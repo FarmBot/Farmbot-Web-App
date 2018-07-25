@@ -2,9 +2,10 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { TimePeriodSelection, getEndDate, DateDisplay } from "../time_period_selection";
 import { fakeSensorReading } from "../../../__test_support__/fake_state/resources";
+import { TimePeriodSelectionProps, DateDisplayProps } from "../interfaces";
 
 describe("<TimePeriodSelection />", () => {
-  function fakeProps() {
+  function fakeProps(): TimePeriodSelectionProps {
     return {
       timePeriod: 3600 * 24,
       endDate: 1515715140,
@@ -47,7 +48,7 @@ describe("<TimePeriodSelection />", () => {
 
 describe("getEndDate()", () => {
   it("returns recent reading date", () => {
-    expect(getEndDate([fakeSensorReading()])).toEqual(1515702038);
+    expect(getEndDate([fakeSensorReading()])).toEqual(expect.any(Number));
   });
 
   it("returns current date", () => {
@@ -56,7 +57,7 @@ describe("getEndDate()", () => {
 });
 
 describe("<DateDisplay />", () => {
-  function fakeProps() {
+  function fakeProps(): DateDisplayProps {
     return {
       timePeriod: 3600 * 24 * 7,
       endDate: 1515715140,

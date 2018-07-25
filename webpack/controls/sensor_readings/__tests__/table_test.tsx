@@ -7,11 +7,13 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 
 describe("<SensorReadingsTable />", () => {
-  function fakeProps(): SensorReadingsTableProps {
+  function fakeProps(sr = fakeSensorReading()): SensorReadingsTableProps {
     return {
-      readingsForPeriod: () => [fakeSensorReading()],
+      readingsForPeriod: () => [sr],
       sensors: [fakeSensor()],
       timeOffset: 0,
+      hover: jest.fn(),
+      hovered: undefined,
     };
   }
 
@@ -30,5 +32,28 @@ describe("<SensorReadingsTable />", () => {
     p.readingsForPeriod = () => [sr];
     const wrapper = mount(<SensorReadingsTable {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("analog");
+  });
+
+  it("hovers row", () => {
+    const sr = fakeSensorReading();
+    const p = fakeProps(sr);
+    const wrapper = mount(<SensorReadingsTable {...p} />);
+    wrapper.find("tr").last().simulate("mouseEnter");
+    expect(p.hover).toHaveBeenCalledWith(sr.uuid);
+  });
+
+  it("unhovers row", () => {
+    const p = fakeProps();
+    const wrapper = mount(<SensorReadingsTable {...p} />);
+    wrapper.find("tr").last().simulate("mouseLeave");
+    expect(p.hover).toHaveBeenCalledWith(undefined);
+  });
+
+  it("selects row", () => {
+    const sr = fakeSensorReading();
+    const p = fakeProps(sr);
+    p.hovered = sr.uuid;
+    const wrapper = mount(<SensorReadingsTable {...p} />);
+    expect(wrapper.find("tr").last().hasClass("selected")).toEqual(true);
   });
 });

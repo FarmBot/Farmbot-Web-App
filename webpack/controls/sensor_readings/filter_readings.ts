@@ -4,6 +4,16 @@ import { every, isNumber } from "lodash";
 import { Xyz } from "../../devices/interfaces";
 import * as moment from "moment";
 
+/** One day in seconds. */
+const oneDay = 3600 * 24;
+/** Calculate a sensor reading filtered time period end time in seconds. */
+export const calcEndOfPeriod = (
+  timePeriod: number,
+  endDate: number,
+  period: "current" | "previous"
+) => endDate + oneDay
+  - timePeriod * (period === "current" ? 0 : 1);
+
 /** Filter sensor readings using sensor history widget state. */
 export const filterSensorReadings =
   (sensorReadings: TaggedSensorReading[],
@@ -16,10 +26,10 @@ export const filterSensorReadings =
       // Don't return sensor readings from the previous period if not desired.
       if (period === "previous" && !showPreviousPeriod) { return []; }
 
-      /** Time period begin. */
-      const begin = endDate - (period === "current" ? 1 : 2) * timePeriod;
       /** Time period end. */
-      const end = period === "current" ? endDate : endDate - timePeriod;
+      const end = calcEndOfPeriod(timePeriod, endDate, period);
+      /** Time period begin. */
+      const begin = end - timePeriod;
 
       return sensorReadings
         // Filter by date

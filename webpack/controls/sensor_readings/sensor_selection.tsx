@@ -2,14 +2,9 @@ import * as React from "react";
 import { FBSelect, DropDownItem } from "../../ui";
 import { t } from "i18next";
 import { TaggedSensor } from "../../resources/tagged_resources";
+import { SensorSelectionProps } from "./interfaces";
 
 const ALL_CHOICE: DropDownItem = { label: t("All"), value: "" };
-
-export interface SensorSelectionProps {
-  selectedSensor: TaggedSensor | undefined;
-  sensors: TaggedSensor[];
-  setSensor: (sensor: TaggedSensor) => void;
-}
 
 /** Select a sensor by which to filter sensor readings. */
 export const SensorSelection = ({
@@ -24,6 +19,7 @@ export const SensorSelection = ({
   return <div>
     <label>{t("Sensor")}</label>
     <FBSelect
+      key={selectedSensor ? selectedSensor.uuid : "all_sensors"}
       selectedItem={selectedSensor
         ? sensorDDIByUuidLookup[selectedSensor.uuid]
         : ALL_CHOICE}

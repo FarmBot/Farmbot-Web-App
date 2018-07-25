@@ -327,10 +327,26 @@ a {
   }
 }
 
+.sensor-readings-plot {
+  max-height: 300px;
+  stroke: $black;
+  font-size: 60px;
+  font-weight: 100;
+}
+
 .sensor-history-table {
   font-size: 1.2rem;
   th, td {
     width: 1%;
+  }
+  tr {
+    color: $black;
+    &.previous {
+      color: $medium_gray;
+    }
+    &.selected {
+      background: $gray;
+    }
   }
   .sensor-history-table-contents {
     display: block;
