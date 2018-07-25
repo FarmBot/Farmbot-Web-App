@@ -48,7 +48,7 @@ describe("<TimePeriodSelection />", () => {
 
 describe("getEndDate()", () => {
   it("returns recent reading date", () => {
-    expect(getEndDate([fakeSensorReading()])).toEqual(1515657600);
+    expect(getEndDate([fakeSensorReading()])).toEqual(expect.any(Number));
   });
 
   it("returns current date", () => {
