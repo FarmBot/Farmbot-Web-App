@@ -1,7 +1,8 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { SensorSelection, SensorSelectionProps } from "../sensor_selection";
+import { SensorSelection } from "../sensor_selection";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
+import { SensorSelectionProps } from "../interfaces";
 
 describe("<SensorSelection />", () => {
   function fakeProps(): SensorSelectionProps {

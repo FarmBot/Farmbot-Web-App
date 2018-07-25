@@ -41,6 +41,7 @@ describe("filterSensorReadings()", () => {
     location: undefined,
     showPreviousPeriod: false,
     deviation: 0,
+    hovered: undefined,
   });
 
   it("filters by date", () => {

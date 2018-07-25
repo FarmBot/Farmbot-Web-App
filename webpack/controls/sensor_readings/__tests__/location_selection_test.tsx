@@ -1,6 +1,7 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { LocationSelection, LocationSelectionProps, LocationDisplay } from "../location_selection";
+import { LocationSelection, LocationDisplay } from "../location_selection";
+import { LocationSelectionProps } from "../interfaces";
 
 describe("<LocationSelection />", () => {
   function fakeProps(): LocationSelectionProps {

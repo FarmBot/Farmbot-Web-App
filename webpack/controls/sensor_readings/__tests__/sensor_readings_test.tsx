@@ -51,8 +51,8 @@ describe("<SensorReadings />", () => {
     const expected = 1515715140;
     const p = fakeProps();
     const wrapper = mount<SensorReadings>(<SensorReadings {...p} />);
-    expect(wrapper.instance().state.endDate)
-      .toEqual(moment(p.sensorReadings[0].body.created_at).unix());
+    expect(wrapper.instance().state.endDate).toEqual(
+      moment(p.sensorReadings[0].body.created_at).startOf("day").unix());
     wrapper.instance().setEndDate(expected);
     expect(wrapper.instance().state.endDate).toEqual(expected);
   });
@@ -71,5 +71,24 @@ describe("<SensorReadings />", () => {
     expect(wrapper.instance().state.deviation).toEqual(0);
     wrapper.instance().setDeviation(expected);
     expect(wrapper.instance().state.deviation).toEqual(expected);
+  });
+
+  it("sets hover", () => {
+    const expected = "fake UUID";
+    const wrapper = mount<SensorReadings>(<SensorReadings {...fakeProps()} />);
+    expect(wrapper.instance().state.hovered).toEqual(undefined);
+    wrapper.instance().hover(expected);
+    expect(wrapper.instance().state.hovered).toEqual(expected);
+  });
+
+  it("clears filters", () => {
+    const s = fakeSensor();
+    const p = fakeProps();
+    p.sensors = [s];
+    const wrapper = mount<SensorReadings>(<SensorReadings {...p} />);
+    wrapper.setState({ location: { x: 1, y: 2, z: 3 }, sensor: s });
+    wrapper.instance().clearFilters();
+    expect(wrapper.instance().state.location).toEqual(undefined);
+    expect(wrapper.instance().state.sensor).toEqual(undefined);
   });
 });
