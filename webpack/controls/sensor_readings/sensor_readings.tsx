@@ -12,6 +12,7 @@ import { ToolTips } from "../../constants";
 import { t } from "i18next";
 import { TaggedSensor } from "../../resources/tagged_resources";
 import { AxisInputBoxGroupState } from "../interfaces";
+import { SensorReadingsPlot } from "./graph";
 
 export class SensorReadings
   extends React.Component<SensorReadingsProps, SensorReadingsState> {
@@ -22,6 +23,7 @@ export class SensorReadings
     location: undefined,
     showPreviousPeriod: false,
     deviation: 0,
+    hovered: undefined,
   };
 
   /** Toggle display of previous time period. */
@@ -33,6 +35,15 @@ export class SensorReadings
   setLocation = (location: AxisInputBoxGroupState | undefined) =>
     this.setState({ location });
   setDeviation = (deviation: number) => this.setState({ deviation });
+  hover = (hovered: string | undefined) => this.setState({ hovered });
+  clearFilters = () => this.setState({
+    sensor: undefined,
+    timePeriod: 3600 * 24,
+    endDate: getEndDate(this.props.sensorReadings),
+    location: undefined,
+    showPreviousPeriod: false,
+    deviation: 0,
+  });
 
   render() {
     /** Return filtered sensor readings for the specified period.
@@ -43,7 +54,11 @@ export class SensorReadings
     return <Widget className="sensor-history-widget">
       <WidgetHeader
         title={t("Sensor History")}
-        helpText={ToolTips.SENSOR_HISTORY} />
+        helpText={ToolTips.SENSOR_HISTORY}>
+        <button className="fb-button gray" onClick={this.clearFilters}>
+          {t("clear filters")}
+        </button>
+      </WidgetHeader>
       <WidgetBody>
         <SensorSelection
           selectedSensor={this.state.sensor}
@@ -62,10 +77,20 @@ export class SensorReadings
           setLocation={this.setLocation}
           setDeviation={this.setDeviation} />
         <hr />
+        <SensorReadingsPlot
+          readingsForPeriod={readingsForPeriod}
+          endDate={this.state.endDate}
+          timeOffset={this.props.timeOffset}
+          hover={this.hover}
+          hovered={this.state.hovered}
+          showPreviousPeriod={this.state.showPreviousPeriod}
+          timePeriod={this.state.timePeriod} />
         <SensorReadingsTable
           readingsForPeriod={readingsForPeriod}
           sensors={this.props.sensors}
-          timeOffset={this.props.timeOffset} />
+          timeOffset={this.props.timeOffset}
+          hover={this.hover}
+          hovered={this.state.hovered} />
       </WidgetBody>
       <WidgetFooter>
         <div className="sensor-history-footer">

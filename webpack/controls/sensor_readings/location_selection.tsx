@@ -5,13 +5,7 @@ import { AxisInputBoxGroupState } from "../interfaces";
 import { Xyz } from "../../devices/interfaces";
 import { AxisInputBox } from "../axis_input_box";
 import { isNumber } from "lodash";
-
-export interface LocationSelectionProps {
-  location: AxisInputBoxGroupState | undefined;
-  deviation: number;
-  setDeviation: (deviation: number) => void;
-  setLocation: (location: AxisInputBoxGroupState | undefined) => void;
-}
+import { LocationSelectionProps } from "./interfaces";
 
 /** Select a location filter for sensor readings. */
 export const LocationSelection =

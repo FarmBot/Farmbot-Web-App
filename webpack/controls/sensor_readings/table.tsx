@@ -1,10 +1,9 @@
 import * as React from "react";
-import { SensorReadingsTableProps } from "./interfaces";
+import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
 import { t } from "i18next";
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
 import * as moment from "moment";
-import { TaggedSensorReading } from "../../resources/tagged_resources";
 
 enum TableColWidth {
   sensor = 125,
@@ -49,17 +48,16 @@ const TableHeader = () =>
   </table>;
 
 /** Sensor reading. */
-const TableRow = (props: {
-  sensorReading: TaggedSensorReading,
-  sensorName: string,
-  timeOffset: number,
-  period: "previous" | "current"
-}) => {
-  const { sensorReading, timeOffset, period, sensorName } = props;
+const TableRow = (props: TableRowProps) => {
+  const {
+    sensorReading, timeOffset, period, sensorName, hover, hovered
+  } = props;
   const { uuid, body } = sensorReading;
   const { value, x, y, z, created_at, mode } = body;
-  const color = period === "previous" ? "gray" : "";
-  return <tr key={uuid} style={{ color }}>
+  return <tr key={uuid}
+    className={`${period} ${hovered === uuid ? "selected" : ""}`}
+    onMouseEnter={() => hover(uuid)}
+    onMouseLeave={() => hover(undefined)}>
     <td style={{ width: `${TableColWidth.sensor}px` }}>
       {sensorName}
     </td>
@@ -100,7 +98,9 @@ export class SensorReadingsTable
                 sensorName={sensorName}
                 sensorReading={sensorReading}
                 timeOffset={this.props.timeOffset}
-                period={period} />;
+                period={period}
+                hover={this.props.hover}
+                hovered={this.props.hovered} />;
             });
           })}
         </tbody>
