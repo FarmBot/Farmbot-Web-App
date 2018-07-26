@@ -1828,6 +1828,13 @@ CREATE INDEX index_logs_on_device_id ON public.logs USING btree (device_id);
 
 
 --
+-- Name: index_logs_on_device_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_logs_on_device_id_and_created_at ON public.logs USING btree (device_id, created_at);
+
+
+--
 -- Name: index_logs_on_sent_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2287,6 +2294,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180716163108'),
 ('20180719143412'),
 ('20180720021451'),
-('20180726145505');
+('20180726145505'),
+('20180726165546');
 
 
