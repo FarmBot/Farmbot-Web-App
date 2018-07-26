@@ -18,3 +18,6 @@ export * from "./fb_select";
 export * from "./new_fb_select";
 export * from "./fallback_img";
 export * from "./doc_link";
+export * from "./left_panel";
+export * from "./center_panel";
+export * from "./right_panel";

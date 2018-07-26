@@ -1,9 +1,6 @@
-const mockHistory = jest.fn();
 let mockPath = "/app/designer/plants";
 jest.mock("../../../../history", () => ({
-  history: {
-    push: mockHistory
-  },
+  history: { push: jest.fn() },
   getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
@@ -13,12 +10,9 @@ import { fakeMapTransformProps } from "../../../../__test_support__/map_transfor
 import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { ToolSlotPointer } from "../../../../interfaces";
 import { shallow } from "enzyme";
+import { history } from "../../../../history";
 
 describe("<ToolSlotLayer/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): ToolSlotLayerProps {
     const ts: ToolSlotPointer = {
       pointer_type: "ToolSlot",
@@ -56,7 +50,7 @@ describe("<ToolSlotLayer/>", () => {
     const wrapper = shallow(<ToolSlotLayer {...p} />);
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
-    expect(mockHistory).toHaveBeenCalledWith("/app/tools");
+    expect(history.push).toHaveBeenCalledWith("/app/tools");
   });
 
   it("doesn't navigate to tools page", async () => {
@@ -65,7 +59,7 @@ describe("<ToolSlotLayer/>", () => {
     const wrapper = shallow(<ToolSlotLayer {...p} />);
     const tools = wrapper.find("g").first();
     await tools.simulate("click");
-    expect(mockHistory).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
   });
 
   it("is in non-clickable mode", () => {

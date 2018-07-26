@@ -44,9 +44,7 @@ module Api
     # Every time a token is created, sweep the old TokenIssuances out of the
     # database.
     def clean_out_old_tokens
-      TokenIssuance
-        .where("exp < ?", Time.now.to_i)
-        .destroy_all
+      CleanOutOldDbItemsJob.perform_later if TokenIssuance.any_expired?
     end
 
     def if_properly_formatted

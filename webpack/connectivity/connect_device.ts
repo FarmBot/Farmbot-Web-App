@@ -54,16 +54,16 @@ export function actOnChannelName(
 export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case "success":
-      return success(log.message, TITLE);
+      return success(log.message, t(TITLE));
     case "warn":
-      return warning(log.message, TITLE);
+      return warning(log.message, t(TITLE));
     case "busy":
     case "error":
-      return error(log.message, TITLE);
+      return error(log.message, t(TITLE));
     case "fun":
     case "info":
     default:
-      return info(log.message, TITLE);
+      return info(log.message, t(TITLE));
   }
 }
 
@@ -89,9 +89,9 @@ export const batchInitResources =
     return { type: Actions.BATCH_INIT, payload };
   };
 
-export const bothUp = () => {
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
+export const bothUp = (why: string) => {
+  dispatchNetworkUp("user.mqtt", undefined, why);
+  dispatchNetworkUp("bot.mqtt", undefined, why);
 };
 
 export function readStatus() {
@@ -102,7 +102,7 @@ export function readStatus() {
 }
 
 export const onOffline = () => {
-  dispatchNetworkDown("user.mqtt");
+  dispatchNetworkDown("user.mqtt", undefined, "onOffline() callback");
   error(t(Content.MQTT_DISCONNECTED), t("Error"));
 };
 
@@ -113,7 +113,7 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
 };
 const onStatus = (dispatch: Function, getState: GetState) =>
   (throttle(function (msg: BotStateTree) {
-    bothUp();
+    bothUp("Got a status message");
     dispatch(incomingStatus(msg));
     if (HACKY_FLAGS.needVersionCheck) {
       const IS_OK = versionOK(getState()
@@ -129,19 +129,22 @@ const onStatus = (dispatch: Function, getState: GetState) =>
 type Client = { connected?: boolean };
 
 export const onSent = (client: Client) => () => {
-  !!client.connected ?
-    dispatchNetworkUp("user.mqtt") : dispatchNetworkDown("user.mqtt");
+  const connected = !!client.connected;
+  const why = `Outbound mqtt.js. client.connected = ${connected}`;
+  const cb = connected ? dispatchNetworkUp : dispatchNetworkDown;
+  cb("user.mqtt", undefined, why);
 };
 
 export function onMalformed() {
-  bothUp();
+  bothUp("Got a malformed message");
   if (!HACKY_FLAGS.alreadyToldUserAboutMalformedMsg) {
     warning(t(Content.MALFORMED_MESSAGE_REC_UPGRADE));
     HACKY_FLAGS.alreadyToldUserAboutMalformedMsg = true;
   }
 }
 
-export const onOnline = () => dispatchNetworkUp("user.mqtt");
+export const onOnline =
+  () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 const attachEventListeners =

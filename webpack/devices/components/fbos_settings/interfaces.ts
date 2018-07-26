@@ -1,7 +1,7 @@
 import {
   SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay
 } from "../../interfaces";
-import { Dictionary } from "farmbot";
+import { Dictionary, InformationalSettings } from "farmbot";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -52,7 +52,7 @@ export interface FarmbotOsRowProps {
 }
 
 export interface FbosDetailsProps {
-  bot: BotState;
+  botInfoSettings: InformationalSettings;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
 }

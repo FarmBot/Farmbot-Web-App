@@ -22,6 +22,8 @@ import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
+import { SendDiagnosticReport } from "./send_diagnostic_report";
+
 import axios from "axios";
 
 export enum ColWidth {
@@ -77,7 +79,7 @@ export class FarmbotOsSettings
   maybeWarnTz = () => {
     const wrongTZ = timezoneMismatch(this.props.account.body.timezone);
     if (wrongTZ) {
-      return Content.DIFFERENT_TZ_WARNING;
+      return t(Content.DIFFERENT_TZ_WARNING);
     } else {
       return "";
     }
@@ -166,6 +168,11 @@ export class FarmbotOsSettings
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
+            <SendDiagnosticReport
+              diagnostics={this.props.diagnostics}
+              expanded={this.props.bot.controlPanelState.diagnostic_dumps}
+              shouldDisplay={this.props.shouldDisplay}
+              dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>
       </form>

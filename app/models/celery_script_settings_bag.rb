@@ -5,11 +5,20 @@
 # the rug. Shoving configuration into a module is not a design pattern. Feedback
 # welcome for refactoring of this code.
 module CeleryScriptSettingsBag
+  class BoxLed
+    def self.name
+      "Raspberry Pi Box LED"
+    end
+
+    def self.exists?(id)
+      true # Not super important right now. - RC 22 JUL 18
+    end
+  end
+
   # List of all celery script nodes that can be used as a varaible...
   ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
   PLANT_STAGES          = %w(planned planted harvested)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
-  ALLOWED_PIN_TYPES     = [Peripheral, Sensor].map(&:name)
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
                              config_update calibrate execute move_absolute
@@ -18,7 +27,7 @@ module CeleryScriptSettingsBag
                              install_farmware update_farmware take_photo zero
                              install_first_party_farmware remove_farmware
                              find_home register_gpio unregister_gpio
-                             set_servo_angle change_ownership)
+                             set_servo_angle change_ownership dump_info)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(images plants regimens peripherals
@@ -32,6 +41,8 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS_TYPES     = [String, :named_pin]
   ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
+                             read_status reboot sync take_photo)
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
                              write_pin )
@@ -53,11 +64,16 @@ module CeleryScriptSettingsBag
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
   BAD_PIN_ID            = "Can't find %s with id of %s"
-  NO_PIN_ID             = "You must select a %s before using it."
+  NO_PIN_ID             = "%s requires a valid pin number"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
-  PIN_TYPE_MAP          = { "Peripheral" => Peripheral, "Sensor" => Sensor }
+  PIN_TYPE_MAP          = { "Peripheral" => Peripheral,
+                            "Sensor"     => Sensor,
+                            "BoxLed3"    => BoxLed,
+                            "BoxLed4"    => BoxLed }
+  CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
+  ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
   KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
     (acc[val] = Kernel.const_get(val)) && acc
   end
@@ -80,9 +96,9 @@ module CeleryScriptSettingsBag
       .arg(:url,          [String])
       .arg(:value,        [String, Integer, TrueClass, FalseClass])
       .arg(:version,      [Integer])
-      .arg(:x,            [Integer])
-      .arg(:y,            [Integer])
-      .arg(:z,            [Integer])
+      .arg(:x,            [Integer, Float])
+      .arg(:y,            [Integer, Float])
+      .arg(:z,            [Integer, Float])
       .arg(:pin_id,       [Integer])
       .arg(:pin_type,     [String]) do |node|
         within(ALLOWED_PIN_TYPES, node) do |val|
@@ -171,22 +187,24 @@ module CeleryScriptSettingsBag
         end
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
-        args     = HashWithIndifferentAccess.new(node.args)
-        x        = args[:pin_type].value
-        klass    = PIN_TYPE_MAP[x]
-        raise "NEVER" unless klass
-        id       = args[:pin_id].value
-        node.invalidate!(NO_PIN_ID % [klass]) if (id == 0)
+        args  = HashWithIndifferentAccess.new(node.args)
+        klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
+        id    = args[:pin_id].value
+        node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
         bad_node = !klass.exists?(id)
-        node.invalidate!(BAD_PIN_ID % [klass, id]) if bad_node
+        node.invalidate!(BAD_PIN_ID % [klass.name, id]) if bad_node
       end
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
       .node(:coordinate,            [:x, :y, :z])
       .node(:move_absolute,         [:location, :speed, :offset])
       .node(:move_relative,         [:x, :y, :z, :speed])
-      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ])
-      .node(:read_pin,              [:pin_number, :label, :pin_mode])
+      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
+        no_rpi_analog(n)
+      end
+      .node(:read_pin,              [:pin_number, :label, :pin_mode]) do |n|
+        no_rpi_analog(n)
+      end
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
@@ -227,6 +245,7 @@ module CeleryScriptSettingsBag
       .node(:parameter_declaration, [:label, :data_type], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
+      .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
@@ -237,5 +256,20 @@ module CeleryScriptSettingsBag
   def self.within(array, node)
     val = node&.value
     node.invalidate!(yield(val)) if !array.include?(val)
+  end
+
+  def self.no_rpi_analog(node)
+    args        = HashWithIndifferentAccess.new(node.args)
+    pin_mode    = args.fetch(:pin_mode).try(:value) || DIGITAL
+    pin_number  = args.fetch(:pin_number)
+    is_analog   = pin_mode == ANALOG
+    is_node     = pin_number.is_a?(CeleryScript::AstNode)
+    needs_check = is_analog && is_node
+
+    if needs_check
+      pin_type_args = pin_number.args.with_indifferent_access
+      pin_type      = pin_type_args.fetch(:pin_type).try(:value) || ""
+      node.invalidate!(CANT_ANALOG) if pin_type.include?("BoxLed")
+    end
   end
 end

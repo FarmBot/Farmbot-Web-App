@@ -1,21 +1,16 @@
-const mockHistory = jest.fn();
-jest.mock("../../../history", () => ({
-  history: {
-    push: mockHistory
-  }
-}));
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
-import { PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps } from "../plant_panel";
+import {
+  PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps
+} from "../plant_panel";
 import { shallow } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
 import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
+import { history } from "../../../history";
 
 describe("<PlantPanel/>", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const info: FormattedPlantInfo = {
     x: 12,
     y: 34,
@@ -48,9 +43,7 @@ describe("<PlantPanel/>", () => {
   it("calls destroy", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantPanel {...p} />);
-    const btn = wrapper.find("button").at(1);
-    expect(btn.text()).toEqual("Delete");
-    btn.simulate("click");
+    clickButton(wrapper, 1, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
@@ -63,19 +56,15 @@ describe("<PlantPanel/>", () => {
 
   it("enters select mode", () => {
     const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
-    const btn = wrapper.find("button").last();
-    btn.simulate("click");
-    expect(btn.text()).toEqual("Delete multiple");
-    expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/select");
+    clickButton(wrapper, 2, "Delete multiple");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
   it("navigates to 'move to' mode", () => {
     const dispatch = jest.fn();
     const wrapper = shallow(<PlantPanel info={info} dispatch={dispatch} />);
-    const btn = wrapper.find("button").first();
-    btn.simulate("click");
-    expect(btn.text()).toEqual("Move FarmBot to this plant");
-    expect(mockHistory).toHaveBeenCalledWith("/app/designer/plants/move_to");
+    clickButton(wrapper, 0, "Move FarmBot to this plant");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
     expect(dispatch).toHaveBeenCalledWith({
       payload: { "x": 12, "y": 34, "z": undefined },
       type: Actions.CHOOSE_LOCATION
@@ -84,10 +73,6 @@ describe("<PlantPanel/>", () => {
 });
 
 describe("<EditPlantStatus />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): EditPlantStatusProps => {
     return {
       uuid: "Plant.0.0",

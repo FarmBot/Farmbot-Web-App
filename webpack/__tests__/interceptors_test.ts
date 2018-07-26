@@ -33,6 +33,8 @@ import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity";
 import { error } from "farmbot-toastr";
 import { Session } from "../session";
 
+const A_STRING = expect.any(String);
+
 interface FakeProps {
   uuid: string;
   method: string;
@@ -54,7 +56,6 @@ function fakeResponse(config: Partial<FakeProps>): AxiosResponse {
 
 describe("responseFulfilled", () => {
   it("won't fire for webcam feed updates", () => {
-    jest.clearAllMocks();
     const resp = fakeResponse({
       method: "post",
       url: "https://staging.farmbot.io/api/webcam_feeds/"
@@ -65,14 +66,10 @@ describe("responseFulfilled", () => {
 });
 
 describe("responseRejected", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("undefined error", async () => {
     await expect(responseRejected(undefined)).rejects.toEqual(undefined);
     expect(dispatchNetworkUp).not.toHaveBeenCalled();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api");
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api", undefined, A_STRING);
   });
 
   it("safe error", async () => {
@@ -82,7 +79,7 @@ describe("responseRejected", () => {
     };
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
     expect(dispatchNetworkDown).not.toHaveBeenCalled();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api");
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", undefined, A_STRING);
   });
 
   it("handles 500", async () => {

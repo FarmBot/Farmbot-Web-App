@@ -19,7 +19,7 @@ private
 
     def confirm_password
       invalid = !user.valid_password?(password)
-      add_error :password, :*, BAD_PASSWORD if invalid 
+      add_error :password, :*, BAD_PASSWORD if invalid
     end
   end
 end

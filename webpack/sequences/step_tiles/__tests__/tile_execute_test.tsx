@@ -24,7 +24,7 @@ function fakeProps(): ExecBlockParams {
 
 describe("<ExecuteBlock/>", () => {
   it("renders inputs", () => {
-    const block = mount(<ExecuteBlock {...fakeProps() } />);
+    const block = mount(<ExecuteBlock {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     expect(inputs.length).toEqual(1);
@@ -40,7 +40,7 @@ describe("<RefactoredExecuteBlock />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = dispatch;
-    const block = mount(<RefactoredExecuteBlock {...p } />);
+    const block = mount(<RefactoredExecuteBlock {...p} />);
     // tslint:disable-next-line:no-any
     const instance = block.instance() as any;
     instance.changeSelection({ label: "", value: 10 });

@@ -12,9 +12,15 @@ namespace :api do
     sh "PORT=3000 bundle exec foreman start --procfile=Procfile.dev"
   end
 
+  desc "Run Rails _ONLY_. No Webpack."
+  task only: :environment do
+    sh "PORT=3000 bundle exec foreman start --procfile=Procfile.api_only"
+  end
+
   desc "Pull the latest Farmbot API version"
   task(update: :environment) { same_thing }
 
   desc "Pull the latest Farmbot API version"
   task(upgrade: :environment) { same_thing }
+
 end

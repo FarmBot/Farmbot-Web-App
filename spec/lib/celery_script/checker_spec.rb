@@ -60,8 +60,8 @@ describe CeleryScript::Checker do
   it 'handles wrong leaf types' do
     hash[:body][0][:args][:location][:args][:x] = "supposed to be an Integer"
     result = checker.run
-    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to"\
-                                  " be one of: [Integer] but got String")
+    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to be "\
+                                 "one of: [Integer, Float] but got String")
   end
 
   it "finds a bad leaf" do
@@ -94,15 +94,14 @@ describe CeleryScript::Checker do
               pin_id: 0
             }
           },
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "FOO"
         }
       }
     ]
     chk = CeleryScript::Checker.new(tree, corpus)
     expect(chk.valid?).to be false
-    expect(chk.error.message)
-      .to eq("You must select a Peripheral before using it.")
+    expect(chk.error.message).to eq("Peripheral requires a valid pin number")
   end
 
   it "Catches bad `pin_type`s in `read_pin`" do
@@ -129,7 +128,7 @@ describe CeleryScript::Checker do
       {
         kind: "read_pin",
         args: {
-          pin_mode: 0,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
           label: "pin",
           pin_number: {
             kind: "named_pin",
@@ -142,6 +141,66 @@ describe CeleryScript::Checker do
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("Can't find Peripheral with id of 900")
   end
+
+  it 'allows "BoxLed3", "BoxLed4" as `pin_type`s' do
+    hash[:body] = [
+      {
+        kind: "write_pin",
+        args: {
+          pin_value: 23,
+          pin_mode: 0,
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be true
+  end
+
+  it 'disallows analog for "BoxLed3", "BoxLed4"' do
+    hash[:body] = [
+      {
+        kind: "write_pin",
+        args: {
+          pin_value: 23,
+          pin_mode: CeleryScriptSettingsBag::ANALOG,
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include(CeleryScriptSettingsBag::CANT_ANALOG)
+  end
+
+
+  it 'gives human-friendly names to "BoxLed3", "BoxLed4"' do
+    hash[:body] = [
+      {
+        kind: "write_pin",
+        args: {
+          pin_value: 23,
+          pin_mode: CeleryScriptSettingsBag::DIGITAL,
+          pin_number: {
+            kind: "named_pin",
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 0 }
+          }
+        }
+      }
+    ]
+    chk = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expected = \
+      CeleryScriptSettingsBag::NO_PIN_ID % CeleryScriptSettingsBag::BoxLed.name
+    expect(chk.error.message).to eq(expected)
+  end
+
 
   it "catches bad `axis` nodes" do
     t = \

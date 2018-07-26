@@ -224,6 +224,7 @@ export function urlFor(tag: ResourceName) {
     FbosConfig: API.current.fbosConfigPath,
     WebAppConfig: API.current.webAppConfigPath,
     FirmwareConfig: API.current.firmwareConfigPath,
+    DiagnosticDump: API.current.diagnosticDumpsPath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -238,7 +239,7 @@ const SINGULAR_RESOURCE: ResourceName[] =
   ["WebAppConfig", "FbosConfig", "FirmwareConfig"];
 
 /** Shared functionality in create() and update(). */
-function updateViaAjax(payl: AjaxUpdatePayload) {
+export function updateViaAjax(payl: AjaxUpdatePayload) {
   const { uuid, statusBeforeError, dispatch, index } = payl;
   const resource = findByUuid(index, uuid);
   const { body, kind } = resource;

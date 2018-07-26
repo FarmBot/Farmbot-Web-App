@@ -9,6 +9,12 @@ module SensorReadings
       integer :pin
     end
 
+    optional do
+      integer :mode,
+        in:      CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
+        default: CeleryScriptSettingsBag::DIGITAL
+    end
+
     def execute
       SensorReading.create!(inputs)
     end

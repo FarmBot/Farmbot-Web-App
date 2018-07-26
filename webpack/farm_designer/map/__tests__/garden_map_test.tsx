@@ -2,10 +2,7 @@ jest.mock("../../../open_farm/icons", () => ({
   cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
 }));
 
-const mockError = jest.fn();
-jest.mock("farmbot-toastr", () => ({
-  error: mockError
-}));
+jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
 
 jest.mock("../../actions", () => ({
   closePlantInfo: jest.fn(),
@@ -33,6 +30,7 @@ import { Actions } from "../../../constants";
 import { initSave } from "../../../api/crud";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { movePlant, unselectPlant } from "../../actions";
+import { error } from "farmbot-toastr";
 
 function fakeProps(): GardenMapProps {
   return {
@@ -100,7 +98,6 @@ function fakeProps(): GardenMapProps {
 
 describe("<GardenPlant/>", () => {
   beforeEach(function () {
-    jest.clearAllMocks();
     Object.defineProperty(document, "querySelector", {
       value: () => { return { scrollLeft: 1, scrollTop: 2 }; },
       configurable: true
@@ -143,7 +140,7 @@ describe("<GardenPlant/>", () => {
     wrapper.find("#drop-area-svg").simulate("click", {
       preventDefault: jest.fn(), pageX: -100, pageY: -100
     });
-    expect(mockError).toHaveBeenCalledWith(
+    expect(error).toHaveBeenCalledWith(
       expect.stringContaining("Outside of planting area"));
   });
 
@@ -160,7 +157,7 @@ describe("<GardenPlant/>", () => {
 
   it("ends drag", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
+    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
     expect(wrapper.state()).toEqual({});
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).not.toHaveBeenCalled();
@@ -174,7 +171,7 @@ describe("<GardenPlant/>", () => {
     wrapper.setState({ isDragging: true });
     wrapper.find("#drop-area-svg").simulate("mouseUp");
     expect(p.dispatch).toHaveBeenCalled();
-    expect(wrapper.state().isDragging).toBeFalsy();
+    expect(wrapper.instance().state.isDragging).toBeFalsy();
   });
 
   it("drags: editing", () => {

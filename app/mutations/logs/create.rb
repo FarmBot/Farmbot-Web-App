@@ -33,19 +33,20 @@ module Logs
       #
       # TODO: delete the `meta` field once FBOS < v6.4.0 reach EOL.
       string  :type, in: Log::TYPES
-      integer :x
-      integer :y
-      integer :z
+      float :x
+      float :y
+      float :z
       integer :verbosity
       integer :major_version
       integer :minor_version
+      integer :created_at
 
       hash :meta do # This can be transitioned out soon.
         string :type, in: Log::TYPES
         optional do
-          integer :x
-          integer :y
-          integer :z
+          float :x
+          float :y
+          float :z
           integer :verbosity
           integer :major_version
           integer :minor_version
@@ -68,6 +69,7 @@ module Logs
       @log.major_version = transitional_field(:major_version)
       @log.minor_version = transitional_field(:minor_version)
       @log.type          = transitional_field(:type, "info")
+      @log.created_at    = DateTime.strptime(created_at.to_s,'%s') if created_at
       @log.validate!
     end
 
@@ -79,7 +81,7 @@ module Logs
     private
 
     def maybe_deliver
-      LogDispatch.delay.deliver(device, @log)
+      Log.delay.deliver(device, @log)
     end
 
     def has_bad_words

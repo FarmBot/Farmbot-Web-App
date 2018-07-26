@@ -2,9 +2,8 @@ import * as React from "react";
 import { StepButton } from "./step_buttons/index";
 import { t } from "i18next";
 import { scrollToBottom } from "../util";
-import { Row, ToolTip } from "../ui/index";
+import { Row } from "../ui/index";
 import { TaggedSequence } from "../resources/tagged_resources";
-import { ToolTips } from "../constants";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 interface StepButtonProps {
@@ -145,25 +144,19 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
     </StepButton>
   ];
 
-  return <div className="step-button-cluster-panel">
-    <h3>
-      <i>{t("Commands")}</i>
-    </h3>
-    <ToolTip helpText={ToolTips.SEQUENCE_COMMANDS} />
-    <div>
-      <Row>
-        <div className="step-button-cluster">
-          {
-            ALL_THE_BUTTONS.map(function (el, inx) {
-              return <div key={inx} onClick={
-                // Follows user down the page as they add sequences.
-                () => { scrollToBottom("sequenceDiv"); }}>
-                {el}
-              </div>;
-            })
-          }
-        </div>
-      </Row>
-    </div>
+  return <div>
+    <Row>
+      <div className="step-button-cluster">
+        {
+          ALL_THE_BUTTONS.map(function (el, inx) {
+            return <div key={inx} onClick={
+              // Follows user down the page as they add sequences.
+              () => { scrollToBottom("sequenceDiv"); }}>
+              {el}
+            </div>;
+          })
+        }
+      </div>
+    </Row>
   </div>;
 }

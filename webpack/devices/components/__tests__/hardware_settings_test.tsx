@@ -1,17 +1,14 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { HardwareSettings, FwParamExportMenu } from "../hardware_settings";
+import { HardwareSettings } from "../hardware_settings";
 import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<HardwareSettings />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): HardwareSettingsProps => {
     return {
       bot,
@@ -43,9 +40,9 @@ describe("<HardwareSettings />", () => {
     payload: boolean | string) {
     const p = fakeProps();
     const wrapper = mount(<HardwareSettings {...p} />);
-    const button = wrapper.find(buttonElement).at(buttonIndex);
-    expect(button.text().toLowerCase()).toContain(buttonText);
-    button.simulate("click");
+    clickButton(wrapper, buttonIndex, buttonText, {
+      button_tag: buttonElement, partial_match: true
+    });
     expect(p.dispatch).toHaveBeenCalledWith({ payload, type });
   }
 
@@ -75,13 +72,5 @@ describe("<HardwareSettings />", () => {
   it("doesn't show param export menu", () => {
     const wrapper = shallow(<HardwareSettings {...fakeProps()} />);
     expect(wrapper.find("Popover").length).toEqual(0);
-  });
-});
-
-describe("<FwParamExportMenu />", () => {
-  it("lists all params", () => {
-    const config = fakeFirmwareConfig().body;
-    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
-    expect(wrapper.text()).toContain("movement_max_spd_");
   });
 });

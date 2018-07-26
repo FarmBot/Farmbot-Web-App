@@ -1,17 +1,12 @@
 import * as React from "react";
 import { ChangePassword } from "../components/index";
 import { mount } from "enzyme";
-import { getProp } from "../../__test_support__/helpers";
 import { SpecialStatus } from "../../resources/tagged_resources";
 import * as moxios from "moxios";
 import { API } from "../../api/api";
 import { error } from "farmbot-toastr";
 
 describe("<ChangePassword/>", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function testCase() {
     const el = mount(<ChangePassword />);
     return {
@@ -27,11 +22,11 @@ describe("<ChangePassword/>", function () {
       form: { ...instance().state.form, password: "X" }
     });
     el.update();
-    expect(getProp(el.find("input").first(), "value")).toEqual("X");
+    expect(instance().state.form.password).toEqual("X");
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
     instance().maybeClearForm();
     expect(instance().state.status).toBe(SpecialStatus.DIRTY);
-    expect(getProp(el.find("input").first(), "value")).toEqual("X");
+    expect(instance().state.form.password).toEqual("X");
   });
 
   it("it does fire maybeClearForm() when form is empty.", () => {

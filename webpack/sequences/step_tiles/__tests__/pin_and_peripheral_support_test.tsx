@@ -18,6 +18,7 @@ import {
   pinsAsDropDownsReadPin,
   pinsAsDropDownsWritePin,
   celery2DropDown,
+  BoxLed,
 } from "../pin_and_peripheral_support";
 import * as _ from "lodash";
 import {
@@ -197,13 +198,14 @@ describe("Pin and Peripheral support files", () => {
     it("converts peripherals to DropDownItems", () => {
       const p = fakePeripheral();
       const ri = buildResourceIndex([p]).index;
+      const uuid = ri.all[0];
       const pin_type: AllowedPinTypes = "Peripheral";
       const pin_id = p.body.id || 0;
       const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
       const result = namedPin2DropDown(ri, np);
       const expected: DropDownItem = {
         label: p.body.label,
-        value: p.body.id || NaN,
+        value: uuid,
         headingId: PinGroupName.Peripheral
       };
       expect(result).toEqual(expected);
@@ -217,6 +219,23 @@ describe("Pin and Peripheral support files", () => {
       const boom = () => namedPin2DropDown(ri, np);
       expect(boom).toThrowError("Bad pin_type: \"no\"");
     });
+
+    Object.values(BoxLed).map(boxLed => {
+      it(`converts ${boxLed} named pin to DropDownItem`, () => {
+        const ri = buildResourceIndex([]).index;
+        const namedPin: NamedPin = {
+          kind: "named_pin",
+          args: { pin_type: boxLed, pin_id: -1 }
+        };
+        const result = namedPin2DropDown(ri, namedPin);
+        const expected: DropDownItem = {
+          label: expect.stringContaining("LED"),
+          value: boxLed,
+          headingId: PinGroupName.BoxLed
+        };
+        expect(result).toEqual(expected);
+      });
+    });
   });
 
   describe("dropDown2CeleryArg", () => {
@@ -226,7 +245,7 @@ describe("Pin and Peripheral support files", () => {
       expect(dropDown2CeleryArg(ri, ddi)).toEqual(12);
     });
 
-    it("converts numbers to the correct type", () => {
+    it("converts sensors to the correct type", () => {
       const ri = buildResourceIndex([fakeSensor()]).index;
       const s = ri.references[ri.byKind.Sensor[0]] as TaggedSensor;
       const ddi = { label: "sensor", value: s.uuid };
@@ -242,6 +261,16 @@ describe("Pin and Peripheral support files", () => {
       const ddi = { label: "sensor", value: "x.y.z" };
       const boom = () => dropDown2CeleryArg(ri, ddi);
       expect(boom).toThrowError("Bad uuid in celery arg: x.y.z");
+    });
+
+    it("converts box LED selection to named pin", () => {
+      const ri = buildResourceIndex([]).index;
+      const ddi = { label: "Box LED 3", value: BoxLed.BoxLed3 };
+      const namedPin: NamedPin = {
+        kind: "named_pin",
+        args: { pin_type: BoxLed.BoxLed3, pin_id: -1 }
+      };
+      expect(dropDown2CeleryArg(ri, ddi)).toEqual(namedPin);
     });
   });
 
@@ -280,11 +309,14 @@ describe("Pin and Peripheral support files", () => {
       const s = fakeSensor();
       s.body.id = 1;
       const ri = buildResourceIndex([s]);
+      const uuid = ri.index.all[0];
       const result = celery2DropDown({
         kind: "named_pin",
         args: { pin_type: "Sensor", pin_id: 1 }
       }, ri.index);
-      expect(result).toEqual({ headingId: "Sensor", label: "Fake Pin", value: 1 });
+      expect(result).toEqual({
+        headingId: "Sensor", label: "Fake Pin", value: uuid
+      });
     });
   });
 });

@@ -70,6 +70,7 @@ export class SequenceEditorMiddleActive extends
         <Row>
           <Col xs={11}>
             <BlurableInput value={sequence.body.name}
+              placeholder={t("Sequence Name")}
               onCommit={(e) => {
                 dispatch(edit(sequence, { name: e.currentTarget.value }));
               }} />

@@ -1,10 +1,19 @@
 import * as React from "react";
-import { WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput } from "../ui/index";
+import {
+  WidgetBody,
+  Col,
+  Widget,
+  WidgetHeader,
+  Row,
+  BlurableInput,
+  BIProps
+} from "../ui/index";
 import { t } from "i18next";
 import { resendEmail } from "./resend_verification";
 import { success, error } from "farmbot-toastr";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
+import { BlurablePassword } from "../ui/blurable_password";
 
 type RegKeyName =
   | "regConfirmation"
@@ -24,10 +33,7 @@ interface CreateAccountProps {
   set: KeySetter;
 }
 
-type FieldType =
-  | "email"
-  | "password"
-  | "text";
+type FieldType = BIProps["type"];
 
 interface FormFieldProps {
   label: string;
@@ -44,7 +50,13 @@ export const FormField = (props: FormFieldProps) => <div>
     onCommit={(e) => props.onCommit(e.currentTarget.value)} />
 </div>;
 
-const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
+interface FieldData {
+  label: string,
+  type: FieldType | "password",
+  keyName: RegKeyName
+}
+
+const FIELDS: FieldData[] = [
   { label: "Email", type: "email", keyName: "regEmail" },
   { label: "Name", type: "text", keyName: "regName" },
   { label: "Password", type: "password", keyName: "regPassword" },
@@ -55,12 +67,21 @@ const FIELDS: { label: string, type: FieldType, keyName: RegKeyName }[] = [
  * Renders a list of input boxes on the registration panel form. */
 const renderFormFields = (get: KeyGetter, set: KeySetter) => {
   return FIELDS.map((f) => {
-    return <FormField
-      key={f.label}
-      label={f.label}
-      type={f.type}
-      value={get(f.keyName) || ""}
-      onCommit={(val) => set(f.keyName, val)} />;
+    if (f.type == "password") {
+      return <div key={f.label}>
+        <label> {t(f.label)} </label>
+        <BlurablePassword
+          key={f.label}
+          onCommit={(e) => set(f.keyName, e.currentTarget.value)} />
+      </div>;
+    } else {
+      return <FormField
+        key={f.label}
+        label={f.label}
+        type={f.type}
+        value={get(f.keyName) || ""}
+        onCommit={(val) => set(f.keyName, val)} />;
+    }
   });
 };
 

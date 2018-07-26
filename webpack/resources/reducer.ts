@@ -27,7 +27,7 @@ import {
 } from "../farm_designer/reducer";
 import { ResourceReadyPayl } from "../sync/actions";
 import {
-  famrwareReducer as farmware,
+  farmwareReducer as farmware,
   farmwareState
 } from "../farmware/reducer";
 import { Actions } from "../constants";
@@ -79,7 +79,8 @@ export function emptyState(): RestResources {
         DeviceConfig: [],
         PinBinding: [],
         PlantTemplate: [],
-        SavedGarden: []
+        SavedGarden: [],
+        DiagnosticDump: []
       },
       byKindAndId: {},
       references: {}
@@ -110,6 +111,7 @@ export let resourceReducer = generateReducer
       switch (resource.kind) {
         case "Crop":
         case "Device":
+        case "DiagnosticDump":
         case "FarmEvent":
         case "FarmwareInstallation":
         case "FbosConfig":
@@ -144,6 +146,7 @@ export let resourceReducer = generateReducer
     switch (resource.kind) {
       case "Crop":
       case "Device":
+      case "DiagnosticDump":
       case "FarmEvent":
       case "FarmwareInstallation":
       case "FbosConfig":

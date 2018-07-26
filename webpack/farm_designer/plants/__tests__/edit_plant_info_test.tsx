@@ -9,8 +9,7 @@ jest.mock("../../../history", () => ({
   getPathArray: () => ""
 }));
 
-const mockErr = jest.fn();
-jest.mock("farmbot-toastr", () => ({ error: mockErr }));
+jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
 
 import * as React from "react";
 import { EditPlantInfo } from "../edit_plant_info";
@@ -19,10 +18,6 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../interfaces";
 
 describe("<EditPlantInfo />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): EditPlantInfoProps => {
     return {
       push: jest.fn(),

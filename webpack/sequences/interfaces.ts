@@ -1,5 +1,4 @@
 import { Color } from "../interfaces";
-import { AuthState } from "../auth/interfaces";
 import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
@@ -26,7 +25,6 @@ export interface Props {
   dispatch: Function;
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
-  auth: AuthState | undefined;
   resources: ResourceIndex;
   syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
@@ -51,8 +49,12 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
-export const NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
-  "pin_value", "rhs", "sequence_id", "speed", "x", "y", "z"];
+export const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
+  "pin_value", "rhs", "sequence_id", "speed"];
+
+export const FLOAT_NUMERIC_FIELDS = ["x", "y", "z"];
+
+export const NUMERIC_FIELDS = INT_NUMERIC_FIELDS.concat(FLOAT_NUMERIC_FIELDS);
 
 export interface Sequence extends CeleryScriptSequence {
   id?: number;
@@ -69,7 +71,6 @@ export interface SequencesListProps {
   sequences: TaggedSequence[];
   sequence: TaggedSequence | undefined;
   dispatch: Function;
-  auth: AuthState | undefined;
 }
 
 export interface SequencesListState {

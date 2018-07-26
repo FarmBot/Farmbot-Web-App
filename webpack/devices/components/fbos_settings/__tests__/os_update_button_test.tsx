@@ -5,8 +5,8 @@ const mockDevice = {
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
-const mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+
+jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -18,7 +18,6 @@ describe("<OsUpdateButton/>", () => {
   beforeEach(function () {
     bot.currentOSVersion = "3.1.6";
     bot.hardware.configuration.beta_opt_in = false;
-    jest.clearAllMocks();
   });
 
   const fakeProps = (): OsUpdateButtonProps => {

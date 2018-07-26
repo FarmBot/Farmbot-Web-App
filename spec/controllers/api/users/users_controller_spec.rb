@@ -22,6 +22,7 @@ describe Api::UsersController do
         .to eq(UserSerializer.new(user).as_json.except(*time_stamps))
       expect(subject.default_serializer_options[:root]).to be false
       expect(subject.default_serializer_options[:user]).to eq(user)
+      expect(subject.current_device_id).to eq("device_#{user.device.id}")
     end
 
     it 'errors if you try to delete with the wrong password' do

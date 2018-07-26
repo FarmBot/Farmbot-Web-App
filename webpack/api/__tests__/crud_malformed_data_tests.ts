@@ -1,20 +1,25 @@
+const mockDevice = {
+  on: jest.fn(() => { return Promise.resolve(); }),
+};
+
+jest.mock("../../device", () => ({
+  getDevice: () => mockDevice
+}));
+
 jest.mock("axios", () => ({
   default: {
-    get: () => {
-      return Promise.resolve({ data: {} });
-    }
+    get: () => { return Promise.resolve({ data: "" }); },
+    put: () => { return Promise.resolve({ data: "" }); },
   }
 }));
 
-jest.mock("../../resources/tagged_resources", () => ({
-  isTaggedResource: () => false
-}));
-
-import { refresh } from "../crud";
+import { refresh, updateViaAjax } from "../crud";
 import { TaggedDevice, SpecialStatus } from "../../resources/tagged_resources";
 import { API } from "../index";
 import { get } from "lodash";
 import { Actions } from "../../constants";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { fakePeripheral } from "../../__test_support__/fake_state/resources";
 
 describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -54,6 +59,21 @@ describe("refresh()", () => {
         "NO ERR MSG FOUND");
       expect(dispatchPayl).toEqual("Unable to refresh");
       done();
+    });
+  });
+});
+
+describe("updateViaAjax()", () => {
+  it("rejects malformed API data", () => {
+    const payload = {
+      uuid: "",
+      statusBeforeError: SpecialStatus.DIRTY,
+      dispatch: jest.fn(),
+      index: buildResourceIndex([fakePeripheral()]).index
+    };
+    payload.uuid = payload.index.all[0];
+    updateViaAjax(payload).catch(e => {
+      expect("" + e).toEqual("Error: Just saved a malformed TR.");
     });
   });
 });

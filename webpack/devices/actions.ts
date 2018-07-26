@@ -136,8 +136,13 @@ export function execSequence(sequence: Sequence) {
     commandOK(noun)();
     return getDevice().execSequence(sequence.id).catch(commandErr(noun));
   } else {
-    throw new Error("Can't execute unsaved sequences");
+    throw new Error(t("Can't execute unsaved sequences"));
   }
+}
+
+export function requestDiagnostic() {
+  const noun = "Diagnostic Request";
+  return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
 }
 
 export let saveAccountChanges: Thunk = function (_dispatch, getState) {

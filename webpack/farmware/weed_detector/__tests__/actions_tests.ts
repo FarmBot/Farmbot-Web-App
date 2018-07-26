@@ -11,9 +11,6 @@ import { translateImageWorkspaceAndSave } from "../actions";
 import { scanImage, test } from "../actions";
 
 describe("actions", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("Saves environment variables", () => {
     /** This test is just here to make sure that envSave() is actually
      * triggering side effects. */
@@ -35,9 +32,6 @@ describe("actions", () => {
 });
 
 describe("scanImage()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("calls out to the device", () => {
     // Run function to invoke side effects
     const thunk = scanImage(5);
@@ -52,9 +46,6 @@ describe("scanImage()", () => {
 });
 
 describe("test()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
   it("calls out to the device", () => {
     // Run function to invoke side effects
     const thunk = test();

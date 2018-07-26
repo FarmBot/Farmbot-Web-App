@@ -2,8 +2,7 @@ jest.mock("../../../actions", () => ({
   updateMCU: jest.fn()
 }));
 
-const mockWarn = jest.fn();
-jest.mock("farmbot-toastr", () => ({ warning: mockWarn }));
+jest.mock("farmbot-toastr", () => ({ warning: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -13,12 +12,9 @@ import { updateMCU } from "../../../actions";
 import {
   fakeFirmwareConfig
 } from "../../../../__test_support__/fake_state/resources";
+import { warning } from "farmbot-toastr";
 
 describe("<HomingAndCalibration />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function testAxisLengthInput(
     fw: string, provided: string, expected: string) {
     const dispatch = jest.fn();
@@ -42,18 +38,18 @@ describe("<HomingAndCalibration />", () => {
   }
   it("short int", () => {
     testAxisLengthInput("5.0.0", "100000", "32000");
-    expect(mockWarn)
+    expect(warning)
       .toHaveBeenCalledWith("Maximum input is 32,000. Rounding down.");
   });
 
   it("long int: too long", () => {
     testAxisLengthInput("6.0.0", "10000000000", "2000000000");
-    expect(mockWarn)
+    expect(warning)
       .toHaveBeenCalledWith("Maximum input is 2,000,000,000. Rounding down.");
   });
 
   it("long int: ok", () => {
     testAxisLengthInput("6.0.0", "100000", "100000");
-    expect(mockWarn).not.toHaveBeenCalled();
+    expect(warning).not.toHaveBeenCalled();
   });
 });

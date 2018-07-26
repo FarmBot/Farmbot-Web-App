@@ -11,12 +11,6 @@ import { ChannelName } from "./sequences/interfaces";
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
 
-export interface PinBinding {
-  id?: number;
-  sequence_id: number;
-  pin_num: number;
-}
-
 export interface Sensor {
   id?: number;
   pin: number | undefined;
@@ -30,7 +24,9 @@ export interface SensorReading {
   y: number | undefined;
   z: number | undefined;
   value: number;
+  mode: number;
   pin: number;
+  created_at: string;
 }
 
 export interface DeviceConfig {

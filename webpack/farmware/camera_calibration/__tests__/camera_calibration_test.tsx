@@ -32,8 +32,7 @@ describe("<CameraCalibration/>", () => {
 
   it("renders", () => {
     const wrapper = mount(<CameraCalibration {...props} />);
-    ["Camera Calibration",
-      "Color Range",
+    ["Color Range",
       "HUE017947",
       "SATURATION025558",
       "VALUE025569",

@@ -10,7 +10,7 @@ const SIX_HOURS = HOUR * 6;
 
 const NOT_SEEN = t("No messages seen yet.");
 
-function ago(input: string) {
+export function ago(input: string) {
   return moment(new Date(input)).fromNow();
 }
 

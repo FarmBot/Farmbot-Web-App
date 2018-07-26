@@ -12,7 +12,8 @@ import {
 import { Diagnosis, DiagnosisName } from "./connectivity/diagnosis";
 import { StatusRowProps } from "./connectivity/connectivity_row";
 import { resetConnectionInfo } from "./actions";
-import { PinBindings } from "./components/pin_bindings";
+import { PinBindings } from "./pin_bindings/pin_bindings";
+import { selectAllDiagnosticDumps } from "../resources/selectors";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -58,6 +59,7 @@ export class Devices extends React.Component<Props, {}> {
         <Row>
           <Col xs={12} sm={6}>
             <FarmbotOsSettings
+              diagnostics={selectAllDiagnosticDumps(this.props.resources)}
               account={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
@@ -69,7 +71,8 @@ export class Devices extends React.Component<Props, {}> {
             <ConnectivityPanel
               status={this.props.deviceAccount.specialStatus}
               onRefresh={this.refresh}
-              rowData={this.rowData}>
+              rowData={this.rowData}
+              fbosInfo={this.props.bot.hardware.informational_settings}>
               <Diagnosis
                 userAPI={!!this.flags.userAPI}
                 userMQTT={!!this.flags.userMQTT.connectionStatus}

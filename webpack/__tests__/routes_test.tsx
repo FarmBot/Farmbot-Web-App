@@ -3,14 +3,13 @@ jest.mock("fastclick", () => ({
 }));
 
 let mockAuth: AuthState | undefined = undefined;
-const mockClear = jest.fn();
 jest.mock("../session", () => ({
   Session: {
     fetchStoredToken: jest.fn(() => mockAuth),
     deprecatedGetNum: () => undefined,
     deprecatedGetBool: () => undefined,
     getAll: () => undefined,
-    clear: mockClear
+    clear: jest.fn()
   }
 }));
 
@@ -27,23 +26,20 @@ import { RootComponent } from "../routes";
 import { store } from "../redux/store";
 import { AuthState } from "../auth/interfaces";
 import { auth } from "../__test_support__/fake_state/token";
+import { Session } from "../session";
 
 describe("<RootComponent />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("clears session when not authorized", () => {
     mockAuth = undefined;
     mockPathname = "/app/account";
     shallow(<RootComponent store={store} />);
-    expect(mockClear).toHaveBeenCalled();
+    expect(Session.clear).toHaveBeenCalled();
   });
 
   it("authorized", () => {
     mockAuth = auth;
     mockPathname = "/app/account";
     shallow(<RootComponent store={store} />);
-    expect(mockClear).not.toHaveBeenCalled();
+    expect(Session.clear).not.toHaveBeenCalled();
   });
 });

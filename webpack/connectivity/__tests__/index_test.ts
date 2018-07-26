@@ -33,18 +33,18 @@ const NOW = (new Date());
 describe("dispatchNetworkUp", () => {
   it("calls redux directly", () => {
     jest.resetAllMocks();
-    dispatchNetworkUp("bot.mqtt", NOW);
+    dispatchNetworkUp("bot.mqtt", NOW, "tests");
     expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkUp("bot.mqtt", NOW.toJSON()));
+      .toHaveBeenLastCalledWith(networkUp("bot.mqtt", NOW.toJSON(), "tests"));
   });
 });
 
 describe("dispatchNetworkDown", () => {
   it("calls redux directly", () => {
     jest.resetAllMocks();
-    dispatchNetworkDown("user.api", NOW);
+    dispatchNetworkDown("user.api", NOW, "tests");
     expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkDown("user.api", NOW.toJSON()));
+      .toHaveBeenLastCalledWith(networkDown("user.api", NOW.toJSON(), "tests"));
   });
 });
 

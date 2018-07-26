@@ -67,7 +67,6 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
     sequence: sequence,
-    auth: props.auth,
     resources: props.resources.index,
     syncStatus: (props
       .bot

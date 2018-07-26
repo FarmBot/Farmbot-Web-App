@@ -53,6 +53,5 @@ class ThrottlePolicy
     def calculate_period(time)
       (time.to_i / @time_unit)
     end
-
   end
 end

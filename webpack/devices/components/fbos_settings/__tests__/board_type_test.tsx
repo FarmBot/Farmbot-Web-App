@@ -5,11 +5,10 @@ const mockDevice = {
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
-const mockToast = jest.fn();
 jest.mock("farmbot-toastr", () => ({
-  success: mockToast,
-  info: mockToast,
-  error: mockToast
+  success: jest.fn(),
+  info: jest.fn(),
+  error: jest.fn()
 }));
 
 import * as React from "react";

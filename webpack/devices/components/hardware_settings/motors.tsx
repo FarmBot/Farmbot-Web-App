@@ -25,7 +25,7 @@ export function Motors(props: MotorsProps) {
 
   return <section>
     <Header
-      bool={controlPanelState.motors}
+      expanded={controlPanelState.motors}
       title={t("Motors")}
       name={"motors"}
       dispatch={dispatch} />

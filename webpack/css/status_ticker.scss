@@ -22,6 +22,23 @@
     right: 0;
     pointer-events: none;
   }
+  a {
+    color: $off_white;
+    &:link {
+      font-weight: 500;
+      color: $off_white;
+    }
+    &:visited {
+      color: $off_white;
+    }
+    &:hover {
+      font-weight: bold;
+      color: $off_white;
+    }
+    &:active {
+      color: $off_white;
+    }
+  }
 }
 
 .status-ticker-wrapper {

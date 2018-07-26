@@ -8,12 +8,15 @@ import {
   TaggedSensor,
   TaggedFirmwareConfig,
   TaggedPinBinding,
-  TaggedLog
+  TaggedLog,
+  TaggedDiagnosticDump,
+  TaggedSensorReading
 } from "../../resources/tagged_resources";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { FirmwareConfig } from "../../config_storage/firmware_configs";
+import { PinBindingType } from "../../devices/pin_bindings/interfaces";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -117,6 +120,23 @@ export function fakePlant(): TaggedPlantPointer {
   });
 }
 
+export function fakeDiagnosticDump(): TaggedDiagnosticDump {
+  const string = "----PLACEHOLDER DIAG STUFF ---";
+  return fakeResource("DiagnosticDump", {
+    id: idCounter++,
+    device_id: 123,
+    ticket_identifier: string,
+    fbos_commit: string,
+    fbos_version: string,
+    firmware_commit: string,
+    firmware_state: string,
+    network_interface: string,
+    fbos_dmesg_dump: string,
+    created_at: string,
+    updated_at: string,
+  });
+}
+
 export function fakePoint(): TaggedGenericPointer {
   return fakeResource("Point", {
     id: idCounter++,
@@ -145,7 +165,8 @@ export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
     id: idCounter++,
     pin_num: 10,
-    sequence_id: 1
+    sequence_id: 1,
+    binding_type: PinBindingType.standard,
   });
 }
 
@@ -155,6 +176,19 @@ export function fakeSensor(): TaggedSensor {
     label: "Fake Pin",
     mode: 0,
     pin: 1
+  });
+}
+
+export function fakeSensorReading(): TaggedSensorReading {
+  return fakeResource("SensorReading", {
+    id: idCounter++,
+    created_at: "2018-01-11T20:20:38.362Z",
+    pin: 1,
+    value: 0,
+    mode: 0,
+    x: 10,
+    y: 20,
+    z: 30,
   });
 }
 

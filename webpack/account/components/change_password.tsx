@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
 import {
-  BlurableInput,
   Widget,
   WidgetHeader,
   WidgetBody,
@@ -14,6 +13,7 @@ import { prettyPrintApiErrors, equals, trim } from "../../util";
 import { success, error } from "farmbot-toastr/dist";
 import { Content } from "../../constants";
 import { uniq } from "lodash";
+import { BlurablePassword } from "../../ui/blurable_password";
 
 interface PasswordForm {
   new_password: string;
@@ -21,7 +21,7 @@ interface PasswordForm {
   password: string;
 }
 
-interface ChangePWState { status: SpecialStatus; form: PasswordForm }
+export interface ChangePWState { status: SpecialStatus; form: PasswordForm }
 
 const EMPTY_FORM =
   ({ new_password: "", new_password_confirmation: "", password: "" });
@@ -95,30 +95,21 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
           <label>
             {t("Old Password")}
           </label>
-          <BlurableInput
-            allowEmpty={true}
+          <BlurablePassword
             onCommit={this.set("password")}
-            name="password"
-            value={this.state.form.password}
-            type="password" />
+            name="password" />
           <label>
             {t("New Password")}
           </label>
-          <BlurableInput
-            allowEmpty={true}
+          <BlurablePassword
             onCommit={this.set("new_password")}
-            name="new_password"
-            value={this.state.form.new_password}
-            type="password" />
+            name="new_password" />
           <label>
             {t("Confirm New Password")}
           </label>
-          <BlurableInput
-            allowEmpty={true}
+          <BlurablePassword
             onCommit={this.set("new_password_confirmation")}
-            name={"new_password_confirmation"}
-            value={this.state.form.new_password_confirmation}
-            type="password" />
+            name={"new_password_confirmation"} />
         </form>
       </WidgetBody>
     </Widget>;

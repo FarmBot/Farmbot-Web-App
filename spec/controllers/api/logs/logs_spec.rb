@@ -20,16 +20,22 @@ describe Api::LogsController do
     it "creates one log (legacy format)" do
       sign_in user
       before_count = Log.count
-      post :create,
-           body: { meta: { x: 1, y: 2, z: 3, type: "info" },
-                   channels: ["toast"],
-                   message: "Hello, world!"
-                 }.to_json,
-           params: {format: :json}
+      now          = DateTime.now - 37.3.hours
+      created_at   = now.utc.to_i
+      post :create, body: {
+             created_at: created_at,
+             meta: { x: 1,
+                     y: 2,
+                     z: 3,
+                     type: "info" },
+            channels: ["toast"],
+            message: "Hello, world!" }.to_json,
+           params: { format: :json }
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(Log.last.message).to eq("Hello, world!")
       expect(Log.last.device).to eq(user.device)
+      expect(Log.last.created_at.to_time.to_s).to eq(now.to_time.to_s)
     end
 
     it "creates one log" do
@@ -81,7 +87,6 @@ describe Api::LogsController do
     end
 
     it "Runs compaction when the logs pile up" do
-      LogDispatch.destroy_all
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
       sign_in user
@@ -101,14 +106,12 @@ describe Api::LogsController do
     end
 
     it "delivers emails for logs marked as `email`" do
-      LogDispatch.destroy_all
-      log = logs.first
-      LogDispatch.create!(log: log, device: log.device)
-      b4 = LogDispatch.where(sent_at: nil).count
+      log = Log.create!(device: user.device)
+      b4  = Log.where(sent_at: nil).count
       ldm = LogDeliveryMailer.new
       allow(ldm).to receive(:mail)
       ldm.log_digest(log.device)
-      expect(LogDispatch.where(sent_at: nil).count).to be < b4
+      expect(Log.where(sent_at: nil).count).to be < b4
     end
 
     it "delivers emails for logs marked as `fatal_email`" do

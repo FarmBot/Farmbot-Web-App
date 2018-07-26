@@ -1,7 +1,6 @@
-const mockHistory = jest.fn();
 jest.mock("../../../history", () => ({
   history: {
-    push: mockHistory
+    push: jest.fn()
   }
 }));
 
@@ -49,7 +48,6 @@ describe("<FarmEventForm/>", () => {
 
   beforeEach(() => {
     context.form = new EditFEForm(props());
-    jest.clearAllMocks();
   });
 
   it("sets defaults", () => {

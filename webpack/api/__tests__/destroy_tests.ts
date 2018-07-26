@@ -1,0 +1,101 @@
+const mockResource: { kind: string, body: { id: number | undefined } }
+  = { kind: "Regimen", body: { id: 1 } };
+jest.mock("../../resources/reducer", () => ({
+  findByUuid: () => (mockResource)
+}));
+
+jest.mock("../../resources/actions", () => ({
+  destroyOK: jest.fn(),
+  destroyNO: jest.fn()
+}));
+
+jest.mock("../maybe_start_tracking", () => ({
+  maybeStartTracking: jest.fn()
+}));
+
+let mockDelete: Promise<{}> = Promise.resolve({});
+jest.mock("axios", () => ({
+  default: {
+    delete: jest.fn(() => mockDelete)
+  }
+}));
+
+import { destroy } from "../crud";
+import { API } from "../api";
+import axios from "axios";
+import { destroyOK, destroyNO } from "../../resources/actions";
+
+describe("destroy", () => {
+  beforeEach(() => {
+    mockResource.body.id = 1;
+    mockResource.kind = "Regimen";
+  });
+
+  API.setBaseUrl("http://localhost:3000");
+  // tslint:disable-next-line:no-any
+  const fakeGetState = () => ({ resources: { index: {} } } as any);
+  const fakeDestroy = () => destroy("fakeResource")(jest.fn(), fakeGetState);
+
+  const expectDestroyed = () => {
+    const kind = mockResource.kind.toLowerCase() + "s";
+    expect(axios.delete)
+      .toHaveBeenCalledWith(`http://localhost:3000/api/${kind}/1`);
+    expect(destroyOK).toHaveBeenCalledWith(mockResource);
+  };
+
+  const expectNotDestroyed = () => {
+    expect(axios.delete).not.toHaveBeenCalled();
+  };
+
+  it("not confirmed", () => {
+    window.confirm = () => false;
+    expect(fakeDestroy()).rejects.toEqual("User pressed cancel");
+    expectNotDestroyed();
+  });
+
+  it("id: 0", () => {
+    mockResource.body.id = 0;
+    window.confirm = () => true;
+    expect(fakeDestroy()).resolves.toEqual("");
+    expect(destroyOK).toHaveBeenCalledWith(mockResource);
+  });
+
+  it("id: undefined", () => {
+    mockResource.body.id = undefined;
+    window.confirm = () => true;
+    expect(fakeDestroy()).resolves.toEqual("");
+    expect(destroyOK).toHaveBeenCalledWith(mockResource);
+  });
+
+  it("confirmed", async () => {
+    window.confirm = () => true;
+    await expect(fakeDestroy()).resolves.toEqual(undefined);
+    expectDestroyed();
+  });
+
+  it("confirmation overridden", async () => {
+    window.confirm = () => false;
+    const forceDestroy = () =>
+      destroy("fakeResource", true)(jest.fn(), fakeGetState);
+    await expect(forceDestroy()).resolves.toEqual(undefined);
+    expectDestroyed();
+  });
+
+  it("confirmation not required", async () => {
+    mockResource.kind = "Sensor";
+    window.confirm = () => false;
+    await expect(fakeDestroy()).resolves.toEqual(undefined);
+    expectDestroyed();
+  });
+
+  it("rejected", async () => {
+    window.confirm = () => true;
+    mockDelete = Promise.reject("error");
+    await expect(fakeDestroy()).rejects.toEqual("error");
+    expect(destroyNO).toHaveBeenCalledWith({
+      err: "error",
+      statusBeforeError: undefined,
+      uuid: "fakeResource"
+    });
+  });
+});

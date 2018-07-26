@@ -1,6 +1,7 @@
 export enum Color {
   white = "#ffffff",
   offWhite = "#f4f4f4",
+  lightGray = "#dddddd",
   gray = "#cccccc",
   mediumGray = "#666666",
   darkGray = "#434343",
@@ -15,4 +16,5 @@ export enum Color {
   black = "#000000",
   orange = "#ffa500",
   blue = "#3377dd",
+  magenta = "#a64d79",
 }

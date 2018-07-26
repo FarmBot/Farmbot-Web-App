@@ -28,7 +28,7 @@ describe("<Else/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Else {...fakeProps() } />);
+    const wrapper = mount(<Else {...fakeProps()} />);
     ["ELSE", "Execute Sequence"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(1);

@@ -18,7 +18,7 @@ describe("Weed detector slider", () => {
 
   it("releases the slider", () => {
     const onRelease = jest.fn();
-    const el = shallow(<WeedDetectorSlider
+    const el = shallow<WeedDetectorSlider>(<WeedDetectorSlider
       onRelease={onRelease}
       highest={99}
       lowest={1}
@@ -27,7 +27,7 @@ describe("Weed detector slider", () => {
     el.simulate("release", [5, 6]);
     jest.runAllTimers();
     expect(onRelease).toHaveBeenCalledWith([5, 6]);
-    const { highValue, lowValue } = el.state();
+    const { highValue, lowValue } = el.instance().state;
     expect(highValue).toBeUndefined();
     expect(lowValue).toBeUndefined();
   });

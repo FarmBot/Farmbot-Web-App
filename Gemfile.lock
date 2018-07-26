@@ -4,16 +4,6 @@ GIT
   specs:
     smarf_doc (1.0.0)
 
-GIT
-  remote: https://github.com/fog/fog-google
-  revision: a2e46a2dafb01e896713ae419e5643ae6c2549a2
-  specs:
-    fog-google (1.3.3)
-      fog-core
-      fog-json
-      fog-xml
-      google-api-client (~> 0.19.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -69,9 +59,9 @@ GEM
     arel (9.0.0)
     bcrypt (3.1.12)
     builder (3.2.3)
-    bunny (2.10.0)
+    bunny (2.11.0)
       amq-protocol (~> 2.3.0)
-    capybara (3.2.1)
+    capybara (3.3.1)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
@@ -110,6 +100,7 @@ GEM
     discard (1.0.0)
       activerecord (>= 4.2, < 6)
     docile (1.3.1)
+    effin_utf8 (1.0)
     erubi (1.7.1)
     eventmachine (1.2.7)
     excon (0.62.0)
@@ -120,8 +111,10 @@ GEM
       railties (>= 3.0.0)
     faker (1.8.7)
       i18n (>= 0.7)
-    faraday (0.15.2)
+    faraday (0.13.1)
       multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.12.2)
+      faraday (>= 0.7.4, < 1.0)
     ffi (1.9.25)
     figaro (1.1.1)
       thor (~> 0.14)
@@ -130,20 +123,25 @@ GEM
       excon (~> 0.58)
       formatador (~> 0.2)
       mime-types
-    fog-json (1.1.0)
-      fog-core (~> 2.0)
+    fog-google (1.6.0)
+      fog-core
+      fog-json
+      fog-xml
+      google-api-client (~> 0.23.0)
+    fog-json (1.2.0)
+      fog-core
       multi_json (~> 1.10)
     fog-xml (0.1.3)
       fog-core
       nokogiri (>= 1.5.11, < 2.0.0)
     font-awesome-rails (4.7.0.4)
       railties (>= 3.2, < 6.0)
-    foreman (0.84.0)
+    foreman (0.85.0)
       thor (~> 0.19.1)
     formatador (0.2.5)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
-    google-api-client (0.19.8)
+    google-api-client (0.23.2)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (>= 0.5, < 0.7.0)
       httpclient (>= 2.8.1, < 3.0)
@@ -159,6 +157,7 @@ GEM
       os (~> 0.9)
       signet (~> 0.7)
     hashdiff (0.3.7)
+    hashie (3.5.7)
     httpclient (2.8.3)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
@@ -198,7 +197,7 @@ GEM
     mutations (0.8.2)
       activesupport
     nio4r (2.3.1)
-    nokogiri (1.8.2)
+    nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     os (0.9.6)
@@ -208,7 +207,7 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
       terrapin (~> 0.6.0)
-    passenger (5.3.1)
+    passenger (5.3.3)
       rack
       rake (>= 0.8.1)
     pg (1.0.0)
@@ -220,9 +219,15 @@ GEM
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.2)
+    rabbitmq_http_api_client (1.9.1)
+      effin_utf8 (~> 1.0.0)
+      faraday (~> 0.13.0)
+      faraday_middleware (~> 0.12.0)
+      hashie (~> 3.5)
+      multi_json (~> 1.12)
     rack (2.0.5)
-    rack-attack (5.2.0)
-      rack
+    rack-attack (5.4.0)
+      rack (>= 1.0, < 3)
     rack-cors (1.0.2)
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
@@ -270,7 +275,7 @@ GEM
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
-    retriable (3.1.1)
+    retriable (3.1.2)
     rollbar (2.16.2)
       multi_json
     rspec (3.7.0)
@@ -300,7 +305,7 @@ GEM
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
     secure_headers (6.0.0)
-    selenium-webdriver (3.12.0)
+    selenium-webdriver (3.13.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2)
     signet (0.8.1)
@@ -365,7 +370,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   figaro
-  fog-google!
+  fog-google
   font-awesome-rails
   foreman
   hashdiff
@@ -379,6 +384,7 @@ DEPENDENCIES
   polymorphic_constraints
   pry
   pry-rails
+  rabbitmq_http_api_client
   rack-attack
   rack-cors
   rails

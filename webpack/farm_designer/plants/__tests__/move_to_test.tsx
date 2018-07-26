@@ -21,7 +21,6 @@ import { MoveTo, MoveToProps, MoveToForm, MoveToFormProps } from "../move_to";
 
 describe("<MoveTo />", () => {
   beforeEach(function () {
-    jest.clearAllMocks();
     mockPath = "/app/designer/plants/move_to";
   });
 

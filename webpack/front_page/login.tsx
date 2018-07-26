@@ -8,12 +8,11 @@ import {
   Row,
 } from "../ui/index";
 import { t } from "i18next";
+import { BlurablePassword } from "../ui/blurable_password";
 
 export interface LoginProps {
   /** Attributes */
   email: string | undefined;
-  loginPassword: string | undefined;
-
   /** Callbacks */
   onToggleForgotPassword(): void;
   onSubmit(e: React.FormEvent<HTMLFormElement>): void;
@@ -36,7 +35,6 @@ export class Login extends React.Component<LoginProps, {}> {
   render() {
     const {
       email,
-      loginPassword,
       onEmailChange,
       onSubmit,
       onLoginPasswordChange,
@@ -70,9 +68,7 @@ export class Login extends React.Component<LoginProps, {}> {
             <label>
               {t("Password")}
             </label>
-            <BlurableInput
-              type="password"
-              value={loginPassword || ""}
+            <BlurablePassword
               name="login_password"
               onCommit={onLoginPasswordChange} />
             <a className="forgot-password" onClick={onToggleForgotPassword} >

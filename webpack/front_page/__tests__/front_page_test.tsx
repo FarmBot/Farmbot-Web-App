@@ -30,16 +30,12 @@ jest.mock("../../api", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { FrontPage } from "../front_page";
+import { FrontPage, setField, PartialFromEvent } from "../front_page";
 import axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
 
 describe("<FrontPage />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("shows forgot password box", () => {
     const el = mount(<FrontPage />);
     expect(el.text()).not.toContain("Reset Password");
@@ -139,5 +135,35 @@ describe("<FrontPage />", () => {
     expect(el.text()).toContain("Reset Password");
     el.setState({ activePanel: "login" });
     expect(el.text()).toContain("Login");
+  });
+
+  it("has a generalized form field setter fn", () => {
+    const spy = jest.fn();
+    type Input = Partial<PartialFromEvent["currentTarget"]>;
+    const fakeEv = (input: Input): PartialFromEvent => {
+      return {
+        currentTarget: {
+          checked: true,
+          defaultValue: "defaultValue",
+          value: "value",
+          ...input
+        }
+      };
+    };
+
+    const agreeToTerms = setField("agreeToTerms", spy);
+    const event2 = fakeEv({ checked: false });
+    const expected2 = { agreeToTerms: event2.currentTarget.checked };
+    agreeToTerms(event2);
+    expect(spy).toHaveBeenCalledWith(expected2);
+    jest.resetAllMocks();
+
+    const regName = setField("regName", spy);
+    const event3 = fakeEv({ value: "hello!" });
+    const expected3 = { regName: event3.currentTarget.value };
+    regName(event3);
+    expect(spy).toHaveBeenCalledWith(expected3);
+    jest.resetAllMocks();
+
   });
 });

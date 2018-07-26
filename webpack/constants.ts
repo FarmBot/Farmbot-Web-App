@@ -22,6 +22,9 @@ export namespace ToolTips {
     trim(`Add sensors here to monitor FarmBot's sensors.
     To edit and create new sensors, press the EDIT button.`);
 
+  export const SENSOR_HISTORY =
+    trim(`View and filter historical sensor reading data.`);
+
   // Device
   export const OS_SETTINGS =
     trim(`View and change device settings.`);
@@ -35,6 +38,10 @@ export namespace ToolTips {
 
   export const PIN_BINDINGS =
     trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`);
+
+  export const PIN_BINDING_WARNING =
+    trim(`Warning: Binding to a pin without a physical button and
+    pull-down resistor connected may put FarmBot into an unstable state.`);
 
   // Connectivity
   export const CONNECTIVITY =
@@ -148,6 +155,12 @@ export namespace ToolTips {
   // Farmware
   export const FARMWARE =
     trim(`Manage Farmware (plugins).`);
+
+  export const FARMWARE_LIST =
+    trim(`View, select, and install new Farmware.`);
+
+  export const FARMWARE_INFO =
+    trim(`Farmware (plugin) details and management.`);
 
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
@@ -440,6 +453,12 @@ export namespace Content {
     trim(`Warning! Opting in to FarmBot OS beta releases may reduce
     FarmBot system stability. Are you sure?`);
 
+  export const DIAGNOSTIC_CHECK =
+    trim(`Save snapshot of FarmBot OS system information, including
+    user and device identity, to the database. A code will be returned
+    that you can provide in support requests to allow FarmBot to look up
+    data relevant to the issue to help us identify the problem.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -522,6 +541,17 @@ export namespace Content {
 
   export const SET_TIMEZONE_BODY =
     trim(`Set device timezone here.`);
+
+  // Farmware
+  export const NO_IMAGES_YET =
+    trim(`You haven't yet taken any photos with your FarmBot.
+    Once you do, they will show up here.`);
+
+  export const PROCESSING_PHOTO =
+    trim(`Processing now. Results usually available in one minute.`);
+
+  export const NOT_AVAILABLE_WHEN_OFFLINE =
+    trim(`Not available when device is offline.`);
 }
 
 export enum Actions {
@@ -591,6 +621,7 @@ export enum Actions {
   SELECT_SEQUENCE = "SELECT_SEQUENCE",
 
   // Farmware
+  SELECT_FARMWARE = "SELECT_FARMWARE",
   SELECT_IMAGE = "SELECT_IMAGE",
   FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
 

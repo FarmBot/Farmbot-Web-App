@@ -12,14 +12,12 @@ import { maybeGetDevice } from "../../device";
 
 describe("createRefreshTrigger", () => {
   it("never calls the bot if status is undefined", () => {
-    jest.clearAllMocks();
     const go = createRefreshTrigger();
     go(undefined); go(undefined); go(undefined);
     expect(changeLastClientConnected).not.toHaveBeenCalled();
   });
 
   it("calls the bot when going from down => up", () => {
-    jest.clearAllMocks();
     const go = createRefreshTrigger();
     go({ at: "?", state: "down" });
     go({ at: "?", state: "down" });

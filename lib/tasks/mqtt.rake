@@ -4,7 +4,7 @@ namespace :mqtt do
   task start: :environment do
     begin
       require_relative '../../mqtt/server.rb'
-    rescue => Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED => e
       puts "API is not up yet. Waiting 5 seconds..."
       sleep 5
       retry

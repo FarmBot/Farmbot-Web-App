@@ -1,6 +1,5 @@
-const mockError = jest.fn();
 jest.mock("farmbot-toastr", () => ({
-  error: mockError
+  error: jest.fn()
 }));
 
 import * as React from "react";
@@ -9,12 +8,11 @@ import { Sensors } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { SensorsProps } from "../../../devices/interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
+import { error } from "farmbot-toastr";
+import { clickButton } from "../../../__test_support__/helpers";
+import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<Sensors />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function fakeProps(): SensorsProps {
     const fakeSensor1 = fakeSensor();
     const fakeSensor2 = fakeSensor();
@@ -38,32 +36,28 @@ describe("<Sensors />", () => {
   });
 
   it("isEditing", () => {
-    const wrapper = mount(<Sensors {...fakeProps()} />);
-    expect(wrapper.state().isEditing).toBeFalsy();
-    const edit = wrapper.find("button").at(0);
-    expect(edit.text()).toEqual("Edit");
-    edit.simulate("click");
-    expect(wrapper.state().isEditing).toBeTruthy();
+    const wrapper = mount<Sensors>(<Sensors {...fakeProps()} />);
+    expect(wrapper.instance().state.isEditing).toBeFalsy();
+    clickButton(wrapper, 0, "edit");
+    expect(wrapper.instance().state.isEditing).toBeTruthy();
   });
 
   it("save attempt: pin number too small", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = 1;
     p.sensors[1].body.pin = 1;
+    p.sensors[0].specialStatus = SpecialStatus.DIRTY;
     const wrapper = mount(<Sensors {...p} />);
-    const save = wrapper.find("button").at(1);
-    expect(save.text()).toContain("Save");
-    save.simulate("click");
-    expect(mockError).toHaveBeenLastCalledWith("Pin numbers must be unique.");
+    clickButton(wrapper, 1, "save", { partial_match: true });
+    expect(error).toHaveBeenLastCalledWith("Pin numbers must be unique.");
   });
 
   it("saves", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = 1;
+    p.sensors[0].specialStatus = SpecialStatus.DIRTY;
     const wrapper = mount(<Sensors {...p} />);
-    const save = wrapper.find("button").at(1);
-    expect(save.text()).toContain("Save");
-    save.simulate("click");
+    clickButton(wrapper, 1, "save", { partial_match: true });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
@@ -71,9 +65,7 @@ describe("<Sensors />", () => {
     const p = fakeProps();
     const wrapper = mount(<Sensors {...p} />);
     wrapper.setState({ isEditing: true });
-    const add = wrapper.find("button").at(2);
-    expect(add.text()).toEqual("");
-    add.simulate("click");
+    clickButton(wrapper, 2, "");
     expect(p.dispatch).toHaveBeenCalled();
   });
 
@@ -81,9 +73,7 @@ describe("<Sensors />", () => {
     const p = fakeProps();
     const wrapper = mount(<Sensors {...p} />);
     wrapper.setState({ isEditing: true });
-    const add = wrapper.find("button").at(3);
-    expect(add.text()).toEqual("Stock sensors");
-    add.simulate("click");
+    clickButton(wrapper, 3, "stock sensors");
     expect(p.dispatch).toHaveBeenCalledTimes(2);
   });
 });

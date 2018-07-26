@@ -1,7 +1,7 @@
 jest.mock("../util/errors.ts", () => ({ catchErrors: jest.fn() }));
 
 import * as React from "react";
-import { mount, ReactWrapper } from "enzyme";
+import { mount } from "enzyme";
 import { ErrorBoundary } from "../error_boundary";
 import { catchErrors } from "../util";
 
@@ -20,8 +20,7 @@ class Kaboom extends React.Component<{}, {}> {
 describe("<ErrorBoundary/>", () => {
   it("handles exceptions", () => {
     const nodes = <ErrorBoundary><Kaboom /></ErrorBoundary>;
-    type X = ReactWrapper<{}, ErrorBoundary["state"]>;
-    const el: X = mount(nodes);
+    const el = mount<ErrorBoundary>(nodes);
     expect(el.text()).toContain("can't render this part of the page");
     const i = el.instance();
     expect(i.state.hasError).toBe(true);

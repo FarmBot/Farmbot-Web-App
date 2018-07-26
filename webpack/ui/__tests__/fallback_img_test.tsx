@@ -10,7 +10,7 @@ describe("<FallbackImg />", () => {
     };
   }
   it("renders img", () => {
-    const wrapper = mount(<FallbackImg {...fakeProps() } />);
+    const wrapper = mount(<FallbackImg {...fakeProps()} />);
     const content = wrapper.find("img");
     expect(content.length).toEqual(1);
     expect(content.props().src).toEqual("url");
@@ -26,7 +26,7 @@ describe("<FallbackImg />", () => {
   });
 
   it("falls back", () => {
-    const wrapper = mount(<FallbackImg {...fakeProps() } />);
+    const wrapper = mount(<FallbackImg {...fakeProps()} />);
     wrapper.setState({ needsFallback: true });
     const content = wrapper.find("img");
     expect(content.length).toEqual(1);

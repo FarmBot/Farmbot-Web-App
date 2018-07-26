@@ -16,19 +16,34 @@ import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
-/** `headingIds` required to group the three kinds of pins. */
+/** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
   Sensor = "Sensor",
   Peripheral = "Peripheral",
+  BoxLed = "Box LED",
   Pin = "Pin",
   Position = "Position"
 }
+
+/** User-controllable box LEDs connected to the RPi. */
+export enum BoxLed {
+  BoxLed3 = "BoxLed3",
+  BoxLed4 = "BoxLed4",
+}
+
+const BOX_LED_LABELS: { [x: string]: string } = {
+  [BoxLed.BoxLed3]: t("Box LED 3"),
+  [BoxLed.BoxLed4]: t("Box LED 4"),
+};
 
 export const PERIPHERAL_HEADING: DropDownItem =
   ({ heading: true, label: t("Peripherals"), value: 0 });
 
 export const SENSOR_HEADING: DropDownItem =
   ({ heading: true, label: t("Sensors"), value: 0 });
+
+export const BOX_LED_HEADING: DropDownItem =
+  ({ heading: true, label: t("Box LEDs"), value: 0 });
 
 export const PIN_HEADING: DropDownItem =
   ({ heading: true, label: t("Pins"), value: 0 });
@@ -56,6 +71,13 @@ const sensor2DropDown =
     headingId: PinGroupName.Sensor
   });
 
+const boxLed2DropDown =
+  (boxLed: BoxLed): DropDownItem => ({
+    label: t(BOX_LED_LABELS[boxLed]),
+    value: boxLed,
+    headingId: PinGroupName.BoxLed
+  });
+
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   const list = getAllSavedPeripherals(input).map(peripheral2DropDown);
   return list.length ? [PERIPHERAL_HEADING, ...list] : [];
@@ -64,6 +86,11 @@ export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
 export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   const list = selectAllSavedSensors(input).map(sensor2DropDown);
   return list.length ? [SENSOR_HEADING, ...list] : [];
+}
+
+export function boxLedsAsDropDowns(): DropDownItem[] {
+  const list = Object.values(BoxLed).map(boxLed2DropDown);
+  return [BOX_LED_HEADING, ...list];
 }
 
 /** Number of pins in an Arduino Mega */
@@ -77,6 +104,7 @@ export function pinDropdowns(
 export const pinsAsDropDownsWritePin =
   (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
     ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
+    ...(shouldDisplay(Feature.rpi_led_control) ? boxLedsAsDropDowns() : []),
     ...pinDropdowns(n => n),
   ];
 
@@ -87,9 +115,11 @@ export const pinsAsDropDownsReadPin =
     ...pinDropdowns(n => n),
   ];
 
-const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName> = {
+const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName | BoxLed> = {
   "Peripheral": PinGroupName.Peripheral,
-  "Sensor": PinGroupName.Sensor
+  "Sensor": PinGroupName.Sensor,
+  "BoxLed3": BoxLed.BoxLed3,
+  "BoxLed4": BoxLed.BoxLed4,
 };
 
 export const isPinType =
@@ -111,13 +141,23 @@ export const findByPinNumber =
 
 export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin) {
   const { pin_type } = input.args;
-  const value = input.args.pin_id;
 
   if (isPinType(pin_type)) {
-    const item = findByPinNumber(ri, input);
-    const { label } = item.body;
-    const headingId = TYPE_MAPPING[item.kind];
-    return { label, value, headingId };
+    switch (pin_type) {
+      case BoxLed.BoxLed3:
+      case BoxLed.BoxLed4:
+        return boxLed2DropDown(pin_type as BoxLed);
+      case PinGroupName.Peripheral:
+      case PinGroupName.Sensor:
+      default:
+        const item = findByPinNumber(ri, input);
+        switch (item.kind) {
+          case PinGroupName.Peripheral:
+            return peripheral2DropDown(item);
+          case PinGroupName.Sensor:
+            return sensor2DropDown(item);
+        }
+    }
   } else {
     bail("Bad pin_type: " + JSON.stringify(pin_type));
   }
@@ -126,6 +166,12 @@ export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin) {
 export const dropDown2CeleryArg =
   (ri: ResourceIndex, item: DropDownItem): number | NamedPin => {
     if (isString(item.value)) { // str means "Named Pin". num means "Raw Pin"
+      if (Object.values(BoxLed).includes(item.value)) {
+        return {
+          kind: "named_pin",
+          args: { pin_type: item.value, pin_id: -1 }
+        };
+      }
       const uuid: string = item.value;
       const r = ri.references[uuid];
       if (r) {

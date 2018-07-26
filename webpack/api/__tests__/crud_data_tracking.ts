@@ -2,12 +2,13 @@ jest.mock("../maybe_start_tracking", () => {
   return { maybeStartTracking: jest.fn() };
 });
 
+let mockBody = {};
 jest.mock("axios", () => {
   return {
     default: {
       delete: () => Promise.resolve({}),
-      post: (data: object) => Promise.resolve({ data }),
-      put: (data: object) => Promise.resolve({ data })
+      post: () => Promise.resolve({ data: mockBody }),
+      put: () => Promise.resolve({ data: mockBody })
     }
   };
 });
@@ -36,14 +37,12 @@ describe("AJAX data tracking", () => {
     betterCompact(Object.values(store.getState().resources.index.references));
 
   it("sets consistency when calling destroy()", () => {
-    jest.clearAllMocks();
     const uuid = store.getState().resources.index.byKind.Tool[0];
     store.dispatch(destroy(uuid));
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 
   it("sets consistency when calling saveAll()", () => {
-    jest.clearAllMocks();
     const r = resources().map(x => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
@@ -51,12 +50,13 @@ describe("AJAX data tracking", () => {
     store.dispatch(saveAll(r));
     expect(maybeStartTracking).toHaveBeenCalled();
     const uuids: string[] =
-      _.uniq((maybeStartTracking as any).mock.calls.map((x: string[]) => x[0]));
+      _.uniq((maybeStartTracking as jest.Mock).mock.calls
+        .map((x: string[]) => x[0]));
     expect(uuids.length).toEqual(r.length);
   });
 
   it("sets consistency when calling initSave()", () => {
-    jest.clearAllMocks();
+    mockBody = resources()[0].body;
     store.dispatch(initSave(resources()[0]));
     expect(maybeStartTracking).toHaveBeenCalled();
   });

@@ -26,16 +26,16 @@ function bumpThrottle(edge: Edge, now: number) {
   lastCalledAt[edge] = now;
 }
 
-export let dispatchNetworkUp = (edge: Edge, at = new Date()) => {
+export let dispatchNetworkUp = (edge: Edge, at = new Date(), why: string) => {
   const unix = timestamp(at);
   if (shouldThrottle(edge, unix)) { return; }
-  store.dispatch(networkUp(edge, at.toJSON()));
+  store.dispatch(networkUp(edge, at.toJSON(), why));
   bumpThrottle(edge, unix);
 };
 
-export let dispatchNetworkDown = (edge: Edge, at = new Date()) => {
+export let dispatchNetworkDown = (edge: Edge, at = new Date(), why: string) => {
   const unix = timestamp(at);
   if (shouldThrottle(edge, unix)) { return; }
-  store.dispatch(networkDown(edge, at.toJSON()));
+  store.dispatch(networkDown(edge, at.toJSON(), why));
   bumpThrottle(edge, unix);
 };

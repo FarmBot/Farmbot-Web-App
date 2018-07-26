@@ -5,8 +5,8 @@ const mockDevice = {
 jest.mock("../../device", () => ({
   getDevice: () => (mockDevice)
 }));
-const mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+
+jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -34,7 +34,6 @@ describe("<DirectionButton/>", function () {
   const buttonProps = fakeButtonProps();
 
   beforeEach(function () {
-    jest.clearAllMocks();
     buttonProps.disabled = false;
   });
 

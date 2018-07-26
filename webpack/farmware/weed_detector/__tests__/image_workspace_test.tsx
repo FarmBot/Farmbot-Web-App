@@ -21,7 +21,6 @@ describe("<Body/>", () => {
   }
 
   it("triggers onChange() event", () => {
-    jest.clearAllMocks();
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
     iw.props = props;
@@ -40,5 +39,16 @@ describe("<Body/>", () => {
     jest.clearAllMocks();
     iw.onHslChange("H")([2, 8]);
     expect(props.onChange).not.toHaveBeenCalled();
+  });
+
+  it("triggers numericChange()", () => {
+    const props = fakeProps();
+    const iw = new ImageWorkspace(props);
+    const trigger = iw.numericChange("blur");
+    const currentTarget: Partial<HTMLInputElement> = { value: "23" };
+    type PartialEv = Partial<React.SyntheticEvent<HTMLInputElement>>;
+    const e: PartialEv = { currentTarget: (currentTarget as HTMLInputElement) };
+    trigger(e as React.SyntheticEvent<HTMLInputElement>);
+    expect(props.onChange).toHaveBeenCalledWith("blur", 23);
   });
 });

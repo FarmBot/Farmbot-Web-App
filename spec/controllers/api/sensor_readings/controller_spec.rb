@@ -11,17 +11,19 @@ describe Api::SensorReadingsController do
       sign_in user
       before = SensorReading.count
       post :create,
-        body: { pin: 13, value: 128, x: nil, y: 1, z: 2 }.to_json,
+        body: { pin: 13, value: 128, x: nil, y: 1, z: 2, mode: 1 }.to_json,
         params: { format: :json }
 
-      expect(response.status).to  eq(200)
-      expect(json[:id]).to        be_kind_of(Integer)
-      expect(json[:value]).to     eq(128)
-      expect(json[:device_id]).to eq(nil) # Use the serializer, not as_json.
-      expect(json[:x]).to         eq(nil)
-      expect(json[:y]).to         eq(1)
-      expect(json[:z]).to         eq(2)
-      expect(json[:pin]).to       eq(13)
+      expect(response.status).to   eq(200)
+      expect(json[:id]).to         be_kind_of(Integer)
+      expect(json[:created_at]).to be_kind_of(String)
+      expect(json[:value]).to      eq(128)
+      expect(json[:device_id]).to  eq(nil) # Use the serializer, not as_json.
+      expect(json[:x]).to          eq(nil)
+      expect(json[:y]).to          eq(1)
+      expect(json[:z]).to          eq(2)
+      expect(json[:pin]).to        eq(13)
+      expect(json[:mode]).to       eq(1)
       expect(before < SensorReading.count).to be_truthy
     end
 
@@ -32,7 +34,7 @@ describe Api::SensorReadingsController do
       get :show, params: { format: :json, id: id }
       expect(json).to be_kind_of(Hash)
       reading.reload
-      [ :id, :value, :x, :y, :z, :pin ].map do |attr|
+      [ :id, :value, :x, :y, :z, :pin, :mode ].map do |attr|
         expect(json[attr]).to eq(reading.send(attr))
       end
     end

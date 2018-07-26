@@ -5,9 +5,9 @@ module ToolSlots
     required do
       model   :device, class: Device
       string  :name,   default: "Untitled Slot"
-      integer :x
-      integer :y
-      integer :z
+      float :x
+      float :y
+      float :z
     end
 
     optional do

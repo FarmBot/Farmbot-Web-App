@@ -13,10 +13,6 @@ import { bot } from "../__test_support__/fake_state/bot";
 import { ControlsPopupProps } from "../controls/interfaces";
 
 describe("<ControlsPopup />", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const fakeProps = (): ControlsPopupProps => {
     return {
       dispatch: jest.fn(),

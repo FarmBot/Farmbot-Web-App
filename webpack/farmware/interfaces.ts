@@ -10,13 +10,14 @@ export interface FWState {
 export interface FWProps {
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
-  farmwares: Dictionary<FarmwareManifest | undefined>;
+  farmwares: Farmwares;
   showFirstParty: boolean;
   onToggle(key: BooleanConfigKey): void;
   firstPartyFarmwareNames: string[];
 }
 
 export interface FarmwareState {
+  currentFarmware: string | undefined;
   currentImage: string | undefined;
   firstPartyFarmwareNames: string[];
 }
@@ -25,7 +26,7 @@ export type FarmwareManifestEntry = Record<"name" | "manifest", string>;
 
 export interface FarmwareConfigMenuProps {
   show: boolean | undefined;
-  onToggle(): void;
+  dispatch: Function;
   firstPartyFwsInstalled: boolean;
 }
 
@@ -33,3 +34,5 @@ export interface FarmwareInstallation {
   id?: number;
   url: string;
 }
+
+export type Farmwares = Dictionary<FarmwareManifest | undefined>;

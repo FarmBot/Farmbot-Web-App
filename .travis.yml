@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- 8.9.4
+- 8.11.3
 cache:
   yarn: true
   directories:
@@ -8,6 +8,7 @@ cache:
    - /home/travis/bundle
 env:
   global:
+    - ADMIN_PASSWORD=not_a_real_password
     - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
     - OS_UPDATE_SERVER=http://example.com
     - FW_UPDATE_SERVER=http://example.com

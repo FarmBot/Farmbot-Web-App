@@ -16,7 +16,6 @@ import { bothUp, batchInitResources } from "../connect_device";
 
 describe("BatchQueue", () => {
   it("calls bothUp() to track network connectivity", () => {
-    jest.clearAllMocks();
     mockThrottleStatus.value = false;
     const q = new BatchQueue(1);
     const log = fakeLog();
@@ -27,7 +26,6 @@ describe("BatchQueue", () => {
   });
 
   it("does nothing when throttled", () => {
-    jest.clearAllMocks();
     mockThrottleStatus.value = true;
     const q = new BatchQueue(1);
     q.push(fakeLog());

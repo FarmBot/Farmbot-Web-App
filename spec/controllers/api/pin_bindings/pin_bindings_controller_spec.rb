@@ -36,7 +36,7 @@ describe Api::PinBindingsController do
     it 'creates a pin binding' do
       sign_in user
       s     = FakeSequence.create( device: device)
-      input = { pin_num: 12, sequence_id: s.id}
+      input = { pin_num: 10, sequence_id: s.id}
       b4    = PinBinding.count
       post :create, body: input.to_json, params: { format: :json}
       expect(response.status).to eq(200)
@@ -58,8 +58,8 @@ describe Api::PinBindingsController do
 
     it 'updates pin bindings' do
       sign_in user
-      s     = FakeSequence.create( device: device)
-      input = { pin_num: pin_binding.pin_num + 1, sequence_id: s.id}
+      s     = FakeSequence.create(device: device)
+      input = { pin_num: pin_binding.random_pin_num, sequence_id: s.id}
       put :update,
         body: input.to_json,
         params: { format: :json, id: pin_binding.id}
@@ -69,6 +69,27 @@ describe Api::PinBindingsController do
         expect(json[key]).to eq(input[key])
         expect(pin_binding[key]).to eq(input[key])
       end
+    end
+
+    it 'disallows off limits pins on :create' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: PinBinding::OFF_LIMITS.sample, sequence_id: s.id}
+      b4    = PinBinding.count
+      post :create, body: input.to_json, params: { format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include(PinBinding::BAD_PIN_NUM)
+    end
+
+    it 'disallows off limits pins on :update' do
+      sign_in user
+      s     = FakeSequence.create( device: device)
+      input = { pin_num: PinBinding::OFF_LIMITS.sample, sequence_id: s.id}
+      put :update,
+        body: input.to_json,
+        params: { format: :json, id: pin_binding.id}
+      expect(response.status).to eq(422)
+      expect(json[:pin_num]).to include(PinBinding::BAD_PIN_NUM)
     end
   end
 end

@@ -5,10 +5,6 @@ import { WeekGridProps } from "../interfaces";
 import { Actions } from "../../../constants";
 
 describe("<WeekGrid />", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const weeks = [{
     days:
     {

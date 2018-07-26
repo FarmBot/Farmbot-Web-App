@@ -1,5 +1,5 @@
 require "spec_helper"
-require_relative "../../lib/log_service_support"
+# require_relative "../../lib/log_service"
 
 describe LogService do
   normal_payl  = '{"meta":{"z":0,"y":0,"x":0,"type":"info","major_version":6},' +
@@ -10,8 +10,10 @@ describe LogService do
   '"message":"HQ FarmBot TEST 123 Pin 13 is 0","created_at":'+
   '1512585641,"channels":[]}'
   FakeDeliveryInfo   = Struct.new(:routing_key)
-  device_id          = FactoryBot.create(:device).id
-  fake_delivery_info = FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
+  let!(:device_id) { FactoryBot.create(:device).id }
+  let!(:fake_delivery_info) do
+    FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
+  end
 
   class FakeLogChan
     attr_reader :subcribe_calls
@@ -27,11 +29,20 @@ describe LogService do
 
   it "calls .subscribe() on Transport." do
     Transport.current.clear!
-    load "lib/log_service.rb"
+    load "./lib/log_service_runner.rb"
     arg1        = Transport.current.connection.calls[:subscribe].last[0]
     routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
     expect(arg1).to        eq({block: true})
     expect(routing_key).to eq("bot.*.logs")
+  end
+
+  it "calls .subscribe() on Transport." do
+    Transport.current.clear!
+    load "./lib/resource_service_runner.rb"
+    arg1        = Transport.current.connection.calls[:subscribe].last[0]
+    routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
+    expect(arg1).to        eq({block: true})
+    expect(routing_key).to eq("bot.*.resources_v0.#")
   end
 
   it "creates new messages in the DB when called" do

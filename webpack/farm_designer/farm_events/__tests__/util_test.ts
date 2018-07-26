@@ -3,10 +3,6 @@ import { fakeFarmEvent } from "../../../__test_support__/fake_state/resources";
 import * as moment from "moment";
 
 describe("maybeWarnAboutMissedTasks()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   function testWarn(time: string): () => void {
     const callback = jest.fn();
     const fe = fakeFarmEvent("Regimen", 1);

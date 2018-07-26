@@ -4,6 +4,7 @@ import { ConnectivityPanel } from "../index";
 import { StatusRowProps } from "../connectivity_row";
 import * as _ from "lodash";
 import { SpecialStatus } from "../../../resources/tagged_resources";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<ConnectivityPanel/>", () => {
   function test() {
@@ -21,7 +22,8 @@ describe("<ConnectivityPanel/>", () => {
       component: <ConnectivityPanel
         onRefresh={onRefresh}
         rowData={rowData}
-        status={SpecialStatus.SAVED}>
+        status={SpecialStatus.SAVED}
+        fbosInfo={bot.hardware.informational_settings}>
         <p>I am a child component.</p>
       </ConnectivityPanel>,
       rowData: rowData
@@ -37,8 +39,8 @@ describe("<ConnectivityPanel/>", () => {
 
   it("sets hovered connection", () => {
     const testcase = test();
-    const el = mount(testcase.component);
+    const el = mount<ConnectivityPanel>(testcase.component);
     el.find(".saucer").last().simulate("mouseEnter");
-    expect(el.state().hoveredConnection).toEqual("AB");
+    expect(el.instance().state.hoveredConnection).toEqual("AB");
   });
 });

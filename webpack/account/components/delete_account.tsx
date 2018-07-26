@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
 import {
-  BlurableInput,
   Widget,
   WidgetHeader,
   WidgetBody,
@@ -10,6 +9,7 @@ import {
 } from "../../ui/index";
 import { DeleteAccountProps, DeleteAccountState } from "../interfaces";
 import { Content } from "../../constants";
+import { BlurablePassword } from "../../ui/blurable_password";
 
 export class DeleteAccount extends
   React.Component<DeleteAccountProps, DeleteAccountState> {
@@ -37,13 +37,8 @@ export class DeleteAccount extends
               </label>
             </Col>
             <Col xs={8}>
-              <BlurableInput
-                onCommit={(e) => {
-                  this.setState({ password: e.currentTarget.value });
-                }}
-                allowEmpty={true}
-                value={this.state.password}
-                type="password" />
+              <BlurablePassword
+                onCommit={(e) => { this.setState({ password: e.currentTarget.value }); }} />
             </Col>
             <Col xs={4}>
               <button

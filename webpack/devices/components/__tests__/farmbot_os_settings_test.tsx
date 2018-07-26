@@ -10,22 +10,20 @@ import { FarmbotOsSettings } from "../farmbot_os_settings";
 import { mount, shallow } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeResource } from "../../../__test_support__/fake_resource";
-import { FbosDetails } from "../fbos_settings/farmbot_os_row";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
-import { FbosDetailsProps } from "../fbos_settings/interfaces";
 import { Actions } from "../../../constants";
 import { SpecialStatus } from "../../../resources/tagged_resources";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     window.alert = jest.fn();
   });
 
   const fakeProps = (): FarmbotOsProps => {
     return {
       account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
+      diagnostics: [],
       dispatch: jest.fn(),
       bot,
       botToMqttLastSeen: "",
@@ -48,19 +46,19 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("fetches OS release notes", async () => {
     mockReleaseNoteData = { data: "intro\n\n# v6\n\n* note" };
-    const osSettings = await mount(<FarmbotOsSettings {...fakeProps()} />);
+    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    expect(osSettings.state().osReleaseNotes)
+    expect(osSettings.instance().state.osReleaseNotes)
       .toEqual("# FarmBot OS v6\n* note");
   });
 
   it("doesn't fetch OS release notes", async () => {
     mockReleaseNoteData = { data: "empty notes" };
-    const osSettings = await mount(<FarmbotOsSettings {...fakeProps()} />);
+    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    expect(osSettings.state().osReleaseNotes)
+    expect(osSettings.instance().state.osReleaseNotes)
       .toEqual("Could not get release notes.");
   });
 
@@ -79,26 +77,4 @@ describe("<FarmbotOsSettings/>", () => {
     });
   });
 
-});
-
-describe("<FbosDetails />", () => {
-  const fakeProps = (): FbosDetailsProps => {
-    return {
-      dispatch: jest.fn(),
-      bot: bot,
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
-    };
-  };
-
-  it("renders", () => {
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
-    ["Environment: ---",
-      "Commit: ---",
-      "Target: ---",
-      "Node name: ---",
-      "Firmware: "].map(string =>
-        expect(wrapper.text()).toContain(string));
-  });
 });

@@ -142,7 +142,7 @@ export function ConnectivityDiagram(props: ConnectivityDiagramProps) {
       width="100%"
       height="100%"
       style={{ maxHeight: "300px" }}
-      viewBox="-100 -100 200 220">
+      viewBox="-100 -100 210 220">
       <g className="text"
         dominantBaseline="middle">
         {nodeLabel(t("Browser"), DiagramNodes.browser)}

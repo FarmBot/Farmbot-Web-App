@@ -3,7 +3,8 @@ class CorpusEmitter
 
   class CSArg
     TRANSLATIONS = {"integer" => "number",
-                    "string"  => "string" }
+                    "string"  => "string",
+                    "float"   => "number" }
     attr_reader :name, :allowed_values
 
     def initialize(name:, allowed_values:)
@@ -15,7 +16,11 @@ class CorpusEmitter
     end
 
     def values
-      allowed_values.map { |v| TRANSLATIONS[v] || v.camelize }.join(PIPE)
+      allowed_values
+        .map { |v| TRANSLATIONS[v] || v.camelize }
+        .uniq
+        .sort
+        .join(PIPE)
     end
 
     def to_ts
@@ -83,9 +88,11 @@ class CorpusEmitter
     end
   end
 
-  HASH  = JSON.load(open("http://localhost:3000/api/corpuses/3")).deep_symbolize_keys
+  HASH  = JSON.load(open("http://localhost:3000/api/corpus")).deep_symbolize_keys
   ARGS  = {}
-  HASH[:args].map{ |x| CSArg.new(x) }.each{|x| ARGS[x.name] = x}
+  HASH[:args]
+    .map  { |x| CSArg.new(x) }
+    .each { |x| ARGS[x.name] = x }
   NODES = HASH[:nodes].map { |x| CSNode.new(x) }
 
   def const(key, val)

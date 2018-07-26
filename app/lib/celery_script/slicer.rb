@@ -54,7 +54,6 @@ module CeleryScript
 
     def iterate_over_body(heap, canonical_node, parentAddr)
       body = (canonical_node[:body] || []).map(&:deep_symbolize_keys)
-      # !body.none? && heap.put(parentAddr, CSHeap::BODY, parentAddr + 1)
       @nesting_level += 1
       recurse_into_body(heap, body, parentAddr)
       @nesting_level -= 1

@@ -43,7 +43,7 @@ DEPS = `yarn outdated`
   .map{|y| y.split }
   .map{|y| "#{y[0]}@#{y[3]}"}
   .sort
-
+  .reject { |x| x.include?("router") }
 # puts "Making sure that type checks pass WITHOUT any upgrades"
 tc_ok   = type_check
 

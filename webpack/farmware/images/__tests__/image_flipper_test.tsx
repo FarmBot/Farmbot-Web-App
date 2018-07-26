@@ -7,10 +7,6 @@ import { TaggedImage } from "../../../resources/tagged_resources";
 import { defensiveClone } from "../../../util";
 
 describe("<ImageFlipper/>", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
     const images: TaggedImage[] = [];
     data.forEach((item, index) => {

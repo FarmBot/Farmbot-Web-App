@@ -1,7 +1,13 @@
 FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
+    post "/rmq/user"     => "rmq_utils#user",     as: "rmq_user"
+    post "/rmq/vhost"    => "rmq_utils#vhost",    as: "rmq_vhost"
+    post "/rmq/resource" => "rmq_utils#resource", as: "rmq_resource"
+    post "/rmq/topic"    => "rmq_utils#topic",    as: "rmq_topic"
+
     # Standard API Resources:
     {
+      diagnostic_dumps:       [:create, :destroy, :index],
       farm_events:            [:create, :destroy, :index, :update],
       farmware_installations: [:create, :destroy, :index],
       images:                 [:create, :destroy, :index, :show],

@@ -8,8 +8,8 @@ const mockDevice = {
 jest.mock("../../device", () => ({
   getDevice: () => (mockDevice)
 }));
-const mockOk = jest.fn();
-jest.mock("farmbot-toastr", () => ({ success: mockOk }));
+
+jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -18,10 +18,6 @@ import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 
 describe("<JogButtons/>", function () {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   const jogButtonProps = (): JogMovementControlsProps => {
     return {
       stepSize: 100,

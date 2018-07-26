@@ -17,10 +17,6 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { BooleanSetting } from "../../../session_keys";
 
 describe("remove()", () => {
-  beforeEach(function () {
-    jest.clearAllMocks();
-  });
-
   it("deletes step without confirmation", () => {
     const dispatch = jest.fn();
     mockStorj[BooleanSetting.confirm_step_deletion] = false;
