@@ -1,4 +1,5 @@
 class AddArchivedAtToPoints < ActiveRecord::Migration[5.1]
+  safety_assured
   def change
     add_column :points, :archived_at,       :datetime,  default: nil
     add_column :points, :planted_at,        :datetime,  default: nil

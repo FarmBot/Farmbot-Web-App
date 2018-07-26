@@ -2,6 +2,7 @@ class ChangeEncoderScalingDefault < ActiveRecord::Migration[5.1]
   ALL    = [:encoder_scaling_x, :encoder_scaling_y, :encoder_scaling_z]
   AFTER  = 5556
   BEFORE = 56
+  safety_assured
   def up
     ALL.map do |enc|
       change_column :firmware_configs, enc, :integer, default: AFTER
