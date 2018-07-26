@@ -1,6 +1,7 @@
 class NoInfinity < ActiveRecord::Migration[5.1]
   MAX_AXIS_SIZE = 50_000 # The biggest axis on prod today is 21k
 
+  safety_assured
   def ∞
     1.0/0.0
   end

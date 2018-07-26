@@ -1,4 +1,5 @@
 class AddSpecialActionToPinBinding < ActiveRecord::Migration[5.2]
+  safety_assured
   def up
     execute <<-SQL
       CREATE TYPE special_action AS
