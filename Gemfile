@@ -28,6 +28,7 @@ gem "skylight"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "webpack-rails"
+gem "zero_downtime_migrations"
 # Still working out the bugs. - RC 5 Jul 18
 gem "rabbitmq_http_api_client"
 
