@@ -3,7 +3,7 @@ import { determineInstalledOsVersion, MinVersionOverride } from "../util/index";
 import { maybeGetDevice } from "../resources/selectors";
 import { MW } from "./middlewares";
 import { Everything } from "../interfaces";
-import { Store } from "redux";
+import { Store, Action } from "redux";
 import { Dispatch } from "redux";
 import { createReminderFn } from "./upgrade_reminder";
 
@@ -19,7 +19,7 @@ function getVersionFromState(state: Everything) {
 
 const fn: MW =
   (store: Store<Everything>) =>
-    (dispatch: Dispatch<object>) =>
+    (dispatch: Dispatch<Action<object>>) =>
       (action: any) => {
         const fbos = getVersionFromState(store.getState());
         window.Rollbar && window.Rollbar.configure({ payload: { fbos } });

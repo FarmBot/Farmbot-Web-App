@@ -16,7 +16,7 @@ interface RootComponentProps { store: Store; }
 
 export const attachAppToDom: Callback = () => {
   attachToRoot(RootComponent, { store: _store });
-  _store.dispatch(ready());
+  _store.dispatch(ready() as any);
 };
 
 export class RootComponent extends React.Component<RootComponentProps, {}> {
