@@ -1863,6 +1863,13 @@ CREATE INDEX index_logs_on_verbosity ON public.logs USING btree (verbosity);
 
 
 --
+-- Name: index_logs_on_verbosity_and_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_logs_on_verbosity_and_type ON public.logs USING btree (verbosity, type);
+
+
+--
 -- Name: index_peripherals_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2295,6 +2302,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180719143412'),
 ('20180720021451'),
 ('20180726145505'),
-('20180726165546');
+('20180726165546'),
+('20180727152741');
 
 
