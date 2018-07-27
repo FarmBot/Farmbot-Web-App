@@ -220,7 +220,7 @@ module CeleryScriptSettingsBag
       .node(:sync,                  [], [])
       .node(:check_updates,         [:package], [])
       .node(:power_off,             [], [])
-      .node(:reboot,                [], [])
+      .node(:reboot,                [:package], [])
       .node(:toggle_pin,            [:pin_number], [])
       .node(:explanation,           [:message], [])
       .node(:rpc_request,           [:label], ALLOWED_RPC_NODES)
