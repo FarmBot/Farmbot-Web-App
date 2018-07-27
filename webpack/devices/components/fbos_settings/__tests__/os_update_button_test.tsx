@@ -31,15 +31,16 @@ describe("<OsUpdateButton/>", () => {
   };
 
   it("renders buttons: not connected", () => {
+    bot.hardware.informational_settings.controller_version = undefined;
     bot.currentOSVersion = undefined;
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     expect(buttons.find("button").length).toBe(1);
     const autoUpdate = buttons.find("button").first();
     expect(autoUpdate.hasClass("yellow")).toBeTruthy();
     const osUpdateButton = buttons.find("button").last();
-    expect(osUpdateButton.text()).toBe("Can't connect to release server");
+    expect(osUpdateButton.text()).toBe("Can't connect to bot");
   });
-  it("renders buttons: not connected to bot", () => {
+  it("renders buttons: connected to releases but not bot", () => {
     bot.hardware.informational_settings.controller_version = undefined;
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     expect(buttons.find("button").length).toBe(1);
@@ -48,14 +49,30 @@ describe("<OsUpdateButton/>", () => {
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("Can't connect to bot");
   });
-  it("renders buttons: no beta releases", () => {
+  it("renders buttons: no releases available", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.6";
     bot.hardware.configuration.beta_opt_in = true;
+    bot.currentOSVersion = undefined;
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
-    expect(buttons.find("button").length).toBe(1);
-    const autoUpdate = buttons.find("button").first();
-    expect(autoUpdate.hasClass("yellow")).toBeTruthy();
     const osUpdateButton = buttons.find("button").last();
-    expect(osUpdateButton.text()).toBe("No beta releases available");
+    expect(osUpdateButton.text()).toBe("Can't connect to release server");
+  });
+  it("renders buttons: only beta release available", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.6";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.currentOSVersion = undefined;
+    bot.currentBetaOSVersion = "3.1.7";
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UPDATE");
+  });
+  it("renders buttons: no beta release available", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.6";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.currentBetaOSVersion = undefined;
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UP TO DATE");
   });
   it("up to date", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
@@ -86,6 +103,25 @@ describe("<OsUpdateButton/>", () => {
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
     expect(osUpdateButton.props().title).toBe("5.0.0-beta");
+  });
+  it("latest newer than beta update: latest installed", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.6";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.currentBetaOSVersion = "3.1.4-beta";
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UP TO DATE");
+    expect(osUpdateButton.props().title).toBe("3.1.6");
+  });
+
+  it("latest newer than beta update: beta installed", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.5";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.currentBetaOSVersion = "3.1.5-beta";
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UPDATE");
+    expect(osUpdateButton.props().title).toBe("3.1.6");
   });
   it("beta update has same numeric version: newer commit", () => {
     bot.hardware.informational_settings.controller_version = "5.0.0";
