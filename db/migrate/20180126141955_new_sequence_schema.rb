@@ -1,4 +1,5 @@
 class NewSequenceSchema < ActiveRecord::Migration[5.1]
+  safety_assured
   def change
     create_table :primary_nodes do |t|
       t.timestamps null: false

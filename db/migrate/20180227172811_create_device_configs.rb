@@ -1,4 +1,6 @@
 class CreateDeviceConfigs < ActiveRecord::Migration[5.1]
+  safety_assured
+
   def change
     create_table :device_configs do |t|
       t.references :device, foreign_key: true

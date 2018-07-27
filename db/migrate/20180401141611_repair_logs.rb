@@ -1,4 +1,5 @@
 class RepairLogs < ActiveRecord::Migration[5.1]
+  safety_assured
   REPAIRABLES = [:x, :y, :z, :verbosity, :major_version, :minor_version, :type]
 
   def up

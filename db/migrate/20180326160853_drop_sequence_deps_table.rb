@@ -1,4 +1,5 @@
 class DropSequenceDepsTable < ActiveRecord::Migration[5.1]
+  safety_assured
   def change
     # NOTE TO FUTURE SELF:
     #   if data issues prevent this migration from running try

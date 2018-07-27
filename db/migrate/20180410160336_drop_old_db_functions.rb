@@ -1,4 +1,5 @@
 class DropOldDbFunctions < ActiveRecord::Migration[5.1]
+  safety_assured
   def up
     # These are old database functions that were created by the
     # `polymorphic_constraints` gem. No longer needed.

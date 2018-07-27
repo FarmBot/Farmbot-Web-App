@@ -4,6 +4,7 @@ class RenameLegacyPointerTables < ActiveRecord::Migration[5.1]
     "tool_slots"       => "legacy_tool_slots",
     "plants"           => "legacy_plants",
   }
+  safety_assured
 
   def self.up
     add_column :points, :migrated_at, :datetime

@@ -1,4 +1,5 @@
 class SquasherClean < ActiveRecord::Migration[5.1]
+  safety_assured
   class SchemaMigration < ActiveRecord::Base
   end
 

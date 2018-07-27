@@ -32,6 +32,7 @@ gem "webpack-rails"
 gem "rabbitmq_http_api_client"
 
 group :development, :test do
+  gem "zero_downtime_migrations"
   gem "thin"
   gem "capybara"
   gem "codecov", require: false
