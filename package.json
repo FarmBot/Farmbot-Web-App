@@ -78,7 +78,7 @@
     "react-transition-group": "^2.3.1",
     "redux": "^3.7.2",
     "redux-immutable-state-invariant": "^2.1.0",
-    "redux-thunk": "^2.0.1",
+    "redux-thunk": "2.3.0",
     "rollbar-sourcemap-webpack-plugin": "^2.3.0",
     "sass-loader": "7.0.3",
     "stats-webpack-plugin": "0.6.2",
