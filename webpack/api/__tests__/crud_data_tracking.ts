@@ -38,7 +38,7 @@ describe("AJAX data tracking", () => {
 
   it("sets consistency when calling destroy()", () => {
     const uuid = store.getState().resources.index.byKind.Tool[0];
-    store.dispatch(destroy(uuid));
+    store.dispatch(destroy(uuid) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 
@@ -47,7 +47,7 @@ describe("AJAX data tracking", () => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
     });
-    store.dispatch(saveAll(r));
+    store.dispatch(saveAll(r) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
     const uuids: string[] =
       _.uniq((maybeStartTracking as jest.Mock).mock.calls
@@ -57,7 +57,7 @@ describe("AJAX data tracking", () => {
 
   it("sets consistency when calling initSave()", () => {
     mockBody = resources()[0].body;
-    store.dispatch(initSave(resources()[0]));
+    store.dispatch(initSave(resources()[0]) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 });

@@ -28,7 +28,7 @@ export function setBoolViaRedux(key: BooleanConfigKey, val: boolean) {
   const conf = getWebAppConfig(store.getState().resources.index);
   if (conf) {
     store.dispatch(edit(conf, { [key]: val }));
-    store.dispatch(save(conf.uuid));
+    store.dispatch(save(conf.uuid) as any);
   }
   return val;
 }
@@ -44,7 +44,7 @@ export function setNumViaRedux(key: NumberConfigKey, val: number): number {
   const conf = getWebAppConfig(store.getState().resources.index);
   if (conf) {
     store.dispatch(edit(conf, { [key]: val }));
-    store.dispatch(save(conf.uuid));
+    store.dispatch(save(conf.uuid) as any);
   }
   return val;
 }
