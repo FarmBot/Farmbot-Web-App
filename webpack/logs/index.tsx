@@ -84,7 +84,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
         </Col>
         <Col xs={2}>
           <div className={"settings-menu-button"}>
-            <Popover position={Position.BOTTOM_RIGHT}>
+            <Popover position={Position.TOP_RIGHT}>
               <i className="fa fa-gear" />
               <LogsSettingsMenu
                 setFilterLevel={this.setFilterLevel}
@@ -93,7 +93,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
             </Popover>
           </div>
           <div className={"settings-menu-button"}>
-            <Popover position={Position.BOTTOM_RIGHT}>
+            <Popover position={Position.TOP_RIGHT}>
               <button className={`fb-button ${filterBtnColor}`}>
                 {this.filterActive ? t("Filters active") : t("filter")}
               </button>
