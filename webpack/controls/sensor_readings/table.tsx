@@ -90,18 +90,19 @@ export class SensorReadingsTable
       <table className="sensor-history-table-contents">
         <tbody>
           {["current", "previous"].map((period: "current" | "previous") => {
-            return this.props.readingsForPeriod(period).map(sensorReading => {
-              const pin = sensorReading.body.pin;
-              const sensorName = `${sensorNameByPinLookup[pin]} (pin ${pin})`;
-              return <TableRow
-                key={sensorReading.uuid}
-                sensorName={sensorName}
-                sensorReading={sensorReading}
-                timeOffset={this.props.timeOffset}
-                period={period}
-                hover={this.props.hover}
-                hovered={this.props.hovered} />;
-            });
+            return this.props.readingsForPeriod(period).reverse()
+              .map(sensorReading => {
+                const pin = sensorReading.body.pin;
+                const sensorName = `${sensorNameByPinLookup[pin]} (pin ${pin})`;
+                return <TableRow
+                  key={sensorReading.uuid}
+                  sensorName={sensorName}
+                  sensorReading={sensorReading}
+                  timeOffset={this.props.timeOffset}
+                  period={period}
+                  hover={this.props.hover}
+                  hovered={this.props.hovered} />;
+              });
           })}
         </tbody>
       </table>
