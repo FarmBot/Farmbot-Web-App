@@ -55,6 +55,30 @@ describe Resources::Job do
     expect(errors).to include("You do not own that farm_event")
   end
 
+  it "updates points" do
+    point  = FactoryBot.create(:generic_pointer)
+    result = Resources::Job.run!(body:        {name: "Heyo!"},
+                                 resource:    Point,
+                                 resource_id: point.id,
+                                 device:      point.device,
+                                 action:      "save",
+                                 uuid:        "whatever")
+    expect(result).to be_kind_of(GenericPointer)
+    expect(result.name).to eq("Heyo!")
+  end
+
+  it "does not support `create` yet" do
+    device = FactoryBot.create(:device)
+    result = Resources::Job.run(body:        {name: "Heyo!"},
+                                resource:    Point,
+                                resource_id: 0,
+                                device:      device,
+                                action:      "save",
+                                uuid:        "whatever")
+    expect(result.errors.fetch("body").message)
+      .to eq(Resources::Job::NO_CREATE_YET)
+  end
+
   it "deals with points" do
     device = FactoryBot.create(:device)
     Devices::Destroy

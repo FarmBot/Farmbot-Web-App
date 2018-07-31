@@ -60,8 +60,6 @@ module Resources
     def self.process(delivery_info, body)
       params = step1(delivery_info, body)
       params && step2(params)
-    rescue => q
-      binding.pry
     end
   end # Service
 end # Resources

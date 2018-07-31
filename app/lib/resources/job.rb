@@ -36,11 +36,9 @@ module Resources
       model_name    = resource.model_name
       device_params = inputs.slice(:device)
       klass         = Kernel.const_get(model_name.name.pluralize)
-      id            = body[:id]
-      if id.is_a?(Integer)
-        model        = resource.where(device_params).find(id)
+      if resource_id > 0
+        model        = resource.where(device_params).find(resource_id)
         model_params = {model_name.singular => model}
-        binding.pry
         # device_params is ALWAYS last because security.
         klass::Update.run!(body, model_params, device_params) # Security!
       else
