@@ -64,6 +64,16 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
+const ListItem = (props: { name: string, children: React.ReactChild }) =>
+  <li>
+    <b>
+      {props.name}:&nbsp;
+    </b>
+    <span>
+      {props.children}
+    </span>
+  </li>;
+
 export function PlantPanel(props: PlantPanelProps) {
   const { info, onDestroy, updatePlant, dispatch } = props;
   const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
@@ -75,62 +85,32 @@ export function PlantPanel(props: PlantPanelProps) {
       {t("Plant Info")}
     </label>
     <ul>
-      <li>
-        <b>
-          {t("Full Name")}:&nbsp;
-        </b>
-        <span>
-          {_.startCase(name)}
-        </span>
-      </li>
-      <li>
-        <b>
-          {t("Plant Type")}:&nbsp;
-        </b>
-        <span>
-          <Link
-            to={`/app/designer/plants/crop_search/` + slug}>
-            {_.startCase(slug)}
-          </Link>
-        </span>
-      </li>
-      <li>
-        <b>
-          {t("Started")}:&nbsp;
-        </b>
-        <span>
-          {plantedAt}
-        </span>
-      </li>
-      <li>
-        <b>
-          {t("Age")}:&nbsp;
-        </b>
-        <span>
-          {daysOld} {t("days old")}
-        </span>
-      </li>
-      <li>
-        <b>
-          {t("Location")}:&nbsp;
-        </b>
-        <span>
-          ({x}, {y})
-        </span>
-      </li>
-      <li>
-        <b>
-          {t("Status")}:&nbsp;
-        </b>
-        <span>
-          {updatePlant
-            ? <EditPlantStatus
-              uuid={uuid}
-              plantStatus={plantStatus}
-              updatePlant={updatePlant} />
-            : plantStatus}
-        </span>
-      </li>
+      <ListItem name={t("Full Name")}>
+        {_.startCase(name)}
+      </ListItem>
+      <ListItem name={t("Plant Type")}>
+        <Link
+          to={`/app/designer/plants/crop_search/` + slug}>
+          {_.startCase(slug)}
+        </Link>
+      </ListItem>
+      <ListItem name={t("Started")}>
+        {plantedAt}
+      </ListItem>
+      <ListItem name={t("Age")}>
+        {`${daysOld} ${t("days old")}`}
+      </ListItem>
+      <ListItem name={t("Location")}>
+        {`(${x}, ${y})`}
+      </ListItem>
+      <ListItem name={t("Status")}>
+        {updatePlant
+          ? <EditPlantStatus
+            uuid={uuid}
+            plantStatus={plantStatus}
+            updatePlant={updatePlant} />
+          : plantStatus}
+      </ListItem>
     </ul>
     <button className="fb-button gray"
       hidden={true}
