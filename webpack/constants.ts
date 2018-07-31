@@ -493,6 +493,12 @@ export namespace Content {
     trim(`The terms of service have recently changed. You must accept the
     new terms of service to continue using the site.`);
 
+  export const VERIFICATION_EMAIL_RESENT =
+    trim(`Verification email resent. Please check your email!`);
+
+  export const VERIFICATION_EMAIL_RESEND_ERROR =
+    trim(`Unable to resend verification email. Are you already verified?`);
+
   // Sequences
   export const NO_SEQUENCE_SELECTED =
     trim(`No Sequence selected. Click one in the Sequences panel to edit,

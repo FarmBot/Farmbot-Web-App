@@ -14,6 +14,7 @@ import { success, error } from "farmbot-toastr";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
 import { BlurablePassword } from "../ui/blurable_password";
+import { Content } from "../constants";
 
 type RegKeyName =
   | "regConfirmation"
@@ -104,8 +105,8 @@ const MISSING_EMAIL = "User tried to resend to their registration email, " +
   "but none was found.";
 
 export function sendEmail(email: string) {
-  const ok = () => success(t("Email sent."));
-  const no = () => error(t("Unable to send email."));
+  const ok = () => success(t(Content.VERIFICATION_EMAIL_RESENT));
+  const no = () => error(t(Content.VERIFICATION_EMAIL_RESEND_ERROR));
 
   return resendEmail(email).then(ok, no);
 }

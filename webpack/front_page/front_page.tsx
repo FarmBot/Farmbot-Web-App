@@ -13,6 +13,7 @@ import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
+import { Content } from "../constants";
 
 export interface PartialFromEvent {
   currentTarget: {
@@ -82,6 +83,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
           default:
             log(prettyPrintApiErrors(error as {}));
         }
+        this.setState({ loginPassword: "" });
       });
   }
 
@@ -193,12 +195,11 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     return <ResendVerification
       onGoBack={goBack}
       ok={() => {
-        success(t("Verification email resent. Please check your email!"));
+        success(t(Content.VERIFICATION_EMAIL_RESENT));
         goBack();
       }}
       no={() => {
-        log(t("Unable to resend verification email. " +
-          "Are you already verified?"));
+        log(t(Content.VERIFICATION_EMAIL_RESEND_ERROR));
         goBack();
       }}
       email={this.state.email || ""} />;
