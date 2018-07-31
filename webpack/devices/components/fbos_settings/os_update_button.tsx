@@ -103,10 +103,18 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   // Set FBOS update button status.
   buttonStatus = compareWithBotVersion(latestReleaseV, controller_version);
 
+  /** `1.0.0-beta vs 1.0.0` could be disguised as `1.0.0 vs 1.0.0`
+   *  since `controller_version` is truncated.
+   */
+  const uncertainty = (buttonStatus === UpdateButton.upToDate) && betaOptIn;
+  /** It's actually `1.0.0-beta vs 1.0.0-beta`, but installed beta is old. */
+  const oldBetaCommit = latestReleaseV === currentBetaOSVersion &&
+    !betaCommitsAreEqual(commit, currentBetaOSCommit);
+  /** It's actually `1.0.0-beta vs 1.0.0` therefore needs update to `1.0.0`. */
+  // tslint:disable-next-line:no-any
+  const oldBeta = (bot.hardware.informational_settings as any).currently_on_beta;
   // Button status modification for beta release edge cases.
-  if ((buttonStatus === UpdateButton.upToDate) && betaOptIn &&
-    latestReleaseV === currentBetaOSVersion &&
-    !betaCommitsAreEqual(commit, currentBetaOSCommit)) {
+  if (uncertainty && (oldBetaCommit || oldBeta)) {
     buttonStatus = UpdateButton.needsUpdate;
   }
 
