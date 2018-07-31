@@ -37,12 +37,11 @@ module Resources
     end
 
     def self.step2(params)
-      puts params if Rails.env.production?
-      Job.run!(params)
-      uuid   = (params[:uuid] || "NONE")
       dev    = params[:device]
 
       dev.auto_sync_transaction do
+        oh_wow = Job.run!(params)
+        uuid   = (params[:uuid] || "NONE")
         Transport.current.amqp_send(ok(uuid), dev.id, MQTT_CHAN)
       end
     rescue Mutations::ValidationException => q
@@ -61,6 +60,8 @@ module Resources
     def self.process(delivery_info, body)
       params = step1(delivery_info, body)
       params && step2(params)
+    rescue => q
+      binding.pry
     end
   end # Service
 end # Resources
