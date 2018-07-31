@@ -15,6 +15,14 @@ import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
 
+const showFor = (size: string[], extraClass?: string): string => {
+  const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
+  const HIDDEN_SIZES = ALL_SIZES.filter(x => !size.includes(x));
+  const classNames = HIDDEN_SIZES.map(x => "hidden-" + x);
+  if (extraClass) { classNames.push(extraClass); }
+  return classNames.join(" ");
+};
+
 export interface PartialFromEvent {
   currentTarget: {
     checked: boolean;
@@ -221,7 +229,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         <Col xs={12}>
           <h1 className="text-center">
             {t("Welcome to the")}
-            <br className="hidden-sm hidden-md hidden-lg hidden-xl" />
+            <br className={showFor(["xs"])} />
             &nbsp;
               {t("FarmBot Web App")}
           </h1>
@@ -234,23 +242,23 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             <Col xs={12}>
               {t("Setup, customize, and control FarmBot from your")}
               &nbsp;
-              <span className="hidden-xs hidden-sm">
+              <span className={showFor(["md", "lg", "xl"])}>
                 {t("computer")}
               </span>
-              <span className="hidden-xs hidden-md hidden-lg hidden-xl">
+              <span className={showFor(["sm"])}>
                 {t("tablet")}
               </span>
-              <span className="hidden-sm hidden-md hidden-lg hidden-xl">
+              <span className={showFor(["xs"])}>
                 {t("smartphone")}
               </span>
             </Col>
           </h2>
         </Row>
         <img
-          className="hidden-xs hidden-sm col-md-7"
+          className={showFor(["md", "lg", "xl"], "col-md-7")}
           src="/app-resources/img/farmbot-desktop.png" />
         <img
-          className="hidden-xs hidden-md hidden-lg hidden-xl col-sm-7"
+          className={showFor(["sm"], "col-md-7")}
           src="/app-resources/img/farmbot-tablet.png" />
         <Row>
           <this.activePanel />
