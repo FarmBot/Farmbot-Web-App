@@ -8,7 +8,7 @@ module Resources
       #
       # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2", "xyz"]
       segments = delivery_info.routing_key.split(".")
-      _, device_name, _, action, resource, resource_id, uuid = segments
+      _, device_name, _, action, resource, uuid, resource_id = segments
       run!(device_name: device_name,
            action:      action,
            resource:    resource,

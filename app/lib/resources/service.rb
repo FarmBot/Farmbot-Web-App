@@ -1,6 +1,15 @@
 module Resources
+  MQTT_CHAN         = "from_api"
+  CHANNEL_TPL       =
+    "bot.device_%{device_id}.resources_v0.%{action}.%{klass}.%{uuid}.%{id}"
+  INDEX_OF_USERNAME = 1
+  INDEX_OF_OP       = 3
+  INDEX_OF_KIND     = 4
+  INDEX_OF_UUID     = 5
+  INDEX_OF_ID       = 6
+
   class Service
-    MQTT_CHAN = "from_api"
+
     def self.ok(uuid)
       { kind: "rpc_ok", args: { label: uuid } }.to_json
     end
@@ -21,19 +30,18 @@ module Resources
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
       raw_chan = delivery_info&.routing_key&.split(".") || []
-      id       = raw_chan[1]&.gsub("device_", "")&.to_i
-      uuid     = (raw_chan.last || "NONE")
+      id       = raw_chan[INDEX_OF_USERNAME]&.gsub("device_", "")&.to_i
+      uuid     = raw_chan[INDEX_OF_UUID] || "NONE"
       Transport.current.amqp_send(rpc_err(uuid, q), id, MQTT_CHAN) if id
       nil
     end
 
     def self.step2(params)
-      puts params if Rails.env.production?
-      Job.run!(params)
-      uuid   = (params[:uuid] || "NONE")
       dev    = params[:device]
 
       dev.auto_sync_transaction do
+        oh_wow = Job.run!(params)
+        uuid   = (params[:uuid] || "NONE")
         Transport.current.amqp_send(ok(uuid), dev.id, MQTT_CHAN)
       end
     rescue Mutations::ValidationException => q

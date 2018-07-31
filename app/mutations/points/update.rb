@@ -1,3 +1,5 @@
+require_relative "../../lib/hstore_filter"
+
 module Points
   class Update < Mutations::Command
     required do

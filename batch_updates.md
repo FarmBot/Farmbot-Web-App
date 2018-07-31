@@ -25,7 +25,7 @@ Not all resources support the experimental resource API.
 Send an MQTT message in the format of:
 
 ```
-bot/device_<id>/resources_v0/<action>/<resource type>/<resource_id or 0>/<Transaction UUID>
+bot/device_<id>/resources_v0/<action>/<resource type>/<Transaction UUID>/<resource_id or 0>
 ```
 
 Example 1-1:

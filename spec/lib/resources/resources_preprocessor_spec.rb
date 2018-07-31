@@ -2,8 +2,6 @@ require "spec_helper"
 
 describe Resources::PreProcessor do
   DeliveryInfoShim = Struct.new(:routing_key)
-  CHANNEL_TPL =
-    "bot.device_%{device_id}.resources_v0.%{action}.%{klass}.%{id}.%{uuid}"
 
   let(:pb) { FactoryBot.create(:pin_binding) }
 
@@ -17,7 +15,7 @@ describe Resources::PreProcessor do
 
   let(:preprocessed) do
     body   = {}.to_json
-    chan   = CHANNEL_TPL % props
+    chan   = Resources::CHANNEL_TPL % props
     Resources::PreProcessor.from_amqp(DeliveryInfoShim.new(chan), body)
   end
 
@@ -32,7 +30,7 @@ describe Resources::PreProcessor do
 
   it "handles bad JSON" do
     body   = "}{"
-    chan   = CHANNEL_TPL % props
+    chan   = Resources::CHANNEL_TPL % props
     expect do
       Resources::PreProcessor.from_amqp(DeliveryInfoShim.new(chan), body)
     end.to raise_error(Mutations::ValidationException, "body must be a JSON object")
@@ -41,7 +39,7 @@ describe Resources::PreProcessor do
   describe Resources::Service do
     it "handles syntax errors using step1" do
       body   = "[]"
-      chan   = CHANNEL_TPL % props
+      chan   = Resources::CHANNEL_TPL % props
       shim   = DeliveryInfoShim.new(chan)
       Resources::Service.process(shim, body)
       result = Transport.current.connection
@@ -88,7 +86,7 @@ describe Resources::PreProcessor do
 
     it "processes resources" do
       body   = {}.to_json
-      chan   = CHANNEL_TPL % props
+      chan   = Resources::CHANNEL_TPL % props
       before = PinBinding.count
       result = Resources::Service.process(DeliveryInfoShim.new(chan), body)
       expect(PinBinding.count).to be < before
