@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
-import { TaggedPlantPointer } from "../../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import { round, transformXY } from "../util";
 import { cachedCrop } from "../../../open_farm/icons";
 import { MapTransformProps } from "../interfaces";

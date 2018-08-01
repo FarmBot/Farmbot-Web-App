@@ -8,7 +8,7 @@ import {
   TaggedGenericPointer,
   TaggedPlantPointer,
   TaggedImage,
-} from "../resources/tagged_resources";
+} from "farmbot";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";

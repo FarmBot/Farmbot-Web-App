@@ -7,7 +7,7 @@ jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 import * as React from "react";
 import { mount } from "enzyme";
 import { Photos } from "../photos";
-import { TaggedImage } from "../../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { defensiveClone } from "../../../util";
 import { destroy } from "../../../api/crud";

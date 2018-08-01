@@ -1,4 +1,4 @@
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 
 export interface Image {
   id: number;

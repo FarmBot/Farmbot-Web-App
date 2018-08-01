@@ -9,7 +9,7 @@ import { getPathArray } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
 import {
   TaggedPlantPointer, SpecialStatus
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import {
   translateScreenToGarden,
   round,

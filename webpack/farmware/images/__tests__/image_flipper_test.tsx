@@ -3,7 +3,7 @@ import * as React from "react";
 import { shallow, mount } from "enzyme";
 import { ImageFlipper } from "../image_flipper";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
-import { TaggedImage } from "../../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
 
 describe("<ImageFlipper/>", () => {

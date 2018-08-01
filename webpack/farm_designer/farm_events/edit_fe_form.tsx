@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import {
   TimeUnit, ExecutableQuery, ExecutableType, FarmEvent
 } from "../interfaces";

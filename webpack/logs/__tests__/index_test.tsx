@@ -28,7 +28,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { Logs } from "../index";
 import { ToolTips } from "../../constants";
-import { TaggedLog } from "../../resources/tagged_resources";
+import { TaggedLog } from "farmbot";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";

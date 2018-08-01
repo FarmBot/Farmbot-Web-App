@@ -1,7 +1,7 @@
 import {
   TaggedPlantPointer,
   TaggedGenericPointer
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import { TaggedCrop } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";

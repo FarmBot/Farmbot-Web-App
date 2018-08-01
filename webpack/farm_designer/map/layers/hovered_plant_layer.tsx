@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedPlantPointer } from "../../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import { DesignerState } from "../../interfaces";
 import { transformXY, round } from "../util";
 import { MapTransformProps } from "../interfaces";

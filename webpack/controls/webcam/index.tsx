@@ -2,7 +2,7 @@ import * as React from "react";
 import { Show } from "./show";
 import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
-import { TaggedWebcamFeed, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedWebcamFeed, SpecialStatus } from "farmbot";
 import { edit, save, destroy, init } from "../../api/crud";
 
 type S = { activeMenu: "edit" | "show" };

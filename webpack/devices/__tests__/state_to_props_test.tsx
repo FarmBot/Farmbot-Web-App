@@ -11,7 +11,7 @@ jest.mock("../../resources/selectors_by_kind", () => ({
 
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { TaggedFbosConfig, TaggedImage } from "../../resources/tagged_resources";
+import { TaggedFbosConfig, TaggedImage } from "farmbot";
 
 describe("mapStateToProps()", () => {
   it("uses the API as the source of FBOS settings", () => {

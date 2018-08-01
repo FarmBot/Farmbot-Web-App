@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { t } from "i18next";
 import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
-import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs } from "../panel_header";
 

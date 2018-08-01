@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col } from "../../../ui/index";
 import { t } from "i18next";
 import * as moment from "moment";
-import { TaggedDevice } from "../../../resources/tagged_resources";
+import { TaggedDevice } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 
 export interface LastSeenProps {

@@ -3,7 +3,7 @@ import { Everything } from "../../interfaces";
 import { EditPlantInfoProps } from "../interfaces";
 import { maybeFindPlantById } from "../../resources/selectors";
 import { history } from "../../history";
-import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import * as _ from "lodash";
 import { PlantStage } from "farmbot";
 

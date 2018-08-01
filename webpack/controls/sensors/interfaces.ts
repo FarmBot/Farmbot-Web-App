@@ -1,4 +1,4 @@
-import { TaggedSensor } from "../../resources/tagged_resources";
+import { TaggedSensor } from "farmbot";
 import { Pins } from "farmbot/dist";
 
 export interface SensorState {

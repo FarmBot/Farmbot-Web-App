@@ -21,7 +21,7 @@ import {
   TaggedFarmEvent,
   TaggedSequence,
   TaggedRegimen
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import {
   validFbosConfig, shouldDisplay, determineInstalledOsVersion

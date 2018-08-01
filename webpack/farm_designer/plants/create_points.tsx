@@ -8,7 +8,7 @@ import {
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions } from "../../constants";
-import { TaggedPoint, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedPoint, SpecialStatus } from "farmbot";
 import { deletePoints } from "../../farmware/weed_detector/actions";
 import { clone } from "lodash";
 

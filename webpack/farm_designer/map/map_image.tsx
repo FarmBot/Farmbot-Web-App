@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { CameraCalibrationData, BotOriginQuadrant } from "../interfaces";
 import { MapTransformProps } from "./interfaces";
 import { transformXY } from "./util";
