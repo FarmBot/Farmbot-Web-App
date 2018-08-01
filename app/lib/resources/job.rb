@@ -24,6 +24,8 @@ module Resources
       when SAVE    then do_save
       else; never
       end
+    rescue ActiveRecord::RecordNotFound
+      add_error :not_found, :not_found, NOT_FOUND
     end
 
     private
