@@ -15,7 +15,7 @@ module Api
     end
 
     def update
-      mutate WebcamFeeds::Update.run(params.as_json, feed: webcam)
+      mutate WebcamFeeds::Update.run(params.as_json, webcam_feed: webcam)
     end
 
     def destroy

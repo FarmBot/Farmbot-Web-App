@@ -1,6 +1,6 @@
 module WebcamFeeds
   class Update < Mutations::Command
-    required { model :feed, class: WebcamFeed }
+    required { model :webcam_feed, class: WebcamFeed }
 
     optional do
       string :name
@@ -8,7 +8,7 @@ module WebcamFeeds
     end
 
     def execute
-      feed.update_attributes!(inputs.except(:feed)) && feed
+      webcam_feed.update_attributes!(inputs.except(:webcam_feed)) && webcam_feed
     end
   end
 end

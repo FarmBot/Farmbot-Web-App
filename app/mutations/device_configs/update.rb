@@ -1,7 +1,7 @@
 module DeviceConfigs
   class Update < Mutations::Command
     required {
-      model :config, class: DeviceConfig
+      model :device_config, class: DeviceConfig
     }
 
     optional do
@@ -10,7 +10,7 @@ module DeviceConfigs
     end
 
     def execute
-      config.update_attributes!(inputs.except(:config)) && config
+      device_config.update_attributes!(inputs.except(:device_config)) && device_config
     end
   end
 end
