@@ -3,7 +3,7 @@ import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
 import { t } from "i18next";
 import { RegimenItem } from "../interfaces";
-import { TaggedRegimen } from "../../resources/tagged_resources";
+import { TaggedRegimen } from "farmbot";
 import { defensiveClone } from "../../util";
 import { overwrite, save, destroy } from "../../api/crud";
 import { SaveBtn } from "../../ui";

@@ -1,4 +1,4 @@
-import { TaggedLog } from "../resources/tagged_resources";
+import { TaggedLog } from "farmbot";
 import { BotState, SourceFbosConfig } from "../devices/interfaces";
 import { ConfigurationName, ALLOWED_MESSAGE_TYPES } from "farmbot";
 

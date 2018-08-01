@@ -3,7 +3,7 @@ import { API } from "../api";
 import { Log } from "../interfaces";
 import { noop, throttle } from "lodash";
 import axios from "axios";
-import { ResourceName } from "../resources/tagged_resources";
+import { ResourceName } from "farmbot";
 const name: ResourceName = "Log";
 
 /** re-Downloads all logs from the API and force replaces all entries for logs

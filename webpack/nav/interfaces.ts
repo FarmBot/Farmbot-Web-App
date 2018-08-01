@@ -1,5 +1,5 @@
 import { BotState } from "../devices/interfaces";
-import { TaggedUser, TaggedLog } from "../resources/tagged_resources";
+import { TaggedUser, TaggedLog } from "farmbot";
 
 export interface NavButtonProps {
   user: TaggedUser | undefined;

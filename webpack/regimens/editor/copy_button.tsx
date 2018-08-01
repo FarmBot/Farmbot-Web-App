@@ -2,7 +2,7 @@ import * as React from "react";
 import { CopyButtnProps } from "./interfaces";
 import { t } from "i18next";
 import { init } from "../../api/crud";
-import { TaggedRegimen } from "../../resources/tagged_resources";
+import { TaggedRegimen } from "farmbot";
 import { defensiveClone, urlFriendly } from "../../util";
 import { push } from "../../history";
 

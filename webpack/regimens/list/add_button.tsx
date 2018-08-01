@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
-import { TaggedRegimen, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedRegimen, SpecialStatus } from "farmbot";
 import { init } from "../../api/crud";
 
 function emptyRegimen(length: number): TaggedRegimen {
