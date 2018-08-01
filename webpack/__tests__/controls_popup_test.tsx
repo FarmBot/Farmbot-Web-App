@@ -10,7 +10,7 @@ import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
-import { ControlsPopupProps } from "../controls/interfaces";
+import { ControlsPopupProps } from "../controls/move/interfaces";
 
 describe("<ControlsPopup />", () => {
   const fakeProps = (): ControlsPopupProps => {

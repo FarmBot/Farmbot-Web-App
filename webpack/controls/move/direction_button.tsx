@@ -1,5 +1,5 @@
 import * as React from "react";
-import { moveRelative } from "../devices/actions";
+import { moveRelative } from "../../devices/actions";
 import { DirectionButtonProps, Payl } from "./interfaces";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
@@ -25,8 +25,6 @@ export function directionDisabled(props: DirectionButtonProps): boolean {
       return (isInverted === !negativeOnly)
         ? directionDisableHome
         : directionDisableEnd;
-    default:
-      return false;
   }
 }
 

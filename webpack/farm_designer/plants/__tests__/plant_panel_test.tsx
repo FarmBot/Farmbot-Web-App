@@ -4,7 +4,7 @@ import * as React from "react";
 import {
   PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps
 } from "../plant_panel";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -34,7 +34,7 @@ describe("<PlantPanel/>", () => {
 
   it("renders: editing", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantPanel {...p} />);
+    const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(10, 30)");
@@ -48,7 +48,7 @@ describe("<PlantPanel/>", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
+    const wrapper = mount(<PlantPanel info={info} dispatch={jest.fn()} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(12, 34)");

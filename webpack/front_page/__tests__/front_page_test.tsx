@@ -12,7 +12,11 @@ jest.mock("../../session", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn(), init: jest.fn() }));
+jest.mock("farmbot-toastr", () => ({
+  error: jest.fn(),
+  success: jest.fn(),
+  init: jest.fn()
+}));
 
 jest.mock("../../api", () => ({
   API: {
@@ -29,11 +33,13 @@ jest.mock("../../api", () => ({
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { FrontPage, setField, PartialFromEvent } from "../front_page";
 import axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
+import { success, error } from "farmbot-toastr";
+import { Content } from "../../constants";
 
 describe("<FrontPage />", () => {
   it("shows forgot password box", () => {
@@ -165,5 +171,31 @@ describe("<FrontPage />", () => {
     expect(spy).toHaveBeenCalledWith(expected3);
     jest.resetAllMocks();
 
+  });
+
+  it("resendVerificationPanel(): ok()", () => {
+    const wrapper = mount(<FrontPage />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    const component = shallow(<div>{instance.resendVerificationPanel()}</div>);
+    instance.setState({ activePanel: "resendVerificationEmail" });
+    expect(instance.state.activePanel).toEqual("resendVerificationEmail");
+    // tslint:disable-next-line:no-any
+    (component.find("ResendVerification").props() as any).ok();
+    expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
+    expect(instance.state.activePanel).toEqual("login");
+  });
+
+  it("resendVerificationPanel(): no()", () => {
+    const wrapper = mount(<FrontPage />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    const component = shallow(<div>{instance.resendVerificationPanel()}</div>);
+    instance.setState({ activePanel: "resendVerificationEmail" });
+    expect(instance.state.activePanel).toEqual("resendVerificationEmail");
+    // tslint:disable-next-line:no-any
+    (component.find("ResendVerification").props() as any).no();
+    expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
+    expect(instance.state.activePanel).toEqual("login");
   });
 });

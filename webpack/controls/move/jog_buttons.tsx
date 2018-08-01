@@ -1,11 +1,16 @@
 import * as React from "react";
 import { DirectionButton } from "./direction_button";
-import { homeAll, findHome } from "../devices/actions";
+import { homeAll, findHome } from "../../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
-import { getDevice } from "../device";
+import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
 
 const DEFAULT_STEP_SIZE = 100;
+
+/*
+ * photo |   ^   | ^
+ * home  | < v > | v
+ */
 
 export function JogButtons(props: JogMovementControlsProps) {
   const { stepSize, xySwap, arduinoBusy, doFindHome } = props;

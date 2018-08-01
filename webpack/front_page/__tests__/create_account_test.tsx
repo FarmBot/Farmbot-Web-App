@@ -26,6 +26,7 @@ import { success, error } from "farmbot-toastr";
 import { resendEmail } from "../resend_verification";
 import { ResendPanelBody } from "../resend_panel_body";
 import { BlurablePassword } from "../../ui/blurable_password";
+import { Content } from "../../constants";
 
 describe("<FormField/>", () => {
   it("renders correct props", () => {
@@ -48,13 +49,13 @@ describe("<FormField/>", () => {
 describe("sendEmail()", () => {
   it("calls success() when things are OK", async () => {
     await sendEmail("send@email.com");
-    expect(success).toHaveBeenCalledWith("Email sent.");
+    expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
     expect(resendEmail).toHaveBeenCalledWith("send@email.com");
   });
 
   it("calls error() when things are not OK", async () => {
     await sendEmail("send@email.com");
-    expect(error).toHaveBeenCalledWith("Unable to send email.");
+    expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
     expect(resendEmail).toHaveBeenCalledWith("send@email.com");
   });
 });

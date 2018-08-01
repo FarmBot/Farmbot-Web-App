@@ -61,7 +61,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
     bot.hardware.configuration.beta_opt_in = true;
     bot.currentOSVersion = undefined;
-    bot.currentBetaOSVersion = "3.1.7";
+    bot.currentBetaOSVersion = "3.1.7-beta";
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
@@ -107,17 +107,18 @@ describe("<OsUpdateButton/>", () => {
   it("latest newer than beta update: latest installed", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
     bot.hardware.configuration.beta_opt_in = true;
-    bot.currentBetaOSVersion = "3.1.4-beta";
+    bot.currentBetaOSVersion = "3.1.6-beta";
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UP TO DATE");
     expect(osUpdateButton.props().title).toBe("3.1.6");
   });
-
   it("latest newer than beta update: beta installed", () => {
-    bot.hardware.informational_settings.controller_version = "3.1.5";
+    bot.hardware.informational_settings.controller_version = "3.1.6";
     bot.hardware.configuration.beta_opt_in = true;
-    bot.currentBetaOSVersion = "3.1.5-beta";
+    // tslint:disable-next-line:no-any
+    (bot.hardware.informational_settings as any).currently_on_beta = true;
+    bot.currentBetaOSVersion = "3.1.6-beta";
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");

@@ -1,11 +1,12 @@
+let mockPhotoOutcome = Promise.resolve();
 const mockDevice = {
   home: jest.fn(() => { return Promise.resolve(); }),
   findHome: jest.fn(() => { return Promise.resolve(); }),
-  takePhoto: jest.fn(() => { return Promise.resolve(); }),
+  takePhoto: jest.fn(() => { return mockPhotoOutcome; }),
   moveRelative: jest.fn(() => { return Promise.resolve(); }),
 };
 
-jest.mock("../../device", () => ({
+jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
@@ -15,7 +16,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
-import { bot } from "../../__test_support__/fake_state/bot";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<JogButtons/>", function () {
   const jogButtonProps = (): JogMovementControlsProps => {
@@ -60,6 +61,13 @@ describe("<JogButtons/>", function () {
   });
 
   it("takes photo", () => {
+    const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
+    jogButtons.find("button").at(0).simulate("click");
+    expect(mockDevice.takePhoto).toHaveBeenCalled();
+  });
+
+  it("error taking photo", () => {
+    mockPhotoOutcome = Promise.reject();
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(0).simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
