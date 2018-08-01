@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { RetryBtn } from "../retry_btn";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<RetryBtn/>", () => {
   it("is green before saving", () => {

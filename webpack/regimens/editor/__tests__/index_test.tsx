@@ -13,7 +13,7 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { RegimenEditorProps } from "../interfaces";
 import { destroy, save } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<RegimenEditor />", () => {
   function fakeProps(): RegimenEditorProps {

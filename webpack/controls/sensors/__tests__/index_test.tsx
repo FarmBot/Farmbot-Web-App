@@ -10,7 +10,7 @@ import { SensorsProps } from "../../../devices/interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { error } from "farmbot-toastr";
 import { clickButton } from "../../../__test_support__/helpers";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<Sensors />", () => {
   function fakeProps(): SensorsProps {

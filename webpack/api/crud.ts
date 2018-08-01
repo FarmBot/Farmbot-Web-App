@@ -1,9 +1,8 @@
 import {
-  TaggedResource
+  TaggedResource, SpecialStatus
 } from "farmbot";
 import {
   isTaggedResource,
-  SpecialStatus,
 } from "../resources/tagged_resources";
 import {
   ResourceName,

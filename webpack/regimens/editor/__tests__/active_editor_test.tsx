@@ -4,7 +4,7 @@ import { ActiveEditor } from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { ActiveEditorProps } from "../interfaces";
 import { Actions } from "../../../constants";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<ActiveEditor />", () => {
   const props: ActiveEditorProps = {

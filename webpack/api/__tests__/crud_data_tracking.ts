@@ -21,7 +21,7 @@ import { ReduxAction } from "../../redux/interfaces";
 import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";
 import { betterCompact } from "../../util";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import * as _ from "lodash";
 
 describe("AJAX data tracking", () => {

@@ -6,7 +6,7 @@ import {
   handleUpdate,
   handleCreateOrUpdate
 } from "../auto_sync";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";

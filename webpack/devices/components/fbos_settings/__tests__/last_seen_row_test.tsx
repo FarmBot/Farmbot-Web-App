@@ -2,7 +2,7 @@ import * as React from "react";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { LastSeen, LastSeenProps } from "../last_seen_row";
 import { mount } from "enzyme";
-import { SpecialStatus } from "../../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<LastSeen/>", () => {
   const resource = () => fakeResource("Device", {
@@ -28,7 +28,7 @@ describe("<LastSeen/>", () => {
   });
 
   it("tells you the device has never been seen", () => {
-    const wrapper = mount(<LastSeen {...props() } />);
+    const wrapper = mount(<LastSeen {...props()} />);
     expect(wrapper.text()).toContain("network connectivity issue");
   });
 

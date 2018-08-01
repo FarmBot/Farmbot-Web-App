@@ -6,7 +6,7 @@ import {
   WidgetBody,
   SaveBtn
 } from "../../ui/index";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import Axios from "axios";
 import { API } from "../../api/index";
 import { prettyPrintApiErrors, equals, trim } from "../../util";

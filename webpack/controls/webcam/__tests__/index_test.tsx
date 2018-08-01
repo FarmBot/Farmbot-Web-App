@@ -7,7 +7,7 @@ import { mount } from "enzyme";
 import { WebcamPanel, preToggleCleanup } from "../index";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { destroy, save } from "../../../api/crud";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 
 describe("<WebcamPanel/>", () => {

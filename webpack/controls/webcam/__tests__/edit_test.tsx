@@ -3,7 +3,7 @@ import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { props } from "../test_helpers";
 import { Edit } from "../edit";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { WebcamPanelProps } from "../interfaces";
 

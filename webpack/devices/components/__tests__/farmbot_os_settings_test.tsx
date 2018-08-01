@@ -13,7 +13,7 @@ import { fakeResource } from "../../../__test_support__/fake_resource";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { Actions } from "../../../constants";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {

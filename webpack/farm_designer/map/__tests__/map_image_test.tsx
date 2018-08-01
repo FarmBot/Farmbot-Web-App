@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { MapImage, MapImageProps } from "../map_image";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { cloneDeep } from "lodash";
 import { trim } from "../../../util";
 import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";

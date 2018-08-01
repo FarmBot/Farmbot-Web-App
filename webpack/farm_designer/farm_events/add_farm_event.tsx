@@ -14,7 +14,7 @@ import {
   ExecutableType
 } from "../interfaces";
 import { BackArrow } from "../../ui/index";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 interface State {
   uuid: string;

@@ -5,7 +5,7 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
 
 describe("<TileMoveAbsolute/>", () => {
