@@ -2,8 +2,6 @@ import { ResourceIndex } from "./interfaces";
 import {
   TaggedResource,
   SpecialStatus,
-  isTaggedResource,
-  sanityCheck,
   TaggedWebcamFeed,
   TaggedFbosConfig,
   TaggedCrop,
@@ -22,6 +20,10 @@ import {
   TaggedPinBinding,
   TaggedDiagnosticDump,
   TaggedSensorReading,
+} from "farmbot";
+import {
+  isTaggedResource,
+  sanityCheck,
 } from "./tagged_resources";
 import { sortResourcesById, betterCompact, bail } from "../util";
 import { error } from "farmbot-toastr";

@@ -1,17 +1,25 @@
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
-  TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
-  TaggedWebAppConfig,
-  TaggedSensor,
-  TaggedFirmwareConfig,
-  TaggedPinBinding,
-  TaggedLog,
   TaggedDiagnosticDump,
-  TaggedSensorReading
-} from "../../resources/tagged_resources";
+  TaggedFarmEvent,
+  TaggedFbosConfig,
+  TaggedFirmwareConfig,
+  TaggedGenericPointer,
+  TaggedImage,
+  TaggedLog,
+  TaggedPeripheral,
+  TaggedPinBinding,
+  TaggedPlantPointer,
+  TaggedRegimen,
+  TaggedSensor,
+  TaggedSensorReading,
+  TaggedSequence,
+  TaggedTool,
+  TaggedUser,
+  TaggedWebAppConfig,
+  TaggedWebcamFeed,
+} from "farmbot";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";

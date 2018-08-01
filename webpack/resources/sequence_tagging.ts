@@ -1,6 +1,6 @@
 import { get, set } from "lodash";
 import { SequenceBodyItem, uuid } from "farmbot/dist";
-import { TaggedResource } from "./tagged_resources";
+import { TaggedResource } from "farmbot";
 
 /** HISTORICAL NOTES:
  *   This file is the result of some very subtle bugs relating to dynamic

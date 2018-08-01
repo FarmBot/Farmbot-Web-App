@@ -1,56 +1,21 @@
-import { Sequence } from "../sequences/interfaces";
-import { Tool } from "../tools/interfaces";
-import { Regimen } from "../regimens/interfaces";
-import { FarmEvent, Crop, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
-import {
-  Log,
-  GenericPointer,
-  PlantPointer,
-  ToolSlotPointer,
-  SensorReading,
-  Sensor,
-  DeviceConfig,
-} from "../interfaces";
-import { Peripheral } from "../controls/peripherals/interfaces";
-import { User } from "../auth/interfaces";
-import { DeviceAccountSettings } from "../devices/interfaces";
 import { isObject, isString, get } from "lodash";
-import { Image } from "../farmware/images/interfaces";
 import { betterCompact } from "../util";
 import * as _ from "lodash";
-import { WebcamFeed } from "../controls/interfaces";
-import { FbosConfig } from "../config_storage/fbos_configs";
-import { FirmwareConfig } from "../config_storage/firmware_configs";
-import { WebAppConfig } from "../config_storage/web_app_configs";
-import { FarmwareInstallation } from "../farmware/interfaces";
 import { assertUuid } from "./util";
-import { PinBinding } from "../devices/pin_bindings/interfaces";
-
-export type ResourceName =
-  | "Crop"
-  | "Device"
-  | "DeviceConfig"
-  | "DiagnosticDump"
-  | "FarmEvent"
-  | "FarmwareInstallation"
-  | "FbosConfig"
-  | "FirmwareConfig"
-  | "Image"
-  | "Log"
-  | "Peripheral"
-  | "PinBinding"
-  | "Plant"
-  | "PlantTemplate"
-  | "Point"
-  | "Regimen"
-  | "SavedGarden"
-  | "Sensor"
-  | "SensorReading"
-  | "Sequence"
-  | "Tool"
-  | "User"
-  | "WebAppConfig"
-  | "WebcamFeed";
+import {
+  TaggedCrop,
+  TaggedResource,
+  ResourceName,
+  TaggedRegimen,
+  TaggedSequence,
+  TaggedTool,
+  TaggedFarmEvent,
+  TaggedLog,
+  TaggedToolSlotPointer,
+  TaggedPlantPointer,
+  TaggedGenericPointer,
+  PointerType,
+} from "farmbot";
 
 export interface TaggedResourceBase {
   kind: ResourceName;
@@ -93,62 +58,41 @@ export interface Resource<T extends ResourceName, U extends object>
   body: U;
 }
 
-export type TaggedResource =
-  | TaggedCrop
-  | TaggedDevice
-  | TaggedDiagnosticDump
-  | TaggedFarmEvent
-  | TaggedFarmwareInstallation
-  | TaggedFbosConfig
-  | TaggedFirmwareConfig
-  | TaggedImage
-  | TaggedLog
-  | TaggedPeripheral
-  | TaggedPinBinding
-  | TaggedPlantTemplate
-  | TaggedPoint
-  | TaggedRegimen
-  | TaggedSavedGarden
-  | TaggedSensor
-  | TaggedSensorReading
-  | TaggedSequence
-  | TaggedTool
-  | TaggedUser
-  | TaggedWebAppConfig
-  | TaggedWebcamFeed;
+// export type TaggedPinBinding = Resource<"PinBinding", PinBinding>;
+// // export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
+// export type TaggedRegimen = Resource<"Regimen", Regimen>;
+// export type TaggedTool = Resource<"Tool", Tool>;
+// export type TaggedSequence = Resource<"Sequence", Sequence>;
+// export type TaggedFarmEvent = Resource<"FarmEvent", FarmEvent>;
+// export type TaggedImage = Resource<"Image", Image>;
+// export type TaggedLog = Resource<"Log", Log>;
+// export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
+// export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
+// export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
+// export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
+// export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
+// export type TaggedSensor = Resource<"Sensor", Sensor>;
+// export type TaggedSavedGarden = Resource<"SavedGarden", SavedGarden>;
+// export type TaggedPlantTemplate = Resource<"PlantTemplate", PlantTemplate>;
+// export type TaggedDiagnosticDump = Resource<"DiagnosticDump", DiagnosticDump>;
 
-export type TaggedPinBinding = Resource<"PinBinding", PinBinding>;
-export type TaggedDeviceConfig = Resource<"DeviceConfig", DeviceConfig>;
-export type TaggedRegimen = Resource<"Regimen", Regimen>;
-export type TaggedTool = Resource<"Tool", Tool>;
-export type TaggedSequence = Resource<"Sequence", Sequence>;
-export type TaggedCrop = Resource<"Crop", Crop>;
-export type TaggedFarmEvent = Resource<"FarmEvent", FarmEvent>;
-export type TaggedImage = Resource<"Image", Image>;
-export type TaggedLog = Resource<"Log", Log>;
-export type TaggedPeripheral = Resource<"Peripheral", Peripheral>;
-export type TaggedFbosConfig = Resource<"FbosConfig", FbosConfig>;
-export type TaggedFirmwareConfig = Resource<"FirmwareConfig", FirmwareConfig>;
-export type TaggedWebAppConfig = Resource<"WebAppConfig", WebAppConfig>;
-export type TaggedSensorReading = Resource<"SensorReading", SensorReading>;
-export type TaggedSensor = Resource<"Sensor", Sensor>;
-export type TaggedSavedGarden = Resource<"SavedGarden", SavedGarden>;
-export type TaggedPlantTemplate = Resource<"PlantTemplate", PlantTemplate>;
-export type TaggedDiagnosticDump = Resource<"DiagnosticDump", DiagnosticDump>;
+// type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
+// export type PointerType =
+//   | TaggedToolSlotPointer
+//   | TaggedGenericPointer
+//   | TaggedPlantPointer;
 
-type PointUnion = GenericPointer | PlantPointer | ToolSlotPointer;
+// export type TaggedGenericPointer = Resource<"Point", GenericPointer>;
+// export type TaggedPlantPointer = Resource<"Point", PlantPointer>;
+// export type TaggedToolSlotPointer = Resource<"Point", ToolSlotPointer>;
 
-export type TaggedGenericPointer = Resource<"Point", GenericPointer>;
-export type TaggedPlantPointer = Resource<"Point", PlantPointer>;
-export type TaggedToolSlotPointer = Resource<"Point", ToolSlotPointer>;
+// export type TaggedPoint = Resource<"Point", PointUnion>;
 
-export type TaggedPoint = Resource<"Point", PointUnion>;
-
-export type TaggedUser = Resource<"User", User>;
-export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
-export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
-export type TaggedFarmwareInstallation =
-  Resource<"FarmwareInstallation", FarmwareInstallation>;
+// export type TaggedUser = Resource<"User", User>;
+// export type TaggedDevice = Resource<"Device", DeviceAccountSettings>;
+// export type TaggedWebcamFeed = Resource<"WebcamFeed", WebcamFeed>;
+// export type TaggedFarmwareInstallation =
+//   Resource<"FarmwareInstallation", FarmwareInstallation>;
 
 export interface DiagnosticDump {
   id: number;
@@ -190,11 +134,6 @@ const is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource
   }
   return safe;
 };
-
-export type PointerType =
-  | TaggedToolSlotPointer
-  | TaggedGenericPointer
-  | TaggedPlantPointer;
 
 function isTaggedPoint(x: {}): x is PointerType {
   return (is("Point")(x)) && (x.kind === "Point");

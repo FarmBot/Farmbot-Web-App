@@ -17,7 +17,7 @@ import {
 } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
-import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "farmbot";
 import { autoSync } from "./auto_sync";
 import { startPinging } from "./ping_mqtt";
 import { talk } from "browser-speech";

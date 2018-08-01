@@ -1,10 +1,12 @@
 import { resourceReducer, emptyState } from "../resources/reducer";
 import {
-  TaggedResource, TaggedDevice, TaggedPoint,
+  ResourceName,
   SpecialStatus,
+  TaggedDevice,
   TaggedLog,
-  ResourceName
-} from "../resources/tagged_resources";
+  TaggedPoint,
+  TaggedResource,
+} from "farmbot";
 import * as _ from "lodash";
 import { Actions } from "../constants";
 export function fakeDevice(): TaggedDevice {

@@ -2,7 +2,7 @@ import {
   buildResourceIndex,
   FAKE_RESOURCES
 } from "../__test_support__/resource_index_builder";
-import { TaggedFarmEvent, SpecialStatus } from "../resources/tagged_resources";
+import { TaggedFarmEvent, SpecialStatus } from "farmbot";
 
 const STUB_RESOURCE: TaggedFarmEvent = {
   "uuid": "FarmEvent.0.435",

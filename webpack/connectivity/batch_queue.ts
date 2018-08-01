@@ -1,4 +1,4 @@
-import { TaggedLog } from "../resources/tagged_resources";
+import { TaggedLog } from "farmbot";
 import { store } from "../redux/store";
 import { batchInitResources, bothUp } from "./connect_device";
 import { maybeGetDevice } from "../resources/selectors";

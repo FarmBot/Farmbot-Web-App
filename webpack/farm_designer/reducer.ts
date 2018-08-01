@@ -2,7 +2,7 @@ import { CropLiveSearchResult, CurrentPointPayl } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { DesignerState, HoveredPlantPayl } from "./interfaces";
 import { cloneDeep } from "lodash";
-import { TaggedResource } from "../resources/tagged_resources";
+import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 

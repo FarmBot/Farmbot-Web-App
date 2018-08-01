@@ -8,7 +8,7 @@ import {
   ResourceName,
   TaggedToolSlotPointer,
   TaggedTool
-} from "./tagged_resources";
+} from "farmbot";
 import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
 

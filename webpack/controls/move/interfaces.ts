@@ -1,6 +1,6 @@
 import { BotPosition, BotState } from "../../devices/interfaces";
 import { McuParams, Xyz } from "farmbot";
-import { TaggedUser } from "../../resources/tagged_resources";
+import { TaggedUser } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import {

@@ -1,4 +1,4 @@
-import { TaggedResource, SpecialStatus } from "./tagged_resources";
+import { TaggedResource, SpecialStatus } from "farmbot";
 import { UnsafeError } from "../interfaces";
 import { Actions } from "../constants";
 import { toastErrors } from "../toast_errors";

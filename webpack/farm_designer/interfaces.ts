@@ -7,14 +7,13 @@ import {
   TaggedRegimen,
   TaggedGenericPointer,
   TaggedPlantPointer,
-  TaggedCrop,
   TaggedImage,
 } from "../resources/tagged_resources";
 import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
 import { isNumber } from "lodash";
-import { McuParams } from "farmbot/dist";
+import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";

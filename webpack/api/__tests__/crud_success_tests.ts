@@ -12,7 +12,7 @@ jest.mock("axios", () => ({
 }));
 
 import { refresh } from "../crud";
-import { TaggedDevice, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedDevice, SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { Actions } from "../../constants";
 import { get } from "lodash";

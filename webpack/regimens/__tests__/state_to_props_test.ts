@@ -1,6 +1,6 @@
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { TaggedResource, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 
 describe("mapStateToProps()", () => {

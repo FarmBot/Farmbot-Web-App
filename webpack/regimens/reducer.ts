@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { Dictionary } from "farmbot";
 import { Week, DAYS } from "./bulk_scheduler/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import { TaggedResource } from "../resources/tagged_resources";
+import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
 
 export interface RegimenState {
