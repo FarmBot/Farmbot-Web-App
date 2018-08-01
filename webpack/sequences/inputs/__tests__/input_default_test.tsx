@@ -2,7 +2,7 @@ jest.unmock("../../step_tiles/index");
 import * as React from "react";
 import { InputDefault } from "../input_default";
 import { mount } from "enzyme";
-import { TaggedSequence, SpecialStatus } from "../../../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "farmbot";
 import { MoveAbsolute } from "farmbot/dist";
 import { Actions } from "../../../constants";
 

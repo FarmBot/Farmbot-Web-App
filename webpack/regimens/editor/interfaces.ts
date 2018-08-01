@@ -3,7 +3,7 @@ import {
   CalendarRow,
   RegimenItemCalendarRow
 } from "../interfaces";
-import { TaggedRegimen } from "../../resources/tagged_resources";
+import { TaggedRegimen } from "farmbot";
 import { Actions } from "../../constants";
 
 export interface ActiveEditorProps {

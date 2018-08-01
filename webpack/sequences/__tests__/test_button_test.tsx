@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TestButton, TestBtnProps } from "../test_button";
-import { TaggedSequence, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "farmbot";
 import { mount } from "enzyme";
 
 describe("<TestButton/>", () => {

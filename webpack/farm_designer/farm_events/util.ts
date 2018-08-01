@@ -1,4 +1,4 @@
-import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { TaggedFarmEvent } from "farmbot";
 import * as moment from "moment";
 
 /**

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedGenericPointer } from "../../../resources/tagged_resources";
+import { TaggedGenericPointer } from "farmbot";
 import { GardenPoint } from "../garden_point";
 import { MapTransformProps } from "../interfaces";
 

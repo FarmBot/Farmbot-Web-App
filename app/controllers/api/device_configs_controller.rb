@@ -14,7 +14,7 @@ module Api
     end
 
     def update
-      mutate DeviceConfigs::Update.run(raw_json, config: device_config)
+      mutate DeviceConfigs::Update.run(raw_json, device_config: device_config)
     end
 
     def destroy

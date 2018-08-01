@@ -3,7 +3,7 @@ import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { ConnectivityDiagram } from "./diagram";
 import { ToolTips } from "../../constants";
 import {

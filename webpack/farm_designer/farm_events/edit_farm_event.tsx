@@ -3,7 +3,7 @@ import { AddEditFarmEventProps } from "../interfaces";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
 import { history } from "../../history";
-import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { TaggedFarmEvent } from "farmbot";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "i18next";
 

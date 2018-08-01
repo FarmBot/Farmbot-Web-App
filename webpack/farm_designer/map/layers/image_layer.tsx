@@ -1,7 +1,7 @@
 import * as React from "react";
 import { MapTransformProps } from "../interfaces";
 import { CameraCalibrationData } from "../../interfaces";
-import { TaggedImage } from "../../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { MapImage } from "../map_image";
 import { reverse, cloneDeep } from "lodash";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";

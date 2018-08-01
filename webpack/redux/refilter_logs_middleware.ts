@@ -1,7 +1,7 @@
 import { Actions } from "../constants";
 import { Middleware } from "redux";
 import { MiddlewareConfig } from "./middlewares";
-import { ResourceName } from "../resources/tagged_resources";
+import { ResourceName } from "farmbot";
 import { throttledLogRefresh } from "./refresh_logs";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";

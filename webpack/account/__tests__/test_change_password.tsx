@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ChangePassword } from "../components/index";
 import { mount } from "enzyme";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import * as moxios from "moxios";
 import { API } from "../../api/api";
 import { error } from "farmbot-toastr";

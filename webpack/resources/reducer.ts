@@ -4,10 +4,12 @@ import { RestResources, ResourceIndex } from "./interfaces";
 import {
   TaggedResource,
   ResourceName,
-  sanityCheck,
-  isTaggedResource,
   SpecialStatus,
   TaggedSequence
+} from "farmbot";
+import {
+  sanityCheck,
+  isTaggedResource,
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";

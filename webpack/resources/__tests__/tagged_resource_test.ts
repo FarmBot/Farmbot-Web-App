@@ -1,5 +1,6 @@
 import { fakeTool } from "../../__test_support__/fake_state/resources";
-import { SpecialStatus, getArrayStatus } from "../tagged_resources";
+import { getArrayStatus } from "../tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("getArrayStatus()", () => {
   const toolArray = () => [fakeTool(), fakeTool(), fakeTool()];

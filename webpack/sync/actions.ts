@@ -8,7 +8,7 @@ import { Peripheral } from "../controls/peripherals/interfaces";
 import { FarmEvent, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
 import { Image } from "../farmware/images/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
-import { ResourceName, DiagnosticDump } from "../resources/tagged_resources";
+import { ResourceName, DiagnosticDump } from "farmbot";
 import { User } from "../auth/interfaces";
 import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";

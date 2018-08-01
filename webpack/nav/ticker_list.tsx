@@ -9,7 +9,7 @@ import { Session, safeNumericSetting } from "../session";
 import { ErrorBoundary } from "../error_boundary";
 import { ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { filterByVerbosity } from "../logs/components/logs_table";
-import { TaggedLog, SpecialStatus } from "../resources/tagged_resources";
+import { TaggedLog, SpecialStatus } from "farmbot";
 import { isNumber } from "lodash";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */

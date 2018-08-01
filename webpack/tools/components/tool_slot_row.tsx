@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { Popover, Position } from "@blueprintjs/core";
 import { SlotMenu } from "./toolbay_slot_menu";
-import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { TaggedToolSlotPointer } from "farmbot";
 import { destroy } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { ToolBayNumberCol } from "./toolbay_number_column";

@@ -1,4 +1,4 @@
-import { TaggedSensorReading, TaggedSensor } from "../../resources/tagged_resources";
+import { TaggedSensorReading, TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../interfaces";
 
 export interface SensorReadingsProps {

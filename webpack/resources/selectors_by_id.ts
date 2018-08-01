@@ -6,12 +6,14 @@ import {
   isTaggedSequence,
   isTaggedTool,
   isTaggedToolSlotPointer,
-  ResourceName,
   sanityCheck,
+} from "./tagged_resources";
+import {
+  ResourceName,
   TaggedResource,
   TaggedTool,
   TaggedToolSlotPointer,
-} from "./tagged_resources";
+} from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import { joinKindAndId } from "./reducer";
 import { isNumber } from "lodash";

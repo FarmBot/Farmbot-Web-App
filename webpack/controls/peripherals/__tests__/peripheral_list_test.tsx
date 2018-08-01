@@ -8,7 +8,10 @@ jest.mock("../../../device", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { PeripheralList } from "../peripheral_list";
-import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resources";
+import {
+  TaggedPeripheral,
+  SpecialStatus
+} from "farmbot";
 import { Pins } from "farmbot/dist";
 
 describe("<PeripheralList/>", function () {

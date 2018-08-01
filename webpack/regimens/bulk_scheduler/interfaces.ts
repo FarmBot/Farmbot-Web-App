@@ -1,5 +1,5 @@
 import { RegimenItem } from "../interfaces";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 
 export interface BulkSchedulerOutput {

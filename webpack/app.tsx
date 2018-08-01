@@ -9,7 +9,7 @@ import { LoadingPlant } from "./loading_plant";
 import { BotState, Xyz } from "./devices/interfaces";
 import {
   ResourceName, TaggedUser, TaggedLog
-} from "./resources/tagged_resources";
+} from "farmbot";
 import {
   maybeFetchUser,
   maybeGetTimeOffset,

@@ -1,4 +1,4 @@
-import { TaggedWebcamFeed } from "../../resources/tagged_resources";
+import { TaggedWebcamFeed } from "farmbot";
 import { WebcamPanelProps } from "./interfaces";
 
 export const props = (feeds: TaggedWebcamFeed[]): WebcamPanelProps => {

@@ -6,7 +6,7 @@ import {
   TaggedFarmEvent,
   TaggedTool,
   TaggedPoint
-} from "./tagged_resources";
+} from "farmbot";
 import { CowardlyDictionary } from "../util";
 import {
   ResourceIndex,

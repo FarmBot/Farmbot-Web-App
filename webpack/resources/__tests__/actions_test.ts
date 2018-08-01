@@ -6,7 +6,7 @@ import { updateOK, generalizedError, GeneralizedError } from "../actions";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { toastErrors } from "../../toast_errors";
-import { SpecialStatus } from "../tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("updateOK()", () => {
   it("creates an action", () => {

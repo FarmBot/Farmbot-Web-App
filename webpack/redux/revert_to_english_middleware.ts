@@ -1,7 +1,7 @@
 import { Middleware } from "redux";
 import { Actions } from "../constants";
 import { MiddlewareConfig } from "./middlewares";
-import { ResourceName } from "../resources/tagged_resources";
+import { ResourceName } from "farmbot";
 import { revertToEnglish } from "../revert_to_english";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";

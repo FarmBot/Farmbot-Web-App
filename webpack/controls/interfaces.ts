@@ -6,7 +6,7 @@ import {
   TaggedPeripheral,
   TaggedSensor,
   TaggedSensorReading
-} from "../resources/tagged_resources";
+} from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 

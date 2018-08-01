@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col } from "../../ui";
-import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
+import { TaggedDiagnosticDump } from "farmbot";
 import { jsonDownload } from "../../account/request_account_export";
 import { destroy } from "../../api/crud";
 import { ago } from "../connectivity/status_checks";

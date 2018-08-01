@@ -28,7 +28,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../ui";
 import { NamedPin, AllowedPinTypes } from "farmbot";
-import { TaggedSensor, TaggedSequence } from "../../../resources/tagged_resources";
+import { TaggedSensor, TaggedSequence } from "farmbot";
 import { StepParams } from "../../interfaces";
 
 describe("Pin and Peripheral support files", () => {

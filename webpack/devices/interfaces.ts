@@ -6,10 +6,10 @@ import {
   TaggedPeripheral,
   TaggedDevice,
   TaggedSensor,
-  TaggedDiagnosticDump
-} from "../resources/tagged_resources";
+  TaggedDiagnosticDump,
+  TaggedUser
+} from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";

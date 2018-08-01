@@ -4,11 +4,11 @@ import { RegimenListItemProps } from "../interfaces";
 import { lastUrlChunk, urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
 import {
-  TaggedRegimen,
   isTaggedRegimen
 } from "../../resources/tagged_resources";
 import { t } from "i18next";
 import { Content } from "../../constants";
+import { TaggedRegimen } from "farmbot";
 
 export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");

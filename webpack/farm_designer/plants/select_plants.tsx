@@ -3,7 +3,7 @@ import { history } from "../../history";
 import { t } from "i18next";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
-import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
@@ -66,7 +66,7 @@ export class SelectPlants
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&
-      confirm(t("Are you sure you want to delete {{length}} plants?",  {length : plantUUIDs.length} ))) {
+      confirm(t("Are you sure you want to delete {{length}} plants?", { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
         this
           .props

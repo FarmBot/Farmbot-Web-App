@@ -21,7 +21,7 @@ import {
 } from "../edit_fe_form";
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { success, error } from "farmbot-toastr";
 import * as moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";

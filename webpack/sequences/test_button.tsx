@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { SyncStatus } from "farmbot/dist";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 
 export interface TestBtnProps {
   /** Callback fired ONLY if synced. */

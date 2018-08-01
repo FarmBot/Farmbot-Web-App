@@ -1,6 +1,6 @@
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { TaggedResource, SpecialStatus } from "../../../resources/tagged_resources";
+import { TaggedResource, SpecialStatus } from "farmbot";
 
 export function fakeResourceIndex(): ResourceIndex {
   const fakeResources: TaggedResource[] = [

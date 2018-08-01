@@ -1,10 +1,10 @@
 import {
   Resource as Res,
   ResourceName as Name,
-  TaggedResource,
   SpecialStatus
-} from "../resources/tagged_resources";
+} from "farmbot";
 import { generateUuid } from "../resources/util";
+import { TaggedResource } from "farmbot";
 
 let ID_COUNTER = 0;
 

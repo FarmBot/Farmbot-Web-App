@@ -5,7 +5,7 @@ import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage } from "farmbot";
 import * as _ from "lodash";
 import { StepParams, ChannelName } from "../interfaces";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";

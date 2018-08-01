@@ -5,7 +5,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
 

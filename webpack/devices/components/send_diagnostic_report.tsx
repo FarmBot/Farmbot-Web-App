@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { Collapse } from "@blueprintjs/core";
 import { Header } from "./hardware_settings/header";
 import { ShouldDisplay, Feature } from "../interfaces";
-import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
+import { TaggedDiagnosticDump } from "farmbot";
 import { DiagnosticDumpRow } from "./diagnostic_dump_row";
 import { requestDiagnostic } from "../actions";
 import { Content } from "../../constants";

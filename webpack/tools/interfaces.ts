@@ -2,7 +2,7 @@ import { DropDownItem } from "../ui/index";
 import {
   TaggedTool,
   TaggedToolSlotPointer,
-} from "../resources/tagged_resources";
+} from "farmbot";
 import { BotPosition } from "../devices/interfaces";
 
 export interface ToolsState {

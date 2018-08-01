@@ -1,6 +1,6 @@
 import { isString, isUndefined } from "lodash";
 import { BotState, Feature, MinOsFeatureLookup } from "../devices/interfaces";
-import { TaggedDevice } from "../resources/tagged_resources";
+import { TaggedDevice } from "farmbot";
 
 /**
  * for semverCompare()

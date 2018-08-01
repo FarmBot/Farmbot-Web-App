@@ -2,7 +2,7 @@ import { Color } from "../interfaces";
 import { Week } from "./bulk_scheduler/interfaces";
 import { AuthState } from "../auth/interfaces";
 import { BotState } from "../devices/interfaces";
-import { TaggedRegimen, TaggedSequence } from "../resources/tagged_resources";
+import { TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 
 export interface CalendarRow {

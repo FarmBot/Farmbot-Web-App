@@ -1,4 +1,4 @@
-import { TaggedSequence } from "../../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { If } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { defensiveClone, bail } from "../../../util";

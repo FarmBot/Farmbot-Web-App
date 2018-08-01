@@ -1,4 +1,4 @@
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { SyncStatus } from "farmbot";

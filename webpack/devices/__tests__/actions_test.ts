@@ -47,7 +47,7 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { McuParamName } from "farmbot";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { success, error, warning, info } from "farmbot-toastr";

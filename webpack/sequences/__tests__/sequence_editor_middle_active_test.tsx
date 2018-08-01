@@ -32,7 +32,7 @@ import { destroy, save, edit } from "../../api/crud";
 import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";

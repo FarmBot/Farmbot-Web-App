@@ -14,7 +14,7 @@ import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
 import { getDeviceAccountSettings, getFirmwareConfig } from "../resources/selectors";
-import { TaggedDevice, TaggedFirmwareConfig } from "../resources/tagged_resources";
+import { TaggedDevice, TaggedFirmwareConfig } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";

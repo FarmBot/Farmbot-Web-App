@@ -1,4 +1,4 @@
-import { TaggedSequence, SpecialStatus } from "../tagged_resources";
+import { TaggedSequence, SpecialStatus } from "farmbot";
 import { get } from "lodash";
 import { maybeTagSteps, getStepTag } from "../sequence_tagging";
 

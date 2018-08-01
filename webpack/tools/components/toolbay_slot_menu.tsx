@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { isNumber } from "lodash";
 import { BotPosition } from "../../devices/interfaces";
-import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { TaggedToolSlotPointer } from "farmbot";
 import { ToolPulloutDirection } from "../../interfaces";
 import { edit } from "../../api/crud";
 import { SlotDirectionSelect } from "./toolbay_slot_direction_selection";

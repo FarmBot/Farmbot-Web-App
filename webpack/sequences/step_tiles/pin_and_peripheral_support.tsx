@@ -8,7 +8,7 @@ import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
   TaggedPeripheral, TaggedSensor, ResourceName
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { joinKindAndId } from "../../resources/reducer";

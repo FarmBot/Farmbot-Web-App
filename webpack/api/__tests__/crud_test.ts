@@ -1,6 +1,6 @@
 import { urlFor } from "../crud";
 import { API } from "../api";
-import { ResourceName } from "../../resources/tagged_resources";
+import { ResourceName } from "farmbot";
 
 describe("urlFor()", () => {
   API.setBaseUrl("");

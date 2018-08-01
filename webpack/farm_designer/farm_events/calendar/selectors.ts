@@ -6,7 +6,7 @@ import {
   indexRegimenById
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
-import { TaggedFarmEvent } from "../../../resources/tagged_resources";
+import { TaggedFarmEvent } from "farmbot";
 
 export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithExecutable[] {
   const farmEvents: TaggedFarmEvent[] = selectAllFarmEvents(input);

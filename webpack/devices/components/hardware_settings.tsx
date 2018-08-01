@@ -13,7 +13,7 @@ import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
   HomingAndCalibration
 } from "./hardware_settings/homing_and_calibration";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";
 

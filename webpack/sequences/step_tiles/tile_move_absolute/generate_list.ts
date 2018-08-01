@@ -5,7 +5,7 @@ import {
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
-import { PointerType, TaggedTool } from "../../../resources/tagged_resources";
+import { PointerType, TaggedTool } from "farmbot";
 import { DropDownItem } from "../../../ui/index";
 import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";

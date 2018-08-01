@@ -14,7 +14,7 @@ jest.mock("axios", () => ({
 }));
 
 import { refresh, updateViaAjax } from "../crud";
-import { TaggedDevice, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedDevice, SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { get } from "lodash";
 import { Actions } from "../../constants";

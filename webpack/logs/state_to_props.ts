@@ -8,7 +8,7 @@ import {
 import { getFbosConfig } from "../resources/selectors_by_kind";
 import { validFbosConfig } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedLog } from "../resources/tagged_resources";
+import { TaggedLog } from "farmbot";
 
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(

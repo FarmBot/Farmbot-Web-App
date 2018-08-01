@@ -1,4 +1,4 @@
-import { TaggedSensorReading } from "../../resources/tagged_resources";
+import { TaggedSensorReading } from "farmbot";
 import { SensorReadingsState } from "./interfaces";
 import { every, isNumber } from "lodash";
 import { Xyz } from "../../devices/interfaces";
