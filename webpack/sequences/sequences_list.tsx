@@ -6,7 +6,7 @@ import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col } from "../ui/index";
-import { TaggedSequence, SpecialStatus } from "../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "farmbot";
 import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";

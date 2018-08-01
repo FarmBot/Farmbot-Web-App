@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
-import { TaggedSequence } from "../../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../../../resources/selectors";

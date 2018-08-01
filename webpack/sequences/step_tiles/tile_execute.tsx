@@ -4,7 +4,7 @@ import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { Row, Col, DropDownItem } from "../../ui/index";
 import { Execute } from "farmbot/dist";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";

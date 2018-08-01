@@ -8,7 +8,7 @@ import {
   TaggedTool,
   TaggedToolSlotPointer,
   SpecialStatus
-} from "../tagged_resources";
+} from "farmbot";
 import { createOK } from "../actions";
 import { generateUuid, hasId } from "../util";
 import {

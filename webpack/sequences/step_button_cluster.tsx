@@ -3,7 +3,7 @@ import { StepButton } from "./step_buttons/index";
 import { t } from "i18next";
 import { scrollToBottom } from "../util";
 import { Row } from "../ui/index";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 interface StepButtonProps {

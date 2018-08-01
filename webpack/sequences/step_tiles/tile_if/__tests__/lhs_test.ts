@@ -5,7 +5,7 @@ import {
   SpecialStatus,
   TaggedSequence,
   TaggedPeripheral
-} from "../../../../resources/tagged_resources";
+} from "farmbot";
 import {
   selectAllSequences,
   selectAllPeripherals

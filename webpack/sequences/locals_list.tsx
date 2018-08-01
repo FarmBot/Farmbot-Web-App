@@ -9,7 +9,7 @@ import {
   LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect
 } from "./step_tiles/tile_move_absolute/index";
 import { overwrite } from "../api/crud";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { defensiveClone } from "../util";
 import { Row, Col, FBSelect } from "../ui/index";
 import { t } from "i18next";

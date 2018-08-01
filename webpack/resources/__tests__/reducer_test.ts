@@ -1,7 +1,7 @@
 import { resourceReducer, findByUuid } from "../reducer";
 import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
-import { SpecialStatus, TaggedSequence, TaggedDevice } from "../tagged_resources";
+import { SpecialStatus, TaggedSequence, TaggedDevice } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
 

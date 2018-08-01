@@ -6,7 +6,7 @@ import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
 import { pushStep } from "../actions";
 import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 
 export const stepClick =
   (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>

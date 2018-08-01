@@ -15,7 +15,7 @@ import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
 import { CeleryNode, LegalArgString, If, Execute, Nothing } from "farmbot";
-import { TaggedSequence } from "../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";

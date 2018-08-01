@@ -1,4 +1,4 @@
-import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { TaggedToolSlotPointer } from "farmbot";
 import { SpecialStatus } from "../../resources/tagged_resources";
 
 export function emptyToolSlot(): TaggedToolSlotPointer {

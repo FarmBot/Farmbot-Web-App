@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { SequenceBodyItem } from "farmbot/dist";
 import { DropArea } from "../draggable/drop_area";
 import { StepDragger } from "../draggable/step_dragger";

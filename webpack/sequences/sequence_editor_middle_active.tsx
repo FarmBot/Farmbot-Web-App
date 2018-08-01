@@ -8,7 +8,7 @@ import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui/index";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";

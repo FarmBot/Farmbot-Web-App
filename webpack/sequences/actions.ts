@@ -1,7 +1,7 @@
 import { SequenceBodyItem } from "farmbot";
 import { SelectSequence } from "./interfaces";
 import { edit, init, overwrite } from "../api/crud";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { defensiveClone } from "../util";
 import { push } from "../history";
 import { urlFriendly } from "../util";

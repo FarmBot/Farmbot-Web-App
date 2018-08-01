@@ -8,12 +8,11 @@ import {
 } from "../resources/selectors";
 import {
   isTaggedTool,
-  TaggedTool,
-  TaggedToolSlotPointer
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
 import { DropDownItem, NULL_CHOICE } from "../ui/index";
 import { validBotLocationData } from "../util";
+import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 
 export function mapStateToProps(props: Everything): Props {
   const toolSlots = selectAllToolSlotPointers(props.resources.index);

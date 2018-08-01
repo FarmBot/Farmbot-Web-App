@@ -9,7 +9,7 @@ import {
   FarmwareConfig
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 

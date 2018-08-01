@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedToolSlotPointer } from "../../resources/tagged_resources";
+import { TaggedToolSlotPointer } from "farmbot";
 import { Col, BlurableInput } from "../../ui/index";
 import { edit } from "../../api/crud";
 

@@ -15,9 +15,11 @@ import {
 import { Row, Col } from "../../ui/index";
 import {
   isTaggedSequence,
+} from "../../resources/tagged_resources";
+import {
   TaggedTool,
   TaggedToolSlotPointer
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import {
   findToolById,
   findSlotByToolId,

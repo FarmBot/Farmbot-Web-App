@@ -8,7 +8,6 @@ import {
 } from "../../ui/index";
 import { t } from "i18next";
 import {
-  TaggedToolSlotPointer,
   getArrayStatus
 } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
@@ -16,6 +15,7 @@ import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
 import { ToolSlotRow } from "./tool_slot_row";
 import { emptyToolSlot } from "./empty_tool_slot";
+import { TaggedToolSlotPointer } from "farmbot";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
