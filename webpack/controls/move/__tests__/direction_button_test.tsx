@@ -2,7 +2,7 @@ const mockDevice = {
   moveRelative: jest.fn(() => { return Promise.resolve(); }),
 };
 
-jest.mock("../../device", () => ({
+jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 

@@ -2,26 +2,26 @@ const mockDevice = {
   moveAbsolute: jest.fn(() => { return Promise.resolve(); }),
 };
 
-jest.mock("../../device", () => ({
+jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-jest.mock("../../config_storage/actions", () => {
+jest.mock("../../../config_storage/actions", () => {
   return {
     toggleWebAppBool: jest.fn()
   };
 });
 
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import { Move } from "../move";
-import { bot } from "../../__test_support__/fake_state/bot";
+import { bot } from "../../../__test_support__/fake_state/bot";
 import { MoveProps } from "../interfaces";
-import { toggleWebAppBool } from "../../config_storage/actions";
+import { toggleWebAppBool } from "../../../config_storage/actions";
 import { Dictionary } from "farmbot";
-import { BooleanSetting } from "../../session_keys";
-import { Actions } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
+import { BooleanSetting } from "../../../session_keys";
+import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<Move />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -80,13 +80,5 @@ describe("<Move />", () => {
       type: Actions.CHANGE_STEP_SIZE,
       payload: 1
     });
-  });
-
-  it("inputs axis destination", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<Move {...p} />);
-    const axisInput = wrapper.find("AxisInputBoxGroup");
-    axisInput.simulate("commit", "123");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith("123");
   });
 });
