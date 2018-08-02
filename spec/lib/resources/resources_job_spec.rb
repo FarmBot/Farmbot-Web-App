@@ -134,4 +134,27 @@ describe Resources::Job do
       expect(res.where(discarded_at: nil).count).to eq(count - 1)
     end
   end
+
+  it "creates a point" do
+    device = FactoryBot.create(:device)
+    body   = { name:   SecureRandom.uuid,
+               x:      1,
+               y:      1,
+               z:      1,
+               radius: 1,
+               meta:   {} }
+    result = Resources::Job.run!(body:        body,
+                                 resource:    Point,
+                                 resource_id: 0,
+                                 device:      device,
+                                 action:      "save",
+                                 uuid:        "whatever")
+    expect(result).to be_kind_of(GenericPointer)
+    expect(result[:x]).to eq(1)
+    expect(result[:y]).to eq(1)
+    expect(result[:z]).to eq(1)
+    expect(result[:radius]).to eq(1)
+    expect(result[:meta]).to eq({})
+    expect(Point.where(name: body[:name]).count).to eq(1)
+  end
 end
