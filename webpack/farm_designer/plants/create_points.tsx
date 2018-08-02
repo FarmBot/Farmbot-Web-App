@@ -7,7 +7,7 @@ import {
   BackArrow, Row, Col, BlurableInput, ColorPicker
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { TaggedPoint, SpecialStatus } from "farmbot";
 import { deletePoints } from "../../farmware/weed_detector/actions";
 import { clone } from "lodash";
@@ -129,8 +129,7 @@ export class CreatePoints
           {t("Create point")}
         </p>
         <div className="panel-header-description">
-          {"Click and drag to draw a point or use the inputs and press " +
-            "update. Press CREATE POINT to save, or the back arrow to exit."}
+          {t(Content.CREATE_POINTS_DESCRIPTION)}
         </div>
       </div>
 
