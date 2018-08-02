@@ -1,9 +1,6 @@
 module Resources
   class Job < Mutations::Command
     NOT_FOUND     = "Resource not found"
-    NO_CREATE_YET = "You did not put a numeric `id` in the `body`. " +
-                    "This would be handled as the creation of a new " +
-                    "resource, but we don't support it yet."
     required do
       duck    :body, methods: [:[], :[]=]
       duck    :resource, duck: [:where, :find_by]
@@ -24,6 +21,8 @@ module Resources
       when SAVE    then do_save
       else; never
       end
+    rescue ActiveRecord::RecordNotFound
+      add_error :not_found, :not_found, NOT_FOUND
     end
 
     private
@@ -42,7 +41,7 @@ module Resources
         # device_params is ALWAYS last because security.
         klass::Update.run!(body, model_params, device_params) # Security!
       else
-        add_error :body, :body, NO_CREATE_YET
+        klass::Create.run!(body, device_params)
       end
     end
 

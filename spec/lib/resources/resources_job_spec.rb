@@ -67,16 +67,54 @@ describe Resources::Job do
     expect(result.name).to eq("Heyo!")
   end
 
-  it "does not support `create` yet" do
-    device = FactoryBot.create(:device)
+  it "updates a tool" do
+    tool   = FactoryBot.create(:tool)
+    result = Resources::Job.run!(body:        {name: "Heyo!"},
+                                 resource:    Tool,
+                                 resource_id: tool.id,
+                                 device:      tool.device,
+                                 action:      "save",
+                                 uuid:        "whatever")
+    expect(result).to be_kind_of(Tool)
+    expect(result.name).to eq("Heyo!")
+  end
+
+  it "can't update someone elses tool" do
+    theirs = FactoryBot.create(:tool)
+    them   = theirs.device
+    me     = FactoryBot.create(:device)
     result = Resources::Job.run(body:        {name: "Heyo!"},
-                                resource:    Point,
-                                resource_id: 0,
-                                device:      device,
+                                resource:    Tool,
+                                resource_id: theirs.id,
+                                device:      me,
                                 action:      "save",
                                 uuid:        "whatever")
-    expect(result.errors.fetch("body").message)
-      .to eq(Resources::Job::NO_CREATE_YET)
+    expect(result.errors.message_list).to include(Resources::Job::NOT_FOUND)
+    expect(theirs.reload.name).not_to eq("Heyo!")
+  end
+
+  it "updates a saved_garden" do
+    saved_garden = FactoryBot.create(:saved_garden)
+    result       = Resources::Job.run!(body:        {name: "Heyo!"},
+                                       resource:    SavedGarden,
+                                       resource_id: saved_garden.id,
+                                       device:      saved_garden.device,
+                                       action:      "save",
+                                       uuid:        "whatever")
+    expect(result).to be_kind_of(SavedGarden)
+    expect(result.name).to eq("Heyo!")
+  end
+
+  it "updates a plant_template" do
+    plant_template = FactoryBot.create(:plant_template)
+    result         = Resources::Job.run!(body:        {name: "Heyo!"},
+                                         resource:    PlantTemplate,
+                                         resource_id: plant_template.id,
+                                         device:      plant_template.device,
+                                         action:      "save",
+                                         uuid:        "whatever")
+    expect(result).to be_kind_of(PlantTemplate)
+    expect(result.name).to eq("Heyo!")
   end
 
   it "deals with points" do
@@ -95,5 +133,28 @@ describe Resources::Job do
       Resources::Job.run!(params)
       expect(res.where(discarded_at: nil).count).to eq(count - 1)
     end
+  end
+
+  it "creates a point" do
+    device = FactoryBot.create(:device)
+    body   = { name:   SecureRandom.uuid,
+               x:      1,
+               y:      1,
+               z:      1,
+               radius: 1,
+               meta:   {} }
+    result = Resources::Job.run!(body:        body,
+                                 resource:    Point,
+                                 resource_id: 0,
+                                 device:      device,
+                                 action:      "save",
+                                 uuid:        "whatever")
+    expect(result).to be_kind_of(GenericPointer)
+    expect(result[:x]).to eq(1)
+    expect(result[:y]).to eq(1)
+    expect(result[:z]).to eq(1)
+    expect(result[:radius]).to eq(1)
+    expect(result[:meta]).to eq({})
+    expect(Point.where(name: body[:name]).count).to eq(1)
   end
 end
