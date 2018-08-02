@@ -8,7 +8,7 @@ import { moveAbs } from "../../devices/actions";
 import { history } from "../../history";
 import { AxisInputBox } from "../../controls/axis_input_box";
 import { isNumber } from "lodash";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { validBotLocationData } from "../../util/util";
 import { unselectPlant } from "../actions";
 
@@ -113,9 +113,7 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
         </p>
 
         <div className="panel-header-description">
-          {t("Click a spot in the grid to choose a location. " +
-            "Once selected, press button to move FarmBot to this postion. " +
-            "Press the back arrow to exit.")}
+          {t(Content.MOVE_MODE_DESCRIPTION)}
         </div>
       </div>
 

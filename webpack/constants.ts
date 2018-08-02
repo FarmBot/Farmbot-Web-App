@@ -521,6 +521,15 @@ export namespace Content {
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
 
+  export const MOVE_MODE_DESCRIPTION =
+    trim(`Click a spot in the grid to choose a location.
+    Once selected, press button to move FarmBot to this postion.
+    Press the back arrow to exit.`);
+
+  export const CREATE_POINTS_DESCRIPTION =
+    trim(`Click and drag to draw a point or use the inputs and press
+    update. Press CREATE POINT to save, or the back arrow to exit.`);
+
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that

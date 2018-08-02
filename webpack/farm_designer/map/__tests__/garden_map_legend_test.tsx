@@ -1,3 +1,5 @@
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
+
 let mockAtMax = false;
 let mockAtMin = false;
 jest.mock("../zoom", () => {
@@ -11,6 +13,8 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { GardenMapLegend } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../interfaces";
+import { clickButton } from "../../../__test_support__/helpers";
+import { history } from "../../../history";
 
 describe("<GardenMapLegend />", () => {
   function fakeProps(): GardenMapLegendProps {
@@ -49,5 +53,18 @@ describe("<GardenMapLegend />", () => {
 
   it("zoom in button disabled", () => {
     checkZoomButtons(true, false, 1);
+  });
+
+  it("enters 'move to' mode", () => {
+    const wrapper = shallow(<GardenMapLegend {...fakeProps()} />);
+    clickButton(wrapper, 2, "move mode");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
+  });
+
+  it("opens saved garden panel", () => {
+    const wrapper = shallow(<GardenMapLegend {...fakeProps()} />);
+    clickButton(wrapper, 3, "saved gardens");
+    expect(history.push).toHaveBeenCalledWith(
+      "/app/designer/plants/saved_gardens");
   });
 });

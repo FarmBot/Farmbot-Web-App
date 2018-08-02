@@ -6,7 +6,6 @@ import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
 import { bugsControls } from "./easter_eggs/bugs";
-// import { snapshotGarden } from "../../saved_gardens/snapshot";
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
 
@@ -108,12 +107,10 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
           {t("move mode")}
         </button>
       </div>
-      {/*
-        // This works, but SavedGarden management is a WIP. -RC
-        <button className="fb-button gray" onClick={snapShotGarden}>
-        {t("Snapshot")}
-        </button>
-      */}
+      <button className="fb-button green"
+        onClick={() => history.push("/app/designer/plants/saved_gardens")}>
+        {t("Saved Gardens")}
+      </button>
       {bugsControls()}
     </div>
   </div>;

@@ -1,8 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
-import { FindHome, ALLOWED_AXIS, Xyz } from "farmbot";
+import { FindHome, ALLOWED_AXIS, Xyz, TaggedSequence } from "farmbot";
 import { StepParams, HardwareFlags } from "../interfaces";
-import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
