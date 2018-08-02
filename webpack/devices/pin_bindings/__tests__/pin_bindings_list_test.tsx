@@ -1,3 +1,4 @@
+import { PinBindingType, PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
 const mockDevice = {
   registerGpio: jest.fn(() => { return Promise.resolve(); }),
   unregisterGpio: jest.fn(() => { return Promise.resolve(); }),
@@ -10,7 +11,6 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn()
 }));
 
-import { PinBindingSpecialAction, PinBindingType, } from "../interfaces";
 const mockData = [{
   pin_number: 1, sequence_id: undefined,
   special_action: PinBindingSpecialAction.sync,

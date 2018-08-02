@@ -5,9 +5,7 @@ import { success, error } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen
 } from "farmbot";
-import {
-  TimeUnit, ExecutableQuery, ExecutableType, FarmEvent
-} from "../interfaces";
+import { ExecutableQuery } from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
@@ -31,6 +29,7 @@ import { EventTimePicker } from "./event_time_picker";
 import { TzWarning } from "./tz_warning";
 import { nextRegItemTimes } from "./map_state_to_props";
 import { first } from "lodash";
+import { TimeUnit, ExecutableType, FarmEvent } from "farmbot/dist/resources/api_resources";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";

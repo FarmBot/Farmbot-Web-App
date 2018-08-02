@@ -8,9 +8,12 @@ import {
 import {
   fakeSequence, fakePinBinding
 } from "../../../__test_support__/fake_state/resources";
+import { PinBindingsProps } from "../interfaces";
 import {
-  PinBindingsProps, PinBindingType, PinBindingSpecialAction, SpecialPinBinding
-} from "../interfaces";
+  SpecialPinBinding,
+  PinBindingType,
+  PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 
 describe("<PinBindings/>", () => {
   function fakeProps(): PinBindingsProps {
@@ -62,7 +65,7 @@ describe("<PinBindings/>", () => {
     p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindings {...p} />);
     ["pin bindings", "pin number", "none", "bind", "stock bindings"]
-    .map(string =>      expect(wrapper.text().toLowerCase()).toContain(string));
+      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     ["26", "action"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");

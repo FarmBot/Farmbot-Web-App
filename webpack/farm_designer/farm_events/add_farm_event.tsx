@@ -10,11 +10,11 @@ import { entries } from "../../resources/util";
 import { Link } from "react-router";
 import {
   AddEditFarmEventProps,
-  TaggedExecutable,
-  ExecutableType
+  TaggedExecutable
 } from "../interfaces";
 import { BackArrow } from "../../ui/index";
 import { SpecialStatus } from "farmbot";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 interface State {
   uuid: string;

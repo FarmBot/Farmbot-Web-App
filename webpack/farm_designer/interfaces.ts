@@ -9,7 +9,6 @@ import {
   TaggedPlantPointer,
   TaggedImage,
 } from "farmbot";
-import { PlantPointer } from "../interfaces";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
 import { isNumber } from "lodash";
@@ -18,6 +17,7 @@ import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { ExecutableType, PlantPointer } from "farmbot/dist/resources/api_resources";
 
 /* BotOriginQuadrant diagram
 

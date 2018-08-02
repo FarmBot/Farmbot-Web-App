@@ -1,6 +1,10 @@
 import { BotState, ShouldDisplay } from "../interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
+import {
+  PinBindingType,
+  PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 
 export interface PinBindingsProps {
   bot: BotState;

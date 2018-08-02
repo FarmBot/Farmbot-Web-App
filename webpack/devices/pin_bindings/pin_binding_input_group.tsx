@@ -5,8 +5,8 @@ import { PinBindingColWidth } from "./pin_bindings";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
-  PinBindingType, PinBindingSpecialAction,
-  PinBindingInputGroupProps, PinBindingInputGroupState
+  PinBindingInputGroupProps,
+  PinBindingInputGroupState
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
 import { Feature, ShouldDisplay } from "../interfaces";
@@ -22,6 +22,7 @@ import {
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { ResourceIndex } from "../../resources/interfaces";
+import { PinBindingType, PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {

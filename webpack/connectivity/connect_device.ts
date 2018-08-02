@@ -1,6 +1,6 @@
 import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
-import { Log } from "../interfaces";
+import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource, SpecialStatus } from "farmbot";
 import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
