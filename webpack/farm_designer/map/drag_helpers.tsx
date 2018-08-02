@@ -19,42 +19,41 @@ enum Line {
   Down = 270,
 }
 
+function getAlignment(
+  activeXYZ: BotPosition | undefined,
+  plantXYZ: BotPosition,
+  swappedXY: Boolean
+): Alignment {
+  if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)) {
+    // Plant editing (dragging) is occuring
+    const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
+    if (activeXY.x == plantXYZ.x && activeXY.y == plantXYZ.y) {
+      return Alignment.BOTH;
+    }
+    if (activeXY.x == plantXYZ.x) {
+      return swappedXY ? Alignment.HORIZONTAL : Alignment.VERTICAL;
+    }
+    if (activeXY.y == plantXYZ.y) {
+      return swappedXY ? Alignment.VERTICAL : Alignment.HORIZONTAL;
+    }
+  }
+  return Alignment.NONE;
+}
+
+function rotationArray(alignment: Alignment): number[] {
+  switch (alignment) {
+    case (Alignment.HORIZONTAL):
+      return [Line.Left, Line.Right];
+    case (Alignment.VERTICAL):
+      return [Line.Up, Line.Down];
+    case (Alignment.BOTH):
+      return [Line.Left, Line.Right, Line.Up, Line.Down];
+    default:
+      return [];
+  }
+}
+
 export function DragHelpers(props: DragHelpersProps) {
-
-  function getAlignment(
-    activeXYZ: BotPosition | undefined,
-    plantXYZ: BotPosition,
-    swappedXY: Boolean
-  ): Alignment {
-    if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)) {
-      // Plant editing (dragging) is occuring
-      const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
-      if (activeXY.x == plantXYZ.x && activeXY.y == plantXYZ.y) {
-        return Alignment.BOTH;
-      }
-      if (activeXY.x == plantXYZ.x) {
-        return swappedXY ? Alignment.HORIZONTAL : Alignment.VERTICAL;
-      }
-      if (activeXY.y == plantXYZ.y) {
-        return swappedXY ? Alignment.VERTICAL : Alignment.HORIZONTAL;
-      }
-    }
-    return Alignment.NONE;
-  }
-
-  function rotationArray(alignment: Alignment): number[] {
-    switch (alignment) {
-      case (Alignment.HORIZONTAL):
-        return [Line.Left, Line.Right];
-      case (Alignment.VERTICAL):
-        return [Line.Up, Line.Down];
-      case (Alignment.BOTH):
-        return [Line.Left, Line.Right, Line.Up, Line.Down];
-      default:
-        return [];
-    }
-  }
-
   const {
     dragging, plant, zoomLvl, activeDragXY, mapTransformProps, plantAreaOffset
   } = props;

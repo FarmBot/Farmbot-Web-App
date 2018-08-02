@@ -15,10 +15,11 @@ import {
 import {
   buildResourceIndex, FAKE_RESOURCES
 } from "../../../../__test_support__/resource_index_builder";
-import { Execute, If } from "farmbot";
-import { TaggedSequence } from "farmbot";
+import { Execute, If, TaggedSequence } from "farmbot";
 import { overwrite } from "../../../../api/crud";
-import { fakeSensor, fakePeripheral } from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeSensor, fakePeripheral
+} from "../../../../__test_support__/fake_state/resources";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex

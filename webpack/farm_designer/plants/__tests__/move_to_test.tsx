@@ -12,12 +12,14 @@ jest.mock("../../../device", () => ({
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
+  history: { push: jest.fn() }
 }));
 
 import * as React from "react";
 import { mount } from "enzyme";
 import { MoveTo, MoveToProps, MoveToForm, MoveToFormProps } from "../move_to";
+import { history } from "../../../history";
 
 describe("<MoveTo />", () => {
   beforeEach(function () {
@@ -36,6 +38,12 @@ describe("<MoveTo />", () => {
     const wrapper = mount(<MoveTo {...fakeProps()} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 30 });
+  });
+
+  it("goes back", () => {
+    const wrapper = mount(<MoveTo {...fakeProps()} />);
+    wrapper.find("i").first().simulate("click");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
   });
 });
 

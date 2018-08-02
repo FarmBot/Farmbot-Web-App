@@ -20,6 +20,8 @@ import {
   TaggedPinBinding,
   TaggedDiagnosticDump,
   TaggedSensorReading,
+  TaggedSavedGarden,
+  TaggedPlantTemplate,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -68,6 +70,10 @@ export let findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
 export let findPoints = uuidFinder<TaggedPoint>("Point");
 
 export const selectAllCrops = (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");
+export const selectAllSavedGardens = (i: ResourceIndex) =>
+  findAll<TaggedSavedGarden>(i, "SavedGarden");
+export const selectAllPlantTemplates = (i: ResourceIndex) =>
+  findAll<TaggedPlantTemplate>(i, "PlantTemplate");
 export const selectAllFarmEvents = (i: ResourceIndex) => findAll<TaggedFarmEvent>(i, "FarmEvent");
 export const selectAllImages = (i: ResourceIndex) => findAll<TaggedImage>(i, "Image");
 export const selectAllLogs = (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");

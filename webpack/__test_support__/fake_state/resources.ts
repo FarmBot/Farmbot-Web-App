@@ -19,6 +19,8 @@ import {
   TaggedUser,
   TaggedWebAppConfig,
   TaggedWebcamFeed,
+  TaggedSavedGarden,
+  TaggedPlantTemplate,
 } from "farmbot";
 import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
@@ -155,6 +157,26 @@ export function fakePoint(): TaggedGenericPointer {
     z: 0,
     radius: 100,
     meta: { created_by: "plant-detection" }
+  });
+}
+
+export function fakeSavedGarden(): TaggedSavedGarden {
+  return fakeResource("SavedGarden", {
+    id: 1,
+    name: "Saved Garden 1",
+  });
+}
+
+export function fakePlantTemplate(): TaggedPlantTemplate {
+  return fakeResource("PlantTemplate", {
+    id: idCounter++,
+    saved_garden_id: 1,
+    radius: 50,
+    x: 100,
+    y: 200,
+    z: 0,
+    name: "Plant Template 1",
+    openfarm_slug: "mint",
   });
 }
 

@@ -8,13 +8,17 @@ import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
 } from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
-import { McuParams, Configuration, rpcRequest } from "farmbot";
+import {
+  McuParams, Configuration, rpcRequest, TaggedDevice,
+  TaggedFirmwareConfig
+} from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
 import { API } from "../api/index";
 import { User } from "../auth/interfaces";
-import { getDeviceAccountSettings, getFirmwareConfig } from "../resources/selectors";
-import { TaggedDevice, TaggedFirmwareConfig } from "farmbot";
+import {
+  getDeviceAccountSettings, getFirmwareConfig
+} from "../resources/selectors";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";

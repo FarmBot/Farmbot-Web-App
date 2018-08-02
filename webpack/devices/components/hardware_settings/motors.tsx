@@ -14,6 +14,23 @@ import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
 import { StepsPerMmSettings } from "./steps_per_mm_settings";
 
+const SingleSettingRow =
+  ({ label, tooltip, settingType, children }: {
+    label: string,
+    tooltip: string,
+    children: React.ReactChild,
+    settingType: "button" | "input",
+  }) =>
+    <Row>
+      <Col xs={6}>
+        <label>{label}</label>
+        <SpacePanelToolTip tooltip={tooltip} />
+      </Col>
+      {settingType === "button"
+        ? <Col xs={2} className={"centered-button-div"}>{children}</Col>
+        : <Col xs={6}>{children}</Col>}
+    </Row>;
+
 export function Motors(props: MotorsProps) {
   const {
     dispatch, firmwareVersion, sourceFbosConfig, controlPanelState,
@@ -30,35 +47,23 @@ export function Motors(props: MotorsProps) {
       name={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!controlPanelState.motors}>
-      <Row>
-        <Col xs={6}>
-          <label>
-            {t("Max Retries")}
-          </label>
-          <SpacePanelToolTip tooltip={ToolTips.MAX_MOVEMENT_RETRIES} />
-        </Col>
-        <Col xs={6}>
-          <McuInputBox
-            setting="param_mov_nr_retry"
-            sourceFwConfig={sourceFwConfig}
-            dispatch={dispatch} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={6}>
-          <label>
-            {t("E-Stop on Movement Error")}
-          </label>
-          <SpacePanelToolTip tooltip={ToolTips.E_STOP_ON_MOV_ERR} />
-        </Col>
-        <Col xs={2} className={"centered-button-div"}>
-          <ToggleButton
-            toggleValue={eStopOnMoveError.value}
-            dim={!eStopOnMoveError.consistent}
-            toggleAction={() => dispatch(
-              settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
-        </Col>
-      </Row>
+      <SingleSettingRow settingType="input"
+        label={t("Max Retries")}
+        tooltip={ToolTips.MAX_MOVEMENT_RETRIES}>
+        <McuInputBox
+          setting="param_mov_nr_retry"
+          sourceFwConfig={sourceFwConfig}
+          dispatch={dispatch} />
+      </SingleSettingRow>
+      <SingleSettingRow settingType="button"
+        label={t("E-Stop on Movement Error")}
+        tooltip={ToolTips.E_STOP_ON_MOV_ERR}>
+        <ToggleButton
+          toggleValue={eStopOnMoveError.value}
+          dim={!eStopOnMoveError.consistent}
+          toggleAction={() => dispatch(
+            settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
+      </SingleSettingRow>
       <NumericMCUInputGroup
         name={t("Max Speed (steps/s)")}
         tooltip={ToolTips.MAX_SPEED}
@@ -115,37 +120,25 @@ export function Motors(props: MotorsProps) {
         z={"movement_invert_motor_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      <Row>
-        <Col xs={6}>
-          <label>
-            {t("Enable 2nd X Motor")}
-          </label>
-          <SpacePanelToolTip tooltip={ToolTips.ENABLE_X2_MOTOR} />
-        </Col>
-        <Col xs={2} className={"centered-button-div"}>
-          <ToggleButton
-            toggleValue={enable2ndXMotor.value}
-            dim={!enable2ndXMotor.consistent}
-            toggleAction={() => dispatch(
-              settingToggle("movement_secondary_motor_x", sourceFwConfig))} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={6}>
-          <label>
-            {t("Invert 2nd X Motor")}
-          </label>
-          <SpacePanelToolTip tooltip={ToolTips.INVERT_MOTORS} />
-        </Col>
-        <Col xs={2} className={"centered-button-div"}>
-          <ToggleButton
-            grayscale={!enable2ndXMotor.value}
-            toggleValue={invert2ndXMotor.value}
-            dim={!invert2ndXMotor.consistent}
-            toggleAction={() => dispatch(
-              settingToggle("movement_secondary_motor_invert_x", sourceFwConfig))} />
-        </Col>
-      </Row>
+      <SingleSettingRow settingType="button"
+        label={t("Enable 2nd X Motor")}
+        tooltip={ToolTips.ENABLE_X2_MOTOR}>
+        <ToggleButton
+          toggleValue={enable2ndXMotor.value}
+          dim={!enable2ndXMotor.consistent}
+          toggleAction={() => dispatch(
+            settingToggle("movement_secondary_motor_x", sourceFwConfig))} />
+      </SingleSettingRow>
+      <SingleSettingRow settingType="button"
+        label={t("Invert 2nd X Motor")}
+        tooltip={ToolTips.INVERT_MOTORS}>
+        <ToggleButton
+          grayscale={!enable2ndXMotor.value}
+          toggleValue={invert2ndXMotor.value}
+          dim={!invert2ndXMotor.consistent}
+          toggleAction={() => dispatch(
+            settingToggle("movement_secondary_motor_invert_x", sourceFwConfig))} />
+      </SingleSettingRow>
     </Collapse>
   </section>;
 }

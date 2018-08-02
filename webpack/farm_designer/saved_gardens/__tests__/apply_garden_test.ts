@@ -3,7 +3,7 @@ jest.mock("axios", () => {
 });
 
 import { applyGarden } from "../apply_garden";
-import { API } from "../../api";
+import { API } from "../../../api";
 import axios from "axios";
 
 describe("applyGarden", () => {

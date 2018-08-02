@@ -1,7 +1,7 @@
-import { BotStateTree, ConfigurationName } from "farmbot";
-import { McuParamName, SyncStatus, LocationName } from "farmbot";
 import { AuthState } from "../auth/interfaces";
 import {
+  BotStateTree, ConfigurationName,
+  McuParamName, SyncStatus, LocationName,
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
