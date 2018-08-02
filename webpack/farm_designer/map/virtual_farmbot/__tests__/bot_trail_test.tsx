@@ -5,12 +5,12 @@ import { fakeMapTransformProps } from "../../../../__test_support__/map_transfor
 
 describe("<BotTrail/>", () => {
   function fakeProps(): BotTrailProps {
-    sessionStorage[VirtualTrail.records] = JSON.stringify([
+    sessionStorage.setItem(VirtualTrail.records, JSON.stringify([
       { coord: { x: 0, y: 0 }, water: 0 },
       { coord: { x: 1, y: 1 }, water: 10 },
       { coord: { x: 2, y: 2 }, water: 0 },
       { coord: { x: 3, y: 3 }, water: 0 },
-      { coord: { x: 4, y: 4 }, water: 20 }]);
+      { coord: { x: 4, y: 4 }, water: 20 }]));
     return {
       position: { x: 0, y: 0, z: 0 },
       mapTransformProps: fakeMapTransformProps(),
@@ -19,7 +19,7 @@ describe("<BotTrail/>", () => {
   }
 
   it("shows custom length trail", () => {
-    sessionStorage[VirtualTrail.length] = JSON.stringify(5);
+    sessionStorage.setItem(VirtualTrail.length, JSON.stringify(5));
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     const wrapper = shallow(<BotTrail {...p} />);
@@ -42,14 +42,14 @@ describe("<BotTrail/>", () => {
   });
 
   it("shows default length trail", () => {
-    sessionStorage[VirtualTrail.length] = undefined;
+    sessionStorage.removeItem(VirtualTrail.length);
     const wrapper = shallow(<BotTrail {...fakeProps()} />);
     const lines = wrapper.find(".virtual-bot-trail").find("line");
     expect(lines.length).toEqual(5);
   });
 
   it("doesn't store duplicate last trail point", () => {
-    sessionStorage[VirtualTrail.length] = undefined;
+    sessionStorage.removeItem(VirtualTrail.length);
     const p = fakeProps();
     p.position = { x: 4, y: 4, z: 0 };
     const wrapper = shallow(<BotTrail {...p} />);
