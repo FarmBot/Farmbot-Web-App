@@ -10,14 +10,18 @@ require_relative "../app/lib/service_runner_base.rb"
 require_relative "../app/lib/service_runner_base.rb"
 
 class RabbitWorker
-  SERVICES = { log_channel:      LogService,
-               resource_channel: Resources::Service }
+  WAIT     = 3
+  SERVICES = {
+    log_channel:      LogService,
+    resource_channel: Resources::Service
+  }
 
   def run_it!(chan, service)
-    puts " = = = = = Running #{service} on #{chan}"
+    puts " Attempting to connect #{service} to #{chan}"
     ServiceRunner.go!(Transport.current.send(chan), service)
   rescue
-    sleep 3
+    puts "Connecting to broker in #{WAIT} seconds."
+    sleep WAIT
     retry
   end
 
@@ -30,12 +34,17 @@ class RabbitWorker
   end
 
   def self.go!
-    ThreadsWait.all_waits(self.new.threads)
+    loop do # TODO: What if only one service
+      ThreadsWait.all_waits(self.new.threads)
+    end
   end
 end
 
-sleep 15
-puts "`sleep 15` is not OK - just testing stuff out. RC"
-RabbitWorker.go!
+sleep(RabbitWorker::WAIT * 2)
 
-# :nocov:
+begin
+  RabbitWorker.go!
+rescue
+  sleep RabbitWorker::WAIT
+  retry
+end
