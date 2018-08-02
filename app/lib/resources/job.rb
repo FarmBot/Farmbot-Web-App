@@ -1,9 +1,6 @@
 module Resources
   class Job < Mutations::Command
     NOT_FOUND     = "Resource not found"
-    # NO_CREATE_YET = "You did not put a numeric `id` in the `body`. " +
-    #                 "This would be handled as the creation of a new " +
-    #                 "resource, but we don't support it yet."
     required do
       duck    :body, methods: [:[], :[]=]
       duck    :resource, duck: [:where, :find_by]
