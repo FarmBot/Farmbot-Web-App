@@ -136,7 +136,7 @@ export class API {
   /** /api/pin_bindings/:id */
   get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/saved_gardens/:id */
-  get savedGardensPath() { return `${this.baseUrl}/api/saved_gardens`; }
+  get savedGardensPath() { return `${this.baseUrl}/api/saved_gardens/`; }
   /** /api/saved_gardens/snapshot */
   get snapshotPath() { return this.savedGardensPath + "/snapshot"; }
   /** /api/saved_gardens/:id/apply */

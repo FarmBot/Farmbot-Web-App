@@ -228,6 +228,7 @@ export function urlFor(tag: ResourceName) {
     WebAppConfig: API.current.webAppConfigPath,
     FirmwareConfig: API.current.firmwareConfigPath,
     DiagnosticDump: API.current.diagnosticDumpsPath,
+    SavedGarden: API.current.savedGardensPath,
   };
   const url = OPTIONS[tag];
   if (url) {

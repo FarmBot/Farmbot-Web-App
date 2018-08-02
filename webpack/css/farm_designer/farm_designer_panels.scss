@@ -298,3 +298,28 @@
     min-width: 7rem;
   }
 }
+
+.saved-garden-panel-content {
+  margin-top: 3rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  .row {
+    margin-top: 1rem;
+  }
+  hr {
+    width: 100%;
+    padding-top: 1rem;
+  }
+  button {
+    margin-left: 0.5rem;
+    &.wide {
+      margin: 1rem;
+      margin-left: 2rem;
+      width: 88%;
+      float: left;
+    }
+  }
+  input {
+    min-width: 7rem;
+  }
+}
