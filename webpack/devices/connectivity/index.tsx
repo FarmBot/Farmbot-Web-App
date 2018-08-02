@@ -3,13 +3,12 @@ import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, InformationalSettings } from "farmbot";
 import { ConnectivityDiagram } from "./diagram";
 import { ToolTips } from "../../constants";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay
 } from "../components/fbos_settings/fbos_details";
-import { InformationalSettings } from "farmbot";
 
 interface Props {
   onRefresh(): void;

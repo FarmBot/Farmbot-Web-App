@@ -1,13 +1,9 @@
 import {
-  TaggedResource, SpecialStatus
+  TaggedResource, SpecialStatus, ResourceName, TaggedSequence
 } from "farmbot";
 import {
   isTaggedResource,
 } from "../resources/tagged_resources";
-import {
-  ResourceName,
-  TaggedSequence,
-} from "farmbot";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";

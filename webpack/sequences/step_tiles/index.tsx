@@ -1,5 +1,8 @@
 import * as React from "react";
-import { SequenceBodyItem as Step } from "farmbot";
+import {
+  CeleryNode, LegalArgString, If, Execute, Nothing,
+  SequenceBodyItem as Step, TaggedSequence
+} from "farmbot";
 import { FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";
 import { StepParams, StepInputProps, StepTitleBarProps } from "../interfaces";
@@ -14,8 +17,6 @@ import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import { CeleryNode, LegalArgString, If, Execute, Nothing } from "farmbot";
-import { TaggedSequence } from "farmbot";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";

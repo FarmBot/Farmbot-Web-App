@@ -4,14 +4,14 @@ import {
 import {
   SpecialStatus,
   TaggedSequence,
-  TaggedPeripheral
+  TaggedPeripheral,
+  If
 } from "farmbot";
 import {
   selectAllSequences,
   selectAllPeripherals
 } from "../../../../resources/selectors";
 import { updateLhs } from "../update_lhs";
-import { If } from "farmbot";
 import { PinGroupName } from "../../pin_and_peripheral_support";
 import { Actions } from "../../../../constants";
 import { get } from "lodash";
