@@ -67,27 +67,6 @@ export interface Props {
   getConfigValue: GetWebAppConfigValue;
 }
 
-export type TimeUnit =
-  | "never"
-  | "minutely"
-  | "hourly"
-  | "daily"
-  | "weekly"
-  | "monthly"
-  | "yearly";
-
-export type ExecutableType = "Sequence" | "Regimen";
-
-export interface FarmEvent {
-  id?: number | undefined;
-  start_time: string;
-  end_time?: string | undefined;
-  repeat?: number | undefined;
-  time_unit: TimeUnit;
-  executable_id: number;
-  executable_type: ExecutableType;
-}
-
 export interface MovePlantProps {
   deltaX: number;
   deltaY: number;
@@ -263,17 +242,6 @@ export interface CurrentPointPayl {
   cy: number;
   r: number;
   color?: string;
-}
-
-export interface PlantTemplate {
-  id?: number;
-  saved_garden_id: number;
-  radius: number;
-  x: number;
-  y: number;
-  z: number;
-  name: string;
-  openfarm_slug: string;
 }
 
 export interface SavedGarden {
