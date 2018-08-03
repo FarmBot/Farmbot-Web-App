@@ -1,8 +1,8 @@
 import * as moment from "moment";
 import { Moment, unitOfTime } from "moment";
 import { range } from "lodash";
-import { TimeUnit } from "../../interfaces";
 import { NEVER } from "../edit_fe_form";
+import { TimeUnit } from "farmbot/dist/resources/api_resources";
 
 interface SchedulerProps {
   startTime: Moment;

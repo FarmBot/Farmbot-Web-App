@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Color } from "../../ui/index";
 import { trim } from "../../util";
-import { ToolPulloutDirection } from "../../interfaces";
 import { BotOriginQuadrant } from "../interfaces";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
 export interface ToolGraphicProps {
   x: number;

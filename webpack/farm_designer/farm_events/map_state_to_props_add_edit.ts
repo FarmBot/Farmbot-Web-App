@@ -1,4 +1,4 @@
-import { AddEditFarmEventProps, ExecutableType } from "../interfaces";
+import { AddEditFarmEventProps } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { t } from "i18next";
@@ -29,6 +29,7 @@ import {
 import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
 import { Feature } from "../../devices/interfaces";
 import { hasId } from "../../resources/util";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();

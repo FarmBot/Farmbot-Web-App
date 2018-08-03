@@ -1,12 +1,10 @@
 import axios from "axios";
-import { Log, Point, SensorReading, Sensor, DeviceConfig } from "../interfaces";
+import { SensorReading, Sensor, DeviceConfig } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
-import { Peripheral } from "../controls/peripherals/interfaces";
-import { FarmEvent, SavedGarden, PlantTemplate } from "../farm_designer/interfaces";
-import { Image } from "../farmware/images/interfaces";
+import { SavedGarden } from "../farm_designer/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName, DiagnosticDump } from "farmbot";
 import { User } from "../auth/interfaces";
@@ -14,9 +12,17 @@ import { WebcamFeed } from "../controls/interfaces";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { Session } from "../session";
 import { FbosConfig } from "../config_storage/fbos_configs";
-import { FarmwareInstallation } from "../farmware/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
-import { PinBinding } from "../devices/pin_bindings/interfaces";
+import {
+  FarmEvent,
+  Image,
+  Log,
+  Point,
+  Peripheral,
+  FarmwareInstallation,
+  PinBinding,
+  PlantTemplate
+} from "farmbot/dist/resources/api_resources";
 
 export interface ResourceReadyPayl {
   name: ResourceName;

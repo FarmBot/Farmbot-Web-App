@@ -7,7 +7,7 @@ import {
 } from "./connect_device";
 import { GetState } from "../redux/interfaces";
 import { dispatchNetworkDown } from ".";
-import { Log } from "../interfaces";
+import { Log } from "farmbot/dist/resources/api_resources";
 import * as _ from "lodash";
 import { globalQueue } from "./batch_queue";
 

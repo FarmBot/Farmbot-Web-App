@@ -1,9 +1,9 @@
 import { Actions } from "../constants";
 import { API } from "../api";
-import { Log } from "../interfaces";
 import { noop, throttle } from "lodash";
 import axios from "axios";
 import { ResourceName } from "farmbot";
+import { Log } from "farmbot/dist/resources/api_resources";
 const name: ResourceName = "Log";
 
 /** re-Downloads all logs from the API and force replaces all entries for logs

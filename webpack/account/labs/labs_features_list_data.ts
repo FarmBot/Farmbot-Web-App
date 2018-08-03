@@ -79,7 +79,7 @@ export const fetchLabFeatures = (): LabsFeature[] => ([
     description: t(Content.VIRTUAL_TRAIL),
     storageKey: BooleanSetting.display_trail,
     value: false,
-    callback: () => sessionStorage.virtualTrailRecords = "[]"
+    callback: () => sessionStorage.setItem("virtualTrailRecords", "[]")
   },
 ].map(fetchRealValue));
 

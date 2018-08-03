@@ -63,7 +63,7 @@ describe("<FarmDesigner/>", () => {
   }
 
   it("loads default map settings", () => {
-    localStorage["showPoints"] = "false";
+    localStorage.setItem("showPoints", "false");
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.legendMenuOpen).toBeFalsy();

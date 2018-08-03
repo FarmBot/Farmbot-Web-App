@@ -25,7 +25,7 @@ describe("configureStore", () => {
   });
 
   it("does not crash on malformed states", () => {
-    sessionStorage.lastState = "Not JSON at all.";
+    sessionStorage.setItem("lastState", "Not JSON at all.");
     const result1 = configureStore().getState();
     // tslint:disable-next-line:no-null-keyword
     expect(result1.auth).toBe(null); // Initialize to default value.

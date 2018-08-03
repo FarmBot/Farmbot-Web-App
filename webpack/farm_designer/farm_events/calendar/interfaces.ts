@@ -1,6 +1,6 @@
-import { FarmEvent, ExecutableType } from "../../interfaces";
 import { Regimen } from "../../../regimens/interfaces";
 import { Sequence } from "../../../sequences/interfaces";
+import { ExecutableType, FarmEvent } from "farmbot/dist/resources/api_resources";
 
 /** Would it be better to make a fully formed farm event? Join regimen, sequence, etc. */
 

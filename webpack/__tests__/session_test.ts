@@ -13,7 +13,7 @@ describe("fetchStoredToken", () => {
   });
 
   it("can fetch token", () => {
-    localStorage["session"] = JSON.stringify(auth);
+    localStorage.setItem("session", JSON.stringify(auth));
     expect(Session.fetchStoredToken()).toEqual(auth);
   });
 });
