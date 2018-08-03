@@ -16,7 +16,7 @@ export function unsavedCheck(state: Everything) {
   const total = dirty.length;
   const doStop = (total !== 0);
   const conf = getWebAppConfig(index);
-  const loggedOut = !localStorage.session;
+  const loggedOut = !localStorage.getItem("session");
 
   if ((conf && conf.body.discard_unsaved) || loggedOut) {
     window.onbeforeunload = dontStopThem;
