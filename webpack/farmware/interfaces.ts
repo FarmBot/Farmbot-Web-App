@@ -30,9 +30,4 @@ export interface FarmwareConfigMenuProps {
   firstPartyFwsInstalled: boolean;
 }
 
-export interface FarmwareInstallation {
-  id?: number;
-  url: string;
-}
-
 export type Farmwares = Dictionary<FarmwareManifest | undefined>;

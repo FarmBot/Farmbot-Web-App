@@ -20,9 +20,7 @@ import {
   fakeSequence
 } from "../../../__test_support__/fake_state/resources";
 import { initSave } from "../../../api/crud";
-import {
-  PinBindingInputGroupProps, PinBindingType, PinBindingSpecialAction
-} from "../interfaces";
+import { PinBindingInputGroupProps } from "../interfaces";
 import {
   PinBindingInputGroup, PinNumberInputGroup, BindingTypeDropDown,
   ActionTargetDropDown, SequenceTargetDropDown
@@ -31,6 +29,7 @@ import { error, warning } from "farmbot-toastr";
 import {
   fakeResourceIndex
 } from "../../../sequences/step_tiles/tile_move_absolute/test_helpers";
+import { PinBindingType, PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
 
 describe("<PinBindingInputGroup/>", () => {
   function fakeProps(): PinBindingInputGroupProps {

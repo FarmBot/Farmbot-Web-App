@@ -2,9 +2,9 @@ import * as React from "react";
 import { t } from "i18next";
 import { FBSelect, DropDownItem } from "../../ui/index";
 import { TaggedToolSlotPointer } from "farmbot";
-import { ToolPulloutDirection } from "../../interfaces";
 import { edit } from "../../api/crud";
 import { isNumber } from "lodash";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
 const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
   [ToolPulloutDirection.NONE]:

@@ -5,12 +5,12 @@ import { success, error } from "farmbot-toastr";
 import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
 import { Progress, ProgressCallback } from "../../util";
-import { GenericPointer } from "../../interfaces";
 import { getDevice } from "../../device";
 import { WDENVKey } from "./remote_env/interfaces";
 import { NumericValues } from "./image_workspace";
 import { envSave } from "./remote_env/actions";
 import { noop } from "lodash";
+import { GenericPointer } from "farmbot/dist/resources/api_resources";
 type Key = keyof NumericValues;
 type Translation = Record<Key, WDENVKey>;
 

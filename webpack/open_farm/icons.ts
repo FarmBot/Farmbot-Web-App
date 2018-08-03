@@ -32,13 +32,13 @@ type OFIcon = Readonly<OFCropAttrs>;
 const STORAGE_KEY = "openfarm_icons_with_spread";
 
 function initLocalStorage() {
-  localStorage[STORAGE_KEY] = "{}";
+  localStorage.setItem(STORAGE_KEY, "{}");
   return {};
 }
 
 function getAllIconsFromCache(): Dictionary<OFIcon | undefined> {
   try {
-    const dictionary = JSON.parse(localStorage[STORAGE_KEY]);
+    const dictionary = JSON.parse(localStorage.getItem(STORAGE_KEY) || "");
     return isObject(dictionary) ? dictionary : initLocalStorage();
   } catch (error) {
     return initLocalStorage();
@@ -53,7 +53,7 @@ function localStorageIconFetch(slug: string): Promise<OFIcon> | undefined {
 function localStorageIconSet(icon: OFIcon): void {
   const dictionary = getAllIconsFromCache();
   dictionary[icon.slug] = icon;
-  localStorage[STORAGE_KEY] = JSON.stringify(dictionary);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dictionary));
 }
 
 /** PROBLEM: HTTP requests get fired too fast. If you have 10 garlic plants,

@@ -1,5 +1,5 @@
 import { PlantOptions } from "./interfaces";
-import { PlantPointer } from "../interfaces";
+import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 export const DEFAULT_PLANT_RADIUS = 25;
 

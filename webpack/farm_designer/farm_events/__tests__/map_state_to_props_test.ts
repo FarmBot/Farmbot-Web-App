@@ -10,7 +10,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import * as moment from "moment";
 import { countBy } from "lodash";
-import { TimeUnit } from "../../interfaces";
+import { TimeUnit } from "farmbot/dist/resources/api_resources";
 
 describe("mapStateToProps()", () => {
   function testState() {

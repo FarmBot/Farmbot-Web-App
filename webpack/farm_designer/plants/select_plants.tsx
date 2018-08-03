@@ -36,6 +36,7 @@ interface SelectPlantsState {
   stashedUuid: string | undefined;
   stashedIcon: string;
 }
+const YOU_SURE = "Are you sure you want to delete {{length}} plants?";
 
 @connect(mapStateToProps)
 export class SelectPlants
@@ -66,7 +67,7 @@ export class SelectPlants
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&
-      confirm(t("Are you sure you want to delete {{length}} plants?", { length: plantUUIDs.length }))) {
+      confirm(t(YOU_SURE, { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
         this
           .props

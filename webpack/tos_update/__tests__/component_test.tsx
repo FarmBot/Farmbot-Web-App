@@ -17,7 +17,7 @@ jest.mock("axios", () => {
 });
 
 import * as React from "react";
-import { TosUpdate } from "../index";
+import { TosUpdate } from "../component";
 import { shallow, mount } from "enzyme";
 import axios from "axios";
 import { API } from "../../api/index";

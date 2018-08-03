@@ -29,13 +29,13 @@ describe("unsavedCheck", () => {
   }
 
   it("stops users if they have unsaved work", () => {
-    localStorage.session = "YES";
+    localStorage.setItem("session", "YES");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(stopThem);
   });
 
   it("does nothing when logged out", () => {
-    localStorage.session = undefined;
+    localStorage.removeItem("session");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(dontStopThem);
   });

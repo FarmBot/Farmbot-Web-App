@@ -3,7 +3,7 @@ import axios from "axios";
 import * as _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
-import { Log, Everything } from "../interfaces";
+import { Everything } from "../interfaces";
 import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
 } from "./interfaces";
@@ -28,6 +28,7 @@ import { getFbosConfig } from "../resources/selectors_by_kind";
 import { FbosConfig } from "../config_storage/fbos_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { Log } from "farmbot/dist/resources/api_resources";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;

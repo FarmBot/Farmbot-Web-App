@@ -22,11 +22,10 @@ import {
   TaggedSavedGarden,
   TaggedPlantTemplate,
 } from "farmbot";
-import { ExecutableType } from "../../farm_designer/interfaces";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { FirmwareConfig } from "../../config_storage/firmware_configs";
-import { PinBindingType } from "../../devices/pin_bindings/interfaces";
+import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
