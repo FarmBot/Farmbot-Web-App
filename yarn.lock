@@ -6354,15 +6354,16 @@ sass-graph@^2.2.4:
     scss-tokenizer "^0.2.3"
     yargs "^7.0.0"
 
-sass-loader@7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.0.3.tgz#6ca10871a1cc7549f8143db5a9958242c4e4ca2a"
+sass-loader@7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.1.0.tgz#16fd5138cb8b424bf8a759528a1972d72aad069d"
   dependencies:
     clone-deep "^2.0.1"
     loader-utils "^1.0.1"
     lodash.tail "^4.1.1"
     neo-async "^2.5.0"
     pify "^3.0.0"
+    semver "^5.5.0"
 
 sax@>=0.6.0, sax@^1.2.4, sax@~1.2.4:
   version "1.2.4"
@@ -7539,9 +7540,9 @@ webpack-uglify-js-plugin@1.1.9:
     uglify-js "^2.6.4"
     webpack-core "^0.6.8"
 
-webpack@4.16.3:
-  version "4.16.3"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.16.3.tgz#861be3176d81e7e3d71c66c8acc9bba35588b525"
+webpack@4.16.4:
+  version "4.16.4"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.16.4.tgz#6b020f76483bc66339164c296d89978aa100d37a"
   dependencies:
     "@webassemblyjs/ast" "1.5.13"
     "@webassemblyjs/helper-module-context" "1.5.13"
@@ -7832,6 +7833,6 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-yarn@^1.7.0:
+yarn@^1.9.2:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.9.2.tgz#7666c6db0fed8dc090ae0dce11a8a28b1d82e391"
