@@ -10,4 +10,15 @@ class RegimenItem < ApplicationRecord
   def broadcast?
     false
   end
+
+  after_save :maybe_cascade_changes, on: [:create, :update, :destroy]
+
+  def maybe_cascade_changes
+    (the_changes["sequence_id"] || [])
+      .compact
+      .map { |x| Sequence.find_by(id: x) }
+      .compact
+      .map { |x| x.broadcast! }
+      .map { puts "Cascade RegimenItem" }
+  end
 end
