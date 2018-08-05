@@ -63,6 +63,8 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!
+    # current_device
+    #   .tell("#{self.class.name} #{id || 0}", ["espeak"])  if current_device
     AutoSyncJob.perform_later(broadcast_payload,
                               current_device.id,
                               chan_name,
