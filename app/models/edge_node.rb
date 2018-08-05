@@ -19,7 +19,6 @@ class EdgeNode < ApplicationRecord
         .compact
         .map { |x| Sequence.find_by(id: x) }
         .compact
-        .map { |x| x.broadcast! }
-        .map { puts "Cascade EdgeNode" } if (kind == "sequence_id")
+        .map { |x| x.broadcast!("CASCADE-" + SecureRandom.uuid) } if (kind == "sequence_id")
   end
 end

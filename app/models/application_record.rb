@@ -45,8 +45,8 @@ class ApplicationRecord < ActiveRecord::Base
     return (serializer ? serializer.new(self) : self).as_json
   end
 
-  def broadcast_payload
-    { args: { label: Transport.current.current_request_id }, body: body_as_json }.to_json
+  def broadcast_payload(label)
+    { args: { label: label }, body: body_as_json }.to_json
   end
 
   # Overridable
@@ -62,10 +62,8 @@ class ApplicationRecord < ActiveRecord::Base
     @current_device ||= (Device.current || self.try(:device))
   end
 
-  def broadcast!
-    # current_device
-    #   .tell("#{self.class.name} #{id || 0}", ["espeak"])  if current_device
-    AutoSyncJob.perform_later(broadcast_payload,
+  def broadcast!(label = Transport.current.current_request_id)
+    AutoSyncJob.perform_later(broadcast_payload(label),
                               current_device.id,
                               chan_name,
                               Time.now.utc.to_i) if current_device
