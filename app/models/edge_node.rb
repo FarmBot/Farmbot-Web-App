@@ -15,10 +15,11 @@ class EdgeNode < ApplicationRecord
 
   after_save :maybe_cascade_changes, on: [:create, :update, :destroy]
   def maybe_cascade_changes
+    is_sid = kind == "sequence_id"
     (the_changes["value"] || [])
         .compact
         .map { |x| Sequence.find_by(id: x) }
         .compact
-        .map { |x| x.broadcast!("CASCADE-" + SecureRandom.uuid) } if (kind == "sequence_id")
+        .map { |x| x.broadcast!(Transport.current.cascade_id) } if is_sid
   end
 end

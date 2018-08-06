@@ -62,6 +62,20 @@ class Transport
     amqp_topic.publish(message, routing_key: routing_key)
   end
 
+  # Every RPC / Auto Sync request has a UUID. Sometimes, a single request will
+  # result in a "cascade", meaning that one request generates > 1 response.
+  # The "main" response will contain the `current_request_id`. The "cascaded"
+  # responses will also contain the `current_request_id`, but they will also be
+  # marked as "cascade".
+  # This helps with debugging and the fact that you can't mark requests as half
+  # complete. This can be safely ignored by most developers. It is an API-side
+  # implementation detail.
+  #
+  # - RC 6-AUG-18
+  def cascade_id
+    "cascade-" + current_request_id
+  end
+
   # We need to hoist the Rack X-Farmbot-Rpc-Id to a global state so that it can
   # be used as a unique identifier for AMQP messages.
   def current_request_id

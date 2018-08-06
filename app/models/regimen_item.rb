@@ -18,7 +18,6 @@ class RegimenItem < ApplicationRecord
       .compact
       .map { |x| Sequence.find_by(id: x) }
       .compact
-      .map { |x| x.broadcast!("CASCADE-" + SecureRandom.uuid) }
-      .map { puts "Cascade RegimenItem" }
+      .map { |x| x.broadcast!(Transport.current.cascade_id) }
   end
 end

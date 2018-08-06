@@ -44,8 +44,7 @@ class FarmEvent < ApplicationRecord
       .select{ |x| x.first && x.last }
       .map { |(kind, id)| Resources::RESOURCES.fetch(kind).find_by(id: id) }
       .compact
-      .map { |x| x.broadcast!("CASCADE-" + SecureRandom.uuid) }
-      .map { puts "Cascade FarmEvent" }
+      .map { |x| x.broadcast!(Transport.current.cascade_id) }
   end
 
 end
