@@ -33,4 +33,18 @@ class FarmEvent < ApplicationRecord
   def fancy_name
     start_time.strftime(start_time.year == Time.now.year ? NO_YEAR : WITH_YEAR)
   end
+
+  after_save :maybe_cascade_changes, on: [:create, :update, :destroy]
+  def maybe_cascade_changes
+    # TODO: Possible N+1? #ShipIt
+    # BETTER IDEA: Make a rails Job that takes a "StringyClassName" and resource
+    #              ID, and `broadcast` in the background.
+    (the_changes["executable_type"] || [])
+      .zip(the_changes["executable_id"] || [])
+      .select{ |x| x.first && x.last }
+      .map { |(kind, id)| Resources::RESOURCES.fetch(kind).find_by(id: id) }
+      .compact
+      .map { |x| x.broadcast!(Transport.current.cascade_id) }
+  end
+
 end
