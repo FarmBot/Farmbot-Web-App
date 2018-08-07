@@ -8,6 +8,8 @@ class EdgeNode < ApplicationRecord
   belongs_to            :sequence
   serialize             :value, JSON
   validates_presence_of :sequence
+  after_save            :maybe_cascade_save
+  after_destroy         :cascade_destruction
 
   def broadcast?
     false
@@ -17,9 +19,7 @@ class EdgeNode < ApplicationRecord
     kind == "sequence_id"
   end
 
-  after_save :maybe_cascade_changes
-
-  def maybe_cascade_changes
+  def maybe_cascade_save
     (the_changes["value"] || []) # Grab old ID _AND_ new ID
       .compact
       .uniq
@@ -29,9 +29,9 @@ class EdgeNode < ApplicationRecord
       .map { |x| x.delay.broadcast!(Transport.current.cascade_id) } if is_sequence_id?
   end
 
-  after_destroy :hmm
-
-  def hmm
+  def cascade_destruction
+    # This can't be bundled into the functionality of `maybe_cascade_save`
+    # because `#the_changes` returns an empty change set ({}) on destroy.
     Sequence.find(self.value).delay.broadcast! if is_sequence_id?
   end
 end

@@ -12,11 +12,32 @@ class FarmEvent < ApplicationRecord
   WITH_YEAR          = "%m/%d/%y"
   NO_YEAR            = "%m/%d"
 
-  belongs_to :executable, polymorphic: true
-  validates  :executable, presence: true
-  belongs_to :device
-  validates  :device_id, presence: true
-  validate   :within_20_year_window
+  belongs_to    :device
+  belongs_to    :executable, polymorphic: true
+  validate      :within_20_year_window
+  validates     :device_id, presence: true
+  validates     :executable, presence: true
+
+  after_destroy :cascade_destruction
+  after_save    :maybe_cascade_save
+
+  def maybe_cascade_save
+    eid = the_changes["executable_id"]
+    if eid
+      ets = (the_changes["executable_type"] || [])
+      eid.each_with_index do |id, index|
+        Resources::RESOURCES
+          .fetch(ets[index] || executable_type)
+          .find(id)
+          .delay
+          .broadcast!
+      end
+    end
+  end
+
+  def cascade_destruction
+    executable.delay.broadcast!
+  end
 
   def within_20_year_window
     too_early = start_time && start_time < (Time.now - 20.years)
@@ -33,18 +54,4 @@ class FarmEvent < ApplicationRecord
   def fancy_name
     start_time.strftime(start_time.year == Time.now.year ? NO_YEAR : WITH_YEAR)
   end
-
-  after_save :maybe_cascade_changes, on: [:create, :update, :destroy]
-  def maybe_cascade_changes
-    # TODO: Possible N+1? #ShipIt
-    # BETTER IDEA: Make a rails Job that takes a "StringyClassName" and resource
-    #              ID, and `broadcast` in the background.
-    (the_changes["executable_type"] || [])
-      .zip(the_changes["executable_id"] || [])
-      .select{ |x| x.first && x.last }
-      .map { |(kind, id)| Resources::RESOURCES.fetch(kind).find_by(id: id) }
-      .compact
-      .map { |x| x.broadcast!(Transport.current.cascade_id) }
-  end
-
 end
