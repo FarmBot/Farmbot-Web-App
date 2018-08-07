@@ -26,7 +26,8 @@ class FarmEvent < ApplicationRecord
     if eid
       ets = (the_changes["executable_type"] || [])
       eid.compact.uniq.each_with_index.map do |id, inx|
-          Resources::RESOURCES.fetch(ets[inx] || executable_type).find_by(id: x)
+        klass = ets[inx] || executable_type
+        Resources::RESOURCES.fetch(klass).find_by(id: id)
       end
       .compact
       .map { |model| model.delay.broadcast! }
@@ -34,7 +35,9 @@ class FarmEvent < ApplicationRecord
   end
 
   def cascade_destruction
-    executable.delay.broadcast!
+    if executable
+      executable.delay.broadcast!
+    end
   end
 
   def within_20_year_window

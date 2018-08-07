@@ -15,7 +15,7 @@ describe Api::DiagnosticDumpsController do
     expect(json.pluck(:device_id).uniq).to eq([user.device.id])
   end
 
-  it 'creates a dump' do
+  it 'creates a dump' do # Blinky test 7-AUG-18 RC
     sign_in user
     DiagnosticDump.destroy_all
     b4 = DiagnosticDump.count
