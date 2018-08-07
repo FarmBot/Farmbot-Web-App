@@ -13,8 +13,13 @@ class LogDeliveryMailer < ApplicationMailer
                         .where(id: unsent.pluck(:id))
                         .where
                         .not(Log::IS_FATAL_EMAIL)
+                        .order(created_at: :desc)
         @emails      = device.users.pluck(:email)
-        @messages    = logs.map(&:message)
+        @messages    = logs
+                        .pluck(:created_at, :message)
+                        .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
+                        .map{|(x,y)| "[#{x}]: #{y}"}
+                        .join("\n\n")
         @device_name = device.name || "Farmbot"
         mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
         unsent.update_all(sent_at: Time.now)

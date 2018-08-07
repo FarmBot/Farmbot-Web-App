@@ -5,19 +5,27 @@
 class RegimenItem < ApplicationRecord
   belongs_to :regimen
   belongs_to :sequence
-  validates :sequence, presence: true
+  validates  :sequence, presence: true
 
-  def broadcast?
-    false
-  end
+  after_destroy :cascade_destruction
+  after_save    :maybe_cascade_save
 
-  after_save :maybe_cascade_changes, on: [:create, :update, :destroy]
-
-  def maybe_cascade_changes
+  def maybe_cascade_save
     (the_changes["sequence_id"] || [])
       .compact
       .map { |x| Sequence.find_by(id: x) }
       .compact
       .map { |x| x.broadcast!(Transport.current.cascade_id) }
+  end
+
+  def cascade_destruction
+    s = Sequence.find_by(id: sequence_id)
+    if s
+      s.delay.broadcast!
+    end
+  end
+
+  def broadcast?
+    false
   end
 end
