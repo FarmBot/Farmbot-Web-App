@@ -29,9 +29,12 @@ class EdgeNode < ApplicationRecord
       .map { |x| x.delay.broadcast!(Transport.current.cascade_id) } if is_sequence_id?
   end
 
+  # This can't be bundled into the functionality of `maybe_cascade_save`
+  # because `#the_changes` returns an empty change set ({}) on destroy.
   def cascade_destruction
-    # This can't be bundled into the functionality of `maybe_cascade_save`
-    # because `#the_changes` returns an empty change set ({}) on destroy.
-    Sequence.find(self.value).delay.broadcast! if is_sequence_id?
+    if is_sequence_id?
+      s = Sequence.find_by(id: self.value)
+      s && s.delay.broadcast!
+    end
   end
 end
