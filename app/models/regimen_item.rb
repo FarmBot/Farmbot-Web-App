@@ -20,9 +20,7 @@ class RegimenItem < ApplicationRecord
 
   def cascade_destruction
     s = Sequence.find_by(id: sequence_id)
-    if s
-      s.delay.broadcast!
-    end
+    s.delay.broadcast! if s
   end
 
   def broadcast?
