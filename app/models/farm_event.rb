@@ -25,13 +25,10 @@ class FarmEvent < ApplicationRecord
     eid = the_changes["executable_id"]
     if eid
       ets = (the_changes["executable_type"] || [])
-      eid.each_with_index do |id, index|
-        Resources::RESOURCES
-          .fetch(ets[index] || executable_type)
-          .find(id)
-          .delay
-          .broadcast!
+      eid.compact.uniq.each_with_index.map do |id, inx|
+          Resources::RESOURCES.fetch(ets[inx] || executable_type).find(id)
       end
+      .map { |model|   model.delay.broadcast! }
     end
   end
 
