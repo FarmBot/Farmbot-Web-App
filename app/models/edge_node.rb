@@ -20,7 +20,7 @@ class EdgeNode < ApplicationRecord
   after_save :maybe_cascade_changes
 
   def maybe_cascade_changes
-    (the_changes["value"] || [])
+    (the_changes["value"] || []) # Grab old ID _AND_ new ID
       .compact
       .uniq
       .reject { |x| x == sequence_id } # 🤯 Skip recursive nodes
