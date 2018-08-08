@@ -9,6 +9,7 @@ describe("version tracker middleware", () => {
     window.Rollbar = { configure: jest.fn() };
     const state = fakeState();
     state.resources = buildResourceIndex([fakeDevice()]);
+    // tslint:disable-next-line:no-any
     type Mw = MiddlewareAPI<any>;
     const fakeStore: Partial<Mw> = {
       getState: () => state

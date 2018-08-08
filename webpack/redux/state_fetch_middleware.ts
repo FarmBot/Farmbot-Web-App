@@ -5,7 +5,9 @@ import { createRefreshTrigger } from "./create_refresh_trigger";
 
 const maybeRefresh = createRefreshTrigger();
 const stateFetchMiddleware: Middleware =
+  // tslint:disable-next-line:no-any
   (store) => (next) => (action: any) => {
+    // tslint:disable-next-line:no-any
     const s: Everything = store.getState() as any;
     maybeRefresh(s.bot.connectivity["bot.mqtt"]);
     next(action);

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { WeedDetectorConfig } from "../config"
+import { WeedDetectorConfig } from "../config";
 
 describe("<WeedDetectorConfig />", () => {
   it("renders", () => {

@@ -182,6 +182,7 @@ describe("onOnline", () => {
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
     const setUserEnv = jest.fn(() => Promise.resolve({}));
+    // tslint:disable-next-line:no-any
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();
     expect(setUserEnv).toHaveBeenCalledWith(expect.objectContaining({

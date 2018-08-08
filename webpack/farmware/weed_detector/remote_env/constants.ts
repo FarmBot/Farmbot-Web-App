@@ -92,7 +92,7 @@ export const DEFAULT_FORMATTER: Translation = {
         return val;
     }
   },
-  parse: (_, val) => {
+  parse: (__, val) => {
     try {
       const b = box(JSON.parse(val));
       switch (b.kind) {

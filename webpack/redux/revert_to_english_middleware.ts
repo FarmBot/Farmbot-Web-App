@@ -18,6 +18,7 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  * possible and then revert to english as soon as we have a chance to read the
  * value of `web_app_config.disable_i18n`.
  */
+// tslint:disable-next-line:no-any
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const isResourceReady = action
     && action.type === Actions.RESOURCE_READY

@@ -3,6 +3,8 @@ import { t } from "i18next";
 import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 
+/* tslint:disable:max-line-length */
+
 export function LoadingPlant() {
   const animations = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
   return <div className="loading-plant-div-container">

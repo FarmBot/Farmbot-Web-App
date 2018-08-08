@@ -1,8 +1,8 @@
 import {
   TaggedPlantPointer,
-  TaggedGenericPointer
+  TaggedGenericPointer,
+  TaggedCrop
 } from "farmbot";
-import { TaggedCrop } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";

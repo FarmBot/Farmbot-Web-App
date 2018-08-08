@@ -8,6 +8,7 @@ const mockRedux = {
 jest.mock("../../redux/store", () => mockRedux);
 jest.mock("lodash", () => {
   return {
+    // tslint:disable-next-line:no-any
     set(target: any, key: string, val: any) { target[key] = val; },
     times: (n: number, iter: Function) => {
       let n2 = n;
