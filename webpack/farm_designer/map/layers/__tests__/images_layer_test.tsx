@@ -1,8 +1,12 @@
 import * as React from "react";
 import { ImageLayer, ImageLayerProps } from "../image_layer";
 import { shallow } from "enzyme";
-import { fakeImage, fakeWebAppConfig } from "../../../../__test_support__/fake_state/resources";
-import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
+import {
+  fakeImage, fakeWebAppConfig
+} from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeMapTransformProps
+} from "../../../../__test_support__/map_transform_props";
 
 const mockConfig = fakeWebAppConfig();
 jest.mock("../../../../resources/selectors", () => {

@@ -32,7 +32,8 @@ import { error } from "farmbot-toastr";
 import { joinKindAndId } from "./reducer";
 import { assertUuid } from "./util";
 
-const isSaved = <T extends TaggedResource>(t: T) => t.specialStatus === SpecialStatus.SAVED;
+const isSaved = <T extends TaggedResource>(t: T) =>
+  t.specialStatus === SpecialStatus.SAVED;
 
 /** Generalized way to stamp out "finder" functions.
  * Pass in a `ResourceName` and it will add all the relevant checks.
@@ -51,7 +52,8 @@ const uuidFinder = <T extends TaggedResource>(r: T["kind"]) =>
     }
   };
 
-export function findAll<T extends TaggedResource>(index: ResourceIndex, kind: T["kind"]): T[] {
+export function findAll<T extends TaggedResource>(
+  index: ResourceIndex, kind: T["kind"]): T[] {
   const results: T[] = [];
 
   index.byKind[kind].map(function (uuid) {
@@ -74,7 +76,8 @@ export const selectAllSavedGardens = (i: ResourceIndex) =>
   findAll<TaggedSavedGarden>(i, "SavedGarden");
 export const selectAllPlantTemplates = (i: ResourceIndex) =>
   findAll<TaggedPlantTemplate>(i, "PlantTemplate");
-export const selectAllFarmEvents = (i: ResourceIndex) => findAll<TaggedFarmEvent>(i, "FarmEvent");
+export const selectAllFarmEvents = (i: ResourceIndex) =>
+  findAll<TaggedFarmEvent>(i, "FarmEvent");
 export const selectAllImages = (i: ResourceIndex) => findAll<TaggedImage>(i, "Image");
 export const selectAllLogs = (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");
 export const selectAllPeripherals =
@@ -91,11 +94,13 @@ export const selectAllToolSlots = (i: ResourceIndex): TaggedToolSlotPointer[] =>
 
 export const selectAllDiagnosticDumps =
   (i: ResourceIndex) => findAll<TaggedDiagnosticDump>(i, "DiagnosticDump");
-export const selectAllRegimens = (i: ResourceIndex) => findAll<TaggedRegimen>(i, "Regimen");
+export const selectAllRegimens = (i: ResourceIndex) =>
+  findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors = (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");
 export const selectAllPinBindings =
   (i: ResourceIndex) => findAll<TaggedPinBinding>(i, "PinBinding");
-export const selectAllSequences = (i: ResourceIndex) => findAll<TaggedSequence>(i, "Sequence");
+export const selectAllSequences = (i: ResourceIndex) =>
+  findAll<TaggedSequence>(i, "Sequence");
 export const selectAllSensorReadings = (i: ResourceIndex) =>
   findAll<TaggedSensorReading>(i, "SensorReading");
 export const selectAllTools = (i: ResourceIndex) => findAll<TaggedTool>(i, "Tool");
@@ -112,14 +117,14 @@ export const getWebAppConfig = (i: ResourceIndex): TaggedWebAppConfig | undefine
 export const getFirmwareConfig = (i: ResourceIndex): TaggedFirmwareConfig | undefined =>
   findAll<TaggedFirmwareConfig>(i, "FirmwareConfig")[0];
 
-export const findByKindAndId =
-  <T extends TaggedResource>(i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {
-    const kni = joinKindAndId(kind, id);
-    const uuid = i.byKindAndId[kni] || bail("Not found: " + kni);
-    const resource = i.references[uuid] || bail("Not found uuid: " + uuid);
-    if (resource.kind === kind) {
-      return resource as T; // Why `as T`?
-    } else {
-      return bail("Impossible! " + uuid);
-    }
-  };
+export const findByKindAndId = <T extends TaggedResource>(
+  i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {
+  const kni = joinKindAndId(kind, id);
+  const uuid = i.byKindAndId[kni] || bail("Not found: " + kni);
+  const resource = i.references[uuid] || bail("Not found uuid: " + uuid);
+  if (resource.kind === kind) {
+    return resource as T; // Why `as T`?
+  } else {
+    return bail("Impossible! " + uuid);
+  }
+};
