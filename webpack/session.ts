@@ -40,7 +40,7 @@ export namespace Session {
   export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = window.location.origin || "/";
+    window.location.assign(window.location.origin || "/");
     return undefined as never;
   }
 

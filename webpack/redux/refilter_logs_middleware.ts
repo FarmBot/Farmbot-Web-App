@@ -10,6 +10,7 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  * Middleware function that listens for changes on the `WebAppConfig` resource.
  * If the resource does change, it will trigger a throttled refresh of all log
  * resources, downloading the filtered log list as required from the API. */
+// tslint:disable-next-line:no-any
 export const fn: Middleware = () => (dispatch) => (action: any) => {
   const needsRefresh = action
     && action.payload

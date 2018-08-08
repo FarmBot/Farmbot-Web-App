@@ -8,7 +8,8 @@ import {
 import { betterCompact } from "../../../util";
 import { TaggedFarmEvent } from "farmbot";
 
-export function joinFarmEventsToExecutable(input: ResourceIndex): FarmEventWithExecutable[] {
+export function joinFarmEventsToExecutable(
+  input: ResourceIndex): FarmEventWithExecutable[] {
   const farmEvents: TaggedFarmEvent[] = selectAllFarmEvents(input);
   const sequenceById = indexSequenceById(input);
   const regimenById = indexRegimenById(input);

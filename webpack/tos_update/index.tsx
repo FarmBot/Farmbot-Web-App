@@ -10,7 +10,6 @@ document.body.appendChild(node);
 const domElem = document.getElementById("root");
 const reactElem = React.createElement(TosUpdate, {});
 
-
 const ok = () => domElem && render(reactElem, domElem);
 
 detectLanguage().then(conf => init(conf, ok));

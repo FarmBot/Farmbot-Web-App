@@ -46,7 +46,8 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("fetches OS release notes", async () => {
     mockReleaseNoteData = { data: "intro\n\n# v6\n\n* note" };
-    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings {...fakeProps()} />);
+    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings
+      {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
     expect(osSettings.instance().state.osReleaseNotes)
@@ -55,7 +56,8 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("doesn't fetch OS release notes", async () => {
     mockReleaseNoteData = { data: "empty notes" };
-    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings {...fakeProps()} />);
+    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings
+      {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
     expect(osSettings.instance().state.osReleaseNotes)

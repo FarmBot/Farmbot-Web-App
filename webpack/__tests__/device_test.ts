@@ -13,6 +13,7 @@ describe("fetchNewDevice", () => {
     const bot = await fetchNewDevice(auth);
     expect(bot).toBeInstanceOf(mockFarmbot);
     // We use this for debugging in local dev env
+    // tslint:disable-next-line:no-any
     expect((global as any)["current_bot"]).toBeDefined();
   });
 });

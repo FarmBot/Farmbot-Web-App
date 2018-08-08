@@ -29,6 +29,7 @@ const fakeProps = (): AppProps => {
     axisInversion: { x: false, y: false, z: false },
     firmwareConfig: undefined,
     xySwap: false,
+    animate: false,
   };
 };
 

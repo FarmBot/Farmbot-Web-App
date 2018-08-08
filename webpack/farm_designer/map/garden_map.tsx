@@ -125,6 +125,11 @@ export class GardenMap extends
   /** Currently editing a plant? */
   get isEditing(): boolean { return getMode() === Mode.editPlant; }
 
+  /** Display plant animations? */
+  get animate(): boolean {
+    return !this.props.getConfigValue(BooleanSetting.disable_animations);
+  }
+
   endDrag = () => {
     const p = this.getPlant();
     if (p && this.state.isDragging) {
@@ -402,7 +407,8 @@ export class GardenMap extends
             zoomLvl={this.props.zoomLvl}
             activeDragXY={this.state.activeDragXY}
             activeDragSpread={this.state.activeDragSpread}
-            editing={this.isEditing} />
+            editing={this.isEditing}
+            animate={this.animate} />
           <PointLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showPoints}
@@ -418,7 +424,8 @@ export class GardenMap extends
             editing={this.isEditing}
             selectedForDel={this.props.designer.selectedPlants}
             zoomLvl={this.props.zoomLvl}
-            activeDragXY={this.state.activeDragXY} />
+            activeDragXY={this.state.activeDragXY}
+            animate={this.animate} />
           <ToolSlotLayer
             mapTransformProps={mapTransformProps}
             visible={!!this.props.showFarmbot}
@@ -431,7 +438,8 @@ export class GardenMap extends
             botSize={this.props.botSize}
             plantAreaOffset={this.props.gridOffset}
             peripherals={this.props.peripherals}
-            eStopStatus={this.props.eStopStatus} />
+            eStopStatus={this.props.eStopStatus}
+            getConfigValue={this.props.getConfigValue} />
           <HoveredPlantLayer
             visible={!!this.props.showPlants}
             isEditing={this.isEditing}
@@ -439,7 +447,8 @@ export class GardenMap extends
             currentPlant={this.getPlant()}
             designer={this.props.designer}
             hoveredPlant={this.props.hoveredPlant}
-            dragging={!!this.state.isDragging} />
+            dragging={!!this.state.isDragging}
+            animate={this.animate} />
           <DragHelperLayer
             mapTransformProps={mapTransformProps}
             currentPlant={this.getPlant()}

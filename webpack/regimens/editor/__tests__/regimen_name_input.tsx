@@ -15,6 +15,7 @@ describe("write()", () => {
     const callback = write(input);
     expect(callback).toBeInstanceOf(Function);
     const value = "FOO";
+    // tslint:disable-next-line:no-any
     callback({ currentTarget: { value } } as any);
     expect(input.dispatch).toHaveBeenCalled();
     expect(editRegimen).toHaveBeenCalled();

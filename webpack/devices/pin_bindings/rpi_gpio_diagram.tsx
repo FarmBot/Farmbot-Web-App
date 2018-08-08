@@ -36,7 +36,8 @@ export const gpio = [
   ["GND", 21],
 ];
 
-export class RpiGpioDiagram extends React.Component<RpiGpioDiagramProps, RpiGpioDiagramState> {
+export class RpiGpioDiagram
+  extends React.Component<RpiGpioDiagramProps, RpiGpioDiagramState> {
   state: RpiGpioDiagramState = { hoveredPin: undefined };
 
   hover = (hovered: number | string | undefined) =>

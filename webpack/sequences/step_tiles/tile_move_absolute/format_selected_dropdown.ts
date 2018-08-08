@@ -8,7 +8,8 @@ import {
 } from "../../../resources/selectors";
 import { Point, Tool } from "farmbot/dist";
 
-export function formatSelectedDropdown(ri: ResourceIndex, ld: LocationData): DropDownItem {
+export function formatSelectedDropdown(
+  ri: ResourceIndex, ld: LocationData): DropDownItem {
   switch (ld.kind) {
     case "tool": return tool(ri, ld);
     case "point": return point(ri, ld);

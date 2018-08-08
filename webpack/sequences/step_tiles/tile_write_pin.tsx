@@ -54,7 +54,8 @@ export function TileWritePin(props: StepParams) {
           <FBSelect
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDownsWritePin(props.resources, shouldDisplay || (() => false))} />
+            list={pinsAsDropDownsWritePin(props.resources,
+              shouldDisplay || (() => false))} />
         </Col>
         <Col xs={6} md={3}>
           <label>{t("Value")}</label>

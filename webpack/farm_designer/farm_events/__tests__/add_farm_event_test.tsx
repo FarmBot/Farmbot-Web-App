@@ -12,7 +12,9 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
-import { fakeFarmEvent, fakeSequence } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeFarmEvent, fakeSequence
+} from "../../../__test_support__/fake_state/resources";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {

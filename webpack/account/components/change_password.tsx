@@ -56,7 +56,8 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         success(t("Your password is changed."), t("Success"));
         this.clearForm();
       }, (e) => {
-        error(e ? prettyPrintApiErrors(e) : t("Password change failed."), t("Error"));
+        error(e ? prettyPrintApiErrors(e) : t("Password change failed."),
+          t("Error"));
         this.clearForm();
       });
 
@@ -64,7 +65,8 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     const numUniqueValues = uniq(Object.values(this.state.form)).length;
     switch (numUniqueValues) {
       case 1:
-        error(t("Provided new and old passwords match. Password not changed."), t("Error"));
+        error(t("Provided new and old passwords match. Password not changed."),
+          t("Error"));
         this.clearForm();
         break;
       case 2:

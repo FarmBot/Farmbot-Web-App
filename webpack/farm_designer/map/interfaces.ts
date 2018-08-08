@@ -1,8 +1,8 @@
 import {
   TaggedPlantPointer,
-  TaggedGenericPointer
+  TaggedGenericPointer,
+  TaggedCrop
 } from "farmbot";
-import { TaggedCrop } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
@@ -19,6 +19,7 @@ export interface PlantLayerProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   selectedForDel: string[] | undefined;
+  animate: boolean;
 }
 
 export interface CropSpreadDict {
@@ -59,6 +60,7 @@ export interface GardenPlantProps {
   activeDragXY: BotPosition | undefined;
   uuid: string;
   grayscale: boolean;
+  animate: boolean;
 }
 
 export interface GardenPlantState {
@@ -114,6 +116,7 @@ export interface VirtualFarmBotProps {
   plantAreaOffset: AxisNumberProperty;
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {

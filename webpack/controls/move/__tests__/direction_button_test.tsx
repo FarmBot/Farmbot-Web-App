@@ -10,7 +10,9 @@ jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { DirectionButton, directionDisabled, calculateDistance } from "../direction_button";
+import {
+  DirectionButton, directionDisabled, calculateDistance
+} from "../direction_button";
 import { DirectionButtonProps } from "../interfaces";
 
 function fakeButtonProps(): DirectionButtonProps {

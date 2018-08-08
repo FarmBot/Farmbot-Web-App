@@ -1,4 +1,6 @@
-import { PinBindingType, PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
+import {
+  PinBindingType, PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 const mockDevice = {
   registerGpio: jest.fn(() => { return Promise.resolve(); }),
   unregisterGpio: jest.fn(() => { return Promise.resolve(); }),
