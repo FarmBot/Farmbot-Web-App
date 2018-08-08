@@ -15,7 +15,8 @@ describe("<SpreadLayer/>", () => {
       zoomLvl: 1.8,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
       activeDragSpread: undefined,
-      editing: false
+      editing: false,
+      animate: false,
     };
   }
 

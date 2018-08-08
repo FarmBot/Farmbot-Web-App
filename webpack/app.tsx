@@ -19,7 +19,6 @@ import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
 import { validBotLocationData, validFwConfig } from "./util";
-import { Session } from "./session";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import { FirmwareConfig } from "./config_storage/firmware_configs";
@@ -44,9 +43,11 @@ export interface AppProps {
   axisInversion: Record<Xyz, boolean>;
   xySwap: boolean;
   firmwareConfig: FirmwareConfig | undefined;
+  animate: boolean;
 }
 
 function mapStateToProps(props: Everything): AppProps {
+  const webAppConfigValue = getWebAppConfigValue(() => props);
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     dispatch: props.dispatch,
@@ -56,12 +57,13 @@ function mapStateToProps(props: Everything): AppProps {
     loaded: props.resources.loaded,
     consistent: !!(props.bot || {}).consistent,
     axisInversion: {
-      x: !!Session.deprecatedGetBool(BooleanSetting.x_axis_inverted),
-      y: !!Session.deprecatedGetBool(BooleanSetting.y_axis_inverted),
-      z: !!Session.deprecatedGetBool(BooleanSetting.z_axis_inverted),
+      x: !!webAppConfigValue(BooleanSetting.x_axis_inverted),
+      y: !!webAppConfigValue(BooleanSetting.y_axis_inverted),
+      z: !!webAppConfigValue(BooleanSetting.z_axis_inverted),
     },
-    xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
-    firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index))
+    xySwap: !!webAppConfigValue(BooleanSetting.xy_swap),
+    firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index)),
+    animate: !webAppConfigValue(BooleanSetting.disable_animations),
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -110,7 +112,7 @@ export class App extends React.Component<AppProps, {}> {
         bot={this.props.bot}
         dispatch={this.props.dispatch}
         logs={this.props.logs} />
-      {!syncLoaded && <LoadingPlant />}
+      {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup

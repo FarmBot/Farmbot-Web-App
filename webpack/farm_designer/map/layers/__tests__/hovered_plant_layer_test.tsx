@@ -25,6 +25,7 @@ describe("<HoveredPlantLayer/>", () => {
       hoveredPlant: fakePlant(),
       isEditing: false,
       mapTransformProps: fakeMapTransformProps(),
+      animate: false,
     };
   }
 

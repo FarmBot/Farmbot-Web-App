@@ -4,8 +4,8 @@ import { PinGuardMCUInputGroupProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
-import { isUndefined } from "util";
 import { t } from "i18next";
+import { isUndefined } from "lodash";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 

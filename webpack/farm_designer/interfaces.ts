@@ -28,7 +28,7 @@ import { ExecutableType, PlantPointer } from "farmbot/dist/resources/api_resourc
 */
 export enum BotOriginQuadrant { ONE = 1, TWO = 2, THREE = 3, FOUR = 4 }
 
-type Mystery = BotOriginQuadrant | number | undefined;
+type Mystery = BotOriginQuadrant | number | string | boolean | undefined;
 export function isBotOriginQuadrant(mystery: Mystery):
   mystery is BotOriginQuadrant {
   return isNumber(mystery) && [1, 2, 3, 4].includes(mystery);

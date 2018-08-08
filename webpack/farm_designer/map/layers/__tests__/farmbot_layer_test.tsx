@@ -21,7 +21,8 @@ describe("<FarmBotLayer/>", () => {
       },
       plantAreaOffset: { x: 100, y: 100 },
       peripherals: [],
-      eStopStatus: false
+      eStopStatus: false,
+      getConfigValue: jest.fn(),
     };
   }
 

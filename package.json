@@ -16,7 +16,8 @@
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js",
     "test-slow": "jest --coverage --no-cache -w 4",
     "test": "jest --no-coverage --cache -w 5",
-    "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve"
+    "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
+    "tslint": "./node_modules/tslint/bin/tslint --project ."
   },
   "keywords": [
     "farmbot"
