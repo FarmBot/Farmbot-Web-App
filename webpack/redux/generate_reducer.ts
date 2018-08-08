@@ -5,6 +5,7 @@ import { Dictionary } from "farmbot";
 
 /** A function that responds to a particular action from within a
  * generated reducer. */
+// tslint:disable-next-line:no-any
 interface ActionHandler<State, Payl = any> {
   (state: State, action: ReduxAction<Payl>): State;
 }
@@ -27,6 +28,7 @@ export function generateReducer<State, U = any>(initialState: State,
   const NOOP: ActionHandler<State> = (s) => s;
 
   const reducer: GeneratedReducer =
+    // tslint:disable-next-line:no-any
     ((state = initialState, action: ReduxAction<any>): State => {
 
       // Find the handler in the dictionary, or use the NOOP.

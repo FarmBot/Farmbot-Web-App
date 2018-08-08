@@ -2,6 +2,8 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { InputUnknown } from "../input_unknown";
 
+/* tslint:disable:no-any */
+
 describe("<InputUnknown/>", () => {
   it("is merely a fallback for bad keys", () => {
     const field: any = "Nope!";

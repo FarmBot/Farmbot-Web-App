@@ -20,6 +20,7 @@ function getVersionFromState(state: Everything) {
 const fn: MW =
   (store: Store<Everything>) =>
     (dispatch: Dispatch<Action<object>>) =>
+      // tslint:disable-next-line:no-any
       (action: any) => {
         const fbos = getVersionFromState(store.getState());
         window.Rollbar && window.Rollbar.configure({ payload: { fbos } });

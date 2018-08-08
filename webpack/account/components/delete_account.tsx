@@ -38,7 +38,9 @@ export class DeleteAccount extends
             </Col>
             <Col xs={8}>
               <BlurablePassword
-                onCommit={(e) => { this.setState({ password: e.currentTarget.value }); }} />
+                onCommit={(e) => {
+                  this.setState({ password: e.currentTarget.value });
+                }} />
             </Col>
             <Col xs={4}>
               <button

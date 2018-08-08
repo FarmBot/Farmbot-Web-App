@@ -16,6 +16,7 @@ interface RootComponentProps { store: Store; }
 
 export const attachAppToDom: Callback = () => {
   attachToRoot(RootComponent, { store: _store });
+  // tslint:disable-next-line:no-any
   _store.dispatch(ready() as any);
 };
 

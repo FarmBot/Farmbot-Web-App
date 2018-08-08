@@ -14,6 +14,7 @@ describe("revertToEnglishMiddleware", () => {
       payload: { name: "WebAppConfig", data: { disable_i18n: true } }
     };
     expect(revertToEnglish).not.toHaveBeenCalled();
+    // tslint:disable-next-line:no-any
     revertToEnglishMiddleware.fn({} as any)(dispatch)(action);
     expect(revertToEnglish).toHaveBeenCalled();
     expect(revertToEnglishMiddleware.env).toBe("*");

@@ -1,22 +1,9 @@
-const mockStorj: Dictionary<boolean> = {};
-
-jest.mock("../../../../session", () => {
-  return {
-    Session: {
-      deprecatedGetBool: (k: string) => {
-        mockStorj[k] = !!mockStorj[k];
-        return mockStorj[k];
-      }
-    }
-  };
-});
-
-import { Dictionary } from "farmbot";
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BotPeripheralsProps, BotPeripherals } from "../bot_peripherals";
-import { BooleanSetting } from "../../../../session_keys";
-import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
+import {
+  fakeMapTransformProps
+} from "../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {
   function fakeProps(): BotPeripheralsProps {
@@ -24,7 +11,8 @@ describe("<BotPeripherals/>", () => {
       peripherals: [{ label: "", value: false }],
       position: { x: 0, y: 0, z: 0 },
       mapTransformProps: fakeMapTransformProps(),
-      plantAreaOffset: { x: 100, y: 100 }
+      plantAreaOffset: { x: 100, y: 100 },
+      getConfigValue: jest.fn(),
     };
   }
 
@@ -40,11 +28,11 @@ describe("<BotPeripherals/>", () => {
 
   function animationToggle(
     props: BotPeripheralsProps, enabled: number, disabled: number) {
-    mockStorj[BooleanSetting.disable_animations] = false;
+    props.getConfigValue = () => false;
     const wrapperEnabled = shallow(<BotPeripherals {...props} />);
     expect(wrapperEnabled.find("use").length).toEqual(enabled);
 
-    mockStorj[BooleanSetting.disable_animations] = true;
+    props.getConfigValue = () => true;
     const wrapperDisabled = shallow(<BotPeripherals {...props} />);
     expect(wrapperDisabled.find("use").length).toEqual(disabled);
   }

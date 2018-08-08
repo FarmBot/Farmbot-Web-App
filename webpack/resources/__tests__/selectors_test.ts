@@ -1,4 +1,6 @@
-import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice
+} from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
   resourceReducer,

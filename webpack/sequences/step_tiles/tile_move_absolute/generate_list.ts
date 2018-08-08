@@ -52,7 +52,8 @@ export function generateList(input: ResourceIndex,
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllPoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] = activeTools(input).map(t => formatTools(t));
+  const toolDDI: DropDownItem[] = activeTools(input)
+    .map(tool => formatTools(tool));
   return _(points)
     .map(formatPoint())
     .concat(toolDDI)
@@ -74,8 +75,8 @@ const formatPoint = () => (p: PointerType): DropDownItem => {
   };
 };
 
-const formatTools = (t: TaggedTool): DropDownItem => {
-  const { id, name } = t.body;
+const formatTools = (tool: TaggedTool): DropDownItem => {
+  const { id, name } = tool.body;
   return {
     label: dropDownName((name || "untitled")),
     value: "" + id,

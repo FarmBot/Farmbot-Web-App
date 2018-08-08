@@ -1,7 +1,9 @@
 import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import { DesignerState, HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult } from "../interfaces";
+import {
+  DesignerState, HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
+} from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 
 describe("designer reducer", () => {
@@ -97,8 +99,9 @@ describe("designer reducer", () => {
         image: "lettuce"
       }
     ];
-    const action: ReduxAction<typeof payload> =
-      { type: Actions.OF_SEARCH_RESULTS_OK, payload };
+    const action: ReduxAction<typeof payload> = {
+      type: Actions.OF_SEARCH_RESULTS_OK, payload
+    };
     const newState = designer(oldState(), action);
     expect(newState.cropSearchResults).toEqual(payload);
   });
