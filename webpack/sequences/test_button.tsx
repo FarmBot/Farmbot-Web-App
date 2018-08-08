@@ -2,6 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { SyncStatus } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
+import { isParameterized } from "./is_parameterized";
 
 export interface TestBtnProps {
   /** Callback fired ONLY if synced. */
@@ -15,7 +16,7 @@ export interface TestBtnProps {
 export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
   const isSynced = syncStatus === "synced";
   const isSaved = !sequence.specialStatus;
-  const canTest = isSynced && isSaved;
+  const canTest = isSynced && isSaved && !isParameterized(sequence.body);
   const className = canTest ? "orange" : "pseudo-disabled";
 
   const clickHandler = () => (canTest) ?
