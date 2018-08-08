@@ -3,15 +3,16 @@ import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { getMapSize, transformXY } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
 import * as _ from "lodash";
-import { Session } from "../../../session";
-import { BooleanSetting } from "../../../session_keys";
 import { trim } from "../../../util";
+import { GetWebAppConfigValue } from "../../../config_storage/actions";
+import { BooleanSetting } from "../../../session_keys";
 
 export interface BotPeripheralsProps {
   position: BotPosition;
   peripherals: { label: string, value: boolean }[];
   mapTransformProps: MapTransformProps;
   plantAreaOffset: AxisNumberProperty;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 function lightsFigure(
@@ -46,10 +47,9 @@ function lightsFigure(
 }
 
 function waterFigure(
-  props: { i: number, cx: number, cy: number }) {
-  const { i, cx, cy } = props;
+  props: { i: number, cx: number, cy: number, animate: boolean }) {
+  const { i, cx, cy, animate } = props;
   const color = "rgb(11, 83, 148)";
-  const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
@@ -87,10 +87,9 @@ function waterFigure(
 }
 
 function vacuumFigure(
-  props: { i: number, cx: number, cy: number }) {
-  const { i, cx, cy } = props;
+  props: { i: number, cx: number, cy: number, animate: boolean }) {
+  const { i, cx, cy, animate } = props;
   const color = "black";
-  const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
@@ -121,11 +120,14 @@ function vacuumFigure(
 }
 
 export function BotPeripherals(props: BotPeripheralsProps) {
-  const { peripherals, position, plantAreaOffset, mapTransformProps } = props;
+  const {
+    peripherals, position, plantAreaOffset, mapTransformProps, getConfigValue
+  } = props;
   const { xySwap } = mapTransformProps;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
   const positionQ = transformXY(
     (position.x || 0), (position.y || 0), mapTransformProps);
+  const animate = !getConfigValue(BooleanSetting.disable_animations);
 
   return <g className={"virtual-peripherals"}>
     {peripherals.map((x, i) => {
@@ -141,13 +143,15 @@ export function BotPeripherals(props: BotPeripheralsProps) {
         return waterFigure({
           i,
           cx: positionQ.qx,
-          cy: positionQ.qy
+          cy: positionQ.qy,
+          animate
         });
       } else if (x.label.toLowerCase().includes("vacuum") && x.value) {
         return vacuumFigure({
           i,
           cx: positionQ.qx,
-          cy: positionQ.qy
+          cy: positionQ.qy,
+          animate
         });
       }
     })}

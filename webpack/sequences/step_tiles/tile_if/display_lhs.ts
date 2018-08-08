@@ -1,8 +1,8 @@
 import { NULL_CHOICE, DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { If } from "farmbot";
-import { isString } from "util";
 import { findByKindAndId } from "../../../resources/selectors";
+import { isString } from "lodash";
 
 interface DisplayLhsProps {
   currentStep: If;

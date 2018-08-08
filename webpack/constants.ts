@@ -459,6 +459,10 @@ export namespace Content {
     that you can provide in support requests to allow FarmBot to look up
     data relevant to the issue to help us identify the problem.`);
 
+  export const DEVICE_NEVER_SEEN =
+    trim(`The device has never been seen. Most likely,
+    there is a network connectivity issue on the device's end.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the

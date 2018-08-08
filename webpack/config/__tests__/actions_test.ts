@@ -31,9 +31,10 @@ jest.mock("../../auth/actions", () => ({
   setToken: jest.fn()
 }));
 
-import { ready } from "../actions";
-import { setToken } from "../../auth/actions";
+import { ready, storeToken } from "../actions";
+import { setToken, didLogin } from "../../auth/actions";
 import { Session } from "../../session";
+import { auth } from "../../__test_support__/fake_state/token";
 
 describe("Actions", () => {
   it("calls didLogin()", () => {
@@ -52,5 +53,17 @@ describe("Actions", () => {
     const thunk = ready();
     thunk(dispatch, getState);
     expect(Session.clear).toHaveBeenCalled();
+  });
+
+  it("stores token", () => {
+    const old = auth;
+    old.token.unencoded.jti = "old";
+    const dispatch = jest.fn();
+    console.warn = jest.fn();
+    storeToken(old, dispatch)(undefined);
+    expect(setToken).toHaveBeenCalledWith(old);
+    expect(didLogin).toHaveBeenCalledWith(old, dispatch);
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(
+      "Failed to refresh token"));
   });
 });

@@ -21,6 +21,7 @@ export function PlantLayer(props: PlantLayerProps) {
     selectedForDel,
     zoomLvl,
     activeDragXY,
+    animate,
   } = props;
 
   crops
@@ -57,7 +58,8 @@ export function PlantLayer(props: PlantLayerProps) {
               dragging={p.selected && dragging && editing}
               dispatch={dispatch}
               zoomLvl={zoomLvl}
-              activeDragXY={activeDragXY} />
+              activeDragXY={activeDragXY}
+              animate={animate} />
           </Link>;
         })}
   </g>;

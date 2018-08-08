@@ -17,12 +17,14 @@ describe("unsavedCheck", () => {
       kind: "WebAppConfig",
       uuid: "NOT SET HERE!",
       specialStatus,
+      // tslint:disable-next-line:no-any
       body: (body as any)
     };
     const output = fakeState();
     output.resources = buildResourceIndex([config]);
     // `buildResourceIndex` clears specialStatus. Set it again:
     const uuid = output.resources.index.all[0];
+    // tslint:disable-next-line:no-any
     (output.resources.index.references[uuid] || {} as any)
       .specialStatus = specialStatus;
     return output;

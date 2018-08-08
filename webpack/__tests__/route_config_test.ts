@@ -11,7 +11,8 @@ import { RouterState, RedirectFunction } from "react-router";
 async function makeSureTheyAreRoutes(input: typeof topLevelRoutes.childRoutes) {
   const cb = jest.fn();
   const all = (input || []);
-  await Promise.all(all.map(route => (route.getComponent || noop)({} as RouterState, cb)));
+  await Promise.all(all.map(route =>
+    (route.getComponent || noop)({} as RouterState, cb)));
   expect(cb).toHaveBeenCalled();
   expect(cb).toHaveBeenCalledTimes(all.length);
   cb.mock.calls.map(x => expect(!!x[1]).toBeTruthy());

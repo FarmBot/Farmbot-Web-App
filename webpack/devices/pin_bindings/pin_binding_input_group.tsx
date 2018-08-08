@@ -22,7 +22,9 @@ import {
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { ResourceIndex } from "../../resources/interfaces";
-import { PinBindingType, PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
+import {
+  PinBindingType, PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {

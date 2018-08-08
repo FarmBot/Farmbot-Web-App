@@ -1,5 +1,4 @@
-import { TaggedSequence } from "farmbot";
-import { If } from "farmbot";
+import { TaggedSequence, If } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { defensiveClone, bail } from "../../../util";
 import { DropDownItem } from "../../../ui";

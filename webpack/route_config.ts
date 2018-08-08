@@ -20,6 +20,7 @@ function page<T>(path: string,
   return {
     path,
     getComponent(_, cb): void {
+      // tslint:disable-next-line:no-any
       const ok = (mod: T) => cb(undefined, mod[key] as any);
       const no = (e: object) => cb(undefined, crashPage(e));
       /** Whatever you do, make sure this function stays void or you will get a

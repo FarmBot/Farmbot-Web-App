@@ -1,5 +1,4 @@
-import { TaggedToolSlotPointer } from "farmbot";
-import { SpecialStatus } from "farmbot";
+import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 
 export function emptyToolSlot(): TaggedToolSlotPointer {
   return {

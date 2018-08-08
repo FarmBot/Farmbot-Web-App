@@ -1,9 +1,9 @@
 import * as React from "react";
 import { DragHelpersProps } from "./interfaces";
 import { round, transformXY, getMapSize } from "./util";
-import { isUndefined } from "util";
 import { BotPosition } from "../../devices/interfaces";
 import { Color } from "../../ui/index";
+import { isUndefined } from "lodash";
 
 enum Alignment {
   NONE = "not aligned",

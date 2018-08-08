@@ -8,7 +8,9 @@ jest.mock("../../../history", () => ({
 
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { buildResourceIndex, fakeDevice } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice
+} from "../../../__test_support__/resource_index_builder";
 import {
   fakeSequence, fakeRegimen, fakeFarmEvent
 } from "../../../__test_support__/fake_state/resources";

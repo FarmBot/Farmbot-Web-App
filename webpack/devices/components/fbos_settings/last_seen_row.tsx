@@ -4,6 +4,7 @@ import { t } from "i18next";
 import * as moment from "moment";
 import { TaggedDevice } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
+import { Content } from "../../../constants";
 
 export interface LastSeenProps {
   onClick?(): void;
@@ -46,7 +47,7 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
       };
       return t(text, data);
     } else {
-      return t("The device has never been seen. Most likely, there is a network connectivity issue on the device's end.");
+      return t(Content.DEVICE_NEVER_SEEN);
     }
   }
 

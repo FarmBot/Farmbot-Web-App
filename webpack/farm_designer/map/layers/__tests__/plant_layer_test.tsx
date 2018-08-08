@@ -3,14 +3,6 @@ jest.mock("../../../../history", () => ({
   getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
-jest.mock("../../../../session", () => {
-  return {
-    Session: {
-      deprecatedGetBool: () => { return false; }
-    }
-  };
-});
-
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
 import { shallow } from "enzyme";
@@ -31,7 +23,8 @@ describe("<PlantLayer/>", () => {
       crops: [],
       dispatch: jest.fn(),
       zoomLvl: 1,
-      activeDragXY: { x: undefined, y: undefined, z: undefined }
+      activeDragXY: { x: undefined, y: undefined, z: undefined },
+      animate: true,
     };
   }
 

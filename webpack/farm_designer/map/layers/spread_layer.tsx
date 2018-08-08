@@ -6,8 +6,6 @@ import { cachedCrop } from "../../../open_farm/icons";
 import { MapTransformProps } from "../interfaces";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
 import { BotPosition } from "../../../devices/interfaces";
-import { Session } from "../../../session";
-import { BooleanSetting } from "../../../session_keys";
 
 export interface SpreadLayerProps {
   visible: boolean;
@@ -19,11 +17,14 @@ export interface SpreadLayerProps {
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   editing: boolean;
+  animate: boolean;
 }
 
 export function SpreadLayer(props: SpreadLayerProps) {
-  const { plants, visible, mapTransformProps, currentPlant,
-    dragging, zoomLvl, activeDragXY, activeDragSpread, editing } = props;
+  const {
+    plants, visible, mapTransformProps, currentPlant,
+    dragging, zoomLvl, activeDragXY, activeDragSpread, editing, animate
+  } = props;
   return <g id="spread-layer">
     <defs>
       <radialGradient id="SpreadGradient">
@@ -44,7 +45,8 @@ export function SpreadLayer(props: SpreadLayerProps) {
             plant={p}
             key={"spread-" + p.uuid}
             mapTransformProps={mapTransformProps}
-            selected={selected} />}
+            selected={selected}
+            animate={animate} />}
         <SpreadOverlapHelper
           key={"overlap-" + p.uuid}
           dragging={selected && dragging && editing}
@@ -62,6 +64,7 @@ interface SpreadCircleProps {
   plant: TaggedPlantPointer;
   mapTransformProps: MapTransformProps;
   selected: boolean;
+  animate: boolean;
 }
 
 interface SpreadCircleState {
@@ -80,9 +83,8 @@ export class SpreadCircle extends
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
-    const { selected, mapTransformProps } = this.props;
+    const { selected, mapTransformProps, animate } = this.props;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-    const animate = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
 
     return <g id={"spread-" + id}>
       {!selected &&

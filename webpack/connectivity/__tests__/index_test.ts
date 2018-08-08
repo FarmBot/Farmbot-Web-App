@@ -8,6 +8,7 @@ const mockRedux = {
 jest.mock("../../redux/store", () => mockRedux);
 jest.mock("lodash", () => {
   return {
+    // tslint:disable-next-line:no-any
     set(target: any, key: string, val: any) { target[key] = val; },
     times: (n: number, iter: Function) => {
       let n2 = n;
@@ -53,7 +54,7 @@ describe("autoSync", () => {
     const dispatch = jest.fn();
     const getState: GetState = jest.fn();
     const chan = "chanName";
-    const payload = new Buffer([]);
+    const payload = Buffer.from([]);
     const rmd = routeMqttData(chan, payload);
     autoSync(dispatch, getState)(chan, payload);
     expect(handleInbound).toHaveBeenCalledWith(dispatch, getState, rmd);
