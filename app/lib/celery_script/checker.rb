@@ -103,6 +103,17 @@ module CeleryScript
       run_additional_validations(value, key)
     end
 
+    def type_check_parameter(var, expected)
+      data_type = var.args[:data_type].value
+      if !expected.include?(data_type)
+        # Did it reolve?
+        #   YES: Make sure it resolves to a `kind` from the list above.
+        value.invalidate!(T_MISMATCH % [value.args["label"].value,
+                                          expected,
+                                          data_type])
+      end
+    end
+
     def validate_node_pairing(key, value)
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
@@ -114,13 +125,11 @@ module CeleryScript
         # in depth type checking. We're not there yet, though.
         # Currently we just need `resolve_variable!` to
         # catch unbound identifiers
-        data_type = resolve_variable!(value).args[:data_type].value
-        if !allowed_types.include?(data_type)
-          # Did it reolve?
-          #   YES: Make sure it resolves to a `kind` from the list above.
-          value.invalidate!(T_MISMATCH % [value.args["label"].value,
-                                            allowed_types,
-                                            data_type])
+        var = resolve_variable!(value)
+        case var.kind
+        when "parameter_declaration"
+          type_check_parameter(var, allowed_types)
+        else; raise ("Bad kind: " + var.kind)
         end
       end
       ok      = allowed.include?(actual)
