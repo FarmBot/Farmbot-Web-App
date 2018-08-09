@@ -105,13 +105,11 @@ module CeleryScript
 
     def type_check_parameter(var, expected)
       data_type = var.args[:data_type].value
-      if !expected.include?(data_type)
-        # Did it reolve?
-        #   YES: Make sure it resolves to a `kind` from the list above.
-        value.invalidate!(T_MISMATCH % [value.args["label"].value,
-                                          expected,
-                                          data_type])
-      end
+      bad_var!(value, label, expected, actual) if !expected.include?(data_type)
+    end
+
+    def bad_var!(value, label, expected, actual)
+      value.invalidate!(T_MISMATCH % [label, expected, actual])
     end
 
     def validate_node_pairing(key, value)
@@ -129,7 +127,16 @@ module CeleryScript
         case var.kind
         when "parameter_declaration"
           type_check_parameter(var, allowed_types)
-        else; raise ("Bad kind: " + var.kind)
+        when "variable_declaration"
+          actual = var.args[:data_value].kind
+          is_ok  = allowed_types.include?(actual)
+
+          bad_var!(value,
+                   var.args[:label].value,
+                   allowed_types,
+                   actual) unless is_ok
+        else
+          raise ("Bad kind: " + var.kind)
         end
       end
       ok      = allowed.include?(actual)
