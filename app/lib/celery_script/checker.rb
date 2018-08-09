@@ -129,12 +129,9 @@ module CeleryScript
           type_check_parameter(var, allowed_types)
         when "variable_declaration"
           actual = var.args[:data_value].kind
-          is_ok  = allowed_types.include?(actual)
-
-          bad_var!(value,
-                   var.args[:label].value,
-                   allowed_types,
-                   actual) unless is_ok
+          unless allowed_types.include?(actual)
+            bad_var!(value, var.args[:label].value, allowed_types, actual)
+          end
         else
           raise ("Bad kind: " + var.kind)
         end
