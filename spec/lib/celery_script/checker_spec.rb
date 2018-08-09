@@ -241,9 +241,9 @@ describe CeleryScript::Checker do
         {
           kind: "move_absolute",
           args: {
+            speed: 100,
             location: { kind: "identifier", args: { label: "parent" } },
-            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} },
-            speed: 100
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
           }
         }
       ]
