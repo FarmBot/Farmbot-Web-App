@@ -25,8 +25,7 @@ class TokenIssuance < ApplicationRecord
       id = "device_#{device_id}"
       Transport::Mgmt.try(:close_connections_for_username, id)
     end
-  rescue Faraday::ConnectionFailed
-  rescue Timeout::Error
+  rescue Faraday::ConnectionFailed, Timeout::Error
     Rollbar.error("Failed to evict clients on token revocation")
   end
 
