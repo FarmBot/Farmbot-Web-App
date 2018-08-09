@@ -217,4 +217,72 @@ describe CeleryScript::Checker do
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid package")
   end
+
+  it "handles good variable declarations" do
+    ast = {
+      kind: "sequence",
+      args: {
+        version: 20180209,
+        locals: {
+          kind: "scope_declaration",
+          :args=>{},
+          body: [
+            {
+              kind: "variable_declaration",
+              args: {
+                label: "parent",
+                data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+              }
+            }
+          ]
+        }
+      },
+      body: [
+        {
+          kind: "move_absolute",
+          args: {
+            speed: 100,
+            location: { kind: "identifier", args: { label: "parent" } },
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
+          }
+        }
+      ]
+    }
+    tree = CeleryScript::AstNode.new(ast)
+    chk  = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be true
+  end
+
+  it "handles bad variable declarations" do
+    ast = {
+      kind: "sequence",
+      args: {
+        version: 20180209,
+        locals: {
+          kind: "scope_declaration",
+          :args=>{},
+          body: [
+            {
+              kind: "variable_declaration",
+              args: { label: "parent", data_value: { kind: "nothing", args: { } } }
+            }
+          ]
+        }
+      },
+      body: [
+        {
+          kind: "move_absolute",
+          args: {
+            speed: 100,
+            location: { kind: "identifier", args: { label: "parent" } },
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
+          }
+        }
+      ]
+    }
+    tree = CeleryScript::AstNode.new(ast)
+    chk  = CeleryScript::Checker.new(tree, corpus)
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to include('but got "nothing"')
+  end
 end

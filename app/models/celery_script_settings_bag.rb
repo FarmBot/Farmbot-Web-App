@@ -208,7 +208,7 @@ module CeleryScriptSettingsBag
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
-      .node(:execute,               [:sequence_id])
+      .node(:execute,               [:sequence_id], [:variable_declaration])
       .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
       .node(:sequence,              [:version, :locals], STEPS)
       .node(:home,                  [:speed, :axis], [])
