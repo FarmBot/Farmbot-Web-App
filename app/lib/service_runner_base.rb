@@ -17,8 +17,7 @@ class ServiceRunner
     @channel.subscribe(block: true) do |info, _, payl|
       @worker.process(info, payl.force_encoding("UTF-8"))
     end
-  rescue OFFLINE_ERROR => e
-  rescue StandardError => e
+  rescue OFFLINE_ERROR, StandardError => e
     unless e.is_a?(OFFLINE_ERROR)
       Rollbar.error(e)
       print CRASH_MSG
