@@ -12,7 +12,6 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { LocationData } from "./tile_move_absolute/interfaces";
-import { extractParent } from "../locals_list";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
