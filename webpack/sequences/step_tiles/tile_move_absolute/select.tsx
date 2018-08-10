@@ -15,5 +15,5 @@ export function TileMoveAbsSelect(props: TileMoveAbsProps) {
     allowEmpty={true}
     list={generateList(resources, additionalItems)}
     selectedItem={formatSelectedDropdown(resources, i)}
-    onChange={(x) => onChange(handleSelect(resources, x))} />;
+    onChange={(x: DropDownItem) => onChange(handleSelect(resources, x) as any)} />;
 }

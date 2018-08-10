@@ -16,7 +16,7 @@ import { t } from "i18next";
 import { isNaN } from "lodash";
 
 type LocalVariable = ParameterDeclaration | VariableDeclaration;
-type OnChange = (data_type: LocationData) => void;
+type OnChange = (data_type: LocationData | ParameterDeclaration) => void;
 type DataValue = VariableDeclaration["args"]["data_value"];
 
 export interface LocalsListProps {
@@ -112,6 +112,8 @@ export const guessVecFromLabel =
       { x: vec[0], y: vec[1], z: vec[2] } : undefined;
   };
 
+export const PARENT = { value: "parent", label: "Parent", headingId: "parameter" };
+
 /** Return this when unable to correctly guess coordinate values */
 const BAD = { x: 0, y: 0, z: 0 };
 /** Given a dropdown label and a local variable declaration, tries to guess the
@@ -133,7 +135,7 @@ export const ParentVariableForm =
       <h5>Import Coordinates From</h5>
       <FBSelect
         allowEmpty={true}
-        list={generateList(resources, [])}
+        list={generateList(resources, [PARENT])}
         selectedItem={ddiLabel}
         onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
       <br /> {/** Lol */}

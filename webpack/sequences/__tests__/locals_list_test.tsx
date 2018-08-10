@@ -10,7 +10,8 @@ import {
   ParentVariableFormProps,
   ParentVariableForm,
   LocalsListProps,
-  LocalsList
+  LocalsList,
+  PARENT
 } from "../locals_list";
 import {
   VariableDeclaration,
@@ -233,7 +234,7 @@ describe("<ParentVariableForm/>", () => {
     expect(selects.length).toBe(1);
     const p = selects.first().props();
     expect(p.allowEmpty).toBe(true);
-    const choices = generateList(props.resources, []);
+    const choices = generateList(props.resources, [PARENT]);
     expect(p.list).toEqual(choices);
     const choice = choices[1];
     p.onChange(choice);
