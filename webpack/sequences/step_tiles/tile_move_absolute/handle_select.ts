@@ -1,16 +1,20 @@
-/** Given a dropdown item and a ResourceIndex,
+/** Given a drop down item and a ResourceIndex,
  * figures out the corresponding Tool | Coordinate | Point */
 import { DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { KnownGroupTag, LocationData } from "./interfaces";
 import { findPointerByTypeAndId, findToolById } from "../../../resources/selectors";
 import { bail } from "../../../util";
-import { ParameterDeclaration } from "farmbot";
+import { ParameterDeclaration, Coordinate } from "farmbot";
 
 export type CeleryVariable = LocationData | ParameterDeclaration;
+export const EMPTY_COORD: Coordinate = {
+  kind: "coordinate",
+  args: { x: 0, y: 0, z: 0 }
+};
 
 /** Takes a DropDownItem and turns it into data suitable
- * for MoveAbsolute["args"]["location"] */
+* for MoveAbsolute["args"]["location"] */
 export let handleSelect = (index: ResourceIndex, input: DropDownItem): CeleryVariable => {
   const tag = input.headingId as (KnownGroupTag | "parameter");
   const label = "" + input.value;
@@ -42,6 +46,6 @@ export let handleSelect = (index: ResourceIndex, input: DropDownItem): CeleryVar
       const data_type = "point";
       return { kind: "parameter_declaration", args: { label, data_type } };
     default:
-      return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+      return EMPTY_COORD;
   }
 };
