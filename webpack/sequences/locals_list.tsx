@@ -162,9 +162,8 @@ export const ParentVariableForm =
     const ddiLabel = formatSelectedDropdown(resources, data_value);
     const { x, y, z } = guessXYZ(ddiLabel.label, parent);
 
-    const isDisabled =
-      (parent.kind == "variable_declaration")
-      || data_value.kind !== "coordinate";
+    const isDisabled = (parent.kind == "parameter_declaration") ||
+      data_value.kind !== "coordinate";
 
     return <div>
       <br /> {/** Lol */}
