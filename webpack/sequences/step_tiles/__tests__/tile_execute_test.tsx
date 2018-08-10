@@ -28,7 +28,7 @@ describe("<ExecuteBlock/>", () => {
     const inputs = block.find("input");
     const labels = block.find("label");
     expect(inputs.length).toEqual(1);
-    expect(labels.length).toEqual(1);
+    expect(labels.length).toEqual(2);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
     expect(labels.at(0).text()).toEqual("Sequence");
     expect(block.text()).toContain("None");
