@@ -16,7 +16,7 @@ export interface TestBtnProps {
 export function TestButton({ onClick, onFail, syncStatus, sequence }: TestBtnProps) {
   const isSynced = syncStatus === "synced";
   const isSaved = !sequence.specialStatus;
-  const canTest = isSynced && isSaved && !isParameterized(sequence.body);
+  const canTest = !isParameterized(sequence.body) && isSynced && isSaved;
   const className = canTest ? "orange" : "pseudo-disabled";
 
   const clickHandler = () => (canTest) ?
