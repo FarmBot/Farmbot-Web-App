@@ -12,6 +12,7 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { LocationData } from "./tile_move_absolute/interfaces";
+import { extractParent } from "../locals_list";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -67,8 +68,15 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
             ];
             return;
           case "identifier":
-          default:
-            throw new Error(`We don't support type ${location.kind} yet.`);
+            step.body = [ // This is a rebind: `const parent = parent;`
+              {
+                kind: "variable_declaration",
+                args: {
+                  label: "parent",
+                  data_value: { kind: "identifier", args: { label: "parent" } }
+                }
+              }];
+            return;
         }
       }
     }));
