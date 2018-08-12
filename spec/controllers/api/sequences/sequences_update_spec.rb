@@ -34,7 +34,7 @@ describe Api::SequencesController do
       }
       patch :update, params: {id: sequence.id }, body: input.to_json, as: :json
       expect(response.status).to eq(422)
-      expect(json[:error]).to include("Not your point")
+      expect(json[:body]).to include("Bad point ID")
     end
 
     it 'doesnt allow nonsense in `sequence.args.locals`' do

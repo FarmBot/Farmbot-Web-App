@@ -247,7 +247,7 @@ describe Api::SequencesController do
       }
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:error]).to include("Not your point")
+      expect(json[:body]).to include("Bad point ID")
     end
 
     it 'prevents type errors from bad identifier / binding combos' do
