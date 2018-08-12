@@ -58,8 +58,10 @@ export function toggleDay({ week, day }: ToggleDayParams) {
   };
 }
 
-export function setSequence(uuid: string): ReduxAction<string> {
-  assertUuid("Sequence", uuid);
+export function setSequence(uuid: string | ""): ReduxAction<string> {
+  if (uuid) {
+    assertUuid("Sequence", uuid);
+  }
   return { type: Actions.SET_SEQUENCE, payload: uuid };
 }
 

@@ -9,35 +9,38 @@ import {
 import * as moment from "moment";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { betterCompact } from "../../util";
+import { betterCompact, trim } from "../../util";
+import { isParameterized } from "../../sequences/is_parameterized";
+import { error } from "farmbot-toastr";
+
+export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
+  regimen. Consider wrapping it in a parent sequence that calls it via "execute"
+  instead."`);
 
 export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {
     const s = this.props.selectedSequence;
-    if (s && s.body.id) {
-      return {
-        label: s.body.name,
-        value: s.uuid
-      };
-    } else {
-      return NULL_CHOICE;
-    }
+    return (s && s.body.id) ? { label: s.body.name, value: s.uuid } : NULL_CHOICE;
   };
 
   all = (): DropDownItem[] => {
-    return betterCompact(this
-      .props
-      .sequences
-      .map(x => {
-        if (x.body.id) {
-          return { value: x.uuid, label: x.body.name };
-        }
-      }));
+    return betterCompact(this.props.sequences.map(x => {
+      if (x.body.id) {
+        return { value: x.uuid, label: x.body.name };
+      }
+    }));
   };
 
   onChange = (event: DropDownItem) => {
-    if (_.isString(event.value)) {
-      this.props.dispatch(setSequence(event.value));
+    const uuid = event.value;
+    if (_.isString(uuid)) {
+      const sequence = this.props.sequences.filter(x => x.uuid == uuid)[0];
+
+      if (sequence && isParameterized(sequence.body)) {
+        error(t(NO_PARAMETERS));
+      } else {
+        this.props.dispatch(setSequence(uuid));
+      }
     } else {
       throw new Error("WARNING: Not a sequence UUID.");
     }
@@ -80,8 +83,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
           </div>
         </Col>
       </Row>
-      <WeekGrid weeks={weeks}
-        dispatch={dispatch} />
+      <WeekGrid weeks={weeks} dispatch={dispatch} />
     </div>;
   }
 }
