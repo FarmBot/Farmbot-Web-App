@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe CeleryScript::Corpus do
-  let (:corpus) { Sequence::Corpus }
+  let(:device) { FactoryBot}
+  let(:corpus) { Sequence::Corpus }
 
   it "handles valid move_absolute blocks" do
     ok1 = CeleryScript::AstNode.new({
@@ -26,7 +27,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check1 = CeleryScript::Checker.new(ok1, Sequence::Corpus)
+    check1 = CeleryScript::Checker.new(ok1, Sequence::Corpus, device)
     expect(check1.valid?).to be_truthy
 
     ok2 = CeleryScript::AstNode.new({
@@ -47,7 +48,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check2 = CeleryScript::Checker.new(ok2, Sequence::Corpus)
+    check2 = CeleryScript::Checker.new(ok2, Sequence::Corpus, device)
     expect(check2.valid?).to be_truthy
   end
 
@@ -67,7 +68,7 @@ describe CeleryScript::Corpus do
         },
       }
     })
-    check = CeleryScript::Checker.new(bad, Sequence::Corpus)
+    check = CeleryScript::Checker.new(bad, Sequence::Corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got Integer")
     expect(check.error.message).to include("'location' within 'move_absolute'")
@@ -93,7 +94,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check = CeleryScript::Checker.new(bad, Sequence::Corpus)
+    check = CeleryScript::Checker.new(bad, Sequence::Corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got String")
   end
@@ -122,7 +123,9 @@ describe CeleryScript::Corpus do
       },
       "body": []
     })
-    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
+    checker = CeleryScript::Checker.new(tree,
+                                        CeleryScriptSettingsBag::Corpus,
+                                        device)
     expect(checker.error.message).to include("not a valid message_type")
   end
 
@@ -142,7 +145,9 @@ describe CeleryScript::Corpus do
         }
       ]
     })
-    checker = CeleryScript::Checker.new(tree, CeleryScriptSettingsBag::Corpus)
+    checker = CeleryScript::Checker.new(tree,
+                                        CeleryScriptSettingsBag::Corpus,
+                                        device)
     expect(checker.error.message).to include("not a valid channel_name")
   end
 end

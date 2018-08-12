@@ -33,7 +33,6 @@ describe Api::SequencesController do
         }
       }
       patch :update, params: {id: sequence.id }, body: input.to_json, as: :json
-      binding.pry
       expect(response.status).to eq(422)
       expect(json[:error]).to include("Not your point")
     end

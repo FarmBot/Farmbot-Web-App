@@ -12,10 +12,11 @@ module CeleryScript
     UNBOUND_VAR = "Unbound variable: %s"
     T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
-    attr_reader :tree, :corpus
+    attr_reader :tree, :corpus, :device
 
-    def initialize(tree, corpus)
-      @tree, @corpus = tree, corpus
+    # Device is required for security / permission checks.
+    def initialize(tree, corpus, device)
+      @tree, @corpus, @device = tree, corpus, device
       self.freeze
     end
 
@@ -162,7 +163,7 @@ module CeleryScript
     end
 
     def run_additional_validations(node, expectation)
-      corpus.arg_validator(expectation).call(node, TypeCheckError, corpus)
+      corpus.arg_validator(expectation).call(node, device)
     end
 
     # Calling this method with only one paramter
