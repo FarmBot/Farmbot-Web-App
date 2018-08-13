@@ -21,6 +21,7 @@ const mockInc = jest.fn();
 const mockFinish = jest.fn();
 jest.mock("../../../util", () => ({
   Progress: () => ({ inc: mockInc, finish: mockFinish }),
+  trim: () => { },
 }));
 
 import { translateImageWorkspaceAndSave, deletePoints } from "../actions";
@@ -29,6 +30,7 @@ import axios from "axios";
 import { API } from "../../../api";
 import { success, error } from "farmbot-toastr";
 import { times } from "lodash";
+import { Actions } from "../../../constants";
 
 describe("actions", () => {
   it("Saves environment variables", () => {
@@ -89,7 +91,7 @@ describe("deletePoints()", () => {
     await expect(axios.delete).toHaveBeenCalledWith(":///api/points/1,2,3");
     expect(dispatch).toHaveBeenCalledWith({
       payload: [1, 2, 3],
-      type: "DELETE_POINT_OK"
+      type: Actions.DELETE_POINT_OK
     });
     expect(mockInc).toHaveBeenCalledTimes(2);
     expect(mockFinish).toHaveBeenCalledTimes(1);
@@ -124,7 +126,7 @@ describe("deletePoints()", () => {
       expect.stringContaining(":///api/points/1,"));
     expect(dispatch).toHaveBeenCalledWith({
       payload: expect.arrayContaining([1]),
-      type: "DELETE_POINT_OK"
+      type: Actions.DELETE_POINT_OK
     });
     expect(mockInc).toHaveBeenCalledTimes(3);
     expect(mockFinish).toHaveBeenCalledTimes(1);

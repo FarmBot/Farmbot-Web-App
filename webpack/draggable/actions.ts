@@ -36,7 +36,7 @@ export function stepGet(uuid: string) {
     DataXfer {
     const obj = getState().draggable.dataTransfer[uuid];
     if (obj && obj.intent) {
-      dispatch({ type: "DROP_DATA_XFER", payload: uuid });
+      dispatch({ type: Actions.DROP_DATA_XFER, payload: uuid });
       return obj;
     } else {
       throw new Error(`Can't find StepXferObject with UUID ${uuid}`);

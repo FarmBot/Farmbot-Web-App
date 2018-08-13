@@ -23,6 +23,7 @@ import {
   PinBinding,
   PlantTemplate
 } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../constants";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -30,13 +31,13 @@ export interface ResourceReadyPayl {
 }
 
 export interface SyncResponse {
-  type: "RESOURCE_READY";
+  type: Actions.RESOURCE_READY;
   payload: ResourceReadyPayl;
 }
 
 export function fetchSyncData(dispatch: Function) {
   const fetch =
-    <T>(name: ResourceName, url: string, type = "RESOURCE_READY") => axios
+    <T>(name: ResourceName, url: string, type = Actions.RESOURCE_READY) => axios
       .get<T>(url)
       .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
