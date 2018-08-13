@@ -2,7 +2,6 @@ module Sequences
   class Update < Mutations::Command
     include CeleryScriptValidators
     using CanonicalCeleryHelpers
-    UNKNOWN = "Unknown validation issues."
     BLACKLIST = [:sequence, :device, :args, :body]
 
     required do
@@ -32,6 +31,10 @@ module Sequences
 
     def validate
       validate_sequence
+      # "Cant add `parent` parameter to sequence that is in use by farmevents
+        # Does it have parameters?
+        # Is it in use by an FE or RI?
+        #
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
@@ -39,8 +42,9 @@ module Sequences
       ActiveRecord::Base.transaction do
         sequence.migrated_nodes = true
         sequence.update_attributes!(inputs.except(*BLACKLIST))
-        CeleryScript::StoreCelery
-          .run!(sequence: sequence, args: args, body: body)
+        CeleryScript::StoreCelery.run!(sequence: sequence,
+                                       args:     args,
+                                       body:     body)
       end
       sequence.manually_sync! # We must manually sync this resource.
       CeleryScript::FetchCelery

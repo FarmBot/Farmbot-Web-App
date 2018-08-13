@@ -7,6 +7,20 @@ describe Api::SequencesController do
   describe '#update' do
 
     let(:user) { FactoryBot.create(:user) }
+
+    it 'disallows adding `parent` to sequences used as executable' do
+      sign_in user
+      sequence = FakeSequence.create(device: user.device)
+      farm_ev  = FactoryBot.create(:farm_event, device: user.device, executable: sequence)
+      regimen  = Regimens::Create.run!(device: user.device,
+                                       name:   "X",
+                                       color:  "red",
+                                       regimen_items: [
+                                         { time_offset: 10, sequence_id: sequence.id}
+                                       ])
+      fail "Try to edit the sequence to have a 'parent' - it should crash."
+    end
+
     it 'does not let you use other peoples point resources' do
       sign_in user
       sequence  = FakeSequence.create( device: user.device)
