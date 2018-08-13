@@ -1,5 +1,3 @@
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 

@@ -23,13 +23,6 @@ jest.mock("../../device", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({
-  success: jest.fn(),
-  info: jest.fn(),
-  error: jest.fn(),
-  warning: jest.fn(),
-}));
-
 let mockGetRelease: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({
   default: {

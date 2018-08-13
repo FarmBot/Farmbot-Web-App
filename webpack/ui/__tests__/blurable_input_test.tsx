@@ -1,5 +1,3 @@
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BlurableInput, BIProps } from "../blurable_input";
