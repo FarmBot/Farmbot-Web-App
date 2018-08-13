@@ -419,8 +419,8 @@ CREATE TABLE public.firmware_configs (
     movement_invert_motor_x integer DEFAULT 0,
     movement_invert_motor_y integer DEFAULT 0,
     movement_invert_motor_z integer DEFAULT 0,
-    movement_keep_active_x integer DEFAULT 0,
-    movement_keep_active_y integer DEFAULT 0,
+    movement_keep_active_x integer DEFAULT 1,
+    movement_keep_active_y integer DEFAULT 1,
     movement_keep_active_z integer DEFAULT 1,
     movement_max_spd_x integer DEFAULT 400,
     movement_max_spd_y integer DEFAULT 400,
@@ -2303,6 +2303,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180720021451'),
 ('20180726145505'),
 ('20180726165546'),
-('20180727152741');
+('20180727152741'),
+('20180813185430');
 
 
