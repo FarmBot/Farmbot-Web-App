@@ -8,6 +8,7 @@ class Typescript
     "integer"                     => "number",
     "timestamp without time zone" => "string",
     "character varying"           => "string",
+    "double precision"            => "number"
   }
 
   INTERFACE_TPL = <<~END
