@@ -1,5 +1,7 @@
 module Regimens
   class Create < Mutations::Command
+    include Sequences::TransitionalHelpers
+
     required do
       model :device, class: Device
       string :name
@@ -10,6 +12,10 @@ module Regimens
           integer :sequence_id
         end
       end
+    end
+
+    def validate
+      no_parameterized_regimen_items_plz
     end
 
     def execute
