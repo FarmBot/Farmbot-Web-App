@@ -112,4 +112,15 @@ describe("<CreatePoints />", () => {
     instance.getPointData();
     expect(instance.state).toEqual({ color: "green", cx: 0, cy: 0, r: 1 });
   });
+
+  it("unmounts", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CURRENT_POINT_DATA,
+      payload: undefined
+    });
+  });
 });
