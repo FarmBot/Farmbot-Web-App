@@ -32,6 +32,19 @@ describe("handleSelect()", () => {
     });
   });
 
+  it("handles 'parameter_declaration's", () => {
+    const result = handleSelect(fakeResourceIndex(), {
+      headingId: "parameter",
+      value: "parent",
+      label: "1"
+    });
+    expect(result.kind).toBe("parameter_declaration");
+    if (result.kind == "parameter_declaration") {
+      expect(result.args.label).toBe("parent");
+      expect(result.args.data_type).toBe("point");
+    }
+  });
+
   it("returns location data: identifier", () => {
     const location = handleSelect(fakeResourceIndex(),
       {
