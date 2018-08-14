@@ -73,7 +73,6 @@ describe("getVariable", () => {
   it("handles others", () => {
     const data_value: Identifier = { kind: "identifier", args: { label: "X" } };
 
-    const nonsens = { kind: "never_ever" };
     // tslint:disable-next-line:no-any
     const boom = () => getVariable([{
       kind: "variable_declaration",
