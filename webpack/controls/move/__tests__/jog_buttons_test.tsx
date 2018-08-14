@@ -10,8 +10,6 @@ jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
-import { random, range, some, clamp } from "lodash";
+import { random, range, some, clamp, sample } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
 
 export interface BugsProps {
@@ -16,7 +16,8 @@ type Bug = {
   y: number,
   r: number,
   hp: number,
-  alive: boolean
+  alive: boolean,
+  slug: string
 };
 
 interface BugsState {
@@ -42,7 +43,11 @@ export function getBugTime() {
   return getEggStatus(EggKeys.LAST_BUG_TIME);
 }
 
-const BUG_ICON = "/app-resources/img/generic-plant.svg";
+const BUGS = [
+  "aphid", "caterpillar", "earth-worm", "generic-ant",
+  "generic-moth", "june-bug", "ladybug", "roly-poly"
+];
+const bugFile = (bug: string) => `/app-resources/img/bugs/${bug}.svg`;
 
 export class Bugs extends React.Component<BugsProps, BugsState> {
   state: BugsState = { bugs: [], startTime: NaN };
@@ -55,7 +60,8 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
         y: random(0, this.yMax),
         r: random(25, 100),
         hp: 100,
-        alive: true
+        alive: true,
+        slug: sample(BUGS) || "caterpillar"
       })),
       startTime: this.seconds
     });
@@ -103,7 +109,7 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
           className={`bug ${bug.alive ? "" : "dead"}`}
           filter={bug.alive ? "" : "url(#grayscale)"}
           opacity={bug.hp / 100}
-          xlinkHref={BUG_ICON}
+          xlinkHref={bugFile(bug.slug)}
           onClick={() => this.onClick(bug.id)}
           height={bug.r * 2}
           width={bug.r * 2}

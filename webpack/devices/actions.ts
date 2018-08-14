@@ -215,7 +215,7 @@ export let fetchMinOsFeatureData = (url: string) =>
       })
       .catch((ferror) => {
         dispatch({
-          type: "FETCH_MIN_OS_FEATURE_INFO_ERROR",
+          type: Actions.FETCH_MIN_OS_FEATURE_INFO_ERROR,
           payload: ferror
         });
       });
@@ -225,7 +225,7 @@ export function save(input: TaggedDevice) {
   return function (dispatch: Function) {
     return axios
       .put<User>(API.current.devicePath, input.body)
-      .then(resp => dispatch({ type: "SAVE_DEVICE_OK", payload: resp.data }))
+      .then(resp => dispatch({ type: Actions.SAVE_DEVICE_OK, payload: resp.data }))
       .catch(() => error(t("Error saving device settings.")));
   };
 }
@@ -235,11 +235,11 @@ export function save(input: TaggedDevice) {
  * found on the Devices page.
  */
 export function toggleControlPanel(payload: keyof ControlPanelState) {
-  return { type: "TOGGLE_CONTROL_PANEL_OPTION", payload };
+  return { type: Actions.TOGGLE_CONTROL_PANEL_OPTION, payload };
 }
 
 export function bulkToggleControlPanel(payload: boolean) {
-  return { type: "BULK_TOGGLE_CONTROL_PANEL", payload };
+  return { type: Actions.BULK_TOGGLE_CONTROL_PANEL, payload };
 }
 
 export function MCUFactoryReset() {
@@ -325,12 +325,12 @@ const startUpdate = () => {
 };
 
 const updateOK = (dispatch: Function, noun: string) => {
-  dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
+  dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
   commandOK(noun);
 };
 
 const updateNO = (dispatch: Function, noun: string) => {
-  dispatch({ type: "SETTING_UPDATE_END", payload: undefined });
+  dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
   commandErr(noun);
 };
 

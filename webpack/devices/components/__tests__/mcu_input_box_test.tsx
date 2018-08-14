@@ -1,5 +1,3 @@
-jest.mock("farmbot-toastr", () => ({ warning: jest.fn() }));
-
 jest.mock("../../actions", () => ({ updateMCU: jest.fn() }));
 
 import * as React from "react";

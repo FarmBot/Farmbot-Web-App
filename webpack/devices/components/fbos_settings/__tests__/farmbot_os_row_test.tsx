@@ -23,4 +23,12 @@ describe("<FarmbotOsRow/>", () => {
     ["FarmBot OS", "Version", "Release Notes"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
+
+  it("shows beta version string", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.controller_version = "1.0.0";
+    p.bot.hardware.informational_settings.currently_on_beta = true;
+    const wrapper = mount(<FarmbotOsRow {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("1.0.0-beta");
+  });
 });

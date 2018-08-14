@@ -5,7 +5,6 @@ const mock = {
   }
 };
 
-jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
 jest.mock("axios",
   () => ({ default: { post: jest.fn(() => Promise.resolve(mock.response)) } }));
 

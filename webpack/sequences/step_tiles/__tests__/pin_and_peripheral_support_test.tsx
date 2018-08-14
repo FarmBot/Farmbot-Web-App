@@ -31,6 +31,7 @@ import {
   NamedPin, AllowedPinTypes, TaggedSensor, TaggedSequence
 } from "farmbot";
 import { StepParams } from "../../interfaces";
+import { Actions } from "../../../constants";
 
 describe("Pin and Peripheral support files", () => {
   const newIndex = () => {
@@ -292,7 +293,7 @@ describe("Pin and Peripheral support files", () => {
       };
       const callback = setArgsDotPinNumber(stepParams);
       const ddi: DropDownItem = { label: "hmm", value: 0 };
-      const action = { type: "OVERWRITE_RESOURCE" };
+      const action = { type: Actions.OVERWRITE_RESOURCE };
       callback(ddi);
       expect(stepParams.dispatch)
         .toHaveBeenCalledWith(expect.objectContaining(action));

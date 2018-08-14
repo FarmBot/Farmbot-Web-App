@@ -2,8 +2,6 @@ jest.mock("../../../open_farm/icons", () => ({
   cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
 }));
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 jest.mock("../../actions", () => ({
   closePlantInfo: jest.fn(),
   movePlant: jest.fn(),

@@ -1,6 +1,4 @@
-const mockErr = jest.fn();
 jest.mock("i18next", () => ({ t: (i: string) => i }));
-jest.mock("farmbot-toastr", () => ({ error: mockErr, warning: mockErr }));
 
 import { commitBulkEditor, setTimeOffset, toggleDay, setSequence } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -9,6 +7,7 @@ import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
+import { error, warning } from "farmbot-toastr";
 
 describe("commitBulkEditor()", () => {
   function newFakeState() {
@@ -77,9 +76,9 @@ describe("commitBulkEditor()", () => {
     commitBulkEditor()(dispatch, getState);
     expect(dispatch).not.toHaveBeenCalled();
     if (title) {
-      expect(mockErr).toBeCalledWith(message, title);
+      expect(error).toBeCalledWith(message, title);
     } else {
-      expect(mockErr).toBeCalledWith(message);
+      expect(error).toBeCalledWith(message);
     }
   }
 
@@ -124,7 +123,7 @@ describe("commitBulkEditor()", () => {
       }),
       type: Actions.OVERWRITE_RESOURCE
     });
-    expect(mockErr).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 });
 
@@ -137,7 +136,7 @@ describe("setTimeOffset()", () => {
   it("throws error for NaN", () => {
     expect(() => setTimeOffset(NaN))
       .toThrowError("Bad time input on regimen page: null");
-    expect(mockErr).toBeCalledWith(
+    expect(warning).toBeCalledWith(
       "Time is not properly formatted.", "Bad Input");
   });
 });
