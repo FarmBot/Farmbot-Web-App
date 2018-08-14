@@ -1,8 +1,8 @@
 import * as React from "react";
-import { ExecuteBlock, ExecBlockParams, RefactoredExecuteBlock } from "../tile_execute";
+import { ExecuteBlock, ExecBlockParams, RefactoredExecuteBlock, getVariable } from "../tile_execute";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Execute } from "farmbot/dist";
+import { Execute, Point, Identifier } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 import { Actions } from "../../../constants";
 
@@ -52,5 +52,44 @@ describe("<RefactoredExecuteBlock />", () => {
         })
       })
     });
+  });
+});
+
+describe("getVariable", () => {
+  it("handles points", () => {
+    const data_value: Point = {
+      kind: "point",
+      args: { pointer_type: "point", pointer_id: 123 }
+    };
+
+    const result = getVariable([{
+      kind: "variable_declaration",
+      args: { label: "parent", data_value }
+    }]);
+
+    expect(result).toEqual(data_value);
+  });
+
+  it("handles others", () => {
+    const data_value: Identifier = { kind: "identifier", args: { label: "X" } };
+
+    const nonsens = { kind: "never_ever" };
+    // tslint:disable-next-line:no-any
+    const boom = () => getVariable([{
+      kind: "variable_declaration",
+      args: { label: "parent", data_value }
+    }]);
+
+    expect(boom).toThrow("How did identifier get here?");
+  });
+
+  it("handles undefined", () => {
+    const result = getVariable(undefined);
+    expect(result.kind).toEqual("coordinate");
+    if (result.kind === "coordinate") {
+      expect(result.args.x).toEqual(0);
+      expect(result.args.y).toEqual(0);
+      expect(result.args.z).toEqual(0);
+    }
   });
 });

@@ -125,13 +125,12 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
 export const getVariable = (parent: VariableDeclaration[] | undefined): LocationData => {
   const p = (parent || [])[0];
   if (p) {
-    const parentValue = p.args.data_value;
+    const parentValue = p.args && p.args.data_value;
     switch (parentValue.kind) {
       case "coordinate":
       case "point":
       case "tool":
         return parentValue;
-      case "identifier":
       default:
         throw new Error(`How did ${parentValue.kind} get here?`);
     }
