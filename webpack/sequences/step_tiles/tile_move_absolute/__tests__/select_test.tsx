@@ -10,21 +10,6 @@ import { buildResourceIndex } from "../../../../__test_support__/resource_index_
 import { TileMoveAbsSelect } from "../select";
 import { TileMoveAbsProps } from "../interfaces";
 
-// import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
-// import { SequenceBodyItem } from "farmbot";
-// function fakeSequenceStepProps(currentStep: SequenceBodyItem) {
-//   const currentSequence = fakeSequence();
-//   currentSequence.body.body = [currentStep];
-
-//   return {
-//     resources: buildResourceIndex([currentSequence]).index,
-//     currentSequence,
-//     currentStep,
-//     dispatch: jest.fn(),
-//     index: 0
-//   };
-// }
-
 describe("<TileMoveAbsSelect/>", () => {
   function fakeProps(): TileMoveAbsProps {
     return {
