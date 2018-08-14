@@ -9,13 +9,9 @@ import {
 import * as moment from "moment";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { betterCompact, trim, bail } from "../../util";
-import { isParameterized } from "../../sequences/is_parameterized";
-import { error } from "farmbot-toastr";
+import { betterCompact, bail } from "../../util";
+import { maybeWarnAboutParameters, msToTime, timeToMs } from "./utils";
 
-export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
-  regimen. Consider wrapping it in a parent sequence that calls it via "execute"
-  instead."`);
 const BAD_UUID = "WARNING: Not a sequence UUID.";
 
 export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
@@ -34,8 +30,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
 
   commitChange = (uuid: string) => {
     const s = this.props.sequences.filter(x => x.uuid == uuid)[0];
-    s && isParameterized(s.body) && error(t(NO_PARAMETERS));
-
+    maybeWarnAboutParameters(s);
     this.props.dispatch(setSequence(uuid));
   }
 
@@ -84,22 +79,4 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
       <WeekGrid weeks={weeks} dispatch={dispatch} />
     </div>;
   }
-}
-
-function msToTime(ms: number) {
-  if (_.isNumber(ms)) {
-    const d = moment.duration(ms);
-    const h = _.padStart(d.hours().toString(), 2, "0");
-    const m = _.padStart(d.minutes().toString(), 2, "0");
-    return `${h}:${m}`;
-  } else {
-    return "00:01";
-  }
-}
-
-function timeToMs(input: string) {
-  const [hours, minutes] = input
-    .split(":")
-    .map((n: string) => parseInt(n, 10));
-  return ((hours * 60) + (minutes)) * 60 * 1000;
 }
