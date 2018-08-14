@@ -2,8 +2,6 @@ jest.mock("../../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-jest.mock("farmbot-toastr", () => ({ success: jest.fn() }));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { Photos } from "../photos";

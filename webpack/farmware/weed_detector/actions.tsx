@@ -11,6 +11,7 @@ import { NumericValues } from "./image_workspace";
 import { envSave } from "./remote_env/actions";
 import { noop } from "lodash";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../../constants";
 type Key = keyof NumericValues;
 type Translation = Record<Key, WDENVKey>;
 
@@ -46,7 +47,7 @@ export function deletePoints(
         .all(promises)
         .then(function () {
           dispatch({
-            type: "DELETE_POINT_OK",
+            type: Actions.DELETE_POINT_OK,
             payload: ids
           });
           success(t("Deleted {{num}} {{points}}", {

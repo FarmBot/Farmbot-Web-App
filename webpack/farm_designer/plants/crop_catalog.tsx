@@ -7,6 +7,7 @@ import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";
 import * as _ from "lodash";
+import { Actions } from "../../constants";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   return {
@@ -30,7 +31,7 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
 
   handleChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
-    this.props.dispatch({ type: "SEARCH_QUERY_CHANGE", payload: value });
+    this.props.dispatch({ type: Actions.SEARCH_QUERY_CHANGE, payload: value });
     this.debouncedOFSearch(value);
   }
 

@@ -20,6 +20,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { MoveTo, MoveToProps, MoveToForm, MoveToFormProps } from "../move_to";
 import { history } from "../../../history";
+import { Actions } from "../../../constants";
 
 describe("<MoveTo />", () => {
   beforeEach(function () {
@@ -44,6 +45,17 @@ describe("<MoveTo />", () => {
     const wrapper = mount(<MoveTo {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+  });
+
+  it("unmounts", () => {
+    const p = fakeProps();
+    const wrapper = mount(<MoveTo {...p} />);
+    jest.clearAllMocks();
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: undefined, y: undefined, z: undefined }
+    });
   });
 });
 

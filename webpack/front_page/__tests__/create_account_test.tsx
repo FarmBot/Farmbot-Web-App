@@ -1,10 +1,3 @@
-jest.mock("farmbot-toastr", () => ({
-  success: jest.fn(),
-  error: jest.fn(),
-  info: jest.fn(),
-  warning: jest.fn()
-}));
-
 jest.mock("../resend_verification", () => {
 
   return {

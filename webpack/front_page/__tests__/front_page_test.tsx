@@ -12,12 +12,6 @@ jest.mock("../../session", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({
-  error: jest.fn(),
-  success: jest.fn(),
-  init: jest.fn()
-}));
-
 jest.mock("../../api", () => ({
   API: {
     setBaseUrl: jest.fn(),

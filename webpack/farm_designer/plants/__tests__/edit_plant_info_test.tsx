@@ -9,8 +9,6 @@ jest.mock("../../../history", () => ({
   getPathArray: () => ""
 }));
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import * as React from "react";
 import { EditPlantInfo } from "../edit_plant_info";
 import { mount } from "enzyme";

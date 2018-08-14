@@ -2,8 +2,6 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
-jest.mock("farmbot-toastr/dist", () => ({ success: jest.fn() }));
-
 import * as React from "react";
 import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
