@@ -30,7 +30,7 @@ describe Api::TokensController do
     end
 
     it 'bumps last_saw_api and issues BOT AUD when it is a bot' do
-      ua = "FARMBOTOS/99.99.99 (RPI3) RPI3 (1.1.1)"
+      ua = "FARMBOTOS/111.111.111 (RPI3) RPI3 (111.111.111)"
       allow(request).to receive(:user_agent).and_return(ua)
       request.env["HTTP_USER_AGENT"] = ua
       payload = {user: {email: user.email, password: "password"}}
@@ -40,8 +40,8 @@ describe Api::TokensController do
       expect(after).to be
       expect(after).to be > before
       expect(json.dig(:token, :unencoded, :aud)).to be
-      expect(json.dig(:token, :unencoded, :aud))
-        .to eq(AbstractJwtToken::BOT_AUD)
+      expect(json.dig(:token, :unencoded, :aud)).to eq AbstractJwtToken::BOT_AUD
+      expect(user.device.fbos_version).to eq("111.111.111")
     end
 
     it "issues a 'HUMAN' AUD to browsers" do
