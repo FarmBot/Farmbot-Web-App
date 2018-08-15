@@ -11,10 +11,12 @@ class Log < ApplicationRecord
   # pagination, but could later on.
   PAGE_SIZE = 25
 
-  DISCARD   = ["fun", "debug", nil]
-  # self.meta[:type] is used by the bot and the frontend as a sort of
-  TYPES     = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
+  # Why "EMAIL_ISH"? Because `fatal_email` is LIKE '%email%', but it's probably
+  # not the one you want.
+  IS_EMAIL_ISH   = "channels LIKE '%email%'"
   IS_FATAL_EMAIL = "channels LIKE '%fatal_email%'"
+  DISCARD        = ["fun", "debug", nil]
+  TYPES          = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
   # The means by which the message will be sent. Ex: frontend toast notification
   serialize  :channels
   belongs_to :device
