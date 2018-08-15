@@ -16,12 +16,15 @@ export interface StatusRowProps {
 const iconLookup: CowardlyDictionary<string> = {
   true: "green",
   false: "red",
-  undefined: "red" // change to "yellow" to represent unknown status
+  undefined: "yellow"
 };
 
 export function ConnectivityRow(props: StatusRowProps) {
-  const colorClass = iconLookup["" + props.connectionStatus] || "grey";
-  const hoverClass = props.hoveredConnection === props.connectionName ? "hover" : "";
+  const { connectionStatus, connectionName, hoveredConnection } = props;
+  const colorClass = iconLookup["" + connectionStatus] || "grey";
+  const connectorColorClass = connectionName === "botFirmware" &&
+    colorClass === "yellow" ? "red" : colorClass;
+  const hoverClass = hoveredConnection === connectionName ? "hover" : "";
   const hoverOver = props.hover ? props.hover : () => { };
   const header = props.from === "from";
   const className = header
@@ -29,7 +32,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     : `saucer active ${colorClass} ${hoverClass}`;
 
   const getTitle = () => {
-    switch (props.connectionStatus) {
+    switch (connectionStatus) {
       case undefined: return "Unknown";
       case true: return "Ok";
       default: return "Error";
@@ -40,10 +43,10 @@ export function ConnectivityRow(props: StatusRowProps) {
     <Col xs={1}>
       <div className={className}
         title={header ? "Status" : getTitle()}
-        onMouseEnter={hoverOver(props.connectionName)}
+        onMouseEnter={hoverOver(connectionName)}
         onMouseLeave={hoverOver(undefined)} />
       {!header &&
-        <div className={`saucer-connector ${colorClass}`} />}
+        <div className={`saucer-connector ${connectorColorClass}`} />}
     </Col>
     <Col xs={2}>
       <p>
