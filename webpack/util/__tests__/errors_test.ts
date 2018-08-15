@@ -1,4 +1,4 @@
-import { prettyPrintApiErrors } from "../errors";
+import { prettyPrintApiErrors, catchErrors } from "../errors";
 
 describe("prettyPrintApiErrors", () => {
   it("handles properly formatted API error messages", () => {
@@ -10,5 +10,12 @@ describe("prettyPrintApiErrors", () => {
       }
     });
     expect(result).toEqual("Email: can't be blank");
+  });
+});
+
+describe("catchErrors", () => {
+  it("re-raises erorrs when ROllbar is not detected", () => {
+    const e = new Error("TEST");
+    expect(() => catchErrors(e)).toThrow("TEST");
   });
 });

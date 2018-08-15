@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TileSendMessage, RefactoredSendMessage } from "../tile_send_message";
-import { mount, CommonWrapper } from "enzyme";
+import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
