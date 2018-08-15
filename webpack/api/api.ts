@@ -132,7 +132,7 @@ export class API {
   /** /api/sensors/ */
   get sensorPath() { return `${this.baseUrl}/api/sensors/`; }
   /** /api/farmware_envs/:id */
-  get deviceConfigPath() { return `${this.baseUrl}/api/farmware_envs`; }
+  get farmwareEnvPath() { return `${this.baseUrl}/api/farmware_envs`; }
   /** /api/pin_bindings/:id */
   get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/saved_gardens/:id */

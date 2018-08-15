@@ -65,7 +65,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Sensor[]>("Sensor", API.current.sensorPath);
   fetch<FarmwareInstallation[]>("FarmwareInstallation",
     API.current.farmwareInstallationPath);
-  fetch<FarmwareEnv[]>("FarmwareEnv", API.current.deviceConfigPath);
+  fetch<FarmwareEnv[]>("FarmwareEnv", API.current.farmwareEnvPath);
   fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
   fetch<SavedGarden[]>("SavedGarden", API.current.savedGardensPath);
   fetch<PlantTemplate[]>("PlantTemplate", API.current.plantTemplatePath);
