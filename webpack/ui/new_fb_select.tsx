@@ -5,7 +5,7 @@ import { equals } from "../util";
 
 export interface FBSelectProps {
   /** Value to show. */
-  selectedItem: DropDownItem | undefined;
+  selectedItem: Readonly<DropDownItem> | undefined;
   /** Notifies component user that something was clicked. */
   onChange(selection: DropDownItem): void;
   /** All possible select options. */
@@ -25,7 +25,7 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
   NULL_CHOICE = Object.freeze({
     label: this.props.customNullLabel || "None",
     value: ""
-  });
+  } as DropDownItem);
 
   get item() { return this.props.selectedItem || this.NULL_CHOICE; }
   get list() {

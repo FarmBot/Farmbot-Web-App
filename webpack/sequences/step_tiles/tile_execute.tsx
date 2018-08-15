@@ -3,13 +3,15 @@ import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { Row, Col, DropDownItem } from "../../ui/index";
-import { Execute } from "farmbot/dist";
+import { Execute, VariableDeclaration } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
+import { TileMoveAbsSelect } from "./tile_move_absolute/select";
+import { LocationData } from "./tile_move_absolute/interfaces";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -47,10 +49,45 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     }));
   }
 
+  setVariable = (location: LocationData) => {
+    this.props.dispatch(editStep({
+      sequence: this.props.currentSequence,
+      step: this.props.currentStep,
+      index: this.props.index,
+      executor(step: Execute) {
+        switch (location.kind) {
+          case "coordinate":
+          case "point":
+          case "tool":
+            step.body = [
+              {
+                kind: "variable_declaration",
+                args: { label: "parent", data_value: location }
+              }
+            ];
+            return;
+          case "identifier":
+            step.body = [ // This is a rebind: `const parent = parent;`
+              {
+                kind: "variable_declaration",
+                args: {
+                  label: "parent",
+                  data_value: { kind: "identifier", args: { label: "parent" } }
+                }
+              }];
+            return;
+        }
+      }
+    }));
+
+    console.dir(location);
+  };
+
   render() {
     const props = this.props;
-    const { dispatch, currentStep, index, currentSequence } = props;
+    const { dispatch, currentStep, index, currentSequence, resources } = props;
     const className = "execute-step";
+    const selected = getVariable(this.props.currentStep.body);
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -69,7 +106,35 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
               sequenceId={this.props.currentStep.args.sequence_id} />
           </Col>
         </Row>
+        <Row>
+          <Col xs={12}>
+            <label>{t("Set value of 'parent' to:")}</label>
+            <TileMoveAbsSelect
+              resources={resources}
+              selectedItem={selected}
+              onChange={this.setVariable}
+              shouldDisplay={() => true} />
+            <p>Debug info: {selected.kind}</p>
+          </Col>
+        </Row>
       </StepContent>
     </StepWrapper>;
   }
 }
+
+export const getVariable = (parent: VariableDeclaration[] | undefined): LocationData => {
+  const p = (parent || [])[0];
+  if (p) {
+    const parentValue = p.args && p.args.data_value;
+    switch (parentValue.kind) {
+      case "coordinate":
+      case "point":
+      case "tool":
+        return parentValue;
+      default:
+        throw new Error(`How did ${parentValue.kind} get here?`);
+    }
+  } else {
+    return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+  }
+};

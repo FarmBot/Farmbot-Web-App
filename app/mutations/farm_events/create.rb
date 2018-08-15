@@ -1,7 +1,10 @@
 module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
+    include Sequences::TransitionalHelpers
+
     has_executable_fields
+
     BACKWARDS_END_TIME = "This event starts before it ends. Did you flip the "\
                          "start and end times?"
 
@@ -21,6 +24,7 @@ module FarmEvents
     def validate
       validate_end_time
       validate_executable
+      guard_against_paramter_use(executable.id) if executable.is_a?(Sequence)
     end
 
     def execute

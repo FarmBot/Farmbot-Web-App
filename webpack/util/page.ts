@@ -19,9 +19,5 @@ export function attachToRoot<P>(type: React.ComponentClass<P>,
   const reactElem = React.createElement(type, props);
   const domElem = document.getElementById("root");
 
-  if (domElem) {
-    render(reactElem, domElem);
-  } else {
-    throw new Error(t("Add a <div> with id `root` to the page first."));
-  }
+  domElem && render(reactElem, domElem);
 }

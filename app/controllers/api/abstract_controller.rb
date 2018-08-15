@@ -164,14 +164,15 @@ private
       # Attempt 1:
       #   The device is using an HTTP client that does not provide a user-agent.
       #   We will assume this is an old FBOS version and set it to 0.0.0
-      # TODO UNTESTED CODE: simplecov counts this as tested. It is not.
       return CalculateUpgrade::NULL if ua == NO_UA_FOUND
 
       # Attempt 2:
       #   If the user agent was missing, we would have returned by now.
       #   If the UA includes FARMBOT_UA_STRING at this point, we can be certain
       #   we have a have a non-legacy FBOS client.
-      return Gem::Version::new(ua[10, 5]) if ua.include?(FARMBOT_UA_STRING)
+      if ua.include?(FARMBOT_UA_STRING)
+        return Gem::Version::new(ua[10, 12].split(" ").first)
+      end
 
       # Attempt 3:
       #   Pass CalculateUpgrade::NOT_FBOS if all other attempts fail.
