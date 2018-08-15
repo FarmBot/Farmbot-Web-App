@@ -19,7 +19,6 @@ class LogDeliveryMailer < ApplicationMailer
                         .pluck(:created_at, :message)
                         .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
                         .map{|(x,y)| "[#{x}]: #{y}"}
-                        .join("\n\n")
         @device_name = device.name || "Farmbot"
         mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
         unsent.update_all(sent_at: Time.now)
