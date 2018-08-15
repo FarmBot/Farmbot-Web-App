@@ -3,4 +3,6 @@
 class FarmwareInstallation < ApplicationRecord
   belongs_to :device
   validates  :url, url: true
+  validates_uniqueness_of :url, { scope: :device }
+  validates_presence_of :device
 end
