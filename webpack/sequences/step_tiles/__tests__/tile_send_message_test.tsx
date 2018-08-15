@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TileSendMessage } from "../tile_send_message";
+import { TileSendMessage, RefactoredSendMessage } from "../tile_send_message";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
@@ -7,7 +7,7 @@ import { emptyState } from "../../../resources/reducer";
 import { channel } from "../tile_send_message_support";
 
 describe("<TileSendMessage/>", () => {
-  function bootstrapTest() {
+  function props() {
     const currentStep: SendMessage = {
       kind: "send_message",
       args: {
@@ -21,13 +21,19 @@ describe("<TileSendMessage/>", () => {
         }
       }]
     };
+
     return {
-      component: mount(<TileSendMessage
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index} />)
+      currentSequence: fakeSequence(),
+      currentStep: currentStep,
+      dispatch: jest.fn(),
+      index: 0,
+      resources: emptyState().index,
+    };
+  }
+
+  function bootstrapTest() {
+    return {
+      component: mount(<TileSendMessage {...props()} />)
     };
   }
 
@@ -60,5 +66,17 @@ describe("<TileSendMessage/>", () => {
   it("creates a channel via helpers", () => {
     const chan: Channel = { kind: "channel", args: { channel_name: "email" } };
     expect(channel("email")).toEqual(chan);
+  });
+
+  it("adds and removes channels", () => {
+    const i = new RefactoredSendMessage(props());
+    const addEmail = i.add("email");
+    const removeEmail = i.remove("email");
+    const { currentStep } = i.props;
+    currentStep.body = [];
+    addEmail(currentStep);
+    expect(currentStep.body).toContainEqual(channel("email"));
+    removeEmail(currentStep);
+    expect(currentStep.body).not.toContainEqual(channel("email"));
   });
 });

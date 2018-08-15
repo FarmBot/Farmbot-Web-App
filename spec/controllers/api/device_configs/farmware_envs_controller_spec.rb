@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Api::DeviceConfigsController do
+describe Api::FarmwareEnvsController do
   let(:device) { FactoryBot.create(:device) }
   let(:user)   { FactoryBot.create(:user, device: device) }
 
@@ -8,52 +8,52 @@ describe Api::DeviceConfigsController do
 
   it 'creates a device config' do
     sign_in user
-    b4 = DeviceConfig.count
+    b4 = FarmwareEnv.count
     input = { key: "Coffee Emoji", value: "☕" }
     post :create, params: input
     expect(response.status).to eq(200)
-    expect(DeviceConfig.count).to be > b4
+    expect(FarmwareEnv.count).to be > b4
     input.keys.map { |key| expect(json[key]).to eq(input[key]) }
   end
 
   it 'does not create too many' do
     sign_in user
-    FactoryBot.create_list(:device_config,
+    FactoryBot.create_list(:farmware_env,
                           Device::DEFAULT_MAX_CONFIGS,
                           device: device)
-    b4 = DeviceConfig.count
+    b4 = FarmwareEnv.count
     input = { key: "Coffee Emoji", value: "☕" }
     post :create, params: input
     expect(response.status).to eq(422)
     expect(json[:configs]).to include("over the limit")
-    expect(DeviceConfig.count).to eq(b4)
+    expect(FarmwareEnv.count).to eq(b4)
   end
 
   it 'lists' do
     sign_in user
-    FactoryBot.create_list(:device_config, 5, device: device)
+    FactoryBot.create_list(:farmware_env, 5, device: device)
     get :index
     expect(json.length).to eq(5)
   end
 
   it 'updates' do
     sign_in user
-    device_config = FactoryBot.create(:device_config, device: device)
-    input = { key:   device_config.key.reverse,
-              value: device_config.value.reverse }
+    farmware_env = FactoryBot.create(:farmware_env, device: device)
+    input = { key:   farmware_env.key.reverse,
+              value: farmware_env.value.reverse }
     put :update,
         body:   input.to_json,
-        params: { id: device_config.id }
+        params: { id: farmware_env.id }
     expect(response.status).to be(200)
     input.keys.map { |key| expect(json[key]).to eq(input[key]) }
   end
 
   it 'deletes' do
     sign_in user
-    device_config = FactoryBot.create(:device_config, device: device)
-    id            = device_config.id
-    delete :destroy, params: { id: device_config.id }
+    farmware_env = FactoryBot.create(:farmware_env, device: device)
+    id            = farmware_env.id
+    delete :destroy, params: { id: farmware_env.id }
     expect(response.status).to be(200)
-    expect(DeviceConfig.exists?(id)).to be false
+    expect(FarmwareEnv.exists?(id)).to be false
   end
 end

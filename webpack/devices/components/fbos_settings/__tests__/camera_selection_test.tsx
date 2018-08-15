@@ -5,8 +5,6 @@ jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
 }));
 
-jest.mock("farmbot-toastr", () => ({ info: jest.fn(), error: jest.fn() }));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraSelection } from "../camera_selection";

@@ -50,6 +50,18 @@ describe Api::TokensController do
       expect(json.dig(:error, :jwt)).to include("log out and try again")
     end
 
+    it 'cleans out old stuff' do
+      TokenIssuance.destroy_all
+      request.headers["Authorization"] = "bearer #{auth_token.encoded}"
+      t = TokenIssuance.create!(exp:    (Time.now - 10.years).to_i,
+                                device: user.device,
+                                jti:    SecureRandom.uuid)
+      expect(TokenIssuance.count).to eq(2)
+      run_jobs_now { get :show }
+      expect(response.status).to eq(200)
+      expect(TokenIssuance.exists?(t.id)).to be false
+    end
+
     it 'handles bad `sub` claims' do
       # Simulate a legacy API token.
       token = AbstractJwtToken.new([{

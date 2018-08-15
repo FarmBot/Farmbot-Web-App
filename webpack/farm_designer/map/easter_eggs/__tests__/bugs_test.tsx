@@ -27,7 +27,7 @@ describe("<Bugs />", () => {
       className: expect.stringContaining("bug"),
       filter: "",
       opacity: 1,
-      xlinkHref: "/app-resources/img/generic-plant.svg"
+      xlinkHref: expect.stringContaining("/app-resources/img/bugs/")
     }));
   });
 

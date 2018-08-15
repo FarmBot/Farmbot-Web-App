@@ -7,10 +7,15 @@ import { ColWidth } from "../farmbot_os_settings";
 import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 
+const getVersionString =
+  (fbosVersion: string | undefined, onBeta: boolean | undefined) =>
+    `${fbosVersion || t(" unknown (offline)")}${onBeta ? "-beta" : ""}`;
+
 export function FarmbotOsRow(props: FarmbotOsRowProps) {
   const { sourceFbosConfig, dispatch, bot, osReleaseNotes, botOnline } = props;
-  const { controller_version } = bot.hardware.informational_settings;
-  const version = controller_version || t(" unknown (offline)");
+  const { controller_version, currently_on_beta
+  } = bot.hardware.informational_settings;
+  const version = getVersionString(controller_version, currently_on_beta);
   return <Row>
     <Col xs={ColWidth.label}>
       <label>

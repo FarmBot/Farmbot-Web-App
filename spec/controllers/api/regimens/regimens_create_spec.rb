@@ -7,6 +7,20 @@ describe Api::RegimensController do
   describe '#create' do
     let(:user) { FactoryBot.create(:user) }
     let(:sequence) { FakeSequence.create( device: user.device) }
+    it 'disallows use of parameterized sequences in regimen items' do
+      sign_in user
+      s       = FakeSequence.with_parameters
+      payload = {
+                  device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ]
+                }
+      post :create, params: payload
+      x = Sequences::TransitionalHelpers::PARAMTERS_NOT_ALLOWED
+      expect(json[:sequence]).to include(x)
+    end
+
     it 'creates a new regimen' do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample

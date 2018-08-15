@@ -37,7 +37,7 @@ interface SendMessageParams {
   resources: ResourceIndex;
 }
 
-class RefactoredSendMessage
+export class RefactoredSendMessage
   extends React.Component<SendMessageParams, {}> {
   get args() { return this.props.currentStep.args; }
   get message() { return this.args.message; }
@@ -49,9 +49,11 @@ class RefactoredSendMessage
   get currentSelection() {
     return MESSAGE_STATUSES_DDI[this.message_type];
   }
+
   get channels() {
     return (this.step.body || []).map(x => x.args.channel_name);
   }
+
   hasChannel = (name: ChannelName) => {
     return this.channels.includes(name);
   }

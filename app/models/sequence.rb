@@ -32,8 +32,8 @@ class Sequence < ApplicationRecord
   before_validation :set_defaults
   around_destroy :delete_nodes_too
   def set_defaults
-    self.color           ||= "gray"
-    self.kind            ||= "sequence"
+    self.color ||= "gray"
+    self.kind  ||= "sequence"
   end
 
   def delete_nodes_too
@@ -91,5 +91,9 @@ class Sequence < ApplicationRecord
 
   def fancy_name
     name
+  end
+
+  def self.parameterized?(id)
+    PrimaryNode.where(kind: "parameter_declaration", sequence_id: id).exists?
   end
 end

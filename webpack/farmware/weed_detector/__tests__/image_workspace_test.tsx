@@ -1,4 +1,6 @@
 import { ImageWorkspace } from "../image_workspace";
+import { fakeImage } from "../../../__test_support__/fake_state/resources";
+import { TaggedImage } from "farmbot";
 
 describe("<Body/>", () => {
   function fakeProps() {
@@ -6,8 +8,8 @@ describe("<Body/>", () => {
       onFlip: jest.fn(),
       onProcessPhoto: jest.fn(),
       onChange: jest.fn(),
-      currentImage: undefined,
-      images: [],
+      currentImage: undefined as TaggedImage | undefined,
+      images: [] as TaggedImage[],
       iteration: 9,
       morph: 9,
       blur: 9,
@@ -50,5 +52,34 @@ describe("<Body/>", () => {
     const e: PartialEv = { currentTarget: (currentTarget as HTMLInputElement) };
     trigger(e as React.SyntheticEvent<HTMLInputElement>);
     expect(props.onChange).toHaveBeenCalledWith("blur", 23);
+  });
+
+  it("doesn't process photo", () => {
+    const p = fakeProps();
+    const iw = new ImageWorkspace(p);
+    iw.maybeProcessPhoto();
+    expect(p.onProcessPhoto).not.toHaveBeenCalled();
+  });
+
+  it("processes first photo", () => {
+    const p = fakeProps();
+    const photo = fakeImage();
+    p.images = [photo];
+    const iw = new ImageWorkspace(p);
+    iw.maybeProcessPhoto();
+    expect(p.onProcessPhoto).toHaveBeenCalledWith(photo.body.id);
+  });
+
+  it("processes selected photo", () => {
+    const p = fakeProps();
+    const photo1 = fakeImage();
+    photo1.body.id = 1;
+    const photo2 = fakeImage();
+    photo2.body.id = 2;
+    p.images = [photo1, photo2];
+    p.currentImage = photo2;
+    const iw = new ImageWorkspace(p);
+    iw.maybeProcessPhoto();
+    expect(p.onProcessPhoto).toHaveBeenCalledWith(photo2.body.id);
   });
 });

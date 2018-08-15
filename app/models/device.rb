@@ -12,7 +12,7 @@ class Device < ApplicationRecord
                         "Resuming log storage."
   CACHE_KEY           = "devices.%s"
 
-  has_many  :device_configs,         dependent: :destroy
+  has_many  :farmware_envs,         dependent: :destroy
   has_many  :farm_events,            dependent: :destroy
   has_many  :farmware_installations, dependent: :destroy
   has_many  :images,                 dependent: :destroy

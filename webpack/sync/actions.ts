@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SensorReading, Sensor, DeviceConfig } from "../interfaces";
+import { SensorReading, Sensor, FarmwareEnv } from "../interfaces";
 import { API } from "../api";
 import { Sequence } from "../sequences/interfaces";
 import { Tool } from "../tools/interfaces";
@@ -23,6 +23,7 @@ import {
   PinBinding,
   PlantTemplate
 } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../constants";
 
 export interface ResourceReadyPayl {
   name: ResourceName;
@@ -30,13 +31,13 @@ export interface ResourceReadyPayl {
 }
 
 export interface SyncResponse {
-  type: "RESOURCE_READY";
+  type: Actions.RESOURCE_READY;
   payload: ResourceReadyPayl;
 }
 
 export function fetchSyncData(dispatch: Function) {
   const fetch =
-    <T>(name: ResourceName, url: string, type = "RESOURCE_READY") => axios
+    <T>(name: ResourceName, url: string, type = Actions.RESOURCE_READY) => axios
       .get<T>(url)
       .then((r): SyncResponse => dispatch({
         type, payload: { name, data: r.data }
@@ -64,7 +65,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Sensor[]>("Sensor", API.current.sensorPath);
   fetch<FarmwareInstallation[]>("FarmwareInstallation",
     API.current.farmwareInstallationPath);
-  fetch<DeviceConfig[]>("DeviceConfig", API.current.deviceConfigPath);
+  fetch<FarmwareEnv[]>("FarmwareEnv", API.current.farmwareEnvPath);
   fetch<PinBinding[]>("PinBinding", API.current.pinBindingPath);
   fetch<SavedGarden[]>("SavedGarden", API.current.savedGardensPath);
   fetch<PlantTemplate[]>("PlantTemplate", API.current.plantTemplatePath);

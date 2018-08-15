@@ -1,7 +1,3 @@
-jest.mock("farmbot-toastr", () => ({
-  error: jest.fn()
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { Peripherals } from "../index";

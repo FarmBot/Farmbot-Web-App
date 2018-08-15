@@ -13,9 +13,9 @@ describe Api::FirmwareConfigsController do
       device.firmware_config.destroy! # Let's test defaults.
       get :show, format: :json
       expect(response.status).to be(200)
-      { encoder_enabled_x:                 0,
-        encoder_enabled_y:                 0,
-        encoder_enabled_z:                 0,
+      { encoder_enabled_x:                 1,
+        encoder_enabled_y:                 1,
+        encoder_enabled_z:                 1,
         encoder_invert_x:                  0,
         encoder_invert_y:                  0,
         encoder_invert_z:                  0,
@@ -55,8 +55,8 @@ describe Api::FirmwareConfigsController do
         movement_invert_motor_x:           0,
         movement_invert_motor_y:           0,
         movement_invert_motor_z:           0,
-        movement_keep_active_x:            0,
-        movement_keep_active_y:            0,
+        movement_keep_active_x:            1,
+        movement_keep_active_y:            1,
         movement_keep_active_z:            1,
         movement_max_spd_x:                400,
         movement_max_spd_y:                400,

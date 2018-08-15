@@ -12,8 +12,6 @@ jest.mock("axios", () => {
   };
 });
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import {

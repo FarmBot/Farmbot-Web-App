@@ -4,8 +4,6 @@ jest.mock("../../../history", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({ success: jest.fn(), error: jest.fn() }));
-
 import * as React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen

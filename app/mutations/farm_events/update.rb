@@ -1,7 +1,10 @@
 module FarmEvents
   class Update < Mutations::Command
     NOT_YOURS = 'Not your farm_event.'
+
     include FarmEvents::ExecutableHelpers
+    include Sequences::TransitionalHelpers
+
     has_executable_fields
 
     required do
@@ -10,10 +13,10 @@ module FarmEvents
     end
 
     optional do
-      integer :repeat,    min: 1
-      string  :time_unit, in: FarmEvent::UNITS_OF_TIME
+      integer :repeat,     min: 1
+      string  :time_unit,  in: FarmEvent::UNITS_OF_TIME
       time    :start_time, after: Time.now - 20.years
-      time    :end_time, before: Time.now + 20.years
+      time    :end_time,   before: Time.now + 20.years
     end
 
     def validate
@@ -30,6 +33,7 @@ module FarmEvents
 
     def validate_ownership
       raise Errors::Forbidden, NOT_YOURS if farm_event.device != device
+      guard_against_paramter_use(executable.id) if executable.is_a?(Sequence)
     end
 
     def is_one_time_event

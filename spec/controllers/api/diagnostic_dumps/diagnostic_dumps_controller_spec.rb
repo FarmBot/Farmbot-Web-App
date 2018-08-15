@@ -9,7 +9,7 @@ describe Api::DiagnosticDumpsController do
   it 'lists all diagnostics' do
     sign_in user
     DiagnosticDump.destroy_all
-    device_config = FactoryBot.create_list(:diagnostic_dump, 3, device: device)
+    farmware_env = FactoryBot.create_list(:diagnostic_dump, 3, device: device)
     get :index
     expect(json.length).to eq(3)
     expect(json.pluck(:device_id).uniq).to eq([user.device.id])
@@ -43,9 +43,9 @@ describe Api::DiagnosticDumpsController do
   it 'deletes' do
     sign_in user
     # DiagnosticDump.destroy_all
-    device_config = FactoryBot.create(:diagnostic_dump, device: device)
-    id            = device_config.id
-    delete :destroy, params: { id: device_config.id }
+    farmware_env = FactoryBot.create(:diagnostic_dump, device: device)
+    id            = farmware_env.id
+    delete :destroy, params: { id: farmware_env.id }
     expect(response.status).to be(200)
     expect(DiagnosticDump.exists?(id)).to be false
   end
