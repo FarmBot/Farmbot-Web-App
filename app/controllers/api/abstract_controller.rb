@@ -164,7 +164,6 @@ private
       # Attempt 1:
       #   The device is using an HTTP client that does not provide a user-agent.
       #   We will assume this is an old FBOS version and set it to 0.0.0
-      # TODO UNTESTED CODE: simplecov counts this as tested. It is not.
       return CalculateUpgrade::NULL if ua == NO_UA_FOUND
 
       # Attempt 2:

@@ -48,7 +48,7 @@ module Sequences
     end
 
     def checker
-      @checker = CeleryScript::Checker.new(tree, corpus)
+      @checker = CeleryScript::Checker.new(tree, corpus, device)
     end
   end
 end

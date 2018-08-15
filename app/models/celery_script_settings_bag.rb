@@ -105,15 +105,9 @@ module CeleryScriptSettingsBag
           BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
         end
       end
-      .arg(:pointer_id,   [Integer]) do |node|
-        p_type = node&.parent&.args[:pointer_type]&.value
-        klass  = KLASS_LOOKUP[p_type]
-        # Don't try to validate if `pointer_type` is wrong.
-        # That's a different respnsiblity.
-        if(klass)
-          bad_node = !klass.exists?(node.value)
-          node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
-        end
+      .arg(:pointer_id,   [Integer]) do |node, device|
+        bad_node = !Point.where(id: node.value, device_id: device.id).exists?
+        node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end
       .arg(:pointer_type, [String]) do |node|
         within(ALLOWED_POINTER_TYPE, node) do |val|

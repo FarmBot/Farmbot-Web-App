@@ -7,4 +7,20 @@ class FakeSequence < Mutations::Command
     inputs[:args]   ||= {}
     Sequence.find(Sequences::Create.run!(inputs)[:id])
   end
+
+  def self.with_parameters
+    create({
+      args: {
+        version: 9090909090,
+        locals: {
+          kind: "scope_declaration",
+          args: {},
+          body: [{
+              kind: "parameter_declaration",
+              args: { label: "parent", data_type: "point" }
+            }]
+        }
+      }
+    })
+  end
 end

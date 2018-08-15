@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe CeleryScript::Checker do
-
+  let(:device) { FactoryBot.create(:device) }
   let(:hash) do
     {
       kind: "sequence",
@@ -20,7 +20,7 @@ describe CeleryScript::Checker do
 
   let (:corpus) { Sequence::Corpus }
 
-  let (:checker) { CeleryScript::Checker.new(tree, corpus) }
+  let (:checker) { CeleryScript::Checker.new(tree, corpus, device) }
 
   it "runs through a syntactically valid program" do
       outcome = checker.run!
@@ -75,7 +75,7 @@ describe CeleryScript::Checker do
     hash[:body] = [
       { kind: "execute", args: { sequence_id: 0 } },
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?)
       .to be false
     expect(chk.error.message)
@@ -99,7 +99,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to eq("Peripheral requires a valid pin number")
   end
@@ -118,7 +118,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a type of pin")
   end
@@ -137,7 +137,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("Can't find Peripheral with id of 900")
   end
@@ -156,7 +156,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
   end
 
@@ -174,7 +174,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include(CeleryScriptSettingsBag::CANT_ANALOG)
   end
@@ -194,7 +194,7 @@ describe CeleryScript::Checker do
         }
       }
     ]
-    chk = CeleryScript::Checker.new(tree, corpus)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expected = \
       CeleryScriptSettingsBag::NO_PIN_ID % CeleryScriptSettingsBag::BoxLed.name
@@ -205,7 +205,7 @@ describe CeleryScript::Checker do
   it "catches bad `axis` nodes" do
     t = \
       CeleryScript::AstNode.new({kind: "home", args: { speed: 100, axis: "?" }})
-    chk         = CeleryScript::Checker.new(t, corpus)
+    chk         = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid axis")
   end
@@ -213,7 +213,7 @@ describe CeleryScript::Checker do
   it "catches bad `package` nodes" do
     t = \
       CeleryScript::AstNode.new({ kind: "factory_reset", args: { package: "?" }})
-    chk         = CeleryScript::Checker.new(t, corpus)
+    chk         = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid package")
   end
@@ -249,7 +249,7 @@ describe CeleryScript::Checker do
       ]
     }
     tree = CeleryScript::AstNode.new(ast)
-    chk  = CeleryScript::Checker.new(tree, corpus)
+    chk  = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
   end
 
@@ -281,7 +281,7 @@ describe CeleryScript::Checker do
       ]
     }
     tree = CeleryScript::AstNode.new(ast)
-    chk  = CeleryScript::Checker.new(tree, corpus)
+    chk  = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include('but got "nothing"')
   end
