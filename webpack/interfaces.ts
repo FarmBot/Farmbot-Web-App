@@ -29,7 +29,7 @@ export interface SensorReading {
   created_at: string;
 }
 
-export interface DeviceConfig {
+export interface FarmwareEnv {
   id?: number;
   key: string;
   value: string | number | boolean;

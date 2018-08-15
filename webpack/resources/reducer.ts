@@ -78,7 +78,7 @@ export function emptyState(): RestResources {
         SensorReading: [],
         Sensor: [],
         FarmwareInstallation: [],
-        DeviceConfig: [],
+        FarmwareEnv: [],
         PinBinding: [],
         PlantTemplate: [],
         SavedGarden: [],

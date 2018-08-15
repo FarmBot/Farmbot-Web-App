@@ -1,7 +1,7 @@
-module DeviceConfigs
+module FarmwareEnvs
   class Update < Mutations::Command
     required {
-      model :device_config, class: DeviceConfig
+      model :farmware_env, class: FarmwareEnv
     }
 
     optional do
@@ -10,7 +10,7 @@ module DeviceConfigs
     end
 
     def execute
-      device_config.update_attributes!(inputs.except(:device_config)) && device_config
+      farmware_env.update_attributes!(inputs.except(:farmware_env)) && farmware_env
     end
   end
 end
