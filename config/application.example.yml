@@ -96,3 +96,9 @@ ADMIN_PASSWORD: ""
 # Include the protocol! (http vs. https)
 # DELETE THIS LINE if you are a self-hosted user.
 RABBIT_MGMT_URL: "http://delete_this_line.com"
+# Allow only certain users on the server. If the user's email domain is not
+# on the list of trusted domains, they can not use the server.
+# The example below only allows users with `@farmbot.io` or `@farm.bot` emails
+# to use the server.
+# DELETE THIS LINE IF YOU RUN A PUBLIC SERVER.
+TRUSTED_DOMAINS: "farmbot.io,farm.bot"

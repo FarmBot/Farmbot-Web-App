@@ -401,6 +401,7 @@ DEPENDENCIES
   active_model_serializers
   bunny
   capybara
+  climate_control
   codecov
   database_cleaner
   deep-cover (~> 0.4)
