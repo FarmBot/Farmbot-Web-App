@@ -160,4 +160,13 @@ class Device < ApplicationRecord
   def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
     true
   end
+
+  def unsent_routine_emails
+    logs
+      .where(sent_at: nil)
+      .where(Log::IS_EMAIL_ISH) # `email` and `fatal_email`
+      .where
+      .not(Log::IS_FATAL_EMAIL) # Filter out `fatal_email`s
+      .order(created_at: :desc)
+  end
 end
