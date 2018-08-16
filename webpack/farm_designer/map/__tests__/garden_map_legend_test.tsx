@@ -62,9 +62,17 @@ describe("<GardenMapLegend />", () => {
   });
 
   it("opens saved garden panel", () => {
+    localStorage.setItem("SAVE_MY_GARDEN", "certainly");
     const wrapper = shallow(<GardenMapLegend {...fakeProps()} />);
     clickButton(wrapper, 3, "saved gardens");
     expect(history.push).toHaveBeenCalledWith(
       "/app/designer/plants/saved_gardens");
+  });
+
+  it("saved garden button hidden", () => {
+    localStorage.removeItem("SAVE_MY_GARDEN");
+    const wrapper = shallow(<GardenMapLegend {...fakeProps()} />);
+    const btn = wrapper.find("button").at(3);
+    expect(btn.props().hidden).toEqual(true);
   });
 });

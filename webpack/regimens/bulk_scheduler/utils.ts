@@ -1,17 +1,13 @@
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "../../sequences/is_parameterized";
 import { error } from "farmbot-toastr";
-import { trim } from "../../util";
 import { t } from "i18next";
 import * as moment from "moment";
 import * as _ from "lodash";
-
-export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
-  regimen. Consider wrapping it in a parent sequence that calls it via "execute"
-  instead."`);
+import { Content } from "../../constants";
 
 export function maybeWarnAboutParameters(s: undefined | TaggedSequence) {
-  s && isParameterized(s.body) && error(t(NO_PARAMETERS));
+  s && isParameterized(s.body) && error(t(Content.NO_PARAMETERS));
 }
 
 export function msToTime(ms: number) {

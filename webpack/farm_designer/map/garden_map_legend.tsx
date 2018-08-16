@@ -108,6 +108,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         </button>
       </div>
       <button className="fb-button green"
+        hidden={!(localStorage.getItem("SAVE_MY_GARDEN") === "certainly")}
         onClick={() => history.push("/app/designer/plants/saved_gardens")}>
         {t("Saved Gardens")}
       </button>

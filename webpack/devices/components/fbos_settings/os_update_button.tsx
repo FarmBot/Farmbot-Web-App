@@ -111,7 +111,8 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const oldBetaCommit = latestReleaseV === currentBetaOSVersion &&
     !betaCommitsAreEqual(commit, currentBetaOSCommit);
   /** It's actually `1.0.0-beta vs 1.0.0` therefore needs update to `1.0.0`. */
-  const oldBeta = bot.hardware.informational_settings.currently_on_beta;
+  const oldBeta = latestReleaseV === currentOSVersion &&
+    bot.hardware.informational_settings.currently_on_beta;
   // Button status modification for beta release edge cases.
   if (uncertainty && (oldBetaCommit || oldBeta)) {
     buttonStatus = UpdateButton.needsUpdate;

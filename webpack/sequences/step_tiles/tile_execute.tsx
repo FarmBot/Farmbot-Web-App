@@ -12,6 +12,7 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { LocationData } from "./tile_move_absolute/interfaces";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -19,7 +20,8 @@ export function ExecuteBlock(p: StepParams) {
       currentSequence={p.currentSequence}
       index={p.index}
       dispatch={p.dispatch}
-      resources={p.resources} />;
+      resources={p.resources}
+      shouldDisplay={p.shouldDisplay || (() => false)} />;
   } else {
     throw new Error("Thats not an execute block!");
   }
@@ -31,6 +33,7 @@ export interface ExecBlockParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
 }
 export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}> {
   changeSelection = (input: DropDownItem) => {
@@ -84,10 +87,11 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   };
 
   render() {
-    const props = this.props;
-    const { dispatch, currentStep, index, currentSequence, resources } = props;
+    const {
+      dispatch, currentStep, index, currentSequence, resources, shouldDisplay
+    } = this.props;
     const className = "execute-step";
-    const selected = getVariable(this.props.currentStep.body);
+    const selected = getVariable(currentStep.body);
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -102,39 +106,41 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
             <label>{t("Sequence")}</label>
             <SequenceSelectBox
               onChange={this.changeSelection}
-              resources={this.props.resources}
-              sequenceId={this.props.currentStep.args.sequence_id} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <label>{t("Set value of 'parent' to:")}</label>
-            <TileMoveAbsSelect
               resources={resources}
-              selectedItem={selected}
-              onChange={this.setVariable}
-              shouldDisplay={() => true} />
-            <p>Debug info: {selected.kind}</p>
+              sequenceId={currentStep.args.sequence_id} />
           </Col>
         </Row>
+        {shouldDisplay(Feature.variables) &&
+          <Row>
+            <Col xs={12}>
+              <label>{t("Set value of 'parent' to:")}</label>
+              <TileMoveAbsSelect
+                resources={resources}
+                selectedItem={selected}
+                onChange={this.setVariable}
+                shouldDisplay={shouldDisplay} />
+              <p>Debug info: {selected.kind}</p>
+            </Col>
+          </Row>}
       </StepContent>
     </StepWrapper>;
   }
 }
 
-export const getVariable = (parent: VariableDeclaration[] | undefined): LocationData => {
-  const p = (parent || [])[0];
-  if (p) {
-    const parentValue = p.args && p.args.data_value;
-    switch (parentValue.kind) {
-      case "coordinate":
-      case "point":
-      case "tool":
-        return parentValue;
-      default:
-        throw new Error(`How did ${parentValue.kind} get here?`);
+export const getVariable =
+  (parent: VariableDeclaration[] | undefined): LocationData => {
+    const p = (parent || [])[0];
+    if (p) {
+      const parentValue = p.args && p.args.data_value;
+      switch (parentValue.kind) {
+        case "coordinate":
+        case "point":
+        case "tool":
+          return parentValue;
+        default:
+          throw new Error(`How did ${parentValue.kind} get here?`);
+      }
+    } else {
+      return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
     }
-  } else {
-    return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
-  }
-};
+  };

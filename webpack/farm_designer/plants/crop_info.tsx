@@ -12,6 +12,7 @@ import { OFSearch } from "../util";
 import { unselectPlant, setDragIcon } from "../actions";
 import { validBotLocationData } from "../../util";
 import { createPlant } from "../map/garden_map";
+import { round } from "../map/util";
 
 interface InforFieldProps {
   title: string;
@@ -121,7 +122,9 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
 
   get botXY(): Record<"x" | "y", number> | undefined {
     const { x, y } = this.props.botPosition;
-    return _.isNumber(x) && _.isNumber(y) ? { x, y } : undefined;
+    return _.isNumber(x) && _.isNumber(y)
+      ? { x: round(x), y: round(y) }
+      : undefined;
   }
 
   get botXYLabel(): string {
