@@ -94,6 +94,27 @@ describe("setParent()", () => {
     args: { pointer_type: "point", pointer_id: 5 }
   };
 
+  it("deals with parameter declarations", () => {
+    const data_value: ParameterDeclaration = {
+      kind: "parameter_declaration", args: { label: "---", data_type: "point" }
+    };
+    const sequence = fakeSequence();
+    const expected = {
+      kind: "scope_declaration",
+      args: {},
+      body: [{
+        kind: "parameter_declaration",
+        args: { label: "parent", data_type: "point" }
+      }]
+    };
+    const result = setParent(sequence, data_value);
+    const actual = result.args.locals;
+
+    expect(actual.args).toEqual(expected.args);
+    expect(actual.body).toEqual(expected.body);
+    expect(actual.kind).toEqual(expected.kind);
+  });
+
   it("crashes on `identifier` nodes (no re-binding of vars yet)", () => {
     const seq = fakeSequence();
     const cb = () =>
