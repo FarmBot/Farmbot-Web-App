@@ -7,7 +7,8 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import {
-  LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect, CeleryVariable, EMPTY_COORD
+  LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect,
+  CeleryVariable, EMPTY_COORD
 } from "./step_tiles/tile_move_absolute/index";
 import { overwrite } from "../api/crud";
 import { TaggedSequence } from "farmbot";
