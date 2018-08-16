@@ -84,4 +84,15 @@ describe Device do
   it "is a device" do
     expect(Device.new.is_device).to eq(true)
   end
+
+  it "keeps track of unsent _ROUTINE_ emails" do
+    🤖 = FactoryBot.create(:device)
+    📧 = FactoryBot.create(:log, device: 🤖, channels: ["email"])
+    🚑 = FactoryBot.create(:log, device: 🤖, channels: ["fatal_email"])
+    🍞 = FactoryBot.create(:log, device: 🤖, channels: ["toast"])
+    results = 🤖.unsent_routine_emails
+    expect(results).to     include(📧)
+    expect(results).to_not include(🚑)
+    expect(results).to_not include(🍞)
+  end
 end
