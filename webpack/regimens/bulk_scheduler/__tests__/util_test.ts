@@ -1,6 +1,7 @@
-import { msToTime, maybeWarnAboutParameters, NO_PARAMETERS } from "../utils";
+import { msToTime, maybeWarnAboutParameters } from "../utils";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { error } from "farmbot-toastr";
+import { Content } from "../../../constants";
 
 describe("maybeWarnAboutParameters", () => {
   it("calls `error()` if the sequence uses params", () => {
@@ -10,7 +11,7 @@ describe("maybeWarnAboutParameters", () => {
       args: { label: "parent", data_type: "point" }
     }];
     maybeWarnAboutParameters(s);
-    expect(error).toHaveBeenCalledWith(NO_PARAMETERS);
+    expect(error).toHaveBeenCalledWith(Content.NO_PARAMETERS);
   });
 });
 

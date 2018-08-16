@@ -114,13 +114,22 @@ describe("<OsUpdateButton/>", () => {
   it("latest newer than beta update: beta installed", () => {
     bot.hardware.informational_settings.controller_version = "3.1.6";
     bot.hardware.configuration.beta_opt_in = true;
-    // tslint:disable-next-line:no-any
-    (bot.hardware.informational_settings as any).currently_on_beta = true;
+    bot.hardware.informational_settings.currently_on_beta = true;
     bot.currentBetaOSVersion = "3.1.6-beta";
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").last();
     expect(osUpdateButton.text()).toBe("UPDATE");
     expect(osUpdateButton.props().title).toBe("3.1.6");
+  });
+  it("on latest beta update", () => {
+    bot.hardware.informational_settings.controller_version = "3.1.7";
+    bot.hardware.configuration.beta_opt_in = true;
+    bot.hardware.informational_settings.currently_on_beta = true;
+    bot.currentBetaOSVersion = "3.1.7-beta";
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").last();
+    expect(osUpdateButton.text()).toBe("UP TO DATE");
+    expect(osUpdateButton.props().title).toBe("3.1.7-beta");
   });
   it("beta update has same numeric version: newer commit", () => {
     bot.hardware.informational_settings.controller_version = "5.0.0";
