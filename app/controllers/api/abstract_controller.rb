@@ -144,9 +144,6 @@ private
       if outcome.success?
         render options.merge(json: outcome.result)
       else
-        Rollbar.info("Mutation error",
-                     errors: outcome.errors.message_list.join(" "),
-                     user: current_user.try(:email) || "No User")
         render options.merge(json: outcome.errors.message, status: 422)
       end
     end

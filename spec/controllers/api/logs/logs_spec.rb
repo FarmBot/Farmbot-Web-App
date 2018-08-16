@@ -106,7 +106,7 @@ describe Api::LogsController do
     end
 
     it "delivers emails for logs marked as `email`" do
-      log = Log.create!(device: user.device)
+      log = Log.create!(device: user.device, channels: ["email"])
       b4  = Log.where(sent_at: nil).count
       ldm = LogDeliveryMailer.new
       allow(ldm).to receive(:mail)
