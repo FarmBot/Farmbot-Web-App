@@ -8,20 +8,22 @@ class LogDeliveryMailer < ApplicationMailer
     raise Log::RateLimitError, WHOAH % [device.id] if too_many
   end
 
+  def send_a_digest(device, unsent)
+    @emails      = device.users.pluck(:email)
+    @messages    = unsent
+                    .pluck(:created_at, :message)
+                    .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
+                    .map{|(x,y)| "[#{x}]: #{y}"}
+    @device_name = device.name
+    mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
+    unsent.update_all(sent_at: Time.now)
+  end
+
   def log_digest(device)
     Log.transaction do
       maybe_crash_if_too_many_logs(device)
       unsent         = device.unsent_routine_emails
-      if(unsent.any?)
-        @emails      = device.users.pluck(:email)
-        @messages    = unsent
-                        .pluck(:created_at, :message)
-                        .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
-                        .map{|(x,y)| "[#{x}]: #{y}"}
-        @device_name = device.name || "Farmbot"
-        mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
-        unsent.update_all(sent_at: Time.now)
-      end
+      send_a_digest(device, unsent) if unsent.any?
     end
   end
 end
