@@ -16,6 +16,7 @@ import { defensiveClone } from "../util";
 import { Row, Col, FBSelect } from "../ui/index";
 import { t } from "i18next";
 import { isNaN } from "lodash";
+import { findSlotByToolId } from "../resources/selectors_by_id";
 
 type OnChange = (data_type: LocationData | ParameterDeclaration) => void;
 type DataValue = VariableDeclaration["args"]["data_value"];
@@ -142,17 +143,28 @@ export const PARENT = { value: "parent", label: "Parent", headingId: "parameter"
 /** Return this when unable to correctly guess coordinate values */
 const EMPTY_VEC3 = { x: 0, y: 0, z: 0 };
 type ParentType = ParameterDeclaration | VariableDeclaration;
+
+const maybeFetchToolCoords =
+  (data_value: DataValue, resources: ResourceIndex): Vector3 | undefined => {
+    if (data_value.kind === "tool") {
+      const r = findSlotByToolId(resources, data_value.args.tool_id);
+      return r && r.body;
+    }
+  };
+const guessVariable =
+  (label: string, local: VariableDeclaration, resources: ResourceIndex): Vector3 => {
+    return guessVecFromLabel(label) ||
+      guessFromDataType(local.args.data_value) ||
+      maybeFetchToolCoords(local.args.data_value, resources) ||
+      EMPTY_VEC3;
+  };
+
 /** Given a dropdown label and a local variable declaration, tries to guess the
 * X/Y/Z value of the declared variable. If unable to guess,
 * returns (0, 0, 0) */
-export const guessXYZ = (label: string, local: ParentType): Vector3 => {
-  if (local.kind === "parameter_declaration") {
-    return EMPTY_VEC3;
-  } else {
-    return guessVecFromLabel(label) ||
-      guessFromDataType(local.args.data_value) ||
-      EMPTY_VEC3;
-  }
+export const guessXYZ = (label: string, local: ParentType, resources: ResourceIndex): Vector3 => {
+  return (local.kind === "variable_declaration") ?
+    guessVariable(label, local, resources) : EMPTY_VEC3;
 };
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
@@ -161,7 +173,7 @@ export const ParentVariableForm =
     const data_value = (parent.kind == "variable_declaration") ?
       parent.args.data_value : EMPTY_COORD;
     const ddiLabel = formatSelectedDropdown(resources, data_value);
-    const { x, y, z } = guessXYZ(ddiLabel.label, parent);
+    const { x, y, z } = guessXYZ(ddiLabel.label, parent, resources);
 
     const isDisabled = (parent.kind == "parameter_declaration") ||
       data_value.kind !== "coordinate";
