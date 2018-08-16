@@ -11,16 +11,10 @@ class LogDeliveryMailer < ApplicationMailer
   def log_digest(device)
     Log.transaction do
       maybe_crash_if_too_many_logs(device)
-      unsent         = Log
-                       .where(sent_at: nil, device: device)
-                       .where(Log::IS_EMAIL_ISH) # "email" and "fatal_email"
-                       .where
-                       .not(Log::IS_FATAL_EMAIL)
-                       .order(created_at: :desc)
+      unsent         = device.unsent_routine_emails
       if(unsent.any?)
-        logs         = Log
         @emails      = device.users.pluck(:email)
-        @messages    = logs
+        @messages    = unsent
                         .pluck(:created_at, :message)
                         .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
                         .map{|(x,y)| "[#{x}]: #{y}"}
