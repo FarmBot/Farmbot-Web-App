@@ -25,28 +25,41 @@ describe Users::Create do
 
     it "stops unauthorized users from creating accounts on server" do
       ClimateControl.modify(TRUSTED_DOMAINS: "farmbot.io,farm.bot") do
-        results = Users::Create.run(email:                 "xyz2@qwerty.io",
+        email   = "#{SecureRandom.hex(8)}@qwerty.io"
+        results = Users::Create.run(email:                 email,
                                     name:                  "Faker",
                                     password:              "password12345",
                                     password_confirmation: "password12345",
                                     agree_to_terms:        false)
 
         expect(results.success?).to be false
-        binding.pry
+        errors = results.errors.message_list
+        expect(errors).to include(Users::Create::CANT_USE_SERVER)
       end
     end
 
     it "allows people on the TRUSTED_DOMAINS list to register" do
       emails = ["farmbot.io","farm.bot"]
       ClimateControl.modify(TRUSTED_DOMAINS: emails.join(",")) do
-        results = Users::Create.run(email:                 "xyz2@#{emails.sample}",
+        email = "#{SecureRandom.hex(8)}@#{emails.sample}"
+        results = Users::Create.run(email:                 email,
                                     name:                  "Faker",
                                     password:              "password12345",
                                     password_confirmation: "password12345",
                                     agree_to_terms:        false)
-
         expect(results.success?).to be true
-        binding.pry
       end
+    end
+
+    it "stops users from registering twice" do
+      email   = User.last.email || FactoryBot.create(:email)
+      results = Users::Create.run(email:                 email,
+                                  name:                  "Faker",
+                                  password:              "password12345",
+                                  password_confirmation: "password12345",
+                                  agree_to_terms:        false)
+      expect(results.success?).to be false
+      errors = results.errors.message_list
+      expect(errors).to include(Users::Create::ALREADY_REGISTERED)
     end
 end
