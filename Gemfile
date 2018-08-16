@@ -51,6 +51,7 @@ group :development, :test do
   gem "rspec"
   gem "selenium-webdriver"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
+  gem "climate_control"
 end
 
 group :production do
