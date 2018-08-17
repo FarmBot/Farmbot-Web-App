@@ -16,7 +16,7 @@ export function ToolBayNumberCol({ axis, value, dispatch, slot }: NumColProps) {
     <BlurableInput
       value={value.toString()}
       onCommit={(e) => {
-        dispatch(edit(slot, { [axis]: parseInt(e.currentTarget.value, 10) }));
+        dispatch(edit(slot, { [axis]: parseFloat(e.currentTarget.value) }));
       }}
       type="number" />
   </Col>;

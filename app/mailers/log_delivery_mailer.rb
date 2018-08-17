@@ -1,5 +1,10 @@
 class LogDeliveryMailer < ApplicationMailer
-  WHOAH = "Device %s is sending too many emails!!! (> 20 / hr)"
+  WHOAH   = "Device %s is sending too many emails!!! (> 20 / hr)"
+  SUBJECT = "🌱 New message from %s!"
+
+  def timestamp(time, zone)
+    time.in_time_zone(zone).strftime("%F %I:%M %p")
+  end
 
   def maybe_crash_if_too_many_logs(device)
     query_params   = { sent_at: 1.hours.ago..Time.now, device_id: device.id }
@@ -9,13 +14,14 @@ class LogDeliveryMailer < ApplicationMailer
   end
 
   def send_a_digest(device, unsent)
+    timezone     = device.timezone || "UTC"
     @emails      = device.users.pluck(:email)
     @messages    = unsent
                     .pluck(:created_at, :message)
-                    .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
+                    .map{|(t,m)| [timestamp(t, timezone), m] }
                     .map{|(x,y)| "[#{x}]: #{y}"}
     @device_name = device.name
-    mail(to: @emails, subject: "🌱 New message from #{@device_name}!")
+    mail(to: @emails, subject: SUBJECT % [@device_name])
     unsent.update_all(sent_at: Time.now)
   end
 
