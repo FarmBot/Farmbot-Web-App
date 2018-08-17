@@ -21,7 +21,7 @@ namespace :api do
       .map do |id|
         device = Device.find(id)
         puts "=== Sending email digest to #{device.name}: #{device.id}"
-        LogDeliveryMailer.log_digest(device)
+        LogDeliveryMailer.log_digest(device).deliver
       end
     puts "=== Done."
   end
