@@ -6,24 +6,27 @@ def same_thing
   sh "rails db:migrate"
 end
 
+def check_for_digests
+  Log
+    .where(sent_at: nil, created_at: 1.day.ago...Time.now)
+    .where(Log::IS_EMAIL_ISH)
+    .where
+    .not(Log::IS_FATAL_EMAIL)
+    .pluck(:device_id)
+    .uniq
+    .map do |id|
+      device = Device.find(id)
+      puts "Sending log digest to device \##{id} (#{device.name})"
+      LogDeliveryMailer.log_digest(device).deliver
+    end
+  sleep 10
+end
+
 namespace :api do
-  desc "Just testing things out"
+  desc "Runs pending email digests. "\
+       "Use the `FOREVER` ENV var to continually check."
   task log_digest: :environment do
-    puts "=== Looking for digests..."
-    Log
-      .where(sent_at: nil, created_at: 1.day.ago...Time.now)
-      .where(Log::IS_EMAIL_ISH)
-      .where
-      .not(Log::IS_FATAL_EMAIL)
-      .pluck(:device_id)
-      .uniq
-      .tap {|ids| puts "=== Found #{ids.count} digests..."}
-      .map do |id|
-        device = Device.find(id)
-        puts "=== Sending email digest to #{device.name}: #{device.id}"
-        LogDeliveryMailer.log_digest(device).deliver
-      end
-    puts "=== Done."
+    ENV["FOREVER"] ? loop { check_for_digests } : check_for_digests
   end
 
   desc "Run Webpack and Rails"
