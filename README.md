@@ -5,6 +5,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/74091163d8a02bb8988f/maintainability)](https://codeclimate.com/github/FarmBot/Farmbot-Web-App/maintainability)
 
 
+😎NEW: [Documentation to help software developers write add-ons and plugins for FarmBot](https://developer.farm.bot/docs)👀
+
 # Q: Do I need this?
 
 This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. It requires an intermediate background in Ruby, SQL and Linux system administration.
@@ -13,7 +15,7 @@ If you are a developer interested in contributing or would like to provision you
 
 We do not have the resources available to help novice developers learn to setup servers, environments, configurations, or perform basic Linux command line instructions.
 
-If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.*
+If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.* Running a self-hosted server is not easy!
 
 # Q: Where do I report security issues?
 
