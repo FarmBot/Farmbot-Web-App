@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/74091163d8a02bb8988f/maintainability)](https://codeclimate.com/github/FarmBot/Farmbot-Web-App/maintainability)
 
 
-😎NEW: [Documentation to help software developers write add-ons and plugins for FarmBot](https://developer.farm.bot/docs)👀
+😎:new: [Documentation to help software developers write add-ons and plugins for FarmBot](https://developer.farm.bot/docs)👀
 
 # Q: Do I need this?
 
