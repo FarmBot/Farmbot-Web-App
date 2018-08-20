@@ -7,8 +7,14 @@ import { Farmwares } from "./interfaces";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
 import { FarmwareConfigMenu } from "./farmware_config_menu";
-import { every } from "lodash";
+import { every, Dictionary } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
+
+const DISPLAY_NAMES: Dictionary<string> = {
+  "Photos": t("Photos"),
+  "Camera Calibration": t("Camera Calibration"),
+  "Weed Detector": t("Weed Detector"),
+};
 
 /** Farmware list links: selected or unselected. */
 const farmwareListItem = (dispatch: Function, current: string | undefined) =>
@@ -20,12 +26,15 @@ const farmwareListItem = (dispatch: Function, current: string | undefined) =>
     const selected = (farmwareName == current)
       || (!current && farmwareName == "Photos")
       ? "selected" : "";
+    const displayName = Object.keys(DISPLAY_NAMES).includes(farmwareName)
+      ? DISPLAY_NAMES[farmwareName]
+      : farmwareName;
     return <Link
       to={`/app/farmware/${urlFriendly(farmwareName)}`}
       key={farmwareName}
       onClick={click}>
       <div className={`farmware-list-items ${selected}`} >
-        <p>{farmwareName}</p>
+        <p>{displayName}</p>
       </div>
     </Link>;
   };
@@ -91,7 +100,7 @@ export class FarmwareList
                 this.props.firstPartyFarmwareNames)} />
         </Popover>
       </div>
-      {[t("Photos"), t("Camera Calibration"), t("Weed Detector")]
+      {["Photos", "Camera Calibration", "Weed Detector"]
         .map(farmwareListItem(dispatch, current))}
       <hr />
       <label>

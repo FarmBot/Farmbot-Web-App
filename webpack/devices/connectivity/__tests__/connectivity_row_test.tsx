@@ -22,7 +22,7 @@ describe("<ConnectivityRow/>", () => {
   });
 
   it("renders saucer color: header", () => {
-    const el = render(<ConnectivityRow from="from" to="to" />);
+    const el = render(<ConnectivityRow from="from" to="to" header={true} />);
     expect(el.find(".grey").length).toBe(1);
   });
 

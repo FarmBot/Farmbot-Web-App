@@ -54,7 +54,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
             </div>
           </Col>
           <Col md={12} lg={8}>
-            <ConnectivityRow from={t("from")} to={t("to")} />
+            <ConnectivityRow from={t("from")} to={t("to")} header={true} />
             {rowData
               .map((x, y) => <ConnectivityRow {...x} key={y}
                 hover={this.hover}
