@@ -2,6 +2,16 @@ class LogDeliveryMailer < ApplicationMailer
   WHOAH   = "Device %s is sending too many emails!!! (> 20 / hr)"
   SUBJECT = "🌱 New message from %s!"
 
+  def log_digest(device)
+    Log.transaction do
+      maybe_crash_if_too_many_logs(device)
+      unsent         = device.unsent_routine_emails
+      send_a_digest(device, unsent) if unsent.any?
+    end
+  end
+
+  private
+
   def timestamp(time, zone)
     time.in_time_zone(zone).strftime("%F %I:%M %p")
   end
@@ -25,11 +35,4 @@ class LogDeliveryMailer < ApplicationMailer
     unsent.update_all(sent_at: Time.now)
   end
 
-  def log_digest(device)
-    Log.transaction do
-      maybe_crash_if_too_many_logs(device)
-      unsent         = device.unsent_routine_emails
-      send_a_digest(device, unsent) if unsent.any?
-    end
-  end
 end
