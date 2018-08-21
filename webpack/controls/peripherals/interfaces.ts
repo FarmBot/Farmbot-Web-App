@@ -1,14 +1,8 @@
-import { TaggedPeripheral } from "../../resources/tagged_resources";
+import { TaggedPeripheral } from "farmbot";
 import { Pins } from "farmbot/dist";
 
 export interface PeripheralState {
   isEditing: boolean;
-}
-
-export interface Peripheral {
-  id?: number;
-  pin: number | undefined;
-  label: string;
 }
 
 export interface PeripheralFormProps {

@@ -1,4 +1,3 @@
-jest.mock("farmbot-toastr", () => ({ info: jest.fn() }));
 import { info } from "farmbot-toastr";
 
 describe("createReminderFn", () => {

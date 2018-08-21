@@ -15,34 +15,15 @@ describe LogService do
     FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
   end
 
-  class FakeLogChan
-    attr_reader :subcribe_calls
-
-    def initialize
-      @subcribe_calls = 0
-    end
-
-    def subscribe(*)
-      @subcribe_calls += 1
-    end
+  it "has a log_channel" do
+    calls = Transport.current.log_channel.calls[:bind]
+    expect(calls).to include(["amq.topic", {routing_key: "bot.*.logs"}])
   end
 
-  it "calls .subscribe() on Transport." do
-    Transport.current.clear!
-    load "./lib/log_service_runner.rb"
-    arg1        = Transport.current.connection.calls[:subscribe].last[0]
-    routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
-    expect(arg1).to        eq({block: true})
-    expect(routing_key).to eq("bot.*.logs")
-  end
-
-  it "calls .subscribe() on Transport." do
-    Transport.current.clear!
-    load "./lib/resource_service_runner.rb"
-    arg1        = Transport.current.connection.calls[:subscribe].last[0]
-    routing_key = Transport.current.connection.calls[:bind].last[1][:routing_key]
-    expect(arg1).to        eq({block: true})
-    expect(routing_key).to eq("bot.*.resources_v0.#")
+  it "has a resource_channel" do
+    calls = Transport.current.resource_channel.calls[:bind]
+    expect(calls)
+      .to include(["amq.topic", {routing_key: "bot.*.resources_v0.#"}])
   end
 
   it "creates new messages in the DB when called" do

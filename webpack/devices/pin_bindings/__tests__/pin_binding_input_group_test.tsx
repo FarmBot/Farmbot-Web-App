@@ -15,14 +15,12 @@ import { mount, shallow } from "enzyme";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
-import { TaggedSequence } from "../../../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import {
   fakeSequence
 } from "../../../__test_support__/fake_state/resources";
 import { initSave } from "../../../api/crud";
-import {
-  PinBindingInputGroupProps, PinBindingType, PinBindingSpecialAction
-} from "../interfaces";
+import { PinBindingInputGroupProps } from "../interfaces";
 import {
   PinBindingInputGroup, PinNumberInputGroup, BindingTypeDropDown,
   ActionTargetDropDown, SequenceTargetDropDown
@@ -31,6 +29,9 @@ import { error, warning } from "farmbot-toastr";
 import {
   fakeResourceIndex
 } from "../../../sequences/step_tiles/tile_move_absolute/test_helpers";
+import {
+  PinBindingType, PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 
 describe("<PinBindingInputGroup/>", () => {
   function fakeProps(): PinBindingInputGroupProps {
@@ -147,7 +148,8 @@ describe("<PinBindingInputGroup/>", () => {
   });
 
   it("sets pin", () => {
-    const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
+    const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup
+      {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     // tslint:disable-next-line:no-any
     const instance = wrapper.instance() as any;
@@ -164,24 +166,30 @@ describe("<PinBindingInputGroup/>", () => {
   });
 
   it("changes pin number", () => {
-    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
+    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
+      {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     wrapper.instance().setSelectedPin(7);
     expect(wrapper.instance().state.pinNumberInput).toEqual(7);
   });
 
   it("changes binding type", () => {
-    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
+    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
+      {...fakeProps()} />);
     expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.standard);
     wrapper.instance().setBindingType({ label: "", value: PinBindingType.special });
     expect(wrapper.instance().state.bindingType).toEqual(PinBindingType.special);
   });
 
   it("changes special action", () => {
-    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup {...fakeProps()} />);
+    const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
+      {...fakeProps()} />);
     wrapper.setState({ bindingType: PinBindingType.special });
     expect(wrapper.instance().state.specialActionInput).toEqual(undefined);
-    wrapper.instance().setSpecialAction({ label: "", value: PinBindingSpecialAction.sync });
+    wrapper.instance().setSpecialAction({
+      label: "",
+      value: PinBindingSpecialAction.sync
+    });
     expect(wrapper.instance().state.specialActionInput)
       .toEqual(PinBindingSpecialAction.sync);
   });

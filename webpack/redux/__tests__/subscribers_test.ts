@@ -7,7 +7,7 @@ import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import { WebAppConfig } from "../../config_storage/web_app_configs";
-import { SpecialStatus, TaggedWebAppConfig } from "../../resources/tagged_resources";
+import { SpecialStatus, TaggedWebAppConfig } from "farmbot";
 import { fakeState } from "../../__test_support__/fake_state";
 
 describe("unsavedCheck", () => {
@@ -17,25 +17,27 @@ describe("unsavedCheck", () => {
       kind: "WebAppConfig",
       uuid: "NOT SET HERE!",
       specialStatus,
+      // tslint:disable-next-line:no-any
       body: (body as any)
     };
     const output = fakeState();
     output.resources = buildResourceIndex([config]);
     // `buildResourceIndex` clears specialStatus. Set it again:
     const uuid = output.resources.index.all[0];
+    // tslint:disable-next-line:no-any
     (output.resources.index.references[uuid] || {} as any)
       .specialStatus = specialStatus;
     return output;
   }
 
   it("stops users if they have unsaved work", () => {
-    localStorage.session = "YES";
+    localStorage.setItem("session", "YES");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(stopThem);
   });
 
   it("does nothing when logged out", () => {
-    localStorage.session = undefined;
+    localStorage.removeItem("session");
     unsavedCheck(setItUp(SpecialStatus.DIRTY, { discard_unsaved: false }));
     expect(window.onbeforeunload).toBe(dontStopThem);
   });

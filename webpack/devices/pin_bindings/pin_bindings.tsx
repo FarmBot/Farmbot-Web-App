@@ -6,7 +6,7 @@ import { Feature, BotState } from "../interfaces";
 import { selectAllPinBindings } from "../../resources/selectors";
 import { MustBeOnline } from "../must_be_online";
 import {
-  PinBinding, PinBindingSpecialAction, PinBindingType, PinBindingsProps,
+  PinBindingsProps,
   PinBindingListItems
 } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
@@ -16,6 +16,11 @@ import {
 } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
+import {
+  PinBindingSpecialAction,
+  PinBindingType,
+  PinBinding
+} from "farmbot/dist/resources/api_resources";
 
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {

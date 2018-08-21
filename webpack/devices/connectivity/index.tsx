@@ -3,13 +3,12 @@ import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus, InformationalSettings } from "farmbot";
 import { ConnectivityDiagram } from "./diagram";
 import { ToolTips } from "../../constants";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay
 } from "../components/fbos_settings/fbos_details";
-import { InformationalSettings } from "farmbot";
 
 interface Props {
   onRefresh(): void;
@@ -55,7 +54,7 @@ export class ConnectivityPanel extends React.Component<Props, ConnectivityState>
             </div>
           </Col>
           <Col md={12} lg={8}>
-            <ConnectivityRow from={t("from")} to={t("to")} />
+            <ConnectivityRow from={t("from")} to={t("to")} header={true} />
             {rowData
               .map((x, y) => <ConnectivityRow {...x} key={y}
                 hover={this.hover}

@@ -1,8 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { Row, Col } from "../../ui/index";
-import { TaggedSequence } from "../../resources/tagged_resources";
-import { SequenceBodyItem } from "farmbot";
+import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "../step_icon_group";
 import { splice, remove } from "../step_tiles/index";

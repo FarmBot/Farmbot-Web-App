@@ -18,8 +18,6 @@ jest.mock("../session", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import {
   responseFulfilled, isLocalRequest, requestFulfilled, responseRejected
 } from "../interceptors";

@@ -8,12 +8,11 @@ import {
 } from "../resources/selectors";
 import {
   isTaggedTool,
-  TaggedTool,
-  TaggedToolSlotPointer
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
 import { DropDownItem, NULL_CHOICE } from "../ui/index";
 import { validBotLocationData } from "../util";
+import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 
 export function mapStateToProps(props: Everything): Props {
   const toolSlots = selectAllToolSlotPointers(props.resources.index);
@@ -25,7 +24,10 @@ export function mapStateToProps(props: Everything): Props {
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
     return _(tools)
-      .map(tool => ({ label: tool.body.name || "untitled", value: (tool.body.id as number) }))
+      .map(tool => ({
+        label: tool.body.name || "untitled",
+        value: (tool.body.id as number)
+      }))
       .filter(ddi => _.isNumber(ddi.value) && ddi.value > 0)
       .compact()
       .value();

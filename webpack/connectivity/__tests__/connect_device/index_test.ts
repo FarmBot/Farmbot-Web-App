@@ -1,10 +1,3 @@
-jest.mock("farmbot-toastr", () => ({
-  success: jest.fn(),
-  error: jest.fn(),
-  info: jest.fn(),
-  warning: jest.fn()
-}));
-
 jest.mock("../../index", () => ({
   dispatchNetworkUp: jest.fn(),
   dispatchNetworkDown: jest.fn()
@@ -43,7 +36,7 @@ import {
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
-import { Log } from "../../../interfaces";
+import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
 import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
@@ -182,6 +175,7 @@ describe("onOnline", () => {
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
     const setUserEnv = jest.fn(() => Promise.resolve({}));
+    // tslint:disable-next-line:no-any
     const fakeFarmbot = { setUserEnv: setUserEnv as any } as Farmbot;
     changeLastClientConnected(fakeFarmbot)();
     expect(setUserEnv).toHaveBeenCalledWith(expect.objectContaining({

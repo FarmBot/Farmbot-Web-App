@@ -105,15 +105,9 @@ module CeleryScriptSettingsBag
           BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
         end
       end
-      .arg(:pointer_id,   [Integer]) do |node|
-        p_type = node&.parent&.args[:pointer_type]&.value
-        klass  = KLASS_LOOKUP[p_type]
-        # Don't try to validate if `pointer_type` is wrong.
-        # That's a different respnsiblity.
-        if(klass)
-          bad_node = !klass.exists?(node.value)
-          node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
-        end
+      .arg(:pointer_id,   [Integer]) do |node, device|
+        bad_node = !Point.where(id: node.value, device_id: device.id).exists?
+        node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end
       .arg(:pointer_type, [String]) do |node|
         within(ALLOWED_POINTER_TYPE, node) do |val|
@@ -208,7 +202,7 @@ module CeleryScriptSettingsBag
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
-      .node(:execute,               [:sequence_id])
+      .node(:execute,               [:sequence_id], [:variable_declaration])
       .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
       .node(:sequence,              [:version, :locals], STEPS)
       .node(:home,                  [:speed, :axis], [])
@@ -220,7 +214,7 @@ module CeleryScriptSettingsBag
       .node(:sync,                  [], [])
       .node(:check_updates,         [:package], [])
       .node(:power_off,             [], [])
-      .node(:reboot,                [], [])
+      .node(:reboot,                [:package], [])
       .node(:toggle_pin,            [:pin_number], [])
       .node(:explanation,           [:message], [])
       .node(:rpc_request,           [:label], ALLOWED_RPC_NODES)

@@ -16,7 +16,8 @@ interface RootComponentProps { store: Store; }
 
 export const attachAppToDom: Callback = () => {
   attachToRoot(RootComponent, { store: _store });
-  _store.dispatch(ready());
+  // tslint:disable-next-line:no-any
+  _store.dispatch(ready() as any);
 };
 
 export class RootComponent extends React.Component<RootComponentProps, {}> {

@@ -1,30 +1,33 @@
 import * as React from "react";
 import { shallow } from "enzyme";
-import { MustBeOnline, isBotUp } from "../must_be_online";
+import { MustBeOnline, isBotUp, MBOProps } from "../must_be_online";
 
-describe("<MustBeOnline/>", function () {
-  it("Covers content when status is 'unknown'", function () {
-    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"}>
+describe("<MustBeOnline/>", () => {
+  const fakeProps = (): MBOProps => ({
+    networkState: "down",
+    syncStatus: "sync_now",
+  });
+
+  it("Covers content when status is 'unknown'", () => {
+    const elem = <MustBeOnline {...fakeProps()}>
       <span>Covered</span>
     </MustBeOnline>;
     const overlay = shallow(elem).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
   });
 
-  it("Uncovered when locked open", function () {
-    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"} lockOpen={true}>
-      <span>Uncovered</span>
-    </MustBeOnline>;
-    const overlay = shallow(elem).find("div");
+  it("is uncovered when locked open", () => {
+    const p = fakeProps();
+    p.lockOpen = true;
+    const overlay = shallow(<MustBeOnline {...p} />).find("div");
     expect(overlay.hasClass("unavailable")).toBeFalsy();
     expect(overlay.hasClass("banner")).toBeFalsy();
   });
 
-  it("Doesn't show banner", function () {
-    const elem = <MustBeOnline networkState="down" syncStatus={"sync_now"} hideBanner={true}>
-      <span>Uncovered</span>
-    </MustBeOnline>;
-    const overlay = shallow(elem).find("div");
+  it("doesn't show banner", () => {
+    const p = fakeProps();
+    p.hideBanner = true;
+    const overlay = shallow(<MustBeOnline {...p} />).find("div");
     expect(overlay.hasClass("unavailable")).toBeTruthy();
     expect(overlay.hasClass("banner")).toBeFalsy();
   });

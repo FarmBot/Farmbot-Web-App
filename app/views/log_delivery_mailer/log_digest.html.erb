@@ -1,0 +1,13 @@
+<p>
+  <%= @device_name %> sent you an email.
+</p>
+
+<p>
+  Here's what your device had to say:
+</p>
+
+<ul>
+  <% @messages.each do |msg| %>
+    <li><%= msg %></li>
+  <% end %>
+</ul>

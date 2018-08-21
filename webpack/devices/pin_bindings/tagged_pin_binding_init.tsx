@@ -1,8 +1,11 @@
 import * as React from "react";
 import {
-  PinBindingType, PinBindingSpecialAction, PinBinding, PinBindingListItems
-} from "./interfaces";
-import { TaggedPinBinding, SpecialStatus } from "../../resources/tagged_resources";
+  PinBindingType,
+  PinBindingSpecialAction,
+  PinBinding
+} from "farmbot/dist/resources/api_resources";
+import { PinBindingListItems } from "./interfaces";
+import { TaggedPinBinding, SpecialStatus } from "farmbot";
 import { ShouldDisplay, Feature } from "../interfaces";
 import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { SpecialStatus } from "../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 interface SaveBtnProps {
   /** Callback */

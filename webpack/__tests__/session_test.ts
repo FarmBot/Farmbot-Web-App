@@ -1,11 +1,33 @@
+import { fakeWebAppConfig } from "../__test_support__/fake_state/resources";
+import { fakeState } from "../__test_support__/fake_state";
+
+const mockConfig = fakeWebAppConfig();
+jest.mock("../resources/selectors_by_kind", () => ({
+  getWebAppConfig: () => mockConfig
+}));
+
+jest.mock("../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
+}));
+
+const mockState = fakeState();
+jest.mock("../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: () => mockState,
+  }
+}));
+
 import {
   isNumericSetting,
   isBooleanSetting,
   safeBooleanSettting,
   safeNumericSetting,
-  Session
+  Session,
 } from "../session";
 import { auth } from "../__test_support__/fake_state/token";
+import { edit, save } from "../api/crud";
 
 describe("fetchStoredToken", () => {
   it("can't fetch token", () => {
@@ -13,7 +35,7 @@ describe("fetchStoredToken", () => {
   });
 
   it("can fetch token", () => {
-    localStorage["session"] = JSON.stringify(auth);
+    localStorage.setItem("session", JSON.stringify(auth));
     expect(Session.fetchStoredToken()).toEqual(auth);
   });
 });
@@ -39,9 +61,41 @@ describe("safeBooleanSetting", () => {
   });
 });
 
+describe("setBool", () => {
+  it("sets bool", () => {
+    Session.setBool("x_axis_inverted", false);
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      x_axis_inverted: false
+    });
+    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
+  });
+});
+
+describe("invertBool", () => {
+  it("inverts bool", () => {
+    Session.invertBool("x_axis_inverted");
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      x_axis_inverted: true
+    });
+    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
+  });
+});
+
 describe("safeNumericSetting", () => {
   it("safely returns num", () => {
     expect(() => safeNumericSetting("no")).toThrow();
     expect(safeNumericSetting("zoom_level")).toBe("zoom_level");
+  });
+});
+
+describe("clear()", () => {
+  it("clears", () => {
+    localStorage.clear = jest.fn();
+    sessionStorage.clear = jest.fn();
+    window.location.assign = jest.fn();
+    expect(Session.clear()).toEqual(undefined);
+    expect(localStorage.clear).toHaveBeenCalled();
+    expect(sessionStorage.clear).toHaveBeenCalled();
+    expect(window.location.assign).toHaveBeenCalled();
   });
 });

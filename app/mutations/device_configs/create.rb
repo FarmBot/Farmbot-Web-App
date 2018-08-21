@@ -1,4 +1,4 @@
-module DeviceConfigs
+module FarmwareEnvs
   class Create < Mutations::Command
     LIMIT = Device::DEFAULT_MAX_CONFIGS
 
@@ -10,7 +10,7 @@ module DeviceConfigs
 
     def validate
       # Ensure you're not over the limit
-      if device.device_configs.length >= LIMIT
+      if device.farmware_envs.length >= LIMIT
         add_error :configs,
                   :configs,
                   "You are over the limit of #{LIMIT} configs."
@@ -18,7 +18,7 @@ module DeviceConfigs
     end
 
     def execute
-      DeviceConfig.create!(inputs)
+      FarmwareEnv.create!(inputs)
     end
   end
 end

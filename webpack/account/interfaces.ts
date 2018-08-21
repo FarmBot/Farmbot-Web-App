@@ -1,5 +1,5 @@
 import { User } from "../auth/interfaces";
-import { TaggedUser } from "../resources/tagged_resources";
+import { TaggedUser } from "farmbot";
 
 export interface Props {
   user: TaggedUser;

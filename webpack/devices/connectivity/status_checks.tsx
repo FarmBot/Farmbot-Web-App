@@ -60,13 +60,23 @@ export function browserToMQTT(status:
 
 export function botToFirmware(version: string | undefined): StatusRowProps {
   const boardIdentifier = version ? version.slice(-1) : "undefined";
-  const online = !isUndefined(version) && ["R", "F", "G"].includes(boardIdentifier);
+  const connection = (): { status: boolean | undefined, msg: string } => {
+    const status = ["R", "F", "G"].includes(boardIdentifier);
+    if (isUndefined(version)) {
+      return { status: undefined, msg: t("Unknown.") };
+    }
+    return {
+      status, msg: status
+        ? t("Connected.")
+        : t("Disconnected.")
+    };
+  };
   return {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
     to: ["F", "G"].includes(boardIdentifier) ? "Farmduino" : "Arduino",
-    children: online ? t("Connected.") : t("Disconnected."),
-    connectionStatus: online
+    children: connection().msg,
+    connectionStatus: connection().status
   };
 }
 

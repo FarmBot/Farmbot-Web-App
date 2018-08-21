@@ -1,7 +1,3 @@
-jest.mock("farmbot-toastr", () => ({
-  error: jest.fn()
-}));
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { Peripherals } from "../index";
@@ -9,7 +5,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { PeripheralsProps } from "../../../devices/interfaces";
 import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { error } from "farmbot-toastr";
 
 describe("<Peripherals />", () => {

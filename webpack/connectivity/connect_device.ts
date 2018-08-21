@@ -1,7 +1,7 @@
 import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
-import { Log } from "../interfaces";
-import { Farmbot, BotStateTree } from "farmbot";
+import { Log } from "farmbot/dist/resources/api_resources";
+import { Farmbot, BotStateTree, TaggedResource, SpecialStatus } from "farmbot";
 import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
@@ -17,7 +17,6 @@ import {
 } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
-import { TaggedResource, SpecialStatus } from "../resources/tagged_resources";
 import { autoSync } from "./auto_sync";
 import { startPinging } from "./ping_mqtt";
 import { talk } from "browser-speech";

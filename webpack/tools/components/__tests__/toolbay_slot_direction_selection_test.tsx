@@ -5,7 +5,7 @@ import {
 } from "../toolbay_slot_direction_selection";
 import { fakeToolSlot } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<SlotDirectionSelect />", () => {
   const fakeProps = (): SlotDirectionSelectProps => {

@@ -3,7 +3,7 @@ import { t } from "i18next";
 import * as moment from "moment";
 import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
-import { TaggedPlantPointer } from "../../resources/tagged_resources";
+import { TaggedPlantPointer } from "farmbot";
 import { Actions } from "../../constants";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;

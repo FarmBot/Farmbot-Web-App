@@ -4,7 +4,7 @@ import { BlurableInput, Row, Col } from "../../ui/index";
 import { ImageFlipper } from "../images/image_flipper";
 import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage } from "farmbot";
 import { t } from "i18next";
 
 const RANGES = {

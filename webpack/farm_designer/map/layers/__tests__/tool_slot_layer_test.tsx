@@ -8,9 +8,9 @@ import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
-import { ToolSlotPointer } from "../../../../interfaces";
 import { shallow } from "enzyme";
 import { history } from "../../../../history";
+import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
 
 describe("<ToolSlotLayer/>", () => {
   function fakeProps(): ToolSlotLayerProps {

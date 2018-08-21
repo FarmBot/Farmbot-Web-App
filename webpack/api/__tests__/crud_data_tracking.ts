@@ -21,7 +21,7 @@ import { ReduxAction } from "../../redux/interfaces";
 import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";
 import { betterCompact } from "../../util";
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import * as _ from "lodash";
 
 describe("AJAX data tracking", () => {
@@ -38,7 +38,8 @@ describe("AJAX data tracking", () => {
 
   it("sets consistency when calling destroy()", () => {
     const uuid = store.getState().resources.index.byKind.Tool[0];
-    store.dispatch(destroy(uuid));
+    // tslint:disable-next-line:no-any
+    store.dispatch(destroy(uuid) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 
@@ -47,7 +48,8 @@ describe("AJAX data tracking", () => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
     });
-    store.dispatch(saveAll(r));
+    // tslint:disable-next-line:no-any
+    store.dispatch(saveAll(r) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
     const uuids: string[] =
       _.uniq((maybeStartTracking as jest.Mock).mock.calls
@@ -57,7 +59,8 @@ describe("AJAX data tracking", () => {
 
   it("sets consistency when calling initSave()", () => {
     mockBody = resources()[0].body;
-    store.dispatch(initSave(resources()[0]));
+    // tslint:disable-next-line:no-any
+    store.dispatch(initSave(resources()[0]) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 });

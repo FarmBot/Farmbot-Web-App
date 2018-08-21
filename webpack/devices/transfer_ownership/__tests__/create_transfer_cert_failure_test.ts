@@ -12,11 +12,11 @@ jest.mock("axios", () => {
   };
 });
 
-jest.mock("farmbot-toastr", () => ({ error: jest.fn() }));
-
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
-import { submitOwnershipChange } from "../../components/fbos_settings/change_ownership_form";
+import {
+  submitOwnershipChange
+} from "../../components/fbos_settings/change_ownership_form";
 import { error } from "farmbot-toastr";
 import { API } from "../../../api";
 

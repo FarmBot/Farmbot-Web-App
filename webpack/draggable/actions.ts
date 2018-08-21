@@ -1,6 +1,5 @@
 import { DataXfer, DataXferIntent, DataXferBase } from "./interfaces";
-import { uuid as id } from "farmbot";
-import { SequenceBodyItem as Step } from "farmbot";
+import { SequenceBodyItem as Step, uuid as id } from "farmbot";
 import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as React from "react";
@@ -37,7 +36,7 @@ export function stepGet(uuid: string) {
     DataXfer {
     const obj = getState().draggable.dataTransfer[uuid];
     if (obj && obj.intent) {
-      dispatch({ type: "DROP_DATA_XFER", payload: uuid });
+      dispatch({ type: Actions.DROP_DATA_XFER, payload: uuid });
       return obj;
     } else {
       throw new Error(`Can't find StepXferObject with UUID ${uuid}`);

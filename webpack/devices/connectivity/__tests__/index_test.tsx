@@ -3,7 +3,7 @@ import { render, mount } from "enzyme";
 import { ConnectivityPanel } from "../index";
 import { StatusRowProps } from "../connectivity_row";
 import * as _ from "lodash";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<ConnectivityPanel/>", () => {

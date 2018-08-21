@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui/index";
 import { t } from "i18next";
 import { ToolListProps } from "../interfaces";
-import { TaggedTool } from "../../resources/tagged_resources";
+import { TaggedTool } from "farmbot";
 import { ToolTips } from "../../constants";
 
 export class ToolList extends React.Component<ToolListProps, {}> {

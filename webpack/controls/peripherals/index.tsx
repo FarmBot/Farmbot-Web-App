@@ -7,7 +7,10 @@ import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
 import {
-  TaggedPeripheral, getArrayStatus, SpecialStatus
+  TaggedPeripheral, SpecialStatus,
+} from "farmbot";
+import {
+  getArrayStatus,
 } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";

@@ -7,8 +7,8 @@ import {
   BackArrow, Row, Col, BlurableInput, ColorPicker
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
-import { Actions } from "../../constants";
-import { TaggedPoint, SpecialStatus } from "../../resources/tagged_resources";
+import { Actions, Content } from "../../constants";
+import { TaggedPoint, SpecialStatus } from "farmbot";
 import { deletePoints } from "../../farmware/weed_detector/actions";
 import { clone } from "lodash";
 
@@ -119,8 +119,76 @@ export class CreatePoints
     this.cancel();
   }
 
-  render() {
+  PointProperties = () => {
     const { cx, cy, r, color } = this.state;
+    return <Row>
+      <Col xs={3}>
+        <label>{t("X")}</label>
+        <BlurableInput
+          name="cx"
+          type="number"
+          onCommit={this.update("cx")}
+          value={cx || 0} />
+      </Col>
+      <Col xs={3}>
+        <label>{t("Y")}</label>
+        <BlurableInput
+          name="cy"
+          type="number"
+          onCommit={this.update("cy")}
+          value={cy || 0} />
+      </Col>
+      <Col xs={3}>
+        <label>{t("radius")}</label>
+        <BlurableInput
+          name="r"
+          type="number"
+          onCommit={this.update("r")}
+          value={r || 0} />
+      </Col>
+      <Col xs={3}>
+        <label>{t("color")}</label>
+        <ColorPicker
+          current={color as Color || "green"}
+          onChange={this.changeColor} />
+      </Col>
+    </Row>;
+  }
+
+  PointActions = () =>
+    <Row>
+      <button className="fb-button green"
+        onClick={this.createPoint}>
+        {t("Create point")}
+      </button>
+      <button className="fb-button yellow"
+        onClick={this.updateCurrentPoint}>
+        {t("Update")}
+      </button>
+      <button className="fb-button gray"
+        onClick={this.cancel}>
+        {t("Cancel")}
+      </button>
+    </Row>
+
+  DeleteAllPoints = () =>
+    <Row>
+      <div className="delete-row">
+        <label>{t("delete")}</label>
+        <p>{t("Delete all of the points created through this panel.")}</p>
+        <button className="fb-button red delete"
+          onClick={() => {
+            if (confirm(t("Delete all the points you have created?"))) {
+              this.props.dispatch(deletePoints("points", "farm-designer"));
+              this.cancel();
+            }
+          }}>
+          {t("Delete all created points")}
+        </button>
+      </div>
+    </Row>
+
+  render() {
     return <div
       className="panel-container brown-panel point-creation-panel">
       <div className="panel-header brown-panel">
@@ -129,73 +197,14 @@ export class CreatePoints
           {t("Create point")}
         </p>
         <div className="panel-header-description">
-          {"Click and drag to draw a point or use the inputs and press " +
-            "update. Press CREATE POINT to save, or the back arrow to exit."}
+          {t(Content.CREATE_POINTS_DESCRIPTION)}
         </div>
       </div>
 
       <div className="panel-content">
-        <Row>
-          <Col xs={3}>
-            <label>{t("X")}</label>
-            <BlurableInput
-              name="cx"
-              type="number"
-              onCommit={this.update("cx")}
-              value={cx || 0} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("Y")}</label>
-            <BlurableInput
-              name="cy"
-              type="number"
-              onCommit={this.update("cy")}
-              value={cy || 0} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("radius")}</label>
-            <BlurableInput
-              name="r"
-              type="number"
-              onCommit={this.update("r")}
-              value={r || 0} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("color")}</label>
-            <ColorPicker
-              current={color as Color || "green"}
-              onChange={this.changeColor} />
-          </Col>
-        </Row>
-        <Row>
-          <button className="fb-button green"
-            onClick={this.createPoint}>
-            {t("Create point")}
-          </button>
-          <button className="fb-button yellow"
-            onClick={this.updateCurrentPoint}>
-            {t("Update")}
-          </button>
-          <button className="fb-button gray"
-            onClick={this.cancel}>
-            {t("Cancel")}
-          </button>
-        </Row>
-        <Row>
-          <div className="delete-row">
-            <label>{t("delete")}</label>
-            <p>{t("Delete all of the points created through this panel.")}</p>
-            <button className="fb-button red delete"
-              onClick={() => {
-                if (confirm("Delete all the points you have created?")) {
-                  this.props.dispatch(deletePoints("points", "farm-designer"));
-                  this.cancel();
-                }
-              }}>
-              {t("Delete all created points")}
-            </button>
-          </div>
-        </Row>
+        <this.PointProperties />
+        <this.PointActions />
+        <this.DeleteAllPoints />
       </div>
     </div>;
   }

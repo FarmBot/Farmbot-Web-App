@@ -153,4 +153,12 @@ describe("util", () => {
     });
   });
 
+  describe("fancyDebug()", () => {
+    it("debugs in a fanciful manner", () => {
+      const test = { testing: "fancy debug" };
+      const result = Util.fancyDebug(test);
+      expect(result).toBe(test);
+    });
+  });
+
 });

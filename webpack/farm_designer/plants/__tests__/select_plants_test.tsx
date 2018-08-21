@@ -103,4 +103,20 @@ describe("<SelectPlants />", () => {
       payload: ["plant.1"], type: Actions.SELECT_PLANT
     });
   });
+
+  it("unmounts", () => {
+    const p = fakeProps();
+    p.selected = [];
+    const wrapper = shallow(<SelectPlants {...p} />);
+    jest.clearAllMocks();
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT,
+      payload: [undefined]
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_PLANT,
+      payload: { icon: "fake icon", plantUUID: undefined }
+    });
+  });
 });

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { PeripheralForm } from "../peripheral_form";
-import { TaggedPeripheral, SpecialStatus } from "../../../resources/tagged_resources";
+import { TaggedPeripheral, SpecialStatus } from "farmbot";
 
 describe("<PeripheralForm/>", function () {
   const dispatch = jest.fn();

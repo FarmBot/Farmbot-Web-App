@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";
-import { SpecialStatus, TaggedWebcamFeed } from "../../resources/tagged_resources";
+import { SpecialStatus, TaggedWebcamFeed } from "farmbot";
 import * as _ from "lodash";
 
 export function sortedFeeds(feeds: TaggedWebcamFeed[]): TaggedWebcamFeed[] {

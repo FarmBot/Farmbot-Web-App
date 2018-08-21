@@ -23,13 +23,6 @@ jest.mock("../../device", () => ({
   }
 }));
 
-jest.mock("farmbot-toastr", () => ({
-  success: jest.fn(),
-  info: jest.fn(),
-  error: jest.fn(),
-  warning: jest.fn(),
-}));
-
 let mockGetRelease: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({
   default: {
@@ -47,8 +40,7 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { SpecialStatus } from "../../resources/tagged_resources";
-import { McuParamName } from "farmbot";
+import { SpecialStatus, McuParamName } from "farmbot";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { success, error, warning, info } from "farmbot-toastr";
 
@@ -330,7 +322,7 @@ describe("fetchReleases()", () => {
       "Could not download FarmBot OS update information.");
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
-      type: "FETCH_OS_UPDATE_INFO_ERROR"
+      type: Actions.FETCH_OS_UPDATE_INFO_ERROR
     });
   });
 
@@ -342,7 +334,7 @@ describe("fetchReleases()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
-      type: "FETCH_BETA_OS_UPDATE_INFO_ERROR"
+      type: Actions.FETCH_BETA_OS_UPDATE_INFO_ERROR
     });
   });
 });
@@ -405,7 +397,7 @@ describe("fetchMinOsFeatureData()", () => {
     expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
-      type: "FETCH_MIN_OS_FEATURE_INFO_ERROR"
+      type: Actions.FETCH_MIN_OS_FEATURE_INFO_ERROR
     });
   });
 });

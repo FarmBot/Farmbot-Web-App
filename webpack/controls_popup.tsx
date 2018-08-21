@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { DirectionButton } from "./controls/direction_button";
+import { DirectionButton } from "./controls/move/direction_button";
 import { getDevice } from "./device";
-import { buildDirectionProps } from "./controls/direction_axes_props";
-import { ControlsPopupProps } from "./controls/interfaces";
+import { buildDirectionProps } from "./controls/move/direction_axes_props";
+import { ControlsPopupProps } from "./controls/move/interfaces";
 import { commandErr } from "./devices/actions";
 
 interface State {

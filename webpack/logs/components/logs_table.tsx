@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { TaggedLog } from "../../resources/tagged_resources";
+import { TaggedLog } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";

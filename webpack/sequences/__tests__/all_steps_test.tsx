@@ -2,7 +2,7 @@ import * as React from "react";
 import { AllSteps } from "../all_steps";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { shallow } from "enzyme";
-import { TaggedSequence, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedSequence, SpecialStatus } from "farmbot";
 import { maybeTagSteps } from "../../resources/sequence_tagging";
 import { TileMoveRelative } from "../step_tiles/tile_move_relative";
 import { TileReadPin } from "../step_tiles/tile_read_pin";

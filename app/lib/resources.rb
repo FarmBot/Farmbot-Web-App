@@ -1,8 +1,7 @@
 module Resources
   DEVICE_REGEX = /device_\d*/
-  ACTIONS      = [
-    DESTROY = "destroy"
-  ]
+  ACTIONS      = [ DESTROY = "destroy", SAVE = "save" ]
+
   RESOURCES    = { # Because I don't trust Kernel.const_get
     "FarmEvent"             => FarmEvent,
     "FarmwareInstallations" => FarmwareInstallation,

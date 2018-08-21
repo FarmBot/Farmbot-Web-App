@@ -6,7 +6,7 @@ import { Row, Page, Col } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { WebcamPanel } from "./webcam";
 import { Props } from "./interfaces";
-import { Move } from "./move";
+import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { SensorReadings } from "./sensor_readings/sensor_readings";

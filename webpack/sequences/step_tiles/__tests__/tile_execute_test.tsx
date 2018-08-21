@@ -1,8 +1,13 @@
 import * as React from "react";
-import { ExecuteBlock, ExecBlockParams, RefactoredExecuteBlock } from "../tile_execute";
+import {
+  ExecuteBlock,
+  ExecBlockParams,
+  RefactoredExecuteBlock,
+  getVariable
+} from "../tile_execute";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Execute } from "farmbot/dist";
+import { Execute, Point, Identifier, Coordinate, Tool } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { Actions } from "../../../constants";
 
@@ -18,7 +23,8 @@ function fakeProps(): ExecBlockParams {
     currentStep: currentStep,
     dispatch: jest.fn(),
     index: 0,
-    resources: emptyState().index
+    resources: emptyState().index,
+    shouldDisplay: () => false,
   };
 }
 
@@ -29,6 +35,19 @@ describe("<ExecuteBlock/>", () => {
     const labels = block.find("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(1);
+    expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
+    expect(labels.at(0).text()).toEqual("Sequence");
+    expect(block.text()).toContain("None");
+  });
+
+  it("renders inputs when sequence has a variable", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const block = mount(<ExecuteBlock {...p} />);
+    const inputs = block.find("input");
+    const labels = block.find("label");
+    expect(inputs.length).toEqual(1);
+    expect(labels.length).toEqual(2);
     expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
     expect(labels.at(0).text()).toEqual("Sequence");
     expect(block.text()).toContain("None");
@@ -52,5 +71,73 @@ describe("<RefactoredExecuteBlock />", () => {
         })
       })
     });
+  });
+
+  const testSetVariable = (location: Coordinate | Point | Tool | Identifier) => {
+    const p = fakeProps();
+    const block = new RefactoredExecuteBlock(p);
+    block.setVariable(location);
+    expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: expect.objectContaining({
+        update: expect.objectContaining({
+          body: [{
+            kind: "execute", args: { sequence_id: 0 },
+            body: [{
+              kind: "variable_declaration",
+              args: { label: "parent", data_value: location }
+            }]
+          }]
+        })
+      })
+    }));
+  };
+
+  it("sets variable: coordinate", () => {
+    const location: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
+    testSetVariable(location);
+  });
+
+  it("sets variable: identifier", () => {
+    const location: Identifier = { kind: "identifier", args: { label: "parent" } };
+    testSetVariable(location);
+  });
+});
+
+describe("getVariable", () => {
+  it("handles points", () => {
+    const data_value: Point = {
+      kind: "point",
+      args: { pointer_type: "point", pointer_id: 123 }
+    };
+
+    const result = getVariable([{
+      kind: "variable_declaration",
+      args: { label: "parent", data_value }
+    }]);
+
+    expect(result).toEqual(data_value);
+  });
+
+  it("handles others", () => {
+    const data_value: Identifier = { kind: "identifier", args: { label: "X" } };
+
+    // tslint:disable-next-line:no-any
+    const boom = () => getVariable([{
+      kind: "variable_declaration",
+      args: { label: "parent", data_value }
+    }]);
+
+    expect(boom).toThrow("How did identifier get here?");
+  });
+
+  it("handles undefined", () => {
+    const result = getVariable(undefined);
+    expect(result.kind).toEqual("coordinate");
+    if (result.kind === "coordinate") {
+      expect(result.args.x).toEqual(0);
+      expect(result.args.y).toEqual(0);
+      expect(result.args.z).toEqual(0);
+    }
   });
 });

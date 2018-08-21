@@ -3,7 +3,7 @@ import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
 import { render, shallow } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { Actions } from "../../../constants";
 
 describe("<RegimenListItem/>", () => {

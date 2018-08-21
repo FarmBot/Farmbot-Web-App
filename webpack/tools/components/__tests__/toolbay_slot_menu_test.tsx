@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { SlotMenu, SlotMenuProps } from "../toolbay_slot_menu";
 import { fakeToolSlot } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
-import { SpecialStatus } from "../../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<SlotMenu />", () => {
   const fakeProps = (): SlotMenuProps => {

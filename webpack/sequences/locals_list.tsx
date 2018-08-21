@@ -2,21 +2,23 @@ import * as React from "react";
 import {
   ParameterDeclaration,
   VariableDeclaration,
-  Vector3
+  Vector3,
+  ScopeDeclarationBodyItem
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import {
-  LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect
+  LocationData, InputBox, generateList, formatSelectedDropdown, handleSelect,
+  CeleryVariable, EMPTY_COORD
 } from "./step_tiles/tile_move_absolute/index";
 import { overwrite } from "../api/crud";
-import { TaggedSequence } from "../resources/tagged_resources";
+import { TaggedSequence } from "farmbot";
 import { defensiveClone } from "../util";
 import { Row, Col, FBSelect } from "../ui/index";
 import { t } from "i18next";
 import { isNaN } from "lodash";
+import { findSlotByToolId } from "../resources/selectors_by_id";
 
-type LocalVariable = ParameterDeclaration | VariableDeclaration;
-type OnChange = (data_type: LocationData) => void;
+type OnChange = (data_type: LocationData | ParameterDeclaration) => void;
 type DataValue = VariableDeclaration["args"]["data_value"];
 
 export interface LocalsListProps {
@@ -26,42 +28,66 @@ export interface LocalsListProps {
 }
 
 export interface ParentVariableFormProps {
-  parent: VariableDeclaration;
+  parent: VariableDeclaration | ParameterDeclaration;
   resources: ResourceIndex;
   onChange: OnChange;
 }
 
+const KINDS = ["parameter_declaration", "variable_declaration"];
 /** Given an array of variable declarations (or undefined), finds the "parent"
  * special identifier */
 export const extractParent =
-  (list?: LocalVariable[]): VariableDeclaration | undefined => {
-    const p = (list || []).filter(x => {
+  (list?: ScopeDeclarationBodyItem[]): ScopeDeclarationBodyItem | undefined => {
+    const p = (list ? list : []).filter(x => {
       const isParent = x.args.label === "parent";
-      const isVar = x.kind === "variable_declaration";
+      const isVar = KINDS.includes(x.kind);
       return isVar && isParent;
     })[0];
-    return (p && p.kind === "variable_declaration") ? p : undefined;
+    switch (p && p.kind) {
+      case "variable_declaration":
+      case "parameter_declaration":
+        return p;
+      default:
+        return undefined;
+    }
   };
 
 /** Takes a sequence and data_value. Turn the data_value into the sequence's new
  * `parent` variable. This is a _pure function_. */
-export const setParent = (sequence: TaggedSequence, data_value: LocationData) => {
+export const setParent = (sequence: TaggedSequence, data_value: CeleryVariable) => {
+  const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
   switch (data_value.kind) {
     case "tool":
     case "point":
     case "coordinate":
-      const nextSeq: typeof sequence.body = defensiveClone(sequence.body);
       nextSeq.args.locals = {
         kind: "scope_declaration",
         args: {},
         body: [
-          { kind: "variable_declaration", args: { label: "parent", data_value } }
+          {
+            kind: "variable_declaration",
+            args: {
+              label: "parent",
+              data_value
+            }
+          }
         ]
       };
-      return nextSeq;
+      break;
+    case "parameter_declaration":
+      nextSeq.args.locals = {
+        kind: "scope_declaration",
+        args: {},
+        body: [{
+          kind: "parameter_declaration",
+          args: { label: "parent", data_type: "point" }
+        }]
+      };
+      break;
     default:
-      throw new Error("We don't support re-binding of variables yet.");
+      throw new Error("Bad kind in setParent(): " + data_value.kind);
   }
+  return nextSeq;
 };
 
 /** Returns the event handler that gets called when you edit the X/Y/Z*/
@@ -112,28 +138,52 @@ export const guessVecFromLabel =
       { x: vec[0], y: vec[1], z: vec[2] } : undefined;
   };
 
+export const PARENT = { value: "parent", label: "Parent", headingId: "parameter" };
+
 /** Return this when unable to correctly guess coordinate values */
-const BAD = { x: 0, y: 0, z: 0 };
+const EMPTY_VEC3 = { x: 0, y: 0, z: 0 };
+type ParentType = ParameterDeclaration | VariableDeclaration;
+
+const maybeFetchToolCoords =
+  (data_value: DataValue, resources: ResourceIndex): Vector3 | undefined => {
+    if (data_value.kind === "tool") {
+      const r = findSlotByToolId(resources, data_value.args.tool_id);
+      return r && r.body;
+    }
+  };
+const guessVariable =
+  (label: string, local: VariableDeclaration, resources: ResourceIndex): Vector3 => {
+    return guessVecFromLabel(label) ||
+      guessFromDataType(local.args.data_value) ||
+      maybeFetchToolCoords(local.args.data_value, resources) ||
+      EMPTY_VEC3;
+  };
+
 /** Given a dropdown label and a local variable declaration, tries to guess the
 * X/Y/Z value of the declared variable. If unable to guess,
 * returns (0, 0, 0) */
-export const guessXYZ = (label: string, local: VariableDeclaration): Vector3 =>
-  guessVecFromLabel(label) || guessFromDataType(local.args.data_value) || BAD;
-
+export const guessXYZ = (label: string, local: ParentType, resources: ResourceIndex): Vector3 => {
+  return (local.kind === "variable_declaration") ?
+    guessVariable(label, local, resources) : EMPTY_VEC3;
+};
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
 export const ParentVariableForm =
   ({ parent, resources, onChange }: ParentVariableFormProps) => {
-    const { data_value } = parent.args;
+    const data_value = (parent.kind == "variable_declaration") ?
+      parent.args.data_value : EMPTY_COORD;
     const ddiLabel = formatSelectedDropdown(resources, data_value);
-    const { x, y, z } = guessXYZ(ddiLabel.label, parent);
-    const isDisabled = parent.args.data_value.kind !== "coordinate";
+    const { x, y, z } = guessXYZ(ddiLabel.label, parent, resources);
+
+    const isDisabled = (parent.kind == "parameter_declaration") ||
+      data_value.kind !== "coordinate";
+
     return <div>
       <br /> {/** Lol */}
       <h5>Import Coordinates From</h5>
       <FBSelect
         allowEmpty={true}
-        list={generateList(resources, [])}
+        list={generateList(resources, [PARENT])}
         selectedItem={ddiLabel}
         onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
       <br /> {/** Lol */}

@@ -2,8 +2,8 @@ import axios, { AxiosPromise } from "axios";
 import * as _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
 import { DEFAULT_ICON } from "../open_farm/icons";
-import { ExecutableType } from "./interfaces";
 import { Actions } from "../constants";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 const openFarmSearchQuery = (q: string): AxiosPromise<CropSearchResult> =>

@@ -6,7 +6,7 @@ import {
   TaggedPeripheral,
   TaggedSensor,
   TaggedSensorReading
-} from "../resources/tagged_resources";
+} from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
@@ -23,38 +23,6 @@ export interface Props {
   getWebAppConfigVal: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
   timeOffset: number;
-}
-
-export interface MoveProps {
-  dispatch: Function;
-  bot: BotState;
-  user: TaggedUser | undefined;
-  arduinoBusy: boolean;
-  botToMqttStatus: NetworkState;
-  firmwareSettings: McuParams;
-  getWebAppConfigVal: GetWebAppConfigValue;
-}
-
-export interface DirectionButtonProps {
-  axis: Xyz;
-  direction: "up" | "down" | "left" | "right";
-  directionAxisProps: {
-    isInverted: boolean;
-    stopAtHome: boolean;
-    stopAtMax: boolean;
-    axisLength: number;
-    negativeOnly: boolean;
-    position: number | undefined;
-  }
-  steps: number;
-  disabled: boolean | undefined;
-}
-
-export interface Payl {
-  speed: number;
-  x: number;
-  y: number;
-  z: number;
 }
 
 export type Vector = Vector3;
@@ -84,32 +52,6 @@ export interface AxisInputBoxProps {
 
 export interface AxisInputBoxState {
   value: string | undefined;
-}
-
-export interface StepSizeSelectorProps {
-  choices: number[];
-  selected: number;
-  selector: (num: number) => void;
-}
-
-export interface DirectionAxesProps {
-  axisInversion: Record<Xyz, boolean>;
-  botPosition: BotPosition;
-  firmwareSettings: McuParams;
-}
-
-interface JogMovementControlsBaseProps extends DirectionAxesProps {
-  stepSize: number;
-  arduinoBusy: boolean;
-  xySwap: boolean;
-}
-
-export interface JogMovementControlsProps extends JogMovementControlsBaseProps {
-  doFindHome: boolean;
-}
-
-export interface ControlsPopupProps extends JogMovementControlsBaseProps {
-  dispatch: Function;
 }
 
 export interface ToggleButtonProps {

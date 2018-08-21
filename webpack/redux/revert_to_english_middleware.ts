@@ -1,7 +1,7 @@
 import { Middleware } from "redux";
 import { Actions } from "../constants";
 import { MiddlewareConfig } from "./middlewares";
-import { ResourceName } from "../resources/tagged_resources";
+import { ResourceName } from "farmbot";
 import { revertToEnglish } from "../revert_to_english";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
@@ -18,6 +18,7 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  * possible and then revert to english as soon as we have a chance to read the
  * value of `web_app_config.disable_i18n`.
  */
+// tslint:disable-next-line:no-any
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const isResourceReady = action
     && action.type === Actions.RESOURCE_READY

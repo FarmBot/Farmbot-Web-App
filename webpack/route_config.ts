@@ -20,6 +20,7 @@ function page<T>(path: string,
   return {
     path,
     getComponent(_, cb): void {
+      // tslint:disable-next-line:no-any
       const ok = (mod: T) => cb(undefined, mod[key] as any);
       const no = (e: object) => cb(undefined, crashPage(e));
       /** Whatever you do, make sure this function stays void or you will get a
@@ -62,6 +63,9 @@ export const designerRoutes: PlainRoute = {
     page("plants/create_point",
       () => import("./farm_designer/plants/create_points"),
       "CreatePoints"),
+    page("plants/saved_gardens",
+      () => import("./farm_designer/saved_gardens/saved_gardens"),
+      "SavedGardens"),
     page("plants/:plant_id",
       () => import("./farm_designer/plants/plant_info"),
       "PlantInfo"),

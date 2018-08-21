@@ -5,9 +5,9 @@ import {
 } from "../../ui/index";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
-import { TimeUnit } from "../interfaces";
 import { FarmEventViewModel } from "./edit_fe_form";
 import { EventTimePicker } from "./event_time_picker";
+import { TimeUnit } from "farmbot/dist/resources/api_resources";
 
 type Ev = React.SyntheticEvent<HTMLInputElement>;
 type Key = keyof FarmEventViewModel;

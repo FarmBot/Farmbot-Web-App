@@ -1,9 +1,11 @@
 import { resourceReducer, findByUuid } from "../reducer";
 import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
-import { SpecialStatus, TaggedSequence, TaggedDevice } from "../tagged_resources";
+import { SpecialStatus, TaggedSequence, TaggedDevice, ResourceName } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
+import { Actions } from "../../constants";
+import { fakeResource } from "../../__test_support__/fake_resource";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -25,7 +27,7 @@ describe("resource reducer", () => {
   it("marks resources as SAVING when reducing REFRESH_RESOURCE_START", () => {
     const state = fakeState().resources;
     const uuid = state.index.byKind.Device[0];
-    const device = state.index.references[uuid] as TaggedSequence;
+    const device = state.index.references[uuid] as TaggedDevice;
     expect(device).toBeTruthy();
 
     expect(device.kind).toBe("Device");
@@ -47,6 +49,43 @@ describe("resource reducer", () => {
       resourceReducer(afterStart, refreshNO(payl));
     const dev4 = afterNo.index.references[uuid] as TaggedDevice;
     expect(dev4.specialStatus).toBe(SpecialStatus.SAVED);
+  });
+
+  const TEST_RESOURCE_NAMES = [
+    "Crop", "Device", "DiagnosticDump", "FarmEvent", "FarmwareInstallation",
+    "FbosConfig", "FirmwareConfig", "Log", "Peripheral", "PinBinding",
+    "PlantTemplate", "Point", "Regimen", "SavedGarden", "Sensor", "Sequence",
+  ];
+
+  it("covers save resource branches", () => {
+    const testResource = (kind: ResourceName) => {
+
+      const state = fakeState().resources;
+      const resource = fakeResource(kind, {});
+      const action = {
+        type: Actions.SAVE_RESOURCE_OK,
+        payload: resource
+      };
+      const newState = resourceReducer(state, action);
+      expect((newState.index.references[resource.uuid] || {})).toEqual(resource);
+    };
+    TEST_RESOURCE_NAMES.map((kind: ResourceName) => testResource(kind));
+  });
+
+  it("covers destroy resource branches", () => {
+    const testResourceDestroy = (kind: ResourceName) => {
+
+      const state = fakeState().resources;
+      const resource = fakeResource(kind, {});
+      const action = {
+        type: Actions.DESTROY_RESOURCE_OK,
+        payload: resource
+      };
+      const newState = resourceReducer(state, action);
+      expect(newState.index.references[resource.uuid]).toEqual(undefined);
+    };
+    TEST_RESOURCE_NAMES.concat(["Image", "SensorReading"])
+      .map((kind: ResourceName) => testResourceDestroy(kind));
   });
 });
 

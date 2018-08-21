@@ -1,4 +1,6 @@
-import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex, fakeDevice
+} from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
   resourceReducer,
@@ -8,7 +10,7 @@ import {
   TaggedTool,
   TaggedToolSlotPointer,
   SpecialStatus
-} from "../tagged_resources";
+} from "farmbot";
 import { createOK } from "../actions";
 import { generateUuid, hasId } from "../util";
 import {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col } from "../../ui";
-import { TaggedDiagnosticDump } from "../../resources/tagged_resources";
+import { TaggedDiagnosticDump } from "farmbot";
 import { jsonDownload } from "../../account/request_account_export";
 import { destroy } from "../../api/crud";
 import { ago } from "../connectivity/status_checks";
@@ -29,11 +29,11 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
   render() {
     return <Row>
       <Col xs={3}>
-        <button
+        {/* <button
           className="green fb-button"
           onClick={this.download}>
           {t("Download")}
-        </button>
+        </button> */}
       </Col>
       <Col xs={8}>
         {t("Report {{ticket}} (Saved {{age}})",

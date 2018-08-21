@@ -44,7 +44,7 @@ export class CameraSelection
     getDevice()
       .setUserEnv(message)
       .then(() => {
-        success(t("Successfully configured camera!"),t("Success"));
+        success(t("Successfully configured camera!"), t("Success"));
       })
       .catch(() => error(t("An error occurred during configuration.")));
   }

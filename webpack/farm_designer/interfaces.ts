@@ -7,18 +7,17 @@ import {
   TaggedRegimen,
   TaggedGenericPointer,
   TaggedPlantPointer,
-  TaggedCrop,
   TaggedImage,
-} from "../resources/tagged_resources";
-import { PlantPointer } from "../interfaces";
+} from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
 import { isNumber } from "lodash";
-import { McuParams } from "farmbot/dist";
+import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { ExecutableType, PlantPointer } from "farmbot/dist/resources/api_resources";
 
 /* BotOriginQuadrant diagram
 
@@ -29,7 +28,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 */
 export enum BotOriginQuadrant { ONE = 1, TWO = 2, THREE = 3, FOUR = 4 }
 
-type Mystery = BotOriginQuadrant | number | undefined;
+type Mystery = BotOriginQuadrant | number | string | boolean | undefined;
 export function isBotOriginQuadrant(mystery: Mystery):
   mystery is BotOriginQuadrant {
   return isNumber(mystery) && [1, 2, 3, 4].includes(mystery);
@@ -66,27 +65,6 @@ export interface Props {
   cameraCalibrationData: CameraCalibrationData;
   tzOffset: number;
   getConfigValue: GetWebAppConfigValue;
-}
-
-export type TimeUnit =
-  | "never"
-  | "minutely"
-  | "hourly"
-  | "daily"
-  | "weekly"
-  | "monthly"
-  | "yearly";
-
-export type ExecutableType = "Sequence" | "Regimen";
-
-export interface FarmEvent {
-  id?: number | undefined;
-  start_time: string;
-  end_time?: string | undefined;
-  repeat?: number | undefined;
-  time_unit: TimeUnit;
-  executable_id: number;
-  executable_type: ExecutableType;
 }
 
 export interface MovePlantProps {
@@ -264,17 +242,6 @@ export interface CurrentPointPayl {
   cy: number;
   r: number;
   color?: string;
-}
-
-export interface PlantTemplate {
-  id?: number;
-  saved_garden_id: number;
-  radius: number;
-  x: number;
-  y: number;
-  z: number;
-  name: string;
-  openfarm_slug: string;
 }
 
 export interface SavedGarden {

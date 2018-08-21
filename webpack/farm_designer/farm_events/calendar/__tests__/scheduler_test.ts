@@ -7,9 +7,9 @@ import {
   gracePeriodSeconds
 } from "../scheduler";
 import * as moment from "moment";
-import { TimeUnit } from "../../../interfaces";
 import { Moment } from "moment";
 import { range, padStart } from "lodash";
+import { TimeUnit } from "farmbot/dist/resources/api_resources";
 
 describe("scheduler", () => {
   it("runs every 4 hours, starting Tu, until Th w/ origin of Mo", () => {

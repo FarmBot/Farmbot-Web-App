@@ -10,13 +10,13 @@ import {
   LegalSequenceKind,
   Point,
   Identifier,
-  MoveAbsolute
+  MoveAbsolute,
+  TaggedTool,
+  TaggedToolSlotPointer
 } from "farmbot";
 import { Row, Col } from "../../ui/index";
 import {
   isTaggedSequence,
-  TaggedTool,
-  TaggedToolSlotPointer
 } from "../../resources/tagged_resources";
 import {
   findToolById,

@@ -131,12 +131,12 @@ export class API {
   get sensorReadingPath() { return `${this.baseUrl}/api/sensor_readings`; }
   /** /api/sensors/ */
   get sensorPath() { return `${this.baseUrl}/api/sensors/`; }
-  /** /api/device_configs/:id */
-  get deviceConfigPath() { return `${this.baseUrl}/api/device_configs`; }
+  /** /api/farmware_envs/:id */
+  get farmwareEnvPath() { return `${this.baseUrl}/api/farmware_envs`; }
   /** /api/pin_bindings/:id */
   get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/saved_gardens/:id */
-  get savedGardensPath() { return `${this.baseUrl}/api/saved_gardens`; }
+  get savedGardensPath() { return `${this.baseUrl}/api/saved_gardens/`; }
   /** /api/saved_gardens/snapshot */
   get snapshotPath() { return this.savedGardensPath + "/snapshot"; }
   /** /api/saved_gardens/:id/apply */

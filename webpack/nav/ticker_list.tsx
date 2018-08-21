@@ -7,9 +7,8 @@ import { t } from "i18next";
 import { formatLogTime } from "../logs/index";
 import { Session, safeNumericSetting } from "../session";
 import { ErrorBoundary } from "../error_boundary";
-import { ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { ALLOWED_MESSAGE_TYPES, TaggedLog, SpecialStatus } from "farmbot";
 import { filterByVerbosity } from "../logs/components/logs_table";
-import { TaggedLog, SpecialStatus } from "../resources/tagged_resources";
 import { isNumber } from "lodash";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */

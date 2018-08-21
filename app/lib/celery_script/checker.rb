@@ -12,10 +12,11 @@ module CeleryScript
     UNBOUND_VAR = "Unbound variable: %s"
     T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
-    attr_reader :tree, :corpus
+    attr_reader :tree, :corpus, :device
 
-    def initialize(tree, corpus)
-      @tree, @corpus = tree, corpus
+    # Device is required for security / permission checks.
+    def initialize(tree, corpus, device)
+      @tree, @corpus, @device = tree, corpus, device
       self.freeze
     end
 
@@ -103,6 +104,15 @@ module CeleryScript
       run_additional_validations(value, key)
     end
 
+    def type_check_parameter(var, expected)
+      data_type = var.args[:data_type].value
+      bad_var!(value, label, expected, actual) if !expected.include?(data_type)
+    end
+
+    def bad_var!(value, label, expected, actual)
+      value.invalidate!(T_MISMATCH % [label, expected, actual])
+    end
+
     def validate_node_pairing(key, value)
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
@@ -114,15 +124,18 @@ module CeleryScript
         # in depth type checking. We're not there yet, though.
         # Currently we just need `resolve_variable!` to
         # catch unbound identifiers
-        # data_type =
-          resolve_variable!(value)#.args[:data_type].value
-        # if !allowed_types.include?(data_type)
-        #   # Did it reolve?
-        #   #   YES: Make sure it resolves to a `kind` from the list above.
-        #   value.invalidate!(T_MISMATCH % [value.args["label"].value,
-        #                                     allowed_types,
-        #                                     data_type])
-        # end
+        var = resolve_variable!(value)
+        case var.kind
+        when "parameter_declaration"
+          type_check_parameter(var, allowed_types)
+        when "variable_declaration"
+          actual = var.args[:data_value].kind
+          unless allowed_types.include?(actual)
+            bad_var!(value, var.args[:label].value, allowed_types, actual)
+          end
+        else
+          raise ("Bad kind: " + var.kind)
+        end
       end
       ok      = allowed.include?(actual)
       raise TypeCheckError, (BAD_LEAF % [ value.kind,
@@ -150,7 +163,7 @@ module CeleryScript
     end
 
     def run_additional_validations(node, expectation)
-      corpus.arg_validator(expectation).call(node, TypeCheckError, corpus)
+      corpus.arg_validator(expectation).call(node, device)
     end
 
     # Calling this method with only one paramter

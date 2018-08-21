@@ -1,4 +1,4 @@
-import { TaggedImage, SpecialStatus } from "../../resources/tagged_resources";
+import { TaggedImage, SpecialStatus } from "farmbot";
 
 export let fakeImages: TaggedImage[] = [
   {

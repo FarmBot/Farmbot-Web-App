@@ -1,7 +1,6 @@
-import { TaggedImage } from "../../resources/tagged_resources";
+import { TaggedImage, SyncStatus } from "farmbot";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
-import { SyncStatus } from "farmbot";
 
 export interface CameraCalibrationProps {
   dispatch: Function;

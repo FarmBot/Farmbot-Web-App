@@ -1,11 +1,13 @@
 import { t } from "i18next";
 import * as _ from "lodash";
-import { Dictionary } from "farmbot";
 import { Color } from "../interfaces";
 import { box } from "boxed_value";
 import {
-  TaggedResource, TaggedFirmwareConfig, TaggedFbosConfig
-} from "../resources/tagged_resources";
+  TaggedResource,
+  TaggedFirmwareConfig,
+  TaggedFbosConfig,
+  Dictionary,
+} from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { FbosConfig } from "../config_storage/fbos_configs";

@@ -1,4 +1,4 @@
-import { SpecialStatus } from "../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 
 export interface EditResourceParams {
   uuid: string;

@@ -33,6 +33,7 @@ export function getMiddleware(env: EnvName) {
   const middlewareFns = mwConfig
     .filter(function (mwc) { return (mwc.env === env) || (mwc.env === "*"); })
     .map((mwc) => mwc.fn);
+  // tslint:disable-next-line:no-any
   const wow = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
   const dtCompose = wow && wow({
     actionsBlacklist: [

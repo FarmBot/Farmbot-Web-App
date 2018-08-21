@@ -224,6 +224,32 @@ describe Api::SequencesController do
       expect(json[:body]).to eq("Unbound variable: parent")
     end
 
+    it 'does not let you use other peoples point resources' do
+      sign_in user
+      not_yours = FactoryBot.create(:plant)
+      expect(not_yours.device_id).to_not eq(user.device_id)
+      input = {
+        name: "bad point usage",
+        args: { locals: { kind: "scope_declaration", args: {} } },
+        body: [
+          {
+            kind: "move_absolute",
+            args: {
+              location: {
+                  kind: "point",
+                  args: { pointer_type: "Plant", pointer_id: not_yours.id }
+                },
+                speed: 100,
+                offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+              }
+            }
+        ],
+      }
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body]).to include("Bad point ID")
+    end
+
     it 'prevents type errors from bad identifier / binding combos' do
       $lol = true
       sign_in user

@@ -9,38 +9,34 @@ import {
 import * as moment from "moment";
 import { t } from "i18next";
 import * as _ from "lodash";
-import { betterCompact } from "../../util";
+import { betterCompact, bail } from "../../util";
+import { maybeWarnAboutParameters, msToTime, timeToMs } from "./utils";
+
+const BAD_UUID = "WARNING: Not a sequence UUID.";
 
 export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {
     const s = this.props.selectedSequence;
-    if (s && s.body.id) {
-      return {
-        label: s.body.name,
-        value: s.uuid
-      };
-    } else {
-      return NULL_CHOICE;
-    }
+    return (s && s.body.id) ? { label: s.body.name, value: s.uuid } : NULL_CHOICE;
   };
 
   all = (): DropDownItem[] => {
-    return betterCompact(this
-      .props
-      .sequences
-      .map(x => {
-        if (x.body.id) {
-          return { value: x.uuid, label: x.body.name };
-        }
-      }));
+    return betterCompact(this.props.sequences.map(x => {
+      if (x.body.id) {
+        return { value: x.uuid, label: x.body.name };
+      }
+    }));
   };
 
+  commitChange = (uuid: string) => {
+    const s = this.props.sequences.filter(x => x.uuid == uuid)[0];
+    maybeWarnAboutParameters(s);
+    this.props.dispatch(setSequence(uuid));
+  }
+
   onChange = (event: DropDownItem) => {
-    if (_.isString(event.value)) {
-      this.props.dispatch(setSequence(event.value));
-    } else {
-      throw new Error("WARNING: Not a sequence UUID.");
-    }
+    const uuid = event.value;
+    _.isString(uuid) ? this.commitChange(uuid) : bail(BAD_UUID);
   }
 
   render() {
@@ -80,26 +76,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
           </div>
         </Col>
       </Row>
-      <WeekGrid weeks={weeks}
-        dispatch={dispatch} />
+      <WeekGrid weeks={weeks} dispatch={dispatch} />
     </div>;
   }
-}
-
-function msToTime(ms: number) {
-  if (_.isNumber(ms)) {
-    const d = moment.duration(ms);
-    const h = _.padStart(d.hours().toString(), 2, "0");
-    const m = _.padStart(d.minutes().toString(), 2, "0");
-    return `${h}:${m}`;
-  } else {
-    return "00:01";
-  }
-}
-
-function timeToMs(input: string) {
-  const [hours, minutes] = input
-    .split(":")
-    .map((n: string) => parseInt(n, 10));
-  return ((hours * 60) + (minutes)) * 60 * 1000;
 }

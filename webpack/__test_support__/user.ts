@@ -1,5 +1,5 @@
 import { User } from "../auth/interfaces";
-import { TaggedUser, SpecialStatus } from "../resources/tagged_resources";
+import { TaggedUser, SpecialStatus } from "farmbot";
 
 export let user: User = {
   created_at: "2016-10-05T03:02:58.000Z",

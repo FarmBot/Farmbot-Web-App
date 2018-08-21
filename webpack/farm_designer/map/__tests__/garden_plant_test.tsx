@@ -1,23 +1,8 @@
-const mockStorj: Dictionary<boolean> = {};
-
-jest.mock("../../../session", () => {
-  return {
-    Session: {
-      deprecatedGetBool: (k: string) => {
-        mockStorj[k] = !!mockStorj[k];
-        return mockStorj[k];
-      }
-    }
-  };
-});
-
-import { Dictionary } from "farmbot";
 import * as React from "react";
 import { GardenPlant } from "../garden_plant";
 import { shallow } from "enzyme";
 import { GardenPlantProps } from "../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { BooleanSetting } from "../../../session_keys";
 import { Actions } from "../../../constants";
 import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
 
@@ -32,13 +17,15 @@ describe("<GardenPlant/>", () => {
       dispatch: jest.fn(),
       zoomLvl: 1.8,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      uuid: "plantUuid"
+      uuid: "plantUuid",
+      animate: false,
     };
   }
 
   it("renders plant", () => {
-    mockStorj[BooleanSetting.disable_animations] = true;
-    const wrapper = shallow(<GardenPlant {...fakeProps()} />);
+    const p = fakeProps();
+    p.animate = false;
+    const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").length).toEqual(1);
     expect(wrapper.find("image").props().opacity).toEqual(1);
     expect(wrapper.find("text").length).toEqual(0);
@@ -48,8 +35,9 @@ describe("<GardenPlant/>", () => {
   });
 
   it("renders plant animations", () => {
-    mockStorj[BooleanSetting.disable_animations] = false;
-    const wrapper = shallow(<GardenPlant {...fakeProps()} />);
+    const p = fakeProps();
+    p.animate = true;
+    const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(1);
   });

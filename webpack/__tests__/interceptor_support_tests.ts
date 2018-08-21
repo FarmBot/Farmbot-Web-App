@@ -16,6 +16,7 @@ describe("isSafeError", () => {
 describe("inferUpdateId", () => {
   it("it handles failure by returning `*`", () => {
     expect(inferUpdateId("foo/123/456")).toBe("*");
+    // tslint:disable-next-line:no-any
     expect(inferUpdateId((true as any))).toBe("*");
   });
 

@@ -1,22 +1,31 @@
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
-  TaggedFarmEvent, TaggedSequence, TaggedRegimen, TaggedImage,
-  TaggedTool, TaggedUser, TaggedWebcamFeed,
-  TaggedPlantPointer, TaggedGenericPointer, TaggedPeripheral, TaggedFbosConfig,
-  TaggedWebAppConfig,
-  TaggedSensor,
-  TaggedFirmwareConfig,
-  TaggedPinBinding,
-  TaggedLog,
   TaggedDiagnosticDump,
-  TaggedSensorReading
-} from "../../resources/tagged_resources";
-import { ExecutableType } from "../../farm_designer/interfaces";
+  TaggedFarmEvent,
+  TaggedFbosConfig,
+  TaggedFirmwareConfig,
+  TaggedGenericPointer,
+  TaggedImage,
+  TaggedLog,
+  TaggedPeripheral,
+  TaggedPinBinding,
+  TaggedPlantPointer,
+  TaggedRegimen,
+  TaggedSensor,
+  TaggedSensorReading,
+  TaggedSequence,
+  TaggedTool,
+  TaggedUser,
+  TaggedWebAppConfig,
+  TaggedWebcamFeed,
+  TaggedSavedGarden,
+  TaggedPlantTemplate,
+} from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { FirmwareConfig } from "../../config_storage/firmware_configs";
-import { PinBindingType } from "../../devices/pin_bindings/interfaces";
+import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -147,6 +156,26 @@ export function fakePoint(): TaggedGenericPointer {
     z: 0,
     radius: 100,
     meta: { created_by: "plant-detection" }
+  });
+}
+
+export function fakeSavedGarden(): TaggedSavedGarden {
+  return fakeResource("SavedGarden", {
+    id: 1,
+    name: "Saved Garden 1",
+  });
+}
+
+export function fakePlantTemplate(): TaggedPlantTemplate {
+  return fakeResource("PlantTemplate", {
+    id: idCounter++,
+    saved_garden_id: 1,
+    radius: 50,
+    x: 100,
+    y: 200,
+    z: 0,
+    name: "Plant Template 1",
+    openfarm_slug: "mint",
   });
 }
 

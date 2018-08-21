@@ -1,36 +1,10 @@
 import { BotState, ShouldDisplay } from "../interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
-
-export type PinBinding = StandardPinBinding | SpecialPinBinding;
-
-interface PinBindingBase { id?: number; pin_num: number; }
-
-export enum PinBindingType {
-  special = "special",
-  standard = "standard",
-}
-
-interface StandardPinBinding extends PinBindingBase {
-  binding_type: PinBindingType.standard;
-  sequence_id: number;
-}
-
-export interface SpecialPinBinding extends PinBindingBase {
-  binding_type: PinBindingType.special;
-  special_action: PinBindingSpecialAction;
-}
-
-export enum PinBindingSpecialAction {
-  emergency_lock = "emergency_lock",
-  emergency_unlock = "emergency_unlock",
-  sync = "sync",
-  reboot = "reboot",
-  power_off = "power_off",
-  dump_info = "dump_info",
-  read_status = "read_status",
-  take_photo = "take_photo",
-}
+import {
+  PinBindingType,
+  PinBindingSpecialAction
+} from "farmbot/dist/resources/api_resources";
 
 export interface PinBindingsProps {
   bot: BotState;

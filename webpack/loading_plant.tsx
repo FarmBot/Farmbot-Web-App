@@ -1,13 +1,12 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Session } from "./session";
-import { BooleanSetting } from "./session_keys";
 
-export function LoadingPlant() {
-  const animations = !Session.deprecatedGetBool(BooleanSetting.disable_animations);
+/* tslint:disable:max-line-length */
+
+export function LoadingPlant({ animate }: { animate: boolean }) {
   return <div className="loading-plant-div-container">
     <svg width="300px" height="500px">
-      {animations &&
+      {animate &&
         <g>
           <circle
             className="loading-plant-circle"
@@ -68,8 +67,8 @@ export function LoadingPlant() {
           </g>
         </g>}
       <text
-        className={"loading-plant-text" + (animations ? " animate" : "")}
-        y={animations ? 435 : 150}
+        className={"loading-plant-text" + (animate ? " animate" : "")}
+        y={animate ? 435 : 150}
         x={150}
         fontSize={35}
         textAnchor="middle"

@@ -144,9 +144,6 @@ private
       if outcome.success?
         render options.merge(json: outcome.result)
       else
-        Rollbar.info("Mutation error",
-                     errors: outcome.errors.message_list.join(" "),
-                     user: current_user.try(:email) || "No User")
         render options.merge(json: outcome.errors.message, status: 422)
       end
     end
@@ -170,7 +167,9 @@ private
       #   If the user agent was missing, we would have returned by now.
       #   If the UA includes FARMBOT_UA_STRING at this point, we can be certain
       #   we have a have a non-legacy FBOS client.
-      return Gem::Version::new(ua[10, 5]) if ua.include?(FARMBOT_UA_STRING)
+      if ua.include?(FARMBOT_UA_STRING)
+        return Gem::Version::new(ua[10, 12].split(" ").first)
+      end
 
       # Attempt 3:
       #   Pass CalculateUpgrade::NOT_FBOS if all other attempts fail.

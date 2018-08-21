@@ -4,10 +4,8 @@ import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen
-} from "../../resources/tagged_resources";
-import {
-  TimeUnit, ExecutableQuery, ExecutableType, FarmEvent
-} from "../interfaces";
+} from "farmbot";
+import { ExecutableQuery } from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
   BackArrow,
@@ -31,6 +29,9 @@ import { EventTimePicker } from "./event_time_picker";
 import { TzWarning } from "./tz_warning";
 import { nextRegItemTimes } from "./map_state_to_props";
 import { first } from "lodash";
+import {
+  TimeUnit, ExecutableType, FarmEvent
+} from "farmbot/dist/resources/api_resources";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -52,7 +53,8 @@ export interface FarmEventViewModel {
  * by the edit form.
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
-export function destructureFarmEvent(fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
+export function destructureFarmEvent(
+  fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
     startDate: formatDate((fe.body.start_time).toString(), timeOffset),

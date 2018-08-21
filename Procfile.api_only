@@ -1,5 +1,5 @@
 # Run Rails & Webpack concurrently
-rails:            rails s -e development -p ${API_PORT:-3000} -b 0.0.0.0
-log_service:      rails r lib/log_service_runner.rb
-resource_service: rails r lib/resource_service_runner.rb
-worker:           rake jobs:work
+rails:          rails s -e development -p ${API_PORT:-3000} -b 0.0.0.0
+rabbit_workers: bin/rails r lib/rabbit_workers.rb
+worker:         rake jobs:work
+log_digests:    FOREVER=true rake api:log_digest

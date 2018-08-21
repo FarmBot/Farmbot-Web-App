@@ -1,9 +1,8 @@
 import {
-  TaggedResource,
-  ResourceName,
+  TaggedResource, SpecialStatus, ResourceName, TaggedSequence
+} from "farmbot";
+import {
   isTaggedResource,
-  TaggedSequence,
-  SpecialStatus,
 } from "../resources/tagged_resources";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
@@ -225,6 +224,7 @@ export function urlFor(tag: ResourceName) {
     WebAppConfig: API.current.webAppConfigPath,
     FirmwareConfig: API.current.firmwareConfigPath,
     DiagnosticDump: API.current.diagnosticDumpsPath,
+    SavedGarden: API.current.savedGardensPath,
   };
   const url = OPTIONS[tag];
   if (url) {

@@ -25,6 +25,7 @@ describe("<CreatePoints />", () => {
       currentPoint: undefined
     };
   };
+
   it("renders", () => {
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     ["create point", "cancel", "delete", "x", "y", "radius", "color"]
@@ -67,8 +68,11 @@ describe("<CreatePoints />", () => {
   it("changes color", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 0, cy: 0, r: 0 };
-    const wrapper = shallow(<CreatePoints {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
+    const wrapper = mount(<CreatePoints {...p} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    const component = shallow(<instance.PointProperties />);
+    component.find("ColorPicker").simulate("change", "red");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { color: "red", cx: 0, cy: 0, r: 0 },
       type: Actions.SET_CURRENT_POINT_DATA
@@ -79,12 +83,44 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 0, cy: 0, r: 0 };
     const wrapper = shallow(<CreatePoints {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    const component = shallow(<instance.PointProperties />);
+    component.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: "10" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { cx: 10, cy: 0, r: 0 },
       type: Actions.SET_CURRENT_POINT_DATA
+    });
+  });
+
+  it("fills the state with point data", () => {
+    const p = fakeProps();
+    p.currentPoint = { cx: 1, cy: 2, r: 3, color: "blue" };
+    const wrapper = shallow(<CreatePoints {...p} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.getPointData();
+    expect(instance.state).toEqual({ color: "blue", cx: 1, cy: 2, r: 3 });
+  });
+
+  it("fills the state with default data", () => {
+    const wrapper = shallow(<CreatePoints {...fakeProps()} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.getPointData();
+    expect(instance.state).toEqual({ color: "green", cx: 0, cy: 0, r: 1 });
+  });
+
+  it("unmounts", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+    wrapper.unmount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CURRENT_POINT_DATA,
+      payload: undefined
     });
   });
 });

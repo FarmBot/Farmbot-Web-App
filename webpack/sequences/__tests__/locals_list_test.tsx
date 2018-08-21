@@ -10,7 +10,8 @@ import {
   ParentVariableFormProps,
   ParentVariableForm,
   LocalsListProps,
-  LocalsList
+  LocalsList,
+  PARENT
 } from "../locals_list";
 import {
   VariableDeclaration,
@@ -19,7 +20,7 @@ import {
   Point,
   Coordinate
 } from "farmbot";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeSequence, fakeTool } from "../../__test_support__/fake_state/resources";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
@@ -30,8 +31,12 @@ import {
 } from "../step_tiles/tile_move_absolute/index";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
-const tool: Tool = { kind: "tool", args: { tool_id: 4 } };
-const goodVar: VariableDeclaration = {
+const t = fakeTool();
+t.body.id = 5;
+const tool: Tool = { kind: "tool", args: { tool_id: t.body.id } };
+const resources = buildResourceIndex([t]).index;
+const mrGoodVar: VariableDeclaration = {
+  // https://en.wikipedia.org/wiki/Mr._Goodbar
   kind: "variable_declaration",
   args: { label: "parent", data_value: coord }
 };
@@ -42,7 +47,7 @@ describe("extractParent()", () => {
     args: { label: "nope", data_value: coord }
   };
 
-  const bad: ParameterDeclaration = {
+  const paramDeclr: ParameterDeclaration = {
     kind: "parameter_declaration",
     args: { label: "parent", data_type: "coordinate" }
   };
@@ -56,16 +61,29 @@ describe("extractParent()", () => {
     expect(extractParent([irrelevant])).toBeUndefined();
   });
 
-  it("only returns parent if it is a VARIABLE declaration.", () => {
-    expect(extractParent([bad])).toBeUndefined();
+  it("returns parent if it is a PARAMETER declaration.", () => {
+    const result = extractParent([paramDeclr]);
+    expect(result).toBeDefined();
+    expect(result).toBe(paramDeclr);
   });
 
-  it("returns parent when there is one", () => {
-    const result = extractParent([bad, goodVar, irrelevant]);
-    expect(result).toBeTruthy();
-    if (result) {
-      expect(result.kind).toBe("variable_declaration");
-      expect(result.args.label).toBe("parent");
+  it("returns the first result found", () => {
+    const paramIsFirst = [paramDeclr, mrGoodVar, irrelevant];
+    const r1 = extractParent(paramIsFirst);
+    if (r1) {
+      expect(r1.kind).toBe("parameter_declaration");
+      expect(r1.args.label).toBe("parent");
+    } else {
+      fail();
+    }
+
+    const varIsFirst = [irrelevant, mrGoodVar, paramDeclr];
+    const r2 = extractParent(varIsFirst);
+    if (r2) {
+      expect(r2.kind).toBe("variable_declaration");
+      expect(r2.args.label).toBe("parent");
+    } else {
+      fail();
     }
   });
 });
@@ -75,6 +93,27 @@ describe("setParent()", () => {
     kind: "point",
     args: { pointer_type: "point", pointer_id: 5 }
   };
+
+  it("deals with parameter declarations", () => {
+    const data_value: ParameterDeclaration = {
+      kind: "parameter_declaration", args: { label: "---", data_type: "point" }
+    };
+    const sequence = fakeSequence();
+    const expected = {
+      kind: "scope_declaration",
+      args: {},
+      body: [{
+        kind: "parameter_declaration",
+        args: { label: "parent", data_type: "point" }
+      }]
+    };
+    const result = setParent(sequence, data_value);
+    const actual = result.args.locals;
+
+    expect(actual.args).toEqual(expected.args);
+    expect(actual.body).toEqual(expected.body);
+    expect(actual.kind).toEqual(expected.kind);
+  });
 
   it("crashes on `identifier` nodes (no re-binding of vars yet)", () => {
     const seq = fakeSequence();
@@ -189,8 +228,9 @@ describe("guessVecFromLabel()", () => {
 
 describe("guessXYZ", () => {
   it("Gives labels precedence", () => {
-    const result =
-      guessXYZ("Point_1512679072 (20, 50, 0)", goodVar);
+    const result = guessXYZ("Point_1512679072 (20, 50, 0)",
+      mrGoodVar,
+      resources);
     expect(result.x).toEqual(20);
     expect(result.y).toEqual(50);
     expect(result.z).toEqual(0);
@@ -198,8 +238,10 @@ describe("guessXYZ", () => {
 
   it("Gives labels precedence", () => {
     const result =
-      guessXYZ("None", goodVar);
-    const target = goodVar.args.data_value;
+      guessXYZ("None",
+        mrGoodVar,
+        resources);
+    const target = mrGoodVar.args.data_value;
     if (target.kind === "coordinate") {
       expect(result.x).toEqual(target.args.x);
       expect(result.y).toEqual(target.args.y);
@@ -213,7 +255,8 @@ describe("guessXYZ", () => {
     const result = guessXYZ("None", {
       kind: "variable_declaration",
       args: { label: "parent", data_value: tool }
-    });
+    },
+      resources);
     expect(Object.values(result)).toEqual([0, 0, 0]);
   });
 });
@@ -221,7 +264,7 @@ describe("guessXYZ", () => {
 describe("<ParentVariableForm/>", () => {
   it("renders correct UI components", () => {
     const props: ParentVariableFormProps = {
-      parent: goodVar,
+      parent: mrGoodVar,
       resources: buildResourceIndex().index,
       onChange: jest.fn()
     };
@@ -233,7 +276,7 @@ describe("<ParentVariableForm/>", () => {
     expect(selects.length).toBe(1);
     const p = selects.first().props();
     expect(p.allowEmpty).toBe(true);
-    const choices = generateList(props.resources, []);
+    const choices = generateList(props.resources, [PARENT]);
     expect(p.list).toEqual(choices);
     const choice = choices[1];
     p.onChange(choice);
@@ -260,7 +303,7 @@ describe("<LocalsList/>", () => {
     props.sequence.body.args.locals = {
       kind: "scope_declaration",
       args: {},
-      body: [goodVar]
+      body: [mrGoodVar]
     };
     const el = shallow(<LocalsList {...props} />);
     expect(el.find(ParentVariableForm).length).toBe(1);

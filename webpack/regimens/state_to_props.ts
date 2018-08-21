@@ -8,7 +8,7 @@ import {
   findId,
   findSequence
 } from "../resources/selectors";
-import { TaggedRegimen } from "../resources/tagged_resources";
+import { TaggedRegimen } from "farmbot";
 import { duration } from "moment";
 import * as moment from "moment";
 import { ResourceIndex } from "../resources/interfaces";

@@ -1,17 +1,19 @@
-import { BotStateTree, ConfigurationName } from "farmbot";
-import { McuParamName, SyncStatus, LocationName } from "farmbot";
 import { AuthState } from "../auth/interfaces";
 import {
+  BotStateTree, ConfigurationName,
+  McuParamName, SyncStatus, LocationName,
   TaggedImage,
   TaggedPeripheral,
   TaggedDevice,
   TaggedSensor,
-  TaggedDiagnosticDump
-} from "../resources/tagged_resources";
+  TaggedDiagnosticDump,
+  TaggedUser
+} from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedUser } from "../resources/tagged_resources";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
-import { ConnectionStatus, ConnectionState, NetworkState } from "../connectivity/interfaces";
+import {
+  ConnectionStatus, ConnectionState, NetworkState
+} from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { WebAppConfig } from "../config_storage/web_app_configs";
 import { FirmwareConfig } from "../config_storage/firmware_configs";

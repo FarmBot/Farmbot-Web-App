@@ -19,13 +19,13 @@ export namespace Session {
 
   /** Replace the contents of session storage. */
   export function replaceToken(nextState: AuthState) {
-    localStorage[KEY] = JSON.stringify(nextState);
+    localStorage.setItem(KEY, JSON.stringify(nextState));
   }
 
   /** Fetch the previous session. */
   export function fetchStoredToken(): AuthState | undefined {
     try {
-      const v: AuthState = JSON.parse(localStorage[KEY]);
+      const v: AuthState = JSON.parse(localStorage.getItem(KEY) || "");
       if (box(v).kind === "object") {
         return v;
       } else {
@@ -40,7 +40,7 @@ export namespace Session {
   export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.href = window.location.origin || "/";
+    window.location.assign(window.location.origin || "/");
     return undefined as never;
   }
 

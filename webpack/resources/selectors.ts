@@ -2,14 +2,7 @@ import * as _ from "lodash";
 import { ResourceIndex } from "./interfaces";
 import { joinKindAndId } from "./reducer";
 import {
-  isTaggedPlantPointer,
-  isTaggedGenericPointer,
-  isTaggedRegimen,
-  isTaggedSequence,
-  isTaggedTool,
-  isTaggedToolSlotPointer,
   ResourceName,
-  sanityCheck,
   TaggedGenericPointer,
   TaggedPlantPointer,
   TaggedRegimen,
@@ -19,6 +12,15 @@ import {
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedDevice,
+} from "farmbot";
+import {
+  isTaggedPlantPointer,
+  isTaggedGenericPointer,
+  isTaggedRegimen,
+  isTaggedSequence,
+  isTaggedTool,
+  isTaggedToolSlotPointer,
+  sanityCheck,
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";

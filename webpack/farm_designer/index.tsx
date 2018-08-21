@@ -6,7 +6,6 @@ import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/garden_map_legend";
-import { Session, safeBooleanSettting } from "../session";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
@@ -14,23 +13,26 @@ import { getBotSize, round } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import * as moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
+import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
 
-export const getDefaultAxisLength = (): AxisNumberProperty => {
-  if (Session.deprecatedGetBool(BooleanSetting.map_xl)) {
-    return { x: 5900, y: 2900 };
-  } else {
-    return { x: 2900, y: 1400 };
-  }
-};
+export const getDefaultAxisLength =
+  (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
+    if (getConfigValue(BooleanSetting.map_xl)) {
+      return { x: 5900, y: 2900 };
+    } else {
+      return { x: 2900, y: 1400 };
+    }
+  };
 
-export const getGridSize = (botSize: BotSize) => {
-  if (Session.deprecatedGetBool(BooleanSetting.dynamic_map)) {
-    // Render the map size according to device axis length.
-    return { x: round(botSize.x.value), y: round(botSize.y.value) };
-  }
-  // Use a default map size.
-  return getDefaultAxisLength();
-};
+export const getGridSize =
+  (getConfigValue: GetWebAppConfigValue, botSize: BotSize) => {
+    if (getConfigValue(BooleanSetting.dynamic_map)) {
+      // Render the map size according to device axis length.
+      return { x: round(botSize.x.value), y: round(botSize.y.value) };
+    }
+    // Use a default map size.
+    return getDefaultAxisLength(getConfigValue);
+  };
 
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
@@ -39,17 +41,17 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {
-      const currentValue = Session.deprecatedGetBool(safeBooleanSettting(name));
+      const currentValue = this.props.getConfigValue(name);
       if (isUndefined(currentValue)) {
-        Session.setBool(safeBooleanSettting(name), defaultValue);
+        this.props.dispatch(setWebAppConfigValue(name, defaultValue));
         return defaultValue;
       } else {
-        return currentValue;
+        return !!currentValue;
       }
     }
 
   getBotOriginQuadrant = (): BotOriginQuadrant => {
-    const value = Session.deprecatedGetNum(NumericSetting.bot_origin_quadrant);
+    const value = this.props.getConfigValue(NumericSetting.bot_origin_quadrant);
     return isBotOriginQuadrant(value) ? value : 2;
   }
 
@@ -70,13 +72,15 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   toggle = (name: keyof State) => () => {
-    this.setState({ [name]: !this.state[name] });
-    Session.invertBool(safeBooleanSettting(name));
+    const newValue = !this.state[name];
+    this.props.dispatch(setWebAppConfigValue(name, newValue));
+    this.setState({ [name]: newValue });
   }
 
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
     this.setState({ bot_origin_quadrant: payload });
-    Session.deprecatedSetNum(NumericSetting.bot_origin_quadrant, payload);
+    this.props.dispatch(setWebAppConfigValue(
+      NumericSetting.bot_origin_quadrant, payload));
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
@@ -107,7 +111,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     } = this.state;
 
     const botSize = getBotSize(
-      this.props.botMcuParams, this.props.stepsPerMmXY, getDefaultAxisLength());
+      this.props.botMcuParams,
+      this.props.stepsPerMmXY,
+      getDefaultAxisLength(this.props.getConfigValue));
 
     const stopAtHome = {
       x: !!this.props.botMcuParams.movement_stop_at_home_x,
@@ -170,7 +176,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
           botOriginQuadrant={bot_origin_quadrant}
-          gridSize={getGridSize(botSize)}
+          gridSize={getGridSize(this.props.getConfigValue, botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
           eStopStatus={this.props.eStopStatus}

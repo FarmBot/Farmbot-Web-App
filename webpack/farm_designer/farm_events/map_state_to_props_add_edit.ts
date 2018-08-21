@@ -1,4 +1,4 @@
-import { AddEditFarmEventProps, ExecutableType } from "../interfaces";
+import { AddEditFarmEventProps } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { t } from "i18next";
@@ -21,7 +21,7 @@ import {
   TaggedFarmEvent,
   TaggedSequence,
   TaggedRegimen
-} from "../../resources/tagged_resources";
+} from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import {
   validFbosConfig, shouldDisplay, determineInstalledOsVersion
@@ -29,6 +29,7 @@ import {
 import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
 import { Feature } from "../../devices/interfaces";
 import { hasId } from "../../resources/util";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
@@ -49,53 +50,53 @@ export let repeatOptions = [
   { label: "Years", value: "yearly", name: "time_unit" }
 ];
 
-export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps {
-  const handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
-    const incomingTime = e.currentTarget.value.split(":");
-    const hours = parseInt(incomingTime[0]) || 0;
-    const minutes = parseInt(incomingTime[1]) || 0;
+const handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
+  const incomingTime = e.currentTarget.value.split(":");
+  const hours = parseInt(incomingTime[0]) || 0;
+  const minutes = parseInt(incomingTime[1]) || 0;
 
-    switch (e.currentTarget.name) {
-      case "start_time":
-        // Put the current ISO established by the date field into a var
-        const currentStartISO = new Date((currentISO || "").toString())
-          .toISOString();
+  switch (e.currentTarget.name) {
+    case "start_time":
+      // Put the current ISO established by the date field into a var
+      const currentStartISO = new Date((currentISO || "").toString())
+        .toISOString();
 
-        // Set the time of the already existing iso string
-        const newStartISO = moment(currentStartISO)
-          .set("hours", hours)
-          .set("minutes", minutes)
-          .toISOString();
+      // Set the time of the already existing iso string
+      const newStartISO = moment(currentStartISO)
+        .set("hours", hours)
+        .set("minutes", minutes)
+        .toISOString();
 
-        return newStartISO;
+      return newStartISO;
 
-      case "end_time":
-        const currentEndISO = new Date((currentISO || "").toString())
-          .toISOString();
+    case "end_time":
+      const currentEndISO = new Date((currentISO || "").toString())
+        .toISOString();
 
-        const newEndISO = moment(currentEndISO)
-          .set("hours", hours)
-          .set("minutes", minutes)
-          .toISOString();
+      const newEndISO = moment(currentEndISO)
+        .set("hours", hours)
+        .set("minutes", minutes)
+        .toISOString();
 
-        return newEndISO;
+      return newEndISO;
 
-      default:
-        throw new Error("Expected a name attribute from time field.");
-    }
+    default:
+      throw new Error("Expected a name attribute from time field.");
+  }
+};
+
+const addExecutables =
+  (resource: (TaggedSequence | TaggedRegimen)[]): DropDownItem[] => {
+    const d: DropDownItem[] = [];
+    resource.map(r => {
+      if (r.body.id) {
+        d.push({ label: r.body.name, headingId: r.kind, value: r.body.id });
+      }
+    });
+    return d;
   };
 
-  const addExecutables =
-    (resource: (TaggedSequence | TaggedRegimen)[]): DropDownItem[] => {
-      const d: DropDownItem[] = [];
-      resource.map(r => {
-        if (r.body.id) {
-          d.push({ label: r.body.name, headingId: r.kind, value: r.body.id });
-        }
-      });
-      return d;
-    };
-
+export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps {
   const executableList: DropDownItem[] = [
     { label: t("Sequences"), heading: true, value: 0, headingId: "Sequence" },
     ...addExecutables(selectAllSequences(props.resources.index)),

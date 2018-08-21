@@ -1,4 +1,4 @@
-import { ResourceName } from "./tagged_resources";
+import { ResourceName } from "farmbot";
 import { joinKindAndId } from "./reducer";
 import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";

@@ -1,4 +1,4 @@
-import { SpecialStatus } from "../../resources/tagged_resources";
+import { SpecialStatus } from "farmbot";
 import { destroyNO } from "../../resources/actions";
 import { destroyCatch } from "../crud";
 

@@ -22,9 +22,10 @@ describe "Celery Script `point` node" do
     }.deep_symbolize_keys
   end
 
-  let (:tree)    { CeleryScript::AstNode.new(hash) }
-  let (:corpus)  { Sequence::Corpus }
-  let (:checker) { CeleryScript::Checker.new(tree, corpus) }
+  let(:tree)    { CeleryScript::AstNode.new(hash) }
+  let(:corpus)  { Sequence::Corpus }
+  let(:device)  { plant.device }
+  let(:checker) { CeleryScript::Checker.new(tree, corpus, device) }
 
   it 'handles the corner case' do
     expect { checker.run! }.not_to raise_error

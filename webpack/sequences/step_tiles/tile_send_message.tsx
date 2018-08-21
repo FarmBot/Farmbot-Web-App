@@ -2,10 +2,9 @@ import * as React from "react";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
-import { SendMessage } from "farmbot";
+import { SendMessage, TaggedSequence } from "farmbot";
 import * as _ from "lodash";
 import { StepParams, ChannelName } from "../interfaces";
-import { TaggedSequence } from "../../resources/tagged_resources";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
@@ -38,7 +37,7 @@ interface SendMessageParams {
   resources: ResourceIndex;
 }
 
-class RefactoredSendMessage
+export class RefactoredSendMessage
   extends React.Component<SendMessageParams, {}> {
   get args() { return this.props.currentStep.args; }
   get message() { return this.args.message; }
@@ -50,9 +49,11 @@ class RefactoredSendMessage
   get currentSelection() {
     return MESSAGE_STATUSES_DDI[this.message_type];
   }
+
   get channels() {
     return (this.step.body || []).map(x => x.args.channel_name);
   }
+
   hasChannel = (name: ChannelName) => {
     return this.channels.includes(name);
   }

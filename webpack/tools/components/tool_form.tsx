@@ -10,11 +10,10 @@ import {
   BlurableInput,
   SaveBtn
 } from "../../ui/index";
-import {
-  TaggedTool, getArrayStatus, SpecialStatus
-} from "../../resources/tagged_resources";
+import { getArrayStatus } from "../../resources/tagged_resources";
 import { edit, destroy, init, saveAll } from "../../api/crud";
 import { ToolTips } from "../../constants";
+import { TaggedTool, SpecialStatus } from "farmbot";
 
 export class ToolForm extends React.Component<ToolFormProps, {}> {
   taggedTool = (name: string): TaggedTool => {

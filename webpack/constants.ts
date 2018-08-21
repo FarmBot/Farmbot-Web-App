@@ -459,6 +459,10 @@ export namespace Content {
     that you can provide in support requests to allow FarmBot to look up
     data relevant to the issue to help us identify the problem.`);
 
+  export const DEVICE_NEVER_SEEN =
+    trim(`The device has never been seen. Most likely,
+    there is a network connectivity issue on the device's end.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -493,6 +497,12 @@ export namespace Content {
     trim(`The terms of service have recently changed. You must accept the
     new terms of service to continue using the site.`);
 
+  export const VERIFICATION_EMAIL_RESENT =
+    trim(`Verification email resent. Please check your email!`);
+
+  export const VERIFICATION_EMAIL_RESEND_ERROR =
+    trim(`Unable to resend verification email. Are you already verified?`);
+
   // Sequences
   export const NO_SEQUENCE_SELECTED =
     trim(`No Sequence selected. Click one in the Sequences panel to edit,
@@ -511,9 +521,22 @@ export namespace Content {
     trim(`No Regimen selected. Click one in the Regimens panel to edit, or
     click "+" in the Regimens panel to create a new one.`);
 
+  export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
+    regimen. Consider wrapping it in a parent sequence that calls it via "execute"
+    instead."`);
+
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);
+
+  export const MOVE_MODE_DESCRIPTION =
+    trim(`Click a spot in the grid to choose a location.
+    Once selected, press button to move FarmBot to this postion.
+    Press the back arrow to exit.`);
+
+  export const CREATE_POINTS_DESCRIPTION =
+    trim(`Click and drag to draw a point or use the inputs and press
+    update. Press CREATE POINT to save, or the back arrow to exit.`);
 
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
@@ -570,6 +593,7 @@ export enum Actions {
   REFRESH_RESOURCE_START = "REFRESH_RESOURCE_START",
   REFRESH_RESOURCE_OK = "REFRESH_RESOURCE_OK",
   REFRESH_RESOURCE_NO = "REFRESH_RESOURCE_NO",
+  DELETE_POINT_OK = "DELETE_POINT_OK",
 
   // Auth
   REPLACE_TOKEN = "REPLACE_TOKEN",
@@ -581,6 +605,7 @@ export enum Actions {
   LOGOUT = "LOGOUT",
 
   // Devices
+  SAVE_DEVICE_OK = "SAVE_DEVICE_OK",
   TOGGLE_CONTROL_PANEL_OPTION = "TOGGLE_CONTROL_PANEL_OPTION",
   BULK_TOGGLE_CONTROL_PANEL = "BULK_TOGGLE_CONTROL_PANEL",
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",
@@ -588,8 +613,11 @@ export enum Actions {
   SETTING_UPDATE_END = "SETTING_UPDATE_END",
   BOT_CHANGE = "BOT_CHANGE",
   FETCH_OS_UPDATE_INFO_OK = "FETCH_OS_UPDATE_INFO_OK",
+  FETCH_OS_UPDATE_INFO_ERROR = "FETCH_OS_UPDATE_INFO_ERROR",
   FETCH_BETA_OS_UPDATE_INFO_OK = "FETCH_BETA_OS_UPDATE_INFO_OK",
+  FETCH_BETA_OS_UPDATE_INFO_ERROR = "FETCH_BETA_OS_UPDATE_INFO_ERROR",
   FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
+  FETCH_MIN_OS_FEATURE_INFO_ERROR = "FETCH_MIN_OS_FEATURE_INFO_ERROR",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",

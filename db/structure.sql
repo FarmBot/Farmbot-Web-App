@@ -109,39 +109,6 @@ ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 
 
 --
--- Name: device_configs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.device_configs (
-    id bigint NOT NULL,
-    device_id bigint,
-    key character varying(100),
-    value character varying(300),
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: device_configs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.device_configs_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: device_configs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.device_configs_id_seq OWNED BY public.device_configs.id;
-
-
---
 -- Name: devices; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -293,6 +260,39 @@ ALTER SEQUENCE public.farm_events_id_seq OWNED BY public.farm_events.id;
 
 
 --
+-- Name: farmware_envs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.farmware_envs (
+    id bigint NOT NULL,
+    device_id bigint,
+    key character varying(100),
+    value character varying(300),
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: farmware_envs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.farmware_envs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: farmware_envs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.farmware_envs_id_seq OWNED BY public.farmware_envs.id;
+
+
+--
 -- Name: farmware_installations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -377,9 +377,9 @@ CREATE TABLE public.firmware_configs (
     device_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    encoder_enabled_x integer DEFAULT 0,
-    encoder_enabled_y integer DEFAULT 0,
-    encoder_enabled_z integer DEFAULT 0,
+    encoder_enabled_x integer DEFAULT 1,
+    encoder_enabled_y integer DEFAULT 1,
+    encoder_enabled_z integer DEFAULT 1,
     encoder_invert_x integer DEFAULT 0,
     encoder_invert_y integer DEFAULT 0,
     encoder_invert_z integer DEFAULT 0,
@@ -419,8 +419,8 @@ CREATE TABLE public.firmware_configs (
     movement_invert_motor_x integer DEFAULT 0,
     movement_invert_motor_y integer DEFAULT 0,
     movement_invert_motor_z integer DEFAULT 0,
-    movement_keep_active_x integer DEFAULT 0,
-    movement_keep_active_y integer DEFAULT 0,
+    movement_keep_active_x integer DEFAULT 1,
+    movement_keep_active_y integer DEFAULT 1,
     movement_keep_active_z integer DEFAULT 1,
     movement_max_spd_x integer DEFAULT 400,
     movement_max_spd_y integer DEFAULT 400,
@@ -1280,13 +1280,6 @@ ALTER TABLE ONLY public.delayed_jobs ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: device_configs id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.device_configs ALTER COLUMN id SET DEFAULT nextval('public.device_configs_id_seq'::regclass);
-
-
---
 -- Name: devices id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1312,6 +1305,13 @@ ALTER TABLE ONLY public.edge_nodes ALTER COLUMN id SET DEFAULT nextval('public.e
 --
 
 ALTER TABLE ONLY public.farm_events ALTER COLUMN id SET DEFAULT nextval('public.farm_events_id_seq'::regclass);
+
+
+--
+-- Name: farmware_envs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs ALTER COLUMN id SET DEFAULT nextval('public.farmware_envs_id_seq'::regclass);
 
 
 --
@@ -1485,14 +1485,6 @@ ALTER TABLE ONLY public.delayed_jobs
 
 
 --
--- Name: device_configs device_configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.device_configs
-    ADD CONSTRAINT device_configs_pkey PRIMARY KEY (id);
-
-
---
 -- Name: devices devices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1522,6 +1514,14 @@ ALTER TABLE ONLY public.edge_nodes
 
 ALTER TABLE ONLY public.farm_events
     ADD CONSTRAINT farm_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: farmware_envs farmware_envs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT farmware_envs_pkey PRIMARY KEY (id);
 
 
 --
@@ -1716,13 +1716,6 @@ CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority,
 
 
 --
--- Name: index_device_configs_on_device_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_device_configs_on_device_id ON public.device_configs USING btree (device_id);
-
-
---
 -- Name: index_devices_on_timezone; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1776,6 +1769,13 @@ CREATE INDEX index_farm_events_on_end_time ON public.farm_events USING btree (en
 --
 
 CREATE INDEX index_farm_events_on_executable_type_and_executable_id ON public.farm_events USING btree (executable_type, executable_id);
+
+
+--
+-- Name: index_farmware_envs_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_farmware_envs_on_device_id ON public.farmware_envs USING btree (device_id);
 
 
 --
@@ -1860,6 +1860,13 @@ CREATE INDEX index_logs_on_updated_at ON public.logs USING btree (updated_at);
 --
 
 CREATE INDEX index_logs_on_verbosity ON public.logs USING btree (verbosity);
+
+
+--
+-- Name: index_logs_on_verbosity_and_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_logs_on_verbosity_and_type ON public.logs USING btree (verbosity, type);
 
 
 --
@@ -2141,10 +2148,10 @@ ALTER TABLE ONLY public.primary_nodes
 
 
 --
--- Name: device_configs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.device_configs
+ALTER TABLE ONLY public.farmware_envs
     ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
@@ -2295,6 +2302,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180719143412'),
 ('20180720021451'),
 ('20180726145505'),
-('20180726165546');
+('20180726165546'),
+('20180727152741'),
+('20180813185430'),
+('20180815143819');
 
 

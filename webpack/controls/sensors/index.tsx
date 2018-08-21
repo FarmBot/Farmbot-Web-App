@@ -7,7 +7,11 @@ import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { SensorsProps } from "../../devices/interfaces";
 import { SensorState } from "./interfaces";
 import {
-  TaggedSensor, getArrayStatus, SpecialStatus
+  TaggedSensor,
+  SpecialStatus
+} from "farmbot";
+import {
+  getArrayStatus,
 } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";

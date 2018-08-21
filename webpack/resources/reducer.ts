@@ -4,10 +4,12 @@ import { RestResources, ResourceIndex } from "./interfaces";
 import {
   TaggedResource,
   ResourceName,
-  sanityCheck,
-  isTaggedResource,
   SpecialStatus,
   TaggedSequence
+} from "farmbot";
+import {
+  sanityCheck,
+  isTaggedResource,
 } from "./tagged_resources";
 import { generateUuid, arrayWrap } from "./util";
 import { EditResourceParams } from "../api/interfaces";
@@ -76,7 +78,7 @@ export function emptyState(): RestResources {
         SensorReading: [],
         Sensor: [],
         FarmwareInstallation: [],
-        DeviceConfig: [],
+        FarmwareEnv: [],
         PinBinding: [],
         PlantTemplate: [],
         SavedGarden: [],
@@ -295,8 +297,10 @@ function addToIndex<T>(index: ResourceIndex,
   kind: ResourceName,
   body: T,
   uuid: string) {
-  const tr: TaggedResource =
-    { kind, body, uuid, specialStatus: SpecialStatus.SAVED } as any;
+  const tr: TaggedResource = {
+    kind, body, uuid, specialStatus: SpecialStatus.SAVED
+    // tslint:disable-next-line:no-any
+  } as any;
   sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);

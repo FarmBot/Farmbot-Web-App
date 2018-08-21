@@ -13,6 +13,7 @@ function dev(): Store {
 }
 
 function prod(): Store {
+  // tslint:disable-next-line:no-any
   return createStore(rootReducer, ({} as any), getMiddleware("production"));
 }
 
@@ -31,7 +32,7 @@ export let store = configureStore();
  * Returns {} if nothing is found. Used mostly for hot reloading. */
 function maybeFetchOldState() {
   try {
-    return JSON.parse(sessionStorage["lastState"] || "{}");
+    return JSON.parse(sessionStorage.getItem("lastState") || "{}");
   } catch (e) {
     return {};
   }

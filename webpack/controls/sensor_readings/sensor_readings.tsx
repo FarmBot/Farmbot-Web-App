@@ -10,7 +10,7 @@ import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";
 import { ToolTips } from "../../constants";
 import { t } from "i18next";
-import { TaggedSensor } from "../../resources/tagged_resources";
+import { TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../interfaces";
 import { SensorReadingsPlot } from "./graph";
 

@@ -16,7 +16,7 @@ export function unsavedCheck(state: Everything) {
   const total = dirty.length;
   const doStop = (total !== 0);
   const conf = getWebAppConfig(index);
-  const loggedOut = !localStorage.session;
+  const loggedOut = !localStorage.getItem("session");
 
   if ((conf && conf.body.discard_unsaved) || loggedOut) {
     window.onbeforeunload = dontStopThem;
@@ -34,6 +34,8 @@ export let subscriptions: Subscription[] = [{ env: "*", fn: unsavedCheck }];
 export function registerSubscribers(store: Store) {
   const ENV_LIST = [process.env.NODE_ENV, "*"];
   subscriptions.forEach(function (s) {
-    ENV_LIST.includes(s.env) && store.subscribe(() => s.fn(store.getState()));
+    ENV_LIST.includes &&
+      ENV_LIST.includes(s.env) &&
+      store.subscribe(() => s.fn && s.fn(store.getState()));
   });
 }

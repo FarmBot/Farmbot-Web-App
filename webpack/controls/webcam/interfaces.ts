@@ -1,4 +1,4 @@
-import { TaggedWebcamFeed } from "../../resources/tagged_resources";
+import { TaggedWebcamFeed } from "farmbot";
 
 export interface WebcamPanelProps {
   onToggle(): void;

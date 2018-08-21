@@ -6,13 +6,15 @@ describe "Body nodes" do
                   .node(:wrong, [], [])
                   .node(:bar, [:foo], [])
                   .node(:baz, [], [:bar])
+  let(:device) { FactoryBot.create(:device) }
+
   it "always always empty bodies" do
     tree = CeleryScript::AstNode.new({
       "kind": "baz",
       "args": {},
       "body": []
     })
-    checker = CeleryScript::Checker.new(tree, test_corpus)
+    checker = CeleryScript::Checker.new(tree, test_corpus, device)
     expect(checker.valid?).to eq(true)
   end
 
@@ -22,7 +24,7 @@ describe "Body nodes" do
       "args": {},
       "body": [{ "kind": "wrong", "args": {}}]
     })
-    checker = CeleryScript::Checker.new(tree, test_corpus)
+    checker = CeleryScript::Checker.new(tree, test_corpus, device)
     expect(checker.valid?).to eq(false)
     expect(checker.error.message).to include("node contains 'wrong' node")
   end
@@ -33,7 +35,7 @@ describe "Body nodes" do
       "args": {},
       "body": [{ "kind": "wrong", "args": {}}]
     })
-    checker = CeleryScript::Checker.new(tree, test_corpus)
+    checker = CeleryScript::Checker.new(tree, test_corpus, device)
     expect(checker.valid?).to eq(false)
     expect(checker.error.message).to include("node contains 'wrong' node")
   end
@@ -49,7 +51,7 @@ describe "Body nodes" do
           }
         ]
       })
-    checker  = CeleryScript::Checker.new(tree, test_corpus)
+    checker  = CeleryScript::Checker.new(tree, test_corpus, device)
     actual   = checker.error.message
     expected = "Body of 'wrong' node contains 'wrong' node"
     expect(actual).to include(expected)

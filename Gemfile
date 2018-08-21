@@ -30,12 +30,14 @@ gem "valid_url"
 gem "webpack-rails"
 # Still working out the bugs. - RC 5 Jul 18
 gem "rabbitmq_http_api_client"
+gem "zero_downtime_migrations"
 
 group :development, :test do
-  gem "zero_downtime_migrations"
   gem "thin"
   gem "capybara"
+  gem "deep-cover", "~> 0.4", require: false
   gem "codecov", require: false
+  gem "simplecov"
   gem "database_cleaner"
   gem "factory_bot_rails"
   gem "faker"
@@ -48,8 +50,8 @@ group :development, :test do
   gem "rspec-rails"
   gem "rspec"
   gem "selenium-webdriver"
-  gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
+  gem "climate_control"
 end
 
 group :production do
