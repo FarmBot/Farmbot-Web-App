@@ -31,8 +31,8 @@ module Sequences
 
     def validate
       validate_sequence
-      regimens_cant_have_parameters
-      farm_events_cant_have_parameters
+      # regimens_cant_have_parameters
+      # farm_events_cant_have_parameters
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
