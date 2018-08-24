@@ -58,6 +58,7 @@ module CeleryScriptSettingsBag
   BAD_DATA_TYPE         = '"%s" is not a valid data_type. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
+  BAD_RESOURCE_TYPE     = '"%s" is not a valid resource_type. Allowed values: %s'
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
@@ -180,6 +181,12 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
+      .arg(:resource_id) do |n|
+        raise "NOT READY?"
+      end
+      .arg(:resource_type) do |n|
+        within(RESOURCE_NAME, n) { BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME] }
+      end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
@@ -240,6 +247,7 @@ module CeleryScriptSettingsBag
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
+      .node(:resource_update,       [:resource_type, :resource_id, :label], [:pair])
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
