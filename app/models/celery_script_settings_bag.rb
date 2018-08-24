@@ -45,7 +45,7 @@ module CeleryScriptSettingsBag
                              read_status reboot sync take_photo)
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
-                             write_pin )
+                             write_pin resource_update)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -181,10 +181,11 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
-      .arg(:resource_id) do |n|
+      .arg(:resource_id, [Integer]) do |n|
         raise "NOT READY?"
       end
-      .arg(:resource_type) do |n|
+      .arg(:resource_type, [String]) do |n|
+        raise "NOT READY?"
         within(RESOURCE_NAME, n) { BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME] }
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|

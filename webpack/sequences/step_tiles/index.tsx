@@ -22,6 +22,7 @@ import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
 import { Session } from "../../session";
 import { BooleanSetting } from "../../session_keys";
+import { MarkAs } from "./mark_as";
 
 interface MoveParams {
   step: Step;
@@ -135,6 +136,7 @@ export function renderCeleryNode(props: StepParams) {
     case "take_photo": return <TileTakePhoto {...props} />;
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
+    case "resource_update": return <MarkAs {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
 }

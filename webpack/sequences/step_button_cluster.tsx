@@ -133,15 +133,27 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       color="pink">
       {t("Run Farmware")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
+    <StepButton
+      dispatch={dispatch}
       current={current}
       step={{
-        kind: "take_photo",
-        args: {}
+        kind: "resource_update",
+        args: {
+          resource_type: "Point",
+          resource_id: 0,
+          label: "mark_as"
+        }
       }}
       color="brown">
+      {t("Mark Point As...")}
+    </StepButton>,
+    <StepButton
+      dispatch={dispatch}
+      current={current}
+      color="brown"
+      step={{ kind: "take_photo", args: {} }} >
       {t("TAKE PHOTO")}
-    </StepButton>
+    </StepButton>,
   ];
 
   return <div>
