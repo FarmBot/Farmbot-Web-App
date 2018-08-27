@@ -9,6 +9,7 @@ import { BugsControls } from "./easter_eggs/bugs";
 import { BotOriginQuadrant } from "../interfaces";
 import { MoveModeLink } from "../plants/move_to";
 import { SavedGardensLink } from "../saved_gardens/saved_gardens";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
 
 const OriginSelector = ({ quadrant, update }: {
   quadrant: BotOriginQuadrant,
@@ -27,9 +28,12 @@ const OriginSelector = ({ quadrant, update }: {
     </div>
   </div>;
 
-export const ZoomControls = ({ zoom }: { zoom: (value: number) => () => void }) => {
-  const plusBtnClass = atMaxZoom() ? "disabled" : "";
-  const minusBtnClass = atMinZoom() ? "disabled" : "";
+export const ZoomControls = ({ zoom, getConfigValue }: {
+  zoom: (value: number) => () => void,
+  getConfigValue: GetWebAppConfigValue
+}) => {
+  const plusBtnClass = atMaxZoom(getConfigValue) ? "disabled" : "";
+  const minusBtnClass = atMinZoom(getConfigValue) ? "disabled" : "";
   return <div className="zoom-buttons">
     <button
       className={"fb-button gray zoom " + plusBtnClass}
@@ -100,7 +104,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <i className="fa fa-2x fa-arrow-left" />
     </div>
     <div className="content">
-      <ZoomControls zoom={props.zoom} />
+      <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
       <LayerToggles {...props} />
       <OriginSelector
         quadrant={props.botOriginQuadrant}

@@ -42,7 +42,8 @@ describe("<GardenMapLegend />", () => {
 describe("<ZoomControls />", () => {
   const expectDisabledBtnCountToEqual = (expected: number) => {
     const wrapper = shallow(<ZoomControls
-      zoom={jest.fn()} />);
+      zoom={jest.fn()}
+      getConfigValue={jest.fn()} />);
     expect(wrapper.find(".disabled").length).toEqual(expected);
   };
 
