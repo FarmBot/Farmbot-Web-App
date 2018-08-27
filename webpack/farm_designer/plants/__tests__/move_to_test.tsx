@@ -17,10 +17,13 @@ jest.mock("../../../history", () => ({
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
-import { MoveTo, MoveToProps, MoveToForm, MoveToFormProps } from "../move_to";
+import { mount, shallow } from "enzyme";
+import {
+  MoveTo, MoveToProps, MoveToForm, MoveToFormProps, MoveModeLink
+} from "../move_to";
 import { history } from "../../../history";
 import { Actions } from "../../../constants";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<MoveTo />", () => {
   beforeEach(function () {
@@ -72,5 +75,13 @@ describe("<MoveToForm />", () => {
     wrapper.setState({ z: 50 });
     wrapper.find("button").simulate("click");
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 1, y: 2, z: 50 });
+  });
+});
+
+describe("<MoveModeLink />", () => {
+  it("enters 'move to' mode", () => {
+    const wrapper = shallow(<MoveModeLink />);
+    clickButton(wrapper, 0, "move mode");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
   });
 });

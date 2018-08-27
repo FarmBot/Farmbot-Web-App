@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, bugsControls
+  Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
@@ -88,16 +88,16 @@ describe("resetBugs()", () => {
   });
 });
 
-describe("bugsControls", () => {
+describe("<BugsControls />", () => {
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
-    const noEggs = shallow(bugsControls());
+    const noEggs = shallow(<BugsControls />);
     expect(noEggs.find(".more-bugs").length).toEqual(0);
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
-    const stillNoEggs = shallow(bugsControls());
+    const stillNoEggs = shallow(<BugsControls />);
     expect(stillNoEggs.find(".more-bugs").length).toEqual(0);
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
-    const eggs = shallow(bugsControls());
+    const eggs = shallow(<BugsControls />);
     expect(eggs.find(".more-bugs").length).toEqual(1);
   });
 });

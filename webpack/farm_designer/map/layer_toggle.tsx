@@ -6,7 +6,7 @@ export interface LayerToggleProps {
   label: string;
   value: boolean | undefined;
   onClick(): void;
-  popover?: JSX.Element;
+  popover?: JSX.Element | undefined;
 }
 
 /** A flipper type switch for showing/hiding the layers of the garden map. */
