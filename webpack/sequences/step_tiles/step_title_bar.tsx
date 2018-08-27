@@ -17,9 +17,9 @@ function translate(input: Step): string {
     "move_absolute": t("Move Absolute"),
     "move_relative": t("Move Relative"),
     "read_pin": t("Read Pin"),
-    "resource_update": t("Mark As"),
     "send_message": t("Send Message"),
     "take_photo": t("Take a Photo"),
+    "transaction": t("Mark As"),
     "wait": t("Wait"),
     "write_pin": t("Write Pin"),
   };
