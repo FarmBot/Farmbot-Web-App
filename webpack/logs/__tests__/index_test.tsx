@@ -4,26 +4,6 @@ jest.mock("react-redux", () => ({
 
 const mockStorj: Dictionary<number | boolean> = {};
 
-jest.mock("../../session", () => {
-  return {
-    Session: {
-      deprecatedGetNum: (k: string) => {
-        return mockStorj[k];
-      },
-      deprecatedSetNum: (k: string, v: number) => {
-        mockStorj[k] = v;
-      },
-      deprecatedGetBool: (k: string) => {
-        mockStorj[k] = !!mockStorj[k];
-        return mockStorj[k];
-      }
-    },
-    // tslint:disable-next-line:no-any
-    safeNumericSetting: (x: any) => x
-
-  };
-});
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { Logs } from "../index";
@@ -50,7 +30,8 @@ describe("<Logs />", () => {
       bot,
       timeOffset: 0,
       dispatch: jest.fn(),
-      sourceFbosConfig: jest.fn()
+      sourceFbosConfig: jest.fn(),
+      getConfigValue: x => mockStorj[x],
     };
   };
 

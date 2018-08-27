@@ -50,22 +50,23 @@ export namespace Session {
     return LegacyShim.getBoolViaRedux(key);
   }
 
-  /** Store a boolean value in `localStorage` */
+  /** @deprecated Store a boolean value in `localStorage` */
   export function setBool(key: BooleanConfigKey, val: boolean): boolean {
     return LegacyShim.setBoolViaRedux(key, val);
   }
 
+  /** @deprecated */
   export function invertBool(key: BooleanConfigKey): boolean {
     return Session.setBool(key, !Session.deprecatedGetBool(key));
   }
 
-  /** Extract numeric settings from `localStorage`. Returns `undefined` when
+  /** @deprecated Extract numeric settings from `localStorage`. Returns `undefined` when
    * none are found. */
   export function deprecatedGetNum(key: NumberConfigKey): number | undefined {
     return LegacyShim.getNumViaRedux(key);
   }
 
-  /** Set a numeric value in `localStorage`. */
+  /** @deprecated Set a numeric value in `localStorage`. */
   export function deprecatedSetNum(key: NumberConfigKey, val: number): void {
     LegacyShim.setNumViaRedux(key, val);
   }

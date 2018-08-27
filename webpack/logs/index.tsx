@@ -10,10 +10,11 @@ import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
 import { LogsFilterMenu } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
-import { Session, safeNumericSetting } from "../session";
+import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
 import { NumberConfigKey } from "../config_storage/web_app_configs";
+import { setWebAppConfigValue } from "../config_storage/actions";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime = (created_at: number, timeoffset: number) =>
@@ -24,12 +25,13 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Initialize log type verbosity level to the configured or default value. */
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
-    const currentValue = Session.deprecatedGetNum(safeNumericSetting(name));
+    const currentValue = this.props.getConfigValue(safeNumericSetting(name));
     if (isUndefined(currentValue)) {
-      Session.deprecatedSetNum(safeNumericSetting(name), defaultValue);
+      this.props.dispatch(
+        setWebAppConfigValue(safeNumericSetting(name), defaultValue));
       return defaultValue;
     } else {
-      return currentValue;
+      return currentValue as number;
     }
   }
 
@@ -50,7 +52,8 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     const newSetting = this.state[name] === 0 ? 1 : 0;
     return () => {
       this.setState({ [name]: newSetting });
-      Session.deprecatedSetNum(safeNumericSetting(name + "_log"), newSetting);
+      this.props.dispatch(
+        setWebAppConfigValue(safeNumericSetting(name + "_log"), newSetting));
     };
   }
 
@@ -58,7 +61,8 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   setFilterLevel = (name: keyof Filters) => {
     return (value: number) => {
       this.setState({ [name]: value });
-      Session.deprecatedSetNum(safeNumericSetting(name + "_log"), value);
+      this.props.dispatch(
+        setWebAppConfigValue(safeNumericSetting(name + "_log"), value));
     };
   };
 
@@ -89,7 +93,8 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
               <LogsSettingsMenu
                 setFilterLevel={this.setFilterLevel}
                 dispatch={this.props.dispatch}
-                sourceFbosConfig={this.props.sourceFbosConfig} />
+                sourceFbosConfig={this.props.sourceFbosConfig}
+                getConfigValue={this.props.getConfigValue} />
             </Popover>
           </div>
           <div className={"settings-menu-button"}>

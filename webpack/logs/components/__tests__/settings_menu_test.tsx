@@ -7,26 +7,6 @@ jest.mock("../../../device", () => ({
 
 const mockStorj: Dictionary<number | boolean> = {};
 
-jest.mock("../../../session", () => {
-  return {
-    Session: {
-      deprecatedGetNum: (k: string) => {
-        return mockStorj[k];
-      },
-      setNum: (k: string, v: number) => {
-        mockStorj[k] = v;
-      },
-      deprecatedGetBool: (k: string) => {
-        mockStorj[k] = !!mockStorj[k];
-        return mockStorj[k];
-      }
-    },
-    // tslint:disable-next-line:no-any
-    safeNumericSetting: (x: any) => x
-
-  };
-});
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { LogsSettingsMenu } from "../settings_menu";
@@ -43,7 +23,8 @@ describe("<LogsSettingsMenu />", () => {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      },
+      getConfigValue: x => mockStorj[x],
     };
   };
 
