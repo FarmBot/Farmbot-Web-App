@@ -137,11 +137,10 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       dispatch={dispatch}
       current={current}
       step={{
-        kind: "resource_update",
+        kind: "transaction",
         args: {
           resource_type: "Point",
-          resource_id: 0,
-          label: "mark_as"
+          resource_id: 0
         }
       }}
       color="brown">
