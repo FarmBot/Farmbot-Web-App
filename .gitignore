@@ -25,3 +25,7 @@ public/webpack
 public/webpack/*
 scratchpad.rb
 tmp
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+config/credentials.yml.enc
