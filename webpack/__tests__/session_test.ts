@@ -61,6 +61,21 @@ describe("safeBooleanSetting", () => {
   });
 });
 
+describe("deprecatedGetNum", () => {
+  it("gets number", () => {
+    const result = Session.deprecatedGetNum("success_log");
+    expect(result).toEqual(3);
+  });
+});
+
+describe("deprecatedSetNum", () => {
+  it("sets number", () => {
+    Session.deprecatedSetNum("success_log", 0);
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { success_log: 0 });
+    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
+  });
+});
+
 describe("setBool", () => {
   it("sets bool", () => {
     Session.setBool("x_axis_inverted", false);

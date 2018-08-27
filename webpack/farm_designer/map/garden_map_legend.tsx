@@ -48,7 +48,7 @@ export const ZoomControls = ({ zoom, getConfigValue }: {
   </div>;
 };
 
-const PointsSubMenu = () =>
+export const PointsSubMenu = () =>
   <div>
     <button className={"fb-button green"}
       onClick={() => history.push("/app/designer/plants/create_point")}>
