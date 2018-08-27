@@ -5,17 +5,19 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
-  MARK_AS_ACTIONS,
   MARK_AS_OBJECTS,
   MarkableKind,
   selectedMarkableObject,
   setObjectKind,
+  actionList,
 } from "./mark_as/options";
 
 export interface MarkAsState { markableKind: MarkableKind | undefined; }
 
 export class MarkAs extends React.Component<StepParams, MarkAsState> {
-  state: MarkAsState = { markableKind: undefined };
+  state: MarkAsState = {
+    markableKind: undefined
+  };
 
   render() {
     const { dispatch, currentStep, index, currentSequence } = this.props;
@@ -40,10 +42,9 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
           <Col xs={4}>
             <label>{t("As")}</label>
             <FBSelect
-              list={MARK_AS_ACTIONS["Plant"]}
+              list={actionList(this.state.markableKind)}
               onChange={() => { }}
-              allowEmpty={false}
-              selectedItem={MARK_AS_ACTIONS["Plant"][0]} />
+              selectedItem={undefined} />
           </Col>
           <Col xs={4} />
         </Row>
