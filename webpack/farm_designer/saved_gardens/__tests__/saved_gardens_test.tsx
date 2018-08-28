@@ -20,7 +20,8 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { snapshotGarden } from "../snapshot";
 import {
-  SavedGardens, SavedGardensProps, GardenSnapshot, GardenSnapshotProps, mapStateToProps
+  SavedGardens, SavedGardensProps, GardenSnapshot, GardenSnapshotProps,
+  mapStateToProps, SavedGardensLink
 } from "../saved_gardens";
 import { error } from "farmbot-toastr";
 import { clickButton } from "../../../__test_support__/helpers";
@@ -125,5 +126,22 @@ describe("mapStateToProps()", () => {
   it("has plants in garden", () => {
     const result = mapStateToProps(fakeState());
     expect(result.plantsInGarden).toEqual(true);
+  });
+});
+
+describe("<SavedGardensLink />", () => {
+  it("opens saved garden panel", () => {
+    localStorage.setItem("SAVE_MY_GARDEN", "certainly");
+    const wrapper = shallow(<SavedGardensLink />);
+    clickButton(wrapper, 0, "saved gardens");
+    expect(history.push).toHaveBeenCalledWith(
+      "/app/designer/plants/saved_gardens");
+  });
+
+  it("saved garden button hidden", () => {
+    localStorage.removeItem("SAVE_MY_GARDEN");
+    const wrapper = shallow(<SavedGardensLink />);
+    const btn = wrapper.find("button").at(0);
+    expect(btn.props().hidden).toEqual(true);
   });
 });

@@ -4,7 +4,6 @@ import { Row, Col } from "../../ui/index";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "../step_icon_group";
-import { splice, remove } from "../step_tiles/index";
 
 export interface StepHeaderProps {
   children?: React.ReactNode;
@@ -34,13 +33,10 @@ export function StepHeader(props: StepHeaderProps) {
           step={currentStep}
           sequence={currentSequence} />
         <StepIconGroup
-          onClone={() => dispatch(splice({
-            step: currentStep,
-            index,
-            sequence: currentSequence
-          }))}
-          onTrash={() =>
-            remove({ dispatch, index, sequence: currentSequence })}
+          index={index}
+          dispatch={dispatch}
+          step={currentStep}
+          sequence={currentSequence}
           helpText={t(helpText)} />
         {props.children}
       </div>

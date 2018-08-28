@@ -63,7 +63,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
     show_images: this.initializeSetting(BooleanSetting.show_images, false),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
-    zoom_level: calcZoomLevel(getZoomLevelIndex())
+    zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue))
   };
 
   componentDidMount() {
@@ -84,9 +84,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   updateZoomLevel = (zoomIncrement: number) => () => {
-    const newIndex = getZoomLevelIndex() + zoomIncrement;
+    const newIndex = getZoomLevelIndex(this.props.getConfigValue) + zoomIncrement;
     this.setState({ zoom_level: calcZoomLevel(newIndex) });
-    saveZoomLevelIndex(newIndex);
+    saveZoomLevelIndex(this.props.dispatch, newIndex);
   }
 
   childComponent(props: Props) {

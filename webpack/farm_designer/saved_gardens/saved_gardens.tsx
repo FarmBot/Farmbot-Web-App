@@ -134,3 +134,10 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
     </div>;
   }
 }
+
+export const SavedGardensLink = () =>
+  <button className="fb-button green"
+    hidden={!(localStorage.getItem("FUTURE_FEATURES"))}
+    onClick={() => history.push("/app/designer/plants/saved_gardens")}>
+    {t("Saved Gardens")}
+  </button>;
