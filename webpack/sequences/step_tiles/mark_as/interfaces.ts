@@ -1,7 +1,8 @@
-import { DropDownItem as DDI, NullChoice } from "../../../ui";
+import { DropDownItem as DDI } from "../../../ui";
 
-export interface ToolNoun extends DDI { label: "Tool"; value: "Tool"; }
-export interface PlantNoun extends DDI { label: "Plant"; value: "Plant"; }
+export interface ToolNoun extends DDI { headingId: "Tool"; }
+export interface PlantNoun extends DDI { headingId: "Plant"; }
+export interface NoNoun extends DDI { headingId: "None"; }
 
 export namespace ToolAdjectives {
   export interface Dismounted extends DDI {
@@ -40,8 +41,8 @@ export namespace PlantAdjectives {
 
 export interface NoneSelected {
   kind: "NoneSelected";
-  noun: NullChoice;
-  adjective: NullChoice;
+  noun: NoNoun;
+  adjective: NoNoun;
 }
 
 export interface ToolSelected {

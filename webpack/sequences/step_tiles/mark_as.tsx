@@ -8,49 +8,34 @@ import {
   setNoun,
   adjectiveList,
   setAdjective,
+  getNounList,
 } from "./mark_as/options";
 import { MarkAsSelection } from "./mark_as/interfaces";
-import { NOUNS, NONE_SELECTED } from "./mark_as/constants";
+import { NONE_SELECTED } from "./mark_as/constants";
 import { betterCompact } from "../../util";
-import { TaggedResource } from "farmbot";
-import { ResourceSelector } from "./mark_as/resource_selector";
 
 export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
   state: MarkAsSelection = NONE_SELECTED;
   className = "wait-step";
 
-  resourceList(): TaggedResource[] {
-    switch (this.state.noun.label) {
-      case "Plant":
-      case "Tool":
-      default: return [];
-    }
-  }
-
-  resourceSelector = () => {
-    return <ResourceSelector
-      title={"Object"}
-      list={[]}
-      selected={undefined}
-      onChange={() => { }} />;
-  }
-
-  emptySelector = () => {
-    return <Col xs={8}>
-      <label>{t("Object")}</label>
-      <div className="empty-spot">
-        Select "Tool" or "Plant"
-      </div>
+  nothing = () => {
+    return <Col xs={4}>
     </Col>;
   }
 
-  maybeShowResources = () => {
-    return (this.state.kind == "NoneSelected") ?
-      <this.emptySelector /> : <this.resourceSelector />;
+  adjective = () => {
+    return <Col xs={4}>
+      <label>{t("As " + this.state.adjective.label)}</label>
+      <FBSelect
+        key={"hmmm" + this.props.index}
+        list={betterCompact(adjectiveList(this.state))}
+        onChange={setAdjective((x: MarkAsSelection) => this.setState(x))}
+        selectedItem={this.state.adjective} />
+    </Col>;
   }
 
   render() {
-    const setState: MarkAs["setState"] = this.setState.bind(this);
+    const setState = (x: MarkAsSelection) => this.setState(x);
     return <StepWrapper>
       <StepHeader
         className={this.className}
@@ -61,23 +46,15 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
         index={this.props.index} />
       <StepContent className={this.className}>
         <Row>
-          <Col xs={2}>
+          <Col xs={8}>
             <label>{t("Mark")}</label>
             <FBSelect
-              list={NOUNS}
+              list={getNounList(this.props.resources)}
               onChange={setNoun(setState)}
               allowEmpty={false}
               selectedItem={this.state.noun} />
           </Col>
-          {this.maybeShowResources()}
-          <Col xs={2}>
-            <label>{t("As")}</label>
-            <FBSelect
-              list={betterCompact(adjectiveList(this.state))}
-              onChange={setAdjective(setState)}
-              allowEmpty={false}
-              selectedItem={this.state.adjective} />
-          </Col>
+          {this.state.kind == "NoneSelected" ? <this.nothing /> : <this.adjective />}
         </Row>
       </StepContent>
     </StepWrapper>;
