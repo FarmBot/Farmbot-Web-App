@@ -1,6 +1,6 @@
-import { Session } from "../../session";
 import { NumericSetting } from "../../session_keys";
 import { findIndex, isNumber, clamp } from "lodash";
+import { setWebAppConfigValue, GetWebAppConfigValue } from "../../config_storage/actions";
 
 /**
  * Map Zoom Level utilities
@@ -21,26 +21,26 @@ const clampZoom = (index: number): number => clamp(index, 0, maxZoomIndex);
 export const maxZoomLevel = zoomLevelsCount - zoomLevel1Index;
 export const minZoomLevel = 1 - zoomLevel1Index;
 
-export function atMaxZoom(): boolean {
-  return getZoomLevelIndex() >= maxZoomIndex;
+export function atMaxZoom(getConfigValue: GetWebAppConfigValue): boolean {
+  return getZoomLevelIndex(getConfigValue) >= maxZoomIndex;
 }
 
-export function atMinZoom(): boolean {
-  return getZoomLevelIndex() <= 0;
+export function atMinZoom(getConfigValue: GetWebAppConfigValue): boolean {
+  return getZoomLevelIndex(getConfigValue) <= 0;
 }
 
 /* Load the index of a saved zoom level. */
-export function getZoomLevelIndex(): number {
-  const savedValue = Session.deprecatedGetNum(NumericSetting.zoom_level);
+export function getZoomLevelIndex(getConfigValue: GetWebAppConfigValue): number {
+  const savedValue = getConfigValue(NumericSetting.zoom_level);
   if (!isNumber(savedValue)) { return zoomLevel1Index; }
   const zoomLevelIndex = savedValue + zoomLevel1Index - 1;
   return clampZoom(zoomLevelIndex);
 }
 
 /* Save a zoom level index. */
-export function saveZoomLevelIndex(index: number) {
+export function saveZoomLevelIndex(dispatch: Function, index: number) {
   const payload = index - zoomLevel1Index + 1;
-  Session.deprecatedSetNum(NumericSetting.zoom_level, payload);
+  dispatch(setWebAppConfigValue(NumericSetting.zoom_level, payload));
 }
 
 /* Calculate map zoom level from a zoom level index. */

@@ -5,7 +5,7 @@ import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
 import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
-import { Session, safeNumericSetting } from "../../session";
+import { safeNumericSetting } from "../../session";
 import { ConfigurationName } from "farmbot";
 
 interface LogSettingRecord {
@@ -55,7 +55,7 @@ const LogSetting = (props: LogSettingProps) => {
   /** Update the current filter level to a minimum needed for log display. */
   const updateMinFilterLevel = (name: keyof Filters, level: number) => {
     const currentLevel =
-      Session.deprecatedGetNum(safeNumericSetting(name + "_log")) || 0;
+      props.getConfigValue(safeNumericSetting(name + "_log")) || 0;
     if (currentLevel < level) { setFilterLevel(name)(level); }
   };
   const config = sourceFbosConfig(setting);
@@ -92,7 +92,7 @@ const LogSetting = (props: LogSettingProps) => {
 };
 
 export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
-  const { setFilterLevel, sourceFbosConfig } = props;
+  const { setFilterLevel, sourceFbosConfig, getConfigValue } = props;
   const LogSettingRow = (settingProps: LogSettingRecord) => {
     const { label, setting, tooltip } = settingProps;
     return <LogSetting
@@ -101,7 +101,8 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       toolTip={tooltip}
       setFilterLevel={setFilterLevel}
       dispatch={props.dispatch}
-      sourceFbosConfig={sourceFbosConfig} />;
+      sourceFbosConfig={sourceFbosConfig}
+      getConfigValue={getConfigValue} />;
   };
   return <div className={"logs-settings-menu"}>
     {t("Create logs for sequence:")}

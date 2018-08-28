@@ -9,6 +9,7 @@ import { getFbosConfig } from "../resources/selectors_by_kind";
 import { validFbosConfig } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedLog } from "farmbot";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(
@@ -28,7 +29,8 @@ export function mapStateToProps(props: Everything): LogsProps {
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     logs: takeSortedLogs(250, props.resources.index),
     bot: props.bot,
-    timeOffset: maybeGetTimeOffset(props.resources.index)
+    timeOffset: maybeGetTimeOffset(props.resources.index),
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 
 }
