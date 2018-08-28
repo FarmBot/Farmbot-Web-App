@@ -1,52 +1,29 @@
-import { DropDownItem } from "../../../ui";
-import { MarkAsState } from "../mark_as";
+import { MarkAsSelection } from "./interfaces";
+import {
+  NONE_SELECTED,
+  SELECT_DEFAULT_BY_NOUN,
+  ADJ_BY_STATE_KIND,
+  TOOL_NOUN,
+  PLANT_NOUN
+} from "./constants";
 
-export type MarkableKind = "Tool" | "Plant";
+type SetState = (x: MarkAsSelection) => void;
 
-// For type safety. This will break when the corpus changes.
-const KIND_MAP: Record<MarkableKind, MarkableKind> =
-  ({ Tool: "Tool", Plant: "Plant" });
-
-const MARKABLE_KINDS = Object.keys(KIND_MAP);
-
-export const MARAKBLE_DDI_LOOKUP: Record<MarkableKind, DropDownItem> = {
-  Tool: { label: "Tool", value: "Tool" },
-  Plant: { label: "Plant", value: "Plant" },
+export const setNoun = (s: SetState) => (d: MarkAsSelection["noun"]) => {
+  return s(SELECT_DEFAULT_BY_NOUN[d.label] || NONE_SELECTED);
 };
 
-export const MARK_AS_OBJECTS: DropDownItem[] =
-  Object.values(MARAKBLE_DDI_LOOKUP);
-
-export const MARK_AS_ACTIONS: Record<MarkableKind, DropDownItem[]> = {
-  Tool: [
-    { label: "Mounted", value: "mounted" },
-    { label: "Dismounted", value: "dismounted" },
-  ],
-  Plant: [
-    { label: "Planned", value: "planned" },
-    { label: "Planted", value: "planted" },
-    { label: "Harvested", value: "harvested" },
-    { label: "Removed", value: "removed" }
-  ]
+export const setAdjective = (s: SetState) => (d: MarkAsSelection["adjective"]) => {
+  switch (d.label) {
+    case "Mounted": case "Dismounted":
+      return s({ kind: "ToolSelected", noun: TOOL_NOUN, adjective: d });
+    case "Planned": case "Planted": case "Harvested": case "Removed":
+      return s({ kind: "PlantSelected", noun: PLANT_NOUN, adjective: d });
+    case "None": default:
+      return s(NONE_SELECTED);
+  }
 };
 
-export const isMarkableKind = (x: unknown): x is MarkableKind => {
-  return (x && typeof (x) == "string" && MARKABLE_KINDS.includes(x));
-};
-
-// this.state.markableKind ? MARAKBLE_DDI_LOOKUP[this.state.markableKind] : undefined
-export const selectedMarkableObject =
-  (x?: string): DropDownItem | undefined => {
-    return isMarkableKind(x) ? MARAKBLE_DDI_LOOKUP[x] : undefined;
-  };
-
-type StateSetter = (s: MarkAsState) => void;
-
-export const setObjectKind = (cb: StateSetter) => (d: DropDownItem) => {
-  const { value } = d;
-  cb({ markableKind: isMarkableKind(value) ? value : undefined });
-};
-
-export const actionList = (x?: MarkableKind): DropDownItem[] => {
-  return isMarkableKind(x) ? MARK_AS_ACTIONS[x] : [];
+export const adjectiveList = <T extends MarkAsSelection>(x: T): T["adjective"][] => {
+  return ADJ_BY_STATE_KIND[x.kind] || [];
 };

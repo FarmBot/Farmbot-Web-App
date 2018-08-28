@@ -9,8 +9,7 @@ export interface DropDownItem {
   headingId?: string | undefined;
 }
 
+export interface NullChoice extends DropDownItem { label: "None"; value: ""; }
+const nc: NullChoice = { label: "None", value: "" };
 /** Used as a placeholder for a selection of "none" when allowEmpty is true. */
-export const NULL_CHOICE: DropDownItem = Object.freeze({
-  label: "None",
-  value: ""
-});
+export const NULL_CHOICE = Object.freeze(nc);

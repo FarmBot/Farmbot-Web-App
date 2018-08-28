@@ -5,23 +5,21 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
-  MARK_AS_OBJECTS,
-  MarkableKind,
-  selectedMarkableObject,
-  setObjectKind,
-  actionList,
+  setNoun,
+  adjectiveList,
+  setAdjective,
 } from "./mark_as/options";
+import { MarkAsSelection } from "./mark_as/interfaces";
+import { NOUNS, NONE_SELECTED } from "./mark_as/constants";
+import { betterCompact } from "../../util";
 
-export interface MarkAsState { markableKind: MarkableKind | undefined; }
-
-export class MarkAs extends React.Component<StepParams, MarkAsState> {
-  state: MarkAsState = {
-    markableKind: undefined
-  };
+export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
+  state: MarkAsSelection = NONE_SELECTED;
 
   render() {
     const { dispatch, currentStep, index, currentSequence } = this.props;
     const className = "wait-step";
+    const setState: MarkAs["setState"] = this.setState.bind(this);
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -35,16 +33,18 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
           <Col xs={4}>
             <label>{t("Mark")}</label>
             <FBSelect
-              list={MARK_AS_OBJECTS}
-              onChange={setObjectKind(this.setState.bind(this))}
-              selectedItem={selectedMarkableObject(this.state.markableKind)} />
+              list={NOUNS}
+              onChange={setNoun(setState)}
+              allowEmpty={false}
+              selectedItem={this.state.noun} />
           </Col>
           <Col xs={4}>
             <label>{t("As")}</label>
             <FBSelect
-              list={actionList(this.state.markableKind)}
-              onChange={() => { }}
-              selectedItem={undefined} />
+              list={betterCompact(adjectiveList(this.state))}
+              onChange={setAdjective(setState)}
+              allowEmpty={false}
+              selectedItem={this.state.adjective} />
           </Col>
           <Col xs={4} />
         </Row>
