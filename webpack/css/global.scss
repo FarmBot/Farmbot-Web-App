@@ -224,19 +224,21 @@ a {
   }
 }
 
-.drag-drop-area {
+.empty-spot {
+  background: $off_white;
+  border-color: $light_gray;
   border-style: dashed;
   border-width: 2px;
-  border-color: $light_gray;
   color: $gray;
   font-weight: bold;
-  margin: 0.75rem 0;
-  margin-right: 15px;
-  padding: 1.25rem;
-  background: $off_white;
   text-align: center;
-  color: $gray;
-  font-weight: bold;
+}
+
+.drag-drop-area {
+  @extend .empty-spot;
+  margin-right: 15px;
+  margin: 0.75rem 0;
+  padding: 1.25rem;
 }
 
 .hardware-widget,
@@ -306,9 +308,9 @@ a {
     color: $orange;
   }
   .fa-th-large {
-      color: $dark_gray;
-      margin-top: 0.5rem;
-      margin-left: 0.5rem;
+    color: $dark_gray;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
   }
   .fb-button {
     margin-top: 0.5rem;
@@ -336,7 +338,8 @@ a {
 
 .sensor-history-table {
   font-size: 1.2rem;
-  th, td {
+  th,
+  td {
     width: 1%;
   }
   tr {
@@ -633,14 +636,14 @@ ul {
     font-size: 2.4rem;
     transition: all 0.25s ease-in-out;
     &:hover {
-      background-color: rgba(0,0,0,0.2);
+      background-color: rgba(0, 0, 0, 0.2);
     }
   }
   &.open {
     i {
       transform: rotate(-135deg);
       &:hover {
-        background-color: rgba(0,0,0,0);
+        background-color: rgba(0, 0, 0, 0);
       }
     }
     .controls-popup-menu-outer {
@@ -649,7 +652,7 @@ ul {
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
-      transition-delay: 0.25s!important;
+      transition-delay: 0.25s !important;
       opacity: 1;
     }
   }
@@ -666,7 +669,7 @@ ul {
 
 .controls-popup-menu-outer {
   transition: all 0.1 s ease-in-out;
-  transition-delay: 0.2s!important;
+  transition-delay: 0.2s !important;
 }
 
 @keyframes page-transition {
@@ -701,7 +704,8 @@ ul {
 
 .farmware-input-panel,
 .farmware-info-panel {
-  label, h4 {
+  label,
+  h4 {
     margin-top: 2rem;
   }
 }
@@ -716,7 +720,8 @@ ul {
   label {
     cursor: pointer;
   }
-  &:hover, &.selected {
+  &:hover,
+  &.selected {
     background: $medium_light_gray;
     p {
       font-weight: bold;
@@ -781,7 +786,6 @@ ul {
   td:nth-child(1),
   td:nth-child(4) {
     min-width: 106px;
-
   }
   td:nth-child(2),
   td:nth-child(3) {
@@ -901,7 +905,8 @@ ul {
       padding: 0.6rem 0.3rem;
     }
   }
-  .pt-popover-wrapper, .pt-popover-target {
+  .pt-popover-wrapper,
+  .pt-popover-target {
     margin-left: 1rem;
     display: inline-block !important;
     margin-top: 0.4rem;

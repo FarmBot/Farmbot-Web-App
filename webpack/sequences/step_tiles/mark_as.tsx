@@ -12,25 +12,56 @@ import {
 import { MarkAsSelection } from "./mark_as/interfaces";
 import { NOUNS, NONE_SELECTED } from "./mark_as/constants";
 import { betterCompact } from "../../util";
+import { TaggedResource } from "farmbot";
+import { ResourceSelector } from "./mark_as/resource_selector";
 
 export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
   state: MarkAsSelection = NONE_SELECTED;
+  className = "wait-step";
+
+  resourceList(): TaggedResource[] {
+    switch (this.state.noun.label) {
+      case "Plant":
+      case "Tool":
+      default: return [];
+    }
+  }
+
+  resourceSelector = () => {
+    return <ResourceSelector
+      title={"Object"}
+      list={[]}
+      selected={undefined}
+      onChange={() => { }} />;
+  }
+
+  emptySelector = () => {
+    return <Col xs={8}>
+      <label>{t("Object")}</label>
+      <div className="empty-spot">
+        Select "Tool" or "Plant"
+      </div>
+    </Col>;
+  }
+
+  maybeShowResources = () => {
+    return (this.state.kind == "NoneSelected") ?
+      <this.emptySelector /> : <this.resourceSelector />;
+  }
 
   render() {
-    const { dispatch, currentStep, index, currentSequence } = this.props;
-    const className = "wait-step";
     const setState: MarkAs["setState"] = this.setState.bind(this);
     return <StepWrapper>
       <StepHeader
-        className={className}
+        className={this.className}
         helpText={ToolTips.WAIT}
-        currentSequence={currentSequence}
-        currentStep={currentStep}
-        dispatch={dispatch}
-        index={index} />
-      <StepContent className={className}>
+        currentSequence={this.props.currentSequence}
+        currentStep={this.props.currentStep}
+        dispatch={this.props.dispatch}
+        index={this.props.index} />
+      <StepContent className={this.className}>
         <Row>
-          <Col xs={4}>
+          <Col xs={2}>
             <label>{t("Mark")}</label>
             <FBSelect
               list={NOUNS}
@@ -38,7 +69,8 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
               allowEmpty={false}
               selectedItem={this.state.noun} />
           </Col>
-          <Col xs={4}>
+          {this.maybeShowResources()}
+          <Col xs={2}>
             <label>{t("As")}</label>
             <FBSelect
               list={betterCompact(adjectiveList(this.state))}
@@ -46,7 +78,6 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
               allowEmpty={false}
               selectedItem={this.state.adjective} />
           </Col>
-          <Col xs={4} />
         </Row>
       </StepContent>
     </StepWrapper>;

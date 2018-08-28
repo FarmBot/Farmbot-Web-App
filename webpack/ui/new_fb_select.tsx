@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropDownItem } from "./fb_select";
+import { DropDownItem, NULL_CHOICE } from "./fb_select";
 import { FilterSearch } from "./filter_search";
 import { equals } from "../util";
 
@@ -21,16 +21,10 @@ export interface FBSelectProps {
 }
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
-
-  NULL_CHOICE = Object.freeze({
-    label: this.props.customNullLabel || "None",
-    value: ""
-  } as DropDownItem);
-
-  get item() { return this.props.selectedItem || this.NULL_CHOICE; }
+  get item() { return this.props.selectedItem || NULL_CHOICE; }
   get list() {
     if (this.props.allowEmpty) {
-      return this.props.list.concat(this.NULL_CHOICE);
+      return this.props.list.concat(NULL_CHOICE);
     } else {
       return this.props.list;
     }
@@ -47,7 +41,7 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
         selectedItem={this.item}
         items={this.list}
         onChange={this.props.onChange}
-        nullChoice={this.NULL_CHOICE} />
+        nullChoice={NULL_CHOICE} />
     </div>;
   }
 }
