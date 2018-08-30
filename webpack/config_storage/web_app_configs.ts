@@ -46,6 +46,7 @@ export interface WebAppConfig {
   discard_unsaved: boolean;
   xy_swap: boolean;
   home_button_homing: boolean;
+  show_motor_plot: boolean;
 }
 
 export type NumberConfigKey = "id"
@@ -89,4 +90,5 @@ export type BooleanConfigKey = "confirm_step_deletion"
     |"show_images"
     |"discard_unsaved"
     |"xy_swap"
-    |"home_button_homing";
+    |"home_button_homing"
+    |"show_motor_plot";

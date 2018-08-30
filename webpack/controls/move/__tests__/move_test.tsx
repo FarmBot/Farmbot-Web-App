@@ -13,7 +13,7 @@ jest.mock("../../../config_storage/actions", () => {
 });
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { Move } from "../move";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { MoveProps } from "../interfaces";
@@ -80,5 +80,11 @@ describe("<Move />", () => {
       type: Actions.CHANGE_STEP_SIZE,
       payload: 1
     });
+  });
+
+  it("displays motor position plot", () => {
+    mockConfig.show_motor_plot = true;
+    const wrapper = shallow(<Move {...fakeProps()} />);
+    expect(wrapper.html()).toContain("motor-position-plot");
   });
 });

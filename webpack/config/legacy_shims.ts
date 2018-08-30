@@ -20,7 +20,8 @@ import { getWebAppConfig } from "../resources/selectors_by_kind";
 /** Avoid using this function in new places. Pass props instead. */
 export function getBoolViaRedux(key: BooleanConfigKey): boolean | undefined {
   const conf = getWebAppConfig(store.getState().resources.index);
-  return conf && conf.body[key];
+  // tslint:disable-next-line:no-any
+  return conf && (conf.body as any)[key];
 }
 
 /** Avoid using this function in new places. Pass props instead. */
