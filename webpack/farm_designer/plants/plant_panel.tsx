@@ -113,7 +113,7 @@ export function PlantPanel(props: PlantPanelProps) {
       </ListItem>
     </ul>
     <button className="fb-button gray"
-      hidden={true}
+      hidden={!localStorage.getItem("FUTURE_FEATURES")}
       onClick={() => {
         dispatch({
           type: Actions.CHOOSE_LOCATION,
