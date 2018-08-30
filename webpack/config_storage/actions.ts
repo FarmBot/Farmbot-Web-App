@@ -1,7 +1,8 @@
 import {
   BooleanConfigKey as BooleanWebAppConfigKey,
   NumberConfigKey as NumberWebAppConfigKey,
-  StringConfigKey as StringWebAppConfigKey
+  StringConfigKey as StringWebAppConfigKey,
+  WebAppConfig
 } from "./web_app_configs";
 import { GetState } from "../redux/interfaces";
 import { edit, save } from "../api/crud";
@@ -12,7 +13,7 @@ export function toggleWebAppBool(key: BooleanWebAppConfigKey) {
   return (dispatch: Function, getState: GetState) => {
     const conf = getWebAppConfig(getState().resources.index);
     if (conf) {
-      const val = !conf.body[key];
+      const val = !(conf.body as WebAppConfig)[key];
       dispatch(edit(conf, { [key]: val }));
       dispatch(save(conf.uuid));
     } else {
@@ -33,7 +34,7 @@ export type GetWebAppConfigValue = (k: WebAppConfigKey) => WebAppConfigValue;
 export function getWebAppConfigValue(getState: GetState) {
   return (key: WebAppConfigKey): WebAppConfigValue => {
     const conf = getWebAppConfig(getState().resources.index);
-    return conf && conf.body[key];
+    return conf && (conf.body as WebAppConfig)[key];
   };
 }
 

@@ -14,6 +14,8 @@ import { MoveProps } from "./interfaces";
 import { MoveWidgetSettingsMenu } from "./settings_menu";
 import { JogControlsGroup } from "./jog_controls_group";
 import { BotPositionRows } from "./bot_position_rows";
+import { MotorPositionPlot } from "./motor_position_plot";
+import { Popover, Position } from "@blueprintjs/core";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -30,9 +32,12 @@ export class Move extends React.Component<MoveProps, {}> {
       <WidgetHeader
         title={t("Move")}
         helpText={ToolTips.MOVE}>
-        <MoveWidgetSettingsMenu
-          toggle={this.toggle}
-          getValue={this.getValue} />
+        <Popover position={Position.BOTTOM_RIGHT}>
+          <i className="fa fa-gear" />
+          <MoveWidgetSettingsMenu
+            toggle={this.toggle}
+            getValue={this.getValue} />
+        </Popover>
         <EStopButton
           bot={this.props.bot}
           user={this.props.user} />
@@ -55,6 +60,8 @@ export class Move extends React.Component<MoveProps, {}> {
             arduinoBusy={this.props.arduinoBusy}
             firmware_version={informational_settings.firmware_version} />
         </MustBeOnline>
+        {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
+          <MotorPositionPlot locationData={locationData} />}
       </WidgetBody>
     </Widget>;
   }
