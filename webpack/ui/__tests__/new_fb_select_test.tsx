@@ -24,6 +24,13 @@ describe("<FBSelect />", () => {
     expect(wrapper.text()).toEqual("Item");
   });
 
+  it("renders custom null label", () => {
+    const p = fakeProps();
+    p.customNullLabel = "Other";
+    const wrapper = mount(<FBSelect {...p} />);
+    expect(wrapper.text()).toEqual("Other");
+  });
+
   it("allows empty", () => {
     const p = fakeProps();
     p.allowEmpty = true;
