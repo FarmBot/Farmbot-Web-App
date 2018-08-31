@@ -32,6 +32,7 @@ before_script:
 - bundle exec rake db:create db:migrate
 script:
 - bundle exec rspec --fail-fast=3
+- npm run tslint
 - npm run typecheck
 - npm run test-slow
 - npm run coverage
