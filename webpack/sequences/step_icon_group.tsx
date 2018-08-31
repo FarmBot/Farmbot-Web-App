@@ -10,6 +10,7 @@ export interface StepIconBarProps {
   step: SequenceBodyItem;
   sequence: TaggedSequence;
   helpText: string;
+  confirmStepDeletion: boolean;
 }
 
 export function StepUpDownButtonPopover(
@@ -24,10 +25,13 @@ export function StepUpDownButtonPopover(
 }
 
 export function StepIconGroup(props: StepIconBarProps) {
-  const { index, dispatch, step, sequence, helpText } = props;
+  const {
+    index, dispatch, step, sequence, helpText, confirmStepDeletion
+  } = props;
 
   const onClone = () => dispatch(splice({ step, index, sequence }));
-  const onTrash = () => remove({ dispatch, index, sequence });
+  const onTrash = () =>
+    remove({ dispatch, index, sequence, confirmStepDeletion });
   const onMove = (delta: number) => () => {
     const to = Math.max(index + delta, 0);
     dispatch(move({ step, sequence, from: index, to }));

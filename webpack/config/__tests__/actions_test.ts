@@ -19,8 +19,6 @@ jest.mock("axios", () => ({
 jest.mock("../../session", () => ({
   Session: {
     fetchStoredToken: jest.fn(),
-    deprecatedGetNum: () => undefined,
-    deprecatedGetBool: () => undefined,
     getAll: () => undefined,
     clear: jest.fn()
   }

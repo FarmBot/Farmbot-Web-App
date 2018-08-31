@@ -7,24 +7,17 @@ import { SequenceEditorMiddleActive } from "./sequence_editor_middle_active";
 export class SequenceEditorMiddle
   extends React.Component<SequenceEditorMiddleProps, {}> {
   render() {
-    const {
-      dispatch,
-      sequence,
-      resources,
-      syncStatus,
-      hardwareFlags,
-      farmwareInfo,
-      shouldDisplay,
-    } = this.props;
+    const { sequence } = this.props;
     if (sequence && isTaggedSequence(sequence)) {
       return <SequenceEditorMiddleActive
-        dispatch={dispatch}
+        dispatch={this.props.dispatch}
         sequence={sequence}
-        resources={resources}
-        syncStatus={syncStatus}
-        hardwareFlags={hardwareFlags}
-        farmwareInfo={farmwareInfo}
-        shouldDisplay={shouldDisplay} />;
+        resources={this.props.resources}
+        syncStatus={this.props.syncStatus}
+        hardwareFlags={this.props.hardwareFlags}
+        farmwareInfo={this.props.farmwareInfo}
+        shouldDisplay={this.props.shouldDisplay}
+        confirmStepDeletion={this.props.confirmStepDeletion} />;
     } else {
       return <SequenceEditorMiddleInactive />;
     }

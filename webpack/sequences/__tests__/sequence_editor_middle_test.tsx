@@ -23,6 +23,7 @@ describe("<SequenceEditorMiddle/>", () => {
         farmwareConfigs: {},
       },
       shouldDisplay: jest.fn(),
+      confirmStepDeletion: false,
     };
   }
 

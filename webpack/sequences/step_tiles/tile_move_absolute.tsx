@@ -169,7 +169,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index}>
+        index={index}
+        confirmStepDeletion={this.props.confirmStepDeletion}>
         {_.some(this.settingConflicts) &&
           <StepWarning
             warning={this.settingConflictWarning}

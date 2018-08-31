@@ -25,6 +25,7 @@ describe("<If_/>", () => {
       index: 0,
       resources: emptyState().index,
       shouldDisplay: jest.fn(),
+      confirmStepDeletion: false,
     };
   }
 
