@@ -9,7 +9,7 @@ const mockFeatures = [
 ];
 
 const mocks = {
-  "maybeToggleFeature": jest.fn(),
+  "maybeToggleFeature": jest.fn(() => jest.fn()),
   "fetchLabFeatures": jest.fn(() => mockFeatures)
 };
 
@@ -21,7 +21,9 @@ import { LabsFeatures } from "../labs_features";
 
 describe("<LabsFeatures/>", () => {
   it("triggers the correct callback on click", () => {
-    const el = mount(<LabsFeatures />);
+    const el = mount(<LabsFeatures
+      dispatch={jest.fn()}
+      getConfigValue={jest.fn()} />);
     expect(mocks.fetchLabFeatures.mock.calls.length).toBeGreaterThan(0);
     el.find("button").simulate("click");
     expect(mockFeatures[0].callback).toHaveBeenCalled();

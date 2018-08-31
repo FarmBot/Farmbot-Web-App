@@ -6,8 +6,8 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col } from "../../ui/index";
 
-export function TileMoveRelative({
-  dispatch, currentStep, index, currentSequence }: StepParams) {
+export function TileMoveRelative(props: StepParams) {
+  const { dispatch, currentStep, index, currentSequence } = props;
   const className = "move-relative-step";
   return <StepWrapper>
     <StepHeader
@@ -16,7 +16,8 @@ export function TileMoveRelative({
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index} />
+      index={index}
+      confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
         <Col xs={6} md={3}>

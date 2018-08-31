@@ -20,18 +20,20 @@ export function TileFindHome(props: StepParams) {
       dispatch={props.dispatch}
       index={props.index}
       resources={props.resources}
-      hardwareFlags={props.hardwareFlags} />;
+      hardwareFlags={props.hardwareFlags}
+      confirmStepDeletion={props.confirmStepDeletion} />;
   } else {
     throw new Error("TileFindHome expects find_home");
   }
 }
-interface FindHomeParams {
+export interface FindHomeParams {
   currentStep: FindHome;
   currentSequence: TaggedSequence;
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
   hardwareFlags: HardwareFlags | undefined;
+  confirmStepDeletion: boolean;
 }
 
 const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
@@ -87,7 +89,8 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index}>
+        index={index}
+        confirmStepDeletion={this.props.confirmStepDeletion}>
         {some(this.settingConflicts) &&
           <StepWarning
             warning={this.settingConflictWarning}

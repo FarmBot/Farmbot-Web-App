@@ -30,6 +30,7 @@ export interface Props {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -40,11 +41,11 @@ export interface SequenceEditorMiddleProps {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
-  syncStatus: SyncStatus;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -156,4 +157,5 @@ export interface StepParams {
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
   shouldDisplay?: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }

@@ -17,7 +17,8 @@ describe("<TileTakePhoto/>", () => {
         currentStep={currentStep}
         dispatch={jest.fn()}
         index={0}
-        resources={emptyState().index} />)
+        resources={emptyState().index}
+        confirmStepDeletion={false} />)
     };
   }
 

@@ -30,6 +30,7 @@ const fakeProps = (): AppProps => {
     firmwareConfig: undefined,
     xySwap: false,
     animate: false,
+    getConfigValue: jest.fn(),
   };
 };
 

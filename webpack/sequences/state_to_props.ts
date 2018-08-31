@@ -9,6 +9,8 @@ import {
   betterCompact, shouldDisplay, determineInstalledOsVersion, validFwConfig
 } from "../util";
 import { getWebAppConfig } from "../resources/selectors";
+import { BooleanSetting } from "../session_keys";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -63,6 +65,9 @@ export function mapStateToProps(props: Everything): Props {
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
 
+  const confirmStepDeletion =
+    !!getWebAppConfigValue(() => props)(BooleanSetting.confirm_step_deletion);
+
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -81,5 +86,6 @@ export function mapStateToProps(props: Everything): Props {
       farmwareConfigs,
     },
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
+    confirmStepDeletion,
   };
 }

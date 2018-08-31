@@ -20,8 +20,6 @@ import * as _ from "lodash";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
-import { Session } from "../../session";
-import { BooleanSetting } from "../../session_keys";
 
 interface MoveParams {
   step: Step;
@@ -64,10 +62,12 @@ interface RemoveParams {
   index: number;
   dispatch: Function;
   sequence: TaggedSequence;
+  confirmStepDeletion: boolean;
 }
 
-export function remove({ dispatch, index, sequence }: RemoveParams) {
-  if (!Session.deprecatedGetBool(BooleanSetting.confirm_step_deletion) ||
+export function remove(props: RemoveParams) {
+  const { dispatch, index, sequence, confirmStepDeletion } = props;
+  if (!confirmStepDeletion ||
     confirm(t("Are you sure you want to delete this step?"))) {
     const original = sequence;
     const update = defensiveClone(original);

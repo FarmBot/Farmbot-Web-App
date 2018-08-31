@@ -23,7 +23,8 @@ export function TileSendMessage(props: StepParams) {
       currentSequence={props.currentSequence}
       dispatch={props.dispatch}
       index={props.index}
-      resources={props.resources} />;
+      resources={props.resources}
+      confirmStepDeletion={props.confirmStepDeletion} />;
   } else {
     throw new Error("TileSendMessage expects send_message");
   }
@@ -35,6 +36,7 @@ interface SendMessageParams {
   dispatch: Function;
   index: number;
   resources: ResourceIndex;
+  confirmStepDeletion: boolean;
 }
 
 export class RefactoredSendMessage
@@ -102,7 +104,8 @@ export class RefactoredSendMessage
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index} />
+        index={index}
+        confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
           <Col xs={12}>

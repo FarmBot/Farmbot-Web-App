@@ -26,7 +26,8 @@ describe("<TileExecuteScript/>", () => {
         firstPartyFarmwareNames: ["one"],
         showFirstPartyFarmware: false,
         farmwareConfigs: { "farmware-to-execute": [] },
-      }
+      },
+      confirmStepDeletion: false,
     };
   };
 

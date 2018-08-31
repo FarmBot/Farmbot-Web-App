@@ -17,6 +17,7 @@ describe("<StepIconGroup />", () => {
     step: { kind: "wait", args: { milliseconds: 100 } },
     sequence: fakeSequence(),
     helpText: "helpful text",
+    confirmStepDeletion: false,
   });
 
   it("renders", () => {

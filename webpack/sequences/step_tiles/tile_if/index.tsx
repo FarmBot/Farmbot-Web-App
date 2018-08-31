@@ -26,6 +26,7 @@ export interface IfParams {
   index: number;
   resources: ResourceIndex;
   shouldDisplay?: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }
 
 export type Operator = "lhs"
@@ -88,7 +89,8 @@ export function InnerIf(props: IfParams) {
     index,
     dispatch,
     currentStep,
-    currentSequence
+    currentSequence,
+    confirmStepDeletion,
   } = props;
   const recursive = isRecursive(currentStep, currentSequence);
   const className = "if-step";
@@ -99,7 +101,8 @@ export function InnerIf(props: IfParams) {
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index}>
+      index={index}
+      confirmStepDeletion={confirmStepDeletion}>
       {recursive && (
         <span>
           <i className="fa fa-exclamation-triangle"></i>

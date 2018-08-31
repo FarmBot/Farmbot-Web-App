@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TileFindHome } from "../tile_find_home";
+import { TileFindHome, FindHomeParams } from "../tile_find_home";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome } from "farmbot/dist";
@@ -7,9 +7,10 @@ import { emptyState } from "../../../resources/reducer";
 import {
   fakeHardwareFlags
 } from "../../../__test_support__/sequence_hardware_settings";
+import { HardwareFlags } from "../../interfaces";
 
 describe("<TileFindHome/>", () => {
-  const fakeProps = () => {
+  const fakeProps = (): FindHomeParams => {
     const currentStep: FindHome = {
       kind: "find_home",
       args: {
@@ -23,7 +24,8 @@ describe("<TileFindHome/>", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      hardwareFlags: fakeHardwareFlags()
+      hardwareFlags: fakeHardwareFlags(),
+      confirmStepDeletion: false,
     };
   };
 
@@ -49,7 +51,7 @@ describe("<TileFindHome/>", () => {
   it("doesn't render warning", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
-    p.hardwareFlags.findHomeEnabled.x = true;
+    (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = true;
     const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
   });
@@ -57,7 +59,7 @@ describe("<TileFindHome/>", () => {
   it("renders warning: all axes", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "all";
-    p.hardwareFlags.findHomeEnabled.x = false;
+    (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = false;
     const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
@@ -65,7 +67,7 @@ describe("<TileFindHome/>", () => {
   it("renders warning: one axis", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
-    p.hardwareFlags.findHomeEnabled.x = false;
+    (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = false;
     const wrapper = mount(<TileFindHome {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });

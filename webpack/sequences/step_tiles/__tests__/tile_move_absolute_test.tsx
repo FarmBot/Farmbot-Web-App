@@ -38,7 +38,8 @@ describe("<TileMoveAbsolute/>", () => {
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      hardwareFlags: fakeHardwareFlags()
+      hardwareFlags: fakeHardwareFlags(),
+      confirmStepDeletion: false,
     };
   };
 
@@ -100,7 +101,8 @@ describe("<TileMoveAbsolute/>", () => {
       currentStep={currentStep}
       dispatch={jest.fn()}
       index={0}
-      resources={index} />).instance() as TileMoveAbsolute;
+      resources={index}
+      confirmStepDeletion={false} />).instance() as TileMoveAbsolute;
 
     expect(component.tool).toEqual(tool);
   });

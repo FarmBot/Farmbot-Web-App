@@ -34,7 +34,8 @@ describe("Pin tile support functions", () => {
       currentStep,
       dispatch,
       index,
-      resources
+      resources,
+      confirmStepDeletion: false,
     };
   }
 
