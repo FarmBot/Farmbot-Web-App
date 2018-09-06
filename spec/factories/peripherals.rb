@@ -3,6 +3,6 @@ FactoryBot.define do
   factory :peripheral do
     device
     pin { count = (count + 1) % 50 }
-    label "MyString"
+    label { "MyString" }
   end
 end
