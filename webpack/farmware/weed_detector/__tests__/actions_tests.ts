@@ -123,7 +123,7 @@ describe("deletePoints()", () => {
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith(
-      expect.stringContaining(":///api/points/1,"));
+      expect.stringContaining("http://localhost/api/points/1,"));
     expect(dispatch).toHaveBeenCalledWith({
       payload: expect.arrayContaining([1]),
       type: Actions.DELETE_POINT_OK

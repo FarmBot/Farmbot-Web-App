@@ -27,8 +27,7 @@ describe("<VirtualFarmBot/>", () => {
     expect(homeLines.at(0).props()).toEqual({ "x1": 2, "x2": 2, "y1": 2, "y2": 1500 });
     expect(homeLines.at(1).props()).toEqual({ "x1": 2, "x2": 3000, "y1": 2, "y2": 2 });
     const maxLines = wrapper.find("#max-lines").find("line");
-    expect(maxLines.at(0).html()).toBeFalsy();
-    expect(maxLines.at(1).html()).toBeFalsy();
+    expect(maxLines.length).toEqual(0);
   });
 
   it("renders home and max lines", () => {
@@ -56,10 +55,10 @@ describe("<VirtualFarmBot/>", () => {
     const wrapper = shallow(<BotExtents {...p} />);
     const homeLines = wrapper.find("#home-lines").find("line");
     expect(homeLines.at(0).props()).toEqual({ "x1": 2, "x2": 3000, "y1": 2, "y2": 2 });
-    expect(homeLines.at(1).html()).toBeFalsy();
+    expect(homeLines.length).toEqual(1);
     const maxLines = wrapper.find("#max-lines").find("line");
     expect(maxLines.at(0).props()).toEqual({ "x1": 2, "x2": 3000, "y1": 100, "y2": 100 });
-    expect(maxLines.at(1).html()).toBeFalsy();
+    expect(maxLines.length).toEqual(1);
   });
 
   it("renders max lines", () => {
@@ -72,8 +71,7 @@ describe("<VirtualFarmBot/>", () => {
     };
     const wrapper = shallow(<BotExtents {...p} />);
     const homeLines = wrapper.find("#home-lines").find("line");
-    expect(homeLines.at(0).html()).toBeFalsy();
-    expect(homeLines.at(1).html()).toBeFalsy();
+    expect(homeLines.length).toEqual(0);
     const maxLines = wrapper.find("#max-lines").find("line");
     expect(maxLines.at(0).props()).toEqual({ "x1": 100, "x2": 100, "y1": 2, "y2": 100 });
     expect(maxLines.at(1).props()).toEqual({ "x1": 2, "x2": 100, "y1": 100, "y2": 100 });
@@ -128,11 +126,9 @@ describe("<VirtualFarmBot/>", () => {
     p.stopAtHome.y = false;
     const wrapper = shallow(<BotExtents {...p} />);
     const homeLines = wrapper.find("#home-lines").find("line");
-    expect(homeLines.at(0).html()).toBeFalsy();
-    expect(homeLines.at(1).html()).toBeFalsy();
+    expect(homeLines.length).toEqual(0);
     const maxLines = wrapper.find("#max-lines").find("line");
-    expect(maxLines.at(0).html()).toBeFalsy();
-    expect(maxLines.at(1).html()).toBeFalsy();
+    expect(maxLines.length).toEqual(0);
   });
 
 });
