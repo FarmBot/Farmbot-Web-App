@@ -224,21 +224,19 @@ a {
   }
 }
 
-.empty-spot {
-  background: $off_white;
-  border-color: $light_gray;
+.drag-drop-area {
   border-style: dashed;
   border-width: 2px;
+  border-color: $light_gray;
   color: $gray;
   font-weight: bold;
-  text-align: center;
-}
-
-.drag-drop-area {
-  @extend .empty-spot;
-  margin-right: 15px;
   margin: 0.75rem 0;
+  margin-right: 15px;
   padding: 1.25rem;
+  background: $off_white;
+  text-align: center;
+  color: $gray;
+  font-weight: bold;
 }
 
 .hardware-widget,

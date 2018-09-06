@@ -136,7 +136,7 @@ export function renderCeleryNode(props: StepParams) {
     case "take_photo": return <TileTakePhoto {...props} />;
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
-    case "transaction": return <MarkAs {...props} />;
+    case "resource_update": return <MarkAs {...props} />;
     default: return <div><hr /> ? Unknown step ? <hr /></div>;
   }
 }

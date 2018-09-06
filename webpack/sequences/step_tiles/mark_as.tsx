@@ -1,39 +1,14 @@
-import * as React from "react";
-import { t } from "i18next";
-import { StepParams } from "../interfaces";
-import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { Row, Col, FBSelect } from "../../ui/index";
-import {
-  setNoun,
-  adjectiveList,
-  setAdjective,
-  getNounList,
-} from "./mark_as/options";
-import { MarkAsSelection } from "./mark_as/interfaces";
-import { NONE_SELECTED } from "./mark_as/constants";
 import { betterCompact } from "../../util";
+import { Row, Col, FBSelect } from "../../ui/index";
+import { StepParams } from "../interfaces";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { t } from "i18next";
+import { ToolTips } from "../../constants";
+import * as React from "react";
 
 export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
   state: MarkAsSelection = NONE_SELECTED;
   className = "wait-step";
-
-  nothing = () => {
-    return <Col xs={4}>
-    </Col>;
-  }
-
-  adjective = () => {
-    return <Col xs={4}>
-      <label>{t("as")}</label>
-      <FBSelect
-        key={this.state.adjective.label}
-        list={betterCompact(adjectiveList(this.state))}
-        onChange={setAdjective((x: MarkAsSelection) => this.setState(x))}
-        selectedItem={this.state.adjective} />
-    </Col>;
-  }
-
   render() {
     const setState = (x: MarkAsSelection) => this.setState(x);
     return <StepWrapper>
@@ -55,7 +30,14 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
               allowEmpty={false}
               selectedItem={this.state.noun} />
           </Col>
-          {this.state.kind == "NoneSelected" ? <this.nothing /> : <this.adjective />}
+          <Col xs={4}>
+            <label>{t("as")}</label>
+            <FBSelect
+              key={this.state.adjective.label}
+              list={betterCompact(adjectiveList(this.state))}
+              onChange={setAdjective((x: MarkAsSelection) => this.setState(x))}
+              selectedItem={this.state.adjective} />
+          </Col>
         </Row>
       </StepContent>
     </StepWrapper>;
