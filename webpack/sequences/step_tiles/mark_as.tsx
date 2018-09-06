@@ -1,4 +1,3 @@
-import { betterCompact } from "../../util";
 import { Row, Col, FBSelect } from "../../ui/index";
 import { StepParams } from "../interfaces";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
@@ -6,11 +5,9 @@ import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import * as React from "react";
 
-export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
-  state: MarkAsSelection = NONE_SELECTED;
+export class MarkAs extends React.Component<StepParams, {}> {
   className = "wait-step";
   render() {
-    const setState = (x: MarkAsSelection) => this.setState(x);
     return <StepWrapper>
       <StepHeader
         className={this.className}
@@ -25,18 +22,17 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
           <Col xs={8}>
             <label>{t("Mark")}</label>
             <FBSelect
-              list={getNounList(this.props.resources)}
-              onChange={setNoun(setState)}
+              list={[]}
+              onChange={() => { }}
               allowEmpty={false}
-              selectedItem={this.state.noun} />
+              selectedItem={undefined} />
           </Col>
           <Col xs={4}>
             <label>{t("as")}</label>
             <FBSelect
-              key={this.state.adjective.label}
-              list={betterCompact(adjectiveList(this.state))}
-              onChange={setAdjective((x: MarkAsSelection) => this.setState(x))}
-              selectedItem={this.state.adjective} />
+              list={[]}
+              onChange={() => { }}
+              selectedItem={undefined} />
           </Col>
         </Row>
       </StepContent>
