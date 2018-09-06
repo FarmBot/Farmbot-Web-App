@@ -3,9 +3,9 @@ FactoryBot.define do
     x { rand(1...550) }
     y { rand(1...550) }
     z { rand(1...550) }
-    meta ({})
+    meta {({})}
     device
     tool
-    pointer_type("ToolSlot")
+    pointer_type { "ToolSlot" }
   end
 end

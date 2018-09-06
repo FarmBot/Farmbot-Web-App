@@ -4,6 +4,6 @@ FactoryBot.define do
     sequence(:created_at) { |n| n.minutes.ago.utc }
     message               { Faker::Company.bs }
     type                  { Log::TYPES.sample }
-    channels ["toast"]
+    channels { ["toast"] }
   end
 end
