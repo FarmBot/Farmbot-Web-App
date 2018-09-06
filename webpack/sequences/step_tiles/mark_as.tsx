@@ -25,9 +25,9 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
 
   adjective = () => {
     return <Col xs={4}>
-      <label>{t("state.adjective.label = " + this.state.adjective.label)}</label>
+      <label>{t("as")}</label>
       <FBSelect
-        key={"hmmm" + this.props.index}
+        key={this.state.adjective.label}
         list={betterCompact(adjectiveList(this.state))}
         onChange={setAdjective((x: MarkAsSelection) => this.setState(x))}
         selectedItem={this.state.adjective} />
