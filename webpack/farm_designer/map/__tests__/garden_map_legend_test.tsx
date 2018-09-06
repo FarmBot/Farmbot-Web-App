@@ -40,13 +40,15 @@ describe("<GardenMapLegend />", () => {
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     ["plants", "origin", "move"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.find("Popover").length).toEqual(1);
+    expect(wrapper.html()).toContain("filter");
+    expect(wrapper.html()).not.toContain("extras");
   });
 
   it("shows submenu", () => {
     localStorage.setItem("FUTURE_FEATURES", "true");
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    expect(wrapper.find("Popover").length).toEqual(2);
+    expect(wrapper.html()).toContain("filter");
+    expect(wrapper.html()).toContain("extras");
   });
 });
 
