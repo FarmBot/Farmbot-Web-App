@@ -43,7 +43,8 @@ export class MarkAs extends React.Component<StepParams, MarkAsSelection> {
         currentSequence={this.props.currentSequence}
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}
-        index={this.props.index} />
+        index={this.props.index}
+        confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={this.className}>
         <Row>
           <Col xs={8}>

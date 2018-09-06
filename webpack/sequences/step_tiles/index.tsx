@@ -20,6 +20,7 @@ import * as _ from "lodash";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
+import { MarkAs } from "./mark_as";
 
 interface MoveParams {
   step: Step;
