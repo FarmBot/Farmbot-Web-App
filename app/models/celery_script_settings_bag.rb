@@ -183,10 +183,10 @@ module CeleryScriptSettingsBag
         end
       end
       .arg(:resource_id, [Integer]) do |n|
-        raise "NOT READY?"
+        # raise "NOT READY?"
       end
       .arg(:resource_type, [String]) do |n|
-        raise "NOT READY?"
+        # raise "NOT READY?"
         within(RESOURCE_NAME, n) { BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME] }
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|

@@ -1216,7 +1216,8 @@ CREATE TABLE public.web_app_configs (
     photo_filter_end character varying,
     discard_unsaved boolean DEFAULT false,
     xy_swap boolean DEFAULT false,
-    home_button_homing boolean DEFAULT false
+    home_button_homing boolean DEFAULT false,
+    show_motor_plot boolean DEFAULT false
 );
 
 
@@ -2305,6 +2306,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180726165546'),
 ('20180727152741'),
 ('20180813185430'),
-('20180815143819');
+('20180815143819'),
+('20180829211322');
 
 
