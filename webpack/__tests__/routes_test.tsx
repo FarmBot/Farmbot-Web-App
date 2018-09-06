@@ -6,8 +6,6 @@ let mockAuth: AuthState | undefined = undefined;
 jest.mock("../session", () => ({
   Session: {
     fetchStoredToken: jest.fn(() => mockAuth),
-    deprecatedGetNum: () => undefined,
-    deprecatedGetBool: () => undefined,
     getAll: () => undefined,
     clear: jest.fn()
   }

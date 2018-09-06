@@ -30,7 +30,8 @@ describe("<StepHeader />", () => {
     currentStep: { kind: "take_photo", args: {} },
     dispatch: jest.fn(),
     index: 0,
-    children: "child"
+    children: "child",
+    confirmStepDeletion: false,
   };
 
   it("renders", () => {

@@ -289,7 +289,8 @@ describe("Pin and Peripheral support files", () => {
         dispatch,
         currentSequence,
         currentStep,
-        index
+        index,
+        confirmStepDeletion: false,
       };
       const callback = setArgsDotPinNumber(stepParams);
       const ddi: DropDownItem = { label: "hmm", value: 0 };

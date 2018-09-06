@@ -1,24 +1,3 @@
-import { fakeWebAppConfig } from "../__test_support__/fake_state/resources";
-import { fakeState } from "../__test_support__/fake_state";
-
-const mockConfig = fakeWebAppConfig();
-jest.mock("../resources/selectors_by_kind", () => ({
-  getWebAppConfig: () => mockConfig
-}));
-
-jest.mock("../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-const mockState = fakeState();
-jest.mock("../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => mockState,
-  }
-}));
-
 import {
   isNumericSetting,
   isBooleanSetting,
@@ -27,7 +6,6 @@ import {
   Session,
 } from "../session";
 import { auth } from "../__test_support__/fake_state/token";
-import { edit, save } from "../api/crud";
 
 describe("fetchStoredToken", () => {
   it("can't fetch token", () => {
@@ -58,41 +36,6 @@ describe("safeBooleanSetting", () => {
   it("safely fetches bool", () => {
     expect(() => safeBooleanSettting("no")).toThrow();
     expect(safeBooleanSettting("x_axis_inverted")).toBe("x_axis_inverted");
-  });
-});
-
-describe("deprecatedGetNum", () => {
-  it("gets number", () => {
-    const result = Session.deprecatedGetNum("success_log");
-    expect(result).toEqual(3);
-  });
-});
-
-describe("deprecatedSetNum", () => {
-  it("sets number", () => {
-    Session.deprecatedSetNum("success_log", 0);
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { success_log: 0 });
-    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
-  });
-});
-
-describe("setBool", () => {
-  it("sets bool", () => {
-    Session.setBool("x_axis_inverted", false);
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      x_axis_inverted: false
-    });
-    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
-  });
-});
-
-describe("invertBool", () => {
-  it("inverts bool", () => {
-    Session.invertBool("x_axis_inverted");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
-      x_axis_inverted: true
-    });
-    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
   });
 });
 

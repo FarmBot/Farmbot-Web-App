@@ -9,8 +9,8 @@ import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 
-export function TileExecuteScript({
-  dispatch, currentStep, index, currentSequence, farmwareInfo }: StepParams) {
+export function TileExecuteScript(props: StepParams) {
+  const { dispatch, currentStep, index, currentSequence, farmwareInfo } = props;
   if (currentStep.kind === "execute_script") {
 
     const farmwareName = currentStep.args.label;
@@ -63,7 +63,8 @@ export function TileExecuteScript({
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index} />
+        index={index}
+        confirmStepDeletion={props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
           <Col xs={12}>

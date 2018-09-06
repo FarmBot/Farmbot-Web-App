@@ -79,7 +79,9 @@ export class Account extends React.Component<Props, State> {
           <ChangePassword />
         </Row>
         <Row>
-          <LabsFeatures />
+          <LabsFeatures
+            dispatch={this.props.dispatch}
+            getConfigValue={this.props.getConfigValue} />
         </Row>
         <Row>
           <DeleteAccount onClick={deleteAcct} />

@@ -61,7 +61,8 @@ describe("<AllSteps/>", () => {
       sequence={TEST_CASE}
       onDrop={() => { }}
       dispatch={jest.fn()}
-      resources={buildResourceIndex([]).index} />);
+      resources={buildResourceIndex([]).index}
+      confirmStepDeletion={false} />);
     [TileMoveRelative, TileReadPin, TileWritePin]
       .map(q => {
         expect(el.find(q).length).toEqual(1);

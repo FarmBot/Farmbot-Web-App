@@ -1,9 +1,11 @@
 import { User } from "../auth/interfaces";
 import { TaggedUser } from "farmbot";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface Props {
   user: TaggedUser;
   dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 /** JSON form that gets POSTed to the API when user updates their info. */

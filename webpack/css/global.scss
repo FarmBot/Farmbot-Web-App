@@ -610,6 +610,14 @@ ul {
   }
 }
 
+.motor-position-plot-border {
+  text {
+    font-size: 0.4rem;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+}
+
 .controls-popup,
 .controls-popup-menu-outer {
   position: fixed;

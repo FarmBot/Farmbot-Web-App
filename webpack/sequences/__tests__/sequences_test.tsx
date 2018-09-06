@@ -29,6 +29,7 @@ describe("<Sequences/>", () => {
         farmwareConfigs: {},
       },
       shouldDisplay: jest.fn(),
+      confirmStepDeletion: false,
     };
   }
 

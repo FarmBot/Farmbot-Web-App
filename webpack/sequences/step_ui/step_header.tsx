@@ -13,6 +13,7 @@ export interface StepHeaderProps {
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
+  confirmStepDeletion: boolean;
 }
 
 export function StepHeader(props: StepHeaderProps) {
@@ -22,7 +23,8 @@ export function StepHeader(props: StepHeaderProps) {
     currentSequence,
     currentStep,
     dispatch,
-    index
+    index,
+    confirmStepDeletion,
   } = props;
   return <Row>
     <Col sm={12}>
@@ -37,7 +39,8 @@ export function StepHeader(props: StepHeaderProps) {
           dispatch={dispatch}
           step={currentStep}
           sequence={currentSequence}
-          helpText={t(helpText)} />
+          helpText={t(helpText)}
+          confirmStepDeletion={confirmStepDeletion} />
         {props.children}
       </div>
     </Col>

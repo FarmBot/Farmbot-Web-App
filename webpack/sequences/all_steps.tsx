@@ -17,6 +17,7 @@ interface AllStepsProps {
   hardwareFlags?: HardwareFlags;
   farmwareInfo?: FarmwareInfo;
   shouldDisplay?: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
@@ -50,6 +51,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 hardwareFlags,
                 farmwareInfo,
                 shouldDisplay,
+                confirmStepDeletion: this.props.confirmStepDeletion,
               })}
             </div>
           </StepDragger>

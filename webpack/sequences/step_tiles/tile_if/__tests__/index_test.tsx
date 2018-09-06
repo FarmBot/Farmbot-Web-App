@@ -46,6 +46,7 @@ function fakeProps(): IfParams {
     index: 0,
     resources: fakeResourceIndex,
     shouldDisplay: jest.fn(),
+    confirmStepDeletion: false,
   };
 }
 
