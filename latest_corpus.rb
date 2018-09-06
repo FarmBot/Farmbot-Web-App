@@ -1,10 +1,12 @@
 class CorpusEmitter
-  PIPE = "\n          | "
+  PIPE = "\n    | "
 
   class CSArg
     TRANSLATIONS = {"integer" => "number",
                     "string"  => "string",
-                    "float"   => "number" }
+                    "float"   => "number",
+                    "boolean" => "boolean" }
+
     attr_reader :name, :allowed_values
 
     def initialize(name:, allowed_values:)
@@ -141,7 +143,7 @@ class CorpusEmitter
     result.push(enum_type :PlantStage, CeleryScriptSettingsBag::PLANT_STAGES)
 
     File.open("latest_corpus.ts", "w") do |f|
-      f.write(result.join.gsub("\n\n\n", "\n").gsub("\n\n", "\n").strip)
+      f.write(result.join.gsub("\n\n\n", "\n").gsub("\n\n", "\n").gsub("\n\n", "\n").strip)
     end
   end
 end

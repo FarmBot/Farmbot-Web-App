@@ -2355,9 +2355,9 @@ farmbot-toastr@^1.0.0, farmbot-toastr@^1.0.3:
     farmbot-toastr "^1.0.0"
     typescript "^2.3.4"
 
-"farmbot@https://github.com/RickCarlino/farmbot-js.git#e019f316":
-  version "6.5.0-rc5"
-  resolved "https://github.com/RickCarlino/farmbot-js.git#e019f3168cb9a70772e49c21c82c45b606087d36"
+"farmbot@https://github.com/RickCarlino/farmbot-js.git#2458c790":
+  version "6.5.0-rc7"
+  resolved "https://github.com/RickCarlino/farmbot-js.git#2458c790e27cb07df9c7aa4bc3e8a9cf2accb875"
   dependencies:
     mqtt "2.15.0"
 

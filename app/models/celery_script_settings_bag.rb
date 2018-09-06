@@ -45,7 +45,7 @@ module CeleryScriptSettingsBag
                              read_status reboot sync take_photo)
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
-                             write_pin)
+                             write_pin resource_update)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -78,6 +78,7 @@ module CeleryScriptSettingsBag
   KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
     (acc[val] = Kernel.const_get(val)) && acc
   end
+  RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
 
   Corpus = CeleryScript::Corpus
       .new
@@ -248,7 +249,7 @@ module CeleryScriptSettingsBag
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
-      .node(:resource_update,       [:resource_type, :resource_id], [:pair])
+      .node(:resource_update,       RESOURCE_UPDATE_ARGS)
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)

@@ -19,9 +19,9 @@ function translate(input: Step): string {
     "read_pin": t("Read Pin"),
     "send_message": t("Send Message"),
     "take_photo": t("Take a Photo"),
-    "transaction": t("Mark As"),
+    "resource_update": t("Mark As"),
     "wait": t("Wait"),
-    "write_pin": t("Write Pin"),
+    "write_pin": t("Write Pin")
   };
 
   return TRANSLATIONS[input.kind] || input.kind;
