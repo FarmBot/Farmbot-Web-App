@@ -138,7 +138,12 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       current={current}
       step={{
         kind: "resource_update",
-        args: { resource_type: "none", resource_id: 1, label: "none", value: 0 }
+        args: {
+          resource_type: "Device",
+          resource_id: 0,
+          label: "mounted_tool_id",
+          value: 0
+        }
       }}
       color="brown">
       {t("Mark Point As...")}

@@ -51,7 +51,6 @@ export function unpackStep(i: InputData): OutputData {
       return resource_id && (resource_id > 0) ? mountTool(i) : DISMOUNTED;
     case "discarded_at": return discardPoint(i);
     case "plant_stage": return plantStage(i);
-    default:
-      return unknownOption(i);
+    default: return unknownOption(i);
   }
 }

@@ -8,16 +8,41 @@ import { unpackStep } from "./mark_as/unpack_step";
 import { ResourceUpdate } from "../../../latest_corpus";
 import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
+import { editStep } from "../../api/crud";
+import { packStep } from "./mark_as/pack_step";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
 
 export class MarkAs extends React.Component<StepParams, MarkAsState> {
   state: MarkAsState = { nextResource: undefined };
   className = "wait-step";
+
+  commitSelection = (nextAction: DropDownItem) => {
+    const { nextResource } = this.state;
+    this.setState({ nextResource: undefined });
+    const nextStep =
+      packStep(this.props.currentStep as ResourceUpdate, nextResource, nextAction);
+    this.props.dispatch(editStep({
+      step: this.props.currentStep,
+      sequence: this.props.currentSequence,
+      index: this.props.index,
+      executor(c) {
+        if (c.kind == "resource_update") {
+          c.args.label = nextStep.args.label;
+          c.args.value = nextStep.args.value;
+          c.args.resource_type = nextStep.args.resource_type;
+          c.args.resource_id = nextStep.args.resource_id;
+        }
+      }
+    }));
+  };
+
   render() {
     const step = this.props.currentStep as ResourceUpdate;
     const { action, resource } =
       unpackStep({ step, resourceIndex: this.props.resources });
+    const selectedAsOptn =
+      this.state.nextResource ? { label: "", value: "" } : action;
     return <StepWrapper>
       <StepHeader
         className={this.className}
@@ -29,7 +54,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
         confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={this.className}>
         <Row>
-          <Col xs={8}>
+          <Col xs={6}>
             <label>{t("Mark")}</label>
             <FBSelect
               list={resourceList(this.props.resources)}
@@ -37,12 +62,13 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
               allowEmpty={false}
               selectedItem={this.state.nextResource || resource} />
           </Col>
-          <Col xs={4}>
+          <Col xs={6}>
             <label>{t("as")}</label>
             <FBSelect
               list={actionList(this.state.nextResource, step, this.props.resources)}
-              onChange={() => { }}
-              selectedItem={action} />
+              onChange={this.commitSelection}
+              key={JSON.stringify(selectedAsOptn)}
+              selectedItem={selectedAsOptn} />
           </Col>
         </Row>
       </StepContent>
