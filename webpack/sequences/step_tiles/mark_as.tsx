@@ -4,10 +4,15 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import * as React from "react";
+import { unpackStep } from "./mark_as/unpack_step";
+import { ResourceUpdate } from "../../../latest_corpus";
 
 export class MarkAs extends React.Component<StepParams, {}> {
   className = "wait-step";
   render() {
+    const step = this.props.currentStep as ResourceUpdate;
+    const { action, resource } =
+      unpackStep({ step, resourceIndex: this.props.resources });
     return <StepWrapper>
       <StepHeader
         className={this.className}
@@ -25,14 +30,14 @@ export class MarkAs extends React.Component<StepParams, {}> {
               list={[]}
               onChange={() => { }}
               allowEmpty={false}
-              selectedItem={undefined} />
+              selectedItem={resource} />
           </Col>
           <Col xs={4}>
             <label>{t("as")}</label>
             <FBSelect
               list={[]}
               onChange={() => { }}
-              selectedItem={undefined} />
+              selectedItem={action} />
           </Col>
         </Row>
       </StepContent>
