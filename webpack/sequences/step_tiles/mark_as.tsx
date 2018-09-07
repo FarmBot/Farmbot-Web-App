@@ -1,4 +1,4 @@
-import { Row, Col, FBSelect } from "../../ui/index";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { t } from "i18next";
@@ -6,8 +6,13 @@ import { ToolTips } from "../../constants";
 import * as React from "react";
 import { unpackStep } from "./mark_as/unpack_step";
 import { ResourceUpdate } from "../../../latest_corpus";
+import { resourceList } from "./mark_as/resource_list";
+import { actionList } from "./mark_as/action_list";
 
-export class MarkAs extends React.Component<StepParams, {}> {
+interface MarkAsState { nextResource: DropDownItem | undefined }
+
+export class MarkAs extends React.Component<StepParams, MarkAsState> {
+  state: MarkAsState = { nextResource: undefined };
   className = "wait-step";
   render() {
     const step = this.props.currentStep as ResourceUpdate;
@@ -27,15 +32,15 @@ export class MarkAs extends React.Component<StepParams, {}> {
           <Col xs={8}>
             <label>{t("Mark")}</label>
             <FBSelect
-              list={[]}
-              onChange={() => { }}
+              list={resourceList(this.props.resources)}
+              onChange={(nextResource) => this.setState({ nextResource })}
               allowEmpty={false}
-              selectedItem={resource} />
+              selectedItem={this.state.nextResource || resource} />
           </Col>
           <Col xs={4}>
             <label>{t("as")}</label>
             <FBSelect
-              list={[]}
+              list={actionList(this.state.nextResource, step, this.props.resources)}
               onChange={() => { }}
               selectedItem={action} />
           </Col>
