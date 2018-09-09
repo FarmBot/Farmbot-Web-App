@@ -1,7 +1,7 @@
 import { ResourceUpdate } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { findToolById } from "../../../resources/selectors";
+import { findToolById, findByKindAndId } from "../../../resources/selectors";
 import { point2ddi } from "../tile_move_absolute/format_selected_dropdown";
 
 interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
@@ -23,7 +23,7 @@ function mountTool(i: InputData): OutputData {
 
 function unknownOption(i: InputData): OutputData {
   const r = `${i.step.args.resource_type}#${i.step.args.resource_id}`;
-  const a = `${i.step.args.label} = ${i.step.args.value}`;
+  const a = `${i.step.args.value}`;
 
   return { resource: { label: r, value: r }, action: { label: a, value: a } };
 }
@@ -41,7 +41,15 @@ function discardPoint(i: InputData): OutputData {
 }
 
 function plantStage(i: InputData): OutputData {
-  return unknownOption(i);
+  const { resource_id, value } = i.step.args;
+  const r = findByKindAndId(i.resourceIndex, "Point", resource_id);
+  if (r.kind !== "Point") { throw new Error("Always expecting Point"); }
+  // .body;
+  const a = value as string;
+  return {
+    resource: { label: r.body.name, value: r.uuid },
+    action: { label: a, value: a }
+  };
 }
 
 export function unpackStep(i: InputData): OutputData {
@@ -51,6 +59,7 @@ export function unpackStep(i: InputData): OutputData {
       return resource_id && (resource_id > 0) ? mountTool(i) : DISMOUNTED;
     case "discarded_at": return discardPoint(i);
     case "plant_stage": return plantStage(i);
-    default: return unknownOption(i);
+    default:
+      return unknownOption(i);
   }
 }

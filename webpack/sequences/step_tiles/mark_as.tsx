@@ -73,7 +73,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
         </Row>
         <Row>
           <pre>
-            {JSON.stringify(this.props.currentStep.args)}
+            {step.args.resource_type}#{step.args.resource_id}.{step.args.label} = {step.args.value}
           </pre>
         </Row>
       </StepContent>
