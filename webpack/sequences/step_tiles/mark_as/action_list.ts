@@ -5,7 +5,7 @@ import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllTools } from "../../../resources/selectors";
 
 const DEFAULT = "Default";
-const DISMOUNT = { label: "Not Mounted", value: "---" };
+const DISMOUNT = { label: "Not Mounted", value: 0 };
 const MOUNTED_TO = "Mounted to tool: ";
 const PLANT_OPTIONS = [
   { label: "Planned", value: "planned" },

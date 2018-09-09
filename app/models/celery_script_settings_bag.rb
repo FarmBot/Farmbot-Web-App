@@ -30,9 +30,8 @@ module CeleryScriptSettingsBag
                              set_servo_angle change_ownership dump_info)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
-  RESOURCE_NAME         = %w(images plants regimens peripherals
-                             corpuses logs sequences farm_events
-                             tool_slots tools points tokens users device)
+  RESOURCE_NAME         = %w(Device FarmEvent Image Log Peripheral Plant Point
+                             Regimen Sequence Tool ToolSlot User)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
@@ -187,7 +186,7 @@ module CeleryScriptSettingsBag
       end
       .arg(:resource_type, [String]) do |n|
         # raise "NOT READY?"
-        within(RESOURCE_NAME, n) { BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME] }
+        within(RESOURCE_NAME, n) { |v| BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME] }
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)

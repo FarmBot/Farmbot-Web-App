@@ -71,6 +71,11 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
               selectedItem={selectedAsOptn} />
           </Col>
         </Row>
+        <Row>
+          <pre>
+            {JSON.stringify(this.props.currentStep.args)}
+          </pre>
+        </Row>
       </StepContent>
     </StepWrapper>;
   }

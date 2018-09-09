@@ -8,7 +8,7 @@ interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
 interface OutputData { resource: DropDownItem; action: DropDownItem; }
 
 const TOOL_MOUNT: DropDownItem = { label: "Tool Mount", value: "tool_mount" };
-const NOT_IN_USE: DropDownItem = { label: "Not in use", value: "dismounted" };
+const NOT_IN_USE: DropDownItem = { label: "Not in use", value: 0 };
 const DISMOUNTED: OutputData = { resource: TOOL_MOUNT, action: NOT_IN_USE };
 const DEFAULT_TOOL_NAME = "Untitled Tool";
 const REMOVED_ACTION = { label: "Removed", value: "removed" };
