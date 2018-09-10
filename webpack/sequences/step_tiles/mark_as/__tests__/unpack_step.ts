@@ -1,4 +1,4 @@
-import { unpackStep, InputData } from "../unpack_step";
+import { unpackStep } from "../unpack_step";
 import { fakeResourceIndex } from "../../tile_move_absolute/test_helpers";
 import { ResourceUpdate } from "farmbot";
 import { selectAllPlantPointers } from "../../../../resources/selectors";
@@ -17,7 +17,28 @@ describe("unpackStep()", () => {
     };
   }
 
-  it("unpacks plant-based operations", () => {
+  it("unpacks discarded_at operations", () => {
+    const resourceIndex = fakeResourceIndex();
+    const plant = selectAllPlantPointers(resourceIndex)[1];
+    expect(plant).toBeTruthy();
+
+    const result = unpackStep({
+      step: step({
+        resource_type: "Plant",
+        resource_id: plant.body.id || -1,
+        label: "discarded_at",
+        value: "non-configurable"
+      }), resourceIndex
+    });
+    expect(result.action.label).toBe("Removed");
+    expect(result.action.value).toBe("removed");
+    const { body } = plant;
+    expect(result.resource.label)
+      .toBe(`${body.name} (${body.x}, ${body.y}, ${body.z})`);
+    expect(result.resource.value).toBe(body.id);
+  });
+
+  it("unpacks plant_stage operations", () => {
     const resourceIndex = fakeResourceIndex();
     const plant = selectAllPlantPointers(resourceIndex)[1];
     expect(plant).toBeTruthy();
