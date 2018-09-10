@@ -1,22 +1,12 @@
-import { unpackStep, OutputData, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import { fakeResourceIndex } from "../../tile_move_absolute/test_helpers";
-import { ResourceUpdate } from "farmbot";
-import { selectAllPlantPointers, selectAllTools } from "../../../../resources/selectors";
+import { resourceUpdate } from "../assertion_support";
+import { unpackStep, OutputData, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
+import {
+  selectAllPlantPointers,
+  selectAllTools
+} from "../../../../resources/selectors";
 
 describe("unpackStep()", () => {
-  function step(i: Partial<ResourceUpdate["args"]>): ResourceUpdate {
-    return {
-      kind: "resource_update",
-      args: {
-        resource_type: "Other",
-        resource_id: 1,
-        label: "some_attr",
-        value: "some_value",
-        ...i
-      }
-    };
-  }
-
   function assertGoodness(result: OutputData,
     action_label: string,
     action_value: string,
@@ -30,7 +20,7 @@ describe("unpackStep()", () => {
 
   it("unpacks empty tool_ids", () => {
     const result = unpackStep({
-      step: step({ label: "mounted_tool_id", value: 0 }),
+      step: resourceUpdate({ label: "mounted_tool_id", value: 0 }),
       resourceIndex: fakeResourceIndex()
     });
     expect(result).toEqual(DISMOUNTED);
@@ -42,7 +32,7 @@ describe("unpackStep()", () => {
     expect(body).toBeTruthy();
 
     const result = unpackStep({
-      step: step({ label: "mounted_tool_id", value: body.id || NaN }),
+      step: resourceUpdate({ label: "mounted_tool_id", value: body.id || NaN }),
       resourceIndex
     });
     const actionLabel = "Mounted to: Generic Tool";
@@ -52,7 +42,7 @@ describe("unpackStep()", () => {
 
   it("unpacks invalid tool_ids (that may have been valid previously)", () => {
     const result = unpackStep({
-      step: step({ label: "mounted_tool_id", value: Infinity }),
+      step: resourceUpdate({ label: "mounted_tool_id", value: Infinity }),
       resourceIndex: fakeResourceIndex()
     });
     const actionLabel = "Mounted to: an unknown tool";
@@ -66,7 +56,7 @@ describe("unpackStep()", () => {
     expect(body).toBeTruthy();
 
     const result = unpackStep({
-      step: step({
+      step: resourceUpdate({
         resource_type: "Plant",
         resource_id: body.id || -1,
         label: "discarded_at",
@@ -86,7 +76,7 @@ describe("unpackStep()", () => {
     expect(plant).toBeTruthy();
 
     const result = unpackStep({
-      step: step({
+      step: resourceUpdate({
         resource_type: "Plant",
         resource_id: plant.body.id || -1,
         label: "plant_stage",
@@ -98,7 +88,7 @@ describe("unpackStep()", () => {
 
   it("unpacks unknown resource_update steps", () => {
     const result = unpackStep({
-      step: step({}),
+      step: resourceUpdate({}),
       resourceIndex: fakeResourceIndex()
     });
     assertGoodness(result, "some_attr = some_value", "some_value", "Other", 1);
