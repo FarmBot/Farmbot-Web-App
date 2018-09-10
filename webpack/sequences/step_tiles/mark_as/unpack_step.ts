@@ -6,12 +6,17 @@ import { point2ddi } from "../tile_move_absolute/format_selected_dropdown";
 import { capitalize } from "lodash";
 import { MOUNTED_TO } from "./action_list";
 
-export interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
-interface OutputData { resource: DropDownItem; action: DropDownItem; }
+interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
+export interface OutputData { resource: DropDownItem; action: DropDownItem; }
 
-const TOOL_MOUNT: DropDownItem = { label: "Tool Mount", value: "tool_mount" };
+export const TOOL_MOUNT: DropDownItem = {
+  label: "Tool Mount", value: "tool_mount"
+};
 const NOT_IN_USE: DropDownItem = { label: "Not Mounted", value: 0 };
-const DISMOUNTED: OutputData = { resource: TOOL_MOUNT, action: NOT_IN_USE };
+export const DISMOUNTED: OutputData = {
+  resource: TOOL_MOUNT,
+  action: NOT_IN_USE
+};
 const DEFAULT_TOOL_NAME = "Untitled Tool";
 const REMOVED_ACTION = { label: "Removed", value: "removed" };
 

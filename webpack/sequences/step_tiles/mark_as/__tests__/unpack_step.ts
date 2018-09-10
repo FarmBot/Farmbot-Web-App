@@ -1,7 +1,7 @@
-import { unpackStep } from "../unpack_step";
+import { unpackStep, OutputData, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import { fakeResourceIndex } from "../../tile_move_absolute/test_helpers";
 import { ResourceUpdate } from "farmbot";
-import { selectAllPlantPointers } from "../../../../resources/selectors";
+import { selectAllPlantPointers, selectAllTools } from "../../../../resources/selectors";
 
 describe("unpackStep()", () => {
   function step(i: Partial<ResourceUpdate["args"]>): ResourceUpdate {
@@ -17,25 +17,67 @@ describe("unpackStep()", () => {
     };
   }
 
+  function assertGoodness(result: OutputData,
+    action_label: string,
+    action_value: string,
+    resource_label: string,
+    resource_value: string | number): void {
+    expect(result.action.label).toBe(action_label);
+    expect(result.action.value).toBe(action_value);
+    expect(result.resource.label).toBe(resource_label);
+    expect(result.resource.value).toBe(resource_value);
+  }
+
+  it("unpacks empty tool_ids", () => {
+    const result = unpackStep({
+      step: step({ label: "mounted_tool_id", value: 0 }),
+      resourceIndex: fakeResourceIndex()
+    });
+    expect(result).toEqual(DISMOUNTED);
+  });
+
+  it("unpacks valid tool_ids", () => {
+    const resourceIndex = fakeResourceIndex();
+    const { body } = selectAllTools(resourceIndex)[0];
+    expect(body).toBeTruthy();
+
+    const result = unpackStep({
+      step: step({ label: "mounted_tool_id", value: body.id || NaN }),
+      resourceIndex
+    });
+    const actionLabel = "Mounted to: Generic Tool";
+    const { label, value } = TOOL_MOUNT;
+    assertGoodness(result, actionLabel, "mounted", label, value);
+  });
+
+  it("unpacks invalid tool_ids (that may have been valid previously)", () => {
+    const result = unpackStep({
+      step: step({ label: "mounted_tool_id", value: Infinity }),
+      resourceIndex: fakeResourceIndex()
+    });
+    const actionLabel = "Mounted to: an unknown tool";
+    const { label, value } = TOOL_MOUNT;
+    assertGoodness(result, actionLabel, "mounted", label, value);
+  });
+
   it("unpacks discarded_at operations", () => {
     const resourceIndex = fakeResourceIndex();
-    const plant = selectAllPlantPointers(resourceIndex)[1];
-    expect(plant).toBeTruthy();
+    const { body } = selectAllPlantPointers(resourceIndex)[1];
+    expect(body).toBeTruthy();
 
     const result = unpackStep({
       step: step({
         resource_type: "Plant",
-        resource_id: plant.body.id || -1,
+        resource_id: body.id || -1,
         label: "discarded_at",
         value: "non-configurable"
       }), resourceIndex
     });
-    expect(result.action.label).toBe("Removed");
-    expect(result.action.value).toBe("removed");
-    const { body } = plant;
-    expect(result.resource.label)
-      .toBe(`${body.name} (${body.x}, ${body.y}, ${body.z})`);
-    expect(result.resource.value).toBe(body.id);
+    assertGoodness(result,
+      "Removed",
+      "removed",
+      `${body.name} (${body.x}, ${body.y}, ${body.z})`,
+      body.id || NaN);
   });
 
   it("unpacks plant_stage operations", () => {
@@ -51,10 +93,7 @@ describe("unpackStep()", () => {
         value: "wilting"
       }), resourceIndex
     });
-    expect(result.action.label).toBe("Wilting");
-    expect(result.action.value).toBe("wilting");
-    expect(result.resource.label).toBe(plant.body.name);
-    expect(result.resource.value).toBe(plant.uuid); // Why uuid for plants? -RC
+    assertGoodness(result, "Wilting", "wilting", plant.body.name, plant.uuid);
   });
 
   it("unpacks unknown resource_update steps", () => {
@@ -62,9 +101,6 @@ describe("unpackStep()", () => {
       step: step({}),
       resourceIndex: fakeResourceIndex()
     });
-    expect(result.action.label).toBe("some_attr = some_value");
-    expect(result.action.value).toBe("some_value");
-    expect(result.resource.label).toBe("Other");
-    expect(result.resource.value).toBe(1);
+    assertGoodness(result, "some_attr = some_value", "some_value", "Other", 1);
   });
 });
