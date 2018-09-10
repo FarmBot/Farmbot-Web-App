@@ -1,4 +1,4 @@
-import { ResourceUpdate } from "farmbot";
+import { ResourceUpdate, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { findToolById, findByKindAndId } from "../../../resources/selectors";
@@ -56,12 +56,11 @@ function discardPoint(i: InputData): OutputData {
 
 function plantStage(i: InputData): OutputData {
   const { resource_id, value } = i.step.args;
-  const r = findByKindAndId(i.resourceIndex, "Point", resource_id);
-  if (r.kind !== "Point") { throw new Error("Always expecting Point"); }
-  const a = value as string;
+  const r: TaggedPoint = findByKindAndId(i.resourceIndex, "Point", resource_id);
+
   return {
     resource: { label: r.body.name, value: r.uuid },
-    action: { label: capitalize(a), value: a }
+    action: { label: capitalize("" + value), value: ("" + value) }
   };
 }
 

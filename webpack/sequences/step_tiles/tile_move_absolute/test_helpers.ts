@@ -55,6 +55,21 @@ export function fakeResourceIndex(): ResourceIndex {
     },
     {
       "specialStatus": SpecialStatus.SAVED,
+      "kind": "Point",
+      "body": {
+        "id": 4,
+        "meta": {},
+        "name": "dandelion",
+        "pointer_type": "Plant",
+        "radius": 100,
+        "x": 100,
+        "y": 200,
+        "z": 300,
+      },
+      "uuid": "toolslot"
+    },
+    {
+      "specialStatus": SpecialStatus.SAVED,
       "kind": "Tool",
       "body": {
         "id": 1,
