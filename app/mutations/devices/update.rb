@@ -22,8 +22,7 @@ module Devices
     end
 
     def mounted_tool_data
-      mounted_tool_id_present? ?
-        {mounted_tool_id: better_tool_id} : {}
+      mounted_tool_id_present? ? {mounted_tool_id: better_tool_id} : {}
     end
   end
 end
