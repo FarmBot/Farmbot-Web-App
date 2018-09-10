@@ -24,26 +24,26 @@ describe("generateList()", () => {
       value: 0,
       heading: true,
     });
-    const plant = items[3];
+    const plant = items[4];
     expect(plant).toEqual({
       headingId: "Plant",
       label: "Plant 1 (1, 2, 3)",
       value: "1"
     });
-    const pointHeading = items[4];
+    const pointHeading = items[5];
     expect(pointHeading).toEqual({
       headingId: "GenericPointer",
       label: "Map Points",
       value: 0,
       heading: true,
     });
-    const point = items[5];
+    const point = items[6];
     expect(point).toEqual({
       headingId: "GenericPointer",
       label: "Point 1 (10, 20, 30)",
       value: "2"
     });
-    const otherHeading = items[6];
+    const otherHeading = items[7];
     expect(otherHeading).toEqual({
       headingId: "Other",
       label: "Other",
