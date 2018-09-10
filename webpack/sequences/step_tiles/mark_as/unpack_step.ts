@@ -6,7 +6,7 @@ import { point2ddi } from "../tile_move_absolute/format_selected_dropdown";
 import { capitalize } from "lodash";
 import { MOUNTED_TO } from "./action_list";
 
-interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
+export interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
 interface OutputData { resource: DropDownItem; action: DropDownItem; }
 
 const TOOL_MOUNT: DropDownItem = { label: "Tool Mount", value: "tool_mount" };
@@ -34,10 +34,12 @@ function mountTool(i: InputData): OutputData {
 }
 
 function unknownOption(i: InputData): OutputData {
-  const r = `${i.step.args.resource_type}#${i.step.args.resource_id}`;
-  const a = `${i.step.args.value}`;
+  const { resource_type, resource_id, label, value } = i.step.args;
 
-  return { resource: { label: r, value: r }, action: { label: a, value: a } };
+  return {
+    resource: { label: resource_type, value: resource_id },
+    action: { label: `${label} = ${value}`, value: "" + value }
+  };
 }
 
 function discardPoint(i: InputData): OutputData {
@@ -70,7 +72,6 @@ export function unpackStep(i: InputData): OutputData {
     case "mounted_tool_id": return mountTool(i);
     case "discarded_at": return discardPoint(i);
     case "plant_stage": return plantStage(i);
-    default:
-      return unknownOption(i);
+    default: return unknownOption(i);
   }
 }
