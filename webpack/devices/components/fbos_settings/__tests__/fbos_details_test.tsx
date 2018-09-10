@@ -17,9 +17,8 @@ describe("<FbosDetails/>", () => {
     return {
       botInfoSettings: bot.hardware.informational_settings,
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      sourceFbosConfig: x =>
+        ({ value: bot.hardware.configuration[x], consistent: true }),
     };
   };
 
@@ -33,6 +32,12 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.firmware_commit = "fakeFwCommit";
     p.botInfoSettings.soc_temp = 48.3;
     p.botInfoSettings.wifi_level = -49;
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).uptime = 100;
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).memory_usage = 100;
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).disk_usage = 100;
 
     const wrapper = mount(<FbosDetails {...p} />);
     ["Environment", "fakeEnv",
@@ -44,6 +49,9 @@ describe("<FbosDetails/>", () => {
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi Strength", "-49dBm",
       "Beta release Opt-In",
+      "Uptime", "100s",
+      "Memory usage", "100MB",
+      "Disk usage", "100%",
     ]
       .map(string => expect(wrapper.text()).toContain(string));
   });
@@ -93,6 +101,19 @@ describe("<FbosDetails/>", () => {
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("CPU temperature: unknown");
     expect(wrapper.text()).not.toContain("&deg;C");
+  });
+
+  it("doesn't display extra metrics when bot is offline", () => {
+    const p = fakeProps();
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).uptime = undefined;
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).memory_usage = undefined;
+    // tslint:disable-next-line:no-any
+    (p.botInfoSettings as any).disk_usage = undefined;
+    const wrapper = mount(<FbosDetails {...p} />);
+    ["uptime", "usage"].map(metric =>
+      expect(wrapper.text().toLowerCase()).not.toContain(metric));
   });
 });
 
