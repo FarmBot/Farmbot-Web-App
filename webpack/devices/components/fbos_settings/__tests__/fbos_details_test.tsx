@@ -33,11 +33,11 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.soc_temp = 48.3;
     p.botInfoSettings.wifi_level = -49;
     // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).uptime = 100;
+    (p.botInfoSettings as any).uptime = 0;
     // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).memory_usage = 100;
+    (p.botInfoSettings as any).memory_usage = 0;
     // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).disk_usage = 100;
+    (p.botInfoSettings as any).disk_usage = 0;
 
     const wrapper = mount(<FbosDetails {...p} />);
     ["Environment", "fakeEnv",
@@ -49,9 +49,9 @@ describe("<FbosDetails/>", () => {
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi Strength", "-49dBm",
       "Beta release Opt-In",
-      "Uptime", "100s",
-      "Memory usage", "100MB",
-      "Disk usage", "100%",
+      "Uptime", "0s",
+      "Memory usage", "0MB",
+      "Disk usage", "0%",
     ]
       .map(string => expect(wrapper.text()).toContain(string));
   });
