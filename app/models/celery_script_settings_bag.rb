@@ -271,10 +271,11 @@ module CeleryScriptSettingsBag
       # the current_device.
       # For convinience, we try to set it here, defaulting to 0 if
       # current_user can't be found.
-      x.args["resource_id"].instance_variable_set("@value", me.try(:id) || 0)
+      node
+        .args["resource_id"]
+        .instance_variable_set("@value", me.try(:id) || 0)
     when *RESOURCE_NAME.without("Device")
-      klass       = resource_type.constantize
-      resource_ok = klass.exists?(resource_id)
+      resource_ok = resource_type.constantize.exists?(resource_id)
       no_resource(node, resource_type, resource_id) unless resource_ok
     end
   end

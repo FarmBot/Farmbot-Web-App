@@ -10,9 +10,9 @@ import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
 import { editStep } from "../../api/crud";
 import { packStep } from "./mark_as/pack_step";
-import { fancyDebug } from "../../util";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
+const NONE: DropDownItem = { value: 0, label: "" };
 
 export class MarkAs extends React.Component<StepParams, MarkAsState> {
   state: MarkAsState = { nextResource: undefined };
@@ -32,7 +32,6 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
           c.args.value = nextStep.args.value;
           c.args.resource_type = nextStep.args.resource_type;
           c.args.resource_id = nextStep.args.resource_id;
-          fancyDebug(c.args);
         }
       }
     }));
@@ -68,7 +67,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
               list={actionList(this.state.nextResource, step, this.props.resources)}
               onChange={this.commitSelection}
               key={JSON.stringify(action) + JSON.stringify(this.state)}
-              selectedItem={action} />
+              selectedItem={this.state.nextResource ? NONE : action} />
           </Col>
         </Row>
       </StepContent>

@@ -20,11 +20,15 @@ const mountedTo = (name = DEFAULT_TOOL_NAME): DropDownItem =>
 
 function mountTool(i: InputData): OutputData {
   const { value } = i.step.args;
-
-  if (typeof value == "number" && value > 0) {
-    const tool = findToolById(i.resourceIndex, value);
-    return { resource: TOOL_MOUNT, action: mountedTo(tool.body.name) };
+  if (typeof value === "number" && value > 0) {
+    try { // Good tool id
+      const tool = findToolById(i.resourceIndex, value as number);
+      return { resource: TOOL_MOUNT, action: mountedTo(tool.body.name) };
+    } catch { // Bad tool ID or app still loading.
+      return { resource: TOOL_MOUNT, action: mountedTo("an unknown tool") };
+    }
   } else {
+    // No tool id
     return DISMOUNTED;
   }
 }
