@@ -7,7 +7,7 @@ const value = 0; // Not used in headings.
 const TOP_HALF = [
   { headingId: "Device", label: "Device", value, heading: true, },
   { headingId: "Device", label: "Tool Mount", value },
-  { headingId: "Plant", label: "Plant", value, heading: true, }
+  { headingId: "Plant", label: "Plants", value, heading: true, }
 ];
 
 const isSaved = (x: TaggedResource) => !!x.body.id;

@@ -6,7 +6,7 @@ import { selectAllTools } from "../../../resources/selectors";
 
 const DEFAULT = "Default";
 const DISMOUNT = { label: "Not Mounted", value: 0 };
-const MOUNTED_TO = "Mounted to tool: ";
+export const MOUNTED_TO = "Mounted to:";
 const PLANT_OPTIONS = [
   { label: "Planned", value: "planned" },
   { label: "Planted", value: "planted" },
@@ -19,7 +19,7 @@ const allToolsAsDDI = (i: ResourceIndex) => {
     .filter(x => !!x.body.id)
     .map(x => {
       return {
-        label: MOUNTED_TO + x.body.name,
+        label: `${MOUNTED_TO} ${x.body.name}`,
         value: x.body.id || 0
       };
     });

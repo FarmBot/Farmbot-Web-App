@@ -10,6 +10,7 @@ import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
 import { editStep } from "../../api/crud";
 import { packStep } from "./mark_as/pack_step";
+import { fancyDebug } from "../../util";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
 
@@ -19,7 +20,6 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
 
   commitSelection = (nextAction: DropDownItem) => {
     const { nextResource } = this.state;
-    this.setState({ nextResource: undefined });
     const nextStep =
       packStep(this.props.currentStep as ResourceUpdate, nextResource, nextAction);
     this.props.dispatch(editStep({
@@ -32,17 +32,17 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
           c.args.value = nextStep.args.value;
           c.args.resource_type = nextStep.args.resource_type;
           c.args.resource_id = nextStep.args.resource_id;
+          fancyDebug(c.args);
         }
       }
     }));
+    this.setState({ nextResource: undefined });
   };
 
   render() {
     const step = this.props.currentStep as ResourceUpdate;
     const { action, resource } =
       unpackStep({ step, resourceIndex: this.props.resources });
-    const selectedAsOptn =
-      this.state.nextResource ? { label: "", value: "" } : action;
     return <StepWrapper>
       <StepHeader
         className={this.className}
@@ -67,14 +67,9 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
             <FBSelect
               list={actionList(this.state.nextResource, step, this.props.resources)}
               onChange={this.commitSelection}
-              key={JSON.stringify(selectedAsOptn)}
-              selectedItem={selectedAsOptn} />
+              key={JSON.stringify(action) + JSON.stringify(this.state)}
+              selectedItem={action} />
           </Col>
-        </Row>
-        <Row>
-          <pre>
-            {step.args.resource_type}#{step.args.resource_id}.{step.args.label} = {step.args.value}
-          </pre>
         </Row>
       </StepContent>
     </StepWrapper>;
