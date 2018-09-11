@@ -1,6 +1,6 @@
 import { resourceUpdate } from "../assertion_support";
 import { packStep } from "../pack_step";
-import { TOP_HALF } from "../resource_list";
+import { TOP_HALF } from "../constants";
 
 describe("packStep()", () => {
   const plant = resourceUpdate({ resource_type: "Plant", resource_id: 6 });

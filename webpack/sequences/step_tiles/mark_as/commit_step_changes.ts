@@ -1,17 +1,10 @@
-import { TaggedSequence } from "farmbot";
 import { ResourceUpdate } from "../../../../latest_corpus";
 import { editStep } from "../../../api/crud";
-import { DropDownItem } from "../../../ui";
 import { packStep } from "./pack_step";
+import { MarkAsEditProps } from "./interfaces";
 
-export interface MarkAsEditProps {
-  nextAction: DropDownItem;
-  nextResource: DropDownItem | undefined;
-  step: ResourceUpdate;
-  index: number;
-  sequence: TaggedSequence
-}
-
+/** A wrapper for the `editStep()` action creator.
+ * Isolated from UI for ease of testing. */
 export const commitStepChanges = (p: MarkAsEditProps) => {
   const { step, nextResource, nextAction, index, sequence } = p;
   return editStep({

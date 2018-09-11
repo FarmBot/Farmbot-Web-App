@@ -1,22 +1,22 @@
 import { fakeResourceIndex } from "../../tile_move_absolute/test_helpers";
 import { resourceUpdate } from "../assertion_support";
-import { unpackStep, OutputData, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
+import { unpackStep, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import {
   selectAllPlantPointers,
   selectAllTools,
   selectAllGenericPointers
 } from "../../../../resources/selectors";
-
+import { DropDownPair } from "../interfaces";
 describe("unpackStep()", () => {
-  function assertGoodness(result: OutputData,
+  function assertGoodness(result: DropDownPair,
     action_label: string,
     action_value: string,
     resource_label: string,
     resource_value: string | number): void {
-    expect(result.action.label).toBe(action_label);
-    expect(result.action.value).toBe(action_value);
-    expect(result.resource.label).toBe(resource_label);
-    expect(result.resource.value).toBe(resource_value);
+    expect(result.rightSide.label).toBe(action_label);
+    expect(result.rightSide.value).toBe(action_value);
+    expect(result.leftSide.label).toBe(resource_label);
+    expect(result.leftSide.value).toBe(resource_value);
   }
 
   it("unpacks empty tool_ids", () => {

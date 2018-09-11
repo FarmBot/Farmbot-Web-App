@@ -10,10 +10,9 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { betterMerge } from "../../../util";
 import { MarkAs } from "../mark_as";
+import { ResourceUpdateArgs } from "./interfaces";
 
-type Args = Partial<ResourceUpdate["args"]>;
-
-export function resourceUpdate(i: Args): ResourceUpdate {
+export function resourceUpdate(i: ResourceUpdateArgs): ResourceUpdate {
   return {
     kind: "resource_update",
     args: {

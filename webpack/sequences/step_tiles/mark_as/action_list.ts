@@ -1,20 +1,15 @@
-import { DropDownItem } from "../../../ui";
 import { Dictionary } from "farmbot";
-import { ResourceUpdate } from "../../../../latest_corpus";
+import { DropDownItem } from "../../../ui";
+import { ListBuilder } from "./interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
+import { ResourceUpdate } from "../../../../latest_corpus";
 import { selectAllTools } from "../../../resources/selectors";
-
-const DEFAULT = "Default";
-const DISMOUNT = { label: "Not Mounted", value: 0 };
-export const MOUNTED_TO = "Mounted to:";
-export const PLANT_OPTIONS = [
-  { label: "Planned", value: "planned" },
-  { label: "Planted", value: "planted" },
-  { label: "Harvested", value: "harvested" },
-];
-const POINT_OPTIONS = [
-  { label: "Removed", value: "removed" }
-];
+import {
+  MOUNTED_TO,
+  DISMOUNT,
+  PLANT_OPTIONS,
+  POINT_OPTIONS
+} from "./constants";
 
 const allToolsAsDDI = (i: ResourceIndex) => {
   return selectAllTools(i)
@@ -27,7 +22,7 @@ const allToolsAsDDI = (i: ResourceIndex) => {
     });
 };
 
-type ListBuilder = (i: ResourceIndex) => DropDownItem[];
+const DEFAULT = "Default";
 
 const ACTION_LIST: Dictionary<ListBuilder> = {
   "Device": (i) => [DISMOUNT, ...allToolsAsDDI(i)],

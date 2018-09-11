@@ -1,7 +1,20 @@
 import { ResourceUpdate } from "farmbot";
 import { DropDownItem } from "../../../ui";
 
-/** Using the current state of the "mark as" step */
+/**
+ * This is a support function for the <MarkAs/> component.
+ *
+ * SCENARIO: You are editing a `Mark As..` sequence step. The user has unsaved
+ *            local changes as well as a copy of older data from the API.
+ *
+ * PROBLEM:   You need to take the component's local state plus the
+ *            shape of the "resource_update" ("Mark As..") block and merge them
+ *            together so that you can render the form in the editor.
+ *
+ * SOLUTION:  Use the celery node + pieces of the component's state (resourceDDI,
+ *            actionDDI) to properly populate dropdown menus and determine the
+ *            shape of the new "resource_update" step when it is saved.
+ * */
 export const packStep =
   (csNode: ResourceUpdate,
     resourceDDI: DropDownItem | undefined,

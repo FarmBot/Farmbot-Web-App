@@ -30,7 +30,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
 
   render() {
     const step = this.props.currentStep as ResourceUpdate;
-    const { action, resource } =
+    const { rightSide, leftSide } =
       unpackStep({ step, resourceIndex: this.props.resources });
     return <StepWrapper>
       <StepHeader
@@ -49,15 +49,15 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
               list={resourceList(this.props.resources)}
               onChange={(nextResource) => this.setState({ nextResource })}
               allowEmpty={false}
-              selectedItem={this.state.nextResource || resource} />
+              selectedItem={this.state.nextResource || leftSide} />
           </Col>
           <Col xs={6}>
             <label>{t("as")}</label>
             <FBSelect
               list={actionList(this.state.nextResource, step, this.props.resources)}
               onChange={this.commitSelection}
-              key={JSON.stringify(action) + JSON.stringify(this.state)}
-              selectedItem={this.state.nextResource ? NONE : action} />
+              key={JSON.stringify(rightSide) + JSON.stringify(this.state)}
+              selectedItem={this.state.nextResource ? NONE : rightSide} />
           </Col>
         </Row>
       </StepContent>
