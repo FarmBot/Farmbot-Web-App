@@ -8,7 +8,7 @@ import { unpackStep } from "./mark_as/unpack_step";
 import { ResourceUpdate } from "../../../latest_corpus";
 import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
-import { commitStepChanges } from "./mark_as/commit_selection";
+import { commitStepChanges } from "./mark_as/commit_step_changes";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
 const NONE: DropDownItem = { value: 0, label: "" };
