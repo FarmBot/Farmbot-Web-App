@@ -3,7 +3,8 @@ import { resourceUpdate } from "../assertion_support";
 import { unpackStep, OutputData, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import {
   selectAllPlantPointers,
-  selectAllTools
+  selectAllTools,
+  selectAllGenericPointers
 } from "../../../../resources/selectors";
 
 describe("unpackStep()", () => {
@@ -52,12 +53,12 @@ describe("unpackStep()", () => {
 
   it("unpacks discarded_at operations", () => {
     const resourceIndex = fakeResourceIndex();
-    const { body } = selectAllPlantPointers(resourceIndex)[1];
-    expect(body).toBeTruthy();
+    const { body } = selectAllGenericPointers(resourceIndex)[0];
+    expect(body.pointer_type).toBe("GenericPointer");
 
     const result = unpackStep({
       step: resourceUpdate({
-        resource_type: "Plant",
+        resource_type: "GenericPointer",
         resource_id: body.id || -1,
         label: "discarded_at",
         value: "non-configurable"
@@ -83,7 +84,9 @@ describe("unpackStep()", () => {
         value: "wilting"
       }), resourceIndex
     });
-    assertGoodness(result, "Wilting", "wilting", plant.body.name, plant.uuid);
+    const { body } = plant;
+    const plantName = `${body.name} (${body.x}, ${body.y}, ${body.z})`;
+    assertGoodness(result, "wilting", "wilting", plantName, body.id || NaN);
   });
 
   it("unpacks unknown resource_update steps", () => {

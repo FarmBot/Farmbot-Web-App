@@ -1,10 +1,14 @@
 import { ResourceUpdate, TaggedPoint, TaggedPlantPointer } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { findToolById, findByKindAndId } from "../../../resources/selectors";
-import { point2ddi } from "../tile_move_absolute/format_selected_dropdown";
+import {
+  findToolById,
+  findByKindAndId,
+  findPointerByTypeAndId
+} from "../../../resources/selectors";
 import { MOUNTED_TO } from "./action_list";
-import { plant2ddi } from "./resource_list";
+import { plant2ddi, pointer2ddi } from "./resource_list";
+import { GenericPointer } from "farmbot/dist/resources/api_resources";
 
 interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
 export interface OutputData { resource: DropDownItem; action: DropDownItem; }
@@ -48,13 +52,11 @@ function unknownOption(i: InputData): OutputData {
 }
 
 function discardPoint(i: InputData): OutputData {
-  const { resource_type, resource_id } = i.step.args;
-
+  const { resource_id } = i.step.args;
+  const t =
+    findPointerByTypeAndId(i.resourceIndex, "GenericPointer", resource_id).body;
   return {
-    resource: point2ddi(i.resourceIndex, {
-      pointer_type: resource_type,
-      pointer_id: resource_id
-    }),
+    resource: pointer2ddi(t as GenericPointer),
     action: REMOVED_ACTION
   };
 }

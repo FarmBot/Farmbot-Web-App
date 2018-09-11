@@ -31,7 +31,7 @@ const isRelevant = (x: TaggedPoint) => {
   return saved && notToolSlot;
 };
 
-const pointer2ddi = (i: GenericPointer): DropDownItem => {
+export const pointer2ddi = (i: GenericPointer): DropDownItem => {
   const { x, y, z, name } = i;
   return {
     value: i.id as number,
