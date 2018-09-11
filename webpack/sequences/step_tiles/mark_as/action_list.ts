@@ -7,7 +7,7 @@ import { selectAllTools } from "../../../resources/selectors";
 const DEFAULT = "Default";
 const DISMOUNT = { label: "Not Mounted", value: 0 };
 export const MOUNTED_TO = "Mounted to:";
-const PLANT_OPTIONS = [
+export const PLANT_OPTIONS = [
   { label: "Planned", value: "planned" },
   { label: "Planted", value: "planted" },
   { label: "Harvested", value: "harvested" },
