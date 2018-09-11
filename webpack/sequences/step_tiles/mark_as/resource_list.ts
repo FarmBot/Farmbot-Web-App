@@ -4,7 +4,8 @@ import { selectAllPoints } from "../../../resources/selectors";
 import { TaggedResource, TaggedPoint } from "farmbot";
 
 const value = 0; // Not used in headings.
-const TOP_HALF = [
+
+export const TOP_HALF = [
   { headingId: "Device", label: "Device", value, heading: true, },
   { headingId: "Device", label: "Tool Mount", value },
   { headingId: "Plant", label: "Plants", value, heading: true, }

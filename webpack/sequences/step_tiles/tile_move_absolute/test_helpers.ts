@@ -61,6 +61,8 @@ export function fakeResourceIndex(): ResourceIndex {
         "meta": {},
         "name": "dandelion",
         "pointer_type": "Plant",
+        "openfarm_slug": "potato",
+        "plant_stage": "harvested",
         "radius": 100,
         "x": 100,
         "y": 200,
