@@ -53,7 +53,8 @@ export class Sequences extends React.Component<Props, {}> {
           show={sequenceSelected}>
           <StepButtonCluster
             current={this.props.sequence}
-            dispatch={this.props.dispatch} />
+            dispatch={this.props.dispatch}
+            shouldDisplay={this.props.shouldDisplay} />
         </RightPanel>
       </Row>
     </Page>;

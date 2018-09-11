@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import * as React from "react";
 import { unpackStep } from "./mark_as/unpack_step";
-import { ResourceUpdate } from "../../../latest_corpus";
+import { ResourceUpdate } from "farmbot";
 import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
 import { commitStepChanges } from "./mark_as/commit_step_changes";

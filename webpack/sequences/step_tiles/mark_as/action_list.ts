@@ -2,7 +2,7 @@ import { Dictionary } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ListBuilder } from "./interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { ResourceUpdate } from "../../../../latest_corpus";
+import { ResourceUpdate } from "farmbot";
 import { selectAllTools } from "../../../resources/selectors";
 import {
   MOUNTED_TO,

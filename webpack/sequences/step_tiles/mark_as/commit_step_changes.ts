@@ -1,4 +1,4 @@
-import { ResourceUpdate } from "../../../../latest_corpus";
+import { ResourceUpdate } from "farmbot";
 import { editStep } from "../../../api/crud";
 import { packStep } from "./pack_step";
 import { MarkAsEditProps } from "./interfaces";
