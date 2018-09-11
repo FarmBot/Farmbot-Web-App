@@ -23,7 +23,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
       </label>
     </Col>
     <Col xs={3}>
-      <Popover position={Position.TOP_LEFT}>
+      <Popover position={Position.BOTTOM_LEFT}>
         <p>
           {t("Version {{ version }}", { version })}
         </p>

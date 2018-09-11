@@ -3,7 +3,7 @@ import { Saucer } from "../../../ui/index";
 import { t } from "i18next";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { last } from "lodash";
+import { last, isNumber } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
 
@@ -63,8 +63,10 @@ export function FbosDetails(props: FbosDetailsProps) {
   const { dispatch, sourceFbosConfig, botInfoSettings } = props;
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
-    soc_temp, wifi_level
-  } = botInfoSettings;
+    soc_temp, wifi_level, uptime, memory_usage, disk_usage
+    // TODO: remove `as any` in the next line (& tests) when FBJS is published.
+    // tslint:disable-next-line:no-any
+  } = botInfoSettings as any;
   const betaOptIn = sourceFbosConfig("beta_opt_in");
   const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
   return <div>
@@ -74,6 +76,9 @@ export function FbosDetails(props: FbosDetailsProps) {
     <p><b>Node name: </b>{last((node_name || "").split("@"))}</p>
     <p><b>Firmware: </b>{firmware_version}</p>
     <p><b>Firmware commit: </b>{shortenCommit(firmware_commit)}</p>
+    {isNumber(uptime) && <p><b>Uptime: </b>{uptime}s</p>}
+    {isNumber(memory_usage) && <p><b>Memory usage: </b>{memory_usage}MB</p>}
+    {isNumber(disk_usage) && <p><b>Disk usage: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay wifiStrength={wifi_level} />
     <fieldset>
