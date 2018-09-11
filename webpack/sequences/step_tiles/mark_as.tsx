@@ -8,8 +8,7 @@ import { unpackStep } from "./mark_as/unpack_step";
 import { ResourceUpdate } from "../../../latest_corpus";
 import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
-import { editStep } from "../../api/crud";
-import { packStep } from "./mark_as/pack_step";
+import { commitStepChanges } from "./mark_as/commit_selection";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
 const NONE: DropDownItem = { value: 0, label: "" };
@@ -19,21 +18,12 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
   className = "wait-step";
 
   commitSelection = (nextAction: DropDownItem) => {
-    const { nextResource } = this.state;
-    const nextStep =
-      packStep(this.props.currentStep as ResourceUpdate, nextResource, nextAction);
-    this.props.dispatch(editStep({
-      step: this.props.currentStep,
-      sequence: this.props.currentSequence,
+    this.props.dispatch(commitStepChanges({
       index: this.props.index,
-      executor(c) {
-        if (c.kind == "resource_update") {
-          c.args.label = nextStep.args.label;
-          c.args.value = nextStep.args.value;
-          c.args.resource_type = nextStep.args.resource_type;
-          c.args.resource_id = nextStep.args.resource_id;
-        }
-      }
+      nextAction,
+      nextResource: this.state.nextResource,
+      sequence: this.props.currentSequence,
+      step: this.props.currentStep as ResourceUpdate,
     }));
     this.setState({ nextResource: undefined });
   };
