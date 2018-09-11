@@ -42,10 +42,10 @@ export const pointer2ddi = (i: GenericPointer): DropDownItem => {
 
 export const plant2ddi = (i: TaggedPlantPointer["body"]): DropDownItem => {
   const { x, y, z, name, id } = i;
-  const n = name || i.openfarm_slug || `Plant ${id}`;
+
   return {
-    value: i.id as number,
-    label: `${n} (${x}, ${y}, ${z})`,
+    value: id as number,
+    label: `${name} (${x}, ${y}, ${z})`,
     headingId: "Plant"
   };
 };
