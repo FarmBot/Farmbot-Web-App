@@ -3,7 +3,8 @@ import { betterMerge } from "../../../../util";
 import { resourceUpdate } from "../assertion_support";
 import {
   fakeTool,
-  fakePlant
+  fakePlant,
+  fakePoint
 } from "../../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex
@@ -14,6 +15,7 @@ describe("actionList()", () => {
     betterMerge(fakeTool(), { body: { name: "T1", id: 1 } }),
     fakePlant(),
     betterMerge(fakeTool(), { body: { name: "T2", id: 2 } }),
+    betterMerge(fakePoint(), { body: { name: "my point", id: 7 } }),
     betterMerge(fakeTool(), { body: { name: "T3", id: undefined } }),
   ]);
 
@@ -34,6 +36,16 @@ describe("actionList()", () => {
     expect(labels).toContain("Not Mounted");
     expect(labels).toContain("Mounted to: T1");
     expect(labels).toContain("Mounted to: T2");
+  });
+
+  it("provides a list of generic pointer actions", () => {
+    const ddi = { label: "test case", value: 1, headingId: "GenericPointer" };
+    const step = resourceUpdate({});
+    const { index } = myIndex();
+    const result = actionList(ddi, step, index);
+    expect(result.length).toBe(1);
+    const labels = result.map(x => x.label);
+    expect(labels).toContain("Removed");
   });
 
   it("returns an empty list for all other options", () => {
