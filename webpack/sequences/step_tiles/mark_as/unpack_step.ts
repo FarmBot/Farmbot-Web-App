@@ -1,10 +1,10 @@
-import { ResourceUpdate, TaggedPoint } from "farmbot";
+import { ResourceUpdate, TaggedPoint, TaggedPlantPointer } from "farmbot";
 import { DropDownItem } from "../../../ui";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { findToolById, findByKindAndId } from "../../../resources/selectors";
 import { point2ddi } from "../tile_move_absolute/format_selected_dropdown";
-import { capitalize } from "lodash";
 import { MOUNTED_TO } from "./action_list";
+import { plant2ddi } from "./resource_list";
 
 interface InputData { step: ResourceUpdate; resourceIndex: ResourceIndex; }
 export interface OutputData { resource: DropDownItem; action: DropDownItem; }
@@ -64,8 +64,8 @@ function plantStage(i: InputData): OutputData {
   const r: TaggedPoint = findByKindAndId(i.resourceIndex, "Point", resource_id);
 
   return {
-    resource: { label: r.body.name, value: r.uuid },
-    action: { label: capitalize("" + value), value: ("" + value) }
+    resource: plant2ddi(r.body as TaggedPlantPointer["body"]),
+    action: { label: ("" + value), value: ("" + value) }
   };
 }
 

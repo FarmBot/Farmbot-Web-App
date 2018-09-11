@@ -11,7 +11,9 @@ export const PLANT_OPTIONS = [
   { label: "Planned", value: "planned" },
   { label: "Planted", value: "planted" },
   { label: "Harvested", value: "harvested" },
-  { label: "Removed", value: "removed" },
+];
+const POINT_OPTIONS = [
+  { label: "Removed", value: "removed" }
 ];
 
 const allToolsAsDDI = (i: ResourceIndex) => {
@@ -30,11 +32,12 @@ type ListBuilder = (i: ResourceIndex) => DropDownItem[];
 const ACTION_LIST: Dictionary<ListBuilder> = {
   "Device": (i) => [DISMOUNT, ...allToolsAsDDI(i)],
   "Plant": () => PLANT_OPTIONS,
+  "GenericPointer": () => POINT_OPTIONS,
   [DEFAULT]: () => []
 };
 
 const getList =
-  (t = DEFAULT): ListBuilder => ACTION_LIST[t] || ACTION_LIST[DEFAULT];
+  (t = DEFAULT): ListBuilder => (ACTION_LIST[t] || ACTION_LIST[DEFAULT]);
 
 export const actionList = (d: DropDownItem | undefined,
   r: ResourceUpdate,

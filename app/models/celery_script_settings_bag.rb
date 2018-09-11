@@ -31,7 +31,7 @@ module CeleryScriptSettingsBag
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(Device FarmEvent Image Log Peripheral Plant Point
-                             Regimen Sequence Tool ToolSlot User)
+                             Regimen Sequence Tool ToolSlot User GenericPointer)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
