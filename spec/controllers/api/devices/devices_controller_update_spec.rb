@@ -65,7 +65,10 @@ describe Api::DevicesController do
     it "performs referential integrity checks on mounted_tool_id" do
       sign_in user
       put :update,
-        params:  { id: user.device.id, mounted_tool_id: (Tool.count * 2) },
+        params:  {
+          id: user.device.id,
+          mounted_tool_id: (FactoryBot.create(:tool).id + 1)
+        },
         session: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:mounted_tool_id]).to include("Can't mount to tool")

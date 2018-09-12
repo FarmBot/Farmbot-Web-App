@@ -168,11 +168,12 @@ describe CeleryScript::Corpus do
   end
 
   it "rejects bogus resource_updates" do
-    fake_id = (4 + Sequence.count * 3)
+    fake_id = FakeSequence.create().id + 1
+    expect(Sequence.exists?(fake_id)).to be(false)
     ast = { "kind": "resource_update",
             "args": { "resource_type" => "Sequence",
                       "resource_id"   => fake_id,
-                      "label"         => "name",
+                      "label"         => "foo",
                       "value"         => "Should Fail" } }
     hmm = CeleryScript::AstNode.new(ast)
     expect(hmm.args.fetch("resource_id").value).to eq(fake_id)

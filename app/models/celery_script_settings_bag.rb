@@ -276,7 +276,7 @@ module CeleryScriptSettingsBag
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
-    val = node&.value
+    val = node.try(:value)
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 
