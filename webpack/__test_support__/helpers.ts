@@ -1,10 +1,8 @@
 import { ReactWrapper, ShallowWrapper } from "enzyme";
 import { range } from "lodash";
 
-// tslint:disable-next-line:no-any
-export function getProp(i: ReactWrapper<any, {}>, key: string): any {
-  return i.props()[key];
-}
+export const getProp =
+  <T, K extends keyof T>(i: ReactWrapper<T, {}>, key: K): T[K] => i.props()[key];
 
 /** Simulate a click and check button text for a button in a wrapper. */
 export function clickButton(

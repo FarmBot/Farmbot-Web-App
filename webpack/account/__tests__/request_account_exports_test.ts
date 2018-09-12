@@ -1,7 +1,6 @@
 const mock = {
   response: {
-    // tslint:disable-next-line:no-any
-    data: (undefined as any) // Mutable
+    data: (undefined as undefined | {}) // Mutable
   }
 };
 
@@ -35,8 +34,7 @@ describe("requestAccountExport", () => {
 
   it("downloads the data synchronously (when API has no email support)", async () => {
     mock.response.data = {};
-    // tslint:disable-next-line:no-any
-    window.URL = window.URL || ({} as any);
+    window.URL = window.URL || ({} as typeof window.URL);
     window.URL.createObjectURL = jest.fn();
     window.URL.revokeObjectURL = jest.fn();
     const a = await requestAccountExport();
