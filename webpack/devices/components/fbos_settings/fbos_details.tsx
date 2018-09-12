@@ -71,7 +71,10 @@ export function FbosDetails(props: FbosDetailsProps) {
   const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
   return <div>
     <p><b>Environment: </b>{env}</p>
-    <p><b>Commit: </b>{shortenCommit(commit)}</p>
+    <p><b>Commit: </b>
+      <a href={"https://github.com/FarmBot/farmbot_os/tree/" + shortenCommit(commit)}>
+        {shortenCommit(commit)}</a>
+    </p>
     <p><b>Target: </b>{target}</p>
     <p><b>Node name: </b>{last((node_name || "").split("@"))}</p>
     <p><b>Firmware: </b>{firmware_version}</p>
