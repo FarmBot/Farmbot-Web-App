@@ -249,7 +249,7 @@ module CeleryScriptSettingsBag
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch("resource_type").value
         resource_id   = x.args.fetch("resource_id").value
-        check_resource_type(x, resource_type, resource_id, Device.current)
+        check_resource_type(x, resource_type, resource_id)
       end
       .node(:install_first_party_farmware, [])
 
@@ -260,22 +260,17 @@ module CeleryScriptSettingsBag
     node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
   end
 
-  def self.check_resource_type(node,
-                               resource_type,
-                               resource_id,
-                               me = Device.current)
+  def self.check_resource_type(node, resource_type, resource_id)
     case resource_type # <= Security critical code (for const_get'ing)
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
-      # For convinience, we try to set it here, defaulting to 0 if
-      # current_user can't be found.
-      node
-        .args["resource_id"]
-        .instance_variable_set("@value", me.try(:id) || 0)
+      # For convinience, we try to set it here, defaulting to 0
+      node.args["resource_id"].instance_variable_set("@value", 0)
     when *RESOURCE_NAME.without("Device")
-      resource_ok = resource_type.constantize.exists?(resource_id)
-      no_resource(node, resource_type, resource_id) unless resource_ok
+      klass       = Kernel.const_get(resource_type)
+      resource_ok = klass.exists?(resource_id)
+      no_resource(node, klass, resource_id) unless resource_ok
     end
   end
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE

@@ -157,18 +157,28 @@ describe CeleryScript::Corpus do
   end
 
   it "Validates resource_update nodes" do
-    ast = {
-      kind: "resource_update",
-      args: {
-        resource_type: "Device",
-        resource_id:   23,
-        label:         "mounted_tool_id",
-        value:         1
-      }
-    }
-    ast = { "kind": "tool", "args": { "tool_id": 0 } };
-    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
-                                        corpus,
-                                        device)
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "Device",
+                      "resource_id"   => 23, # Mutated to "0" later..
+                      "label"         => "mounted_tool_id",
+                      "value"         => 1 } }
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast), corpus, device)
+    expect(checker.valid?).to be(true)
+    expect(checker.tree.args["resource_id"].value).to eq(0)
+  end
+
+  it "rejects bogus resource_updates" do
+    fake_id = (4 + Sequence.count * 3)
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "Sequence",
+                      "resource_id"   => fake_id,
+                      "label"         => "name",
+                      "value"         => "Should Fail" } }
+    hmm = CeleryScript::AstNode.new(ast)
+    expect(hmm.args.fetch("resource_id").value).to eq(fake_id)
+    checker = CeleryScript::Checker.new(hmm, corpus, device)
+    expect(checker.valid?).to be(false)
+    expect(checker.error.message)
+      .to eq("Can't find Sequence with id of #{fake_id}")
   end
 end
