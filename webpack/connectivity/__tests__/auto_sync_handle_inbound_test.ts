@@ -14,6 +14,7 @@ import {
 } from "../auto_sync";
 import { destroyOK } from "../../resources/actions";
 import { SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData } from "../interfaces";
+import { unpackUUID } from "../../util";
 
 describe("handleInbound()", () => {
   const dispatch = jest.fn();
@@ -50,7 +51,7 @@ describe("handleInbound()", () => {
   it("handles DELETE when the record is in system", () => {
     const i = getState().resources.index.byKind.Sequence;
     // Pick an ID that we know will be in the DB
-    const id = parseInt(Object.values(i)[0].split(".")[1], 10);
+    const id = unpackUUID(Object.values(i)[0]).remoteId || -1;
     const fixtr: DeleteMqttData = { status: "DELETE", kind: "Sequence", id };
     handleInbound(dispatch, getState, fixtr);
     expect(dispatch).toHaveBeenCalled();

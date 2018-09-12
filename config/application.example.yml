@@ -86,7 +86,8 @@ EXTRA_DOMAINS: staging.farm.bot,whatever.farm.bot
 # Most users will not want this enabled.
 RUN_CAPYBARA: "true"
 # Set this to "production" in most cases.
-# If you need help debugging issues, please delete this line.
+# Setting this line to "production" will disable debug backtraces.
+# Please delete this line if you are submitting a bug report on the forum/Github
 RAILS_ENV: "production"
 # Every server has a superuser.
 # Set this to something SECURE.

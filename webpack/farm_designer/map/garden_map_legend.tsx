@@ -49,7 +49,7 @@ export const ZoomControls = ({ zoom, getConfigValue }: {
 };
 
 export const PointsSubMenu = () =>
-  <div>
+  <div className="map-points-submenu">
     <button className={"fb-button green"}
       onClick={() => history.push("/app/designer/plants/create_point")}>
       {t("Point Creator")}
@@ -67,6 +67,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       value={props.showPoints}
       label={t("Points?")}
       onClick={toggle("show_points")}
+      submenuTitle={t("extras")}
       popover={!!localStorage.getItem("FUTURE_FEATURES")
         ? <PointsSubMenu />
         : undefined} />
@@ -82,6 +83,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       value={props.showImages}
       label={t("Photos?")}
       onClick={toggle("show_images")}
+      submenuTitle={t("filter")}
       popover={<ImageFilterMenu
         tzOffset={props.tzOffset}
         dispatch={props.dispatch}

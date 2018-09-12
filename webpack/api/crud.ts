@@ -13,7 +13,7 @@ import {
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
-import { defensiveClone } from "../util";
+import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
@@ -247,7 +247,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
   let url = urlFor(kind);
   if (body.id) {
     verb = "put";
-    if (!SINGULAR_RESOURCE.includes(payl.uuid.split(".")[0] as ResourceName)) {
+    if (!SINGULAR_RESOURCE.includes(unpackUUID(payl.uuid).kind)) {
       url += body.id;
     }
   } else {

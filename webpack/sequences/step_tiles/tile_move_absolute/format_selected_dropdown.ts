@@ -6,13 +6,13 @@ import {
   findToolById,
   findPointerByTypeAndId
 } from "../../../resources/selectors";
-import { Point, Tool } from "farmbot/dist";
+import { Tool } from "farmbot/dist";
 
 export function formatSelectedDropdown(
   ri: ResourceIndex, ld: LocationData): DropDownItem {
   switch (ld.kind) {
-    case "tool": return tool(ri, ld);
-    case "point": return point(ri, ld);
+    case "tool": return tool2ddi(ri, ld);
+    case "point": return point2ddi(ri, ld.args);
     case "identifier": return PARENT_DDI[0];
     case "coordinate":
     default:
@@ -20,15 +20,20 @@ export function formatSelectedDropdown(
   }
 }
 
-function tool(ri: ResourceIndex, ld: Tool): DropDownItem {
+function tool2ddi(ri: ResourceIndex, ld: Tool): DropDownItem {
   const t = findToolById(ri, ld.args.tool_id).body;
   const label = dropDownName(t.name || "untitled");
   return { label, value: t.id || -999 };
 }
 
-function point(ri: ResourceIndex, ld: Point): DropDownItem {
+interface LookupParams {
+  pointer_type: string;
+  pointer_id: number;
+}
+
+export function point2ddi(ri: ResourceIndex, ld: LookupParams): DropDownItem {
   const p =
-    findPointerByTypeAndId(ri, ld.args.pointer_type, ld.args.pointer_id).body;
+    findPointerByTypeAndId(ri, ld.pointer_type, ld.pointer_id).body;
   const label = dropDownName(p.name, { x: p.x, y: p.y, z: p.z });
   return { label, value: p.id || -999 };
 }

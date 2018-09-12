@@ -5,13 +5,16 @@ import { scrollToBottom } from "../util";
 import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { ShouldDisplay, Feature } from "../devices/interfaces";
 
-interface StepButtonProps {
+export interface StepButtonProps {
   dispatch: Function;
   current: TaggedSequence | undefined;
+  shouldDisplay: ShouldDisplay;
 }
 
-export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
+export function StepButtonCluster(props: StepButtonProps) {
+  const { dispatch, current, shouldDisplay } = props;
   const ALL_THE_BUTTONS = [
     <StepButton dispatch={dispatch}
       current={current}
@@ -133,16 +136,31 @@ export function StepButtonCluster({ dispatch, current }: StepButtonProps) {
       color="pink">
       {t("Run Farmware")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
+    <StepButton
+      dispatch={dispatch}
       current={current}
-      step={{
-        kind: "take_photo",
-        args: {}
-      }}
-      color="brown">
+      color="brown"
+      step={{ kind: "take_photo", args: {} }} >
       {t("TAKE PHOTO")}
-    </StepButton>
+    </StepButton>,
   ];
+
+  shouldDisplay(Feature.mark_as_step) && ALL_THE_BUTTONS.push(<StepButton
+    dispatch={dispatch}
+    current={current}
+    step={{
+      kind: "resource_update",
+      args: {
+        resource_type: "Device",
+        resource_id: 0,
+        label: "mounted_tool_id",
+        value: 0
+      }
+    }}
+    color="brown">
+    {t("Mark As...")}
+  </StepButton>
+  );
 
   return <div>
     <Row>

@@ -12,6 +12,7 @@ import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { joinKindAndId } from "../../../resources/reducer";
+import { capitalize } from "lodash";
 
 export function activeTools(resources: ResourceIndex) {
   const Tool: TaggedTool["kind"] = "Tool";
@@ -88,5 +89,5 @@ const formatTools = (tool: TaggedTool): DropDownItem => {
 export function dropDownName(name: string, v?: Vector3) {
   let label = name || "untitled";
   if (v) { label += ` (${v.x}, ${v.y}, ${v.z})`; }
-  return label;
+  return capitalize(label);
 }
