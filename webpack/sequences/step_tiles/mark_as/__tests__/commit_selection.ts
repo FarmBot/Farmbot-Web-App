@@ -2,6 +2,7 @@ import { fakeMarkAsProps } from "../assertion_support";
 import { commitStepChanges } from "../commit_step_changes";
 import { ResourceUpdate, TaggedSequence } from "farmbot";
 import { Actions } from "../../../../constants";
+import { unpackUUID } from "../../../../util";
 
 describe("commitSelection", () => {
   it("commits changes in a <MarkAs/> component", () => {
@@ -15,7 +16,7 @@ describe("commitSelection", () => {
     });
     expect(results.type).toBe(Actions.OVERWRITE_RESOURCE);
     const { payload } = results;
-    expect(payload.uuid.split(".")[0]).toBe("Sequence");
+    expect(unpackUUID(payload.uuid).kind).toBe("Sequence");
     const s = payload.update as TaggedSequence["body"];
     expect(s.kind).toBe("sequence");
     const step = (s.body || [])[0] as ResourceUpdate;

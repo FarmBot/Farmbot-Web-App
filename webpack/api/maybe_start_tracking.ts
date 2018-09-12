@@ -1,5 +1,6 @@
 import { ResourceName } from "farmbot";
 import { startTracking } from "../connectivity/data_consistency";
+import { unpackUUID } from "../util";
 
 const BLACKLIST: ResourceName[] = [
   "DiagnosticDump",
@@ -16,6 +17,6 @@ const BLACKLIST: ResourceName[] = [
 ];
 
 export function maybeStartTracking(uuid: string) {
-  const ignore = BLACKLIST.includes(uuid.split(".")[0] as ResourceName);
+  const ignore = BLACKLIST.includes(unpackUUID(uuid).kind);
   ignore || startTracking(uuid);
 }
