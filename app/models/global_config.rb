@@ -18,9 +18,9 @@ class GlobalConfig < ApplicationRecord
     "FBOS_END_OF_LIFE_VERSION" => "0.0.0",
     "MINIMUM_FBOS_VERSION"     => "6.0.0"
   }.map do |(key, value)|
-    self.find_or_create_by(key: key) do |conf|
-      conf.assign_attributes(key: key, value: value)
-    end
+    self
+      .find_or_create_by(key: key)
+      .update_attributes(key: key, value: value)
   end
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
