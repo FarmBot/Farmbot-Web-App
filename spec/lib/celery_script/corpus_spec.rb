@@ -182,4 +182,18 @@ describe CeleryScript::Corpus do
     expect(checker.error.message)
       .to eq("Can't find Sequence with id of #{fake_id}")
   end
+
+  it "rejects bogus resource_types" do
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "CanOpener",
+                      "resource_id"   => 0,
+                      "label"         => "foo",
+                      "value"         => "Should Fail" } }
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
+                                        corpus,
+                                        device)
+    expect(checker.valid?).to be(false)
+    expect(checker.error.message)
+      .to include('"CanOpener" is not a valid resource_type.')
+  end
 end
