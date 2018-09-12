@@ -74,9 +74,8 @@ module CeleryScriptSettingsBag
                             "BoxLed4"    => BoxLed }
   CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
-  KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
-    (acc[val] = Kernel.const_get(val)) && acc
-  end
+  # KLASS_LOOKUP          =
+  #   Point::POINTER_KINDS.reduce({}) { |a, v| (a[v] = Kernel.const_get(v)) && a }
   RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
 
   Corpus = CeleryScript::Corpus
