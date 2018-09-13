@@ -6770,6 +6770,10 @@ symbol-tree@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.2.tgz#ae27db38f660a7ae2e1c3b7d1bc290819b8519e6"
 
+takeme@^0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/takeme/-/takeme-0.11.1.tgz#74fd0b4da3d604145d8e78acefc05ae4a966ae0f"
+
 tapable@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-1.0.0.tgz#cbb639d9002eed9c6b5975eb20598d7936f1f9f2"
