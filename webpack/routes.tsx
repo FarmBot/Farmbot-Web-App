@@ -34,20 +34,21 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
     (notLoggedIn && restrictedArea && Session.clear());
   }
 
+  changeRoute = (c: React.ComponentType, info: object) => {
+    console.dir(info);
+    this.setState({ CurrentRoute: c });
+  };
+
   componentDidMount() {
-    new Router(ROUTES).enableHtml5Routing("/app").init();
-  }
-
-  pageContent() {
-    const { CurrentRoute } = this.state;
-
-    return CurrentRoute ? CurrentRoute : "HMMM";
+    const routes = ROUTES.map(x => x(this.changeRoute));
+    new Router(routes).enableHtml5Routing("/app").init();
   }
 
   render() {
+    const { CurrentRoute } = this.state;
     return <ErrorBoundary>
       <Provider store={_store}>
-        {this.pageContent()}
+        <CurrentRoute />
       </Provider>
     </ErrorBoundary>;
   }
