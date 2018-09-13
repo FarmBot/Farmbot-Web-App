@@ -52,7 +52,7 @@
     "css-loader": "1.0.0",
     "enzyme": "3.6.0",
     "enzyme-adapter-react-16": "1.5.0",
-    "farmbot": "https://github.com/RickCarlino/farmbot-js.git#2458c790",
+    "farmbot": "6.5.0",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "2.0.0",

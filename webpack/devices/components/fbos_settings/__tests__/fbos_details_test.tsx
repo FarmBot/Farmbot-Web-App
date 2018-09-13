@@ -32,12 +32,9 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.firmware_commit = "fakeFwCommit";
     p.botInfoSettings.soc_temp = 48.3;
     p.botInfoSettings.wifi_level = -49;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).uptime = 0;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).memory_usage = 0;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).disk_usage = 0;
+    p.botInfoSettings.uptime = 0;
+    p.botInfoSettings.memory_usage = 0;
+    p.botInfoSettings.disk_usage = 0;
 
     const wrapper = mount(<FbosDetails {...p} />);
     ["Environment", "fakeEnv",
@@ -49,7 +46,7 @@ describe("<FbosDetails/>", () => {
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi Strength", "-49dBm",
       "Beta release Opt-In",
-      "Uptime", "0s",
+      "Uptime", "0 seconds",
       "Memory usage", "0MB",
       "Disk usage", "0%",
     ]
@@ -62,6 +59,22 @@ describe("<FbosDetails/>", () => {
     const wrapper = shallow(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("nodeName");
     expect(wrapper.text()).not.toContain("name@");
+  });
+
+  it("displays commit link", () => {
+    const p = fakeProps();
+    p.botInfoSettings.commit = "abcdefgh";
+    p.botInfoSettings.firmware_commit = "abcdefgh";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").length).toEqual(2);
+  });
+
+  it("doesn't display link without commit", () => {
+    const p = fakeProps();
+    p.botInfoSettings.commit = "---";
+    p.botInfoSettings.firmware_commit = "---";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").length).toEqual(0);
   });
 
   it("toggles os beta opt in setting on", () => {
@@ -105,15 +118,33 @@ describe("<FbosDetails/>", () => {
 
   it("doesn't display extra metrics when bot is offline", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).uptime = undefined;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).memory_usage = undefined;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).disk_usage = undefined;
+    p.botInfoSettings.uptime = undefined;
+    p.botInfoSettings.memory_usage = undefined;
+    p.botInfoSettings.disk_usage = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     ["uptime", "usage"].map(metric =>
       expect(wrapper.text().toLowerCase()).not.toContain(metric));
+  });
+
+  it("displays uptime in minutes", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 120;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 minutes");
+  });
+
+  it("displays uptime in hours", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 7200;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 hours");
+  });
+
+  it("displays uptime in days", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 172800;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 days");
   });
 });
 
