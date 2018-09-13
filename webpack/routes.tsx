@@ -11,6 +11,7 @@ import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
 import { ROUTES } from "./route_config_new";
+import { App } from "./app";
 
 interface RootComponentProps { store: Store; }
 
@@ -48,7 +49,9 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
     const { CurrentRoute } = this.state;
     return <ErrorBoundary>
       <Provider store={_store}>
-        <CurrentRoute />
+        <App {...{} as App["props"]}>
+          <CurrentRoute />
+        </App>
       </Provider>
     </ErrorBoundary>;
   }
