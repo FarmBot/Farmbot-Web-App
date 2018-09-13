@@ -2,14 +2,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router";
 import { t } from "i18next";
-import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
-import { TaggedPlantPointer } from "farmbot";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs } from "../panel_header";
+import { TaggedPlant } from "../map/interfaces";
+import { getPlants } from "../state_to_props";
 
 interface Props {
-  plants: TaggedPlantPointer[];
+  plants: TaggedPlant[];
   dispatch: Function;
   hoveredPlantListItem?: string | undefined;
 }
@@ -19,10 +19,9 @@ interface State {
 }
 
 function mapStateToProps(props: Everything): Props {
-  const plants = selectAllPlantPointers(props.resources.index);
   const { hoveredPlantListItem } = props.resources.consumers.farm_designer;
   return {
-    plants,
+    plants: getPlants(props.resources),
     dispatch: props.dispatch,
     hoveredPlantListItem,
   };

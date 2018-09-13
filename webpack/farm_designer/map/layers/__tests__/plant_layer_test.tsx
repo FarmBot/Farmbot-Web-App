@@ -6,8 +6,8 @@ jest.mock("../../../../history", () => ({
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
 import { shallow } from "enzyme";
-import { fakePlant } from "../../../../__test_support__/fake_state/resources";
-import { PlantLayerProps } from "../../interfaces";
+import { fakePlant, fakePlantTemplate } from "../../../../__test_support__/fake_state/resources";
+import { PlantLayerProps, GardenPlantProps } from "../../interfaces";
 import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
 
 describe("<PlantLayer/>", () => {
@@ -64,5 +64,45 @@ describe("<PlantLayer/>", () => {
     const wrapper = shallow(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
+  });
+
+  it("has link to plant", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    p.plants[0].body.id = 5;
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect(wrapper.find("Link").props().to)
+      .toEqual("/app/designer/plants/5");
+  });
+
+  it("has link to plant template", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    p.plants = [fakePlantTemplate()];
+    p.plants[0].body.id = 5;
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect(wrapper.find("Link").props().to)
+      .toEqual("/app/designer/saved_gardens/templates/5");
+  });
+
+  it("has selected plant", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.plants = [plant];
+    p.currentPlant = plant;
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
+  });
+
+  it("has plant selected for deletion", () => {
+    mockPath = "/app/designer/plants";
+    const p = fakeProps();
+    const plant = fakePlant();
+    p.plants = [plant];
+    p.selectedForDel = [plant.uuid];
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).grayscale)
+      .toEqual(true);
   });
 });

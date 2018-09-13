@@ -17,6 +17,7 @@ export let initialState: DesignerState = {
   cropSearchResults: [],
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   currentPoint: undefined,
+  openedSavedGarden: undefined,
 };
 
 export let designer = generateReducer<DesignerState>(initialState)
@@ -52,5 +53,9 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
     s.chosenLocation = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {
+    s.openedSavedGarden = payload;
     return s;
   });

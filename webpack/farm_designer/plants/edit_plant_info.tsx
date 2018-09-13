@@ -2,15 +2,15 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { BackArrow } from "../../ui/index";
-import { TaggedPlantPointer } from "farmbot";
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
+import { TaggedPlant } from "../map/interfaces";
 
 @connect(mapStateToProps)
 export class EditPlantInfo extends PlantInfoBase {
 
-  default = (plant_info: TaggedPlantPointer) => {
+  default = (plant_info: TaggedPlant) => {
     const info = formatPlantInfo(plant_info);
     return <div className="panel-container green-panel" >
       <div className="panel-header green-panel">
@@ -25,7 +25,8 @@ export class EditPlantInfo extends PlantInfoBase {
         info={info}
         onDestroy={this.destroy}
         updatePlant={this.updatePlant}
-        dispatch={this.props.dispatch} />
+        dispatch={this.props.dispatch}
+        inSavedGarden={!!this.props.openedSavedGarden} />
     </div>;
   }
 
