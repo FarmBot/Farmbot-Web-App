@@ -12,9 +12,9 @@
     color: $white;
   }
   .mobile-menu {
+    z-index: 9999;
     background: $dark_gray;
     color: $white;
-    z-index: 9999;
     height: 100vh;
     outline: none;
     animation: slide-in 0.2s;

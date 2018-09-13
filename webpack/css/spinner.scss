@@ -1,63 +1,63 @@
 $offset: 187;
 $duration: 1.3s;
 .spinner-container {
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    display: flex;
-    padding-top: 16%;
-    justify-content: center;
-    z-index: 1;
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 16%;
+  justify-content: center;
 }
 
 .spinner {
-    animation: rotator $duration linear infinite;
+  animation: rotator $duration linear infinite;
 }
 
 @keyframes rotator {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(270deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
 }
 
 .spinner-path {
-    stroke-dasharray: $offset;
-    stroke-dashoffset: 0;
-    transform-origin: center;
-    animation: dash $duration ease-in-out infinite, colors ($duration * 3) ease-in-out infinite;
+  stroke-dasharray: $offset;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash $duration ease-in-out infinite, colors ($duration * 3) ease-in-out infinite;
 }
 
 @keyframes colors {
-    0% {
-        stroke: #783F04;
-    }
-    25% {
-        stroke: #EE6666;
-    }
-    50% {
-        stroke: #66AA44;
-    }
-    75% {
-        stroke: #274E13;
-    }
-    100% {
-        stroke: #666666;
-    }
+  0% {
+    stroke: #783f04;
+  }
+  25% {
+    stroke: #ee6666;
+  }
+  50% {
+    stroke: #66aa44;
+  }
+  75% {
+    stroke: #274e13;
+  }
+  100% {
+    stroke: #666666;
+  }
 }
 
 @keyframes dash {
-    0% {
-        stroke-dashoffset: $offset;
-    }
-    50% {
-        stroke-dashoffset: $offset / 4;
-        transform: rotate(135deg);
-    }
-    100% {
-        stroke-dashoffset: $offset;
-        transform: rotate(450deg);
-    }
+  0% {
+    stroke-dashoffset: $offset;
+  }
+  50% {
+    stroke-dashoffset: $offset / 4;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: $offset;
+    transform: rotate(450deg);
+  }
 }

@@ -3,16 +3,16 @@
 }
 
 .image-flipper-image {
-  max-width: 100%;
   margin: auto;
+  max-width: 100%;
   max-height: 650px;
   min-height: 200px;
 }
 
 .image-flipper-left {
   position: absolute;
-  left: -5px;
   top: -5px;
+  left: -5px;
   bottom: -5px;
   background-color: rgba(0, 0, 0, 0.5);
   &:hover {
@@ -22,9 +22,9 @@
 
 .image-flipper-right {
   position: absolute;
-  right: -5px;
   top: -5px;
   bottom: -5px;
+  right: -5px;
   background-color: rgba(0, 0, 0, 0.5);
   &:hover {
     background-color: rgba(0, 0, 0, 0.7);
@@ -45,13 +45,13 @@
   }
   p {
     position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1;
     font-size: 1.5rem;
     text-align: center;
     padding: 20% 1rem 0;
     line-height: 2.4rem;
-    left: 0;
-    right: 0;
-    z-index: 1;
     margin-left: 50px;
     margin-right: 50px;
   }
@@ -59,13 +59,13 @@
 
 .photos {
   .photos-footer {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    display: flex;
     position: relative;
     left: 2.5rem;
     bottom: -1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     width: 90%;
-    display: flex;
     justify-content: space-between;
     label {
       font-weight: normal;
@@ -93,9 +93,9 @@
 
 .index-indicator {
   position: absolute;
-  background: $white;
-  height: 3px;
   top: 3rem;
   bottom: 0;
   right: 0;
+  background: $white;
+  height: 3px;
 }

@@ -1,13 +1,12 @@
 $duration: 2;
-
 .loading-plant-div-container {
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    display: flex;
-    padding-top: 10%;
-    justify-content: center;
-    z-index: 1;
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 10%;
+  justify-content: center;
 }
 
 .loading-plant-svg-container {
@@ -56,7 +55,7 @@ $duration: 2;
   transform-box: fill-box;
   transform: scale(1);
   opacity: 1;
-  animation: loading-plant-accent-pop $duration*0.5s cubic-bezier(0, 0, 0, 1.4) 1 ;
+  animation: loading-plant-accent-pop $duration*0.5s cubic-bezier(0, 0, 0, 1.4) 1;
 }
 
 @keyframes loading-plant-accent-pop {
@@ -77,9 +76,7 @@ $duration: 2;
 .loading-plant-circle {
   transform-origin: center;
   transform-box: fill-box;
-  animation:
-  loading-plant-circle-pop $duration*0.3s cubic-bezier(0, 0, 0, 1.4) 1,
-  loading-plant-circle $duration*3s linear infinite $duration*0.3s;
+  animation: loading-plant-circle-pop $duration*0.3s cubic-bezier(0, 0, 0, 1.4) 1, loading-plant-circle $duration*3s linear infinite $duration*0.3s;
 }
 
 @keyframes loading-plant-circle-pop {

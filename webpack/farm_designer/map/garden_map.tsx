@@ -381,6 +381,7 @@ export class GardenMap extends
           mapTransformProps={mapTransformProps}
           plantAreaOffset={this.props.gridOffset} />
         <svg
+          className="drop-area-svg"
           id="drop-area-svg"
           x={this.props.gridOffset.x} y={this.props.gridOffset.y}
           width={xySwap ? gridSize.y : gridSize.x}

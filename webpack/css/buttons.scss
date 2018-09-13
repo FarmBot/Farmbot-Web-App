@@ -1,4 +1,5 @@
 .fb-button {
+  position: relative;
   font-size: 1rem;
   float: right;
   text-transform: uppercase;
@@ -7,7 +8,6 @@
   padding: .2rem .8rem;
   border-radius: 3px;
   border: none;
-  position: relative;
   color: $off_white;
   transition: all 0.1s ease-in-out !important;
   &.disabled,
@@ -25,6 +25,7 @@
     pointer-events: none;
   }
   .btn-spinner {
+    margin: 0.2rem 0px 0 0.6rem;
     width: 0.8rem;
     height: 0.8rem;
     animation: rotate 0.8s infinite linear;
@@ -32,7 +33,6 @@
     border-right-color: transparent;
     border-radius: 50%;
     float: right;
-    margin: 0.2rem 0px 0 0.6rem;
     &.sync {
       border-color: $dark_gray;
       border-right-color: transparent;
@@ -200,40 +200,39 @@
 }
 
 .fb-toggle-button {
-  height: 1.8rem !important;
   position: relative;
+  height: 1.8rem !important;
   border-bottom: none !important;
   box-shadow: none !important;
   padding: 0.3rem 0.10rem;
   border-radius: 10px;
   width: 5rem;
   border-bottom: none;
-  position: relative;
   transition: all 0.4s ease;
   &.yellow {
     &:after {
       content: "";
       position: absolute;
+      top: 0.1rem;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
       height: 1.6rem;
       width: 1.6rem;
       background: $white;
       border-radius: 50%;
-      margin: 0 auto;
-      left: 0;
-      right: 0;
-      top: 0.1rem;
       box-shadow: inset rgba(0, 0, 0, 0.03) 0px 0px 3px 3px;
     }
     &:before {
       content: "";
       position: absolute;
+      top: 0.1rem;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
       height: 1.6rem;
       width: 1.6rem;
       border-radius: 50%;
-      top: 0.1rem;
-      margin: 0 auto;
-      left: 0;
-      right: 0;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
     }
   }
@@ -243,12 +242,12 @@
     &:after {
       content: "";
       position: absolute;
+      top: 0.1rem;
+      right: 0.2rem;
       height: 1.6rem;
       width: 1.6rem;
       background: $white;
       border-radius: 50%;
-      top: 0.1rem;
-      right: 0.2rem;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
     }
     &:hover {
@@ -264,12 +263,12 @@
     &:after {
       content: "";
       position: absolute;
+      top: 0.1rem;
+      left: 0.2rem;
       height: 1.6rem;
       width: 1.6rem;
       background: white;
       border-radius: 50%;
-      top: 0.1rem;
-      left: 0.2rem;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
     }
     &.dim {
@@ -282,9 +281,12 @@
 }
 
 .plus-button {
+  position: fixed;
+  left: 0;
+  bottom: 5rem;
+  right: 0;
   z-index: 3;
   border-radius: 50%;
-  bottom: 5rem;
   width: 5rem;
   height: 5rem;
   color: $off_white;
@@ -292,9 +294,6 @@
   text-align: center;
   cursor: pointer;
   box-shadow: 0 3px 0px 0px $dark_green;
-  position: fixed;
-  left: 0;
-  right: 0;
   i {
     line-height: 5rem;
     font-size: 2.8rem;
