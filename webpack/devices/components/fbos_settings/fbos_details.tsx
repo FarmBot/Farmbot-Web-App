@@ -64,9 +64,7 @@ export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage
-    // TODO: remove `as any` in the next line (& tests) when FBJS is published.
-    // tslint:disable-next-line:no-any
-  } = botInfoSettings as any;
+  } = botInfoSettings;
   const betaOptIn = sourceFbosConfig("beta_opt_in");
   const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
   return <div>

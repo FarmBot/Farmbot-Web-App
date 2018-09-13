@@ -105,12 +105,9 @@ describe("<FbosDetails/>", () => {
 
   it("doesn't display extra metrics when bot is offline", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).uptime = undefined;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).memory_usage = undefined;
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).disk_usage = undefined;
+    p.botInfoSettings.uptime = undefined;
+    p.botInfoSettings.memory_usage = undefined;
+    p.botInfoSettings.disk_usage = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
     ["uptime", "usage"].map(metric =>
       expect(wrapper.text().toLowerCase()).not.toContain(metric));
