@@ -71,7 +71,7 @@ export function startTracking(uuid = PLACEHOLDER) {
   }
   storeUUID(cleanID);
   getDevice().on(cleanID, () => stopTracking(cleanID));
-  setTimeout(stop, MAX_WAIT);
+  // setTimeout(stop, MAX_WAIT);
 }
 
 export function stopTracking(uuid: string) {
