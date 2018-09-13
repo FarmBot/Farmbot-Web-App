@@ -31,7 +31,7 @@ set(window, "outstanding_requests", outstandingRequests);
 const PLACEHOLDER = "placeholder";
 
 /** Max wait in MS before clearing out. */
-const MAX_WAIT = 3500;
+// const MAX_WAIT = 3500;
 
 /**
 * PROBLEM:  You save a sequence and click "RUN" very fast. The remote device
