@@ -17,8 +17,8 @@
   }
   &:after {
     content: "";
-    bottom: 0;
     left: 0;
+    bottom: 0;
     right: 0;
     pointer-events: none;
   }
@@ -48,11 +48,11 @@
     background: rgba(255, 255, 255, 0.2);
   }
   .saucer {
+    margin: 0.2rem 0.6rem 0rem 0;
     float: left;
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 50%;
-    margin: 0.2rem 0.6rem 0rem 0;
   }
 }
 

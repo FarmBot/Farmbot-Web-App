@@ -1,12 +1,12 @@
 .farm-designer {
+  position: relative;
   height: 100vh;
   overflow-y: hidden;
-  position: relative;
 }
 
 .farm-designer-map {
-  min-width: 100%;
   display: inline-block;
+  min-width: 100%;
   padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
   height: 100%;
   overflow: auto;
@@ -25,11 +25,11 @@
     }
     text::selection {
       background: none;
+    }
   }
 }
-}
 
-#drop-area-svg {
+.drop-area-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
@@ -70,27 +70,27 @@
       margin-bottom: 2rem;
     }
     label {
+      position: absolute;
       left: 15px;
+      bottom: -5px;
       right: 15px;
       margin-top: 0 !important;
       padding: 0.4rem 0.6rem 0.2rem;
-      bottom: -5px;
       background: rgba(0, 0, 0, 0.5);
       color: $white;
-      position: absolute;
       font-size: 1.2rem !important;
     }
   }
 }
 
 .crop-info-overlay {
+  display: flex;
   position: relative;
   bottom: 3rem;
   z-index: 2;
   background-color: $dark_gray;
   font-style: italic;
   color: $off_white;
-  display: flex;
   justify-content: center;
   /* align horizontal */
   align-items: center;
@@ -101,17 +101,17 @@
 
 .thin-search-wrapper {
   .text-input-wrapper {
-    margin: 1rem;
     position: relative;
+    margin: 1rem;
     border-bottom: 1px solid #000;
     &:before,
     &:after {
       content: "";
       position: absolute;
+      bottom: 0;
       background: #000;
       width: 1px;
       height: 10px;
-      bottom: 0;
     }
     &:before {
       left: 0;
@@ -135,7 +135,7 @@
       background: transparent !important;
     }
     &::-webkit-input-placeholder {
-      color: #999;
+      color: $placeholder_gray;
     }
   }
   .select-results-container {
@@ -160,14 +160,15 @@
   .plant-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
-    &:hover, &.hovered {
+    &:hover,
+    &.hovered {
       background: darken($light_green, 10%);
       transition: background 0.2s ease;
     }
     img {
+      margin: 0 1rem 0 0;
       height: 4rem;
       width: 4rem;
-      margin: 0 1rem 0 0;
     }
   }
   .plant-search-item-age {
@@ -178,12 +179,12 @@
     float: right;
   }
   .plant-search-item-name {
+    display: inline-block;
     vertical-align: middle;
     white-space: nowrap;
     width: 8em;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: inline-block;
     margin-left: 1rem;
   }
 }
@@ -270,9 +271,17 @@
 }
 
 @keyframes water-spray-animation {
-  0%   { transform: scale(0.7) rotate(0deg); opacity: 0;}
-  50%   { opacity: 1;}
-  100% { transform: scale(1.1) rotate(10deg); opacity: 0;}
+  0% {
+    transform: scale(0.7) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1) rotate(10deg);
+    opacity: 0;
+  }
 }
 
 .vacuum {
@@ -287,8 +296,14 @@
 }
 
 @keyframes vacuum-animation {
-  0%   { transform: scale(1); opacity: 0;}
-  100% { transform: scale(0); opacity: 1;}
+  0% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 1;
+  }
 }
 
 .garden-map-legend {
@@ -303,12 +318,12 @@
     transform: translateX(-140px);
   }
   .content {
-    background: rgba(256, 256, 256, .75);
-    padding: 10px;
-    border-radius: 5px;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    background: rgba(256, 256, 256, .75);
+    padding: 10px;
+    border-radius: 5px;
     >*+* {
       margin-top: 1rem;
     }
@@ -347,27 +362,26 @@
   }
   .farmbot-origin {
     .quadrants {
-      border: 1px solid $dark_gray;
       display: flex;
       flex-wrap: wrap;
+      border: 1px solid $dark_gray;
     }
     .quadrant {
+      display: inline-block;
+      position: relative;
       background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
       background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
       cursor: pointer;
       border: 1px solid $dark_gray;
       width: 50%;
       height: 24px;
-      display: inline-block;
-      position: relative;
       transition: all 0.2s ease-in-out;
       &:hover {
         background-color: rgba(0, 0, 0, 0.1);
       }
       &.selected {
         box-shadow: inset 0 0 8px $dark_gray;
-      }
-      // Quadrant 1
+      } // Quadrant 1
       &:nth-child(2) {
         &:before {
           top: 0;
@@ -377,8 +391,7 @@
           top: 8px;
           right: 16px;
         }
-      }
-      // Quadrant 2
+      } // Quadrant 2
       &:nth-child(1) {
         &:before {
           top: 0;
@@ -388,19 +401,17 @@
           top: 8px;
           left: 16px;
         }
-      }
-      // Quadrant 3
+      } // Quadrant 3
       &:nth-child(3) {
         &:before {
-          bottom: 0;
           left: 0;
+          bottom: 0;
         }
         &:after {
-          bottom: 8px;
           left: 16px;
+          bottom: 8px;
         }
-      }
-      // Quadrant 4
+      } // Quadrant 4
       &:nth-child(4) {
         &:before {
           bottom: 0;
@@ -440,10 +451,10 @@
     }
   }
   .menu-pullout {
-    color: $white;
-    cursor: pointer;
     position: absolute;
     left: -4.5rem;
+    color: $white;
+    cursor: pointer;
     transition: all 0.4s ease;
     text-shadow: 0px 1px 1px #555;
     &.active {
@@ -464,12 +475,12 @@
       }
     }
     span {
+      position: absolute;
+      top: 0.6rem;
+      left: -4.6rem;
       transition-delay: 0.6s;
       transition: all 0.4s ease;
       opacity: 0;
-      position: absolute;
-      left: -4.6rem;
-      top: 0.6rem;
     }
   }
 }

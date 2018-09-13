@@ -15,9 +15,9 @@
       flex: 1;
       input,
       label {
+        display: inline-block;
         width: auto;
         cursor: pointer;
-        display: inline-block;
       }
       input {
         margin-left: 1rem;
@@ -36,17 +36,17 @@
     float: right;
     margin-top: 0.1rem;
   }
-   ::-webkit-input-placeholder {
+  ::-webkit-input-placeholder {
     color: $dark_gray;
     font-weight: bold;
     text-transform: uppercase;
   }
-   ::-moz-placeholder {
+  ::-moz-placeholder {
     color: $dark_gray;
     font-weight: bold;
     text-transform: uppercase;
   }
-   :-ms-input-placeholder {
+  :-ms-input-placeholder {
     color: $dark_gray;
     font-weight: bold;
     text-transform: uppercase;
@@ -109,8 +109,8 @@
 }
 
 .step-up-down-arrows {
-  text-align: center;
   display: inline-block;
+  text-align: center;
   font-size: 2rem;
 }
 

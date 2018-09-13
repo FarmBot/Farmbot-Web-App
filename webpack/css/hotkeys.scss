@@ -1,21 +1,21 @@
 .hotkey-guide {
-  z-index: 99;
+  position: relative;
   top: 24vh;
-  margin: 0 auto;
   left: 0;
   right: 0;
+  z-index: 99;
+  margin: 0 auto;
   width: 32rem;
-  position: relative;
   outline: none;
   h3 {
-    text-align: center;
     display: block;
+    text-align: center;
     margin-bottom: 3rem;
   }
   i {
     position: absolute;
-    font-size: 2rem;
     top: 1rem;
     left: 1rem;
+    font-size: 2rem;
   }
 }

@@ -11,6 +11,7 @@
 }
 
 .move-amount {
+  margin: 0;
   background-color: $white;
   border-right: 2px solid $off-white;
   color: $medium_gray;
@@ -22,7 +23,6 @@
   padding-right: 0;
   text-align: center;
   width: 20%;
-  margin: 0;
   float: left;
   &:hover {
     background-color: darken($white, 40%);
@@ -41,7 +41,7 @@
     border-right: 0px none;
   }
   &.move-amount-selected {
-    background-color: $medium_gray!important;
+    background-color: $medium_gray !important;
     color: $off_white;
   }
 }
@@ -55,12 +55,12 @@
 }
 
 .arrow-button {
+  margin: 0;
   background-color: $medium_gray;
   border-bottom: 2px solid $dark_gray;
   color: $off_white;
-  font-size: 16px!important;
+  font-size: 16px !important;
   height: 40px;
-  margin: 0;
   padding: 12px;
   text-align: center;
   width: 40px;

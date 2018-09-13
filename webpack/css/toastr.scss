@@ -1,18 +1,18 @@
 .toast-container {
   position: fixed;
   bottom: 0px;
-  width: 100%;
   z-index: 999999;
+  width: 100%;
   pointer-events: none;
 }
 
 .toast {
+  position: relative;
   box-shadow: 0px 1px 4px #555;
   pointer-events: all;
   padding: 1.8rem;
   cursor: pointer;
   min-height: 6rem;
-  position: relative;
   margin-top: 10px;
   margin-left: auto;
   margin-right: auto;
@@ -39,14 +39,16 @@
     pointer-events: none;
   }
   &.yellow {
-    .toast-title, .toast-message {
+    .toast-title,
+    .toast-message {
       color: $dark_gray;
     }
   }
   &.blue,
   &.green,
   &.red {
-    .toast-title, .toast-message {
+    .toast-title,
+    .toast-message {
       color: $off_white;
     }
   }
@@ -66,19 +68,19 @@
 
 .toast-loader {
   position: absolute;
+  top: 1rem;
+  right: 1rem;
   width: 1.6rem;
   height: 1.6rem;
   overflow: hidden;
   transform: rotate(180deg);
-  top: 1rem;
-  right: 1rem;
 }
 
 .toast-loader-left,
 .toast-loader-right,
 .toast-loader-spinner {
-  top: 0;
   position: absolute;
+  top: 0;
   width: 50%;
   height: 100%;
 }
@@ -93,8 +95,8 @@
 
 .toast-loader-right {
   right: 0;
-  background: #666 !important;
   z-index: 1;
+  background: #666 !important;
   opacity: 0;
   animation: show-hide 7s steps(1, end) reverse;
   border-radius: 0 100% 100% 0/ 0 50% 50% 0;
@@ -102,10 +104,10 @@
 
 .toast-loader-spinner {
   left: 0;
+  z-index: 2;
   background: #666 !important;
   animation: spin 7s linear;
   transform-origin: center right;
-  z-index: 2;
   border-radius: 100% 0 0 100%/ 50% 0 0 50%;
 }
 
