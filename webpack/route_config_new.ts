@@ -36,6 +36,16 @@ export const UNBOUND_ROUTES = [
     key: "Controls"
   }),
   rc({
+    $: "/designer",
+    enter: () => import("./farm_designer/plants/plant_inventory"),
+    key: "Plants"
+  }),
+  rc({
+    $: "/designer/plants",
+    enter: () => import("./farm_designer/plants/plant_inventory"),
+    key: "Plants"
+  }),
+  rc({
     $: "/designer/farm_events",
     enter: () => import("./farm_designer/farm_events/farm_events"),
     key: "FarmEvents"
@@ -49,11 +59,6 @@ export const UNBOUND_ROUTES = [
     $: "/designer/farm_events/add",
     enter: () => import("./farm_designer/farm_events/add_farm_event"),
     key: "AddFarmEvent"
-  }),
-  rc({
-    $: "/designer/plants",
-    enter: () => import("./farm_designer/plants/plant_inventory"),
-    key: "Plants"
   }),
   rc({
     $: "/designer/plants/:plant_id",
