@@ -35,10 +35,8 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
     (notLoggedIn && restrictedArea && Session.clear());
   }
 
-  changeRoute = (c: React.ComponentType, info: object) => {
-    console.dir(info);
-    this.setState({ CurrentRoute: c });
-  };
+  changeRoute =
+    (c: React.ComponentType) => this.setState({ CurrentRoute: c });
 
   componentDidMount() {
     const routes = ROUTES.map(x => x(this.changeRoute));

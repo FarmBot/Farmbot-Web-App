@@ -49,7 +49,6 @@ export const NavLinks = (props: NavLinksProps) => {
     <div className="nav-links">
       {links.map(link => {
         const isActive = (currPageSlug === link.slug) ? "active" : "";
-        console.log(`${isActive ? "*" : ""} ${currPageSlug} ${link.slug}`);
         const childPath = link.slug === "designer" ? "/plants" : "";
         const fn = link.computeHref || DEFAULT;
         return <Link

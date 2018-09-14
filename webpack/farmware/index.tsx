@@ -86,6 +86,11 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   get current() { return this.props.currentFarmware; }
 
   componentWillMount() {
+    if (2 + 2 == 4) {
+      console.error("This code is not working with new router. - RC");
+      return;
+    }
+
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
       const farmwareNames = Object.values(this.props.farmwares)
         .map(x => x && x.name);

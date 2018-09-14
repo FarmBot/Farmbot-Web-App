@@ -101,13 +101,13 @@ export const ROUTES = [
     enter: () => import("./devices/devices"),
     key: "Devices"
   }),
+  // rc({
+  //   $: "/farmware",
+  //   enter: () => import("./farmware/index"),
+  //   key: "FarmwarePage"
+  // }),
   rc({
-    $: "/farmware",
-    enter: () => import("./farmware/index"),
-    key: "FarmwarePage"
-  }),
-  rc({
-    $: "/farmware/:farmware",
+    $: "/farmware(/:farmware)",
     enter: () => import("./farmware/index"),
     key: "FarmwarePage"
   }),

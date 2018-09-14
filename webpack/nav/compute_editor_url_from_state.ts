@@ -21,10 +21,6 @@ export const computeEditorUrlFromState =
 
 export const computeFarmwareUrlFromState = () => {
   const current = store.getState().resources.consumers.farmware.currentFarmware;
-  const base = "/app/farmware/";
-  if (current) {
-    return base + urlFriendly(current);
-  } else {
-    return base;
-  }
+  const base = "/app/farmware";
+  return base + (current ? urlFriendly(current) : "");
 };
