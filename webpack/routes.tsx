@@ -36,7 +36,12 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
   }
 
   changeRoute =
-    (c: React.ComponentType) => this.setState({ CurrentRoute: c });
+    (c: React.ComponentType) => {
+      console.group();
+      console.count("changeRoute");
+      this.setState({ CurrentRoute: c });
+      console.groupEnd();
+    }
 
   componentDidMount() {
     const routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));

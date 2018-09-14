@@ -41,8 +41,7 @@ function drt<T>(i: SpecialRoute<T>) {
           const El: any = (await getChild())[key];
           const { FarmDesigner } = await import("./farm_designer");
           const stub: any = {
-            children: <El />,
-            key: "FARM_DESIGNER_DYNAMIC_MAGIC"
+            children: <El />
           };
           callback(() => <FarmDesigner {...stub} />, info);
         } catch (e) {

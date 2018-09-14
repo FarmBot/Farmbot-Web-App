@@ -8,6 +8,9 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   className?: string;
 }
 
+export const maybeStripLegacyUrl =
+  (url: string) => url.startsWith("/app") ? url.replace("/app", "") : url;
+
 export const Link: React.SFC<LinkProps> = (props) => <a
   {...props}
   href={props.to}
@@ -15,6 +18,6 @@ export const Link: React.SFC<LinkProps> = (props) => <a
     e.preventDefault();
     /** BEGIN LEGACY SHIMS */
     const { onClick, to } = props;
-    navigate(to.startsWith("/app") ? to.replace("/app", "") : to);
+    navigate(maybeStripLegacyUrl(to));
     onClick && onClick(e);
   }} />;
