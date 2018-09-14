@@ -14,6 +14,7 @@ export const Link: React.SFC<LinkProps> = (props) => <a
   onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     /** BEGIN LEGACY SHIMS */
-    const href = props.to;
-    navigate(href.startsWith("/app") ? href.replace("/app", "") : href);
+    const { onClick, to } = props;
+    navigate(to.startsWith("/app") ? to.replace("/app", "") : to);
+    onClick && onClick(e);
   }} />;
