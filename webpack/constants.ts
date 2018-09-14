@@ -37,7 +37,8 @@ export namespace ToolTips {
     few sequences to verify that everything works as expected.`);
 
   export const PIN_BINDINGS =
-    trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is activated.`);
+    trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is
+    activated.`);
 
   export const PIN_BINDING_WARNING =
     trim(`Warning: Binding to a pin without a physical button and
@@ -49,10 +50,10 @@ export namespace ToolTips {
 
   // Hardware Settings: Homing and Calibration
   export const HOMING =
-    trim(`(Alpha) If encoders or end-stops are enabled, home axis (find zero).`);
+    trim(`If encoders or end-stops are enabled, home axis (find zero).`);
 
   export const CALIBRATION =
-    trim(`(Alpha) If encoders or end-stops are enabled, home axis and determine
+    trim(`If encoders or end-stops are enabled, home axis and determine
     maximum.`);
 
   export const SET_ZERO_POSITION =
@@ -107,8 +108,8 @@ export namespace ToolTips {
     trim(`The number of motor steps required to move the axis one millimeter.`);
 
   export const ALWAYS_POWER_MOTORS =
-    trim(`Keep power applied to motors. Prevents slipping from gravity in certain
-    situations.`);
+    trim(`Keep power applied to motors. Prevents slipping from gravity in
+    certain situations.`);
 
   export const INVERT_MOTORS =
     trim(`Invert direction of motor during calibration.`);
@@ -118,23 +119,23 @@ export namespace ToolTips {
 
   // Hardware Settings: Encoders and Endstops
   export const ENABLE_ENCODERS =
-    trim(`(Alpha) Enable use of rotary encoders during calibration and homing.`);
+    trim(`Enable use of rotary encoders during calibration and homing.`);
 
   export const ENCODER_POSITIONING =
-    trim(`[EXPERIMENTAL] Use encoders for positioning.`);
+    trim(`Use encoders for positioning.`);
 
   export const INVERT_ENCODERS =
-    trim(`(Alpha) Reverse the direction of encoder position reading.`);
+    trim(`Reverse the direction of encoder position reading.`);
 
   export const MAX_MISSED_STEPS =
-    trim(`(Alpha) Number of steps missed (determined by encoder) before motor is
+    trim(`Number of steps missed (determined by encoder) before motor is
     considered to have stalled.`);
 
   export const ENCODER_MISSED_STEP_DECAY =
-    trim(`(Alpha) Reduction to missed step total for every good step.`);
+    trim(`Reduction to missed step total for every good step.`);
 
   export const ENCODER_SCALING =
-    trim(`(Alpha) encoder scaling factor = 10000 * (motor resolution * microsteps)
+    trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution).`);
 
   export const ENABLE_ENDSTOPS =
@@ -253,6 +254,12 @@ export namespace ToolTips {
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type on the
     Device page.`);
+
+  export const MARK_AS =
+    trim(`The Mark As step allows FarmBot to programmatically edit the
+    properties of the UTM, plants, and weeds from within a sequence.
+    For example, you can mark a plant as "planted" during a seeding
+    sequence or delete a weed after removing it.`);
 
   // Regimens
   export const BULK_SCHEDULER =
@@ -522,8 +529,8 @@ export namespace Content {
     click "+" in the Regimens panel to create a new one.`);
 
   export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
-    regimen. Consider wrapping it in a parent sequence that calls it via "execute"
-    instead."`);
+    regimen. Consider wrapping it in a parent sequence that calls it via
+    "execute" instead.`);
 
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
@@ -537,6 +544,10 @@ export namespace Content {
   export const CREATE_POINTS_DESCRIPTION =
     trim(`Click and drag to draw a point or use the inputs and press
     update. Press CREATE POINT to save, or the back arrow to exit.`);
+
+  export const BOX_SELECT_DESCRIPTION =
+    trim(`Drag a box around the plants you would like to select.
+    Press the back arrow to exit.`);
 
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
@@ -634,6 +645,7 @@ export enum Actions {
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
+  CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

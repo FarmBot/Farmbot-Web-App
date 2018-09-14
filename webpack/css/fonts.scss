@@ -1,6 +1,6 @@
 // Google Fonts
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic,100,100italic);
-@import 'colors';
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic,100,100italic");
+@import "colors";
 // Font Variables
 $roboto: 'Roboto',
 Arial,
@@ -8,8 +8,8 @@ Helvetica,
 sans-serif;
 body,
 html {
-    font-family: $roboto;
-    font-weight: 400;
+  font-family: $roboto;
+  font-weight: 400;
 }
 
 h1,
@@ -20,13 +20,13 @@ h5,
 h6,
 p,
 fieldset {
-    font-family: $roboto;
-    font-weight: 400;
+  font-family: $roboto;
+  font-weight: 400;
 }
 
 p {
-    font-size: 1.1rem;
-    color: $dark_gray;
-    line-height: 1.4rem;
-    margin-bottom: 0!important;
+  font-size: 1.1rem;
+  color: $dark_gray;
+  line-height: 1.4rem;
+  margin-bottom: 0 !important;
 }

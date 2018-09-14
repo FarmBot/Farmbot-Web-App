@@ -99,14 +99,13 @@ const CropInfoList = (crop: OpenFarm.OFCrop) => {
 };
 
 export function mapStateToProps(props: Everything): CropInfoProps {
+  const { cropSearchResults, openedSavedGarden } =
+    props.resources.consumers.farm_designer;
   return {
     OFSearch,
     dispatch: Function,
-    cropSearchResults: props
-      .resources
-      .consumers
-      .farm_designer
-      .cropSearchResults || [],
+    cropSearchResults: cropSearchResults || [],
+    openedSavedGarden,
     botPosition: validBotLocationData(props.bot.hardware.location_data).position
   };
 }
@@ -179,8 +178,15 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
         <button className="fb-button gray" disabled={!this.botXY}
           onClick={() => {
             if (this.botXY) {
-              createPlant(result.crop.name, result.crop.slug,
-                this.botXY, undefined, this.props.dispatch);
+              const { openedSavedGarden } = this.props;
+              createPlant({
+                cropName: result.crop.name,
+                slug: result.crop.slug,
+                gardenCoords: this.botXY,
+                gridSize: undefined,
+                dispatch: this.props.dispatch,
+                openedSavedGarden
+              });
             }
           }}>
           {t("Add plant at current FarmBot location {{coordinate}}",

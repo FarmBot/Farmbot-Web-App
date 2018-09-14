@@ -121,7 +121,7 @@ export function CreateAccount(props: CreateAccountProps) {
   const RelevantForm = props.sent ? DidRegister : MustRegister;
   return <Col xs={12} sm={5}>
     <Widget>
-      <WidgetHeader title={"Create An Account"} />
+      <WidgetHeader title={t("Create An Account")} />
       <RelevantForm {...props} />
     </Widget>
   </Col>;

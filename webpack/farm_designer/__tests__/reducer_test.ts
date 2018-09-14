@@ -19,6 +19,7 @@ describe("designer reducer", () => {
       cropSearchResults: [],
       chosenLocation: { x: undefined, y: undefined, z: undefined },
       currentPoint: undefined,
+      openedSavedGarden: undefined,
     };
   };
 
@@ -81,6 +82,16 @@ describe("designer reducer", () => {
     expect(newState.currentPoint).toEqual({
       cx: 10, cy: 20, r: 30, color: "red"
     });
+  });
+
+  it("sets opened saved garden", () => {
+    const payload = "savedGardenUuid";
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.CHOOSE_SAVED_GARDEN,
+      payload
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.openedSavedGarden).toEqual(payload);
   });
 
   it("stores new OpenFarm assets", () => {

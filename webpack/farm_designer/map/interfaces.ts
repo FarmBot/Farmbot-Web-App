@@ -1,15 +1,18 @@
 import {
   TaggedPlantPointer,
   TaggedGenericPointer,
-  TaggedCrop
+  TaggedCrop,
+  TaggedPlantTemplate
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 
+export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
+
 export interface PlantLayerProps {
-  plants: TaggedPlantPointer[];
-  currentPlant: TaggedPlantPointer | undefined;
+  plants: TaggedPlant[];
+  currentPlant: TaggedPlant | undefined;
   dragging: boolean;
   editing: boolean;
   visible: boolean;
@@ -53,7 +56,7 @@ export type MapTransformProps = {
 export interface GardenPlantProps {
   mapTransformProps: MapTransformProps;
   dispatch: Function;
-  plant: Readonly<TaggedPlantPointer>;
+  plant: Readonly<TaggedPlant>;
   selected: boolean;
   dragging: boolean;
   zoomLvl: number;
@@ -82,12 +85,12 @@ export interface DragHelpersBaseProps {
 }
 
 export interface DragHelperLayerProps extends DragHelpersBaseProps {
-  currentPlant: TaggedPlantPointer | undefined;
+  currentPlant: TaggedPlant | undefined;
   editing: boolean;
 }
 
 export interface DragHelpersProps extends DragHelpersBaseProps {
-  plant: Readonly<TaggedPlantPointer>;
+  plant: Readonly<TaggedPlant>;
 }
 
 export type AxisNumberProperty = Record<"x" | "y", number>;
@@ -103,6 +106,7 @@ export interface BotExtentsProps {
 export interface MapBackgroundProps {
   mapTransformProps: MapTransformProps;
   plantAreaOffset: AxisNumberProperty;
+  templateView: boolean;
 }
 
 export interface GridProps {
@@ -125,7 +129,7 @@ export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps 
 
 export interface SpreadOverlapHelperProps {
   dragging: boolean;
-  plant: Readonly<TaggedPlantPointer>;
+  plant: Readonly<TaggedPlant>;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;

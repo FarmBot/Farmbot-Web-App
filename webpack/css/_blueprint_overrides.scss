@@ -68,19 +68,19 @@
   &:hover {
     background: $white !important;
   }
-   :first-child {
+  :first-child {
+    display: inline-block;
     white-space: nowrap;
     width: 73%;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: inline-block;
     padding-right: 1rem;
   }
 }
 
 .pt-popover-wrapper {
-  position: relative;
   display: block;
+  position: relative;
   * {
     text-align: left;
   }

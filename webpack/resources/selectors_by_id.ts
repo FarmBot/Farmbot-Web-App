@@ -7,6 +7,7 @@ import {
   isTaggedTool,
   isTaggedToolSlotPointer,
   sanityCheck,
+  isTaggedPlantTemplate,
 } from "./tagged_resources";
 import {
   ResourceName,
@@ -96,6 +97,13 @@ export function maybeFindPlantById(index: ResourceIndex, id: number) {
   const uuid = index.byKindAndId[joinKindAndId("Point", id)];
   const resource = index.references[uuid || "nope"];
   if (resource && isTaggedPlantPointer(resource)) { return resource; }
+}
+
+/** Unlike other findById methods, this one allows undefined (missed) values */
+export function maybeFindPlantTemplateById(index: ResourceIndex, id: number) {
+  const uuid = index.byKindAndId[joinKindAndId("PlantTemplate", id)];
+  const resource = index.references[uuid || "nope"];
+  if (resource && isTaggedPlantTemplate(resource)) { return resource; }
 }
 
 export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {

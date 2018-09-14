@@ -144,7 +144,7 @@ export class API {
     (gardenId: number) => `${this.savedGardensPath}/${gardenId}/apply`;
   get exportDataPath() { return `${this.baseUrl}/api/export_data`; }
   /** /api/plant_templates/:id */
-  get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates`; }
+  get plantTemplatePath() { return `${this.baseUrl}/api/plant_templates/`; }
   /** /api/diagnostic_dumps/:id */
   get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps/`; }
   /** /api/farmware_installations/:id */

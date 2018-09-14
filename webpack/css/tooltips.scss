@@ -7,7 +7,10 @@
   &:hover,
   &:active {
     .help-text {
+      display: block;
       position: absolute;
+      left: 17rem;
+      bottom: -0.8rem;
       z-index: 999;
       padding: 2px;
       font-style: normal;
@@ -16,9 +19,6 @@
       border-radius: 3px;
       padding: .5rem .8rem;
       width: 250px;
-      left: 17rem;
-      bottom: -0.8rem;
-      display: block;
     }
   }
 }

@@ -1,23 +1,26 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { TaggedPlantPointer } from "farmbot";
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
 import { unselectPlant } from "../actions";
 import { Link } from "../../link";
+import { TaggedPlant } from "../map/interfaces";
 
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
 
-  default = (plant_info: TaggedPlantPointer) => {
+  default = (plant_info: TaggedPlant) => {
     const info = formatPlantInfo(plant_info);
     const { name, id } = info;
+    const plantId = (id || "BROKEN").toString();
     return <div className="panel-container green-panel" >
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <Link to="/app/designer/plants" className="back-arrow">
+          <Link
+            to={`/app/designer/${this.plantCategory}`}
+            className="back-arrow">
             <i
               className="fa fa-arrow-left"
               onClick={unselectPlant(this.props.dispatch)} />
@@ -26,13 +29,16 @@ export class PlantInfo extends PlantInfoBase {
             {name}
           </span>
           <Link
-            to={`/app/designer/plants/` + (id || "BROKEN").toString() + `/edit`}
+            to={`/app/designer/${this.plantCategory}/${plantId}/edit`}
             className="right-button">
             {t("Edit")}
           </Link>
         </p>
       </div>
-      <PlantPanel info={info} dispatch={this.props.dispatch} />
+      <PlantPanel
+        info={info}
+        dispatch={this.props.dispatch}
+        inSavedGarden={!!this.props.openedSavedGarden} />
     </div>;
   }
 

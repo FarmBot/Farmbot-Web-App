@@ -225,6 +225,7 @@ export function urlFor(tag: ResourceName) {
     FirmwareConfig: API.current.firmwareConfigPath,
     DiagnosticDump: API.current.diagnosticDumpsPath,
     SavedGarden: API.current.savedGardensPath,
+    PlantTemplate: API.current.plantTemplatePath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -276,7 +277,8 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "Point",
   "Sequence",
   "Regimen",
-  "Image"
+  "Image",
+  "SavedGarden",
 ];
 
 const confirmationChecker = (resource: TaggedResource, force = false) =>

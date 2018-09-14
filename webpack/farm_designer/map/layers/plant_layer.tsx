@@ -2,7 +2,7 @@ import * as React from "react";
 import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
-import { defensiveClone } from "../../../util";
+import { defensiveClone, unpackUUID } from "../../../util";
 import { maybeNoPointer } from "../maybe_no_pointer";
 import { Link } from "../../../link";
 
@@ -43,9 +43,13 @@ export function PlantLayer(props: PlantLayerProps) {
           };
         })
         .map(p => {
+          const plantCategory =
+            unpackUUID(p.uuid).kind === "PlantTemplate"
+              ? "saved_gardens/templates"
+              : "plants";
           return <Link className="plant-link-wrapper"
             style={maybeNoPointer({})}
-            to={"/app/designer/plants/" + p.plantId}
+            to={`/app/designer/${plantCategory}/` + p.plantId}
             id={p.plantId}
             onClick={_.noop}
             key={p.plantId}>

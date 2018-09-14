@@ -21,6 +21,7 @@ describe("<HoveredPlantLayer/>", () => {
         cropSearchResults: [],
         chosenLocation: { x: undefined, y: undefined, z: undefined },
         currentPoint: undefined,
+        openedSavedGarden: undefined,
       },
       hoveredPlant: fakePlant(),
       isEditing: false,

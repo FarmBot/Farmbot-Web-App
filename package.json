@@ -17,7 +17,8 @@
     "test-slow": "jest --coverage --no-cache -w 4",
     "test": "jest --no-coverage --cache -w 5",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
-    "tslint": "./node_modules/tslint/bin/tslint --project ."
+    "tslint": "./node_modules/tslint/bin/tslint --project .",
+    "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q"
   },
   "keywords": [
     "farmbot"
@@ -78,6 +79,7 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-thunk": "2.3.0",
     "rollbar-sourcemap-webpack-plugin": "^2.3.0",
+    "sass-lint": "^1.12.1",
     "sass-loader": "7.1.0",
     "stats-webpack-plugin": "0.7.0",
     "style-loader": "0.23.0",

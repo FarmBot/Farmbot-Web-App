@@ -16,9 +16,9 @@
  */
 
 .widget-wrapper {
+  position: relative;
   box-shadow: 0px 0px 10px $gray;
   margin-bottom: 3rem;
-  position: relative;
 }
 
 .widget-header {
@@ -60,17 +60,17 @@
     }
     a:hover {
       font-weight: 600;
-      color: white;
+      color: $white;
     }
     a:active {
-      color: white;
+      color: $white;
     }
   }
   h5 {
+    display: inline;
     color: $gray;
     font-size: 1.2rem;
     text-transform: uppercase;
-    display: inline;
     margin-right: 1rem;
   }
 }

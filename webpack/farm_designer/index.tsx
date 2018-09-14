@@ -14,6 +14,7 @@ import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom
 import * as moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
+import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
@@ -183,6 +184,9 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           cameraCalibrationData={this.props.cameraCalibrationData}
           getConfigValue={this.props.getConfigValue} />
       </div>
+
+      {this.props.designer.openedSavedGarden &&
+        <SavedGardenHUD dispatch={this.props.dispatch} />}
     </div>;
   }
 }

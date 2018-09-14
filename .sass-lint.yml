@@ -1,0 +1,48 @@
+#########################
+## Sass Lint Config File
+#########################
+# Linter Options
+options:
+  # Don't merge default rules
+  merge-default-rules: false
+  # Raise an error if warnings are generated
+  max-warnings: 0
+# File Options
+files:
+  include: 'webpack/css/**/*.s+(a|c)ss'
+# Rule Configuration
+rules:
+  extends-before-mixins: 2
+  extends-before-declarations: 2
+  placeholder-in-extend: 2
+  mixins-before-declarations: 2
+  no-warn: 1
+  no-debug: 1
+  no-ids: 2
+  hex-notation:
+    - 2
+    -
+      style: lowercase
+  indentation:
+    - 2
+    -
+      size: 2
+  property-sort-order:
+    - 1
+    -
+      order:
+        - content
+        - display
+        - position
+        - top
+        - left
+        - bottom
+        - right
+        - z-index
+        - margin
+      ignore-custom-properties: true
+  variable-for-property:
+    - 2
+    -
+      properties:
+        - color

@@ -1,9 +1,9 @@
 .farmware-input-panel,
 .sequence-editor-panel,
 .regimen-editor-panel {
+  margin: -3rem -1.5rem -6rem;
   height: calc(100vh - 5rem);
   background: $light_gray;
-  margin: -3rem -1.5rem -6rem;
   @media screen and (max-width: 768px) {
     margin-bottom: 3rem;
   }
@@ -14,7 +14,8 @@
     margin-top: 0.4rem;
   }
   @media screen and (max-width: 974px) {
-    h3, p {
+    h3,
+    p {
       margin-left: 15px;
       margin-right: 15px;
     }
