@@ -45,12 +45,16 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
 
   render() {
     const { CurrentRoute } = this.state;
-    return <ErrorBoundary>
-      <Provider store={_store}>
-        <App {...{} as App["props"]}>
-          <CurrentRoute />
-        </App>
-      </Provider>
-    </ErrorBoundary>;
+    try {
+      return <ErrorBoundary>
+        <Provider store={_store}>
+          <App {...{} as App["props"]}>
+            <CurrentRoute />
+          </App>
+        </Provider>
+      </ErrorBoundary>;
+    } catch (error) {
+      return <p> Kaboom!</p>;
+    }
   }
 }
