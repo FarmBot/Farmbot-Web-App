@@ -9,6 +9,7 @@ describe("<FarmbotOsRow/>", () => {
   const fakeProps = (): FarmbotOsRowProps => {
     return {
       bot,
+      osReleaseNotesHeading: "",
       osReleaseNotes: "",
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       sourceFbosConfig: (x) => {

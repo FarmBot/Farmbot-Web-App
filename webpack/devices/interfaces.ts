@@ -160,6 +160,7 @@ export interface FarmbotOsProps {
 }
 
 export interface FarmbotOsState {
+  osReleaseNotesHeading: string;
   osReleaseNotes: string;
 }
 
