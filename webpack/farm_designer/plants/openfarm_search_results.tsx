@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router";
+import { Link } from "../../link";
 
 /** A stripped down version of OFSearchResult */
 interface Result {

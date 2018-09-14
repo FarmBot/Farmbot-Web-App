@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Link } from "react-router";
 import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone } from "../../../util";
 import { maybeNoPointer } from "../maybe_no_pointer";
+import { Link } from "../../../link";
 
 const cropSpreadDict: CropSpreadDict = {};
 

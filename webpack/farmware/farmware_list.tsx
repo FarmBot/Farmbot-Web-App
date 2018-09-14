@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Link } from "react-router";
 import { urlFriendly, betterCompact } from "../util";
 import { Actions } from "../constants";
 import { Farmwares } from "./interfaces";
@@ -9,6 +8,7 @@ import { commandErr } from "../devices/actions";
 import { FarmwareConfigMenu } from "./farmware_config_menu";
 import { every, Dictionary } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
+import { Link } from "../link";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),

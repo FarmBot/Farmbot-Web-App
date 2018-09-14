@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { Row } from "../../ui/index";
@@ -9,6 +8,7 @@ import * as _ from "lodash";
 import * as moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
+import { Link } from "../../link";
 
 export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   innerRows = (items: CalendarOccurrence[]) => {

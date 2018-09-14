@@ -1,10 +1,10 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { Link } from "react-router";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
 import { t } from "i18next";
+import { Link } from "../../link";
 
 export function TileTakePhoto(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -22,9 +22,11 @@ export function TileTakePhoto(props: StepParams) {
       <Row>
         <Col xs={12}>
           <p>
-            {t("Photos are viewable from the")} <Link to="/app/farmware">
-              farmware {t("page")}</Link>.
-                </p>
+            {t("Photos are viewable from the")}
+            <Link to="/app/farmware">
+              farmware {t("page")}
+            </Link>.
+          </p>
         </Col>
       </Row>
     </StepContent>

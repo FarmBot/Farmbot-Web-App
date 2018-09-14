@@ -2,7 +2,6 @@ import * as React from "react";
 import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui/index";
 import { TickerListProps } from "./interfaces";
-import { Link } from "react-router";
 import { t } from "i18next";
 import { formatLogTime } from "../logs/index";
 import { safeNumericSetting } from "../session";
@@ -11,6 +10,7 @@ import { ALLOWED_MESSAGE_TYPES, TaggedLog, SpecialStatus } from "farmbot";
 import { filterByVerbosity } from "../logs/components/logs_table";
 import { isNumber } from "lodash";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { Link } from "../link";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
