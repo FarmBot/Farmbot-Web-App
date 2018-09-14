@@ -7,7 +7,7 @@ import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
 import { BackArrow } from "../../ui/index";
 import { unselectPlant } from "../actions";
-import { Actions } from "../../constants";
+import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
 
@@ -113,8 +113,7 @@ export class SelectPlants
         </div>
 
         <div className="panel-header-description">
-          {t("Drag a box around the plants you would like to select. " +
-            "Press the back arrow to exit.")}
+          {t(Content.BOX_SELECT_DESCRIPTION)}
         </div>
 
       </div>
