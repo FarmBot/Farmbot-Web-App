@@ -1,7 +1,11 @@
-import { browserHistory } from "react-router";
-export let history = browserHistory;
-export let push = (url: string) => history.push(url);
+import { navigate } from "takeme";
+
+export let push = (url: string) => navigate(url);
+
+/** This is a stub from the `react-router`.
+ * Don't use it anymore. */
+export let history = { push, getCurrentLocation: () => window.location };
 
 export function getPathArray() {
-  return history.getCurrentLocation().pathname.split("/");
+  return location.pathname.split("/");
 }

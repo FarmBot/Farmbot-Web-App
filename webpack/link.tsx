@@ -1,15 +1,15 @@
 import * as React from "react";
-const a = <p />;
+import { html5LinkOnClick } from "takeme";
 
-type AnchorProps = typeof a["props"];
-
-interface LinkProps extends AnchorProps {
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to: string;
   children: React.ReactChild | React.ReactChild[];
   style?: React.CSSProperties;
   className?: string;
 }
 
-export function Link({ children }: LinkProps) {
-  return <a onClick={() => alert("FIXME")}>{children}</a>;
-}
+export const Link: React.SFC<LinkProps> =
+  (props) => <a onClick={(e) => html5LinkOnClick({ event: e.nativeEvent })}
+    href={props.href}
+    target={props.target}
+    children={props.children} />;
