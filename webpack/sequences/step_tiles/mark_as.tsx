@@ -35,7 +35,7 @@ export class MarkAs extends React.Component<StepParams, MarkAsState> {
     return <StepWrapper>
       <StepHeader
         className={this.className}
-        helpText={ToolTips.WAIT}
+        helpText={ToolTips.MARK_AS}
         currentSequence={this.props.currentSequence}
         currentStep={this.props.currentStep}
         dispatch={this.props.dispatch}

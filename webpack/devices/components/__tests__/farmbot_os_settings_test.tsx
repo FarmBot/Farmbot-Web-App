@@ -50,8 +50,10 @@ describe("<FarmbotOsSettings/>", () => {
       {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
+    expect(osSettings.instance().state.osReleaseNotesHeading)
+      .toEqual("FarmBot OS v6");
     expect(osSettings.instance().state.osReleaseNotes)
-      .toEqual("# FarmBot OS v6\n* note");
+      .toEqual("* note");
   });
 
   it("doesn't fetch OS release notes", async () => {

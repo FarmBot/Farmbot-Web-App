@@ -40,6 +40,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
           <i className="fa fa-caret-down" />
         </p>
         <div className="release-notes">
+          <h1>{props.osReleaseNotesHeading}</h1>
           <Markdown>
             {osReleaseNotes}
           </Markdown>

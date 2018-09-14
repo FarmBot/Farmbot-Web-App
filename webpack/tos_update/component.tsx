@@ -101,7 +101,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
     logInit();
     const body = t("Before logging in, you must agree to our latest Terms" +
       " of Service and Privacy Policy");
-    log(body, "New Terms of Service");
+    log(body, t("New Terms of Service"));
   }
 
   render() {
@@ -110,8 +110,8 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
         <Widget>
           <WidgetHeader title={
             this.tosLoadOk
-              ? "Agree to Terms of Service"
-              : "Problem Loading Terms of Service"} />
+              ? t("Agree to Terms of Service")
+              : t("Problem Loading Terms of Service")} />
           <WidgetBody>
             {this.tosForm()}
           </WidgetBody>

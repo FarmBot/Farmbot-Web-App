@@ -194,6 +194,9 @@ a {
   cursor: pointer !important;
   &.fa-gear {
     color: $white;
+    &.dark {
+      color: $dark_gray;
+    }
   }
 }
 
@@ -808,7 +811,8 @@ ul {
   max-width: 250px;
   h1 {
     font-weight: 300;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    line-height: 2rem;
   }
   li:before {
     content: "• ";
