@@ -1,4 +1,5 @@
 import { RouteConfig } from "takeme";
+import { Apology } from "./apology";
 
 interface FarmBotRoute<T> { $: string; enter: () => Promise<T>; key: keyof T; }
 
@@ -14,13 +15,16 @@ const rc =
           callback((await enter())[key], info);
         } catch (e) {
           console.error(e);
-          alert("Kaboom");
+          callback(Apology, info);
         }
       }
     };
   };
 
-export const ROUTES = [
+/** Bind the route to a callback by calling in a function that passes the
+  callback in as the first argument
+ */
+export const UNBOUND_ROUTES = [
   rc({
     $: "/account",
     enter: () => import("./account/index"),
@@ -101,13 +105,13 @@ export const ROUTES = [
     enter: () => import("./devices/devices"),
     key: "Devices"
   }),
-  // rc({
-  //   $: "/farmware",
-  //   enter: () => import("./farmware/index"),
-  //   key: "FarmwarePage"
-  // }),
   rc({
-    $: "/farmware(/:farmware)",
+    $: "/farmware/*",
+    enter: () => import("./farmware/index"),
+    key: "FarmwarePage"
+  }),
+  rc({
+    $: "/farmware",
     enter: () => import("./farmware/index"),
     key: "FarmwarePage"
   }),
@@ -127,12 +131,7 @@ export const ROUTES = [
     key: "Regimens"
   }),
   rc({
-    $: "/sequences",
-    enter: () => import("./sequences/sequences"),
-    key: "Sequences"
-  }),
-  rc({
-    $: "/sequences/:sequence",
+    $: "/sequences(/:sequence)",
     enter: () => import("./sequences/sequences"),
     key: "Sequences"
   }),

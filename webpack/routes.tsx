@@ -10,7 +10,7 @@ import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
-import { ROUTES } from "./route_config_new";
+import { UNBOUND_ROUTES } from "./route_config_new";
 import { App } from "./app";
 
 interface RootComponentProps { store: Store; }
@@ -39,7 +39,7 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
     (c: React.ComponentType) => this.setState({ CurrentRoute: c });
 
   componentDidMount() {
-    const routes = ROUTES.map(x => x(this.changeRoute));
+    const routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
     new Router(routes).enableHtml5Routing("/app").init();
   }
 

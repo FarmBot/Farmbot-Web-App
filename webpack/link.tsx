@@ -1,5 +1,5 @@
 import * as React from "react";
-import { html5LinkOnClick } from "takeme";
+import { navigate } from "takeme";
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to: string;
@@ -10,5 +10,10 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 
 export const Link: React.SFC<LinkProps> = (props) => <a
   {...props}
-  onClick={e => html5LinkOnClick({ event: e.nativeEvent })}
-  href={props.to} />;
+  href={props.to}
+  onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    /** BEGIN LEGACY SHIMS */
+    const href = props.to;
+    navigate(href.startsWith("/app") ? href.replace("/app", "") : href);
+  }} />;
