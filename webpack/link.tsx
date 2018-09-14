@@ -8,8 +8,7 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   className?: string;
 }
 
-export const Link: React.SFC<LinkProps> =
-  (props) => <a onClick={(e) => html5LinkOnClick({ event: e.nativeEvent })}
-    href={props.href}
-    target={props.target}
-    children={props.children} />;
+export const Link: React.SFC<LinkProps> = (props) => <a
+  {...props}
+  onClick={e => html5LinkOnClick({ event: e.nativeEvent })}
+  href={props.to} />;
