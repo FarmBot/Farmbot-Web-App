@@ -3,30 +3,29 @@ import { history } from "../../history";
 import { t } from "i18next";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
-import { TaggedPlantPointer } from "farmbot";
-import { selectAllPlantPointers } from "../../resources/selectors";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
 import { BackArrow } from "../../ui/index";
 import { unselectPlant } from "../actions";
 import { Actions } from "../../constants";
+import { TaggedPlant } from "../map/interfaces";
+import { getPlants } from "../state_to_props";
 
 export function mapStateToProps(props: Everything) {
-  const plants = selectAllPlantPointers(props.resources.index);
   return {
     selected: props
       .resources
       .consumers
       .farm_designer
       .selectedPlants,
-    plants,
+    plants: getPlants(props.resources),
     dispatch: props.dispatch,
     currentIcon: props.resources.consumers.farm_designer.hoveredPlant.icon
   };
 }
 
 export interface SelectPlantsProps {
-  plants: TaggedPlantPointer[];
+  plants: TaggedPlant[];
   dispatch: Function;
   selected: string[];
   currentIcon: string;

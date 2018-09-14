@@ -7,21 +7,42 @@ import {
   selectAllImages,
   maybeGetTimeOffset,
   selectAllPeripherals,
-  getFirmwareConfig
+  getFirmwareConfig,
+  selectAllPlantTemplates
 } from "../resources/selectors";
 import * as _ from "lodash";
-import { validBotLocationData, validFwConfig } from "../util";
+import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
+import { Props } from "./interfaces";
+import { TaggedPlant } from "./map/interfaces";
+import { RestResources } from "../resources/interfaces";
+import { isString } from "lodash";
 
-export function mapStateToProps(props: Everything) {
+const plantFinder = (plants: TaggedPlant[]) =>
+  (uuid: string | undefined): TaggedPlant =>
+    plants.filter(x => x.uuid === uuid)[0];
 
-  const plants = selectAllPlantPointers(props.resources.index);
-  const maybeSelectedPlants = props.resources.consumers.farm_designer.selectedPlants;
-  const selectedPlant = maybeSelectedPlants
-    ? plants.filter(x => x.uuid === maybeSelectedPlants[0])[0]
+export const getPlants = (resources: RestResources) => {
+  const onlyPlants = selectAllPlantPointers(resources.index);
+  const plantTemplates = selectAllPlantTemplates(resources.index);
+  const { openedSavedGarden } = resources.consumers.farm_designer;
+  return isString(openedSavedGarden)
+    ? plantTemplates.filter(x =>
+      x.body.saved_garden_id === unpackUUID(openedSavedGarden).remoteId)
+    : onlyPlants;
+};
+
+export function mapStateToProps(props: Everything): Props {
+  const plants = getPlants(props.resources);
+  const findPlant = plantFinder(plants);
+
+  const { selectedPlants } = props.resources.consumers.farm_designer;
+  const selectedPlant = selectedPlants
+    ? findPlant(selectedPlants[0])
     : undefined;
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
-  const hoveredPlant = plants.filter(x => x.uuid === plantUUID)[0];
+
+  const hoveredPlant = findPlant(plantUUID);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
@@ -60,7 +81,6 @@ export function mapStateToProps(props: Everything) {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
     selectedPlant,
-    zoomLevel: 1,
     designer: props.resources.consumers.farm_designer,
     points: selectAllGenericPointers(props.resources.index),
     toolSlots: joinToolsAndSlot(props.resources.index),

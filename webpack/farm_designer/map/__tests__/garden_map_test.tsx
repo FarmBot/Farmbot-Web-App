@@ -62,6 +62,7 @@ function fakeProps(): GardenMapProps {
       }],
       chosenLocation: { x: undefined, y: undefined, z: undefined },
       currentPoint: undefined,
+      openedSavedGarden: undefined,
     },
     plants: [fakePlant(), fakePlant()],
     points: [],

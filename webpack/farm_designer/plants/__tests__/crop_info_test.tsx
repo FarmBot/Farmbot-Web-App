@@ -39,6 +39,7 @@ describe("<CropInfo />", () => {
           svg_icon: "fake_mint_svg"
         }
       }],
+      openedSavedGarden: undefined,
       botPosition: { x: undefined, y: undefined, z: undefined },
     };
   };

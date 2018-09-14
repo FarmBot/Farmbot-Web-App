@@ -19,7 +19,8 @@ describe("<PlantInfo />", () => {
     return {
       push: jest.fn(),
       findPlant: fakePlant,
-      dispatch: jest.fn()
+      dispatch: jest.fn(),
+      openedSavedGarden: undefined,
     };
   }
 
@@ -39,5 +40,21 @@ describe("<PlantInfo />", () => {
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+  });
+
+  it("has link to plants", () => {
+    const p = fakeProps();
+    p.openedSavedGarden = undefined;
+    const wrapper = mount(<PlantInfo {...p} />);
+    expect(wrapper.find("Link").first().props().to)
+      .toEqual("/app/designer/plants");
+  });
+
+  it("has link to plant templates", () => {
+    const p = fakeProps();
+    p.openedSavedGarden = "savedGardenUuid";
+    const wrapper = mount(<PlantInfo {...p} />);
+    expect(wrapper.find("Link").first().props().to)
+      .toEqual("/app/designer/saved_gardens/templates");
   });
 });

@@ -3,13 +3,15 @@ import { t } from "i18next";
 import * as moment from "moment";
 import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
-import { TaggedPlantPointer } from "farmbot";
 import { Actions } from "../../constants";
+import { TaggedPlant } from "../map/interfaces";
+import { get } from "lodash";
+import { unpackUUID } from "../../util";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
 interface PlantInventoryItemProps {
-  tpp: TaggedPlantPointer;
+  tpp: TaggedPlant;
   dispatch: Function;
   hovered: boolean;
 }
@@ -41,7 +43,11 @@ export class PlantInventoryItem extends
     };
 
     const click = () => {
-      push("/app/designer/plants/" + plantId);
+      const plantCategory =
+        unpackUUID(this.props.tpp.uuid).kind === "PlantTemplate"
+          ? "saved_gardens/templates"
+          : "plants";
+      push(`/app/designer/${plantCategory}/` + plantId);
       dispatch({ type: Actions.SELECT_PLANT, payload: [tpp.uuid] });
     };
 
@@ -61,9 +67,11 @@ export class PlantInventoryItem extends
     const label = plant.name || "Unknown plant";
 
     // Original planted date vs time now to determine age.
-    const plantedAt = plant.planted_at
-      ? moment(plant.planted_at)
-      : moment(plant.created_at) || moment();
+    const getPlantedAt = get(plant, "planted_at", moment());
+    const createdAt = get(plant, "created_at", moment());
+    const plantedAt = getPlantedAt
+      ? moment(getPlantedAt)
+      : moment(createdAt);
     const currentDay = moment();
     const daysOld = currentDay.diff(plantedAt, "days") + 1;
 

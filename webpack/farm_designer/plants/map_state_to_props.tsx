@@ -1,20 +1,29 @@
 import * as moment from "moment";
 import { Everything } from "../../interfaces";
 import { EditPlantInfoProps } from "../interfaces";
-import { maybeFindPlantById } from "../../resources/selectors";
+import {
+  maybeFindPlantById, maybeFindPlantTemplateById
+} from "../../resources/selectors";
 import { history } from "../../history";
-import { TaggedPlantPointer, PlantStage } from "farmbot";
+import { PlantStage } from "farmbot";
 import * as _ from "lodash";
+import { TaggedPlant } from "../map/interfaces";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
+  const openedSavedGarden =
+    props.resources.consumers.farm_designer.openedSavedGarden;
+  const gardenOpen = !!openedSavedGarden;
   const findPlant = (id: string | undefined) => {
     const num = parseInt(id || "NOPE", 10);
     if (_.isNumber(num) && !_.isNaN(num)) {
-      return maybeFindPlantById(props.resources.index, num);
+      return gardenOpen
+        ? maybeFindPlantTemplateById(props.resources.index, num)
+        : maybeFindPlantById(props.resources.index, num);
     }
   };
 
   return {
+    openedSavedGarden,
     findPlant,
     push: history.push,
     dispatch: props.dispatch,
@@ -37,11 +46,11 @@ export interface FormattedPlantInfo {
   plantStatus: PlantStage;
 }
 
-export function formatPlantInfo(rsrc: TaggedPlantPointer): FormattedPlantInfo {
+export function formatPlantInfo(rsrc: TaggedPlant): FormattedPlantInfo {
   const p = rsrc.body;
-  const plantedAt = p.planted_at
-    ? moment(p.planted_at)
-    : moment(p.created_at) || moment();
+  const plantedAt = _.get(p, "planted_at", moment())
+    ? moment(_.get(p, "planted_at", moment()))
+    : moment(_.get(p, "created_at", moment()));
   const currentDay = moment();
   const daysOld = currentDay.diff(plantedAt, "days") + 1;
   return {
@@ -53,6 +62,6 @@ export function formatPlantInfo(rsrc: TaggedPlantPointer): FormattedPlantInfo {
     y: p.y,
     uuid: rsrc.uuid,
     plantedAt: plantedAt.format("MMMM Do YYYY, h:mma"),
-    plantStatus: p.plant_stage,
+    plantStatus: _.get(p, "plant_stage", "planned"),
   };
 }
