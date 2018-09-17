@@ -2,6 +2,7 @@ import { navigate } from "takeme";
 import { maybeStripLegacyUrl } from "./link";
 
 export const push = (url: string) => {
+  debugger;
   navigate(maybeStripLegacyUrl(url));
 };
 export const getPathArray = () => location.pathname.split("/");

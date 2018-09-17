@@ -1,12 +1,10 @@
-import { history, push } from "../history";
+jest.mock("takeme", () => ({ navigate: jest.fn() }));
+import { navigate } from "takeme";
+import { push } from "../history";
 
 describe("push()", () => {
   it("calls history with a URL", () => {
-    const URL = "/wow.html";
-    const oldFn = history.push;
-    history.push = jest.fn();
-    push(URL);
-    expect(history.push).toHaveBeenCalledWith(URL);
-    history.push = oldFn;
+    push("/app/wow.html");
+    expect(navigate).toHaveBeenCalledWith("/wow.html");
   });
 });
