@@ -10,7 +10,7 @@ import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
-import { UNBOUND_ROUTES } from "./route_config_new";
+import { UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
 
 interface RootComponentProps { store: Store; }
@@ -37,10 +37,7 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
 
   changeRoute =
     (c: React.ComponentType) => {
-      console.group();
-      console.count("changeRoute");
       this.setState({ CurrentRoute: c });
-      console.groupEnd();
     }
 
   componentDidMount() {
