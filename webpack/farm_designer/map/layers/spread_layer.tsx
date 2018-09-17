@@ -72,13 +72,17 @@ interface SpreadCircleState {
 
 export class SpreadCircle extends
   Component<SpreadCircleProps, SpreadCircleState> {
-
+  public isClear = false;
   state: SpreadCircleState = { spread: undefined };
 
-  componentDidMount() {
+  componentWillMount = () => {
+    this.isClear = true;
+    // NOTE: The error still happens here:
     cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) => this.setState({ spread }));
+      .then(({ spread }) => this.isClear && this.setState({ spread }));
   }
+
+  componentWillUnmount = () => { this.isClear = false; };
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
