@@ -56,7 +56,7 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
         </Provider>
       </ErrorBoundary>;
     } catch (error) {
-      return <p> Kaboom!</p>;
+      return <p> Problem loading page.</p>;
     }
   }
 }

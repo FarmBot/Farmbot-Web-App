@@ -79,8 +79,11 @@ function legacyRoute<T>(i: LegacyRouteCfg<T>) {
         try {
           // tslint:disable-next-line:no-any
           const El: any = (await getChild())[key];
+          // ^ Let route() / legacyRoute() catch type issues.
+
           // tslint:disable-next-line:no-any
           const stub: any = { children: <El /> };
+          // ^ react-redux will mutate the real props behind the scenes.
           const { FarmDesigner } = await import("./farm_designer");
           callback(() => <FarmDesigner {...stub} />, info);
         } catch (e) {

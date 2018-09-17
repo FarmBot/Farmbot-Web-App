@@ -77,7 +77,6 @@ export class SpreadCircle extends
 
   componentWillMount = () => {
     this.isClear = true;
-    // NOTE: The error still happens here:
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.isClear && this.setState({ spread }));
   }

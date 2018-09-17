@@ -86,7 +86,6 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   get current() { return this.props.currentFarmware; }
 
   componentWillMount() {
-    console.warn("Do we still need this? - RC");
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
       const farmwareNames = Object.values(this.props.farmwares)
         .map(x => x && x.name);
