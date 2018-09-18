@@ -183,24 +183,14 @@ export const UNBOUND_ROUTES = [
     key: "AddFarmEvent"
   }),
   legacyRoute({
-    $: "/designer/plants/:plant_id",
-    getChild: () => import("./farm_designer/plants/plant_info"),
-    key: "PlantInfo"
-  }),
-  legacyRoute({
-    $: "/designer/plants/:plant_id/edit",
-    getChild: () => import("./farm_designer/plants/edit_plant_info"),
-    key: "EditPlantInfo"
-  }),
-  legacyRoute({
-    $: "/designer/plants/create_point",
-    getChild: () => import("./farm_designer/plants/create_points"),
-    key: "CreatePoints"
-  }),
-  legacyRoute({
     $: "/designer/plants/crop_search",
     getChild: () => import("./farm_designer/plants/crop_catalog"),
     key: "CropCatalog"
+  }),
+  legacyRoute({
+    $: "/designer/plants/crop_search/:crop/add",
+    getChild: () => import("./farm_designer/plants/add_plant"),
+    key: "AddPlant"
   }),
   legacyRoute({
     $: "/designer/plants/crop_search/:crop",
@@ -208,9 +198,19 @@ export const UNBOUND_ROUTES = [
     key: "CropInfo"
   }),
   legacyRoute({
-    $: "/designer/plants/crop_search/:crop/add",
-    getChild: () => import("./farm_designer/plants/add_plant"),
-    key: "AddPlant"
+    $: "/designer/plants/create_point",
+    getChild: () => import("./farm_designer/plants/create_points"),
+    key: "CreatePoints"
+  }),
+  legacyRoute({
+    $: "/designer/plants/:plant_id/edit",
+    getChild: () => import("./farm_designer/plants/edit_plant_info"),
+    key: "EditPlantInfo"
+  }),
+  legacyRoute({
+    $: "/designer/plants/:plant_id",
+    getChild: () => import("./farm_designer/plants/plant_info"),
+    key: "PlantInfo"
   }),
   legacyRoute({
     $: "/designer/plants/move_to",

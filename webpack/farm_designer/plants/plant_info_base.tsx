@@ -14,7 +14,11 @@ export abstract class PlantInfoBase extends
     return this.templates ? "saved_gardens/templates" : "plants";
   }
 
-  get stringyID() { return getPathArray()[this.templates ? 5 : 4] || ""; }
+  get stringyID() {
+    const aha = getPathArray()[this.templates ? 5 : 4] || "";
+    console.log(" === " + aha);
+    return aha;
+  }
 
   get plant() { return this.props.findPlant(this.stringyID); }
 
