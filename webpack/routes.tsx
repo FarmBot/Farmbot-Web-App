@@ -12,6 +12,7 @@ import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
 import { UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
+// import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 interface RootComponentProps { store: Store; }
 

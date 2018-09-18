@@ -153,11 +153,6 @@ export const UNBOUND_ROUTES = [
     key: "FarmDesigner"
   }),
   legacyRoute({
-    $: "/designer/plants",
-    getChild: () => import("./farm_designer/plants/plant_inventory"),
-    key: "Plants"
-  }),
-  legacyRoute({
     $: "/designer/farm_events",
     getChild: () => import("./farm_designer/farm_events/farm_events"),
     key: "FarmEvents"
@@ -173,6 +168,11 @@ export const UNBOUND_ROUTES = [
     key: "EditFarmEvent"
   }),
   // =================== PLANT ROUTES
+  legacyRoute({
+    $: "/designer/plants",
+    getChild: () => import("./farm_designer/plants/plant_inventory"),
+    key: "Plants"
+  }),
   legacyRoute({
     $: "/designer/plants/move_to",
     getChild: () => import("./farm_designer/plants/move_to"),
