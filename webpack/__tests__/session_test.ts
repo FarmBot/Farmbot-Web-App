@@ -47,13 +47,13 @@ describe("safeNumericSetting", () => {
 });
 
 describe("clear()", () => {
-  it("clears", () => {
+  fit("clears", () => {
     localStorage.clear = jest.fn();
     sessionStorage.clear = jest.fn();
-    window.location.assign = jest.fn();
+    location.assign = jest.fn();
     expect(Session.clear()).toEqual(undefined);
     expect(localStorage.clear).toHaveBeenCalled();
     expect(sessionStorage.clear).toHaveBeenCalled();
-    expect(window.location.assign).toHaveBeenCalled();
+    expect(location.assign).toHaveBeenCalled();
   });
 });

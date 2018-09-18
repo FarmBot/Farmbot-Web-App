@@ -25,7 +25,8 @@ describe("<Body/>", () => {
   it("triggers onChange() event", () => {
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
-    iw.props = props;
+    // tslint:disable-next-line:no-any
+    (iw as any).props = props;
     iw.onHslChange("H")([4, 5]);
     expect(props.onChange).toHaveBeenCalledTimes(2);
     expect(props.onChange).toHaveBeenCalledWith("H_HI", 5);

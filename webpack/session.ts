@@ -39,14 +39,13 @@ export namespace Session {
   export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
-    window.location.assign(window.location.origin || "/");
+    location.assign(window.location.origin || "/");
     return undefined as never;
   }
 }
 
 export const isBooleanSetting =
-  // tslint:disable-next-line:no-any
-  (x: any): x is BooleanConfigKey => !!BooleanSetting[x as BooleanConfigKey];
+  (k: unknown): k is BooleanConfigKey => !!BooleanSetting[k as BooleanConfigKey];
 
 export function safeBooleanSettting(name: string): BooleanConfigKey {
   if (isBooleanSetting(name)) {
