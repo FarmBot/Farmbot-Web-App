@@ -23,7 +23,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
       </label>
     </Col>
     <Col xs={3}>
-      <Popover position={Position.TOP_LEFT}>
+      <Popover position={Position.BOTTOM_LEFT}>
         <p>
           {t("Version {{ version }}", { version })}
         </p>
@@ -40,6 +40,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
           <i className="fa fa-caret-down" />
         </p>
         <div className="release-notes">
+          <h1>{props.osReleaseNotesHeading}</h1>
           <Markdown>
             {osReleaseNotes}
           </Markdown>

@@ -4,12 +4,15 @@ import { Color } from "../../ui/index";
 import { getMapSize } from "./util";
 
 export function MapBackground(props: MapBackgroundProps) {
-  const { mapTransformProps, plantAreaOffset } = props;
+  const { mapTransformProps, plantAreaOffset, templateView } = props;
   const { gridSize, xySwap } = mapTransformProps;
   const gridSizeW = xySwap ? gridSize.y : gridSize.x;
   const gridSizeH = xySwap ? gridSize.x : gridSize.y;
   const boardWidth = 20;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
+  const bkgdColor = templateView ? Color.templateSoilBkgd : Color.soilBackground;
+  const fillColor = templateView ? Color.templateGridSoil : Color.gridSoil;
+  const edgeColor = templateView ? "rgba(0,0,0,0.25)" : "rgba(120,63,4,0.25)";
   return <g id="map-background">
     <defs>
       <pattern id="diagonalHatch"
@@ -21,15 +24,15 @@ export function MapBackground(props: MapBackgroundProps) {
 
     <rect id="bed-border"
       x={0} y={0} width={mapSize.w} height={mapSize.h}
-      fill={Color.soilBackground} />
+      fill={bkgdColor} />
     <rect id="bed-interior" x={boardWidth / 2} y={boardWidth / 2}
       width={mapSize.w - boardWidth} height={mapSize.h - boardWidth}
-      stroke="rgba(120,63,4,0.25)" strokeWidth={boardWidth}
-      fill={Color.soilBackground} />
+      stroke={edgeColor} strokeWidth={boardWidth}
+      fill={bkgdColor} />
     <rect id="no-access-perimeter" x={boardWidth} y={boardWidth}
       width={mapSize.w - boardWidth * 2} height={mapSize.h - boardWidth * 2}
       fill="url(#diagonalHatch)" />
     <rect id="grid-fill" x={plantAreaOffset.x} y={plantAreaOffset.y}
-      width={gridSizeW} height={gridSizeH} fill={Color.gridSoil} />
+      width={gridSizeW} height={gridSizeH} fill={fillColor} />
   </g>;
 }

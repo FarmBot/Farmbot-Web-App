@@ -122,7 +122,8 @@ CREATE TABLE public.devices (
     last_saw_mq timestamp without time zone,
     fbos_version character varying(15),
     throttled_until timestamp without time zone,
-    throttled_at timestamp without time zone
+    throttled_at timestamp without time zone,
+    mounted_tool_id bigint
 );
 
 
@@ -1216,7 +1217,8 @@ CREATE TABLE public.web_app_configs (
     photo_filter_end character varying,
     discard_unsaved boolean DEFAULT false,
     xy_swap boolean DEFAULT false,
-    home_button_homing boolean DEFAULT false
+    home_button_homing boolean DEFAULT false,
+    show_motor_plot boolean DEFAULT false
 );
 
 
@@ -1716,6 +1718,13 @@ CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority,
 
 
 --
+-- Name: index_devices_on_mounted_tool_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_devices_on_mounted_tool_id ON public.devices USING btree (mounted_tool_id);
+
+
+--
 -- Name: index_devices_on_timezone; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2196,6 +2205,14 @@ ALTER TABLE ONLY public.token_issuances
 
 
 --
+-- Name: devices fk_rails_eef5afaff7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.devices
+    ADD CONSTRAINT fk_rails_eef5afaff7 FOREIGN KEY (mounted_tool_id) REFERENCES public.tools(id);
+
+
+--
 -- Name: pin_bindings fk_rails_f72ee24d98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2305,6 +2322,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180726165546'),
 ('20180727152741'),
 ('20180813185430'),
-('20180815143819');
+('20180815143819'),
+('20180829211322'),
+('20180910143055');
 
 

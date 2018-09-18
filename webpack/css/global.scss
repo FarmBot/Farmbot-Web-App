@@ -64,12 +64,12 @@ input[type=time] {
 
 .markdown {
   p {
-    color: #fff;
+    display: inline-block;
+    color: $white;
     text-overflow: ellipsis;
     overflow: hidden;
     width: calc(100% - 13rem);
     white-space: nowrap;
-    display: inline-block;
     text-transform: none;
     margin-top: 0.3rem;
   }
@@ -82,12 +82,12 @@ fieldset {
 }
 
 .saucer {
+  position: relative;
+  z-index: 2;
   height: 2rem;
   width: 2rem;
   background: $dark_gray;
   border-radius: 50%;
-  position: relative;
-  z-index: 2;
   cursor: pointer;
   &.active {
     border: 2px solid white;
@@ -104,10 +104,10 @@ fieldset {
 }
 
 .saucer-connector {
-  height: 3rem;
-  width: 1rem;
   position: absolute;
   z-index: 1;
+  height: 3rem;
+  width: 1rem;
   margin-left: 0.5rem;
   margin-top: -1rem;
   &.last {
@@ -134,11 +134,11 @@ fieldset {
 .chip-temp-display {
   position: relative;
   .saucer {
+    position: absolute;
+    top: 2px;
+    right: 1rem;
     height: 1rem;
     width: 1rem;
-    position: absolute;
-    right: 1rem;
-    top: 2px;
     cursor: default;
   }
 }
@@ -146,11 +146,11 @@ fieldset {
 .wifi-strength-display {
   position: relative;
   .percent-bar {
-    width: 25%;
     position: absolute;
-    height: 1rem;
-    left: 12rem;
     top: 2px;
+    left: 12rem;
+    height: 1rem;
+    width: 25%;
     clip-path: polygon(0 85%, 100% 0, 100% 100%, 0% 100%);
     background-color: $light_gray;
     .percent-bar-fill {
@@ -194,6 +194,9 @@ a {
   cursor: pointer !important;
   &.fa-gear {
     color: $white;
+    &.dark {
+      color: $dark_gray;
+    }
   }
 }
 
@@ -209,10 +212,10 @@ a {
   &:after {
     content: "\25BE";
     position: absolute;
+    top: 0.2rem;
+    right: 1rem;
     color: $dark_gray;
     font-size: 2rem;
-    right: 1rem;
-    top: 0.2rem;
     line-height: initial;
     pointer-events: none;
   }
@@ -225,13 +228,13 @@ a {
 }
 
 .drag-drop-area {
+  margin: 0.75rem 0;
+  margin-right: 15px;
   border-style: dashed;
   border-width: 2px;
   border-color: $light_gray;
   color: $gray;
   font-weight: bold;
-  margin: 0.75rem 0;
-  margin-right: 15px;
   padding: 1.25rem;
   background: $off_white;
   text-align: center;
@@ -306,9 +309,9 @@ a {
     color: $orange;
   }
   .fa-th-large {
-      color: $dark_gray;
-      margin-top: 0.5rem;
-      margin-left: 0.5rem;
+    color: $dark_gray;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
   }
   .fb-button {
     margin-top: 0.5rem;
@@ -336,7 +339,8 @@ a {
 
 .sensor-history-table {
   font-size: 1.2rem;
-  th, td {
+  th,
+  td {
     width: 1%;
   }
   tr {
@@ -404,15 +408,15 @@ fieldset {
 .webcam-stream-valid {
   img {
     display: flex;
-    max-width: 100%;
     margin: auto;
+    max-width: 100%;
     max-height: 650px;
     min-height: 300px;
   }
   iframe {
     display: flex;
-    width: 100%;
     margin: auto;
+    width: 100%;
     max-height: 650px;
     min-height: 300px;
     border: none;
@@ -420,10 +424,10 @@ fieldset {
 }
 
 .webcam-stream-unavailable p {
-  width: 100%;
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 100%;
   transform: translate(-50%, -50%);
   vertical-align: middle;
   text-align: center;
@@ -432,8 +436,8 @@ fieldset {
 
 .clear-webcam-url-btn {
   position: absolute !important;
-  left: 2rem;
   top: 6.2rem;
+  left: 2rem;
 }
 
 h3 {
@@ -534,19 +538,19 @@ ul {
 }
 
 .coming-soon {
-  opacity: 0.50;
   position: relative;
+  opacity: 0.50;
   width: 100%;
   height: 100%;
 }
 
 .coming-soon:after {
   content: "Coming Soon!";
-  background-color: $red;
-  width: 100%;
   position: absolute;
   top: 25%;
   left: 0;
+  background-color: $red;
+  width: 100%;
   vertical-align: middle;
   text-align: center;
   font-size: 2.5rem;
@@ -554,26 +558,26 @@ ul {
 
 .unavailable {
   position: relative;
+  z-index: 10;
   width: 100%;
   height: 100%;
   opacity: 0.40;
   pointer-events: none;
-  z-index: 10;
   &.banner {
     &:after {
       content: "Not available when device is offline.";
+      position: absolute;
+      top: 25%;
+      left: -2.5%;
+      z-index: 10;
+      width: 105%;
       padding: 0.5rem;
       background-color: $dark_gray;
       opacity: 0.90;
       color: $off_white;
       font-size: 1.8rem;
-      position: absolute;
       vertical-align: middle;
       text-align: center;
-      top: 25%;
-      left: -2.5%;
-      width: 105%;
-      z-index: 10;
     }
   }
 }
@@ -583,8 +587,8 @@ ul {
 }
 
 .button-group {
-  float: right;
   margin: -2rem 0 2rem;
+  float: right;
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
@@ -607,40 +611,48 @@ ul {
   }
 }
 
+.motor-position-plot-border {
+  text {
+    font-size: 0.4rem;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+}
+
 .controls-popup,
 .controls-popup-menu-outer {
   position: fixed;
+  bottom: 3rem;
+  right: 4rem;
+  z-index: 2;
   background: $dark_gray;
   border-radius: 3rem;
   height: 6rem;
   width: 6rem;
-  right: 4rem;
-  bottom: 3rem;
   cursor: pointer;
-  z-index: 2;
 }
 
 .controls-popup {
   color: $off_white;
   i {
+    position: fixed;
+    bottom: 3rem;
     z-index: 3;
     width: 6rem;
     height: 6rem;
-    bottom: 3rem;
     border-radius: 3rem;
     padding: 18px 20px;
-    position: fixed;
     font-size: 2.4rem;
     transition: all 0.25s ease-in-out;
     &:hover {
-      background-color: rgba(0,0,0,0.2);
+      background-color: rgba(0, 0, 0, 0.2);
     }
   }
   &.open {
     i {
       transform: rotate(-135deg);
       &:hover {
-        background-color: rgba(0,0,0,0);
+        background-color: rgba(0, 0, 0, 0);
       }
     }
     .controls-popup-menu-outer {
@@ -649,7 +661,7 @@ ul {
       padding: 0.6rem 5rem 0rem 0rem;
     }
     .controls-popup-menu-inner {
-      transition-delay: 0.25s!important;
+      transition-delay: 0.25s !important;
       opacity: 1;
     }
   }
@@ -666,7 +678,7 @@ ul {
 
 .controls-popup-menu-outer {
   transition: all 0.1 s ease-in-out;
-  transition-delay: 0.2s!important;
+  transition-delay: 0.2s !important;
 }
 
 @keyframes page-transition {
@@ -679,10 +691,10 @@ ul {
 }
 
 .empty-state-graphic {
-  width: 50%;
   display: flex;
   margin: auto;
   margin-top: 10%;
+  width: 50%;
 }
 
 .farmware-selection-panel {
@@ -701,7 +713,8 @@ ul {
 
 .farmware-input-panel,
 .farmware-info-panel {
-  label, h4 {
+  label,
+  h4 {
     margin-top: 2rem;
   }
 }
@@ -716,7 +729,8 @@ ul {
   label {
     cursor: pointer;
   }
-  &:hover, &.selected {
+  &:hover,
+  &.selected {
     background: $medium_light_gray;
     p {
       font-weight: bold;
@@ -726,10 +740,10 @@ ul {
 
 .farmware-button,
 .farmware-settings-menu {
-  float: right !important;
   position: absolute !important;
-  right: 3rem;
   top: 1rem;
+  right: 3rem;
+  float: right !important;
 }
 
 .logs {
@@ -781,7 +795,6 @@ ul {
   td:nth-child(1),
   td:nth-child(4) {
     min-width: 106px;
-
   }
   td:nth-child(2),
   td:nth-child(3) {
@@ -798,7 +811,8 @@ ul {
   max-width: 250px;
   h1 {
     font-weight: 300;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    line-height: 2rem;
   }
   li:before {
     content: "• ";
@@ -857,9 +871,9 @@ ul {
     width: 100%;
     margin-top: 0.5rem;
     .indicator {
+      position: relative;
       background: $dark_gray;
       height: 2rem;
-      position: relative;
       span {
         position: relative;
         top: 0.15rem;
@@ -889,21 +903,22 @@ ul {
   }
   .fb-checkbox {
     display: inline;
-    margin-right: 1rem;
     position: relative;
+    margin-right: 1rem;
     &.partial:after {
       content: "";
       position: absolute;
+      left: 0.75rem;
+      bottom: 1.2rem;
       border: solid $dark_gray;
       border-width: 0 0 3px 0;
-      bottom: 1.2rem;
-      left: 0.75rem;
       padding: 0.6rem 0.3rem;
     }
   }
-  .pt-popover-wrapper, .pt-popover-target {
-    margin-left: 1rem;
+  .pt-popover-wrapper,
+  .pt-popover-target {
     display: inline-block !important;
+    margin-left: 1rem;
     margin-top: 0.4rem;
   }
 }
@@ -913,8 +928,8 @@ ul {
   margin-left: 3rem;
   i {
     position: absolute;
-    right: 1rem;
     top: 0.55rem;
+    right: 1rem;
     color: $light_gray;
     &:hover {
       color: $dark_gray;

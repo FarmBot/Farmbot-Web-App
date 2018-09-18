@@ -31,6 +31,7 @@ gem "webpack-rails"
 # Still working out the bugs. - RC 5 Jul 18
 gem "rabbitmq_http_api_client"
 gem "zero_downtime_migrations"
+# gem "digest-murmurhash"
 
 group :development, :test do
   gem "thin"

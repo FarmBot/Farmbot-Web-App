@@ -27,7 +27,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check1 = CeleryScript::Checker.new(ok1, Sequence::Corpus, device)
+    check1 = CeleryScript::Checker.new(ok1, corpus, device)
     expect(check1.valid?).to be_truthy
 
     ok2 = CeleryScript::AstNode.new({
@@ -48,7 +48,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check2 = CeleryScript::Checker.new(ok2, Sequence::Corpus, device)
+    check2 = CeleryScript::Checker.new(ok2, corpus, device)
     expect(check2.valid?).to be_truthy
   end
 
@@ -68,7 +68,7 @@ describe CeleryScript::Corpus do
         },
       }
     })
-    check = CeleryScript::Checker.new(bad, Sequence::Corpus, device)
+    check = CeleryScript::Checker.new(bad, corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got Integer")
     expect(check.error.message).to include("'location' within 'move_absolute'")
@@ -94,7 +94,7 @@ describe CeleryScript::Corpus do
         speed: 100
       }
     })
-    check = CeleryScript::Checker.new(bad, Sequence::Corpus, device)
+    check = CeleryScript::Checker.new(bad, corpus, device)
     expect(check.valid?).to be_falsey
     expect(check.error.message).to include("but got String")
   end
@@ -123,9 +123,7 @@ describe CeleryScript::Corpus do
       },
       "body": []
     })
-    checker = CeleryScript::Checker.new(tree,
-                                        CeleryScriptSettingsBag::Corpus,
-                                        device)
+    checker = CeleryScript::Checker.new(tree, corpus, device)
     expect(checker.error.message).to include("not a valid message_type")
   end
 
@@ -145,9 +143,57 @@ describe CeleryScript::Corpus do
         }
       ]
     })
-    checker = CeleryScript::Checker.new(tree,
-                                        CeleryScriptSettingsBag::Corpus,
-                                        device)
+    checker = CeleryScript::Checker.new(tree, corpus, device)
     expect(checker.error.message).to include("not a valid channel_name")
+  end
+
+  it "validates tool_ids" do
+    ast = { "kind": "tool", "args": { "tool_id": 0 } };
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
+                                        corpus,
+                                        device)
+    expect(checker.valid?).to be(false)
+    expect(checker.error.message).to include("Tool #0 does not exist.")
+  end
+
+  it "Validates resource_update nodes" do
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "Device",
+                      "resource_id"   => 23, # Mutated to "0" later..
+                      "label"         => "mounted_tool_id",
+                      "value"         => 1 } }
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast), corpus, device)
+    expect(checker.valid?).to be(true)
+    expect(checker.tree.args["resource_id"].value).to eq(0)
+  end
+
+  it "rejects bogus resource_updates" do
+    fake_id = FakeSequence.create().id + 1
+    expect(Sequence.exists?(fake_id)).to be(false)
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "Sequence",
+                      "resource_id"   => fake_id,
+                      "label"         => "foo",
+                      "value"         => "Should Fail" } }
+    hmm = CeleryScript::AstNode.new(ast)
+    expect(hmm.args.fetch("resource_id").value).to eq(fake_id)
+    checker = CeleryScript::Checker.new(hmm, corpus, device)
+    expect(checker.valid?).to be(false)
+    expect(checker.error.message)
+      .to eq("Can't find Sequence with id of #{fake_id}")
+  end
+
+  it "rejects bogus resource_types" do
+    ast = { "kind": "resource_update",
+            "args": { "resource_type" => "CanOpener",
+                      "resource_id"   => 0,
+                      "label"         => "foo",
+                      "value"         => "Should Fail" } }
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
+                                        corpus,
+                                        device)
+    expect(checker.valid?).to be(false)
+    expect(checker.error.message)
+      .to include('"CanOpener" is not a valid resource_type.')
   end
 end

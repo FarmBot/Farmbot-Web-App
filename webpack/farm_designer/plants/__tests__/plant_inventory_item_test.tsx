@@ -1,16 +1,22 @@
+jest.mock("../../../open_farm/icons", () => ({
+  cachedCrop: jest.fn(() => Promise.resolve({ svg_icon: "icon" })),
+  svgToUrl: jest.fn(x => x),
+}));
+
 jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import * as React from "react";
 import { PlantInventoryItem } from "../plant_inventory_item";
 import { shallow } from "enzyme";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { fakePlant, fakePlantTemplate } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
+import { TaggedPlant } from "../../map/interfaces";
 
 describe("<PlantInventoryItem />", () => {
   const fakeProps = () => {
     return {
-      tpp: fakePlant(),
+      tpp: fakePlant() as TaggedPlant,
       dispatch: jest.fn(),
       hovered: false,
     };
@@ -64,5 +70,26 @@ describe("<PlantInventoryItem />", () => {
       type: Actions.SELECT_PLANT
     });
     expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.tpp.body.id);
+  });
+
+  it("selects plant template", () => {
+    const p = fakeProps();
+    p.tpp = fakePlantTemplate();
+    const wrapper = shallow(<PlantInventoryItem {...p} />);
+    wrapper.simulate("click");
+    expect(p.dispatch).toBeCalledWith({
+      payload: [p.tpp.uuid],
+      type: Actions.SELECT_PLANT
+    });
+    expect(push).toHaveBeenCalledWith(
+      "/app/designer/saved_gardens/templates/" + p.tpp.body.id);
+  });
+
+  it("gets cached icon", async () => {
+    const wrapper =
+      shallow<PlantInventoryItem>(<PlantInventoryItem {...fakeProps()} />);
+    const img = new Image;
+    await wrapper.find("img").simulate("load", { currentTarget: img });
+    expect(wrapper.state().icon).toEqual("icon");
   });
 });

@@ -30,9 +30,8 @@ module CeleryScriptSettingsBag
                              set_servo_angle change_ownership dump_info)
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
-  RESOURCE_NAME         = %w(images plants regimens peripherals
-                             corpuses logs sequences farm_events
-                             tool_slots tools points tokens users device)
+  RESOURCE_NAME         = %w(Device FarmEvent Image Log Peripheral Plant Point
+                             Regimen Sequence Tool ToolSlot User GenericPointer)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
@@ -45,7 +44,7 @@ module CeleryScriptSettingsBag
                              read_status reboot sync take_photo)
   STEPS                 = %w(_if execute execute_script find_home move_absolute
                              move_relative read_pin send_message take_photo wait
-                             write_pin )
+                             write_pin resource_update)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -58,12 +57,13 @@ module CeleryScriptSettingsBag
   BAD_DATA_TYPE         = '"%s" is not a valid data_type. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
+  BAD_RESOURCE_TYPE     = '"%s" is not a valid resource_type. Allowed values: %s'
   BAD_TOOL_ID           = 'Tool #%s does not exist.'
   BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
   BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
   BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
   BAD_POINTER_ID        = "Bad point ID: %s"
-  BAD_PIN_ID            = "Can't find %s with id of %s"
+  BAD_RESOURCE_ID       = "Can't find %s with id of %s"
   NO_PIN_ID             = "%s requires a valid pin number"
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
@@ -74,9 +74,9 @@ module CeleryScriptSettingsBag
                             "BoxLed4"    => BoxLed }
   CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
-  KLASS_LOOKUP          = Point::POINTER_KINDS.reduce({}) do |acc, val|
-    (acc[val] = Kernel.const_get(val)) && acc
-  end
+  # KLASS_LOOKUP          =
+  #   Point::POINTER_KINDS.reduce({}) { |a, v| (a[v] = Kernel.const_get(v)) && a }
+  RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
 
   Corpus = CeleryScript::Corpus
       .new
@@ -180,13 +180,19 @@ module CeleryScriptSettingsBag
           BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
         end
       end
+      .arg(:resource_id, [Integer])
+      .arg(:resource_type, [String]) do |n|
+        within(RESOURCE_NAME, n) do |v|
+          BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME]
+        end
+      end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id    = args[:pin_id].value
         node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
         bad_node = !klass.exists?(id)
-        node.invalidate!(BAD_PIN_ID % [klass.name, id]) if bad_node
+        no_resource(node, klass, id) if bad_node
       end
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
@@ -240,15 +246,37 @@ module CeleryScriptSettingsBag
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
+      .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
+        resource_type = x.args.fetch("resource_type").value
+        resource_id   = x.args.fetch("resource_id").value
+        check_resource_type(x, resource_type, resource_id)
+      end
       .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
 
+  def self.no_resource(node, klass, resource_id)
+    node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
+  end
+
+  def self.check_resource_type(node, resource_type, resource_id)
+    case resource_type # <= Security critical code (for const_get'ing)
+    when "Device"
+      # When "resource_type" is "Device", resource_id always refers to
+      # the current_device.
+      # For convinience, we try to set it here, defaulting to 0
+      node.args["resource_id"].instance_variable_set("@value", 0)
+    when *RESOURCE_NAME.without("Device")
+      klass       = Kernel.const_get(resource_type)
+      resource_ok = klass.exists?(resource_id)
+      no_resource(node, klass, resource_id) unless resource_ok
+    end
+  end
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
   def self.within(array, node)
-    val = node&.value
+    val = node.try(:value)
     node.invalidate!(yield(val)) if !array.include?(val)
   end
 

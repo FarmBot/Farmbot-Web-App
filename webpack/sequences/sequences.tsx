@@ -43,7 +43,8 @@ export class Sequences extends React.Component<Props, {}> {
             resources={this.props.resources}
             hardwareFlags={this.props.hardwareFlags}
             farmwareInfo={this.props.farmwareInfo}
-            shouldDisplay={this.props.shouldDisplay} />
+            shouldDisplay={this.props.shouldDisplay}
+            confirmStepDeletion={this.props.confirmStepDeletion} />
         </CenterPanel>
         <RightPanel
           className="step-button-cluster-panel"
@@ -52,7 +53,8 @@ export class Sequences extends React.Component<Props, {}> {
           show={sequenceSelected}>
           <StepButtonCluster
             current={this.props.sequence}
-            dispatch={this.props.dispatch} />
+            dispatch={this.props.dispatch}
+            shouldDisplay={this.props.shouldDisplay} />
         </RightPanel>
       </Row>
     </Page>;

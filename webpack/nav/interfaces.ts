@@ -1,5 +1,6 @@
 import { BotState } from "../devices/interfaces";
 import { TaggedUser, TaggedLog } from "farmbot";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface NavButtonProps {
   user: TaggedUser | undefined;
@@ -16,6 +17,7 @@ export interface NavBarProps {
   user: TaggedUser | undefined;
   dispatch: Function;
   timeOffset: number;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface NavBarState {
@@ -36,6 +38,7 @@ export interface TickerListProps {
   logs: TaggedLog[]
   tickerListOpen: boolean;
   timeOffset: number;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface NavLinksProps {

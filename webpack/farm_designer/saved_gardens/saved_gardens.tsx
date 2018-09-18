@@ -4,102 +4,22 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { history } from "../../history";
 import { unselectPlant } from "../actions";
-import { snapshotGarden } from "../saved_gardens/snapshot";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers
 } from "../../resources/selectors";
-import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
-import { applyGarden } from "./apply_garden";
-import { destroy } from "../../api/crud";
-import { Row, Col } from "../../ui";
-import { error } from "farmbot-toastr";
+import { GardenSnapshot } from "./garden_snapshot";
+import { SavedGardenList } from "./garden_list";
+import { SavedGardensProps } from "./interfaces";
+import { closeSavedGarden } from "./actions";
 
-export interface GardenSnapshotProps {
-  plantsInGarden: boolean;
-}
-
-interface GardenSnapshotState {
-  name: string | undefined;
-}
-
-export class GardenSnapshot
-  extends React.Component<GardenSnapshotProps, GardenSnapshotState> {
-  state = { name: undefined };
-
-  render() {
-    return <div>
-      <label>{t("garden name")}</label>
-      <input
-        onChange={e => this.setState({ name: e.currentTarget.value })}
-        value={this.state.name} />
-      <button
-        className="fb-button gray wide"
-        onClick={() => this.props.plantsInGarden
-          ? snapshotGarden(this.state.name)
-          : error(t("No plants in garden. Create some plants first."))}>
-        {t("Snapshot")}
-      </button>
-    </div>;
-  }
-}
-
-const SavedGardenList = ({
-  savedGardens, plantTemplates, dispatch, plantsInGarden
-}: SavedGardensProps) =>
-  <div>
-    <Row>
-      <Col xs={5}>
-        <label>{t("name")}</label>
-      </Col>
-      <Col xs={2}>
-        <label>{t("plants")}</label>
-      </Col>
-    </Row>
-    {savedGardens.map(sg => {
-      const gardenId = sg.body.id;
-      const plantCount = plantTemplates.filter(pt =>
-        pt.body.saved_garden_id === gardenId).length;
-      if (gardenId) {
-        return <Row key={sg.uuid}>
-          <Col xs={5}>
-            <p>{sg.body.name}</p>
-          </Col>
-          <Col xs={2}>
-            <p>{plantCount}</p>
-          </Col>
-          <Col xs={5}>
-            <button
-              className="fb-button green"
-              onClick={() => plantsInGarden
-                ? error(t("Please clear current garden first."))
-                : applyGarden(gardenId)}>
-              {t("apply")}
-            </button>
-            <button
-              className="fb-button red"
-              onClick={() => dispatch(destroy(sg.uuid))}>
-              <i className="fa fa-times" />
-            </button>
-          </Col>
-        </Row>;
-      }
-    })}
-  </div>;
-
-export function mapStateToProps(props: Everything) {
+export function mapStateToProps(props: Everything): SavedGardensProps {
   return {
     savedGardens: selectAllSavedGardens(props.resources.index),
     plantTemplates: selectAllPlantTemplates(props.resources.index),
     dispatch: props.dispatch,
     plantsInGarden: selectAllPlantPointers(props.resources.index).length > 0,
+    openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
   };
-}
-
-export interface SavedGardensProps {
-  savedGardens: TaggedSavedGarden[];
-  plantTemplates: TaggedPlantTemplate[];
-  dispatch: Function;
-  plantsInGarden: boolean;
 }
 
 @connect(mapStateToProps)
@@ -125,7 +45,9 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
       </div>
 
       <div className="panel-content saved-garden-panel-content">
-        <GardenSnapshot plantsInGarden={this.props.plantsInGarden} />
+        <GardenSnapshot
+          plantsInGarden={this.props.plantsInGarden}
+          disabled={!!this.props.openedSavedGarden} />
         <hr />
         {this.props.savedGardens.length > 0
           ? <SavedGardenList {...this.props} />
@@ -134,3 +56,31 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
     </div>;
   }
 }
+
+export const SavedGardensLink = () =>
+  <button className="fb-button green"
+    hidden={!(localStorage.getItem("FUTURE_FEATURES"))}
+    onClick={() => history.push("/app/designer/saved_gardens")}>
+    {t("Saved Gardens")}
+  </button>;
+
+export const savedGardenOpen = (pathArray: string[]) =>
+  pathArray[3] === "saved_gardens" && parseInt(pathArray[4]) > 0
+    ? parseInt(pathArray[4]) : false;
+
+export const SavedGardenHUD = (props: { dispatch: Function }) =>
+  <div className="saved-garden-indicator">
+    <label>{t("Viewing saved garden")}</label>
+    <button className="fb-button gray"
+      onClick={() => history.push("/app/designer/saved_gardens")}>
+      {t("Menu")}
+    </button>
+    <button className="fb-button green"
+      onClick={() => history.push("/app/designer/plants")}>
+      {t("Edit")}
+    </button>
+    <button className="fb-button red"
+      onClick={() => props.dispatch(closeSavedGarden())}>
+      {t("Exit")}
+    </button>
+  </div>;

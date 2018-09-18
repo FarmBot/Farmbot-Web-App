@@ -1,25 +1,5 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
-jest.mock("../../session", () => {
-  return {
-    Session: {
-      deprecatedGetNum: (k: string) => {
-        return mockStorj[k];
-      },
-      deprecatedSetNum: (k: string, v: number) => {
-        mockStorj[k] = v;
-      },
-      deprecatedGetBool: (k: string) => {
-        mockStorj[k] = !!mockStorj[k];
-        return mockStorj[k];
-      }
-    },
-    // tslint:disable-next-line:no-any
-    safeNumericSetting: (x: any) => x
-
-  };
-});
-
 import * as React from "react";
 import { mount } from "enzyme";
 import { TickerList } from "../ticker_list";
@@ -41,6 +21,7 @@ describe("<TickerList />", () => {
       logs: [fakeTaggedLog(), fakeTaggedLog()],
       tickerListOpen: false,
       toggle: jest.fn(),
+      getConfigValue: x => mockStorj[x],
     };
   };
 

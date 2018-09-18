@@ -21,7 +21,8 @@ export function ExecuteBlock(p: StepParams) {
       index={p.index}
       dispatch={p.dispatch}
       resources={p.resources}
-      shouldDisplay={p.shouldDisplay || (() => false)} />;
+      shouldDisplay={p.shouldDisplay || (() => false)}
+      confirmStepDeletion={p.confirmStepDeletion} />;
   } else {
     throw new Error("Thats not an execute block!");
   }
@@ -34,6 +35,7 @@ export interface ExecBlockParams {
   index: number;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
+  confirmStepDeletion: boolean;
 }
 export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}> {
   changeSelection = (input: DropDownItem) => {
@@ -99,7 +101,8 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}
-        index={index} />
+        index={index}
+        confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
           <Col xs={12}>

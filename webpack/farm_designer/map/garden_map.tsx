@@ -7,9 +7,7 @@ import * as moment from "moment";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import { getPathArray } from "../../history";
 import { initSave, save, edit } from "../../api/crud";
-import {
-  TaggedPlantPointer, SpecialStatus
-} from "farmbot";
+import { SpecialStatus } from "farmbot";
 import {
   translateScreenToGarden,
   round,
@@ -31,14 +29,16 @@ import {
   ImageLayer,
 } from "./layers";
 import { cachedCrop } from "../../open_farm/icons";
-import { AxisNumberProperty, MapTransformProps } from "./interfaces";
+import { AxisNumberProperty, MapTransformProps, TaggedPlant } from "./interfaces";
 import { SelectionBox, SelectionBoxData } from "./selection_box";
 import { Actions, Content } from "../../constants";
-import { isNumber, last } from "lodash";
+import { isNumber, last, isString } from "lodash";
 import { TargetCoordinate } from "./target_coordinate";
 import { DrawnPoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import { BooleanSetting } from "../../session_keys";
+import { savedGardenOpen } from "../saved_gardens/saved_gardens";
+import { unpackUUID } from "../../util";
 
 /** Garden map interaction modes. */
 export enum Mode {
@@ -49,6 +49,7 @@ export enum Mode {
   addPlant = "addPlant",
   moveTo = "moveTo",
   createPoint = "createPoint",
+  templateView = "templateView",
 }
 
 /** Determine the current map mode based on path. */
@@ -57,20 +58,65 @@ export const getMode = (): Mode => {
   if (pathArray) {
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
     if (pathArray[5] === "edit") { return Mode.editPlant; }
+    if (pathArray[6] === "edit") { return Mode.editPlant; }
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[4] === "move_to") { return Mode.moveTo; }
     if (pathArray[4] === "create_point") { return Mode.createPoint; }
+    if (savedGardenOpen(pathArray)) { return Mode.templateView; }
   }
   return Mode.none;
 };
 
-export const createPlant = (
+const newPlant = (props: {
+  x: number,
+  y: number,
+  slug: string,
+  cropName: string,
+  openedSavedGarden: string | undefined
+}): TaggedPlant => {
+  const savedGardenId = isString(props.openedSavedGarden)
+    ? unpackUUID(props.openedSavedGarden).remoteId
+    : undefined;
+  return isNumber(savedGardenId)
+    ? {
+      kind: "PlantTemplate",
+      uuid: "--never",
+      specialStatus: SpecialStatus.SAVED,
+      body: {
+        x: props.x,
+        y: props.y,
+        z: 0,
+        openfarm_slug: props.slug,
+        name: props.cropName,
+        radius: DEFAULT_PLANT_RADIUS,
+        saved_garden_id: savedGardenId,
+      }
+    }
+    : {
+      kind: "Point",
+      uuid: "--never",
+      specialStatus: SpecialStatus.SAVED,
+      body: Plant({
+        x: props.x,
+        y: props.y,
+        openfarm_slug: props.slug,
+        name: props.cropName,
+        created_at: moment().toISOString(),
+        radius: DEFAULT_PLANT_RADIUS
+      })
+    };
+};
+
+export const createPlant = (props: {
   cropName: string,
   slug: string,
   gardenCoords: AxisNumberProperty,
   gridSize: AxisNumberProperty | undefined,
-  dispatch: Function) => {
+  dispatch: Function,
+  openedSavedGarden: string | undefined
+}) => {
+  const { cropName, slug, gardenCoords, gridSize, openedSavedGarden } = props;
   const { x, y } = gardenCoords;
   const tooLow = x < 0 || y < 0; // negative (beyond grid start)
   const tooHigh = gridSize
@@ -80,23 +126,11 @@ export const createPlant = (
   if (outsideGrid) {
     error(t(Content.OUTSIDE_PLANTING_AREA));
   } else {
-    const p: TaggedPlantPointer = {
-      kind: "Point",
-      uuid: "--never",
-      specialStatus: SpecialStatus.SAVED,
-      body: Plant({
-        x,
-        y,
-        openfarm_slug: slug,
-        name: cropName,
-        created_at: moment().toISOString(),
-        radius: DEFAULT_PLANT_RADIUS
-      })
-    };
+    const p = newPlant({ x, y, slug, cropName, openedSavedGarden });
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map
-      dispatch(initSave(p));
+      props.dispatch(initSave(p));
     }
   }
 };
@@ -218,7 +252,7 @@ export class GardenMap extends
   }
 
   /** Return the selected plant, mode-allowing. */
-  getPlant = (): TaggedPlantPointer | undefined => {
+  getPlant = (): TaggedPlant | undefined => {
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.moveTo:
@@ -253,7 +287,15 @@ export class GardenMap extends
       const { designer, gridSize, dispatch } = this.props;
       const slug = getPathArray()[5];
       const { crop } = findBySlug(designer.cropSearchResults || [], slug);
-      createPlant(crop.name, crop.slug, gardenCoords, gridSize, dispatch);
+      const { openedSavedGarden } = designer;
+      createPlant({
+        cropName: crop.name,
+        slug: crop.slug,
+        gardenCoords,
+        gridSize,
+        dispatch,
+        openedSavedGarden
+      });
     } else {
       throw new Error(`Missing 'drop-area-svg', 'farm-designer-map', or
       'farm-designer' while trying to add a plant.`);
@@ -282,7 +324,7 @@ export class GardenMap extends
 
   /** Return all plants within the selection box. */
   getSelected(box: SelectionBoxData) {
-    const selected = this.props.plants.filter((p) => {
+    const selected = this.props.plants.filter(p => {
       if (box &&
         isNumber(box.x0) && isNumber(box.y0) &&
         isNumber(box.x1) && isNumber(box.y1)) {
@@ -378,9 +420,11 @@ export class GardenMap extends
       <svg
         id="map-background-svg">
         <MapBackground
+          templateView={!!this.props.designer.openedSavedGarden}
           mapTransformProps={mapTransformProps}
           plantAreaOffset={this.props.gridOffset} />
         <svg
+          className="drop-area-svg"
           id="drop-area-svg"
           x={this.props.gridOffset.x} y={this.props.gridOffset.y}
           width={xySwap ? gridSize.y : gridSize.x}

@@ -8,7 +8,8 @@ describe("<MapBackground/>", () => {
   function fakeProps(): MapBackgroundProps {
     return {
       mapTransformProps: fakeMapTransformProps(),
-      plantAreaOffset: { x: 100, y: 100 }
+      plantAreaOffset: { x: 100, y: 100 },
+      templateView: false,
     };
   }
 

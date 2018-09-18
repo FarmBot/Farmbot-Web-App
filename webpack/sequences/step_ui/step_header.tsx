@@ -4,7 +4,6 @@ import { Row, Col } from "../../ui/index";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "../step_icon_group";
-import { splice, remove } from "../step_tiles/index";
 
 export interface StepHeaderProps {
   children?: React.ReactNode;
@@ -14,6 +13,7 @@ export interface StepHeaderProps {
   currentStep: SequenceBodyItem;
   dispatch: Function;
   index: number;
+  confirmStepDeletion: boolean;
 }
 
 export function StepHeader(props: StepHeaderProps) {
@@ -23,7 +23,8 @@ export function StepHeader(props: StepHeaderProps) {
     currentSequence,
     currentStep,
     dispatch,
-    index
+    index,
+    confirmStepDeletion,
   } = props;
   return <Row>
     <Col sm={12}>
@@ -34,14 +35,12 @@ export function StepHeader(props: StepHeaderProps) {
           step={currentStep}
           sequence={currentSequence} />
         <StepIconGroup
-          onClone={() => dispatch(splice({
-            step: currentStep,
-            index,
-            sequence: currentSequence
-          }))}
-          onTrash={() =>
-            remove({ dispatch, index, sequence: currentSequence })}
-          helpText={t(helpText)} />
+          index={index}
+          dispatch={dispatch}
+          step={currentStep}
+          sequence={currentSequence}
+          helpText={t(helpText)}
+          confirmStepDeletion={confirmStepDeletion} />
         {props.children}
       </div>
     </Col>

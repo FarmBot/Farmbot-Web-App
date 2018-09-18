@@ -37,7 +37,7 @@ const OS_RELEASE_NOTES_URL =
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
-  state = { osReleaseNotes: "" };
+  state = { osReleaseNotesHeading: "", osReleaseNotes: "" };
 
   componentDidMount() {
     this.fetchReleaseNotes(OS_RELEASE_NOTES_URL,
@@ -49,12 +49,12 @@ export class FarmbotOsSettings
     axios
       .get<string>(url)
       .then(resp => {
-        const notes = resp.data
+        const osReleaseNotes = resp.data
           .split("# v")
           .filter(x => x.startsWith(osMajorVersion))[0]
-          .split("\n\n").join("\n");
-        const osReleaseNotes = "# FarmBot OS v" + notes;
-        this.setState({ osReleaseNotes });
+          .split("\n\n").slice(1).join("\n");
+        const osReleaseNotesHeading = "FarmBot OS v" + osMajorVersion;
+        this.setState({ osReleaseNotesHeading, osReleaseNotes });
       })
       .catch(() =>
         this.setState({ osReleaseNotes: "Could not get release notes." }));
@@ -142,6 +142,7 @@ export class FarmbotOsSettings
               || this.props.isValidFbosConfig}>
             <FarmbotOsRow
               bot={this.props.bot}
+              osReleaseNotesHeading={this.state.osReleaseNotesHeading}
               osReleaseNotes={this.state.osReleaseNotes}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}

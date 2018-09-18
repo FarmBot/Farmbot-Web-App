@@ -125,3 +125,12 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
     </div>;
   }
 }
+
+export const MoveModeLink = () =>
+  <div className="move-to-mode">
+    <button
+      className="fb-button gray"
+      onClick={() => history.push("/app/designer/plants/move_to")}>
+      {t("move mode")}
+    </button>
+  </div>;

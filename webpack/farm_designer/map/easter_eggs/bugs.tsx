@@ -120,8 +120,8 @@ export class Bugs extends React.Component<BugsProps, BugsState> {
   }
 }
 
-export const bugsControls = () => {
-  return showBugResetButton()
+export const BugsControls = () =>
+  showBugResetButton()
     ? <div className="more-bugs">
       <button
         className="fb-button green"
@@ -134,4 +134,3 @@ export const bugsControls = () => {
         </p>}
     </div>
     : <div />;
-};

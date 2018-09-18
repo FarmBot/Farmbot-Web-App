@@ -31,8 +31,8 @@ module Sequences
 
     def validate
       validate_sequence
-      regimens_cant_have_parameters
-      farm_events_cant_have_parameters
+      # regimens_cant_have_parameters
+      # farm_events_cant_have_parameters
       raise Errors::Forbidden unless device.sequences.include?(sequence)
     end
 
@@ -55,26 +55,29 @@ module Sequences
       Regimen   => BASE + "the following Regimen(s) are using it: %{items}",
     }
 
-    def regimens_cant_have_parameters
-      maybe_stop_parameter_use(resource: Regimen,
-                               items: Regimen
-                               .includes(:regimen_items)
-                               .where(regimen_items: {sequence_id: sequence.id})
-                               .map(&:fancy_name))
-    end
+    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
+    # def regimens_cant_have_parameters
+    #   maybe_stop_parameter_use(resource: Regimen,
+    #                            items: Regimen
+    #                            .includes(:regimen_items)
+    #                            .where(regimen_items: {sequence_id: sequence.id})
+    #                            .map(&:fancy_name))
+    # end
 
-    def farm_events_cant_have_parameters
-      maybe_stop_parameter_use(resource: FarmEvent,
-                               items: FarmEvent
-                                .where(executable: sequence)
-                                .map(&:fancy_name))
-    end
+    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
+    # def farm_events_cant_have_parameters
+    #   maybe_stop_parameter_use(resource: FarmEvent,
+    #                            items: FarmEvent
+    #                             .where(executable: sequence)
+    #                             .map(&:fancy_name))
+    # end
 
-    def maybe_stop_parameter_use(resource:, items:)
-      add_error :sequence, :sequence, EXPL.fetch(resource) % {
-        resource: resource,
-        items: items.join(", ")
-      } if items.present?
-    end
+    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
+    # def maybe_stop_parameter_use(resource:, items:)
+    #   add_error :sequence, :sequence, EXPL.fetch(resource) % {
+    #     resource: resource,
+    #     items: items.join(", ")
+    #   } if items.present?
+    # end
   end
 end

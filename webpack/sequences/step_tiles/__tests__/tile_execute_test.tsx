@@ -20,11 +20,12 @@ function fakeProps(): ExecBlockParams {
   };
   return {
     currentSequence: fakeSequence(),
-    currentStep: currentStep,
+    currentStep,
     dispatch: jest.fn(),
     index: 0,
     resources: emptyState().index,
     shouldDisplay: () => false,
+    confirmStepDeletion: false,
   };
 }
 

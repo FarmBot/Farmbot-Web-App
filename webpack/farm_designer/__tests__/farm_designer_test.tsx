@@ -35,6 +35,7 @@ describe("<FarmDesigner/>", () => {
         cropSearchResults: [],
         chosenLocation: { x: undefined, y: undefined, z: undefined },
         currentPoint: undefined,
+        openedSavedGarden: undefined,
       },
       hoveredPlant: undefined,
       points: [],
@@ -111,5 +112,12 @@ describe("<FarmDesigner/>", () => {
     expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeFalsy();
     expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeTruthy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeFalsy();
+  });
+
+  it("renders saved garden indicator", () => {
+    const p = fakeProps();
+    p.designer.openedSavedGarden = "SavedGardenUuid";
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
   });
 });

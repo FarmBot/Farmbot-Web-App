@@ -6,14 +6,13 @@ import {
   TaggedSequence,
   TaggedRegimen,
   TaggedGenericPointer,
-  TaggedPlantPointer,
   TaggedImage,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
-import { AxisNumberProperty, BotSize } from "./map/interfaces";
+import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -49,11 +48,11 @@ export interface State extends TypeCheckerHint {
 
 export interface Props {
   dispatch: Function;
-  selectedPlant: TaggedPlantPointer | undefined;
+  selectedPlant: TaggedPlant | undefined;
   designer: DesignerState;
-  hoveredPlant: TaggedPlantPointer | undefined;
+  hoveredPlant: TaggedPlant | undefined;
   points: TaggedGenericPointer[];
-  plants: TaggedPlantPointer[];
+  plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
   botLocationData: BotLocationData;
@@ -70,7 +69,7 @@ export interface Props {
 export interface MovePlantProps {
   deltaX: number;
   deltaY: number;
-  plant: TaggedPlantPointer;
+  plant: TaggedPlant;
   gridSize: AxisNumberProperty;
 }
 
@@ -97,6 +96,7 @@ export interface DesignerState {
   cropSearchResults: CropLiveSearchResult[];
   chosenLocation: BotPosition;
   currentPoint: CurrentPointPayl | undefined;
+  openedSavedGarden: string | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -161,10 +161,10 @@ export interface GardenMapProps {
   dispatch: Function;
   designer: DesignerState;
   points: TaggedGenericPointer[];
-  plants: TaggedPlantPointer[];
+  plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
-  selectedPlant: TaggedPlantPointer | undefined;
-  hoveredPlant: TaggedPlantPointer | undefined;
+  selectedPlant: TaggedPlant | undefined;
+  hoveredPlant: TaggedPlant | undefined;
   crops: TaggedCrop[];
   botLocationData: BotLocationData;
   botSize: BotSize;
@@ -195,7 +195,8 @@ export type PlantOptions = Partial<PlantPointer>;
 export interface EditPlantInfoProps {
   push(url: string): void;
   dispatch: Function;
-  findPlant(stringyID: string | undefined): TaggedPlantPointer | undefined;
+  findPlant(stringyID: string | undefined): TaggedPlant | undefined;
+  openedSavedGarden: string | undefined;
 }
 
 export interface DraggableEvent {
@@ -206,7 +207,6 @@ export interface DraggableEvent {
 }
 
 export interface HoveredPlantPayl {
-  /* Use UUID here to prevent denormalization? */
   plantUUID: string | undefined;
   icon: string;
 }
@@ -222,6 +222,7 @@ export interface CropCatalogProps {
 export interface CropInfoProps {
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
+  openedSavedGarden: string | undefined;
   OFSearch: (query: string) => (dispatch: Function) => void;
   botPosition: BotPosition;
 }

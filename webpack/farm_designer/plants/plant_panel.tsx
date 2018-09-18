@@ -15,6 +15,7 @@ export interface PlantPanelProps {
   info: FormattedPlantInfo;
   onDestroy?(uuid: string): void;
   updatePlant?(uuid: string, update: PlantOptions): void;
+  inSavedGarden: boolean;
   dispatch: Function;
 }
 
@@ -64,6 +65,20 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
+const MoveToPlant =
+  (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
+    <button className="fb-button gray"
+      hidden={!localStorage.getItem("FUTURE_FEATURES") || props.isEditing}
+      onClick={() => {
+        props.dispatch({
+          type: Actions.CHOOSE_LOCATION,
+          payload: { x: props.x, y: props.y, z: undefined }
+        });
+        history.push("/app/designer/plants/move_to");
+      }}>
+      {t("Move FarmBot to this plant")}
+    </button>;
+
 const ListItem = (props: { name: string, children: React.ReactChild }) =>
   <li>
     <b>
@@ -75,10 +90,11 @@ const ListItem = (props: { name: string, children: React.ReactChild }) =>
   </li>;
 
 export function PlantPanel(props: PlantPanelProps) {
-  const { info, onDestroy, updatePlant, dispatch } = props;
+  const { info, onDestroy, updatePlant, dispatch, inSavedGarden } = props;
   const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
-  if (onDestroy) { x = round(x); y = round(y); }
+  const isEditing = !!onDestroy;
+  if (isEditing) { x = round(x); y = round(y); }
   const destroy = () => onDestroy && onDestroy(uuid);
   return <div className="panel-content">
     <label>
@@ -104,7 +120,7 @@ export function PlantPanel(props: PlantPanelProps) {
         {`(${x}, ${y})`}
       </ListItem>
       <ListItem name={t("Status")}>
-        {updatePlant
+        {(updatePlant && !inSavedGarden)
           ? <EditPlantStatus
             uuid={uuid}
             plantStatus={plantStatus}
@@ -112,32 +128,22 @@ export function PlantPanel(props: PlantPanelProps) {
           : plantStatus}
       </ListItem>
     </ul>
-    <button className="fb-button gray"
-      hidden={true}
-      onClick={() => {
-        dispatch({
-          type: Actions.CHOOSE_LOCATION,
-          payload: { x, y, z: undefined }
-        });
-        history.push("/app/designer/plants/move_to");
-      }}>
-      {t("Move FarmBot to this plant")}
-    </button>
+    <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
     <div>
-      <label hidden={!onDestroy}>
+      <label hidden={!isEditing}>
         {t("Delete this plant")}
       </label>
     </div>
     <button
       className="fb-button red"
-      hidden={!onDestroy}
+      hidden={!isEditing}
       onClick={destroy}>
       {t("Delete")}
     </button>
     <button
       className="fb-button gray"
       style={{ marginRight: "10px" }}
-      hidden={!onDestroy}
+      hidden={!isEditing}
       onClick={() => history.push("/app/designer/plants/select")} >
       {t("Delete multiple")}
     </button>

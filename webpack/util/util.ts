@@ -7,6 +7,7 @@ import {
   TaggedFirmwareConfig,
   TaggedFbosConfig,
   Dictionary,
+  ResourceName,
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
 import { FirmwareConfig } from "../config_storage/firmware_configs";
@@ -210,4 +211,20 @@ export function validFbosConfig(
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;
+}
+
+interface BetterUUID {
+  kind: ResourceName;
+  localId: number;
+  remoteId?: number;
+}
+
+export function unpackUUID(uuid: string): BetterUUID {
+  const [kind, remoteId, localId] = uuid.split(".");
+  const id = parseInt(remoteId, 10);
+  return {
+    kind: (kind as ResourceName),
+    localId: parseInt(localId, 10),
+    remoteId: id > 0 ? id : undefined
+  };
 }

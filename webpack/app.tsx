@@ -22,7 +22,7 @@ import { validBotLocationData, validFwConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import { FirmwareConfig } from "./config_storage/firmware_configs";
-import { getWebAppConfigValue } from "./config_storage/actions";
+import { getWebAppConfigValue, GetWebAppConfigValue } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
@@ -44,6 +44,7 @@ export interface AppProps {
   xySwap: boolean;
   firmwareConfig: FirmwareConfig | undefined;
   animate: boolean;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -64,6 +65,7 @@ function mapStateToProps(props: Everything): AppProps {
     xySwap: !!webAppConfigValue(BooleanSetting.xy_swap),
     firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index)),
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
+    getConfigValue: webAppConfigValue,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -111,7 +113,8 @@ export class App extends React.Component<AppProps, {}> {
         user={this.props.user}
         bot={this.props.bot}
         dispatch={this.props.dispatch}
-        logs={this.props.logs} />
+        logs={this.props.logs}
+        getConfigValue={this.props.getConfigValue} />
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

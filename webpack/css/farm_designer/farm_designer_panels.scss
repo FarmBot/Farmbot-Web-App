@@ -1,8 +1,8 @@
 .panel-header,
 .farm-designer-panels {
-  width: 30rem;
   position: fixed;
   top: 8.9rem;
+  width: 30rem;
 }
 
 @keyframes panel-pullout {
@@ -74,6 +74,7 @@
 .panel-tabs {
   display: flex;
   a {
+    display: block;
     flex: 1;
     text-align: center;
     text-transform: uppercase;
@@ -81,7 +82,6 @@
     line-height: 5rem;
     height: 5rem;
     color: $light_gray;
-    display: block;
     &.active {
       border-bottom: 3px solid $white;
       font-weight: bold;
@@ -106,17 +106,18 @@
   padding-left: 1.4rem;
   padding-right: 2rem;
   .back-arrow {
+    display: inline-block;
     color: $off_white;
     margin-right: 1rem;
     font-size: 1.8rem;
     margin-top: -1.8rem;
-    display: inline-block;
     vertical-align: middle;
     &:hover {
       color: $white;
     }
   }
   .title {
+    display: inline-block;
     color: $white;
     font-size: 1.8rem;
     margin-top: 0.4rem;
@@ -124,7 +125,6 @@
     width: 10em;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: inline-block;
     height: 2rem;
   }
   .right-button {
@@ -245,8 +245,8 @@
 
 .panel-header {
   position: fixed;
-  width: 300px;
   z-index: 2;
+  width: 300px;
   .panel-header-description,
   .crop-info-description {
     font-size: 1.2rem;
@@ -261,10 +261,10 @@
 
 .crop-info-panel {
   .panel-header {
+    position: inherit;
     background-size: 144% !important;
     background-repeat: no-repeat !important;
     background-position: top center !important;
-    position: inherit;
     .back-arrow {
       margin-top: -0.2rem;
       vertical-align: bottom;

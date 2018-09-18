@@ -9,12 +9,6 @@ jest.mock("../../history", () => ({
   },
 }));
 
-jest.mock("../../session", () => ({
-  Session: {
-    deprecatedGetBool: () => true // Simulate opt-in to beta features.
-  }
-}));
-
 const mockDevice = {
   execScript: jest.fn(() => Promise.resolve({})),
 };

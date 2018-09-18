@@ -29,6 +29,7 @@ describe("<PlantPanel/>", () => {
       onDestroy: jest.fn(),
       updatePlant: jest.fn(),
       dispatch: jest.fn(),
+      inSavedGarden: false,
     };
   };
 
@@ -43,29 +44,37 @@ describe("<PlantPanel/>", () => {
   it("calls destroy", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantPanel {...p} />);
-    clickButton(wrapper, 1, "Delete");
+    clickButton(wrapper, 0, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
   it("renders", () => {
-    const wrapper = mount(<PlantPanel info={info} dispatch={jest.fn()} />);
+    const p = fakeProps();
+    p.onDestroy = undefined;
+    p.updatePlant = undefined;
+    const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
     expect(txt).toContain("(12, 34)");
   });
 
   it("enters select mode", () => {
-    const wrapper = shallow(<PlantPanel info={info} dispatch={jest.fn()} />);
+    const p = fakeProps();
+    p.onDestroy = undefined;
+    p.updatePlant = undefined;
+    const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 2, "Delete multiple");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
   it("navigates to 'move to' mode", () => {
-    const dispatch = jest.fn();
-    const wrapper = shallow(<PlantPanel info={info} dispatch={dispatch} />);
+    const p = fakeProps();
+    p.onDestroy = undefined;
+    p.updatePlant = undefined;
+    const wrapper = mount(<PlantPanel {...p} />);
     clickButton(wrapper, 0, "Move FarmBot to this plant");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
-    expect(dispatch).toHaveBeenCalledWith({
+    expect(p.dispatch).toHaveBeenCalledWith({
       payload: { "x": 12, "y": 34, "z": undefined },
       type: Actions.CHOOSE_LOCATION
     });

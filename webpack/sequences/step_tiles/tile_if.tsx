@@ -10,7 +10,8 @@ export function TileIf(props: StepParams) {
       dispatch={props.dispatch}
       index={props.index}
       resources={props.resources}
-      shouldDisplay={props.shouldDisplay} />;
+      shouldDisplay={props.shouldDisplay}
+      confirmStepDeletion={props.confirmStepDeletion} />;
   } else {
     return <p> Expected "_if" node</p>;
   }

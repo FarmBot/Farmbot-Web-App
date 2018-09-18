@@ -1,7 +1,7 @@
 .farm-event-panel {
   .fa-calendar {
-    font-size: 2rem;
     margin: 0.5rem 0 0 1.6rem;
+    font-size: 2rem;
   }
   .panel-content {
     padding: 6rem 1rem 6rem 0;
@@ -48,8 +48,8 @@
 
 .farm-event-data-block {
   display: flex;
-  padding: 0.8rem;
   position: relative;
+  padding: 0.8rem;
   font-size: 1.2rem;
   align-items: center;
   background: $white;
@@ -61,8 +61,8 @@
   }
   i {
     position: absolute;
-    right: 0.8rem;
     top: 1rem;
+    right: 0.8rem;
     opacity: 0;
   }
   &:after {

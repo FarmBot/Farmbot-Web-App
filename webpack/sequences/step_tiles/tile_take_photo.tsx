@@ -6,8 +6,8 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
 import { t } from "i18next";
 
-export function TileTakePhoto({
-  dispatch, currentStep, index, currentSequence }: StepParams) {
+export function TileTakePhoto(props: StepParams) {
+  const { dispatch, currentStep, index, currentSequence } = props;
   const className = "take-photo-step";
   return <StepWrapper>
     <StepHeader
@@ -16,7 +16,8 @@ export function TileTakePhoto({
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index} />
+      index={index}
+      confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
         <Col xs={12}>

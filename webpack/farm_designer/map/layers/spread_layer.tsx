@@ -1,16 +1,15 @@
 import * as React from "react";
 import { Component } from "react";
-import { TaggedPlantPointer } from "farmbot";
 import { round, transformXY } from "../util";
 import { cachedCrop } from "../../../open_farm/icons";
-import { MapTransformProps } from "../interfaces";
+import { MapTransformProps, TaggedPlant } from "../interfaces";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
 import { BotPosition } from "../../../devices/interfaces";
 
 export interface SpreadLayerProps {
   visible: boolean;
-  plants: TaggedPlantPointer[];
-  currentPlant: TaggedPlantPointer | undefined;
+  plants: TaggedPlant[];
+  currentPlant: TaggedPlant | undefined;
   mapTransformProps: MapTransformProps;
   dragging: boolean;
   zoomLvl: number;
@@ -61,7 +60,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
 }
 
 interface SpreadCircleProps {
-  plant: TaggedPlantPointer;
+  plant: TaggedPlant;
   mapTransformProps: MapTransformProps;
   selected: boolean;
   animate: boolean;

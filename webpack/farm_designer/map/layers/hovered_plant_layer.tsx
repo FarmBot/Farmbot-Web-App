@@ -1,8 +1,7 @@
 import * as React from "react";
-import { TaggedPlantPointer } from "farmbot";
 import { DesignerState } from "../../interfaces";
 import { transformXY, round } from "../util";
-import { MapTransformProps } from "../interfaces";
+import { MapTransformProps, TaggedPlant } from "../interfaces";
 import { SpreadCircle } from "./spread_layer";
 import { Circle } from "../circle";
 import * as _ from "lodash";
@@ -15,9 +14,9 @@ import * as _ from "lodash";
 
 export interface HoveredPlantLayerProps {
   visible: boolean;
-  currentPlant: TaggedPlantPointer | undefined;
+  currentPlant: TaggedPlant | undefined;
   designer: DesignerState;
-  hoveredPlant: TaggedPlantPointer | undefined;
+  hoveredPlant: TaggedPlant | undefined;
   isEditing: boolean;
   mapTransformProps: MapTransformProps;
   dragging: boolean;

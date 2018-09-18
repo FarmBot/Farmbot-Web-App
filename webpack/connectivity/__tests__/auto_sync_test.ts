@@ -12,6 +12,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
 import { SyncPayload, UpdateMqttData, Reason } from "../interfaces";
 import { storeUUID } from "../data_consistency";
+import { unpackUUID } from "../../util";
 
 function toBinary(input: object): Buffer {
   return Buffer.from(JSON.stringify(input), "utf8");
@@ -62,8 +63,10 @@ describe("handleCreateOrUpdate", () => {
     const dispatch = jest.fn();
     const getState = jest.fn(fakeState) as GetState;
     const { index } = getState().resources;
-    const fakeId = Object.values(index.byKind.Sequence)[0].split(".")[1];
-    myPayload.id = parseInt(fakeId, 10);
+
+    const fakeId =
+      unpackUUID(Object.values(index.byKind.Sequence)[0]).remoteId || -1;
+    myPayload.id = fakeId;
     myPayload.kind = "Sequence";
     handleCreateOrUpdate(dispatch, getState, myPayload);
     expect(dispatch).toHaveBeenCalled();

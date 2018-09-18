@@ -20,7 +20,8 @@ end
 
 describe "Pin Binding updates" do
   it "enforces mutual exclusivity" do
-    [Point, Tool, PinBinding, Sequence, Device].map(&:destroy_all)
+    Device.update_all(mounted_tool_id: nil)
+    [Point, Tool, PinBinding, Sequence].map(&:destroy_all)
     device = FactoryBot.create(:device)
     PinBinding.create!(device: device)
     Sequence.create!(device: device, name: "test")

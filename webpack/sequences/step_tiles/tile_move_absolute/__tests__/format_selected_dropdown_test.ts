@@ -6,7 +6,7 @@ describe("formatSelectedDropdown()", () => {
   it("returns dropdown item: tool", () => {
     const dropdown = formatSelectedDropdown(fakeResourceIndex(),
       { kind: "tool", args: { tool_id: 1 } });
-    expect(dropdown).toEqual({ label: "Generic Tool", value: 1 });
+    expect(dropdown).toEqual({ label: "Generic tool", value: 1 });
   });
 
   it("returns dropdown item: point", () => {

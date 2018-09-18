@@ -1,24 +1,18 @@
-let mockZoomValue: number | undefined = 1;
-jest.mock("../../../session", () => {
-  return {
-    Session: {
-      deprecatedGetNum: () => mockZoomValue,
-      deprecatedSetNum: jest.fn()
-    }
-  };
-});
+jest.mock("../../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn()
+}));
 
 import * as ZoomUtils from "../zoom";
-import { Session } from "../../../session";
+import { setWebAppConfigValue } from "../../../config_storage/actions";
 
 describe("zoom utilities", () => {
   it("getZoomLevelIndex()", () => {
-    expect(ZoomUtils.getZoomLevelIndex()).toEqual(9);
+    expect(ZoomUtils.getZoomLevelIndex(() => undefined)).toEqual(9);
   });
 
   it("saveZoomLevelIndex()", () => {
-    ZoomUtils.saveZoomLevelIndex(9);
-    expect(Session.deprecatedSetNum).toHaveBeenCalledWith("zoom_level", 1);
+    ZoomUtils.saveZoomLevelIndex(jest.fn(), 9);
+    expect(setWebAppConfigValue).toHaveBeenCalledWith("zoom_level", 1);
   });
 
   it("calcZoomLevel()", () => {
@@ -26,38 +20,33 @@ describe("zoom utilities", () => {
   });
 
   it("within zoom range", () => {
-    mockZoomValue = 1;
-    expect(ZoomUtils.atMaxZoom()).toBeFalsy();
-    expect(ZoomUtils.atMinZoom()).toBeFalsy();
+    expect(ZoomUtils.atMaxZoom(() => 1)).toBeFalsy();
+    expect(ZoomUtils.atMinZoom(() => 1)).toBeFalsy();
   });
 
   it("at max zoom", () => {
-    mockZoomValue = ZoomUtils.maxZoomLevel;
-    expect(ZoomUtils.atMaxZoom()).toBeTruthy();
-    expect(ZoomUtils.atMinZoom()).toBeFalsy();
+    expect(ZoomUtils.atMaxZoom(() => ZoomUtils.maxZoomLevel)).toBeTruthy();
+    expect(ZoomUtils.atMinZoom(() => ZoomUtils.maxZoomLevel)).toBeFalsy();
   });
 
   it("beyond max zoom", () => {
-    mockZoomValue = 999;
-    const result = ZoomUtils.getZoomLevelIndex();
+    const result = ZoomUtils.getZoomLevelIndex(() => 999);
     expect(result).toEqual(ZoomUtils.maxZoomIndex);
   });
 
   it("at min zoom", () => {
-    mockZoomValue = ZoomUtils.minZoomLevel;
-    expect(ZoomUtils.atMaxZoom()).toBeFalsy();
-    expect(ZoomUtils.atMinZoom()).toBeTruthy();
+    expect(ZoomUtils.atMaxZoom(() => ZoomUtils.minZoomLevel)).toBeFalsy();
+    expect(ZoomUtils.atMinZoom(() => ZoomUtils.minZoomLevel)).toBeTruthy();
   });
 
   it("beyond min zoom", () => {
-    mockZoomValue = -999;
-    const result = ZoomUtils.getZoomLevelIndex();
+    const result = ZoomUtils.getZoomLevelIndex(() => -999);
     expect(result).toEqual(0);
   });
 
   it("at unknown zoom", () => {
-    mockZoomValue = undefined;
-    const defaultZoom = ZoomUtils.calcZoomLevel(ZoomUtils.getZoomLevelIndex());
+    const defaultZoom =
+      ZoomUtils.calcZoomLevel(ZoomUtils.getZoomLevelIndex(() => undefined));
     expect(defaultZoom).toEqual(1);
   });
 });

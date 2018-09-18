@@ -17,9 +17,8 @@ describe("<FbosDetails/>", () => {
     return {
       botInfoSettings: bot.hardware.informational_settings,
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
+      sourceFbosConfig: x =>
+        ({ value: bot.hardware.configuration[x], consistent: true }),
     };
   };
 
@@ -33,6 +32,9 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.firmware_commit = "fakeFwCommit";
     p.botInfoSettings.soc_temp = 48.3;
     p.botInfoSettings.wifi_level = -49;
+    p.botInfoSettings.uptime = 0;
+    p.botInfoSettings.memory_usage = 0;
+    p.botInfoSettings.disk_usage = 0;
 
     const wrapper = mount(<FbosDetails {...p} />);
     ["Environment", "fakeEnv",
@@ -44,6 +46,9 @@ describe("<FbosDetails/>", () => {
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi Strength", "-49dBm",
       "Beta release Opt-In",
+      "Uptime", "0 seconds",
+      "Memory usage", "0MB",
+      "Disk usage", "0%",
     ]
       .map(string => expect(wrapper.text()).toContain(string));
   });
@@ -54,6 +59,22 @@ describe("<FbosDetails/>", () => {
     const wrapper = shallow(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("nodeName");
     expect(wrapper.text()).not.toContain("name@");
+  });
+
+  it("displays commit link", () => {
+    const p = fakeProps();
+    p.botInfoSettings.commit = "abcdefgh";
+    p.botInfoSettings.firmware_commit = "abcdefgh";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").length).toEqual(2);
+  });
+
+  it("doesn't display link without commit", () => {
+    const p = fakeProps();
+    p.botInfoSettings.commit = "---";
+    p.botInfoSettings.firmware_commit = "---";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").length).toEqual(0);
   });
 
   it("toggles os beta opt in setting on", () => {
@@ -93,6 +114,37 @@ describe("<FbosDetails/>", () => {
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("CPU temperature: unknown");
     expect(wrapper.text()).not.toContain("&deg;C");
+  });
+
+  it("doesn't display extra metrics when bot is offline", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = undefined;
+    p.botInfoSettings.memory_usage = undefined;
+    p.botInfoSettings.disk_usage = undefined;
+    const wrapper = mount(<FbosDetails {...p} />);
+    ["uptime", "usage"].map(metric =>
+      expect(wrapper.text().toLowerCase()).not.toContain(metric));
+  });
+
+  it("displays uptime in minutes", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 120;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 minutes");
+  });
+
+  it("displays uptime in hours", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 7200;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 hours");
+  });
+
+  it("displays uptime in days", () => {
+    const p = fakeProps();
+    p.botInfoSettings.uptime = 172800;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("2 days");
   });
 });
 

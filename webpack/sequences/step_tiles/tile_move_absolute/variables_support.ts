@@ -5,7 +5,7 @@ import {
   Nothing,
   ScopeDeclarationBodyItem
 } from "farmbot";
-import { isObject as obj, isString as strn, uniqBy } from "lodash";
+import { get, uniqBy } from "lodash";
 import { defensiveClone } from "../../../util";
 
 /** A less strict version of a CeleryScript node used for
@@ -32,9 +32,12 @@ const isIdentifier =
   (x: Traversable): x is Identifier => (x.kind === "identifier");
 
 /** Is it a fully-formed CeleryScript node? Can we continue recursing? */
-const isTraversable =
-  // tslint:disable-next-line:no-any
-  (x: any): x is Traversable => (obj(x) && obj(x.args) && strn(x.kind));
+const isTraversable = (x: unknown): x is Traversable => {
+  const kind: string | undefined = get(x, "kind");
+  const args: object | undefined = get(x, "args");
+
+  return !!((typeof kind == "string") && args && typeof args == "object");
+};
 
 /** Is it an _identifier_ node? Put it in the array if so.
  * If it is some other node type, continue recursion. */
@@ -57,7 +60,7 @@ const traverseBody = (input: Body, accumulator: Accum) => {
 
 /** Recurse into every leg of node.args and node.body, pushing all `identifier`
  * nodes into the `acc` array. */
-const traverse = (acc: Accum = []) => (input: Traversable): Accum => {
+const traverse = (acc: Accum = []) => (input: unknown): Accum => {
   if (isTraversable(input)) {
     traverseArgs(input.args, acc);
     traverseBody(input.body, acc);

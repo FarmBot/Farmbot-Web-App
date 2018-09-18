@@ -39,7 +39,7 @@ describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
-    expect(osSettings.find("button").length).toBe(6);
+    expect(osSettings.find("button").length).toBe(7);
     ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "CAMERA", "FIRMWARE"]
       .map(string => expect(osSettings.text()).toContain(string));
   });
@@ -50,8 +50,10 @@ describe("<FarmbotOsSettings/>", () => {
       {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
+    expect(osSettings.instance().state.osReleaseNotesHeading)
+      .toEqual("FarmBot OS v6");
     expect(osSettings.instance().state.osReleaseNotes)
-      .toEqual("# FarmBot OS v6\n* note");
+      .toEqual("* note");
   });
 
   it("doesn't fetch OS release notes", async () => {

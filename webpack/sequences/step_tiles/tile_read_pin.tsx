@@ -35,7 +35,8 @@ export function TileReadPin(props: StepParams) {
       currentSequence={currentSequence}
       currentStep={currentStep}
       dispatch={dispatch}
-      index={index} />
+      index={index}
+      confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
         <Col xs={6} md={6}>

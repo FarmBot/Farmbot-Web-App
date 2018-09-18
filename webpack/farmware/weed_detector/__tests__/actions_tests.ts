@@ -86,9 +86,9 @@ describe("deletePoints()", () => {
     mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const dispatch = jest.fn();
     await deletePoints("weeds", "plant-detection")(dispatch, jest.fn());
-    expect(axios.post).toHaveBeenCalledWith(":///api/points/search",
+    expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
-    await expect(axios.delete).toHaveBeenCalledWith(":///api/points/1,2,3");
+    await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
     expect(dispatch).toHaveBeenCalledWith({
       payload: [1, 2, 3],
       type: Actions.DELETE_POINT_OK
@@ -104,9 +104,9 @@ describe("deletePoints()", () => {
     mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const dispatch = jest.fn();
     await deletePoints("weeds", "plant-detection")(dispatch, jest.fn());
-    expect(axios.post).toHaveBeenCalledWith(":///api/points/search",
+    expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
-    await expect(axios.delete).toHaveBeenCalledWith(":///api/points/1,2,3");
+    await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
     await expect(dispatch).not.toHaveBeenCalled();
     expect(mockInc).toHaveBeenCalledTimes(1);
     expect(mockFinish).toHaveBeenCalledTimes(1);
@@ -120,10 +120,10 @@ describe("deletePoints()", () => {
     mockData = times(200, () => ({ id: 1 }));
     const dispatch = jest.fn();
     await deletePoints("weeds", "plant-detection")(dispatch, jest.fn());
-    expect(axios.post).toHaveBeenCalledWith(":///api/points/search",
+    expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith(
-      expect.stringContaining(":///api/points/1,"));
+      expect.stringContaining("http://localhost/api/points/1,"));
     expect(dispatch).toHaveBeenCalledWith({
       payload: expect.arrayContaining([1]),
       type: Actions.DELETE_POINT_OK

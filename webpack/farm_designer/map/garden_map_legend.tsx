@@ -5,114 +5,115 @@ import { GardenMapLegendProps } from "./interfaces";
 import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
-import { bugsControls } from "./easter_eggs/bugs";
+import { BugsControls } from "./easter_eggs/bugs";
+import { BotOriginQuadrant } from "../interfaces";
+import { MoveModeLink } from "../plants/move_to";
+import { SavedGardensLink } from "../saved_gardens/saved_gardens";
+import { GetWebAppConfigValue } from "../../config_storage/actions";
+
+const OriginSelector = ({ quadrant, update }: {
+  quadrant: BotOriginQuadrant,
+  update: (quadrant: number) => () => void
+}) =>
+  <div className="farmbot-origin">
+    <label>
+      {t("Origin")}
+    </label>
+    <div className="quadrants">
+      {[2, 1, 3, 4].map(q =>
+        <div key={"quadrant_" + q}
+          className={"quadrant " + (quadrant === q && "selected")}
+          onClick={update(q)} />
+      )}
+    </div>
+  </div>;
+
+export const ZoomControls = ({ zoom, getConfigValue }: {
+  zoom: (value: number) => () => void,
+  getConfigValue: GetWebAppConfigValue
+}) => {
+  const plusBtnClass = atMaxZoom(getConfigValue) ? "disabled" : "";
+  const minusBtnClass = atMinZoom(getConfigValue) ? "disabled" : "";
+  return <div className="zoom-buttons">
+    <button
+      className={"fb-button gray zoom " + plusBtnClass}
+      onClick={zoom(1)}>
+      <i className="fa fa-2x fa-plus" />
+    </button>
+    <button
+      className={"fb-button gray zoom zoom-out " + minusBtnClass}
+      onClick={zoom(-1)}>
+      <i className="fa fa-2x fa-minus" />
+    </button>
+  </div>;
+};
+
+export const PointsSubMenu = () =>
+  <div className="map-points-submenu">
+    <button className={"fb-button green"}
+      onClick={() => history.push("/app/designer/plants/create_point")}>
+      {t("Point Creator")}
+    </button>
+  </div>;
+
+const LayerToggles = (props: GardenMapLegendProps) => {
+  const { toggle, getConfigValue } = props;
+  return <div className="toggle-buttons">
+    <LayerToggle
+      value={props.showPlants}
+      label={t("Plants?")}
+      onClick={toggle("show_plants")} />
+    <LayerToggle
+      value={props.showPoints}
+      label={t("Points?")}
+      onClick={toggle("show_points")}
+      submenuTitle={t("extras")}
+      popover={!!localStorage.getItem("FUTURE_FEATURES")
+        ? <PointsSubMenu />
+        : undefined} />
+    <LayerToggle
+      value={props.showSpread}
+      label={t("Spread?")}
+      onClick={toggle("show_spread")} />
+    <LayerToggle
+      value={props.showFarmbot}
+      label={t("FarmBot?")}
+      onClick={toggle("show_farmbot")} />
+    <LayerToggle
+      value={props.showImages}
+      label={t("Photos?")}
+      onClick={toggle("show_images")}
+      submenuTitle={t("filter")}
+      popover={<ImageFilterMenu
+        tzOffset={props.tzOffset}
+        dispatch={props.dispatch}
+        getConfigValue={getConfigValue}
+        imageAgeInfo={props.imageAgeInfo} />} />
+  </div>;
+};
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
-
-  const {
-    zoom,
-    toggle,
-    updateBotOriginQuadrant,
-    botOriginQuadrant,
-    legendMenuOpen,
-    showPlants,
-    showPoints,
-    showSpread,
-    showFarmbot,
-    showImages,
-    dispatch,
-    tzOffset,
-    getConfigValue,
-    imageAgeInfo,
-  } = props;
-
-  const plusBtnClass = atMaxZoom() ? "disabled" : "";
-  const minusBtnClass = atMinZoom() ? "disabled" : "";
-  const menuClass = legendMenuOpen ? "active" : "";
-
+  const menuClass = props.legendMenuOpen ? "active" : "";
   return <div
     className={"garden-map-legend " + menuClass}
     style={{ zoom: 1 }}>
     <div
       className={"menu-pullout " + menuClass}
-      onClick={toggle("legend_menu_open")}>
+      onClick={props.toggle("legend_menu_open")}>
       <span>
         {t("Menu")}
       </span>
       <i className="fa fa-2x fa-arrow-left" />
     </div>
     <div className="content">
-      <div className="zoom-buttons">
-        <button
-          className={"fb-button gray zoom " + plusBtnClass}
-          onClick={zoom(1)}>
-          <i className="fa fa-2x fa-plus" />
-        </button>
-        <button
-          className={"fb-button gray zoom zoom-out " + minusBtnClass}
-          onClick={zoom(-1)}>
-          <i className="fa fa-2x fa-minus" />
-        </button>
-      </div>
-      <div className="toggle-buttons">
-        <LayerToggle
-          value={showPlants}
-          label={t("Plants?")}
-          onClick={toggle("show_plants")} />
-        <LayerToggle
-          value={showPoints}
-          label={t("Points?")}
-          onClick={toggle("show_points")} />
-        <LayerToggle
-          value={showSpread}
-          label={t("Spread?")}
-          onClick={toggle("show_spread")} />
-        <LayerToggle
-          value={showFarmbot}
-          label={t("FarmBot?")}
-          onClick={toggle("show_farmbot")} />
-        <LayerToggle
-          value={showImages}
-          label={t("Photos?")}
-          onClick={toggle("show_images")}
-          popover={<ImageFilterMenu
-            tzOffset={tzOffset}
-            dispatch={dispatch}
-            getConfigValue={getConfigValue}
-            imageAgeInfo={imageAgeInfo} />} />
-      </div>
-      <div className="farmbot-origin">
-        <label>
-          {t("Origin")}
-        </label>
-        <div className="quadrants">
-          <div
-            className={"quadrant " + (botOriginQuadrant === 2 && "selected")}
-            onClick={updateBotOriginQuadrant(2)} />
-          <div
-            className={"quadrant " + (botOriginQuadrant === 1 && "selected")}
-            onClick={updateBotOriginQuadrant(1)} />
-          <div
-            className={"quadrant " + (botOriginQuadrant === 3 && "selected")}
-            onClick={updateBotOriginQuadrant(3)} />
-          <div
-            className={"quadrant " + (botOriginQuadrant === 4 && "selected")}
-            onClick={updateBotOriginQuadrant(4)} />
-        </div>
-      </div>
-      <div className="move-to-mode">
-        <button
-          className="fb-button gray"
-          onClick={() => history.push("/app/designer/plants/move_to")}>
-          {t("move mode")}
-        </button>
-      </div>
-      <button className="fb-button green"
-        hidden={!(localStorage.getItem("SAVE_MY_GARDEN") === "certainly")}
-        onClick={() => history.push("/app/designer/plants/saved_gardens")}>
-        {t("Saved Gardens")}
-      </button>
-      {bugsControls()}
+      <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
+      <LayerToggles {...props} />
+      <OriginSelector
+        quadrant={props.botOriginQuadrant}
+        update={props.updateBotOriginQuadrant} />
+      <MoveModeLink />
+      <SavedGardensLink />
+      <BugsControls />
     </div>
   </div>;
 }

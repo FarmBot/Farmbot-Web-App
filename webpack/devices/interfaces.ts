@@ -64,6 +64,7 @@ export enum Feature {
   endstop_invert = "endstop_invert",
   diagnostic_dumps = "diagnostic_dumps",
   rpi_led_control = "rpi_led_control",
+  mark_as_step = "mark_as_step",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -159,6 +160,7 @@ export interface FarmbotOsProps {
 }
 
 export interface FarmbotOsState {
+  osReleaseNotesHeading: string;
   osReleaseNotes: string;
 }
 

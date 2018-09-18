@@ -13,7 +13,7 @@ import {
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer";
 import { generateUuid } from "../resources/util";
-import { defensiveClone } from "../util";
+import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
@@ -225,6 +225,7 @@ export function urlFor(tag: ResourceName) {
     FirmwareConfig: API.current.firmwareConfigPath,
     DiagnosticDump: API.current.diagnosticDumpsPath,
     SavedGarden: API.current.savedGardensPath,
+    PlantTemplate: API.current.plantTemplatePath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -247,7 +248,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
   let url = urlFor(kind);
   if (body.id) {
     verb = "put";
-    if (!SINGULAR_RESOURCE.includes(payl.uuid.split(".")[0] as ResourceName)) {
+    if (!SINGULAR_RESOURCE.includes(unpackUUID(payl.uuid).kind)) {
       url += body.id;
     }
   } else {
@@ -276,7 +277,8 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "Point",
   "Sequence",
   "Regimen",
-  "Image"
+  "Image",
+  "SavedGarden",
 ];
 
 const confirmationChecker = (resource: TaggedResource, force = false) =>

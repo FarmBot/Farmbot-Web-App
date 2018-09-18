@@ -91,7 +91,7 @@ export class FarmwareList
     return <div>
       <div className="farmware-settings-menu">
         <Popover position={Position.BOTTOM_RIGHT}>
-          <i className="fa fa-gear" />
+          <i className="fa fa-gear dark" />
           <FarmwareConfigMenu
             show={this.props.showFirstParty}
             dispatch={this.props.dispatch}

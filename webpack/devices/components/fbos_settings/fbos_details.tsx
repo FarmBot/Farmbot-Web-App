@@ -3,10 +3,12 @@ import { Saucer } from "../../../ui/index";
 import { t } from "i18next";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { last } from "lodash";
+import { last, isNumber } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
+import { SourceFbosConfig } from "../../interfaces";
 
+/** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
   if (!temp) {
     return "gray";
@@ -24,6 +26,7 @@ export const colorFromTemp = (temp: number | undefined): string => {
   }
 };
 
+/** RPI CPU temperature display row: label, temperature, indicator. */
 export function ChipTemperatureDisplay({ chip, temperature }: {
   chip?: string, temperature: number | undefined
 }): JSX.Element {
@@ -36,6 +39,7 @@ export function ChipTemperatureDisplay({ chip, temperature }: {
   </div>;
 }
 
+/** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay({ wifiStrength }: {
   wifiStrength: number | undefined
 }): JSX.Element {
@@ -59,33 +63,82 @@ export function WiFiStrengthDisplay({ wifiStrength }: {
   </div>;
 }
 
+/** Get the first 8 characters of a commit. */
+const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
+
+/** GitHub commit display row: label, commit link. */
+const CommitDisplay = ({ title, repo, commit }: {
+  title: string, repo: string, commit: string
+}): JSX.Element => {
+  const shortCommit = shortenCommit(commit);
+  return <p>
+    <b>{title}: </b>
+    {shortCommit === "---"
+      ? shortCommit
+      : <a
+        href={`https://github.com/FarmBot/${repo}/tree/${shortCommit}`}
+        target="_blank">
+        {shortCommit}
+      </a>}
+  </p>;
+};
+
+/** FBOS uptime display row: label and uptime in relevant unit. */
+const UptimeDisplay = ({ uptime_sec }: { uptime_sec: number }): JSX.Element => {
+  const convertUptime = (seconds: number) => {
+    if (seconds >= 172800) {
+      return `${Math.round(seconds / 86400)} ${t("days")}`;
+    } else if (seconds >= 7200) {
+      return `${Math.round(seconds / 3600)} ${t("hours")}`;
+    } else if (seconds >= 120) {
+      return `${Math.round(seconds / 60)} ${t("minutes")}`;
+    } else {
+      return `${seconds} ${t("seconds")}`;
+    }
+  };
+  return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
+};
+
+/** Label and toggle button for opting in to FBOS beta releases. */
+const BetaReleaseOptInButton = ({ dispatch, sourceFbosConfig }: {
+  dispatch: Function, sourceFbosConfig: SourceFbosConfig
+}): JSX.Element => {
+  const betaOptIn = sourceFbosConfig("beta_opt_in");
+  return <fieldset>
+    <label style={{ marginTop: "0.75rem" }}>
+      {t("Beta release Opt-In")}
+    </label>
+    <ToggleButton
+      toggleValue={betaOptIn.value}
+      dim={!betaOptIn.consistent}
+      toggleAction={() =>
+        (betaOptIn.value || confirm(Content.OS_BETA_RELEASES)) &&
+        dispatch(updateConfig({ beta_opt_in: !betaOptIn.value }))} />
+  </fieldset>;
+};
+
+/** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {
-  const { dispatch, sourceFbosConfig, botInfoSettings } = props;
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
-    soc_temp, wifi_level
-  } = botInfoSettings;
-  const betaOptIn = sourceFbosConfig("beta_opt_in");
-  const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
+    soc_temp, wifi_level, uptime, memory_usage, disk_usage
+  } = props.botInfoSettings;
+
   return <div>
     <p><b>Environment: </b>{env}</p>
-    <p><b>Commit: </b>{shortenCommit(commit)}</p>
+    <CommitDisplay title={"Commit"} repo={"farmbot_os"} commit={commit} />
     <p><b>Target: </b>{target}</p>
     <p><b>Node name: </b>{last((node_name || "").split("@"))}</p>
     <p><b>Firmware: </b>{firmware_version}</p>
-    <p><b>Firmware commit: </b>{shortenCommit(firmware_commit)}</p>
+    <CommitDisplay title={"Firmware commit"}
+      repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
+    {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
+    {isNumber(memory_usage) && <p><b>Memory usage: </b>{memory_usage}MB</p>}
+    {isNumber(disk_usage) && <p><b>Disk usage: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay wifiStrength={wifi_level} />
-    <fieldset>
-      <label style={{ marginTop: "0.75rem" }}>
-        {t("Beta release Opt-In")}
-      </label>
-      <ToggleButton
-        toggleValue={betaOptIn.value}
-        dim={!betaOptIn.consistent}
-        toggleAction={() =>
-          (betaOptIn.value || confirm(Content.OS_BETA_RELEASES)) &&
-          dispatch(updateConfig({ beta_opt_in: !betaOptIn.value }))} />
-    </fieldset>
+    <BetaReleaseOptInButton
+      dispatch={props.dispatch}
+      sourceFbosConfig={props.sourceFbosConfig} />
   </div>;
 }

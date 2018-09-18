@@ -30,9 +30,10 @@ export function Edit(props: WebcamPanelProps) {
   return <Widget>
     <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
       <button
-        className="fb-button green"
-        onClick={props.init}>
-        <i className="fa fa-plus" />
+        className="fb-button gray"
+        disabled={unsaved.length > 0}
+        onClick={props.onToggle}>
+        {t("Back")}
       </button>
       <button
         className="fb-button green"
@@ -40,9 +41,9 @@ export function Edit(props: WebcamPanelProps) {
         {t("Save")}{unsaved.length > 0 ? "*" : ""}
       </button>
       <button
-        className="fb-button gray"
-        onClick={props.onToggle}>
-        {t("View")}
+        className="fb-button green"
+        onClick={props.init}>
+        <i className="fa fa-plus" />
       </button>
     </WidgetHeader>
     <div className="widget-body">

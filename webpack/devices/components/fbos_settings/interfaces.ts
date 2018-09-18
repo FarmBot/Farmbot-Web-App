@@ -45,6 +45,7 @@ export interface FactoryResetRowProps {
 
 export interface FarmbotOsRowProps {
   bot: BotState;
+  osReleaseNotesHeading: string;
   osReleaseNotes: string;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
