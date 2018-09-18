@@ -123,12 +123,7 @@ export const UNBOUND_ROUTES = [
     key: "Devices"
   }),
   route({
-    $: "/farmware/*",
-    getModule: () => import("./farmware"),
-    key: "FarmwarePage"
-  }),
-  route({
-    $: "/farmware",
+    $: "/farmware(/:name)",
     getModule: () => import("./farmware"),
     key: "FarmwarePage"
   }),
@@ -138,12 +133,7 @@ export const UNBOUND_ROUTES = [
     key: "Logs"
   }),
   route({
-    $: "/regimens",
-    getModule: () => import("./regimens"),
-    key: "Regimens"
-  }),
-  route({
-    $: "/regimens/:regimen",
+    $: "/regimens(/:regimen)",
     getModule: () => import("./regimens"),
     key: "Regimens"
   }),
@@ -173,14 +163,35 @@ export const UNBOUND_ROUTES = [
     key: "FarmEvents"
   }),
   legacyRoute({
+    $: "/designer/farm_events/add",
+    getChild: () => import("./farm_designer/farm_events/add_farm_event"),
+    key: "AddFarmEvent"
+  }),
+  legacyRoute({
     $: "/designer/farm_events/:farm_event_id",
     getChild: () => import("./farm_designer/farm_events/edit_farm_event"),
     key: "EditFarmEvent"
   }),
+  // =================== PLANT ROUTES
   legacyRoute({
-    $: "/designer/farm_events/add",
-    getChild: () => import("./farm_designer/farm_events/add_farm_event"),
-    key: "AddFarmEvent"
+    $: "/designer/plants/move_to",
+    getChild: () => import("./farm_designer/plants/move_to"),
+    key: "MoveTo"
+  }),
+  legacyRoute({
+    $: "/designer/plants/saved_gardens",
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    key: "SavedGardens"
+  }),
+  legacyRoute({
+    $: "/designer/plants/select",
+    getChild: () => import("./farm_designer/plants/select_plants"),
+    key: "SelectPlants"
+  }),
+  legacyRoute({
+    $: "/designer/plants/create_point",
+    getChild: () => import("./farm_designer/plants/create_points"),
+    key: "CreatePoints"
   }),
   legacyRoute({
     $: "/designer/plants/crop_search",
@@ -198,11 +209,6 @@ export const UNBOUND_ROUTES = [
     key: "CropInfo"
   }),
   legacyRoute({
-    $: "/designer/plants/create_point",
-    getChild: () => import("./farm_designer/plants/create_points"),
-    key: "CreatePoints"
-  }),
-  legacyRoute({
     $: "/designer/plants/:plant_id/edit",
     getChild: () => import("./farm_designer/plants/edit_plant_info"),
     key: "EditPlantInfo"
@@ -211,20 +217,5 @@ export const UNBOUND_ROUTES = [
     $: "/designer/plants/:plant_id",
     getChild: () => import("./farm_designer/plants/plant_info"),
     key: "PlantInfo"
-  }),
-  legacyRoute({
-    $: "/designer/plants/move_to",
-    getChild: () => import("./farm_designer/plants/move_to"),
-    key: "MoveTo"
-  }),
-  legacyRoute({
-    $: "/designer/plants/saved_gardens",
-    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
-    key: "SavedGardens"
-  }),
-  legacyRoute({
-    $: "/designer/plants/select",
-    getChild: () => import("./farm_designer/plants/select_plants"),
-    key: "SelectPlants"
   }),
 ].concat([NOT_FOUND]);
