@@ -68,7 +68,6 @@
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "raf": "^3.4.0",
     "react": "16.5.2",
-    "react-addons-css-transition-group": "^15.6.2",
     "react-addons-test-utils": "^15.6.2",
     "react-color": "2.14.1",
     "react-dom": "16.5.2",
