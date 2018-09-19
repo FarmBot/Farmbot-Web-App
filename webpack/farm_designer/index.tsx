@@ -157,7 +157,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       <div
         className={`farm-designer-map ${this.mapOnly ? "" : "panel-open"}`}
         style={{ zoom: zoom_level }}>
-        {add_css_transition_here_maybe()}
         <GardenMap
           showPoints={show_points}
           showPlants={show_plants}
