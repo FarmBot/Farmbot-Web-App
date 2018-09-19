@@ -218,4 +218,30 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./farm_designer/plants/plant_info"),
     key: "PlantInfo"
   }),
+  legacyRoute({
+    $: "saved_gardens",
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    key: "SavedGardens"
+  }),
+  legacyRoute({
+    $: "saved_gardens/templates",
+    getChild: () => import("./farm_designer/plants/plant_inventory"),
+    key: "Plants"
+  }),
+  legacyRoute({
+    $: "saved_gardens/templates/:plant_template_id/edit",
+    getChild: () => import("./farm_designer/plants/edit_plant_info"),
+    key: "EditPlantInfo"
+  }),
+  legacyRoute({
+    $: "saved_gardens/templates/:plant_template_id",
+    getChild: () => import("./farm_designer/plants/plant_info"),
+    key: "PlantInfo"
+  }),
+  legacyRoute({
+    $: "saved_gardens/:saved_garden_id",
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    key: "SavedGardens"
+  }),
+
 ].concat([NOT_FOUND]);
