@@ -148,8 +148,6 @@ export interface FarmEventProps {
   timezoneIsSet: boolean;
   /** Sorted list of the first (100?) events due on the calendar. */
   calendarRows: CalendarDay[];
-  /** Call this function to navigate to different pages. */
-  push: (url: string) => void;
 }
 
 export interface GardenMapProps {

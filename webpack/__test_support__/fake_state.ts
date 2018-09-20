@@ -1,6 +1,5 @@
 import { noop } from "lodash";
 import { Everything } from "../interfaces";
-import { location } from "./fake_state/location";
 import { peripherals as Peripheral } from "./fake_state/peripherals";
 import { auth } from "./fake_state/token";
 import { bot } from "./fake_state/bot";
@@ -13,14 +12,12 @@ import { routeReducerDefaultState } from "../experimental/reducer";
 export function fakeState(_: Function = noop): Everything {
   return {
     dispatch: jest.fn(),
-    location,
     Peripheral,
     auth,
     bot,
     config,
     draggable,
     resources,
-    router: { push: jest.fn() },
     route: routeReducerDefaultState,
   };
 }
