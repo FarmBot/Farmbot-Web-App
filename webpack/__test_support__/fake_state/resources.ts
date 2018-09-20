@@ -293,6 +293,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     discard_unsaved: false,
     xy_swap: false,
     home_button_homing: false,
+    show_motor_plot: false,
+    show_historic_points: false,
   });
 }
 

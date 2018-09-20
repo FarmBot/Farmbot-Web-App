@@ -24,7 +24,7 @@ import {
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
-import { findPoints, selectAllPoints } from "./selectors_by_kind";
+import { findPoints, selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 
 export * from "./selectors_by_id";
@@ -57,7 +57,7 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
 export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
 
 export function groupPointsByType(index: ResourceIndex) {
-  return _(selectAllPoints(index))
+  return _(selectAllActivePoints(index))
     // If this fails to compile....
     .tap(x => x[0].body.pointer_type)
     // ... this line must be updated:
@@ -68,7 +68,7 @@ export function groupPointsByType(index: ResourceIndex) {
 export function findPointerByTypeAndId(index: ResourceIndex,
   type_: string,
   id: number) {
-  const p = selectAllPoints(index)
+  const p = selectAllActivePoints(index)
     .filter(({ body }) => (body.id === id) && (body.pointer_type === type_))[0];
   if (p) {
     return p;
@@ -82,21 +82,21 @@ export function findPointerByTypeAndId(index: ResourceIndex,
 export function selectAllGenericPointers(index: ResourceIndex):
   TaggedGenericPointer[] {
   const genericPointers = selectAllPoints(index)
-    .map(p => (isTaggedGenericPointer(p)) ? p : undefined);
+    .map(p => isTaggedGenericPointer(p) ? p : undefined);
   return betterCompact(genericPointers);
 }
 
 export function selectAllPlantPointers(index: ResourceIndex): TaggedPlantPointer[] {
-  const genericPointers = selectAllPoints(index)
-    .map(p => (isTaggedPlantPointer(p)) ? p : undefined);
-  return betterCompact(genericPointers);
+  const plantPointers = selectAllActivePoints(index)
+    .map(p => isTaggedPlantPointer(p) ? p : undefined);
+  return betterCompact(plantPointers);
 }
 
 export function selectAllToolSlotPointers(index: ResourceIndex):
   TaggedToolSlotPointer[] {
-  const genericPointers = selectAllPoints(index)
-    .map(p => (isTaggedToolSlotPointer(p)) ? p : undefined);
-  return betterCompact(genericPointers);
+  const toolSlotPointers = selectAllActivePoints(index)
+    .map(p => isTaggedToolSlotPointer(p) ? p : undefined);
+  return betterCompact(toolSlotPointers);
 }
 
 export function findToolSlot(i: ResourceIndex, uuid: string): TaggedToolSlotPointer {

@@ -17,6 +17,7 @@ import {
 import { GardenMapLegendProps } from "../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
+import { BooleanSetting } from "../../../session_keys";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -81,9 +82,22 @@ describe("<ZoomControls />", () => {
 
 describe("<PointsSubMenu />", () => {
   it("navigates to point creator", () => {
-    const wrapper = mount(<PointsSubMenu />);
+    const wrapper = mount(<PointsSubMenu
+      toggle={jest.fn()}
+      getConfigValue={jest.fn()} />);
     clickButton(wrapper, 0, "point creator");
     expect(history.push).toHaveBeenCalledWith(
       "/app/designer/plants/create_point");
+  });
+
+  it("shows historic points", () => {
+    const toggle = jest.fn();
+    const wrapper = shallow(<PointsSubMenu
+      toggle={toggle}
+      getConfigValue={() => true} />);
+    const toggleBtn = wrapper.find("LayerToggle");
+    expect(toggleBtn.props().value).toEqual(true);
+    toggleBtn.simulate("click");
+    expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_historic_points);
   });
 });
