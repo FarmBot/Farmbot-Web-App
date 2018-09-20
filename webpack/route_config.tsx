@@ -1,12 +1,24 @@
 import { RouteConfig } from "takeme";
 import { Apology } from "./apology";
 
-interface UnboundRouteConfig<T> {
+interface UnboundRouteConfigNoChild<T> {
+  children: false,
   $: string;
   getModule: () => Promise<T>;
   key: keyof T;
 }
 
+interface UnboundRouteConfigChild<T, U> {
+  children: true,
+  $: string;
+  getModule: () => Promise<T>;
+  key: keyof T;
+  getChild: () => Promise<U>;
+  childKey: keyof U;
+}
+
+type UnboundRouteConfig<T, U> =
+  UnboundRouteConfigNoChild<T> | UnboundRouteConfigChild<T, U>;
 /** This is the preferred way to generate a route when there are no legacy
  *  concerns.
  *  PROBLEM:
@@ -32,17 +44,23 @@ interface UnboundRouteConfig<T> {
  *          BIND ROUTE CHANGE CALLBACK TO UNBOUND ROUTE =>
  *            DONE.
  */
-function route<T>(i: UnboundRouteConfig<T>) {
+function route<T, U>(info: UnboundRouteConfig<T, U>) {
   return (callback: Function): RouteConfig => {
-    const { $, getModule, key } = i;
+    const { $ } = info;
     return {
       $,
-      enter: async (info) => {
+      enter: async () => {
         try {
-          callback((await getModule())[key], info);
+          const comp = (await info.getModule())[info.key];
+          if (info.children) {
+            const child = (await info.getChild())[info.childKey];
+            callback(comp, child);
+          } else {
+            callback((await info.getModule())[info.key]);
+          }
         } catch (e) {
           console.error(e);
-          callback(Apology, info);
+          callback(Apology);
         }
       }
     };
@@ -52,53 +70,217 @@ function route<T>(i: UnboundRouteConfig<T>) {
 /** The 404 handler. All unresolved routes end up here. MUST BE LAST ITEM IN
  * ROUTE CONFIG!!! */
 export const NOT_FOUND_ROUTE = route({
+  children: false,
   $: "*",
   getModule: () => import("./404"),
   key: "FourOhFour"
 });
+
+const getModule = () => import("./farm_designer");
+const key = "FarmDesigner";
 
 /** Bind the route to a callback by calling in a function that passes the
   callback in as the first argument
  */
 export const UNBOUND_ROUTES = [
   route({
+    children: false,
     $: "/account",
     getModule: () => import("./account"),
-    key: "Account"
+    key: "Account",
   }),
   route({
+    children: false,
     $: "/controls",
     getModule: () => import("./controls/controls"),
-    key: "Controls"
+    key: "Controls",
   }),
   route({
+    children: false,
     $: "/device",
     getModule: () => import("./devices/devices"),
-    key: "Devices"
+    key: "Devices",
   }),
   route({
+    children: false,
     $: "/farmware(/:name)",
     getModule: () => import("./farmware"),
-    key: "FarmwarePage"
+    key: "FarmwarePage",
   }),
   route({
+    children: false,
     $: "/logs",
     getModule: () => import("./logs"),
-    key: "Logs"
+    key: "Logs",
   }),
   route({
+    children: false,
     $: "/regimens(/:regimen)",
     getModule: () => import("./regimens"),
-    key: "Regimens"
+    key: "Regimens",
   }),
   route({
+    children: false,
     $: "/sequences(/:sequence)",
     getModule: () => import("./sequences/sequences"),
-    key: "Sequences"
+    key: "Sequences",
   }),
   route({
+    children: false,
     $: "/tools",
     getModule: () => import("./tools"),
-    key: "Tools"
+    key: "Tools",
   }),
-];
+  // =====
+  route({
+    children: false,
+    $: "/designer",
+    getModule: () => import("./farm_designer"),
+    key: "FarmDesigner"
+  }),
+  route({
+    children: true,
+    $: "/designer/farm_events",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farm_events/farm_events"),
+    childKey: "FarmEvents"
+  }),
+  route({
+    children: true,
+    $: "/designer/farm_events/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farm_events/add_farm_event"),
+    childKey: "AddFarmEvent"
+  }),
+  route({
+    children: true,
+    $: "/designer/farm_events/:farm_event_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/farm_events/edit_farm_event"),
+    childKey: "EditFarmEvent"
+  }),
+  // =================== PLANT ROUTES
+  route({
+    children: true,
+    $: "/designer/plants",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/plant_inventory"),
+    childKey: "Plants"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/move_to",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/move_to"),
+    childKey: "MoveTo"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/saved_gardens",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    childKey: "SavedGardens"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/select",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/select_plants"),
+    childKey: "SelectPlants"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/create_point",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/create_points"),
+    childKey: "CreatePoints"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/crop_search",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/crop_catalog"),
+    childKey: "CropCatalog"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/crop_search/:crop/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/add_plant"),
+    childKey: "AddPlant"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/crop_search/:crop",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/crop_info"),
+    childKey: "CropInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/:plant_id/edit",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/edit_plant_info"),
+    childKey: "EditPlantInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/plants/:plant_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/plant_info"),
+    childKey: "PlantInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/saved_gardens",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    childKey: "SavedGardens"
+  }),
+  route({
+    children: true,
+    $: "/designer/saved_gardens/templates",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/plant_inventory"),
+    childKey: "Plants"
+  }),
+  route({
+    children: true,
+    $: "/designer/saved_gardens/templates/:plant_template_id/edit",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/edit_plant_info"),
+    childKey: "EditPlantInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/saved_gardens/templates/:plant_template_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/plant_info"),
+    childKey: "PlantInfo"
+  }),
+  route({
+    children: true,
+    $: "/designer/saved_gardens/:saved_garden_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
+    childKey: "SavedGardens"
+  }),
+].concat([NOT_FOUND_ROUTE]);

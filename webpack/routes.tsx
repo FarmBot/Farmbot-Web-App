@@ -9,12 +9,9 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
-import { Router, RouteConfig } from "takeme";
-import { UNBOUND_ROUTES, NOT_FOUND_ROUTE } from "./route_config";
+import { Router } from "takeme";
+import { UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
-import { BIG_LOOKUP } from "./experimental/experimental";
-import { FarmDesigner } from "./farm_designer";
-import { DESIGNER_ROUTES } from "./experimental/experimental";
 
 interface RootComponentProps { store: Store; }
 
@@ -28,8 +25,6 @@ interface RootComponentState {
     Route: React.ComponentType;
     ChildRoute?: React.ComponentType;
 }
-
-const FARM_DESIGNER = () => <FarmDesigner {...({} as any)} />;
 
 export class RootComponent extends React.Component<RootComponentProps, RootComponentState> {
     state: RootComponentState = { Route: () => <div>Loading...</div> };
@@ -48,24 +43,7 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
 
     componentDidMount() {
         const main_routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
-        const designer_routes = DESIGNER_ROUTES
-            .map(($: string): RouteConfig => {
-                return {
-                    $: $,
-                    enter: async () => {
-                        const fn = BIG_LOOKUP[$];
-                        if (fn) {
-                            const child = await fn();
-                            this.changeRoute(FARM_DESIGNER, child);
-                        }
-                    }
-                };
-            });
-        new Router([
-            ...main_routes,
-            ...designer_routes,
-            NOT_FOUND_ROUTE(this.changeRoute)
-        ]).enableHtml5Routing("/app").init();
+        new Router(main_routes).enableHtml5Routing("/app").init();
     }
 
     render() {
