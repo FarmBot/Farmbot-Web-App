@@ -57,7 +57,7 @@ export function fetchSyncData(dispatch: Function) {
   fetch<Image[]>("Image", API.current.imagesPath);
   fetch<Log[]>("Log", API.current.filteredLogsPath);
   fetch<Peripheral[]>("Peripheral", API.current.peripheralsPath);
-  fetch<Point[]>("Point", API.current.pointsPath);
+  fetch<Point[]>("Point", API.current.allPointsPath);
   fetch<Regimen[]>("Regimen", API.current.regimensPath);
   fetch<Sequence[]>("Sequence", API.current.sequencesPath);
   fetch<Tool[]>("Tool", API.current.toolsPath);
