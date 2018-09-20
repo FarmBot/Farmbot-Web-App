@@ -9,9 +9,13 @@ class KeyGen
   end
 
   def self.generate_new_key(path = SAVE_PATH)
-    rsa = OpenSSL::PKey::RSA.generate(2048)
+    rsa = generate_new_key()
     File.open(path, 'w') { |f| f.write(rsa.to_pem) }
     return rsa
+  end
+
+  def self.generate_new_key
+    OpenSSL::PKey::RSA.generate(2048)
   end
 
   # Heroku / 12Factor users can't store stuff on the file system. Store your pem
