@@ -9,10 +9,12 @@ import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
-import { Router } from "takeme";
-import { UNBOUND_ROUTES } from "./route_config";
+import { Router, RouteConfig } from "takeme";
+import { UNBOUND_ROUTES, NOT_FOUND_ROUTE } from "./route_config";
 import { App } from "./app";
-// import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { Experimental, DesignerRouteName, BIG_LOOKUP } from "./experimental/experimental";
+import { routeChange } from "./experimental/reducer";
+import { FarmDesigner } from "./farm_designer";
 
 interface RootComponentProps { store: Store; }
 
@@ -23,11 +25,14 @@ export const attachAppToDom: Callback = () => {
 };
 
 interface RootComponentState {
-  CurrentRoute: React.ComponentType
+  Route: React.ComponentType;
+  ChildRoute?: React.ComponentType;
 }
 
+const FARM_DESIGNER = () => <FarmDesigner {...({} as any)} />;
+
 export class RootComponent extends React.Component<RootComponentProps, RootComponentState> {
-  state: RootComponentState = { CurrentRoute: () => <div>Loading...</div> };
+  state: RootComponentState = { Route: () => <div>Loading...</div> };
 
   componentWillMount() {
     const notLoggedIn = !Session.fetchStoredToken();
@@ -37,22 +42,43 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
   }
 
   changeRoute =
-    (c: React.ComponentType) => {
-      this.setState({ CurrentRoute: c });
-    }
+    (Route: React.ComponentType, ChildRoute?: React.ComponentType) => {
+      this.setState({ Route: Route, ChildRoute });
+    };
 
   componentDidMount() {
-    const routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
-    new Router(routes).enableHtml5Routing("/app").init();
+    const main_routes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
+    const designer_routes = Object
+      .values(DesignerRouteName)
+      .map(($): RouteConfig => {
+        return {
+          $: $,
+          enter: async () => {
+            _store.dispatch(routeChange($));
+            const fn = BIG_LOOKUP[$];
+            if (fn) {
+              const child = await fn();
+              this.changeRoute(FARM_DESIGNER, child);
+            }
+          }
+        };
+      });
+    new Router([
+      ...main_routes,
+      ...designer_routes,
+      NOT_FOUND_ROUTE(this.changeRoute)
+    ]).enableHtml5Routing("/app").init();
   }
 
   render() {
-    const { CurrentRoute } = this.state;
+    const { Route } = this.state;
+    const { ChildRoute } = this.state;
+    const props = ChildRoute ? { children: <ChildRoute /> } : {};
     try {
       return <ErrorBoundary>
         <Provider store={_store}>
           <App {...{} as App["props"]}>
-            <CurrentRoute />
+            <Route {...props} />
           </App>
         </Provider>
       </ErrorBoundary>;
