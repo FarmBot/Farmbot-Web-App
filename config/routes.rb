@@ -27,7 +27,7 @@ FarmBot::Application.routes.draw do
     # Singular API Resources:
     {
       device:          [:create, :destroy, :show, :update],
-      device_cert:     [:create, :show],
+      device_cert:     [:create],
       fbos_config:     [:destroy, :show, :update,],
       firmware_config: [:destroy, :show, :update,],
       public_key:      [:show],

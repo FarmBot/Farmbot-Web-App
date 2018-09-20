@@ -93,7 +93,7 @@ class NervesHub
     csr_safe = Base64.strict_encode64(csr_bin)
 
     data = {
-      identifier: serial_number
+      identifier: serial_number,
       csr:        csr_safe,
     }
     resp = conn.post(device_sign_path(serial_number), data.to_json(), headers())
@@ -102,7 +102,7 @@ class NervesHub
     FileUtils.rm(key_file)
     FileUtils.rm(csr_file)
     ret = {
-      cert: Base64.strict_encode64(cert)
+      cert: Base64.strict_encode64(cert),
       csr:  csr_safe,
       key:  key_safe,
     }
@@ -110,6 +110,18 @@ class NervesHub
 
   def self.active?
     !(current_cert.nil? && current_key.nil?)
+  end
+
+  def self.hostname
+    NERVES_HUB_HOST
+  end
+
+  def self.port
+    NERVES_HUB_PORT
+  end
+
+  def self.ca
+    Base64.strict_encode64(File.read(@current_ca_file))
   end
 
 private
