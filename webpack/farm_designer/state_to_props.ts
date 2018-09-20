@@ -17,6 +17,7 @@ import { Props } from "./interfaces";
 import { TaggedPlant } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString } from "lodash";
+import { BooleanSetting } from "../session_keys";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -43,6 +44,12 @@ export function mapStateToProps(props: Everything): Props {
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
 
   const hoveredPlant = findPlant(plantUUID);
+
+  const getConfigValue = getWebAppConfigValue(() => props);
+  const allPoints = selectAllGenericPointers(props.resources.index);
+  const points = getConfigValue(BooleanSetting.show_historic_points)
+    ? allPoints
+    : allPoints.filter(x => !x.body.discarded_at);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
@@ -82,7 +89,7 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: props.dispatch,
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
-    points: selectAllGenericPointers(props.resources.index),
+    points,
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
@@ -94,6 +101,6 @@ export function mapStateToProps(props: Everything): Props {
     latestImages,
     cameraCalibrationData,
     tzOffset: maybeGetTimeOffset(props.resources.index),
-    getConfigValue: getWebAppConfigValue(() => props),
+    getConfigValue,
   };
 }

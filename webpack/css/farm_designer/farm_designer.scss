@@ -527,6 +527,24 @@
   }
 }
 
+.map-points-submenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  fieldset {
+    display: flex;
+    margin-top: 1rem;
+    flex-direction: column;
+    align-items: center;
+  }
+  label {
+    margin-top: 0.75rem;
+  }
+  button {
+    margin: auto;
+  }
+}
+
 .image-filter-menu {
   width: 32rem;
   th {

@@ -4,10 +4,13 @@ import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate, fakeSavedGarden
+  fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig
 } from "../../__test_support__/fake_state/resources";
+import { WebAppConfig } from "../../config_storage/web_app_configs";
 
 describe("mapStateToProps()", () => {
+  const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
+
   it("hovered plantUUID is undefined", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.hoveredPlant = {
@@ -43,6 +46,34 @@ describe("mapStateToProps()", () => {
     state.resources.consumers.farm_designer.selectedPlants = [plantUuid];
     expect(mapStateToProps(state).selectedPlant).toEqual(
       expect.objectContaining({ uuid: plantUuid }));
+  });
+
+  it("returns all points", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    (webAppConfig.body as WebAppConfig).show_historic_points = true;
+    const point1 = fakePoint();
+    point1.body.discarded_at = undefined;
+    const point2 = fakePoint();
+    point2.body.discarded_at = DISCARDED_AT;
+    const point3 = fakePoint();
+    point3.body.discarded_at = DISCARDED_AT;
+    state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
+    expect(mapStateToProps(state).points.length).toEqual(3);
+  });
+
+  it("returns active points", () => {
+    const state = fakeState();
+    const webAppConfig = fakeWebAppConfig();
+    (webAppConfig.body as WebAppConfig).show_historic_points = false;
+    const point1 = fakePoint();
+    point1.body.discarded_at = undefined;
+    const point2 = fakePoint();
+    point2.body.discarded_at = DISCARDED_AT;
+    const point3 = fakePoint();
+    point3.body.discarded_at = DISCARDED_AT;
+    state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
+    expect(mapStateToProps(state).points.length).toEqual(1);
   });
 });
 

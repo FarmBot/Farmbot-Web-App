@@ -6,10 +6,11 @@ import { history } from "../../history";
 import { atMaxZoom, atMinZoom } from "./zoom";
 import { ImageFilterMenu } from "./image_filter_menu";
 import { BugsControls } from "./easter_eggs/bugs";
-import { BotOriginQuadrant } from "../interfaces";
+import { BotOriginQuadrant, State } from "../interfaces";
 import { MoveModeLink } from "../plants/move_to";
 import { SavedGardensLink } from "../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 const OriginSelector = ({ quadrant, update }: {
   quadrant: BotOriginQuadrant,
@@ -48,12 +49,19 @@ export const ZoomControls = ({ zoom, getConfigValue }: {
   </div>;
 };
 
-export const PointsSubMenu = () =>
+export const PointsSubMenu = ({ toggle, getConfigValue }: {
+  toggle: (property: keyof State) => () => void,
+  getConfigValue: GetWebAppConfigValue
+}) =>
   <div className="map-points-submenu">
     <button className={"fb-button green"}
       onClick={() => history.push("/app/designer/plants/create_point")}>
       {t("Point Creator")}
     </button>
+    <LayerToggle
+      value={!!getConfigValue(BooleanSetting.show_historic_points)}
+      label={t("Historic Points?")}
+      onClick={toggle(BooleanSetting.show_historic_points)} />
   </div>;
 
 const LayerToggles = (props: GardenMapLegendProps) => {
@@ -69,7 +77,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       onClick={toggle("show_points")}
       submenuTitle={t("extras")}
       popover={!!localStorage.getItem("FUTURE_FEATURES")
-        ? <PointsSubMenu />
+        ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
         : undefined} />
     <LayerToggle
       value={props.showSpread}

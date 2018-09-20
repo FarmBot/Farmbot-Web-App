@@ -83,9 +83,11 @@ export const selectAllLogs = (i: ResourceIndex) => findAll<TaggedLog>(i, "Log");
 export const selectAllPeripherals =
   (i: ResourceIndex) => findAll<TaggedPeripheral>(i, "Peripheral");
 export const selectAllPoints = (i: ResourceIndex) => findAll<TaggedPoint>(i, "Point");
+export const selectAllActivePoints = (input: ResourceIndex) =>
+  selectAllPoints(input).filter(x => !x.body.discarded_at);
 
 export const selectAllToolSlots = (i: ResourceIndex): TaggedToolSlotPointer[] => {
-  return betterCompact(selectAllPoints(i)
+  return betterCompact(selectAllActivePoints(i)
     .map((x): TaggedToolSlotPointer | undefined => {
       const y = x.body; // Hack around TS taggedUnion issues (I think).
       return (y.pointer_type === "ToolSlot") ? { ...x, body: y } : undefined;
