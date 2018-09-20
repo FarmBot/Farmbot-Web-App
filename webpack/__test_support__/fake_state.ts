@@ -6,7 +6,6 @@ import { bot } from "./fake_state/bot";
 import { config } from "./fake_state/config";
 import { draggable } from "./fake_state/draggable";
 import { resources } from "./fake_state/resources";
-import { routeReducerDefaultState } from "../experimental/reducer";
 
 /** Factory function for empty state object. */
 export function fakeState(_: Function = noop): Everything {
@@ -17,7 +16,6 @@ export function fakeState(_: Function = noop): Everything {
     bot,
     config,
     draggable,
-    resources,
-    route: routeReducerDefaultState,
+    resources
   };
 }

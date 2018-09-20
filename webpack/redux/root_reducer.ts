@@ -8,7 +8,6 @@ import { Session } from "../session";
 import { resourceReducer as resources } from "../resources/reducer";
 import { Everything } from "../interfaces";
 import { Actions } from "../constants";
-import { routeReducer as route } from "../experimental/reducer";
 
 export let reducers = combineReducers({
   auth,
@@ -16,7 +15,6 @@ export let reducers = combineReducers({
   config,
   draggable,
   resources,
-  route
 });
 
 /** This is the topmost reducer in the application. If you need to preempt a

@@ -1,7 +1,4 @@
 import * as React from "react";
-import { FarmDesigner } from "../farm_designer";
-import { connect } from "react-redux";
-import { Everything } from "../interfaces";
 import { CowardlyDictionary } from "../util";
 
 export enum DesignerRouteName {
@@ -102,38 +99,4 @@ export const BIG_LOOKUP: CowardlyDictionary<() => Promise<React.ComponentType>> 
   },
 };
 
-export const DESIGNER_ROUTES: DesignerRouteName[] = Object
-  .values(DesignerRouteName);
-
-interface ExperimentalProps { route: string | undefined; }
-interface ExperimentalState { MapContents: React.ComponentType; }
-
-type P = ExperimentalProps;
-type S = ExperimentalState;
-
-// @connect()ed components don't need props passed to them.
-// We can get around type errors by passing empty props.
-// Some day, I will migrate to a typescript friendly react-redux alternative.
-const NOT_TYPE_SAFE: any = {};
-
-@connect((s: Everything): P => {
-  return { route: s.route.$ };
-})
-export class Experimental extends React.Component<P, S> {
-  state: S = { MapContents: () => <div>Loading...</div> };
-  Default = () => <div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    Could not load {this.props.route}...
-  </div>;
-
-  render() {
-    return <FarmDesigner {...NOT_TYPE_SAFE}>
-      <this.Content />
-    </FarmDesigner>;
-  }
-}
+export const DESIGNER_ROUTES: string[] = Object.values(DesignerRouteName);
