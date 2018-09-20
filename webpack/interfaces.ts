@@ -6,6 +6,7 @@ import { Point } from "farmbot/dist/resources/api_resources";
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
+import { RouterState } from "./experimental/reducer";
 
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
@@ -60,6 +61,7 @@ export interface Everything {
   draggable: DraggableState;
   Peripheral: PeripheralState;
   resources: RestResources;
+  route: RouterState;
   router: {
     push(url?: string): void;
   };
