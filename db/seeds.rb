@@ -1,4 +1,3 @@
-puts "Seeding database: " + ActiveRecord::Base.connection.current_database
 
 unless Rails.env == "development"
     POINT_COUNT             = 8

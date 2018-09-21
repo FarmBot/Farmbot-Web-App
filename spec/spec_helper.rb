@@ -93,13 +93,6 @@ RSpec.configure do |config|
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = "random"
-  config.before(:each) do
-    db_name  = ActiveRecord::Base.connection.current_database
-    db_name2 = Rails.configuration.database_configuration[Rails.env]["database"]
-    raise "WARNING WRONG DATABASE" unless db_name.include?("_test")
-    raise "WARNING WRONG DATABASE" unless db_name2.include?("_test")
-    raise "WRONG DATABASE"         unless ENV["RAILS_ENV"] == "test"
-  end
   if ENV["DOCS"]
 
     config.after(:each, type: :controller) do
