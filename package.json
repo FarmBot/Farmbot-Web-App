@@ -34,7 +34,7 @@
     "@blueprintjs/select": "^2.0.1",
     "@types/enzyme": "3.1.14",
     "@types/fastclick": "^1.0.28",
-    "@types/i18next": "8.4.5",
+    "@types/i18next": "11.9.0",
     "@types/jest": "23.3.2",
     "@types/lodash": "4.14.116",
     "@types/markdown-it": "0.0.5",
@@ -83,7 +83,7 @@
     "stats-webpack-plugin": "0.7.0",
     "style-loader": "0.23.0",
     "takeme": "^0.11.1",
-    "ts-jest": "23.1.4",
+    "ts-jest": "23.10.1",
     "ts-lint": "^4.5.1",
     "ts-loader": "5.1.1",
     "tslint": "5.11.0",
@@ -102,6 +102,13 @@
     "clearMocks": true,
     "logHeapUsage": true,
     "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "ignoreCodes": [
+            151001
+          ]
+        }
+      },
       "globalConfig": {
         "NODE_ENV": "development",
         "TOS_URL": "https://farmbot.io/tos/",
