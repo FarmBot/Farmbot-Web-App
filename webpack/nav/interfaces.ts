@@ -26,7 +26,7 @@ export interface NavBarState {
   accountMenuOpen: boolean;
 }
 
-type ToggleEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void;
+type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
 
 export interface MobileMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;

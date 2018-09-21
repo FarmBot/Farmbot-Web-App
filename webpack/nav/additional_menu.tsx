@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { t } from "i18next";
 import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
+import { Link } from "../link";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">

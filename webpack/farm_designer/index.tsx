@@ -91,8 +91,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   childComponent(props: Props) {
-    const fallback = React.createElement(Plants, props);
-    return this.props.children || fallback;
+    return this.props.children || React.createElement(Plants, props);
   }
 
   get mapOnly() {

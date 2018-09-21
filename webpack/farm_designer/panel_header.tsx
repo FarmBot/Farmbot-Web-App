@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Link } from "react-router";
 import { getPathArray } from "../history";
+import { Link } from "../link";
 
 type Tabs = "Map" | "Plants" | "FarmEvents";
 

@@ -47,7 +47,7 @@ describe("mapStateToProps()", () => {
   }
 
   it("returns calendar rows", () => {
-    const { calendarRows, push } = mapStateToProps(testState());
+    const { calendarRows } = mapStateToProps(testState());
 
     expect(calendarRows).toEqual([
       {
@@ -90,8 +90,6 @@ describe("mapStateToProps()", () => {
         sortKey: 7956928800,
         year: 22
       }]);
-
-    expect(push).toBeTruthy();
   });
 });
 

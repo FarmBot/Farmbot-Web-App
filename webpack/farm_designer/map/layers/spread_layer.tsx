@@ -72,10 +72,9 @@ interface SpreadCircleState {
 
 export class SpreadCircle extends
   Component<SpreadCircleProps, SpreadCircleState> {
-
   state: SpreadCircleState = { spread: undefined };
 
-  componentDidMount() {
+  componentWillMount = () => {
     cachedCrop(this.props.plant.body.openfarm_slug)
       .then(({ spread }) => this.setState({ spread }));
   }

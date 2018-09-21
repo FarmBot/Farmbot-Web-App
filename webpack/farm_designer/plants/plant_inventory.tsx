@@ -1,12 +1,12 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router";
 import { t } from "i18next";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs } from "../panel_header";
-import { TaggedPlant } from "../map/interfaces";
+import { Link } from "../../link";
 import { getPlants } from "../state_to_props";
+import { TaggedPlant } from "../map/interfaces";
 
 interface Props {
   plants: TaggedPlant[];

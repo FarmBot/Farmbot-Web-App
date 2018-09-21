@@ -1,6 +1,5 @@
 import { noop } from "lodash";
 import { Everything } from "../interfaces";
-import { location } from "./fake_state/location";
 import { peripherals as Peripheral } from "./fake_state/peripherals";
 import { auth } from "./fake_state/token";
 import { bot } from "./fake_state/bot";
@@ -12,8 +11,6 @@ import { resources } from "./fake_state/resources";
 export function fakeState(_: Function = noop): Everything {
   return {
     dispatch: jest.fn(),
-    router: { push: jest.fn() },
-    location,
     Peripheral,
     auth,
     bot,

@@ -17,12 +17,11 @@ import { RegimenItem } from "../../regimens/interfaces";
 
 /** Prepares a FarmEvent[] for use with <FBSelect /> */
 export function mapStateToProps(state: Everything): FarmEventProps {
-  const push = (state && state.router && state.router.push) || (() => { });
   const calendar = mapResourcesToCalendar(state.resources.index, moment());
   const calendarRows = calendar.getAll();
   const dev = maybeGetDevice(state.resources.index);
   const timezoneIsSet = !!(dev && (dev.body.timezone));
-  return { calendarRows, push, timezoneIsSet };
+  return { calendarRows, timezoneIsSet };
 }
 
 export function mapResourcesToCalendar(

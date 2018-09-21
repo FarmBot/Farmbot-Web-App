@@ -15,9 +15,7 @@ export abstract class PlantInfoBase extends
   }
 
   get stringyID() { return getPathArray()[this.templates ? 5 : 4] || ""; }
-
   get plant() { return this.props.findPlant(this.stringyID); }
-
   destroy = (plantUUID: string) => {
     this.props.dispatch(destroy(plantUUID))
       .then(() =>

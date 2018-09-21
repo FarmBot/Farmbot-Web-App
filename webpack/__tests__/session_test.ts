@@ -48,12 +48,15 @@ describe("safeNumericSetting", () => {
 
 describe("clear()", () => {
   it("clears", () => {
-    localStorage.clear = jest.fn();
-    sessionStorage.clear = jest.fn();
-    window.location.assign = jest.fn();
+    jest.clearAllMocks();
+    localStorage.foo = "bar";
+    sessionStorage.foo = "bar";
+    location.assign = jest.fn();
+    expect(localStorage.foo).toBeTruthy();
+    expect(sessionStorage.foo).toBeTruthy();
     expect(Session.clear()).toEqual(undefined);
-    expect(localStorage.clear).toHaveBeenCalled();
-    expect(sessionStorage.clear).toHaveBeenCalled();
-    expect(window.location.assign).toHaveBeenCalled();
+    expect(location.assign).toHaveBeenCalled();
+    expect(localStorage.foo).toBeFalsy();
+    expect(sessionStorage.foo).toBeFalsy();
   });
 });

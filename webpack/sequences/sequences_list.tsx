@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { t } from "i18next";
 import { push } from "../history";
 import { selectSequence } from "./actions";
@@ -10,6 +9,7 @@ import { TaggedSequence, SpecialStatus } from "farmbot";
 import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
+import { Link } from "../link";
 
 const sequenceList = (dispatch: Function) =>
   (ts: TaggedSequence) => {

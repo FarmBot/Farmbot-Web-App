@@ -35,34 +35,14 @@ export interface FarmwareEnv {
   value: string | number | boolean;
 }
 
-interface Location {
-  /** EX: /app/designer */
-  pathname: string;
-  /** EX: ?id=twowing-silverbell&p1=CropInfo */
-  search: string;
-  hash: string;
-  // /** ¯\_(ツ)_/¯ */
-  // state: void;
-  /** EX: "PUSH" */
-  action: string;
-  /** EX:  jhedoi */
-  key: string;
-  /** URL ?Query=string, converted to JS object. */
-  query: { [name: string]: string };
-}
-
 export interface Everything {
   config: ConfigState;
   auth: AuthState | undefined;
   dispatch: Function;
   bot: BotState;
-  location: Location;
   draggable: DraggableState;
   Peripheral: PeripheralState;
   resources: RestResources;
-  router: {
-    push(url?: string): void;
-  };
 }
 
 /** There were a few cases where we handle errors that are legitimately unknown.
