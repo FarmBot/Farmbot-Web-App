@@ -7,7 +7,6 @@ import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
 import { attachToRoot } from "./util";
-import { Callback } from "i18next";
 import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
 import { UNBOUND_ROUTES } from "./route_config";
@@ -15,7 +14,7 @@ import { App } from "./app";
 
 interface RootComponentProps { store: Store; }
 
-export const attachAppToDom: Callback = () => {
+export const attachAppToDom = () => {
     attachToRoot(RootComponent, { store: _store });
     // tslint:disable-next-line:no-any
     _store.dispatch(ready() as any);
