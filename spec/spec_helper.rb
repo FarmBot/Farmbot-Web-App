@@ -93,8 +93,9 @@ RSpec.configure do |config|
   config.include Helpers
   config.infer_spec_type_from_file_location!
   config.order = "random"
-  config.after(:each) do
-    puts "===" + ActiveRecord::Base.connection.current_database
+  config.before(:each) do
+    db_name = ActiveRecord::Base.connection.current_database
+    raise "WARNING WRONG DATABASE" unless db_name.include?("_test")
   end
   if ENV["DOCS"]
 
