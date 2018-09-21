@@ -1,6 +1,7 @@
 import { RouteConfig } from "takeme";
 import { Apology } from "./apology";
 
+/** 99% of route configurations will use this interface. */
 interface UnboundRouteConfigNoChild<T> {
   children: false,
   $: string;
@@ -8,6 +9,10 @@ interface UnboundRouteConfigNoChild<T> {
   key: keyof T;
 }
 
+/** A few routes (in the FarmDesigner, mainly) need to use child routes.
+ * If that's the case, set `children: true` and pass in a `getChild`/`childKey`
+ * property.
+ */
 interface UnboundRouteConfigChild<T, U> {
   children: true,
   $: string;
@@ -17,21 +22,22 @@ interface UnboundRouteConfigChild<T, U> {
   childKey: keyof U;
 }
 
+/** The union of both route config types. */
 type UnboundRouteConfig<T, U> =
   UnboundRouteConfigNoChild<T> | UnboundRouteConfigChild<T, U>;
-/** This is the preferred way to generate a route when there are no legacy
- *  concerns.
+/** This is the preferred way to generate a route in the app.
  *  PROBLEM:
  *   1. We want to lazy load each route's component to shrink the bundle size.
- *   2. We don't have access to `this.setState()` because `this` does not exist
- *      until runtime.
+ *   2. We don't have access to `this.setState()` until runtime because `this`
+ *      is a mounted component.
  *  SOLUTION:
  *   Write a helper function that creates a route in multiple steps.
- *   1. Pass in an object (StandardRoute<T>) that describes:
+ *   1. Pass in an object (UnboundRouteConfig<T, U>) that describes:
  *     * the URL
  *     * The module's file location (dynamic `import()` that returns the module
  *       as a promise)
- *     * The specific module that you want to use for the route
+ *     * The specific module that you want to use for the route.
+ *     * (optional) a set of child routes (like the FarmDesigner side panel)
  *   2. Once that information is available, we can create an "unbound route".
  *      An unbound route is a function that has all needed URL / module
  *      information but does NOT yet have a callback to trigger when a route
@@ -39,9 +45,10 @@ type UnboundRouteConfig<T, U> =
  *      componentDidMount) and passed to the "unbound" route to create a "real"
  *      URL route that is needed by the `takeme` routing library.
  *      Workflow:
- *      DECLARE ROUTE DATA =>
- *        CREATE UNBOUND ROUTE =>
- *          BIND ROUTE CHANGE CALLBACK TO UNBOUND ROUTE =>
+ *
+ *      Determine how to load the route and children =>
+ *        Pass that information to route() =>
+ *          Pass the resulting UnboundRoute to `takeme` router. =>
  *            DONE.
  */
 function route<T, U>(info: UnboundRouteConfig<T, U>) {
@@ -80,7 +87,10 @@ const getModule = () => import("./farm_designer");
 const key = "FarmDesigner";
 
 /** Bind the route to a callback by calling in a function that passes the
-  callback in as the first argument
+  callback in as the first argument.
+ *
+ * DO NOT RE-ORDER ITEMS FOR READABILITY- they are order dependant.
+ * Stuff will break if the route order is changed.
  */
 export const UNBOUND_ROUTES = [
   route({
@@ -131,7 +141,6 @@ export const UNBOUND_ROUTES = [
     getModule: () => import("./tools"),
     key: "Tools",
   }),
-  // =====
   route({
     children: false,
     $: "/designer",
@@ -162,7 +171,6 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./farm_designer/farm_events/edit_farm_event"),
     childKey: "EditFarmEvent"
   }),
-  // =================== PLANT ROUTES
   route({
     children: true,
     $: "/designer/plants",
