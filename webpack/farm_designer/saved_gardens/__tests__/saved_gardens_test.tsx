@@ -29,6 +29,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { SavedGardensProps } from "../interfaces";
 import { applyGarden, destroySavedGarden, closeSavedGarden } from "../actions";
+import { Actions } from "../../../constants";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -135,9 +136,14 @@ describe("<SavedGardenHUD />", () => {
   });
 
   it("navigates to plants", () => {
-    const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
+    const dispatch = jest.fn();
+    const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
     clickButton(wrapper, 1, "edit");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT,
+      payload: undefined
+    });
   });
 
   it("exits garden", () => {

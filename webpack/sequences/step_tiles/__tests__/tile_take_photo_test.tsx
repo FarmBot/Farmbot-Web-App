@@ -4,29 +4,34 @@ import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { TakePhoto } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { StepParams } from "../../interfaces";
 
 describe("<TileTakePhoto/>", () => {
-  function bootstrapTest() {
-    const currentStep: TakePhoto = {
-      kind: "take_photo",
-      args: {}
-    };
-    return {
-      component: mount(<TileTakePhoto
-        currentSequence={fakeSequence()}
-        currentStep={currentStep}
-        dispatch={jest.fn()}
-        index={0}
-        resources={emptyState().index}
-        confirmStepDeletion={false} />)
-    };
-  }
+  const currentStep: TakePhoto = {
+    kind: "take_photo",
+    args: {}
+  };
+
+  const fakeProps = (): StepParams => ({
+    currentSequence: fakeSequence(),
+    currentStep: currentStep,
+    dispatch: jest.fn(),
+    index: 0,
+    resources: emptyState().index,
+    confirmStepDeletion: false,
+  });
+
+  it("renders step", () => {
+    const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase())
+      .toEqual("photos are viewable from the farmware page.");
+  });
 
   it("renders inputs", () => {
-    const block = bootstrapTest().component;
-    const inputs = block.find("input");
+    const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
+    const inputs = wrapper.find("input");
     expect(inputs.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Take a Photo");
-    expect(block.text()).toContain("farmware page");
+    expect(wrapper.text()).toContain("farmware page");
   });
 });
