@@ -10,6 +10,11 @@ type Info = UnboundRouteConfig<{}, {}>;
 
 function mapper(bind_to: Function, index: number) {
     return bind_to((x: ConnectedComponent, y: ConnectedComponent | undefined, z: Info) => {
+        if (z.$ == "*") {
+            expect(x.WrappedComponent.name).toEqual("FourOhFour");
+            return;
+        }
+
         expect(index).toBeGreaterThan(-1);
         expect(x.name).toBe("Connect");
         expect(x.WrappedComponent.name).toContain(z.key);
