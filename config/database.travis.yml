@@ -3,9 +3,9 @@ defaults: &defaults
   min_messages: ERROR
 
 development:
-  database: farmbot_development
   <<: *defaults
+  database: farmbot_development
 
 test:
-  database: farmbot_test
   <<: *defaults
+  database: farmbot_test
