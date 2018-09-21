@@ -1218,7 +1218,8 @@ CREATE TABLE public.web_app_configs (
     discard_unsaved boolean DEFAULT false,
     xy_swap boolean DEFAULT false,
     home_button_homing boolean DEFAULT false,
-    show_motor_plot boolean DEFAULT false
+    show_motor_plot boolean DEFAULT false,
+    show_historic_points boolean DEFAULT false
 );
 
 
@@ -2324,6 +2325,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180813185430'),
 ('20180815143819'),
 ('20180829211322'),
-('20180910143055');
+('20180910143055'),
+('20180920194120');
 
 

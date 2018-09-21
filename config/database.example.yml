@@ -4,13 +4,13 @@ default: &default
   pool: 5
 
 development:
-  database: farmbot_development
   <<: *default
+  database: farmbot_development
 
 test:
-  database: farmbot_test
   <<: *default
+  database: farmbot_test
 
 production:
-  database: farmbot_prod
   <<: *default
+  database: farmbot_prod
