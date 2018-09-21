@@ -23,7 +23,7 @@ interface UnboundRouteConfigChild<T, U> {
 }
 
 /** The union of both route config types. */
-type UnboundRouteConfig<T, U> =
+export type UnboundRouteConfig<T, U> =
   UnboundRouteConfigNoChild<T> | UnboundRouteConfigChild<T, U>;
 /** This is the preferred way to generate a route in the app.
  *  PROBLEM:
@@ -61,9 +61,9 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
           const comp = (await info.getModule())[info.key];
           if (info.children) {
             const child = (await info.getChild())[info.childKey];
-            callback(comp, child);
+            callback(comp, child, info);
           } else {
-            callback((await info.getModule())[info.key]);
+            callback((await info.getModule())[info.key], undefined, info);
           }
         } catch (e) {
           console.error(e);
