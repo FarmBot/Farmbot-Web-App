@@ -72,16 +72,12 @@ interface SpreadCircleState {
 
 export class SpreadCircle extends
   Component<SpreadCircleProps, SpreadCircleState> {
-  public isClear = false;
   state: SpreadCircleState = { spread: undefined };
 
   componentWillMount = () => {
-    this.isClear = true;
     cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) => this.isClear && this.setState({ spread }));
+      .then(({ spread }) => this.setState({ spread }));
   }
-
-  componentWillUnmount = () => { this.isClear = false; };
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
