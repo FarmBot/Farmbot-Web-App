@@ -10,7 +10,7 @@ import { unpackUUID } from "../../util";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
-interface PlantInventoryItemProps {
+export interface PlantInventoryItemProps {
   tpp: TaggedPlant;
   dispatch: Function;
   hovered: boolean;
@@ -47,7 +47,7 @@ export class PlantInventoryItem extends
         unpackUUID(this.props.tpp.uuid).kind === "PlantTemplate"
           ? "saved_gardens/templates"
           : "plants";
-      push(`/app/designer/${plantCategory}/` + plantId);
+      push(`/app/designer/${plantCategory}/${plantId}`);
       dispatch({ type: Actions.SELECT_PLANT, payload: [tpp.uuid] });
     };
 

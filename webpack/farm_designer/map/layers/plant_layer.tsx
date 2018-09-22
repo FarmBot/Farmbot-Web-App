@@ -49,7 +49,7 @@ export function PlantLayer(props: PlantLayerProps) {
               : "plants";
           return <Link className="plant-link-wrapper"
             style={maybeNoPointer({})}
-            to={`/app/designer/${plantCategory}/` + p.plantId}
+            to={`/app/designer/${plantCategory}/${p.plantId}`}
             id={p.plantId}
             onClick={_.noop}
             key={p.plantId}>

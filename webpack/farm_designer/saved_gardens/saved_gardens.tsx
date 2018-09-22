@@ -76,7 +76,10 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
       {t("Menu")}
     </button>
     <button className="fb-button green"
-      onClick={() => history.push("/app/designer/plants")}>
+      onClick={() => {
+        history.push("/app/designer/plants");
+        unselectPlant(props.dispatch)();
+      }}>
       {t("Edit")}
     </button>
     <button className="fb-button red"
