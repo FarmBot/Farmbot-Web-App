@@ -13,9 +13,6 @@ class NervesHub
   #   * NERVES_HUB_PORT - Port for NervesHub server.
   #   * NERVES_HUB_ORG  - Organization name that the FarmBot API is authorized
   #                       to use.
-  #   * NERVES_HUB_DEVICE_CSR_DIR - Where device csr will be generated
-  #                                 temporarily. The private device cert will
-  #                                 never be stored to disk.
   #
   # Authorizing the FarmBot API is done by installing an authorized client side
   # SSL certificate as assigned by the NervesHub CA. There are two options for
@@ -37,15 +34,14 @@ class NervesHub
   #   * FarmBot gets configured via configurator
   #   * FarmBot gets a JWT from the FarmBot API
   #   * FarmBot makes an authenticated call to the FarmBot API asking for a
-  #     NervesHub SSL Cert
+  #     NervesHub SSL Private Key/Cert combo.
   #   * FarmBot API makes a call to NervesHub generating a `device` resource.
   #   * FarmBot API makes a call to NervesHub generating a `device_cert` resouce.
-  #   * FarmBot API sends this cert (without saving it) directly to the FarmBot.
+  #     * This require creating a CSR (certificate signing request).
+  #   * FarmBot API sends this cert (without saving it) directly to the FarmBot
+  #     via AMQP.
   #   * FarmBot burns that cert into internal storage on it's SD card.
 
-  # Device Certs are generated locally, and should be discarded
-  # after a successful request to nerves-hub.
-  NERVES_HUB_DEVICE_CSR_DIR   = ENV.fetch("NERVES_HUB_DEVICE_CSR_DIR") {"/tmp/"}
   NERVES_HUB_HOST             = ENV.fetch("NERVES_HUB_HOST") { "api.nerves-hub.org" }
   NERVES_HUB_PORT             = ENV.fetch("NERVES_HUB_PORT") { 443 }
   NERVES_HUB_ORG              = ENV.fetch("NERVES_HUB_ORG")  { "farmbot" }
@@ -64,10 +60,14 @@ class NervesHub
 
   NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
 
+  # Raises an exception for when NervesHub API requests fail.
   def self.bad_http(code, body)
     raise NervesHubHTTPError, NERVES_HUB_ERROR % [code, body]
   end
 
+  # Checks if a deivce exists in NervesHub
+  # if it does     -> does a PUT request updating the tags.
+  # if it does not -> does a POST request creating the device with given tags.
   def self.create_or_update(serial_number, tags)
     current_nerves_hub_devcice = device(serial_number)
     if current_nerves_hub_devcice
@@ -77,18 +77,26 @@ class NervesHub
     end
   end
 
+  # GET request for the current device.
+  # this method will return `nil` instead of raising an exception.
   def self.device(serial_number)
     resp = conn.get(device_path(serial_number))
     if resp.code == "200"
-      JSON(resp.body)["data"].deep_symbolize_keys()
+      return JSON(resp.body)["data"].deep_symbolize_keys()
     end
+
+    if resp.code == "404"
+      return nil
+    end
+
+    bad_http(resp.code, resp.body)
   end
 
+  # PUT request to a device to update it's tags.
   def self.update(serial_number, tags)
     data = {tags: tags}
     resp = conn.put(device_path(serial_number), data.to_json(), headers())
     bad_http(resp.code, resp.body) if resp.code != "201"
-
     JSON(resp.body)["data"].deep_symbolize_keys()
   end
 
@@ -106,7 +114,7 @@ class NervesHub
     JSON(resp.body)["data"].deep_symbolize_keys()
   end
 
-  # Delete a device.
+  # Delete a device from NervesHub
   def self.delete_device(serial_number)
     resp = conn.delete("#{devices_path()}/#{serial_number}")
     bad_http(resp.code, resp.body) if resp.code != "204"
@@ -114,16 +122,14 @@ class NervesHub
   end
 
   # Creates a device certificate that is able to access NervesHub.
+  # This creates a CSR on behalf of the device.
   def self.sign_device(serial_number)
     puts("signing nerves hub device: #{serial_number}")
-    key_file = generate_device_key(serial_number)
-    csr_file = generate_device_csr(serial_number, key_file)
+    key = generate_device_key(serial_number)
+    csr = generate_device_csr(serial_number, key)
 
-    key_bin = File.read(key_file)
-    csr_bin = File.read(csr_file)
-
-    key_safe = Base64.strict_encode64(key_bin)
-    csr_safe = Base64.strict_encode64(csr_bin)
+    key_safe = Base64.strict_encode64(key.to_pem)
+    csr_safe = Base64.strict_encode64(csr.to_pem)
 
     data = {
       identifier: serial_number,
@@ -132,8 +138,7 @@ class NervesHub
     resp = conn.post(device_sign_path(serial_number), data.to_json(), headers())
     bad_http(resp.code, resp.body) if resp.code != "200"
     cert = JSON(resp.body)["data"].deep_symbolize_keys()[:cert]
-    FileUtils.rm(key_file)
-    FileUtils.rm(csr_file)
+
     ret = {
       cert: Base64.strict_encode64(cert),
       csr:  csr_safe,
@@ -141,75 +146,97 @@ class NervesHub
     }
   end
 
+  # Is the NervesHub module configured.
+  # Doesn't mean the configuration is correct, just that it exists
   def self.active?
     !(current_cert.nil? && current_key.nil?)
   end
 
-  def self.hostname
-    NERVES_HUB_HOST
-  end
-
-  def self.port
-    NERVES_HUB_PORT
-  end
-
-  def self.ca
-    Base64.strict_encode64(File.read(@current_ca_file))
-  end
-
 private
 
+  # Helper for making requests to a device url on NervesHub
   def self.devices_path
     "/orgs/#{NERVES_HUB_ORG}/devices"
   end
 
+  # Helper for making requests to a particular device on NervesHub
   def self.device_path(serial_number)
     "/orgs/#{NERVES_HUB_ORG}/devices/#{serial_number}"
   end
 
+  # Helper for making signing requests for a device on NervesHub
   def self.device_sign_path(serial_number)
     "#{devices_path}/#{serial_number}/certificates/sign"
   end
 
+  # Headers for HTTP requests to NervesHub
   def self.headers
     {"Content-Type" => "application/json"}
   end
 
+  # Generates a key on behalf of a NervesHub device
   def self.generate_device_key(serial_number)
-    file = File.join(NERVES_HUB_DEVICE_CSR_DIR, "#{serial_number}-key.pem")
-    %x[openssl ecparam -genkey -name prime256v1 -noout -out #{file}]
-    file
+    OpenSSL::PKey::EC.new("prime256v1").generate_key!()
   end
 
-  def self.generate_device_csr(serial_number, key_file)
-    file = File.join(NERVES_HUB_DEVICE_CSR_DIR, "#{serial_number}-csr.pem")
-    %x[openssl req -new -sha256 -key #{key_file} -out #{file} -subj /O=#{NERVES_HUB_ORG}]
-    file
+  # Generates a CSR on behalf of a NervesHub device
+  # This CSR is POSTed to the NervesHub API.
+  # The signed key and a cert are then returned by NervesHub.
+  # This key and cert must be passed to a NervesHub device. In the case of
+  # FarmBotOS, it will be delivered via AMQP.
+  def self.generate_device_csr(serial_number, key)
+    options = {
+      :organization => NERVES_HUB_ORG,
+    }
+
+    request = OpenSSL::X509::Request.new
+    request.version = 0
+    request.subject = OpenSSL::X509::Name.new([
+      ['O', options[:organization], OpenSSL::ASN1::UTF8STRING],
+    ])
+    request.public_key = real_public_key(key)
+    request.sign(key, OpenSSL::Digest::SHA1.new)
   end
 
+  # This is because OpenSSL::PKey::EC doesn't follow the same API
+  # as other private keys for some reason.
+  # https://github.com/ruby/openssl/issues/29#issuecomment-149799052
+  def self.real_public_key(k)
+    point = k.public_key
+    pub = OpenSSL::PKey::EC.new(point.group)
+    pub.public_key = point
+    pub
+  end
+
+  # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_cert
     OpenSSL::X509::Certificate.new(ENV['NERVES_HUB_CERT']) if ENV['NERVES_HUB_CERT']
   end
 
+  # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_file_cert
     OpenSSL::X509::Certificate.new(File.read(NERVES_HUB_CERT_PATH)) if File.exist?(NERVES_HUB_CERT_PATH)
   end
 
+  # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_key
     OpenSSL::PKey::EC.new(ENV['NERVES_HUB_KEY']) if ENV['NERVES_HUB_KEY']
   end
 
+  # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_file_key
     OpenSSL::PKey::EC.new(File.read(NERVES_HUB_KEY_PATH)) if File.exist?(NERVES_HUB_KEY_PATH)
   end
 
+  # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_ca_file
     File.exist?(NERVES_HUB_CA_PATH) && NERVES_HUB_CA_PATH
   end
 
-  # This is a hack because net/http doesn't
-  # Allo loading this as a normal cert, it only allows
-  # loading a flie.
+  # This is a hack because Ruby "net/http" client doesn't
+  # Allow loading this as a normal cert, it only allows
+  # loading a flie from the filesystem.
+  # https://stackoverflow.com/questions/36993208/how-to-enumerate-through-multiple-certificates-in-a-bundle
   def self.try_file_ca_file
     if ENV['NERVES_HUB_KEY']
       file = File.open(NERVES_HUB_CA_HACK, 'w')
@@ -219,18 +246,22 @@ private
     end
   end
 
+  # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.current_cert
     @current_cert ||= (try_env_cert() || try_file_cert() || nil)
   end
 
+  # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.current_key
     @current_key ||= (try_env_key() || try_file_key() || nil)
   end
 
+  # Certificate Authority file. See `try_file_ca_file()`
   def self.current_ca_file
     @current_ca_file ||= (try_env_ca_file() || try_file_ca_file() || nil)
   end
 
+  # HTTP connection.
   def self.conn
     if active?() && !@conn
       FileUtils.mkdir_p NERVES_HUB_DEVICE_CSR_DIR
