@@ -1,5 +1,5 @@
 const mockDevice = {
-  send: jest.fn(() => { return Promise.resolve(); })
+  readPin: jest.fn(() => { return Promise.resolve(); })
 };
 jest.mock("../../../device", () => ({
   getDevice: () => (mockDevice)
@@ -55,27 +55,20 @@ describe("<SensorList/>", function () {
   });
 
   const expectedPayload = (pin_number: number, pin_mode: 0 | 1) =>
-    expect.objectContaining({
-      kind: "rpc_request",
-      args: expect.objectContaining({ label: expect.any(String) }),
-      body: [expect.objectContaining({
-        kind: "read_pin",
-        args: {
-          pin_number,
-          label: `pin${pin_number}`,
-          pin_mode
-        }
-      })]
+    ({
+      pin_number,
+      label: `pin${pin_number}`,
+      pin_mode
     });
 
   it("reads pins", () => {
     const wrapper = mount(<SensorList {...fakeProps()} />);
     const toggle = wrapper.find("button");
     toggle.first().simulate("click");
-    expect(mockDevice.send).toHaveBeenCalledWith(expectedPayload(51, 1));
+    expect(mockDevice.readPin).toHaveBeenCalledWith(expectedPayload(51, 1));
     toggle.last().simulate("click");
-    expect(mockDevice.send).toHaveBeenLastCalledWith(expectedPayload(50, 0));
-    expect(mockDevice.send).toHaveBeenCalledTimes(2);
+    expect(mockDevice.readPin).toHaveBeenLastCalledWith(expectedPayload(50, 0));
+    expect(mockDevice.readPin).toHaveBeenCalledTimes(2);
   });
 
   it("pins toggles are disabled", () => {
@@ -85,6 +78,6 @@ describe("<SensorList/>", function () {
     const toggle = wrapper.find("button");
     toggle.first().simulate("click");
     toggle.last().simulate("click");
-    expect(mockDevice.send).not.toHaveBeenCalled();
+    expect(mockDevice.readPin).not.toHaveBeenCalled();
   });
 });

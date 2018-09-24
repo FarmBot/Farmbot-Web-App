@@ -441,6 +441,9 @@ export namespace Content {
     trim(`This will restart FarmBot's Raspberry Pi and controller
     software.`);
 
+  export const RESTART_FIRMWARE =
+    trim(`Restart the Farmduino or Arduino firmware.`);
+
   export const OS_AUTO_UPDATE =
     trim(`When enabled, FarmBot OS will periodically check for, download,
     and install updates automatically.`);

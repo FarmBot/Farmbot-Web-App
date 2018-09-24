@@ -1,5 +1,6 @@
 const mockDevice = {
   updateConfig: jest.fn(() => { return Promise.resolve(); }),
+  send: jest.fn(() => { return Promise.resolve(); }),
 };
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
@@ -12,6 +13,7 @@ import { PowerAndResetProps } from "../interfaces";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import { clickButton } from "../../../../__test_support__/helpers";
 
 describe("<PowerAndReset/>", () => {
   const fakeProps = (): PowerAndResetProps => {
@@ -34,6 +36,9 @@ describe("<PowerAndReset/>", () => {
       "Automatic Factory Reset", "Connection Attempt Period"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
+    ["Restart Firmware", "Change Ownership"]
+      .map(string => expect(wrapper.text().toLowerCase())
+        .not.toContain(string.toLowerCase()));
   });
 
   it("closed", () => {
@@ -61,8 +66,35 @@ describe("<PowerAndReset/>", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
-    wrapper.find("button").at(3).simulate("click");
+    clickButton(wrapper, 3, "yes");
     expect(mockDevice.updateConfig)
       .toHaveBeenCalledWith({ disable_factory_reset: true });
+  });
+
+  it("restarts firmware", () => {
+    const p = fakeProps();
+    p.controlPanelState.power_and_reset = true;
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<PowerAndReset {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("Restart Firmware".toLowerCase());
+    clickButton(wrapper, 2, "restart");
+    expect(mockDevice.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "rpc_request",
+        args: expect.objectContaining({ label: expect.any(String) }),
+        body: [expect.objectContaining({
+          kind: "reboot", args: { package: "arduino_firmware" }
+        })]
+      }));
+  });
+
+  it("shows change ownership button", () => {
+    const p = fakeProps();
+    p.controlPanelState.power_and_reset = true;
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<PowerAndReset {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("Change Ownership".toLowerCase());
   });
 });
