@@ -103,3 +103,26 @@ RABBIT_MGMT_URL: "http://delete_this_line.com"
 # to use the server.
 # DELETE THIS LINE IF YOU RUN A PUBLIC SERVER.
 TRUSTED_DOMAINS: "farmbot.io,farm.bot"
+# Nerves Hub Configuration
+# Nerves Hub handles OTA Firmware updates.
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_HOST: "delete_this.org"
+# Port to connect to.
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_PORT: 443
+# Organization that the cert and key are authorized to access.
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_ORG: "delete_this_line"
+# Where to temporarily store device cert sign requests
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_DEVICE_CSR_DIR: "/delete/this/path"
+# Contents of the NervesHub authorized cert
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_CERT: "Change this! Cert looks like `-----BEGIN CERTIFICATE-----`"
+# Contents of the NervesHub authorized key
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_KEY:  "Change this! Key looks like `-----BEGIN EC PRIVATE KEY-----`"
+# Contents of the NervesHub cert chain. Should contain one root-ca,
+# and 3 intermediates.
+# DELETE THIS LINE if you are a self-hosted user.
+NERVES_HUB_CA:   "Change this! CA looks like `-----BEGIN CERTIFICATE-----`"
