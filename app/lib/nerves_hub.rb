@@ -3,6 +3,7 @@ require "openssl"
 require "base64"
 
 class NervesHub
+  class NervesHubHTTPError < StandardError; end
   # There is a lot of configuration available in this class to support:
   #   * Self Hosters
   #   * Running a local instance of Nerves-Hub
@@ -44,10 +45,10 @@ class NervesHub
 
   # Device Certs are generated locally, and should be discarded
   # after a successful request to nerves-hub.
-  NERVES_HUB_DEVICE_CSR_DIR   = ENV["NERVES_HUB_DEVICE_CSR_DIR"] || "/tmp/"
-  NERVES_HUB_HOST             = ENV["NERVES_HUB_HOST"] || "api.nerves-hub.org"
-  NERVES_HUB_PORT             = ENV["NERVES_HUB_PORT"] || 443
-  NERVES_HUB_ORG              = ENV["NERVES_HUB_ORG"]  || "farmbot"
+  NERVES_HUB_DEVICE_CSR_DIR   = ENV.fetch("NERVES_HUB_DEVICE_CSR_DIR") {"/tmp/"}
+  NERVES_HUB_HOST             = ENV.fetch("NERVES_HUB_HOST") { "api.nerves-hub.org" }
+  NERVES_HUB_PORT             = ENV.fetch("NERVES_HUB_PORT") { 443 }
+  NERVES_HUB_ORG              = ENV.fetch("NERVES_HUB_ORG")  { "farmbot" }
   NERVES_HUB_BASE_URL         = "https://#{NERVES_HUB_HOST}:#{NERVES_HUB_PORT}"
   NERVES_HUB_URI              = URI.parse(NERVES_HUB_BASE_URL)
 
@@ -61,28 +62,60 @@ class NervesHub
   # So it needs to be written to a path.
   NERVES_HUB_CA_HACK          = "/tmp/nerves_hub_ca.#{Rails.env}.pem"
 
+  NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
+
+  def self.bad_http(code, body)
+    raise NervesHubHTTPError, NERVES_HUB_ERROR % [code, body]
+  end
+
+  def self.create_or_update(serial_number, tags)
+    current_nerves_hub_devcice = device(serial_number)
+    if current_nerves_hub_devcice
+      update_device(serial_number, tags)
+    else
+      new_device(serial_number, tags)
+    end
+  end
+
+  def self.device(serial_number)
+    resp = conn.get(device_path(serial_number))
+    if resp.code == "200"
+      JSON(resp.body)["data"].deep_symbolize_keys()
+    end
+  end
+
+  def self.update(serial_number, tags)
+    data = {tags: tags}
+    resp = conn.put(device_path(serial_number), data.to_json(), headers())
+    bad_http(resp.code, resp.body) if resp.code != "201"
+
+    JSON(resp.body)["data"].deep_symbolize_keys()
+  end
+
   # Create a new device in NervesHub. `tags` should be a list of strings
   # to identify the ENV that FarmBotOS is running in.
   def self.new_device(serial_number, tags)
+    puts("creating nerves hub device: #{serial_number}")
     data = {
       description: "farmbot-#{serial_number}",
       identifier:  serial_number,
       tags:        tags
     }
     resp = conn.post(devices_path(), data.to_json(), headers())
-    (resp.code == "201") || raise("NervesHub request failed: #{resp.code}: #{resp.body}")
+    bad_http(resp.code, resp.body) if resp.code != "201"
     JSON(resp.body)["data"].deep_symbolize_keys()
   end
 
   # Delete a device.
   def self.delete_device(serial_number)
     resp = conn.delete("#{devices_path()}/#{serial_number}")
-    (resp.code == "204") || raise("NervesHub request failed: #{resp.code}: #{resp.body}")
+    bad_http(resp.code, resp.body) if resp.code != "204"
     resp.body
   end
 
   # Creates a device certificate that is able to access NervesHub.
   def self.sign_device(serial_number)
+    puts("signing nerves hub device: #{serial_number}")
     key_file = generate_device_key(serial_number)
     csr_file = generate_device_csr(serial_number, key_file)
 
@@ -97,7 +130,7 @@ class NervesHub
       csr:        csr_safe,
     }
     resp = conn.post(device_sign_path(serial_number), data.to_json(), headers())
-    (resp.code == "200") || raise("NervesHub request failed: #{resp.code}: #{resp.body}")
+    bad_http(resp.code, resp.body) if resp.code != "200"
     cert = JSON(resp.body)["data"].deep_symbolize_keys()[:cert]
     FileUtils.rm(key_file)
     FileUtils.rm(csr_file)
@@ -130,6 +163,10 @@ private
     "/orgs/#{NERVES_HUB_ORG}/devices"
   end
 
+  def self.device_path(serial_number)
+    "/orgs/#{NERVES_HUB_ORG}/devices/#{serial_number}"
+  end
+
   def self.device_sign_path(serial_number)
     "#{devices_path}/#{serial_number}/certificates/sign"
   end
@@ -146,7 +183,7 @@ private
 
   def self.generate_device_csr(serial_number, key_file)
     file = File.join(NERVES_HUB_DEVICE_CSR_DIR, "#{serial_number}-csr.pem")
-    %x[openssl req -new -sha256 -key #{key_file} -out #{file} -subj /O=#{serial_number}]
+    %x[openssl req -new -sha256 -key #{key_file} -out #{file} -subj /O=#{NERVES_HUB_ORG}]
     file
   end
 
