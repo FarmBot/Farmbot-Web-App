@@ -61,7 +61,8 @@ class NervesHub
   NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
 
   # HEADERS for HTTP requests to NervesHub
-  HEADERS = {"Content-Type" => "application/json"}
+  HEADERS      = {"Content-Type" => "application/json"}
+  DEFAULT_HTTP = Net::HTTP.new(NERVES_HUB_URI.host, NERVES_HUB_URI.port)
 
   # Raises an exception for when NervesHub API requests fail.
   def self.bad_http(code, body)
@@ -153,37 +154,40 @@ class NervesHub
     !(current_cert.nil? && current_key.nil?)
   end
 
+  def self.set_conn(obj = DEFAULT_HTTP)
+    @conn            = obj
+    # Setting the contents of this
+    # in the CA store doesn't work for some reason?
+    @conn.ca_file    = self.current_ca_file
+    # Don't think this is absolutely needed.
+    @conn.cert_store = nil
+    @conn            = obj
+    @conn.use_ssl    = true
+    @conn.cert       = current_cert
+    @conn.key        = current_key
+    @conn
+  end
+
   # HTTP connection.
   def self.conn
-    if active? && !@conn
-      @conn = Net::HTTP.new(NERVES_HUB_URI.host, NERVES_HUB_URI.port)
-      @conn.use_ssl = true
-      @conn.cert = current_cert
-      @conn.key = current_key
-      # Setting the contents of this
-      # in the CA store doesn't work for some reason?
-      @conn.ca_file = self.current_ca_file
-      # Don't think this is absolutely needed.
-      @conn.cert_store = nil
-    end
-    @conn
+    active? && !@conn ? set_conn : @conn
   end
 
 private
 
   # Helper for making requests to a device url on NervesHub
-  def self.devices_path
-    "/orgs/#{NERVES_HUB_ORG}/devices"
+  def self.devices_path(*chunks)
+    ["/orgs", NERVES_HUB_ORG, "devices"].concat(chunks).join("/")
   end
 
   # Helper for making requests to a particular device on NervesHub
   def self.device_path(serial_number)
-    "/orgs/#{NERVES_HUB_ORG}/devices/#{serial_number}"
+    devices_path(serial_number)
   end
 
   # Helper for making signing requests for a device on NervesHub
   def self.device_sign_path(serial_number)
-    "#{devices_path}/#{serial_number}/certificates/sign"
+    devices_path(serial_number, "certificates", "sign")
   end
 
   # Generates a key on behalf of a NervesHub device
