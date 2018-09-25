@@ -7,4 +7,5 @@ describe NervesHub do
     expect { NervesHub.bad_http(status, msg) }
       .to raise_error(NervesHub::NervesHubHTTPError)
   end
+
 end

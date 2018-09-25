@@ -60,6 +60,9 @@ class NervesHub
 
   NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
 
+  # HEADERS for HTTP requests to NervesHub
+  HEADERS = {"Content-Type" => "application/json"}
+
   # Raises an exception for when NervesHub API requests fail.
   def self.bad_http(code, body)
     raise NervesHubHTTPError, NERVES_HUB_ERROR % [code, body]
@@ -81,23 +84,21 @@ class NervesHub
   # this method will return `nil` instead of raising an exception.
   def self.device(serial_number)
     resp = conn.get(device_path(serial_number))
-    if resp.code == "200"
-      return JSON(resp.body)["data"].deep_symbolize_keys()
-    end
 
-    if resp.code == "404"
-      return nil
+    case resp.code
+    when "200" then return JSON(resp.body)["data"].deep_symbolize_keys
+    when "404" then return
+    else
+      bad_http(resp.code, resp.body)
     end
-
-    bad_http(resp.code, resp.body)
   end
 
   # PUT request to a device to update it's tags.
   def self.update(serial_number, tags)
     data = {tags: tags}
-    resp = conn.put(device_path(serial_number), data.to_json(), headers())
+    resp = conn.put(device_path(serial_number), data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "201"
-    JSON(resp.body)["data"].deep_symbolize_keys()
+    JSON(resp.body)["data"].deep_symbolize_keys
   end
 
   # Create a new device in NervesHub. `tags` should be a list of strings
@@ -109,14 +110,14 @@ class NervesHub
       identifier:  serial_number,
       tags:        tags
     }
-    resp = conn.post(devices_path(), data.to_json(), headers())
+    resp = conn.post(devices_path, data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "201"
-    JSON(resp.body)["data"].deep_symbolize_keys()
+    JSON(resp.body)["data"].deep_symbolize_keys
   end
 
   # Delete a device from NervesHub
   def self.delete_device(serial_number)
-    resp = conn.delete("#{devices_path()}/#{serial_number}")
+    resp = conn.delete("#{devices_path}/#{serial_number}")
     bad_http(resp.code, resp.body) if resp.code != "204"
     resp.body
   end
@@ -135,9 +136,9 @@ class NervesHub
       identifier: serial_number,
       csr:        csr_safe,
     }
-    resp = conn.post(device_sign_path(serial_number), data.to_json(), headers())
+    resp = conn.post(device_sign_path(serial_number), data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "200"
-    cert = JSON(resp.body)["data"].deep_symbolize_keys()[:cert]
+    cert = JSON(resp.body)["data"].deep_symbolize_keys[:cert]
 
     ret = {
       cert: Base64.strict_encode64(cert),
@@ -150,6 +151,22 @@ class NervesHub
   # Doesn't mean the configuration is correct, just that it exists
   def self.active?
     !(current_cert.nil? && current_key.nil?)
+  end
+
+  # HTTP connection.
+  def self.conn
+    if active? && !@conn
+      @conn = Net::HTTP.new(NERVES_HUB_URI.host, NERVES_HUB_URI.port)
+      @conn.use_ssl = true
+      @conn.cert = current_cert
+      @conn.key = current_key
+      # Setting the contents of this
+      # in the CA store doesn't work for some reason?
+      @conn.ca_file = self.current_ca_file
+      # Don't think this is absolutely needed.
+      @conn.cert_store = nil
+    end
+    @conn
   end
 
 private
@@ -169,14 +186,9 @@ private
     "#{devices_path}/#{serial_number}/certificates/sign"
   end
 
-  # Headers for HTTP requests to NervesHub
-  def self.headers
-    {"Content-Type" => "application/json"}
-  end
-
   # Generates a key on behalf of a NervesHub device
   def self.generate_device_key(serial_number)
-    OpenSSL::PKey::EC.new("prime256v1").generate_key!()
+    OpenSSL::PKey::EC.new("prime256v1").generate_key!
   end
 
   # Generates a CSR on behalf of a NervesHub device
@@ -241,41 +253,23 @@ private
     if ENV['NERVES_HUB_KEY']
       file = File.open(NERVES_HUB_CA_HACK, 'w')
       file.write(ENV['NERVES_HUB_KEY'])
-      file.close()
+      file.close
       NERVES_HUB_CA_HACK
     end
   end
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.current_cert
-    @current_cert ||= (try_env_cert() || try_file_cert() || nil)
+    @current_cert ||= (try_env_cert || try_file_cert || nil)
   end
 
   # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.current_key
-    @current_key ||= (try_env_key() || try_file_key() || nil)
+    @current_key ||= (try_env_key || try_file_key || nil)
   end
 
-  # Certificate Authority file. See `try_file_ca_file()`
+  # Certificate Authority file. See `try_file_ca_file`
   def self.current_ca_file
-    @current_ca_file ||= (try_env_ca_file() || try_file_ca_file() || nil)
+    @current_ca_file ||= (try_env_ca_file || try_file_ca_file || nil)
   end
-
-  # HTTP connection.
-  def self.conn
-    if active?() && !@conn
-      FileUtils.mkdir_p NERVES_HUB_DEVICE_CSR_DIR
-      @conn = Net::HTTP.new(NERVES_HUB_URI.host, NERVES_HUB_URI.port)
-      @conn.use_ssl = true
-      @conn.cert = current_cert()
-      @conn.key = current_key()
-      # Setting the contents of this
-      # in the CA store doesn't work for some reason?
-      @conn.ca_file = self.current_ca_file()
-      # Don't think this is absolutely needed.
-      @conn.cert_store = nil
-    end
-    @conn
-  end
-
 end
