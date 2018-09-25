@@ -10,7 +10,9 @@ class GlobalConfig < ApplicationRecord
   # Bootstrap these values, but NEVER clobber pre-existing ones:
   {
     "FBOS_END_OF_LIFE_VERSION" => "6.3.0",
-    "MINIMUM_FBOS_VERSION"     => "6.0.0"
+    "MINIMUM_FBOS_VERSION"     => "6.0.0",
+    "TOS_URL"                  => ENV.fetch("TOS_URL", ""),
+    "PRIV_URL"                 => ENV.fetch("PRIV_URL", "")
   }.map do |(key, value)|
     x = self.find_by(key: key)
     self.create!(key: key, value: value) unless x
@@ -20,8 +22,6 @@ class GlobalConfig < ApplicationRecord
   # Bootstrap these values, and ALWAYS clobber pre-existing ones:
   {
     "NODE_ENV"                 => Rails.env || "development",
-    "TOS_URL"                  => ENV.fetch("TOS_URL", ""),
-    "PRIV_URL"                 => ENV.fetch("PRIV_URL", ""),
     "LONG_REVISION"            => LONG_REVISION,
     "SHORT_REVISION"           => LONG_REVISION.first(8),
   }.map do |(key, value)|
