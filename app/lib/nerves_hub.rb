@@ -115,12 +115,12 @@ class NervesHub
     JSON(resp.body)["data"].deep_symbolize_keys
   end
 
-  # Delete a device from NervesHub
-  def self.delete_device(serial_number)
-    resp = conn.delete("#{devices_path}/#{serial_number}")
-    bad_http(resp.code, resp.body) if resp.code != "204"
-    resp.body
-  end
+  # # Delete a device from NervesHub
+  # def self.delete_device(serial_number)
+  #   resp = conn.delete("#{devices_path}/#{serial_number}")
+  #   bad_http(resp.code, resp.body) if resp.code != "204"
+  #   resp.body
+  # end
 
   # Creates a device certificate that is able to access NervesHub.
   # This creates a CSR on behalf of the device.
