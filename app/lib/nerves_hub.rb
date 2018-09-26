@@ -74,7 +74,7 @@ class NervesHub
   def self.create_or_update(serial_number, tags)
     current_nerves_hub_devcice = device(serial_number)
     if current_nerves_hub_devcice
-      update_device(serial_number, tags)
+      update(serial_number, tags)
     else
       new_device(serial_number, tags)
     end
@@ -85,7 +85,7 @@ class NervesHub
   def self.device(serial_number)
     resp = conn.get(device_path(serial_number))
 
-    case resp.code
+    case resp.code.to_s
     when "200" then return JSON(resp.body)["data"].deep_symbolize_keys
     when "404" then return
     else
@@ -125,26 +125,21 @@ class NervesHub
   # Creates a device certificate that is able to access NervesHub.
   # This creates a CSR on behalf of the device.
   def self.sign_device(serial_number)
-    puts("signing nerves hub device: #{serial_number}")
     key = generate_device_key
     csr = generate_device_csr(serial_number, key)
 
     key_safe = Base64.strict_encode64(key.to_pem)
     csr_safe = Base64.strict_encode64(csr.to_pem)
 
-    data = {
-      identifier: serial_number,
-      csr:        csr_safe,
-    }
+    data = { identifier: serial_number,
+             csr:        csr_safe, }
     resp = conn.post(device_sign_path(serial_number), data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "200"
     cert = JSON(resp.body)["data"].deep_symbolize_keys[:cert]
 
-    ret = {
-      cert: Base64.strict_encode64(cert),
-      csr:  csr_safe,
-      key:  key_safe,
-    }
+    return { cert: Base64.strict_encode64(cert),
+             csr:  csr_safe,
+             key:  key_safe, }
   end
 
   # Is the NervesHub module configured.

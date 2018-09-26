@@ -19,6 +19,11 @@ describe NervesHub do
                                       :key=        => nil)
   end
 
+  before(:each) { NervesHub.set_conn(stub_connection) }
+
+  # reset to default.
+  after(:each) { NervesHub.set_conn }
+
   it "generates HTTP failure messages" do
     status = "800"
     msg    = "failed to reticulate splines."
@@ -33,68 +38,53 @@ describe NervesHub do
   end
 
   it "gets a device via .device" do
-    conn = stub_connection
     resp = StubResp.new("200", { "data" => { hello: :world } }.to_json)
     ser  = "f1o2o3"
     url  = NervesHub.device_path(ser)
-
-    allow(conn).to receive(:get).with(url).and_return(resp)
-
-    NervesHub.set_conn(conn)
+    expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect(NervesHub.device(ser)).to eq(hello: "world")
   end
 
   it "returns `nil` when a 404 occurs" do
-    conn = stub_connection
     resp = StubResp.new("404", { "data" => { i_dont: :think_so } }.to_json)
     ser  = "f1o2o3"
     url  = NervesHub.device_path(ser)
-
-    allow(conn).to receive(:get).with(url).and_return(resp)
-
-    NervesHub.set_conn(conn)
+    expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect(NervesHub.device(ser)).to eq(nil)
   end
 
   it "raises exception on unknown HTTP response codes" do
-    conn = stub_connection
     resp = StubResp.new("500", "kablamo!".to_json)
     ser  = "f1o2o3"
     url  = NervesHub.device_path(ser)
-    expect(conn).to receive(:get).with(url).and_return(resp)
-
-    NervesHub.set_conn(conn)
+    expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect { NervesHub.device(ser) }.to raise_error(NervesHub::NervesHubHTTPError)
   end
 
   it "handles failed updates to a device" do
-    conn          = stub_connection
     resp          = StubResp.new("500", { "data" => { } }.to_json)
     ser           = "f1o2o3"
     expected_args = [NervesHub.device_path(ser),
                      {"tags":["foo"]}.to_json,
                      NervesHub::HEADERS]
 
-    NervesHub.set_conn(conn)
-    allow(conn).to receive(:put).with(*expected_args).and_return(resp)
+    expect(NervesHub.conn).to receive(:put).with(*expected_args).and_return(resp)
 
     expect { NervesHub.update(ser, ["foo"]) }
       .to raise_error(NervesHub::NervesHubHTTPError)
   end
 
   it "updates the device via REST" do
-    conn          = stub_connection
     resp          = StubResp.new("201", { "data" => {x: "y"} }.to_json)
     ser           = "f1o2o3"
     expected_args = [NervesHub.device_path(ser),
                      {"tags":["foo"]}.to_json,
                      NervesHub::HEADERS]
 
-    NervesHub.set_conn(conn)
-    allow(conn).to receive(:put).with(*expected_args).and_return(resp)
+    expect(NervesHub.conn).to receive(:put).with(*expected_args).and_return(resp)
     results = NervesHub.update(ser, ["foo"])
     expect(results).to eq(x: "y")
   end
@@ -105,5 +95,4 @@ describe NervesHub do
     key2 = NervesHub.generate_device_key
     expect(key1.to_pem).not_to eq(key2.to_pem)
   end
-
 end
