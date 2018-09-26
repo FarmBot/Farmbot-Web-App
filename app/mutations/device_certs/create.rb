@@ -1,19 +1,16 @@
 module DeviceCerts
   class Create < Mutations::Command
     required do
-      model :device, class: Device
+      model  :device, class: Device
+      array  :tags, class: String
       string :serial_number
-      array :tags, class: String
     end
 
     def execute
-      data = {
-        device_id: device.id,
-        serial_number: serial_number,
-        tags: tags
-      }
-      SendNervesHubInfoJob.perform_later(data)
-      Hash.new
+      SendNervesHubInfoJob.perform_later(device_id:     device.id,
+                                         serial_number: serial_number,
+                                         tags:          tags)
+      return {}
     end
   end
 end
