@@ -18,11 +18,13 @@ describe NervesHub do
                                       :cert=       => nil,
                                       :key=        => nil)
   end
-
   before(:each) { NervesHub.set_conn(stub_connection) }
 
   # reset to default.
   after(:each) { NervesHub.set_conn }
+
+  ser = "f1o2o3"
+  url = NervesHub.device_path(ser)
 
   it "generates HTTP failure messages" do
     status = "800"
@@ -39,8 +41,6 @@ describe NervesHub do
 
   it "gets a device via .device" do
     resp = StubResp.new("200", { "data" => { hello: :world } }.to_json)
-    ser  = "f1o2o3"
-    url  = NervesHub.device_path(ser)
     expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect(NervesHub.device(ser)).to eq(hello: "world")
@@ -48,8 +48,6 @@ describe NervesHub do
 
   it "returns `nil` when a 404 occurs" do
     resp = StubResp.new("404", { "data" => { i_dont: :think_so } }.to_json)
-    ser  = "f1o2o3"
-    url  = NervesHub.device_path(ser)
     expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect(NervesHub.device(ser)).to eq(nil)
@@ -57,8 +55,6 @@ describe NervesHub do
 
   it "raises exception on unknown HTTP response codes" do
     resp = StubResp.new("500", "kablamo!".to_json)
-    ser  = "f1o2o3"
-    url  = NervesHub.device_path(ser)
     expect(NervesHub.conn).to receive(:get).with(url).and_return(resp)
 
     expect { NervesHub.device(ser) }.to raise_error(NervesHub::NervesHubHTTPError)
@@ -66,7 +62,6 @@ describe NervesHub do
 
   it "handles failed updates to a device" do
     resp          = StubResp.new("500", { "data" => { } }.to_json)
-    ser           = "f1o2o3"
     expected_args = [NervesHub.device_path(ser),
                      {"tags":["foo"]}.to_json,
                      NervesHub::HEADERS]
@@ -79,7 +74,6 @@ describe NervesHub do
 
   it "updates the device via REST" do
     resp          = StubResp.new("201", { "data" => {x: "y"} }.to_json)
-    ser           = "f1o2o3"
     expected_args = [NervesHub.device_path(ser),
                      {"tags":["foo"]}.to_json,
                      NervesHub::HEADERS]
@@ -94,5 +88,10 @@ describe NervesHub do
     expect(key1).to be_kind_of(OpenSSL::PKey::EC)
     key2 = NervesHub.generate_device_key
     expect(key1.to_pem).not_to eq(key2.to_pem)
+  end
+
+  it "calls `new_device` if device does not exist" do
+    results = NervesHub.create_or_update("X", ["Y", "Z"])
+    binding.pry
   end
 end
