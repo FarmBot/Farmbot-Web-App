@@ -96,7 +96,14 @@ describe NervesHub do
     NervesHub.set_conn(conn)
     allow(conn).to receive(:put).with(*expected_args).and_return(resp)
     results = NervesHub.update(ser, ["foo"])
-    expect(results).to eq({x: "y"})
-    # binding.pry
+    expect(results).to eq(x: "y")
   end
+
+  it "generates a new, random key" do
+    key1 = NervesHub.generate_device_key
+    expect(key1).to be_kind_of(OpenSSL::PKey::EC)
+    key2 = NervesHub.generate_device_key
+    expect(key1.to_pem).not_to eq(key2.to_pem)
+  end
+
 end

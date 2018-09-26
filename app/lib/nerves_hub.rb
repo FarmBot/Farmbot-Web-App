@@ -57,8 +57,7 @@ class NervesHub
   # net/http doesn't support loading this as a X509::Certificate
   # So it needs to be written to a path.
   NERVES_HUB_CA_HACK          = "/tmp/nerves_hub_ca.#{Rails.env}.pem"
-
-  NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
+  NERVES_HUB_ERROR            = "NervesHub request failed: %s: %s"
 
   # HEADERS for HTTP requests to NervesHub
   HEADERS      = {"Content-Type" => "application/json"}
@@ -127,7 +126,7 @@ class NervesHub
   # This creates a CSR on behalf of the device.
   def self.sign_device(serial_number)
     puts("signing nerves hub device: #{serial_number}")
-    key = generate_device_key(serial_number)
+    key = generate_device_key
     csr = generate_device_csr(serial_number, key)
 
     key_safe = Base64.strict_encode64(key.to_pem)
@@ -191,7 +190,7 @@ private
   end
 
   # Generates a key on behalf of a NervesHub device
-  def self.generate_device_key(serial_number)
+  def self.generate_device_key
     OpenSSL::PKey::EC.new("prime256v1").generate_key!
   end
 
