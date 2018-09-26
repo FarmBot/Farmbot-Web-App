@@ -1,16 +1,22 @@
 require "spec_helper"
 
 describe NervesHub do
-  class StubConn
-    attr_accessor :ca_file, :cert_store, :use_ssl, :cert, :key
-  end
-
   class StubResp
     attr_accessor :code, :body
 
     def initialize(code, body)
       @code, @body = code, body
     end
+  end
+
+  let(:conn) do
+    double("connection double", :ca_file=    => nil,
+                                :cert_store  => nil,
+                                :cert_store= => nil,
+                                :use_ssl     => nil,
+                                :use_ssl=    => nil,
+                                :cert=       => nil,
+                                :key=        => nil)
   end
 
   it "generates HTTP failure messages" do
@@ -27,7 +33,6 @@ describe NervesHub do
   end
 
   it "gets a device via .device" do
-    conn = StubConn.new
     resp = StubResp.new("200", { "data" => { hello: :world } }.to_json)
     ser  = "f1o2o3"
     url  = NervesHub.device_path(ser)
@@ -38,4 +43,38 @@ describe NervesHub do
 
     expect(NervesHub.device(ser)).to eq(hello: "world")
   end
+
+  it "returns `nil` when a 404 occurs" do
+    resp = StubResp.new("404", { "data" => { i_dont: :think_so } }.to_json)
+    ser  = "f1o2o3"
+    url  = NervesHub.device_path(ser)
+
+    allow(conn).to receive(:get).with(url).and_return(resp)
+
+    NervesHub.set_conn(conn)
+
+    expect(NervesHub.device(ser)).to eq(nil)
+  end
+
+  it "raises exception on unknown HTTP response codes" do
+    resp = StubResp.new("500", "kablamo!".to_json)
+    ser  = "f1o2o3"
+    url  = NervesHub.device_path(ser)
+    expect(conn).to receive(:get).with(url).and_return(resp)
+
+    NervesHub.set_conn(conn)
+
+    expect { NervesHub.device(ser) }.to raise_error(NervesHub::NervesHubHTTPError)
+  end
+
+  # it "updates a device" do
+  #   resp = StubResp.new("404", { "data" => { i_dont: :think_so } }.to_json)
+  #   ser  = "f1o2o3"
+  #   allow(conn).to receive(:get).with(url).and_return(resp)
+
+  #   url  = NervesHub.update(ser, ["foo"])
+
+
+  #   NervesHub.set_conn(conn)
+  # end
 end
