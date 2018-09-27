@@ -109,8 +109,8 @@ describe NervesHub do
 
   it "sometimes performs the NERVES_HUB_CA_HACK" do
     pem = OpenSSL::PKey::RSA.generate(2048).to_pem
-    ClimateControl.modify NERVES_HUB_KEY: pem do
-      result = NervesHub.try_file_ca_file
+    ClimateControl.modify NERVES_HUB_CA: pem do
+      result = NervesHub.try_env_ca_file
       expect(result).to eq(NervesHub::NERVES_HUB_CA_HACK)
       expect(File.read(NervesHub::NERVES_HUB_CA_HACK)).to eq(pem)
     end
