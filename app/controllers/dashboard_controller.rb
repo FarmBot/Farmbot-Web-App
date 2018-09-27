@@ -41,7 +41,7 @@ class DashboardController < ApplicationController
     rescue
       report = {problem: "Crashed while parsing report"}
     end
-    Rollbar.error("CSP VIOLATION!!!", report)
+    Rollbar.info("CSP Violation", report)
 
     render json: report
   end
