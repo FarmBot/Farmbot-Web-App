@@ -215,6 +215,8 @@ private
     pub
   end
 
+  ## CERT STUFF
+
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_cert
     OpenSSL::X509::Certificate.new(ENV['NERVES_HUB_CERT']) if ENV['NERVES_HUB_CERT']
@@ -224,6 +226,9 @@ private
   def self.try_file_cert
     OpenSSL::X509::Certificate.new(File.read(NERVES_HUB_CERT_PATH)) if File.exist?(NERVES_HUB_CERT_PATH)
   end
+  ## END CERT STUFF
+
+  ## PRIVATE KEY STUFF
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_key
@@ -235,8 +240,17 @@ private
     OpenSSL::PKey::EC.new(File.read(NERVES_HUB_KEY_PATH)) if File.exist?(NERVES_HUB_KEY_PATH)
   end
 
-  # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
-  def self.try_env_ca_file
+  ## END PRIVATE KEY STUFF
+
+  ## CA STUFF
+
+  # THE CA File _must_ be a file, not the contents of a file.
+  # This means these functions return a path to a file, not
+  # the contents of a file.
+
+  # NervesHub CA bundle for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
+  def self.try_file_ca_file
+    # Don't read the file, just the path.
     File.exist?(NERVES_HUB_CA_PATH) && NERVES_HUB_CA_PATH
   end
 
@@ -244,14 +258,16 @@ private
   # Allow loading this as a normal cert, it only allows
   # loading a flie from the filesystem.
   # https://stackoverflow.com/questions/36993208/how-to-enumerate-through-multiple-certificates-in-a-bundle
-  def self.try_file_ca_file
-    if ENV['NERVES_HUB_KEY']
+  def self.try_env_ca_file
+    if ENV['NERVES_HUB_CA']
       file = File.open(NERVES_HUB_CA_HACK, 'w')
-      file.write(ENV['NERVES_HUB_KEY'])
+      file.write(ENV['NERVES_HUB_CA'])
       file.close
       NERVES_HUB_CA_HACK
     end
   end
+
+  ## END CA STUFF
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.current_cert
