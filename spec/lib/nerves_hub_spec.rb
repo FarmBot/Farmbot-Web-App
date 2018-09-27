@@ -106,4 +106,13 @@ describe NervesHub do
     expect(NervesHub.conn).to receive(:post).with(*xpect_args2).and_return(resp2)
     expect(NervesHub.create_or_update("X", ["Y", "Z"])).to eq(data)
   end
+
+  it "sometimes performs the NERVES_HUB_CA_HACK" do
+    pem = OpenSSL::PKey::RSA.generate(2048).to_pem
+    ClimateControl.modify NERVES_HUB_KEY: pem do
+      result = NervesHub.try_file_ca_file
+      expect(result).to eq(NervesHub::NERVES_HUB_CA_HACK)
+      expect(File.read(NervesHub::NERVES_HUB_CA_HACK)).to eq(pem)
+    end
+  end
 end
