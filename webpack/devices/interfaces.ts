@@ -65,6 +65,8 @@ export enum Feature {
   diagnostic_dumps = "diagnostic_dumps",
   rpi_led_control = "rpi_led_control",
   mark_as_step = "mark_as_step",
+  firmware_restart = "firmware_restart",
+  api_farmware_installations = "api_farmware_installations",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;

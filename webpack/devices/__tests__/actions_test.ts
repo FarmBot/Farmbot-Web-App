@@ -3,6 +3,7 @@ const mockDevice = {
   powerOff: jest.fn(() => { return Promise.resolve(); }),
   resetOS: jest.fn(),
   reboot: jest.fn(() => { return Promise.resolve(); }),
+  send: jest.fn(() => { return Promise.resolve(); }),
   checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
   emergencyLock: jest.fn(() => { return Promise.resolve(); }),
   emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
@@ -35,7 +36,9 @@ import {
   fakeSequence, fakeFbosConfig, fakeFirmwareConfig
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import { changeStepSize, resetNetwork, resetConnectionInfo } from "../actions";
+import {
+  changeStepSize, resetNetwork, resetConnectionInfo, commandErr
+} from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
@@ -78,6 +81,14 @@ describe("reboot()", function () {
   it("calls reboot", async () => {
     await actions.reboot();
     expect(mockDevice.reboot).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
+  });
+});
+
+describe("restartFirmware()", function () {
+  it("calls restartFirmware", async () => {
+    await actions.restartFirmware();
+    expect(mockDevice.send).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -248,6 +259,18 @@ describe("isLog()", function () {
   it("knows if it is a log or not", () => {
     expect(actions.isLog({})).toBe(false);
     expect(actions.isLog({ message: "foo" })).toBe(true);
+  });
+
+  it("filters sensitive logs", () => {
+    expect(() => actions.isLog({ message: "NERVESPSKWPASSWORD" }))
+      .toThrowError(/Refusing to display log/);
+  });
+});
+
+describe("commandErr()", () => {
+  it("sends toast", () => {
+    commandErr()();
+    expect(error).toHaveBeenCalledWith("Command failed");
   });
 });
 
