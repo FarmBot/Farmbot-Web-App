@@ -104,12 +104,9 @@ class NervesHub
   # Create a new device in NervesHub. `tags` should be a list of strings
   # to identify the ENV that FarmBotOS is running in.
   def self.new_device(serial_number, tags)
-    puts("creating nerves hub device: #{serial_number}")
-    data = {
-      description: "farmbot-#{serial_number}",
-      identifier:  serial_number,
-      tags:        tags
-    }
+    data = { description: "farmbot-#{serial_number}",
+             identifier:  serial_number,
+             tags:        tags }
     resp = conn.post(devices_path, data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "201"
     JSON(resp.body)["data"].deep_symbolize_keys

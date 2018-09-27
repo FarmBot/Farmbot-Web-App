@@ -1,7 +1,7 @@
 DO_INTEGRATION   = !!ENV["RUN_CAPYBARA"]
 ENV["MQTT_HOST"] = "blooper.io"
 ENV["OS_UPDATE_SERVER"] = "http://non_legacy_update_url.com"
-require "deep_cover/builtin_takeover"
+# require "deep_cover/builtin_takeover"
 require "simplecov"
 #Ignore anything with the word "spec" in it. No need to test your tests.
 SimpleCov.start do

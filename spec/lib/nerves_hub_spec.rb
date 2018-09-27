@@ -91,7 +91,19 @@ describe NervesHub do
   end
 
   it "calls `new_device` if device does not exist" do
-    results = NervesHub.create_or_update("X", ["Y", "Z"])
-    binding.pry
+    expect(NervesHub.conn)
+    xpect_args = "/orgs/farmbot/devices/X"
+    resp       = StubResp.new("404", { "data" => { } }.to_json)
+    expect(NervesHub.conn).to receive(:get).with(xpect_args).and_return(resp)
+
+    xpect_args2 = [ "/orgs/farmbot/devices",
+                    { "description": "farmbot-X",
+                      "identifier": "X",
+                      "tags": [ "Y", "Z" ] }.to_json,
+                    NervesHub::HEADERS ]
+    data        = {fake: "Farmbot"}
+    resp2       = StubResp.new("201", { "data" => data }.to_json)
+    expect(NervesHub.conn).to receive(:post).with(*xpect_args2).and_return(resp2)
+    expect(NervesHub.create_or_update("X", ["Y", "Z"])).to eq(data)
   end
 end
