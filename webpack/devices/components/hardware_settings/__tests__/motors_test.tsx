@@ -18,10 +18,12 @@ import { fakeState } from "../../../../__test_support__/fake_state";
 
 describe("<Motors/>", () => {
   const fakeProps = (): MotorsProps => {
+    const controlPanelState = panelState();
+    controlPanelState.motors = true;
     return {
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
       firmwareVersion: undefined,
-      controlPanelState: panelState(),
+      controlPanelState,
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
@@ -33,14 +35,13 @@ describe("<Motors/>", () => {
   };
 
   it("renders the base case", () => {
-    const el = render(<Motors {...fakeProps()} />);
-    const txt = el.text();
-    [ // Not a whole lot to test here....
-      "Enable 2nd X Motor",
+    const wrapper = render(<Motors {...fakeProps()} />);
+    ["Enable 2nd X Motor",
       "Max Retries",
       "E-Stop on Movement Error",
       "Max Speed (steps/s)"
-    ].map(xpectd => expect(txt).toContain(xpectd));
+    ].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
 
   it("doesn't render homing speed", () => {

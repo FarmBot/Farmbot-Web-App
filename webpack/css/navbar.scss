@@ -94,7 +94,7 @@ nav {
       color: $white;
     }
   }
-  .pt-popover-content {
+  .bp3-popover-content {
     position: relative;
     width: 22rem;
     a:not(.app-version) {
@@ -113,18 +113,18 @@ nav {
       }
     }
   }
-  .pt-overlay-content {
+  .bp3-overlay-content {
     margin-top: 1.6rem;
     color: $white;
   }
-  .pt-popover-wrapper {
+  .bp3-popover-wrapper {
     a {
       color: $white;
     }
-    .pt-popover-arrow-fill {
+    .bp3-popover-arrow-fill {
       fill: $dark_gray;
     }
-    .pt-popover-content {
+    .bp3-popover-content {
       background: $dark_gray;
     }
   }
