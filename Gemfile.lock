@@ -118,15 +118,15 @@ GEM
     ffi (1.9.25)
     figaro (1.1.1)
       thor (~> 0.14)
-    fog-core (2.1.2)
+    fog-core (2.1.0)
       builder
       excon (~> 0.58)
       formatador (~> 0.2)
       mime-types
-    fog-google (1.7.1)
-      fog-core
-      fog-json
-      fog-xml
+    fog-google (1.8.0)
+      fog-core (>= 2.0, <= 2.1.0)
+      fog-json (~> 1.2.0)
+      fog-xml (~> 0.1.0)
       google-api-client (~> 0.23.0)
     fog-json (1.2.0)
       fog-core
@@ -141,7 +141,7 @@ GEM
     formatador (0.2.5)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
-    google-api-client (0.23.8)
+    google-api-client (0.23.9)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (>= 0.5, < 0.7.0)
       httpclient (>= 2.8.1, < 3.0)
@@ -304,7 +304,7 @@ GEM
     selenium-webdriver (3.14.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2)
-    signet (0.9.1)
+    signet (0.10.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
