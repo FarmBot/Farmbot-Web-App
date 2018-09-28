@@ -9,8 +9,6 @@ module Api
       "all device users must agree to terms of service."
     NOT_JSON         = "That request was not valid JSON. Consider checking the"\
                         " request body with a JSON validator.."
-    FARMBOT_UA_STRING = "FARMBOTOS"
-    NO_UA_FOUND   = FARMBOT_UA_STRING + "/0.0.0 (RPI3) RPI3 (MISSING)"
     respond_to :json
     before_action :check_fbos_version
     before_action :set_default_stuff
@@ -156,18 +154,18 @@ private
 
     # Try to extract FarmBot OS version from user agent.
     def fbos_version
-      ua = pretty_ua
+      ua = FbosDetector.pretty_ua(request)
 
       # Attempt 1:
       #   The device is using an HTTP client that does not provide a user-agent.
       #   We will assume this is an old FBOS version and set it to 0.0.0
-      return CalculateUpgrade::NULL if ua == NO_UA_FOUND
+      return CalculateUpgrade::NULL if ua == FbosDetector::NO_UA_FOUND
 
       # Attempt 2:
       #   If the user agent was missing, we would have returned by now.
-      #   If the UA includes FARMBOT_UA_STRING at this point, we can be certain
+      #   If the UA includes FbosDetector::FARMBOT_UA_STRING at this point, we can be certain
       #   we have a have a non-legacy FBOS client.
-      if ua.include?(FARMBOT_UA_STRING)
+      if ua.include?(FbosDetector::FARMBOT_UA_STRING)
         return Gem::Version::new(ua[10, 12].split(" ").first)
       end
 
@@ -183,17 +181,9 @@ private
       end
     end
 
-    # Format the user agent header in a way that is easier for us to parse.
-    def pretty_ua
-      # "FARMBOTOS/3.1.0 (RPI3) RPI3 ()"
-      # If there is no user-agent present, we assume it is a _very_ old version
-      # of FBOS.
-      (request.user_agent || NO_UA_FOUND).upcase
-    end
-
     # Conditionally execute a block when the request was made by a FarmBot
     def when_farmbot_os
-      yield if pretty_ua.include?(FARMBOT_UA_STRING)
+      yield if FbosDetector.pretty_ua(request).include?(FbosDetector::FARMBOT_UA_STRING)
     end
 
     # Devices have a `last_saw_api` field to assist users with debugging.

@@ -49,4 +49,8 @@ class User < ApplicationRecord
       u.device_id             = Devices::Create.run!(user: u).id
     end
   end
+
+  def update_tracked_fields!(request)
+    super(request) unless FbosDetector.is_fbos_ua?(request)
+  end
 end
