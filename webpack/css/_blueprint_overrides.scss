@@ -1,29 +1,35 @@
 // Padding for the popups.
-.pt-popover-content {
+.bp3-popover-content {
   padding: 1rem;
 }
 
 // Arrow is slightly off by default in the popup menu.
-.pt-tether-element-attached-left.pt-tether-target-attached-right>.pt-popover>.pt-popover-arrow {
+.bp3-tether-element-attached-left.bp3-tether-target-attached-right>.bp3-popover>.bp3-popover-arrow {
   left: -1rem;
 }
 
 // As of right now, all the menus appear from floated icons in the widgets.
 .widget-header {
-  .pt-popover-wrapper {
+  .bp3-popover-wrapper {
+    float: right;
+  }
+}
+
+.hardware-widget {
+  .bp3-popover-wrapper {
     float: right;
   }
 }
 
 .device-widget {
-  .pt-popover-wrapper {
+  .bp3-popover-wrapper {
     width: 100%;
   }
-  .pt-icon-standard {
+  .bp3-icon-standard {
     float: right;
     margin-top: 0.7rem;
   }
-  .pt-button {
+  .bp3-button {
     text-align: left;
     width: 100%;
     span {
@@ -34,22 +40,22 @@
   }
 }
 
-.pt-overlay-content.pt-tether-abutted.pt-tether-abutted-top.pt-tether-element.pt-tether-element-attached-left.pt-tether-element-attached-top.pt-tether-enabled.pt-tether-target-attached-bottom.pt-tether-target-attached-left.pt-transition-container {
+.bp3-overlay-content.bp3-tether-abutted.bp3-tether-abutted-top.bp3-tether-element.bp3-tether-element-attached-left.bp3-tether-element-attached-top.bp3-tether-enabled.bp3-tether-target-attached-bottom.bp3-tether-target-attached-left.bp3-transition-container {
   top: 2rem !important;
 }
 
-.pt-menu {
+.bp3-menu {
   max-height: 20rem !important;
   overflow-y: scroll;
 }
 
-.pt-input-group {
-  .pt-icon {
+.bp3-input-group {
+  .bp3-icon {
     top: 0.6rem;
   }
 }
 
-.pt-button:not(.pt-minimal) {
+.bp3-button:not(.bp3-minimal) {
   font-weight: normal;
   text-transform: none;
   background: $white;
@@ -78,7 +84,7 @@
   }
 }
 
-.pt-popover-wrapper {
+.bp3-popover-wrapper {
   display: block;
   position: relative;
   * {
@@ -86,14 +92,14 @@
   }
 }
 
-.pt-icon-standard.pt-align-right {
+.bp3-icon-standard.bp3-align-right {
   float: right !important;
   margin-top: 0.6rem !important;
   margin-left: 0 !important;
   font-size: 1.6rem !important;
 }
 
-.nav-right .pt-popover-wrapper {
+.nav-right .bp3-popover-wrapper {
   transition: all 0.2s ease;
   text-transform: uppercase;
   color: $gray;
