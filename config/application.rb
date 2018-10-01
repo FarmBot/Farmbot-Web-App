@@ -20,9 +20,14 @@ module FarmBot
     LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
     WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.webpack.dev_server.host          = proc { request.host }
+    # PROBLEM:  Containers run in docker. Default dev_server.manifest_host is
+    #           "localhost", but our `dev_server` runs in a different docker
+    #           container.
+    # SOLUTION: Explicitly set the hostname of the container where Webpack runs.
+    #           In our case, that's `webpack`. See docker-compose.yml for all
+    #           hostnames. -RC 1 OCT 18
     config.webpack.dev_server.manifest_host = "webpack"
     config.webpack.dev_server.manifest_port = 3808
-    10.times do puts "==HELLO??"*10 end
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
