@@ -6,6 +6,14 @@ services:
       - ./docker_volumes/db:/var/lib/postgresql/data
     env_file:
       - ./.env
+  mqtt:
+    build: ./mqtt
+    ports:
+     - "5672:5672"   # AMQP (RabbitMQ)
+     - "1883:1883"   # MQTT
+     - "8883:8883"   # MQTT over TLS/SSL
+     - "3002:15675"  # MQTT over WebSockets
+     - "15672:15672" # Management API
   web:
     build:
       context: .
@@ -15,7 +23,8 @@ services:
     volumes:
       - .:/farmbot
     ports:
-      - "3000:3000"
+      - "3000:3000" # Web / API
+      - "3808:3808" # Webpack Dev Server
     depends_on:
       - db
     env_file:
