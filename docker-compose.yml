@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: docker-api.Dockerfile
     # Add the `rm -f` part to avoid "server is still running..." errors:
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development -p ${API_PORT:-3000} -b 0.0.0.0"
     volumes:
       - .:/farmbot
       - ./docker_volumes/bundle_cache:/bundle
@@ -47,7 +47,7 @@ services:
     build:
       context: .
       dockerfile: docker-api.Dockerfile
-    command: rake jobs:work
+    command: bundle exec rake jobs:work
     volumes:
       - .:/farmbot
       - ./docker_volumes/bundle_cache:/bundle
@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: docker-api.Dockerfile
-    command: rake api:log_digest
+    command: bundle exec rake api:log_digest
     volumes:
       - .:/farmbot
       - ./docker_volumes/bundle_cache:/bundle
@@ -71,7 +71,7 @@ services:
     build:
       context: .
       dockerfile: docker-api.Dockerfile
-    command: rails r lib/rabbit_workers.rb
+    command: bundle exec rails r lib/rabbit_workers.rb
     volumes:
       - .:/farmbot
       - ./docker_volumes/bundle_cache:/bundle
