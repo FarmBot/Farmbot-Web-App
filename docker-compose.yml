@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./docker_volumes/db:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+  web:
+    build:
+      context: .
+      dockerfile: docker-api.Dockerfile
+    # command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    command: bundle exec rails api:start
+    volumes:
+      - .:/farmbot
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
