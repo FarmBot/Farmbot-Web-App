@@ -28,13 +28,16 @@ cd Farmbot-Web-App
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-# Don't know which text editor to use?
-# Use micro! `snap install micro --classic`
 #
-# BE SURE TO READ `application.yml` AND CHANGE THE VALUES
+# READ `example.env` AND CHANGE THE VALUES. SAVE RESULTS TO `.env`!
+# This is the most important step ^
 
+snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
+# READ NOTE ABOVE. Very important!
+# SAVE THIS FILE AS `.env` WHEN FINISHED!
+nano example.env
 sudo docker-compose build
-bundle install
+docker-compose run web bundle install
 yarn install
 cp config/database.example.yml config/database.yml
 cp config/application.example.yml config/application.yml
