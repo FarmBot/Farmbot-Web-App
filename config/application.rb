@@ -19,6 +19,10 @@ module FarmBot
     I18n.enforce_available_locales = false
     LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
     WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
+    config.webpack.dev_server.host          = proc { request.host }
+    config.webpack.dev_server.manifest_host = "webpack"
+    config.webpack.dev_server.manifest_port = 3808
+    10.times do puts "==HELLO??"*10 end
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
