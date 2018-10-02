@@ -10,7 +10,7 @@ import {
   isTaggedTool,
 } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
-import { DropDownItem, NULL_CHOICE } from "../ui/index";
+import { DropDownItem, NULL_CHOICE } from "../ui";
 import { validBotLocationData } from "../util";
 import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
 
@@ -44,11 +44,9 @@ export function mapStateToProps(props: Everything): Props {
 	 * and in an <FBSelect /> compatible format. */
   const getChosenToolOption = (toolSlotUUID: string | undefined) => {
     const chosenTool = toolSlotUUID && getToolByToolSlotUUID(toolSlotUUID);
-    if (chosenTool && isTaggedTool(chosenTool) && chosenTool.body.id) {
-      return { label: chosenTool.body.name || "untitled", value: chosenTool.uuid };
-    } else {
-      return NULL_CHOICE;
-    }
+    return (chosenTool && isTaggedTool(chosenTool) && chosenTool.body.id)
+      ? { label: chosenTool.body.name || "untitled", value: chosenTool.uuid }
+      : NULL_CHOICE;
   };
 
   const changeToolSlot = (t: TaggedToolSlotPointer,
@@ -62,6 +60,9 @@ export function mapStateToProps(props: Everything): Props {
       dispatch(edit(t, { tool_id }));
     };
 
+  const botPosition =
+    validBotLocationData(props.bot.hardware.location_data).position;
+
   return {
     toolSlots,
     tools,
@@ -72,7 +73,7 @@ export function mapStateToProps(props: Everything): Props {
     changeToolSlot,
     isActive,
     dispatch: _.noop,
-    botPosition: validBotLocationData(props.bot.hardware.location_data).position
+    botPosition,
   };
 
 }
