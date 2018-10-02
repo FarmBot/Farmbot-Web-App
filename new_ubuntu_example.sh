@@ -23,31 +23,35 @@ cd Farmbot-Web-App
 # Open `config/application.yml` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-#
-# READ `example.env` AND CHANGE THE VALUES. SAVE RESULTS TO `.env`!
-# This is the most important step ^
 
 snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
 # READ NOTE ABOVE. Very important!
-# SAVE THIS FILE AS `.env` WHEN FINISHED!
-nano example.env
-# Build the docker image
-sudo docker-compose build
+cp example.env .env
+nano .env
+# ^ This is the most important step
+
 # Install application specific Ruby dependencies
 sudo docker-compose run web bundle install
 # Install application specific Javascript deps
 sudo docker-compose run web npm install
 # Create a database in PostgreSQL
 sudo docker-compose run web bundle exec rails db:setup
+# Generate a set of *.pem files for data encryption
+sudo docker-compose run web rake keys:generate
 # Manually create the rabbitmq.conf file
 # TODO: Improve this step -RC 1 Oct 18
 sudo docker-compose run web bundle exec rails r mqtt/server.rb
-# Generate a set of *.pem files for data encryption
-sudo docker-compose run web rake keys:generate
+# Build the UI assets via WebPack
+sudo docker-compose run web npm run build
 
-# At this point, setup is complete.
-# You can verify installation by running unit tests.
-# The steps below are _OPTIONAL_
+# Run the server! ٩(^‿^)۶
+sudo docker-compose up
+
+
+# At this point, setup is complete. Content should be visible at
+#  http://YOUR_HOST:3000/.
+
+# You can optionally verify installation by running unit tests.
 
 # Create the database for the app to use:
 sudo docker-compose run -e RAILS_ENV=test web bundle exec rails db:setup
