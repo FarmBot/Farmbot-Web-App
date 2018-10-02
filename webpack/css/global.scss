@@ -836,6 +836,7 @@ ul {
   }
 }
 
+.tools-widget,
 .toolbay-widget {
   .fa-gear {
     color: $dark_gray;
@@ -843,6 +844,9 @@ ul {
   }
   .del-button {
     margin-top: 0.5rem;
+  }
+  .fb-button {
+    margin-left: 1rem;
   }
 }
 

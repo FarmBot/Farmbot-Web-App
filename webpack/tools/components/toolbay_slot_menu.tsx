@@ -7,9 +7,8 @@ import { edit } from "../../api/crud";
 import { SlotDirectionSelect } from "./toolbay_slot_direction_selection";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
-const positionIsDefined = (position: BotPosition): boolean => {
-  return isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
-};
+const positionIsDefined = (position: BotPosition): boolean =>
+  isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
 
 const useCurrentPosition = (
   dispatch: Function, slot: TaggedToolSlotPointer, position: BotPosition) => {
@@ -18,21 +17,16 @@ const useCurrentPosition = (
   }
 };
 
-const positionButtonTitle = (position: BotPosition): string => {
-  if (positionIsDefined(position)) {
-    return `(${position.x}, ${position.y}, ${position.z})`;
-  } else {
-    return t("(unknown)");
-  }
-};
+const positionButtonTitle = (position: BotPosition): string =>
+  positionIsDefined(position)
+    ? `(${position.x}, ${position.y}, ${position.z})`
+    : t("(unknown)");
 
 const changePulloutDirection =
   (dispatch: Function, slot: TaggedToolSlotPointer) => () => {
-    const newDirection = (
-      old: ToolPulloutDirection | undefined): ToolPulloutDirection => {
-      if (isNumber(old) && old < 4) { return old + 1; }
-      return ToolPulloutDirection.NONE;
-    };
+    const newDirection =
+      (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
+        isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
     dispatch(edit(slot,
       { pullout_direction: newDirection(slot.body.pullout_direction) }));
   };
@@ -61,29 +55,22 @@ export const SlotMenu = (props: SlotMenuProps) => {
       <label>
         {t("Change slot direction")}
       </label>
-      <i className={"direction-icon " +
-        directionIconClass(pullout_direction)}
-        onClick={
-          changePulloutDirection(dispatch, slot)} />
+      <i className={"direction-icon " + directionIconClass(pullout_direction)}
+        onClick={changePulloutDirection(dispatch, slot)} />
       <SlotDirectionSelect
         key={pullout_direction}
         dispatch={dispatch}
         slot={slot} />
     </fieldset>
     <fieldset>
-      <label>
-        {t("Use current location")}
-      </label>
+      <label>{t("Use current location")}</label>
       <button
         className="blue fb-button"
         title={positionButtonTitle(botPosition)}
-        onClick={() =>
-          useCurrentPosition(dispatch, slot, botPosition)}>
+        onClick={() => useCurrentPosition(dispatch, slot, botPosition)}>
         <i className="fa fa-crosshairs" />
       </button>
-      <p>
-        {positionButtonTitle(botPosition)}
-      </p>
+      <p>{positionButtonTitle(botPosition)}</p>
     </fieldset>
   </div>;
 };

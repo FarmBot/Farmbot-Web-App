@@ -3,25 +3,22 @@ import { ToolList } from "../tool_list";
 import { mount } from "enzyme";
 import { mapStateToProps } from "../../state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { ToolListAndFormProps } from "../../interfaces";
 
 describe("<ToolList />", () => {
-  function bootstrapTest() {
-    const state = fakeState();
-    const toggle = jest.fn();
-    const props = mapStateToProps(state);
+  const fakeProps = (): ToolListAndFormProps => {
+    const props = mapStateToProps(fakeState());
     return {
-      state,
-      toggle,
-      props,
-      component: mount(<ToolList dispatch={state.dispatch}
-        tools={props.tools}
-        toggle={toggle}
-        isActive={props.isActive} />)
+      dispatch: jest.fn(),
+      tools: props.tools,
+      toggle: jest.fn(),
+      isActive: props.isActive,
     };
-  }
+  };
+
   it("renders tool names and statuses", () => {
-    const test = bootstrapTest();
-    expect(test.component.text()).toContain("Trench Digging Toolactive");
-    expect(test.component.text()).toContain("Berry Picking Toolinactive");
+    const wrapper = mount(<ToolList {...fakeProps()} />);
+    expect(wrapper.text()).toContain("Trench Digging Toolactive");
+    expect(wrapper.text()).toContain("Berry Picking Toolinactive");
   });
 });
