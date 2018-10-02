@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Col, Row } from "../../ui/index";
+import { Col, Row } from "../../ui";
 import { t } from "i18next";
 
-export function ToolBayHeader(_: {}) {
+export function ToolBayHeader() {
   return <Row>
     <Col xs={1}>
       <label>{t("Slot")}</label>
