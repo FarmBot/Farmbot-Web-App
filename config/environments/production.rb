@@ -13,11 +13,7 @@ FarmBot::Application.configure do
   config.log_level                   = :info
   config.perform_caching             = false
   config.public_file_server.enabled  = false
-  # config.after_initialize do
-  #   Bullet.enable  = true
-  #   Bullet.console = true
-  #   Bullet.rollbar = true if ENV["ROLLBAR_ACCESS_TOKEN"]
-  # end
+
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.
   # 2. FarmBot is an open source project that must be vendor neutral.

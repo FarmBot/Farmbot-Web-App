@@ -11,11 +11,12 @@
 
 This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. It requires an intermediate background in Ruby, SQL and Linux system administration.
 
-If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
 We do not have the resources available to help novice developers learn to setup servers, environments, configurations, or perform basic Linux command line instructions.
 
 If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.* Running a self-hosted server is not easy!
+
+If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
 # Q: Where do I report security issues?
 
@@ -33,25 +34,21 @@ For a list of example API requests and responses, see our [reference documentati
 
 We provide example setup instructions for Ubuntu 18 [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.sh).
 
-Installation was last tested against Ubuntu 18.04 in June of 2018 on an x86 based machine.
+Installation was last tested against Ubuntu 18.04 in October of 2018 on an x86 based machine.
 
 Our ability to help individual users with private setup is limited. Using the public server at http://my.farm.bot is the recommended setup for end users. Please see the top of this document for more information.
 
 # Config Settings (important)
 
-We try our best to follow the [12 Factor Methodology](https://12factor.net/). Part of that means using ENV variables as a means of [storing configuration](https://12factor.net/config). **Your server won't run without setting ENV variables first**.
+We follow the [12 Factor Methodology](https://12factor.net/). As such, ENV variables are the primary means of [storing configuration](https://12factor.net/config). **Your server won't run without setting ENV variables first**.
 
-You can accomplish this by setting the ENV variables directly from your shell / server management tool or by writing an `application.yml` file.
+You can accomplish this by setting the ENV variables directly from your shell / server management tool or by writing an `.env` file in server's base directory.
 
-See `config/application.example.yml` for a list of all the variables that must be set.
+See `example.env` for a list of all the variables that must be set.
 
-**Encryption keys**: Encryption keys will be auto-generated if not present. They can be reset using `rake keys:generate`. If `ENV['RSA_KEY']` is set, it will be used in place of the `*.pem` files. Useful for environments like Heroku, where file system access is not allowed.
+**Encryption keys**: Encryption keys will be auto-generated if not present. They can be reset using `rake keys:generate`. If `ENV['RSA_KEY']` is set, it will be used in place of the `*.pem` files. This is useful for environments like Heroku and Docker, where file system access is not allowed.
 
-# Want to Help?
-
-[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
-
-## Translating the web app into your language
+# Translating the Web App into Your Language
 
 Thanks for your interest in internationalizing the FarmBot web app! To add translations:
 
@@ -59,3 +56,7 @@ Thanks for your interest in internationalizing the FarmBot web app! To add trans
 0. Navigate to `/public/app-resources/languages` and run the command `node _helper.js yy` where `yy` is your language's [language code](http://www.science.co.il/Language/Locale-codes.php). Eg: `ru` for Russian.
 0. Edit the translations in the file created in the previous step: `"phrase": "translated phrase"`.
 0. When you have updated or added new translations, commit/push your changes and submit a pull request.
+
+# Want to Help?
+
+[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.

@@ -79,7 +79,7 @@ RSpec.configure do |config|
     require "capybara/rails"
     require "capybara/rspec"
     require "selenium/webdriver"
-    # Be sure to run `RAILS_ENV=test rails api:start` and `rails mqtt:start`!
+    # Be sure to run the server in a seperate window!
     Capybara.run_server  = false
     Capybara.app_host    = "http://localhost:3000"
     Capybara.server_host = "localhost"

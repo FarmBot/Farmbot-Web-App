@@ -4,23 +4,23 @@ Parts of this document may be out of date or reflect practices that are no longe
 
 Please raise an issue if you hit any issues during deployment.
 
-# Run on a Local Machine (saves time)
+# Run on a Local Machine
 
 If you want to run a server on a LAN for personal use, this is the easiest and cheapest option.
 
-**Simplicity:** :heart::heart::heart:
+**Simplicity:** :heart: :heart: :heart:
 
 **Reliability:** :broken_heart:
 
-**Affordability:** :heart::heart::heart:
+**Affordability:** :heart: :heart: :heart:
 
  1. Follow the [developer setup guide](https://github.com/FarmBot/Farmbot-Web-App#q-how-do-i-setup-an-instance-locally).
 
 # Deployment Using Heroku (best reliability)
 
-**Simplicity:** :heart::heart::heart::heart:
+**Simplicity:** :heart: :heart: :heart: :heart:
 
-**Reliability:** :heart::heart::heart::heart:
+**Reliability:** :heart: :heart: :heart: :heart:
 
 **Affordability:** :broken_heart:
 
@@ -28,4 +28,4 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
  2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>` (we need this to know the version number of the web app).
  3. (If emails are enabled) Enable the [Heroku scheduler](https://elements.heroku.com/addons/scheduler) and configure it to run `rake api:log_digest` every 10 minutes. This is required for Device log digests via email.
 
-Don't forget to [set ENV vars](https://devcenter.heroku.com/articles/config-vars) as you would normally do with `application.yml` and run `heroku run rake db:setup`.
+Don't forget to [set ENV vars](https://devcenter.heroku.com/articles/config-vars) and run `heroku run rake db:setup`.

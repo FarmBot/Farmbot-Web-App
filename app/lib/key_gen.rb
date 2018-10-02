@@ -14,8 +14,8 @@ class KeyGen
     return rsa
   end
 
-  # Heroku / 12Factor users can't store stuff on the file system. Store your pem
-  # file in ENV['RSA_KEY'] if that applies to you.
+  # Heroku / 12Factor users can't store stuff on the file system.
+  # Store your pem file in ENV['RSA_KEY'] if that applies to you.
   def self.try_env
     OpenSSL::PKey::RSA.new(ENV['RSA_KEY']) if ENV['RSA_KEY']
   end

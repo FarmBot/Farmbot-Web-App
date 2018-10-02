@@ -11,7 +11,7 @@
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "clean": "rm -rf public/dist && rm -rf public/webpack",
     "build": "TARGET=production bundle exec rake webpack:compile",
-    "start": "echo 'use `rails api:start`'",
+    "start": "echo 'use `sudo docker-compose up` instead.'",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js",
     "test-slow": "jest --coverage --no-cache -w 4",

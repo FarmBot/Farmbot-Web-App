@@ -13,8 +13,8 @@ erd_diagram.png
 erd.pdf
 latest_corpus.ts
 log/*.log
-mqtt/rabbitmq.conf
-mqtt/rabbitmq.config
+docker_configs/rabbitmq.conf
+docker_configs/rabbitmq.config
 node_modules
 node_modules/
 package-lock.json

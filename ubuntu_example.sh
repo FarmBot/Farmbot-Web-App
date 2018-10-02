@@ -38,9 +38,9 @@ sudo docker-compose run web npm install
 sudo docker-compose run web bundle exec rails db:setup
 # Generate a set of *.pem files for data encryption
 sudo docker-compose run web rake keys:generate
-# Manually create the rabbitmq.conf file
+# Manually create the rabbitmq.conf file.
 # TODO: Improve this step -RC 1 Oct 18
-sudo docker-compose run web bundle exec rails r mqtt/server.rb
+sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
 # Build the UI assets via WebPack
 sudo docker-compose run web npm run build
 # Run the server! ٩(^‿^)۶
