@@ -14,11 +14,6 @@ sudo docker run hello-world # Should run!
 sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-# # Install Yarn
-# curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-# echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-# sudo apt-get update && sudo apt-get install yarn
-
 # Install FarmBot Web App
 git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10 --branch=master
 cd Farmbot-Web-App
@@ -36,44 +31,27 @@ snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
 # READ NOTE ABOVE. Very important!
 # SAVE THIS FILE AS `.env` WHEN FINISHED!
 nano example.env
+# Build the docker image
 sudo docker-compose build
-docker-compose run web bundle install
-yarn install
-cp config/database.example.yml config/database.yml
-cp config/application.example.yml config/application.yml
+# Install application specific Ruby dependencies
+sudo docker-compose run web bundle install
+# Install application specific Javascript deps
+sudo docker-compose run web npm install
+# Create a database in PostgreSQL
+sudo docker-compose run web bundle exec rails db:setup
+# Manually create the rabbitmq.conf file
+# TODO: Improve this step -RC 1 Oct 18
+sudo docker-compose run web bundle exec rails r mqtt/server.rb
+# Generate a set of *.pem files for data encryption
+sudo docker-compose run web rake keys:generate
 
-
-# Next, we need to set some things up in PostgreSQL
-# Before proceeding, it is important to know your username on the machine.
-# Type the following command to determine your system username:
-whoami
-
-# ...then Run this command...
-sudo -u postgres psql
-
-#  Now that you are in the PSQL command prompt,
-#  enter the commands below. Replace your_system_username_here with the results
-#  of the `whoami` command:
-#
-#    CREATE USER "your_system_username_here" WITH SUPERUSER;
-#    \q
-#
-# ...after running `\q` we are back to the shell- Continue installation as
-# usual.
-
-# Generate a set of *.pem files for data encryption:
-rake keys:generate
+# At this point, setup is complete.
+# You can verify installation by running unit tests.
+# The steps below are _OPTIONAL_
 
 # Create the database for the app to use:
-rake db:create:all db:migrate db:seed
-
-# Run the database migration and unit tests (API only)
-RAILS_ENV=test rake db:create db:migrate && rspec spec
-
-# Run UI-level unit tests:
-npm run test
-
-# RUNNING ON PORT 80 =======================================================+
-# NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
-# This is a quick alternative to running rails as root / sudo.              |
-# ==========================================================================+
+sudo docker-compose run -e RAILS_ENV=test web bundle exec rails db:setup
+# Run the tests in the "test" RAILS_ENV:
+sudo docker-compose run -e RAILS_ENV=test web rspec spec
+# Run user-interface unit tests:
+sudo docker-compose run web npm run test
