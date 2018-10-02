@@ -1,0 +1,84 @@
+version: '3'
+services:
+  mqtt: # ======================================================================
+    build:
+      context: ./docker_configs
+      dockerfile: rabbitmq.Dockerfile
+    ports:
+     - "5672:5672"   # AMQP (RabbitMQ)
+     - "1883:1883"   # MQTT
+     - "8883:8883"   # MQTT over TLS/SSL
+     - "3002:15675"  # MQTT over WebSockets
+     - "15672:15672" # Management API
+  db:  # =======================================================================
+    image: postgres
+    volumes:
+      - ./docker_volumes/db:/var/lib/postgresql/data
+    env_file:
+      - .env
+  web:  # ======================================================================
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
+    # Add the `rm -f` part to avoid "server is still running..." errors:
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development -p ${API_PORT:-3000} -b 0.0.0.0"
+    volumes:
+      - .:/farmbot
+      - ./docker_volumes/bundle_cache:/bundle
+    ports:
+      - "3000:3000" # Web / API
+    depends_on:
+      - db
+    env_file:
+      - .env
+  webpack: # ===================================================================
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
+    command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+    volumes:
+      - .:/farmbot
+      - ./docker_volumes/bundle_cache:/bundle
+    ports:
+      - "3808:3808" # Webpack Dev Server
+    depends_on:
+      - web
+    env_file:
+      - .env
+  delayed_job: # ===============================================================
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
+    command: bundle exec rake jobs:work
+    volumes:
+      - .:/farmbot
+      - ./docker_volumes/bundle_cache:/bundle
+    env_file:
+      - .env
+    depends_on:
+      - db
+  log_digests: # ===============================================================
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
+    command: bundle exec rake api:log_digest
+    volumes:
+      - .:/farmbot
+      - ./docker_volumes/bundle_cache:/bundle
+    depends_on:
+      - db
+    env_file:
+      - .env
+  rabbit_jobs: # ===============================================================
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
+    command: bundle exec rails r lib/rabbit_workers.rb
+    volumes:
+      - .:/farmbot
+      - ./docker_volumes/bundle_cache:/bundle
+    depends_on:
+      - db
+      - mqtt
+    env_file:
+      - .env

@@ -6,15 +6,15 @@
 /tmp
 api_docs.md
 config/application.yml
-config/database.yml
+# config/database.yml
 config/secrets.yml
 coverage
 erd_diagram.png
 erd.pdf
 latest_corpus.ts
 log/*.log
-mqtt/rabbitmq.conf
-mqtt/rabbitmq.config
+docker_configs/rabbitmq.conf
+docker_configs/rabbitmq.config
 node_modules
 node_modules/
 package-lock.json
@@ -29,3 +29,5 @@ tmp
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 config/credentials.yml.enc
+docker_volumes
+.env

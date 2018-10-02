@@ -24,7 +24,8 @@
   "exclude": [
     "node_modules",
     "typings",
-    "public"
+    "public",
+    "docker_volumes"
   ],
   "compileOnSave": false,
   "buildOnSave": false
