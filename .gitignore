@@ -6,7 +6,7 @@
 /tmp
 api_docs.md
 config/application.yml
-config/database.yml
+# config/database.yml
 config/secrets.yml
 coverage
 erd_diagram.png
