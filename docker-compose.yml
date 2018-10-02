@@ -1,7 +1,9 @@
 version: '3'
 services:
   mqtt: # ======================================================================
-    build: ./docker_configs/rabbitmq.Dockerfile
+    build:
+      context: ./docker_configs
+      dockerfile: rabbitmq.Dockerfile
     ports:
      - "5672:5672"   # AMQP (RabbitMQ)
      - "1883:1883"   # MQTT
@@ -11,7 +13,7 @@ services:
   db:  # =======================================================================
     image: postgres
     volumes:
-      - ././docker_volumes/db:/var/lib/postgresql/data
+      - ./docker_volumes/db:/var/lib/postgresql/data
     env_file:
       - .env
   web:  # ======================================================================
