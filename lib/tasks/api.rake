@@ -22,6 +22,49 @@ def check_for_digests
   sleep 10
 end
 
+class V7Migration
+  BIG_WARNING =   <<~END
+    ░██████░░███████░░█████░░░██████░░  You have recently upgraded your server
+    ░██░░░░░░░░██░░░░██░░░██░░██░░░██░  from version 6 to version 7.
+    ░██████░░░░██░░░░██░░░██░░██████░░  This requires action on your part.
+    ░░░░░██░░░░██░░░░██░░░██░░██░░░░░░  Please read the instructions below
+    ░██████░░░░██░░░░░████░░░░██░░░░░░  carefully.
+
+    1. Follow v7 installation found in "ubuntu_example.sh". You will need to
+       skip certain steps. The skipable steps are listed in the instructions.
+
+    2. Stop using `rails api:start` and `rails mqtt:start` commands. The new
+       startup command is `sudo docker-compose up` See "ubuntu_example.sh" for
+       details.
+
+    3. If you wish to continue using your current database:
+       a. Set `DATABASE_URL` ENV var to match the format of
+          postgres://username:password@host_name:5432/database_name
+       b. Migrate the database to the new container-based DB manually:
+          https://stackoverflow.com/questions/1237725/copying-postgresql-database-to-another-server
+
+    4. Update database.yml
+    5. Remove quotes from application.yml
+
+    (important) Migrate `mqtt/` folder to `docker_configs/`.
+       Type "continue" and press enter to
+  END
+  def run
+    explain_situation
+    move_mqtt_folder
+    migration_application_yml
+  end
+
+  def explain_situation
+  end
+
+  def move_mqtt_folder
+  end
+
+  def migration_application_yml
+  end
+end
+
 namespace :api do
   desc "Runs pending email digests. "\
        "Use the `FOREVER` ENV var to continually check."
