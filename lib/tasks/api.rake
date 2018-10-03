@@ -19,7 +19,7 @@ def check_for_digests
       puts "Sending log digest to device \##{id} (#{device.name})"
       LogDeliveryMailer.log_digest(device).deliver
     end
-  sleep 10
+  sleep 10.minutes
 end
 
 class V7Migration
@@ -87,6 +87,11 @@ namespace :api do
   desc "Run Rails _ONLY_. No Webpack."
   task only: :environment do
     sh "sudo docker-compose up --scale webpack=0"
+  end
+
+  desc "Run Webpack _ONLY_. No other services"
+  task webpack: :environment do
+    sh "sudo docker-compose run webpack npm run webpack"
   end
 
   desc "Pull the latest Farmbot API version"
