@@ -84,6 +84,11 @@ namespace :api do
   desc "Deprecated. Will be removed in December of 2018"
   task(:start) { puts V7Migration::BIG_WARNING }
 
+  desc "Run Rails _ONLY_. No Webpack."
+  task only: :environment do
+    sh "sudo docker-compose up --scale webpack=0"
+  end
+
   desc "Pull the latest Farmbot API version"
   task(update: :environment) { same_thing }
 
