@@ -2,7 +2,7 @@
 def same_thing
   sh "git pull https://github.com/FarmBot/Farmbot-Web-App.git master"
   sh "sudo docker-compose run web bundle install"
-  sh "sudo docker-compose run web yarn install"
+  sh "sudo docker-compose run web npm install"
   sh "sudo docker-compose run web rails db:migrate"
 end
 
