@@ -67,9 +67,9 @@ class V7Migration
 
     5. Migrate the contents of `config/application.yml` to `.env`. Ensure you
        have removed "quotation marks" and that all entries are `key=value` pairs.
+       See `example.env` for a properly formatted example.
 
-    6. (SECURITY CRITICAL) Migrate `mqtt/` folder to `docker_configs/` and
-       delete `mqtt/`
+    6. (SECURITY CRITICAL) delete `mqtt/`
   END
 end
 

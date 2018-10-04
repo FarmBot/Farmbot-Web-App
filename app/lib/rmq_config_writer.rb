@@ -6,7 +6,7 @@ class RmqConfigWriter
                     "domain name (not localhost).\n" +
                     "API_PORT is also mandatory."
   PROTO           = ENV["FORCE_SSL"] ? "https:" : "http:"
-  ADMIN_PASSWORD  = ENV.fetch("ADMIN_PASSWORD")
+  ADMIN_PASSWORD  = ENV["ADMIN_PASSWORD"]
   CFG_DATA        = { admin_password:   ADMIN_PASSWORD,
                       fully_formed_url: PROTO + ($API_URL || "") }
   TEMPLATE        = <<~END
@@ -24,6 +24,8 @@ class RmqConfigWriter
     default_pass                    = %{admin_password}
     mqtt.allow_anonymous            = false
   END
+
+  puts 'Warning: ENV["ADMIN_PASSWORD"] not set' unless ADMIN_PASSWORD
 
   def self.render
     raise BAD_PASSWORD if ADMIN_PASSWORD.length < 5
