@@ -1,10 +1,8 @@
 version: '3.4'
 x-db_user: &db_user
   depends_on: ["db"]
-x-rails_job: &rails_job
-  build:
-    context: .
-    dockerfile: docker_configs/api.Dockerfile
+x-rails: &rails
+  image:    farmbot_web
   env_file: .env
   volumes:
     - .:/farmbot
@@ -15,8 +13,11 @@ services:
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
     env_file: .env
   web:         # ====================
-    <<: *rails_job
     <<: *db_user
+    <<: *rails
+    build:
+      context: .
+      dockerfile: docker_configs/api.Dockerfile
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development -p ${API_PORT:-3000} -b 0.0.0.0"
     ports: ["3000:3000"] # Web / API
   mqtt:        # ====================
@@ -36,18 +37,18 @@ services:
     volumes:
      - ./docker_volumes/rabbit:/farmbot
   webpack:     # ====================
-    <<: *rails_job
+    <<: *rails
     command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
     ports: ["3808:3808"] # Webpack Dev Server
   delayed_job: # ====================
-    <<: *rails_job
+    <<: *rails
     depends_on: ["db","mqtt"]
     command: bundle exec rake jobs:work
   log_digests: # ====================
-    <<: *rails_job
+    <<: *rails
     <<: *db_user
     command: bundle exec rake api:log_digest
   rabbit_jobs: # ====================
-    <<: *rails_job
+    <<: *rails
     depends_on: ["db","mqtt"]
     command: bundle exec rails r lib/rabbit_workers.rb
