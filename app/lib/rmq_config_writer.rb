@@ -9,6 +9,9 @@ class RmqConfigWriter
   ADMIN_PASSWORD  = ENV["ADMIN_PASSWORD"]
   CFG_DATA        = { admin_password:   ADMIN_PASSWORD,
                       fully_formed_url: PROTO + ($API_URL || "") }
+  ENV_WARNING     = "Warning: ENV[\"ADMIN_PASSWORD\"] not set. If you are not "\
+                    "using 3rd party MQTT hosting, please set this value and "\
+                    "re-build the server image."
   TEMPLATE        = <<~END
     auth_backends.1                 = cache
     auth_cache.cache_ttl            = 600000
@@ -25,12 +28,18 @@ class RmqConfigWriter
     mqtt.allow_anonymous            = false
   END
 
-  puts 'Warning: ENV["ADMIN_PASSWORD"] not set' unless ADMIN_PASSWORD
-
-  def self.render
+  def self.do_render
     raise BAD_PASSWORD if ADMIN_PASSWORD.length < 5
     raise NO_API_HOST  if !ENV["API_HOST"] || !ENV["API_PORT"]
     FileUtils.mkdir_p CONFIG_PATH
     File.open(CONFIG_OUTPUT, "w+") { |f| f.write(TEMPLATE % CFG_DATA) }
+  end
+
+  def self.dont_render
+    puts ENV_WARNING
+  end
+
+  def self.render
+    ADMIN_PASSWORD ? do_render : dont_render
   end
 end
