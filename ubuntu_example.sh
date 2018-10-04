@@ -17,7 +17,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 # Install FarmBot Web App
 # ⚠ SKIP THIS STEP IF UPGRADING!
 git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10 --branch=master
-cd Farmbot-Web-App  # ⚠ SKIP THIS STEP IF UPGRADING!
+
+cd Farmbot-Web-App
 
 # == This is a very important step!!! ==
 #
@@ -40,8 +41,7 @@ sudo docker-compose run web bundle exec rails db:setup
 # Generate a set of *.pem files for data encryption
 sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
 # Manually create the rabbitmq.conf file.
-# TODO: Improve this step -RC 1 Oct 18
-# sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
+sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
 # Build the UI assets via WebPack
 sudo docker-compose run web npm run build
 # Run the server! ٩(^‿^)۶
