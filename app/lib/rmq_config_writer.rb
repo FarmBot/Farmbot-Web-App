@@ -29,6 +29,7 @@ class RmqConfigWriter
   END
 
   def self.do_render
+    puts "Writing RMQ Config ================================================="
     raise BAD_PASSWORD if ADMIN_PASSWORD.length < 5
     raise NO_API_HOST  if !ENV["API_HOST"] || !ENV["API_PORT"]
     FileUtils.mkdir_p CONFIG_PATH
