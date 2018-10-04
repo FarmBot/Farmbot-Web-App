@@ -9,17 +9,13 @@
 api_docs.md
 config/application.yml
 config/credentials.yml.enc
-config/secrets.yml
 coverage
-docker_configs/rabbitmq.conf
-docker_configs/rabbitmq.config
 docker_volumes
 erd_diagram.png
 erd.pdf
 latest_corpus.ts
 log/*.log
-mqtt/rabbitmq.conf   # Legacy config directory. Delete on 3 Dec 18 - RC
-mqtt/rabbitmq.config # Legacy config directory. Delete on 3 Dec 18 - RC
+mqtt/ # Legacy config directory. Delete on 3 Dec 18 - RC
 node_modules
 package-lock.json
 public/direct_upload/temp/*.jpg

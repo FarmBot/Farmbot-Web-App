@@ -1,3 +1,3 @@
-puts "========================================================================="
-puts "Writing RMQ Config now?"
+puts "Writing RMQ Config ======================================================"
+
 RmqConfigWriter.render
