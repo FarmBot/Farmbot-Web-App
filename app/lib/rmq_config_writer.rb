@@ -31,7 +31,6 @@ class RmqConfigWriter
   def self.do_render
     puts "Writing RMQ Config ================================================="
     raise BAD_PASSWORD if ADMIN_PASSWORD.length < 5
-    raise NO_API_HOST  if !ENV["API_HOST"] || !ENV["API_PORT"]
     FileUtils.mkdir_p CONFIG_PATH
     File.open(CONFIG_OUTPUT, "w+") { |f| f.write(TEMPLATE % CFG_DATA) }
   end
@@ -40,7 +39,11 @@ class RmqConfigWriter
     puts ENV_WARNING
   end
 
+  def self.env_ok?
+    ADMIN_PASSWORD && ENV.key?("API_HOST") && ENV.key?("API_PORT")
+  end
+
   def self.render
-    ADMIN_PASSWORD ? do_render : dont_render
+    env_ok? ? do_render : dont_render
   end
 end
