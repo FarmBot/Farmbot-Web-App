@@ -41,7 +41,7 @@ sudo docker-compose run web bundle exec rails db:setup
 sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
 # Manually create the rabbitmq.conf file.
 # TODO: Improve this step -RC 1 Oct 18
-sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
+# sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
 # Build the UI assets via WebPack
 sudo docker-compose run web npm run build
 # Run the server! ٩(^‿^)۶

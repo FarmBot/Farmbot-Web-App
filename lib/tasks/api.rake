@@ -74,9 +74,9 @@ class V7Migration
 end
 
 def hard_reset_api
-  sh "sudo rm -rf docker_volumes/"
   sh "sudo docker stop $(sudo docker ps -a -q)"
   sh "sudo docker rm $(sudo docker ps -a -q)"
+  sh "sudo rm -rf docker_volumes/"
 rescue => exception
   puts exception.message
   puts "Reset failed. Was there nothing to destroy?"
@@ -87,7 +87,6 @@ def rebuild_deps
   sh "sudo docker-compose run web npm install"
   sh "sudo docker-compose run web bundle exec rails db:setup"
   sh "sudo docker-compose run web rake keys:generate"
-  sh "sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb"
   sh "sudo docker-compose run web npm run build"
 end
 
@@ -125,11 +124,11 @@ namespace :api do
 
   desc "Reset _everything_, including your database"
   task :reset do
-    puts "This is going to destroy _ALL_ of your local data."\
-         " Type 'destroy' to continue"
+    puts "This is going to destroy _ALL_ of your local Farmbot SQL data and "\
+         "configs. Type 'destroy' to continue, enter to abort."
     if user_typed?("destroy")
       hard_reset_api
-      puts "Done. Type 'build' to re-install dependencies"
+      puts "Done. Type 'build' to re-install dependencies, enter to abort."
       rebuild_deps if user_typed?("build")
     end
   end

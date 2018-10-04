@@ -31,13 +31,17 @@ services:
      - "15672:15672" # Management API
     depends_on: ["web"]
     env_file:   .env
+    environment:
+     - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
+    volumes:
+     - ./docker_volumes/rabbit:/farmbot
   webpack:     # ====================
     <<: *rails_job
     command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
     ports: ["3808:3808"] # Webpack Dev Server
   delayed_job: # ====================
     <<: *rails_job
-    <<: *db_user
+    depends_on: ["db","mqtt"]
     command: bundle exec rake jobs:work
   log_digests: # ====================
     <<: *rails_job
@@ -45,5 +49,5 @@ services:
     command: bundle exec rake api:log_digest
   rabbit_jobs: # ====================
     <<: *rails_job
-    command: bundle exec rails r lib/rabbit_workers.rb
     depends_on: ["db","mqtt"]
+    command: bundle exec rails r lib/rabbit_workers.rb
