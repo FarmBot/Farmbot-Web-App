@@ -22,7 +22,7 @@ cd Farmbot-Web-App
 
 # == This is a very important step!!! ==
 #
-# Open `config/application.yml` in a text editor and change all the values.
+# Open `.env` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
 
