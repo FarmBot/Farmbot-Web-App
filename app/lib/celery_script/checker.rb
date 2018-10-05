@@ -141,9 +141,12 @@ module CeleryScript
           type_check_parameter(var, allowed_types)
         when "variable_declaration"
           actual = var.args[:data_value].kind
-          unless allowed_types.include?(actual)
-            bad_var!(value, var.args[:label].value, allowed_types, actual)
-          end
+          # Don't delete this- it is currently unreachable code, but as soon as we
+          # allow identifiers other than `point`, `tool` and `coordinate` we will
+          # need it again (and can write tests)
+          # unless allowed_types.include?(actual)
+          #   bad_var!(value, var.args[:label].value, allowed_types, actual)
+          # end SEE_MY_NOTE =============================^ RC 4 Oct 18
         else
           raise ("Bad kind: " + var.kind)
         end

@@ -1,3 +1,15 @@
+# SCENARIO: RabbitMQ's HTTP auth backend plugin uses *files* instead of ENV vars
+#           for configuration.
+# PROBLEM: 1. This is the only service that requires such configuartion. All
+#             other services are configured in one place- the `.env` file.
+#          2. When using files, it's easy to forget that the file needs updates.
+#             Refreshing the .env file will NOT refresh rabbit configs.
+#          3. This adds an additional step to server provisioning procedures.
+# SOLUTION: Since Rabbit requires the API to load ahead of itself, we can create
+#           the configuration on-the-fly when the API boots up by using custom
+#           ENV vars and string templates. Essentially, the API overwrites the
+#           contents of rabbitmq.conf every time it boots up, eliminating the
+#           need to refresh/create cumbersome config files.
 class RmqConfigWriter
   CONFIG_PATH     = "docker_volumes/rabbit"
   CONFIG_FILENAME = "farmbot_rmq_config.conf"
