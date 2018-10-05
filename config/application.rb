@@ -9,12 +9,11 @@ Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
     Delayed::Worker.max_attempts = 4
-    # config.after_initialize do
-    #   Bullet.enable  = true
-    #   Bullet.console = true
-    # end
+    REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
+    REDIS_URL     = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
+    config.cache_store                 = :redis_cache_store, { url: REDIS_URL }
     config.active_record.schema_format = :sql
-    config.active_job.queue_adapter = :delayed_job
+    config.active_job.queue_adapter    = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     LOCAL_API_HOST = ENV["API_HOST"] || "localhost"

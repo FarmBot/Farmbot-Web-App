@@ -1,6 +1,6 @@
 version: '3.4'
 x-db_user: &db_user
-  depends_on: ["db"]
+  depends_on: ["db", "redis"]
 x-rails: &rails
   image:    farmbot_web
   env_file: .env
@@ -9,9 +9,11 @@ x-rails: &rails
     - ./docker_volumes/bundle_cache:/bundle
 services:
   redis:
-    image: redis:4.0.11
-    environment: ["REDIS_PASS=mypass"]
-    ports:       ["6379:6379"]
+    image: redis
+    volumes:
+     - ./docker_volumes/redis/data:/data
+     - ./docker_volumes/redis/conf:/usr/local/etc/redis
+    ports: ["6379:6379"]
   db:          # ====================
     image: postgres
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]

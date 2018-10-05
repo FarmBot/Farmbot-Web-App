@@ -1,10 +1,10 @@
 FarmBot::Application.configure do
+
   config
     .action_mailer
     .default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
   config.active_support.deprecation  = :notify
   config.cache_classes               = true
-  config.cache_store                 = :null_store
   config.consider_all_requests_local = false
   config.eager_load                  = true
   config.force_ssl                   = true if ENV["FORCE_SSL"]
