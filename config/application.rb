@@ -72,13 +72,15 @@ module FarmBot
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
-        connect_src: ALL_LOCAL_URIS + [ENV["MQTT_HOST"],
-                      "api.github.com",
-                      "raw.githubusercontent.com",
-                      "openfarm.cc",
-                      "api.rollbar.com",
-                      WEBPACK_URL] +
-          (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
+        connect_src: ALL_LOCAL_URIS + [
+            ENV["MQTT_HOST"],
+            "api.github.com",
+            "raw.githubusercontent.com",
+            "openfarm.cc",
+            "api.rollbar.com",
+            WEBPACK_URL,
+            ENV["FORCE_SSL"] ? "wss:" : "ws:"
+          ] + (Rails.env.production? ? %w() : %w(localhost:3000 localhost:3808)),
         font_src: %w(
           'self'
           data:
@@ -86,12 +88,12 @@ module FarmBot
           fonts.googleapis.com
           fonts.gstatic.com
         ),
-        form_action: %w('self'),
-        frame_src: %w(*),       # We need "*" to support webcam users.
-        img_src: %w(* data:),   # We need "*" to support webcam users.
+        form_action:  %w('self'),
+        frame_src:    %w(*),       # We need "*" to support webcam users.
+        img_src:      %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
-        media_src: %w(),
-        object_src: %w(),
+        media_src:    %w(),
+        object_src:   %w(),
         sandbox: %w(
           allow-scripts
           allow-forms
