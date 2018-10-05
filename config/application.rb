@@ -12,6 +12,7 @@ module FarmBot
     REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
     REDIS_URL     = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
     config.cache_store                 = :redis_cache_store, { url: REDIS_URL }
+    config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
     config.active_job.queue_adapter    = :delayed_job
     config.action_dispatch.perform_deep_munge = false
