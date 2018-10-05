@@ -2,7 +2,7 @@
 def same_thing
   sh "git pull https://github.com/FarmBot/Farmbot-Web-App.git master"
   sh "sudo docker-compose run web bundle install"
-  sh "sudo docker-compose run web yarn install"
+  sh "sudo docker-compose run web npm install"
   sh "sudo docker-compose run web rails db:migrate"
 end
 
@@ -19,7 +19,7 @@ def check_for_digests
       puts "Sending log digest to device \##{id} (#{device.name})"
       LogDeliveryMailer.log_digest(device).deliver
     end
-  sleep 10
+  sleep 10.minutes
 end
 
 class V7Migration
@@ -67,10 +67,32 @@ class V7Migration
 
     5. Migrate the contents of `config/application.yml` to `.env`. Ensure you
        have removed "quotation marks" and that all entries are `key=value` pairs.
+       See `example.env` for a properly formatted example.
 
-    6. (SECURITY CRITICAL) Migrate `mqtt/` folder to `docker_configs/` and
-       delete `mqtt/`
+    6. (SECURITY CRITICAL) delete `mqtt/`
   END
+end
+
+def hard_reset_api
+  sh "sudo docker stop $(sudo docker ps -a -q)"
+  sh "sudo docker rm $(sudo docker ps -a -q)"
+  sh "sudo rm -rf docker_volumes/"
+rescue => exception
+  puts exception.message
+  puts "Reset failed. Was there nothing to destroy?"
+end
+
+def rebuild_deps
+  sh "sudo docker-compose run web bundle install"
+  sh "sudo docker-compose run web npm install"
+  sh "sudo docker-compose run web bundle exec rails db:setup"
+  sh "sudo docker-compose run web rake keys:generate"
+  sh "sudo docker-compose run web npm run build"
+end
+
+def user_typed?(word)
+  STDOUT.flush
+  STDIN.gets.chomp.downcase.include?(word.downcase)
 end
 
 namespace :api do
@@ -84,9 +106,30 @@ namespace :api do
   desc "Deprecated. Will be removed in December of 2018"
   task(:start) { puts V7Migration::BIG_WARNING }
 
+  desc "Run Rails _ONLY_. No Webpack."
+  task only: :environment do
+    sh "sudo docker-compose up --scale webpack=0"
+  end
+
+  desc "Run Webpack _ONLY_. No other services"
+  task webpack: :environment do
+    sh "sudo docker-compose run webpack npm run webpack"
+  end
+
   desc "Pull the latest Farmbot API version"
   task(update: :environment) { same_thing }
 
   desc "Pull the latest Farmbot API version"
   task(upgrade: :environment) { same_thing }
+
+  desc "Reset _everything_, including your database"
+  task :reset do
+    puts "This is going to destroy _ALL_ of your local Farmbot SQL data and "\
+         "configs. Type 'destroy' to continue, enter to abort."
+    if user_typed?("destroy")
+      hard_reset_api
+      puts "Done. Type 'build' to re-install dependencies, enter to abort."
+      rebuild_deps if user_typed?("build")
+    end
+  end
 end

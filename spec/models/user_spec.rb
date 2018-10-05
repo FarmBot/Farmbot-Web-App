@@ -1,10 +1,4 @@
 describe User do
-  it "lazily instantiates an admin user" do
-    admin = User.admin_user
-    expect(admin).to be_kind_of(User)
-    expect(admin.valid_password?(ENV["ADMIN_PASSWORD"])).to eq(true)
-  end
-
   describe "#new" do
     it "Creates a new user" do
       expect(User.new).to be_kind_of(User)

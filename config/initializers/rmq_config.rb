@@ -1,0 +1,2 @@
+
+RmqConfigWriter.render

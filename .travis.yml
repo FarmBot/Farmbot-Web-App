@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - 8.11.3
 cache:
-  yarn: true
+  # yarn: true
   directories:
    - /home/travis/.rvm/
    - /home/travis/bundle
@@ -25,7 +25,7 @@ before_install:
   - rvm install 2.5.1
   - rvm use 2.5.1
 install:
-  - yarn install
+  - npm install
   - bundle install --jobs=3 --retry=3 --path=/home/travis/bundle
 before_script:
 - cp config/database.travis.yml config/database.yml
