@@ -15,8 +15,9 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Install FarmBot Web App
+# ⚠ SKIP THIS STEP IF UPGRADING!
 git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10 --branch=master
-cd Farmbot-Web-App
+cd Farmbot-Web-App  # ⚠ SKIP THIS STEP IF UPGRADING!
 
 # == This is a very important step!!! ==
 #
@@ -26,8 +27,8 @@ cd Farmbot-Web-App
 
 snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
 # READ NOTE ABOVE. Very important!
-cp example.env .env
-nano .env
+cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
+micro .env          # ⚠ SKIP THIS STEP IF UPGRADING!
 # ^ This is the most important step
 
 # Install application specific Ruby dependencies
@@ -37,7 +38,7 @@ sudo docker-compose run web npm install
 # Create a database in PostgreSQL
 sudo docker-compose run web bundle exec rails db:setup
 # Generate a set of *.pem files for data encryption
-sudo docker-compose run web rake keys:generate
+sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
 # Manually create the rabbitmq.conf file.
 # TODO: Improve this step -RC 1 Oct 18
 sudo docker-compose run web bundle exec rails r docker_configs/rabbitmq_config_builder.rb
