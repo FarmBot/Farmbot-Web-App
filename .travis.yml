@@ -1,39 +1,41 @@
-language: node_js
-node_js:
-- 8.11.3
-cache:
-  # yarn: true
-  directories:
-   - /home/travis/.rvm/
-   - /home/travis/bundle
 env:
   global:
-    - ADMIN_PASSWORD=not_a_real_password
-    - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-    - OS_UPDATE_SERVER=http://example.com
-    - FW_UPDATE_SERVER=http://example.com
-    - DB=postgresql
+    - ADMIN_PASSWORD=this_is_a_fake_admin_pass
+    - POSTGRES_PASSWORD=fake_db_password_also
+    - API_HOST=10.1.10.219
+    - MQTT_HOST=10.1.10.219
+    - API_PORT=3000
+    - # These are fake, also, don't worry.
+    - DEVISE_SECRET=9542adda400ea2d10644d09006b098ce3d245d72740c442f6c37116a3cea2c2e8cbde7a7e451e9c4d3b1db826f4a4991bfd8ba50a8b313704bca89289615cd3f
+    - SECRET_KEY_BASE=9390020153a289e9b7349b77864dd765d6e88a8fdd23727085ea82609992133152f2cb437db2abae15a61af79087bd37e3fb3a4470107effde0791a0acec27cc
     - COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
-  matrix:
-    # Production like setup
-    - MQTT_HOST=example.com
-    # Self hosted like setup
-    - MQTT_HOST=127.0.0.1
-      API_HOST=127.0.0.1
-      NO_EMAILS=TRUE
+  # matrix: # Removing this temporarily until compose stuff is stable - RC
+  #   # Production like setup
+  #   - MQTT_HOST=example.com
+  #   # Self hosted like setup
+  #   - MQTT_HOST=127.0.0.1
+  #     API_HOST=127.0.0.1
+  #     NO_EMAILS=TRUE
 before_install:
-  - rvm install 2.5.1
-  - rvm use 2.5.1
+  - sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
+  - sudo apt-get update --yes
+  - sudo apt-get install docker-ce --yes
+  - sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - sudo chmod +x /usr/local/bin/docker-compose
 install:
-  - npm install
-  - bundle install --jobs=3 --retry=3 --path=/home/travis/bundle
-before_script:
-- cp config/database.travis.yml config/database.yml
-- bundle exec rake db:create db:migrate
+  - sudo docker-compose run web bundle install
+  - sudo docker-compose run web npm install
+  - sudo docker-compose run web bundle exec rails db:setup
+  - sudo docker-compose run web rake keys:generate
+  - sudo docker-compose run web npm run build
 script:
-- bundle exec rspec --fail-fast=3
-- npm run tslint
-- npm run sass-lint
-- npm run typecheck
-- npm run test-slow
-- npm run coverage
+  - sudo docker-compose run web npm run tslint
+  - sudo docker-compose run web npm run sass-lint
+  - sudo docker-compose run web npm run typecheck
+  - sudo docker-compose run web npm run test-slow
+  - sudo docker-compose run web npm run coverage
+  - sudo docker-compose run web npm run rspec spec
+  - sudo docker-compose run web npm run test-slow
+  - sudo docker-compose run web npm run coverage

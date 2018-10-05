@@ -1,0 +1,46 @@
+env_we_need:
+
+install_docker: &install_docker
+  - run:
+      name: Install Docker Deps
+      command: |
+        sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
+        sudo apt-get update --yes
+        sudo apt-get install docker-ce --yes
+        sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
+bootstrap_project: &bootstrap_project
+  - run:
+      name: Bootstrap project (bundler, npm, database, etc..)
+      command: |
+        sudo docker-compose run web bundle install
+        sudo docker-compose run web npm install
+        sudo docker-compose run web bundle exec rails db:setup
+        sudo docker-compose run web rake keys:generate
+        sudo docker-compose run web npm run build
+
+run_linters: &run_linters
+  - run:
+      name: Make sure type checks and linting pass before wasting time on tests
+      command: |
+        sudo docker-compose run web npm run tslint
+        sudo docker-compose run web npm run sass-lint
+        sudo docker-compose run web npm run typecheck
+        sudo docker-compose run web npm run test-slow
+        sudo docker-compose run web npm run coverage
+
+run_tests: &run_tests
+  - run:
+      name: Make sure type checks and linting pass before wasting time on tests
+      command: |
+        sudo docker-compose run web npm run tslint
+        sudo docker-compose run web npm run sass-lint
+        sudo docker-compose run web npm run typecheck
+        sudo docker-compose run web npm run test-slow
+        sudo docker-compose run web npm run coverage
+        sudo docker-compose run web npm run rspec spec
+        sudo docker-compose run web npm run test-slow
+        sudo docker-compose run web npm run coverage
