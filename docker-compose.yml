@@ -50,6 +50,7 @@ services:
     <<: *rails
     depends_on: ["db","mqtt"]
     command: bundle exec rake jobs:work
+    restart: "always"
   log_digests: # ====================
     <<: *rails
     <<: *db_user

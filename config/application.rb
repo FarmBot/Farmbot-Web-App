@@ -17,7 +17,7 @@ module FarmBot
     config.active_job.queue_adapter    = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
-    LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
+    LOCAL_API_HOST = ENV.fetch("API_HOST", "webpack")
     WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.webpack.dev_server.host          = proc { request.host }
     # PROBLEM:  Containers run in docker. Default dev_server.manifest_host is
@@ -26,7 +26,7 @@ module FarmBot
     # SOLUTION: Explicitly set the hostname of the container where Webpack runs.
     #           In our case, that's `webpack`. See docker-compose.yml for all
     #           hostnames. -RC 1 OCT 18
-    config.webpack.dev_server.manifest_host = "webpack"
+    config.webpack.dev_server.manifest_host = LOCAL_API_HOST
     config.webpack.dev_server.manifest_port = 3808
     config.generators do |g|
       g.template_engine :erb
