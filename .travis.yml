@@ -29,6 +29,7 @@ install:
   - sudo mv docker-compose /usr/local/bin
   - docker-compose -v
   - docker -v
+  - touch .env
 before_script:
   - sudo docker-compose run web bundle install
   - sudo docker-compose run web npm install
