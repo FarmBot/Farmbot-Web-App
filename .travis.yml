@@ -24,6 +24,6 @@ script:
   - sudo docker-compose run web npm run tslint
   - sudo docker-compose run web npm run sass-lint
   - sudo docker-compose run web npm run typecheck
-  - sudo docker-compose run web npm run rspec spec
+  - sudo docker-compose run web rspec spec
   - sudo docker-compose run web npm run test-slow
   - sudo docker-compose run web npm run coverage
