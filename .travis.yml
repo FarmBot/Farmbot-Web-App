@@ -1,3 +1,5 @@
+sudo: required
+dist: bionic
 env:
   global:
     - ADMIN_PASSWORD=this_is_a_fake_admin_pass
