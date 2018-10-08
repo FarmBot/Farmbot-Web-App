@@ -1,0 +1,23 @@
+version: 2
+executorType: machine
+stages:
+  build:
+    parallel: 6
+    workdir: /home/circleci/project
+    environment:
+      - FOO: "bar"
+    steps:
+      - type: checkout
+      - type: shell
+        command:
+          - run: curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+          - run: chmod +x docker-compose
+          - run: sudo mv docker-compose /usr/local/bin
+          - run: mv travis.env .env
+          - run: sudo docker-compose run web bundle install
+          - run: sudo docker-compose run web npm install
+          - run: sudo docker-compose run web bundle exec rails db:setup
+          - run: sudo docker-compose run web rake keys:generate
+          - run: sudo docker-compose run web rspec spec
+          - run: sudo docker-compose run webpack sh run_js_build.sh
+

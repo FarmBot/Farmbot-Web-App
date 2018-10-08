@@ -8,13 +8,12 @@
 sudo:     required
 env:
   global:
-    - DOCKER_COMPOSE_VERSION=1.22.0
+    - DOCKER_COMPOSE_VERSION=
 install:
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - mv travis.env .env
-before_script:
   - sudo docker-compose run web bundle install
   - sudo docker-compose run web npm install
   - sudo docker-compose run web bundle exec rails db:setup
