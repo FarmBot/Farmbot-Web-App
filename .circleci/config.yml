@@ -1,6 +1,8 @@
 version: 2
+# executor: "machine"
 jobs:
   build:
+    executor: "machine"
     steps:
       - checkout
       - run:
