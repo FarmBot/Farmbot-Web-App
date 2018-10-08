@@ -1,6 +1,6 @@
 version: 2
 executorType: machine
-stages:
+jobs:
   build:
     # parallel: 6
     # workdir: /home/circleci/project
