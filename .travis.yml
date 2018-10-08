@@ -20,9 +20,5 @@ before_script:
   - sudo docker-compose run web bundle exec rails db:setup
   - sudo docker-compose run web rake keys:generate
 script:
-  - sudo docker-compose run webpack npm run tslint
-  - sudo docker-compose run webpack npm run sass-lint
-  - sudo docker-compose run webpack npm run typecheck
   - sudo docker-compose run web rspec spec
-  - sudo docker-compose run webpack npm run test-slow
-  - sudo docker-compose run webpack npm run coverage
+  - sudo docker-compose run webpack sh run_js_build.sh
