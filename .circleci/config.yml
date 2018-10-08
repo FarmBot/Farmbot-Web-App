@@ -22,4 +22,4 @@ jobs:
       - deploy:
           name: Build and push Docker image
           command: |
-            echo "🎉"
+            echo "Tada!"
