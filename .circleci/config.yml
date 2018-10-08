@@ -1,31 +1,25 @@
 version: 2
-executorType: machine
 jobs:
   build:
-    # parallel: 6
-    # workdir: /home/circleci/project
-    # environment:
-    #   - FOO: "bar"
     steps:
-      - type: checkout
-      - type: shell
-        command:
-          - run: curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-          - run: chmod +x docker-compose
-          - run: sudo mv docker-compose /usr/local/bin
-          - run: mv travis.env .env
-          - run: sudo docker-compose run web bundle install
-          - run: sudo docker-compose run web npm install
-          - run: sudo docker-compose run web bundle exec rails db:setup
-          - run: sudo docker-compose run web rake keys:generate
-  test:
-    steps:
-      - type: shell
-        command:
-          - run: sudo docker-compose run web rspec spec
-          - run: sudo docker-compose run webpack sh run_js_build.sh
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
+      - checkout
+      - run:
+          name: Do stuff - Part I
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+            chmod +x docker-compose
+            sudo mv docker-compose /usr/local/bin
+            mv travis.env .env
+            sudo docker-compose run web bundle install
+            sudo docker-compose run web npm install
+            sudo docker-compose run web bundle exec rails db:setup
+            sudo docker-compose run web rake keys:generate
+      - run:
+          name: Do stuff - Part II
+          command: |
+            sudo docker-compose run web rspec spec
+            sudo docker-compose run webpack sh run_js_build.sh
+      - deploy:
+          name: Build and push Docker image
+          command: |
+            echo "🎉"
