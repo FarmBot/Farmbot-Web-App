@@ -11,8 +11,7 @@ x-rails: &rails
 
 x-base_config: &base_config
   env_file: .env
-  restart: unless-stopped
-
+  # restart: unless-stopped
 services:
   redis:
     <<: *base_config
@@ -52,8 +51,11 @@ services:
      - ./docker_volumes/rabbit:/farmbot
   webpack:     # ====================
     <<: *base_config
-    <<: *rails
+    image: node:8.12.0-alpine
+    working_dir: /farmbot
     command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+    volumes:
+      - .:/farmbot
     ports: ["3808:3808"] # Webpack Dev Server
   delayed_job: # ====================
     <<: *base_config

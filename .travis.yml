@@ -19,7 +19,6 @@ before_script:
   - sudo docker-compose run web npm install
   - sudo docker-compose run web bundle exec rails db:setup
   - sudo docker-compose run web rake keys:generate
-  # - sudo docker-compose run web npm run build
 script:
   - sudo docker-compose run web npm run tslint
   - sudo docker-compose run web npm run sass-lint
