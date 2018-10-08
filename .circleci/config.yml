@@ -2,10 +2,10 @@ version: 2
 executorType: machine
 stages:
   build:
-    parallel: 6
-    workdir: /home/circleci/project
-    environment:
-      - FOO: "bar"
+    # parallel: 6
+    # workdir: /home/circleci/project
+    # environment:
+    #   - FOO: "bar"
     steps:
       - type: checkout
       - type: shell
@@ -18,6 +18,14 @@ stages:
           - run: sudo docker-compose run web npm install
           - run: sudo docker-compose run web bundle exec rails db:setup
           - run: sudo docker-compose run web rake keys:generate
+  test:
+    steps:
+      - type: shell
+        command:
           - run: sudo docker-compose run web rspec spec
           - run: sudo docker-compose run webpack sh run_js_build.sh
-
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
