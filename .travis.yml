@@ -1,39 +1,24 @@
-language: node_js
-node_js:
-- 8.11.3
-cache:
-  # yarn: true
-  directories:
-   - /home/travis/.rvm/
-   - /home/travis/bundle
+# matrix: # Removing this temporarily until compose stuff is stable - RC
+#   # Production like setup
+#   - MQTT_HOST=example.com
+#   # Self hosted like setup
+#   - MQTT_HOST=127.0.0.1
+#     API_HOST=127.0.0.1
+#     NO_EMAILS=TRUE
+sudo:     required
 env:
   global:
-    - ADMIN_PASSWORD=not_a_real_password
-    - SECRET_TOKEN=e815982094c62436066bafc9151f2d33c4a351a776654cb7487476de260a4592
-    - OS_UPDATE_SERVER=http://example.com
-    - FW_UPDATE_SERVER=http://example.com
-    - DB=postgresql
-    - COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG
-  matrix:
-    # Production like setup
-    - MQTT_HOST=example.com
-    # Self hosted like setup
-    - MQTT_HOST=127.0.0.1
-      API_HOST=127.0.0.1
-      NO_EMAILS=TRUE
-before_install:
-  - rvm install 2.5.1
-  - rvm use 2.5.1
+    - DOCKER_COMPOSE_VERSION=1.22.0
 install:
-  - npm install
-  - bundle install --jobs=3 --retry=3 --path=/home/travis/bundle
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - mv travis.env .env
 before_script:
-- cp config/database.travis.yml config/database.yml
-- bundle exec rake db:create db:migrate
+  - sudo docker-compose run web bundle install
+  - sudo docker-compose run web npm install
+  - sudo docker-compose run web bundle exec rails db:setup
+  - sudo docker-compose run web rake keys:generate
 script:
-- bundle exec rspec --fail-fast=3
-- npm run tslint
-- npm run sass-lint
-- npm run typecheck
-- npm run test-slow
-- npm run coverage
+  - sudo docker-compose run web rspec spec
+  - sudo docker-compose run webpack sh run_js_build.sh

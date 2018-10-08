@@ -3,7 +3,7 @@ ruby "2.5.1"
 
 gem "active_model_serializers"
 gem "bunny"
-gem "delayed_job_active_record"
+gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
 gem "delayed_job"
 gem "devise"
 gem "discard"
@@ -31,7 +31,7 @@ gem "webpack-rails"
 # Still working out the bugs. - RC 5 Jul 18
 gem "rabbitmq_http_api_client"
 gem "zero_downtime_migrations"
-# gem "digest-murmurhash"
+gem "redis", "~> 4.0"
 
 group :development, :test do
   gem "thin"
