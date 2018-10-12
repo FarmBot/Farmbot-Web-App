@@ -64,6 +64,7 @@ describe("<App />: Loading", () => {
   it("MUST_LOADs not loaded", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("Loading...");
+    wrapper.unmount();
   });
 
   it("MUST_LOADs partially loaded", () => {
@@ -71,6 +72,7 @@ describe("<App />: Loading", () => {
     p.loaded = ["Sequence"];
     const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).toContain("Loading...");
+    wrapper.unmount();
   });
 
   it("MUST_LOADs loaded", () => {
@@ -78,6 +80,7 @@ describe("<App />: Loading", () => {
     p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
     const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).not.toContain("Loading...");
+    wrapper.unmount();
   });
 });
 
@@ -86,10 +89,12 @@ describe("<App />: NavBar", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text())
       .toContain("Farm DesignerControlsDeviceSequencesRegimensToolsFarmware");
+    wrapper.unmount();
   });
 
   it("displays ticker", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("No logs yet.");
+    wrapper.unmount();
   });
 });
