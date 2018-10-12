@@ -14,7 +14,7 @@
     "start": "echo 'use `sudo docker-compose up` instead.'",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js",
-    "test-slow": "jest --runInBand --coverage --ci",
+    "test-slow": "jest --coverage --ci --maxWorkers=6",
     "test": "jest --no-coverage --cache -w 5",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
     "tslint": "./node_modules/tslint/bin/tslint --project .",
