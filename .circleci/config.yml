@@ -1,0 +1,27 @@
+version: 2
+# executor: "machine"
+jobs:
+  build:
+    executor: "machine"
+    steps:
+      - checkout
+      - run:
+          name: Setup the database and (fake) secrets
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+            chmod +x docker-compose
+            sudo mv docker-compose /usr/local/bin
+            mv .circleci/circle_envs .env
+            sudo docker-compose run web bundle install
+            sudo docker-compose run web npm install
+            sudo docker-compose run web bundle exec rails db:setup
+            sudo docker-compose run web rake keys:generate
+      - run:
+          name: Run Rails and JS tests
+          command: |
+            sudo docker-compose run web     rspec spec
+            sudo docker-compose run webpack npm run tslint
+            sudo docker-compose run webpack npm run sass-lint
+            sudo docker-compose run webpack npm run typecheck
+            sudo docker-compose run webpack npm run test-slow
+            sudo docker-compose run webpack npm run coverage

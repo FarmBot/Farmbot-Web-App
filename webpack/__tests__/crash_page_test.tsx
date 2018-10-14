@@ -31,5 +31,7 @@ describe("<CrashPage/>", () => {
     jest.resetAllMocks();
     el.find("a").first().simulate("click");
     expect(Session.clear).toHaveBeenCalled();
+    el.unmount();
+
   });
 });
