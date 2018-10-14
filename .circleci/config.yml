@@ -11,7 +11,7 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
             chmod +x docker-compose
             sudo mv docker-compose /usr/local/bin
-            mv travis.env .env
+            mv .cricleci/circle.env .env
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
             sudo docker-compose run web bundle exec rails db:setup
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Run Rails and JS tests
           command: |
-            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web rspec spec
+            sudo docker-compose run web rspec spec
             sudo docker-compose run webpack sh run_js_build.sh
       - deploy:
           name: Build and push Docker image

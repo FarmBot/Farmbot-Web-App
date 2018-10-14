@@ -27,10 +27,10 @@ cd Farmbot-Web-App
 # == Nothing will work if you skip this step!!! ==
 
 snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
-# READ NOTE ABOVE. Very important!
 cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
 micro .env          # ⚠ SKIP THIS STEP IF UPGRADING!
 # ^ This is the most important step
+# READ NOTE ABOVE. Very important!
 
 # Install application specific Ruby dependencies
 sudo docker-compose run web bundle install
