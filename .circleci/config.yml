@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Do stuff - Part II
           command: |
-            sudo docker-compose run web rspec spec
+            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web rspec spec
             sudo docker-compose run webpack sh run_js_build.sh
       - deploy:
           name: Build and push Docker image
