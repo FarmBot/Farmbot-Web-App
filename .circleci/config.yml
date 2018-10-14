@@ -11,7 +11,7 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
             chmod +x docker-compose
             sudo mv docker-compose /usr/local/bin
-            mv .cricleci/circle.env .env
+            mv .circleci/circle_envs .env
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
             sudo docker-compose run web bundle exec rails db:setup
