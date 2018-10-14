@@ -7,6 +7,7 @@ describe Devices::Dump do
   NOPE        = "Expected value[%s] to equal %s. Got %s instead"
 
   it "serializes _all_ the data", :slow do
+    Rails.cache.clear
     device    = FactoryBot.create(:device)
     resources = MODEL_NAMES
                   .map { |x| x.to_s.singularize.to_sym }
@@ -47,7 +48,7 @@ describe Devices::Dump do
     expect(results[:export_created_at]).to be
     export_time = Time.parse(results[:export_created_at])
     today       = Time.now
-    expect(today - export_time).to be < 1
+    expect(today - export_time.round).to be < 1
     expect(results[:database_schema])
       .to eq(ActiveRecord::Migrator.current_version)
     expect(results[:server_url]).to eq($API_URL)

@@ -1,3 +1,4 @@
+jest.resetAllMocks();
 jest.mock("farmbot-toastr", () => ({
   fun: jest.fn(),
   init: jest.fn(),

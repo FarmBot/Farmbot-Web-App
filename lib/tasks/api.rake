@@ -111,11 +111,6 @@ namespace :api do
     sh "sudo docker-compose up --scale webpack=0"
   end
 
-  desc "Run Webpack _ONLY_. No other services"
-  task webpack: :environment do
-    sh "sudo docker-compose run webpack npm run webpack"
-  end
-
   desc "Pull the latest Farmbot API version"
   task(update: :environment) { same_thing }
 

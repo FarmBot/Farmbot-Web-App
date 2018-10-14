@@ -14,7 +14,7 @@
     "start": "echo 'use `sudo docker-compose up` instead.'",
     "heroku-postbuild": "webpack --config=./config/webpack.prod.js",
     "webpack": "./node_modules/.bin/webpack-dev-server --config config/webpack.dev.js",
-    "test-slow": "jest --coverage --no-cache -w 4",
+    "test-slow": "jest --coverage --ci --maxWorkers=6",
     "test": "jest --no-coverage --cache -w 5",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
     "tslint": "./node_modules/tslint/bin/tslint --project .",
@@ -29,8 +29,8 @@
     "webpack-dev-server": "3.1.9"
   },
   "dependencies": {
-    "@blueprintjs/core": "^3.6.1",
-    "@blueprintjs/datetime": "^3.2.0",
+    "@blueprintjs/core": "^3.7.0",
+    "@blueprintjs/datetime": "^3.3.0",
     "@blueprintjs/select": "^3.2.0",
     "@types/enzyme": "3.1.14",
     "@types/fastclick": "^1.0.28",
@@ -51,7 +51,7 @@
     "css-loader": "1.0.0",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.6.0",
-    "farmbot": "^6.5.2",
+    "farmbot": "6.5.2",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "2.0.0",
@@ -94,7 +94,7 @@
     "which": "1.3.1"
   },
   "devDependencies": {
-    "webpack-cli": "3.1.1"
+    "webpack-cli": "^3.1.2"
   },
   "jest": {
     "clearMocks": true,

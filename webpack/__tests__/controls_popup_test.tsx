@@ -29,6 +29,8 @@ describe("<ControlsPopup />", () => {
   p.axisInversion.x = true;
   const wrapper = mount(<ControlsPopup {...p} />);
 
+  afterAll(wrapper.unmount);
+
   it("Has a false initial state", () => {
     expect(wrapper.state("isOpen")).toBeFalsy();
   });

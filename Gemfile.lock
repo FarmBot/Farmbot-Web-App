@@ -262,6 +262,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rake (12.3.1)
+    redis (4.0.2)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
@@ -389,6 +390,7 @@ DEPENDENCIES
   rails
   rails-erd
   rails_12factor
+  redis (~> 4.0)
   request_store
   rollbar
   rspec

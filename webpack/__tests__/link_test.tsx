@@ -38,5 +38,6 @@ describe("<Link/>", () => {
     function Child(_: unknown) { return <p>Hey!</p>; }
     const el = shallow(<Link to="/wherever"><Child /></Link>);
     expect(el.html()).toContain("Hey!");
+    el.unmount();
   });
 });
