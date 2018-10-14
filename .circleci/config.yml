@@ -21,7 +21,3 @@ jobs:
           command: |
             sudo docker-compose run web rspec spec
             sudo docker-compose run webpack sh run_js_build.sh
-      - deploy:
-          name: Build and push Docker image
-          command: |
-            echo "Tada!"
