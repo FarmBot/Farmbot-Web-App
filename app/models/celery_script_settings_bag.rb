@@ -17,7 +17,7 @@ module CeleryScriptSettingsBag
 
   # List of all celery script nodes that can be used as a varaible...
   ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
-  PLANT_STAGES          = %w(planned planted harvested)
+  PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
                              sync check_updates power_off reboot toggle_pin
