@@ -60,6 +60,8 @@ describe("<FarmDesigner/>", () => {
       },
       tzOffset: 0,
       getConfigValue: jest.fn(),
+      sensorReadings: [],
+      sensors: [],
     };
   }
 
