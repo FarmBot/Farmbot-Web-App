@@ -376,7 +376,7 @@ CREATE TABLE public.fbos_configs (
     sequence_init_log boolean DEFAULT false,
     network_not_found_timer integer,
     firmware_hardware character varying DEFAULT 'arduino'::character varying,
-    api_migrated boolean DEFAULT false,
+    api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false
 );
@@ -499,7 +499,7 @@ CREATE TABLE public.firmware_configs (
     pin_guard_5_active_state integer DEFAULT 1,
     pin_guard_5_pin_nr integer DEFAULT 0,
     pin_guard_5_time_out integer DEFAULT 60,
-    api_migrated boolean DEFAULT false,
+    api_migrated boolean DEFAULT true,
     movement_invert_2_endpoints_x integer DEFAULT 0,
     movement_invert_2_endpoints_y integer DEFAULT 0,
     movement_invert_2_endpoints_z integer DEFAULT 0
@@ -2389,6 +2389,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180829211322'),
 ('20180910143055'),
 ('20180920194120'),
-('20180926161918');
+('20180925203846'),
+('20180926161918'),
+('20181014231010');
 
 
