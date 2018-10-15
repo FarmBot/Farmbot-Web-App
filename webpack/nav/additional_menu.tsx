@@ -10,6 +10,11 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       <i className="fa fa-cog"></i>
       {t("Account Settings")}
     </Link>
+    {localStorage.getItem("FUTURE_FEATURES") &&
+      <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-question-circle"></i>
+        {t("Help")}
+      </Link>}
     <div>
       <a href={docLink("the-farmbot-web-app")}
         target="_blank">

@@ -101,6 +101,12 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
+    $: "/help",
+    getModule: () => import("./help/help"),
+    key: "Help",
+  }),
+  route({
+    children: false,
     $: "/controls",
     getModule: () => import("./controls/controls"),
     key: "Controls",

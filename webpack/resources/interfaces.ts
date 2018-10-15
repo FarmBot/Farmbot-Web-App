@@ -11,6 +11,7 @@ import {
 } from "farmbot";
 import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
+import { HelpState } from "../help/reducer";
 
 type UUID = string;
 
@@ -30,6 +31,7 @@ export interface RestResources {
     regimens: RegimenState;
     farm_designer: DesignerState;
     farmware: FarmwareState;
+    help: HelpState;
   }
 }
 

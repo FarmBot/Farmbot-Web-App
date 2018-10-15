@@ -15,6 +15,7 @@ describe("NavBar", () => {
     user: taggedUser,
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
+    tour: undefined,
   });
 
   it("has correct parent classname", () => {

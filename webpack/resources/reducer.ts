@@ -32,6 +32,10 @@ import {
   farmwareReducer as farmware,
   farmwareState
 } from "../farmware/reducer";
+import {
+  helpReducer as help,
+  initialState as helpState
+} from "../help/reducer";
 import { Actions } from "../constants";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 import { GeneralizedError } from "./actions";
@@ -44,7 +48,8 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   regimens,
   sequences,
   farm_designer,
-  farmware
+  farmware,
+  help
 } as any); // tslint:disable-line
 
 export function emptyState(): RestResources {
@@ -53,7 +58,8 @@ export function emptyState(): RestResources {
       sequences: sequenceState,
       regimens: regimenState,
       farm_designer: designerState,
-      farmware: farmwareState
+      farmware: farmwareState,
+      help: helpState,
     },
     loaded: [],
     index: {
@@ -97,7 +103,8 @@ const afterEach = (state: RestResources, a: ReduxAction<object>) => {
     sequences: state.consumers.sequences,
     regimens: state.consumers.regimens,
     farm_designer: state.consumers.farm_designer,
-    farmware: state.consumers.farmware
+    farmware: state.consumers.farmware,
+    help: state.consumers.help,
   }, a);
   return state;
 };
