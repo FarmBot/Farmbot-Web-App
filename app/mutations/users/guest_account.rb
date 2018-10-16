@@ -5,8 +5,8 @@ module Users
 
     def run
       # First pass, most important resources ===
-      create_users
-      create_device
+      create_user
+      update_device
 
       # Second pass, stuff that's not very relational ===
       create_fbos_config
@@ -29,29 +29,26 @@ module Users
 
 private
 
-    def create_tools
-      binding.pry
-      SEED_DATA[:device]
-    end
-
-    def create_device
-      binding.pry
-      SEED_DATA[:device]
+    def update_device
+      @device = @user.device
+      @device.update_attributes!(SEED_DATA[:device])
     end
 
     def create_fbos_config
-      binding.pry
-      SEED_DATA[:fbos_config]
+      @device.fbos_config.update_attributes!(SEED_DATA[:fbos_config])
     end
 
     def create_firmware_config
-      binding.pry
-      SEED_DATA[:firmware_config]
+      @device.firmware_config.update_attributes!(SEED_DATA[:firmware_config])
     end
 
     def create_web_app_config
+      @device.web_app_config.update_attributes!(SEED_DATA[:web_app_config])
+    end
+
+    def create_tools
       binding.pry
-      SEED_DATA[:web_app_config]
+      SEED_DATA[:device]
     end
 
     def create_points
@@ -99,15 +96,15 @@ private
       SEED_DATA[:sequences]
     end
 
-    def create_users
-      serial   = (User.last.try(:id) || 0) + 2
+    def create_user
       password = SecureRandom.alphanumeric(10)
-      params   = SEED_DATA[:user].merge(email: "guest#{serial}@farmbot.io",
+      email    = "guest#{(User.last.try(:id) || 0) + 2}@farmbot.io"
+      params   = SEED_DATA[:user].merge(email: email,
                                         password:              password,
                                         password_confirmation: password,
                                         agree_to_terms:        true)
-      @user    = Users::Create.run!(params)
-      binding.pry
+      Users::Create.run!(params)
+      @user    = User.find_by(email: email)
     end
 
     def create_webcam_feeds
