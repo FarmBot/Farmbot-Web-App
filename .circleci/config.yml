@@ -27,8 +27,6 @@ jobs:
             sudo docker-compose run webpack npm run tslint
             sudo docker-compose run webpack npm run sass-lint
             sudo docker-compose run webpack npm run typecheck
-            sudo docker-compose run webpack npm run test-slow
-            sudo docker-compose run webpack npm run coverage
       - run:
           name: Run Jest Tests
           command: |
