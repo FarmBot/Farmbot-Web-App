@@ -37,4 +37,4 @@ jobs:
           name: Run JS tests
           command: |
             sudo docker-compose run webpack npm run test-slow
-            sudo docker-compose run webpack npm run coverage
+            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG webpack npm run coverage
