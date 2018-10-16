@@ -62,8 +62,7 @@ private
     end
 
     def create_images
-      binding.pry
-      SEED_DATA[:images]
+      Images::Create.run!(SEED_DATA[:images].merge(device: @device))
     end
 
     def create_logs

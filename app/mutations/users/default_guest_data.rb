@@ -746,17 +746,14 @@
       calendar: []
     }
   ],
-  images: [
-    {
-      attachment_processed_at: "2018-10-15T18:16:16.798Z",
-      attachment_url: "https://farmbot-staging.storage.googleapis.com/images/attachments/000/003/425/x640/open-uri20181015-4-pt4ed4?1539627376",
-      meta: {
-        x: 500.0,
-        y: 500.0,
-        z: 0.0
-      }
+  images: {
+    attachment_url: $API_URL + "/guest_assets/guest_photo_1.jpeg",
+    meta: {
+      x: 500.0,
+      y: 500.0,
+      z: 0.0
     }
-  ],
+  },
   logs: [
     {
       message: "Configuring Farmbot.",
