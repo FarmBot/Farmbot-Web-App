@@ -14,7 +14,8 @@ jobs:
             mv .circleci/circle_envs .env
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
-            sudo docker-compose run web bundle exec rails db:migrate db:setup
+            sudo docker-compose run web bundle exec rails db:create:all
+            sudo docker-compose run web bundle exec rails db:migrate
             sudo docker-compose run web rake keys:generate
       - run:
           name: Run RSpec
