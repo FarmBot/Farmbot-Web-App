@@ -8,7 +8,7 @@
     "url": "https://github.com/farmbot/farmbot-web-frontend"
   },
   "scripts": {
-    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js --verbose",
     "clean": "rm -rf public/dist && rm -rf public/webpack",
     "build": "TARGET=production bundle exec rake webpack:compile",
     "start": "echo 'use `sudo docker-compose up` instead.'",
