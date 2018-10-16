@@ -6,20 +6,35 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup the database and (fake) secrets
+          name: Shuffle configs around, install Docker-Compose
           command: |
             curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
             chmod +x docker-compose
             sudo mv docker-compose /usr/local/bin
             mv .circleci/circle_envs .env
+      - run:
+          name: Install Ruby/JS deps
+          command: |
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
+      - run:
+          name: Create databases and secrets
+          command: |
             sudo docker-compose run web bundle exec rails db:create
             sudo docker-compose run web bundle exec rails db:migrate
             sudo docker-compose run web rake keys:generate
+      - run:
+          name: Run Ruby tests
+          command: |
             sudo docker-compose run web     rspec spec
+      - run:
+          name: Run linters
+          command: |
             sudo docker-compose run webpack npm run tslint
             sudo docker-compose run webpack npm run sass-lint
             sudo docker-compose run webpack npm run typecheck
+      - run:
+          name: Run JS tests
+          command: |
             sudo docker-compose run webpack npm run test-slow
             sudo docker-compose run webpack npm run coverage
