@@ -18,6 +18,7 @@ export interface NavBarProps {
   dispatch: Function;
   timeOffset: number;
   getConfigValue: GetWebAppConfigValue;
+  tour: string | undefined;
 }
 
 export interface NavBarState {

@@ -14,25 +14,12 @@ jobs:
             mv .circleci/circle_envs .env
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
-            sudo docker-compose run web bundle exec rails db:setup
+            sudo docker-compose run web bundle exec rails db:create
+            sudo docker-compose run web bundle exec rails db:migrate
             sudo docker-compose run web rake keys:generate
-      - run:
-          name: Run RSpec
-          command: |
             sudo docker-compose run web     rspec spec
-      - run:
-          name: Run Linters
-          command: |
             sudo docker-compose run webpack npm run tslint
             sudo docker-compose run webpack npm run sass-lint
             sudo docker-compose run webpack npm run typecheck
             sudo docker-compose run webpack npm run test-slow
-            sudo docker-compose run webpack npm run coverage
-      - run:
-          name: Run Jest Tests
-          command: |
-            sudo docker-compose run webpack npm run test-slow
-      - run:
-          name: Send Coverage Report
-          command: |
             sudo docker-compose run webpack npm run coverage

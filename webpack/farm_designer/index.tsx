@@ -63,6 +63,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
     show_images: this.initializeSetting(BooleanSetting.show_images, false),
+    show_sensor_readings: this.initializeSetting(BooleanSetting.show_sensor_readings, false),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
     zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue))
   };
@@ -106,6 +107,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       show_spread,
       show_farmbot,
       show_images,
+      show_sensor_readings,
       bot_origin_quadrant,
       zoom_level
     } = this.state;
@@ -144,6 +146,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showSpread={show_spread}
         showFarmbot={show_farmbot}
         showImages={show_images}
+        showSensorReadings={show_sensor_readings}
         dispatch={this.props.dispatch}
         tzOffset={this.props.tzOffset}
         getConfigValue={this.props.getConfigValue}
@@ -163,6 +166,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           showSpread={show_spread}
           showFarmbot={show_farmbot}
           showImages={show_images}
+          showSensorReadings={show_sensor_readings}
           selectedPlant={this.props.selectedPlant}
           crops={this.props.crops}
           dispatch={this.props.dispatch}
@@ -182,7 +186,10 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           eStopStatus={this.props.eStopStatus}
           latestImages={this.props.latestImages}
           cameraCalibrationData={this.props.cameraCalibrationData}
-          getConfigValue={this.props.getConfigValue} />
+          getConfigValue={this.props.getConfigValue}
+          sensorReadings={this.props.sensorReadings}
+          timeOffset={this.props.tzOffset}
+          sensors={this.props.sensors} />
       </div>
 
       {this.props.designer.openedSavedGarden &&

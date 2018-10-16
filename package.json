@@ -8,7 +8,7 @@
     "url": "https://github.com/farmbot/farmbot-web-frontend"
   },
   "scripts": {
-    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js --verbose",
     "clean": "rm -rf public/dist && rm -rf public/webpack",
     "build": "TARGET=production bundle exec rake webpack:compile",
     "start": "echo 'use `sudo docker-compose up` instead.'",
@@ -43,6 +43,7 @@
     "@types/react": "^16.4.16",
     "@types/react-color": "2.13.6",
     "@types/react-dom": "^16.0.9",
+    "@types/react-joyride": "^2.0.0",
     "@types/react-redux": "6.0.9",
     "axios": "^0.18.0",
     "boxed_value": "^1.0.0",
@@ -71,6 +72,7 @@
     "react-addons-test-utils": "^15.6.2",
     "react-color": "2.14.1",
     "react-dom": "16.5.2",
+    "react-joyride": "^2.0.0-15",
     "react-redux": "^5.0.6",
     "react-test-renderer": "16.5.2",
     "react-transition-group": "2.5.0",
