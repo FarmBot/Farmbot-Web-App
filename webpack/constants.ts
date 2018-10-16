@@ -317,6 +317,9 @@ export namespace ToolTips {
   // App
   export const LABS =
     trim(`Customize your web app experience.`);
+
+  export const TOURS =
+    trim(`Take a guided tour of the Web App.`);
 }
 
 export namespace Content {
@@ -591,6 +594,55 @@ export namespace Content {
     trim(`Not available when device is offline.`);
 }
 
+export namespace TourContent {
+  // Getting started
+  export const ADD_PLANTS =
+    trim(`Add plants by pressing the + button and searching for a plant,
+    selecting one, and dragging it into the garden.`);
+
+  export const ADD_TOOLS =
+    trim(`Press edit and then the + button to add tools.`);
+
+  export const ADD_TOOLS_SLOTS =
+    trim(`Add the newly created tools to the corresponding toolbay slots on
+    FarmBot: press edit and then + to create a toolbay slot.`);
+
+  export const ADD_PERIPHERALS =
+    trim(`Press edit and then the + button to add peripherals.`);
+
+  export const ADD_SEQUENCES =
+    trim(`Press the + button to add a new sequence. You will need
+    to create sequences to mount tools, move to the plant locations you
+    created in the Farm Designer, and seed/water them.`);
+
+  export const ADD_REGIMENS =
+    trim(`Press the + button and add your newly created sequences to a
+    regimen via the scheduler. The regimen should include all actions
+    needed to take care of a plant over its life.`);
+
+  export const ADD_FARM_EVENTS =
+    trim(`Add a farm event via the + button to schedule a sequence or
+    regimen in the calendar.`);
+
+  // Monitoring
+  export const LOCATION_GRID =
+    trim(`View FarmBot's current location using the axis position display.`);
+
+  export const VIRTUAL_FARMBOT =
+    trim(`Or view FarmBot's current location in the virtual garden.`);
+
+  export const LOGS_TABLE =
+    trim(`View recent log messages here. More detailed log messages can be
+    shown by adjusting filter settings.`);
+
+  export const PHOTOS =
+    trim(`View photos your FarmBot has taken here.`);
+
+  // Fun stuff
+  export const APP_SETTINGS =
+    trim(`Toggle various settings to customize your web app experience.`);
+}
+
 export enum Actions {
 
   // Resources
@@ -667,6 +719,9 @@ export enum Actions {
   SELECT_FARMWARE = "SELECT_FARMWARE",
   SELECT_IMAGE = "SELECT_IMAGE",
   FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
+
+  // App
+  START_TOUR = "START_TOUR",
 
   // Network
   NETWORK_EDGE_CHANGE = "NETWORK_EDGE_CHANGE",

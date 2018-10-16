@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Widget, WidgetHeader, FallbackImg } from "../../ui/index";
+import { Widget, WidgetHeader, FallbackImg, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
@@ -53,7 +53,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
     const title = flipper.current.name || t("Webcam Feeds");
     const msg = this.getMessage(flipper.current.url);
     const imageClass = msg.length > 0 ? "no-flipper-image-container" : "";
-    return <Widget>
+    return <Widget className="webcam-widget">
       <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
         <button
           className="fb-button gray"
@@ -62,7 +62,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
         </button>
         <IndexIndicator i={this.state.current} total={feeds.length} />
       </WidgetHeader>
-      <div className="widget-body">
+      <WidgetBody>
         <div className="image-flipper">
           <div className={imageClass}>
             <p>{msg}</p>
@@ -85,7 +85,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             {t("Next")}
           </button>
         </div>
-      </div>
+      </WidgetBody>
     </Widget>;
   }
 }

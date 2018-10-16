@@ -39,6 +39,7 @@ import { Bugs, showBugs } from "./easter_eggs/bugs";
 import { BooleanSetting } from "../../session_keys";
 import { savedGardenOpen } from "../saved_gardens/saved_gardens";
 import { unpackUUID } from "../../util";
+import { SensorReadingsLayer } from "./layers/sensor_readings_layer";
 
 /** Garden map interaction modes. */
 export enum Mode {
@@ -442,6 +443,12 @@ export class GardenMap extends
           <Grid
             onClick={closePlantInfo(this.props.dispatch)}
             mapTransformProps={mapTransformProps} />
+          <SensorReadingsLayer
+            visible={!!this.props.showSensorReadings}
+            sensorReadings={this.props.sensorReadings}
+            mapTransformProps={mapTransformProps}
+            timeOffset={this.props.timeOffset}
+            sensors={this.props.sensors} />
           <SpreadLayer
             mapTransformProps={mapTransformProps}
             plants={this.props.plants}

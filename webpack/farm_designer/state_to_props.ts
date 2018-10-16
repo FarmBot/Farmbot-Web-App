@@ -8,7 +8,9 @@ import {
   maybeGetTimeOffset,
   selectAllPeripherals,
   getFirmwareConfig,
-  selectAllPlantTemplates
+  selectAllPlantTemplates,
+  selectAllSensorReadings,
+  selectAllSensors
 } from "../resources/selectors";
 import * as _ from "lodash";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
@@ -84,6 +86,13 @@ export function mapStateToProps(props: Everything): Props {
     calibrationZ: user_env["CAMERA_CALIBRATION_camera_z"],
   };
 
+  const sensorReadings = _(selectAllSensorReadings(props.resources.index))
+    .sortBy(x => x.body.created_at)
+    .reverse()
+    .take(500)
+    .reverse()
+    .value();
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
@@ -102,5 +111,7 @@ export function mapStateToProps(props: Everything): Props {
     cameraCalibrationData,
     tzOffset: maybeGetTimeOffset(props.resources.index),
     getConfigValue,
+    sensorReadings,
+    sensors: selectAllSensors(props.resources.index),
   };
 }

@@ -97,6 +97,11 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
+    {localStorage.getItem("FUTURE_FEATURES") &&
+      <LayerToggle
+        value={props.showSensorReadings}
+        label={t("Readings?")}
+        onClick={toggle("show_sensor_readings")} />}
   </div>;
 };
 
