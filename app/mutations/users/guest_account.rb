@@ -71,13 +71,12 @@ private
     end
 
     def create_peripherals
-      binding.pry
       SEED_DATA[:peripherals]
     end
 
     def create_pin_bindings
-      binding.pry
       SEED_DATA[:pin_bindings]
+        .map { |x| PinBinding.create!(x.merge(device: @device)) }
     end
 
     def create_regimens
@@ -86,8 +85,7 @@ private
     end
 
     def create_sensors
-      binding.pry
-      SEED_DATA[:sensors]
+      SEED_DATA[:sensors].map{|x| Sensor.create!(x.merge(device: @device))}
     end
 
     def create_sequences
@@ -107,8 +105,7 @@ private
     end
 
     def create_webcam_feeds
-      binding.pry
-      SEED_DATA[:webcam_feeds]
+      WebcamFeed.create!(SEED_DATA[:webcam_feed].merge(device: @device))
     end
   end
 end

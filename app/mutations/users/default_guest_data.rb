@@ -747,7 +747,7 @@
     }
   ],
   images: {
-    attachment_url: $API_URL + "/guest_assets/guest_photo_1.jpeg",
+    attachment_url: "https://i.imgur.com/8pGjQtT.jpg",
     meta: {
       x: 500.0,
       y: 500.0,
@@ -902,19 +902,16 @@
       sequence_id: nil,
       special_action: "emergency_lock",
       pin_num: 16,
-      binding_type: "special"
     },
     {
       sequence_id: nil,
       special_action: "emergency_unlock",
       pin_num: 22,
-      binding_type: "special"
     },
     {
       sequence_id: nil,
       special_action: "take_photo",
       pin_num: 26,
-      binding_type: "special"
     }
   ],
   regimens: [
@@ -1944,10 +1941,8 @@
     }
   ],
   user: { name: "FarmBot", agree_to_terms: true },
-  webcam_feeds: [
-    {
+  webcam_feed: {
       url: "https://scontent-sjc3-1.cdninstagram.com/vp/beb0c90dbfcc5652b9b752c0ae62cec5/5C3FCF2D/t51.2885-15/sh0.08/e35/s640x640/41334547_333667650717095_8130819691118984488_n.jpg",
       name: "My FarmBot"
     }
-  ]
 }
