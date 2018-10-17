@@ -735,17 +735,10 @@
       pullout_direction: 1
     }
   ],
-  farm_events: [
-    {
-      start_time: "2018-10-16T00:00:00.000Z",
-      end_time: "2018-10-16T00:01:00.000Z",
+  farm_events: {
       repeat: 1,
       time_unit: "never",
-      executable_id: 205,
-      executable_type: "Regimen",
-      calendar: []
-    }
-  ],
+    },
   images: {
     attachment_url: "https://i.imgur.com/8pGjQtT.jpg",
     meta: {

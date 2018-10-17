@@ -17,14 +17,14 @@ module Users
       create_sensors
       create_webcam_feeds
       create_tools
+      create_points
+      create_logs
 
       # Third pass, relational stuff ===
-      create_points
-      create_farm_events
-      create_logs
       create_peripherals
-      create_regimens
       create_sequences
+      create_regimens
+      create_farm_events
     end
 
 private
@@ -46,32 +46,13 @@ private
       @device.web_app_config.update_attributes!(SEED_DATA[:web_app_config])
     end
 
-    def create_tools
-      binding.pry
-      SEED_DATA[:device]
-    end
-
-    def create_points
-      binding.pry
-      SEED_DATA[:points]
-    end
-
-    def create_farm_events
-      binding.pry
-      SEED_DATA[:farm_events]
-    end
-
     def create_images
       Images::Create.run!(SEED_DATA[:images].merge(device: @device))
     end
 
-    def create_logs
-      binding.pry
-      SEED_DATA[:logs]
-    end
-
     def create_peripherals
       SEED_DATA[:peripherals]
+        .map{|x| Peripheral.create!(x.merge(device: @device))}
     end
 
     def create_pin_bindings
@@ -79,18 +60,58 @@ private
         .map { |x| PinBinding.create!(x.merge(device: @device)) }
     end
 
+    def create_sensors
+      SEED_DATA[:sensors].map{|x| Sensor.create!(x.merge(device: @device))}
+    end
+
+    def create_webcam_feeds
+      WebcamFeed.create!(SEED_DATA[:webcam_feed].merge(device: @device))
+    end
+
+    def create_tools
+      # Stuffs gets wonky here.
+      # We need to create tools, sae their ID and then replace tool_id in other
+      # places later (eg: example sequence that uses tools)
+      @tool_mapping = SEED_DATA[:tools]
+        .map { |(id, name)| [id, Tool.create!(name: name, device: @device)] }
+        .reduce({}) { |acc, (id, tool)| acc.merge!(id => tool) }
+    end
+
+    def create_points
+      SEED_DATA[:points].map do |x|
+        if x.key?(:tool_id)
+          Point.create!(x.merge(device:  @device,
+                                tool_id: @tool_mapping.fetch(x[:tool_id]).id))
+        else
+          Point.create!(x.merge(device: @device))
+        end
+      end
+    end
+
+    def create_farm_events
+      binding.pry
+      SEED_DATA[:farm_events]
+    end
+
+    def create_logs
+      SEED_DATA[:logs].map { |x| Log.create!(x.merge(device: @device)) }
+    end
+
     def create_regimens
       binding.pry
       SEED_DATA[:regimens]
     end
 
-    def create_sensors
-      SEED_DATA[:sensors].map{|x| Sensor.create!(x.merge(device: @device))}
-    end
-
     def create_sequences
-      binding.pry
-      SEED_DATA[:sequences]
+      SEED_DATA[:sequences].map do |x|
+        CeleryScript::JSONClimber.climb(x) do |y|
+          args = y[:args]
+          if args.keys.include?(:tool_id)
+            args.update(tool_id: @tool_mapping.fetch(args.fetch(:tool_id)).id)
+          end
+        end
+      end
+      .map { |x| binding.pry }
     end
 
     def create_user
@@ -102,10 +123,6 @@ private
                                         agree_to_terms:        true)
       Users::Create.run!(params)
       @user    = User.find_by(email: email)
-    end
-
-    def create_webcam_feeds
-      WebcamFeed.create!(SEED_DATA[:webcam_feed].merge(device: @device))
     end
   end
 end
