@@ -28,7 +28,7 @@ export class Move extends React.Component<MoveProps, {}> {
   render() {
     const { location_data, informational_settings } = this.props.bot.hardware;
     const locationData = validBotLocationData(location_data);
-    return <Widget>
+    return <Widget className="move-widget">
       <WidgetHeader
         title={t("Move")}
         helpText={ToolTips.MOVE}>

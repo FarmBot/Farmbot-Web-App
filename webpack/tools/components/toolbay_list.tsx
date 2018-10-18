@@ -22,7 +22,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
   }
 
   render() {
-    return <Widget>
+    return <Widget className="toolbay-list">
       <WidgetHeader
         helpText={ToolTips.TOOLBAY_LIST}
         title={t("ToolBay ") + "1"}>

@@ -13,6 +13,7 @@ import { AdditionalMenu } from "./additional_menu";
 import { MobileMenu } from "./mobile_menu";
 import { Popover, Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
+import { RunTour } from "../help/tour";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -94,6 +95,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       bot={this.props.bot}
                       user={this.props.user} />
                     {this.syncButton()}
+                    <RunTour currentTour={this.props.tour} />
                   </div>
                 </div>
               </div>

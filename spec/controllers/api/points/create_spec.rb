@@ -26,16 +26,20 @@ describe Api::PointsController do
       time = (DateTime.now - 1.day).to_json
       p = { x: 23,
             y: 45,
-            name: "My Lettuce",
+            name: "Put me in a salad",
             pointer_type: "Plant",
-            openfarm_slug: "limestone-lettuce",
-            planted_at: time }
+            openfarm_slug: "mung-bean",
+            planted_at: time,
+            plant_stage: "sprouted"
+          }
       post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
-      expect(plant.x).to eq(p[:x])
-      expect(plant.y).to eq(p[:y])
-      expect(plant.name).to eq(p[:name])
+      expect(plant.x).to             eq(p[:x])
+      expect(plant.y).to             eq(p[:y])
+      expect(plant.name).to          eq(p[:name])
+      expect(plant.plant_stage).to   eq("sprouted")
+      expect(p[:plant_stage]).to     eq("sprouted")
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to be_truthy
       p.keys.each do |key|

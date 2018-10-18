@@ -31,6 +31,7 @@ const fakeProps = (): AppProps => {
     xySwap: false,
     animate: false,
     getConfigValue: jest.fn(),
+    tour: undefined,
   };
 };
 

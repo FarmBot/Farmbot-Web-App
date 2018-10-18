@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Widget, WidgetHeader } from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { t } from "i18next";
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
@@ -27,7 +27,7 @@ export function Edit(props: WebcamPanelProps) {
   const unsaved = props
     .feeds
     .filter(x => x.specialStatus === SpecialStatus.DIRTY);
-  return <Widget>
+  return <Widget className="webcam-widget">
     <WidgetHeader title="Edit" helpText={ToolTips.WEBCAM}>
       <button
         className="fb-button gray"
@@ -46,8 +46,8 @@ export function Edit(props: WebcamPanelProps) {
         <i className="fa fa-plus" />
       </button>
     </WidgetHeader>
-    <div className="widget-body">
+    <WidgetBody>
       {rows}
-    </div>
+    </WidgetBody>
   </Widget>;
 }
