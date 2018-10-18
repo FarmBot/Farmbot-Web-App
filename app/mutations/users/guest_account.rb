@@ -51,8 +51,14 @@ private
     end
 
     def create_peripherals
-      SEED_DATA[:peripherals]
-        .map{|x| Peripheral.create!(x.merge(device: @device))}
+      @peripheral_mapping = SEED_DATA[:peripherals]
+        .map do |(old_id, params)|
+          [old_id, Peripheral.create!(params.merge(device: @device))]
+        end
+        .reduce({}) do |acc, (id, per)|
+          acc[id] = per
+          acc
+        end
     end
 
     def create_pin_bindings
@@ -102,16 +108,51 @@ private
       SEED_DATA[:regimens]
     end
 
+    def the_spinach_id # It's the only edge case.
+      @the_spinach_id = @device.points.find_by(SEED_DATA[:points].first).id
+    end
+
+    # WARNING: This method has N+1s all over the place!!
+    #          Never let it run on the main thread!
     def create_sequences
-      SEED_DATA[:sequences].map do |x|
+      sequence_id_mapping = SEED_DATA[:sequences]
+        .to_a
+        .reduce({}) do |acc, (old_id, s)|
+          new_id = Sequences::Create.run!(name:   s.fetch(:name),
+                                          body:   [],
+                                          device: @device).fetch("id")
+          acc.merge!(old_id => new_id)
+        end
+
+      SEED_DATA[:sequences].map do |(id, x)|
         CeleryScript::JSONClimber.climb(x) do |y|
-          args = y[:args]
-          if args.keys.include?(:tool_id)
-            args.update(tool_id: @tool_mapping.fetch(args.fetch(:tool_id)).id)
+          args   = y[:args]
+          leaves = args.keys
+
+          if leaves.include?(:tool_id)
+            args.merge!(tool_id: @tool_mapping.fetch(args.fetch(:tool_id)).id)
+          end
+
+          if leaves.include?(:pin_id)
+            args.merge!(pin_id: @peripheral_mapping.fetch(args.fetch(:pin_id)).id)
+          end
+
+          if leaves.include?(:sequence_id)
+            args[:sequence_id] = sequence_id_mapping.fetch(args[:sequence_id])
+          end
+
+          if leaves.include?(:pointer_id)
+            args[:pointer_id] = the_spinach_id
           end
         end
+        [id, x]
       end
-      .map { |x| binding.pry }
+      .map do |(y,z)|
+        # This would not be needed if Sequences::Create returned a Sequence
+        # rather than a Hash. TODO: Fix this N+1 later.
+        s = Sequence.find(sequence_id_mapping.fetch(y))
+        Sequences::Update.run!(z.merge(sequence: s, device: @device))
+      end
     end
 
     def create_user
