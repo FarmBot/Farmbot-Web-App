@@ -104,8 +104,11 @@ private
     end
 
     def create_regimens
-      binding.pry
-      SEED_DATA[:regimens]
+      r = SEED_DATA[:regimen].deep_dup
+      r[:regimen_items].map do |x|
+        x.merge!(sequence_id: @sequence_id_mapping.fetch(x.fetch(:sequence_id)))
+      end
+      Regimens::Create.run!(r.merge(device: @device))
     end
 
     def the_spinach_id # It's the only edge case.

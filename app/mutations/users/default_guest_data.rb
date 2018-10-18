@@ -887,369 +887,81 @@
       pin_num: 26,
     }
   ],
-  regimens: [
-    {
+  regimen: {
       name: "Spinach Plant Care",
       color: "green",
-      in_use: true,
       regimen_items: [
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5994000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5907600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5821200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5734800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5648400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5562000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5475600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5389200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5302800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5216400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5130000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 5043600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4957200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4870800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4784400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4698000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4611600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4525200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 304800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4352400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4266000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4179600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4093200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 4006800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3920400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3834000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3747600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3661200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3574800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3488400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3402000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3315600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3229200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3142800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 3056400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2970000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2883600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2797200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2710800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2624400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2538000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2451600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2365200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2278800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2192400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2106000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 2019600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1933200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1846800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1760400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1674000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1587600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1501200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1414800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1328400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1242000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1155600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 1069200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 982800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 896400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 810000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 723600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 637200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 550800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 464400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 378000000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 291600000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 205200000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 118800000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3048,
-          time_offset: 32400000
-        },
-        {
-          regimen_id: 205,
-          sequence_id: 3043,
-          time_offset: 28800000
-        }
+        { sequence_id: -3048, time_offset: 5994000000 },
+        { sequence_id: -3048, time_offset: 5907600000 },
+        { sequence_id: -3048, time_offset: 5821200000 },
+        { sequence_id: -3048, time_offset: 5734800000 },
+        { sequence_id: -3048, time_offset: 5648400000 },
+        { sequence_id: -3048, time_offset: 5562000000 },
+        { sequence_id: -3048, time_offset: 5475600000 },
+        { sequence_id: -3048, time_offset: 5389200000 },
+        { sequence_id: -3048, time_offset: 5302800000 },
+        { sequence_id: -3048, time_offset: 5216400000 },
+        { sequence_id: -3048, time_offset: 5130000000 },
+        { sequence_id: -3048, time_offset: 5043600000 },
+        { sequence_id: -3048, time_offset: 4957200000 },
+        { sequence_id: -3048, time_offset: 4870800000 },
+        { sequence_id: -3048, time_offset: 4784400000 },
+        { sequence_id: -3048, time_offset: 4698000000 },
+        { sequence_id: -3048, time_offset: 4611600000 },
+        { sequence_id: -3048, time_offset: 4525200000 },
+        { sequence_id: -3048, time_offset: 4352400000 },
+        { sequence_id: -3048, time_offset: 4266000000 },
+        { sequence_id: -3048, time_offset: 4179600000 },
+        { sequence_id: -3048, time_offset: 4093200000 },
+        { sequence_id: -3048, time_offset: 4006800000 },
+        { sequence_id: -3048, time_offset: 3920400000 },
+        { sequence_id: -3048, time_offset: 3834000000 },
+        { sequence_id: -3048, time_offset: 3747600000 },
+        { sequence_id: -3048, time_offset: 3661200000 },
+        { sequence_id: -3048, time_offset: 3574800000 },
+        { sequence_id: -3048, time_offset: 3488400000 },
+        { sequence_id: -3048, time_offset: 3402000000 },
+        { sequence_id: -3048, time_offset: 3315600000 },
+        { sequence_id: -3048, time_offset: 3229200000 },
+        { sequence_id: -3048, time_offset: 3142800000 },
+        { sequence_id: -3048, time_offset: 3056400000 },
+        { sequence_id: -3048, time_offset: 2970000000 },
+        { sequence_id: -3048, time_offset: 2883600000 },
+        { sequence_id: -3048, time_offset: 2797200000 },
+        { sequence_id: -3048, time_offset: 2710800000 },
+        { sequence_id: -3048, time_offset: 2624400000 },
+        { sequence_id: -3048, time_offset: 2538000000 },
+        { sequence_id: -3048, time_offset: 2451600000 },
+        { sequence_id: -3048, time_offset: 2365200000 },
+        { sequence_id: -3048, time_offset: 2278800000 },
+        { sequence_id: -3048, time_offset: 2192400000 },
+        { sequence_id: -3048, time_offset: 2106000000 },
+        { sequence_id: -3048, time_offset: 2019600000 },
+        { sequence_id: -3048, time_offset: 1933200000 },
+        { sequence_id: -3048, time_offset: 1846800000 },
+        { sequence_id: -3048, time_offset: 1760400000 },
+        { sequence_id: -3048, time_offset: 1674000000 },
+        { sequence_id: -3048, time_offset: 1587600000 },
+        { sequence_id: -3048, time_offset: 1501200000 },
+        { sequence_id: -3048, time_offset: 1414800000 },
+        { sequence_id: -3048, time_offset: 1328400000 },
+        { sequence_id: -3048, time_offset: 1242000000 },
+        { sequence_id: -3048, time_offset: 1155600000 },
+        { sequence_id: -3048, time_offset: 1069200000 },
+        { sequence_id: -3048, time_offset: 982800000  },
+        { sequence_id: -3048, time_offset: 896400000  },
+        { sequence_id: -3048, time_offset: 810000000  },
+        { sequence_id: -3048, time_offset: 723600000  },
+        { sequence_id: -3048, time_offset: 637200000  },
+        { sequence_id: -3048, time_offset: 550800000  },
+        { sequence_id: -3048, time_offset: 464400000  },
+        { sequence_id: -3048, time_offset: 378000000  },
+        { sequence_id: -3048, time_offset: 291600000  },
+        { sequence_id: -3048, time_offset: 118800000  },
+        { sequence_id: -3048, time_offset: 32400000   },
+        { sequence_id: -3043, time_offset: 28800000   },
       ]
-    }
-  ],
+    },
   sensors: [
     {
       pin: 63,
