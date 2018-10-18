@@ -735,10 +735,10 @@
       pullout_direction: 1
     }
   ],
-  farm_events: {
+  farm_event: {
       repeat: 1,
       time_unit: "never",
-    },
+  },
   images: {
     attachment_url: "https://i.imgur.com/8pGjQtT.jpg",
     meta: {

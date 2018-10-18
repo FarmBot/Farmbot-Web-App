@@ -95,8 +95,11 @@ private
     end
 
     def create_farm_events
-      binding.pry
-      SEED_DATA[:farm_events]
+      r      = @device.regimens.last
+      params = SEED_DATA[:farm_event].merge(device:          @device,
+                                            executable_type: r.class.name,
+                                            executable_id:   r.id
+      FarmEvents::Create.run!(params)
     end
 
     def create_logs
