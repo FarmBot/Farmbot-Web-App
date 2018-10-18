@@ -3,7 +3,7 @@ module Users
     SEED_PATH = "./app/mutations/users/default_guest_data.rb"
     SEED_DATA = eval(File.read(SEED_PATH))
 
-    def run
+    def execute
       # First pass, most important resources ===
       create_user
       update_device
@@ -25,6 +25,7 @@ module Users
       create_sequences
       create_regimens
       create_farm_events
+      @device
     end
 
 private
@@ -98,7 +99,7 @@ private
       r      = @device.regimens.last
       params = SEED_DATA[:farm_event].merge(device:          @device,
                                             executable_type: r.class.name,
-                                            executable_id:   r.id
+                                            executable_id:   r.id)
       FarmEvents::Create.run!(params)
     end
 

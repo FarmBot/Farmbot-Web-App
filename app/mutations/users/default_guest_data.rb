@@ -740,7 +740,7 @@
       time_unit: "never",
   },
   images: {
-    attachment_url: "https://i.imgur.com/8pGjQtT.jpg",
+    attachment_url: "https://cdn.shopify.com/s/files/1/2040/0289/files/Soil.jpg?16907882993122390390",
     meta: {
       x: 500.0,
       y: 500.0,
@@ -986,7 +986,7 @@
   },
   user: { name: "FarmBot", agree_to_terms: true },
   webcam_feed: {
-      url: "https://scontent-sjc3-1.cdninstagram.com/vp/beb0c90dbfcc5652b9b752c0ae62cec5/5C3FCF2D/t51.2885-15/sh0.08/e35/s640x640/41334547_333667650717095_8130819691118984488_n.jpg",
+      url: "https://cdn.shopify.com/s/files/1/2040/0289/files/FarmBot.jpg?16907882993122390390",
       name: "My FarmBot"
     }
 }
