@@ -115,7 +115,7 @@ private
     # WARNING: This method has N+1s all over the place!!
     #          Never let it run on the main thread!
     def create_sequences
-      sequence_id_mapping = SEED_DATA[:sequences]
+      @sequence_id_mapping = SEED_DATA[:sequences]
         .to_a
         .reduce({}) do |acc, (old_id, s)|
           new_id = Sequences::Create.run!(name:   s.fetch(:name),
@@ -124,7 +124,8 @@ private
           acc.merge!(old_id => new_id)
         end
 
-      SEED_DATA[:sequences].map do |(id, x)|
+      SEED_DATA[:sequences].map do |(id, params)|
+        x = params.dup
         CeleryScript::JSONClimber.climb(x) do |y|
           args   = y[:args]
           leaves = args.keys
@@ -138,21 +139,19 @@ private
           end
 
           if leaves.include?(:sequence_id)
-            args[:sequence_id] = sequence_id_mapping.fetch(args[:sequence_id])
+            args[:sequence_id] = @sequence_id_mapping.fetch(args[:sequence_id])
           end
 
           if leaves.include?(:pointer_id)
             args[:pointer_id] = the_spinach_id
           end
-        end
-        [id, x]
-      end
-      .map do |(y,z)|
+
+        end #/climb
         # This would not be needed if Sequences::Create returned a Sequence
         # rather than a Hash. TODO: Fix this N+1 later.
-        s = Sequence.find(sequence_id_mapping.fetch(y))
-        Sequences::Update.run!(z.merge(sequence: s, device: @device))
-      end
+        s = Sequence.find(@sequence_id_mapping.fetch(id))
+        Sequences::Update.run!(x.merge(sequence: s, device: @device))
+      end #/SEED_DATA[:sequences].map
     end
 
     def create_user
