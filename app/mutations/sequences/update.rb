@@ -20,7 +20,7 @@ module Sequences
       # In the long term, the app benefits from the new storage mechanism
       # because it is easier to track sequence dependencies, migrate deprecated
       # sequences, and also to query for data inside of a sequence (nearly
-      # impossible under the old database schema.
+      # impossible under the old database schema).
       #
       # END HISTORICAL NOTE ================================================== ^
     end
