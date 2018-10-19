@@ -45,6 +45,7 @@ export interface AppProps {
   firmwareConfig: FirmwareConfig | undefined;
   animate: boolean;
   getConfigValue: GetWebAppConfigValue;
+  tour: string | undefined;
 }
 
 function mapStateToProps(props: Everything): AppProps {
@@ -66,6 +67,7 @@ function mapStateToProps(props: Everything): AppProps {
     firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index)),
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
     getConfigValue: webAppConfigValue,
+    tour: props.resources.consumers.help.currentTour,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -114,7 +116,8 @@ export class App extends React.Component<AppProps, {}> {
         bot={this.props.bot}
         dispatch={this.props.dispatch}
         logs={this.props.logs}
-        getConfigValue={this.props.getConfigValue} />
+        getConfigValue={this.props.getConfigValue}
+        tour={this.props.tour} />
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

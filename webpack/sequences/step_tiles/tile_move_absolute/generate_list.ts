@@ -1,7 +1,7 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
-  selectAllPoints,
-  selectAllToolSlotPointers
+  selectAllToolSlotPointers,
+  selectAllActivePoints
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
@@ -51,7 +51,7 @@ const HEADINGS: DropDownItem[] = [
 export function generateList(input: ResourceIndex,
   additionalItems: DropDownItem[]): DropDownItem[] {
   const SORT_KEY: keyof DropDownItem = "headingId";
-  const points = selectAllPoints(input)
+  const points = selectAllActivePoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
   const toolDDI: DropDownItem[] = activeTools(input)
     .map(tool => formatTools(tool));

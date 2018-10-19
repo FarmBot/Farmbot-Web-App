@@ -7,6 +7,8 @@ import {
   TaggedRegimen,
   TaggedGenericPointer,
   TaggedImage,
+  TaggedSensorReading,
+  TaggedSensor,
 } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
@@ -16,7 +18,9 @@ import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
 import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { ExecutableType, PlantPointer } from "farmbot/dist/resources/api_resources";
+import {
+  ExecutableType, PlantPointer
+} from "farmbot/dist/resources/api_resources";
 
 /* BotOriginQuadrant diagram
 
@@ -42,6 +46,7 @@ export interface State extends TypeCheckerHint {
   show_spread: boolean;
   show_farmbot: boolean;
   show_images: boolean;
+  show_sensor_readings: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
 }
@@ -64,6 +69,8 @@ export interface Props {
   cameraCalibrationData: CameraCalibrationData;
   tzOffset: number;
   getConfigValue: GetWebAppConfigValue;
+  sensorReadings: TaggedSensorReading[];
+  sensors: TaggedSensor[];
 }
 
 export interface MovePlantProps {
@@ -148,8 +155,6 @@ export interface FarmEventProps {
   timezoneIsSet: boolean;
   /** Sorted list of the first (100?) events due on the calendar. */
   calendarRows: CalendarDay[];
-  /** Call this function to navigate to different pages. */
-  push: (url: string) => void;
 }
 
 export interface GardenMapProps {
@@ -158,6 +163,7 @@ export interface GardenMapProps {
   showSpread: boolean | undefined;
   showFarmbot: boolean | undefined;
   showImages: boolean | undefined;
+  showSensorReadings: boolean | undefined;
   dispatch: Function;
   designer: DesignerState;
   points: TaggedGenericPointer[];
@@ -178,6 +184,9 @@ export interface GardenMapProps {
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
   getConfigValue: GetWebAppConfigValue;
+  sensorReadings: TaggedSensorReading[];
+  sensors: TaggedSensor[];
+  timeOffset: number;
 }
 
 export interface GardenMapState {

@@ -4,8 +4,8 @@
 class KeyGen
   SAVE_PATH        = "jwt.#{Rails.env}.pem"
 
-  def self.try_file
-    OpenSSL::PKey::RSA.new(File.read(SAVE_PATH)) if File.file?(SAVE_PATH)
+  def self.try_file(path = SAVE_PATH)
+    OpenSSL::PKey::RSA.new(File.read(path)) if File.file?(path)
   end
 
   def self.generate_new_key(path = SAVE_PATH)
@@ -14,8 +14,8 @@ class KeyGen
     return rsa
   end
 
-  # Heroku / 12Factor users can't store stuff on the file system. Store your pem
-  # file in ENV['RSA_KEY'] if that applies to you.
+  # Heroku / 12Factor users can't store stuff on the file system.
+  # Store your pem file in ENV['RSA_KEY'] if that applies to you.
   def self.try_env
     OpenSSL::PKey::RSA.new(ENV['RSA_KEY']) if ENV['RSA_KEY']
   end

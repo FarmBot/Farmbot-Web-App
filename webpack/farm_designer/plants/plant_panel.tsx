@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { t } from "i18next";
-import { Link } from "react-router";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
@@ -10,6 +9,7 @@ import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
 import * as moment from "moment";
 import { Actions } from "../../constants";
+import { Link } from "../../link";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;

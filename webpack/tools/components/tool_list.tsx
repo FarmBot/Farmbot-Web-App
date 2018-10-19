@@ -1,16 +1,32 @@
 import * as React from "react";
-import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui/index";
+import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
 import { t } from "i18next";
-import { ToolListProps } from "../interfaces";
+import { ToolListAndFormProps } from "../interfaces";
 import { TaggedTool } from "farmbot";
 import { ToolTips } from "../../constants";
 
-export class ToolList extends React.Component<ToolListProps, {}> {
-  render() {
-    const toggle = () => this.props.toggle();
-    const { tools } = this.props;
+enum ColWidth {
+  toolName = 8,
+  status = 4,
+}
 
-    return <Widget>
+export class ToolList extends React.Component<ToolListAndFormProps, {}> {
+
+  ToolListItem = (tool: TaggedTool) => {
+    return <Row key={tool.uuid}>
+      <Col xs={ColWidth.toolName}>
+        {tool.body.name || "Name not found"}
+      </Col>
+      <Col xs={ColWidth.status}>
+        {this.props.isActive(tool) ? t("active") : t("inactive")}
+      </Col>
+    </Row>;
+  }
+
+  render() {
+    const { tools, toggle } = this.props;
+
+    return <Widget className="tool-list">
       <WidgetHeader helpText={ToolTips.TOOL_LIST} title={t("Tools")}>
         <button
           className="fb-button gray"
@@ -20,23 +36,14 @@ export class ToolList extends React.Component<ToolListProps, {}> {
       </WidgetHeader>
       <WidgetBody>
         <Row>
-          <Col xs={8}>
+          <Col xs={ColWidth.toolName}>
             <label>{t("Tool Name")}</label>
           </Col>
-          <Col xs={4}>
+          <Col xs={ColWidth.status}>
             <label>{t("Status")}</label>
           </Col>
         </Row>
-        {tools.map((tool: TaggedTool) => {
-          return <Row key={tool.uuid}>
-            <Col xs={8}>
-              {tool.body.name || "Name not found"}
-            </Col>
-            <Col xs={4}>
-              {this.props.isActive(tool) ? t("active") : t("inactive")}
-            </Col>
-          </Row>;
-        })}
+        {tools.map(this.ToolListItem)}
       </WidgetBody>
     </Widget>;
   }

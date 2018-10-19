@@ -7,7 +7,7 @@ import { destroy } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { ToolBayNumberCol } from "./toolbay_number_column";
 
-interface ToolSlotRowProps {
+export interface ToolSlotRowProps {
   dispatch: Function;
   slot: TaggedToolSlotPointer;
   botPosition: Record<"x" | "y" | "z", number | undefined>;
@@ -22,7 +22,7 @@ interface ToolSlotRowProps {
 type Axis = Xyz & keyof (TaggedToolSlotPointer["body"]);
 const axes: Axis[] = ["x", "y", "z"];
 
-export function ToolSlotRow(p: ToolSlotRowProps) {
+export function ToolSlotRow(props: ToolSlotRowProps) {
   const {
     dispatch,
     slot,
@@ -30,7 +30,7 @@ export function ToolSlotRow(p: ToolSlotRowProps) {
     toolOptions,
     onToolSlotChange,
     chosenToolOption
-  } = p;
+  } = props;
 
   return <Row>
     <Col xs={1}>
@@ -42,12 +42,10 @@ export function ToolSlotRow(p: ToolSlotRowProps) {
           botPosition={botPosition} />
       </Popover>
     </Col>
-    {
-      axes
-        .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
-        .map((props) =>
-          <ToolBayNumberCol key={slot.uuid + props.axis} {...props} />)
-    }
+    {axes
+      .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
+      .map(axisProps =>
+        <ToolBayNumberCol key={slot.uuid + axisProps.axis} {...axisProps} />)}
     <Col xs={4}>
       <FBSelect
         list={toolOptions}

@@ -16,7 +16,7 @@ export class LabsFeatures extends React.Component<LabsFeaturesProps, {}> {
 
   render() {
     const { getConfigValue, dispatch } = this.props;
-    return <Widget className="peripherals-widget">
+    return <Widget className="app-settings-widget">
       <WidgetHeader title={t("App Settings")}
         helpText={ToolTips.LABS}>
       </WidgetHeader>

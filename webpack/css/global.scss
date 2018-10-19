@@ -10,17 +10,17 @@ body {
 
 .color-picker-col {
   padding: 0;
-  .pt-popover-target {
+  .bp3-popover-target {
     float: left;
   }
 }
 
 .colorpicker-menu {
   padding: 0;
-  .pt-popover-arrow-fill {
+  .bp3-popover-arrow-fill {
     fill: $dark_gray;
   }
-  .pt-popover-content {
+  .bp3-popover-content {
     width: 13rem;
     background: $dark_gray;
   }
@@ -30,14 +30,14 @@ body {
   }
 }
 
-.pt-popover.help {
-  .pt-popover-arrow {
+.bp3-popover.help {
+  .bp3-popover-arrow {
     display: none !important;
   }
-  .pt-popover-arrow-fill {
+  .bp3-popover-arrow-fill {
     fill: $dark_gray;
   }
-  .pt-popover-content {
+  .bp3-popover-content {
     width: 32rem;
     color: $white;
     background: $dark_gray;
@@ -272,7 +272,6 @@ a {
     padding: 0.25rem;
   }
   .fa-download {
-    margin-top: -20px;
     float: right;
     color: $dark_gray !important;
   }
@@ -442,6 +441,18 @@ fieldset {
 
 h3 {
   display: inline-block;
+  margin-top: 0;
+  font-size: 2.2rem;
+}
+
+h4 {
+  line-height: 1.1rem;
+  font-size: 1.8rem;
+  color: $darker_gray;
+}
+
+hr {
+  border-top: 1px solid rgba(16, 22, 26, 0.15);
 }
 
 .e-stop {
@@ -758,7 +769,7 @@ ul {
     margin-left: 1rem;
     margin-top: 0.25rem;
   }
-  .pt-popover-target {
+  .bp3-popover-target {
     float: right;
   }
 }
@@ -771,7 +782,7 @@ ul {
     float: left;
     margin-right: 10px;
   }
-  .pt-popover-wrapper {
+  .bp3-popover-wrapper {
     display: inline-block;
     margin-left: 1rem;
     margin-top: 0.5rem;
@@ -825,6 +836,7 @@ ul {
   }
 }
 
+.tools-widget,
 .toolbay-widget {
   .fa-gear {
     color: $dark_gray;
@@ -832,6 +844,9 @@ ul {
   }
   .del-button {
     margin-top: 0.5rem;
+  }
+  .fb-button {
+    margin-left: 1rem;
   }
 }
 
@@ -915,8 +930,8 @@ ul {
       padding: 0.6rem 0.3rem;
     }
   }
-  .pt-popover-wrapper,
-  .pt-popover-target {
+  .bp3-popover-wrapper,
+  .bp3-popover-target {
     display: inline-block !important;
     margin-left: 1rem;
     margin-top: 0.4rem;
@@ -935,4 +950,10 @@ ul {
       color: $dark_gray;
     }
   }
+}
+
+.tour-list {
+  margin: auto;
+  width: 75%;
+  margin-top: 1rem;
 }

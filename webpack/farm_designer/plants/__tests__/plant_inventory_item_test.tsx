@@ -6,17 +6,16 @@ jest.mock("../../../open_farm/icons", () => ({
 jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import * as React from "react";
-import { PlantInventoryItem } from "../plant_inventory_item";
+import { PlantInventoryItem, PlantInventoryItemProps } from "../plant_inventory_item";
 import { shallow } from "enzyme";
 import { fakePlant, fakePlantTemplate } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
-import { TaggedPlant } from "../../map/interfaces";
 
 describe("<PlantInventoryItem />", () => {
-  const fakeProps = () => {
+  const fakeProps = (): PlantInventoryItemProps => {
     return {
-      tpp: fakePlant() as TaggedPlant,
+      tpp: fakePlant(),
       dispatch: jest.fn(),
       hovered: false,
     };

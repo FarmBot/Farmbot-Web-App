@@ -1,22 +1,22 @@
+.env
 .vscode
 .vscode/
 *.log
 *.pem
 *scratchpad*
+/config/master.key
 /tmp
 api_docs.md
 config/application.yml
-config/database.yml
-config/secrets.yml
+config/credentials.yml.enc
 coverage
+docker_volumes
 erd_diagram.png
 erd.pdf
 latest_corpus.ts
 log/*.log
-mqtt/rabbitmq.conf
-mqtt/rabbitmq.config
+mqtt/ # Legacy config directory. Delete on 3 Dec 18 - RC
 node_modules
-node_modules/
 package-lock.json
 public/direct_upload/temp/*.jpg
 public/dist
@@ -25,7 +25,3 @@ public/webpack
 public/webpack/*
 scratchpad.rb
 tmp
-
-# Ignore master key for decrypting credentials and more.
-/config/master.key
-config/credentials.yml.enc

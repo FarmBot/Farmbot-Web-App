@@ -271,6 +271,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_spread: false,
     show_farmbot: true,
     show_images: false,
+    show_sensor_readings: false,
     show_plants: true,
     show_points: true,
     x_axis_inverted: false,
@@ -293,6 +294,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     discard_unsaved: false,
     xy_swap: false,
     home_button_homing: false,
+    show_motor_plot: false,
+    show_historic_points: false,
   });
 }
 

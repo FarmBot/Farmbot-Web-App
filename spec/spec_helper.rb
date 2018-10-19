@@ -1,7 +1,7 @@
 DO_INTEGRATION   = !!ENV["RUN_CAPYBARA"]
 ENV["MQTT_HOST"] = "blooper.io"
 ENV["OS_UPDATE_SERVER"] = "http://non_legacy_update_url.com"
-require "deep_cover/builtin_takeover"
+# require "deep_cover/builtin_takeover"
 require "simplecov"
 #Ignore anything with the word "spec" in it. No need to test your tests.
 SimpleCov.start do
@@ -79,7 +79,7 @@ RSpec.configure do |config|
     require "capybara/rails"
     require "capybara/rspec"
     require "selenium/webdriver"
-    # Be sure to run `RAILS_ENV=test rails api:start` and `rails mqtt:start`!
+    # Be sure to run the server in a seperate window!
     Capybara.run_server  = false
     Capybara.app_host    = "http://localhost:3000"
     Capybara.server_host = "localhost"

@@ -6,7 +6,6 @@ class ApplicationRecord < ActiveRecord::Base
   DONT_BROADCAST = [ "created_at",
                      "last_saw_api",
                      "last_saw_mq",
-                     "last_seen",
                      "last_sign_in_at",
                      "last_sign_in_ip",
                      "sign_in_count",

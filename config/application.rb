@@ -9,16 +9,25 @@ Bundler.require(:default, Rails.env)
 module FarmBot
   class Application < Rails::Application
     Delayed::Worker.max_attempts = 4
-    # config.after_initialize do
-    #   Bullet.enable  = true
-    #   Bullet.console = true
-    # end
+    REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
+    REDIS_URL     = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
+    config.cache_store                 = :redis_cache_store, { url: REDIS_URL }
+    config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
-    config.active_job.queue_adapter = :delayed_job
+    config.active_job.queue_adapter    = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
-    LOCAL_API_HOST = ENV["API_HOST"] || "localhost"
+    LOCAL_API_HOST = ENV.fetch("API_HOST", "webpack")
     WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
+    config.webpack.dev_server.host          = proc { request.host }
+    # PROBLEM:  Containers run in docker. Default dev_server.manifest_host is
+    #           "localhost", but our `dev_server` runs in a different docker
+    #           container.
+    # SOLUTION: Explicitly set the hostname of the container where Webpack runs.
+    #           In our case, that's `webpack`. See docker-compose.yml for all
+    #           hostnames. -RC 1 OCT 18
+    config.webpack.dev_server.manifest_host = LOCAL_API_HOST
+    config.webpack.dev_server.manifest_port = 3808
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -63,13 +72,15 @@ module FarmBot
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
-        connect_src: ALL_LOCAL_URIS + [ENV["MQTT_HOST"],
-                      "api.github.com",
-                      "raw.githubusercontent.com",
-                      "openfarm.cc",
-                      "api.rollbar.com",
-                      WEBPACK_URL] +
-          (Rails.env.production? ? %w(wss:) : %w(ws: localhost:3000 localhost:3808)),
+        connect_src: ALL_LOCAL_URIS + [
+            ENV["MQTT_HOST"],
+            "api.github.com",
+            "raw.githubusercontent.com",
+            "openfarm.cc",
+            "api.rollbar.com",
+            WEBPACK_URL,
+            ENV["FORCE_SSL"] ? "wss:" : "ws:"
+          ] + (Rails.env.production? ? %w() : %w(localhost:3000 localhost:3808)),
         font_src: %w(
           'self'
           data:
@@ -77,12 +88,12 @@ module FarmBot
           fonts.googleapis.com
           fonts.gstatic.com
         ),
-        form_action: %w('self'),
-        frame_src: %w(*),       # We need "*" to support webcam users.
-        img_src: %w(* data:),   # We need "*" to support webcam users.
+        form_action:  %w('self'),
+        frame_src:    %w(*),       # We need "*" to support webcam users.
+        img_src:      %w(* data:),   # We need "*" to support webcam users.
         manifest_src: %w('self'),
-        media_src: %w(),
-        object_src: %w(),
+        media_src:    %w(),
+        object_src:   %w(),
         sandbox: %w(
           allow-scripts
           allow-forms

@@ -1,21 +1,19 @@
 FarmBot::Application.configure do
-  config.force_ssl = true if ENV["FORCE_SSL"]
-  config.perform_caching = false
-  config.cache_store = :null_store
-  config.action_mailer.default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
-  config.active_support.deprecation = :notify
-  config.cache_classes = true
+
+  config
+    .action_mailer
+    .default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
+  config.active_support.deprecation  = :notify
+  config.cache_classes               = true
   config.consider_all_requests_local = false
-  config.eager_load = true
-  config.i18n.fallbacks = true
-  config.log_formatter = ::Logger::Formatter.new
-  config.log_level = :info
-  config.public_file_server.enabled = false
-  # config.after_initialize do
-  #   Bullet.enable  = true
-  #   Bullet.console = true
-  #   Bullet.rollbar = true if ENV["ROLLBAR_ACCESS_TOKEN"]
-  # end
+  config.eager_load                  = true
+  config.force_ssl                   = true if ENV["FORCE_SSL"]
+  config.i18n.fallbacks              = true
+  config.log_formatter               = ::Logger::Formatter.new
+  config.log_level                   = :info
+  config.perform_caching             = false
+  config.public_file_server.enabled  = false
+
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.
   # 2. FarmBot is an open source project that must be vendor neutral.

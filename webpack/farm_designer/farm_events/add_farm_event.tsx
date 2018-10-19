@@ -7,7 +7,6 @@ import { init, destroy } from "../../api/crud";
 import { EditFEForm } from "./edit_fe_form";
 import { betterCompact } from "../../util";
 import { entries } from "../../resources/util";
-import { Link } from "react-router";
 import {
   AddEditFarmEventProps,
   TaggedExecutable
@@ -15,6 +14,7 @@ import {
 import { BackArrow } from "../../ui/index";
 import { SpecialStatus } from "farmbot";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { Link } from "../../link";
 
 interface State {
   uuid: string;

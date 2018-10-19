@@ -10,7 +10,7 @@ import { defensiveClone } from "../../../util";
 
 describe("<PureFarmEvents/>", () => {
   it("renders nav", () => {
-    const wrapper = render(<PureFarmEvents push={jest.fn()}
+    const wrapper = render(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={false} />);
     ["Map", "Plants", "Farm Events"].map(string =>
@@ -18,8 +18,7 @@ describe("<PureFarmEvents/>", () => {
   });
 
   it("sorts items correctly", () => {
-    const push = jest.fn();
-    const results = render(<PureFarmEvents push={push}
+    const results = render(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={true} />);
     const rows = results
@@ -35,7 +34,7 @@ describe("<PureFarmEvents/>", () => {
   });
 
   it("warns about unset timezones", () => {
-    const results = render(<PureFarmEvents push={jest.fn()}
+    const results = render(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={false} />);
     const txt = results.text();
@@ -54,7 +53,7 @@ describe("<PureFarmEvents/>", () => {
       subheading: "",
       id: 79
     }];
-    const results = render(<PureFarmEvents push={jest.fn()}
+    const results = render(<PureFarmEvents
       calendarRows={row}
       timezoneIsSet={true} />);
     const txt = results.text();

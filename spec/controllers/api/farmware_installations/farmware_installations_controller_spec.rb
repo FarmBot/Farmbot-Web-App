@@ -13,7 +13,7 @@ describe Api::FarmwareInstallationsController do
       post :create, body: payload.to_json, params: {format: :json}
       expect(response.status).to eq(200)
       expect(FarmwareInstallation.count).to be > old_installation_count
-      expect(json.keys.sort).to eq([:id, :url])
+      expect(json.keys.sort).to eq([:created_at, :id, :updated_at, :url])
       expect(json[:url]).to eq(url)
       expect(FarmwareInstallation.find(json[:id]).device).to eq(user.device)
     end

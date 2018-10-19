@@ -1,119 +1,58 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 17 machine.
+# How to install FarmBot Web API on a Fresh Ubuntu 18.04.1 LTS Machine
 
 # Remove old (possibly broke) docker versions
 sudo apt-get remove docker docker-engine docker.io
 
 # Install docker
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common rake --yes
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common --yes
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" --yes
 sudo apt-get update --yes
 sudo apt-get install docker-ce --yes
 sudo docker run hello-world # Should run!
-
-# Install RVM
-command curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-curl -sSL https://get.rvm.io | bash
-source /usr/local/rvm/scripts/rvm
-rvm install "ruby-2.5.1"
-cd .
-rvm --default use 2.5.1
-# LOG OUT AND LOG BACK IN NOW.
-
-# Image Magick
-sudo apt-get install imagemagick --yes
-
-
-# Install Node
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs --yes
-
-# Install Yarn
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt-get update && sudo apt-get install yarn
-
-# Install database deps
-sudo apt-get install libpq-dev postgresql-contrib --yes
+# Install docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
 # Install FarmBot Web App
+# ⚠ SKIP THIS STEP IF UPGRADING!
 git clone https://github.com/FarmBot/Farmbot-Web-App --depth=10 --branch=master
+
 cd Farmbot-Web-App
-gem install bundler
-npm install yarn
-bundle install
-yarn install
-cp config/database.example.yml config/database.yml
-cp config/application.example.yml config/application.yml
 
 # == This is a very important step!!! ==
 #
-# Open `config/application.yml` in a text editor and change all the values.
+# Open `.env` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
-# Don't know which text editor to use?
-# Use micro! `snap install micro --classic`
-#
-# BE SURE TO READ `application.yml` AND CHANGE THE VALUES
 
-# Next, we need to set some things up in PostgreSQL
-# Before proceeding, it is important to know your username on the machine.
-# Type the following command to determine your system username:
-whoami
+snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
+cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
+micro .env          # ⚠ SKIP THIS STEP IF UPGRADING!
+# ^ This is the most important step
+# READ NOTE ABOVE. Very important!
 
-# ...then Run this command...
-sudo -u postgres psql
+# Install application specific Ruby dependencies
+sudo docker-compose run web bundle install
+# Install application specific Javascript deps
+sudo docker-compose run web npm install
+# Create a database in PostgreSQL
+sudo docker-compose run web bundle exec rails db:create db:migrate
+# Generate a set of *.pem files for data encryption
+sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
+# Build the UI assets via WebPack
+sudo docker-compose run web npm run build
+# Run the server! ٩(^‿^)۶
+sudo docker-compose up
 
-#  Now that you are in the PSQL command prompt,
-#  enter the commands below. Replace your_system_username_here with the results
-#  of the `whoami` command:
-#
-#    CREATE USER "your_system_username_here" WITH SUPERUSER;
-#    \q
-#
-# ...after running `\q` we are back to the shell- Continue installation as
-# usual.
+# At this point, setup is complete. Content should be visible at ===============
+#  http://YOUR_HOST:3000/.
 
-# Generate a set of *.pem files for data encryption:
-rake keys:generate
+# You can optionally verify installation by running unit tests.
 
 # Create the database for the app to use:
-rake db:create:all db:migrate db:seed
-
-# Run the database migration and unit tests (API only)
-RAILS_ENV=test rake db:create db:migrate && rspec spec
-
-# Run UI-level unit tests:
-npm run test
-
-# INSTALLATION IS NOW COMPLETE ===================================+
-# You may run the commands below every time you start the server. |
-# ================================================================+
-
-# Runs the web server in new tab, but use SAME DIRECTORY AS BEFORE. Don't worry
-# about the "MQTT server is unreachable" messages yet- we still need to start
-# MQTT (next).
-rails api:start
-
-# Run MQTT (new tab or window, SAME DIRECTORY)
-rails mqtt:start
-
-# That's it! You can now visit the webserver on http://0.0.0.0:3000
-# (replace 0.0.0.0 with the IP address of your machine)
-
-# RUNNING ON PORT 80 =======================================================+
-# NEXT STEP IS OPTIONAL. DO THIS IF YOU WANT TO USE PORT 80 INSTEAD OF 3000.|
-# This is a quick alternative to running rails as root / sudo.              |
-# ==========================================================================+
-
-# Step 1: Install `socat`
-sudo apt-get install socat
-
-# Step 2: Forward port 80 to port 3000
-sudo socat TCP-LISTEN:80,fork TCP:localhost:3000
-
-# Other options for routing traffic to port 80 include:
-#  * Using `iptables`
-#  * Configuring NGinx as a reverse proxy.
-# The options above are intended for advanced users. Our ability to provide
-# support to individual users for these use cases is limited.
+sudo docker-compose run -e RAILS_ENV=test web bundle exec rails db:setup
+# Run the tests in the "test" RAILS_ENV:
+sudo docker-compose run -e RAILS_ENV=test web rspec spec
+# Run user-interface unit tests:
+sudo docker-compose run web npm run test

@@ -8,7 +8,7 @@ class Transport
   def self.amqp_url
     @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
                   ENV['RABBITMQ_URL']  ||
-                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@#{ENV.fetch("MQTT_HOST")}:5672"
+                  "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@mqtt:5672"
   end
 
   def self.default_amqp_adapter=(value)

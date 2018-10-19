@@ -9,6 +9,7 @@ describe("<LoadingPlant/>", () => {
     expect(wrapper.find(".loading-plant-text").props().y).toEqual(150);
     expect(wrapper.text()).toContain("Loading");
     expect(wrapper.find(".animate").length).toEqual(0);
+    wrapper.unmount();
   });
 
   it("renders loading animation", () => {
@@ -21,5 +22,6 @@ describe("<LoadingPlant/>", () => {
     expect(wrapper.find(".loading-plant-text").props().y).toEqual(435);
     expect(wrapper.text()).toContain("Loading");
     expect(wrapper.find(".animate").length).toEqual(1);
+    wrapper.unmount();
   });
 });

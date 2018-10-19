@@ -8,7 +8,9 @@ import {
   maybeGetTimeOffset,
   selectAllPeripherals,
   getFirmwareConfig,
-  selectAllPlantTemplates
+  selectAllPlantTemplates,
+  selectAllSensorReadings,
+  selectAllSensors
 } from "../resources/selectors";
 import * as _ from "lodash";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
@@ -17,6 +19,7 @@ import { Props } from "./interfaces";
 import { TaggedPlant } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString } from "lodash";
+import { BooleanSetting } from "../session_keys";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -43,6 +46,12 @@ export function mapStateToProps(props: Everything): Props {
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
 
   const hoveredPlant = findPlant(plantUUID);
+
+  const getConfigValue = getWebAppConfigValue(() => props);
+  const allPoints = selectAllGenericPointers(props.resources.index);
+  const points = getConfigValue(BooleanSetting.show_historic_points)
+    ? allPoints
+    : allPoints.filter(x => !x.body.discarded_at);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
@@ -77,12 +86,19 @@ export function mapStateToProps(props: Everything): Props {
     calibrationZ: user_env["CAMERA_CALIBRATION_camera_z"],
   };
 
+  const sensorReadings = _(selectAllSensorReadings(props.resources.index))
+    .sortBy(x => x.body.created_at)
+    .reverse()
+    .take(500)
+    .reverse()
+    .value();
+
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
-    points: selectAllGenericPointers(props.resources.index),
+    points,
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
@@ -94,6 +110,8 @@ export function mapStateToProps(props: Everything): Props {
     latestImages,
     cameraCalibrationData,
     tzOffset: maybeGetTimeOffset(props.resources.index),
-    getConfigValue: getWebAppConfigValue(() => props),
+    getConfigValue,
+    sensorReadings,
+    sensors: selectAllSensors(props.resources.index),
   };
 }

@@ -4,8 +4,6 @@
 module LogDeliveryStuff
   class RateLimitError < StandardError; end
   module ClassMethods
-    attr_accessor :max_per_hour
-
     # If this method grows, create a mutation.
     def deliver(device, log)
       send_fatal_emails(log, device)
@@ -19,6 +17,5 @@ module LogDeliveryStuff
 
   def self.included(receiver)
     receiver.extend(ClassMethods)
-    receiver.max_per_hour = 20
   end
 end

@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Link } from "react-router";
 import * as _ from "lodash";
 import { GardenPlant } from "../garden_plant";
 import { PlantLayerProps, CropSpreadDict } from "../interfaces";
 import { defensiveClone, unpackUUID } from "../../../util";
 import { maybeNoPointer } from "../maybe_no_pointer";
+import { Link } from "../../../link";
 
 const cropSpreadDict: CropSpreadDict = {};
 
@@ -49,7 +49,7 @@ export function PlantLayer(props: PlantLayerProps) {
               : "plants";
           return <Link className="plant-link-wrapper"
             style={maybeNoPointer({})}
-            to={`/app/designer/${plantCategory}/` + p.plantId}
+            to={`/app/designer/${plantCategory}/${p.plantId}`}
             id={p.plantId}
             onClick={_.noop}
             key={p.plantId}>

@@ -37,6 +37,7 @@ function fakeProps(): GardenMapProps {
     showSpread: false,
     showFarmbot: false,
     showImages: false,
+    showSensorReadings: false,
     selectedPlant: fakePlant(),
     crops: [],
     dispatch: jest.fn(),
@@ -92,6 +93,9 @@ function fakeProps(): GardenMapProps {
       calibrationZ: undefined
     },
     getConfigValue: jest.fn(),
+    sensorReadings: [],
+    sensors: [],
+    timeOffset: 0,
   };
 }
 

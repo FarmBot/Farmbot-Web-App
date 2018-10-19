@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { FBSelect, DropDownItem } from "../../ui/index";
+import { FBSelect, DropDownItem } from "../../ui";
 import { TaggedToolSlotPointer } from "farmbot";
 import { edit } from "../../api/crud";
 import { isNumber } from "lodash";

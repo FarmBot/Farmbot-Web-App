@@ -91,6 +91,16 @@ export function reboot() {
     .then(commandOK(noun), commandErr(noun));
 }
 
+export function restartFirmware() {
+  const noun = "Restart Firmware";
+  getDevice() // TODO: add `restartFirmware()` to FBJS
+    .send(rpcRequest([{
+      kind: "reboot",
+      args: { package: "arduino_firmware" }
+    }]))
+    .then(commandOK(noun), commandErr(noun));
+}
+
 export function emergencyLock() {
   const noun = "Emergency stop";
   getDevice()
@@ -297,9 +307,7 @@ export function pinToggle(pin_number: number) {
 export function readPin(pin_number: number, label: string, pin_mode: number) {
   const noun = "Read pin";
   return getDevice()
-    .send(rpcRequest([{
-      kind: "read_pin", args: { pin_number, label, pin_mode }
-    }]))
+    .readPin({ pin_number, label, pin_mode })
     .then(_.noop, commandErr(noun));
 }
 

@@ -1,4 +1,4 @@
-unless Rails.env == "production"
+if Rails.env == "development"
     POINT_COUNT             = 8
     PLANT_COUNT             = 8
     DATE_RANGE_LO           = 1..3
@@ -20,15 +20,14 @@ unless Rails.env == "production"
     User.destroy_all
     PlantTemplate.destroy_all
     SavedGarden.destroy_all
-    User.admin_user
     Users::Create.run!(name:                  "Test",
                        email:                 "test@test.com",
                        password:              "password123",
                        password_confirmation: "password123",
                        confirmed_at:          Time.now,
                        agreed_to_terms_at:    Time.now)
-    User.all.update_all(confirmed_at:          Time.now,
-                        agreed_to_terms_at:    Time.now)
+    User.all.update_all(confirmed_at:         Time.now,
+                        agreed_to_terms_at:   Time.now)
     u = User.last
     u.update_attributes(device: Devices::Create.run!(user: u))
     Log.transaction do

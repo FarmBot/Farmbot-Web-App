@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { RegimenListItemProps } from "../interfaces";
 import { lastUrlChunk, urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
@@ -9,6 +8,7 @@ import {
 import { t } from "i18next";
 import { Content } from "../../constants";
 import { TaggedRegimen } from "farmbot";
+import { Link } from "../../link";
 
 export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");

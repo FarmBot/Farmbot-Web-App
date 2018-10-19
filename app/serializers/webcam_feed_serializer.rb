@@ -1,3 +1,3 @@
-class WebcamFeedSerializer < ActiveModel::Serializer
-  attributes :id, :url, :name, :updated_at, :created_at
+class WebcamFeedSerializer < ApplicationSerializer
+  attributes :url, :name
 end

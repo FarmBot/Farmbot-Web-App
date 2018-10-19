@@ -18,6 +18,7 @@ export interface NavBarProps {
   dispatch: Function;
   timeOffset: number;
   getConfigValue: GetWebAppConfigValue;
+  tour: string | undefined;
 }
 
 export interface NavBarState {
@@ -26,7 +27,7 @@ export interface NavBarState {
   accountMenuOpen: boolean;
 }
 
-type ToggleEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void;
+type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
 
 export interface MobileMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;

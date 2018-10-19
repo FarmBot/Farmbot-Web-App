@@ -3,21 +3,13 @@
 
 // https://github.com/facebook/jest/issues/2098
 function Whatever() {
-  var store = {};
+  var store = { items: {} };
 
+  store.clear = jest.fn(() => store.items = {});
+  store.getItem = (key) => store.items[key];
   store.isFakeStore = true;
-
-  store.getItem = (key) => {
-    return store[key];
-  };
-
-  store.setItem = (key, value) => {
-    store[key] = value;
-  };
-
-  store.removeItem = (key) => {
-    store[key] = undefined;
-  };
+  store.removeItem = (key) => store.items[key] = undefined;
+  store.setItem = (key, value) => store.items[key] = value;
 
   return store;
 }

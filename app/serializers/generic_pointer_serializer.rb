@@ -1,3 +1,3 @@
 class GenericPointerSerializer < BasePointSerializer
-  attributes :radius
+  attributes :radius, :discarded_at
 end

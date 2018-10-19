@@ -1,7 +1,11 @@
-import { browserHistory } from "react-router";
-export let history = browserHistory;
-export let push = (url: string) => history.push(url);
+import { navigate } from "takeme";
+import { maybeStripLegacyUrl } from "./link";
+
+export const push = (url: string) => navigate(maybeStripLegacyUrl(url));
 
 export function getPathArray() {
-  return history.getCurrentLocation().pathname.split("/");
+  return location.pathname.split("/");
 }
+
+/** This is a stub from the `react-router` days. Don't use it anymore. */
+export const history = { push, getCurrentLocation: () => window.location };

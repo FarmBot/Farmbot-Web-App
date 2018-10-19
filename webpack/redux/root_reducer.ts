@@ -14,7 +14,7 @@ export let reducers = combineReducers({
   bot,
   config,
   draggable,
-  resources
+  resources,
 });
 
 /** This is the topmost reducer in the application. If you need to preempt a

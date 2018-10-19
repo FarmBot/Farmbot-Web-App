@@ -104,14 +104,25 @@ module CeleryScript
       run_additional_validations(value, key)
     end
 
+    # Don't delete this- it is currently unreachable code, but as soon as we
+    # allow identifiers other than `point`, `tool` and `coordinate` we will
+    # need it again (and can write tests)
+    # def bad_var!(value, label, expected, actual)
+    #   value.invalidate!(T_MISMATCH % [label, expected, actual])
+    # end SEE_MY_NOTE =============================^ RC 4 Oct 18
+
+
     def type_check_parameter(var, expected)
       data_type = var.args[:data_type].value
-      bad_var!(value, label, expected, actual) if !expected.include?(data_type)
+
+      # Don't delete this- it is currently unreachable code, but as soon as we
+      # allow identifiers other than `point`, `tool` and `coordinate` we will
+      # need it again (and can write tests)
+      # if !expected.include?(data_type)
+      #   bad_var!(value, label, expected, actual)
+      # end SEE_MY_NOTE =============================^ RC 4 Oct 18
     end
 
-    def bad_var!(value, label, expected, actual)
-      value.invalidate!(T_MISMATCH % [label, expected, actual])
-    end
 
     def validate_node_pairing(key, value)
       actual  = value.kind
@@ -130,11 +141,15 @@ module CeleryScript
           type_check_parameter(var, allowed_types)
         when "variable_declaration"
           actual = var.args[:data_value].kind
-          unless allowed_types.include?(actual)
-            bad_var!(value, var.args[:label].value, allowed_types, actual)
-          end
-        else
-          raise ("Bad kind: " + var.kind)
+        #   Don't delete this- it is currently unreachable code, but as soon as we
+        #   allow identifiers other than `point`, `tool` and `coordinate` we will
+        #   need it again (and can write tests)
+        #   unless allowed_types.include?(actual)
+        #     bad_var!(value, var.args[:label].value, allowed_types, actual)
+        #   end
+        # else
+        #   raise ("Bad kind: " + var.kind)
+        #  SEE_MY_NOTE =============================^ RC 4 Oct 18
         end
       end
       ok      = allowed.include?(actual)

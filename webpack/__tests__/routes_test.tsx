@@ -30,14 +30,16 @@ describe("<RootComponent />", () => {
   it("clears session when not authorized", () => {
     mockAuth = undefined;
     mockPathname = "/app/account";
-    shallow(<RootComponent store={store} />);
+    const wrapper = shallow(<RootComponent store={store} />);
     expect(Session.clear).toHaveBeenCalled();
+    wrapper.unmount();
   });
 
   it("authorized", () => {
     mockAuth = auth;
     mockPathname = "/app/account";
-    shallow(<RootComponent store={store} />);
+    const wrapper = shallow(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
+    wrapper.unmount();
   });
 });

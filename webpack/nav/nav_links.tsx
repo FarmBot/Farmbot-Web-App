@@ -1,11 +1,11 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Link } from "react-router";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
   computeEditorUrlFromState, computeFarmwareUrlFromState
 } from "./compute_editor_url_from_state";
+import { Link } from "../link";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
