@@ -28,7 +28,8 @@ RSpec.describe Api::SensorsController, type: :controller do
     get :index, params: { format: :json }
     expect(response.status).to eq(200)
     expect(json.length).to  eq(2)
-    expect(json.first.keys.sort).to eq([:id, :label, :mode, :pin])
+    expect(json.first.keys.sort)
+      .to eq([:created_at, :id, :label, :mode, :pin, :updated_at])
   end
 
   it "updates a resource" do
