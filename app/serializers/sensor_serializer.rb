@@ -1,3 +1,3 @@
-class SensorSerializer < ActiveModel::Serializer
+class SensorSerializer < ApplicationSerializer
   attributes :id, :pin, :label, :mode
 end

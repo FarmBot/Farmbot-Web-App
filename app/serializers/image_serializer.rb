@@ -1,4 +1,4 @@
-class ImageSerializer < ActiveModel::Serializer
+class ImageSerializer < ApplicationSerializer
   attributes :id, :device_id, :attachment_processed_at, :updated_at,
              :created_at, :attachment_url, :meta
 

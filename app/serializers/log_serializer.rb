@@ -1,4 +1,4 @@
-class LogSerializer < ActiveModel::Serializer
+class LogSerializer < ApplicationSerializer
   attributes :id, :created_at, :updated_at, :channels, :message, :meta,
     :major_version, :minor_version, :type, :verbosity, :x, :y, :z
 

@@ -1,4 +1,4 @@
-class PinBindingSerializer < ActiveModel::Serializer
+class PinBindingSerializer < ApplicationSerializer
   attributes :id, :created_at, :updated_at, :device_id, :sequence_id,
              :special_action, :pin_num, :binding_type
 

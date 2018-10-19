@@ -1,4 +1,4 @@
-class ToolSerializer < ActiveModel::Serializer
+class ToolSerializer < ApplicationSerializer
   attributes :id, :name, :status
 
   def status

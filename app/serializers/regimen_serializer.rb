@@ -1,4 +1,4 @@
-class RegimenSerializer < ActiveModel::Serializer
+class RegimenSerializer < ApplicationSerializer
   attributes :id, :name, :color, :device_id, :in_use
   has_many :regimen_items
 

@@ -1,3 +1,3 @@
-class FarmwareInstallationSerializer < ActiveModel::Serializer
+class FarmwareInstallationSerializer < ApplicationSerializer
   attributes :id, :url
 end
