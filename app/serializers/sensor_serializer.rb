@@ -1,3 +1,3 @@
 class SensorSerializer < ApplicationSerializer
-  attributes :id, :pin, :label, :mode
+  attributes :pin, :label, :mode
 end

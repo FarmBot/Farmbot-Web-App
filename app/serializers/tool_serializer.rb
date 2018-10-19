@@ -1,5 +1,5 @@
 class ToolSerializer < ApplicationSerializer
-  attributes :id, :name, :status
+  attributes :name, :status
 
   def status
     # The attribute `tool_slot_id` is added via a special SQL query.

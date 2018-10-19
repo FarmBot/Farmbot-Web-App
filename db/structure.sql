@@ -155,7 +155,9 @@ CREATE TABLE public.devices (
     fbos_version character varying(15),
     throttled_until timestamp without time zone,
     throttled_at timestamp without time zone,
-    mounted_tool_id bigint
+    mounted_tool_id bigint,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -268,7 +270,9 @@ CREATE TABLE public.farm_events (
     repeat integer,
     time_unit character varying,
     executable_type character varying(280),
-    executable_id integer
+    executable_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -812,7 +816,9 @@ CREATE TABLE public.plant_templates (
     y double precision NOT NULL,
     z double precision DEFAULT 0.0 NOT NULL,
     name character varying DEFAULT 'untitled'::character varying NOT NULL,
-    openfarm_slug character varying(280) DEFAULT 'null'::character varying NOT NULL
+    openfarm_slug character varying(280) DEFAULT 'null'::character varying NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -901,7 +907,9 @@ CREATE TABLE public.regimen_items (
     id integer NOT NULL,
     time_offset bigint,
     regimen_id integer,
-    sequence_id integer
+    sequence_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -933,7 +941,9 @@ CREATE TABLE public.regimens (
     id integer NOT NULL,
     color character varying,
     name character varying(280),
-    device_id integer
+    device_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -1251,7 +1261,8 @@ CREATE TABLE public.web_app_configs (
     xy_swap boolean DEFAULT false,
     home_button_homing boolean DEFAULT false,
     show_motor_plot boolean DEFAULT false,
-    show_historic_points boolean DEFAULT false
+    show_historic_points boolean DEFAULT false,
+    show_sensor_readings boolean DEFAULT false
 );
 
 
@@ -2391,6 +2402,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180920194120'),
 ('20180925203846'),
 ('20180926161918'),
-('20181014231010');
+('20181014221342'),
+('20181019023351');
 
 

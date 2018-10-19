@@ -1,6 +1,5 @@
 class ImageSerializer < ApplicationSerializer
-  attributes :id, :device_id, :attachment_processed_at, :updated_at,
-             :created_at, :attachment_url, :meta
+  attributes :device_id, :attachment_processed_at, :attachment_url, :meta
 
   def attachment_url
     url_ = object.attachment.url("x640")
