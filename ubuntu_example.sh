@@ -37,7 +37,7 @@ sudo docker-compose run web bundle install
 # Install application specific Javascript deps
 sudo docker-compose run web npm install
 # Create a database in PostgreSQL
-sudo docker-compose run web bundle exec rails db:setup
+sudo docker-compose run web bundle exec rails db:create db:migrate
 # Generate a set of *.pem files for data encryption
 sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
 # Build the UI assets via WebPack
