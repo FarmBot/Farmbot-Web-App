@@ -153,4 +153,5 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations`;
   }
+  get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
 }
