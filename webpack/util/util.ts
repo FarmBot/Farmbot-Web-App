@@ -10,8 +10,6 @@ import {
   ResourceName,
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
-import { FirmwareConfig } from "../config_storage/firmware_configs";
-import { FbosConfig } from "../config_storage/fbos_configs";
 
 export let colors: Array<Color> = [
   "blue",
@@ -197,7 +195,7 @@ export function validBotLocationData(
  * Return FirmwareConfig if the data is valid.
  */
 export function validFwConfig(
-  config: TaggedFirmwareConfig | undefined): FirmwareConfig | undefined {
+  config: TaggedFirmwareConfig | undefined): TaggedFirmwareConfig["body"] | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;
@@ -207,7 +205,7 @@ export function validFwConfig(
  * Return FbosConfig if the data is valid.
  */
 export function validFbosConfig(
-  config: TaggedFbosConfig | undefined): FbosConfig | undefined {
+  config: TaggedFbosConfig | undefined): TaggedFbosConfig["body"] | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;

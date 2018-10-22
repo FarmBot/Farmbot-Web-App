@@ -32,7 +32,6 @@ const getSyncObject = () => axios
   .get<SyncObject>(API.current.syncPatch)
   .then(x => x.data);
 
-
 interface ReconciliationResult {
   /** IDs that can't be found in local index. */
   mustGet: number[],
@@ -69,7 +68,7 @@ export function reconcileTools(_remote: SyncObject, local: ResourceIndex) {
   //   }
   // });
 
-  _remote.tools.map(([id, updated_at]) => {
+  _remote.tools.map(([id, _updated_at]) => {
     const uuid = local.byKindAndId[joinKindAndId("Tool", id)];
     if (uuid) {
       const tool = local.references[uuid];

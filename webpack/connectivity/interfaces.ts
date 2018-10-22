@@ -1,5 +1,5 @@
-import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName } from "farmbot";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export type NetworkState = "up" | "down";
 

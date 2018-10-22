@@ -9,10 +9,7 @@ import { DeviceAccountSettings } from "../devices/interfaces";
 import { ResourceName, DiagnosticDump } from "farmbot";
 import { User } from "../auth/interfaces";
 import { WebcamFeed } from "../controls/interfaces";
-import { WebAppConfig } from "../config_storage/web_app_configs";
 import { Session } from "../session";
-import { FbosConfig } from "../config_storage/fbos_configs";
-import { FirmwareConfig } from "../config_storage/firmware_configs";
 import {
   FarmEvent,
   Image,
@@ -21,7 +18,10 @@ import {
   Peripheral,
   FarmwareInstallation,
   PinBinding,
-  PlantTemplate
+  PlantTemplate,
+  FbosConfig,
+  WebAppConfig,
+  FirmwareConfig
 } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../constants";
 

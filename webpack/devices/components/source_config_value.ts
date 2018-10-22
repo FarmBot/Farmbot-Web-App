@@ -1,9 +1,8 @@
-import { FbosConfig } from "../../config_storage/fbos_configs";
 import {
   Configuration, ConfigurationName, McuParams, McuParamName
 } from "farmbot";
 import { SourceFbosConfig, SourceFwConfig } from "../interfaces";
-import { FirmwareConfig } from "../../config_storage/firmware_configs";
+import { FbosConfig, FirmwareConfig } from "farmbot/dist/resources/api_resources";
 
 export const sourceFbosConfigValue =
   (apiConfig: FbosConfig | undefined, botConfig: Configuration

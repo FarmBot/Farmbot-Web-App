@@ -4,7 +4,7 @@ import {
 } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
 import { IntegerSize } from "../../util";
-import { FirmwareConfig } from "../../config_storage/firmware_configs";
+import { FirmwareConfig } from "farmbot/dist/resources/api_resources";
 
 export interface HomingRowProps {
   hardware: McuParams;

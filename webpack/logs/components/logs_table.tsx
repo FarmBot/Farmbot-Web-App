@@ -21,7 +21,7 @@ export const xyzTableEntry =
 const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message } = tlog.body;
-  const time = formatLogTime(created_at, timeOffset);
+  const time = formatLogTime(created_at || NaN, timeOffset);
   return <tr key={uuid}>
     <td>
       <div className={`saucer ${type}`}>
