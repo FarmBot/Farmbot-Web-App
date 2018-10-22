@@ -25,9 +25,10 @@ import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
 import { getFbosConfig } from "../resources/selectors_by_kind";
-import { FbosConfig } from "../config_storage/fbos_configs";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
-import { Log, FirmwareConfig } from "farmbot/dist/resources/api_resources";
+import { Log } from "farmbot/dist/resources/api_resources";
+import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;

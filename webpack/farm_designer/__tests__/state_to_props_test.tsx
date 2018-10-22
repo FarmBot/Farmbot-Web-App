@@ -6,7 +6,7 @@ import {
 import {
   fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig
 } from "../../__test_support__/fake_state/resources";
-import { WebAppConfig } from "../../config_storage/web_app_configs";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("mapStateToProps()", () => {
   const DISCARDED_AT = "2018-01-01T00:00:00.000Z";

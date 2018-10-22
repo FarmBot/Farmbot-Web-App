@@ -24,8 +24,8 @@ import {
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
-import { FirmwareConfig } from "../../config_storage/firmware_configs";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;

@@ -1,14 +1,12 @@
 import * as React from "react";
 import { t } from "i18next";
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey
-} from "../../config_storage/web_app_configs";
 import { BooleanSetting } from "../../session_keys";
 import { ToggleButton } from "../toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const moveWidgetSetting = (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
-  ({ label, setting }: { label: string, setting: BooleanWebAppConfigKey }) =>
+  ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
     <fieldset>
       <label>
         {t(label)}

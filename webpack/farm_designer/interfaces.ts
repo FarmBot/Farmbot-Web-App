@@ -20,7 +20,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
   ExecutableType, PlantPointer
 } from "farmbot/dist/resources/api_resources";
-import { BooleanConfigKey } from "../config_storage/fbos_configs";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /* BotOriginQuadrant diagram
 

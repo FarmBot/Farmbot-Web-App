@@ -1,4 +1,7 @@
-import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
+import {
+  BooleanConfigKey,
+  NumberConfigKey
+} from "farmbot/dist/resources/configs/web_app";
 
 export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   x_axis_inverted: "x_axis_inverted",

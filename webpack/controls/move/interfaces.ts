@@ -2,12 +2,10 @@ import { BotPosition, BotState } from "../../devices/interfaces";
 import { McuParams, Xyz, TaggedUser } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey
-} from "../../config_storage/web_app_configs";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
-export type ToggleWebAppBool = (key: BooleanWebAppConfigKey) => () => void;
-export type GetWebAppBool = (key: BooleanWebAppConfigKey) => boolean;
+export type ToggleWebAppBool = (key: BooleanConfigKey) => () => void;
+export type GetWebAppBool = (key: BooleanConfigKey) => boolean;
 
 export interface MoveProps {
   dispatch: Function;

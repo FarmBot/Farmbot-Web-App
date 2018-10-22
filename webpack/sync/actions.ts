@@ -19,11 +19,11 @@ import {
   FarmwareInstallation,
   PinBinding,
   PlantTemplate,
-  FbosConfig,
-  WebAppConfig,
-  FirmwareConfig
 } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../constants";
+import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 export interface ResourceReadyPayl {
   name: ResourceName;

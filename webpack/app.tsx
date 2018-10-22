@@ -23,7 +23,7 @@ import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import { getWebAppConfigValue, GetWebAppConfigValue } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
-import { FirmwareConfig } from "farmbot/dist/resources/api_resources";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");
