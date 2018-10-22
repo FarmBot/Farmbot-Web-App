@@ -1,8 +1,7 @@
 module Devices
   class Sync < Mutations::Command
     FIELDS    = [ :id, :updated_at ]
-    PLURAL    = [ :diagnostic_dumps,
-                  :farm_events,
+    PLURAL    = [ :farm_events,
                   :farmware_envs,
                   :farmware_installations,
                   :peripherals,
@@ -19,10 +18,10 @@ module Devices
     end
 
     def execute
-      base = { now:             Time.now.utc, # Clock skew detector?
-               device:          pluck(device),
-               fbos_config:     pluck(device.fbos_config),
-               firmware_config: pluck(device.firmware_config), }
+      base = { now:              Time.now.utc, # Clock skew detector?
+               devices:          pluck(device),
+               fbos_configs:     pluck(device.fbos_config),
+               firmware_configs: pluck(device.firmware_config), }
       PLURAL.reduce(base) do |json, resource|
         json.update(resource => device.send(resource).pluck(*FIELDS))
       end
