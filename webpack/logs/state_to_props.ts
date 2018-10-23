@@ -28,7 +28,6 @@ export function mapStateToProps(props: Everything): LogsProps {
     dispatch: props.dispatch,
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     logs: takeSortedLogs(250, props.resources.index),
-    bot: props.bot,
     timeOffset: maybeGetTimeOffset(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
   };
