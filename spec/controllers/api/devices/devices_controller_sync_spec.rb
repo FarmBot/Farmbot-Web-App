@@ -7,10 +7,13 @@ describe Api::DevicesController do
   let(:device) { user.device }
 
   describe '#sync' do
+    EDGE_CASES = [:devices, # Singular resources
+                  :fbos_configs,
+                  :firmware_configs,]
     it 'provides timestamps of updates, plus current time' do
       sign_in user
 
-      FactoryBot.create(:diagnostic_dump,      device: device)
+      FactoryBot.create(:diagnostic_dump,       device: device)
       FactoryBot.create(:farm_event,            device: device)
       FactoryBot.create(:farmware_env,          device: device)
       FactoryBot.create(:farmware_installation, device: device)
@@ -28,11 +31,11 @@ describe Api::DevicesController do
       get :sync, params: {}, session: { format: :json }
       expect(response.status).to eq(200)
       expect(Time.now - Time.parse(json[:now])).to be < 150
-      pair = json[:device].first
+      pair = json[:devices].first
       expect(pair.first).to eq(device.id)
       expect(pair.last).to eq(device.updated_at.as_json)
       expect(pair.last.first(8)).to eq(device.updated_at.as_json.first(8))
-      json.keys.without(:now).without(:device).map do |key|
+      json.keys.without(:now).without(*EDGE_CASES).map do |key|
         array = json[key]
         expect(array).to be_kind_of(Array)
         sample = array.sample

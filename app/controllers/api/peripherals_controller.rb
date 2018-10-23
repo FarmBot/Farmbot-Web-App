@@ -4,7 +4,7 @@ module Api
       render json: current_device.peripherals
     end
 
-    def index
+    def show
       render json: peripheral
     end
 

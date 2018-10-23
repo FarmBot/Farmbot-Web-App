@@ -7,21 +7,20 @@ describe Devices::Sync do
 
   it 'is different this time!' do
     results = Devices::Sync.run!(device: device)
-    expect(results.keys.sort).to eq([ :device,
-                                      :diagnostic_dumps,
-                                      :farm_events,
-                                      :farmware_envs,
-                                      :farmware_installations,
-                                      :fbos_config,
-                                      :firmware_config,
-                                      :now,
-                                      :peripherals,
-                                      :pin_bindings,
-                                      :points,
-                                      :regimens,
-                                      :sensor_readings,
-                                      :sensors,
-                                      :sequences,
-                                      :tools ])
+    expect(results.keys.sort).to eq([:devices,
+                                     :farm_events,
+                                     :farmware_envs,
+                                     :farmware_installations,
+                                     :fbos_configs,
+                                     :firmware_configs,
+                                     :now,
+                                     :peripherals,
+                                     :pin_bindings,
+                                     :points,
+                                     :regimens,
+                                     :sensor_readings,
+                                     :sensors,
+                                     :sequences,
+                                     :tools])
   end
 end
