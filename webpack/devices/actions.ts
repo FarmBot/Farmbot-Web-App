@@ -9,16 +9,11 @@ import {
 } from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
-  McuParams, Configuration, rpcRequest, TaggedDevice,
-  TaggedFirmwareConfig
+  McuParams, Configuration, TaggedFirmwareConfig
 } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
-import { API } from "../api/index";
-import { User } from "../auth/interfaces";
-import {
-  getDeviceAccountSettings, getFirmwareConfig
-} from "../resources/selectors";
+import { getFirmwareConfig } from "../resources/selectors";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
@@ -54,14 +49,18 @@ export function isLog(x: any): x is Log {
     return false;
   }
 }
+
+/** Toast message upon request error. */
 export const commandErr =
   (noun = "Command") => () => error(t(`${noun} failed`));
 
+/** Toast message upon request success. */
 export const commandOK = (noun = "Command") => () => {
   const msg = t(noun) + t(" request sent to device.");
   success(msg, t("Request sent"));
 };
 
+/** Update FBOS. */
 export function checkControllerUpdates() {
   const noun = "Check for Updates";
   commandOK(noun)();
@@ -70,6 +69,7 @@ export function checkControllerUpdates() {
     .catch(commandErr(noun));
 }
 
+/** Shutdown FBOS. */
 export function powerOff() {
   const noun = "Power Off Bot";
   getDevice()
@@ -77,6 +77,7 @@ export function powerOff() {
     .then(commandOK(noun), commandErr(noun));
 }
 
+/** Factory reset FBOS. */
 export function factoryReset() {
   if (!confirm(t(Content.FACTORY_RESET_ALERT))) {
     return;
@@ -84,6 +85,7 @@ export function factoryReset() {
   getDevice().resetOS();
 }
 
+/** Reboot FBOS. */
 export function reboot() {
   const noun = "Reboot Bot";
   getDevice()
@@ -91,13 +93,11 @@ export function reboot() {
     .then(commandOK(noun), commandErr(noun));
 }
 
+/** Restart Farmduino firmware serial connection. */
 export function restartFirmware() {
   const noun = "Restart Firmware";
-  getDevice() // TODO: add `restartFirmware()` to FBJS
-    .send(rpcRequest([{
-      kind: "reboot",
-      args: { package: "arduino_firmware" }
-    }]))
+  getDevice()
+    .rebootFirmware()
     .then(commandOK(noun), commandErr(noun));
 }
 
@@ -120,23 +120,15 @@ export function emergencyUnlock() {
 export function sync(): Thunk {
   const noun = "Sync";
   return function (_dispatch, getState) {
-    const IS_OK = versionOK(getState()
-      .bot
-      .hardware
-      .informational_settings
-      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+    const currentFBOSversion =
+      getState().bot.hardware.informational_settings.controller_version;
+    const IS_OK = versionOK(currentFBOSversion, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (IS_OK) {
       getDevice()
         .sync()
-        // TODO: Probably wrong. Fix when there is time to QA - RC 5/2/18
-        .then(() => { commandOK(noun); })
         .catch(commandErr(noun));
     } else {
-      if (getState()
-        .bot
-        .hardware
-        .informational_settings
-        .controller_version) {
+      if (currentFBOSversion) {
         badVersion();
       } else {
         info(t("FarmBot is not connected."), t("Disconnected"), "red");
@@ -160,11 +152,8 @@ export function requestDiagnostic() {
   return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
 }
 
-export let saveAccountChanges: Thunk = function (_dispatch, getState) {
-  return save(getDeviceAccountSettings(getState().resources.index));
-};
-
-export let fetchReleases =
+/** Fetch FarmBot OS release data. */
+export const fetchReleases =
   (url: string, options = { beta: false }) =>
     (dispatch: Function) => {
       axios
@@ -231,15 +220,6 @@ export let fetchMinOsFeatureData = (url: string) =>
       });
   };
 
-export function save(input: TaggedDevice) {
-  return function (dispatch: Function) {
-    return axios
-      .put<User>(API.current.devicePath, input.body)
-      .then(resp => dispatch({ type: Actions.SAVE_DEVICE_OK, payload: resp.data }))
-      .catch(() => error(t("Error saving device settings.")));
-  };
-}
-
 /**
  * Toggles visibility of individual sections in the giant controls panel
  * found on the Devices page.
@@ -248,10 +228,12 @@ export function toggleControlPanel(payload: keyof ControlPanelState) {
   return { type: Actions.TOGGLE_CONTROL_PANEL_OPTION, payload };
 }
 
+/** Toggle visibility of all hardware control panel sections. */
 export function bulkToggleControlPanel(payload: boolean) {
   return { type: Actions.BULK_TOGGLE_CONTROL_PANEL, payload };
 }
 
+/** Factory reset all firmware settings. */
 export function MCUFactoryReset() {
   if (!confirm(t(Content.MCU_RESET_ALERT))) {
     return;
@@ -259,6 +241,7 @@ export function MCUFactoryReset() {
   return getDevice().resetMCU().catch(commandErr("MCU Reset"));
 }
 
+/** Toggle a firmware setting. */
 export function settingToggle(
   name: ConfigKey,
   sourceFwConfig: SourceFwConfig,
@@ -325,6 +308,7 @@ export function findHome(axis: Axis, speed = CONFIG_DEFAULTS.speed) {
     .catch(commandErr(noun));
 }
 
+/** Start hardware settings update spinner. */
 const startUpdate = () => {
   return {
     type: Actions.SETTING_UPDATE_START,
@@ -332,18 +316,20 @@ const startUpdate = () => {
   };
 };
 
-const updateOK = (dispatch: Function, noun: string) => {
+/** Stop hardware settings update spinner. */
+const updateOK = (dispatch: Function) => {
   dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
-  commandOK(noun);
 };
 
+/** Stop hardware settings update spinner and display an error toast. */
 const updateNO = (dispatch: Function, noun: string) => {
   dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
-  commandErr(noun);
+  commandErr(noun)();
 };
 
+/** Update firmware setting. */
 export function updateMCU(key: ConfigKey, val: string) {
-  const noun = "configuration update";
+  const noun = "Firmware config update";
   return function (dispatch: Function, getState: () => Everything) {
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const getParams = () => {
@@ -362,7 +348,7 @@ export function updateMCU(key: ConfigKey, val: string) {
         dispatch(startUpdate());
         getDevice()
           .updateMcu({ [key]: val })
-          .then(() => updateOK(dispatch, noun))
+          .then(() => updateOK(dispatch))
           .catch(() => updateNO(dispatch, noun));
       }
     }
@@ -374,8 +360,9 @@ export function updateMCU(key: ConfigKey, val: string) {
   };
 }
 
+/** Update FBOS setting. */
 export function updateConfig(config: Configuration) {
-  const noun = "Update Config";
+  const noun = "FarmBot OS config update";
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig && fbosConfig.body.api_migrated) {
@@ -389,27 +376,30 @@ export function updateConfig(config: Configuration) {
   };
 }
 
+/** Register a sequence to an RPi GPIO pin (FBOS < 6.4.4). */
 export function registerGpioPin(
   pinBinding: { pin_number: number, sequence_id: number }) {
   const noun = "Register GPIO Pin";
   return function (dispatch: Function) {
     getDevice()
       .registerGpio(pinBinding)
-      .then(() => updateOK(dispatch, noun))
+      .then(() => updateOK(dispatch))
       .catch(() => updateNO(dispatch, noun));
   };
 }
 
+/** Remove binding from an RPi GPIO pin (FBOS < 6.4.4). */
 export function unregisterGpioPin(pin_number: number) {
   const noun = "Unregister GPIO Pin";
   return function (dispatch: Function) {
     getDevice()
       .unregisterGpio({ pin_number })
-      .then(() => updateOK(dispatch, noun))
+      .then(() => updateOK(dispatch))
       .catch(() => updateNO(dispatch, noun));
   };
 }
 
+/** Change jog button movement amount. */
 export function changeStepSize(integer: number) {
   return {
     type: Actions.CHANGE_STEP_SIZE,
@@ -426,6 +416,7 @@ export function resetNetwork(): ReduxAction<{}> {
   return { type: Actions.RESET_NETWORK, payload: {} };
 }
 
+/** for connectivity panel */
 export function resetConnectionInfo() {
   return function (dispatch: Function) {
     dispatch(resetNetwork());
