@@ -4,6 +4,10 @@ module Api
       render json: current_device.peripherals
     end
 
+    def index
+      render json: peripheral
+    end
+
     def create
       mutate Peripherals::Create.run(raw_json, device: current_device)
     end

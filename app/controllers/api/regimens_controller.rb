@@ -6,6 +6,10 @@ module Api
       render json: your_regimens
     end
 
+    def show
+      render json: the_regimen
+    end
+
     def create
       mutate Regimens::Create.run(params.as_json, regimen_params)
     end

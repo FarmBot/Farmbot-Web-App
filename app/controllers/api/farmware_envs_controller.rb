@@ -13,6 +13,10 @@ module Api
       render json: farmware_envs
     end
 
+    def show
+      render json: farmware_env
+    end
+
     def update
       mutate FarmwareEnvs::Update.run(raw_json, farmware_env: farmware_env)
     end
