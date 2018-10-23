@@ -8,21 +8,7 @@ import { joinKindAndId } from "./resources/reducer";
 import { SpecialStatus } from "farmbot";
 
 type RelevantResource =
-  // | "device"
-  // | "diagnostic_dumps"
-  // | "farm_events"
-  // | "farmware_envs"
-  // | "farmware_installations"
-  // | "fbos_config"
-  // | "firmware_config"
-  // | "peripherals"
-  // | "pin_bindings"
-  // | "points"
-  // | "regimens"
-  // | "sensor_readings"
-  // | "sensors"
-  // | "sequences"
-  | "tools";
+  | "tools"; // We only care about "tools" for the sake of demonstration.
 
 type SyncInfoTuple = [number, string];
 type SyncObject = Record<RelevantResource, SyncInfoTuple[]>;
@@ -33,7 +19,6 @@ const getSyncObject = () => axios
   .then(x => x.data);
 
 interface ReconciliationResult {
-  /** IDs that can't be found in local index. */
   mustGet: number[],
   mustPost: string[],
   mustPut: number[],
@@ -45,28 +30,13 @@ export function reconcileTools(_remote: SyncObject, local: ResourceIndex) {
 
   const output: ReconciliationResult = {
     mustGet: [],
-    mustPost: [],
-    mustPut: [],
-    mustDelete: [
-      // Ids that exist locally, but not in sync object
-    ],
-    /** Updated locally and on remote - user or application must intervene. */
+    mustPost: [],   // Significantly smaller
+    mustPut: [],    // Significantly smaller
+    mustDelete: [], // FBOS don't need this.
     mustMerge: [
-      // Tools where status == "dirty" and `updated_at` does not match
-      // remote version
+      /** Flip out if local and remote copy are dirty- that's a merge conflict. */
     ]
-    // Not show: `mustDelete` (we don't have Tombstone records on the FE)
   };
-
-  // const toolList = _local.byKind.Tool;
-  // toolList.map(uuid => {
-  //   const tool = _local.references[uuid];
-  //   if (tool && tool.kind == "Tool") {
-
-  //   } else {
-  //     throw new Error("Impossible");
-  //   }
-  // });
 
   _remote.tools.map(([id, _updated_at]) => {
     const uuid = local.byKindAndId[joinKindAndId("Tool", id)];
@@ -78,7 +48,7 @@ export function reconcileTools(_remote: SyncObject, local: ResourceIndex) {
           if (tool.specialStatus === SpecialStatus.DIRTY) {
             output.mustPut.push(local_id);
           } else {
-            debugger;
+            throw new Error("Your data sync layer is broke.");
           }
         } else {
           output.mustPost.push(uuid);
@@ -88,6 +58,7 @@ export function reconcileTools(_remote: SyncObject, local: ResourceIndex) {
       output.mustGet.push(id);
     }
   });
+
   return output;
 }
 
