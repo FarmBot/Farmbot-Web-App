@@ -10,6 +10,7 @@ describe Api::DevicesController do
     EDGE_CASES = [:devices, # Singular resources
                   :fbos_configs,
                   :firmware_configs,]
+    FORMAT     = "%Y-%m-%d %H:%M:%S.%6N"
     it 'provides timestamps of updates, plus current time' do
       sign_in user
 
@@ -33,7 +34,8 @@ describe Api::DevicesController do
       expect(Time.now - Time.parse(json[:now])).to be < 150
       pair = json[:devices].first
       expect(pair.first).to eq(device.id)
-      expect(pair.last).to eq(device.updated_at.as_json)
+      real_time = device.updated_at.strftime(FORMAT)
+      expect(pair.last).to include(real_time)
       expect(pair.last.first(8)).to eq(device.updated_at.as_json.first(8))
       json.keys.without(:now).without(*EDGE_CASES).map do |key|
         array = json[key]
@@ -49,10 +51,12 @@ describe Api::DevicesController do
           expect(obj.id).to                 eq(sample.first)
           expect(obj.updated_at.as_json).to eq(sample.last)
         else
-          pairs = obj
-            .pluck(:id, :updated_at)
-            .map{|(id, date)| [id, date.as_json]}
-          expect(json[key]).to eq(pairs)
+          expected = obj.pluck(:id, :updated_at)
+          json[key].each_with_index do |item, index|
+            comparison = expected[index]
+            expect(item.first).to eq(comparison.first)
+            expect(Time.parse(item.last)).to eq(comparison.last.to_time)
+          end
         end
       end
     end
