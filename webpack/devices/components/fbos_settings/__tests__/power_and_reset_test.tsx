@@ -1,6 +1,6 @@
 const mockDevice = {
   updateConfig: jest.fn(() => { return Promise.resolve(); }),
-  send: jest.fn(() => { return Promise.resolve(); }),
+  rebootFirmware: jest.fn(() => { return Promise.resolve(); }),
 };
 jest.mock("../../../../device", () => ({
   getDevice: () => (mockDevice)
@@ -79,14 +79,7 @@ describe("<PowerAndReset/>", () => {
     expect(wrapper.text().toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
     clickButton(wrapper, 2, "restart");
-    expect(mockDevice.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        kind: "rpc_request",
-        args: expect.objectContaining({ label: expect.any(String) }),
-        body: [expect.objectContaining({
-          kind: "reboot", args: { package: "arduino_firmware" }
-        })]
-      }));
+    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 
   it("shows change ownership button", () => {

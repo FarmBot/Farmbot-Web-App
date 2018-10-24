@@ -3,7 +3,7 @@ const mockDevice = {
   powerOff: jest.fn(() => { return Promise.resolve(); }),
   resetOS: jest.fn(),
   reboot: jest.fn(() => { return Promise.resolve(); }),
-  send: jest.fn(() => { return Promise.resolve(); }),
+  rebootFirmware: jest.fn(() => { return Promise.resolve(); }),
   checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
   emergencyLock: jest.fn(() => { return Promise.resolve(); }),
   emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
@@ -15,6 +15,8 @@ const mockDevice = {
   sync: jest.fn(() => { return Promise.resolve(); }),
   readStatus: jest.fn(() => Promise.resolve()),
   updateConfig: jest.fn(() => Promise.resolve()),
+  registerGpio: jest.fn(() => Promise.reject()),
+  unregisterGpio: jest.fn(() => Promise.reject()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
 
@@ -88,7 +90,7 @@ describe("reboot()", function () {
 describe("restartFirmware()", function () {
   it("calls restartFirmware", async () => {
     await actions.restartFirmware();
-    expect(mockDevice.send).toHaveBeenCalled();
+    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -107,9 +109,28 @@ describe("emergencyLock() / emergencyUnlock", function () {
 });
 
 describe("sync()", function () {
+  it("calls sync", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = "999.0.0";
+    actions.sync()(jest.fn(), () => state);
+    expect(mockDevice.sync).toHaveBeenCalled();
+  });
+
+  it("calls badVersion", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = "1.0.0";
+    actions.sync()(jest.fn(), () => state);
+    expect(mockDevice.sync).not.toHaveBeenCalled();
+    expect(info).toBeCalledWith(
+      expect.stringContaining("old version"),
+      expect.stringContaining("Please Update"),
+      "red");
+  });
+
   it("doesn't call sync: disconnected", () => {
-    const getState = () => fakeState();
-    actions.sync()(jest.fn(), getState);
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = undefined;
+    actions.sync()(jest.fn(), () => state);
     expect(mockDevice.sync).not.toHaveBeenCalled();
     const expectedMessage = ["FarmBot is not connected.", "Disconnected", "red"];
     expect(info).toBeCalledWith(...expectedMessage);
@@ -189,6 +210,17 @@ describe("settingToggle()", () => {
       type: Actions.EDIT_RESOURCE
     });
   });
+
+  it("displays an alert message", () => {
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    window.alert = jest.fn();
+    const msg = "this is an alert.";
+    actions.settingToggle(
+      "param_mov_nr_retry", jest.fn(() => ({ value: "" })),
+      msg)(jest.fn(), fakeState);
+    expect(window.alert).toHaveBeenCalledWith(msg);
+  });
 });
 
 describe("updateMCU()", () => {
@@ -235,6 +267,22 @@ describe("updateMCU()", () => {
     expect(mockDevice.updateMcu).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalledWith(
       "Minimum speed should always be lower than maximum");
+  });
+
+  it("catches error", async () => {
+    mockDevice.updateMcu = jest.fn(() => { return Promise.reject(); });
+    const dispatch = jest.fn();
+    const state = fakeState();
+    const fakeConfig = fakeFirmwareConfig();
+    fakeConfig.body.api_migrated = false;
+    state.resources = buildResourceIndex([fakeConfig]);
+    await actions.updateMCU(
+      "param_mov_nr_retry", "1")(dispatch, () => state);
+    await expect(mockDevice.updateMcu).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenLastCalledWith({
+      payload: undefined, type: Actions.SETTING_UPDATE_END
+    });
+    expect(error).toHaveBeenCalledWith("Firmware config update failed");
   });
 });
 
@@ -451,6 +499,22 @@ describe("updateConfig()", () => {
       },
       type: Actions.EDIT_RESOURCE
     });
+  });
+});
+
+describe("registerGpioPin()", () => {
+  it("catches error", async () => {
+    await actions.registerGpioPin({ pin_number: 1, sequence_id: 1 })(jest.fn());
+    await expect(mockDevice.registerGpio).toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Register GPIO Pin failed");
+  });
+});
+
+describe("unregisterGpioPin()", () => {
+  it("catches error", async () => {
+    await actions.unregisterGpioPin(1)(jest.fn());
+    await expect(mockDevice.unregisterGpio).toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Unregister GPIO Pin failed");
   });
 });
 

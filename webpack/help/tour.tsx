@@ -31,8 +31,7 @@ interface TourState {
 export class Tour extends React.Component<TourProps, TourState> {
   state: TourState = { run: false, index: 0, };
 
-  // tslint:disable-next-line:no-any // broken typing
-  callback: any = ({ action, index, step, type }: CBData) => {
+  callback = ({ action, index, step, type }: CBData) => {
     console.log("Tour debug:", step.target, type, action);
     tourPageNavigation(step.target);
     if (type === "step:after") {
