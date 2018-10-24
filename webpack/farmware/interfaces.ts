@@ -1,6 +1,6 @@
 import { Dictionary, FarmwareManifest, SyncStatus } from "farmbot/dist";
 import { NetworkState } from "../connectivity/interfaces";
-import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export interface FWState {
   selectedFarmware: string | undefined;

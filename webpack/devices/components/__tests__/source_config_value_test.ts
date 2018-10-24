@@ -1,7 +1,8 @@
 import { sourceFbosConfigValue, sourceFwConfigValue } from "../source_config_value";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import {
-  fakeFbosConfig, fakeFirmwareConfig
+  fakeFbosConfig,
+  fakeFirmwareConfig
 } from "../../../__test_support__/fake_state/resources";
 
 describe("sourceFbosConfigValue()", () => {

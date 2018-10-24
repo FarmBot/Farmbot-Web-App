@@ -16,11 +16,11 @@ import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/selection_box";
-import { BooleanConfigKey } from "../config_storage/web_app_configs";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
   ExecutableType, PlantPointer
 } from "farmbot/dist/resources/api_resources";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /* BotOriginQuadrant diagram
 

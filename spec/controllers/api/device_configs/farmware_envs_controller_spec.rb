@@ -56,4 +56,11 @@ describe Api::FarmwareEnvsController do
     expect(response.status).to be(200)
     expect(FarmwareEnv.exists?(id)).to be false
   end
+
+  it 'shows' do
+    sign_in user
+    fe = FactoryBot.create(:farmware_env, device: device)
+    get :show, params: { id: fe.id }
+    expect(json[:id]).to eq(fe.id)
+  end
 end

@@ -6,6 +6,10 @@ module Api
       render json: current_device.farm_events
     end
 
+    def show
+      render json: current_device.farm_events.find(params[:id])
+    end
+
     def create
       mutate FarmEvents::Create.run(params.as_json, device: current_device)
     end

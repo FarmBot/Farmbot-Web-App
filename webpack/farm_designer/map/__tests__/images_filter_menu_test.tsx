@@ -2,8 +2,8 @@ import * as React from "react";
 import { ImageFilterMenu, ImageFilterMenuProps } from "../image_filter_menu";
 import { shallow, mount } from "enzyme";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
-import { StringConfigKey } from "../../../config_storage/web_app_configs";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
+import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 const mockConfig = fakeWebAppConfig();
 jest.mock("../../../resources/selectors", () => {

@@ -3,7 +3,8 @@ import { Actions } from "../constants";
 import { MiddlewareConfig } from "./middlewares";
 import { ResourceName } from "farmbot";
 import { revertToEnglish } from "../revert_to_english";
-import { WebAppConfig } from "../config_storage/web_app_configs";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 
 /**

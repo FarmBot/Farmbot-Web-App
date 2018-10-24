@@ -4,6 +4,10 @@ module Api
       render json: current_device.sensors
     end
 
+    def show
+      render json: sensor
+    end
+
     def create
       mutate Sensors::Create.run(raw_json, device: current_device)
     end

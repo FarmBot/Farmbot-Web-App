@@ -56,6 +56,8 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     amq-protocol (2.3.0)
+    appsignal (2.7.2)
+      rack
     arel (9.0.0)
     bcrypt (3.1.12)
     builder (3.2.3)
@@ -315,9 +317,9 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
-    skylight (3.0.0)
-      skylight-core (= 3.0.0)
-    skylight-core (3.0.0)
+    skylight (3.1.0)
+      skylight-core (= 3.1.0)
+    skylight-core (3.1.0)
       activesupport (>= 4.2.0)
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
@@ -358,6 +360,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  appsignal
   bunny
   capybara
   climate_control

@@ -15,9 +15,9 @@ import {
   ConnectionStatus, ConnectionState, NetworkState
 } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
-import { WebAppConfig } from "../config_storage/web_app_configs";
-import { FirmwareConfig } from "../config_storage/firmware_configs";
 import { Farmwares } from "../farmware/interfaces";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;

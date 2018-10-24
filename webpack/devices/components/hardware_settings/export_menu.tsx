@@ -1,6 +1,6 @@
 import * as React from "react";
-import { FirmwareConfig } from "../../../config_storage/firmware_configs";
 import { pickBy } from "lodash";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 /** i.e., { encoder_enabled: { x: 1, y: 1, z: 1 } } */
 type CondensedFwConfig = {

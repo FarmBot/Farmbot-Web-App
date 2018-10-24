@@ -8,18 +8,18 @@ FarmBot::Application.routes.draw do
     # Standard API Resources:
     {
       diagnostic_dumps:       [:create, :destroy, :index],
-      farm_events:            [:create, :destroy, :index, :update],
-      farmware_installations: [:create, :destroy, :index],
+      farm_events:            [:create, :destroy, :index, :show, :update],
+      farmware_installations: [:create, :destroy, :index, :show],
       images:                 [:create, :destroy, :index, :show],
       password_resets:        [:create, :update],
-      peripherals:            [:create, :destroy, :index, :update],
-      sensors:                [:create, :destroy, :index, :update],
-      regimens:               [:create, :destroy, :index, :update],
+      peripherals:            [:create, :destroy, :index, :show, :update],
+      sensors:                [:create, :destroy, :index, :show, :update],
+      regimens:               [:create, :destroy, :index, :show, :update],
       sensor_readings:        [:create, :destroy, :index, :show],
       sequences:              [:create, :destroy, :index, :show, :update],
       tools:                  [:create, :destroy, :index, :show, :update],
       webcam_feeds:           [:create, :destroy, :index, :show, :update],
-      farmware_envs:         [:create, :destroy, :index, :update],
+      farmware_envs:          [:create, :destroy, :index, :show, :update],
       plant_templates:        [:create, :destroy, :index, :update],
       pin_bindings:           [:create, :destroy, :index, :show, :update]
     }.to_a.map { |(name, only)| resources name, only: only }
@@ -54,6 +54,7 @@ FarmBot::Application.routes.draw do
     end
 
     get "/global_config" => "global_config#show", as: :global_config
+    get "/device/sync"   => "devices#sync",       as: :device_sync
 
     # Make life easier on API users by not adding special rules for singular
     # resources.

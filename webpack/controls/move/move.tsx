@@ -6,9 +6,6 @@ import { MustBeOnline } from "../../devices/must_be_online";
 import { validBotLocationData } from "../../util";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { ToolTips } from "../../constants";
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey
-} from "../../config_storage/web_app_configs";
 import { BooleanSetting } from "../../session_keys";
 import { MoveProps } from "./interfaces";
 import { MoveWidgetSettingsMenu } from "./settings_menu";
@@ -16,13 +13,14 @@ import { JogControlsGroup } from "./jog_controls_group";
 import { BotPositionRows } from "./bot_position_rows";
 import { MotorPositionPlot } from "./motor_position_plot";
 import { Popover, Position } from "@blueprintjs/core";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export class Move extends React.Component<MoveProps, {}> {
 
-  toggle = (key: BooleanWebAppConfigKey) => (): void =>
+  toggle = (key: BooleanConfigKey) => (): void =>
     this.props.dispatch(toggleWebAppBool(key));
 
-  getValue = (key: BooleanWebAppConfigKey): boolean =>
+  getValue = (key: BooleanConfigKey): boolean =>
     !!this.props.getWebAppConfigVal(BooleanSetting[key]);
 
   render() {
