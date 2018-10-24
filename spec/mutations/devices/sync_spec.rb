@@ -23,4 +23,9 @@ describe Devices::Sync do
                                      :sequences,
                                      :tools])
   end
+
+  # it 'optimizes with SQL' do
+  #   query         = "SELECT id, updated_at FROM ? WHERE device_id = ?"
+  #   records_array = ActiveRecord::Base.connection.execute(sql)
+  # end
 end
