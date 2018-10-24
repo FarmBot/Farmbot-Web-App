@@ -43,7 +43,7 @@
     "@types/react": "^16.4.18",
     "@types/react-color": "2.13.6",
     "@types/react-dom": "^16.0.9",
-    "@types/react-joyride": "^2.0.0",
+    "@types/react-joyride": "^2.0.1",
     "@types/react-redux": "6.0.9",
     "axios": "^0.18.0",
     "boxed_value": "^1.0.0",

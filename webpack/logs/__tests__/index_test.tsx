@@ -9,7 +9,6 @@ import { mount } from "enzyme";
 import { Logs } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, Dictionary } from "farmbot";
-import { bot } from "../../__test_support__/fake_state/bot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { LogsProps } from "../interfaces";
@@ -27,7 +26,6 @@ describe("<Logs />", () => {
   const fakeProps = (): LogsProps => {
     return {
       logs: fakeLogs(),
-      bot,
       timeOffset: 0,
       dispatch: jest.fn(),
       sourceFbosConfig: jest.fn(),
