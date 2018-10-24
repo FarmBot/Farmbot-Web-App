@@ -6,7 +6,7 @@ class Rack::Attack
 
   ### Stop people from overusing the sync object. ###
   throttle('sync_req/ip', limit: 5, period: 1.minutes) do |req|
-    req.ip if req.parameters["action"] == "sync"
+    req.ip if req.url.include?("/sync")
   end
 end
 
