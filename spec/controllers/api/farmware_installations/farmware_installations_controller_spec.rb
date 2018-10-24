@@ -40,6 +40,16 @@ describe Api::FarmwareInstallationsController do
     end
   end
 
+  describe "#show" do
+    it "lists one" do
+      fi = FactoryBot.create(:farmware_installation, device: user.device)
+      sign_in user
+      get :show, params: { id: fi.id }
+      expect(response.status).to eq(200)
+      expect(json[:id]).to eq(fi.id)
+    end
+  end
+
   describe "#destroy" do
     it "destroys a record" do
       sign_in user
