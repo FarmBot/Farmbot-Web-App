@@ -3,6 +3,11 @@ class Rack::Attack
   throttle('req/ip', limit: 1000, period: 1.minutes) do |req|
     req.ip
   end
+
+  ### Stop people from overusing the sync object. ###
+  throttle('sync_req/ip', limit: 5, period: 1.minutes) do |req|
+    req.ip if req.url.include?("/sync")
+  end
 end
 
 # Always allow requests from localhost
