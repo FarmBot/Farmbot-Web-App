@@ -63,19 +63,19 @@ FarmBot::Application.routes.draw do
     patch "/device/:id" => "devices#update", as: :patch_device_redirect
     put   "/device/:id" => "devices#update", as: :put_device_redirect
 
-    delete "/api/fbos_config/:id" => "fbos_configs#destroy", as: "delete_fbos_config_redirect"
-    get    "/api/fbos_config/:id" => "fbos_configs#show",    as: "get_fbos_config_redirect"
-    put    "/api/fbos_config/:id" => "fbos_configs#update",  as: "put_fbos_config_redirect"
+    delete "/fbos_config/:id" => "fbos_configs#destroy", as: "delete_fbos_config_redirect"
+    get    "/fbos_config/:id" => "fbos_configs#show",    as: "get_fbos_config_redirect"
+    put    "/fbos_config/:id" => "fbos_configs#update",  as: "put_fbos_config_redirect"
 
-    delete "/api/firmware_config/:id" => "firmware_configs#destroy", as: "delete_firmware_config_redirect"
-    get    "/api/firmware_config/:id" => "firmware_configs#show",    as: "get_firmware_config_redirect"
-    patch  "/api/firmware_config/:id" => "firmware_configs#update",  as: "patch_firmware_config_redirect"
-    put    "/api/firmware_config/:id" => "firmware_configs#update",  as: "put_firmware_config_redirect"
+    delete "/firmware_config/:id" => "firmware_configs#destroy", as: "delete_firmware_config_redirect"
+    get    "/firmware_config/:id" => "firmware_configs#show",    as: "get_firmware_config_redirect"
+    patch  "/firmware_config/:id" => "firmware_configs#update",  as: "patch_firmware_config_redirect"
+    put    "/firmware_config/:id" => "firmware_configs#update",  as: "put_firmware_config_redirect"
 
-    delete "/api/web_app_config/:id" => "web_app_configs#destroy",  as: "delete_web_app_config_redirect"
-    get    "/api/web_app_config/:id" => "web_app_configs#show",     as: "get_web_app_config_redirect"
-    patch  "/api/web_app_config/:id" => "web_app_configs#update",   as: "patch_web_app_config_redirect"
-    put    "/api/web_app_config/:id" => "web_app_configs#update",   as: "put_web_app_config_redirect"
+    delete "/web_app_config/:id" => "web_app_configs#destroy",  as: "delete_web_app_config_redirect"
+    get    "/web_app_config/:id" => "web_app_configs#show",     as: "get_web_app_config_redirect"
+    patch  "/web_app_config/:id" => "web_app_configs#update",   as: "patch_web_app_config_redirect"
+    put    "/web_app_config/:id" => "web_app_configs#update",   as: "put_web_app_config_redirect"
 
     patch "/users/:id" => "users#update", as: :patch_users_redirect
     put   "/users/:id" => "users#update", as: :put_users_redirect

@@ -81,11 +81,10 @@ export class SequenceEditorMiddleActive extends
               onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
           </Col>
         </Row>
-        {shouldDisplay(Feature.variables) &&
-          <LocalsList
-            sequence={this.props.sequence}
-            resources={this.props.resources}
-            dispatch={this.props.dispatch} />}
+        <LocalsList
+          sequence={this.props.sequence}
+          resources={this.props.resources}
+          dispatch={this.props.dispatch} />
         <hr />
       </div>
       <div className="sequence" id="sequenceDiv">
