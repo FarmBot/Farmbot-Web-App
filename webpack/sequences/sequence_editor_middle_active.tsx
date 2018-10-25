@@ -14,7 +14,6 @@ import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 import { LocalsList } from "./locals_list";
-import { Feature } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -44,7 +43,7 @@ const copy = function (dispatch: Function, sequence: TaggedSequence) {
 export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   render() {
-    const { dispatch, sequence, shouldDisplay } = this.props;
+    const { dispatch, sequence } = this.props;
 
     return <div className="sequence-editor-content">
       <div className="sequence-editor-tools">

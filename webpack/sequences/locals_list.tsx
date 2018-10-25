@@ -186,9 +186,6 @@ export const ParentVariableForm =
         list={generateList(resources, [PARENT])}
         selectedItem={ddiLabel}
         onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
-      <pre>
-        {JSON.stringify(parent, null, 2)}
-      </pre>
       <br /> {/** Lol */}
       <Row>
         <Col xs={4}>
