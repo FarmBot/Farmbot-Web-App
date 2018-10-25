@@ -13,7 +13,7 @@ import {
 } from "../tile_pin_support";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
+import { emptyState } from "../../../resources/reducer_support";
 
 describe("Pin tile support functions", () => {
   function fakeProps() {

@@ -16,7 +16,7 @@ import {
   TaggedToolSlotPointer,
 } from "farmbot";
 import { ResourceIndex } from "./interfaces";
-import { joinKindAndId } from "./reducer";
+import { joinKindAndId } from "./reducer_support";
 import { isNumber } from "lodash";
 import { findAll } from "./selectors";
 import * as _ from "lodash";

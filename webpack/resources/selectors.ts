@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { ResourceIndex } from "./interfaces";
-import { joinKindAndId } from "./reducer";
+import { joinKindAndId } from "./reducer_support";
 import {
   ResourceName,
   TaggedGenericPointer,

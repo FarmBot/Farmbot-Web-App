@@ -11,9 +11,7 @@ interface Props {
   onChange: CALLBACK;
 }
 
-export function ParentSelector({
-  resources, selected, onChange
-}: Props) {
+export function ParentSelector({ resources, selected, onChange }: Props) {
   return <div>
     <label>{t("Set value of 'parent' to:")}</label>
     <TileMoveAbsSelect

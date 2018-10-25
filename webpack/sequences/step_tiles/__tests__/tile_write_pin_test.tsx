@@ -3,7 +3,7 @@ import { TileWritePin } from "../tile_write_pin";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
+import { emptyState } from "../../../resources/reducer_support";
 
 describe("<TileWritePin/>", () => {
   function fakeProps() {

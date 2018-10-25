@@ -1,3 +1,4 @@
+
 import { t } from "i18next";
 import {
   getAllSavedPeripherals,
@@ -11,7 +12,7 @@ import {
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
-import { joinKindAndId } from "../../resources/reducer";
+import { joinKindAndId } from "../../resources/reducer_support";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";

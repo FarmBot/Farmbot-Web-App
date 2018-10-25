@@ -3,9 +3,8 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
-  resourceReducer,
   emptyState
-} from "../reducer";
+} from "../reducer_support";
 import {
   TaggedTool,
   TaggedToolSlotPointer,
@@ -19,6 +18,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as _ from "lodash";
+import { resourceReducer } from "../reducer";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;

@@ -3,7 +3,7 @@ import { TileWait } from "../tile_wait";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Wait } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
+import { emptyState } from "../../../resources/reducer_support";
 
 describe("<TileWait/>", () => {
   function bootstrapTest() {

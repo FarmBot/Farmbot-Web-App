@@ -3,7 +3,7 @@ import { TileExecuteScript } from "../tile_execute_script";
 import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ExecuteScript } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
+import { emptyState } from "../../../resources/reducer_support";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
 
