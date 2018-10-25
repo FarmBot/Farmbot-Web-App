@@ -59,9 +59,9 @@ FarmBot::Application.routes.draw do
     # Make life easier on API users by not adding special rules for singular
     # resources.
     # Might be safe to remove now with the advent of TaggedResource.kind
-    get   "/device/:id"      => "devices#show",   as: :get_device_redirect
-    patch "/device/:id"      => "devices#update", as: :patch_device_redirect
-    put   "/device/:id"      => "devices#update", as: :put_device_redirect
+    get   "/device/:id" => "devices#show",   as: :get_device_redirect
+    patch "/device/:id" => "devices#update", as: :patch_device_redirect
+    put   "/device/:id" => "devices#update", as: :put_device_redirect
 
     delete "/api/fbos_config/:id" => "fbos_configs#destroy", as: "delete_fbos_config_redirect"
     get    "/api/fbos_config/:id" => "fbos_configs#show",    as: "get_fbos_config_redirect"
@@ -77,8 +77,8 @@ FarmBot::Application.routes.draw do
     patch  "/api/web_app_config/:id" => "web_app_configs#update",   as: "patch_web_app_config_redirect"
     put    "/api/web_app_config/:id" => "web_app_configs#update",   as: "put_web_app_config_redirect"
 
-    patch "/users/:id"       => "users#update", as: :patch_users_redirect
-    put   "/users/:id"       => "users#update", as: :put_users_redirect
+    patch "/users/:id" => "users#update", as: :patch_users_redirect
+    put   "/users/:id" => "users#update", as: :put_users_redirect
 
     patch "/webcam_feed/:id" => "webcam_feeds#update", as: :patch_webcam_feed_redirect
     put   "/webcam_feed/:id" => "webcam_feeds#update", as: :put_webcam_feed_redirect
