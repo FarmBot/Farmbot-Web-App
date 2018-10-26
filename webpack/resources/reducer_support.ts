@@ -162,7 +162,7 @@ export function removeFromIndex(index: ResourceIndex, tr: TaggedResource) {
   }
 }
 
-export function whoops(origin: string, kind: string) {
+export function whoops(origin: string, kind: string): never {
   const msg = `${origin}/${kind}: No handler written for this one yet.`;
   throw new Error(msg);
 }

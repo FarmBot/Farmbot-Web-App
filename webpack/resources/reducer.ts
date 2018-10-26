@@ -26,92 +26,45 @@ import { ResourceReadyPayl } from "../sync/actions";
 import { arrayWrap } from "./util";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 
+const STUFF_WE_HANDLE: TaggedResource["kind"][] = ["Crop", "Device",
+  "DiagnosticDump", "FarmEvent", "FarmwareInstallation", "FbosConfig",
+  "FirmwareConfig", "Image", "Log", "Peripheral", "PinBinding", "PlantTemplate",
+  "Point", "Regimen", "SavedGarden", "Sensor", "SensorReading", "Sequence",
+  "Tool", "User", "WebAppConfig", "WebcamFeed"];
+
+const sanitize =
+  (input: TaggedResource | undefined, origin: string): TaggedResource => {
+    if (input && input.body && STUFF_WE_HANDLE.includes(input.kind)) {
+      return input;
+    } else {
+      return whoops(origin, (input || { kind: "EMPTY???" }).kind);
+    }
+  };
+
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
   generateReducer<RestResources>(initialState, afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      const resource = payload;
+      const resource = sanitize(payload, Actions.SAVE_RESOURCE_OK);
       resource.specialStatus = SpecialStatus.SAVED;
-      if (resource
-        && resource.body) {
-        switch (resource.kind) {
-          case "Crop":
-          case "Device":
-          case "DiagnosticDump":
-          case "FarmEvent":
-          case "FarmwareInstallation":
-          case "FbosConfig":
-          case "FirmwareConfig":
-          case "Log":
-          case "Peripheral":
-          case "PinBinding":
-          case "PlantTemplate":
-          case "Point":
-          case "Regimen":
-          case "SavedGarden":
-          case "Sensor":
-          case "Sequence":
-          case "Tool":
-          case "User":
-          case "WebAppConfig":
-          case "WebcamFeed":
-            reindexResource(s.index, resource);
-            dontTouchThis(resource);
-            s.index.references[resource.uuid] = resource;
-            break;
-          default:
-            whoops(Actions.SAVE_RESOURCE_OK, payload.kind);
-        }
-      } else {
-        throw new Error("Somehow, a resource was created without an ID?");
-      }
+      reindexResource(s.index, resource);
+      dontTouchThis(resource);
+      s.index.references[resource.uuid] = resource;
       return s;
     })
     .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-      const resource = payload;
-      switch (resource.kind) {
-        case "Crop":
-        case "Device":
-        case "DiagnosticDump":
-        case "FarmEvent":
-        case "FarmwareInstallation":
-        case "FbosConfig":
-        case "FirmwareConfig":
-        case "Image":
-        case "Log":
-        case "Peripheral":
-        case "PinBinding":
-        case "PlantTemplate":
-        case "Point":
-        case "Regimen":
-        case "SavedGarden":
-        case "Sensor":
-        case "SensorReading":
-        case "Sequence":
-        case "Tool":
-        case "User":
-        case "WebAppConfig":
-        case "WebcamFeed":
-          removeFromIndex(s.index, resource);
-          break;
-        default:
-          whoops(Actions.DESTROY_RESOURCE_OK, payload.kind);
-      }
+      const resource = sanitize(payload, Actions.DESTROY_RESOURCE_OK);
+      removeFromIndex(s.index, resource);
       return s;
     })
     .add<TaggedResource>(Actions.UPDATE_RESOURCE_OK, (s, { payload }) => {
       const uuid = payload.uuid;
       s.index.references[uuid] = payload;
-      const tr = s.index.references[uuid];
-      if (tr) {
-        tr.specialStatus = SpecialStatus.SAVED;
-        sanityCheck(tr);
-        dontTouchThis(tr);
-        reindexResource(s.index, tr);
-        return s;
-      } else {
-        throw new Error("BAD UUID IN UPDATE_RESOURCE_OK");
-      }
+      const tr = sanitize(s.index.references[uuid], Actions.UPDATE_RESOURCE_OK);
+      tr.specialStatus = SpecialStatus.SAVED;
+      dontTouchThis(tr);
+      reindexResource(s.index, tr);
+      return s;
     })
     .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
       const uuid = payload.uuid;
