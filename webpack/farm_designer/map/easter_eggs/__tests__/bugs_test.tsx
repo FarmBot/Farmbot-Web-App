@@ -5,7 +5,9 @@ import {
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
-import { fakeMapTransformProps } from "../../../../__test_support__/map_transform_props";
+import {
+  fakeMapTransformProps
+} from "../../../../__test_support__/map_transform_props";
 
 const expectAlive = (value: string) =>
   expect(getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE)).toEqual(value);
