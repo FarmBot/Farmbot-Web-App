@@ -1,5 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
+import { Color } from "./ui";
 
 /* tslint:disable:max-line-length */
 
@@ -13,10 +14,12 @@ export function LoadingPlant({ animate }: { animate: boolean }) {
             cx={150}
             cy={250}
             r={110}
-            stroke="rgba(256,256,256,0.7)"
+            stroke={Color.white}
+            strokeOpacity={0.7}
             strokeWidth={6}
             strokeDasharray={16}
-            fill="rgba(256,256,256,0.25)" />
+            fill={Color.white}
+            fillOpacity={0.25} />
           <g className="loading-plant-svg-container">
             <g className="loading-plant">
               <path
@@ -72,7 +75,7 @@ export function LoadingPlant({ animate }: { animate: boolean }) {
         x={150}
         fontSize={35}
         textAnchor="middle"
-        fill="#434343">
+        fill={Color.darkGray}>
         {t("Loading...")}
       </text>
     </svg>

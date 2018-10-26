@@ -37,7 +37,7 @@ export class AddPlant
       rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
 
     return <div
-      className={"panel-container green-panel"}>
+      className={"panel-container green-panel add-plant-panel"}>
       <div className="panel-header green-panel"
         style={{ background: backgroundURL }}>
         <p className="panel-title">

@@ -153,6 +153,9 @@
 }
 
 .plant-selection-panel {
+  .back-arrow {
+    vertical-align: bottom;
+  }
   .panel-content {
     padding: 15rem 1.4rem;
     padding-right: 0;
@@ -166,6 +169,12 @@
     img {
       filter: grayscale(100%);
     }
+  }
+}
+
+.add-plant-panel {
+  .back-arrow {
+    vertical-align: bottom;
   }
 }
 
