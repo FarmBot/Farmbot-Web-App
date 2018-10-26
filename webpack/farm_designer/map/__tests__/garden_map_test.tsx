@@ -1,376 +1,196 @@
-jest.mock("../../../open_farm/icons", () => ({
-  cachedCrop: jest.fn(() => { return Promise.resolve({ spread: 100 }); })
-}));
-
 jest.mock("../../actions", () => ({
-  closePlantInfo: jest.fn(),
-  movePlant: jest.fn(),
   unselectPlant: jest.fn(() => jest.fn()),
 }));
 
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn(),
-  edit: () => "edit resource",
-  save: () => "save resource",
+import { Mode } from "../interfaces";
+let mockMode = Mode.none;
+jest.mock("../util", () => ({
+  getMode: () => mockMode,
+  getMapSize: () => ({ h: undefined, w: undefined }),
+  getGardenCoordinates: jest.fn(),
 }));
 
-let mockPath = "";
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+jest.mock("../layers/plants/plant_actions", () => ({
+  dragPlant: jest.fn(),
+  dropPlant: jest.fn(),
+  beginPlantDrag: jest.fn(),
+  maybeSavePlantLocation: jest.fn(),
 }));
+
+jest.mock("../drawn_point/drawn_point_actions", () => ({
+  startNewPoint: jest.fn(),
+  resizePoint: jest.fn(),
+}));
+
+jest.mock("../background/selection_box_actions", () => ({
+  startNewSelectionBox: jest.fn(),
+  resizeBox: jest.fn(),
+}));
+
+jest.mock("../../plants/move_to", () => ({ chooseLocation: jest.fn() }));
 
 import * as React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow } from "enzyme";
 import { GardenMapProps } from "../../interfaces";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { Actions } from "../../../constants";
-import { initSave } from "../../../api/crud";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
-import { movePlant, unselectPlant } from "../../actions";
-import { error } from "farmbot-toastr";
+import { unselectPlant } from "../../actions";
+import {
+  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
+} from "../layers/plants/plant_actions";
+import {
+  startNewSelectionBox, resizeBox
+} from "../background/selection_box_actions";
+import { getGardenCoordinates } from "../util";
+import { chooseLocation } from "../../plants/move_to";
+import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 
-function fakeProps(): GardenMapProps {
-  return {
-    showPoints: true,
-    showPlants: true,
-    showSpread: false,
-    showFarmbot: false,
-    showImages: false,
-    showSensorReadings: false,
-    selectedPlant: fakePlant(),
-    crops: [],
-    dispatch: jest.fn(),
-    designer: {
-      selectedPlants: undefined,
-      hoveredPlant: {
-        plantUUID: "",
-        icon: ""
-      },
-      hoveredPlantListItem: undefined,
-      cropSearchQuery: "",
-      cropSearchResults: [{
-        crop: {
-          name: "strawberry",
-          slug: "strawberry",
-          binomial_name: "",
-          common_names: [],
-          description: "",
-          sun_requirements: "",
-          sowing_method: "",
-          processing_pictures: 0
-        }, image: ""
-      }],
-      chosenLocation: { x: undefined, y: undefined, z: undefined },
-      currentPoint: undefined,
-      openedSavedGarden: undefined,
-    },
-    plants: [fakePlant(), fakePlant()],
-    points: [],
-    toolSlots: [],
-    botLocationData: {
-      position: { x: 0, y: 0, z: 0 },
-      scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined },
-    },
-    botSize: {
-      x: { value: 3000, isDefault: true },
-      y: { value: 1500, isDefault: true }
-    },
-    stopAtHome: { x: true, y: true },
-    hoveredPlant: fakePlant(),
-    zoomLvl: 1,
-    botOriginQuadrant: 2,
-    gridSize: { x: 1000, y: 1000 },
-    gridOffset: { x: 100, y: 100 },
-    peripherals: [],
-    eStopStatus: false,
-    latestImages: [],
-    cameraCalibrationData: {
-      scale: undefined, rotation: undefined,
-      offset: { x: undefined, y: undefined },
-      origin: undefined,
-      calibrationZ: undefined
-    },
-    getConfigValue: jest.fn(),
-    sensorReadings: [],
-    sensors: [],
-    timeOffset: 0,
-  };
-}
+const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
-describe("<GardenPlant/>", () => {
-  beforeEach(function () {
-    Object.defineProperty(document, "querySelector", {
-      value: () => { return { scrollLeft: 1, scrollTop: 2 }; },
-      configurable: true
-    });
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: 1 }; }, configurable: true
-    });
-  });
+const fakeProps = (): GardenMapProps => ({
+  showPoints: true,
+  showPlants: true,
+  showSpread: false,
+  showFarmbot: false,
+  showImages: false,
+  showSensorReadings: false,
+  selectedPlant: undefined,
+  crops: [],
+  dispatch: jest.fn(),
+  designer: {
+    selectedPlants: undefined,
+    hoveredPlant: { plantUUID: "", icon: "" },
+    hoveredPlantListItem: undefined,
+    cropSearchQuery: "",
+    cropSearchResults: [],
+    chosenLocation: { x: undefined, y: undefined, z: undefined },
+    currentPoint: undefined,
+    openedSavedGarden: undefined,
+  },
+  plants: [],
+  points: [],
+  toolSlots: [],
+  botLocationData: {
+    position: { x: 0, y: 0, z: 0 },
+    scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    raw_encoders: { x: undefined, y: undefined, z: undefined },
+  },
+  botSize: {
+    x: { value: 3000, isDefault: true },
+    y: { value: 1500, isDefault: true }
+  },
+  stopAtHome: { x: true, y: true },
+  hoveredPlant: undefined,
+  zoomLvl: 1,
+  botOriginQuadrant: 2,
+  gridSize: { x: 1000, y: 2000 },
+  gridOffset: { x: 100, y: 100 },
+  peripherals: [],
+  eStopStatus: false,
+  latestImages: [],
+  cameraCalibrationData: {
+    scale: undefined, rotation: undefined,
+    offset: { x: undefined, y: undefined },
+    origin: undefined,
+    calibrationZ: undefined
+  },
+  getConfigValue: jest.fn(),
+  sensorReadings: [],
+  sensors: [],
+  timeOffset: 0,
+});
 
+describe("<GardenMap/>", () => {
   it("drops plant", () => {
-    const p = fakeProps();
-    const dispatch = jest.fn();
-    p.dispatch = dispatch;
-    const wrapper = shallow(<GardenMap {...p} />);
-    mockPath = "/app/designer/plants/crop_search/strawberry/add";
-    wrapper.find("#drop-area-svg").simulate("click", {
-      preventDefault: jest.fn()
-    });
-    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({ name: "strawberry" })
-    }));
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.clickToAdd;
+    wrapper.find(".drop-area-svg").simulate("click", DEFAULT_EVENT);
+    expect(dropPlant).toHaveBeenCalled();
   });
 
-  it("doesn't drop plant: error", () => {
+  it("starts drag", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    mockPath = "/app/designer/plants/crop_search/aplant/add";
-    Object.defineProperty(document, "querySelector", {
-      value: () => { }, configurable: true
-    });
-    const add = () =>
-      wrapper.find("#drop-area-svg").simulate("click", {
-        preventDefault: jest.fn()
-      });
-    expect(add).toThrow(/while trying to add a plant./);
-  });
-
-  it("doesn't drop plant: outside planting area", () => {
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    mockPath = "/app/designer/plants/crop_search/aplant/add";
-    wrapper.find("#drop-area-svg").simulate("click", {
-      preventDefault: jest.fn(), pageX: -100, pageY: -100
-    });
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("Outside of planting area"));
-  });
-
-  it("starts drag and sets activeSpread", async () => {
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/1/edit/";
-    await wrapper.find("#drop-area-svg").simulate("mouseDown");
-    expect(wrapper.state()).toEqual({
-      activeDragSpread: 1000,
-      isDragging: true
-    });
+    mockMode = Mode.editPlant;
+    wrapper.find(".drop-area-svg").simulate("mouseDown", DEFAULT_EVENT);
+    expect(beginPlantDrag).toHaveBeenCalled();
   });
 
   it("ends drag", () => {
-    const p = fakeProps();
-    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    wrapper.find("#drop-area-svg").simulate("mouseUp");
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({
-      activeDragSpread: undefined,
-      activeDragXY: { x: undefined, y: undefined, z: undefined },
-      isDragging: false,
-      pageX: 0,
-      pageY: 0
-    });
+    const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
     wrapper.setState({ isDragging: true });
-    wrapper.find("#drop-area-svg").simulate("mouseUp");
-    expect(p.dispatch).toHaveBeenCalled();
+    wrapper.find(".drop-area-svg").simulate("mouseUp", DEFAULT_EVENT);
+    expect(maybeSavePlantLocation).toHaveBeenCalled();
     expect(wrapper.instance().state.isDragging).toBeFalsy();
   });
 
   it("drags: editing", () => {
-    mockPath = "/app/designer/plants/1/edit";
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: 0.5 }; }, configurable: true
-    });
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    wrapper.find("#drop-area-svg").simulate("mouseMove");
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({});
-    wrapper.setState({ isDragging: true, pageX: 200, pageY: 300 });
-    wrapper.find("#drop-area-svg").simulate("mouseMove", {
-      pageX: 400, pageY: 500
-    });
-    expect(wrapper.state()).toEqual({
-      activeDragXY: { x: 500, y: 600, z: 0 },
-      isDragging: true,
-      pageX: 400,
-      pageY: 500
-    });
-    expect(movePlant).toHaveBeenCalledWith(expect.objectContaining({
-      deltaX: 400, deltaY: 400
-    }));
+    mockMode = Mode.editPlant;
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.find(".drop-area-svg").simulate("mouseMove", DEFAULT_EVENT);
+    expect(dragPlant).toHaveBeenCalled();
   });
 
-  it("drags: editing, zoom undefined", () => {
-    mockPath = "/app/designer/plants/1/edit";
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: undefined }; }, configurable: true
-    });
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    wrapper.find("#drop-area-svg").simulate("mouseMove");
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({});
-    wrapper.setState({ isDragging: true, pageX: 300, pageY: 400 });
-    wrapper.find("#drop-area-svg").simulate("mouseMove", {
-      pageX: 400, pageY: 500
-    });
-    expect(wrapper.state()).toEqual({
-      activeDragXY: { x: 200, y: 300, z: 0 },
-      isDragging: true,
-      pageX: 400,
-      pageY: 500
-    });
-    expect(movePlant).toHaveBeenCalledWith(expect.objectContaining({
-      deltaX: 100, deltaY: 100
-    }));
-  });
-
-  it("drags: editing, X&Y swapped", () => {
-    mockPath = "/app/designer/plants/1/edit";
-    const p = fakeProps();
-    p.getConfigValue = () => true;
-    p.botOriginQuadrant = 1;
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    wrapper.find("#drop-area-svg").simulate("mouseMove");
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({});
-    wrapper.setState({ isDragging: true, pageX: 300, pageY: 500 });
-    wrapper.find("#drop-area-svg").simulate("mouseMove", {
-      pageX: 400, pageY: 500
-    });
-    expect(wrapper.state()).toEqual({
-      activeDragXY: { x: -100, y: 300, z: 0 },
-      isDragging: true,
-      pageX: 500,
-      pageY: 400
-    });
-    expect(movePlant).toHaveBeenCalledWith(expect.objectContaining({
-      deltaX: -200, deltaY: 100
-    }));
-  });
-
-  it("starts drag: selecting", async () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/select";
-    await wrapper.find("#drop-area-svg").simulate("mouseDown", {
-      pageX: 1000, pageY: 2000
-    });
-    expect(wrapper.state()).toEqual({
-      selectionBox: {
-        x0: 580, y0: 1790, x1: undefined, y1: undefined
-      }
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: undefined,
-      type: Actions.SELECT_PLANT
-    });
+  it("starts drag: selecting", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.boxSelect;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-svg").simulate("mouseDown", e);
+    expect(startNewSelectionBox).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
   });
 
   it("drags: selecting", () => {
-    mockPath = "/app/designer/plants/select";
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    wrapper.find("#drop-area-svg").simulate("mouseMove");
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({});
-    wrapper.setState({
-      selectionBox: {
-        x0: 0, y0: 0, x1: undefined, y1: undefined
-      }
-    });
-    wrapper.find("#drop-area-svg").simulate("mouseMove", {
-      pageX: 2000, pageY: 2000
-    });
-    expect(wrapper.state()).toEqual({
-      selectionBox: {
-        x0: 0, y0: 0, x1: 1580, y1: 1790
-      }
-    });
-    expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.SELECT_PLANT,
-      payload: [expect.any(String), expect.any(String)]
-    }));
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.boxSelect;
+    const e = { pageX: 2000, pageY: 2000 };
+    wrapper.find(".drop-area-svg").simulate("mouseMove", e);
+    expect(resizeBox).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
   });
 
-  it("selects location", async () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/move_to";
-    await wrapper.find("#drop-area-svg").simulate("click", {
+  it("selects location", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.moveTo;
+    wrapper.find(".drop-area-svg").simulate("click", {
       pageX: 1000, pageY: 2000, preventDefault: jest.fn()
     });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { x: 580, y: 1790, z: 0 },
-      type: Actions.CHOOSE_LOCATION
-    });
+    expect(chooseLocation).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining({ pageX: 1000, pageY: 2000 }));
   });
 
-  it("selects location: zoom undefined", async () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: undefined }; }, configurable: true
-    });
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/move_to";
-    await wrapper.find("#drop-area-svg").simulate("click", {
-      pageX: 1000, pageY: 2000, preventDefault: jest.fn()
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { x: 580, y: 1790, z: 0 },
-      type: Actions.CHOOSE_LOCATION
-    });
-  });
-
-  it("starts drawing point", async () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/create_point/";
-    await wrapper.find("#drop-area-svg").simulate("mouseDown", {
+  it("starts drawing point", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.createPoint;
+    wrapper.find(".drop-area-svg").simulate("mouseDown", {
       pageX: 1, pageY: 2
     });
-    expect(wrapper.state()).toEqual({ isDragging: true });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { cx: -420, cy: -210, r: 0 },
-      type: Actions.SET_CURRENT_POINT_DATA
-    });
+    expect(startNewPoint).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining({ pageX: 1, pageY: 2 }));
   });
 
-  it("sets drawn point radius", async () => {
-    const p = fakeProps();
-    p.designer.currentPoint = { cx: -420, cy: -210, r: 0 };
-    const wrapper = shallow(<GardenMap {...p} />);
-    expect(wrapper.state()).toEqual({});
-    mockPath = "/app/designer/plants/create_point/";
-    wrapper.setState({ isDragging: true });
-    await wrapper.find("#drop-area-svg").simulate("mouseMove", {
+  it("sets drawn point radius", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.createPoint;
+    wrapper.find(".drop-area-svg").simulate("mouseMove", {
       pageX: 10, pageY: 20
     });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { cx: -420, cy: -210, r: 22 },
-      type: Actions.SET_CURRENT_POINT_DATA
-    });
+    expect(resizePoint).toHaveBeenCalled();
   });
 
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
-    const noEggs = shallow(<GardenMap {...fakeProps()} />);
-    expect(noEggs.find("Bugs").length).toEqual(0);
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    expect(instance.Bugs()).toEqual(<g />);
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
-    const eggs = shallow(<GardenMap {...fakeProps()} />);
-    expect(eggs.find("Bugs").length).toEqual(1);
+    expect(instance.Bugs()).not.toEqual(<g />);
   });
 
   const expectHandledDragOver = () => {
@@ -385,37 +205,74 @@ describe("<GardenPlant/>", () => {
   };
 
   it(".drop-area: handles drag over (crop page)", () => {
-    mockPath = "/app/designer/plants/crop_search/mint";
+    mockMode = Mode.addPlant;
     expectHandledDragOver();
   });
 
   it(".drop-area: handles drag over (click-to-add mode)", () => {
-    mockPath = "/app/designer/plants/crop_search/mint/add";
+    mockMode = Mode.clickToAdd;
     expectHandledDragOver();
   });
 
   it(".drop-area: handles drag start", () => {
-    mockPath = "/app/designer/plants";
+    mockMode = Mode.none;
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    const e = { preventDefault: jest.fn() };
+    const e = DEFAULT_EVENT;
     wrapper.find(".drop-area").simulate("dragStart", e);
     expect(e.preventDefault).toHaveBeenCalled();
   });
 
   it(".drop-area: handles drag enter", () => {
-    mockPath = "/app/designer/plants/crop_search";
+    mockMode = Mode.addPlant;
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    const e = { preventDefault: jest.fn() };
+    const e = DEFAULT_EVENT;
     wrapper.find(".drop-area").simulate("dragEnter", e);
     expect(e.preventDefault).toHaveBeenCalled();
   });
 
   it("calls unselectPlant on unmount", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GardenMap {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.componentWillUnmount();
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    wrapper.unmount();
     expect(unselectPlant).toHaveBeenCalled();
   });
+
+  it("doesn't return plant in wrong mode", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    mockMode = Mode.moveTo;
+    expect(instance.getPlant()).toEqual(undefined);
+    mockMode = Mode.boxSelect;
+    expect(instance.getPlant()).toEqual(undefined);
+    mockMode = Mode.createPoint;
+    expect(instance.getPlant()).toEqual(undefined);
+  });
+
+  it("sets state", () => {
+    const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
+    expect(wrapper.instance().state.isDragging).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.setMapState({ isDragging: true });
+    expect(wrapper.instance().state.isDragging).toBe(true);
+  });
+
+  it("unswapped height and width", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => false;
+    const wrapper = shallow(<GardenMap {...p} />);
+    const svg = wrapper.find(".drop-area-svg");
+    expect(svg.props().width).toEqual(1000);
+    expect(svg.props().height).toEqual(2000);
+  });
+
+  it("swapped height and width", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const wrapper = shallow(<GardenMap {...p} />);
+    const svg = wrapper.find(".drop-area-svg");
+    expect(svg.props().width).toEqual(2000);
+    expect(svg.props().height).toEqual(1000);
+  });
+
 });

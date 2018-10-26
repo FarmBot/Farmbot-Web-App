@@ -15,7 +15,7 @@ import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interface
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
-import { SelectionBoxData } from "./map/selection_box";
+import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
   ExecutableType, PlantPointer
@@ -192,8 +192,8 @@ export interface GardenMapProps {
 export interface GardenMapState {
   isDragging: boolean | undefined;
   botOriginQuadrant: BotOriginQuadrant;
-  pageX: number | undefined;
-  pageY: number | undefined;
+  qPageX: number | undefined;
+  qPageY: number | undefined;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   selectionBox: SelectionBoxData | undefined;

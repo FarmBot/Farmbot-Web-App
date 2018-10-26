@@ -11,6 +11,7 @@ import { isNumber } from "lodash";
 import { Actions, Content } from "../../constants";
 import { validBotLocationData } from "../../util/util";
 import { unselectPlant } from "../actions";
+import { AxisNumberProperty } from "../map/interfaces";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -134,3 +135,16 @@ export const MoveModeLink = () =>
       {t("move mode")}
     </button>
   </div>;
+
+/** Mark a new bot target location on the map. */
+export const chooseLocation = (props: {
+  gardenCoords: AxisNumberProperty | undefined,
+  dispatch: Function,
+}) => {
+  if (props.gardenCoords) {
+    props.dispatch({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: props.gardenCoords.x, y: props.gardenCoords.y, z: 0 }
+    });
+  }
+};

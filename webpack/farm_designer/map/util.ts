@@ -2,9 +2,12 @@ import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import {
-  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps
+  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode
 } from "./interfaces";
 import { trim } from "../../util";
+import { getPathArray } from "../../history";
+import { savedGardenOpen } from "../saved_gardens/saved_gardens";
+import { last } from "lodash";
 
 /*
  * Farm Designer Map Utilities
@@ -137,7 +140,8 @@ function quadTransform(params: QuadTransformParams): XYCoordinate {
             result[axis] = coordinate[axis];
             return result;
           default:
-            throw new Error(`Something went wrong calculating the ${axis} origin.`);
+            throw new Error(
+              `Something went wrong calculating the ${axis} origin.`);
         }
       }, { x: 0, y: 0 });
   } else {
@@ -243,4 +247,59 @@ export const transformForQuadrant =
       `scale(${flip.x}, ${flip.y})
        translate(${translate.x}, ${translate.y})`
     );
+  };
+
+/** Determine the current map mode based on path. */
+export const getMode = (): Mode => {
+  const pathArray = getPathArray();
+  if (pathArray) {
+    if (pathArray[6] === "add") { return Mode.clickToAdd; }
+    if (pathArray[5] === "edit") { return Mode.editPlant; }
+    if (pathArray[6] === "edit") { return Mode.editPlant; }
+    if (pathArray[4] === "select") { return Mode.boxSelect; }
+    if (pathArray[4] === "crop_search") { return Mode.addPlant; }
+    if (pathArray[4] === "move_to") { return Mode.moveTo; }
+    if (pathArray[4] === "create_point") { return Mode.createPoint; }
+    if (savedGardenOpen(pathArray)) { return Mode.templateView; }
+  }
+  return Mode.none;
+};
+
+/** Get the garden map coordinate of a cursor or screen interaction. */
+export const getGardenCoordinates = (props: {
+  mapTransformProps: MapTransformProps,
+  gridOffset: AxisNumberProperty,
+  pageX: number,
+  pageY: number,
+}): AxisNumberProperty | undefined => {
+  const el = document.querySelector(".drop-area-svg");
+  const map = document.querySelector(".farm-designer-map");
+  const page = document.querySelector(".farm-designer");
+  if (el && map && page) {
+    const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
+    const params: ScreenToGardenParams = {
+      page: { x: props.pageX, y: props.pageY },
+      scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },
+      mapTransformProps: props.mapTransformProps,
+      gridOffset: props.gridOffset,
+      zoomLvl,
+      mapOnly: last(getPathArray()) === "designer",
+    };
+    return translateScreenToGarden(params);
+  } else {
+    return undefined;
+  }
+};
+
+export const maybeNoPointer =
+  (defaultStyle: React.CSSProperties): React.SVGProps<SVGGElement>["style"] => {
+    switch (getMode()) {
+      case Mode.boxSelect:
+      case Mode.clickToAdd:
+      case Mode.moveTo:
+      case Mode.createPoint:
+        return { "pointerEvents": "none" };
+      default:
+        return defaultStyle;
+    }
   };

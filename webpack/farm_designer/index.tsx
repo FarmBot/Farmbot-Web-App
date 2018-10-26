@@ -5,7 +5,7 @@ import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfac
 import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
-import { GardenMapLegend } from "./map/garden_map_legend";
+import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";

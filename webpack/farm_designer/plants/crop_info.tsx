@@ -11,7 +11,7 @@ import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
 import { unselectPlant, setDragIcon } from "../actions";
 import { validBotLocationData } from "../../util";
-import { createPlant } from "../map/garden_map";
+import { createPlant } from "../map/layers/plants/plant_actions";
 import { round } from "../map/util";
 
 interface InforFieldProps {

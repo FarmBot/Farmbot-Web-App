@@ -85,7 +85,7 @@ export interface DragHelpersBaseProps {
   plantAreaOffset: AxisNumberProperty;
 }
 
-export interface DragHelperLayerProps extends DragHelpersBaseProps {
+export interface ActivePlantDragHelperProps extends DragHelpersBaseProps {
   currentPlant: TaggedPlant | undefined;
   editing: boolean;
 }
@@ -135,4 +135,16 @@ export interface SpreadOverlapHelperProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
+}
+
+/** Garden map interaction modes. */
+export enum Mode {
+  none = "none",
+  boxSelect = "boxSelect",
+  clickToAdd = "clickToAdd",
+  editPlant = "editPlant",
+  addPlant = "addPlant",
+  moveTo = "moveTo",
+  createPoint = "createPoint",
+  templateView = "templateView",
 }
