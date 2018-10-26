@@ -226,3 +226,35 @@ export function unpackUUID(uuid: string): BetterUUID {
     remoteId: id > 0 ? id : undefined
   };
 }
+
+/** Throw this away- it's just a stub function to intenionally drop test
+ * coverage (and hopefully trigger the CI stuff). */
+export function dropCoverage() {
+  if (Math.random() > 0.5) {
+    return [
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+    ];
+  } else {
+    return [
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+      (() => Math.random())(),
+    ];
+  }
+}
