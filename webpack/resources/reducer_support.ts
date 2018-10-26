@@ -113,21 +113,17 @@ export const mutateSpecialStatus =
     }
   };
 
-interface HasID {
-  id?: number | undefined;
-}
-
-export function addAllToIndex<T extends HasID>(i: ResourceIndex,
-  kind: ResourceName,
-  all: T[]) {
-  all.map(function (tr) {
-    return addToIndex(i, kind, tr, generateUuid(tr.id, kind));
+export function addAllToIndex<T extends TaggedResource>(i: ResourceIndex,
+  kind: T["kind"],
+  all: T["body"][]) {
+  all.map(function (body) {
+    return addOneToIndex(i, kind, body, generateUuid(body.id, kind));
   });
 }
 
-function addToIndex<T>(index: ResourceIndex,
-  kind: ResourceName,
-  body: T,
+function addOneToIndex<T extends TaggedResource>(index: ResourceIndex,
+  kind: T["kind"],
+  body: T["body"],
   uuid: string) {
   const tr: TaggedResource = {
     kind, body, uuid, specialStatus: SpecialStatus.SAVED
@@ -178,7 +174,7 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
 
 export function reindexResource(i: ResourceIndex, r: TaggedResource) {
   removeFromIndex(i, r);
-  addToIndex(i, r.kind, r.body, r.uuid);
+  addOneToIndex(i, r.kind, r.body, r.uuid);
 }
 
 /** If the body of a sequence changes, we need to re-traverse the tree to pull

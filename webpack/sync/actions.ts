@@ -6,7 +6,7 @@ import { Tool } from "../tools/interfaces";
 import { Regimen } from "../regimens/interfaces";
 import { SavedGarden } from "../farm_designer/interfaces";
 import { DeviceAccountSettings } from "../devices/interfaces";
-import { ResourceName, DiagnosticDump } from "farmbot";
+import { ResourceName, DiagnosticDump, TaggedResource } from "farmbot";
 import { User } from "../auth/interfaces";
 import { WebcamFeed } from "../controls/interfaces";
 import { Session } from "../session";
@@ -25,14 +25,14 @@ import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
-export interface ResourceReadyPayl {
-  name: ResourceName;
-  data: object[];
+export interface ResourceReadyPayl<T extends TaggedResource> {
+  name: T["kind"];
+  data: T["body"][];
 }
 
 export interface SyncResponse {
   type: Actions.RESOURCE_READY;
-  payload: ResourceReadyPayl;
+  payload: ResourceReadyPayl<TaggedResource>;
 }
 
 export function fetchSyncData(dispatch: Function) {
