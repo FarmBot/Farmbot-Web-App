@@ -6,6 +6,7 @@ if Rails.env == "development"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 
+    DeviceSerialNumber.destroy_all
     Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
@@ -30,6 +31,10 @@ if Rails.env == "development"
                         agreed_to_terms_at:   Time.now)
     u = User.last
     u.update_attributes(device: Devices::Create.run!(user: u))
+    # === Parameterized Sequence stuff
+    json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json")).deep_symbolize_keys
+    Sequences::Create.run!(json, device: u.device)
+    # === Parameterized Sequence stuff
     Log.transaction do
       FactoryBot.create_list(:log, 35, device: u.device)
     end

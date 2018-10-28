@@ -11,7 +11,7 @@ import {
   updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
-import { findByUuid } from "../resources/reducer";
+import { findByUuid } from "../resources/reducer_support";
 import { generateUuid } from "../resources/util";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";

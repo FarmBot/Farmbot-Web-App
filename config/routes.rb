@@ -59,16 +59,33 @@ FarmBot::Application.routes.draw do
     # Make life easier on API users by not adding special rules for singular
     # resources.
     # Might be safe to remove now with the advent of TaggedResource.kind
-    get   "/device/:id"      => "devices#show",           as: :get_device_redirect
-    post  "/export_data"     => "devices#dump",           as: :dump_device
-    get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
-    patch "/device/:id"      => "devices#update",         as: :patch_device_redirect
-    patch "/users/:id"       => "users#update",           as: :patch_users_redirect
-    patch "/webcam_feed/:id" => "webcam_feeds#update",    as: :patch_webcam_feed_redirect
-    put   "/device/:id"      => "devices#update",         as: :put_device_redirect
+    get   "/device/:id" => "devices#show",   as: :get_device_redirect
+    patch "/device/:id" => "devices#update", as: :patch_device_redirect
+    put   "/device/:id" => "devices#update", as: :put_device_redirect
+
+    delete "/fbos_config/:id" => "fbos_configs#destroy", as: "delete_fbos_config_redirect"
+    get    "/fbos_config/:id" => "fbos_configs#show",    as: "get_fbos_config_redirect"
+    put    "/fbos_config/:id" => "fbos_configs#update",  as: "put_fbos_config_redirect"
+
+    delete "/firmware_config/:id" => "firmware_configs#destroy", as: "delete_firmware_config_redirect"
+    get    "/firmware_config/:id" => "firmware_configs#show",    as: "get_firmware_config_redirect"
+    patch  "/firmware_config/:id" => "firmware_configs#update",  as: "patch_firmware_config_redirect"
+    put    "/firmware_config/:id" => "firmware_configs#update",  as: "put_firmware_config_redirect"
+
+    delete "/web_app_config/:id" => "web_app_configs#destroy",  as: "delete_web_app_config_redirect"
+    get    "/web_app_config/:id" => "web_app_configs#show",     as: "get_web_app_config_redirect"
+    patch  "/web_app_config/:id" => "web_app_configs#update",   as: "patch_web_app_config_redirect"
+    put    "/web_app_config/:id" => "web_app_configs#update",   as: "put_web_app_config_redirect"
+
+    patch "/users/:id" => "users#update", as: :patch_users_redirect
+    put   "/users/:id" => "users#update", as: :put_users_redirect
+
+    patch "/webcam_feed/:id" => "webcam_feeds#update", as: :patch_webcam_feed_redirect
+    put   "/webcam_feed/:id" => "webcam_feeds#update", as: :put_webcam_feed_redirect
+
     put   "/password_resets" => "password_resets#update", as: :whatever
-    put   "/users/:id"       => "users#update",           as: :put_users_redirect
-    put   "/webcam_feed/:id" => "webcam_feeds#update",    as: :put_webcam_feed_redirect
+    get   "/storage_auth"    => "images#storage_auth",    as: :storage_auth
+    post  "/export_data"     => "devices#dump",           as: :dump_device
   end
 
   devise_for :users

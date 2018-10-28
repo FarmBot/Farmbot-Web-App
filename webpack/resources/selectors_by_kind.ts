@@ -29,7 +29,7 @@ import {
 } from "./tagged_resources";
 import { sortResourcesById, betterCompact, bail } from "../util";
 import { error } from "farmbot-toastr";
-import { joinKindAndId } from "./reducer";
+import { joinKindAndId } from "./reducer_support";
 import { assertUuid } from "./util";
 
 const isSaved = <T extends TaggedResource>(t: T) =>

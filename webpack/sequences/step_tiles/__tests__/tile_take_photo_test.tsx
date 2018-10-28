@@ -3,7 +3,7 @@ import { TileTakePhoto } from "../tile_take_photo";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { TakePhoto } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
+import { emptyState } from "../../../resources/reducer_support";
 import { StepParams } from "../../interfaces";
 
 describe("<TileTakePhoto/>", () => {

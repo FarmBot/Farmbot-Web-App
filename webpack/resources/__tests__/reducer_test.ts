@@ -1,4 +1,4 @@
-import { resourceReducer, findByUuid } from "../reducer";
+import { findByUuid } from "../reducer_support";
 import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
 import { SpecialStatus, TaggedSequence, TaggedDevice, ResourceName } from "farmbot";
@@ -6,6 +6,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
+import { resourceReducer } from "../reducer";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {

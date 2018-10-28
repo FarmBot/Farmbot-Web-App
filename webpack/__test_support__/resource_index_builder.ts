@@ -1,4 +1,4 @@
-import { resourceReducer, emptyState } from "../resources/reducer";
+import { emptyState } from "../resources/reducer_support";
 import {
   ResourceName,
   SpecialStatus,
@@ -9,6 +9,7 @@ import {
 } from "farmbot";
 import * as _ from "lodash";
 import { Actions } from "../constants";
+import { resourceReducer } from "../resources/reducer";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",

@@ -10,9 +10,9 @@ import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
-import { TileMoveAbsSelect } from "./tile_move_absolute/select";
 import { LocationData } from "./tile_move_absolute/interfaces";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import { ParentSelector } from "./tile_execute/parent_selector";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -90,7 +90,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
 
   render() {
     const {
-      dispatch, currentStep, index, currentSequence, resources, shouldDisplay
+      dispatch, currentStep, index, currentSequence, resources
     } = this.props;
     const className = "execute-step";
     const selected = getVariable(currentStep.body);
@@ -113,18 +113,14 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
               sequenceId={currentStep.args.sequence_id} />
           </Col>
         </Row>
-        {shouldDisplay(Feature.variables) &&
-          <Row>
-            <Col xs={12}>
-              <label>{t("Set value of 'parent' to:")}</label>
-              <TileMoveAbsSelect
-                resources={resources}
-                selectedItem={selected}
-                onChange={this.setVariable}
-                shouldDisplay={shouldDisplay} />
-              <p>Debug info: {selected.kind}</p>
-            </Col>
-          </Row>}
+        {this.props.shouldDisplay(Feature.variables) && <Row>
+          <Col xs={12}>
+            <ParentSelector
+              resources={resources}
+              selected={selected}
+              onChange={this.setVariable} />
+          </Col>
+        </Row>}
       </StepContent>
     </StepWrapper>;
   }

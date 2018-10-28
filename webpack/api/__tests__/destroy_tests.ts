@@ -1,6 +1,6 @@
 const mockResource: { kind: string, body: { id: number | undefined } }
   = { kind: "Regimen", body: { id: 1 } };
-jest.mock("../../resources/reducer", () => ({
+jest.mock("../../resources/reducer_support", () => ({
   findByUuid: () => (mockResource)
 }));
 
