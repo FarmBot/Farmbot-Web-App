@@ -11,7 +11,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { LocationData } from "./tile_move_absolute/interfaces";
-import { ShouldDisplay } from "../../devices/interfaces";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { ParentSelector } from "./tile_execute/parent_selector";
 
 export function ExecuteBlock(p: StepParams) {
@@ -113,14 +113,14 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
               sequenceId={currentStep.args.sequence_id} />
           </Col>
         </Row>
-        <Row>
+        {this.props.shouldDisplay(Feature.variables) && <Row>
           <Col xs={12}>
             <ParentSelector
               resources={resources}
               selected={selected}
               onChange={this.setVariable} />
           </Col>
-        </Row>
+        </Row>}
       </StepContent>
     </StepWrapper>;
   }

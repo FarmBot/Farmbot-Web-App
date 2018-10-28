@@ -18,7 +18,7 @@ export function ParentSelector({ resources, selected, onChange }: Props) {
       resources={resources}
       selectedItem={selected}
       onChange={onChange}
-      shouldDisplay={() => true} />
+      shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
     <p>Debug info: {selected.kind}</p>
   </div>;
 }

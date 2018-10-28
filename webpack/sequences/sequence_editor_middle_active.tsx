@@ -14,6 +14,7 @@ import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 import { LocalsList } from "./locals_list";
+import { Feature } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -80,10 +81,10 @@ export class SequenceEditorMiddleActive extends
               onChange={color => editCurrentSequence(dispatch, sequence, { color })} />
           </Col>
         </Row>
-        <LocalsList
+        {this.props.shouldDisplay(Feature.variables) && <LocalsList
           sequence={this.props.sequence}
           resources={this.props.resources}
-          dispatch={this.props.dispatch} />
+          dispatch={this.props.dispatch} />}
         <hr />
       </div>
       <div className="sequence" id="sequenceDiv">
