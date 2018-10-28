@@ -1,3 +1,19 @@
+import {
+  findByUuid,
+  initResourceReducer,
+  mutateSpecialStatus,
+  afterEach,
+} from "./reducer_support";
+import {
+  defensiveClone,
+  equals
+} from "../util";
+import {
+  removeFromIndex,
+  addAllToIndex,
+  reindexResource,
+  maybeRecalculateLocalSequenceVariables
+} from "./reducer_indexing";
 import { generateReducer } from "../redux/generate_reducer";
 import { RestResources } from "./interfaces";
 import { initialState } from "../resources/reducer_support";
@@ -6,42 +22,10 @@ import { Actions } from "../constants";
 import { sanityCheck, isTaggedResource } from "./tagged_resources";
 import { GeneralizedError } from "./actions";
 import { merge } from "lodash";
-import {
-  findByUuid,
-  initResourceReducer,
-  mutateSpecialStatus,
-  reindexResource,
-  whoops,
-  maybeRecalculateLocalSequenceVariables,
-  addAllToIndex,
-  afterEach,
-  removeFromIndex
-} from "./reducer_support";
 import { EditResourceParams } from "../api/interfaces";
-import {
-  defensiveClone,
-  equals
-} from "../util";
 import { ResourceReadyPayl } from "../sync/actions";
 import { arrayWrap } from "./util";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
-
-const STUFF_WE_HANDLE: TaggedResource["kind"][] = ["Crop", "Device",
-  "DiagnosticDump", "FarmEvent", "FarmwareInstallation", "FbosConfig",
-  "FirmwareConfig", "Image", "Log", "Peripheral", "PinBinding", "PlantTemplate",
-  "Point", "Regimen", "SavedGarden", "Sensor", "SensorReading", "Sequence",
-  "Tool", "User", "WebAppConfig", "WebcamFeed"];
-
-const NULL_TR = { kind: "EMPTY???" };
-
-const sanitize =
-  (input: TaggedResource | undefined, origin: string): TaggedResource => {
-    if (input && input.body && STUFF_WE_HANDLE.includes(input.kind)) {
-      return input;
-    } else {
-      return whoops(origin, (input || NULL_TR).kind);
-    }
-  };
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
@@ -69,7 +53,7 @@ export let resourceReducer =
       return s;
     })
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      const resource = sanitize(payload, Actions.SAVE_RESOURCE_OK);
+      const resource = payload;
       resource.specialStatus = SpecialStatus.SAVED;
       reindexResource(s.index, resource);
       dontTouchThis(resource);
@@ -77,7 +61,7 @@ export let resourceReducer =
       return s;
     })
     .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-      removeFromIndex(s.index, sanitize(payload, Actions.DESTROY_RESOURCE_OK));
+      removeFromIndex(s.index, payload);
       return s;
     })
     .add<TaggedResource>(Actions.UPDATE_RESOURCE_OK, (s, { payload }) => {
@@ -85,7 +69,7 @@ export let resourceReducer =
       const uuid = payload.uuid;
       console.log("You should use addToIndex here:");
       s.index.references[uuid] = payload;
-      const tr = sanitize(s.index.references[uuid], Actions.UPDATE_RESOURCE_OK);
+      const tr = findByUuid(s.index, uuid);
       mutateSpecialStatus(uuid, s.index, SpecialStatus.SAVED);
       reindexResource(s.index, tr);
       dontTouchThis(tr);
@@ -119,13 +103,13 @@ export let resourceReducer =
       dontTouchThis(original);
       return s;
     })
-    .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
-      const { uuid, body, kind } = sanitize(payload, Actions.REFRESH_RESOURCE_OK);
+      const { uuid, body, kind } = payload;
       addAllToIndex(s.index, kind, [body]);
       mutateSpecialStatus(uuid, s.index);
       return s;
     })
+    .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)
     .add<string>(Actions.REFRESH_RESOURCE_START, (s, a) => {
       mutateSpecialStatus(a.payload, s.index, SpecialStatus.SAVING);
       return s;
