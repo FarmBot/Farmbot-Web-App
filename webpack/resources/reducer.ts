@@ -31,25 +31,8 @@ import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 export let resourceReducer =
   generateReducer<RestResources>(initialState, afterEach)
     .add<ResourceReadyPayl<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      // TODO: This action is needlessly CPU intensive. Clean it up or find a
-      // way to remove it. -RC 26 OCT 18
-
-      /** Problem:  Most API resources are plural (array wrapped) resource.
-       *            A small subset are singular (`device` and a few others),
-       *            making `.map()` and friends unsafe.
-       *  Solution: wrap everything in an array on the way in. */
-      const { index } = s;
-      const { name } = payload;
-      s.loaded.push(name);
-      index.byKind[name].map(x => {
-        const resource = index.references[x];
-        if (resource) {
-          removeFromIndex(index, resource);
-          dontTouchThis(resource);
-        }
-      });
-      const data = arrayWrap(payload.data);
-      addAllToIndex<TaggedResource>(index, name, data);
+      !s.loaded.includes(payload.name) && s.loaded.push(payload.name);
+      addAllToIndex(s.index, payload.name, arrayWrap(payload.data));
       return s;
     })
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
@@ -65,7 +48,6 @@ export let resourceReducer =
       return s;
     })
     .add<TaggedResource>(Actions.UPDATE_RESOURCE_OK, (s, { payload }) => {
-      // ==========
       const uuid = payload.uuid;
       console.log("You should use addToIndex here:");
       s.index.references[uuid] = payload;
@@ -114,8 +96,8 @@ export let resourceReducer =
       mutateSpecialStatus(a.payload, s.index, SpecialStatus.SAVING);
       return s;
     })
-    .add<GeneralizedError>(Actions.REFRESH_RESOURCE_NO, (s, a) => {
-      mutateSpecialStatus(a.payload.uuid, s.index);
+    .add<GeneralizedError>(Actions.REFRESH_RESOURCE_NO, (s, { payload }) => {
+      mutateSpecialStatus(payload.uuid, s.index);
       return s;
     })
     .add<TaggedResource>(Actions.SAVE_RESOURCE_START, (s, { payload }) => {
