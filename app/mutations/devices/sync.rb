@@ -24,7 +24,7 @@ module Devices
 
     def execute
       conn    = ActiveRecord::Base.connection
-      QUERIES.reduce(now: Time.now) do |acc, (key, value)|
+      QUERIES.reduce({}) do |acc, (key, value)|
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
     end

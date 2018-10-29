@@ -5,7 +5,6 @@ import {
   SpecialStatus,
 } from "farmbot";
 import {
-  sanityCheck,
   isTaggedResource,
 } from "./tagged_resources";
 import {
@@ -30,8 +29,7 @@ import {
   helpReducer as help,
   initialState as helpState
 } from "../help/reducer";
-import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
-import { reindexResource } from "./reducer_indexing";
+import { indexUpsert } from "./reducer";
 
 export function emptyState(): RestResources {
   return {
@@ -118,11 +116,7 @@ export const mutateSpecialStatus =
 
 export function initResourceReducer(s: RestResources,
   { payload }: ReduxAction<TaggedResource>): RestResources {
-  const tr = payload;
-  reindexResource(s.index, tr);
-  s.index.references[tr.uuid] = tr;
-  sanityCheck(tr);
-  dontTouchThis(tr);
+  indexUpsert(s.index, payload);
   return s;
 }
 

@@ -2,6 +2,9 @@ import { ResourceIndex } from "./interfaces";
 import { TaggedResource } from "farmbot";
 import { joinKindAndId } from "./reducer_support";
 import { maybeTagSteps } from "./sequence_tagging";
+import {
+  recomputeLocalVarDeclaration
+} from "../sequences/step_tiles/tile_move_absolute/variables_support";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -40,8 +43,12 @@ const BY_KIND_AND_ID: Indexer = {
 
 const DONT_TOUCH_THIS_STUFF: Indexer = {
   up(r) {
-    r.kind == "Sequence" && console.log("Index function heads here");
-    maybeTagSteps(r);
+    if (r.kind === "Sequence") {
+      const recomputed = recomputeLocalVarDeclaration(r.body);
+      r.body.args = recomputed.args;
+      r.body.body = recomputed.body;
+      maybeTagSteps(r);
+    }
   },
   down(_r, _i) {
   },
