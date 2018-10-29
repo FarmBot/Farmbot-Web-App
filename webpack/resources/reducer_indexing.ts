@@ -1,7 +1,6 @@
 import { TaggedResource, SpecialStatus, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import { generateUuid } from "./util";
-import { sanityCheck } from "./tagged_resources";
 import { joinKindAndId } from "./reducer_support";
 import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 import {
@@ -24,7 +23,6 @@ function addOneToIndex<T extends TaggedResource>(index: ResourceIndex,
     kind, body, uuid, specialStatus: SpecialStatus.SAVED
     // tslint:disable-next-line:no-any
   } as any;
-  sanityCheck(tr);
   index.all.push(tr.uuid);
   index.byKind[tr.kind].push(tr.uuid);
   if (tr.body.id) { index.byKindAndId[tr.kind + "." + tr.body.id] = tr.uuid; }

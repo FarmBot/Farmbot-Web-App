@@ -37,10 +37,8 @@ export let resourceReducer =
       return s;
     })
     .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
-      console.log("========= LEGACY NONSENSE?: ");
-      const uuid = payload.uuid;
       const { update } = payload;
-      const target = findByUuid(s.index, uuid);
+      const target = findByUuid(s.index, payload.uuid);
       const before = defensiveClone(target.body);
       merge(target, { body: update });
       const didChange = !equals(before, target.body);
@@ -62,6 +60,12 @@ export let resourceReducer =
       addAllToIndex(s.index, payload.name, arrayWrap(payload.data));
       return s;
     })
+    .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
+      const { uuid, body, kind } = payload;
+      addAllToIndex(s.index, kind, [body]);
+      mutateSpecialStatus(uuid, s.index);
+      return s;
+    })
     .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
       removeFromIndex(s.index, payload);
       return s;
@@ -69,12 +73,6 @@ export let resourceReducer =
     .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
       merge(findByUuid(s.index, payload.uuid), payload);
       mutateSpecialStatus(payload.uuid, s.index, payload.statusBeforeError);
-      return s;
-    })
-    .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
-      const { uuid, body, kind } = payload;
-      addAllToIndex(s.index, kind, [body]);
-      mutateSpecialStatus(uuid, s.index);
       return s;
     })
     .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)
