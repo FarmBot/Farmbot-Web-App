@@ -3,6 +3,7 @@ import {
   initResourceReducer,
   mutateSpecialStatus,
   afterEach,
+  emptyState,
 } from "./reducer_support";
 import {
   defensiveClone,
@@ -10,7 +11,6 @@ import {
 } from "../util";
 import { generateReducer } from "../redux/generate_reducer";
 import { RestResources, ResourceIndex } from "./interfaces";
-import { initialState } from "../resources/reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
 import { GeneralizedError } from "./actions";
@@ -39,7 +39,7 @@ export function indexRemove(db: ResourceIndex, resources: TaggedResource | Tagge
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(initialState, afterEach)
+  generateReducer<RestResources>(emptyState(), afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, payload);
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
@@ -60,8 +60,7 @@ export let resourceReducer =
       mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
       return s;
     })
-    .add<SyncResponse<TaggedResource>>(Actions.RESOURCE_READY, (s, a) => {
-      const { payload } = a.payload;
+    .add<SyncResponse<TaggedResource>["payload"]>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
 
       arrayWrap(payload.body).map(body => {
@@ -73,8 +72,6 @@ export let resourceReducer =
         };
         if (isTaggedResource(x)) {
           indexUpsert(s.index, x);
-        } else {
-          throw new Error(JSON.stringify(x));
         }
       });
       return s;
