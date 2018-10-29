@@ -8,7 +8,7 @@ import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
 import {
-  updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
+  updateNO, destroyOK, destroyNO, GeneralizedError, saveOK
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer_support";
@@ -261,7 +261,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
       const r2 = { body: defensiveClone(resp.data) };
       const newTR = _.assign({}, r1, r2);
       if (isTaggedResource(newTR)) {
-        dispatch(updateOK(newTR));
+        dispatch(saveOK(newTR));
       } else {
         throw new Error("Just saved a malformed TR.");
       }

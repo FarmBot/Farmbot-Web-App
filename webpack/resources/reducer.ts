@@ -19,7 +19,6 @@ import { RestResources } from "./interfaces";
 import { initialState } from "../resources/reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
-import { sanityCheck, isTaggedResource } from "./tagged_resources";
 import { GeneralizedError } from "./actions";
 import { merge } from "lodash";
 import { EditResourceParams } from "../api/interfaces";
@@ -30,59 +29,46 @@ import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
   generateReducer<RestResources>(initialState, afterEach)
-    .add<ResourceReadyPayl<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      !s.loaded.includes(payload.name) && s.loaded.push(payload.name);
-      addAllToIndex(s.index, payload.name, arrayWrap(payload.data));
-      return s;
-    })
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      const resource = payload;
-      resource.specialStatus = SpecialStatus.SAVED;
-      reindexResource(s.index, resource);
-      dontTouchThis(resource);
-      s.index.references[resource.uuid] = resource;
-      return s;
-    })
-    .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-      removeFromIndex(s.index, payload);
-      return s;
-    })
-    .add<TaggedResource>(Actions.UPDATE_RESOURCE_OK, (s, { payload }) => {
-      const uuid = payload.uuid;
-      console.log("You should use addToIndex here:");
-      s.index.references[uuid] = payload;
-      const tr = findByUuid(s.index, uuid);
-      mutateSpecialStatus(uuid, s.index, SpecialStatus.SAVED);
-      reindexResource(s.index, tr);
-      dontTouchThis(tr);
-      return s;
-    })
-    .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
-      merge(findByUuid(s.index, payload.uuid), payload);
-      mutateSpecialStatus(payload.uuid, s.index, payload.statusBeforeError);
+      s.index.references[payload.uuid] = payload;
+      mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
+      reindexResource(s.index, payload);
+      dontTouchThis(payload);
       return s;
     })
     .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
+      console.log("========= LEGACY NONSENSE?: ");
       const uuid = payload.uuid;
       const { update } = payload;
       const target = findByUuid(s.index, uuid);
       const before = defensiveClone(target.body);
       merge(target, { body: update });
-      if (!equals(before, target.body)) {
-        target.specialStatus = SpecialStatus.DIRTY;
-      }
-      sanityCheck(target);
-      payload && isTaggedResource(target);
+      const didChange = !equals(before, target.body);
+      didChange && mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
       dontTouchThis(target);
       maybeRecalculateLocalSequenceVariables(target);
       return s;
     })
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const original = findByUuid(s.index, payload.uuid);
-      original.body = payload.update as typeof original.body;
+      original.body = payload.update;
       mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
       maybeRecalculateLocalSequenceVariables(original);
       dontTouchThis(original);
+      return s;
+    })
+    .add<ResourceReadyPayl<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
+      !s.loaded.includes(payload.name) && s.loaded.push(payload.name);
+      addAllToIndex(s.index, payload.name, arrayWrap(payload.data));
+      return s;
+    })
+    .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
+      removeFromIndex(s.index, payload);
+      return s;
+    })
+    .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
+      merge(findByUuid(s.index, payload.uuid), payload);
+      mutateSpecialStatus(payload.uuid, s.index, payload.statusBeforeError);
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
