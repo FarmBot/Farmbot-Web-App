@@ -64,14 +64,18 @@ export let resourceReducer =
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
 
       arrayWrap(payload.body).map(body => {
-        const x = {
-          kind: payload.kind,
-          uuid: generateUuid(body.id, payload.kind),
-          specialStatus: SpecialStatus.SAVED,
-          body
-        };
-        if (isTaggedResource(x)) {
-          indexUpsert(s.index, x);
+        try {
+          const x = {
+            kind: payload.kind,
+            uuid: generateUuid(body.id, payload.kind),
+            specialStatus: SpecialStatus.SAVED,
+            body
+          };
+          if (isTaggedResource(x)) {
+            indexUpsert(s.index, x);
+          }
+        } catch (error) {
+          debugger;
         }
       });
       return s;

@@ -6,21 +6,19 @@ import { Session } from "../session";
 
 export interface SyncResponse<T extends TaggedResource> {
   type: Actions.RESOURCE_READY;
-  payload: {
-    kind: T["kind"];
-    body: T["body"] | T["body"][];
-  }
+  payload: { kind: T["kind"]; body: T["body"] | T["body"][]; }
 }
 
+export const resourceReady =
+  <T extends TaggedResource>(kind: T["kind"], body: T["body"] | T["body"][]) => {
+    return { type: Actions.RESOURCE_READY, payload: { kind, body, } };
+  };
+
 export function fetchSyncData(dispatch: Function) {
-  const type = Actions.RESOURCE_READY;
   const fetch =
     <T extends TaggedResource>(kind: T["kind"], url: string) => axios
       .get<T["body"] | T["body"][]>(url)
-      .then(({ data }) => {
-        const action: SyncResponse<T> = { type, payload: { kind, body: data } };
-        dispatch(action);
-      }, Session.clear);
+      .then(({ data }) => dispatch(resourceReady(kind, data)), Session.clear);
 
   fetch("User", API.current.usersPath);
   fetch("Device", API.current.devicePath);

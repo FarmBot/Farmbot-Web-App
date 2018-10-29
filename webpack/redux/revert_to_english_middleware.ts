@@ -1,7 +1,7 @@
 import { Middleware } from "redux";
-import { Actions } from "../constants";
 import { MiddlewareConfig } from "./middlewares";
 import { ResourceName } from "farmbot";
+import { Actions } from "../constants";
 import { revertToEnglish } from "../revert_to_english";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
@@ -23,11 +23,13 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const isResourceReady = action
     && action.type === Actions.RESOURCE_READY
-    && action.payload.name === WEB_APP_CONFIG
-    && action.payload;
+    && action.payload
+    && action.payload.body
+    && action.payload.kind === WEB_APP_CONFIG;
 
-  if (isResourceReady) {
-    const conf: WebAppConfig = action.payload.data;
+  if (isResourceReady) { // This is super un-typesafe
+
+    const conf: WebAppConfig = action.payload.body;
     conf.disable_i18n && revertToEnglish();
   }
 
