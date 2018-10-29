@@ -60,10 +60,11 @@ export let resourceReducer =
       mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
       return s;
     })
-    .add<SyncResponse<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
+    .add<SyncResponse<TaggedResource>>(Actions.RESOURCE_READY, (s, a) => {
+      const { payload } = a.payload;
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
 
-      arrayWrap(payload.data).map(body => {
+      arrayWrap(payload.body).map(body => {
         const x = {
           kind: payload.kind,
           uuid: generateUuid(body.id, payload.kind),
@@ -73,7 +74,7 @@ export let resourceReducer =
         if (isTaggedResource(x)) {
           indexUpsert(s.index, x);
         } else {
-          throw new Error("BAD RESOURCE WHOAH!");
+          throw new Error(JSON.stringify(x));
         }
       });
       return s;
