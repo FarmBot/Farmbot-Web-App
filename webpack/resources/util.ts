@@ -13,6 +13,9 @@ export function generateUuid(id: number | undefined, kind: ResourceName) {
 export function arrayWrap<T>(input: T | (T[])): T[] {
   return _.isArray(input) ? input : [input];
 }
+export function arrayUnwrap<T>(input: T | T[]): T {
+  return _.isArray(input) ? input[0] : input;
+}
 
 export function entries<T>(input: Dictionary<T | undefined>): T[] {
   const x = Object.keys(input).map(key => input[key]);

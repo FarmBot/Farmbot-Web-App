@@ -3,8 +3,9 @@ import { Actions } from "../constants";
 import { ConnectionState, EdgeStatus } from "./interfaces";
 import { computeBestTime } from "./reducer_support";
 import { padEnd } from "lodash";
-import { TaggedResource } from "farmbot";
-import { SyncResponse } from "../sync/actions";
+import { TaggedDevice } from "farmbot";
+import { SyncBodyContents } from "../sync/actions";
+import { arrayUnwrap } from "../resources/util";
 
 export const DEFAULT_STATE: ConnectionState = {
   "bot.mqtt": undefined,
@@ -28,10 +29,10 @@ export let connectivityReducer =
       s[payload.name] = payload.status;
       return s;
     })
-    .add<SyncResponse<TaggedResource>["payload"]>(Actions.RESOURCE_READY, (s, a) => {
-      const d = a.payload.body[0];
+    .add<SyncBodyContents<TaggedDevice>>(Actions.RESOURCE_READY, (s, a) => {
+      const d = arrayUnwrap(a.payload.body);
       if (d && a.payload.kind === "Device") {
-        s["bot.mqtt"] = computeBestTime(s["bot.mqtt"], d && (d as any).last_saw_mq);
+        s["bot.mqtt"] = computeBestTime(s["bot.mqtt"], d && d.last_saw_mq);
       }
       return s;
     })

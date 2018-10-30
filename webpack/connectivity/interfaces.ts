@@ -1,5 +1,4 @@
 import { ResourceName } from "farmbot";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export type NetworkState = "up" | "down";
 
@@ -21,11 +20,6 @@ export type Edge =
   | "bot.mqtt"
   | "user.mqtt"
   | "user.api";
-
-export interface ResourceReady {
-  name: string,
-  data: [DeviceAccountSettings];
-}
 
 type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
 
