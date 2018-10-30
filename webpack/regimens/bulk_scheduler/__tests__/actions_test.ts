@@ -9,13 +9,13 @@ import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
 import { error, warning } from "farmbot-toastr";
 import { newTaggedResource } from "../../../sync/actions";
+import { arrayUnwrap } from "../../../resources/util";
 
 describe("commitBulkEditor()", () => {
   function newFakeState() {
     const state = fakeState();
-
     const fakeResources: TaggedResource[] = [
-      ...newTaggedResource("Regimen", {
+      arrayUnwrap(newTaggedResource("Regimen", {
         "id": 1,
         "name": "Test Regimen",
         "color": "gray",
@@ -27,8 +27,8 @@ describe("commitBulkEditor()", () => {
             "time_offset": 1000
           }
         ]
-      }),
-      ...newTaggedResource("Sequence", {
+      })),
+      arrayUnwrap(newTaggedResource("Sequence", {
         "id": 1,
         "name": "Test Sequence",
         "color": "gray",
@@ -38,7 +38,7 @@ describe("commitBulkEditor()", () => {
           "version": 4
         },
         "kind": "sequence"
-      })
+      }))
     ];
     state.resources.index = buildResourceIndex(fakeResources).index;
     const regimenUuid = state.resources.index.all[0];

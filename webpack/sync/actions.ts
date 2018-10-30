@@ -1,9 +1,9 @@
 import axios from "axios";
 import { API } from "../api";
 import { Actions } from "../constants";
-import { TaggedResource as TR, SpecialStatus } from "farmbot";
+import { TaggedResource as TR, SpecialStatus, TaggedResource } from "farmbot";
 import { Session } from "../session";
-import { arrayWrap } from "../resources/util";
+import { arrayWrap, generateUuid } from "../resources/util";
 
 export interface SyncBodyContents<T extends TR> {
   kind: T["kind"];
@@ -25,10 +25,14 @@ export const resourceReady =
 export const newTaggedResource = <T extends TR>(kind: T["kind"],
   bodies: T["body"] | T["body"][],
   specialStatus = SpecialStatus.SAVED): T[] => {
-  return arrayWrap(bodies).map((body: T["body"]): T => {
-    const tr = newTaggedResource(kind, body)[0];
-    tr.specialStatus = specialStatus;
-    return tr;
+  const arr = arrayWrap(bodies);
+  return arr.map((body: T["body"]): T => {
+    return {
+      kind: kind as TaggedResource["kind"],
+      body: body as TaggedResource["body"],
+      uuid: generateUuid(body && body.id ? body.id : undefined, kind),
+      specialStatus
+    } as T;
   });
 };
 

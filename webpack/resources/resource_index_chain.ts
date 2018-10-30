@@ -14,7 +14,7 @@ export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 // be using Record<T, U> types.
 const filterOutUuid = (tr: TaggedResource) => (id: string) => id !== tr.uuid;
 
-const REFERENCES: Indexer = { // ========
+const REFERENCES: Indexer = {
   up(r, i) { i.references[r.uuid] = r; },
   down(r, i) { delete i.references[r.uuid]; },
 };
