@@ -1,19 +1,8 @@
-import {
-  Resource as Res,
-  ResourceName as Name,
-  SpecialStatus,
-  TaggedResource
-} from "farmbot";
-import { generateUuid } from "../resources/util";
+import { Resource as Res, TaggedResource } from "farmbot";
+import { arrayUnwrap } from "../resources/util";
+import { newTaggedResource } from "../sync/actions";
 
-let ID_COUNTER = 0;
-
-export function fakeResource<T extends Name,
-  U extends TaggedResource["body"]>(kind: T, body: U): Res<T, U> {
-  return {
-    specialStatus: SpecialStatus.SAVED,
-    kind,
-    uuid: generateUuid(ID_COUNTER++, kind),
-    body
-  };
+export function fakeResource<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"]): Res<T["kind"], T["body"]> {
+  return arrayUnwrap(newTaggedResource(kind, body));
 }
