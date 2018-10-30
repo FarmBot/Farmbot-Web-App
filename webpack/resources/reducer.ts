@@ -3,11 +3,11 @@ import {
   initResourceReducer,
   mutateSpecialStatus,
   afterEach,
-  emptyState,
 } from "./reducer_support";
 import {
   defensiveClone,
-  equals
+  equals,
+  betterCompact
 } from "../util";
 import { generateReducer } from "../redux/generate_reducer";
 import { RestResources, ResourceIndex } from "./interfaces";
@@ -36,6 +36,56 @@ export function indexRemove(db: ResourceIndex, resources: TaggedResource | Tagge
     arrayWrap(resources).map(resource => callback(resource, db));
   });
 }
+import { initialState as regimenState } from "../regimens/reducer";
+import { initialState as sequenceState } from "../sequences/reducer";
+import { farmwareState } from "../farmware/reducer";
+import { initialState as designerState } from "../farm_designer/reducer";
+import { initialState as helpState } from "../help/reducer";
+
+export const emptyState =
+  (): RestResources => {
+    return {
+      consumers: {
+        sequences: sequenceState,
+        regimens: regimenState,
+        farm_designer: designerState,
+        farmware: farmwareState,
+        help: helpState,
+      },
+      loaded: [],
+      index: {
+        all: [],
+        byKind: {
+          WebcamFeed: [],
+          Device: [],
+          FarmEvent: [],
+          Image: [],
+          Plant: [],
+          Log: [],
+          Peripheral: [],
+          Crop: [],
+          Point: [],
+          Regimen: [],
+          Sequence: [],
+          Tool: [],
+          User: [],
+          FbosConfig: [],
+          FirmwareConfig: [],
+          WebAppConfig: [],
+          SensorReading: [],
+          Sensor: [],
+          FarmwareInstallation: [],
+          FarmwareEnv: [],
+          PinBinding: [],
+          PlantTemplate: [],
+          SavedGarden: [],
+          DiagnosticDump: []
+        },
+        byKindAndId: {},
+        references: {}
+      }
+    };
+  };
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
@@ -62,20 +112,15 @@ export let resourceReducer =
     })
     .add<SyncResponse<TaggedResource>["payload"]>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-
-      arrayWrap(payload.body).map(body => {
-        try {
-          const x = {
-            kind: payload.kind,
-            uuid: generateUuid(body.id, payload.kind),
-            specialStatus: SpecialStatus.SAVED,
-            body
-          };
-          if (isTaggedResource(x)) {
-            indexUpsert(s.index, x);
-          }
-        } catch (error) {
-          debugger;
+      betterCompact(arrayWrap(payload.body)).map(body => {
+        const x = {
+          kind: payload.kind,
+          uuid: generateUuid(body.id, payload.kind),
+          specialStatus: SpecialStatus.SAVED,
+          body
+        };
+        if (isTaggedResource(x)) {
+          indexUpsert(s.index, x);
         }
       });
       return s;

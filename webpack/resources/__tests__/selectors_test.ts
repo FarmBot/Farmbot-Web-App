@@ -3,9 +3,6 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
-  emptyState
-} from "../reducer_support";
-import {
   TaggedTool,
   TaggedToolSlotPointer,
   SpecialStatus
@@ -16,9 +13,9 @@ import {
   fakeWebcamFeed,
   fakeSequence
 } from "../../__test_support__/fake_state/resources";
-import { Actions } from "../../constants";
 import * as _ from "lodash";
-import { resourceReducer } from "../reducer";
+import { resourceReducer, emptyState } from "../reducer";
+import { resourceReady } from "../../sync/actions";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
@@ -75,13 +72,10 @@ describe("getFeeds", () => {
 
   it("finds the only WebcamFeed", () => {
     const feed = fakeWebcamFeed();
-    const state = [{
-      type: Actions.RESOURCE_READY,
-      payload: {
-        name: "WebcamFeed",
-        data: feed
-      }
-    }].reduce(resourceReducer, emptyState());
+    const state = [
+      resourceReady("WebcamFeed", feed.body)
+    ].reduce(resourceReducer, emptyState());
+
     expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
   });
 });

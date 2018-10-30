@@ -1,81 +1,14 @@
-import { RestResources, ResourceIndex } from "./interfaces";
-import {
-  TaggedResource,
-  ResourceName,
-  SpecialStatus,
-} from "farmbot";
-import {
-  isTaggedResource,
-} from "./tagged_resources";
-import {
-  initialState as sequenceState,
-  sequenceReducer as sequences,
-} from "../sequences/reducer";
-import {
-  initialState as regimenState,
-  regimensReducer as regimens
-} from "../regimens/reducer";
+import { ResourceName, SpecialStatus, TaggedResource } from "farmbot";
 import { combineReducers } from "redux";
+import { farmwareReducer as farmware } from "../farmware/reducer";
+import { designer as farm_designer } from "../farm_designer/reducer";
+import { helpReducer as help } from "../help/reducer";
 import { ReduxAction } from "../redux/interfaces";
-import {
-  designer as farm_designer,
-  initialState as designerState
-} from "../farm_designer/reducer";
-import {
-  farmwareReducer as farmware,
-  farmwareState
-} from "../farmware/reducer";
-import {
-  helpReducer as help,
-  initialState as helpState
-} from "../help/reducer";
+import { regimensReducer as regimens } from "../regimens/reducer";
+import { sequenceReducer as sequences } from "../sequences/reducer";
+import { ResourceIndex, RestResources } from "./interfaces";
 import { indexUpsert } from "./reducer";
-
-export function emptyState(): RestResources {
-  return {
-    consumers: {
-      sequences: sequenceState,
-      regimens: regimenState,
-      farm_designer: designerState,
-      farmware: farmwareState,
-      help: helpState,
-    },
-    loaded: [],
-    index: {
-      all: [],
-      byKind: {
-        WebcamFeed: [],
-        Device: [],
-        FarmEvent: [],
-        Image: [],
-        Plant: [],
-        Log: [],
-        Peripheral: [],
-        Crop: [],
-        Point: [],
-        Regimen: [],
-        Sequence: [],
-        Tool: [],
-        User: [],
-        FbosConfig: [],
-        FirmwareConfig: [],
-        WebAppConfig: [],
-        SensorReading: [],
-        Sensor: [],
-        FarmwareInstallation: [],
-        FarmwareEnv: [],
-        PinBinding: [],
-        PlantTemplate: [],
-        SavedGarden: [],
-        DiagnosticDump: []
-      },
-      byKindAndId: {},
-      references: {}
-    }
-  };
-}
-
-export const initialState: RestResources = emptyState();
+import { isTaggedResource } from "./tagged_resources";
 
 export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;

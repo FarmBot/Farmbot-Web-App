@@ -3,7 +3,7 @@ import { TileIf } from "../tile_if";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer_support";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileIf/>", () => {
   function bootstrapTest() {

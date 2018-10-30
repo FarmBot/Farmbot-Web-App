@@ -1,4 +1,3 @@
-import { emptyState } from "../resources/reducer_support";
 import {
   ResourceName,
   SpecialStatus,
@@ -8,8 +7,8 @@ import {
   TaggedResource,
 } from "farmbot";
 import * as _ from "lodash";
-import { Actions } from "../constants";
-import { resourceReducer } from "../resources/reducer";
+import { resourceReducer, emptyState } from "../resources/reducer";
+import { resourceReady } from "../sync/actions";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -325,9 +324,8 @@ export
     .groupBy(KIND)
     .toPairs()
     .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map((y: [ResourceName, TaggedResource[]]) => ({
-      type: Actions.RESOURCE_READY,
-      payload: { name: y[0], data: y[1].map(x => x.body) }
-    }))
+    .map((y: [ResourceName, TaggedResource[]]) => {
+      return resourceReady((y[0] as any), y[1].map(x => x.body as any));
+    })
     .reduce(resourceReducer, state);
 }

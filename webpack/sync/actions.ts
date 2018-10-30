@@ -6,7 +6,10 @@ import { Session } from "../session";
 
 export interface SyncResponse<T extends TaggedResource> {
   type: Actions.RESOURCE_READY;
-  payload: { kind: T["kind"]; body: T["body"] | T["body"][]; }
+  payload: {
+    kind: T["kind"];
+    body: T["body"][];
+  }
 }
 
 export const resourceReady =

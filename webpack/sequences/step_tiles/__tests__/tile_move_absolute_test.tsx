@@ -3,10 +3,10 @@ import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer_support";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { SpecialStatus } from "farmbot";
 import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = () => {

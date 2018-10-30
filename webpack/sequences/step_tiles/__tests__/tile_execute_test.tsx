@@ -8,8 +8,8 @@ import {
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Execute, Point, Identifier, Coordinate, Tool } from "farmbot";
-import { emptyState } from "../../../resources/reducer_support";
 import { Actions } from "../../../constants";
+import { emptyState } from "../../../resources/reducer";
 
 function fakeProps(): ExecBlockParams {
   const currentStep: Execute = {

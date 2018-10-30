@@ -4,15 +4,14 @@ jest.mock("../../revert_to_english", () => {
 
 import { revertToEnglishMiddleware } from "../revert_to_english_middleware";
 import { revertToEnglish } from "../../revert_to_english";
-import { Actions } from "../../constants";
+import { resourceReady } from "../../sync/actions";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("revertToEnglishMiddleware", () => {
   it("calls `revertToEnglish` when appropriate", () => {
     const dispatch = jest.fn(() => ({}));
-    const action = {
-      type: Actions.RESOURCE_READY,
-      payload: { name: "WebAppConfig", data: { disable_i18n: true } }
-    };
+    const data = { disable_i18n: true } as WebAppConfig;
+    const action = resourceReady("WebAppConfig", data);
     expect(revertToEnglish).not.toHaveBeenCalled();
     // tslint:disable-next-line:no-any
     revertToEnglishMiddleware.fn({} as any)(dispatch)(action);
