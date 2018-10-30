@@ -75,7 +75,7 @@ describe("resource reducer", () => {
     const testResourceDestroy = (kind: ResourceName) => {
 
       const state = fakeState().resources;
-      const resource = fakeResource(kind, {});
+      const resource = fakeResource(kind as TaggedResource["kind"], {});
       const action = {
         type: Actions.DESTROY_RESOURCE_OK,
         payload: resource

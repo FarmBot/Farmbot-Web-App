@@ -34,7 +34,6 @@ export function fakeSequence(): TaggedSequence {
   return fakeResource("Sequence", {
     args: {
       version: 4,
-      label: "WIP",
       locals: { kind: "scope_declaration", args: {} },
     },
     id: 12,
@@ -63,7 +62,6 @@ export function fakeFarmEvent(exe_type: ExecutableType,
     "time_unit": "never",
     "executable_id": exe_id,
     "executable_type": exe_type,
-    "calendar": []
   });
 }
 
@@ -96,15 +94,12 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("Tool", {
-    name: "Foo"
-  });
+  return fakeResource("Tool", { name: "Foo" });
 }
 
 export function fakeUser(): TaggedUser {
   return fakeResource("User", {
     id: idCounter++,
-    device_id: 789,
     name: "Fake User 123",
     email: "fake@fake.com",
     created_at: "---",
