@@ -60,8 +60,8 @@ describe("resource reducer", () => {
   let id = 1;
   it("covers save resource branches", () => {
     const testResource = (kind: TaggedResource["kind"]) => {
-      const resource = fakeResource(kind, { id: ++id });
-      const action = resourceReady(resource.kind, resource.body);
+      const resource = fakeResource(kind, { id: ++id }) as TaggedResource;
+      const action = resourceReady(resource.kind, [resource]);
       const newState = resourceReducer(fakeState().resources, action);
       const uuid = newState.index.byKindAndId[joinKindAndId(kind, resource.body.id)];
       const expectation = newState.index.references[uuid || "?"];

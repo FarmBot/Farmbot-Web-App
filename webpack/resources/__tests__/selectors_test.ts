@@ -16,6 +16,7 @@ import {
 import * as _ from "lodash";
 import { resourceReducer, emptyState } from "../reducer";
 import { resourceReady } from "../../sync/actions";
+// import { Actions } from "../../constants";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
@@ -73,9 +74,9 @@ describe("getFeeds", () => {
   it("finds the only WebcamFeed", () => {
     const feed = fakeWebcamFeed();
     const state = [
-      resourceReady("WebcamFeed", feed.body)
+      resourceReady("WebcamFeed", feed)
     ].reduce(resourceReducer, emptyState());
-
+    debugger;
     expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
   });
 });

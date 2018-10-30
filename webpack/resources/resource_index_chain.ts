@@ -20,8 +20,12 @@ const REFERENCES: Indexer = { // ========
 };
 
 const ALL: Indexer = {
-  up(r, s) { s.all.push(r.uuid); },
-  down(r, i) { i.all = i.all.filter(filterOutUuid(r)); },
+  up(r, s) {
+    s.all.push(r.uuid);
+  },
+  down(r, i) {
+    i.all = i.all.filter(filterOutUuid(r));
+  },
 };
 
 const BY_KIND: Indexer = {

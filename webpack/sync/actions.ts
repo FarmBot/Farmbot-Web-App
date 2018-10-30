@@ -1,13 +1,13 @@
 import axios from "axios";
 import { API } from "../api";
 import { Actions } from "../constants";
-import { TaggedResource as TR } from "farmbot";
+import { TaggedResource as TR, SpecialStatus } from "farmbot";
 import { Session } from "../session";
 import { arrayWrap } from "../resources/util";
 
 export interface SyncBodyContents<T extends TR> {
   kind: T["kind"];
-  body: T["body"][];
+  body: T[];
 }
 export interface SyncResponse<T extends TR> {
   type: Actions.RESOURCE_READY;
@@ -15,18 +15,30 @@ export interface SyncResponse<T extends TR> {
 }
 
 export const resourceReady =
-  <T extends TR>(kind: T["kind"], body: T["body"] | T["body"][]): SyncResponse<T> => {
+  <T extends TR>(kind: T["kind"], body: T | T[]): SyncResponse<T> => {
     return {
       type: Actions.RESOURCE_READY,
       payload: { kind, body: arrayWrap(body) }
     };
   };
 
+export const newTaggedResource = <T extends TR>(kind: T["kind"],
+  bodies: T["body"] | T["body"][],
+  specialStatus = SpecialStatus.SAVED): T[] => {
+  return arrayWrap(bodies).map((body: T["body"]): T => {
+    const tr = newTaggedResource(kind, body)[0];
+    tr.specialStatus = specialStatus;
+    return tr;
+  });
+};
+
 export function fetchSyncData(dispatch: Function) {
   const fetch =
     <T extends TR>(kind: T["kind"], url: string) => axios
       .get<T["body"] | T["body"][]>(url)
-      .then(({ data }) => dispatch(resourceReady(kind, data)), Session.clear);
+      .then(({ data }) => {
+        dispatch(resourceReady(kind, newTaggedResource(kind, data)))
+      }, Session.clear);
 
   fetch("User", API.current.usersPath);
   fetch("Device", API.current.devicePath);

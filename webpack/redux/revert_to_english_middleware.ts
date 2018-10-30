@@ -29,7 +29,10 @@ const fn: Middleware = () => (dispatch) => (action: any) => {
     && x.payload.body
     && x.payload.kind === WEB_APP_CONFIG) {
     const conf = arrayUnwrap(x.payload.body);
-    conf && conf.disable_i18n && revertToEnglish();
+    conf
+      && conf.body
+      && conf.body.disable_i18n
+      && revertToEnglish();
   }
 
   return dispatch(action);

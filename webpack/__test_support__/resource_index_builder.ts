@@ -1,5 +1,4 @@
 import {
-  ResourceName,
   SpecialStatus,
   TaggedDevice,
   TaggedLog,
@@ -320,12 +319,14 @@ export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
     state = emptyState()) {
   const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
-  return _(resources)
+  const t = _(resources)
     .groupBy(KIND)
     .toPairs()
-    .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map((y: [ResourceName, TaggedResource[]]) => {
-      return resourceReady((y[0] as any), y[1].map(x => x.body as any));
+    .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
+    .map((y) => {
+      const [kind, list] = y;
+      return resourceReady(kind, list);
     })
     .reduce(resourceReducer, state);
+  return t;
 }

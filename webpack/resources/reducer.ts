@@ -9,7 +9,7 @@ import { generateReducer } from "../redux/generate_reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { SyncBodyContents } from "../sync/actions";
-import { betterCompact, defensiveClone, equals } from "../util";
+import { defensiveClone, equals } from "../util";
 import { GeneralizedError } from "./actions";
 import { ResourceIndex, RestResources } from "./interfaces";
 import {
@@ -19,11 +19,7 @@ import {
   mutateSpecialStatus
 } from "./reducer_support";
 import { INDEXES } from "./resource_index_chain";
-import { isTaggedResource } from "./tagged_resources";
-import {
-  arrayWrap,
-  generateUuid
-} from "./util";
+import { arrayWrap } from "./util";
 
 const ups = INDEXES.map(x => x.up);
 
@@ -111,15 +107,7 @@ export let resourceReducer =
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      betterCompact(arrayWrap(payload.body)).map(body => {
-        const x = {
-          kind: payload.kind,
-          uuid: generateUuid(body.id, payload.kind),
-          specialStatus: SpecialStatus.SAVED,
-          body
-        };
-        if (isTaggedResource(x)) { indexUpsert(s.index, x); }
-      });
+      payload.body.map(x => indexUpsert(s.index, x));
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {

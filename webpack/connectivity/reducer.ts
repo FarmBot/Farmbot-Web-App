@@ -31,8 +31,8 @@ export let connectivityReducer =
     })
     .add<SyncBodyContents<TaggedDevice>>(Actions.RESOURCE_READY, (s, a) => {
       const d = arrayUnwrap(a.payload.body);
-      if (d && a.payload.kind === "Device") {
-        s["bot.mqtt"] = computeBestTime(s["bot.mqtt"], d && d.last_saw_mq);
+      if (d && d.kind === "Device") {
+        s["bot.mqtt"] = computeBestTime(s["bot.mqtt"], d && d.body.last_saw_mq);
       }
       return s;
     })

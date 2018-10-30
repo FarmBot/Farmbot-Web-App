@@ -23,6 +23,7 @@ import { API } from "../api";
 import { betterCompact } from "../../util";
 import { SpecialStatus } from "farmbot";
 import * as _ from "lodash";
+import { arrayUnwrap } from "../../resources/util";
 
 describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
@@ -57,10 +58,12 @@ describe("AJAX data tracking", () => {
     expect(uuids.length).toEqual(r.length);
   });
 
-  it("sets consistency when calling initSave()", () => {
-    mockBody = resources()[0].body;
+  fit("sets consistency when calling initSave()", () => {
+    const tr = arrayUnwrap(resources());
+    mockBody = tr.body;
     // tslint:disable-next-line:no-any
-    store.dispatch(initSave(resources()[0]) as any);
+    const action: any = initSave(tr);
+    store.dispatch(action);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 });
