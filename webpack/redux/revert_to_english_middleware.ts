@@ -1,9 +1,10 @@
-import { Middleware } from "redux";
+import { Middleware, DeepPartial } from "redux";
 import { MiddlewareConfig } from "./middlewares";
-import { ResourceName } from "farmbot";
+import { ResourceName, TaggedWebAppConfig } from "farmbot";
 import { Actions } from "../constants";
 import { revertToEnglish } from "../revert_to_english";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { SyncResponse } from "../sync/actions";
+import { arrayUnwrap } from "../resources/util";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 
@@ -21,16 +22,14 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  */
 // tslint:disable-next-line:no-any
 const fn: Middleware = () => (dispatch) => (action: any) => {
-  const isResourceReady = action
-    && action.type === Actions.RESOURCE_READY
-    && action.payload
-    && action.payload.body
-    && action.payload.kind === WEB_APP_CONFIG;
-
-  if (isResourceReady) { // This is super un-typesafe
-
-    const conf: WebAppConfig = action.payload.body;
-    conf.disable_i18n && revertToEnglish();
+  const x: DeepPartial<SyncResponse<TaggedWebAppConfig>> = action;
+  if (x
+    && x.type === Actions.RESOURCE_READY
+    && x.payload
+    && x.payload.body
+    && x.payload.kind === WEB_APP_CONFIG) {
+    const conf = arrayUnwrap(x.payload.body);
+    conf && conf.disable_i18n && revertToEnglish();
   }
 
   return dispatch(action);

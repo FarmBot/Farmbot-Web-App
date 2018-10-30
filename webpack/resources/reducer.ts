@@ -1,29 +1,33 @@
-import {
-  findByUuid,
-  initResourceReducer,
-  mutateSpecialStatus,
-  afterEach,
-} from "./reducer_support";
-import {
-  defensiveClone,
-  equals,
-  betterCompact
-} from "../util";
-import { generateReducer } from "../redux/generate_reducer";
-import { RestResources, ResourceIndex } from "./interfaces";
-import { TaggedResource, SpecialStatus } from "farmbot";
-import { Actions } from "../constants";
-import { GeneralizedError } from "./actions";
+import { SpecialStatus, TaggedResource } from "farmbot";
 import { merge } from "lodash";
 import { EditResourceParams } from "../api/interfaces";
-import { SyncResponse } from "../sync/actions";
-import { arrayWrap, generateUuid } from "./util";
-import { isTaggedResource } from "./tagged_resources";
+import { Actions } from "../constants";
+import { farmwareState } from "../farmware/reducer";
+import { initialState as designerState } from "../farm_designer/reducer";
+import { initialState as helpState } from "../help/reducer";
+import { generateReducer } from "../redux/generate_reducer";
+import { initialState as regimenState } from "../regimens/reducer";
+import { initialState as sequenceState } from "../sequences/reducer";
+import { SyncBodyContents } from "../sync/actions";
+import { betterCompact, defensiveClone, equals } from "../util";
+import { GeneralizedError } from "./actions";
+import { ResourceIndex, RestResources } from "./interfaces";
+import {
+  afterEach,
+  findByUuid,
+  initResourceReducer,
+  mutateSpecialStatus
+} from "./reducer_support";
 import { INDEXES } from "./resource_index_chain";
+import { isTaggedResource } from "./tagged_resources";
+import {
+  arrayWrap,
+  generateUuid
+} from "./util";
 
 const ups = INDEXES.map(x => x.up);
 
-export function indexUpsert(db: ResourceIndex, resources: TaggedResource | TaggedResource[]) {
+export function indexUpsert(db: ResourceIndex, resources: TaggedResource) {
   ups.map(callback => {
     arrayWrap(resources).map(resource => callback(resource, db));
   });
@@ -31,16 +35,11 @@ export function indexUpsert(db: ResourceIndex, resources: TaggedResource | Tagge
 
 const downs = INDEXES.map(x => x.down).reverse();
 
-export function indexRemove(db: ResourceIndex, resources: TaggedResource | TaggedResource[]) {
+export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
   downs.map(callback => {
     arrayWrap(resources).map(resource => callback(resource, db));
   });
 }
-import { initialState as regimenState } from "../regimens/reducer";
-import { initialState as sequenceState } from "../sequences/reducer";
-import { farmwareState } from "../farmware/reducer";
-import { initialState as designerState } from "../farm_designer/reducer";
-import { initialState as helpState } from "../help/reducer";
 
 export const emptyState =
   (): RestResources => {
@@ -110,7 +109,7 @@ export let resourceReducer =
       mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
       return s;
     })
-    .add<SyncResponse<TaggedResource>["payload"]>(Actions.RESOURCE_READY, (s, { payload }) => {
+    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
       betterCompact(arrayWrap(payload.body)).map(body => {
         const x = {
@@ -119,9 +118,7 @@ export let resourceReducer =
           specialStatus: SpecialStatus.SAVED,
           body
         };
-        if (isTaggedResource(x)) {
-          indexUpsert(s.index, x);
-        }
+        if (isTaggedResource(x)) { indexUpsert(s.index, x); }
       });
       return s;
     })
