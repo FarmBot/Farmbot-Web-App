@@ -3,50 +3,42 @@ jest.mock("i18next", () => ({ t: (i: string) => i }));
 import { commitBulkEditor, setTimeOffset, toggleDay, setSequence } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { TaggedResource, SpecialStatus } from "farmbot";
+import { TaggedResource } from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
 import { error, warning } from "farmbot-toastr";
+import { newTaggedResource } from "../../../sync/actions";
 
 describe("commitBulkEditor()", () => {
   function newFakeState() {
     const state = fakeState();
+
     const fakeResources: TaggedResource[] = [
-      {
-        "specialStatus": SpecialStatus.SAVED,
-        "kind": "Regimen",
-        "body": {
-          "id": 1,
-          "name": "Test Regimen",
-          "color": "gray",
-          "regimen_items": [
-            {
-              "id": 1,
-              "regimen_id": 1,
-              "sequence_id": 1,
-              "time_offset": 1000
-            }
-          ]
+      ...newTaggedResource("Regimen", {
+        "id": 1,
+        "name": "Test Regimen",
+        "color": "gray",
+        "regimen_items": [
+          {
+            "id": 1,
+            "regimen_id": 1,
+            "sequence_id": 1,
+            "time_offset": 1000
+          }
+        ]
+      }),
+      ...newTaggedResource("Sequence", {
+        "id": 1,
+        "name": "Test Sequence",
+        "color": "gray",
+        "body": [{ kind: "wait", args: { milliseconds: 100 } }],
+        "args": {
+          "locals": { kind: "scope_declaration", args: {} },
+          "version": 4
         },
-        "uuid": "N/A"
-      },
-      {
-        "kind": "Sequence",
-        "specialStatus": SpecialStatus.SAVED,
-        "body": {
-          "id": 1,
-          "name": "Test Sequence",
-          "color": "gray",
-          "body": [{ kind: "wait", args: { milliseconds: 100 } }],
-          "args": {
-            "locals": { kind: "scope_declaration", args: {} },
-            "version": 4
-          },
-          "kind": "sequence"
-        },
-        "uuid": "N/A"
-      }
+        "kind": "sequence"
+      })
     ];
     state.resources.index = buildResourceIndex(fakeResources).index;
     const regimenUuid = state.resources.index.all[0];

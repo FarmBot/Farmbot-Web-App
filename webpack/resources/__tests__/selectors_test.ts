@@ -76,8 +76,7 @@ describe("getFeeds", () => {
     const state = [
       resourceReady("WebcamFeed", feed)
     ].reduce(resourceReducer, emptyState());
-    debugger;
-    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
+    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed.body);
   });
 });
 
