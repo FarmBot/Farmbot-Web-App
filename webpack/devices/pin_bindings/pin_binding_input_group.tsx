@@ -25,6 +25,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import {
   PinBindingType, PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
+import { TaggedPinBinding } from "farmbot";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -67,18 +68,21 @@ export class PinBindingInputGroup
     if (isNumber(pinNumberInput)) {
       if (bindingType && (sequenceIdInput || specialActionInput)) {
         if (shouldDisplay(Feature.api_pin_bindings)) {
-          dispatch(initSave(
-            bindingType == PinBindingType.special
-              ? taggedPinBinding({
-                pin_num: pinNumberInput,
-                special_action: specialActionInput,
-                binding_type: bindingType
-              })
-              : taggedPinBinding({
-                pin_num: pinNumberInput,
-                sequence_id: sequenceIdInput,
-                binding_type: bindingType
-              })));
+          let tr: TaggedPinBinding;
+          if (bindingType == PinBindingType.special) { // This is too deep.
+            tr = taggedPinBinding({
+              pin_num: pinNumberInput,
+              special_action: specialActionInput,
+              binding_type: bindingType
+            });
+          } else {
+            tr = taggedPinBinding({
+              pin_num: pinNumberInput,
+              sequence_id: sequenceIdInput,
+              binding_type: bindingType
+            });
+          }
+          dispatch(initSave(tr.kind, tr.body));
         } else {
           dispatch(registerGpioPin({
             pin_number: pinNumberInput,

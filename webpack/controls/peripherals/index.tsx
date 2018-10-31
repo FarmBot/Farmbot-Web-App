@@ -7,7 +7,7 @@ import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
 import {
-  TaggedPeripheral, SpecialStatus,
+  TaggedPeripheral
 } from "farmbot";
 import {
   getArrayStatus,
@@ -15,6 +15,9 @@ import {
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import * as _ from "lodash";
+import { newTaggedResource } from "../../sync/actions";
+import { Peripheral } from "farmbot/dist/resources/api_resources";
+import { arrayUnwrap } from "../../resources/util";
 
 export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
   constructor(props: PeripheralsProps) {
@@ -62,12 +65,9 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   taggedPeripheral = (pin: number, label: string): TaggedPeripheral => {
-    return {
-      uuid: "WILL_BE_CHANGED_BY_REDUCER",
-      specialStatus: SpecialStatus.SAVED,
-      kind: "Peripheral",
-      body: { pin, label }
-    };
+    const tr: TaggedPeripheral[] =
+      newTaggedResource("Peripheral", { pin, label } as Peripheral);
+    return arrayUnwrap(tr);
   }
 
   emptyPeripheral = (): TaggedPeripheral => {
@@ -76,7 +76,8 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
 
   farmduinoPeripherals = (dispatch: Function) => {
     const newPeripheral = (pin: number, label: string) => {
-      dispatch(init(this.taggedPeripheral(pin, label)));
+      const tr = this.taggedPeripheral(pin, label);
+      dispatch(init(tr.kind, tr.body));
     };
 
     newPeripheral(7, t("Lighting"));
@@ -109,7 +110,10 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => { dispatch(init(this.emptyPeripheral())); }}>
+          onClick={() => {
+            const tr = this.emptyPeripheral();
+            dispatch(init(tr.kind, tr.body));
+          }}>
           <i className="fa fa-plus" />
         </button>
         <button

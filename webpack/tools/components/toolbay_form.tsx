@@ -34,7 +34,10 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
         onClick={() => dispatch(saveAll(toolSlots, toggle))} />
       <button
         className="green fb-button"
-        onClick={() => dispatch(init(emptyToolSlot()))}>
+        onClick={() => {
+          const tr = emptyToolSlot();
+          dispatch(init(tr.kind, tr.body));
+        }}>
         <i className="fa fa-plus" />
       </button>
     </div>;

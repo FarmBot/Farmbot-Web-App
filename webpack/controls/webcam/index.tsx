@@ -46,7 +46,7 @@ export class WebcamPanel extends React.Component<P, S> {
         this.setState({ activeMenu });
       },
       feeds: this.props.feeds,
-      init: () => this.props.dispatch(init(EMPTY_FEED)),
+      init: () => this.props.dispatch(init(EMPTY_FEED.kind, EMPTY_FEED.body)),
       edit: (tr, update) => this.props.dispatch(edit(tr, update)),
       save: (tr) => { this.props.dispatch(save(tr.uuid)); },
       destroy: (tr) => { this.props.dispatch(destroy(tr.uuid)); }

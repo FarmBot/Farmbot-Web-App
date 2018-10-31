@@ -26,7 +26,8 @@ export function AddRegimen(props: AddRegimenProps) {
   return <button
     className={classes}
     onClick={() => {
-      dispatch(init(emptyRegimen(length)));
+      const tr = emptyRegimen(length);
+      dispatch(init(tr.kind, tr.body));
       push("/app/regimens/new_regimen_" + (length++));
     }}>
     {props.children || <i className="fa fa-plus" />}

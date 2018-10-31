@@ -51,8 +51,10 @@ export const StockPinBindingsButton =
         <button
           className="fb-button green"
           onClick={() =>
-            stockPinBindings.map(binding =>
-              dispatch(initSave(taggedPinBinding(binding))))}>
+            stockPinBindings.map(binding => {
+              const tr = taggedPinBinding(binding);
+              dispatch(initSave(tr.kind, tr.body));
+            })}>
           <i className="fa fa-plus" />
           {t("v1.4 Stock Bindings")}
         </button>}

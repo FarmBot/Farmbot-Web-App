@@ -5,10 +5,9 @@ import * as Selector from "../selectors";
 import {
   TaggedTool,
   TaggedToolSlotPointer,
-  SpecialStatus
 } from "farmbot";
 import { saveOK } from "../actions";
-import { generateUuid, hasId, arrayUnwrap } from "../util";
+import { hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
   fakeSequence

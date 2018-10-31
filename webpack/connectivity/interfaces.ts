@@ -1,4 +1,4 @@
-import { ResourceName } from "farmbot";
+import { TaggedResource } from "farmbot";
 
 export type NetworkState = "up" | "down";
 
@@ -27,17 +27,17 @@ type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
  * An `undefined` value means we don't know. */
 export type ConnectionState = ConnectionRecord;
 
-export interface UpdateMqttData {
+export interface UpdateMqttData<T extends TaggedResource> {
   status: "UPDATE"
-  kind: ResourceName;
+  kind: T["kind"];
+  body: T["body"];
   id: number;
-  body: object;
   sessionId: string;
 }
 
-export interface DeleteMqttData {
+export interface DeleteMqttData<T extends TaggedResource> {
   status: "DELETE"
-  kind: ResourceName;
+  kind: T["kind"];
   id: number;
 }
 
@@ -50,9 +50,9 @@ export interface SkipMqttData {
   status: "SKIP";
 }
 
-export type MqttDataResult =
-  | UpdateMqttData
-  | DeleteMqttData
+export type MqttDataResult<T extends TaggedResource> =
+  | UpdateMqttData<T>
+  | DeleteMqttData<T>
   | SkipMqttData
   | BadMqttData;
 

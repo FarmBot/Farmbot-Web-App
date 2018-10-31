@@ -81,7 +81,7 @@ export const createPlant = (props: {
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map
-      props.dispatch(initSave(p));
+      props.dispatch(initSave(p.kind, p.body));
     }
   }
 };

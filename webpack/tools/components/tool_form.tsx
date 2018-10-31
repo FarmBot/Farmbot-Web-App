@@ -27,7 +27,10 @@ export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
     this.taggedTool(t("Tool ") + (this.props.tools.length + 1))
 
   stockTools = (dispatch: Function) => {
-    const newTool = (name: string) => dispatch(init(this.taggedTool(name)));
+    const newTool = (name: string) => {
+      const tr = this.taggedTool(name);
+      dispatch(init(tr.kind, tr.body));
+    };
 
     newTool(t("Seeder"));
     newTool(t("Watering Nozzle"));
@@ -52,7 +55,10 @@ export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
         onClick={() => dispatch(saveAll(tools, toggle))} />
       <button
         className="fb-button green"
-        onClick={() => dispatch(init(this.emptyTool()))}>
+        onClick={() => {
+          const tr = this.emptyTool();
+          dispatch(init(tr.kind, tr.body));
+        }}>
         <i className="fa fa-plus" />
       </button>
       <button

@@ -67,7 +67,8 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
 
   stockSensors = (dispatch: Function) => {
     const newSensor = (pin: number, label: string, mode: 0 | 1) => {
-      dispatch(init(this.taggedSensor(pin, label, mode)));
+      const tr = this.taggedSensor(pin, label, mode); // legacy
+      dispatch(init(tr.kind, tr.body));
     };
 
     newSensor(63, t("Tool Verification"), 0);
@@ -97,7 +98,10 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => { dispatch(init(this.emptySensor())); }}>
+          onClick={() => {
+            const tr = this.emptySensor();
+            dispatch(init(tr.kind, tr.body));
+          }}>
           <i className="fa fa-plus" />
         </button>
         <button

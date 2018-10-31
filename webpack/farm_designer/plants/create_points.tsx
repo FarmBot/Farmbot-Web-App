@@ -115,7 +115,7 @@ export class CreatePoints
         radius: (r || 1),
       }
     };
-    this.props.dispatch(initSave(p));
+    this.props.dispatch(initSave(p.kind, p.body));
     this.cancel();
   }
 
