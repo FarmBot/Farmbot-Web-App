@@ -12,7 +12,7 @@ import {
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer_support";
-import { generateUuid } from "../resources/util";
+// import { generateUuid } from "../resources/util";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
@@ -21,6 +21,8 @@ import * as _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";
+import { newTaggedResource } from "../sync/actions";
+import { arrayUnwrap } from "../resources/util";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -71,19 +73,25 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 }
 
 /** Initialize (but don't save) an indexed / tagged resource. */
-export function init(resource: TaggedResource,
+export function init<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"],
   /** Set to "true" when you want an `undefined` SpecialStatus. */
   clean = false): ReduxAction<TaggedResource> {
+  const resource = arrayUnwrap(newTaggedResource(kind, body));
   resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
   // /** Don't touch this- very important! */
-  resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
-export function initSave(resource: TaggedResource) {
-  return function (dispatch: Function/*, getState: GetState*/) {
-    const action = init(resource);
+export function initSave<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"]) {
+  return function (dispatch: Function, getState: GetState) {
+    const action = init(kind, body);
+    const before = getState().resources.index;
     dispatch(action);
+    const after = getState().resources.index;
+    console.log(before, after);
+    debugger;
     return dispatch(save(action.payload.uuid));
   };
 }

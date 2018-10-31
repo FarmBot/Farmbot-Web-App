@@ -8,32 +8,24 @@ import {
   SpecialStatus
 } from "farmbot";
 import { saveOK } from "../actions";
-import { generateUuid, hasId } from "../util";
+import { generateUuid, hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
   fakeSequence
 } from "../../__test_support__/fake_state/resources";
 import * as _ from "lodash";
 import { resourceReducer, emptyState } from "../reducer";
-import { resourceReady } from "../../sync/actions";
+import { resourceReady, newTaggedResource } from "../../sync/actions";
 // import { Actions } from "../../constants";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
-const fakeTool: TaggedTool = {
-  kind: "Tool",
-  specialStatus: SpecialStatus.SAVED,
-  uuid: generateUuid(TOOL_ID, "Tool"),
-  body: {
-    name: "yadda yadda",
-    id: TOOL_ID
-  }
-};
-const fakeSlot: TaggedToolSlotPointer = {
-  kind: "Point",
-  specialStatus: SpecialStatus.SAVED,
-  uuid: generateUuid(SLOT_ID, "Point"),
-  body: {
+const fakeTool: TaggedTool = arrayUnwrap(newTaggedResource("Tool", {
+  name: "yadda yadda",
+  id: TOOL_ID
+}));
+const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
+  {
     tool_id: TOOL_ID,
     pointer_type: "ToolSlot",
     radius: 0,
@@ -44,8 +36,8 @@ const fakeSlot: TaggedToolSlotPointer = {
     pointer_id: SLOT_ID,
     meta: {},
     pullout_direction: 0
-  }
-};
+  }));
+
 const fakeIndex = buildResourceIndex().index;
 
 describe("findSlotByToolId", () => {

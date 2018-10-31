@@ -2,7 +2,7 @@ jest.mock("../maybe_start_tracking", () => {
   return { maybeStartTracking: jest.fn() };
 });
 
-let mockBody = {};
+const mockBody: Partial<TaggedUser["body"]> = { id: 23 };
 jest.mock("axios", () => {
   return {
     default: {
@@ -21,10 +21,10 @@ import { ReduxAction } from "../../redux/interfaces";
 import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";
 import { betterCompact } from "../../util";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedUser } from "farmbot";
 import * as _ from "lodash";
-import { arrayUnwrap } from "../../resources/util";
-import { newTaggedResource } from "../../sync/actions";
+// import { arrayUnwrap } from "../../resources/util";
+// import { newTaggedResource } from "../../sync/actions";
 
 fdescribe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
@@ -60,12 +60,11 @@ fdescribe("AJAX data tracking", () => {
   });
 
   fit("sets consistency when calling initSave()", () => {
-    const oldTr = arrayUnwrap(resources());
-    const newTr = arrayUnwrap(newTaggedResource(oldTr.kind, oldTr.body));
-    newTr.uuid = "--tainted--";
-    mockBody = oldTr.body;
     // tslint:disable-next-line:no-any
-    const action: any = initSave(newTr);
+    const action: any = initSave("User", {
+      name: "tester123",
+      email: "test@test.com"
+    });
     store.dispatch(action);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
