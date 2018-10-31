@@ -5,6 +5,7 @@ import { maybeTagSteps } from "./sequence_tagging";
 import {
   recomputeLocalVarDeclaration
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
+import { uniq } from "lodash";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -22,6 +23,8 @@ const REFERENCES: Indexer = {
 const ALL: Indexer = {
   up(r, s) {
     s.all.push(r.uuid);
+    // This is unfortunate and fixable by switching to Map<string, string>
+    s.all = uniq(s.all);
   },
   down(r, i) {
     i.all = i.all.filter(filterOutUuid(r));
@@ -29,7 +32,11 @@ const ALL: Indexer = {
 };
 
 const BY_KIND: Indexer = {
-  up(r, i) { i.byKind[r.kind].push(r.uuid); },
+  up(r, i) {
+    i.byKind[r.kind].push(r.uuid);
+    // This is unfortunate and fixable by switching to Map<string, string>
+    i.byKind[r.kind] = uniq(i.byKind[r.kind]);
+  },
   down(r, i) {
     i.byKind[r.kind] = i.byKind[r.kind].filter(filterOutUuid(r));
   },

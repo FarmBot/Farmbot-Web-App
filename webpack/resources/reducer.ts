@@ -107,6 +107,12 @@ export let resourceReducer =
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+      /** Example Use Case: Refreshing a group of logs after the application
+       * is already bootstrapped. */
+      s.index.byKind[payload.kind].map(uuid => {
+        const ref = s.index.references[uuid];
+        ref && indexRemove(s.index, ref);
+      });
       payload.body.map(x => indexUpsert(s.index, x));
       return s;
     })
