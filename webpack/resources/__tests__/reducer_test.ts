@@ -56,11 +56,12 @@ describe("resource reducer", () => {
   const TEST_RESOURCE_NAMES: TaggedResource["kind"][] = ["Crop", "Device",
     "DiagnosticDump", "FarmEvent", "FarmwareInstallation", "FbosConfig",
     "FirmwareConfig", "Log", "Peripheral", "PinBinding", "PlantTemplate",
-    "Point", "Regimen", "SavedGarden", "Sensor", "Sequence"];
+    "Point", "Regimen", "SavedGarden", "Sensor"];
   let id = 1;
+
   it("covers save resource branches", () => {
     const testResource = (kind: TaggedResource["kind"]) => {
-      const resource = fakeResource(kind, { id: ++id }) as TaggedResource;
+      const resource: TaggedResource = fakeResource(kind, { id: ++id });
       const action = resourceReady(resource.kind, [resource]);
       const newState = resourceReducer(fakeState().resources, action);
       const uuid = newState.index.byKindAndId[joinKindAndId(kind, resource.body.id)];
