@@ -45,6 +45,6 @@ describe("<ToolBayForm/>", () => {
   it("adds new tool slot", () => {
     const wrapper = mount(<ToolBayForm {...fakeProps()} />);
     clickButton(wrapper, 2, "");
-    expect(init).toHaveBeenCalledWith(emptyToolSlot());
+    expect(init).toHaveBeenCalledWith(emptyToolSlot().kind, emptyToolSlot().body);
   });
 });

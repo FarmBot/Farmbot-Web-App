@@ -58,9 +58,8 @@ describe("createPlant", () => {
 
   it("creates plant", () => {
     createPlant(fakeProps());
-    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({ name: "Mint", x: 10, y: 20 })
-    }));
+    expect(initSave).toHaveBeenCalledWith("Point",
+      expect.objectContaining({ name: "Mint", x: 10, y: 20 }));
   });
 
   it("doesn't create plant outside planting area", () => {
@@ -102,9 +101,8 @@ describe("dropPlant", () => {
 
   it("drops plant", () => {
     dropPlant(fakeProps());
-    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({ name: "Mint", x: 10, y: 20 })
-    }));
+    expect(initSave).toHaveBeenCalledWith("Point",
+      expect.objectContaining({ name: "Mint", x: 10, y: 20 }));
   });
 
   it("throws error", () => {

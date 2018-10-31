@@ -39,9 +39,7 @@ describe("<ToolForm/>", () => {
     const wrapper = mount(<ToolForm {...fakeProps()} />);
     expect(wrapper.props().tools.length).toEqual(2);
     clickButton(wrapper, 2, "");
-    expect(init).toHaveBeenCalledWith(expect.objectContaining({
-      body: { name: "Tool 3" }
-    }));
+    expect(init).toHaveBeenCalledWith("Tool", { name: "Tool 3" });
   });
 
   it("adds stock tools", () => {

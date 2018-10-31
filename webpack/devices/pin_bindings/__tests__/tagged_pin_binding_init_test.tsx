@@ -25,8 +25,6 @@ describe("<StockPinBindingsButton />", () => {
     const wrapper = mount(<StockPinBindingsButton {...p} />);
     wrapper.find("button").simulate("click");
     stockPinBindings.map(body =>
-      expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-        kind: "PinBinding", body
-      })));
+      expect(initSave).toHaveBeenCalledWith("PinBinding", body));
   });
 });
