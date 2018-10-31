@@ -24,7 +24,7 @@ const ALL: Indexer = {
   up(r, s) {
     s.all.push(r.uuid);
     // This is unfortunate and fixable by switching to Map<string, string>
-    s.all = uniq(s.all);
+    s.all = uniq(s.all).sort();
   },
   down(r, i) {
     i.all = i.all.filter(filterOutUuid(r));

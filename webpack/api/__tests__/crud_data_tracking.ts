@@ -24,8 +24,9 @@ import { betterCompact } from "../../util";
 import { SpecialStatus } from "farmbot";
 import * as _ from "lodash";
 import { arrayUnwrap } from "../../resources/util";
+import { newTaggedResource } from "../../sync/actions";
 
-describe("AJAX data tracking", () => {
+fdescribe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
   const initialState = { resources: buildResourceIndex() };
   const wrappedReducer =
@@ -52,17 +53,19 @@ describe("AJAX data tracking", () => {
     // tslint:disable-next-line:no-any
     store.dispatch(saveAll(r) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
+    const list = (maybeStartTracking as jest.Mock).mock.calls;
     const uuids: string[] =
-      _.uniq((maybeStartTracking as jest.Mock).mock.calls
-        .map((x: string[]) => x[0]));
+      _.uniq(list.map((x: string[]) => x[0]));
     expect(uuids.length).toEqual(r.length);
   });
 
-  it("sets consistency when calling initSave()", () => {
-    const tr = arrayUnwrap(resources());
-    mockBody = tr.body;
+  fit("sets consistency when calling initSave()", () => {
+    const oldTr = arrayUnwrap(resources());
+    const newTr = arrayUnwrap(newTaggedResource(oldTr.kind, oldTr.body));
+    newTr.uuid = "--tainted--";
+    mockBody = oldTr.body;
     // tslint:disable-next-line:no-any
-    const action: any = initSave(tr);
+    const action: any = initSave(newTr);
     store.dispatch(action);
     expect(maybeStartTracking).toHaveBeenCalled();
   });

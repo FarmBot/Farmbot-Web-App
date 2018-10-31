@@ -74,21 +74,17 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 export function init(resource: TaggedResource,
   /** Set to "true" when you want an `undefined` SpecialStatus. */
   clean = false): ReduxAction<TaggedResource> {
-  resource.body.id = resource.body.id || 0;
   resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
-  /** Don't touch this- very important! */
+  // /** Don't touch this- very important! */
   resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
 export function initSave(resource: TaggedResource) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function/*, getState: GetState*/) {
     const action = init(resource);
-    if (resource.body.id === 0) { delete resource.body.id; }
     dispatch(action);
-    const nextState = getState().resources.index;
-    const tr = findByUuid(nextState, action.payload.uuid);
-    return dispatch(save(tr.uuid));
+    return dispatch(save(action.payload.uuid));
   };
 }
 
