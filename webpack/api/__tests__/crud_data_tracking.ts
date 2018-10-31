@@ -58,7 +58,7 @@ describe("AJAX data tracking", () => {
     expect(uuids.length).toEqual(r.length);
   });
 
-  fit("sets consistency when calling initSave()", () => {
+  it("sets consistency when calling initSave()", () => {
     const tr = arrayUnwrap(resources());
     mockBody = tr.body;
     // tslint:disable-next-line:no-any
