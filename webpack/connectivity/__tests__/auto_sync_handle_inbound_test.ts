@@ -53,8 +53,9 @@ describe("handleInbound()", () => {
     const i = getState().resources.index.byKind.Sequence;
     // Pick an ID that we know will be in the DB
     const id = unpackUUID(Object.values(i)[0]).remoteId || -1;
-    const fixtr: DeleteMqttData<TaggedSequence> =
-      { status: "DELETE", kind: "Sequence", id };
+    const fixtr: DeleteMqttData<TaggedSequence> = {
+      status: "DELETE", kind: "Sequence", id
+    };
     handleInbound(dispatch, getState, fixtr);
     expect(dispatch).toHaveBeenCalled();
     expect(destroyOK).toHaveBeenCalled();
