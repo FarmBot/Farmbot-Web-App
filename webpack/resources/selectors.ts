@@ -186,7 +186,7 @@ export function maybeGetTimeOffset(index: ResourceIndex): number {
 }
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
-  const dev = index.references[index.byKind.Device[0] || "nope"];
+  const dev = index.references[Object.keys(index.byKind.Device)[0] || "nope"];
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
@@ -196,7 +196,7 @@ export const getDeviceAccountSettings =
     const device = maybeGetDevice(index);
     switch (Object.keys(index.byKind.Device).length) {
       case 0: return bail(`Tried to load device before it was loaded.`);
-      case 1: return (device) ? device : bail("Malformed device!");
+      case 1: return device ? device : bail("Malformed device!");
       default: return bail("Found more than 1 device");
     }
   };
