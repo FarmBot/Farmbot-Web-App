@@ -89,10 +89,13 @@ export function climb(t: Traversable | unknown, cb: TreeClimberCB) {
   const climbBody = (body: Body = []) => body.map(item => climb(item, cb));
 
   if (isTraversable(t)) {
-    cb(t);
+    console.log("Traversing " + t.kind);
+    t.body = t.body || [];
     climbArgs(t.args);
     climbBody(t.body);
+    cb(t);
   } else {
+    console.log("Refusing to traverse " + JSON.stringify(t));
     return;
   }
 }

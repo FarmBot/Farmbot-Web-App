@@ -1,0 +1,33 @@
+import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
+import { MoveAbsolute } from "farmbot";
+import { performAllIndexesOnSequence } from "../variables_support";
+import { get } from "lodash";
+
+describe("performAllIndexesOnSequence", () => {
+  const move_abs: MoveAbsolute = {
+    kind: "move_absolute",
+    args: {
+      location: { kind: "identifier", args: { label: "parent" } },
+      offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+      speed: 800
+    }
+  };
+
+  it("fills in missing information related to variables", () => {
+    const missing_declaration = fakeSequence().body;
+    expect(missing_declaration.args.locals.body).toBeUndefined();
+    missing_declaration.body = [move_abs];
+    missing_declaration.args.locals = {
+      kind: "scope_declaration",
+      args: {},
+      body: []
+    };
+    performAllIndexesOnSequence(missing_declaration);
+    const locals = missing_declaration.args.locals.body;
+    if (locals) {
+      expect(get(locals[0], "uuid")).toBeDefined();
+    } else {
+      fail("Expected performAllIndexesOnSequence to fill in missing declarations");
+    }
+  });
+});
