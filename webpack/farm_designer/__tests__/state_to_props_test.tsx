@@ -96,7 +96,7 @@ describe("getPlants()", () => {
 
   it("returns plant templates", () => {
     const resources = fakeResources();
-    const savedGardenUuid = resources.index.byKind["SavedGarden"][0];
+    const savedGardenUuid = Object.keys(resources.index.byKind["SavedGarden"])[0];
     resources.consumers.farm_designer.openedSavedGarden = savedGardenUuid;
     expect(getPlants(resources).length).toEqual(1);
   });
