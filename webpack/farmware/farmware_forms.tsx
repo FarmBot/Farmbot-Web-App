@@ -4,10 +4,16 @@ import { t } from "i18next";
 import { FarmwareManifest, Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
 import * as _ from "lodash";
+import {
+  ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv
+} from "../devices/interfaces";
 
 export interface FarmwareFormProps {
   farmware: FarmwareManifest;
-  user_env: Record<string, string | undefined>;
+  user_env: UserEnv;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  dispatch: Function;
 }
 
 /** Namespace a Farmware config with the Farmware name. */
@@ -28,14 +34,19 @@ export function farmwareHelpText(farmware: FarmwareManifest | undefined): string
 /** Return a div that includes all Farmware input fields. */
 export function ConfigFields(props: {
   farmware: FarmwareManifest,
-  getValue: (farmwareName: string, currentConfig: FarmwareConfig) => string
+  getValue: (farmwareName: string, currentConfig: FarmwareConfig) => string,
+  shouldDisplay: ShouldDisplay,
+  saveFarmwareEnv: SaveFarmwareEnv,
+  dispatch: Function,
 }): JSX.Element {
 
   /** Set a Farmware input value on FBOS. */
   function inputChange(key: string) {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value;
-      getDevice().setUserEnv({ [key]: value }).catch(() => { });
+      props.shouldDisplay(Feature.api_farmware_env)
+        ? props.dispatch(props.saveFarmwareEnv(key, value))
+        : getDevice().setUserEnv({ [key]: value }).catch(() => { });
     };
   }
 
@@ -83,7 +94,10 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
       </button>
       <ConfigFields
         farmware={farmware}
-        getValue={getValue} />
+        getValue={getValue}
+        shouldDisplay={props.shouldDisplay}
+        saveFarmwareEnv={props.saveFarmwareEnv}
+        dispatch={props.dispatch} />
     </div>
   </Col>;
 }

@@ -53,7 +53,10 @@ describe("<ConfigFields />", () => {
   const fakeProps = () => {
     return {
       farmware: fakeFarmware(),
-      getValue: jest.fn()
+      getValue: jest.fn(),
+      dispatch: jest.fn(),
+      shouldDisplay: () => false,
+      saveFarmwareEnv: jest.fn(),
     };
   };
 
@@ -73,13 +76,27 @@ describe("<ConfigFields />", () => {
       "my_fake_farmware_config_1": 1
     });
   });
+
+  it("changes env var in API", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = shallow(<ConfigFields {...p} />);
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: 1 } });
+    expect(mockDevice.setUserEnv).not.toHaveBeenCalled();
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
+      "my_fake_farmware_config_1", 1);
+  });
 });
 
 describe("<FarmwareForm />", () => {
   const fakeProps = (): FarmwareFormProps => {
     return {
       farmware: fakeFarmware(),
-      user_env: {}
+      user_env: {},
+      dispatch: jest.fn(),
+      shouldDisplay: () => false,
+      saveFarmwareEnv: jest.fn(),
     };
   };
 

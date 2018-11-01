@@ -1,18 +1,27 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { DetectorState, HSV } from "./interfaces";
+import { DetectorState } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { deletePoints, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
-import { FarmwareProps } from "../../devices/interfaces";
+import { FarmwareProps, Feature } from "../../devices/interfaces";
 import { mapStateToProps } from "../../farmware/state_to_props";
 import { ImageWorkspace } from "./image_workspace";
-import { WDENVKey as ENVKey } from "./remote_env/interfaces";
+import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
-import { translateImageWorkspaceAndSave } from "./actions";
 import { MustBeOnline } from "../../devices/must_be_online";
+import { envSave } from "./remote_env/actions";
+
+export const namespace = (prefix: string) => (key: string): WDENVKey => {
+  const namespacedKey = prefix + key;
+  if (isWDENVKey(namespacedKey)) {
+    return namespacedKey;
+  } else {
+    throw new Error(`${namespacedKey} is not a WDENVKey`);
+  }
+};
 
 @connect(mapStateToProps)
 export class WeedDetector
@@ -33,25 +42,16 @@ export class WeedDetector
     this.setState({ deletionProgress: t("Deleting...") });
   }
 
-  /** Mapping of HSV values to FBOS Env variables. */
-  CHANGE_MAP: Record<HSV, [ENVKey, ENVKey]> = {
-    H: ["CAMERA_CALIBRATION_H_LO", "CAMERA_CALIBRATION_H_HI"],
-    S: ["CAMERA_CALIBRATION_S_LO", "CAMERA_CALIBRATION_S_HI"],
-    V: ["CAMERA_CALIBRATION_V_LO", "CAMERA_CALIBRATION_V_LO"]
-  };
+  namespace = namespace("WEED_DETECTOR_");
 
-  /** Maps <ImageWorkspace/> props to weed detector ENV vars. */
-  translateValueAndSave = translateImageWorkspaceAndSave({
-    "iteration": "WEED_DETECTOR_iteration",
-    "morph": "WEED_DETECTOR_morph",
-    "blur": "WEED_DETECTOR_blur",
-    "H_HI": "WEED_DETECTOR_H_HI",
-    "H_LO": "WEED_DETECTOR_H_LO",
-    "S_HI": "WEED_DETECTOR_S_HI",
-    "S_LO": "WEED_DETECTOR_S_LO",
-    "V_HI": "WEED_DETECTOR_V_HI",
-    "V_LO": "WEED_DETECTOR_V_LO"
-  });
+  change = (key: string, value: number) => {
+    this.saveEnvVar(this.namespace(key), value);
+  }
+
+  saveEnvVar = (key: WDENVKey, value: number) =>
+    this.props.shouldDisplay(Feature.api_farmware_env)
+      ? this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
+      : envSave(key, value)
 
   render() {
     return <div className="weed-detector">
@@ -74,20 +74,20 @@ export class WeedDetector
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <ImageWorkspace
-              onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
-              onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
+              onProcessPhoto={id => this.props.dispatch(scanImage(id))}
+              onFlip={uuid => this.props.dispatch(selectImage(uuid))}
               currentImage={this.props.currentImage}
               images={this.props.images}
-              onChange={this.translateValueAndSave}
-              iteration={envGet("WEED_DETECTOR_iteration", this.props.env)}
-              morph={envGet("WEED_DETECTOR_morph", this.props.env)}
-              blur={envGet("WEED_DETECTOR_blur", this.props.env)}
-              H_LO={envGet("WEED_DETECTOR_H_LO", this.props.env)}
-              H_HI={envGet("WEED_DETECTOR_H_HI", this.props.env)}
-              S_LO={envGet("WEED_DETECTOR_S_LO", this.props.env)}
-              S_HI={envGet("WEED_DETECTOR_S_HI", this.props.env)}
-              V_LO={envGet("WEED_DETECTOR_V_LO", this.props.env)}
-              V_HI={envGet("WEED_DETECTOR_V_HI", this.props.env)} />
+              onChange={this.change}
+              iteration={envGet(this.namespace("iteration"), this.props.env)}
+              morph={envGet(this.namespace("morph"), this.props.env)}
+              blur={envGet(this.namespace("blur"), this.props.env)}
+              H_LO={envGet(this.namespace("H_LO"), this.props.env)}
+              H_HI={envGet(this.namespace("H_HI"), this.props.env)}
+              S_LO={envGet(this.namespace("S_LO"), this.props.env)}
+              S_HI={envGet(this.namespace("S_HI"), this.props.env)}
+              V_LO={envGet(this.namespace("V_LO"), this.props.env)}
+              V_HI={envGet(this.namespace("V_HI"), this.props.env)} />
           </MustBeOnline>
         </Col>
       </Row>

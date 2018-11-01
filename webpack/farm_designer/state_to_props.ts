@@ -10,16 +10,23 @@ import {
   getFirmwareConfig,
   selectAllPlantTemplates,
   selectAllSensorReadings,
-  selectAllSensors
+  selectAllSensors,
+  maybeGetDevice
 } from "../resources/selectors";
 import * as _ from "lodash";
-import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
+import {
+  validBotLocationData, validFwConfig, unpackUUID,
+  shouldDisplay as shouldDisplayFunc,
+  determineInstalledOsVersion
+} from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { Props } from "./interfaces";
 import { TaggedPlant } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString } from "lodash";
 import { BooleanSetting } from "../session_keys";
+import { Feature } from "../devices/interfaces";
+import { reduceFarmwareEnv } from "../farmware/state_to_props";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -74,16 +81,23 @@ export function mapStateToProps(props: Everything): Props {
     .reverse()
     .value();
 
-  const { user_env } = props.bot.hardware;
+  const installedOsVersion = determineInstalledOsVersion(
+    props.bot, maybeGetDevice(props.resources.index));
+  const shouldDisplay =
+    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const env = shouldDisplay(Feature.api_farmware_env)
+    ? reduceFarmwareEnv(props.resources.index)
+    : props.bot.hardware.user_env;
+
   const cameraCalibrationData = {
-    scale: user_env["CAMERA_CALIBRATION_coord_scale"],
-    rotation: user_env["CAMERA_CALIBRATION_total_rotation_angle"],
+    scale: env["CAMERA_CALIBRATION_coord_scale"],
+    rotation: env["CAMERA_CALIBRATION_total_rotation_angle"],
     offset: {
-      x: user_env["CAMERA_CALIBRATION_camera_offset_x"],
-      y: user_env["CAMERA_CALIBRATION_camera_offset_y"]
+      x: env["CAMERA_CALIBRATION_camera_offset_x"],
+      y: env["CAMERA_CALIBRATION_camera_offset_y"]
     },
-    origin: user_env["CAMERA_CALIBRATION_image_bot_origin_location"],
-    calibrationZ: user_env["CAMERA_CALIBRATION_camera_z"],
+    origin: env["CAMERA_CALIBRATION_image_bot_origin_location"],
+    calibrationZ: env["CAMERA_CALIBRATION_camera_z"],
   };
 
   const sensorReadings = _(selectAllSensorReadings(props.resources.index))

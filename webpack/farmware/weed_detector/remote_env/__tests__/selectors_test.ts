@@ -1,5 +1,5 @@
 import { prepopulateEnv, envGet } from "../selectors";
-import { DEFAULTS } from "../constants";
+import { WD_KEY_DEFAULTS } from "../constants";
 import { WD_ENV } from "../interfaces";
 
 describe("populateEnv()", () => {
@@ -12,7 +12,7 @@ describe("populateEnv()", () => {
   it("Falls back on defaults", () => {
     const result = prepopulateEnv({});
     const actual = result.CAMERA_CALIBRATION_calibration_object_separation;
-    const expected = DEFAULTS.CAMERA_CALIBRATION_calibration_object_separation;
+    const expected = WD_KEY_DEFAULTS.CAMERA_CALIBRATION_calibration_object_separation;
     expect(actual).toEqual(expected);
   });
 });
