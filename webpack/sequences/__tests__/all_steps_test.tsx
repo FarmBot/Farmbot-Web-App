@@ -3,13 +3,13 @@ import { AllSteps } from "../all_steps";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { shallow } from "enzyme";
 import { TaggedSequence, SpecialStatus } from "farmbot";
-import { maybeTagSteps } from "../../resources/sequence_tagging";
+import { tagAllSteps } from "../../resources/sequence_tagging";
 import { TileMoveRelative } from "../step_tiles/tile_move_relative";
 import { TileReadPin } from "../step_tiles/tile_read_pin";
 import { TileWritePin } from "../step_tiles/tile_write_pin";
 
 describe("<AllSteps/>", () => {
-  const TEST_CASE = {
+  const TEST_CASE: TaggedSequence = {
     "kind": "Sequence",
     "specialStatus": SpecialStatus.SAVED,
     "body": {
@@ -54,7 +54,7 @@ describe("<AllSteps/>", () => {
     "uuid": "Sequence.8.52"
   } as TaggedSequence;
 
-  maybeTagSteps(TEST_CASE);
+  tagAllSteps(TEST_CASE.body.body || []);
 
   it("uses index as a key", () => {
     const el = shallow(<AllSteps

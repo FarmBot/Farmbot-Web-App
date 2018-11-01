@@ -1,6 +1,5 @@
 import { get, set } from "lodash";
 import { SequenceBodyItem, uuid } from "farmbot/dist";
-import { TaggedResource } from "farmbot";
 
 /** HISTORICAL NOTES:
  *   This file is the result of some very subtle bugs relating to dynamic
@@ -65,12 +64,7 @@ export let setStepTag = (i: SequenceBodyItem) => {
   set(i, TAG_PROP, uuid());
 };
 
-/** Idempotently add a `uuid` property to all steps in an array. */
-export let tagAllSteps = (i: SequenceBodyItem[]) => i.map(setStepTag);
-
 /** REALLY IMPORTANT SEE FILE HEADER FOR MORE INFO! -RC
  * Used by Redux within the `resource` reducer. Given a TaggedResource,
  * idempotently adds `UUID` property to all steps in all sequences. */
-export function maybeTagSteps(x: TaggedResource) {
-  if (x && (x.kind === "Sequence")) { tagAllSteps(x.body.body || []); }
-}
+export let tagAllSteps = (i: SequenceBodyItem[]) => i.map(setStepTag);
