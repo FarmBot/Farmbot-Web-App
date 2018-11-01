@@ -226,5 +226,5 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
 }
 
 export function all(index: ResourceIndex) {
-  return betterCompact(index.all.map(uuid => index.references[uuid]));
+  return betterCompact(Object.keys(index.all).map(uuid => index.references[uuid]));
 }
