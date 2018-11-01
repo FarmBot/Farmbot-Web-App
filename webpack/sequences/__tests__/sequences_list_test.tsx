@@ -77,9 +77,8 @@ describe("<SequencesList />", () => {
   it("adds new sequence", () => {
     const wrapper = mount(<SequencesList {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
-    expect(init).toHaveBeenCalledWith(expect.objectContaining({
-      kind: "Sequence", body: expect.objectContaining({ body: [] })
-    }));
+    expect(init).toHaveBeenCalledWith("Sequence",
+      expect.objectContaining({ body: [] }));
     expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_2");
   });
 

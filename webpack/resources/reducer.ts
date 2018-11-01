@@ -84,7 +84,7 @@ export const emptyState =
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(emptyState(), afterEach)
+  generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, payload);
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);

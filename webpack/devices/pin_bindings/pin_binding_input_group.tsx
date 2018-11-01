@@ -11,7 +11,7 @@ import {
 import { isNumber, includes } from "lodash";
 import { Feature, ShouldDisplay } from "../interfaces";
 import { initSave } from "../../api/crud";
-import { taggedPinBinding } from "./tagged_pin_binding_init";
+import { pinBindingBody } from "./tagged_pin_binding_init";
 import { registerGpioPin } from "../actions";
 import { error, warning } from "farmbot-toastr";
 import {
@@ -25,7 +25,6 @@ import { ResourceIndex } from "../../resources/interfaces";
 import {
   PinBindingType, PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
-import { TaggedPinBinding } from "farmbot";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -68,21 +67,17 @@ export class PinBindingInputGroup
     if (isNumber(pinNumberInput)) {
       if (bindingType && (sequenceIdInput || specialActionInput)) {
         if (shouldDisplay(Feature.api_pin_bindings)) {
-          let tr: TaggedPinBinding;
-          if (bindingType == PinBindingType.special) { // This is too deep.
-            tr = taggedPinBinding({
+          bindingType == PinBindingType.special
+            ? dispatch(initSave("PinBinding", pinBindingBody({
               pin_num: pinNumberInput,
               special_action: specialActionInput,
               binding_type: bindingType
-            });
-          } else {
-            tr = taggedPinBinding({
+            })))
+            : dispatch(initSave("PinBinding", pinBindingBody({
               pin_num: pinNumberInput,
               sequence_id: sequenceIdInput,
               binding_type: bindingType
-            });
-          }
-          dispatch(initSave(tr.kind, tr.body));
+            })));
         } else {
           dispatch(registerGpioPin({
             pin_number: pinNumberInput,

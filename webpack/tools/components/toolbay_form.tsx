@@ -14,7 +14,7 @@ import { saveAll, init } from "../../api/crud";
 import { ToolBayHeader } from "./toolbay_header";
 import { ToolTips } from "../../constants";
 import { ToolSlotRow } from "./tool_slot_row";
-import { emptyToolSlot } from "./empty_tool_slot";
+import { emptyToolSlotBody } from "./empty_tool_slot";
 import { TaggedToolSlotPointer } from "farmbot";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
@@ -34,10 +34,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
         onClick={() => dispatch(saveAll(toolSlots, toggle))} />
       <button
         className="green fb-button"
-        onClick={() => {
-          const tr = emptyToolSlot();
-          dispatch(init(tr.kind, tr.body));
-        }}>
+        onClick={() => dispatch(init("Point", emptyToolSlotBody()))}>
         <i className="fa fa-plus" />
       </button>
     </div>;

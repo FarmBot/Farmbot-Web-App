@@ -5,7 +5,6 @@ import { initSave, edit, save } from "../../../../api/crud";
 import {
   AxisNumberProperty, TaggedPlant, MapTransformProps
 } from "../../interfaces";
-import { SpecialStatus } from "farmbot";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import * as moment from "moment";
 import { unpackUUID } from "../../../../util";
@@ -18,21 +17,19 @@ import { movePlant } from "../../../actions";
 import { cachedCrop } from "../../../../open_farm/icons";
 
 /** Return a new plant or plantTemplate object. */
-export const newPlant = (props: {
+export const newPlantKindAndBody = (props: {
   x: number,
   y: number,
   slug: string,
   cropName: string,
   openedSavedGarden: string | undefined
-}): TaggedPlant => {
+}): { kind: TaggedPlant["kind"], body: TaggedPlant["body"] } => {
   const savedGardenId = isString(props.openedSavedGarden)
     ? unpackUUID(props.openedSavedGarden).remoteId
     : undefined;
   return isNumber(savedGardenId)
     ? {
       kind: "PlantTemplate",
-      uuid: "--never",
-      specialStatus: SpecialStatus.SAVED,
       body: {
         x: props.x,
         y: props.y,
@@ -45,8 +42,6 @@ export const newPlant = (props: {
     }
     : {
       kind: "Point",
-      uuid: "--never",
-      specialStatus: SpecialStatus.SAVED,
       body: Plant({
         x: props.x,
         y: props.y,
@@ -77,7 +72,7 @@ export const createPlant = (props: {
   if (outsideGrid) {
     error(t(Content.OUTSIDE_PLANTING_AREA));
   } else {
-    const p = newPlant({ x, y, slug, cropName, openedSavedGarden });
+    const p = newPlantKindAndBody({ x, y, slug, cropName, openedSavedGarden });
     // Stop non-plant objects from creating generic plants in the map
     if (p.body.name != "name" && p.body.openfarm_slug != "slug") {
       // Create and save a new plant in the garden map

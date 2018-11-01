@@ -82,13 +82,12 @@ describe("<CropInfo />", () => {
     const button = wrapper.find("button").last();
     expect(button.text()).toContain("location (100, 200)");
     button.simulate("click");
-    expect(initSave).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({
+    expect(initSave).toHaveBeenCalledWith("Point",
+      expect.objectContaining({
         name: "Mint",
         x: 100,
         y: 200,
         z: 0
-      })
-    }));
+      }));
   });
 });

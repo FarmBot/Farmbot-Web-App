@@ -92,13 +92,12 @@ describe("handleCreate", () => {
 
 describe("asTaggedResource", () => {
   it("turns MQTT data into FE data", () => {
-    const UUID = "123-456-789";
     const p = payload();
     const result = asTaggedResource(p);
     expect(result.body).toEqual(p.body);
     expect(result.kind).toEqual(p.kind);
     expect(result.specialStatus).toEqual(SpecialStatus.SAVED);
-    expect(result.uuid).toEqual(UUID);
+    expect(result.uuid).toContain(p.kind);
   });
 });
 

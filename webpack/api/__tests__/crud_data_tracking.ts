@@ -12,6 +12,15 @@ jest.mock("axios", () => {
     }
   };
 });
+
+jest.mock("../../resources/reducer_support", () => ({
+  findByUuid: () => arrayUnwrap(newTaggedResource("User", { id: 23 })),
+  // tslint:disable-next-line:no-any
+  afterEach: (s: any) => s,
+  joinKindAndId: jest.fn(),
+  mutateSpecialStatus: jest.fn(),
+}));
+
 import { destroy, saveAll, initSave } from "../crud";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { createStore, applyMiddleware } from "redux";
@@ -23,10 +32,10 @@ import { API } from "../api";
 import { betterCompact } from "../../util";
 import { SpecialStatus, TaggedUser } from "farmbot";
 import * as _ from "lodash";
-// import { arrayUnwrap } from "../../resources/util";
-// import { newTaggedResource } from "../../sync/actions";
+import { newTaggedResource } from "../../sync/actions";
+import { arrayUnwrap } from "../../resources/util";
 
-fdescribe("AJAX data tracking", () => {
+describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
   const initialState = { resources: buildResourceIndex() };
   const wrappedReducer =
@@ -59,7 +68,7 @@ fdescribe("AJAX data tracking", () => {
     expect(uuids.length).toEqual(r.length);
   });
 
-  fit("sets consistency when calling initSave()", () => {
+  it("sets consistency when calling initSave()", () => {
     // tslint:disable-next-line:no-any
     const action: any = initSave("User", {
       name: "tester123",

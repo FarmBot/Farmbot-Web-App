@@ -41,7 +41,7 @@ export function fetchSyncData(dispatch: Function) {
     <T extends TR>(kind: T["kind"], url: string) => axios
       .get<T["body"] | T["body"][]>(url)
       .then(({ data }) => {
-        dispatch(resourceReady(kind, newTaggedResource(kind, data)))
+        dispatch(resourceReady(kind, newTaggedResource(kind, data)));
       }, Session.clear);
 
   fetch("User", API.current.usersPath);

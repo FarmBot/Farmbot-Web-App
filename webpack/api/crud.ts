@@ -85,13 +85,9 @@ export function init<T extends TaggedResource>(kind: T["kind"],
 
 export function initSave<T extends TaggedResource>(kind: T["kind"],
   body: T["body"]) {
-  return function (dispatch: Function, getState: GetState) {
+  return function (dispatch: Function) {
     const action = init(kind, body);
-    const before = getState().resources.index;
     dispatch(action);
-    const after = getState().resources.index;
-    console.log(before, after);
-    debugger;
     return dispatch(save(action.payload.uuid));
   };
 }

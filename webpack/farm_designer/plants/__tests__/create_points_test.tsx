@@ -36,17 +36,13 @@ describe("<CreatePoints />", () => {
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30, color: "red" });
     clickButton(wrapper, 0, "create point");
-    expect(initSave).toHaveBeenCalledWith({
-      body: {
+    expect(initSave).toHaveBeenCalledWith("Point",
+      {
         meta: { color: "red", created_by: "farm-designer" },
         name: "Created Point",
         pointer_type: "GenericPointer",
         radius: 30, x: 10, y: 20, z: 0
-      },
-      kind: "Point",
-      specialStatus: "",
-      uuid: ""
-    });
+      });
   });
 
   it("deletes all points", () => {

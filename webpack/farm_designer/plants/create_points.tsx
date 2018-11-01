@@ -8,9 +8,9 @@ import {
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
-import { TaggedPoint, SpecialStatus } from "farmbot";
 import { deletePoints } from "../../farmware/weed_detector/actions";
 import { clone } from "lodash";
+import { GenericPointer } from "farmbot/dist/resources/api_resources";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -101,21 +101,16 @@ export class CreatePoints
 
   createPoint = () => {
     const { cx, cy, r, color } = this.state;
-    const p: TaggedPoint = {
-      kind: "Point",
-      uuid: "",
-      specialStatus: SpecialStatus.SAVED,
-      body: {
-        pointer_type: "GenericPointer",
-        name: "Created Point",
-        meta: { color, created_by: "farm-designer" },
-        x: (cx || 0),
-        y: (cy || 0),
-        z: 0,
-        radius: (r || 1),
-      }
+    const body: GenericPointer = {
+      pointer_type: "GenericPointer",
+      name: "Created Point",
+      meta: { color, created_by: "farm-designer" },
+      x: (cx || 0),
+      y: (cy || 0),
+      z: 0,
+      radius: (r || 1),
     };
-    this.props.dispatch(initSave(p.kind, p.body));
+    this.props.dispatch(initSave("Point", body));
     this.cancel();
   }
 
