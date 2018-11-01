@@ -11,7 +11,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { ToolBayFormProps } from "../../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
 import { saveAll, init } from "../../../api/crud";
-import { emptyToolSlot } from "../empty_tool_slot";
+import { emptyToolSlotBody } from "../empty_tool_slot";
 
 describe("<ToolBayForm/>", () => {
   const fakeProps = (): ToolBayFormProps => {
@@ -45,6 +45,6 @@ describe("<ToolBayForm/>", () => {
   it("adds new tool slot", () => {
     const wrapper = mount(<ToolBayForm {...fakeProps()} />);
     clickButton(wrapper, 2, "");
-    expect(init).toHaveBeenCalledWith(emptyToolSlot().kind, emptyToolSlot().body);
+    expect(init).toHaveBeenCalledWith("Point", emptyToolSlotBody());
   });
 });

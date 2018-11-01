@@ -21,9 +21,9 @@ import {
   TaggedWebcamFeed,
   TaggedSavedGarden,
   TaggedPlantTemplate,
+  TaggedToolSlotPointer,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
-import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
@@ -107,7 +107,19 @@ export function fakeUser(): TaggedUser {
   });
 }
 
-export const fakeToolSlot = emptyToolSlot;
+export function fakeToolSlot(): TaggedToolSlotPointer {
+  return fakeResource("Point", {
+    x: 0,
+    y: 0,
+    z: 0,
+    radius: 25,
+    pointer_type: "ToolSlot",
+    meta: {},
+    tool_id: undefined,
+    name: "Tool Slot",
+    pullout_direction: 0
+  });
+}
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {

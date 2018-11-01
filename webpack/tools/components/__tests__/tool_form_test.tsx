@@ -5,6 +5,11 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
+import { SpecialStatus } from "farmbot";
+jest.mock("../../../resources/tagged_resources", () => ({
+  getArrayStatus: () => SpecialStatus.SAVED,
+}));
+
 import * as React from "react";
 import { ToolForm } from "../tool_form";
 import { mount, shallow } from "enzyme";

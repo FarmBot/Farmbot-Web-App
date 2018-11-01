@@ -6,28 +6,19 @@ import { PeripheralForm } from "./peripheral_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { PeripheralsProps } from "../../devices/interfaces";
 import { PeripheralState } from "./interfaces";
-import {
-  TaggedPeripheral
-} from "farmbot";
-import {
-  getArrayStatus,
-} from "../../resources/tagged_resources";
+import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
-import * as _ from "lodash";
-import { newTaggedResource } from "../../sync/actions";
-import { Peripheral } from "farmbot/dist/resources/api_resources";
-import { arrayUnwrap } from "../../resources/util";
+import { uniq } from "lodash";
 
-export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
+export class Peripherals
+  extends React.Component<PeripheralsProps, PeripheralState> {
   constructor(props: PeripheralsProps) {
     super(props);
     this.state = { isEditing: false };
   }
 
-  toggle = () => {
-    this.setState({ isEditing: !this.state.isEditing });
-  }
+  toggle = () => this.setState({ isEditing: !this.state.isEditing });
 
   maybeSave = () => {
     const { peripherals } = this.props;
@@ -35,7 +26,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     const positivePins = pinNums.filter(x => x && x > 0);
     const smallPins = pinNums.filter(x => x && x < 1000);
     // I hate adding client side validation, but this is a wonky endpoint - RC.
-    const allAreUniq = _.uniq(pinNums).length === pinNums.length;
+    const allAreUniq = uniq(pinNums).length === pinNums.length;
     const allArePositive = positivePins.length === pinNums.length;
     const allAreSmall = smallPins.length === pinNums.length;
     if (allAreUniq && allArePositive) {
@@ -64,34 +55,21 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
     }
   }
 
-  taggedPeripheral = (pin: number, label: string): TaggedPeripheral => {
-    const tr: TaggedPeripheral[] =
-      newTaggedResource("Peripheral", { pin, label } as Peripheral);
-    return arrayUnwrap(tr);
-  }
+  newPeripheral = (pin = 0, label = t("New Peripheral")) => {
+    this.props.dispatch(init("Peripheral", { pin, label }));
+  };
 
-  emptyPeripheral = (): TaggedPeripheral => {
-    return this.taggedPeripheral(0, t("New Peripheral"));
-  }
-
-  farmduinoPeripherals = (dispatch: Function) => {
-    const newPeripheral = (pin: number, label: string) => {
-      const tr = this.taggedPeripheral(pin, label);
-      dispatch(init(tr.kind, tr.body));
-    };
-
-    newPeripheral(7, t("Lighting"));
-    newPeripheral(8, t("Water"));
-    newPeripheral(9, t("Vacuum"));
-    newPeripheral(10, t("Peripheral ") + "4");
-    newPeripheral(12, t("Peripheral ") + "5");
+  farmduinoPeripherals = () => {
+    this.newPeripheral(7, t("Lighting"));
+    this.newPeripheral(8, t("Water"));
+    this.newPeripheral(9, t("Vacuum"));
+    this.newPeripheral(10, t("Peripheral ") + "4");
+    this.newPeripheral(12, t("Peripheral ") + "5");
   }
 
   render() {
-    const { dispatch, peripherals } = this.props;
     const { isEditing } = this.state;
-
-    const status = getArrayStatus(peripherals);
+    const status = getArrayStatus(this.props.peripherals);
 
     return <Widget className="peripherals-widget">
       <WidgetHeader title={t("Peripherals")} helpText={ToolTips.PERIPHERALS}>
@@ -110,17 +88,14 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => {
-            const tr = this.emptyPeripheral();
-            dispatch(init(tr.kind, tr.body));
-          }}>
+          onClick={() => this.newPeripheral()}>
           <i className="fa fa-plus" />
         </button>
         <button
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => this.farmduinoPeripherals(dispatch)}>
+          onClick={this.farmduinoPeripherals}>
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
           Farmduino
           </button>

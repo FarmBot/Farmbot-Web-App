@@ -5,20 +5,19 @@ import {
   PinBinding
 } from "farmbot/dist/resources/api_resources";
 import { PinBindingListItems } from "./interfaces";
-import { TaggedPinBinding, SpecialStatus } from "farmbot";
 import { ShouldDisplay, Feature } from "../interfaces";
 import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";
 import { t } from "i18next";
 
 /** Return the correct Pin Binding resource according to binding type. */
-export const taggedPinBinding =
+export const pinBindingBody =
   (bodyInputs: {
     pin_num: number,
     binding_type: PinBindingType,
     sequence_id?: number | undefined,
     special_action?: PinBindingSpecialAction | undefined
-  }): TaggedPinBinding => {
+  }): PinBinding => {
     const { pin_num, binding_type, special_action, sequence_id } = bodyInputs;
     const body: PinBinding =
       binding_type == PinBindingType.special
@@ -33,12 +32,7 @@ export const taggedPinBinding =
           binding_type,
           sequence_id: sequence_id || 0,
         };
-    return {
-      uuid: "WILL_BE_CHANGED_BY_REDUCER",
-      specialStatus: SpecialStatus.SAVED,
-      kind: "PinBinding",
-      body
-    };
+    return body;
   };
 
 /** Add default pin bindings. */
@@ -50,11 +44,8 @@ export const StockPinBindingsButton =
       {shouldDisplay(Feature.api_pin_bindings) &&
         <button
           className="fb-button green"
-          onClick={() =>
-            stockPinBindings.map(binding => {
-              const tr = taggedPinBinding(binding);
-              dispatch(initSave(tr.kind, tr.body));
-            })}>
+          onClick={() => stockPinBindings.map(binding =>
+            dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
           <i className="fa fa-plus" />
           {t("v1.4 Stock Bindings")}
         </button>}

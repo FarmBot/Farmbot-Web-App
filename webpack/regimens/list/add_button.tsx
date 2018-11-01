@@ -2,21 +2,14 @@ import * as React from "react";
 import { t } from "i18next";
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
-import { TaggedRegimen, SpecialStatus } from "farmbot";
+import { TaggedRegimen } from "farmbot";
 import { init } from "../../api/crud";
 
-function emptyRegimen(length: number): TaggedRegimen {
-  return {
-    kind: "Regimen",
-    uuid: "NEVER",
-    specialStatus: SpecialStatus.DIRTY,
-    body: {
-      name: (t("New regimen ") + (length++)),
-      color: "gray",
-      regimen_items: []
-    }
-  };
-}
+const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
+  name: (t("New regimen ") + (length++)),
+  color: "gray",
+  regimen_items: []
+});
 
 export function AddRegimen(props: AddRegimenProps) {
   props.className ? props.className : "";
@@ -26,8 +19,7 @@ export function AddRegimen(props: AddRegimenProps) {
   return <button
     className={classes}
     onClick={() => {
-      const tr = emptyRegimen(length);
-      dispatch(init(tr.kind, tr.body));
+      dispatch(init("Regimen", emptyRegimenBody(length)));
       push("/app/regimens/new_regimen_" + (length++));
     }}>
     {props.children || <i className="fa fa-plus" />}

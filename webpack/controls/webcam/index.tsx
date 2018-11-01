@@ -9,13 +9,6 @@ type S = { activeMenu: "edit" | "show" };
 
 type P = { feeds: TaggedWebcamFeed[]; dispatch: Function; };
 
-const EMPTY_FEED: TaggedWebcamFeed = {
-  kind: "WebcamFeed",
-  specialStatus: SpecialStatus.DIRTY,
-  uuid: "",
-  body: { url: "", name: "" }
-};
-
 export const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) => {
   const { uuid } = f;
   const { name, url, id } = f.body;
@@ -46,10 +39,10 @@ export class WebcamPanel extends React.Component<P, S> {
         this.setState({ activeMenu });
       },
       feeds: this.props.feeds,
-      init: () => this.props.dispatch(init(EMPTY_FEED.kind, EMPTY_FEED.body)),
+      init: () => this.props.dispatch(init("WebcamFeed", { url: "", name: "" })),
       edit: (tr, update) => this.props.dispatch(edit(tr, update)),
-      save: (tr) => { this.props.dispatch(save(tr.uuid)); },
-      destroy: (tr) => { this.props.dispatch(destroy(tr.uuid)); }
+      save: tr => this.props.dispatch(save(tr.uuid)),
+      destroy: tr => this.props.dispatch(destroy(tr.uuid))
     };
   }
 

@@ -19,7 +19,7 @@ jest.mock("../../../../../history", () => ({
 }));
 
 import {
-  newPlant, maybeSavePlantLocation, beginPlantDrag, setActiveSpread,
+  newPlantKindAndBody, maybeSavePlantLocation, beginPlantDrag, setActiveSpread,
   dragPlant, createPlant, dropPlant
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
@@ -31,9 +31,9 @@ import {
 import { movePlant } from "../../../../actions";
 import { error } from "farmbot-toastr";
 
-describe("newPlant()", () => {
+describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
-    const result = newPlant({
+    const result = newPlantKindAndBody({
       x: 0,
       y: 0,
       slug: "mint",
