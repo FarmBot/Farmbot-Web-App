@@ -55,10 +55,16 @@ export function sanityCheck(x: object): x is TaggedResource {
 }
 
 export function isTaggedResource(x: object): x is TaggedResource {
-  return (isObject(x)
+  const isOk = (isObject(x)
     && isString(get(x, "kind"))
     && isString(get(x, "uuid"))
     && isObject(get(x, "body")));
+  if (isOk) {
+    return true;
+  } else {
+    console.log(JSON.stringify(x));
+    return false;
+  }
 }
 
 const is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource {

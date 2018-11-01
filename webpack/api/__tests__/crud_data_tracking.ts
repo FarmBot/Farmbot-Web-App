@@ -2,7 +2,7 @@ jest.mock("../maybe_start_tracking", () => {
   return { maybeStartTracking: jest.fn() };
 });
 
-let mockBody = {};
+const mockBody: Partial<TaggedUser["body"]> = { id: 23 };
 jest.mock("axios", () => {
   return {
     default: {
@@ -12,6 +12,15 @@ jest.mock("axios", () => {
     }
   };
 });
+
+jest.mock("../../resources/reducer_support", () => ({
+  findByUuid: () => arrayUnwrap(newTaggedResource("User", { id: 23 })),
+  // tslint:disable-next-line:no-any
+  afterEach: (s: any) => s,
+  joinKindAndId: jest.fn(),
+  mutateSpecialStatus: jest.fn(),
+}));
+
 import { destroy, saveAll, initSave } from "../crud";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { createStore, applyMiddleware } from "redux";
@@ -21,8 +30,10 @@ import { ReduxAction } from "../../redux/interfaces";
 import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";
 import { betterCompact } from "../../util";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedUser } from "farmbot";
 import * as _ from "lodash";
+import { newTaggedResource } from "../../sync/actions";
+import { arrayUnwrap } from "../../resources/util";
 
 describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
@@ -51,16 +62,19 @@ describe("AJAX data tracking", () => {
     // tslint:disable-next-line:no-any
     store.dispatch(saveAll(r) as any);
     expect(maybeStartTracking).toHaveBeenCalled();
+    const list = (maybeStartTracking as jest.Mock).mock.calls;
     const uuids: string[] =
-      _.uniq((maybeStartTracking as jest.Mock).mock.calls
-        .map((x: string[]) => x[0]));
+      _.uniq(list.map((x: string[]) => x[0]));
     expect(uuids.length).toEqual(r.length);
   });
 
   it("sets consistency when calling initSave()", () => {
-    mockBody = resources()[0].body;
     // tslint:disable-next-line:no-any
-    store.dispatch(initSave(resources()[0]) as any);
+    const action: any = initSave("User", {
+      name: "tester123",
+      email: "test@test.com"
+    });
+    store.dispatch(action);
     expect(maybeStartTracking).toHaveBeenCalled();
   });
 });

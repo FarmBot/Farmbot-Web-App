@@ -3,7 +3,7 @@ import { TileReadPin } from "../tile_read_pin";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ReadPin } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer_support";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileReadPin/>", () => {
   function bootstrapTest() {

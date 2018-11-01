@@ -11,7 +11,7 @@ describe("refilterLogsMiddleware.fn()", () => {
     // tslint:disable-next-line:no-any
     fn({ type: "any", payload: {} } as any);
     expect(throttledLogRefresh).not.toHaveBeenCalled();
-    fn({ type: Actions.UPDATE_RESOURCE_OK, payload: { kind: "WebAppConfig" } });
+    fn({ type: Actions.SAVE_RESOURCE_OK, payload: { kind: "WebAppConfig" } });
     expect(throttledLogRefresh).toHaveBeenCalled();
   });
 });

@@ -10,7 +10,6 @@ describe Devices::Sync do
              :farmware_installations,
              :fbos_configs,
              :firmware_configs,
-             :now,
              :peripherals,
              :pin_bindings,
              :points,

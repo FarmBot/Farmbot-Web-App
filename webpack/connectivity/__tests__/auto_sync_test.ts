@@ -6,7 +6,7 @@ import {
   handleUpdate,
   handleCreateOrUpdate
 } from "../auto_sync";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedSequence } from "farmbot";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
@@ -23,11 +23,11 @@ const fakePayload: SyncPayload = {
   body: { foo: "bar" }
 };
 
-const payload = (): UpdateMqttData => ({
+const payload = (): UpdateMqttData<TaggedSequence> => ({
   status: "UPDATE",
   kind: "Sequence",
   id: 5,
-  body: {},
+  body: {} as TaggedSequence["body"],
   sessionId: "wow"
 });
 
@@ -78,7 +78,7 @@ describe("handleCreateOrUpdate", () => {
 
 describe("handleUpdate", () => {
   it("creates Redux actions when data updates", () => {
-    const wow = handleUpdate(payload(), "whatever");
+    const wow = handleUpdate(payload());
     expect(wow.type).toEqual(Actions.OVERWRITE_RESOURCE);
   });
 });
@@ -92,13 +92,12 @@ describe("handleCreate", () => {
 
 describe("asTaggedResource", () => {
   it("turns MQTT data into FE data", () => {
-    const UUID = "123-456-789";
     const p = payload();
-    const result = asTaggedResource(p, UUID);
+    const result = asTaggedResource(p);
     expect(result.body).toEqual(p.body);
     expect(result.kind).toEqual(p.kind);
     expect(result.specialStatus).toEqual(SpecialStatus.SAVED);
-    expect(result.uuid).toEqual(UUID);
+    expect(result.uuid).toContain(p.kind);
   });
 });
 

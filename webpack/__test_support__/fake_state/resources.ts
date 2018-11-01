@@ -21,9 +21,9 @@ import {
   TaggedWebcamFeed,
   TaggedSavedGarden,
   TaggedPlantTemplate,
+  TaggedToolSlotPointer,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
-import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
@@ -34,7 +34,6 @@ export function fakeSequence(): TaggedSequence {
   return fakeResource("Sequence", {
     args: {
       version: 4,
-      label: "WIP",
       locals: { kind: "scope_declaration", args: {} },
     },
     id: 12,
@@ -63,7 +62,6 @@ export function fakeFarmEvent(exe_type: ExecutableType,
     "time_unit": "never",
     "executable_id": exe_id,
     "executable_type": exe_type,
-    "calendar": []
   });
 }
 
@@ -96,15 +94,12 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("Tool", {
-    name: "Foo"
-  });
+  return fakeResource("Tool", { name: "Foo" });
 }
 
 export function fakeUser(): TaggedUser {
   return fakeResource("User", {
     id: idCounter++,
-    device_id: 789,
     name: "Fake User 123",
     email: "fake@fake.com",
     created_at: "---",
@@ -112,7 +107,19 @@ export function fakeUser(): TaggedUser {
   });
 }
 
-export const fakeToolSlot = emptyToolSlot;
+export function fakeToolSlot(): TaggedToolSlotPointer {
+  return fakeResource("Point", {
+    x: 0,
+    y: 0,
+    z: 0,
+    radius: 25,
+    pointer_type: "ToolSlot",
+    meta: {},
+    tool_id: undefined,
+    name: "Tool Slot",
+    pullout_direction: 0
+  });
+}
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {

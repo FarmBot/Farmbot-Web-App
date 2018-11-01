@@ -13,6 +13,7 @@ import { fakeResource } from "../../../../../__test_support__/fake_resource";
 import { shallow } from "enzyme";
 import { history } from "../../../../../history";
 import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
+import { TaggedToolSlotPointer } from "farmbot";
 
 describe("<ToolSlotLayer/>", () => {
   function fakeProps(): ToolSlotLayerProps {
@@ -27,7 +28,7 @@ describe("<ToolSlotLayer/>", () => {
       meta: {},
       pullout_direction: 0
     };
-    const toolSlot = fakeResource("Point", ts);
+    const toolSlot: TaggedToolSlotPointer = fakeResource("Point", ts);
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],

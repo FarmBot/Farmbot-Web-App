@@ -28,8 +28,7 @@ export function copySequence(payload: TaggedSequence) {
     const copy = defensiveClone(payload);
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
-    copy.uuid = "SET_BY_REDUCER";
-    dispatch(init(copy));
+    dispatch(init(copy.kind, copy.body));
     push("/app/sequences/" + urlFriendly(copy.body.name));
   };
 }

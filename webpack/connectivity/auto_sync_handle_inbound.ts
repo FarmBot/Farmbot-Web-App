@@ -3,10 +3,11 @@ import { handleCreateOrUpdate } from "./auto_sync";
 import { maybeDetermineUuid } from "../resources/selectors";
 import { destroyOK } from "../resources/actions";
 import { MqttDataResult } from "./interfaces";
+import { TaggedResource } from "farmbot";
 
 export function handleInbound(dispatch: Function,
   getState: GetState,
-  data: MqttDataResult) {
+  data: MqttDataResult<TaggedResource>) {
   switch (data.status) {
     case "ERR":
     case "SKIP":

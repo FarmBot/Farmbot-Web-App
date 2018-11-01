@@ -8,11 +8,11 @@ import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
 import {
-  updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
+  updateNO, destroyOK, destroyNO, GeneralizedError, saveOK
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { findByUuid } from "../resources/reducer_support";
-import { generateUuid } from "../resources/util";
+// import { generateUuid } from "../resources/util";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
@@ -21,6 +21,8 @@ import * as _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";
+import { newTaggedResource } from "../sync/actions";
+import { arrayUnwrap } from "../resources/util";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -71,24 +73,22 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 }
 
 /** Initialize (but don't save) an indexed / tagged resource. */
-export function init(resource: TaggedResource,
+export function init<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"],
   /** Set to "true" when you want an `undefined` SpecialStatus. */
   clean = false): ReduxAction<TaggedResource> {
-  resource.body.id = resource.body.id || 0;
+  const resource = arrayUnwrap(newTaggedResource(kind, body));
   resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
-  /** Don't touch this- very important! */
-  resource.uuid = generateUuid(resource.body.id, resource.kind);
+  // /** Don't touch this- very important! */
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
-export function initSave(resource: TaggedResource) {
-  return function (dispatch: Function, getState: GetState) {
-    const action = init(resource);
-    if (resource.body.id === 0) { delete resource.body.id; }
+export function initSave<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"]) {
+  return function (dispatch: Function) {
+    const action = init(kind, body);
     dispatch(action);
-    const nextState = getState().resources.index;
-    const tr = findByUuid(nextState, action.payload.uuid);
-    return dispatch(save(tr.uuid));
+    return dispatch(save(action.payload.uuid));
   };
 }
 
@@ -261,7 +261,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
       const r2 = { body: defensiveClone(resp.data) };
       const newTR = _.assign({}, r1, r2);
       if (isTaggedResource(newTR)) {
-        dispatch(updateOK(newTR));
+        dispatch(saveOK(newTR));
       } else {
         throw new Error("Just saved a malformed TR.");
       }

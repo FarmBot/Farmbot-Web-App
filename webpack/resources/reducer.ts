@@ -1,94 +1,133 @@
-import {
-  findByUuid,
-  initResourceReducer,
-  mutateSpecialStatus,
-  afterEach,
-} from "./reducer_support";
-import {
-  defensiveClone,
-  equals
-} from "../util";
-import {
-  removeFromIndex,
-  addAllToIndex,
-  reindexResource,
-  maybeRecalculateLocalSequenceVariables
-} from "./reducer_indexing";
-import { generateReducer } from "../redux/generate_reducer";
-import { RestResources } from "./interfaces";
-import { initialState } from "../resources/reducer_support";
-import { TaggedResource, SpecialStatus } from "farmbot";
-import { Actions } from "../constants";
-import { sanityCheck, isTaggedResource } from "./tagged_resources";
-import { GeneralizedError } from "./actions";
+import { SpecialStatus, TaggedResource } from "farmbot";
 import { merge } from "lodash";
 import { EditResourceParams } from "../api/interfaces";
-import { ResourceReadyPayl } from "../sync/actions";
+import { Actions } from "../constants";
+import { farmwareState } from "../farmware/reducer";
+import { initialState as designerState } from "../farm_designer/reducer";
+import { initialState as helpState } from "../help/reducer";
+import { generateReducer } from "../redux/generate_reducer";
+import { initialState as regimenState } from "../regimens/reducer";
+import { initialState as sequenceState } from "../sequences/reducer";
+import { SyncBodyContents } from "../sync/actions";
+import { defensiveClone, equals } from "../util";
+import { GeneralizedError } from "./actions";
+import { ResourceIndex, RestResources } from "./interfaces";
+import {
+  afterEach,
+  findByUuid,
+  initResourceReducer,
+  mutateSpecialStatus
+} from "./reducer_support";
+import { INDEXES } from "./resource_index_chain";
 import { arrayWrap } from "./util";
-import { maybeTagSteps as dontTouchThis } from "./sequence_tagging";
+
+const ups = INDEXES.map(x => x.up);
+
+export function indexUpsert(db: ResourceIndex, resources: TaggedResource) {
+  ups.map(callback => {
+    arrayWrap(resources).map(resource => callback(resource, db));
+  });
+}
+
+const downs = INDEXES.map(x => x.down).reverse();
+
+export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
+  downs.map(callback => {
+    arrayWrap(resources).map(resource => callback(resource, db));
+  });
+}
+
+export const emptyState =
+  (): RestResources => {
+    return {
+      consumers: {
+        sequences: sequenceState,
+        regimens: regimenState,
+        farm_designer: designerState,
+        farmware: farmwareState,
+        help: helpState,
+      },
+      loaded: [],
+      index: {
+        all: [],
+        byKind: {
+          WebcamFeed: [],
+          Device: [],
+          FarmEvent: [],
+          Image: [],
+          Plant: [],
+          Log: [],
+          Peripheral: [],
+          Crop: [],
+          Point: [],
+          Regimen: [],
+          Sequence: [],
+          Tool: [],
+          User: [],
+          FbosConfig: [],
+          FirmwareConfig: [],
+          WebAppConfig: [],
+          SensorReading: [],
+          Sensor: [],
+          FarmwareInstallation: [],
+          FarmwareEnv: [],
+          PinBinding: [],
+          PlantTemplate: [],
+          SavedGarden: [],
+          DiagnosticDump: []
+        },
+        byKindAndId: {},
+        references: {}
+      }
+    };
+  };
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(initialState, afterEach)
-    .add<ResourceReadyPayl<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      !s.loaded.includes(payload.name) && s.loaded.push(payload.name);
-      addAllToIndex(s.index, payload.name, arrayWrap(payload.data));
+  generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
+    .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
+      indexUpsert(s.index, payload);
+      mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
       return s;
     })
-    .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      const resource = payload;
-      resource.specialStatus = SpecialStatus.SAVED;
-      reindexResource(s.index, resource);
-      dontTouchThis(resource);
-      s.index.references[resource.uuid] = resource;
+    .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
+      const { update } = payload;
+      const target = findByUuid(s.index, payload.uuid);
+      const before = defensiveClone(target.body);
+      merge(target, { body: update });
+      const didChange = !equals(before, target.body);
+      didChange && mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
+      return s;
+    })
+    .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
+      const original = findByUuid(s.index, payload.uuid);
+      original.body = payload.update;
+      mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
+      return s;
+    })
+    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
+      !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+      /** Example Use Case: Refreshing a group of logs after the application
+       * is already bootstrapped. */
+      s.index.byKind[payload.kind].map(uuid => {
+        const ref = s.index.references[uuid];
+        ref && indexRemove(s.index, ref);
+      });
+      payload.body.map(x => indexUpsert(s.index, x));
+      return s;
+    })
+    .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
+      indexUpsert(s.index, payload);
+      mutateSpecialStatus(payload.uuid, s.index);
       return s;
     })
     .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
-      removeFromIndex(s.index, payload);
-      return s;
-    })
-    .add<TaggedResource>(Actions.UPDATE_RESOURCE_OK, (s, { payload }) => {
-      const uuid = payload.uuid;
-      console.log("You should use addToIndex here:");
-      s.index.references[uuid] = payload;
-      const tr = findByUuid(s.index, uuid);
-      mutateSpecialStatus(uuid, s.index, SpecialStatus.SAVED);
-      reindexResource(s.index, tr);
-      dontTouchThis(tr);
+      indexRemove(s.index, payload);
       return s;
     })
     .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
       merge(findByUuid(s.index, payload.uuid), payload);
       mutateSpecialStatus(payload.uuid, s.index, payload.statusBeforeError);
-      return s;
-    })
-    .add<EditResourceParams>(Actions.EDIT_RESOURCE, (s, { payload }) => {
-      const uuid = payload.uuid;
-      const { update } = payload;
-      const target = findByUuid(s.index, uuid);
-      const before = defensiveClone(target.body);
-      merge(target, { body: update });
-      if (!equals(before, target.body)) {
-        target.specialStatus = SpecialStatus.DIRTY;
-      }
-      sanityCheck(target);
-      payload && isTaggedResource(target);
-      dontTouchThis(target);
-      maybeRecalculateLocalSequenceVariables(target);
-      return s;
-    })
-    .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
-      const original = findByUuid(s.index, payload.uuid);
-      original.body = payload.update as typeof original.body;
-      mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
-      maybeRecalculateLocalSequenceVariables(original);
-      dontTouchThis(original);
-      return s;
-    })
-    .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
-      const { uuid, body, kind } = payload;
-      addAllToIndex(s.index, kind, [body]);
-      mutateSpecialStatus(uuid, s.index);
       return s;
     })
     .add<TaggedResource>(Actions.INIT_RESOURCE, initResourceReducer)

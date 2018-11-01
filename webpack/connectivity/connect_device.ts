@@ -1,7 +1,7 @@
 import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
-import { Farmbot, BotStateTree, TaggedResource, SpecialStatus } from "farmbot";
+import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { noop, throttle } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
@@ -76,12 +76,8 @@ export function speakLogAloud(getState: GetState) {
   };
 }
 
-export const initLog = (log: Log): ReduxAction<TaggedResource> => init({
-  kind: "Log",
-  specialStatus: SpecialStatus.SAVED,
-  uuid: "MUST_CHANGE",
-  body: log
-}, true);
+export const initLog =
+  (log: Log): ReduxAction<TaggedResource> => init("Log", log, true);
 
 export const batchInitResources =
   (payload: TaggedResource[]): ReduxAction<TaggedResource[]> => {

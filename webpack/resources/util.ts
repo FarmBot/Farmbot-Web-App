@@ -14,6 +14,11 @@ export function arrayWrap<T>(input: T | (T[])): T[] {
   return _.isArray(input) ? input : [input];
 }
 
+/** For when you have an array that is guaranteed to have a length of 1 */
+export function arrayUnwrap<T>(input: T | T[]): T {
+  return _.isArray(input) ? input[0] : input;
+}
+
 export function entries<T>(input: Dictionary<T | undefined>): T[] {
   const x = Object.keys(input).map(key => input[key]);
   const y = betterCompact(x);

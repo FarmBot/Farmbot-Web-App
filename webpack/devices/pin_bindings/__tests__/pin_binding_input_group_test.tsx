@@ -98,15 +98,12 @@ describe("<PinBindingInputGroup/>", () => {
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-    const expectedResult = expect.objectContaining({
-      kind: "PinBinding",
-      body: {
+    expect(initSave).toHaveBeenCalledWith("PinBinding",
+      {
         pin_num: 1,
         sequence_id: 2,
         binding_type: PinBindingType.standard
-      }
-    });
-    expect(initSave).toHaveBeenCalledWith(expectedResult);
+      });
   });
 
   it("registers pin: api (special action)", () => {
@@ -124,15 +121,12 @@ describe("<PinBindingInputGroup/>", () => {
     });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-    const expectedResult = expect.objectContaining({
-      kind: "PinBinding",
-      body: {
+    expect(initSave).toHaveBeenCalledWith("PinBinding",
+      {
         pin_num: 2,
         binding_type: PinBindingType.special,
         special_action: PinBindingSpecialAction.emergency_lock
-      }
-    });
-    expect(initSave).toHaveBeenCalledWith(expectedResult);
+      });
   });
 
   it("sets sequence id", () => {

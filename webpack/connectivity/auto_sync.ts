@@ -1,7 +1,6 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
 import {
-  ResourceName,
   TaggedResource,
   SpecialStatus
 } from "farmbot";
@@ -9,12 +8,13 @@ import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
 import { outstandingRequests } from "./data_consistency";
+import { newTaggedResource } from "../sync/actions";
 
 export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
 }
 
-export function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
+export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<TaggedResource> {
   /** Skip irrelevant messages */
   if (!chan.includes("sync")) { return { status: "SKIP" }; }
 
@@ -23,7 +23,7 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
   if (parts.length !== 5) { return { status: "ERR", reason: Reason.BAD_CHAN }; }
 
   const id = parseInt(parts.pop() || "0", 10);
-  const kind = parts.pop() as ResourceName;
+  const kind = parts.pop() as TaggedResource["kind"]; // TODO FIXME RC 31OCT18
   const { body, args } = decodeBinary(payload);
 
   if (body) {
@@ -34,29 +34,22 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult {
 }
 
 export const asTaggedResource =
-  (data: UpdateMqttData, uuid: string): TaggedResource => {
-    return {
-      // tslint:disable-next-line:no-any
-      kind: (data.kind as any),
-      uuid,
-      specialStatus: SpecialStatus.SAVED,
-      // tslint:disable-next-line:no-any
-      body: (data.body as any) // I trust you, API...
-    };
+  (data: UpdateMqttData<TaggedResource>): TaggedResource => {
+    return newTaggedResource(data.kind, data.body)[0];
   };
 
 export const handleCreate =
-  (data: UpdateMqttData) => init(asTaggedResource(data, "IS SET LATER"), true);
+  (data: UpdateMqttData<TaggedResource>) => init(data.kind, data.body, true);
 
 export const handleUpdate =
-  (d: UpdateMqttData, uid: string) => {
-    const tr = asTaggedResource(d, uid);
+  (d: UpdateMqttData<TaggedResource>) => {
+    const tr = asTaggedResource(d);
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
 export function handleCreateOrUpdate(dispatch: Function,
   getState: GetState,
-  data: UpdateMqttData) {
+  data: UpdateMqttData<TaggedResource>) {
 
   const state = getState();
   const { index } = state.resources;
@@ -78,7 +71,7 @@ export function handleCreateOrUpdate(dispatch: Function,
   // created by us or some other user. That information lets us know if we are
   // UPDATE-ing data or INSERTing data. It also prevents us from double updating
   // data when an update comes in twice.
-  const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
+  const action = hasCopy ? handleUpdate(data) : handleCreate(data);
   return isEcho || dispatch(action);
 }
 

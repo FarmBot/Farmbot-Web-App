@@ -20,11 +20,8 @@ describe("copySequence()", () => {
     const sequence = fakeSequence();
     const copy = copySequence(sequence);
     copy(jest.fn());
-    expect(init).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({
-        name: "fake copy 1"
-      })
-    }));
+    expect(init).toHaveBeenCalledWith("Sequence",
+      expect.objectContaining({ name: "fake copy 1" }));
   });
 
   it("updates current path", () => {

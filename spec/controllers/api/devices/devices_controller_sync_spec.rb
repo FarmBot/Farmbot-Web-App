@@ -31,13 +31,13 @@ describe Api::DevicesController do
 
       get :sync, params: {}, session: { format: :json }
       expect(response.status).to eq(200)
-      expect(Time.now - Time.parse(json[:now])).to be < 150
       pair = json[:devices].first
       expect(pair.first).to eq(device.id)
+      # TODO: FIXME: Non-deterministic test
       real_time = device.updated_at.strftime(FORMAT)
       expect(pair.last).to include(real_time)
       expect(pair.last.first(8)).to eq(device.updated_at.as_json.first(8))
-      json.keys.without(:now).without(*EDGE_CASES).map do |key|
+      json.keys.without(*EDGE_CASES).map do |key|
         array = json[key]
         expect(array).to be_kind_of(Array)
         sample = array.sample

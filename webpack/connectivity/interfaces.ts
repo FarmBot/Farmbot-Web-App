@@ -1,5 +1,4 @@
-import { ResourceName } from "farmbot";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { TaggedResource } from "farmbot";
 
 export type NetworkState = "up" | "down";
 
@@ -22,28 +21,23 @@ export type Edge =
   | "user.mqtt"
   | "user.api";
 
-export interface ResourceReady {
-  name: string,
-  data: [DeviceAccountSettings];
-}
-
 type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */
 export type ConnectionState = ConnectionRecord;
 
-export interface UpdateMqttData {
+export interface UpdateMqttData<T extends TaggedResource> {
   status: "UPDATE"
-  kind: ResourceName;
+  kind: T["kind"];
+  body: T["body"];
   id: number;
-  body: object;
   sessionId: string;
 }
 
-export interface DeleteMqttData {
+export interface DeleteMqttData<T extends TaggedResource> {
   status: "DELETE"
-  kind: ResourceName;
+  kind: T["kind"];
   id: number;
 }
 
@@ -56,9 +50,9 @@ export interface SkipMqttData {
   status: "SKIP";
 }
 
-export type MqttDataResult =
-  | UpdateMqttData
-  | DeleteMqttData
+export type MqttDataResult<T extends TaggedResource> =
+  | UpdateMqttData<T>
+  | DeleteMqttData<T>
   | SkipMqttData
   | BadMqttData;
 

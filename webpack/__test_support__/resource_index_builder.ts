@@ -1,6 +1,4 @@
-import { emptyState } from "../resources/reducer_support";
 import {
-  ResourceName,
   SpecialStatus,
   TaggedDevice,
   TaggedLog,
@@ -8,8 +6,8 @@ import {
   TaggedResource,
 } from "farmbot";
 import * as _ from "lodash";
-import { Actions } from "../constants";
-import { resourceReducer } from "../resources/reducer";
+import { resourceReducer, emptyState } from "../resources/reducer";
+import { resourceReady } from "../sync/actions";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -316,18 +314,15 @@ const log: TaggedLog = {
 
 export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
   tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
+const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
 
 export
   function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
     state = emptyState()) {
-  const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
   return _(resources)
     .groupBy(KIND)
     .toPairs()
-    .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map((y: [ResourceName, TaggedResource[]]) => ({
-      type: Actions.RESOURCE_READY,
-      payload: { name: y[0], data: y[1].map(x => x.body) }
-    }))
+    .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
+    .map(y => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);
 }

@@ -2,10 +2,10 @@ import * as React from "react";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { LastSeen, LastSeenProps } from "../last_seen_row";
 import { mount } from "enzyme";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedDevice } from "farmbot";
 
 describe("<LastSeen/>", () => {
-  const resource = () => fakeResource("Device", {
+  const resource = (): TaggedDevice => fakeResource("Device", {
     id: 1,
     name: "foo",
     last_saw_api: "",

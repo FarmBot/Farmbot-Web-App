@@ -3,7 +3,7 @@ import { TileMoveRelative } from "../tile_move_relative";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveRelative } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer_support";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileMoveRelative/>", () => {
   function bootstrapTest() {

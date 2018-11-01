@@ -5,7 +5,7 @@ import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col } from "../ui/index";
-import { TaggedSequence, SpecialStatus } from "farmbot";
+import { TaggedSequence } from "farmbot";
 import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
@@ -56,23 +56,16 @@ export class SequencesList extends
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
 
-  emptySequence = (): TaggedSequence => {
-    return {
-      kind: "Sequence",
-      uuid: "REDUCER_MUST_CHANGE_THIS",
-      specialStatus: SpecialStatus.SAVED,
-      body: {
-        name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
-        args: {
-          version: -999,
-          locals: { kind: "scope_declaration", args: {} },
-        },
-        color: "gray",
-        kind: "sequence",
-        body: []
-      }
-    };
-  }
+  emptySequenceBody = (): TaggedSequence["body"] => ({
+    name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
+    args: {
+      version: -999,
+      locals: { kind: "scope_declaration", args: {} },
+    },
+    color: "gray",
+    kind: "sequence",
+    body: []
+  });
 
   render() {
     const { sequences, dispatch } = this.props;
@@ -82,7 +75,7 @@ export class SequencesList extends
       <button
         className="fb-button green add"
         onClick={() => {
-          dispatch(init(this.emptySequence()));
+          dispatch(init("Sequence", this.emptySequenceBody()));
           push("/app/sequences/new_sequence_" + (sequences.length++));
         }}>
         <i className="fa fa-plus" />
