@@ -22,19 +22,12 @@ const REFERENCES: Indexer = {
 
 const ALL: Indexer = {
   up(r, s) {
-    if (r.kind === "User") {
-      console.log("Handling " + r.uuid);
-      if (s.all.includes(r.uuid)) {
-        console.log("Already in index");
-      } else {
-        console.log("Not in index yet");
-      }
-    }
     s.all.push(r.uuid);
     // This is unfortunate and fixable by switching to Map<string, string>
     s.all = uniq(s.all).sort();
   },
   down(r, i) {
+    // This is unfortunate and fixable by switching to Map<string, string>
     i.all = i.all.filter(filterOutUuid(r));
   },
 };
@@ -46,6 +39,7 @@ const BY_KIND: Indexer = {
     i.byKind[r.kind] = uniq(i.byKind[r.kind]);
   },
   down(r, i) {
+    // This is unfortunate and fixable by switching to Map<string, string>
     i.byKind[r.kind] = i.byKind[r.kind].filter(filterOutUuid(r));
   },
 };
