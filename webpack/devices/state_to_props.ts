@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { Props } from "./interfaces";
+import { Props, Feature } from "./interfaces";
 import {
   selectAllImages,
   getDeviceAccountSettings,
@@ -11,8 +11,12 @@ import {
 } from "./components/source_config_value";
 import { getFbosConfig } from "../resources/selectors_by_kind";
 import {
-  determineInstalledOsVersion, shouldDisplay, validFwConfig, validFbosConfig
+  determineInstalledOsVersion, validFwConfig, validFbosConfig,
+  shouldDisplay as shouldDisplayFunc
 } from "../util";
+import {
+  saveOrEditFarmwareEnv, reduceFarmwareEnv
+} from "../farmware/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;
@@ -20,6 +24,11 @@ export function mapStateToProps(props: Everything): Props {
   const firmwareConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
+  const shouldDisplay =
+    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const env = shouldDisplay(Feature.api_farmware_env)
+    ? reduceFarmwareEnv(props.resources.index)
+    : props.bot.hardware.user_env;
   return {
     userToApi: props.bot.connectivity["user.api"],
     userToMqtt: props.bot.connectivity["user.mqtt"],
@@ -32,8 +41,10 @@ export function mapStateToProps(props: Everything): Props {
     resources: props.resources.index,
     sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
     sourceFwConfig: sourceFwConfigValue(firmwareConfig, hardware.mcu_params),
-    shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
+    shouldDisplay,
     firmwareConfig,
     isValidFbosConfig: !!fbosConfig,
+    env,
+    saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
   };
 }

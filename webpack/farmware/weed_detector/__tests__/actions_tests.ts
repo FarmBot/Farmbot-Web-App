@@ -24,34 +24,13 @@ jest.mock("../../../util", () => ({
   trim: () => { },
 }));
 
-import { translateImageWorkspaceAndSave, deletePoints } from "../actions";
+import { deletePoints } from "../actions";
 import { scanImage, test } from "../actions";
 import axios from "axios";
 import { API } from "../../../api";
 import { success, error } from "farmbot-toastr";
 import { times } from "lodash";
 import { Actions } from "../../../constants";
-
-describe("actions", () => {
-  it("Saves environment variables", () => {
-    /** This test is just here to make sure that envSave() is actually
-     * triggering side effects. */
-    const translator = translateImageWorkspaceAndSave({
-      "iteration": "WEED_DETECTOR_iteration",
-      "morph": "WEED_DETECTOR_morph",
-      "blur": "WEED_DETECTOR_blur",
-      "H_HI": "WEED_DETECTOR_H_HI",
-      "H_LO": "WEED_DETECTOR_H_LO",
-      "S_HI": "WEED_DETECTOR_S_HI",
-      "S_LO": "WEED_DETECTOR_S_LO",
-      "V_HI": "WEED_DETECTOR_V_HI",
-      "V_LO": "WEED_DETECTOR_V_LO"
-    });
-    translator("H_HI", 45);
-    expect(mockDevice.setUserEnv)
-      .toHaveBeenLastCalledWith({ "WEED_DETECTOR_H_HI": "45" });
-  });
-});
 
 describe("scanImage()", () => {
   it("calls out to the device", () => {

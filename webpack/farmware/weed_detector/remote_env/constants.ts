@@ -1,6 +1,6 @@
 import { box } from "boxed_value";
 import * as _ from "lodash";
-import { WDENVKey, WD_ENV, Translation, FormatTranslationMap } from "./interfaces";
+import { WDENVKey, Translation, FormatTranslationMap } from "./interfaces";
 
 /** I would rather not deal with all the weird edge cases that come with
  * supporting strings and numbers right now. It adds too many edge cases for the
@@ -19,40 +19,9 @@ export enum SPECIAL_VALUES {
   Y = 7
 }
 
-/** The runtime equivalent for WeedDetectorENVKey.
- *  Good for iterating and whatnot. */
-export const EVERY_KEY: WDENVKey[] = [
-  "CAMERA_CALIBRATION_blur",
-  "CAMERA_CALIBRATION_calibration_along_axis",
-  "CAMERA_CALIBRATION_calibration_object_separation",
-  "CAMERA_CALIBRATION_camera_offset_x",
-  "CAMERA_CALIBRATION_camera_offset_y",
-  "CAMERA_CALIBRATION_coord_scale",
-  "CAMERA_CALIBRATION_H_HI",
-  "CAMERA_CALIBRATION_H_LO",
-  "CAMERA_CALIBRATION_image_bot_origin_location",
-  "CAMERA_CALIBRATION_invert_hue_selection",
-  "CAMERA_CALIBRATION_iteration",
-  "CAMERA_CALIBRATION_morph",
-  "CAMERA_CALIBRATION_S_HI",
-  "CAMERA_CALIBRATION_S_LO",
-  "CAMERA_CALIBRATION_total_rotation_angle",
-  "CAMERA_CALIBRATION_V_HI",
-  "CAMERA_CALIBRATION_V_LO",
-  "WEED_DETECTOR_blur",
-  "WEED_DETECTOR_H_HI",
-  "WEED_DETECTOR_H_LO",
-  "WEED_DETECTOR_iteration",
-  "WEED_DETECTOR_morph",
-  "WEED_DETECTOR_S_HI",
-  "WEED_DETECTOR_S_LO",
-  "WEED_DETECTOR_V_HI",
-  "WEED_DETECTOR_V_LO"
-];
-
 /** Sometimes, ENV var values are not available but rendering must still be
  * performed. This map provides a set of defaults for every ENV var. */
-export const DEFAULTS: WD_ENV = {
+export const WD_KEY_DEFAULTS = {
   CAMERA_CALIBRATION_calibration_along_axis: SPECIAL_VALUES.X,
   CAMERA_CALIBRATION_image_bot_origin_location: SPECIAL_VALUES.BOTTOM_LEFT,
   CAMERA_CALIBRATION_invert_hue_selection: SPECIAL_VALUES.TRUE,
@@ -80,6 +49,11 @@ export const DEFAULTS: WD_ENV = {
   WEED_DETECTOR_V_HI: 255,
   WEED_DETECTOR_V_LO: 50,
 };
+
+/** The runtime equivalent for WeedDetectorENVKey.
+ *  Good for iterating and whatnot. */
+export const EVERY_WD_KEY: WDENVKey[] =
+  Object.keys(WD_KEY_DEFAULTS).map((x: WDENVKey) => x);
 
 export const DEFAULT_FORMATTER: Translation = {
   format: (key, val): number | string => {

@@ -22,6 +22,7 @@ import {
   TaggedSavedGarden,
   TaggedPlantTemplate,
   TaggedToolSlotPointer,
+  TaggedFarmwareEnv,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -402,4 +403,11 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_time_out: 60,
     api_migrated: false
   } as FirmwareConfig);
+}
+
+export function fakeFarmwareEnv(): TaggedFarmwareEnv {
+  return fakeResource("FarmwareEnv", {
+    key: "fake_FarmwareEnv_key",
+    value: "fake_FarmwareEnv_value"
+  });
 }

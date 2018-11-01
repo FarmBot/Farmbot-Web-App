@@ -11,6 +11,7 @@ import { GardenSnapshot } from "./garden_snapshot";
 import { SavedGardenList } from "./garden_list";
 import { SavedGardensProps } from "./interfaces";
 import { closeSavedGarden } from "./actions";
+import { TaggedSavedGarden } from "farmbot";
 
 export function mapStateToProps(props: Everything): SavedGardensProps {
   return {
@@ -27,6 +28,11 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
+  }
+
+  get currentSavedGarden(): TaggedSavedGarden | undefined {
+    return this.props.savedGardens
+      .filter(x => x.uuid === this.props.openedSavedGarden)[0];
   }
 
   render() {
@@ -47,7 +53,9 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
       <div className="panel-content saved-garden-panel-content">
         <GardenSnapshot
           plantsInGarden={this.props.plantsInGarden}
-          disabled={!!this.props.openedSavedGarden} />
+          currentSavedGarden={this.currentSavedGarden}
+          plantTemplates={this.props.plantTemplates}
+          dispatch={this.props.dispatch} />
         <hr />
         {this.props.savedGardens.length > 0
           ? <SavedGardenList {...this.props} />

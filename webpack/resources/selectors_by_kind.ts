@@ -22,6 +22,7 @@ import {
   TaggedSensorReading,
   TaggedSavedGarden,
   TaggedPlantTemplate,
+  TaggedFarmwareEnv,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -96,6 +97,8 @@ export const selectAllToolSlots = (i: ResourceIndex): TaggedToolSlotPointer[] =>
 
 export const selectAllDiagnosticDumps =
   (i: ResourceIndex) => findAll<TaggedDiagnosticDump>(i, "DiagnosticDump");
+export const selectAllFarmwareEnvs =
+  (i: ResourceIndex) => findAll<TaggedFarmwareEnv>(i, "FarmwareEnv");
 export const selectAllRegimens = (i: ResourceIndex) =>
   findAll<TaggedRegimen>(i, "Regimen");
 export const selectAllSensors = (i: ResourceIndex) => findAll<TaggedSensor>(i, "Sensor");

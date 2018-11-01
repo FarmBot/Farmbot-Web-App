@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Row, Col } from "../../ui";
+import { Row, Col, BlurableInput } from "../../ui";
 import { error } from "farmbot-toastr";
 import { isNumber, isString } from "lodash";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
@@ -8,8 +8,9 @@ import {
   SavedGardensProps, GardenViewButtonProps, SavedGardenItemProps
 } from "./interfaces";
 import { TaggedSavedGarden } from "farmbot";
+import { edit, save } from "../../api/crud";
 
-const GardenInfo = (props: {
+export const GardenInfo = (props: {
   savedGarden: TaggedSavedGarden,
   gardenIsOpen: boolean,
   plantCount: number,
@@ -21,7 +22,12 @@ const GardenInfo = (props: {
       savedGarden: savedGarden.uuid, gardenIsOpen, dispatch
     })}>
     <Col xs={4}>
-      <p>{savedGarden.body.name}</p>
+      <BlurableInput
+        value={savedGarden.body.name || ""}
+        onCommit={e => {
+          dispatch(edit(savedGarden, { name: e.currentTarget.value }));
+          dispatch(save(savedGarden.uuid));
+        }} />
     </Col>
     <Col xs={2}>
       <p style={{ textAlign: "center" }}>{props.plantCount}</p>

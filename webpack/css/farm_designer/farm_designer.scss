@@ -325,6 +325,14 @@
   }
 }
 
+.garden-snapshot {
+  button {
+    &.pseudo-disabled {
+      cursor: not-allowed;
+    }
+  }
+}
+
 .saved-garden-list {
   margin: -15px;
   .saved-garden-row {
@@ -335,13 +343,22 @@
     .saved-garden-info div {
       cursor: pointer;
       padding-right: 0;
+      input {
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      p {
+        margin-top: 0.25rem;
+      }
     }
     &:hover {
       background: $light_gray;
     }
     &.selected {
       background: $gray;
-      p {
+      p,
+      input {
         font-weight: bold;
       }
     }

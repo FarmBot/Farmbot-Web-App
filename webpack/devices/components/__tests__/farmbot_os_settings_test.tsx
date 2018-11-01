@@ -33,6 +33,8 @@ describe("<FarmbotOsSettings/>", () => {
       },
       shouldDisplay: jest.fn(),
       isValidFbosConfig: false,
+      env: {},
+      saveFarmwareEnv: jest.fn(),
     };
   };
 
