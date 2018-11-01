@@ -186,7 +186,7 @@ export function maybeGetTimeOffset(index: ResourceIndex): number {
 }
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
-  const dev = index.references[index.byKind.Device[0] || "nope"];
+  const dev = index.references[Object.keys(index.byKind.Device)[0] || "nope"];
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
@@ -194,16 +194,16 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
 export const getDeviceAccountSettings =
   (index: ResourceIndex): TaggedDevice => {
     const device = maybeGetDevice(index);
-    switch (index.byKind.Device.length) {
+    switch (Object.keys(index.byKind.Device).length) {
       case 0: return bail(`Tried to load device before it was loaded.`);
-      case 1: return (device) ? device : bail("Malformed device!");
+      case 1: return device ? device : bail("Malformed device!");
       default: return bail("Found more than 1 device");
     }
   };
 
 export function maybeFetchUser(index: ResourceIndex):
   TaggedUser | undefined {
-  const list = index.byKind.User;
+  const list = Object.keys(index.byKind.User);
   const uuid = list[0];
   const user = index.references[uuid || -1];
 
@@ -226,5 +226,5 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
 }
 
 export function all(index: ResourceIndex) {
-  return betterCompact(index.all.map(uuid => index.references[uuid]));
+  return betterCompact(Object.keys(index.all).map(uuid => index.references[uuid]));
 }

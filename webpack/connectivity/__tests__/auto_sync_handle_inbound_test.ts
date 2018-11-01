@@ -52,7 +52,7 @@ describe("handleInbound()", () => {
   it("handles DELETE when the record is in system", () => {
     const i = getState().resources.index.byKind.Sequence;
     // Pick an ID that we know will be in the DB
-    const id = unpackUUID(Object.values(i)[0]).remoteId || -1;
+    const id = unpackUUID(Object.keys(i)[0]).remoteId || -1;
     const fixtr: DeleteMqttData<TaggedSequence> = {
       status: "DELETE", kind: "Sequence", id
     };

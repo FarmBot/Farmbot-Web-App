@@ -16,8 +16,8 @@ import { HelpState } from "../help/reducer";
 type UUID = string;
 
 export interface ResourceIndex {
-  all: UUID[];
-  byKind: Record<ResourceName, UUID[]>;
+  all: Record<UUID, UUID>;
+  byKind: Record<ResourceName, Record<UUID, UUID>>;
   byKindAndId: CowardlyDictionary<UUID>;
   references: Dictionary<TaggedResource | undefined>;
 }

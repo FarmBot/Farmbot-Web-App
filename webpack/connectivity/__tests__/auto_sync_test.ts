@@ -65,7 +65,7 @@ describe("handleCreateOrUpdate", () => {
     const { index } = getState().resources;
 
     const fakeId =
-      unpackUUID(Object.values(index.byKind.Sequence)[0]).remoteId || -1;
+      unpackUUID(Object.keys(index.byKind.Sequence)[0]).remoteId || -1;
     myPayload.id = fakeId;
     myPayload.kind = "Sequence";
     handleCreateOrUpdate(dispatch, getState, myPayload);

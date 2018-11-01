@@ -42,7 +42,7 @@ describe("mapStateToProps()", () => {
   it("returns selected plant", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakePlant()]);
-    const plantUuid = state.resources.index.byKind["Point"][0];
+    const plantUuid = Object.keys(state.resources.index.byKind["Point"])[0];
     state.resources.consumers.farm_designer.selectedPlants = [plantUuid];
     expect(mapStateToProps(state).selectedPlant).toEqual(
       expect.objectContaining({ uuid: plantUuid }));
@@ -96,7 +96,7 @@ describe("getPlants()", () => {
 
   it("returns plant templates", () => {
     const resources = fakeResources();
-    const savedGardenUuid = resources.index.byKind["SavedGarden"][0];
+    const savedGardenUuid = Object.keys(resources.index.byKind["SavedGarden"])[0];
     resources.consumers.farm_designer.openedSavedGarden = savedGardenUuid;
     expect(getPlants(resources).length).toEqual(1);
   });

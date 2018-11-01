@@ -131,7 +131,8 @@ describe("<PinBindingInputGroup/>", () => {
 
   it("sets sequence id", () => {
     const p = fakeProps();
-    const s = p.resources.references[p.resources.byKind.Sequence[0]];
+    const key = Object.keys(p.resources.byKind.Sequence)[0];
+    const s = p.resources.references[key];
     const id = s && s.body.id;
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);

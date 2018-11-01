@@ -23,13 +23,14 @@ test("buildResourceIndex - base case", () => {
   const result1 = buildResourceIndex(FAKE_RESOURCES);
   const { index } = result1;
   const OK_LENGTH = FAKE_RESOURCES.length;
-  expect(index.all.length).toBe(OK_LENGTH);
+  expect(Object.keys(index.all).length).toBe(OK_LENGTH);
   expect(Object.keys(index.references).length).toBe(OK_LENGTH);
 });
 
 test("buildResourceIndex - add a FarmEvent", () => {
   const db = buildResourceIndex([STUB_RESOURCE]);
-  const fe = db.index.references[db.index.byKind.FarmEvent[0]];
+  const key = Object.keys(db.index.byKind.FarmEvent)[0];
+  const fe = db.index.references[key];
   expect(fe).toBeTruthy();
   if (fe && fe.kind === "FarmEvent") {
     const { body } = fe;

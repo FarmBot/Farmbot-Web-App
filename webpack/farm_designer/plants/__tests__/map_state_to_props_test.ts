@@ -9,7 +9,7 @@ describe("mapStateToProps()", () => {
     const plant = fakePlant();
     plant.body.id = 10;
     state.resources = buildResourceIndex([plant]);
-    const uuid = state.resources.index.all[0];
+    const uuid = Object.keys(state.resources.index.all)[0];
     const result = mapStateToProps(state);
     expect(result.findPlant(undefined)).toEqual(undefined);
     expect(result.findPlant("10")).toEqual(

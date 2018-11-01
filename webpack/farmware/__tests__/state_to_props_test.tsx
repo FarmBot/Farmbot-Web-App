@@ -15,7 +15,7 @@ describe("mapStateToProps()", () => {
 
   it("currentImage defined", () => {
     const state = fakeState();
-    const secondImageUUID = state.resources.index.byKind.Image[1];
+    const secondImageUUID = Object.keys(state.resources.index.byKind.Image)[1];
     state.resources.consumers.farmware.currentImage = secondImageUUID;
     const props = mapStateToProps(state);
     const currentImageUUID = props.currentImage ? props.currentImage.uuid : "";

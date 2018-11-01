@@ -31,7 +31,6 @@ function fakeProps(): ExecBlockParams {
 
 describe("<ExecuteBlock/>", () => {
   it("renders inputs", () => {
-    pending("This is being actively worked on");
     const block = mount(<ExecuteBlock {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");

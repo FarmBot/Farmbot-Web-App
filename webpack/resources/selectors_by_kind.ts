@@ -56,7 +56,7 @@ export function findAll<T extends TaggedResource>(
   index: ResourceIndex, kind: T["kind"]): T[] {
   const results: T[] = [];
 
-  index.byKind[kind].map(function (uuid) {
+  Object.keys(index.byKind[kind]).map(function (uuid) {
     const item = index.references[uuid];
     if (item && isTaggedResource(item) && (item.kind === kind)) {
       results.push(item as T);

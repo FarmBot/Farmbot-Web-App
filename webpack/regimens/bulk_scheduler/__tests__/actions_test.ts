@@ -41,8 +41,9 @@ describe("commitBulkEditor()", () => {
       }))
     ];
     state.resources.index = buildResourceIndex(fakeResources).index;
-    const regimenUuid = state.resources.index.all[0];
-    const sequenceUuid = state.resources.index.all[1];
+    const all = Object.keys(state.resources.index.all);
+    const regimenUuid = all[0];
+    const sequenceUuid = all[1];
 
     state.resources.consumers.regimens.currentRegimen = regimenUuid;
     state.resources.consumers.regimens.selectedSequenceUUID = sequenceUuid;
