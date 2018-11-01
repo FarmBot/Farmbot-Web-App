@@ -84,7 +84,7 @@ describe("<TileMoveAbsolute/>", () => {
         }
       }
     ]).index;
-    const tool = index.references[index.byKind.Tool[0]];
+    const tool = index.references[Object.keys(index.byKind.Tool)[0]];
     if (!tool) { throw new Error("Impossible"); }
 
     const currentStep: SequenceBodyItem = {

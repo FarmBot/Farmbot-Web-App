@@ -249,7 +249,7 @@ describe("Pin and Peripheral support files", () => {
 
     it("converts sensors to the correct type", () => {
       const ri = buildResourceIndex([fakeSensor()]).index;
-      const s = ri.references[ri.byKind.Sensor[0]] as TaggedSensor;
+      const s = ri.references[Object.keys(ri.byKind.Sensor)[0]] as TaggedSensor;
       const ddi = { label: "sensor", value: s.uuid };
       const pin_type: AllowedPinTypes = "Sensor";
       const pin_id = s.body.id || NaN;
@@ -281,7 +281,7 @@ describe("Pin and Peripheral support files", () => {
       const resources = newIndex();
       const dispatch = jest.fn();
       const currentSequence =
-        resources.references[resources.byKind.Sequence[0]] as TaggedSequence;
+        resources.references[Object.keys(resources.byKind.Sequence)[0]] as TaggedSequence;
       const index = 0;
       const currentStep = (currentSequence.body.body || [])[index];
       const stepParams: StepParams = {

@@ -48,7 +48,7 @@ describe("AJAX data tracking", () => {
     betterCompact(Object.values(store.getState().resources.index.references));
 
   it("sets consistency when calling destroy()", () => {
-    const uuid = store.getState().resources.index.byKind.Tool[0];
+    const uuid = Object.keys(store.getState().resources.index.byKind.Tool)[0];
     // tslint:disable-next-line:no-any
     store.dispatch(destroy(uuid) as any);
     expect(maybeStartTracking).toHaveBeenCalled();

@@ -29,7 +29,8 @@ test("buildResourceIndex - base case", () => {
 
 test("buildResourceIndex - add a FarmEvent", () => {
   const db = buildResourceIndex([STUB_RESOURCE]);
-  const fe = db.index.references[db.index.byKind.FarmEvent[0]];
+  const key = Object.keys(db.index.byKind.FarmEvent)[0];
+  const fe = db.index.references[key];
   expect(fe).toBeTruthy();
   if (fe && fe.kind === "FarmEvent") {
     const { body } = fe;

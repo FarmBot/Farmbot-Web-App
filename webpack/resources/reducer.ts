@@ -37,50 +37,49 @@ export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
   });
 }
 
-export const emptyState =
-  (): RestResources => {
-    return {
-      consumers: {
-        sequences: sequenceState,
-        regimens: regimenState,
-        farm_designer: designerState,
-        farmware: farmwareState,
-        help: helpState,
+export const emptyState = (): RestResources => {
+  return {
+    consumers: {
+      sequences: sequenceState,
+      regimens: regimenState,
+      farm_designer: designerState,
+      farmware: farmwareState,
+      help: helpState,
+    },
+    loaded: [],
+    index: {
+      all: [], // TODO: Make this a map to reduce iterations?
+      byKind: {
+        WebcamFeed: {},
+        Device: {},
+        FarmEvent: {},
+        Image: {},
+        Plant: {},
+        Log: {},
+        Peripheral: {},
+        Crop: {},
+        Point: {},
+        Regimen: {},
+        Sequence: {},
+        Tool: {},
+        User: {},
+        FbosConfig: {},
+        FirmwareConfig: {},
+        WebAppConfig: {},
+        SensorReading: {},
+        Sensor: {},
+        FarmwareInstallation: {},
+        FarmwareEnv: {},
+        PinBinding: {},
+        PlantTemplate: {},
+        SavedGarden: {},
+        DiagnosticDump: {}
       },
-      loaded: [],
-      index: {
-        all: [],
-        byKind: {
-          WebcamFeed: [],
-          Device: [],
-          FarmEvent: [],
-          Image: [],
-          Plant: [],
-          Log: [],
-          Peripheral: [],
-          Crop: [],
-          Point: [],
-          Regimen: [],
-          Sequence: [],
-          Tool: [],
-          User: [],
-          FbosConfig: [],
-          FirmwareConfig: [],
-          WebAppConfig: [],
-          SensorReading: [],
-          Sensor: [],
-          FarmwareInstallation: [],
-          FarmwareEnv: [],
-          PinBinding: [],
-          PlantTemplate: [],
-          SavedGarden: [],
-          DiagnosticDump: []
-        },
-        byKindAndId: {},
-        references: {}
-      }
-    };
+      byKindAndId: {},
+      references: {}
+    }
   };
+};
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
@@ -109,7 +108,7 @@ export let resourceReducer =
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
       /** Example Use Case: Refreshing a group of logs after the application
        * is already bootstrapped. */
-      s.index.byKind[payload.kind].map(uuid => {
+      Object.keys(s.index.byKind[payload.kind]).map(uuid => {
         const ref = s.index.references[uuid];
         ref && indexRemove(s.index, ref);
       });

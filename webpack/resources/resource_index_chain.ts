@@ -34,13 +34,11 @@ const ALL: Indexer = {
 
 const BY_KIND: Indexer = {
   up(r, i) {
-    i.byKind[r.kind].push(r.uuid);
-    // This is unfortunate and fixable by switching to Map<string, string>
-    i.byKind[r.kind] = uniq(i.byKind[r.kind]);
+    i.byKind[r.kind][r.uuid] = r.uuid;
   },
   down(r, i) {
-    // This is unfortunate and fixable by switching to Map<string, string>
-    i.byKind[r.kind] = i.byKind[r.kind].filter(filterOutUuid(r));
+    const byKind = i.byKind[r.kind];
+    delete byKind[r.uuid];
   },
 };
 
