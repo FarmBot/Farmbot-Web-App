@@ -7,17 +7,20 @@ jest.mock("axios", () => ({
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
-jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+  initSave: jest.fn(),
+}));
 
 import { API } from "../../../api";
 import axios from "axios";
 import {
   snapshotGarden, applyGarden, destroySavedGarden, closeSavedGarden,
-  openSavedGarden, openOrCloseGarden
+  openSavedGarden, openOrCloseGarden, newSavedGarden
 } from "../actions";
 import { history } from "../../../history";
 import { Actions } from "../../../constants";
-import { destroy } from "../../../api/crud";
+import { destroy, initSave } from "../../../api/crud";
 
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", () => {
@@ -99,5 +102,13 @@ describe("openOrCloseGarden", () => {
     };
     openOrCloseGarden(props)();
     expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens");
+  });
+});
+
+describe("newSavedGarden", () => {
+  it("creates a new saved garden", () => {
+    newSavedGarden("my saved garden")(jest.fn());
+    expect(initSave).toHaveBeenCalledWith(
+      "SavedGarden", { name: "my saved garden" });
   });
 });

@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { success } from "farmbot-toastr";
 import { history } from "../../history";
 import { Actions } from "../../constants";
-import { destroy } from "../../api/crud";
+import { destroy, initSave } from "../../api/crud";
 import { unpackUUID } from "../../util";
 import { isString } from "lodash";
 
@@ -24,8 +24,11 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
     dispatch(unselectSavedGarden);
   });
 
-export const destroySavedGarden = (uuid: string) => (dispatch: Function) =>
-  dispatch(destroy(uuid)).catch(() => { });
+export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
+  dispatch(destroy(uuid))
+    .then(dispatch(unselectSavedGarden))
+    .catch(() => { });
+};
 
 export const closeSavedGarden = () => {
   history.push("/app/designer/saved_gardens");
@@ -47,3 +50,8 @@ export const openOrCloseGarden = (props: {
     !props.gardenIsOpen && isString(props.savedGarden)
       ? props.dispatch(openSavedGarden(props.savedGarden))
       : props.dispatch(closeSavedGarden());
+
+export const newSavedGarden = (name: string) =>
+  (dispatch: Function) => {
+    dispatch(initSave("SavedGarden", { name: name || "Untitled Garden" }));
+  };

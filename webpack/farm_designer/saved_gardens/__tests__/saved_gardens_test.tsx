@@ -12,6 +12,8 @@ jest.mock("../actions", () => ({
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
+jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -43,7 +45,7 @@ describe("<SavedGardens />", () => {
   it("renders saved gardens", () => {
     const wrapper = mount(<SavedGardens {...fakeProps()} />);
     ["saved garden 1", "2", "apply"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(wrapper.html().toLowerCase()).toContain(string));
   });
 
   it("applies garden", () => {
@@ -51,14 +53,14 @@ describe("<SavedGardens />", () => {
     p.savedGardens[0].uuid = "SavedGarden.1.0";
     p.plantsInGarden = false;
     const wrapper = mount(<SavedGardens {...p} />);
-    clickButton(wrapper, 2, "apply");
+    clickButton(wrapper, 3, "apply");
     expect(applyGarden).toHaveBeenCalledWith(1);
   });
 
   it("plants still in garden", () => {
     const wrapper = mount(<SavedGardens {...fakeProps()} />);
     wrapper.find("button").first().simulate("click");
-    clickButton(wrapper, 2, "apply");
+    clickButton(wrapper, 3, "apply");
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "Please clear current garden first"));
   });
@@ -66,7 +68,7 @@ describe("<SavedGardens />", () => {
   it("destroys garden", () => {
     const p = fakeProps();
     const wrapper = mount(<SavedGardens {...p} />);
-    clickButton(wrapper, 1, "");
+    clickButton(wrapper, 2, "");
     expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGardens[0].uuid);
   });
 
