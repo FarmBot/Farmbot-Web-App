@@ -34,7 +34,7 @@ describe("mapStateToProps()", () => {
       })
     ];
     state.resources.index = buildResourceIndex(fakeResources).index;
-    const regimenUuid = state.resources.index.all[0];
+    const regimenUuid = Object.keys(state.resources.index.all)[0];
     state.resources.consumers.regimens.currentRegimen = regimenUuid;
     const props = mapStateToProps(state);
     props.current ? expect(props.current.uuid).toEqual(regimenUuid) : fail;

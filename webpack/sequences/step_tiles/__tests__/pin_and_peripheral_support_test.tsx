@@ -200,7 +200,7 @@ describe("Pin and Peripheral support files", () => {
     it("converts peripherals to DropDownItems", () => {
       const p = fakePeripheral();
       const ri = buildResourceIndex([p]).index;
-      const uuid = ri.all[0];
+      const uuid = Object.keys(ri.all)[0];
       const pin_type: AllowedPinTypes = "Peripheral";
       const pin_id = p.body.id || 0;
       const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
@@ -312,7 +312,7 @@ describe("Pin and Peripheral support files", () => {
       const s = fakeSensor();
       s.body.id = 1;
       const ri = buildResourceIndex([s]);
-      const uuid = ri.index.all[0];
+      const uuid = Object.keys(ri.index.all)[0];
       const result = celery2DropDown({
         kind: "named_pin",
         args: { pin_type: "Sensor", pin_id: 1 }

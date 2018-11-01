@@ -23,7 +23,7 @@ describe("unsavedCheck", () => {
     const output = fakeState();
     output.resources = buildResourceIndex([config]);
     // `buildResourceIndex` clears specialStatus. Set it again:
-    const uuid = output.resources.index.all[0];
+    const uuid = Object.keys(output.resources.index.all)[0];
     // tslint:disable-next-line:no-any
     (output.resources.index.references[uuid] || {} as any)
       .specialStatus = specialStatus;
