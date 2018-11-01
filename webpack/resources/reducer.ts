@@ -76,7 +76,8 @@ export const emptyState = (): RestResources => {
         DiagnosticDump: {}
       },
       byKindAndId: {},
-      references: {}
+      references: {},
+      sequenceMeta: {}
     }
   };
 };

@@ -16,7 +16,7 @@ const REFERENCES: Indexer = {
 };
 
 const ALL: Indexer = {
-  up: (r, s) => s.all[r.uuid] = r.uuid,
+  up: (r, s) => s.all[r.uuid] = true,
   down: (r, i) => delete i.all[r.uuid],
 };
 
