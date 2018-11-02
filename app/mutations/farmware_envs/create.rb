@@ -13,7 +13,7 @@ module FarmwareEnvs
       if device.farmware_envs.length >= LIMIT
         add_error :configs,
                   :configs,
-                  "You are over the limit of #{LIMIT} configs."
+                  "You are over the limit of #{LIMIT} Farmware Envs."
       end
     end
 

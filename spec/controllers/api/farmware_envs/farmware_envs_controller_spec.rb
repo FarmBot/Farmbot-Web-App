@@ -6,7 +6,7 @@ describe Api::FarmwareEnvsController do
 
   include Devise::Test::ControllerHelpers
 
-  it 'creates a device config' do
+  it 'creates a farmware env' do
     sign_in user
     b4 = FarmwareEnv.count
     input = { key: "Coffee Emoji", value: "☕" }
@@ -55,6 +55,15 @@ describe Api::FarmwareEnvsController do
     delete :destroy, params: { id: farmware_env.id }
     expect(response.status).to be(200)
     expect(FarmwareEnv.exists?(id)).to be false
+  end
+
+  it 'deletes all' do
+    sign_in user
+    FarmwareEnv.destroy_all
+    FactoryBot.create_list(:farmware_env, 3, device: device)
+    delete :destroy, params: { id: "all" }
+    expect(response.status).to be(200)
+    expect(FarmwareEnv.count).to eq(0)
   end
 
   it 'shows' do

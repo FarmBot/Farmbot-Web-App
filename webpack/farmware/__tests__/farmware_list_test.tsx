@@ -21,6 +21,7 @@ describe("<FarmwareList />", () => {
       farmwares: fakeFarmwares(),
       showFirstParty: false,
       firstPartyFarmwareNames: [],
+      shouldDisplay: () => false,
     };
   };
 
