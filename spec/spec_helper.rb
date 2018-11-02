@@ -8,6 +8,7 @@ SimpleCov.start do
   add_filter "/spec/"
   add_filter "config/initializers"
 end
+SimpleCov.coverage_dir('coverage_api')
 
 require "codecov"
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
