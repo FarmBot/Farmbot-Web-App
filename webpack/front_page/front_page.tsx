@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors } from "../util";
+import { prettyPrintApiErrors, attachToRoot } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState, SetterCB } from "./interfaces";
@@ -14,6 +14,10 @@ import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
+
+export const attachFrontPage = () => {
+  attachToRoot(FrontPage, {});
+};
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
