@@ -1,21 +1,21 @@
-import { get, set } from "lodash";
+import { get } from "lodash";
 import {
   Dictionary,
   Identifier,
   ScopeDeclarationBodyItem,
-  uuid,
   VariableDeclaration
 } from "farmbot";
 import {
   SequenceResource as Sequence
 } from "farmbot/dist/resources/api_resources";
+import { setStepTag } from "../../../resources/sequence_tagging";
 
 // ======= TYPE DECLARATIONS =======
 /** Less strict version of CeleryScript args. It's traversable, or unknown. */
 type Args = Dictionary<Traversable | unknown>;
 type Body = Traversable[] | undefined;
 /** Less strict CeleryScript node used for the sake of recursion. */
-interface Traversable { kind: string; args: Args; body?: Body; }
+export interface Traversable { kind: string; args: Args; body?: Body; }
 type TreeClimberCB = (item: Traversable) => void;
 // ======= END TYPE DECLARATIONS =======
 
@@ -25,7 +25,6 @@ const IDENTIFIER = "identifier";
 const KIND = "kind";
 const OBJECT = "object";
 const STRING = "string";
-const UUID = "uuid";
 // ======= END CONST / LITERAL DECLARATIONS =======
 
 /** Is it a fully-formed CeleryScript node? Can we continue recursing? */
@@ -38,9 +37,6 @@ const isTraversable = (x: unknown): x is Traversable => {
 /** Is it a variable (identifier)? */
 const isIdentifier =
   (x: Traversable): x is Identifier => (x.kind === IDENTIFIER);
-
-const markWithUuid =
-  (node: Traversable) => !get(node, UUID) && set(node, UUID, uuid());
 
 const newVar = (label: string): VariableDeclaration => ({
   kind: "variable_declaration",
@@ -72,13 +68,13 @@ export const performAllIndexesOnSequence = (input: Sequence): Sequence => {
       // If it's not already in the sequence.args, declare it as an empty var.
       const declaration = newVar(varName);
       declared[varName] = declaration;
-      markWithUuid(declaration);
+      setStepTag(declaration);
       body.push(declaration);
     }
   };
 
   climb(input, node => {
-    markWithUuid(node);
+    setStepTag(node);
     isIdentifier(node) && updateDeclarations(node);
   });
 
