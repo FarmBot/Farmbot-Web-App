@@ -1,6 +1,6 @@
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { MoveAbsolute } from "farmbot";
-import { performAllIndexesOnSequence } from "../variables_support";
+import { performAllTransformsOnSequence } from "../variables_support";
 import { get } from "lodash";
 
 describe("performAllIndexesOnSequence", () => {
@@ -22,10 +22,12 @@ describe("performAllIndexesOnSequence", () => {
       args: {},
       body: []
     };
-    performAllIndexesOnSequence(missing_declaration);
+    performAllTransformsOnSequence(missing_declaration);
     const locals = missing_declaration.args.locals.body;
     if (locals) {
+      expect(locals[0]).toBeDefined();
       expect(get(locals[0], "uuid")).toBeDefined();
+      expect(locals[0].args.label).toEqual("parent");
     } else {
       fail("Expected performAllIndexesOnSequence to fill in missing declarations");
     }

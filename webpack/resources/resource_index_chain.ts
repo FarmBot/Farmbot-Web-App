@@ -2,7 +2,7 @@ import { ResourceIndex } from "./interfaces";
 import { TaggedResource } from "farmbot";
 import { joinKindAndId } from "./reducer_support";
 import {
-  performAllIndexesOnSequence
+  performAllTransformsOnSequence
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 
 type IndexDirection = "up" | "down";
@@ -36,10 +36,24 @@ const BY_KIND_AND_ID: Indexer = {
 };
 
 const SEQUENCE_STUFF: Indexer = {
-  up(r) {
-    (r.kind === "Sequence") && performAllIndexesOnSequence(r.body);
+  up(r, _i) {
+    if (r.kind === "Sequence") {
+      performAllTransformsOnSequence(r.body);
+      // const locals = (r.body.args.locals.body || []);
+      // i.sequenceMeta[r.uuid] = locals.map((local): SequenceVariableMeta => {
+      //   switch (local.kind) {
+      //     case "parameter_declaration":
+      //     case "variable_declaration":
+      //       return {
+      //         label: local.args.label,
+      //         kind: local.args.data_type
+      //       };
+      //   }
+      // });
+    }
   },
-  down(_r, _i) {
+  down(r, i) {
+    delete i.sequenceMeta[r.uuid];
   },
 };
 

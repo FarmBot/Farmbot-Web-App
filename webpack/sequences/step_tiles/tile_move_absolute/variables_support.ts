@@ -46,9 +46,15 @@ const newVar = (label: string): VariableDeclaration => ({
   }
 });
 
-/** Calculate the next value of sequence.arg.locals given a *new* list of
- * variables for a sequence. */
-export const performAllIndexesOnSequence = (input: Sequence): Sequence => {
+/** This function currently has two responsibilities:
+ * 1. Recursively tag all CeleryScript nodes with a `uuid` property to
+ *    prevent subtle React issues.
+ * 2. "fill in the blanks" for variables. Example: If a move abs. step
+ *    references `parent`, but sequence.args.locals.body does not contain a
+ *    `parent` declaration, that could be very bad.
+ *
+ * SEE ALSO: Huge explanation in `sequence_tagging.ts` */
+export const performAllTransformsOnSequence = (input: Sequence): Sequence => {
   // Ideally, we want to be able to blindly insert identifiers into any part of
   // a sequence and have said identifier show up in the `scope_declaration`.
 
