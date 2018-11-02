@@ -15,11 +15,17 @@ import { HelpState } from "../help/reducer";
 
 type UUID = string;
 
+export interface SequenceVariableMeta {
+  label: string;
+  kind: "Point"
+}
+
 export interface ResourceIndex {
-  all: Record<UUID, UUID>;
+  all: Record<UUID, true>;
   byKind: Record<ResourceName, Record<UUID, UUID>>;
   byKindAndId: CowardlyDictionary<UUID>;
   references: Dictionary<TaggedResource | undefined>;
+  sequenceMeta: Record<UUID, SequenceVariableMeta[]>;
 }
 
 export interface RestResources {

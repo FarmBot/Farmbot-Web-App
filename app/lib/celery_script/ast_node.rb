@@ -7,7 +7,12 @@ module CeleryScript
       BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
                            "no leaves here."
       LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
-      def initialize(parent = nil, args:, body: nil, comment: "", kind:)
+      def initialize(parent = nil,
+                     args:,
+                     body: nil,
+                     comment: "",
+                     kind:,
+                     uuid: nil)
           @comment, @kind, @parent = comment, kind, parent
 
           @args = args.map do |key, value|

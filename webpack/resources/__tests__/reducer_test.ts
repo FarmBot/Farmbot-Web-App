@@ -1,13 +1,21 @@
 import { findByUuid, joinKindAndId } from "../reducer_support";
 import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
-import { SpecialStatus, TaggedSequence, TaggedDevice, ResourceName, TaggedResource } from "farmbot";
+import {
+  SpecialStatus,
+  TaggedSequence,
+  TaggedDevice,
+  ResourceName,
+  TaggedResource,
+  TaggedTool
+} from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
 import { resourceReady } from "../../sync/actions";
+import { EditResourceParams } from "../../api/interfaces";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -70,6 +78,36 @@ describe("resource reducer", () => {
       expect(expectation).toEqual(resource);
     };
     TEST_RESOURCE_NAMES.map(kind => testResource(kind));
+  });
+
+  it("EDITs a _RESOURCE", () => {
+    const startingState = fakeState().resources;
+    const { index } = startingState;
+    const uuid = Object.keys(index.byKind.Tool)[0];
+    const update: Partial<TaggedTool["body"]> = { name: "after" };
+    const payload: EditResourceParams = {
+      uuid,
+      update,
+      specialStatus: SpecialStatus.SAVED
+    };
+    const action = { type: Actions.EDIT_RESOURCE, payload };
+    const newState = resourceReducer(startingState, action);
+    const oldTool = index.references[uuid] as TaggedTool;
+    const newTool = newState.index.references[uuid] as TaggedTool;
+    expect(oldTool.body.name).not.toEqual("after");
+    expect(newTool.body.name).toEqual("after");
+  });
+
+  it("handles resource failures", () => {
+    const startingState = fakeState().resources;
+    const uuid = Object.keys(startingState.index.byKind.Tool)[0];
+    const action = {
+      type: Actions._RESOURCE_NO,
+      payload: { uuid, err: "Whatever", statusBeforeError: SpecialStatus.DIRTY }
+    };
+    const newState = resourceReducer(startingState, action);
+    const tool = newState.index.references[uuid] as TaggedTool;
+    expect(tool.specialStatus).toBe(SpecialStatus.DIRTY);
   });
 
   it("covers destroy resource branches", () => {

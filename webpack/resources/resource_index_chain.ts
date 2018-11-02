@@ -1,9 +1,8 @@
 import { ResourceIndex } from "./interfaces";
 import { TaggedResource } from "farmbot";
 import { joinKindAndId } from "./reducer_support";
-import { maybeTagSteps } from "./sequence_tagging";
 import {
-  recomputeLocalVarDeclaration
+  performAllTransformsOnSequence
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 
 type IndexDirection = "up" | "down";
@@ -16,7 +15,7 @@ const REFERENCES: Indexer = {
 };
 
 const ALL: Indexer = {
-  up: (r, s) => s.all[r.uuid] = r.uuid,
+  up: (r, s) => s.all[r.uuid] = true,
   down: (r, i) => delete i.all[r.uuid],
 };
 
@@ -37,15 +36,24 @@ const BY_KIND_AND_ID: Indexer = {
 };
 
 const SEQUENCE_STUFF: Indexer = {
-  up(r) {
+  up(r, _i) {
     if (r.kind === "Sequence") {
-      const recomputed = recomputeLocalVarDeclaration(r.body);
-      r.body.args = recomputed.args;
-      r.body.body = recomputed.body;
-      maybeTagSteps(r);
+      performAllTransformsOnSequence(r.body);
+      // const locals = (r.body.args.locals.body || []);
+      // i.sequenceMeta[r.uuid] = locals.map((local): SequenceVariableMeta => {
+      //   switch (local.kind) {
+      //     case "parameter_declaration":
+      //     case "variable_declaration":
+      //       return {
+      //         label: local.args.label,
+      //         kind: local.args.data_type
+      //       };
+      //   }
+      // });
     }
   },
-  down(_r, _i) {
+  down(r, i) {
+    delete i.sequenceMeta[r.uuid];
   },
 };
 
