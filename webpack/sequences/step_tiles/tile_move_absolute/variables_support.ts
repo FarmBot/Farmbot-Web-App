@@ -72,6 +72,7 @@ export const performAllIndexesOnSequence = (input: Sequence): Sequence => {
       // If it's not already in the sequence.args, declare it as an empty var.
       const declaration = newVar(varName);
       declared[varName] = declaration;
+      markWithUuid(declaration);
       body.push(declaration);
     }
   };
@@ -85,17 +86,15 @@ export const performAllIndexesOnSequence = (input: Sequence): Sequence => {
 };
 
 export function climb(t: Traversable | unknown, cb: TreeClimberCB) {
-  const climbArgs = (a: Args) => Object.keys(a).map(arg => climb(a[arg], cb));
-  const climbBody = (body: Body = []) => body.map(item => climb(item, cb));
+  const climbArgs = /** RECURSION ALERT! */
+    (a: Args) => Object.keys(a).map(arg => climb(a[arg], cb));
+  const climbBody = /** WEE OOO WEE OO */
+    (body: Body = []) => body.map(item => climb(item, cb));
 
   if (isTraversable(t)) {
-    console.log("Traversing " + t.kind);
     t.body = t.body || [];
     climbArgs(t.args);
     climbBody(t.body);
     cb(t);
-  } else {
-    console.log("Refusing to traverse " + JSON.stringify(t));
-    return;
   }
 }
