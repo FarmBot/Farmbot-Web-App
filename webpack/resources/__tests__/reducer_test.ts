@@ -98,6 +98,18 @@ describe("resource reducer", () => {
     expect(newTool.body.name).toEqual("after");
   });
 
+  it("handles resource failures", () => {
+    const startingState = fakeState().resources;
+    const uuid = Object.keys(startingState.index.byKind.Tool)[0];
+    const action = {
+      type: Actions._RESOURCE_NO,
+      payload: { uuid, err: "Whatever", statusBeforeError: SpecialStatus.DIRTY }
+    };
+    const newState = resourceReducer(startingState, action);
+    const tool = newState.index.references[uuid] as TaggedTool;
+    expect(tool.specialStatus).toBe(SpecialStatus.DIRTY);
+  });
+
   it("covers destroy resource branches", () => {
     const testResourceDestroy = (kind: ResourceName) => {
 
