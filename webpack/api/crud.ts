@@ -226,6 +226,7 @@ export function urlFor(tag: ResourceName) {
     DiagnosticDump: API.current.diagnosticDumpsPath,
     SavedGarden: API.current.savedGardensPath,
     PlantTemplate: API.current.plantTemplatePath,
+    FarmwareEnv: API.current.farmwareEnvPath,
   };
   const url = OPTIONS[tag];
   if (url) {

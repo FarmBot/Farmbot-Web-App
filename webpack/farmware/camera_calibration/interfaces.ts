@@ -1,6 +1,7 @@
 import { TaggedImage, SyncStatus } from "farmbot";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
+import { ShouldDisplay, SaveFarmwareEnv } from "../../devices/interfaces";
 
 export interface CameraCalibrationProps {
   dispatch: Function;
@@ -18,4 +19,6 @@ export interface CameraCalibrationProps {
   V_HI: number;
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }

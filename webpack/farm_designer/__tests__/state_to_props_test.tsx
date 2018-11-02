@@ -4,7 +4,7 @@ import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig
+  fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig, fakeFarmwareEnv
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
@@ -99,5 +99,18 @@ describe("getPlants()", () => {
     const savedGardenUuid = Object.keys(resources.index.byKind["SavedGarden"])[0];
     resources.consumers.farm_designer.openedSavedGarden = savedGardenUuid;
     expect(getPlants(resources).length).toEqual(1);
+  });
+
+  it("returns API farmware env", () => {
+    const state = fakeState();
+    state.bot.hardware.user_env = {};
+    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    const fwEnv = fakeFarmwareEnv();
+    fwEnv.body.key = "CAMERA_CALIBRATION_total_rotation_angle";
+    fwEnv.body.value = 15;
+    state.resources = buildResourceIndex([fwEnv]);
+    const props = mapStateToProps(state);
+    expect(props.cameraCalibrationData).toEqual(
+      expect.objectContaining({ rotation: "15" }));
   });
 });

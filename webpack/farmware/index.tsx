@@ -113,6 +113,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           currentImage={this.props.currentImage}
           images={this.props.images}
           env={this.props.env}
+          saveFarmwareEnv={this.props.saveFarmwareEnv}
           iteration={envGet("CAMERA_CALIBRATION_iteration", this.props.env)}
           morph={envGet("CAMERA_CALIBRATION_morph", this.props.env)}
           blur={envGet("CAMERA_CALIBRATION_blur", this.props.env)}
@@ -122,6 +123,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
           S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
           V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+          shouldDisplay={this.props.shouldDisplay}
           botToMqttStatus={this.props.botToMqttStatus} />;
       case "plant_detection":
       case "weed_detector":
@@ -130,7 +132,10 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         const farmware = getFarmwareByName(this.props.farmwares, farmwareName);
         return farmware && needsFarmwareForm(farmware)
           ? <FarmwareForm farmware={farmware}
-            user_env={this.props.user_env} />
+            user_env={this.props.user_env}
+            shouldDisplay={this.props.shouldDisplay}
+            saveFarmwareEnv={this.props.saveFarmwareEnv}
+            dispatch={this.props.dispatch} />
           : <div>
             <button
               className="fb-button green farmware-button"

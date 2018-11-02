@@ -10,9 +10,22 @@ import { calibrate, scanImage } from "./actions";
 import { envGet } from "../weed_detector/remote_env/selectors";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { WeedDetectorConfig } from "../weed_detector/config";
+import { Feature } from "../../devices/interfaces";
+import { namespace } from "../weed_detector";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
+  change = (key: string, value: number) => {
+    this.saveEnvVar(this.namespace(key), value);
+  }
+
+  namespace = namespace("CAMERA_CALIBRATION_");
+
+  saveEnvVar = (key: WDENVKey, value: number) =>
+    this.props.shouldDisplay(Feature.api_farmware_env)
+      ? this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
+      : envSave(key, value)
+
   render() {
     return <div className="weed-detector">
       <button
@@ -27,24 +40,11 @@ export class CameraCalibration extends
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <ImageWorkspace
-              onProcessPhoto={(id) => { this.props.dispatch(scanImage(id)); }}
-              onFlip={(uuid) => this.props.dispatch(selectImage(uuid))}
+              onProcessPhoto={id => this.props.dispatch(scanImage(id))}
+              onFlip={uuid => this.props.dispatch(selectImage(uuid))}
               images={this.props.images}
               currentImage={this.props.currentImage}
-              onChange={(key, value) => {
-                const MAPPING: Record<typeof key, WDENVKey> = {
-                  "iteration": "CAMERA_CALIBRATION_iteration",
-                  "morph": "CAMERA_CALIBRATION_morph",
-                  "blur": "CAMERA_CALIBRATION_blur",
-                  "H_HI": "CAMERA_CALIBRATION_H_HI",
-                  "H_LO": "CAMERA_CALIBRATION_H_LO",
-                  "S_HI": "CAMERA_CALIBRATION_S_HI",
-                  "S_LO": "CAMERA_CALIBRATION_S_LO",
-                  "V_HI": "CAMERA_CALIBRATION_V_HI",
-                  "V_LO": "CAMERA_CALIBRATION_V_LO"
-                };
-                envSave(MAPPING[key], value);
-              }}
+              onChange={this.change}
               iteration={this.props.iteration}
               morph={this.props.morph}
               blur={this.props.blur}
@@ -54,12 +54,11 @@ export class CameraCalibration extends
               H_HI={this.props.H_HI}
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
-              invertHue={!!envGet(
-                "CAMERA_CALIBRATION_invert_hue_selection",
+              invertHue={!!envGet(this.namespace("invert_hue_selection"),
                 this.props.env)} />
             <WeedDetectorConfig
               values={this.props.env}
-              onChange={envSave} />
+              onChange={this.saveEnvVar} />
           </MustBeOnline>
         </Col>
       </Row>

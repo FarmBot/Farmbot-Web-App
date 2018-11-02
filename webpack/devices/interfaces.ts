@@ -34,7 +34,13 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   firmwareConfig: FirmwareConfig | undefined;
   isValidFbosConfig: boolean;
+  env: UserEnv;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }
+
+/** Function to save a Farmware env variable to the API. */
+export type SaveFarmwareEnv =
+  (key: string, value: string) => (dispatch: Function) => void;
 
 /** Value and consistency of the value between the bot and /api/fbos_config. */
 export type SourceFbosConfig = (config: ConfigurationName) =>
@@ -67,6 +73,7 @@ export enum Feature {
   mark_as_step = "mark_as_step",
   firmware_restart = "firmware_restart",
   api_farmware_installations = "api_farmware_installations",
+  api_farmware_env = "api_farmware_env",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -149,6 +156,8 @@ export interface CalibrationButtonProps {
   axis: Axis;
 }
 
+export type UserEnv = Record<string, string | undefined>;
+
 export interface FarmbotOsProps {
   bot: BotState;
   diagnostics: TaggedDiagnosticDump[];
@@ -159,6 +168,8 @@ export interface FarmbotOsProps {
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
   isValidFbosConfig: boolean;
+  env: UserEnv;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }
 
 export interface FarmbotOsState {
@@ -198,7 +209,7 @@ export interface SensorsProps {
 export interface FarmwareProps {
   dispatch: Function;
   env: Partial<WD_ENV>;
-  user_env: Record<string, string | undefined>;
+  user_env: UserEnv;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;
@@ -208,6 +219,8 @@ export interface FarmwareProps {
   webAppConfig: Partial<WebAppConfig>;
   firstPartyFarmwareNames: string[];
   currentFarmware: string | undefined;
+  shouldDisplay: ShouldDisplay;
+  saveFarmwareEnv: SaveFarmwareEnv;
 }
 
 export interface HardwareSettingsProps {

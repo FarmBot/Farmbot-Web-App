@@ -39,6 +39,8 @@ describe("<FarmwarePage />", () => {
       webAppConfig: {},
       firstPartyFarmwareNames: [],
       currentFarmware: undefined,
+      shouldDisplay: () => false,
+      saveFarmwareEnv: jest.fn(),
     };
   };
 
