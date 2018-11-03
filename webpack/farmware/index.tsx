@@ -159,6 +159,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           <FarmwareList
             current={this.current}
             dispatch={this.props.dispatch}
+            shouldDisplay={this.props.shouldDisplay}
             farmwares={this.props.farmwares}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />

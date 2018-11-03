@@ -757,6 +757,12 @@ ul {
   float: right !important;
 }
 
+.farmware-settings-menu-contents {
+  label {
+    margin-top: 0.5rem;
+  }
+}
+
 .logs {
   .row {
     @media screen and (max-width: 974px) {

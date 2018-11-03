@@ -9,6 +9,7 @@ import { FarmwareConfigMenu } from "./farmware_config_menu";
 import { every, Dictionary } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
 import { Link } from "../link";
+import { ShouldDisplay } from "../devices/interfaces";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),
@@ -45,6 +46,7 @@ export interface FarmwareListProps {
   farmwares: Farmwares;
   showFirstParty: boolean;
   firstPartyFarmwareNames: string[];
+  shouldDisplay: ShouldDisplay;
 }
 
 interface FarmwareListState {
@@ -94,6 +96,7 @@ export class FarmwareList
           <i className="fa fa-gear dark" />
           <FarmwareConfigMenu
             show={this.props.showFirstParty}
+            shouldDisplay={this.props.shouldDisplay}
             dispatch={this.props.dispatch}
             firstPartyFwsInstalled={
               this.firstPartyFarmwaresPresent(

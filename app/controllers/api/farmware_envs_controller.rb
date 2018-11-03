@@ -1,8 +1,8 @@
 # Api::FarmwareEnvController is the RESTful endpoint for managing key/value
 # configuration pairs.
 module Api
-  # Device configs controller handles CRUD for user definable key/value pairs.
-  # Usually used by 3rd party Farmware devs. Not used often as of May 2018
+  # Farmware envs controller handles CRUD for user definable key/value pairs.
+  # Usually used for Farmware settings and data.
   class FarmwareEnvsController < Api::AbstractController
 
     def create
@@ -22,7 +22,11 @@ module Api
     end
 
     def destroy
-      render json: (farmware_env.destroy! && "")
+      if params[:id] == "all"
+        render json: (current_device.farmware_envs.destroy_all && "")
+      else
+        render json: (farmware_env.destroy! && "")
+      end
     end
 
   private

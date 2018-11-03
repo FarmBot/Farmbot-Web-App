@@ -171,7 +171,7 @@ export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
-    const maybeProceed = confirmationChecker(resource, force);
+    const maybeProceed = confirmationChecker(resource.kind, force);
     return maybeProceed(() => {
       const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
@@ -188,6 +188,14 @@ export function destroy(uuid: string, force = false) {
       }
     }) || Promise.reject("User pressed cancel");
   };
+}
+
+export function destroyAll(resourceName: ResourceName, force = false) {
+  if (force || confirm(t("Are you sure you want to delete all items?"))) {
+    return axios.delete(urlFor(resourceName) + "all");
+  } else {
+    return Promise.reject("User pressed cancel");
+  }
 }
 
 export function saveAll(input: TaggedResource[],
@@ -282,9 +290,9 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "SavedGarden",
 ];
 
-const confirmationChecker = (resource: TaggedResource, force = false) =>
+const confirmationChecker = (resourceName: ResourceName, force = false) =>
   <T>(proceed: () => T): T | undefined => {
-    if (MUST_CONFIRM_LIST.includes(resource.kind)) {
+    if (MUST_CONFIRM_LIST.includes(resourceName)) {
       if (force || confirm(t("Are you sure you want to delete this item?"))) {
         return proceed();
       } else {
