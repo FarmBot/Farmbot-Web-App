@@ -146,6 +146,7 @@
       "json",
       "lcov"
     ],
+    "coverageDirectory": "<rootDir>/coverage_fe",
     "setupTestFrameworkScriptFile": "<rootDir>/webpack/__test_support__/customMatchers.js"
   }
 }
