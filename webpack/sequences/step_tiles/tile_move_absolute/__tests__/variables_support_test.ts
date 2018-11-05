@@ -1,6 +1,6 @@
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { MoveAbsolute } from "farmbot";
-import { performAllTransformsOnSequence } from "../variables_support";
+import { sanitizeNodes } from "../variables_support";
 import { get } from "lodash";
 
 describe("performAllIndexesOnSequence", () => {
@@ -22,7 +22,7 @@ describe("performAllIndexesOnSequence", () => {
       args: {},
       body: []
     };
-    performAllTransformsOnSequence(missing_declaration);
+    sanitizeNodes(missing_declaration);
     const locals = missing_declaration.args.locals.body;
     if (locals) {
       expect(locals[0]).toBeDefined();

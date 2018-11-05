@@ -6,19 +6,24 @@ import { Identifier, Coordinate, Point, Tool } from "farmbot";
 import { CALLBACK } from "../tile_move_absolute/interfaces";
 
 interface Props {
+  targetUuid: string;
   resources: ResourceIndex;
   selected: Coordinate | Identifier | Point | Tool;
   onChange: CALLBACK;
 }
 
-export function ParentSelector({ resources, selected, onChange }: Props) {
+export function ParentSelector({ resources, selected, onChange, targetUuid }: Props) {
+  const meta = Object.values(resources.sequenceMeta[targetUuid] || {});
   return <div>
-    <label>{t("Set value of 'parent' to:")}</label>
-    <TileMoveAbsSelect
-      resources={resources}
-      selectedItem={selected}
-      onChange={onChange}
-      shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
-    <p>Debug info: {selected.kind}</p>
+    {meta.map(val => {
+      return <div key={val.label}>
+        <label>{t(`Set '${val.label}' value to:`)}</label>
+        <TileMoveAbsSelect
+          resources={resources}
+          selectedItem={selected}
+          onChange={onChange}
+          shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
+      </div>;
+    })}
   </div>;
 }

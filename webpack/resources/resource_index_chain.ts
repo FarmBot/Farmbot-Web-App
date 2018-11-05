@@ -1,8 +1,8 @@
-import { ResourceIndex } from "./interfaces";
-import { TaggedResource } from "farmbot";
+import { ResourceIndex, VariableNameMapping } from "./interfaces";
+import { TaggedResource, TaggedSequence } from "farmbot";
 import { joinKindAndId } from "./reducer_support";
 import {
-  performAllTransformsOnSequence
+  sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 
 type IndexDirection = "up" | "down";
@@ -35,11 +35,21 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
+function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
+  const varData: VariableNameMapping = {};
+  return (tr.body.args.locals.body || []).reduce((acc, declaration) => {
+    acc[declaration.args.label] = { label: declaration.args.label };
+    return acc;
+  }, varData);
+}
+
 const SEQUENCE_STUFF: Indexer = {
   up(r, i) {
-    (r.kind === "Sequence") && (i.references[r.uuid] = {
-      ...r, body: performAllTransformsOnSequence(r.body)
-    });
+    if (r.kind === "Sequence") {
+      const tr = { ...r, body: sanitizeNodes(r.body) };
+      i.references[r.uuid] = tr;
+      i.sequenceMeta[r.uuid] = variableLookupTable(tr);
+    }
   },
   down(r, i) {
     delete i.sequenceMeta[r.uuid];

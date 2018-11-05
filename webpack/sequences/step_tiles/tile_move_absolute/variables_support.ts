@@ -49,12 +49,12 @@ const newVar = (label: string): VariableDeclaration => ({
 /** This function currently has two responsibilities:
  * 1. Recursively tag all CeleryScript nodes with a `uuid` property to
  *    prevent subtle React issues.
- * 2. "fill in the blanks" for variables. Example: If a move abs. step
+ * 2. "fill in the blanks" for variables. Example: If a move abs step
  *    references `parent`, but sequence.args.locals.body does not contain a
- *    `parent` declaration, that could be very bad.
- *
+ *    `parent` declaration, that could be very bad and we must insert an empty
+ *    declaration to avoid runtime errors.
  * SEE ALSO: Huge explanation in `sequence_tagging.ts` */
-export const performAllTransformsOnSequence = (input: Sequence): Sequence => {
+export const sanitizeNodes = (input: Sequence): Sequence => {
   // Ideally, we want to be able to blindly insert identifiers into any part of
   // a sequence and have said identifier show up in the `scope_declaration`.
 
