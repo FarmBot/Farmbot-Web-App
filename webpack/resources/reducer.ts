@@ -102,6 +102,7 @@ export let resourceReducer =
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const original = findByUuid(s.index, payload.uuid);
       original.body = payload.update;
+      indexUpsert(s.index, original);
       mutateSpecialStatus(payload.uuid, s.index, payload.specialStatus);
       return s;
     })

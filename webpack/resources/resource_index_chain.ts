@@ -36,21 +36,10 @@ const BY_KIND_AND_ID: Indexer = {
 };
 
 const SEQUENCE_STUFF: Indexer = {
-  up(r, _i) {
-    if (r.kind === "Sequence") {
-      performAllTransformsOnSequence(r.body);
-      // const locals = (r.body.args.locals.body || []);
-      // i.sequenceMeta[r.uuid] = locals.map((local): SequenceVariableMeta => {
-      //   switch (local.kind) {
-      //     case "parameter_declaration":
-      //     case "variable_declaration":
-      //       return {
-      //         label: local.args.label,
-      //         kind: local.args.data_type
-      //       };
-      //   }
-      // });
-    }
+  up(r, i) {
+    (r.kind === "Sequence") && (i.references[r.uuid] = {
+      ...r, body: performAllTransformsOnSequence(r.body)
+    });
   },
   down(r, i) {
     delete i.sequenceMeta[r.uuid];
