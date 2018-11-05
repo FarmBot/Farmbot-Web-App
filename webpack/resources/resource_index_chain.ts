@@ -36,11 +36,9 @@ const BY_KIND_AND_ID: Indexer = {
 };
 
 function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
-  const varData: VariableNameMapping = {};
-  return (tr.body.args.locals.body || []).reduce((acc, declaration) => {
-    acc[declaration.args.label] = { label: declaration.args.label };
-    return acc;
-  }, varData);
+  return (tr.body.args.locals.body || []).reduce((acc, { args }) => {
+    return { ...acc, [args.label]: { label: args.label } };
+  }, {} as VariableNameMapping); // WOW FUNCTIONAL PROGRAMMING
 }
 
 const SEQUENCE_STUFF: Indexer = {
