@@ -81,7 +81,8 @@ const MUST_LOAD: ResourceName[] = [
   "Sequence",
   "Regimen",
   "FarmEvent",
-  "Point"
+  "Point",
+  "Tool" // Sequence editor needs this for rendering.
 ];
 
 @connect(mapStateToProps)
