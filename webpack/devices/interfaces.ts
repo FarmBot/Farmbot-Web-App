@@ -7,7 +7,8 @@ import {
   TaggedDevice,
   TaggedSensor,
   TaggedDiagnosticDump,
-  TaggedUser
+  TaggedUser,
+  TaggedFarmwareInstallation
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -221,6 +222,7 @@ export interface FarmwareProps {
   currentFarmware: string | undefined;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
+  taggedFarmwareInstallations: TaggedFarmwareInstallation[];
 }
 
 export interface HardwareSettingsProps {

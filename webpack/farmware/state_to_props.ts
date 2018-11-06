@@ -2,11 +2,13 @@ import { Everything } from "../interfaces";
 import {
   selectAllImages, maybeGetTimeOffset, maybeGetDevice
 } from "../resources/selectors";
-import { FarmwareProps, Feature, SaveFarmwareEnv, UserEnv } from "../devices/interfaces";
+import {
+  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
+} from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
 import {
-  getWebAppConfig, selectAllFarmwareEnvs
+  getWebAppConfig, selectAllFarmwareEnvs, selectAllFarmwareInstallations
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
@@ -61,6 +63,9 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
 
+  const taggedFarmwareInstallations =
+    selectAllFarmwareInstallations(props.resources.index);
+
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     currentFarmware,
@@ -76,5 +81,6 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     firstPartyFarmwareNames,
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
+    taggedFarmwareInstallations,
   };
 }

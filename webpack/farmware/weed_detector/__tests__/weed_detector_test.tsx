@@ -41,6 +41,7 @@ describe("<WeedDetector />", () => {
     currentFarmware: undefined,
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
+    taggedFarmwareInstallations: [],
   });
 
   it("renders", () => {

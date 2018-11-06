@@ -41,6 +41,7 @@ describe("<FarmwarePage />", () => {
       currentFarmware: undefined,
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),
+      taggedFarmwareInstallations: [],
     };
   };
 

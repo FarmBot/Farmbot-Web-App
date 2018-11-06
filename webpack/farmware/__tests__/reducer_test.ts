@@ -2,7 +2,7 @@
 import { farmwareReducer } from "../reducer";
 import { FarmwareState } from "../interfaces";
 import { Actions } from "../../constants";
-import { fakeImage } from "../../__test_support__/fake_state/resources";
+import { fakeImage, fakeFarmwareInstallation } from "../../__test_support__/fake_state/resources";
 
 describe("farmwareReducer", () => {
   const fakeState = (): FarmwareState => {
@@ -58,6 +58,17 @@ describe("farmwareReducer", () => {
     expect(oldState.currentImage).not.toEqual(newState.currentImage);
     expect(newState.currentImage).not.toBeUndefined();
     expect(newState.currentImage).toBe(image.uuid);
+  });
+
+  it("doesn't set the current image via INIT_RESOURCE for non-image", () => {
+    const nonimage = fakeFarmwareInstallation();
+    const oldState = fakeState();
+    const newState = farmwareReducer(oldState, {
+      type: Actions.INIT_RESOURCE,
+      payload: nonimage
+    });
+    expect(oldState.currentImage).toEqual(newState.currentImage);
+    expect(newState.currentImage).toBeUndefined();
   });
 
   it("sets 1st party farmware list", () => {

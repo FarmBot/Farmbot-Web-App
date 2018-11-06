@@ -10,6 +10,7 @@ import { every, Dictionary } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
 import { Link } from "../link";
 import { ShouldDisplay } from "../devices/interfaces";
+import { TaggedFarmwareInstallation } from "farmbot";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),
@@ -47,6 +48,7 @@ export interface FarmwareListProps {
   showFirstParty: boolean;
   firstPartyFarmwareNames: string[];
   shouldDisplay: ShouldDisplay;
+  installations: TaggedFarmwareInstallation[];
 }
 
 interface FarmwareListState {
