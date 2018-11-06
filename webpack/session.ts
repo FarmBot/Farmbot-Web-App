@@ -56,8 +56,7 @@ export function safeBooleanSettting(name: string): BooleanConfigKey {
 }
 
 export const isNumericSetting =
-  // tslint:disable-next-line:no-any
-  (x: any): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
+  (x: unknown): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
 
 export function safeNumericSetting(name: string): NumberConfigKey {
   if (isNumericSetting(name)) {

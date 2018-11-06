@@ -3,8 +3,7 @@ import { Primitive } from "../../../util";
 import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
 
 export const isWDENVKey =
-  // tslint:disable-next-line:no-any
-  (key: any): key is WDENVKey => EVERY_WD_KEY.includes(key);
+  (key: unknown): key is WDENVKey => (EVERY_WD_KEY as string[]).includes("" + key);
 
 /** Weed detector ENV key. */
 export type WDENVKey = keyof typeof WD_KEY_DEFAULTS;

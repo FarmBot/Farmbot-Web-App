@@ -30,7 +30,7 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
  * fires off. Afterwards, sub-reducers are allowed to make sense of data
  * changes. A common use case for sub-reducers is to listen for
  * `DESTROY_RESOURCE_OK` and clean up stale UUIDs. */
-export const afterEach = (state: RestResources, a: ReduxAction<object>) => {
+export const afterEach = (state: RestResources, a: ReduxAction<unknown>) => {
   state.consumers = consumerReducer({
     sequences: state.consumers.sequences,
     regimens: state.consumers.regimens,
@@ -58,6 +58,7 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   if (x && isTaggedResource(x)) {
     return x;
   } else {
+    // debugger;
     throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
   }
 }
