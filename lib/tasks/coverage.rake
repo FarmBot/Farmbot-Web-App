@@ -11,20 +11,33 @@ def open_json(url)
   JSON.parse(open(url).read)
 end
 
+def to_percent(pair)
+  return ((pair.head / pair.tail) * 100).round(4)
+end
+
 namespace :coverage do
   desc "Coveralls stats stopped working :("
   task run: :environment do
-    _, branches, _, lines = Nokogiri::HTML(open(COVERAGE_FILE_PATH))
+    statements, branches, functions, lines = Nokogiri::HTML(open(COVERAGE_FILE_PATH))
       .css(CSS_SELECTOR)
       .map(&:text)
       .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
       .map { |x| Pair.new(*x) }
+
+    puts
+    puts "This build: #{CURRENT_COMMIT}"
+    puts "Statements: #{to_percent(statements)}%"
+    puts "Branches:   #{to_percent(branches)}%"
+    puts "Functions:  #{to_percent(functions)}%"
+    puts "Lines:      #{to_percent(lines)}%"
+    puts
 
     covered       = lines.head + branches.head
     total         = lines.tail + branches.tail
     build_percent = (covered / total) * 100
 
     latest_commit_staging = open_json(REPO_URL).dig("object", "sha")
+    puts "staging: #{latest_commit_staging}"
     build_url             = "https://coveralls.io/builds/#{latest_commit_staging}.json"
     begin
       staging_percent     = open_json(build_url).fetch("covered_percent")
@@ -34,15 +47,20 @@ namespace :coverage do
       staging_percent     = 100
     end
 
-    diff = (build_percent - staging_percent)
-    pass = (diff > -THRESHOLD)
+    if CURRENT_COMMIT == latest_commit_staging
+      diff = 0
+      pass = true
+    else
+      diff = (build_percent - staging_percent)
+      pass = (diff > -THRESHOLD)
+    end
 
     puts "=" * 37
     puts "COVERAGE RESULTS"
-    puts "This build:    #{build_percent.round(8)} #{CURRENT_COMMIT[0,7]}"
-    puts "Staging build: #{staging_percent.round(8)} #{latest_commit_staging[0,7]}"
+    puts "This build:    #{build_percent.round(8)}% #{CURRENT_COMMIT[0,7]}"
+    puts "Staging build: #{staging_percent.round(8)}% #{latest_commit_staging[0,7]}"
     puts "=" * 37
-    puts "Difference:    #{diff.round(8)}"
+    puts "Difference:    #{diff.round(8)}%"
     puts "Pass?:         #{pass ? "yes" : "no"}"
 
     exit pass ? 0 : 1
