@@ -11,7 +11,7 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
 import { LocationData } from "./tile_move_absolute/interfaces";
-import { ShouldDisplay } from "../../devices/interfaces";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { ParentSelector } from "./tile_execute/parent_selector";
 import { findSequenceById } from "../../resources/selectors_by_id";
 
@@ -117,11 +117,11 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
         </Row>
         <Row>
           <Col xs={12}>
-            <ParentSelector
+            {this.props.shouldDisplay(Feature.variables) && <ParentSelector
               targetUuid={calleeUuid}
               resources={resources}
               selected={selected}
-              onChange={this.setVariable} />
+              onChange={this.setVariable} />}
           </Col>
         </Row>
       </StepContent>

@@ -39,7 +39,16 @@ export interface ResourceIndex {
    * SOLUTION:
    *  * Create an index entry, indexed by UUID, for every variable declared in
    *    a sequence.
-   *   * Within that entry, map of the name of the var to a list of meta attrs.
+   *   * Within that entry, map the name of the var to a map of meta attrs.
+   * {
+   *   ...
+   *   "Sequence.0.1": {
+   *     ...
+   *     "parent": { label: "parent" },
+   *     "parent1": { label: "parent1" },
+   *   }
+   *   ...
+   * }
    */
   sequenceMeta: Record<UUID, VariableNameMapping>;
 }
