@@ -28,7 +28,11 @@ const BY_KIND: Indexer = {
 };
 
 const BY_KIND_AND_ID: Indexer = {
-  up: (r, i) => r.body.id && (i.byKindAndId[joinKindAndId(r.kind, r.body.id)] = r.uuid),
+  up: (r, i) => {
+    if (r.body.id) {
+      i.byKindAndId[joinKindAndId(r.kind, r.body.id)] = r.uuid;
+    }
+  },
   down(r, i) {
     delete i.byKindAndId[joinKindAndId(r.kind, r.body.id)];
     delete i.byKindAndId[joinKindAndId(r.kind, 0)];

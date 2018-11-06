@@ -58,7 +58,6 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   if (x && isTaggedResource(x)) {
     return x;
   } else {
-    // debugger;
     throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
   }
 }
