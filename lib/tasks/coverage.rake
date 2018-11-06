@@ -48,12 +48,11 @@ namespace :coverage do
     end
 
     if CURRENT_COMMIT == latest_commit_staging
-      diff = 0
-      pass = true
-    else
-      diff = (build_percent - staging_percent)
-      pass = (diff > -THRESHOLD)
+      staging_percent = build_percent
     end
+
+    diff = (build_percent - staging_percent)
+    pass = (diff > -THRESHOLD)
 
     puts "=" * 37
     puts "COVERAGE RESULTS"
