@@ -1,14 +1,18 @@
 import * as React from "react";
 import { t } from "i18next";
-import { FarmwareManifest } from "farmbot";
+import { FarmwareManifest, TaggedFarmwareInstallation } from "farmbot";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
 import { Content } from "../constants";
+import { ShouldDisplay } from "../devices/interfaces";
 
 export interface FarmwareInfoProps {
+  dispatch: Function;
   farmware: FarmwareManifest | undefined;
   showFirstParty: boolean;
   firstPartyFarmwareNames: string[];
+  installations: TaggedFarmwareInstallation[];
+  shouldDisplay: ShouldDisplay;
 }
 
 export function FarmwareInfo(props: FarmwareInfoProps) {

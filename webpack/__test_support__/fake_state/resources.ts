@@ -23,6 +23,7 @@ import {
   TaggedPlantTemplate,
   TaggedToolSlotPointer,
   TaggedFarmwareEnv,
+  TaggedFarmwareInstallation,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -409,5 +410,11 @@ export function fakeFarmwareEnv(): TaggedFarmwareEnv {
   return fakeResource("FarmwareEnv", {
     key: "fake_FarmwareEnv_key",
     value: "fake_FarmwareEnv_value"
+  });
+}
+
+export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
+  return fakeResource("FarmwareInstallation", {
+    url: "https://"
   });
 }

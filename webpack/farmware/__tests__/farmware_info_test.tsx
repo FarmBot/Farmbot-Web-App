@@ -19,6 +19,9 @@ describe("<FarmwareInfo />", () => {
       farmware: fakeFarmware(),
       showFirstParty: false,
       firstPartyFarmwareNames: [],
+      dispatch: jest.fn(),
+      installations: [],
+      shouldDisplay: () => false,
     };
   };
 
@@ -64,10 +67,30 @@ describe("<FarmwareInfo />", () => {
     expect(mockDevice.updateFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
 
+  it("doesn't update Farmware", () => {
+    const p = fakeProps();
+    p.farmware = fakeFarmware();
+    // tslint:disable-next-line:no-any
+    p.farmware.name = undefined as any;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 0, "Update");
+    expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
+  });
+
   it("removes Farmware", () => {
     const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
+  });
+
+  it("removes Farmware", () => {
+    const p = fakeProps();
+    p.farmware = fakeFarmware();
+    // tslint:disable-next-line:no-any
+    p.farmware.name = undefined as any;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
   });
 
   it("doesn't remove 1st-party Farmware", () => {

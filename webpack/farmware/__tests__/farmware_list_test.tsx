@@ -22,6 +22,7 @@ describe("<FarmwareList />", () => {
       showFirstParty: false,
       firstPartyFarmwareNames: [],
       shouldDisplay: () => false,
+      installations: [],
     };
   };
 
