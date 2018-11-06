@@ -151,7 +151,7 @@ export class API {
   get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps/`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
-    return `${this.baseUrl}/api/farmware_installations`;
+    return `${this.baseUrl}/api/farmware_installations/`;
   }
   get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
 }

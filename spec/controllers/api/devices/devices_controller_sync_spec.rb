@@ -10,7 +10,7 @@ describe Api::DevicesController do
     EDGE_CASES = [:devices, # Singular resources
                   :fbos_configs,
                   :firmware_configs,]
-    FORMAT     = "%Y-%m-%d %H:%M:%S.%6N"
+    FORMAT     = "%Y-%m-%d %H:%M:%S.%5N"
     it 'provides timestamps of updates, plus current time' do
       sign_in user
 

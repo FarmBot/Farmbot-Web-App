@@ -161,6 +161,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             dispatch={this.props.dispatch}
             shouldDisplay={this.props.shouldDisplay}
             farmwares={this.props.farmwares}
+            installations={this.props.taggedFarmwareInstallations}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
         </LeftPanel>
@@ -180,7 +181,10 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           helpText={ToolTips.FARMWARE_INFO}
           show={!!farmware}>
           <FarmwareInfo
+            dispatch={this.props.dispatch}
             farmware={farmware}
+            installations={this.props.taggedFarmwareInstallations}
+            shouldDisplay={this.props.shouldDisplay}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
         </RightPanel>
