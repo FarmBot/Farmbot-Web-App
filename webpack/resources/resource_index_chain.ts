@@ -1,5 +1,5 @@
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
-import { TaggedResource, TaggedSequence } from "farmbot";
+import { TaggedResource, TaggedSequence, ScopeDeclarationBodyItem } from "farmbot";
 import { joinKindAndId } from "./reducer_support";
 import {
   sanitizeNodes
@@ -38,11 +38,17 @@ const BY_KIND_AND_ID: Indexer = {
     delete i.byKindAndId[joinKindAndId(r.kind, 0)];
   },
 };
+export const lookupReducer =
+  (_acc: VariableNameMapping, _item: ScopeDeclarationBodyItem) => {
+    // const { args } = item;
+    // const n = { [args.label]: { label: args.label } };
+    // @gabrielBurnworth I am stubbing this to just return {};
+    // (still crashes locally)
+    return { /*...acc, n*/ };
+  };
 
-function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
-  return (tr.body.args.locals.body || []).reduce((acc, { args }) => {
-    return { ...acc, [args.label]: { label: args.label } };
-  }, {} as VariableNameMapping); // WOW FUNCTIONAL PROGRAMMING
+export function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
+  return (tr.body.args.locals.body || []).reduce(lookupReducer, {});
 }
 
 const SEQUENCE_STUFF: Indexer = {

@@ -48,8 +48,6 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
       executor: (step: Execute) => {
         if (_.isNumber(input.value)) {
           step.args.sequence_id = input.value;
-        } else {
-          throw new Error("Never not a number;");
         }
       }
     }));
