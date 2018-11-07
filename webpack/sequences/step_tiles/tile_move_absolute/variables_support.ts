@@ -65,7 +65,6 @@ export function climb(t: Traversable | unknown, cb: TreeClimberCB) {
  * 2. Add unbound variables to `locals` declaration (prevent NPEs).
  * 3. Remove unused variables from `locals` declaration. */
 export const sanitizeNodes = (input: Sequence): Sequence => {
-
   // Collect all *declared* variables. Required for fixing unbound vars.
   const declared: Dictionary<ScopeDeclarationBodyItem> = {};
   (input.args.locals.body || []).map(var_ => declared[var_.args.label] = var_);

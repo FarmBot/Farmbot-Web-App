@@ -13,7 +13,30 @@ describe("performAllIndexesOnSequence", () => {
     }
   };
 
-  it("fills in missing information related to variables", () => {
+  it("removes unused variables", () => {
+    const unusedVar = fakeSequence().body;
+    expect(unusedVar.args.locals.body).toBeUndefined();
+    unusedVar.body = [];
+    unusedVar.args.locals = {
+      kind: "scope_declaration",
+      args: {},
+      body: [
+        {
+          kind: "parameter_declaration",
+          args: { data_type: "whatever", label: "parent" }
+        }
+      ]
+    };
+    const result = sanitizeNodes(unusedVar);
+    const locals = result.args.locals.body;
+    if (locals) {
+      expect(locals[0]).not.toBeDefined();
+    } else {
+      fail("Expected sanitizeNodes to set body to []");
+    }
+  });
+
+  it("handles missing parameters / variables", () => {
     const missing_declaration = fakeSequence().body;
     expect(missing_declaration.args.locals.body).toBeUndefined();
     missing_declaration.body = [move_abs];
