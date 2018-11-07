@@ -101,16 +101,11 @@ export let resourceReducer =
     })
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {
       const { uuid, update, specialStatus } = payload;
-      if (s.index.references[payload.uuid]) {
-        const original = findByUuid(s.index, uuid);
-        original.body = update;
-        indexUpsert(s.index, original);
-        mutateSpecialStatus(uuid, s.index, specialStatus);
-        return s;
-      } else {
-        console.warn(`Ignoring update to UUID ${uuid}. Possible echo?`);
-        return s;
-      }
+      const original = findByUuid(s.index, uuid);
+      original.body = update;
+      indexUpsert(s.index, original);
+      mutateSpecialStatus(uuid, s.index, specialStatus);
+      return s;
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);

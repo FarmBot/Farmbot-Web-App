@@ -34,7 +34,6 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<Tag
 }
 
 export function asTaggedResource(data: UpdateMqttData<TaggedResource>): TaggedResource {
-  console.log("SUSPECT Y");
   return newTaggedResource(data.kind, data.body)[0];
 }
 
@@ -71,10 +70,6 @@ export function handleCreateOrUpdate(dispatch: Function,
   // created by us or some other user. That information lets us know if we are
   // UPDATE-ing data or INSERTing data. It also prevents us from double updating
   // data when an update comes in twice.
-  const diagnostic1 = hasCopy ? "has a copy locally" : "has no local copy";
-  const diagnostic2 = isEcho ? "an echo" : "not an echo";
-  console.log(`(${data.sessionId})
-   ${data.kind} ${data.id || 0} ${diagnostic1} and is ${diagnostic2}`);
 
   const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
   return isEcho || dispatch(action);

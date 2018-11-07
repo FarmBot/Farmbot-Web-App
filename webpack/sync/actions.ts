@@ -25,7 +25,6 @@ export const resourceReady =
 export const newTaggedResource = <T extends TR>(kind: T["kind"],
   bodies: T["body"] | T["body"][],
   specialStatus = SpecialStatus.SAVED): T[] => {
-  console.log("SUSPECT Z");
   const arr = arrayWrap(bodies);
   return arr.map((body: T["body"]): T => {
     return {
