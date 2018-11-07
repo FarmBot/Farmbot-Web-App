@@ -78,8 +78,10 @@ describe("handleCreateOrUpdate", () => {
 
 describe("handleUpdate", () => {
   it("creates Redux actions when data updates", () => {
-    const wow = handleUpdate(payload());
+    const uuid = "THIS IS IT";
+    const wow = handleUpdate(payload(), uuid);
     expect(wow.type).toEqual(Actions.OVERWRITE_RESOURCE);
+    expect(wow.payload.uuid).toBe(uuid);
   });
 });
 

@@ -42,8 +42,9 @@ export const handleCreate =
   (data: UpdateMqttData<TaggedResource>) => init(data.kind, data.body, true);
 
 export const handleUpdate =
-  (d: UpdateMqttData<TaggedResource>, uid: string) => {
+  (d: UpdateMqttData<TaggedResource>, uuid: string) => {
     const tr = asTaggedResource(d);
+    tr.uuid = uuid;
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
@@ -75,7 +76,7 @@ export function handleCreateOrUpdate(dispatch: Function,
   console.log(`(${data.sessionId})
    ${data.kind} ${data.id || 0} ${diagnostic1} and is ${diagnostic2}`);
 
-  const action = hasCopy ? handleUpdate(data /*, hasCopy*/) : handleCreate(data);
+  const action = hasCopy ? handleUpdate(data, hasCopy) : handleCreate(data);
   return isEcho || dispatch(action);
 }
 
