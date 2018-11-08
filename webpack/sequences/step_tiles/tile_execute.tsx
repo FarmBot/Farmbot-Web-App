@@ -127,6 +127,11 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   }
 }
 
+const ZERO_ZERO_ZERO: LocationData = {
+  kind: "coordinate",
+  args: { x: 0, y: 0, z: 0 }
+};
+
 export const getVariable =
   (parent: VariableDeclaration[] | undefined): LocationData => {
     const p = (parent || [])[0];
@@ -138,9 +143,9 @@ export const getVariable =
         case "tool":
           return parentValue;
         default:
-          throw new Error(`How did ${parentValue.kind} get here?`);
+          return ZERO_ZERO_ZERO;
       }
     } else {
-      return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+      return ZERO_ZERO_ZERO;
     }
   };

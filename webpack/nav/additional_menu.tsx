@@ -32,7 +32,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       <a
         href="https://github.com/FarmBot/Farmbot-Web-App"
         target="_blank">
-        {(globalConfig.SHORT_REVISION || "NONE").slice(0, 8)}
+        {(globalConfig.SHORT_REVISION || "NONE").slice(0, 7)}
       </a>
     </div>
   </div>;

@@ -123,7 +123,6 @@ describe("getVariable", () => {
   it("handles others", () => {
     const data_value: Identifier = { kind: "identifier", args: { label: "X" } };
 
-    // tslint:disable-next-line:no-any
     const boom = () => getVariable([{
       kind: "variable_declaration",
       args: { label: "parent", data_value }
