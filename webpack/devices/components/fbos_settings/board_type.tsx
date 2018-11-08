@@ -86,8 +86,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
   }
 
   sendOffConfig = (selectedItem: DropDownItem) => {
-    // tslint:disable-next-line:no-any
-    const isFwHardwareValue = (x?: any): x is FirmwareHardware => {
+    const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
       const values: FirmwareHardware[] = [
         "arduino", "farmduino", "farmduino_k14"];
       return !!values.includes(x as FirmwareHardware);

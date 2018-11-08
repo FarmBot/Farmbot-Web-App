@@ -12,10 +12,10 @@ import {
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
-import { joinKindAndId } from "../../resources/reducer_support";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import { joinKindAndId } from "../../resources/reducer_support";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {

@@ -14,8 +14,7 @@ export type GetState = () => Everything;
 
 /** A Redux Thunk function. */
 export interface Thunk {
-  // tslint:disable-next-line:no-any
-  (dispatch: Function, getState: GetState): any;
+  (dispatch: Function, getState: GetState): unknown;
 }
 
 export type EnvName = "test" | "production" | "development" | "*";

@@ -13,14 +13,6 @@ jest.mock("axios", () => {
   };
 });
 
-jest.mock("../../resources/reducer_support", () => ({
-  findByUuid: () => arrayUnwrap(newTaggedResource("User", { id: 23 })),
-  // tslint:disable-next-line:no-any
-  afterEach: (s: any) => s,
-  joinKindAndId: jest.fn(),
-  mutateSpecialStatus: jest.fn(),
-}));
-
 import { destroy, saveAll, initSave } from "../crud";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { createStore, applyMiddleware } from "redux";
@@ -32,8 +24,6 @@ import { API } from "../api";
 import { betterCompact } from "../../util";
 import { SpecialStatus, TaggedUser } from "farmbot";
 import * as _ from "lodash";
-import { newTaggedResource } from "../../sync/actions";
-import { arrayUnwrap } from "../../resources/util";
 
 describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");

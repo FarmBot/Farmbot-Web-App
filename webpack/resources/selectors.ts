@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import { ResourceIndex } from "./interfaces";
-import { joinKindAndId } from "./reducer_support";
 import {
   ResourceName,
   TaggedGenericPointer,
@@ -26,6 +25,7 @@ import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
 import { findPoints, selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
+import { joinKindAndId } from "./reducer_support";
 
 export * from "./selectors_by_id";
 export * from "./selectors_by_kind";

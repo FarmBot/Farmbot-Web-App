@@ -1,9 +1,9 @@
 import { ResourceName } from "farmbot";
-import { joinKindAndId } from "./reducer_support";
 import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { ResourceIndex } from "./interfaces";
+import { joinKindAndId } from "./reducer_support";
 
 let count = 0;
 export function generateUuid(id: number | undefined, kind: ResourceName) {

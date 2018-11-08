@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import Joyride, { Step as TourStep, State as CBData } from "react-joyride";
+import Joyride, { Step as TourStep, State as CBData, StepStyles } from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
 import { TOUR_STEPS, tourPageNavigation } from "./tours";
@@ -13,11 +13,10 @@ const strings = () => ({
   skip: t("End Tour")
 });
 
-// tslint:disable-next-line:no-any // broken typing
-const STYLES: any = {
+const STYLES = {
   buttonNext: { backgroundColor: Color.green },
   buttonBack: { color: Color.darkGray }
-};
+} as StepStyles;
 
 interface TourProps {
   steps: TourStep[];

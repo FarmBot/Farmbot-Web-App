@@ -5,13 +5,11 @@ import { Dictionary } from "farmbot";
 
 /** A function that responds to a particular action from within a
  * generated reducer. */
-// tslint:disable-next-line:no-any
-interface ActionHandler<State, Payl = any> {
+interface ActionHandler<State, Payl = unknown> {
   (state: State, action: ReduxAction<Payl>): State;
 }
 
-// tslint:disable-next-line:no-any
-export function generateReducer<State, U = any>(initialState: State,
+export function generateReducer<State, U = unknown>(initialState: State,
   /** For passing state down to children. */
   afterEach?: (s: State, a: ReduxAction<U>) => State) {
 

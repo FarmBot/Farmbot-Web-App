@@ -13,6 +13,7 @@ import { SequenceSelectBox } from "../sequence_select_box";
 import { LocationData } from "./tile_move_absolute/interfaces";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { ParentSelector } from "./tile_execute/parent_selector";
+import { findSequenceById } from "../../resources/selectors_by_id";
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -47,8 +48,6 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
       executor: (step: Execute) => {
         if (_.isNumber(input.value)) {
           step.args.sequence_id = input.value;
-        } else {
-          throw new Error("Never not a number;");
         }
       }
     }));
@@ -84,8 +83,6 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
         }
       }
     }));
-
-    console.dir(location);
   };
 
   render() {
@@ -94,6 +91,9 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     } = this.props;
     const className = "execute-step";
     const selected = getVariable(currentStep.body);
+    const { sequence_id } = currentStep.args;
+    const calleeUuid = sequence_id ?
+      findSequenceById(resources, sequence_id).uuid : "NOT_SET_YET";
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -113,14 +113,15 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
               sequenceId={currentStep.args.sequence_id} />
           </Col>
         </Row>
-        {this.props.shouldDisplay(Feature.variables) && <Row>
+        <Row>
           <Col xs={12}>
-            <ParentSelector
+            {this.props.shouldDisplay(Feature.variables) && <ParentSelector
+              targetUuid={calleeUuid}
               resources={resources}
               selected={selected}
-              onChange={this.setVariable} />
+              onChange={this.setVariable} />}
           </Col>
-        </Row>}
+        </Row>
       </StepContent>
     </StepWrapper>;
   }

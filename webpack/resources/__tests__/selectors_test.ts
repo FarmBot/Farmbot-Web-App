@@ -13,7 +13,8 @@ import {
   fakeSequence
 } from "../../__test_support__/fake_state/resources";
 import * as _ from "lodash";
-import { resourceReducer, emptyState } from "../reducer";
+import { resourceReducer } from "../reducer";
+import { emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 // import { Actions } from "../../constants";
 
