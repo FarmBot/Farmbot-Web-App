@@ -51,12 +51,8 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 export const lookupReducer =
-  (_acc: VariableNameMapping, _item: ScopeDeclarationBodyItem) => {
-    // const { args } = item;
-    // const n = { [args.label]: { label: args.label } };
-    // @gabrielBurnworth I am stubbing this to just return {};
-    // (still crashes locally)
-    return { /*...acc, n*/ };
+  (acc: VariableNameMapping, { args }: ScopeDeclarationBodyItem) => {
+    return { ...acc, ...({ [args.label]: { label: args.label } }) };
   };
 
 export function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
