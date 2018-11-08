@@ -11,8 +11,8 @@ import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 import { t } from "i18next";
-import { joinKindAndId } from "../../../resources/reducer_support";
 import { capitalize } from "lodash";
+import { joinKindAndId } from "../../../resources/reducer_support";
 
 export function activeTools(resources: ResourceIndex) {
   const Tool: TaggedTool["kind"] = "Tool";

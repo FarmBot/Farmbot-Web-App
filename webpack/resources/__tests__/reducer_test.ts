@@ -1,4 +1,3 @@
-import { findByUuid, joinKindAndId } from "../reducer_support";
 import { fakeState } from "../../__test_support__/fake_state";
 import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
 import {
@@ -14,6 +13,7 @@ import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
+import { joinKindAndId, findByUuid } from "../reducer_support";
 import { resourceReady } from "../../sync/actions";
 import { EditResourceParams } from "../../api/interfaces";
 

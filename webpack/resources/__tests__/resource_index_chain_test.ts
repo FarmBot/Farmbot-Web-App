@@ -1,4 +1,4 @@
-import { lookupReducer } from "../resource_index_chain";
+import { lookupReducer } from "../reducer_support";
 
 describe("variableLookupTable", () => {
   it("creates variable meta data", () => {

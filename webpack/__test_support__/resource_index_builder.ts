@@ -6,8 +6,9 @@ import {
   TaggedResource,
 } from "farmbot";
 import * as _ from "lodash";
-import { resourceReducer, emptyState } from "../resources/reducer";
+import { resourceReducer } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
+import { emptyState } from "../resources/reducer";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",

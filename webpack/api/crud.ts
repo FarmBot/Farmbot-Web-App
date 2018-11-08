@@ -11,8 +11,6 @@ import {
   updateNO, destroyOK, destroyNO, GeneralizedError, saveOK
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
-import { findByUuid } from "../resources/reducer_support";
-// import { generateUuid } from "../resources/util";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
@@ -23,6 +21,7 @@ import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";
 import { newTaggedResource } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
+import { findByUuid } from "../resources/reducer_support";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {

@@ -1,41 +1,25 @@
-import { SpecialStatus, TaggedResource } from "farmbot";
-import { merge } from "lodash";
-import { EditResourceParams } from "../api/interfaces";
-import { Actions } from "../constants";
-import { farmwareState } from "../farmware/reducer";
-import { initialState as designerState } from "../farm_designer/reducer";
-import { initialState as helpState } from "../help/reducer";
 import { generateReducer } from "../redux/generate_reducer";
+import { RestResources } from "./interfaces";
+import {
+  indexUpsert,
+  mutateSpecialStatus,
+  findByUuid,
+  indexRemove,
+  initResourceReducer,
+  afterEach
+} from "./reducer_support";
+import { TaggedResource, SpecialStatus } from "farmbot";
+import { Actions } from "../constants";
+import { EditResourceParams } from "../api/interfaces";
+import { defensiveClone, equals } from "../util";
+import { merge } from "lodash";
+import { SyncBodyContents } from "../sync/actions";
+import { GeneralizedError } from "./actions";
+import { initialState as helpState } from "../help/reducer";
+import { initialState as designerState } from "../farm_designer/reducer";
+import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
-import { SyncBodyContents } from "../sync/actions";
-import { defensiveClone, equals } from "../util";
-import { GeneralizedError } from "./actions";
-import { ResourceIndex, RestResources } from "./interfaces";
-import {
-  afterEach,
-  findByUuid,
-  initResourceReducer,
-  mutateSpecialStatus
-} from "./reducer_support";
-import { INDEXES } from "./resource_index_chain";
-import { arrayWrap } from "./util";
-
-const ups = INDEXES.map(x => x.up);
-
-export function indexUpsert(db: ResourceIndex, resources: TaggedResource) {
-  ups.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
-  });
-}
-
-const downs = INDEXES.map(x => x.down).reverse();
-
-export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
-  downs.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
-  });
-}
 
 export const emptyState = (): RestResources => {
   return {
