@@ -33,8 +33,7 @@ describe Api::DevicesController do
       expect(response.status).to eq(200)
       pair = json[:devices].first
       expect(pair.first).to eq(device.id)
-      # TODO: FIXME: Non-deterministic test
-      real_time = device.updated_at.strftime(FORMAT)
+      real_time = device.updated_at.strftime(FORMAT).sub(/0+$/, '')
       expect(pair.last).to include(real_time)
       expect(pair.last.first(8)).to eq(device.updated_at.as_json.first(8))
       json.keys.without(*EDGE_CASES).map do |key|
