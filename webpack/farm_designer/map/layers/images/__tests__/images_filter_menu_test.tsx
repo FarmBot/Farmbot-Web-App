@@ -94,9 +94,7 @@ describe("<ImageFilterMenu />", () => {
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.sliderChange(1);
+    wrapper.instance().sliderChange(1);
     expect(wrapper.instance().state.slider).toEqual(1);
     expect(setWebAppConfigValue)
       .toHaveBeenCalledWith("photo_filter_begin", "2001-01-02T00:00:00.000Z");

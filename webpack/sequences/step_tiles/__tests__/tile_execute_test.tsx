@@ -60,10 +60,9 @@ describe("<RefactoredExecuteBlock />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = dispatch;
-    const block = mount(<RefactoredExecuteBlock {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = block.instance() as any;
-    instance.changeSelection({ label: "", value: 10 });
+    const block =
+      mount<RefactoredExecuteBlock>(<RefactoredExecuteBlock {...p} />);
+    block.instance().changeSelection({ label: "", value: 10 });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OVERWRITE_RESOURCE,
       payload: expect.objectContaining({

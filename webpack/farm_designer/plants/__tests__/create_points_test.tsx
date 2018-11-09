@@ -64,10 +64,9 @@ describe("<CreatePoints />", () => {
   it("changes color", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 0, cy: 0, r: 0 };
-    const wrapper = mount(<CreatePoints {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    const component = shallow(<instance.PointProperties />);
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    const PP = wrapper.instance().PointProperties;
+    const component = shallow(<PP />);
     component.find("ColorPicker").simulate("change", "red");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { color: "red", cx: 0, cy: 0, r: 0 },
@@ -78,10 +77,9 @@ describe("<CreatePoints />", () => {
   it("updates value", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 0, cy: 0, r: 0 };
-    const wrapper = shallow(<CreatePoints {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    const component = shallow(<instance.PointProperties />);
+    const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
+    const PP = wrapper.instance().PointProperties;
+    const component = shallow(<PP />);
     component.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: "10" }
     });
@@ -94,19 +92,19 @@ describe("<CreatePoints />", () => {
   it("fills the state with point data", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 1, cy: 2, r: 3, color: "blue" };
-    const wrapper = shallow(<CreatePoints {...p} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.getPointData();
-    expect(instance.state).toEqual({ color: "blue", cx: 1, cy: 2, r: 3 });
+    const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
+    wrapper.instance().getPointData();
+    expect(wrapper.instance().state).toEqual({
+      color: "blue", cx: 1, cy: 2, r: 3
+    });
   });
 
   it("fills the state with default data", () => {
-    const wrapper = shallow(<CreatePoints {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.getPointData();
-    expect(instance.state).toEqual({ color: "green", cx: 0, cy: 0, r: 1 });
+    const wrapper = shallow<CreatePoints>(<CreatePoints {...fakeProps()} />);
+    wrapper.instance().getPointData();
+    expect(wrapper.instance().state).toEqual({
+      color: "green", cx: 0, cy: 0, r: 1
+    });
   });
 
   it("unmounts", () => {

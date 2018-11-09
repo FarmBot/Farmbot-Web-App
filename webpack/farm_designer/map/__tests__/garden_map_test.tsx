@@ -184,13 +184,11 @@ describe("<GardenMap/>", () => {
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    expect(instance.Bugs()).toEqual(<g />);
+    const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
+    expect(wrapper.instance().Bugs()).toEqual(<g />);
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
-    expect(instance.Bugs()).not.toEqual(<g />);
+    expect(wrapper.instance().Bugs()).not.toEqual(<g />);
   });
 
   const expectHandledDragOver = () => {
@@ -237,23 +235,19 @@ describe("<GardenMap/>", () => {
   });
 
   it("doesn't return plant in wrong mode", () => {
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
+    const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
     mockMode = Mode.moveTo;
-    expect(instance.getPlant()).toEqual(undefined);
+    expect(wrapper.instance().getPlant()).toEqual(undefined);
     mockMode = Mode.boxSelect;
-    expect(instance.getPlant()).toEqual(undefined);
+    expect(wrapper.instance().getPlant()).toEqual(undefined);
     mockMode = Mode.createPoint;
-    expect(instance.getPlant()).toEqual(undefined);
+    expect(wrapper.instance().getPlant()).toEqual(undefined);
   });
 
   it("sets state", () => {
     const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().state.isDragging).toBeFalsy();
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.setMapState({ isDragging: true });
+    wrapper.instance().setMapState({ isDragging: true });
     expect(wrapper.instance().state.isDragging).toBe(true);
   });
 
