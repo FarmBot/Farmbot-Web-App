@@ -225,10 +225,21 @@ export const LocalsList =
   ({ resources, sequence, dispatch }: LocalsListProps) => {
     const parent = extractParent(sequence.body.args.locals.body);
     if (parent) {
-      return <ParentVariableForm
-        parent={parent}
-        resources={resources}
-        onChange={handleVariableChange(dispatch, sequence)} />;
+      /** The `seqeunce` passed in here is probably wrong? */
+      return <div>
+        <pre>{JSON.stringify((sequence.body.body || []).map(x => x.kind))}</pre>
+        <br />
+        <ParentVariableForm
+          parent={parent}
+          resources={resources}
+          onChange={() => {
+            // Something strange happens here with closure scope, I think.
+            // Was getting stale data bugs.
+            // HOTFIX: Pull the `sequence` out of the index at execution time.
+            const s = resources.references[sequence.uuid];
+            s && s.kind == "Sequence" && handleVariableChange(dispatch, s);
+          }} />
+      </div>;
     } else {
       return <div />;
     }
