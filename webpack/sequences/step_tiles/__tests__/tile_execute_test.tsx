@@ -133,6 +133,7 @@ describe("getVariable", () => {
         }
       }
     };
+    // tslint:disable-next-line:no-any
     const boom = () => getVariable([badData as any]);
     const json = JSON.stringify(badData.args.data_value);
     const expected = `How did this get here? ${json}`;
