@@ -228,7 +228,13 @@ export const LocalsList =
       return <ParentVariableForm
         parent={parent}
         resources={resources}
-        onChange={handleVariableChange(dispatch, sequence)} />;
+        onChange={() => {
+          // Something strange happens here with closure scope, I think.
+          // Was getting stale data bugs.
+          // HOTFIX: Pull the `sequence` out of the index at execution time.
+          const s = resources.references[sequence.uuid];
+          s && s.kind == "Sequence" && handleVariableChange(dispatch, s);
+        }} />;
     } else {
       return <div />;
     }

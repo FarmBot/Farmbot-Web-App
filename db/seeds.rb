@@ -56,7 +56,7 @@ if Rails.env == "development"
                    x:             rand(40...970),
                    y:             rand(40...470),
                    radius:        rand(10...50),
-                   name:          Faker::StarWars.call_sign,
+                   name:          Faker::Food.vegetables,
                    openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
 

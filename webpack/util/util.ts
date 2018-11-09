@@ -24,7 +24,7 @@ export let colors: Array<Color> = [
 
 /** Picks a color that is compliant with sequence / regimen color codes */
 export function randomColor(): Color {
-  return _.sample(colors) || "gray";
+  return _.sample(colors) as typeof colors[0];
 }
 
 export function defensiveClone<T>(target: T): T {

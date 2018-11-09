@@ -136,9 +136,10 @@ export const getVariable =
         case "coordinate":
         case "point":
         case "tool":
+        case "identifier":
           return parentValue;
         default:
-          throw new Error(`How did ${parentValue.kind} get here?`);
+          throw new Error(`How did this get here? ${JSON.stringify(parentValue)}`);
       }
     } else {
       return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };

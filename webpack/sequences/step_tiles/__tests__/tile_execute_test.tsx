@@ -121,15 +121,23 @@ describe("getVariable", () => {
   });
 
   it("handles others", () => {
-    const data_value: Identifier = { kind: "identifier", args: { label: "X" } };
-
+    const badData = {
+      kind: "not_a_variable_declaration",
+      args: {
+        label: "parent",
+        data_value: {
+          kind: "not_an_identifier",
+          args: {
+            label: "X"
+          }
+        }
+      }
+    };
     // tslint:disable-next-line:no-any
-    const boom = () => getVariable([{
-      kind: "variable_declaration",
-      args: { label: "parent", data_value }
-    }]);
-
-    expect(boom).toThrow("How did identifier get here?");
+    const boom = () => getVariable([badData as any]);
+    const json = JSON.stringify(badData.args.data_value);
+    const expected = `How did this get here? ${json}`;
+    expect(boom).toThrow(expected);
   });
 
   it("handles undefined", () => {
