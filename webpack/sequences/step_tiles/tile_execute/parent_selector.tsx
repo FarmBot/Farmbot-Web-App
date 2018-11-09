@@ -23,10 +23,6 @@ export function ParentSelector({ resources, selected, onChange, targetUuid }: Pr
           selectedItem={selected}
           onChange={onChange}
           shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
-        <br />
-        <pre>
-          {JSON.stringify(selected)}
-        </pre>
       </div>;
     })}
   </div>;

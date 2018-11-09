@@ -225,7 +225,6 @@ export const LocalsList =
   ({ resources, sequence, dispatch }: LocalsListProps) => {
     const parent = extractParent(sequence.body.args.locals.body);
     if (parent) {
-      /** The `seqeunce` passed in here is probably wrong? */
       return <div>
         <pre>{JSON.stringify((sequence.body.body || []).map(x => x.kind))}</pre>
         <br />
