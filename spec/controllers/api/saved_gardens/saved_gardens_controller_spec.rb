@@ -22,7 +22,7 @@ describe Api::SavedGardensController do
     it "creates a saved_gardens" do
       sign_in user
       b4 = user.device.saved_gardens.count
-      params = { name: Faker::StarWars.call_sign }
+      params = { name: Faker::Food.vegetables }
       post :create, params: {format: :json}, body: params.to_json
       expect(response.status).to be(200)
       expect(json[:name]).to be_kind_of(String)
@@ -36,7 +36,7 @@ describe Api::SavedGardensController do
       sign_in user
       garden = saved_gardens.first
       b4     = garden.name
-      params = { name: Faker::StarWars.call_sign }
+      params = { name: Faker::Food.vegetables }
       put :update, params: { format: :json, id: garden.id }, body: params.to_json
       expect(response.status).to be(200)
       expect(json[:name]).to_not eq(b4)

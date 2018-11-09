@@ -34,7 +34,7 @@ describe Api::PlantTemplatesController do
     it "creates a plant template" do
       sign_in user
       b4 = user.device.plant_templates.count
-      params = {name:            Faker::StarWars.call_sign,
+      params = {name:            Faker::Food.vegetables,
                 saved_garden_id: saved_garden.id,
                 x:               1,
                 y:               2,
@@ -53,7 +53,7 @@ describe Api::PlantTemplatesController do
       sign_in user
       plant_template = plant_templates.first
       b4             = plant_template.name
-      params         = {name:            Faker::StarWars.call_sign,
+      params         = {name:            Faker::Food.vegetables,
                         x:               9,
                         y:               10,
                         z:               11,

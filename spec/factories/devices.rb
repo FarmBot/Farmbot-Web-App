@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :device do
-    name  { Faker::StarWars.call_sign }
+    name  { Faker::Food.vegetables }
     timezone { Device::TIMEZONES.sample }
   end
 end
