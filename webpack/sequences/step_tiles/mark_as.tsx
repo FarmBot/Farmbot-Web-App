@@ -15,7 +15,7 @@ const NONE: DropDownItem = { value: 0, label: "" };
 
 export class MarkAs extends React.Component<StepParams, MarkAsState> {
   state: MarkAsState = { nextResource: undefined };
-  className = "wait-step";
+  className = "resource-update-step";
 
   commitSelection = (nextAction: DropDownItem) => {
     this.props.dispatch(commitStepChanges({
