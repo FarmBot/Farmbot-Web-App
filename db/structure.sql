@@ -384,7 +384,7 @@ CREATE TABLE public.fbos_configs (
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
-    firmware_debug_log boolean
+    firmware_debug_log boolean DEFAULT false
 );
 
 
