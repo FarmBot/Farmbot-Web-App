@@ -52,8 +52,13 @@ export type StepTag = string;
 /** Property name where a unique ID is stored in a step. */
 const TAG_PROP = "uuid";
 
-export const setStepTag =
-  (node: Traversable) => !get(node, TAG_PROP) && set(node, TAG_PROP, uuid());
+export const maybeTagStep =
+  (t: Traversable) => !get(t, TAG_PROP) && forceSetStepTag(t);
+
+export const forceSetStepTag = <T extends Traversable>(node: T): T => {
+  set(node, TAG_PROP, uuid());
+  return node;
+};
 
 /** VERY IMPORTANT FUNCTION.
  *  SEE HEADER AT TOP OF FILE.
