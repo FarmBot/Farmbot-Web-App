@@ -19,7 +19,7 @@ jest.mock("../../device", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { FarmwarePage } from "../index";
+import { FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
 import { fakeFarmware, fakeFarmwares } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
@@ -110,5 +110,18 @@ describe("<FarmwarePage />", () => {
     const wrapper = mount(<FarmwarePage {...p} />);
     clickButton(wrapper, 1, "Run");
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Test Farmware");
+  });
+});
+
+describe("<BasicFarmwarePage />", () => {
+  it("renders Farmware pending install", () => {
+    const farmware = fakeFarmware();
+    farmware.name = "My Farmware 1";
+    farmware.uuid = "pending installation";
+    const wrapper = mount(<BasicFarmwarePage
+      farmware={farmware}
+      farmwareName={farmware.name} />);
+    expect(wrapper.text().toLowerCase()).toContain("pending installation");
+    expect(wrapper.find("button").first().props().disabled).toEqual(true);
   });
 });

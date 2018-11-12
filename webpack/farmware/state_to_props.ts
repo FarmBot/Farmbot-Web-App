@@ -12,11 +12,13 @@ import {
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
-  shouldDisplay as shouldDisplayFunc
+  shouldDisplay as shouldDisplayFunc,
+  trim
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv } from "farmbot";
+import { TaggedFarmwareEnv, FarmwareManifest } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
+import { t } from "i18next";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -32,6 +34,9 @@ export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
       dispatch(initSave("FarmwareEnv", { key, value }));
     }
   };
+
+export const isPendingInstallation = (farmware: FarmwareManifest | undefined) =>
+  !farmware || farmware.uuid == "pending installation";
 
 export const reduceFarmwareEnv =
   (ri: ResourceIndex): UserEnv => {
@@ -65,6 +70,32 @@ export function mapStateToProps(props: Everything): FarmwareProps {
 
   const taggedFarmwareInstallations =
     selectAllFarmwareInstallations(props.resources.index);
+
+  shouldDisplay(Feature.api_farmware_installations) &&
+    taggedFarmwareInstallations.map(x => {
+      const name = trim(`${t("Unknown Farmware")}
+      ${x.body.id} (${t("pending install")}...)`);
+      if (!Object.keys(farmwares).includes(name) &&
+        !Object.values(farmwares).map(fw => fw.url).includes(x.body.url)) {
+        farmwares[name] = {
+          name,
+          uuid: "pending installation",
+          executable: "",
+          args: [],
+          url: x.body.url,
+          path: "",
+          config: [],
+          meta: {
+            min_os_version_major: "",
+            description: t("installation pending"),
+            language: "",
+            version: "",
+            author: "",
+            zip: ""
+          }
+        };
+      }
+    });
 
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),

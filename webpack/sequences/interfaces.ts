@@ -48,6 +48,14 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
 }
 
+export interface SequenceHeaderProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+  syncStatus: SyncStatus;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+}
+
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
 export const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",

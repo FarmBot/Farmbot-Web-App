@@ -9,7 +9,8 @@ import { FarmwareConfigMenu } from "./farmware_config_menu";
 import { every, Dictionary } from "lodash";
 import { Popover, Position } from "@blueprintjs/core";
 import { Link } from "../link";
-import { ShouldDisplay } from "../devices/interfaces";
+import { ShouldDisplay, Feature } from "../devices/interfaces";
+import { initSave } from "../api/crud";
 import { TaggedFarmwareInstallation } from "farmbot";
 
 const DISPLAY_NAMES: Dictionary<string> = {
@@ -59,12 +60,18 @@ export class FarmwareList
   extends React.Component<FarmwareListProps, FarmwareListState> {
   state: FarmwareListState = { packageUrl: "" };
 
+  clearUrl = () => this.setState({ packageUrl: "" });
+
   install = () => {
-    if (this.state.packageUrl) {
-      getDevice()
-        .installFarmware(this.state.packageUrl)
-        .then(() => this.setState({ packageUrl: "" }))
-        .catch(commandErr("Farmware installation"));
+    const url = this.state.packageUrl;
+    if (url) {
+      this.props.shouldDisplay(Feature.api_farmware_installations)
+        ? this.props.dispatch(initSave("FarmwareInstallation", { url }))
+          .then(this.clearUrl)
+        : getDevice()
+          .installFarmware(url)
+          .then(this.clearUrl)
+          .catch(commandErr("Farmware installation"));
     } else {
       alert(t("Enter a URL"));
     }
