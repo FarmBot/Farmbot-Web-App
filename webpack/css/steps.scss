@@ -96,6 +96,12 @@
   &.take-photo-step {
     background: $brown;
   }
+  &.resource-update-step {
+    background: $brown;
+  }
+  &.unknown-step {
+    background: $gray;
+  }
   .help {
     float: right;
   }
@@ -173,6 +179,12 @@
   }
   &.take-photo-step a {
     color: $dark_brown;
+  }
+  &.resource-update-step {
+    background: $light_brown;
+  }
+  &.unknown-step {
+    background: $light_gray;
   }
   input,
   select {
