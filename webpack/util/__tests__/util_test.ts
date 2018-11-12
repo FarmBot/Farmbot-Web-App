@@ -156,8 +156,11 @@ describe("util", () => {
   describe("fancyDebug()", () => {
     it("debugs in a fanciful manner", () => {
       const test = { testing: "fancy debug" };
+      console.log = jest.fn();
       const result = Util.fancyDebug(test);
       expect(result).toBe(test);
+      expect(console.log)
+        .toHaveBeenCalledWith("             testing => \"fancy debug\"");
     });
   });
 

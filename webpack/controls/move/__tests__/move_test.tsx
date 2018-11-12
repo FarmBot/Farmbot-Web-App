@@ -65,10 +65,8 @@ describe("<Move />", () => {
   });
 
   it("toggle: invert jog button", () => {
-    const wrapper = mount(<Move {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.toggle(BooleanSetting.xy_swap)();
+    const wrapper = mount<Move>(<Move {...fakeProps()} />);
+    wrapper.instance().toggle(BooleanSetting.xy_swap)();
     expect(toggleWebAppBool).toHaveBeenCalledWith(BooleanSetting.xy_swap);
   });
 

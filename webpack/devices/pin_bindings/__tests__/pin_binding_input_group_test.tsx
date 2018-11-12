@@ -136,9 +136,7 @@ describe("<PinBindingInputGroup/>", () => {
     const id = s && s.body.id;
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.setSequenceIdInput({ label: "label", value: id });
+    wrapper.instance().setSequenceIdInput({ label: "label", value: "" + id });
     expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
@@ -146,15 +144,13 @@ describe("<PinBindingInputGroup/>", () => {
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup
       {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.setSelectedPin(10); // pin already bound
+    wrapper.instance().setSelectedPin(10); // pin already bound
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    instance.setSelectedPin(99); // invalid pin
+    wrapper.instance().setSelectedPin(99); // invalid pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    instance.setSelectedPin(5); // available pin
+    wrapper.instance().setSelectedPin(5); // available pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(5);
-    instance.setSelectedPin(1); // reserved pin
+    wrapper.instance().setSelectedPin(1); // reserved pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(1);
     expect(warning).toHaveBeenCalledWith(
       "Reserved Raspberry Pi pin may not work as expected.");

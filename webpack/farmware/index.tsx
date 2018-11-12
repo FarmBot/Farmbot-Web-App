@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug
 } from "../ui/index";
-import { mapStateToProps } from "./state_to_props";
+import { mapStateToProps, isPendingInstallation } from "./state_to_props";
 import { Photos } from "./images/photos";
 import { CameraCalibration } from "./camera_calibration/camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
@@ -22,6 +22,7 @@ import { FarmwareInfo } from "./farmware_info";
 import { Farmwares } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
+import { FarmwareManifest } from "farmbot";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -74,12 +75,28 @@ const getFarmwareByName =
   };
 
 /** Execute a Farmware. */
-const run = (farmwareName: string | undefined) => () => {
-  if (farmwareName) {
-    const no = commandErr("Farmware execution");
-    getDevice().execScript(farmwareName).then(() => { }, no);
-  }
+const run = (farmwareName: string) => () => {
+  getDevice().execScript(farmwareName)
+    .then(() => { }, commandErr("Farmware execution"));
 };
+
+export const BasicFarmwarePage = ({ farmwareName, farmware }: {
+  farmwareName: string,
+  farmware: FarmwareManifest | undefined
+}) =>
+  <div>
+    <button
+      className="fb-button green farmware-button"
+      disabled={isPendingInstallation(farmware)}
+      onClick={run(farmwareName)}>
+      {t("Run")}
+    </button>
+    <p>
+      {isPendingInstallation(farmware)
+        ? t("Pending installation.")
+        : t("No inputs provided.")}
+    </p>
+  </div>;
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
@@ -136,14 +153,9 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             dispatch={this.props.dispatch} />
-          : <div>
-            <button
-              className="fb-button green farmware-button"
-              onClick={run(farmwareName)}>
-              {t("Run")}
-            </button>
-            <p>{t("No inputs provided.")}</p>
-          </div>;
+          : <BasicFarmwarePage
+            farmwareName={farmwareName}
+            farmware={farmware} />;
     }
   }
 

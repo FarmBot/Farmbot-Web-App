@@ -36,4 +36,10 @@ describe("setActiveFarmwareByName", () => {
       payload: "my_farmware"
     });
   });
+
+  it("handles undefined farmware names", () => {
+    mockLastUrlChunk = "some_farmware";
+    setActiveFarmwareByName([undefined]);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
 });
