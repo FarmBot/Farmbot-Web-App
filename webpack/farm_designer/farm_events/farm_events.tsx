@@ -3,19 +3,34 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
-import { FarmEventProps, CalendarOccurrence } from "../interfaces";
+import { FarmEventProps, CalendarOccurrence, FarmEventState } from "../interfaces";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 
-export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
+const filterSearch = (term: string) => (item: CalendarOccurrence) =>
+  item.heading.toLowerCase().includes(term)
+  || (item.subheading && item.subheading.toLowerCase().includes(term));
+
+export class PureFarmEvents
+  extends React.Component<FarmEventProps, FarmEventState> {
+  state: FarmEventState = { searchTerm: "" };
+  get searchTerm() { return this.state.searchTerm.toLowerCase(); }
+
+  resetCalendar = () => {
+    this.setState({ searchTerm: "" });
+    const panel = document.querySelector(".farm-events");
+    if (panel) { panel.scrollTo(0, 0); }
+  }
+
   innerRows = (items: CalendarOccurrence[]) => {
 
     return _(items)
       .sortBy(x => x.sortKey)
       .value()
+      .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
         const url = `/app/designer/farm_events/`
           + (occur.id || "UNSAVED_EVENT").toString();
@@ -46,21 +61,24 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   renderCalendarRowsInYear(year: number) {
     return this.props.calendarRows.filter((day) => {
       return day.year == year;
-    }).map(item => {
-      return <div className="farm-event" key={item.sortKey}>
-        <div className="farm-event-date">
-          <div className="farm-event-date-month">
-            {item.month}
+    })
+      .filter(item => !this.searchTerm ||
+        _.some(item.items.map(filterSearch(this.searchTerm))))
+      .map(item => {
+        return <div className="farm-event" key={item.sortKey}>
+          <div className="farm-event-date">
+            <div className="farm-event-date-month">
+              {item.month}
+            </div>
+            <div className="farm-event-date-day">
+              <b>{item.day}</b>
+            </div>
           </div>
-          <div className="farm-event-date-day">
-            <b>{item.day}</b>
+          <div className="farm-event-data">
+            {this.innerRows(item.items)}
           </div>
-        </div>
-        <div className="farm-event-data">
-          {this.innerRows(item.items)}
-        </div>
-      </div>;
-    });
+        </div>;
+      });
   }
 
   renderCalendarRows() {
@@ -98,6 +116,11 @@ export class PureFarmEvents extends React.Component<FarmEventProps, {}> {
   normalContent = () => {
     return <div className="panel-content">
       <Row>
+        <i className="fa fa-calendar" onClick={this.resetCalendar} />
+        <input
+          value={this.state.searchTerm}
+          onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
+          placeholder={t("Search FarmEvents...")} />
       </Row>
 
       <div className="farm-events">

@@ -261,6 +261,9 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
 
+  export const UNKNOWN_STEP =
+    trim(`Unable to properly display this step.`);
+
   // Regimens
   export const BULK_SCHEDULER =
     trim(`Add sequences to your regimen by selecting a sequence from the

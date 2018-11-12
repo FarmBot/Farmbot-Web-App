@@ -3,7 +3,7 @@ import { PureFarmEvents } from "../farm_events";
 import {
   calendarRows
 } from "../../../__test_support__/farm_event_calendar_support";
-import { render } from "enzyme";
+import { render, shallow } from "enzyme";
 import { get } from "lodash";
 import { Content } from "../../../constants";
 import { defensiveClone } from "../../../util";
@@ -58,5 +58,53 @@ describe("<PureFarmEvents/>", () => {
       timezoneIsSet={true} />);
     const txt = results.text();
     expect(txt).toContain("Every 4 hours");
+  });
+
+  it("filters farm events", () => {
+    const wrapper = shallow(<PureFarmEvents
+      calendarRows={calendarRows}
+      timezoneIsSet={true} />);
+    wrapper.find("input").simulate("change",
+      { currentTarget: { value: "no match" } });
+    expect(wrapper.text()).not.toContain("every 4 hours");
+  });
+
+  it("filters farm events", () => {
+    const wrapper = shallow(<PureFarmEvents
+      calendarRows={calendarRows}
+      timezoneIsSet={true} />);
+    wrapper.find("input").simulate("change",
+      { currentTarget: { value: "every 4 hours" } });
+    expect(wrapper.text().toLowerCase()).toContain("every 4 hours");
+  });
+
+  it("resets calendar", () => {
+    const mockScrollTo = jest.fn();
+    Object.defineProperty(document, "querySelector", {
+      value: () => ({ scrollTo: mockScrollTo }), configurable: true
+    });
+    const wrapper = shallow(<PureFarmEvents
+      calendarRows={calendarRows}
+      timezoneIsSet={true} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.setState({ searchTerm: "farm events" });
+    instance.resetCalendar();
+    expect(mockScrollTo).toHaveBeenCalledWith(0, 0);
+    expect(instance.state.searchTerm).toEqual("");
+  });
+
+  it("can't find panel", () => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => { }, configurable: true
+    });
+    const wrapper = shallow(<PureFarmEvents
+      calendarRows={calendarRows}
+      timezoneIsSet={true} />);
+    // tslint:disable-next-line:no-any
+    const instance = wrapper.instance() as any;
+    instance.setState({ searchTerm: "farm events" });
+    instance.resetCalendar();
+    expect(instance.state.searchTerm).toEqual("");
   });
 });

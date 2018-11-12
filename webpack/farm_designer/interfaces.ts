@@ -157,6 +157,10 @@ export interface FarmEventProps {
   calendarRows: CalendarDay[];
 }
 
+export interface FarmEventState {
+  searchTerm: string;
+}
+
 export interface GardenMapProps {
   showPlants: boolean | undefined;
   showPoints: boolean | undefined;

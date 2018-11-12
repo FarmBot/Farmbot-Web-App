@@ -18,9 +18,15 @@ jest.mock("../../devices/actions", () => ({
   execSequence: jest.fn()
 }));
 
+let mockParent = false;
+jest.mock("../locals_list", () => ({
+  extractParent: () => mockParent,
+  LocalsList: () => <div />,
+}));
+
 import * as React from "react";
 import {
-  SequenceEditorMiddleActive, onDrop
+  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps } from "../interfaces";
@@ -41,23 +47,21 @@ import { clickButton } from "../../__test_support__/helpers";
 describe("<SequenceEditorMiddleActive/>", () => {
   const sequence = fakeSequence();
   sequence.specialStatus = SpecialStatus.DIRTY;
-  function fakeProps(): ActiveMiddleProps {
-    return {
-      dispatch: jest.fn(),
-      sequence: sequence,
-      resources: buildResourceIndex(FAKE_RESOURCES).index,
-      syncStatus: "synced",
-      hardwareFlags: fakeHardwareFlags(),
-      farmwareInfo: {
-        farmwareNames: [],
-        firstPartyFarmwareNames: [],
-        showFirstPartyFarmware: false,
-        farmwareConfigs: {},
-      },
-      shouldDisplay: jest.fn(),
-      confirmStepDeletion: false,
-    };
-  }
+  const fakeProps = (): ActiveMiddleProps => ({
+    dispatch: jest.fn(),
+    sequence,
+    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    syncStatus: "synced",
+    hardwareFlags: fakeHardwareFlags(),
+    farmwareInfo: {
+      farmwareNames: [],
+      firstPartyFarmwareNames: [],
+      showFirstPartyFarmware: false,
+      farmwareConfigs: {},
+    },
+    shouldDisplay: jest.fn(),
+    confirmStepDeletion: false,
+  });
 
   it("saves", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
@@ -93,25 +97,31 @@ describe("<SequenceEditorMiddleActive/>", () => {
     expect(wrapper.find(".drag-drop-area").text()).toEqual("DRAG COMMAND HERE");
   });
 
-  it("edits name", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "new name" }
+  it("has correct height", () => {
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    expect(wrapper.find(".sequence").props().style).toEqual({
+      height: "calc(100vh - 25rem)"
     });
-    expect(edit).toHaveBeenCalledWith(
-      expect.objectContaining({ uuid: p.sequence.uuid }),
-      { name: "new name" });
   });
 
-  it("edits color", () => {
+  it("has correct height with variables", () => {
+    mockParent = false;
     const p = fakeProps();
-    const wrapper = shallow(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(editCurrentSequence).toHaveBeenCalledWith(
-      expect.any(Function),
-      expect.objectContaining({ uuid: p.sequence.uuid }),
-      { color: "red" });
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.find(".sequence").props().style).toEqual({
+      height: "calc(100vh - 25rem)"
+    });
+  });
+
+  it("has correct height with variable form", () => {
+    mockParent = true;
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.find(".sequence").props().style).toEqual({
+      height: "calc(100vh - 38rem)"
+    });
   });
 });
 
@@ -145,5 +155,33 @@ describe("onDrop()", () => {
     const dispatch = jest.fn();
     onDrop(dispatch, fakeSequence())(0, "");
     expect(dispatch).not.toHaveBeenCalled();
+  });
+});
+
+describe("<SequenceNameAndColor />", () => {
+  const fakeProps = () => ({
+    dispatch: jest.fn(),
+    sequence: fakeSequence(),
+  });
+
+  it("edits name", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<SequenceNameAndColor {...p} />);
+    wrapper.find("BlurableInput").simulate("commit", {
+      currentTarget: { value: "new name" }
+    });
+    expect(edit).toHaveBeenCalledWith(
+      expect.objectContaining({ uuid: p.sequence.uuid }),
+      { name: "new name" });
+  });
+
+  it("edits color", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<SequenceNameAndColor {...p} />);
+    wrapper.find("ColorPicker").simulate("change", "red");
+    expect(editCurrentSequence).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.objectContaining({ uuid: p.sequence.uuid }),
+      { color: "red" });
   });
 });

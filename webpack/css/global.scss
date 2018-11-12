@@ -763,6 +763,12 @@ ul {
   }
 }
 
+.farmware-url {
+  font-size: 1rem;
+  width: 100px;
+  word-wrap: break-word;
+}
+
 .logs {
   .row {
     @media screen and (max-width: 974px) {
@@ -962,4 +968,10 @@ ul {
   margin: auto;
   width: 75%;
   margin-top: 1rem;
+}
+
+.parent-variable-form {
+  .row {
+    margin-top: 1rem;
+  }
 }

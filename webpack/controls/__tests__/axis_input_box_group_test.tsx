@@ -27,10 +27,8 @@ describe("<AxisInputBoxGroup />", () => {
   });
 
   it("changes", () => {
-    const wrapper = mount(<AxisInputBoxGroup {...props} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.change("x", 10);
+    const wrapper = mount<AxisInputBoxGroup>(<AxisInputBoxGroup {...props} />);
+    wrapper.instance().change("x", 10);
     expect(wrapper.state()).toEqual({ x: 10 });
   });
 
