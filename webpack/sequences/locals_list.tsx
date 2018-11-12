@@ -178,15 +178,17 @@ export const ParentVariableForm =
     const isDisabled = (parent.kind == "parameter_declaration") ||
       data_value.kind !== "coordinate";
 
-    return <div>
-      <br /> {/** Lol */}
-      <h5>Import Coordinates From</h5>
-      <FBSelect
-        allowEmpty={true}
-        list={generateList(resources, [PARENT])}
-        selectedItem={ddiLabel}
-        onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
-      <br /> {/** Lol */}
+    return <div className="parent-variable-form">
+      <Row>
+        <Col xs={12}>
+          <h5>{t("Import Coordinates From")}</h5>
+          <FBSelect
+            allowEmpty={true}
+            list={generateList(resources, [PARENT])}
+            selectedItem={ddiLabel}
+            onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
+        </Col>
+      </Row>
       <Row>
         <Col xs={4}>
           <InputBox
