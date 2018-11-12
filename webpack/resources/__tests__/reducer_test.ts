@@ -27,7 +27,7 @@ describe("resource reducer", () => {
     expect(sequence.kind).toBe("Sequence");
     const next = resourceReducer(state, overwrite(sequence, {
       name: "wow",
-      args: { locals: { kind: "scope_declaration", args: {} } },
+      args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
       body: []
     }));
     const seq2 = next.index.references[uuid] as TaggedSequence;
