@@ -5,6 +5,7 @@ import { tourNames, TOUR_STEPS } from "../tours";
 import { mount, shallow } from "enzyme";
 import { RunTour, Tour } from "../tour";
 import { history } from "../../history";
+import { State } from "react-joyride";
 
 describe("<RunTour />", () => {
   const EMPTY_DIV = "<div></div>";
@@ -21,36 +22,38 @@ describe("<RunTour />", () => {
 });
 
 describe("<Tour />", () => {
+  const fakeCallbackData = (data: Partial<State>): State => ({
+    action: data.action || "start",
+    index: data.index || 0,
+    controlled: false,
+    lifecycle: "ready",
+    size: 0,
+    status: "ready",
+    step: { target: "", content: "" },
+    type: data.type || "tour:start",
+  });
   it("ends tour", () => {
     const steps = [TOUR_STEPS()[tourNames()[0].name][0]];
-    const wrapper = shallow(<Tour steps={steps} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.callback({ action: "", index: 0, step: {}, type: "tour:end" });
+    const wrapper = shallow<Tour>(<Tour steps={steps} />);
+    wrapper.instance().callback(fakeCallbackData({ type: "tour:end" }));
     expect(wrapper.state()).toEqual({ run: false, index: 0 });
     expect(history.push).toHaveBeenCalledWith("/app/help");
   });
 
   it("navigates through tour: next", () => {
     const steps = TOUR_STEPS()[tourNames()[0].name];
-    const wrapper = shallow(<Tour steps={steps} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.callback({
-      action: "next", index: 0, step: {}, type: "step:after"
-    });
+    const wrapper = shallow<Tour>(<Tour steps={steps} />);
+    wrapper.instance().callback(
+      fakeCallbackData({ action: "next", type: "step:after" }));
     expect(wrapper.state()).toEqual({ run: true, index: 1 });
     expect(history.push).toHaveBeenCalledWith("/app/tools");
   });
 
   it("navigates through tour: other", () => {
     const steps = [TOUR_STEPS()[tourNames()[0].name][0]];
-    const wrapper = shallow(<Tour steps={steps} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.callback({
-      action: "prev", index: 9, step: {}, type: "step:after"
-    });
+    const wrapper = shallow<Tour>(<Tour steps={steps} />);
+    wrapper.instance().callback(
+      fakeCallbackData({ action: "prev", index: 9, type: "step:after" }));
     expect(wrapper.state()).toEqual({ run: true, index: 8 });
     expect(history.push).not.toHaveBeenCalled();
   });

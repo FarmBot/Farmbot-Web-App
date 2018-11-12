@@ -25,7 +25,7 @@ import { API } from "../../api/index";
 type E = React.FormEvent<HTMLInputElement>;
 
 describe("<TosUpdate/>", () => {
-  const instance = () => shallow(<TosUpdate />).instance() as TosUpdate;
+  const instance = () => shallow<TosUpdate>(<TosUpdate />).instance();
   it("renders correctly when envs are set", () => {
     const oldTos = globalConfig.TOS_URL;
     const oldPriv = globalConfig.PRIV_URL;

@@ -6,9 +6,14 @@ jest.mock("../../api/crud", () => ({
 
 import { mapStateToProps, saveOrEditFarmwareEnv } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
+import {
+  fakeFarmwareEnv, fakeFarmwareInstallation
+} from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
+import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 
 describe("mapStateToProps()", () => {
 
@@ -47,6 +52,31 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.user_env).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"
+    });
+  });
+
+  it("includes API FarmwareInstallations", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    const farmware1 = fakeFarmwareInstallation();
+    farmware1.body.id = 2;
+    const farmware2 = fakeFarmwareInstallation();
+    farmware2.body.url = "farmware 2 url";
+    state.resources = buildResourceIndex([farmware1, farmware2]);
+    const botFarmware = fakeFarmware();
+    botFarmware.url = farmware2.body.url;
+    const botFarmwareName = "farmware_0";
+    state.bot.hardware.process_info.farmwares = { "farmware_0": botFarmware };
+    const props = mapStateToProps(state);
+    expect(props.farmwares).toEqual({
+      "Unknown Farmware 2 (pending install...)":
+        expect.objectContaining({
+          meta: expect.objectContaining({ description: "installation pending" }),
+          name: "Unknown Farmware 2 (pending install...)",
+          url: "https://",
+          uuid: "pending installation"
+        }),
+      [botFarmwareName]: botFarmware
     });
   });
 });

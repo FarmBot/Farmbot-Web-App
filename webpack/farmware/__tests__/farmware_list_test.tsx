@@ -1,17 +1,20 @@
-const mockDevice = {
-  installFarmware: jest.fn(() => Promise.resolve({})),
-};
+const mockDevice = { installFarmware: jest.fn(() => Promise.resolve({})) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../api/crud", () => ({
+  initSave: jest.fn(),
+  destroy: jest.fn(),
 }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FarmwareList, FarmwareListProps } from "../farmware_list";
-import { fakeFarmwares, fakeFarmware } from "../../__test_support__/fake_farmwares";
+import {
+  fakeFarmwares, fakeFarmware
+} from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
+import { initSave } from "../../api/crud";
 
 describe("<FarmwareList />", () => {
   const fakeProps = (): FarmwareListProps => {
@@ -70,6 +73,19 @@ describe("<FarmwareList />", () => {
     clickButton(wrapper, 0, "Install");
     expect(window.alert).not.toHaveBeenCalled();
     expect(mockDevice.installFarmware).toHaveBeenCalledWith(FAKE_INSTALL_URL);
+  });
+
+  it("installs a new farmware: API", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const wrapper = mount(<FarmwareList {...p} />);
+    wrapper.setState({ packageUrl: FAKE_INSTALL_URL });
+    window.alert = jest.fn();
+    clickButton(wrapper, 0, "Install");
+    expect(window.alert).not.toHaveBeenCalled();
+    expect(initSave)
+      .toHaveBeenCalledWith("FarmwareInstallation", { url: FAKE_INSTALL_URL });
   });
 
   it("doesn't show 1st-party Farmware", () => {
