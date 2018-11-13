@@ -1,17 +1,7 @@
 import * as React from "react";
 import {
-  extractParent,
-  handleVariableChange,
-  setParent,
-  changeAxis,
-  guessFromDataType,
-  guessVecFromLabel,
-  guessXYZ,
-  ParentVariableFormProps,
   ParentVariableForm,
-  LocalsListProps,
   LocalsList,
-  PARENT
 } from "../locals_list";
 import {
   VariableDeclaration,
@@ -20,15 +10,31 @@ import {
   Point,
   Coordinate
 } from "farmbot";
-import { fakeSequence, fakeTool } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence,
+  fakeTool
+} from "../../__test_support__/fake_state/resources";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { FBSelect } from "../../ui/index";
 import {
   InputBox, generateList, handleSelect
 } from "../step_tiles/tile_move_absolute/index";
+import {
+  extractParent,
+  setParent,
+  handleVariableChange,
+  changeAxis,
+  guessFromDataType,
+  guessVecFromLabel,
+  guessXYZ,
+  ParentVariableFormProps,
+  PARENT, LocalsListProps
+} from "../locals_list_support";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
