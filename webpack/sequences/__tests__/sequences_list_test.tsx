@@ -22,6 +22,7 @@ import { Actions } from "../../constants";
 import { init } from "../../api/crud";
 import { push } from "../../history";
 import { selectSequence } from "../actions";
+import { YOU_MUST_FIX_THIS } from "../../resources/reducer";
 
 describe("<SequencesList />", () => {
   const fakeProps = (): SequencesListProps => {
@@ -30,6 +31,7 @@ describe("<SequencesList />", () => {
     const fakeSequence2 = fakeSequence();
     fakeSequence2.body.name = "Sequence 2";
     return {
+      resourceUsage: YOU_MUST_FIX_THIS,
       dispatch: jest.fn(),
       sequence: undefined,
       sequences: [fakeSequence1, fakeSequence2]

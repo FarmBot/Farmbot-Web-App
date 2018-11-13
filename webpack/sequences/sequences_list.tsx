@@ -10,14 +10,15 @@ import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
+import { YOU_MUST_FIX_THIS } from "../resources/reducer";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
   .name
   .toLowerCase()
   .includes(searchTerm);
-const sequenceList = (dispatch: Function) =>
-  (ts: TaggedSequence, in_use: boolean) => {
+const sequenceList = (dispatch: Function, in_use: boolean) =>
+  (ts: TaggedSequence) => {
     const css = [
       `fb-button`,
       `block`,
@@ -93,7 +94,7 @@ export class SequencesList extends
             {
               sortResourcesById(sequences)
                 .filter(filterFn(searchTerm))
-                .map(sequenceList(dispatch))
+                .map(sequenceList(dispatch, YOU_MUST_FIX_THIS["whatever"]))
             }
           </div>
         </Col>

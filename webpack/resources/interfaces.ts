@@ -51,6 +51,7 @@ export interface ResourceIndex {
    * }
    */
   sequenceMeta: Record<UUID, VariableNameMapping>;
+  inUse: Record<UUID, boolean>
 }
 
 export interface RestResources {
