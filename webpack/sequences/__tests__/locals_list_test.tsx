@@ -327,7 +327,8 @@ describe("<LocalsList/>", () => {
 describe("localListOnChange", () => {
   it("triggers the dispatch()er", () => {
     const p = props();
-    localListOnChange(p);
+    const cb = localListOnChange(p);
+    cb({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
     expect(p.dispatch).toHaveBeenCalled();
   });
 });
