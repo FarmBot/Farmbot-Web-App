@@ -86,7 +86,7 @@ export const LocalsList = (p: LocalsListProps) => {
     return <ParentVariableForm
       parent={parent}
       resources={resources}
-      onChange={() => localListOnChange(p)} />;
+      onChange={localListOnChange(p)} />;
   } else {
     return <div />;
   }

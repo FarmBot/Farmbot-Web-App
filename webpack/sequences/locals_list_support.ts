@@ -176,5 +176,9 @@ export const localListOnChange =
     // Was getting stale data bugs.
     // HOTFIX: Pull the `sequence` out of the index at execution time.
     const s = resources.references[sequence.uuid];
-    s && s.kind == "Sequence" && handleVariableChange(dispatch, s);
+    if (s && s.kind == "Sequence") {
+      return handleVariableChange(dispatch, s);
+    } else {
+      return () => { };
+    }
   };
