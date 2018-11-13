@@ -37,11 +37,10 @@ export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
 
 /** Rather than update (patch) a TaggedResource, this method will overwrite
  * everything within the `.body` property. */
-export function overwrite(tr: TaggedResource,
-  changeset: typeof tr.body,
+export function overwrite<T extends TaggedResource>(tr: T,
+  changeset: Partial<T["body"]>,
   specialStatus = SpecialStatus.DIRTY):
   ReduxAction<EditResourceParams> {
-
   return {
     type: Actions.OVERWRITE_RESOURCE,
     payload: { uuid: tr.uuid, update: changeset, specialStatus }

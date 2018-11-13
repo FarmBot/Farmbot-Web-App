@@ -52,7 +52,7 @@ describe Users::Create do
     end
 
     it "stops users from registering twice" do
-      email   = User.last.email || FactoryBot.create(:email)
+      email   = (User.last || FactoryBot.create(:user)).email
       results = Users::Create.run(email:                 email,
                                   name:                  "Faker",
                                   password:              "password12345",

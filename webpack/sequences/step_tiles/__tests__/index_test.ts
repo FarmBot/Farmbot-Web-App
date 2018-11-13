@@ -70,7 +70,8 @@ describe("splice()", () => {
   it("adds step", () => {
     const p = fakeProps();
     splice(p);
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
-      expect.objectContaining({ body: [step] }));
+    expect(overwrite)
+      .toHaveBeenCalledWith(expect.any(Object),
+        expect.objectContaining({ body: expect.any(Array) }));
   });
 });
