@@ -64,7 +64,6 @@ describe("<SequencesList />", () => {
 
   it("shows in-use indicator", () => {
     const p = fakeProps();
-    p.sequences[0].body.in_use = true;
     const wrapper = mount(<SequencesList {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });

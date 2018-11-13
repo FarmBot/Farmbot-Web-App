@@ -33,7 +33,6 @@ describe("<RegimenListItem/>", () => {
 
   it("shows in-use indicator", () => {
     const props = fakeProps();
-    props.regimen.body.in_use = true;
     const wrapper = render(<RegimenListItem {...props} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });

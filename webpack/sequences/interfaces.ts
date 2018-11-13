@@ -78,6 +78,7 @@ export interface SequenceReducerState {
 
 export interface SequencesListProps {
   sequences: TaggedSequence[];
+  resourceUsage: Record<string, boolean | undefined>;
   sequence: TaggedSequence | undefined;
   dispatch: Function;
 }

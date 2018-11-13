@@ -10,7 +10,7 @@ import { Content } from "../../constants";
 import { TaggedRegimen } from "farmbot";
 import { Link } from "../../link";
 
-export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
+export function RegimenListItem({ regimen, dispatch, in_use }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
   const color = (regimen.body.color) || "gray";
   const style = [`block`, `full-width`, `fb-button`, `${color}`];
@@ -23,8 +23,7 @@ export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
       className={style.join(" ")}
       onClick={select(dispatch, regimen)}>
       <label>{name}</label>
-      {regimen.body.in_use &&
-        <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+      {in_use && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
     </button>
   </Link>;
 }

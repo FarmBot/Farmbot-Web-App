@@ -11,8 +11,13 @@ import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
 
+const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
+  .body
+  .name
+  .toLowerCase()
+  .includes(searchTerm);
 const sequenceList = (dispatch: Function) =>
-  (ts: TaggedSequence) => {
+  (ts: TaggedSequence, in_use: boolean) => {
     const css = [
       `fb-button`,
       `block`,
@@ -38,8 +43,7 @@ const sequenceList = (dispatch: Function) =>
           onClick={click} >
           <button className={css.join(" ")} draggable={true}>
             <label>{name}</label>
-            {ts.body.in_use &&
-              <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+            {in_use && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
           </button>
         </Link>
       </StepDragger>
@@ -88,11 +92,7 @@ export class SequencesList extends
           <div className="sequence-list">
             {
               sortResourcesById(sequences)
-                .filter(seq => seq
-                  .body
-                  .name
-                  .toLowerCase()
-                  .includes(searchTerm))
+                .filter(filterFn(searchTerm))
                 .map(sequenceList(dispatch))
             }
           </div>

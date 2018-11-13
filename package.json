@@ -52,7 +52,7 @@
     "css-loader": "^1.0.1",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.7.0",
-    "farmbot": "^6.5.10",
+    "farmbot": "^6.6.0-rc1",
     "farmbot-toastr": "^1.0.3",
     "fastclick": "^1.0.6",
     "file-loader": "2.0.0",
