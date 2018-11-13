@@ -382,7 +382,9 @@ CREATE TABLE public.fbos_configs (
     firmware_hardware character varying DEFAULT 'arduino'::character varying,
     api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
-    arduino_debug_messages boolean DEFAULT false
+    arduino_debug_messages boolean DEFAULT false,
+    firmware_path character varying,
+    firmware_debug_log boolean DEFAULT false
 );
 
 
@@ -2405,6 +2407,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181014221342'),
 ('20181014231010'),
 ('20181019023351'),
-('20181025182807');
+('20181025182807'),
+('20181112010427');
 
 
