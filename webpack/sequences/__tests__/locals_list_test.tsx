@@ -1,17 +1,7 @@
 import * as React from "react";
 import {
-  extractParent,
-  handleVariableChange,
-  setParent,
-  changeAxis,
-  guessFromDataType,
-  guessVecFromLabel,
-  guessXYZ,
-  ParentVariableFormProps,
   ParentVariableForm,
-  LocalsListProps,
   LocalsList,
-  PARENT
 } from "../locals_list";
 import {
   VariableDeclaration,
@@ -20,15 +10,33 @@ import {
   Point,
   Coordinate
 } from "farmbot";
-import { fakeSequence, fakeTool } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence,
+  fakeTool
+} from "../../__test_support__/fake_state/resources";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { FBSelect } from "../../ui/index";
 import {
   InputBox, generateList, handleSelect
 } from "../step_tiles/tile_move_absolute/index";
+import {
+  extractParent,
+  setParent,
+  handleVariableChange,
+  changeAxis,
+  guessFromDataType,
+  guessVecFromLabel,
+  guessXYZ,
+  ParentVariableFormProps,
+  PARENT,
+  LocalsListProps,
+  localListOnChange
+} from "../locals_list_support";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
@@ -39,6 +47,15 @@ const mrGoodVar: VariableDeclaration = {
   // https://en.wikipedia.org/wiki/Mr._Goodbar
   kind: "variable_declaration",
   args: { label: "parent", data_value: coord }
+};
+
+const props = (): LocalsListProps => {
+  const sequence = fakeSequence();
+  return {
+    sequence,
+    resources: buildResourceIndex([sequence]).index,
+    dispatch: jest.fn()
+  };
 };
 
 describe("extractParent()", () => {
@@ -263,49 +280,55 @@ describe("guessXYZ", () => {
 
 describe("<ParentVariableForm/>", () => {
   it("renders correct UI components", () => {
-    const props: ParentVariableFormProps = {
+    const props2: ParentVariableFormProps = {
       parent: mrGoodVar,
       resources: buildResourceIndex().index,
       onChange: jest.fn()
     };
 
-    const el = shallow(<ParentVariableForm {...props} />);
+    const el = shallow(<ParentVariableForm {...props2} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(InputBox);
 
     expect(selects.length).toBe(1);
     const p = selects.first().props();
     expect(p.allowEmpty).toBe(true);
-    const choices = generateList(props.resources, [PARENT]);
+    const choices = generateList(props2.resources, [PARENT]);
     expect(p.list).toEqual(choices);
     const choice = choices[1];
     p.onChange(choice);
-    expect(props.onChange)
-      .toHaveBeenCalledWith(handleSelect(props.resources, choice));
+    expect(props2.onChange)
+      .toHaveBeenCalledWith(handleSelect(props2.resources, choice));
     expect(inputs.length).toBe(3);
   });
 });
 
 describe("<LocalsList/>", () => {
-  const props: LocalsListProps = {
-    sequence: fakeSequence(),
-    resources: buildResourceIndex().index,
-    dispatch: jest.fn()
-  };
 
   it("renders nothing", () => {
-    props.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
-    const el = shallow(<LocalsList {...props} />);
+    const p = props();
+    p.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
+    const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(0);
   });
 
   it("renders something", () => {
-    props.sequence.body.args.locals = {
+    const p = props();
+    p.sequence.body.args.locals = {
       kind: "scope_declaration",
       args: {},
       body: [mrGoodVar]
     };
-    const el = shallow(<LocalsList {...props} />);
+    const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(1);
+  });
+});
+
+describe("localListOnChange", () => {
+  it("triggers the dispatch()er", () => {
+    const p = props();
+    const cb = localListOnChange(p);
+    cb({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
+    expect(p.dispatch).toHaveBeenCalled();
   });
 });
