@@ -3,7 +3,8 @@ import {
   Dictionary,
   Identifier,
   ScopeDeclarationBodyItem,
-  VariableDeclaration
+  VariableDeclaration,
+  Execute
 } from "farmbot";
 import {
   SequenceResource as Sequence
@@ -17,12 +18,14 @@ type Body = Traversable[] | undefined;
 /** Less strict CeleryScript node used for the sake of recursion. */
 export interface Traversable { kind: string; args: Args; body?: Body; }
 type TreeClimberCB = (item: Traversable) => void;
+type InterestingNodes = Identifier | Execute;
 // ======= END TYPE DECLARATIONS =======
 
-// ======= CONST / LITERAL / DYNAMIC KEY DECLARATIONS     =======
-const ARGS = "args";
-const IDENTIFIER = "identifier";
-const KIND = "kind";
+// ======= CONST / LITERAL / DYNAMIC KEY DECLARATIONS =======
+const ARGS: keyof InterestingNodes = "args";
+const KIND: keyof InterestingNodes = "kind";
+const IDENTIFIER: Identifier["kind"] = "identifier";
+const EXECUTE: Execute["kind"] = "execute";
 const OBJECT = "object";
 const STRING = "string";
 // ======= END CONST / LITERAL DECLARATIONS =======
@@ -37,6 +40,11 @@ const isTraversable = (x: unknown): x is Traversable => {
 /** Is it a variable (identifier)? */
 const isIdentifier =
   (x: Traversable): x is Identifier => (x.kind === IDENTIFIER);
+
+/** Is it an execute block? */
+const isExecute = (x: Traversable): x is Execute => {
+  return !!((x.kind === EXECUTE) && (x as Execute).args.sequence_id);
+};
 
 const newVar = (label: string): VariableDeclaration => ({
   kind: "variable_declaration",
@@ -60,31 +68,37 @@ export function climb(t: Traversable | unknown, cb: TreeClimberCB) {
   }
 }
 
+interface SanitizationResult {
+  thisSequence: Sequence;
+  callsTheseSequences: number[];
+}
+
 /* 1. Recursively tag all CeleryScript nodes with a `uuid` property to
  *    prevent subtle React issues. SEE: Explanation in `sequence_tagging.ts`
  * 2. Add unbound variables to `locals` declaration (prevent NPEs).
  * 3. Remove unused variables from `locals` declaration. */
-export const sanitizeNodes = (input: Sequence): Sequence => {
+export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
   // Collect all *declared* variables. Required for fixing unbound vars.
   const declared: Dictionary<ScopeDeclarationBodyItem> = {};
-  (input.args.locals.body || []).map(var_ => declared[var_.args.label] = var_);
+  (thisSequence.args.locals.body || []).map(var_ => declared[var_.args.label] = var_);
 
   // Collect all *referenced* variables. Required for removing unused vars.
   const used: Dictionary<Identifier> = {};
   const collectUniqVariables = (id: Identifier) => used[id.args.label] = id;
-
-  climb(input, node => {
+  const callsTheseSequences: number[] = [];
+  climb(thisSequence, node => {
     maybeTagStep(node);
     isIdentifier(node) && collectUniqVariables(node);
+    isExecute(node) && callsTheseSequences.push(node.args.sequence_id);
   });
 
   // Add unbound variables to locals array. Unused variables magically disappear
-  input.args.locals.body = Object.values(used)
+  thisSequence.args.locals.body = Object.values(used)
     .map(({ args }) => declared[args.label] || newVar(args.label))
     .map(node => {
       maybeTagStep(node);
       return node;
     });
 
-  return input;
+  return { thisSequence, callsTheseSequences };
 };

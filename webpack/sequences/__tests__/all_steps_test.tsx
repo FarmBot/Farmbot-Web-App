@@ -48,7 +48,7 @@ describe("<AllSteps/>", () => {
         "version": 4,
       },
       "kind": "sequence"
-    }),
+    }).thisSequence,
     "uuid": "Sequence.8.52"
   };
 

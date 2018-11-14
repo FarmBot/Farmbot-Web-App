@@ -46,15 +46,47 @@ export function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
   return (tr.body.args.locals.body || []).reduce(lookupReducer, {});
 }
 
+export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
+  ids.map(id => {
+    const uuid = i.byKindAndId[joinKindAndId("Sequence", id)];
+    if (uuid) { // `undefined` usually means "not ready".
+      const inUse = i.inUse["Sequence.Sequence"][uuid] || {};
+      i.inUse["Sequence.Sequence"][uuid] = { ...inUse, ...{ [myUuid]: true } };
+    }
+  });
+}
+
+export const updateOtherSequenceIndexes =
+  (tr: TaggedSequence, i: ResourceIndex) => {
+    i.references[tr.uuid] = tr;
+    i.sequenceMeta[tr.uuid] = variableLookupTable(tr);
+  };
+
 const SEQUENCE_STUFF: Indexer = {
   up(r, i) {
     if (r.kind === "Sequence") {
-      const tr = { ...r, body: sanitizeNodes(r.body) };
-      i.references[r.uuid] = tr;
-      i.sequenceMeta[r.uuid] = variableLookupTable(tr);
+      // STEP 1: Sanitize nodes, tag them with unique UUIDs (for React),
+      //         collect up sequence_id's, etc. NOTE: This is CPU expensive,
+      //         so if you need to do tree traversal, do it now.
+      const { thisSequence, callsTheseSequences } = sanitizeNodes(r.body);
+      // STEP 2: Add sequence to index.references, update variable reference
+      //         indexes
+      updateSequenceUsageIndex(r.uuid, callsTheseSequences, i);
+      // Step 3: Update the in_use stats for Sequence-to-Sequence usage.
+      updateOtherSequenceIndexes({ ...r, body: thisSequence }, i);
     }
   },
   down(r, i) {
+    if (r.kind === "Sequence") {
+      const usingSequences = i.inUse["Sequence.Sequence"];
+      delete usingSequences[r.uuid];
+      // Object
+      //   .keys(usingSequences)
+      //   .map(key => {
+      //     const t = usingSequences[key];
+      //   });
+      console.log("TODO: cleanup Sequence.Sequence in_use things");
+    }
     delete i.sequenceMeta[r.uuid];
   },
 };
@@ -62,12 +94,12 @@ const SEQUENCE_STUFF: Indexer = {
 const IN_USE: Indexer = {
   up(r, _i) {
     switch (r.kind) {
-      case "Regimen":
-        r.body.regimen_items.map(x => x.sequence_id);
-        break;
-      case "Sequence":
-        console.log("Handle this in sanitizeNodes()");
-        break;
+      // case "Regimen":
+      //   r.body.regimen_items.map(x => x.sequence_id);
+      //   break;
+      // case "Sequence":
+      //   console.log("Handle this in sanitizeNodes()");
+      //   break;
       case "FarmEvent":
         r.body.executable_type;
     }
