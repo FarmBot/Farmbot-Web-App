@@ -27,6 +27,7 @@ export interface LocalsListProps {
 
 export interface ParentVariableFormProps {
   parent: VariableDeclaration | ParameterDeclaration;
+  sequence: TaggedSequence;
   resources: ResourceIndex;
   onChange: OnChange;
 }
@@ -168,17 +169,4 @@ export const guessXYZ =
   (label: string, local: ParentType, resources: ResourceIndex): Vector3 => {
     return (local.kind === "variable_declaration") ?
       guessVariable(label, local, resources) : EMPTY_VEC3;
-  };
-
-export const localListOnChange =
-  ({ resources, sequence, dispatch }: LocalsListProps) => {
-    // Something strange happens here with closure scope, I think.
-    // Was getting stale data bugs.
-    // HOTFIX: Pull the `sequence` out of the index at execution time.
-    const s = resources.references[sequence.uuid];
-    if (s && s.kind == "Sequence") {
-      return handleVariableChange(dispatch, s);
-    } else {
-      return () => { };
-    }
   };

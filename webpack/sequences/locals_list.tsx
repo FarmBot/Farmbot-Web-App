@@ -6,7 +6,7 @@ import {
   changeAxis,
   LocalsListProps,
   extractParent,
-  localListOnChange
+  handleVariableChange
 } from "./locals_list_support";
 import { Row, Col, FBSelect } from "../ui";
 import { t } from "i18next";
@@ -25,7 +25,7 @@ import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
 export const ParentVariableForm =
-  ({ parent, resources, onChange }: ParentVariableFormProps) => {
+  ({ parent, sequence, resources, onChange }: ParentVariableFormProps) => {
     const data_value = (parent.kind == "variable_declaration") ?
       parent.args.data_value : EMPTY_COORD;
     const ddiLabel = formatSelectedDropdown(resources, data_value);
@@ -39,10 +39,11 @@ export const ParentVariableForm =
         <Col xs={12}>
           <h5>{t("Import Coordinates From")}</h5>
           <FBSelect
+            key={JSON.stringify(sequence)}
             allowEmpty={true}
             list={generateList(resources, [PARENT])}
             selectedItem={ddiLabel}
-            onChange={(ddi) => onChange(handleSelect(resources, ddi))} />
+            onChange={ddi => onChange(handleSelect(resources, ddi))} />
         </Col>
       </Row>
       <Row>
@@ -79,15 +80,13 @@ export const ParentVariableForm =
 
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
-export const LocalsList = (p: LocalsListProps) => {
-  const { resources, sequence } = p;
-  const parent = extractParent(sequence.body.args.locals.body);
-  if (parent) {
-    return <ParentVariableForm
+export const LocalsList = (props: LocalsListProps) => {
+  const parent = extractParent(props.sequence.body.args.locals.body);
+  return parent
+    ? <ParentVariableForm
       parent={parent}
-      resources={resources}
-      onChange={localListOnChange(p)} />;
-  } else {
-    return <div />;
-  }
+      sequence={props.sequence}
+      resources={props.resources}
+      onChange={handleVariableChange(props.dispatch, props.sequence)} />
+    : <div />;
 };
