@@ -2,6 +2,7 @@ import { TaggedResource, ScopeDeclarationBodyItem, TaggedSequence } from "farmbo
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import { joinKindAndId } from "./reducer_support";
 import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
+import { USAGE_KINDS } from "./in_use";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -58,18 +59,6 @@ const SEQUENCE_STUFF: Indexer = {
   },
 };
 
-function handleRegimen(input) {
-
-}
-
-function handleSequence() {
-
-}
-
-function handleFarmEvent() {
-
-}
-
 const IN_USE: Indexer = {
   up(r, _i) {
     switch (r.kind) {
@@ -83,9 +72,7 @@ const IN_USE: Indexer = {
         r.body.executable_type;
     }
   },
-  down(r, i) {
-    delete i.inUse[r.uuid];
-  }
+  down: (r, i) => USAGE_KINDS.map(kind => delete i.inUse[kind][r.uuid])
 };
 
 export const INDEXES: Indexer[] = [
@@ -94,4 +81,5 @@ export const INDEXES: Indexer[] = [
   BY_KIND,
   BY_KIND_AND_ID,
   SEQUENCE_STUFF,
+  IN_USE
 ];

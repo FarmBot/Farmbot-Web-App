@@ -12,8 +12,9 @@ import {
 import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
 import { HelpState } from "../help/reducer";
+import { UsageIndex } from "./in_use";
 
-type UUID = string;
+export type UUID = string;
 
 export interface SequenceVariableMeta {
   /** As of November 2018, the only thing you can make variables from are
@@ -26,6 +27,7 @@ export interface SequenceVariableMeta {
 
 export type VariableNameMapping = Record<string, SequenceVariableMeta>;
 export type UUIDSet = Record<UUID, true>;
+
 export interface ResourceIndex {
   all: UUIDSet;
   byKind: Record<ResourceName, Record<UUID, UUID>>;
@@ -81,7 +83,7 @@ export interface ResourceIndex {
    *   ...
    * }
    */
-  inUse: Record<UUID, (UUIDSet | undefined)>;
+  inUse: UsageIndex;
 }
 
 export interface RestResources {

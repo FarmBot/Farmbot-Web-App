@@ -10,7 +10,7 @@ import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
-import { YOU_MUST_FIX_THIS } from "../resources/reducer";
+import { resourceUsageList, YOU_MUST_FIX_THIS } from "../resources/in_use";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
@@ -94,7 +94,7 @@ export class SequencesList extends
             {
               sortResourcesById(sequences)
                 .filter(filterFn(searchTerm))
-                .map(sequenceList(dispatch, YOU_MUST_FIX_THIS["whatever"]))
+                .map(sequenceList(dispatch, resourceUsageList(YOU_MUST_FIX_THIS)["whatever"]))
             }
           </div>
         </Col>

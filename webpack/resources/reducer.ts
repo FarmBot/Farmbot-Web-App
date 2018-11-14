@@ -20,11 +20,7 @@ import { initialState as designerState } from "../farm_designer/reducer";
 import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
-
-/** Pull this variable out when its time to write unit tests for in_use tracker */
-export const YOU_MUST_FIX_THIS: Record<string, boolean> = {
-  FIXME: true
-};
+import { YOU_MUST_FIX_THIS } from "./in_use";
 
 export const emptyState = (): RestResources => {
   return {
