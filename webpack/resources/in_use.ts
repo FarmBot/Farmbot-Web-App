@@ -6,7 +6,7 @@ export type UsageKind =
   | "Regimen.Sequence"
   | "Sequence.Sequence";
 
-export const USAGE_KINDS: UsageKind[] = [
+export const EVERY_USAGE_KIND: UsageKind[] = [
   "FarmEvent.Regimen",
   "FarmEvent.Sequence",
   "Regimen.Sequence",
@@ -20,7 +20,7 @@ const start: Record<UUID, boolean> = {};
 
 export const resourceUsageList =
   (usageIndex: UsageIndex): Record<UUID, boolean> => {
-    return USAGE_KINDS
+    return EVERY_USAGE_KIND
       .map(key => Object.keys(usageIndex[key]))
       .reduce<string[]>((acc, item) => acc.concat(item), [])
       .reduce((acc, item) => ({ ...acc, [item]: true }), start);

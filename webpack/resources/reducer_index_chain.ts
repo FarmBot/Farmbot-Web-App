@@ -2,7 +2,7 @@ import { TaggedResource, ScopeDeclarationBodyItem, TaggedSequence } from "farmbo
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import { joinKindAndId } from "./reducer_support";
 import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { USAGE_KINDS } from "./in_use";
+import { EVERY_USAGE_KIND } from "./in_use";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -72,7 +72,7 @@ const IN_USE: Indexer = {
         r.body.executable_type;
     }
   },
-  down: (r, i) => USAGE_KINDS.map(kind => delete i.inUse[kind][r.uuid])
+  down: (r, i) => EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid])
 };
 
 export const INDEXES: Indexer[] = [
