@@ -28,6 +28,8 @@ services:
     <<: *base_config
     <<: *db_user
     <<: *rails
+    stdin_open: true # Needed for binding.pry
+    tty: true        # Needed for binding.pry
     build:
       context: .
       dockerfile: docker_configs/api.Dockerfile

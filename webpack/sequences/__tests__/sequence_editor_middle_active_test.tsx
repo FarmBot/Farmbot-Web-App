@@ -19,10 +19,9 @@ jest.mock("../../devices/actions", () => ({
 }));
 
 let mockParent = false;
-jest.mock("../locals_list", () => ({
-  extractParent: () => mockParent,
-  LocalsList: () => <div />,
-}));
+jest.mock("../locals_list_support", () => ({ extractParent: () => mockParent }));
+
+jest.mock("../locals_list", () => ({ LocalsList: () => <div /> }));
 
 import * as React from "react";
 import {

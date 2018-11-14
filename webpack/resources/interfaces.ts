@@ -25,8 +25,9 @@ export interface SequenceVariableMeta {
 }
 
 export type VariableNameMapping = Record<string, SequenceVariableMeta>;
+export type UUIDSet = Record<UUID, true>;
 export interface ResourceIndex {
-  all: Record<UUID, true>;
+  all: UUIDSet;
   byKind: Record<ResourceName, Record<UUID, UUID>>;
   byKindAndId: CowardlyDictionary<UUID>;
   references: Dictionary<TaggedResource | undefined>;
@@ -51,7 +52,36 @@ export interface ResourceIndex {
    * }
    */
   sequenceMeta: Record<UUID, VariableNameMapping>;
-  inUse: Record<UUID, boolean>
+  /**
+   * PROBLEM:
+   *  * We need to _efficiently_ track which resources are in_use.
+   *
+   * DISAMBIGUATION:
+   *  * If deleting the resource causes a referential integrity issue, it is
+   *    said to be "in use"
+   *  * Another way to think of the term "in use": "Can't be safely deleted"
+   *
+   * SCENARION:
+   *  * You have a sequence `Sequence.0.1`
+   *  * It has 2 "consumers":
+   *    * A FarmEvent that triggers it (UUID: "FarmEvent.0.2")
+   *    * Another Sequence that calls the sequence above via an `execute` block
+   *      (UUID: "Sequence.0.3")
+   *
+   * SOLUTION:
+   *  * Create an index entry, indexed by UUID, for every resource that is
+   *    "in_use".
+   *  * If it does not have an entry, it's not in use.
+   * {
+   *   ...
+   *   // Not in use by anything
+   *   "Sequence.0.5": undefined,
+   *   // Two other resources have a "reservation" on Sequence.0.1
+   *   "Sequence.0.1": { "FarmEvent.0.2": true, "Sequence.0.3":  true }
+   *   ...
+   * }
+   */
+  inUse: Record<UUID, (UUIDSet | undefined)>;
 }
 
 export interface RestResources {

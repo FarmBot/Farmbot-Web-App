@@ -8,7 +8,7 @@ import {
 import {
   SequenceResource as Sequence
 } from "farmbot/dist/resources/api_resources";
-import { setStepTag } from "../../../resources/sequence_tagging";
+import { maybeTagStep } from "../../../resources/sequence_tagging";
 
 // ======= TYPE DECLARATIONS =======
 /** Less strict version of CeleryScript args. It's traversable, or unknown. */
@@ -74,7 +74,7 @@ export const sanitizeNodes = (input: Sequence): Sequence => {
   const collectUniqVariables = (id: Identifier) => used[id.args.label] = id;
 
   climb(input, node => {
-    setStepTag(node);
+    maybeTagStep(node);
     isIdentifier(node) && collectUniqVariables(node);
   });
 
@@ -82,7 +82,7 @@ export const sanitizeNodes = (input: Sequence): Sequence => {
   input.args.locals.body = Object.values(used)
     .map(({ args }) => declared[args.label] || newVar(args.label))
     .map(node => {
-      setStepTag(node);
+      maybeTagStep(node);
       return node;
     });
 

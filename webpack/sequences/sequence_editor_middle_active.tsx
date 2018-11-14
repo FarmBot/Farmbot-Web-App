@@ -13,8 +13,9 @@ import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
-import { LocalsList, extractParent } from "./locals_list";
+import { LocalsList } from "./locals_list";
 import { Feature } from "../devices/interfaces";
+import { extractParent } from "./locals_list_support";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>

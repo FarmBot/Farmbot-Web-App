@@ -1,7 +1,3 @@
-jest.mock("../../../account/request_account_export", () => {
-  return { jsonDownload: jest.fn() };
-});
-
 jest.mock("../../../api/crud", () => {
   return { destroy: jest.fn() };
 });
@@ -9,7 +5,9 @@ jest.mock("../../../api/crud", () => {
 import * as React from "react";
 import { mount } from "enzyme";
 import { DiagnosticDumpRow } from "../diagnostic_dump_row";
-import { fakeDiagnosticDump } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeDiagnosticDump
+} from "../../../__test_support__/fake_state/resources";
 import { destroy } from "../../../api/crud";
 
 describe("<DiagnosticDumpRow/>", () => {

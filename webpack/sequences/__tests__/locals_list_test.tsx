@@ -1,17 +1,7 @@
 import * as React from "react";
 import {
-  extractParent,
-  handleVariableChange,
-  setParent,
-  changeAxis,
-  guessFromDataType,
-  guessVecFromLabel,
-  guessXYZ,
-  ParentVariableFormProps,
   ParentVariableForm,
-  LocalsListProps,
   LocalsList,
-  PARENT
 } from "../locals_list";
 import {
   VariableDeclaration,
@@ -20,15 +10,32 @@ import {
   Point,
   Coordinate
 } from "farmbot";
-import { fakeSequence, fakeTool } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence,
+  fakeTool
+} from "../../__test_support__/fake_state/resources";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { FBSelect } from "../../ui/index";
 import {
   InputBox, generateList, handleSelect
 } from "../step_tiles/tile_move_absolute/index";
+import {
+  extractParent,
+  setParent,
+  handleVariableChange,
+  changeAxis,
+  guessFromDataType,
+  guessVecFromLabel,
+  guessXYZ,
+  ParentVariableFormProps,
+  PARENT,
+  LocalsListProps,
+} from "../locals_list_support";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
@@ -39,6 +46,15 @@ const mrGoodVar: VariableDeclaration = {
   // https://en.wikipedia.org/wiki/Mr._Goodbar
   kind: "variable_declaration",
   args: { label: "parent", data_value: coord }
+};
+
+const fakeProps = (): LocalsListProps => {
+  const sequence = fakeSequence();
+  return {
+    sequence,
+    resources: buildResourceIndex([sequence]).index,
+    dispatch: jest.fn()
+  };
 };
 
 describe("extractParent()", () => {
@@ -265,6 +281,7 @@ describe("<ParentVariableForm/>", () => {
   it("renders correct UI components", () => {
     const props: ParentVariableFormProps = {
       parent: mrGoodVar,
+      sequence: fakeSequence(),
       resources: buildResourceIndex().index,
       onChange: jest.fn()
     };
@@ -287,25 +304,21 @@ describe("<ParentVariableForm/>", () => {
 });
 
 describe("<LocalsList/>", () => {
-  const props: LocalsListProps = {
-    sequence: fakeSequence(),
-    resources: buildResourceIndex().index,
-    dispatch: jest.fn()
-  };
-
   it("renders nothing", () => {
-    props.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
-    const el = shallow(<LocalsList {...props} />);
+    const p = fakeProps();
+    p.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
+    const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(0);
   });
 
   it("renders something", () => {
-    props.sequence.body.args.locals = {
+    const p = fakeProps();
+    p.sequence.body.args.locals = {
       kind: "scope_declaration",
       args: {},
       body: [mrGoodVar]
     };
-    const el = shallow(<LocalsList {...props} />);
+    const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(1);
   });
 });
