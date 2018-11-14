@@ -43,7 +43,9 @@ namespace :coverage do
       staging_percent     = open_json(build_url).fetch("covered_percent")
     rescue OpenURI::HTTPError => exception
       puts exception.message
-      puts "Error getting coveralls data. Wait for build to finish and try again."
+      puts "Error getting coveralls data."
+      puts "Wait for staging build to finish and try again."
+      puts "If error continues, perhaps a blinky test failed the staging build."
       staging_percent     = 100
     end
 
