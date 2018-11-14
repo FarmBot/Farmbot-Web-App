@@ -13,7 +13,7 @@ export const EVERY_USAGE_KIND: UsageKind[] = [
   "Sequence.Sequence"
 ];
 
-export type UsageMap = Record<UUID, UUID>;
+export type UsageMap = Record<UUID, Record<UUID, boolean>>;
 export type UsageIndex = Record<UsageKind, UsageMap>;
 
 const start: Record<UUID, boolean> = {};
