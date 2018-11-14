@@ -107,15 +107,17 @@ describe Api::SequencesController do
 
     it 'updates existing sequences' do
       sign_in user
-      sequence = FakeSequence.create( device: user.device)
+      sequence = FakeSequence.create(device: user.device)
+      sequence.update_attributes!(updated_at: 2.days.ago)
+      updated_at_before = sequence.updated_at.to_i
       input = { sequence: { name: "Scare Birds", args: {}, body: [] } }
       params = { id: sequence.id }
-      patch :update,
-        params: params,
-        body: input.to_json,
-        format: :json
+      run_jobs_now do
+        patch :update, params: params, body: input.to_json, format: :json
+      end
       expect(response.status).to eq(200)
       sequence.reload
+      expect(sequence.updated_at.to_i).to be > updated_at_before
       expect(sequence.name).to eq(input[:sequence][:name])
     end
   end

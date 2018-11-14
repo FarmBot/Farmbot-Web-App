@@ -55,7 +55,10 @@ class Sequence < ApplicationRecord
   end
 
   def manually_sync!
-    device.auto_sync_transaction { broadcast! } if device
+    device.auto_sync_transaction do
+      update_attributes!(updated_at: Time.now)
+      broadcast!
+    end if device
   end
 
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
