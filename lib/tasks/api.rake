@@ -134,7 +134,7 @@ namespace :api do
   desc "Update GlobalConfig to deprecate old FBOS versions"
   task deprecate: :environment do
     # Get current version
-    version_str     = GlobalConfig.dump.fetch("MINIMUM_FBOS_VERSION")
+    version_str     = GlobalConfig.dump.fetch("FBOS_END_OF_LIFE_VERSION")
     # Convert it to Gem::Version for easy comparisons (>, <, ==, etc)
     current_version = Gem::Version::new(version_str)
     # 60 days is the current policy.
@@ -163,7 +163,7 @@ namespace :api do
     if data # ...or not
       puts "Setting new support target to #{data.to_s}"
       GlobalConfig # Set the new oldest support version.
-        .find_by(key: "MINIMUM_FBOS_VERSION")
+        .find_by(key: "FBOS_END_OF_LIFE_VERSION")
         .update_attributes!(value: data.to_is)
     end
   end
