@@ -13,7 +13,7 @@ jest.mock("axios", () => {
   };
 });
 
-import { destroy, saveAll, initSave } from "../crud";
+import { destroy, saveAll, initSave, initSaveGetId } from "../crud";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { createStore, applyMiddleware } from "redux";
 import { resourceReducer } from "../../resources/reducer";
@@ -61,6 +61,16 @@ describe("AJAX data tracking", () => {
   it("sets consistency when calling initSave()", () => {
     // tslint:disable-next-line:no-any
     const action: any = initSave("User", {
+      name: "tester123",
+      email: "test@test.com"
+    });
+    store.dispatch(action);
+    expect(maybeStartTracking).toHaveBeenCalled();
+  });
+
+  it("sets consistency when calling initSaveGetId()", () => {
+    // tslint:disable-next-line:no-any
+    const action: any = initSaveGetId("User", {
       name: "tester123",
       email: "test@test.com"
     });

@@ -77,9 +77,35 @@ export function init<T extends TaggedResource>(kind: T["kind"],
   clean = false): ReduxAction<TaggedResource> {
   const resource = arrayUnwrap(newTaggedResource(kind, body));
   resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
-  // /** Don't touch this- very important! */
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
+
+/** Initialize and save a new resource, returning the `id`.
+ * If you don't need the `id` returned, use `initSave` instead.
+ */
+export const initSaveGetId =
+  <T extends TaggedResource>(kind: T["kind"], body: T["body"]) =>
+    (dispatch: Function) => {
+      const resource = arrayUnwrap(newTaggedResource(kind, body));
+      resource.specialStatus = SpecialStatus.DIRTY;
+      dispatch({ type: Actions.INIT_RESOURCE, payload: resource });
+      dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
+      maybeStartTracking(resource.uuid);
+      return axios.post<typeof resource.body>(
+        urlFor(resource.kind), resource.body)
+        .then(resp => {
+          dispatch(saveOK(resource));
+          return resp.data.id;
+        })
+        .catch((err: UnsafeError) => {
+          dispatch(updateNO({
+            err,
+            uuid: resource.uuid,
+            statusBeforeError: resource.specialStatus
+          }));
+          return Promise.reject(err);
+        });
+    };
 
 export function initSave<T extends TaggedResource>(kind: T["kind"],
   body: T["body"]) {

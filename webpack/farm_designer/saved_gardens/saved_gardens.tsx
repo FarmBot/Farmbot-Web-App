@@ -12,16 +12,15 @@ import { SavedGardenList } from "./garden_list";
 import { SavedGardensProps } from "./interfaces";
 import { closeSavedGarden } from "./actions";
 import { TaggedSavedGarden } from "farmbot";
+import { Content } from "../../constants";
 
-export function mapStateToProps(props: Everything): SavedGardensProps {
-  return {
-    savedGardens: selectAllSavedGardens(props.resources.index),
-    plantTemplates: selectAllPlantTemplates(props.resources.index),
-    dispatch: props.dispatch,
-    plantsInGarden: selectAllPlantPointers(props.resources.index).length > 0,
-    openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
-  };
-}
+export const mapStateToProps = (props: Everything): SavedGardensProps => ({
+  savedGardens: selectAllSavedGardens(props.resources.index),
+  plantTemplates: selectAllPlantTemplates(props.resources.index),
+  dispatch: props.dispatch,
+  plantPointerCount: selectAllPlantPointers(props.resources.index).length,
+  openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
+});
 
 @connect(mapStateToProps)
 export class SavedGardens extends React.Component<SavedGardensProps, {}> {
@@ -46,13 +45,12 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
         </p>
 
         <div className="panel-header-description">
-          {t("Save or load a garden.")}
+          {t(Content.SAVED_GARDENS)}
         </div>
       </div>
 
       <div className="panel-content saved-garden-panel-content">
         <GardenSnapshot
-          plantsInGarden={this.props.plantsInGarden}
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}
           dispatch={this.props.dispatch} />
@@ -65,6 +63,7 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
   }
 }
 
+/** Link to SavedGardens panel for garden map legend. */
 export const SavedGardensLink = () =>
   <button className="fb-button green"
     hidden={!(localStorage.getItem("FUTURE_FEATURES"))}
@@ -72,10 +71,12 @@ export const SavedGardensLink = () =>
     {t("Saved Gardens")}
   </button>;
 
+/** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
   pathArray[3] === "saved_gardens" && parseInt(pathArray[4]) > 0
     ? parseInt(pathArray[4]) : false;
 
+/** Sticky an indicator and actions menu when a SavedGarden is open. */
 export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
