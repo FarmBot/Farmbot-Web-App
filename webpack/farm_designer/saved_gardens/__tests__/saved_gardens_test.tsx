@@ -36,7 +36,7 @@ import { Actions } from "../../../constants";
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
     dispatch: jest.fn(),
-    plantsInGarden: true,
+    plantPointerCount: 1,
     savedGardens: [fakeSavedGarden()],
     plantTemplates: [fakePlantTemplate(), fakePlantTemplate()],
     openedSavedGarden: undefined,
@@ -51,7 +51,7 @@ describe("<SavedGardens />", () => {
   it("applies garden", () => {
     const p = fakeProps();
     p.savedGardens[0].uuid = "SavedGarden.1.0";
-    p.plantsInGarden = false;
+    p.plantPointerCount = 0;
     const wrapper = mount(<SavedGardens {...p} />);
     clickButton(wrapper, 3, "apply");
     expect(applyGarden).toHaveBeenCalledWith(1);
@@ -91,12 +91,12 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([]);
     const result = mapStateToProps(state);
-    expect(result.plantsInGarden).toEqual(false);
+    expect(result.plantPointerCount).toEqual(0);
   });
 
   it("has plants in garden", () => {
     const result = mapStateToProps(fakeState());
-    expect(result.plantsInGarden).toEqual(true);
+    expect(result.plantPointerCount).toBeGreaterThan(0);
   });
 });
 

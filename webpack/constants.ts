@@ -558,6 +558,11 @@ export namespace Content {
     trim(`Drag a box around the plants you would like to select.
     Press the back arrow to exit.`);
 
+  export const SAVED_GARDENS =
+    trim(`Create new gardens from scratch or by copying plants from the
+    current garden. View and edit saved gardens, and, when ready, apply them
+    to the main garden.`);
+
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that
