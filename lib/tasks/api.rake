@@ -127,4 +127,44 @@ namespace :api do
       rebuild_deps if user_typed?("build")
     end
   end
+
+  VERSION   = "tag_name"
+  TIMESTAMP = "created_at"
+
+  desc "Update GlobalConfig to deprecate old FBOS versions"
+  task deprecate: :environment do
+    # Get current version
+    version_str     = GlobalConfig.dump.fetch("MINIMUM_FBOS_VERSION")
+    # Convert it to Gem::Version for easy comparisons (>, <, ==, etc)
+    current_version = Gem::Version::new(version_str)
+    # 60 days is the current policy.
+    cutoff   = 60.days.ago
+    # Download release data from github
+    stringio = open("https://api.github.com/repos/farmbot/farmbot_os/releases")
+    string   = stringio.read
+    data     = JSON
+    .parse(string)
+    .map    { |x| x.slice(VERSION, TIMESTAMP)    } # Only grab keys that matter
+    .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
+    .map   do |x|
+      # Convert string-y version/timestamps to Real ObjectsTM
+      version = Gem::Version::new(x.fetch(VERSION).gsub("v", ""))
+      time    = DateTime.parse(x.fetch(TIMESTAMP))
+      Pair.new(version, time)
+    end
+    .select do |pair|
+      # Grab versions that are > current version and outside of cutoff window
+      (pair.head > current_version) && (pair.tail < cutoff)
+    end
+    .sort_by { |p| p.tail } # Sort by release date
+    .last(2) # Grab 2 latest versions (closest to cuttof)
+    .first   # Give 'em some leeway, grabbing the 2nd most outdated version.
+    .try(:head) # We might already be up-to-date?
+    if data # ...or not
+      puts "Setting new support target to #{data.to_s}"
+      GlobalConfig # Set the new oldest support version.
+        .find_by(key: "MINIMUM_FBOS_VERSION")
+        .update_attributes!(value: data.to_is)
+    end
+  end
 end
