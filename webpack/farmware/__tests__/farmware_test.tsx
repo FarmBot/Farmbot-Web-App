@@ -42,6 +42,7 @@ describe("<FarmwarePage />", () => {
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),
       taggedFarmwareInstallations: [],
+      imageJobs: [],
     };
   };
 

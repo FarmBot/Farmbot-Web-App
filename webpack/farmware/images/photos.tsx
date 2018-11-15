@@ -10,6 +10,10 @@ import { Content } from "../../constants";
 import { selectImage } from "./actions";
 import { safeStringFetch } from "../../util";
 import { destroy } from "../../api/crud";
+import {
+  downloadProgress
+} from "../../devices/components/fbos_settings/os_update_button";
+import { JobProgress, TaggedImage } from "farmbot";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -30,6 +34,67 @@ function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   </div>;
 }
 
+const PhotoMetaData = ({ image }: { image: TaggedImage | undefined }) =>
+  <div className="image-metadata">
+    {image
+      ? Object.keys(image.body.meta)
+        .filter(key => ["x", "y", "z"].includes(key))
+        .sort()
+        .map((key, index) =>
+          <MetaInfo key={index} attr={key} obj={image.body.meta} />)
+      : <MetaInfo
+        label={t("Image")}
+        attr={"image"}
+        obj={{ image: t("No meta data.") }} />}
+  </div>;
+
+const PhotoButtons = (props: {
+  takePhoto: () => void,
+  deletePhoto: () => void,
+  imageJobs: JobProgress[]
+}) => {
+  const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
+  return <div className="farmware-button">
+    <button
+      className="fb-button green"
+      onClick={props.takePhoto}>
+      {t("Take Photo")}
+    </button>
+    <button
+      className="fb-button red"
+      onClick={props.deletePhoto}>
+      {t("Delete Photo")}
+    </button>
+    <p>
+      {imageUploadJobProgress &&
+        `${t("uploading photo")}...${imageUploadJobProgress}`}
+    </p>
+  </div>;
+};
+
+const PhotoFooter = ({ image, timeOffset }: {
+  image: TaggedImage | undefined,
+  timeOffset: number
+}) => {
+  const created_at = image
+    ? moment(image.body.created_at)
+      .utcOffset(timeOffset)
+      .format("MMMM Do, YYYY h:mma")
+    : "";
+  return <div className="photos-footer">
+    {/** Separated from <MetaInfo /> for stylistic purposes. */}
+    {image ?
+      <div className="image-created-at">
+        <label>{t("Created At:")}</label>
+        <span>
+          {created_at}
+        </span>
+      </div>
+      : ""}
+    <PhotoMetaData image={image} />
+  </div>;
+};
+
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
@@ -38,22 +103,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
     getDevice().takePhoto().then(ok, no);
   }
 
-  metaDatas() {
-    const i = this.props.currentImage;
-    if (i) {
-      const { meta } = i.body;
-      return Object.keys(meta)
-        .filter(key => ["x", "y", "z"].includes(key))
-        .sort()
-        .map((key, index) => {
-          return <MetaInfo key={index} attr={key} obj={meta} />;
-        });
-    } else {
-      return <MetaInfo attr={t("image")} obj={{ image: t("No meta data.") }} />;
-    }
-  }
-
-  destroy = () => {
+  deletePhoto = () => {
     const img = this.props.currentImage || this.props.images[0];
     if (img && img.uuid) {
       this.props.dispatch(destroy(img.uuid))
@@ -63,43 +113,18 @@ export class Photos extends React.Component<PhotosProps, {}> {
   }
 
   render() {
-    const image = this.props.currentImage;
-    const created_at = image
-      ? moment(image.body.created_at)
-        .utcOffset(this.props.timeOffset)
-        .format("MMMM Do, YYYY h:mma")
-      : "";
     return <div className="photos">
-      <div className="farmware-button">
-        <button
-          className="fb-button green"
-          onClick={this.takePhoto}>
-          {t("Take Photo")}
-        </button>
-        <button
-          className="fb-button red"
-          onClick={() => this.destroy()}>
-          {t("Delete Photo")}
-        </button>
-      </div>
+      <PhotoButtons
+        takePhoto={this.takePhoto}
+        deletePhoto={this.deletePhoto}
+        imageJobs={this.props.imageJobs} />
       <ImageFlipper
-        onFlip={id => { this.props.dispatch(selectImage(id)); }}
+        onFlip={id => this.props.dispatch(selectImage(id))}
         currentImage={this.props.currentImage}
         images={this.props.images} />
-      <div className="photos-footer">
-        {/** Separated from <MetaInfo /> for stylistic purposes. */}
-        {image ?
-          <div className="image-created-at">
-            <label>{t("Created At:")}</label>
-            <span>
-              {created_at}
-            </span>
-          </div>
-          : ""}
-        <div className="image-metadatas">
-          {this.metaDatas()}
-        </div>
-      </div>
+      <PhotoFooter
+        image={this.props.currentImage}
+        timeOffset={this.props.timeOffset} />
     </div>;
   }
 }

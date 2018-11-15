@@ -14,6 +14,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
+import { JobProgress } from "farmbot";
 
 describe("mapStateToProps()", () => {
 
@@ -78,6 +79,44 @@ describe("mapStateToProps()", () => {
         }),
       [botFarmwareName]: botFarmware
     });
+  });
+
+  it("returns image upload job list", () => {
+    const state = fakeState();
+    state.bot.hardware.jobs = {
+      "img1.png": {
+        status: "working",
+        percent: 20,
+        unit: "percent",
+        time: "2018-11-15 18:13:21.167440Z",
+      } as JobProgress,
+      "FBOS_OTA": {
+        status: "working",
+        percent: 10,
+        unit: "percent",
+        time: "2018-11-15 17:13:21.167440Z",
+      } as JobProgress,
+      "img2.png": {
+        status: "working",
+        percent: 10,
+        unit: "percent",
+        time: "2018-11-15 19:13:21.167440Z",
+      } as JobProgress,
+    };
+    const props = mapStateToProps(state);
+    expect(props.imageJobs).toEqual([
+      {
+        status: "working",
+        percent: 10,
+        unit: "percent",
+        time: "2018-11-15 19:13:21.167440Z"
+      },
+      {
+        status: "working",
+        percent: 20,
+        unit: "percent",
+        time: "2018-11-15 18:13:21.167440Z"
+      }]);
   });
 });
 

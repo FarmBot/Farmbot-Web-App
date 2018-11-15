@@ -37,7 +37,7 @@ const isWorking = (job: JobProgress | undefined) =>
   job && (job.status == "working");
 
 /** FBOS update download progress. */
-function downloadProgress(job: JobProgress | undefined) {
+export function downloadProgress(job: JobProgress | undefined) {
   if (job && isWorking(job)) {
     switch (job.unit) {
       case "bytes":

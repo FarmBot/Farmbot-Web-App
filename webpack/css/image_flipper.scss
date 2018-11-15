@@ -74,7 +74,7 @@
       font-weight: bold;
     }
   }
-  .image-metadatas {
+  .image-metadata {
     display: flex;
     label {
       margin-left: 1rem;
@@ -87,6 +87,14 @@
     }
     label {
       margin-right: 0.5rem;
+    }
+  }
+  .farmware-button {
+    p {
+      float: right;
+      margin-top: 0.75rem;
+      margin-right: 1rem;
+      color: $medium_gray;
     }
   }
 }

@@ -122,7 +122,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           timeOffset={this.props.timeOffset}
           dispatch={this.props.dispatch}
           images={this.props.images}
-          currentImage={this.props.currentImage} />;
+          currentImage={this.props.currentImage}
+          imageJobs={this.props.imageJobs} />;
       case "camera_calibration":
         return <CameraCalibration
           syncStatus={this.props.syncStatus}
