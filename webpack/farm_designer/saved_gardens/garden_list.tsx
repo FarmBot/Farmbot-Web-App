@@ -5,17 +5,13 @@ import { error } from "farmbot-toastr";
 import { isNumber, isString } from "lodash";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import {
-  SavedGardensProps, GardenViewButtonProps, SavedGardenItemProps
+  SavedGardensProps, GardenViewButtonProps, SavedGardenItemProps,
+  SavedGardenInfoProps
 } from "./interfaces";
-import { TaggedSavedGarden } from "farmbot";
 import { edit, save } from "../../api/crud";
 
-export const GardenInfo = (props: {
-  savedGarden: TaggedSavedGarden,
-  gardenIsOpen: boolean,
-  plantCount: number,
-  dispatch: Function
-}) => {
+/** Name input and PlantTemplate count for a single SavedGarden. */
+export const GardenInfo = (props: SavedGardenInfoProps) => {
   const { savedGarden, gardenIsOpen, dispatch } = props;
   return <div className="saved-garden-info"
     onClick={openOrCloseGarden({
@@ -30,11 +26,12 @@ export const GardenInfo = (props: {
         }} />
     </Col>
     <Col xs={2}>
-      <p style={{ textAlign: "center" }}>{props.plantCount}</p>
+      <p style={{ textAlign: "center" }}>{props.plantTemplateCount}</p>
     </Col>
   </div>;
 };
 
+/** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
   const { dispatch, savedGarden, gardenIsOpen } = props;
   const onClick = openOrCloseGarden({ savedGarden, gardenIsOpen, dispatch });
@@ -48,12 +45,14 @@ const GardenViewButton = (props: GardenViewButtonProps) => {
   </button>;
 };
 
+/** Apply a SavedGarden after checking that the current garden is empty. */
 const ApplyGardenButton =
-  (props: { plantsInGarden: boolean, gardenId: number, dispatch: Function }) =>
+  (props: { plantPointerCount: number, gardenId: number, dispatch: Function }) =>
     <button
       className="fb-button green"
-      onClick={() => props.plantsInGarden
-        ? error(t("Please clear current garden first."))
+      onClick={() => props.plantPointerCount > 0
+        ? error(t("Please clear current garden first. ({{plantCount}} plants)",
+          { plantCount: props.plantPointerCount }))
         : props.dispatch(applyGarden(props.gardenId))}>
       {t("apply")}
     </button>;
@@ -66,6 +65,7 @@ const DestroyGardenButton =
       <i className="fa fa-times" />
     </button>;
 
+/** Info and actions for a single SavedGarden. */
 const SavedGardenItem = (props: SavedGardenItemProps) => {
   return <div
     className={`saved-garden-row ${props.gardenIsOpen ? "selected" : ""}`}>
@@ -73,7 +73,7 @@ const SavedGardenItem = (props: SavedGardenItemProps) => {
       <GardenInfo
         savedGarden={props.savedGarden}
         gardenIsOpen={props.gardenIsOpen}
-        plantCount={props.plantCount}
+        plantTemplateCount={props.plantTemplateCount}
         dispatch={props.dispatch} />
       <Col xs={6}>
         <DestroyGardenButton
@@ -81,7 +81,7 @@ const SavedGardenItem = (props: SavedGardenItemProps) => {
           gardenUuid={props.savedGarden.uuid} />
         <ApplyGardenButton
           dispatch={props.dispatch}
-          plantsInGarden={props.plantsInGarden}
+          plantPointerCount={props.plantPointerCount}
           gardenId={props.savedGarden.body.id || -1} />
         <GardenViewButton
           dispatch={props.dispatch}
@@ -92,6 +92,7 @@ const SavedGardenItem = (props: SavedGardenItemProps) => {
   </div>;
 };
 
+/** Info and action list for all SavedGardens. */
 export const SavedGardenList = (props: SavedGardensProps) =>
   <div className="saved-garden-list">
     <Row>
@@ -112,9 +113,9 @@ export const SavedGardenList = (props: SavedGardensProps) =>
           savedGarden={sg}
           gardenIsOpen={sg.uuid === props.openedSavedGarden}
           dispatch={props.dispatch}
-          plantCount={props.plantTemplates.filter(pt =>
-            pt.body.saved_garden_id === sg.body.id).length}
-          plantsInGarden={props.plantsInGarden} />;
+          plantPointerCount={props.plantPointerCount}
+          plantTemplateCount={props.plantTemplates.filter(pt =>
+            pt.body.saved_garden_id === sg.body.id).length} />;
       }
     })}
   </div>;

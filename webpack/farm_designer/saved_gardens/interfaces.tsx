@@ -4,7 +4,7 @@ export interface SavedGardensProps {
   savedGardens: TaggedSavedGarden[];
   plantTemplates: TaggedPlantTemplate[];
   dispatch: Function;
-  plantsInGarden: boolean;
+  plantPointerCount: number;
   openedSavedGarden: string | undefined;
 }
 
@@ -18,6 +18,13 @@ export interface SavedGardenItemProps {
   savedGarden: TaggedSavedGarden;
   gardenIsOpen: boolean;
   dispatch: Function;
-  plantCount: number;
-  plantsInGarden: boolean;
+  plantPointerCount: number;
+  plantTemplateCount: number;
+}
+
+export interface SavedGardenInfoProps {
+  savedGarden: TaggedSavedGarden;
+  gardenIsOpen: boolean;
+  plantTemplateCount: number;
+  dispatch: Function;
 }

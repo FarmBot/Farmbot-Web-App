@@ -5,19 +5,18 @@ jest.mock("axios", () => {
 jest.mock("../actions", () => ({
   snapshotGarden: jest.fn(),
   newSavedGarden: jest.fn(),
+  copySavedGarden: jest.fn(),
 }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { GardenSnapshotProps, GardenSnapshot } from "../garden_snapshot";
 import { clickButton } from "../../../__test_support__/helpers";
-import { error } from "farmbot-toastr";
-import { snapshotGarden, newSavedGarden } from "../actions";
+import { snapshotGarden, newSavedGarden, copySavedGarden } from "../actions";
 import { fakeSavedGarden } from "../../../__test_support__/fake_state/resources";
 
 describe("<GardenSnapshot />", () => {
   const fakeProps = (): GardenSnapshotProps => ({
-    plantsInGarden: true,
     currentSavedGarden: undefined,
     plantTemplates: [],
     dispatch: jest.fn(),
@@ -29,24 +28,17 @@ describe("<GardenSnapshot />", () => {
     expect(snapshotGarden).toHaveBeenCalledWith("");
   });
 
-  it("doesn't snapshot saved garden", () => {
+  it("copies saved garden", () => {
     const p = fakeProps();
     p.currentSavedGarden = fakeSavedGarden();
     const wrapper = mount(<GardenSnapshot {...p} />);
     clickButton(wrapper, 0, "snapshot current garden");
     expect(snapshotGarden).not.toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("while saved garden is open"));
-  });
-
-  it("no garden to save", () => {
-    const p = fakeProps();
-    p.plantsInGarden = false;
-    const wrapper = mount(<GardenSnapshot {...p} />);
-    clickButton(wrapper, 0, "snapshot current garden");
-    expect(snapshotGarden).not.toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "No plants in garden"));
+    expect(copySavedGarden).toHaveBeenCalledWith({
+      newSGName: "",
+      plantTemplates: [],
+      savedGarden: p.currentSavedGarden
+    });
   });
 
   it("changes name", () => {

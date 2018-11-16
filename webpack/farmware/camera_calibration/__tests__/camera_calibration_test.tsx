@@ -35,6 +35,7 @@ describe("<CameraCalibration/>", () => {
     syncStatus: "synced",
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
+    timeOffset: 0,
   });
 
   it("renders", () => {
