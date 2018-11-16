@@ -72,7 +72,7 @@ const PhotoButtons = (props: {
   </div>;
 };
 
-const PhotoFooter = ({ image, timeOffset }: {
+export const PhotoFooter = ({ image, timeOffset }: {
   image: TaggedImage | undefined,
   timeOffset: number
 }) => {

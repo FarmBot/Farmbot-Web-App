@@ -6,6 +6,7 @@ import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
 import { t } from "i18next";
+import { PhotoFooter } from "../images/photos";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -31,13 +32,14 @@ export interface NumericValues {
 
 type NumericKeyName = keyof NumericValues;
 
-interface Props extends NumericValues {
+export interface ImageWorkspaceProps extends NumericValues {
   onFlip(uuid: string | undefined): void;
   onProcessPhoto(image_id: number): void;
   currentImage: TaggedImage | undefined;
   images: TaggedImage[];
   onChange(key: NumericKeyName, value: number): void;
   invertHue?: boolean;
+  timeOffset: number;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -47,7 +49,7 @@ const CHANGE_MAP: Record<HSV, [NumericKeyName, NumericKeyName]> = {
   V: ["V_LO", "V_HI"]
 };
 
-export class ImageWorkspace extends React.Component<Props, {}> {
+export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
   /** Generates a function to handle changes to blur/morph/iteration. */
   numericChange = (key: NumericKeyName) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -160,6 +162,9 @@ export class ImageWorkspace extends React.Component<Props, {}> {
         onFlip={this.props.onFlip}
         images={this.props.images}
         currentImage={this.props.currentImage} />
+      <PhotoFooter
+        image={this.props.currentImage}
+        timeOffset={this.props.timeOffset} />
     </div>;
   }
 }

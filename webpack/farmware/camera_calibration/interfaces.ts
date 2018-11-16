@@ -21,4 +21,5 @@ export interface CameraCalibrationProps {
   syncStatus: SyncStatus | undefined;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
+  timeOffset: number;
 }
