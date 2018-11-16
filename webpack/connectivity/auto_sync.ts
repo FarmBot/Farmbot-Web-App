@@ -44,7 +44,8 @@ export const handleUpdate =
   (d: UpdateMqttData<TaggedResource>, uuid: string) => {
     const tr = asTaggedResource(d);
     tr.uuid = uuid;
-    console.error("This is the cause of bug (5)");
+    // tslint:disable-next-line:no-any
+    console.error(`${tr.kind}#${tr.body.id || 0} ${(tr.body as any).name} update`);
     return overwrite(tr, tr.body, SpecialStatus.SAVED);
   };
 
