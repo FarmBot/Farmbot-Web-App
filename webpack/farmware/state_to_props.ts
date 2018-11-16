@@ -13,10 +13,11 @@ import {
 import {
   determineInstalledOsVersion,
   shouldDisplay as shouldDisplayFunc,
-  trim
+  trim,
+  betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv, FarmwareManifest } from "farmbot";
+import { TaggedFarmwareEnv, FarmwareManifest, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { t } from "i18next";
 
@@ -97,6 +98,14 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       }
     });
 
+  const { jobs } = props.bot.hardware;
+  const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
+  const imageJobs: JobProgress[] =
+    _(betterCompact(imageJobNames.map(x => jobs[x])))
+      .sortBy("time")
+      .reverse()
+      .value();
+
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     currentFarmware,
@@ -113,5 +122,6 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
+    imageJobs,
   };
 }

@@ -122,7 +122,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           timeOffset={this.props.timeOffset}
           dispatch={this.props.dispatch}
           images={this.props.images}
-          currentImage={this.props.currentImage} />;
+          currentImage={this.props.currentImage}
+          imageJobs={this.props.imageJobs} />;
       case "camera_calibration":
         return <CameraCalibration
           syncStatus={this.props.syncStatus}
@@ -140,6 +141,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
           S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
           V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+          timeOffset={this.props.timeOffset}
           shouldDisplay={this.props.shouldDisplay}
           botToMqttStatus={this.props.botToMqttStatus} />;
       case "plant_detection":

@@ -1,26 +1,25 @@
-import { ImageWorkspace } from "../image_workspace";
+import { ImageWorkspace, ImageWorkspaceProps } from "../image_workspace";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
 
 describe("<Body/>", () => {
-  function fakeProps() {
-    return {
-      onFlip: jest.fn(),
-      onProcessPhoto: jest.fn(),
-      onChange: jest.fn(),
-      currentImage: undefined as TaggedImage | undefined,
-      images: [] as TaggedImage[],
-      iteration: 9,
-      morph: 9,
-      blur: 9,
-      H_LO: 2,
-      S_LO: 4,
-      V_LO: 6,
-      H_HI: 8,
-      S_HI: 10,
-      V_HI: 12
-    };
-  }
+  const fakeProps = (): ImageWorkspaceProps => ({
+    onFlip: jest.fn(),
+    onProcessPhoto: jest.fn(),
+    onChange: jest.fn(),
+    currentImage: undefined as TaggedImage | undefined,
+    images: [] as TaggedImage[],
+    iteration: 9,
+    morph: 9,
+    blur: 9,
+    H_LO: 2,
+    S_LO: 4,
+    V_LO: 6,
+    H_HI: 8,
+    S_HI: 10,
+    V_HI: 12,
+    timeOffset: 0,
+  });
 
   it("triggers onChange() event", () => {
     const props = fakeProps();

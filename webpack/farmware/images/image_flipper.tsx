@@ -5,6 +5,15 @@ import { Content } from "../../constants";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 
+/** Placeholder image with text overlay. */
+const PlaceholderImg = ({ textOverlay }: { textOverlay: string }) =>
+  <div className="no-flipper-image-container">
+    <p>{t(textOverlay)}</p>
+    <img
+      className="image-flipper-image"
+      src={PLACEHOLDER_FARMBOT} />
+  </div>;
+
 export class ImageFlipper extends
   React.Component<ImageFlipperProps, Partial<ImageFlipperState>> {
 
@@ -16,30 +25,22 @@ export class ImageFlipper extends
 
   imageJSX = () => {
     if (this.props.images.length > 0) {
-      const i = this.props.currentImage || this.props.images[0];
-      let url: string;
-      url = (i.body.attachment_processed_at) ?
-        i.body.attachment_url : PLACEHOLDER_FARMBOT;
+      const image = this.props.currentImage || this.props.images[0];
+      const url = image.body.attachment_processed_at
+        ? image.body.attachment_url
+        : PLACEHOLDER_FARMBOT;
       return <div>
-        {!this.state.isLoaded && (
-          <div className="no-flipper-image-container">
-            <p>{t(`Image loading (try refreshing)`)}</p>
-            <img
-              className="image-flipper-image"
-              src={PLACEHOLDER_FARMBOT} />
-          </div>)}
+        {!this.state.isLoaded &&
+          <PlaceholderImg
+            textOverlay={t("Image loading (try refreshing)")} />}
         <img
           onLoad={() => this.setState({ isLoaded: true })}
           className={`image-flipper-image is-loaded-${this.state.isLoaded}`}
           src={url} />
       </div>;
     } else {
-      return <div className="no-flipper-image-container">
-        <p>{t(Content.NO_IMAGES_YET)}</p>
-        <img
-          className="image-flipper-image"
-          src={PLACEHOLDER_FARMBOT} />
-      </div>;
+      return <PlaceholderImg
+        textOverlay={Content.NO_IMAGES_YET} />;
     }
   }
 
@@ -61,10 +62,9 @@ export class ImageFlipper extends
   }
 
   render() {
-    const image = this.imageJSX();
     const multipleImages = this.props.images.length > 1;
     return <div className="image-flipper">
-      {image}
+      <this.imageJSX />
       <button
         onClick={this.go(1)}
         disabled={!multipleImages || this.state.disablePrev}

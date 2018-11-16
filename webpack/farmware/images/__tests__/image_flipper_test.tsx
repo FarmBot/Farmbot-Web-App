@@ -1,10 +1,11 @@
 import "../../../__test_support__/unmock_i18next";
 import * as React from "react";
 import { shallow, mount } from "enzyme";
-import { ImageFlipper } from "../image_flipper";
+import { ImageFlipper, PLACEHOLDER_FARMBOT } from "../image_flipper";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
+import { ImageFlipperProps } from "../interfaces";
 
 describe("<ImageFlipper/>", () => {
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
@@ -17,114 +18,104 @@ describe("<ImageFlipper/>", () => {
     return images;
   }
 
+  const fakeProps = (): ImageFlipperProps => ({
+    images: prepareImages(fakeImages),
+    currentImage: undefined,
+    onFlip: jest.fn(),
+  });
+
   it("defaults to index 0 and flips up", () => {
-    const onFlip = jest.fn();
-    const currentImage = undefined;
-    const images = prepareImages(fakeImages);
-    const props = { images, currentImage, onFlip };
-    const x = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    const x = shallow(<ImageFlipper {...p} />);
     const up = (x.instance() as ImageFlipper).go(1);
     up();
-    expect(onFlip).toHaveBeenCalledWith(images[1].uuid);
+    expect(p.onFlip).toHaveBeenCalledWith(p.images[1].uuid);
   });
 
   it("flips down", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages(fakeImages);
-    const currentImage = images[1];
-    const props = { images, currentImage, onFlip };
-    const x = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const x = shallow(<ImageFlipper {...p} />);
     const down = (x.instance() as ImageFlipper).go(-1);
     down();
-    expect(onFlip).toHaveBeenCalledWith(images[0].uuid);
+    expect(p.onFlip).toHaveBeenCalledWith(p.images[0].uuid);
   });
 
   it("stops at upper end", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages(fakeImages);
-    const currentImage = images[2];
-    const props = { images, currentImage, onFlip };
-    const x = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.currentImage = p.images[2];
+    const x = shallow(<ImageFlipper {...p} />);
     const up = (x.instance() as ImageFlipper).go(1);
     up();
-    expect(onFlip).not.toHaveBeenCalled();
+    expect(p.onFlip).not.toHaveBeenCalled();
   });
 
   it("stops at lower end", () => {
-    const images = prepareImages(fakeImages);
-    const props = {
-      images,
-      currentImage: images[0],
-      onFlip: jest.fn()
-    };
-    const x = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.currentImage = p.images[0];
+    const x = shallow(<ImageFlipper {...p} />);
     const down = (x.instance() as ImageFlipper).go(-1);
     down();
-    expect(props.onFlip).not.toHaveBeenCalled();
+    expect(p.onFlip).not.toHaveBeenCalled();
   });
 
   it("disables flippers when no images", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages([]);
-    const currentImage = undefined;
-    const props = { images, currentImage, onFlip };
-    const wrapper = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.images = prepareImages([]);
+    const wrapper = shallow(<ImageFlipper {...p} />);
     expect(wrapper.find("button").first().props().disabled).toBeTruthy();
     expect(wrapper.find("button").last().props().disabled).toBeTruthy();
   });
 
   it("disables flippers when only one image", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages([fakeImages[0]]);
-    const currentImage = undefined;
-    const props = { images, currentImage, onFlip };
-    const wrapper = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.images = prepareImages([fakeImages[0]]);
+    const wrapper = shallow(<ImageFlipper {...p} />);
     expect(wrapper.find("button").first().props().disabled).toBeTruthy();
     expect(wrapper.find("button").last().props().disabled).toBeTruthy();
   });
 
   it("disables next flipper on load", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages(fakeImages);
-    const currentImage = undefined;
-    const props = { images, currentImage, onFlip };
-    const wrapper = shallow(<ImageFlipper {...props} />);
+    const wrapper = shallow(<ImageFlipper {...fakeProps()} />);
     wrapper.update();
     expect(wrapper.find("button").first().props().disabled).toBeFalsy();
     expect(wrapper.find("button").last().props().disabled).toBeTruthy();
   });
 
   it("disables flipper at lower end", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages(fakeImages);
-    const currentImage = images[1];
-    const props = { images, currentImage, onFlip };
-    const wrapper = shallow(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const wrapper = shallow(<ImageFlipper {...p} />);
     wrapper.setState({ disableNext: false });
     const nextButton = wrapper.render().find("button").last();
     expect(nextButton.text().toLowerCase()).toBe("next");
     expect(nextButton.prop("disabled")).toBeFalsy();
     wrapper.find("button").last().simulate("click");
-    expect(onFlip).toHaveBeenLastCalledWith(images[0].uuid);
+    expect(p.onFlip).toHaveBeenLastCalledWith(p.images[0].uuid);
     expect(wrapper.find("button").last().render().prop("disabled")).toBeTruthy();
   });
 
   it("disables flipper at upper end", () => {
-    const onFlip = jest.fn();
-    const images = prepareImages(fakeImages);
-    const currentImage = images[1];
-    const props = { images, currentImage, onFlip };
-    const wrapper = mount(<ImageFlipper {...props} />);
+    const p = fakeProps();
+    p.currentImage = p.images[1];
+    const wrapper = mount(<ImageFlipper {...p} />);
     const prevButton = wrapper.find("button").first();
     expect(prevButton.text().toLowerCase()).toBe("prev");
     expect(prevButton.props().disabled).toBeFalsy();
     prevButton.simulate("click");
     wrapper.update();
     // FAILED
-    expect(onFlip).toHaveBeenCalledWith(images[2].uuid);
+    expect(p.onFlip).toHaveBeenCalledWith(p.images[2].uuid);
     expect(wrapper.find("button").first().render().prop("disabled")).toBeTruthy();
     prevButton.simulate("click");
-    expect(onFlip).toHaveBeenCalledTimes(1);
+    expect(p.onFlip).toHaveBeenCalledTimes(1);
   });
 
+  it("renders placeholder", () => {
+    const p = fakeProps();
+    p.images[0].body.attachment_processed_at = undefined;
+    p.currentImage = p.images[0];
+    const wrapper = mount(<ImageFlipper {...p} />);
+    expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
+  });
 });
