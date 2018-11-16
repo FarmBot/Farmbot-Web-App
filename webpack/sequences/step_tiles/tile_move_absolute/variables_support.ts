@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import { get, uniq } from "lodash";
 import {
   Dictionary,
   Identifier,
@@ -85,17 +85,16 @@ export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
   // Collect all *referenced* variables. Required for removing unused vars.
   const used: Dictionary<Identifier> = {};
   const collectUniqVariables = (_id: Identifier) => used[_id.args.label] = _id;
-  const callsTheseSequences: number[] = [];
+  const idList: number[] = [];
   climb(thisSequence, node => {
     maybeTagStep(node);
     isIdentifier(node) && collectUniqVariables(node);
     if (isExecute(node)) {
       const { sequence_id } = node.args;
       // Recursion does not qualify as "in_use"
-      (sequence_id != id) && callsTheseSequences.push(sequence_id);
+      (sequence_id != id) && idList.push(sequence_id);
     }
   });
-
   // Add unbound variables to locals array. Unused variables magically disappear
   thisSequence.args.locals.body = Object.values(used)
     .map(({ args }) => declared[args.label] || newVar(args.label))
@@ -104,5 +103,5 @@ export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
       return node;
     });
 
-  return { thisSequence, callsTheseSequences };
+  return { thisSequence, callsTheseSequences: uniq(idList) };
 };

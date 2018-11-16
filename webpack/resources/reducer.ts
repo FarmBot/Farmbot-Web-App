@@ -102,6 +102,9 @@ export let resourceReducer =
         ref && indexRemove(s.index, ref);
       });
       payload.body.map(x => indexUpsert(s.index, x));
+      if (payload.kind === "Sequence") {
+        payload.body.map(x => indexUpsert(s.index, x));
+      }
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
