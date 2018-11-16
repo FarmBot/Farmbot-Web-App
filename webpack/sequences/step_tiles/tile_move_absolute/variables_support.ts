@@ -81,15 +81,19 @@ export const sanitizeNodes = (thisSequence: Sequence): SanitizationResult => {
   // Collect all *declared* variables. Required for fixing unbound vars.
   const declared: Dictionary<ScopeDeclarationBodyItem> = {};
   (thisSequence.args.locals.body || []).map(var_ => declared[var_.args.label] = var_);
-
+  const { id } = thisSequence;
   // Collect all *referenced* variables. Required for removing unused vars.
   const used: Dictionary<Identifier> = {};
-  const collectUniqVariables = (id: Identifier) => used[id.args.label] = id;
+  const collectUniqVariables = (_id: Identifier) => used[_id.args.label] = _id;
   const callsTheseSequences: number[] = [];
   climb(thisSequence, node => {
     maybeTagStep(node);
     isIdentifier(node) && collectUniqVariables(node);
-    isExecute(node) && callsTheseSequences.push(node.args.sequence_id);
+    if (isExecute(node)) {
+      const { sequence_id } = node.args;
+      // Recursion does not qualify as "in_use"
+      (sequence_id != id) && callsTheseSequences.push(sequence_id);
+    }
   });
 
   // Add unbound variables to locals array. Unused variables magically disappear
