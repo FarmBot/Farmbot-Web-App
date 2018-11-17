@@ -2,16 +2,17 @@ import { UUID } from "./interfaces";
 
 /** List of relationships the inUse tracker must know about. */
 export type UsageKind =
-  | "FarmEvent.Regimen"
-  | "FarmEvent.Sequence"
+  // | "CantBeDeleted.BecuaseThisUsesIt"
+  | "Regimen.FarmEvent"
   | "Regimen.Sequence"
+  | "Sequence.FarmEvent"
   | "Sequence.Sequence";
 
 /** Same as `type UsageKind` except for iteration and runtime checks. */
 export const EVERY_USAGE_KIND: UsageKind[] = [
-  "FarmEvent.Regimen",
-  "FarmEvent.Sequence",
+  "Regimen.FarmEvent",
   "Regimen.Sequence",
+  "Sequence.FarmEvent",
   "Sequence.Sequence"
 ];
 

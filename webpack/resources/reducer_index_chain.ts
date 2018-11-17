@@ -93,6 +93,7 @@ const SEQUENCE_STUFF: Indexer = {
 
 const IN_USE: Indexer = {
   up(r, _i) {
+    console.log("Hello?");
     switch (r.kind) {
       // case "Regimen":
       //   r.body.regimen_items.map(x => x.sequence_id);
@@ -101,6 +102,7 @@ const IN_USE: Indexer = {
       //   console.log("Handle this in sanitizeNodes()");
       //   break;
       case "FarmEvent":
+        console.log("INDEX STUFF HERE");
         r.body.executable_type;
     }
   },

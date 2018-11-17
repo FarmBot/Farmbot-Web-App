@@ -1,7 +1,4 @@
-import {
-  ResourceName,
-  SpecialStatus
-} from "farmbot";
+import { ResourceName, SpecialStatus } from "farmbot";
 import { combineReducers } from "redux";
 import { ReduxAction } from "../redux/interfaces";
 import { helpReducer as help } from "../help/reducer";
@@ -16,6 +13,7 @@ import { TaggedResource, ScopeDeclarationBodyItem, TaggedSequence } from "farmbo
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 import { EVERY_USAGE_KIND } from "./in_use";
+import { betterCompact } from "../util";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -93,11 +91,6 @@ const SEQUENCE_STUFF: Indexer = {
     if (r.kind === "Sequence") {
       const usingSequences = i.inUse["Sequence.Sequence"];
       delete usingSequences[r.uuid];
-      // Object
-      //   .keys(usingSequences)
-      //   .map(key => {
-      //     const t = usingSequences[key];
-      //   });
       console.log("TODO: cleanup Sequence.Sequence in_use things");
     }
     delete i.sequenceMeta[r.uuid];
@@ -105,19 +98,43 @@ const SEQUENCE_STUFF: Indexer = {
 };
 
 const IN_USE: Indexer = {
-  up(r, _i) {
-    switch (r.kind) {
-      // case "Regimen":
-      //   r.body.regimen_items.map(x => x.sequence_id);
-      //   break;
-      // case "Sequence":
-      //   console.log("Handle this in sanitizeNodes()");
-      //   break;
-      case "FarmEvent":
-        r.body.executable_type;
+  up(r, i) {
+    if (r.kind === "FarmEvent") {
+      i.inUse["Regimen.FarmEvent"] = {};
+      i.inUse["Sequence.FarmEvent"] = {};
+
+      betterCompact(Object
+        .keys(i.byKind["FarmEvent"])
+        .map(uuid => i.references[uuid])
+        .map(resource => (resource && resource.kind === "FarmEvent") ?
+          resource : undefined))
+        .map(regimen => {
+          const uuid =
+            i.byKindAndId[joinKindAndId(regimen.body.executable_type, 0)];
+          const resource = i.references[uuid || "X"];
+          if (resource) {
+            const hmm = resource.uuid;
+            switch (resource.kind) {
+              case "Sequence":
+                console.log("Does this work? Sequence.");
+                i.inUse["Sequence.FarmEvent"][hmm] =
+                  i.inUse["Sequence.FarmEvent"][hmm] || {};
+                i.inUse["Sequence.FarmEvent"][hmm][resource.uuid] = true;
+                break;
+              case "Regimen":
+                console.log("Does this work? Regimen.");
+                i.inUse["Regimen.FarmEvent"][hmm] =
+                  i.inUse["Regimen.FarmEvent"][hmm] || {};
+                i.inUse["Regimen.FarmEvent"][hmm][resource.uuid] = true;
+                break;
+            }
+          }
+        });
     }
   },
-  down: (r, i) => EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid])
+  down: (r, i) => {
+    EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
+  }
 };
 
 export const INDEXES: Indexer[] = [

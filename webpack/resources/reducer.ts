@@ -63,8 +63,8 @@ export const emptyState = (): RestResources => {
       references: {},
       sequenceMeta: {},
       inUse: {
-        "FarmEvent.Regimen": {},
-        "FarmEvent.Sequence": {},
+        "Regimen.FarmEvent": {},
+        "Sequence.FarmEvent": {},
         "Regimen.Sequence": {},
         "Sequence.Sequence": {},
       }
@@ -76,6 +76,7 @@ export const emptyState = (): RestResources => {
 export let resourceReducer =
   generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
+      console.log("Hello? " + payload.kind);
       indexUpsert(s.index, payload);
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
       return s;

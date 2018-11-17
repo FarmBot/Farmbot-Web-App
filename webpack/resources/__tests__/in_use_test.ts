@@ -10,10 +10,10 @@ import { resourceReady } from "../../sync/actions";
 describe("resourceUsageList", () => {
   it("Converts `UsageIndex` type Into Record<UUID, boolean>", () => {
     const x = {
-      "FarmEvent.Regimen": {
+      "Regimen.FarmEvent": {
         "FarmEvent.0.0": { "Regimen.2.2": true, "Regimen.1.1": true }
       },
-      "FarmEvent.Sequence": {
+      "Sequence.FarmEvent": {
         "FarmEvent.3.3": { "Sequence.4.4": true, "Sequence.5.5": true }
       },
       "Regimen.Sequence": {
