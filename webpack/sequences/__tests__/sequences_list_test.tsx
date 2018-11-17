@@ -71,7 +71,7 @@ describe("<SequencesList />", () => {
     });
   });
 
-  fit("shows in-use indicator", () => {
+  it("shows in-use indicator", () => {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.name = "Sequence 1";
     fakeSequence1.body.id = 1;
