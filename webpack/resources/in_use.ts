@@ -33,12 +33,3 @@ export const resourceUsageList =
       .reduce<string[]>((acc, item) => acc.concat(item), [])
       .reduce((acc, item) => ({ ...acc, [item]: true }), start);
   };
-
-/** Pull this variable out when its time
- * to write unit tests for in_use tracker */
-export const YOU_MUST_FIX_THIS: UsageIndex = {
-  "FarmEvent.Regimen": {},
-  "FarmEvent.Sequence": {},
-  "Regimen.Sequence": {},
-  "Sequence.Sequence": {},
-};

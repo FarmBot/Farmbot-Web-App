@@ -20,7 +20,6 @@ import { initialState as designerState } from "../farm_designer/reducer";
 import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
-import { YOU_MUST_FIX_THIS } from "./in_use";
 
 export const emptyState = (): RestResources => {
   return {
@@ -63,7 +62,12 @@ export const emptyState = (): RestResources => {
       byKindAndId: {},
       references: {},
       sequenceMeta: {},
-      inUse: YOU_MUST_FIX_THIS
+      inUse: {
+        "FarmEvent.Regimen": {},
+        "FarmEvent.Sequence": {},
+        "Regimen.Sequence": {},
+        "Sequence.Sequence": {},
+      }
     }
   };
 };
