@@ -4,6 +4,8 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
 import { DeepPartial } from "redux";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { resourceReducer } from "../reducer";
+import { resourceReady } from "../../sync/actions";
 
 describe("resourceUsageList", () => {
   it("Converts `UsageIndex` type Into Record<UUID, boolean>", () => {
@@ -28,9 +30,11 @@ describe("resourceUsageList", () => {
     expected.map(y => expect(actual).toContain(y));
   });
 });
+
 describe("in_use tracking at reducer level", () => {
   function testCase(sequences: TaggedSequence[]): ResourceIndex {
-    return buildResourceIndex(sequences).index;
+    return resourceReducer(buildResourceIndex(sequences),
+      resourceReady("Sequence", sequences)).index;
   }
 
   const assertShape =
@@ -54,23 +58,25 @@ describe("in_use tracking at reducer level", () => {
 
   it("handles a sequence that calls many sequences", () => {
     const s1 = fakeSequence();
+    const s1_id = 1;
+    s1.body.id = s1_id;
     const s2 = fakeSequence();
+    const s2_id = 2;
+    s2.body.id = s2_id;
     const s3 = fakeSequence();
-    if (s1.body.id && s2.body.id) {
-      s1.body.body = [
-        { kind: "execute", args: { sequence_id: s3.body.id || -0 } },
-        { kind: "execute", args: { sequence_id: s2.body.id || -0 } },
-      ];
-      const { inUse } = testCase([s1]);
-      assertShape(inUse, {
-        "Sequence.Sequence": {
-          [s2.uuid]: { [s1.uuid]: true },
-          [s3.uuid]: { [s1.uuid]: true },
-        }
-      });
-    } else {
-      fail("Need an ID for this one.");
-    }
+    const s3_id = 3;
+    s3.body.id = s3_id;
+    s1.body.body = [
+      { kind: "execute", args: { sequence_id: s3_id } },
+      { kind: "execute", args: { sequence_id: s2_id } },
+    ];
+    const { inUse } = testCase([s1, s2, s3]);
+    assertShape(inUse, {
+      "Sequence.Sequence": {
+        [s2.uuid]: { [s1.uuid]: true },
+        [s3.uuid]: { [s1.uuid]: true },
+      }
+    });
   });
 
   it("transitions from in_use to not in_use", () => {
