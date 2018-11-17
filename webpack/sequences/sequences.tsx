@@ -11,7 +11,7 @@ import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { LeftPanel, CenterPanel, RightPanel } from "../ui";
-import { YOU_MUST_FIX_THIS, resourceUsageList } from "../resources/in_use";
+import { resourceUsageList } from "../resources/in_use";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
@@ -29,7 +29,7 @@ export class Sequences extends React.Component<Props, {}> {
           title={t("Sequences")}
           helpText={t(ToolTips.SEQUENCE_LIST)}>
           <SequencesList
-            resourceUsage={resourceUsageList(YOU_MUST_FIX_THIS)}
+            resourceUsage={resourceUsageList(this.props.resources.inUse)}
             dispatch={this.props.dispatch}
             sequence={this.props.sequence}
             sequences={this.props.sequences} />

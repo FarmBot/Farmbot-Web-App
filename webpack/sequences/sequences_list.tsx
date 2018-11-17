@@ -3,32 +3,29 @@ import { t } from "i18next";
 import { push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
-import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
+import { sortResourcesById, urlFriendly, lastUrlChunk, fancyDebug } from "../util";
 import { Row, Col } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
-import { resourceUsageList, YOU_MUST_FIX_THIS } from "../resources/in_use";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
   .name
   .toLowerCase()
   .includes(searchTerm);
-const sequenceList = (dispatch: Function, in_use: boolean) =>
+const sequenceList = (dispatch: Function, usage: Record<string, boolean | undefined>) =>
   (ts: TaggedSequence) => {
-    const css = [
-      `fb-button`,
-      `block`,
-      `full-width`,
-      `${ts.body.color || "purple"}`
-    ];
+    const css =
+      [`fb-button`, `block`, `full-width`, `${ts.body.color || "purple"}`];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
     const click = () => dispatch(selectSequence(ts.uuid));
     const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
+    const inUse = !!usage[ts.uuid];
+
     return <div className="sequence-list-items" key={uuid}>
       <StepDragger
         dispatch={dispatch}
@@ -44,7 +41,7 @@ const sequenceList = (dispatch: Function, in_use: boolean) =>
           onClick={click} >
           <button className={css.join(" ")} draggable={true}>
             <label>{name}</label>
-            {in_use && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+            {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
           </button>
         </Link>
       </StepDragger>
@@ -75,7 +72,7 @@ export class SequencesList extends
   render() {
     const { sequences, dispatch } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
-
+    const { resourceUsage } = this.props;
     return <div>
       <button
         className="fb-button green add"
@@ -94,7 +91,7 @@ export class SequencesList extends
             {
               sortResourcesById(sequences)
                 .filter(filterFn(searchTerm))
-                .map(sequenceList(dispatch, resourceUsageList(YOU_MUST_FIX_THIS)["whatever"]))
+                .map(sequenceList(dispatch, resourceUsage))
             }
           </div>
         </Col>
