@@ -3,7 +3,7 @@ import { t } from "i18next";
 import { push } from "../history";
 import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
-import { sortResourcesById, urlFriendly, lastUrlChunk, fancyDebug } from "../util";
+import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { init } from "../api/crud";

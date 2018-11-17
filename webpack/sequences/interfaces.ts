@@ -69,7 +69,6 @@ export interface Sequence extends CeleryScriptSequence {
   id?: number;
   color: Color;
   name: string;
-  in_use?: boolean;
 }
 
 export interface SequenceReducerState {

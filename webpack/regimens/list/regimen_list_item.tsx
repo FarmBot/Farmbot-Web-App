@@ -10,12 +10,13 @@ import { Content } from "../../constants";
 import { TaggedRegimen } from "farmbot";
 import { Link } from "../../link";
 
-export function RegimenListItem({ regimen, dispatch, in_use }: RegimenListItemProps) {
+export function RegimenListItem({ regimen, dispatch }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
   const color = (regimen.body.color) || "gray";
   const style = [`block`, `full-width`, `fb-button`, `${color}`];
   lastUrlChunk() === urlFriendly(regimen.body.name) && style.push("active");
-
+  console.log("This no longer works");
+  const in_use = false;
   return <Link
     to={`/app/regimens/${urlFriendly(name)}`}
     key={regimen.uuid}>

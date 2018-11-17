@@ -49,7 +49,6 @@ export interface Regimen {
   name: string;
   color: Color;
   regimen_items: RegimenItem[];
-  in_use?: boolean;
 }
 
 export interface RegimenListItemProps {
@@ -57,7 +56,6 @@ export interface RegimenListItemProps {
   regimen: TaggedRegimen;
   dispatch: Function;
   index: number;
-  in_use?: boolean;
 }
 
 /** Individual step that a regimen will execute at a point in time. */

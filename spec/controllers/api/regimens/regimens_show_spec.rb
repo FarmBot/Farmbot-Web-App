@@ -7,14 +7,13 @@ describe Api::RegimensController do
   describe '#show' do
     let(:user) { FactoryBot.create(:user) }
 
-    it 'retrieves a specific regimin' do
+    it 'retrieves a specific regimen' do
       sign_in user
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       fe      = FactoryBot.create(:farm_event, executable: regimen)
       get :show, params: {id: regimen.id}
       expect(response.status).to eq(200)
       expect(json[:id]).to eq(regimen.id)
-      expect(json[:in_use]).to eq(true)
     end
   end
 end
