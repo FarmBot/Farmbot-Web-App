@@ -14,9 +14,10 @@ import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
 import { selectAllFarmEvents, findByKindAndId } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../constants";
 
 type IndexDirection = "up" | "down";
-type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
+type IndexerCallback = (self: TaggedResource, index: ResourceIndex, action?: Actions) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
 const REFERENCES: Indexer = {
@@ -120,8 +121,10 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
 }
 
 const IN_USE: Indexer = {
-  up(_r, _i) {
-    // console.log(`IN_USE indexer on '${r.kind}' resource`);
+  up(r, i, a) {
+    if (!(a === Actions.RESOURCE_READY)) {
+      r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
+    }
   },
   down: (_r, _i) => {
     // EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
@@ -197,9 +200,9 @@ export function whoops(origin: string, kind: string): never {
 const ups = INDEXES.map(x => x.up);
 const downs = INDEXES.map(x => x.down).reverse();
 
-export function indexUpsert(db: ResourceIndex, resources: TaggedResource) {
+export function indexUpsert(db: ResourceIndex, resources: TaggedResource, action?: Actions) {
   ups.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
+    arrayWrap(resources).map(resource => callback(resource, db, action));
   });
 }
 

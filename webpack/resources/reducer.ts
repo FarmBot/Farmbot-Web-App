@@ -103,14 +103,16 @@ export let resourceReducer =
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
       const after = s.loaded.length;
       const isLoaded = (before === 21) && (after === 22);
-      isLoaded && reindexAllFarmEventUsage(s.index);
+      if (isLoaded) {
+        reindexAllFarmEventUsage(s.index);
+      }
       /** Example Use Case: Refreshing a group of logs after the application
        * is already bootstrapped. */
       Object.keys(s.index.byKind[payload.kind]).map(uuid => {
         const ref = s.index.references[uuid];
         ref && indexRemove(s.index, ref);
       });
-      payload.body.map(x => indexUpsert(s.index, x));
+      payload.body.map(x => indexUpsert(s.index, x, Actions.RESOURCE_READY));
       // MISFORTUNE: 1. Sequences can depend on other sequences.
       //             2. We need to keep track of this.
       //             3. We don't have control over resource load order.
