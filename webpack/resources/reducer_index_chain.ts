@@ -80,11 +80,6 @@ const SEQUENCE_STUFF: Indexer = {
     if (r.kind === "Sequence") {
       const usingSequences = i.inUse["Sequence.Sequence"];
       delete usingSequences[r.uuid];
-      // Object
-      //   .keys(usingSequences)
-      //   .map(key => {
-      //     const t = usingSequences[key];
-      //   });
       console.log("TODO: cleanup Sequence.Sequence in_use things");
     }
     delete i.sequenceMeta[r.uuid];
@@ -93,17 +88,18 @@ const SEQUENCE_STUFF: Indexer = {
 
 const IN_USE: Indexer = {
   up(r, _i) {
-    console.log("Hello?");
+    console.log("Doing it for " + r.kind);
     switch (r.kind) {
-      // case "Regimen":
-      //   r.body.regimen_items.map(x => x.sequence_id);
-      //   break;
-      // case "Sequence":
-      //   console.log("Handle this in sanitizeNodes()");
-      //   break;
+      case "Regimen":
+        console.log("Hello, reg");
+        break;
+      case "Sequence":
+        // It's not here- instead, we index sequence usage stats during
+        // recursion. SEE: `SEQUENCE_STUFF`
+        break;
       case "FarmEvent":
         console.log("INDEX STUFF HERE");
-        r.body.executable_type;
+        break;
     }
   },
   down: (r, i) => EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid])

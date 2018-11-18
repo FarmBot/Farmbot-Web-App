@@ -76,7 +76,6 @@ export const emptyState = (): RestResources => {
 export let resourceReducer =
   generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      console.log("Hello? " + payload.kind);
       indexUpsert(s.index, payload);
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
       return s;
@@ -107,7 +106,15 @@ export let resourceReducer =
         ref && indexRemove(s.index, ref);
       });
       payload.body.map(x => indexUpsert(s.index, x));
-      (payload.kind === "Sequence") &&
+      // MISFORTUNE: 1. Sequences can depend on other sequences.
+      //             2. We need to keep track of this.
+      //             3. We don't have control over resource load order.
+      //             4. A sequence might depend on a sequence that is behind it
+      //                  in the array, leading to missing ID errors.
+      // SOLUTION: For now, just run the index sequence resources twice.
+      // TODO: Use topological sorting or sth to avoid this (if it matter at
+      //         all). RC 18 NOV 18
+      payload.kind === "Sequence" &&
         payload.body.map(x => indexUpsert(s.index, x));
       return s;
     })

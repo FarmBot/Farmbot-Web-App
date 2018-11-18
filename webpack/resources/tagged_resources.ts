@@ -60,7 +60,7 @@ export function isTaggedResource(x: object): x is TaggedResource {
   if (isOk) {
     return true;
   } else {
-    console.log(JSON.stringify(x));
+    console.error(JSON.stringify(x));
     return false;
   }
 }

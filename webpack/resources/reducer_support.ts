@@ -97,40 +97,41 @@ const SEQUENCE_STUFF: Indexer = {
   },
 };
 
+function reindexAllFarmEventUsage(i: ResourceIndex) {
+  i.inUse["Regimen.FarmEvent"] = {};
+  i.inUse["Sequence.FarmEvent"] = {};
+
+  betterCompact(Object
+    .keys(i.byKind["FarmEvent"])
+    .map(uuid => i.references[uuid])
+    .map(resource => (resource && resource.kind === "FarmEvent") ?
+      resource : undefined))
+    .map(regimen => {
+      const uuid =
+        i.byKindAndId[joinKindAndId(regimen.body.executable_type, 0)];
+      const resource = i.references[uuid || "X"];
+      if (resource) {
+        const hmm = resource.uuid;
+        switch (resource.kind) {
+          case "Sequence":
+            i.inUse["Sequence.FarmEvent"][hmm] =
+              i.inUse["Sequence.FarmEvent"][hmm] || {};
+            i.inUse["Sequence.FarmEvent"][hmm][resource.uuid] = true;
+            break;
+          case "Regimen":
+            i.inUse["Regimen.FarmEvent"][hmm] =
+              i.inUse["Regimen.FarmEvent"][hmm] || {};
+            i.inUse["Regimen.FarmEvent"][hmm][resource.uuid] = true;
+            break;
+        }
+      }
+    });
+}
+
 const IN_USE: Indexer = {
   up(r, i) {
-    if (r.kind === "FarmEvent") {
-      i.inUse["Regimen.FarmEvent"] = {};
-      i.inUse["Sequence.FarmEvent"] = {};
-
-      betterCompact(Object
-        .keys(i.byKind["FarmEvent"])
-        .map(uuid => i.references[uuid])
-        .map(resource => (resource && resource.kind === "FarmEvent") ?
-          resource : undefined))
-        .map(regimen => {
-          const uuid =
-            i.byKindAndId[joinKindAndId(regimen.body.executable_type, 0)];
-          const resource = i.references[uuid || "X"];
-          if (resource) {
-            const hmm = resource.uuid;
-            switch (resource.kind) {
-              case "Sequence":
-                console.log("Does this work? Sequence.");
-                i.inUse["Sequence.FarmEvent"][hmm] =
-                  i.inUse["Sequence.FarmEvent"][hmm] || {};
-                i.inUse["Sequence.FarmEvent"][hmm][resource.uuid] = true;
-                break;
-              case "Regimen":
-                console.log("Does this work? Regimen.");
-                i.inUse["Regimen.FarmEvent"][hmm] =
-                  i.inUse["Regimen.FarmEvent"][hmm] || {};
-                i.inUse["Regimen.FarmEvent"][hmm][resource.uuid] = true;
-                break;
-            }
-          }
-        });
-    }
+    console.log(`IN_USE indexer on '${r.kind}' resource`);
+    (r.kind === "FarmEvent") && reindexAllFarmEventUsage(i);
   },
   down: (r, i) => {
     EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
