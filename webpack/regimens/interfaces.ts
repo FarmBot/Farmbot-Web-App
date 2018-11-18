@@ -3,7 +3,7 @@ import { Week } from "./bulk_scheduler/interfaces";
 import { AuthState } from "../auth/interfaces";
 import { BotState } from "../devices/interfaces";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
-import { ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex, UUID } from "../resources/interfaces";
 
 export interface CalendarRow {
   day: string;
@@ -22,6 +22,7 @@ export interface Props {
   dailyOffsetMs: number;
   weeks: Week[];
   calendar: CalendarRow[];
+  regimenUsageStats: Record<UUID, boolean | undefined>
 }
 
 export interface RegimenItemCalendarRow {
@@ -55,6 +56,7 @@ export interface RegimenListItemProps {
   length: number;
   regimen: TaggedRegimen;
   dispatch: Function;
+  inUse: boolean;
   index: number;
 }
 
@@ -78,6 +80,7 @@ export interface RegimensListProps {
   dispatch: Function;
   regimens: TaggedRegimen[];
   regimen: TaggedRegimen | undefined;
+  usageStats: Record<UUID, boolean | undefined>;
 }
 
 export interface RegimensListState {

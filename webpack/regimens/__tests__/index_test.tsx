@@ -17,6 +17,7 @@ import { bot } from "../../__test_support__/fake_state/bot";
 import { auth } from "../../__test_support__/fake_state/token";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeRegimen } from "../../__test_support__/fake_state/resources";
+import { resourceUsageList } from "../../resources/in_use";
 
 describe("<Regimens />", () => {
   function fakeProps(): Props {
@@ -31,7 +32,13 @@ describe("<Regimens />", () => {
       dailyOffsetMs: 1000,
       weeks: [],
       bot,
-      calendar: []
+      calendar: [],
+      regimenUsageStats: resourceUsageList({
+        "Regimen.FarmEvent": {},
+        "Regimen.Sequence": {},
+        "Sequence.FarmEvent": {},
+        "Sequence.Sequence": {},
+      })
     };
   }
 

@@ -27,6 +27,7 @@ export class Regimens extends React.Component<Props, {}> {
           title={t("Regimens")}
           helpText={t(ToolTips.REGIMEN_LIST)}>
           <RegimensList
+            usageStats={this.props.regimenUsageStats}
             dispatch={this.props.dispatch}
             regimens={this.props.regimens}
             regimen={this.props.current} />

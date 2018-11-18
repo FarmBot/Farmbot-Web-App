@@ -14,6 +14,7 @@ import * as moment from "moment";
 import { ResourceIndex } from "../resources/interfaces";
 import { randomColor } from "../util";
 import * as _ from "lodash";
+import { resourceUsageList } from "../resources/in_use";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
@@ -35,7 +36,8 @@ export function mapStateToProps(props: Everything): Props {
     dailyOffsetMs,
     weeks,
     bot,
-    calendar
+    calendar,
+    regimenUsageStats: resourceUsageList(props.resources.index.inUse)
   };
 }
 
