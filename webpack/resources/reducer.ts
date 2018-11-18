@@ -6,7 +6,8 @@ import {
   findByUuid,
   indexRemove,
   initResourceReducer,
-  afterEach
+  afterEach,
+  reindexAllFarmEventUsage
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -98,7 +99,11 @@ export let resourceReducer =
       return s;
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
+      const before = s.loaded.length;
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+      const after = s.loaded.length;
+      const isLoaded = (before === 21) && (after === 22);
+      isLoaded && reindexAllFarmEventUsage(s.index);
       /** Example Use Case: Refreshing a group of logs after the application
        * is already bootstrapped. */
       Object.keys(s.index.byKind[payload.kind]).map(uuid => {
@@ -116,6 +121,7 @@ export let resourceReducer =
       //         all). RC 18 NOV 18
       payload.kind === "Sequence" &&
         payload.body.map(x => indexUpsert(s.index, x));
+
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {

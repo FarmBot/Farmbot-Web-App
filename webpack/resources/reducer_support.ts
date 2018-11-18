@@ -12,8 +12,8 @@ import { arrayWrap } from "./util";
 import { TaggedResource, ScopeDeclarationBodyItem, TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { EVERY_USAGE_KIND } from "./in_use";
-import { betterCompact } from "../util";
+import { selectAllFarmEvents, findByKindAndId } from "./selectors_by_kind";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -97,44 +97,34 @@ const SEQUENCE_STUFF: Indexer = {
   },
 };
 
-function reindexAllFarmEventUsage(i: ResourceIndex) {
+export function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
   i.inUse["Sequence.FarmEvent"] = {};
-
-  betterCompact(Object
-    .keys(i.byKind["FarmEvent"])
-    .map(uuid => i.references[uuid])
-    .map(resource => (resource && resource.kind === "FarmEvent") ?
-      resource : undefined))
-    .map(regimen => {
-      const uuid =
-        i.byKindAndId[joinKindAndId(regimen.body.executable_type, 0)];
-      const resource = i.references[uuid || "X"];
-      if (resource) {
-        const hmm = resource.uuid;
-        switch (resource.kind) {
-          case "Sequence":
-            i.inUse["Sequence.FarmEvent"][hmm] =
-              i.inUse["Sequence.FarmEvent"][hmm] || {};
-            i.inUse["Sequence.FarmEvent"][hmm][resource.uuid] = true;
-            break;
-          case "Regimen":
-            i.inUse["Regimen.FarmEvent"][hmm] =
-              i.inUse["Regimen.FarmEvent"][hmm] || {};
-            i.inUse["Regimen.FarmEvent"][hmm][resource.uuid] = true;
-            break;
-        }
-      }
+  const whichOne: Record<ExecutableType, typeof i.inUse["Regimen.FarmEvent"]> = {
+    "Regimen": i.inUse["Regimen.FarmEvent"],
+    "Sequence": i.inUse["Sequence.FarmEvent"],
+  };
+  // Which FarmEvents use which resource?
+  selectAllFarmEvents(i)
+    .map(fe => ({
+      exe_type: fe.body.executable_type,
+      exe_uuid: findByKindAndId(i, fe.body.executable_type, fe.body.executable_id).uuid,
+      fe_uuid: fe.uuid
+    }))
+    .map(data => {
+      whichOne[data.exe_type] = whichOne[data.exe_type] || {};
+      whichOne[data.exe_type][data.exe_uuid] =
+        whichOne[data.exe_type][data.exe_uuid] || {};
+      whichOne[data.exe_type][data.exe_uuid][data.fe_uuid];
     });
 }
 
 const IN_USE: Indexer = {
-  up(r, i) {
-    console.log(`IN_USE indexer on '${r.kind}' resource`);
-    (r.kind === "FarmEvent") && reindexAllFarmEventUsage(i);
+  up(_r, _i) {
+    // console.log(`IN_USE indexer on '${r.kind}' resource`);
   },
-  down: (r, i) => {
-    EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
+  down: (_r, _i) => {
+    // EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
   }
 };
 
