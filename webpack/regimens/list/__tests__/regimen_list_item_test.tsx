@@ -32,14 +32,14 @@ describe("<RegimenListItem/>", () => {
     expect(wrapper.text()).toContain("Foo *");
   });
 
-  fit("shows in-use indicator", () => {
+  it("shows in-use indicator", () => {
     const p = fakeProps();
     p.inUse = true;
     const wrapper = render(<RegimenListItem {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });
 
-  fit("doesn't show in-use indicator", () => {
+  it("doesn't show in-use indicator", () => {
     const props = fakeProps();
     const wrapper = render(<RegimenListItem {...props} />);
     expect(wrapper.find(".in-use").length).toEqual(0);

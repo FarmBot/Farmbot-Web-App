@@ -1,9 +1,13 @@
-import { TaggedSequence } from "farmbot";
+import { TaggedResource } from "farmbot";
 import { ResourceIndex } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
 import { DeepPartial } from "redux";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import {
+  fakeSequence,
+  fakeFarmEvent,
+  fakeRegimen
+} from "../../__test_support__/fake_state/resources";
 import { resourceReducer } from "../reducer";
 import { resourceReady } from "../../sync/actions";
 
@@ -32,7 +36,7 @@ describe("resourceUsageList", () => {
 });
 
 describe("in_use tracking at reducer level", () => {
-  function testCase(sequences: TaggedSequence[]): ResourceIndex {
+  function testCase(sequences: TaggedResource[]): ResourceIndex {
     return resourceReducer(buildResourceIndex(sequences),
       resourceReady("Sequence", sequences)).index;
   }
@@ -79,7 +83,18 @@ describe("in_use tracking at reducer level", () => {
     });
   });
 
-  it("transitions from in_use to not in_use", () => {
-    pending();
+  it("Tracks a FarmEvent's Regimen usage", () => {
+    const theRegimen = fakeRegimen();
+    theRegimen.body.id = 2;
+    const theFarmEvent = fakeFarmEvent("Regimen", theRegimen.body.id);
+    const { inUse } = testCase([theRegimen, theFarmEvent]);
+    assertShape(inUse, {
+      "Regimen.FarmEvent": {
+        [theRegimen.uuid]: { [theFarmEvent.uuid]: true },
+      }
+    });
   });
+
+  it("Tracks a Regimen's Sequence usage", () => pending());
+  it("transitions from in_use to not in_use", () => pending());
 });
