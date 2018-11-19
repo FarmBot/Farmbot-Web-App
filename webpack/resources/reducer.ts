@@ -7,7 +7,7 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
-  reindexAllFarmEventUsage
+  // REINDEXERS
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -99,31 +99,16 @@ export let resourceReducer =
       return s;
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      const before = s.loaded.length;
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      const after = s.loaded.length;
-      const isLoaded = (before === 21) && (after === 22);
-      if (isLoaded) {
-        reindexAllFarmEventUsage(s.index);
-      }
-      /** Example Use Case: Refreshing a group of logs after the application
-       * is already bootstrapped. */
-      Object.keys(s.index.byKind[payload.kind]).map(uuid => {
-        const ref = s.index.references[uuid];
-        ref && indexRemove(s.index, ref);
-      });
-      payload.body.map(x => indexUpsert(s.index, x, Actions.RESOURCE_READY));
-      // MISFORTUNE: 1. Sequences can depend on other sequences.
-      //             2. We need to keep track of this.
-      //             3. We don't have control over resource load order.
-      //             4. A sequence might depend on a sequence that is behind it
-      //                  in the array, leading to missing ID errors.
-      // SOLUTION: For now, just run the index sequence resources twice.
-      // TODO: Use topological sorting or sth to avoid this (if it matter at
-      //         all). RC 18 NOV 18
-      payload.kind === "Sequence" &&
-        payload.body.map(x => indexUpsert(s.index, x));
 
+      payload.body.map(x => indexUpsert(s.index, x));
+      // if (s.loaded.length > 22) {
+      //   const fn = REINDEXERS[payload.kind];
+      //   fn && fn(s.index);
+      // }
+      // if (s.loaded.length == 22) {
+      //   console.log("TODO");
+      // }
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {

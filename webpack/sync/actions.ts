@@ -54,6 +54,7 @@ export async function fetchSyncData(dispatch: Function) {
       get("FirmwareConfig", API.current.firmwareConfigPath),
       get("FarmwareEnv", API.current.farmwareEnvPath),
       get("FarmwareInstallation", API.current.farmwareInstallationPath),
+      get("WebAppConfig", API.current.webAppConfigPath),
     ],
     1: () => [
       get("Peripheral", API.current.peripheralsPath),
@@ -78,7 +79,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("SavedGarden", API.current.savedGardensPath),
       get("Peripheral", API.current.peripheralsPath),
       get("User", API.current.usersPath),
-      get("WebAppConfig", API.current.webAppConfigPath),
       get("WebcamFeed", API.current.webcamFeedPath)
     ],
   };

@@ -9,16 +9,21 @@ import { sequenceReducer as sequences } from "../sequences/reducer";
 import { RestResources } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { arrayWrap } from "./util";
-import { TaggedResource, ScopeDeclarationBodyItem, TaggedSequence } from "farmbot";
+import {
+  TaggedResource,
+  ScopeDeclarationBodyItem,
+  TaggedSequence
+} from "farmbot";
 import { ResourceIndex, VariableNameMapping } from "./interfaces";
-import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
+import {
+  sanitizeNodes
+} from "../sequences/step_tiles/tile_move_absolute/variables_support";
 import { selectAllFarmEvents, findByKindAndId } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
-import { Actions } from "../constants";
 import { betterCompact } from "../util";
 
 type IndexDirection = "up" | "down";
-type IndexerCallback = (self: TaggedResource, index: ResourceIndex, action?: Actions) => void;
+type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
 const REFERENCES: Indexer = {
@@ -87,22 +92,19 @@ const reindexSequences = (i: ResourceIndex) => (s: TaggedSequence) => {
   updateOtherSequenceIndexes({ ...s, body: thisSequence }, i);
 };
 
-const reindexAllSequences: IndexerCallback = (r, i) => {
-  if (r.kind === "Sequence") {
-    i.inUse["Sequence.Sequence"] = {};
-    betterCompact(Object
-      .keys(i.byKind["Sequence"])
-      .map(uuid => {
-        const resource = i.references[uuid];
-        if (resource && resource.kind == "Sequence") {
-          return resource;
-        }
-      })).map(reindexSequences(i));
-  }
+const reindexAllSequences = (i: ResourceIndex) => {
+  i.inUse["Sequence.Sequence"] = {};
+  const mapper = reindexSequences(i);
+  betterCompact(Object.keys(i.byKind["Sequence"]).map(uuid => {
+    const resource = i.references[uuid];
+    return (resource && resource.kind == "Sequence") ? resource : undefined;
+  })).map(mapper);
 };
 
-const SEQUENCE_STUFF: Indexer =
-  ({ up: reindexAllSequences, down: reindexAllSequences });
+const SEQUENCE_STUFF: Indexer = {
+  up(_, i) { reindexAllSequences(i); },
+  down(_, i) { reindexAllSequences(i); },
+};
 
 export function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
@@ -127,17 +129,15 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
 }
 
 const IN_USE: Indexer = {
-  up(r, i, a) {
-    if (!(a === Actions.RESOURCE_READY)) {
-      r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
-    }
+  up: (_r, _i) => {
+    // r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
   },
   down: (_r, _i) => {
-    // EVERY_USAGE_KIND.map(kind => delete i.inUse[kind][r.uuid]);
+    // r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
   }
 };
 
-export const INDEXES: Indexer[] = [
+export const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
   BY_KIND,
@@ -145,6 +145,14 @@ export const INDEXES: Indexer[] = [
   SEQUENCE_STUFF,
   IN_USE
 ];
+
+type Reindexer = (i: ResourceIndex) => void;
+
+export const REINDEXERS: Partial<Record<TaggedResource["kind"], Reindexer>> = {
+  "Log": () => { console.log("TODO: Logs reindexer"); },
+  "Regimen": reindexAllFarmEventUsage,
+  "Sequence": reindexAllSequences,
+};
 
 export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
@@ -203,14 +211,13 @@ export function whoops(origin: string, kind: string): never {
   throw new Error(msg);
 }
 
-const ups = INDEXES.map(x => x.up);
-const downs = INDEXES.map(x => x.down).reverse();
+const ups = INDEXERS.map(x => x.up);
+const downs = INDEXERS.map(x => x.down).reverse();
 
-export function indexUpsert(db: ResourceIndex, resources: TaggedResource, action?: Actions) {
-  ups.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db, action));
-  });
-}
+export const indexUpsert =
+  (db: ResourceIndex, resources: TaggedResource) => ups
+    .map(callback => arrayWrap(resources)
+      .map(resource => callback(resource, db)));
 
 export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
   downs.map(callback => {
