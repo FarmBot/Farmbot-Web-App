@@ -36,34 +36,56 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
   });
 };
 
-export function fetchSyncData(dispatch: Function) {
-  const fetch =
-    <T extends TR>(kind: T["kind"], url: string) => axios
-      .get<T["body"] | T["body"][]>(url)
-      .then(({ data }) => {
-        dispatch(resourceReady(kind, newTaggedResource(kind, data)));
-      }, Session.clear);
+const download = (dispatch: Function) =>
+  <T extends TR>(kind: T["kind"], url: string) => axios
+    .get<T["body"] | T["body"][]>(url)
+    .then(({ data }) => {
+      dispatch(resourceReady(kind, newTaggedResource(kind, data)));
+    }, Session.clear);
 
-  fetch("User", API.current.usersPath);
-  fetch("Device", API.current.devicePath);
-  fetch("WebcamFeed", API.current.webcamFeedPath);
-  fetch("FbosConfig", API.current.fbosConfigPath);
-  fetch("WebAppConfig", API.current.webAppConfigPath);
-  fetch("FirmwareConfig", API.current.firmwareConfigPath);
-  fetch("FarmEvent", API.current.farmEventsPath);
-  fetch("Image", API.current.imagesPath);
-  fetch("Log", API.current.filteredLogsPath);
-  fetch("Peripheral", API.current.peripheralsPath);
-  fetch("Point", API.current.allPointsPath);
-  fetch("Regimen", API.current.regimensPath);
-  fetch("Sequence", API.current.sequencesPath);
-  fetch("Tool", API.current.toolsPath);
-  fetch("SensorReading", API.current.sensorReadingPath);
-  fetch("Sensor", API.current.sensorPath);
-  fetch("FarmwareInstallation", API.current.farmwareInstallationPath);
-  fetch("FarmwareEnv", API.current.farmwareEnvPath);
-  fetch("PinBinding", API.current.pinBindingPath);
-  fetch("SavedGarden", API.current.savedGardensPath);
-  fetch("PlantTemplate", API.current.plantTemplatePath);
-  fetch("DiagnosticDump", API.current.diagnosticDumpsPath);
+export async function fetchSyncData(dispatch: Function) {
+  const get = download(dispatch);
+
+  /** Resources are placed into groups based on their dependencies. */
+  const group = {
+    0: () => [
+      get("Device", API.current.devicePath),
+      get("FbosConfig", API.current.fbosConfigPath),
+      get("FirmwareConfig", API.current.firmwareConfigPath),
+      get("FarmwareEnv", API.current.farmwareEnvPath),
+      get("FarmwareInstallation", API.current.farmwareInstallationPath),
+    ],
+    1: () => [
+      get("Peripheral", API.current.peripheralsPath),
+      get("Point", API.current.pointsPath),
+      get("SensorReading", API.current.sensorReadingPath),
+      get("Sensor", API.current.sensorPath),
+      get("Tool", API.current.toolsPath)
+    ],
+    2: () => [
+      get("Sequence", API.current.sequencesPath)
+    ],
+    3: () => [
+      get("Regimen", API.current.regimensPath),
+      get("PinBinding", API.current.pinBindingPath)
+    ],
+    4: () => [
+      get("FarmEvent", API.current.farmEventsPath),
+      get("DiagnosticDump", API.current.diagnosticDumpsPath),
+      get("Image", API.current.imagesPath),
+      get("Log", API.current.filteredLogsPath),
+      get("PlantTemplate", API.current.plantTemplatePath),
+      get("SavedGarden", API.current.savedGardensPath),
+      get("Peripheral", API.current.peripheralsPath),
+      get("User", API.current.usersPath),
+      get("WebAppConfig", API.current.webAppConfigPath),
+      get("WebcamFeed", API.current.webcamFeedPath)
+    ],
+  };
+
+  await group[0]();
+  await group[1]();
+  await group[2]();
+  await group[3]();
+  await group[4]();
 }
