@@ -82,10 +82,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("WebcamFeed", API.current.webcamFeedPath)
     ],
   };
-
-  await group[0]();
-  await group[1]();
-  await group[2]();
-  await group[3]();
-  await group[4]();
+  const mapper = async (num: keyof typeof group) => await group[num]();
+  [0, 1, 2, 3, 4].map(mapper);
 }

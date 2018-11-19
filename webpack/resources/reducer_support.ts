@@ -15,6 +15,7 @@ import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variab
 import { selectAllFarmEvents, findByKindAndId } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../constants";
+import { betterCompact } from "../util";
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex, action?: Actions) => void;
@@ -74,29 +75,34 @@ export const updateOtherSequenceIndexes =
     i.sequenceMeta[tr.uuid] = variableLookupTable(tr);
   };
 
-const SEQUENCE_STUFF: Indexer = {
-  up(r, i) {
-    if (r.kind === "Sequence") {
-      // STEP 1: Sanitize nodes, tag them with unique UUIDs (for React),
-      //         collect up sequence_id's, etc. NOTE: This is CPU expensive,
-      //         so if you need to do tree traversal, do it now.
-      const { thisSequence, callsTheseSequences } = sanitizeNodes(r.body);
-      // STEP 2: Add sequence to index.references, update variable reference
-      //         indexes
-      updateSequenceUsageIndex(r.uuid, callsTheseSequences, i);
-      // Step 3: Update the in_use stats for Sequence-to-Sequence usage.
-      updateOtherSequenceIndexes({ ...r, body: thisSequence }, i);
-    }
-  },
-  down(r, i) {
-    if (r.kind === "Sequence") {
-      const usingSequences = i.inUse["Sequence.Sequence"];
-      delete usingSequences[r.uuid];
-      console.log("TODO: cleanup Sequence.Sequence in_use things");
-    }
-    delete i.sequenceMeta[r.uuid];
-  },
+const reindexSequences = (i: ResourceIndex) => (s: TaggedSequence) => {
+  // STEP 1: Sanitize nodes, tag them with unique UUIDs (for React),
+  //         collect up sequence_id's, etc. NOTE: This is CPU expensive,
+  //         so if you need to do tree traversal, do it now.
+  const { thisSequence, callsTheseSequences } = sanitizeNodes(s.body);
+  // STEP 2: Add sequence to index.references, update variable reference
+  //         indexes
+  updateSequenceUsageIndex(s.uuid, callsTheseSequences, i);
+  // Step 3: Update the in_use stats for Sequence-to-Sequence usage.
+  updateOtherSequenceIndexes({ ...s, body: thisSequence }, i);
 };
+
+const reindexAllSequences: IndexerCallback = (r, i) => {
+  if (r.kind === "Sequence") {
+    i.inUse["Sequence.Sequence"] = {};
+    betterCompact(Object
+      .keys(i.byKind["Sequence"])
+      .map(uuid => {
+        const resource = i.references[uuid];
+        if (resource && resource.kind == "Sequence") {
+          return resource;
+        }
+      })).map(reindexSequences(i));
+  }
+};
+
+const SEQUENCE_STUFF: Indexer =
+  ({ up: reindexAllSequences, down: reindexAllSequences });
 
 export function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
