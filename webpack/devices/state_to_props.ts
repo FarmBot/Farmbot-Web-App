@@ -4,12 +4,10 @@ import {
   selectAllImages,
   getDeviceAccountSettings,
   maybeGetDevice,
-  getFirmwareConfig
 } from "../resources/selectors";
 import {
   sourceFbosConfigValue, sourceFwConfigValue
 } from "./components/source_config_value";
-import { getFbosConfig } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion, validFwConfig, validFbosConfig,
   shouldDisplay as shouldDisplayFunc
@@ -17,6 +15,7 @@ import {
 import {
   saveOrEditFarmwareEnv, reduceFarmwareEnv
 } from "../farmware/state_to_props";
+import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;

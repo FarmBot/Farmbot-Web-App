@@ -14,7 +14,6 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  getFbosConfig,
   maybeGetDevice
 } from "../../resources/selectors";
 import {
@@ -30,6 +29,7 @@ import { sourceFbosConfigValue } from "../../devices/components/source_config_va
 import { Feature } from "../../devices/interfaces";
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { getFbosConfig } from "../../resources/getters";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();

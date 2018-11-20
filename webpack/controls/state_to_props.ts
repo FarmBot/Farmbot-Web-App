@@ -2,7 +2,6 @@ import { Everything } from "../interfaces";
 import {
   selectAllPeripherals,
   selectAllWebcamFeeds,
-  getFirmwareConfig,
   selectAllSensors,
   maybeGetDevice,
   selectAllSensorReadings,
@@ -15,6 +14,7 @@ import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
+import { getFirmwareConfig } from "../resources/getters";
 
 export function mapStateToProps(props: Everything): Props {
   const peripherals = _.uniq(selectAllPeripherals(props.resources.index));

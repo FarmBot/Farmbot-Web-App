@@ -1,12 +1,12 @@
 import { GetState } from "../redux/interfaces";
 import { edit, save } from "../api/crud";
-import { getWebAppConfig } from "../resources/selectors_by_kind";
 import {
   BooleanConfigKey,
   WebAppConfig,
   NumberConfigKey,
   StringConfigKey
 } from "farmbot/dist/resources/configs/web_app";
+import { getWebAppConfig } from "../resources/getters";
 
 /** Inverts boolean config key in WebAppConfig object, stored in the API. */
 export function toggleWebAppBool(key: BooleanConfigKey) {

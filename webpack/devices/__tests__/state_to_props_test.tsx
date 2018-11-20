@@ -6,10 +6,14 @@ let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
 const mockImages: TaggedImage | undefined = fakeImage();
 
 jest.mock("../../resources/selectors_by_kind", () => ({
-  getFbosConfig: () => mockFbosConfig,
-  getFirmwareConfig: () => undefined,
+  selectAllLogs: () => [],
   selectAllImages: () => [mockImages],
   selectAllFarmwareEnvs: () => [fakeFarmwareEnv()]
+}));
+
+jest.mock("../../resources/getters", () => ({
+  getFbosConfig: () => mockFbosConfig,
+  getFirmwareConfig: () => undefined,
 }));
 
 import { mapStateToProps } from "../state_to_props";

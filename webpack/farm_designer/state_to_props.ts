@@ -7,7 +7,6 @@ import {
   selectAllImages,
   maybeGetTimeOffset,
   selectAllPeripherals,
-  getFirmwareConfig,
   selectAllPlantTemplates,
   selectAllSensorReadings,
   selectAllSensors,
@@ -27,6 +26,7 @@ import { isString } from "lodash";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { reduceFarmwareEnv } from "../farmware/state_to_props";
+import { getFirmwareConfig } from "../resources/getters";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>

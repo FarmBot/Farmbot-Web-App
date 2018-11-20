@@ -13,17 +13,16 @@ import {
 } from "farmbot";
 import { Sequence } from "../sequences/interfaces";
 import { ControlPanelState } from "../devices/interfaces";
-import { getFirmwareConfig } from "../resources/selectors";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
-import { getFbosConfig } from "../resources/selectors_by_kind";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
