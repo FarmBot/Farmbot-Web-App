@@ -112,10 +112,12 @@ const reindexAllSequences = (i: ResourceIndex) => {
   })).map(mapper);
 };
 
-const SEQUENCE_STUFF: Indexer = {
-  up(_, i) { reindexAllSequences(i); },
-  down(_, i) { reindexAllSequences(i); },
-};
+// const SEQUENCE_STUFF: Indexer = {
+//   up(_, _i) { },
+//   down(_, i) {
+//     reindexAllSequences(i);
+//   },
+// };
 
 export function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
@@ -144,7 +146,7 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
-  SEQUENCE_STUFF
+  // SEQUENCE_STUFF
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
@@ -203,8 +205,10 @@ const BEFORE_HOOKS: IndexerHook = {
 };
 
 const AFTER_HOOKS: IndexerHook = {
-  // "Regimen": reindexAllFarmEventUsage,
-  "Sequence": reindexAllSequences,
+  Regimen(_index, _strategy) {
+    // reindexAllFarmEventUsage()
+  },
+  Sequence: reindexAllSequences,
 };
 
 const ups = INDEXERS.map(x => x.up);
@@ -231,8 +235,10 @@ export const indexUpsert =
     after && after(db, strategy);
   };
 
-export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
-  downs.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
-  });
+export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
+  downs
+    .map(callback => arrayWrap(resource).map(r => callback(r, db)));
+  // Finalize indexing (if needed)
+  const after = AFTER_HOOKS[resource.kind];
+  after && after(db, "one");
 }
