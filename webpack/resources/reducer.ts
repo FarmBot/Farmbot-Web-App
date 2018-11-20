@@ -99,9 +99,7 @@ export let resourceReducer =
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-
       payload.body.map(x => indexUpsert(s.index, x));
-
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {

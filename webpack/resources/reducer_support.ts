@@ -138,9 +138,9 @@ export const INDEXERS: Indexer[] = [
 
 type Reindexer = (i: ResourceIndex) => void;
 
-export const REINDEXERS: Partial<Record<TaggedResource["kind"], Reindexer>> = {
+export const AFTER_HOOKS: Partial<Record<TaggedResource["kind"], Reindexer>> = {
   "Log": () => { console.log("TODO: Logs reindexer"); },
-  "Regimen": reindexAllFarmEventUsage,
+  // "Regimen": reindexAllFarmEventUsage,
   "Sequence": reindexAllSequences,
 };
 
@@ -204,10 +204,14 @@ export function whoops(origin: string, kind: string): never {
 const ups = INDEXERS.map(x => x.up);
 const downs = INDEXERS.map(x => x.down).reverse();
 
-export const indexUpsert =
-  (db: ResourceIndex, resources: TaggedResource) => ups
-    .map(callback => arrayWrap(resources)
-      .map(resource => callback(resource, db)));
+export const indexUpsert = (db: ResourceIndex, resource: TaggedResource) => {
+  // Run singular indexers
+  ups.map(callback => callback(resource, db));
+
+  // Run group indexers, all at once.
+  const fn = AFTER_HOOKS[resource.kind];
+  fn && fn(db);
+};
 
 export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
   downs.map(callback => {
