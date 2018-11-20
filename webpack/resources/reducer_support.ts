@@ -8,7 +8,7 @@ import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
 import { RestResources } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
-import { arrayWrap } from "./util";
+import { arrayWrap, arrayUnwrap } from "./util";
 import {
   TaggedResource,
   ScopeDeclarationBodyItem,
@@ -18,9 +18,20 @@ import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import {
   sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { selectAllFarmEvents, findByKindAndId } from "./selectors_by_kind";
+import { selectAllFarmEvents, findByKindAndId, selectAllLogs } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
+
+// NONSENSE CAUSED BY CIRCULAR DEPS (TODO: FIX LATER RC) =======================
+export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
+  const x = index.references[uuid];
+  if (x && isTaggedResource(x)) {
+    return x;
+  } else {
+    throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
+  }
+}
+// END NONSENSE ================================================================
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -136,13 +147,8 @@ export const INDEXERS: Indexer[] = [
   SEQUENCE_STUFF
 ];
 
-type Reindexer = (i: ResourceIndex) => void;
-
-export const AFTER_HOOKS: Partial<Record<TaggedResource["kind"], Reindexer>> = {
-  "Log": () => { console.log("TODO: Logs reindexer"); },
-  // "Regimen": reindexAllFarmEventUsage,
-  "Sequence": reindexAllSequences,
-};
+type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
+type Reindexer = (i: ResourceIndex, strategy: "one" | "many") => void;
 
 export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
@@ -183,35 +189,47 @@ export const mutateSpecialStatus =
 
 export function initResourceReducer(s: RestResources,
   { payload }: ReduxAction<TaggedResource>): RestResources {
-  indexUpsert(s.index, payload);
+  indexUpsert(s.index, [payload], "one");
   return s;
 }
 
-export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
-  const x = index.references[uuid];
-  if (x && isTaggedResource(x)) {
-    return x;
-  } else {
-    throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
-  }
-}
+const BEFORE_HOOKS: IndexerHook = {
+  Log(_index, strategy) {
+    // IMPLEMENTATION DETAIL: When the app downloads a *list* of logs, we
+    // replaces the entire logs collection.
+    (strategy === "many") &&
+      selectAllLogs(_index).map(log => indexRemove(_index, log));
+  },
+};
 
-export function whoops(origin: string, kind: string): never {
-  const msg = `${origin}/${kind}: No handler written for this one yet.`;
-  throw new Error(msg);
-}
+const AFTER_HOOKS: IndexerHook = {
+  // "Regimen": reindexAllFarmEventUsage,
+  "Sequence": reindexAllSequences,
+};
 
 const ups = INDEXERS.map(x => x.up);
 const downs = INDEXERS.map(x => x.down).reverse();
 
-export const indexUpsert = (db: ResourceIndex, resource: TaggedResource) => {
-  // Run singular indexers
-  ups.map(callback => callback(resource, db));
+export const indexUpsert =
+  (db: ResourceIndex, resources: TaggedResource[], strategy: "one" | "many") => {
+    if (resources.length == 0) {
+      return;
+    }
+    const { kind } = arrayUnwrap(resources);
 
-  // Run group indexers, all at once.
-  const fn = AFTER_HOOKS[resource.kind];
-  fn && fn(db);
-};
+    // Clean up indexes (if needed)
+    const before = BEFORE_HOOKS[kind];
+    before && before(db, strategy);
+
+    // Run indexers
+    ups.map(callback => {
+      resources.map(resource => callback(resource, db));
+    });
+
+    // Finalize indexing (if needed)
+    const after = AFTER_HOOKS[kind];
+    after && after(db, strategy);
+  };
 
 export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
   downs.map(callback => {

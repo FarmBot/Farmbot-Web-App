@@ -76,7 +76,7 @@ export const emptyState = (): RestResources => {
 export let resourceReducer =
   generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      indexUpsert(s.index, payload);
+      indexUpsert(s.index, [payload], "one");
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
       return s;
     })
@@ -93,17 +93,17 @@ export let resourceReducer =
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
       original.body = update;
-      indexUpsert(s.index, original);
+      indexUpsert(s.index, [original], "one");
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      payload.body.map(x => indexUpsert(s.index, x));
+      indexUpsert(s.index, payload.body, "many");
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
-      indexUpsert(s.index, payload);
+      indexUpsert(s.index, [payload], "one");
       mutateSpecialStatus(payload.uuid, s.index);
       return s;
     })
