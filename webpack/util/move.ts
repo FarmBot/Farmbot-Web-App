@@ -1,7 +1,7 @@
 enum Comparison { LOW = -1, EQ = 0, HIGH = 1 }
 /** Emulates the "spaceship operator" seen in languages like Ruby, PHP, etc..
  * -1 => "too low", 0 => "identical", 1 => "too high" */
-const threeWayComparison = (l: number, r: number): Comparison => {
+export const threeWayComparison = (l: number, r: number): Comparison => {
   if (l == r) {
     return Comparison.EQ;
   }

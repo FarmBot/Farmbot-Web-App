@@ -22,7 +22,6 @@ import { selectAllFarmEvents, findByKindAndId, selectAllLogs } from "./selectors
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
 
-// NONSENSE CAUSED BY CIRCULAR DEPS (TODO: FIX LATER RC) =======================
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
   if (x && isTaggedResource(x)) {
@@ -31,7 +30,6 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
     throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
   }
 }
-// END NONSENSE ================================================================
 
 type IndexDirection = "up" | "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
@@ -112,13 +110,6 @@ const reindexAllSequences = (i: ResourceIndex) => {
   })).map(mapper);
 };
 
-// const SEQUENCE_STUFF: Indexer = {
-//   up(_, _i) { },
-//   down(_, i) {
-//     reindexAllSequences(i);
-//   },
-// };
-
 export function reindexAllFarmEventUsage(i: ResourceIndex) {
   i.inUse["Regimen.FarmEvent"] = {};
   i.inUse["Sequence.FarmEvent"] = {};
@@ -126,6 +117,7 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
     "Regimen": i.inUse["Regimen.FarmEvent"],
     "Sequence": i.inUse["Sequence.FarmEvent"],
   };
+
   // Which FarmEvents use which resource?
   selectAllFarmEvents(i)
     .map(fe => ({
@@ -146,7 +138,6 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
-  // SEQUENCE_STUFF
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
@@ -205,9 +196,7 @@ const BEFORE_HOOKS: IndexerHook = {
 };
 
 const AFTER_HOOKS: IndexerHook = {
-  Regimen(_index, _strategy) {
-    // reindexAllFarmEventUsage()
-  },
+  FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
 };
 

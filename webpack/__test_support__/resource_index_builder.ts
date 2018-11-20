@@ -8,6 +8,7 @@ import {
 import * as _ from "lodash";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
+import { threeWayComparison as c3 } from "../util/move";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -20,6 +21,7 @@ export function fakeDevice(): TaggedDevice {
     "uuid": "Device.415.0"
   };
 }
+
 const tr1: TaggedResource = {
   "kind": "User",
   "body": {
@@ -315,13 +317,51 @@ const log: TaggedLog = {
 export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
   tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
+type ResourceGroupNumber = 0 | 1 | 2 | 3 | 4;
+type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
 
+/** In the real app, resources are loaded in a particular order.
+ * This table serves as a reference to prevent referential integrity issues. */
+const GROUPS: ResourceLookupTable = {
+  // GROUP 0
+  Device: 0,
+  FarmwareEnv: 0,
+  FarmwareInstallation: 0,
+  FbosConfig: 0,
+  FirmwareConfig: 0,
+  WebAppConfig: 0,
+  // Group 1
+  Peripheral: 1,
+  Point: 1,
+  SensorReading: 1,
+  Sensor: 1,
+  Tool: 1,
+  // Group 2
+  Sequence: 2,
+  // Group 3
+  PinBinding: 3,
+  Regimen: 3,
+  // Group 4
+  FarmEvent: 4,
+  DiagnosticDump: 4,
+  Image: 4,
+  Log: 4,
+  PlantTemplate: 4,
+  SavedGarden: 4,
+  User: 4,
+  WebcamFeed: 4,
+  Crop: 4,
+};
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   state = emptyState()) {
-  return _(resources)
+  const sortedResources = resources
+    .sort((l, r) => c3(GROUPS[l.kind], GROUPS[r.kind]));
+  type K = keyof typeof GROUPS;
+  return _(sortedResources)
     .groupBy(KIND)
     .toPairs()
+    .sort((l, r) => c3(GROUPS[l[0] as K || 4], GROUPS[r[0] as K || 4]))
     .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
-    .map(y => resourceReady(y[0], y[1]))
+    .map((y) => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);
 }
