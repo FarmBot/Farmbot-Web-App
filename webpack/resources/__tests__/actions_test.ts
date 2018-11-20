@@ -2,7 +2,11 @@ jest.mock("../../toast_errors", () => {
   return { toastErrors: jest.fn() };
 });
 
-import { generalizedError, GeneralizedError, saveOK } from "../actions";
+import {
+  generalizedError,
+  GeneralizedError,
+  saveOK,
+} from "../actions";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { toastErrors } from "../../toast_errors";

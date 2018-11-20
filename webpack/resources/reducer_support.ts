@@ -119,11 +119,21 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
   };
 
   // Which FarmEvents use which resource?
-  selectAllFarmEvents(i)
-    .map(fe => ({
-      exe_type: fe.body.executable_type,
-      exe_uuid: findByKindAndId(i, fe.body.executable_type, fe.body.executable_id).uuid,
-      fe_uuid: fe.uuid
+  betterCompact(selectAllFarmEvents(i)
+    .map(fe => {
+      try {
+        const { uuid } =
+          findByKindAndId(i, fe.body.executable_type, fe.body.executable_id);
+        return ({
+          exe_type: fe.body.executable_type,
+          exe_uuid: uuid,
+          fe_uuid: fe.uuid
+        });
+      } catch (error) {
+        // Crashes outside of test suite (for now)
+        if (!describe) { console.error("Something is wrong!"); }
+        return undefined;
+      }
     }))
     .map(data => {
       whichOne[data.exe_type] = whichOne[data.exe_type] || {};
