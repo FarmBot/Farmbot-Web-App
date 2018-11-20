@@ -316,14 +316,12 @@ export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
   tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
 
-export
-  function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
-    state = emptyState()) {
-  const z = _(resources)
+export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
+  state = emptyState()) {
+  return _(resources)
     .groupBy(KIND)
     .toPairs()
     .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
     .map(y => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);
-  return z;
 }

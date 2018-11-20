@@ -7,7 +7,6 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
-  // REINDEXERS
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -102,13 +101,7 @@ export let resourceReducer =
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
 
       payload.body.map(x => indexUpsert(s.index, x));
-      // if (s.loaded.length > 22) {
-      //   const fn = REINDEXERS[payload.kind];
-      //   fn && fn(s.index);
-      // }
-      // if (s.loaded.length == 22) {
-      //   console.log("TODO");
-      // }
+
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {

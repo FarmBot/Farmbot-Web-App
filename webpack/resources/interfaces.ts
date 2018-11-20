@@ -73,13 +73,15 @@ export interface ResourceIndex {
    * SOLUTION:
    *  * Create an index entry, indexed by UUID, for every resource that is
    *    "in_use".
-   *  * If it does not have an entry, it's not in use.
+   *  * If it does not have an entry, it's not in use and can safely be deleted.
+   *
    * {
    *   ...
+   *   // Two other resources have a "reservation" on Sequence.0.1
+   *   // (from SCENARIO above)
+   *   "Sequence.0.1": { "FarmEvent.0.2": true, "Sequence.0.3":  true }
    *   // Not in use by anything
    *   "Sequence.0.5": undefined,
-   *   // Two other resources have a "reservation" on Sequence.0.1
-   *   "Sequence.0.1": { "FarmEvent.0.2": true, "Sequence.0.3":  true }
    *   ...
    * }
    */

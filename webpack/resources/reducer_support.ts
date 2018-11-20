@@ -128,22 +128,12 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
     });
 }
 
-const IN_USE: Indexer = {
-  up: (_r, _i) => {
-    // r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
-  },
-  down: (_r, _i) => {
-    // r.kind === "FarmEvent" && reindexAllFarmEventUsage(i);
-  }
-};
-
 export const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
-  SEQUENCE_STUFF,
-  IN_USE
+  SEQUENCE_STUFF
 ];
 
 type Reindexer = (i: ResourceIndex) => void;
