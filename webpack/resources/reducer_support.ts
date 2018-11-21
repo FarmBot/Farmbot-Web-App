@@ -131,7 +131,7 @@ export function reindexAllFarmEventUsage(i: ResourceIndex) {
         });
       } catch (error) {
         // Crashes outside of test suite (for now)
-        if (!describe) { console.error("Something is wrong!"); }
+        console.error("Something is wrong!");
         return undefined;
       }
     }))
