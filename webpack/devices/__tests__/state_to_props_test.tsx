@@ -6,6 +6,8 @@ let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
 const mockImages: TaggedImage | undefined = fakeImage();
 
 jest.mock("../../resources/selectors_by_kind", () => ({
+  selectAllFarmEvents: () => [],
+  selectAllRegimens: () => [],
   selectAllLogs: () => [],
   selectAllImages: () => [mockImages],
   selectAllFarmwareEnvs: () => [fakeFarmwareEnv()]
