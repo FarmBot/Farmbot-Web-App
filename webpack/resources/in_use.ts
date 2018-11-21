@@ -4,14 +4,14 @@ import { UUID } from "./interfaces";
 export type UsageKind =
   // | "CantBeDeleted.BecuaseThisUsesIt"
   | "Regimen.FarmEvent"
-  | "Regimen.Sequence"
+  | "Sequence.Regimen"
   | "Sequence.FarmEvent"
   | "Sequence.Sequence";
 
 /** Same as `type UsageKind` except for iteration and runtime checks. */
 export const EVERY_USAGE_KIND: UsageKind[] = [
   "Regimen.FarmEvent",
-  "Regimen.Sequence",
+  "Sequence.Regimen",
   "Sequence.FarmEvent",
   "Sequence.Sequence"
 ];

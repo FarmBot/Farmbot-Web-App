@@ -18,7 +18,7 @@ import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import {
   sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { selectAllFarmEvents, findByKindAndId, selectAllLogs } from "./selectors_by_kind";
+import { selectAllFarmEvents, findByKindAndId, selectAllLogs, selectAllRegimens } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
 
@@ -208,6 +208,18 @@ const BEFORE_HOOKS: IndexerHook = {
 const AFTER_HOOKS: IndexerHook = {
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
+  Regimen: (i) => {
+    i.inUse["Sequence.Regimen"] = {};
+    const tracker = i.inUse["Sequence.Regimen"];
+    selectAllRegimens(i)
+      .map(reg => {
+        reg.body.regimen_items.map(ri => {
+          const sequence = findByKindAndId(i, "Sequence", ri.sequence_id);
+          tracker[sequence.uuid] = tracker[sequence.uuid] || {};
+          tracker[sequence.uuid][reg.uuid] = true;
+        });
+      });
+  }
 };
 
 const ups = INDEXERS.map(x => x.up);

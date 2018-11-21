@@ -20,7 +20,7 @@ describe("resourceUsageList", () => {
       "Sequence.FarmEvent": {
         "FarmEvent.3.3": { "Sequence.4.4": true, "Sequence.5.5": true }
       },
-      "Regimen.Sequence": {
+      "Sequence.Regimen": {
         "Regimen.6.6": { "Sequence.7.7": true, "Sequence.8.8": true }
       },
       "Sequence.Sequence": {

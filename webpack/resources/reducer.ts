@@ -65,7 +65,7 @@ export const emptyState = (): RestResources => {
       inUse: {
         "Regimen.FarmEvent": {},
         "Sequence.FarmEvent": {},
-        "Regimen.Sequence": {},
+        "Sequence.Regimen": {},
         "Sequence.Sequence": {},
       }
     }
