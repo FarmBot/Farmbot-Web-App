@@ -4,11 +4,14 @@ import {
   TaggedLog,
   TaggedPoint,
   TaggedResource,
+  TaggedSequence,
+  TaggedRegimen,
 } from "farmbot";
 import * as _ from "lodash";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
 import { threeWayComparison as c3 } from "../util/move";
+import { defensiveClone } from "../util/util";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -354,7 +357,7 @@ const GROUPS: ResourceLookupTable = {
 };
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   state = emptyState()) {
-  const sortedResources = resources
+  const sortedResources = repairBrokeReferences(resources)
     .sort((l, r) => c3(GROUPS[l.kind], GROUPS[r.kind]));
   type K = keyof typeof GROUPS;
   return _(sortedResources)
@@ -364,4 +367,56 @@ export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
     .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
     .map((y) => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);
+}
+
+const blankSeq: TaggedSequence = {
+  "kind": "Sequence",
+  "specialStatus": SpecialStatus.SAVED,
+  "body": {
+    "id": undefined,
+    "name": "Repair sequence",
+    "color": "gray",
+    "body": [],
+    "args": {
+      "version": 4,
+      "locals": { kind: "scope_declaration", args: {} },
+    },
+    "kind": "sequence"
+  },
+  "uuid": "Sequence.23.47"
+};
+
+const blankReg: TaggedRegimen = {
+  "specialStatus": SpecialStatus.SAVED,
+  "kind": "Regimen",
+  "body": {
+    "id": 11,
+    "name": "Repair Sequence",
+    "color": "gray",
+    "regimen_items": []
+  },
+  "uuid": "Regimen.11.46"
+};
+
+/** HISTORIC CONTEXT: At one point, the API kept track of `inUse` stats.
+ * This meant that we could do funny things in the test suite like set
+ * `executable_id` to nonsense values like 0 or -1. This led to an enormous
+ * number of failed tests. To circumvent this, we "repair" faulty foreign keys
+ * in TaggedResources. This applies to many legacy tests. - RC*/
+function repairBrokeReferences(resources: TaggedResource[]): TaggedResource[] {
+  const table = _(resources).groupBy(x => x.kind).value();
+  resources.map(resource => {
+    if (resource.kind === "FarmEvent") { // Find FarmEvents
+      const { executable_type, executable_id } = resource.body;
+      const missingResource = // Ensure foreign key is valid.
+        !(table[executable_type] || []).find(r => r.body.id === executable_id);
+      if (missingResource) { // If not found, add a dummy resource to the list.
+        const base =
+          defensiveClone(executable_type == "Regimen" ? blankReg : blankSeq);
+        base.body.id = executable_id;
+        resources.push(base);
+      }
+    }
+  });
+  return resources;
 }
