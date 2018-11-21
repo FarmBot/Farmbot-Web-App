@@ -86,7 +86,6 @@ export interface ResourceIndex {
    * }
    */
   inUse: UsageIndex;
-  doneLoading?: boolean;
 }
 
 export interface RestResources {
