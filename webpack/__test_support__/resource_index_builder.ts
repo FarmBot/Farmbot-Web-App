@@ -25,6 +25,46 @@ export function fakeDevice(): TaggedDevice {
   };
 }
 
+const tr0: TaggedResource = {
+  "kind": "Sequence",
+  "specialStatus": SpecialStatus.SAVED,
+  "body": {
+    "id": 23,
+    "name": "Goto 0, 0, 0",
+    "color": "gray",
+    "body": [
+      {
+        "kind": "move_absolute",
+        "args": {
+          "location": {
+            "kind": "coordinate",
+            "args": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "offset": {
+            "kind": "coordinate",
+            "args": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "speed": 100
+        }
+      }
+    ],
+    "args": {
+      "version": 4,
+      "locals": { kind: "scope_declaration", args: {} },
+    },
+    "kind": "sequence"
+  },
+  "uuid": "Sequence.23.47"
+};
+
 const tr1: TaggedResource = {
   "kind": "User",
   "body": {
@@ -37,6 +77,7 @@ const tr1: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "uuid": "User.152.44"
 };
+
 const tr2: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "kind": "FarmEvent",
@@ -46,7 +87,7 @@ const tr2: TaggedResource = {
     "end_time": "2017-05-30T05:00:00.000Z",
     "repeat": 1,
     "time_unit": "daily",
-    "executable_id": 23,
+    "executable_id": tr0.body.id || 0,
     "executable_type": "Sequence"
   },
   "uuid": "FarmEvent.21.1"
@@ -61,7 +102,7 @@ const tr3: TaggedResource = {
     "end_time": "2017-05-29T05:00:00.000Z",
     "repeat": 2,
     "time_unit": "daily",
-    "executable_id": 24,
+    "executable_id": tr0.body.id || 0,
     "executable_type": "Sequence"
   },
   "uuid": "FarmEvent.22.2"
@@ -243,46 +284,6 @@ const tr12: TaggedResource = {
   "uuid": "Regimen.11.46"
 };
 
-const tr13: TaggedResource = {
-  "kind": "Sequence",
-  "specialStatus": SpecialStatus.SAVED,
-  "body": {
-    "id": 23,
-    "name": "Goto 0, 0, 0",
-    "color": "gray",
-    "body": [
-      {
-        "kind": "move_absolute",
-        "args": {
-          "location": {
-            "kind": "coordinate",
-            "args": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          "offset": {
-            "kind": "coordinate",
-            "args": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          "speed": 100
-        }
-      }
-    ],
-    "args": {
-      "version": 4,
-      "locals": { kind: "scope_declaration", args: {} },
-    },
-    "kind": "sequence"
-  },
-  "uuid": "Sequence.23.47"
-};
-
 const tr14: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "kind": "Tool",
@@ -317,8 +318,25 @@ const log: TaggedLog = {
   uuid: "Log.1091396.70"
 };
 
-export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
-  tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
+export let FAKE_RESOURCES: TaggedResource[] = [
+  tr1,
+  fakeDevice(),
+  tr2,
+  tr3,
+  tr4,
+  tr5,
+  tr6,
+  tr7,
+  tr8,
+  tr9,
+  tr10,
+  tr11,
+  tr12,
+  tr0,
+  tr14,
+  tr15,
+  log
+];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
 type ResourceGroupNumber = 0 | 1 | 2 | 3 | 4;
 type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
