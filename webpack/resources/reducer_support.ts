@@ -18,7 +18,12 @@ import { ResourceIndex, VariableNameMapping } from "./interfaces";
 import {
   sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { selectAllFarmEvents, findByKindAndId, selectAllLogs, selectAllRegimens } from "./selectors_by_kind";
+import {
+  selectAllFarmEvents,
+  findByKindAndId,
+  selectAllLogs,
+  selectAllRegimens
+} from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
 
@@ -46,11 +51,8 @@ const ALL: Indexer = {
 };
 
 const BY_KIND: Indexer = {
-  up: (r, i) => i.byKind[r.kind][r.uuid] = r.uuid,
-  down(r, i) {
-    const byKind = i.byKind[r.kind];
-    delete byKind[r.uuid];
-  },
+  up(r, i) { i.byKind[r.kind][r.uuid] = r.uuid; },
+  down(r, i) { delete i.byKind[r.kind][r.uuid]; },
 };
 
 const BY_KIND_AND_ID: Indexer = {
@@ -64,6 +66,7 @@ const BY_KIND_AND_ID: Indexer = {
     delete i.byKindAndId[joinKindAndId(r.kind, 0)];
   },
 };
+
 export const lookupReducer =
   (acc: VariableNameMapping, { args }: ScopeDeclarationBodyItem) => {
     return { ...acc, ...({ [args.label]: { label: args.label } }) };
