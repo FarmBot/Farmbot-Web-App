@@ -94,16 +94,16 @@ if Rails.env == "development"
                            {time_offset:345900000, sequence_id:s[:id]}
                          ])
     Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
-    2.times do
-        FarmEvents::Create.run!(
-          device: u.device,
-          start_time: Time.now + 1.hour,
-          end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
-          time_unit: "daily",
-          repeat: [*(DATE_RANGE_LO)].sample,
-          executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
-          executable_type: "Sequence")
-    end
+    # 2.times do
+    #     FarmEvents::Create.run!(
+    #       device: u.device,
+    #       start_time: Time.now + 1.hour,
+    #       end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
+    #       time_unit: "daily",
+    #       repeat: [*(DATE_RANGE_LO)].sample,
+    #       executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
+    #       executable_type: "Sequence")
+    # end
     WebcamFeeds::Create.run!(device: u.device,
                             name: "My Feed 1",
                             url: "https://nature.nps.gov/air/webcams/parks/yosecam/yose.jpg")
