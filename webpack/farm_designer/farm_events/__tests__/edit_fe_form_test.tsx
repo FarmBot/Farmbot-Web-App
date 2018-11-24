@@ -24,7 +24,7 @@ import { success, error } from "farmbot-toastr";
 import * as moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { history } from "../../../history";
-
+const mockSequence = fakeSequence();
 describe("<FarmEventForm/>", () => {
   const props = (): EditFEProps => ({
     deviceTimezone: undefined,
@@ -32,7 +32,7 @@ describe("<FarmEventForm/>", () => {
     repeatOptions: [],
     farmEvent: fakeFarmEvent("Sequence", 12),
     dispatch: jest.fn(() => Promise.resolve()),
-    findExecutable: jest.fn(() => fakeSequence()),
+    findExecutable: jest.fn(() => mockSequence),
     title: "title",
     timeOffset: 0,
     autoSyncEnabled: false,
@@ -92,8 +92,8 @@ describe("<FarmEventForm/>", () => {
     const p = props();
     const i = instance(p);
     i.forceUpdate();
-    expect(i.executableGet().value).toEqual(fakeSequence().body.id);
-    expect(i.executableGet().label).toEqual(fakeSequence().body.name);
+    expect(i.executableGet().value).toEqual(mockSequence.body.id);
+    expect(i.executableGet().label).toEqual(mockSequence.body.name);
   });
 
   it("sets the executable", () => {
@@ -122,7 +122,7 @@ describe("<FarmEventForm/>", () => {
     i.forceUpdate();
     const exe = i.executableGet();
     expect(exe.label).toBe("fake");
-    expect(exe.value).toBe(12);
+    expect(exe.value).toBe(mockSequence.body.id);
     expect(exe.headingId).toBe("Sequence");
   });
 
