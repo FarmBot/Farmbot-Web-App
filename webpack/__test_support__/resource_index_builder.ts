@@ -343,7 +343,7 @@ type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
 
 /** In the real app, resources are loaded in a particular order.
  * This table serves as a reference to prevent referential integrity issues. */
-const GROUPS: ResourceLookupTable = {
+const KIND_PRIORITY: ResourceLookupTable = {
   // GROUP 0
   Device: 0,
   FarmwareEnv: 0,
@@ -376,12 +376,12 @@ const GROUPS: ResourceLookupTable = {
 export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   state = emptyState()) {
   const sortedResources = repairBrokeReferences(resources)
-    .sort((l, r) => c3(GROUPS[l.kind], GROUPS[r.kind]));
-  type K = keyof typeof GROUPS;
+    .sort((l, r) => c3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
+  type K = keyof typeof KIND_PRIORITY;
   return _(sortedResources)
     .groupBy(KIND)
     .toPairs()
-    .sort((l, r) => c3(GROUPS[l[0] as K || 4], GROUPS[r[0] as K || 4]))
+    .sort((l, r) => c3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
     .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
     .map((y) => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);

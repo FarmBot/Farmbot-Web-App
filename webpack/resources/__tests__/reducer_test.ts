@@ -13,8 +13,7 @@ import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
-import { joinKindAndId, findByUuid } from "../reducer_support";
-import { resourceReady } from "../../sync/actions";
+import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
 
 describe("resource reducer", () => {
@@ -65,20 +64,6 @@ describe("resource reducer", () => {
     "DiagnosticDump", "FarmEvent", "FarmwareInstallation", "FbosConfig",
     "FirmwareConfig", "Log", "Peripheral", "PinBinding", "PlantTemplate",
     "Point", "Regimen", "SavedGarden", "Sensor"];
-  let id = 1;
-
-  it("covers save resource branches", () => {
-    const testResource = (kind: TaggedResource["kind"]) => {
-      const resource: TaggedResource = fakeResource(kind, { id: ++id });
-      const action = resourceReady(resource.kind, [resource]);
-      const newState = resourceReducer(fakeState().resources, action);
-      const uuid = newState.index.byKindAndId[joinKindAndId(kind, resource.body.id)];
-      const expectation = newState.index.references[uuid || "?"];
-
-      expect(expectation).toEqual(resource);
-    };
-    TEST_RESOURCE_NAMES.map(kind => testResource(kind));
-  });
 
   it("EDITs a _RESOURCE", () => {
     const startingState = fakeState().resources;
