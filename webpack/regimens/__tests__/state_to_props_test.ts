@@ -3,6 +3,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { TaggedResource } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";
+import { selectAllRegimens } from "../../resources/selectors";
 
 describe("mapStateToProps()", () => {
   it("returns props: no regimen selected", () => {
@@ -15,15 +16,15 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const fakeResources: TaggedResource[] = [
       ...newTaggedResource("Regimen", {
-        id: 1,
+        id: 10000,
         name: "Test Regimen",
         color: "gray",
         regimen_items: [
-          { id: 1, regimen_id: 1, sequence_id: 1, time_offset: 1000 }
+          { id: 1, regimen_id: 10000, sequence_id: 20000, time_offset: 1000 }
         ]
       }),
       ...newTaggedResource("Sequence", {
-        id: 1,
+        id: 20000,
         name: "Test Sequence",
         color: "gray",
         body: [{ kind: "wait", args: { milliseconds: 100 } }],
@@ -33,11 +34,12 @@ describe("mapStateToProps()", () => {
         kind: "sequence"
       })
     ];
-    state.resources.index = buildResourceIndex(fakeResources).index;
-    const regimenUuid = Object.keys(state.resources.index.all)[0];
-    state.resources.consumers.regimens.currentRegimen = regimenUuid;
+    const { index } = buildResourceIndex(fakeResources);
+    state.resources.index = index;
+    const { uuid } = selectAllRegimens(index)[0];
+    state.resources.consumers.regimens.currentRegimen = uuid;
     const props = mapStateToProps(state);
-    props.current ? expect(props.current.uuid).toEqual(regimenUuid) : fail;
+    props.current ? expect(props.current.uuid).toEqual(uuid) : fail;
     expect(props.calendar[0].items[0].item.time_offset).toEqual(1000);
   });
 });
