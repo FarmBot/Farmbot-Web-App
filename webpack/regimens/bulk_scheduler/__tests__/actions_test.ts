@@ -95,17 +95,15 @@ describe("commitBulkEditor()", () => {
     returnsError(state, "No day(s) selected.");
   });
 
-  fit("adds items", () => {
+  it("adds items", () => {
     const state = newFakeState();
     const getState = () => state;
     const dispatch = jest.fn();
     commitBulkEditor()(dispatch, getState);
     const expected = [
-      { id: 1, regimen_id, sequence_id, time_offset: 1000 },
+      { regimen_id, sequence_id, time_offset: 1000 },
       { sequence_id, time_offset: 2000 }
     ];
-    const actual = dispatch.mock.calls[0][0].payload.update.regimen_items;
-    console.dir(actual);
     expect(dispatch).toHaveBeenCalledWith({
       payload: expect.objectContaining({
         update: expect.objectContaining({
