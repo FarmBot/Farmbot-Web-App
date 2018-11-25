@@ -1,5 +1,4 @@
 import { Dictionary } from "farmbot/dist";
-/** Like Dictionary<T>, except more cautious about null values. */
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
 import { CowardlyDictionary } from "../util";
@@ -15,18 +14,19 @@ import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 
 export type UUID = string;
+export type VariableNameSet = Record<string, SequenceVariableMeta>;
+export type UUIDSet = Record<UUID, true>;
 
 export interface SequenceVariableMeta {
-  /** As of November 2018, the only thing you can make variables from are
-   * "vector like" nodes (points, plants, mounted tools etc).
-   * I'm using a single-attribute object (instead of a string) to leave the door
-   * open for additional meta-data later on when the variables feature is more
-   * mature. */
+  /** As of November 2018, the only thing you can make variables are
+   *  "vector like" nodes (points, plants, mounted tools etc). I'm using a
+   * single-attribute object (instead of a string) to leave the door open for
+   * additional meta-data later on when the variables feature is more mature.
+   * Example: Keeping track of a variables type or reference count
+   *   -RC 26 NOV 18
+   * */
   label: string;
 }
-
-export type VariableNameMapping = Record<string, SequenceVariableMeta>;
-export type UUIDSet = Record<UUID, true>;
 
 export interface ResourceIndex {
   all: UUIDSet;
@@ -34,9 +34,8 @@ export interface ResourceIndex {
   byKindAndId: CowardlyDictionary<UUID>;
   references: Dictionary<TaggedResource | undefined>;
   /**
-   * PROBLEM:
-   *  * We need to _efficiently_ track which sequences declare which variables
-   * SCENARION:
+   * PROBLEM: _efficiently_ tracking variable declarations across all sequences.
+   * USE CASE:
    *  * You have a sequence `Sequence.0.1`
    *  * It has 2 variables: `parent` and `parent1`.
    * SOLUTION:
@@ -53,36 +52,29 @@ export interface ResourceIndex {
    *   ...
    * }
    */
-  sequenceMeta: Record<UUID, VariableNameMapping>;
+  sequenceMeta: Record<UUID, VariableNameSet>;
   /**
    * PROBLEM:
    *  * We need to _efficiently_ track which resources are in_use.
-   *
    * DISAMBIGUATION:
-   *  * If deleting the resource causes a referential integrity issue, it is
-   *    said to be "in use"
+   *  * If resource deletion can cause a referential integrity error, it is said
+   *    to be "in use"
    *  * Another way to think of the term "in use": "Can't be safely deleted"
-   *
    * SCENARION:
-   *  * You have a sequence `Sequence.0.1`
-   *  * It has 2 "consumers":
+   *  * A sequence (`Sequence.0.1`) has 2 "consumers":
    *    * A FarmEvent that triggers it (UUID: "FarmEvent.0.2")
-   *    * Another Sequence that calls the sequence above via an `execute` block
-   *      (UUID: "Sequence.0.3")
-   *
+   *    * A Sequence ("Sequence.0.3") that calls the sequence ("Sequence.0.1")
+   *      via an `execute` block.
    * SOLUTION:
-   *  * Create an index entry, indexed by UUID, for every resource that is
-   *    "in_use".
+   *  * Create an index (tracked by UUID), for every resource that is "inUse".
    *  * If it does not have an entry, it's not in use and can safely be deleted.
-   *
    * {
-   *   ...
-   *   // Two other resources have a "reservation" on Sequence.0.1
-   *   // (from SCENARIO above)
-   *   "Sequence.0.1": { "FarmEvent.0.2": true, "Sequence.0.3":  true }
-   *   // Not in use by anything
-   *   "Sequence.0.5": undefined,
-   *   ...
+   *   // "Sequence.0.1" has two "reservations": "FarmEvent.0.2", "Sequence.0.3"
+   *   "Sequence.0.1": {
+   *     "FarmEvent.0.2": true,
+   *     "Sequence.0.3":  true
+   *   },
+   *   "Sequence.0.5": undefined, // Not in use by anything
    * }
    */
   inUse: UsageIndex;

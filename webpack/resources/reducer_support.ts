@@ -14,7 +14,7 @@ import {
   ScopeDeclarationBodyItem,
   TaggedSequence
 } from "farmbot";
-import { ResourceIndex, VariableNameMapping } from "./interfaces";
+import { ResourceIndex, VariableNameSet } from "./interfaces";
 import {
   sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
@@ -36,7 +36,9 @@ export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   }
 }
 
-type IndexDirection = "up" | "down";
+type IndexDirection =
+  | /** Resources entering index */ "up"
+  | /** Resources leaving index */ "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
@@ -67,13 +69,13 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
-export const lookupReducer =
-  (acc: VariableNameMapping, { args }: ScopeDeclarationBodyItem) => {
+export const createVariableNameLookup =
+  (acc: VariableNameSet, { args }: ScopeDeclarationBodyItem) => {
     return { ...acc, ...({ [args.label]: { label: args.label } }) };
   };
 
-export function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
-  return (tr.body.args.locals.body || []).reduce(lookupReducer, {});
+export function variableLookupTable(tr: TaggedSequence): VariableNameSet {
+  return (tr.body.args.locals.body || []).reduce(createVariableNameLookup, {});
 }
 
 export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
@@ -217,26 +219,34 @@ const AFTER_HOOKS: IndexerHook = {
 const ups = INDEXERS.map(x => x.up);
 const downs = INDEXERS.map(x => x.down).reverse();
 
-export const indexUpsert =
-  (db: ResourceIndex, resources: TaggedResource[], strategy: "ongoing" | "initial") => {
-    if (resources.length == 0) {
-      return;
-    }
-    const { kind } = arrayUnwrap(resources);
+type UpsertStrategy =
+  /** Do not throw away pre-existing resources. */
+  | "ongoing"
+  /** Replace everything in the index. */
+  | "initial";
 
-    // Clean up indexes (if needed)
-    const before = BEFORE_HOOKS[kind];
-    before && before(db, strategy);
+type IndexUpsert = (db: ResourceIndex,
+  resources: TaggedResource[],
+  strategy: UpsertStrategy) => void;
+export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
+  if (resources.length == 0) {
+    return;
+  }
+  const { kind } = arrayUnwrap(resources);
 
-    // Run indexers
-    ups.map(callback => {
-      resources.map(resource => callback(resource, db));
-    });
+  // Clean up indexes (if needed)
+  const before = BEFORE_HOOKS[kind];
+  before && before(db, strategy);
 
-    // Finalize indexing (if needed)
-    const after = AFTER_HOOKS[kind];
-    after && after(db, strategy);
-  };
+  // Run indexers
+  ups.map(callback => {
+    resources.map(resource => callback(resource, db));
+  });
+
+  // Finalize indexing (if needed)
+  const after = AFTER_HOOKS[kind];
+  after && after(db, strategy);
+};
 
 export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
   downs
