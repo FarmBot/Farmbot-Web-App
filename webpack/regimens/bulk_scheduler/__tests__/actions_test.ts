@@ -34,8 +34,8 @@ describe("commitBulkEditor()", () => {
       "kind": "sequence"
     };
     const seq = arrayUnwrap(newTaggedResource("Sequence", seqBody));
-    const regimenUuid = seq.uuid;
-    const sequenceUuid = reg.uuid;
+    const regimenUuid = reg.uuid;
+    const sequenceUuid = seq.uuid;
     const fakeResources: TaggedResource[] = [reg, seq];
     state.resources.index = buildResourceIndex(fakeResources).index;
 
@@ -95,7 +95,7 @@ describe("commitBulkEditor()", () => {
     returnsError(state, "No day(s) selected.");
   });
 
-  it("adds items", () => {
+  fit("adds items", () => {
     const state = newFakeState();
     const getState = () => state;
     const dispatch = jest.fn();

@@ -32,10 +32,8 @@ export function hasId(ri: ResourceIndex, k: ResourceName, id: number): boolean {
 export function assertUuid(expected: ResourceName, actual: string | undefined) {
   if (actual && !actual.startsWith(expected)) {
     console.warn(`
-    BAD NEWS!!! You thought this was a ${expected} UUID, but here's what it
-    actually was:
-      ${actual}
-    `);
+    UUID integrity warning! Application expected ${expected} type, but instead
+    received "${actual}"`);
     return false;
   } else {
     return true;

@@ -67,24 +67,25 @@ export function setSequence(uuid: string | ""): ReduxAction<string> {
 
 export function commitBulkEditor(): Thunk {
   return function (dispatch, getState) {
-    const res = getState().resources;
+    const resources = getState().resources;
     const { weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen } =
-      res.consumers.regimens;
+      resources.consumers.regimens;
 
     // If the user hasn't clicked a regimen, initialize one for them.
     if (currentRegimen) {
       // Proceed only if they selected a sequence from the drop down.
       if (selectedSequenceUUID) {
-        const seq = findSequence(res.index, selectedSequenceUUID).body;
-        const regimenItems = weeks.length > 0
-          ? groupRegimenItemsByWeek(weeks, dailyOffsetMs, seq)
-          : undefined;
+        const sequence =
+          findSequence(resources.index, selectedSequenceUUID).body;
+        const groupedItems = weeks.length > 0 ?
+          groupRegimenItemsByWeek(weeks, dailyOffsetMs, sequence) : undefined;
         // Proceed only if days are selcted in the scheduler.
-        if (regimenItems && regimenItems.length > 0) {
-          const reg = findRegimen(res.index, currentRegimen);
-          const update = defensiveClone(reg).body;
-          update.regimen_items = update.regimen_items.concat(regimenItems);
-          dispatch(overwrite(reg, update));
+        debugger;
+        if (groupedItems && groupedItems.length > 0) {
+          const regimen = findRegimen(resources.index, currentRegimen);
+          const clonedRegimen = defensiveClone(regimen).body;
+          clonedRegimen.regimen_items = clonedRegimen.regimen_items.concat(groupedItems);
+          dispatch(overwrite(regimen, clonedRegimen));
         } else {
           return error(t("No day(s) selected."));
         }
