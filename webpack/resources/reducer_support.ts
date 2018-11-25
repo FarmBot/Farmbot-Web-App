@@ -143,7 +143,7 @@ export const INDEXERS: Indexer[] = [
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
-type Reindexer = (i: ResourceIndex, strategy: "one" | "many") => void;
+type Reindexer = (i: ResourceIndex, strategy: "ongoing" | "initial") => void;
 
 export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
@@ -184,7 +184,7 @@ export const mutateSpecialStatus =
 
 export function initResourceReducer(s: RestResources,
   { payload }: ReduxAction<TaggedResource>): RestResources {
-  indexUpsert(s.index, [payload], "one");
+  indexUpsert(s.index, [payload], "ongoing");
   return s;
 }
 
@@ -192,7 +192,7 @@ const BEFORE_HOOKS: IndexerHook = {
   Log(_index, strategy) {
     // IMPLEMENTATION DETAIL: When the app downloads a *list* of logs, we
     // replaces the entire logs collection.
-    (strategy === "many") &&
+    (strategy === "initial") &&
       selectAllLogs(_index).map(log => indexRemove(_index, log));
   },
 };
@@ -218,7 +218,7 @@ const ups = INDEXERS.map(x => x.up);
 const downs = INDEXERS.map(x => x.down).reverse();
 
 export const indexUpsert =
-  (db: ResourceIndex, resources: TaggedResource[], strategy: "one" | "many") => {
+  (db: ResourceIndex, resources: TaggedResource[], strategy: "ongoing" | "initial") => {
     if (resources.length == 0) {
       return;
     }
@@ -243,5 +243,5 @@ export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
     .map(callback => arrayWrap(resource).map(r => callback(r, db)));
   // Finalize indexing (if needed)
   const after = AFTER_HOOKS[resource.kind];
-  after && after(db, "one");
+  after && after(db, "ongoing");
 }

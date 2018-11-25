@@ -12,10 +12,6 @@ export function clickButton(
   options?: { partial_match?: boolean, button_tag?: string }) {
   const btnTag = options && options.button_tag ? options.button_tag : "button";
   const button = wrapper.find(btnTag).at(position);
-  if (!button) {
-    throw new Error("Can't find button (" +
-      btnTag + ") at position " + position);
-  }
   const expectedText = text.toLowerCase();
   const actualText = button.text().toLowerCase();
   options && options.partial_match
