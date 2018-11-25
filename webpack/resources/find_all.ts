@@ -3,6 +3,8 @@ import { ResourceIndex } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { sortResourcesById } from "../util/util";
 
+/** Finds all resource where the `kind` attribute is equal to `kind` parameter.
+ * Also performs basic runtime schema checks. */
 export function findAll<T extends TaggedResource>(
   index: ResourceIndex, kind: T["kind"]): T[] {
   const results: T[] = [];

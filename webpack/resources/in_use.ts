@@ -1,38 +1,53 @@
 import { UUID } from "./interfaces";
 
-/** List of relationships the inUse tracker must know about. */
+/** Used for fast lookups of unique UUIDs. */
+type UUIDSet = Record<UUID, boolean>;
+
+/** The key side of the Record<UUID, > represents the resource that cannot be deleted (hence forward
+ * the "in use resource".
+ * The value represents a set of resource that make it unsafe to delete the
+ * "in use resource". */
+export type UsageMap = Record<UUID, UUIDSet>;
+
+/** A directory of all `inUse` data that the frontend cares about. */
+export type UsageIndex = Record<UsageKind, UsageMap>;
+
+/** A String denoting relationships the inUse tracker must know about.
+ * Format:
+ *   1. Name of a resource that cannot be safely deleted.
+ *   2. A single period (".")
+ *   3. Name of the resource that has a "hold" on the resource listed in (1) */
 export type UsageKind =
-  // | "CantBeDeleted.BecuaseThisUsesIt"
   | "Regimen.FarmEvent"
   | "Sequence.Regimen"
   | "Sequence.FarmEvent"
   | "Sequence.Sequence";
 
-/** Same as `type UsageKind` except for iteration and runtime checks. */
-export const EVERY_USAGE_KIND: UsageKind[] = [
-  "Regimen.FarmEvent",
-  "Sequence.Regimen",
-  "Sequence.FarmEvent",
-  "Sequence.Sequence"
-];
+/** This variable ensures that `EVERY_USAGE_KIND` does not have typos and is
+ * up-to-date all `UsageKind`s */
+const values: Record<UsageKind, UsageKind> = {
+  "Regimen.FarmEvent": "Regimen.FarmEvent",
+  "Sequence.Regimen": "Sequence.Regimen",
+  "Sequence.FarmEvent": "Sequence.FarmEvent",
+  "Sequence.Sequence": "Sequence.Sequence",
+};
 
-export type UsageMap = Record<UUID, Record<UUID, boolean>>;
-export type UsageIndex = Record<UsageKind, UsageMap>;
+/** Array that contains every `UsageKind` token for easy runtime iteration. */
+export const EVERY_USAGE_KIND = Object.values(values);
 
-const start: Record<UUID, boolean> = {};
+const EMPTY_LOOKUP: Readonly<Record<UUID, boolean>> = {};
 
-/**
- * SCENARIO: You need a lookup table of which resources are *not* safe to
- *           delete.
- * PROBLEM:  The nested nature of `UsageIndex` makes lookups across all
- *           resource types a bit of a hassle.
- * SOLUTION: Smoosh all resources into one heap. If you need to do iteration,
- *           use `Object.keys();`
- */
+/** SCENARIO: You need a lookup table of resources that are *not* safe to
+ *            delete.
+ *  PROBLEM:  `UsageIndex` is highly nested and cumbersome to traverse. An array
+ *            requires iteration (slow) and you need to be able to look up usage
+ *            stats quickly for an individual UUID.
+ *  SOLUTION: Merge resources into single `Record<T, U>` lookup set.
+ *            Use `Object.keys` for iteration if required. */
 export const resourceUsageList =
   (usageIndex: UsageIndex): Record<UUID, boolean> => {
     return EVERY_USAGE_KIND
       .map(key => Object.keys(usageIndex[key]))
       .reduce<string[]>((acc, item) => acc.concat(item), [])
-      .reduce((acc, item) => ({ ...acc, [item]: true }), start);
+      .reduce((acc, item) => ({ ...acc, [item]: true }), EMPTY_LOOKUP);
   };

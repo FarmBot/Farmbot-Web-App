@@ -65,6 +65,9 @@ export function setSequence(uuid: string | ""): ReduxAction<string> {
   return { type: Actions.SET_SEQUENCE, payload: uuid };
 }
 
+/** A thunk that takes new edits in the Regimen editor and then commits them to
+ * the active (open) regimen. Use case: A user is editing a regimen and they are
+ * ready to save their work. */
 export function commitBulkEditor(): Thunk {
   return function (dispatch, getState) {
     const resources = getState().resources;
