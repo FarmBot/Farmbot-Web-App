@@ -17,9 +17,9 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import { isNumber } from "lodash";
-import { findAll } from "./selectors";
 import * as _ from "lodash";
 import { joinKindAndId } from "./reducer_support";
+import { findAll } from "./find_all";
 
 /** FINDS: all tagged resources with particular ID */
 export const findAllById =

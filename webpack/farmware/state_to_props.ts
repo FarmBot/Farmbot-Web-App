@@ -8,7 +8,7 @@ import {
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import * as _ from "lodash";
 import {
-  getWebAppConfig, selectAllFarmwareEnvs, selectAllFarmwareInstallations
+  selectAllFarmwareEnvs, selectAllFarmwareInstallations
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
@@ -20,6 +20,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, FarmwareManifest, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { t } from "i18next";
+import { getWebAppConfig } from "../resources/getters";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>

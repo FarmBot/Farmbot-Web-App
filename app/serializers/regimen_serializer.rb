@@ -1,8 +1,4 @@
 class RegimenSerializer < ApplicationSerializer
-  attributes :name, :color, :device_id, :in_use
+  attributes :name, :color, :device_id
   has_many   :regimen_items
-
-  def in_use
-    object.farm_events.any?
-  end
 end

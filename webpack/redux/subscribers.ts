@@ -2,7 +2,7 @@ import { Everything } from "../interfaces";
 import { Store } from "./interfaces";
 import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
-import { getWebAppConfig } from "../resources/selectors_by_kind";
+import { getWebAppConfig } from "../resources/getters";
 
 export function stopThem() { return "You have unsaved work."; }
 export function dontStopThem() { }

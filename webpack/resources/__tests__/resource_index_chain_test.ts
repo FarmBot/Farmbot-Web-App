@@ -1,9 +1,8 @@
-import { lookupReducer } from "../reducer_support";
+import { createVariableNameLookup } from "../reducer_support";
 
 describe("variableLookupTable", () => {
   it("creates variable meta data", () => {
-    // Bare minimum example. CC: @gabrielBurnworth
-    const result = lookupReducer({}, {
+    const result = createVariableNameLookup({}, {
       kind: "parameter_declaration",
       args: { label: "parent", data_type: "Point" }
     });

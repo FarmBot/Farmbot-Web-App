@@ -13,7 +13,8 @@ describe("<RegimensList />", () => {
     return {
       dispatch: jest.fn(),
       regimens: [regimen1, regimen2],
-      regimen: undefined
+      regimen: undefined,
+      usageStats: {}
     };
   }
   it("renders", () => {

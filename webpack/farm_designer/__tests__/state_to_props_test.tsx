@@ -4,9 +4,15 @@ import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig, fakeFarmwareEnv
+  fakePlant,
+  fakePlantTemplate,
+  fakeSavedGarden,
+  fakePoint,
+  fakeWebAppConfig,
+  fakeFarmwareEnv
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { generateUuid } from "../../resources/util";
 
 describe("mapStateToProps()", () => {
   const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
@@ -80,6 +86,7 @@ describe("mapStateToProps()", () => {
 describe("getPlants()", () => {
   const fakeResources = () => {
     const savedGarden = fakeSavedGarden();
+    savedGarden.uuid = generateUuid(1, "SavedGarden");
     savedGarden.body.id = 1;
     const plant1 = fakePlant();
     const plant2 = fakePlant();

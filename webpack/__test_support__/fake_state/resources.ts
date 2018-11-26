@@ -38,7 +38,7 @@ export function fakeSequence(): TaggedSequence {
       version: 4,
       locals: { kind: "scope_declaration", args: {} },
     },
-    id: 12,
+    id: idCounter++,
     color: "red",
     name: "fake",
     kind: "sequence",
@@ -86,7 +86,7 @@ export function fakeLog(): TaggedLog {
 export function fakeImage(): TaggedImage {
   return fakeResource("Image", {
     id: idCounter++,
-    device_id: 46,
+    device_id: idCounter++,
     attachment_processed_at: undefined,
     updated_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
@@ -142,7 +142,7 @@ export function fakeDiagnosticDump(): TaggedDiagnosticDump {
   const string = "----PLACEHOLDER DIAG STUFF ---";
   return fakeResource("DiagnosticDump", {
     id: idCounter++,
-    device_id: 123,
+    device_id: idCounter++,
     ticket_identifier: string,
     fbos_commit: string,
     fbos_version: string,
@@ -170,7 +170,7 @@ export function fakePoint(): TaggedGenericPointer {
 
 export function fakeSavedGarden(): TaggedSavedGarden {
   return fakeResource("SavedGarden", {
-    id: 1,
+    id: idCounter++,
     name: "Saved Garden 1",
   });
 }
@@ -178,7 +178,7 @@ export function fakeSavedGarden(): TaggedSavedGarden {
 export function fakePlantTemplate(): TaggedPlantTemplate {
   return fakeResource("PlantTemplate", {
     id: idCounter++,
-    saved_garden_id: 1,
+    saved_garden_id: idCounter++,
     radius: 50,
     x: 100,
     y: 200,
@@ -203,7 +203,7 @@ export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
     id: idCounter++,
     pin_num: 10,
-    sequence_id: 1,
+    sequence_id: idCounter++,
     binding_type: PinBindingType.standard,
   });
 }
@@ -240,8 +240,8 @@ export function fakePeripheral(): TaggedPeripheral {
 
 export function fakeFbosConfig(): TaggedFbosConfig {
   return fakeResource("FbosConfig", {
-    id: 1,
-    device_id: 1,
+    id: idCounter++,
+    device_id: idCounter++,
     created_at: "",
     updated_at: "",
     auto_sync: false,
@@ -262,8 +262,8 @@ export function fakeFbosConfig(): TaggedFbosConfig {
 
 export function fakeWebAppConfig(): TaggedWebAppConfig {
   return fakeResource("WebAppConfig", {
-    id: 1,
-    device_id: 1,
+    id: idCounter++,
+    device_id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
     confirm_step_deletion: false,
@@ -310,7 +310,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
 
 export function fakeFirmwareConfig(): TaggedFirmwareConfig {
   return fakeResource("FirmwareConfig", {
-    device_id: 1,
+    device_id: idCounter++,
     created_at: "",
     updated_at: "",
     encoder_enabled_x: 0,

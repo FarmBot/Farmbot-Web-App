@@ -1,10 +1,4 @@
-import {
-  ResourceName,
-  ScopeDeclarationBodyItem,
-  SpecialStatus,
-  TaggedResource,
-  TaggedSequence
-} from "farmbot";
+import { ResourceName, SpecialStatus } from "farmbot";
 import { combineReducers } from "redux";
 import { ReduxAction } from "../redux/interfaces";
 import { helpReducer as help } from "../help/reducer";
@@ -12,12 +6,39 @@ import { designer as farm_designer } from "../farm_designer/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
-import { sanitizeNodes } from "../sequences/step_tiles/tile_move_absolute/variables_support";
-import { ResourceIndex, RestResources, VariableNameMapping } from "./interfaces";
+import { RestResources } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
-import { arrayWrap } from "./util";
+import { arrayWrap, arrayUnwrap } from "./util";
+import {
+  TaggedResource,
+  ScopeDeclarationBodyItem,
+  TaggedSequence
+} from "farmbot";
+import { ResourceIndex, VariableNameSet } from "./interfaces";
+import {
+  sanitizeNodes
+} from "../sequences/step_tiles/tile_move_absolute/variables_support";
+import {
+  selectAllFarmEvents,
+  findByKindAndId,
+  selectAllLogs,
+  selectAllRegimens
+} from "./selectors_by_kind";
+import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { betterCompact } from "../util";
 
-type IndexDirection = "up" | "down";
+export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
+  const x = index.references[uuid];
+  if (x && isTaggedResource(x)) {
+    return x;
+  } else {
+    throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
+  }
+}
+
+type IndexDirection =
+  | /** Resources entering index */ "up"
+  | /** Resources leaving index */ "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
@@ -32,11 +53,8 @@ const ALL: Indexer = {
 };
 
 const BY_KIND: Indexer = {
-  up: (r, i) => i.byKind[r.kind][r.uuid] = r.uuid,
-  down(r, i) {
-    const byKind = i.byKind[r.kind];
-    delete byKind[r.uuid];
-  },
+  up(r, i) { i.byKind[r.kind][r.uuid] = r.uuid; },
+  down(r, i) { delete i.byKind[r.kind][r.uuid]; },
 };
 
 const BY_KIND_AND_ID: Indexer = {
@@ -50,35 +68,84 @@ const BY_KIND_AND_ID: Indexer = {
     delete i.byKindAndId[joinKindAndId(r.kind, 0)];
   },
 };
-export const lookupReducer =
-  (acc: VariableNameMapping, { args }: ScopeDeclarationBodyItem) => {
+
+export const createVariableNameLookup =
+  (acc: VariableNameSet, { args }: ScopeDeclarationBodyItem) => {
     return { ...acc, ...({ [args.label]: { label: args.label } }) };
   };
 
-export function variableLookupTable(tr: TaggedSequence): VariableNameMapping {
-  return (tr.body.args.locals.body || []).reduce(lookupReducer, {});
+export function variableLookupTable(tr: TaggedSequence): VariableNameSet {
+  return (tr.body.args.locals.body || []).reduce(createVariableNameLookup, {});
 }
 
-const SEQUENCE_STUFF: Indexer = {
-  up(r, i) {
-    if (r.kind === "Sequence") {
-      const tr = { ...r, body: sanitizeNodes(r.body) };
-      i.references[r.uuid] = tr;
-      i.sequenceMeta[r.uuid] = variableLookupTable(tr);
+export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
+  ids.map(id => {
+    const uuid = i.byKindAndId[joinKindAndId("Sequence", id)];
+    if (uuid) { // `undefined` usually means "not ready".
+      const inUse = i.inUse["Sequence.Sequence"][uuid] || {};
+      i.inUse["Sequence.Sequence"][uuid] = { ...inUse, ...{ [myUuid]: true } };
     }
-  },
-  down(r, i) {
-    delete i.sequenceMeta[r.uuid];
-  },
+  });
+}
+
+export const updateOtherSequenceIndexes =
+  (tr: TaggedSequence, i: ResourceIndex) => {
+    i.references[tr.uuid] = tr;
+    i.sequenceMeta[tr.uuid] = variableLookupTable(tr);
+  };
+
+const reindexSequences = (i: ResourceIndex) => (s: TaggedSequence) => {
+  // STEP 1: Sanitize nodes, tag them with unique UUIDs (for React),
+  //         collect up sequence_id's, etc. NOTE: This is CPU expensive,
+  //         so if you need to do tree traversal, do it now.
+  const { thisSequence, callsTheseSequences } = sanitizeNodes(s.body);
+  // STEP 2: Add sequence to index.references, update variable reference
+  //         indexes
+  updateSequenceUsageIndex(s.uuid, callsTheseSequences, i);
+  // Step 3: Update the in_use stats for Sequence-to-Sequence usage.
+  updateOtherSequenceIndexes({ ...s, body: thisSequence }, i);
 };
 
-export const INDEXES: Indexer[] = [
+const reindexAllSequences = (i: ResourceIndex) => {
+  i.inUse["Sequence.Sequence"] = {};
+  const mapper = reindexSequences(i);
+  betterCompact(Object.keys(i.byKind["Sequence"]).map(uuid => {
+    const resource = i.references[uuid];
+    return (resource && resource.kind == "Sequence") ? resource : undefined;
+  })).map(mapper);
+};
+
+export function reindexAllFarmEventUsage(i: ResourceIndex) {
+  i.inUse["Regimen.FarmEvent"] = {};
+  i.inUse["Sequence.FarmEvent"] = {};
+  const whichOne: Record<ExecutableType, typeof i.inUse["Regimen.FarmEvent"]> = {
+    "Regimen": i.inUse["Regimen.FarmEvent"],
+    "Sequence": i.inUse["Sequence.FarmEvent"],
+  };
+
+  // Which FarmEvents use which resource?
+  betterCompact(selectAllFarmEvents(i)
+    .map(fe => {
+      const { executable_type, executable_id } = fe.body;
+      const { uuid } = findByKindAndId(i, executable_type, executable_id);
+      return { exe_type: executable_type, exe_uuid: uuid, fe_uuid: fe.uuid };
+    }))
+    .map(({ exe_type, exe_uuid, fe_uuid }) => {
+      whichOne[exe_type] = whichOne[exe_type] || {};
+      whichOne[exe_type][exe_uuid] = whichOne[exe_type][exe_uuid] || {};
+      whichOne[exe_type][exe_uuid][fe_uuid] = true;
+    });
+}
+
+export const INDEXERS: Indexer[] = [
   REFERENCES,
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
-  SEQUENCE_STUFF,
 ];
+
+type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
+type Reindexer = (i: ResourceIndex, strategy: "ongoing" | "initial") => void;
 
 export function joinKindAndId(kind: ResourceName, id: number | undefined) {
   return `${kind}.${id || 0}`;
@@ -119,36 +186,72 @@ export const mutateSpecialStatus =
 
 export function initResourceReducer(s: RestResources,
   { payload }: ReduxAction<TaggedResource>): RestResources {
-  indexUpsert(s.index, payload);
+  indexUpsert(s.index, [payload], "ongoing");
   return s;
 }
 
-export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
-  const x = index.references[uuid];
-  if (x && isTaggedResource(x)) {
-    return x;
-  } else {
-    throw new Error("BAD UUID- CANT FIND RESOURCE: " + uuid);
+const BEFORE_HOOKS: IndexerHook = {
+  Log(_index, strategy) {
+    // IMPLEMENTATION DETAIL: When the app downloads a *list* of logs, we
+    // replaces the entire logs collection.
+    (strategy === "initial") &&
+      selectAllLogs(_index).map(log => indexRemove(_index, log));
+  },
+};
+
+const AFTER_HOOKS: IndexerHook = {
+  FarmEvent: reindexAllFarmEventUsage,
+  Sequence: reindexAllSequences,
+  Regimen: (i) => {
+    i.inUse["Sequence.Regimen"] = {};
+    const tracker = i.inUse["Sequence.Regimen"];
+    selectAllRegimens(i)
+      .map(reg => {
+        reg.body.regimen_items.map(ri => {
+          const sequence = findByKindAndId(i, "Sequence", ri.sequence_id);
+          tracker[sequence.uuid] = tracker[sequence.uuid] || {};
+          tracker[sequence.uuid][reg.uuid] = true;
+        });
+      });
   }
-}
+};
 
-export function whoops(origin: string, kind: string): never {
-  const msg = `${origin}/${kind}: No handler written for this one yet.`;
-  throw new Error(msg);
-}
+const ups = INDEXERS.map(x => x.up);
+const downs = INDEXERS.map(x => x.down).reverse();
 
-const ups = INDEXES.map(x => x.up);
+type UpsertStrategy =
+  /** Do not throw away pre-existing resources. */
+  | "ongoing"
+  /** Replace everything in the index. */
+  | "initial";
 
-export function indexUpsert(db: ResourceIndex, resources: TaggedResource) {
+type IndexUpsert = (db: ResourceIndex,
+  resources: TaggedResource[],
+  strategy: UpsertStrategy) => void;
+export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
+  if (resources.length == 0) {
+    return;
+  }
+  const { kind } = arrayUnwrap(resources);
+
+  // Clean up indexes (if needed)
+  const before = BEFORE_HOOKS[kind];
+  before && before(db, strategy);
+
+  // Run indexers
   ups.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
+    resources.map(resource => callback(resource, db));
   });
-}
 
-const downs = INDEXES.map(x => x.down).reverse();
+  // Finalize indexing (if needed)
+  const after = AFTER_HOOKS[kind];
+  after && after(db, strategy);
+};
 
-export function indexRemove(db: ResourceIndex, resources: TaggedResource) {
-  downs.map(callback => {
-    arrayWrap(resources).map(resource => callback(resource, db));
-  });
+export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
+  downs
+    .map(callback => arrayWrap(resource).map(r => callback(r, db)));
+  // Finalize indexing (if needed)
+  const after = AFTER_HOOKS[resource.kind];
+  after && after(db, "ongoing");
 }

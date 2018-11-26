@@ -145,22 +145,6 @@ export function bitArray(...values: boolean[]) {
     });
 }
 
-// Thanks,
-// https://italonascimento.github.io
-//   /applying-a-timeout-to-your-promises/#implementing-the-timeout
-export function withTimeout<T>(ms: number, promise: Promise<T>) {
-  // Create a promise that rejects in <ms> milliseconds
-  const timeout = new Promise((_resolve, reject) => {
-    const id = setTimeout(() => {
-      clearTimeout(id);
-      reject(`Timed out in  ${ms} ms.`);
-    }, ms);
-  });
-
-  // Returns a race between our timeout and the passed in promise
-  return Promise.race([promise, timeout]) as Promise<T>;
-}
-
 /** Performs deep object comparison. ONLY WORKS ON JSON-y DATA TYPES. */
 export const equals = <T>(a: T, b: T): boolean => {
   // Some benchmarks claim that this is slower than `_.isEqual`.

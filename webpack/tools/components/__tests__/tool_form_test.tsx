@@ -8,6 +8,7 @@ jest.mock("../../../api/crud", () => ({
 import { SpecialStatus } from "farmbot";
 jest.mock("../../../resources/tagged_resources", () => ({
   getArrayStatus: () => SpecialStatus.SAVED,
+  isTaggedResource: () => true
 }));
 
 import * as React from "react";

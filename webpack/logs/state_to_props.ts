@@ -5,11 +5,11 @@ import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue
 } from "../devices/components/source_config_value";
-import { getFbosConfig } from "../resources/selectors_by_kind";
 import { validFbosConfig } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedLog } from "farmbot";
 import { getWebAppConfigValue } from "../config_storage/actions";
+import { getFbosConfig } from "../resources/getters";
 
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(

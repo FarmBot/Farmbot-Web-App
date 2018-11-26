@@ -13,7 +13,6 @@ import {
 import {
   maybeFetchUser,
   maybeGetTimeOffset,
-  getFirmwareConfig
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
@@ -24,6 +23,7 @@ import { getPathArray } from "./history";
 import { getWebAppConfigValue, GetWebAppConfigValue } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { getFirmwareConfig } from "./resources/getters";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 const fastClick = require("fastclick");

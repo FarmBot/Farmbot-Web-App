@@ -67,14 +67,6 @@ class Sequence < ApplicationRecord
     if destroyed? then true else false end
   end
 
-  # Determines if the current sequence is used by any farmevents, regimens or
-  # sequences.
-  def in_use?
-    [sequence_usage_report.edge_node_count,
-     sequence_usage_report.farm_event_count,
-     sequence_usage_report.regimen_items_count].max != 0
-  end
-
   # Eagerly load edge_node, primary_node and usage_report. This is a big deal
   # for performance when serializing sequences.
   def self.with_usage_reports

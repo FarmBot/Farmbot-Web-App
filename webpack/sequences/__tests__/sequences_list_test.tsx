@@ -1,8 +1,6 @@
 jest.mock("../../history", () => ({
   push: jest.fn(),
-  history: {
-    getCurrentLocation: () => ({ pathname: "" })
-  }
+  history: { getCurrentLocation: () => ({ pathname: "" }) }
 }));
 
 jest.mock("../actions", () => ({
@@ -22,17 +20,28 @@ import { Actions } from "../../constants";
 import { init } from "../../api/crud";
 import { push } from "../../history";
 import { selectSequence } from "../actions";
+import { resourceUsageList } from "../../resources/in_use";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { resourceReducer } from "../../resources/reducer";
+import { resourceReady } from "../../sync/actions";
 
 describe("<SequencesList />", () => {
-  const fakeProps = (): SequencesListProps => {
+  const fakeSequences = () => {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.name = "Sequence 1";
     const fakeSequence2 = fakeSequence();
     fakeSequence2.body.name = "Sequence 2";
+    return [fakeSequence1, fakeSequence2];
+  };
+
+  const fakeProps = (sequences = fakeSequences()): SequencesListProps => {
+    const { inUse } = resourceReducer(buildResourceIndex(sequences),
+      resourceReady("Sequence", sequences)).index;
     return {
+      resourceUsage: resourceUsageList(inUse),
       dispatch: jest.fn(),
       sequence: undefined,
-      sequences: [fakeSequence1, fakeSequence2]
+      sequences
     };
   };
 
@@ -63,14 +72,25 @@ describe("<SequencesList />", () => {
   });
 
   it("shows in-use indicator", () => {
-    const p = fakeProps();
-    p.sequences[0].body.in_use = true;
+    const fakeSequence1 = fakeSequence();
+    fakeSequence1.body.name = "Sequence 1";
+    fakeSequence1.body.id = 1;
+
+    const fakeSequence2 = fakeSequence();
+    fakeSequence2.body.name = "Sequence 2";
+    fakeSequence2.body.id = 2;
+    fakeSequence2.body.body =
+      [{ kind: "execute", args: { sequence_id: fakeSequence1.body.id } }];
+
+    const p = fakeProps([fakeSequence1, fakeSequence2]);
+
     const wrapper = mount(<SequencesList {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });
 
   it("doesn't show in-use indicator", () => {
-    const wrapper = mount(<SequencesList {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount(<SequencesList {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
   });
 

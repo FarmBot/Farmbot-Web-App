@@ -51,6 +51,7 @@ describe("<SavedGardens />", () => {
   it("applies garden", () => {
     const p = fakeProps();
     p.savedGardens[0].uuid = "SavedGarden.1.0";
+    p.savedGardens[0].body.id = 1;
     p.plantPointerCount = 0;
     const wrapper = mount(<SavedGardens {...p} />);
     clickButton(wrapper, 3, "apply");

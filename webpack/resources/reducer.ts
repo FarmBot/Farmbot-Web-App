@@ -6,7 +6,7 @@ import {
   findByUuid,
   indexRemove,
   initResourceReducer,
-  afterEach
+  afterEach,
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -61,7 +61,13 @@ export const emptyState = (): RestResources => {
       },
       byKindAndId: {},
       references: {},
-      sequenceMeta: {}
+      sequenceMeta: {},
+      inUse: {
+        "Regimen.FarmEvent": {},
+        "Sequence.FarmEvent": {},
+        "Sequence.Regimen": {},
+        "Sequence.Sequence": {},
+      }
     }
   };
 };
@@ -70,7 +76,7 @@ export const emptyState = (): RestResources => {
 export let resourceReducer =
   generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
-      indexUpsert(s.index, payload);
+      indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
       return s;
     })
@@ -87,23 +93,17 @@ export let resourceReducer =
       const { uuid, update, specialStatus } = payload;
       const original = findByUuid(s.index, uuid);
       original.body = update;
-      indexUpsert(s.index, original);
+      indexUpsert(s.index, [original], "ongoing");
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
     .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
       !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      /** Example Use Case: Refreshing a group of logs after the application
-       * is already bootstrapped. */
-      Object.keys(s.index.byKind[payload.kind]).map(uuid => {
-        const ref = s.index.references[uuid];
-        ref && indexRemove(s.index, ref);
-      });
-      payload.body.map(x => indexUpsert(s.index, x));
+      indexUpsert(s.index, payload.body, "initial");
       return s;
     })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
-      indexUpsert(s.index, payload);
+      indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index);
       return s;
     })

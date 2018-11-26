@@ -1,7 +1,7 @@
 
 import { t } from "i18next";
 import {
-  getAllSavedPeripherals,
+  selectAllSavedPeripherals,
   selectAllSavedSensors
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -80,7 +80,7 @@ const boxLed2DropDown =
   });
 
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
-  const list = getAllSavedPeripherals(input).map(peripheral2DropDown);
+  const list = selectAllSavedPeripherals(input).map(peripheral2DropDown);
   return list.length ? [PERIPHERAL_HEADING, ...list] : [];
 }
 

@@ -28,7 +28,7 @@ describe("performAllIndexesOnSequence", () => {
       ]
     };
     const result = sanitizeNodes(unusedVar);
-    const locals = result.args.locals.body;
+    const locals = result.thisSequence.args.locals.body;
     if (locals) {
       expect(locals[0]).not.toBeDefined();
     } else {
