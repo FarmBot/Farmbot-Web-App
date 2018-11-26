@@ -1,4 +1,4 @@
-import { TaggedResource } from "farmbot";
+import { TaggedResource, TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
@@ -9,7 +9,7 @@ import {
   fakeRegimen
 } from "../../__test_support__/fake_state/resources";
 import { resourceReducer } from "../reducer";
-import { resourceReady } from "../../sync/actions";
+import { resourceReady, newTaggedResource } from "../../sync/actions";
 
 describe("resourceUsageList", () => {
   it("Converts `UsageIndex` type Into Record<UUID, boolean>", () => {
@@ -95,6 +95,23 @@ describe("in_use tracking at reducer level", () => {
     });
   });
 
-  it("Tracks a Regimen's Sequence usage", () => pending());
-  it("transitions from in_use to not in_use", () => pending());
+  it("Tracks a Regimen's Sequence usage", () => {
+    const sequence_id = 123123123123;
+    const sequence = newTaggedResource<TaggedSequence>("Sequence", {
+      name: "Y",
+      kind: "sequence",
+      color: "blue",
+      args: { version: 8, locals: { kind: "scope_declaration", args: {} } }
+    })[0];
+    sequence.body.id = sequence_id;
+    const regimen = newTaggedResource<TaggedRegimen>("Regimen", {
+      name: "X",
+      color: "red",
+      regimen_items: [
+        { sequence_id, time_offset: 12 }
+      ]
+    })[0];
+    const ri = buildResourceIndex([regimen, sequence]);
+    expect(resourceUsageList(ri.index.inUse)[sequence.uuid]).toBe(true);
+  });
 });
