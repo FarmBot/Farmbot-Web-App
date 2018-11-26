@@ -13,7 +13,6 @@ import {
   TaggedPoint,
   TaggedSensor,
   TaggedPeripheral,
-  TaggedToolSlotPointer,
   TaggedPinBinding,
   TaggedDiagnosticDump,
   TaggedSensorReading,
@@ -26,7 +25,7 @@ import {
   isTaggedResource,
   sanityCheck,
 } from "./tagged_resources";
-import { betterCompact, bail } from "../util";
+import { bail } from "../util";
 import { error } from "farmbot-toastr";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
