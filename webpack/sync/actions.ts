@@ -77,7 +77,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("Log", API.current.filteredLogsPath),
       get("PlantTemplate", API.current.plantTemplatePath),
       get("SavedGarden", API.current.savedGardensPath),
-      get("Peripheral", API.current.peripheralsPath),
       get("User", API.current.usersPath),
       get("WebcamFeed", API.current.webcamFeedPath)
     ],
