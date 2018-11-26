@@ -2,8 +2,8 @@ import { didLogin, setToken } from "../auth/actions";
 import { Thunk } from "../redux/interfaces";
 import { Session } from "../session";
 import { maybeRefreshToken } from "../refresh_token";
-import { withTimeout } from "../util";
 import { AuthState } from "../auth/interfaces";
+import { timeout } from "promise-timeout";
 
 export const storeToken =
   (old: AuthState, dispatch: Function) => (_new: AuthState | undefined) => {
@@ -28,7 +28,7 @@ export function ready(): Thunk {
       const ok = storeToken(auth, dispatch);
       const no = () => ok(undefined);
       const p = maybeRefreshToken(auth);
-      withTimeout(MAX_TOKEN_WAIT_TIME, p).then(ok, no);
+      timeout(p, MAX_TOKEN_WAIT_TIME).then(ok, no);
     } else {
       Session.clear();
     }

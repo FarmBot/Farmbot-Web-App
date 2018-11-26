@@ -92,24 +92,6 @@ describe("util", () => {
     });
   });
 
-  describe("withTimeout()", () => {
-    it("rejects promises that do not meet a particular deadline", (done) => {
-      const p = new Promise(res => setTimeout(() => res("Done"), 10));
-      Util.withTimeout(1, p).then(fail, (y) => {
-        expect(y).toContain("Timed out");
-        done();
-      });
-    });
-
-    it("resolves promises that meet a particular deadline", (done) => {
-      Util.withTimeout(10, new Promise(res => setTimeout(() => res("Done"), 1)))
-        .then(y => {
-          expect(y).toContain("Done");
-          done();
-        }, fail);
-    });
-  });
-
   describe("shortRevision()", () => {
     it("none", () => {
       globalConfig.SHORT_REVISION = "";
