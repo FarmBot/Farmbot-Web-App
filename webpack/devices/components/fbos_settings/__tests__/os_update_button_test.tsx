@@ -95,8 +95,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.informational_settings.controller_version = installedVersion;
     bot.hardware.informational_settings.commit = installedCommit;
     bot.hardware.informational_settings.currently_on_beta = onBeta;
-    // tslint:disable-next-line:no-any // TODO: fix FBJS
-    (bot.hardware.informational_settings as any).update_available =
+    bot.hardware.informational_settings.update_available =
       update_available || false;
     bot.currentOSVersion = availableVersion;
     bot.currentBetaOSVersion = availableBetaVersion;
