@@ -120,8 +120,7 @@ const buttonVersionStatus =
     const botInfo = bot.hardware.informational_settings;
     const {
       controller_version, commit, currently_on_beta, update_available
-      // tslint:disable-next-line:no-any // TODO: fix FBJS
-    } = botInfo as any;
+    } = botInfo;
 
     /** Newest release version, given settings and data available. */
     const latestReleaseV =
