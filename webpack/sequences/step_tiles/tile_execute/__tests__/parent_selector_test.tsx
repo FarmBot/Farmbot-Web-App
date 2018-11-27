@@ -10,7 +10,15 @@ describe("<ParentSelector/>", () => {
     const sequence = fakeSequence();
     const selected: Identifier = { kind: "identifier", args: { label: "parent" } };
     const { index } = buildResourceIndex([sequence]);
-    index.sequenceMeta[sequence.uuid] = { "parent": { label: "parent" } };
+    index.sequenceMeta[sequence.uuid] = {
+      "parent": {
+        kind: "parameter_declaration",
+        args: {
+          label: "parent",
+          data_type: "point"
+        }
+      }
+    };
     const el = shallow(<ParentSelector
       targetUuid={sequence.uuid}
       selected={selected}

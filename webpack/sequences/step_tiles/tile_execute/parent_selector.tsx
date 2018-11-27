@@ -16,8 +16,8 @@ export function ParentSelector({ resources, selected, onChange, targetUuid }: Pr
   const meta = Object.values(resources.sequenceMeta[targetUuid] || {});
   return <div>
     {meta.map(val => {
-      return <div key={val.label}>
-        <label>{t(`Set '${val.label}' value to:`)}</label>
+      return <div key={val.args.label}>
+        <label>{t(`Set '${val.args.label}' value to:`)}</label>
         <TileMoveAbsSelect
           resources={resources}
           selectedItem={selected}

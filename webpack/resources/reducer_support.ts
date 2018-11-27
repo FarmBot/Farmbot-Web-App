@@ -70,8 +70,12 @@ const BY_KIND_AND_ID: Indexer = {
 };
 
 export const createVariableNameLookup =
-  (acc: VariableNameSet, { args }: ScopeDeclarationBodyItem) => {
-    return { ...acc, ...({ [args.label]: { label: args.label } }) };
+  (acc: VariableNameSet, x: ScopeDeclarationBodyItem) => {
+
+    return {
+      ...acc,
+      [x.args.label]: x
+    };
   };
 
 export function variableLookupTable(tr: TaggedSequence): VariableNameSet {

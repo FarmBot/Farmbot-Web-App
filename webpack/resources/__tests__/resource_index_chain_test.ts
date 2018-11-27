@@ -8,6 +8,6 @@ describe("variableLookupTable", () => {
     });
     expect(result).toBeDefined();
     expect(result.parent).toBeDefined();
-    expect(result.parent.label).toEqual("parent");
+    expect(result.parent.args.label).toEqual("parent");
   });
 });

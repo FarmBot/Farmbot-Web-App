@@ -1,4 +1,4 @@
-import { Dictionary } from "farmbot/dist";
+import { Dictionary, ScopeDeclarationBodyItem } from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
 import { CowardlyDictionary } from "../util";
@@ -14,19 +14,8 @@ import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 
 export type UUID = string;
-export type VariableNameSet = Record<string, SequenceVariableMeta>;
+export type VariableNameSet = Record<string, ScopeDeclarationBodyItem>;
 export type UUIDSet = Record<UUID, true>;
-
-export interface SequenceVariableMeta {
-  /** As of November 2018, the only thing you can make variables are
-   *  "vector like" nodes (points, plants, mounted tools etc). I'm using a
-   * single-attribute object (instead of a string) to leave the door open for
-   * additional meta-data later on when the variables feature is more mature.
-   * Example: Keeping track of a variables type or reference count
-   *   -RC 26 NOV 18
-   * */
-  label: string;
-}
 
 export interface ResourceIndex {
   all: UUIDSet;
@@ -35,13 +24,16 @@ export interface ResourceIndex {
   references: Dictionary<TaggedResource | undefined>;
   /**
    * PROBLEM: _efficiently_ tracking variable declarations across all sequences.
+   *
    * USE CASE:
    *  * You have a sequence `Sequence.0.1`
    *  * It has 2 variables: `parent` and `parent1`.
+   *
    * SOLUTION:
    *  * Create an index entry, indexed by UUID, for every variable declared in
    *    a sequence.
    *   * Within that entry, map the name of the var to a map of meta attrs.
+   *
    * {
    *   ...
    *   "Sequence.0.1": {
