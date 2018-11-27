@@ -15,6 +15,7 @@ describe("<FarmbotOsRow/>", () => {
       sourceFbosConfig: (x) => {
         return { value: bot.hardware.configuration[x], consistent: true };
       },
+      shouldDisplay: () => false,
       botOnline: false
     };
   };
