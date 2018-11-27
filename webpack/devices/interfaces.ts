@@ -76,6 +76,7 @@ export enum Feature {
   firmware_restart = "firmware_restart",
   api_farmware_installations = "api_farmware_installations",
   api_farmware_env = "api_farmware_env",
+  use_update_channel = "use_update_channel",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
