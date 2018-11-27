@@ -1,4 +1,4 @@
-import { Dictionary, ScopeDeclarationBodyItem } from "farmbot/dist";
+import { Dictionary, ScopeDeclarationBodyItem, Vector3 } from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
 import { CowardlyDictionary } from "../util";
@@ -12,9 +12,26 @@ import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
 import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
+import { DropDownItem } from "../ui";
 
+export interface JustAnIdea {
+  celeryNode: ScopeDeclarationBodyItem;
+  dropdown: DropDownItem;
+  location: Vector3;
+  editable: boolean;
+}
+
+export const justAnIdea =
+  (_ri: ResourceIndex, celeryNode: ScopeDeclarationBodyItem): JustAnIdea => {
+    return {
+      celeryNode,
+      dropdown: { label: "parent", value: "0" },
+      location: { x: 0, y: 0, z: 0, },
+      editable: true
+    };
+  };
 export type UUID = string;
-export type VariableNameSet = Record<string, ScopeDeclarationBodyItem>;
+export type VariableNameSet = Record<string, JustAnIdea>;
 export type UUIDSet = Record<UUID, true>;
 
 export interface ResourceIndex {

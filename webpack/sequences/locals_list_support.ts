@@ -4,7 +4,7 @@ import {
   Vector3,
   ScopeDeclarationBodyItem
 } from "farmbot";
-import { ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex, VariableNameSet } from "../resources/interfaces";
 import {
   LocationData,
   CeleryVariable
@@ -20,8 +20,9 @@ type DataValue = VariableDeclaration["args"]["data_value"];
 type ParentType = ParameterDeclaration | VariableDeclaration;
 
 export interface LocalsListProps {
-  sequence: TaggedSequence;
-  resources: ResourceIndex;
+  varialbleData: VariableNameSet;
+  deprecatedSequence: TaggedSequence;
+  deprecatedResources: ResourceIndex;
   dispatch: Function;
 }
 

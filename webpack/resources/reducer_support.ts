@@ -69,18 +69,23 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
-export const createVariableNameLookup =
-  (acc: VariableNameSet, x: ScopeDeclarationBodyItem) => {
-
-    return {
-      ...acc,
-      [x.args.label]: x
-    };
-  };
-
-export function variableLookupTable(tr: TaggedSequence): VariableNameSet {
-  return (tr.body.args.locals.body || []).reduce(createVariableNameLookup, {});
-}
+type R =
+  (acc: VariableNameSet, item: ScopeDeclarationBodyItem) => VariableNameSet;
+type VLT =
+  (_ri: ResourceIndex, tr: TaggedSequence) => VariableNameSet;
+export const variableLookupTable: VLT = (_ri, tr) => {
+  const collection = tr.body.args.locals.body || [];
+  const reducer: R = (acc, x) => ({
+    ...acc,
+    [x.args.label]: {
+      celeryNode: x,
+      location: { x: 0, y: 0, z: 0 },
+      dropdown: { label: "WOW", value: "0" },
+      editable: true
+    }
+  });
+  return collection.reduce(reducer, {});
+};
 
 export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
   ids.map(id => {
@@ -95,7 +100,7 @@ export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: Resou
 export const updateOtherSequenceIndexes =
   (tr: TaggedSequence, i: ResourceIndex) => {
     i.references[tr.uuid] = tr;
-    i.sequenceMeta[tr.uuid] = variableLookupTable(tr);
+    i.sequenceMeta[tr.uuid] = variableLookupTable(i, tr);
   };
 
 const reindexSequences = (i: ResourceIndex) => (s: TaggedSequence) => {

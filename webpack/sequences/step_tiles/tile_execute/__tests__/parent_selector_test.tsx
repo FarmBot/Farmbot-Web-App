@@ -12,11 +12,16 @@ describe("<ParentSelector/>", () => {
     const { index } = buildResourceIndex([sequence]);
     index.sequenceMeta[sequence.uuid] = {
       "parent": {
-        kind: "parameter_declaration",
-        args: {
-          label: "parent",
-          data_type: "point"
-        }
+        celeryNode: {
+          kind: "parameter_declaration",
+          args: {
+            label: "parent",
+            data_type: "point"
+          }
+        },
+        location: { x: 0, y: 0, z: 0 },
+        dropdown: { label: "Parent", value: "0" },
+        editable: true
       }
     };
     const el = shallow(<ParentSelector

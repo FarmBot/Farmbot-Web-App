@@ -81,12 +81,12 @@ export const ParentVariableForm =
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
-  const parent = extractParent(props.sequence.body.args.locals.body);
+  const parent = extractParent(props.deprecatedSequence.body.args.locals.body);
   return parent
     ? <ParentVariableForm
       parent={parent}
-      sequence={props.sequence}
-      resources={props.resources}
-      onChange={handleVariableChange(props.dispatch, props.sequence)} />
+      sequence={props.deprecatedSequence}
+      resources={props.deprecatedResources}
+      onChange={handleVariableChange(props.dispatch, props.deprecatedSequence)} />
     : <div />;
 };

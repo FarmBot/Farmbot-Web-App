@@ -51,8 +51,8 @@ const mrGoodVar: VariableDeclaration = {
 const fakeProps = (): LocalsListProps => {
   const sequence = fakeSequence();
   return {
-    sequence,
-    resources: buildResourceIndex([sequence]).index,
+    deprecatedSequence,
+    deprecatedResources: buildResourceIndex([sequence]).index,
     dispatch: jest.fn()
   };
 };
@@ -306,14 +306,14 @@ describe("<ParentVariableForm/>", () => {
 describe("<LocalsList/>", () => {
   it("renders nothing", () => {
     const p = fakeProps();
-    p.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
+    p.deprecatedSequence.body.args.locals = { kind: "scope_declaration", args: {} };
     const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(0);
   });
 
   it("renders something", () => {
     const p = fakeProps();
-    p.sequence.body.args.locals = {
+    p.deprecatedSequence.body.args.locals = {
       kind: "scope_declaration",
       args: {},
       body: [mrGoodVar]

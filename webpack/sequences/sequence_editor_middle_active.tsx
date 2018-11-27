@@ -86,7 +86,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
     <SequenceBtnGroup {...sequenceAndDispatch} syncStatus={props.syncStatus} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     {props.shouldDisplay(Feature.variables) &&
-      <LocalsList {...sequenceAndDispatch} resources={props.resources} />}
+      <LocalsList {...sequenceAndDispatch} deprecatedResources={props.resources} />}
   </div>;
 };
 
