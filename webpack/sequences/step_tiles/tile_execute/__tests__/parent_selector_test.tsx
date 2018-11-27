@@ -14,14 +14,12 @@ describe("<ParentSelector/>", () => {
       "parent": {
         celeryNode: {
           kind: "parameter_declaration",
-          args: {
-            label: "parent",
-            data_type: "point"
-          }
+          args: { label: "parent", data_type: "point" }
         },
         location: { x: 0, y: 0, z: 0 },
         dropdown: { label: "Parent", value: "0" },
-        editable: true
+        editable: true,
+        resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
       }
     };
     const el = shallow(<ParentSelector

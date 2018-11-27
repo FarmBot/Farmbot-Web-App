@@ -6,7 +6,7 @@ import { designer as farm_designer } from "../farm_designer/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
 import { sequenceReducer as sequences } from "../sequences/reducer";
-import { RestResources } from "./interfaces";
+import { RestResources, JustAnIdea } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { arrayWrap, arrayUnwrap } from "./util";
 import {
@@ -75,15 +75,34 @@ type VLT =
   (_ri: ResourceIndex, tr: TaggedSequence) => VariableNameSet;
 export const variableLookupTable: VLT = (_ri, tr) => {
   const collection = tr.body.args.locals.body || [];
-  const reducer: R = (acc, x) => ({
-    ...acc,
-    [x.args.label]: {
-      celeryNode: x,
-      location: { x: 0, y: 0, z: 0 },
-      dropdown: { label: "WOW", value: "0" },
-      editable: true
+  const reducer: R = (acc, x) => {
+    let result: JustAnIdea;
+    switch (x.kind) {
+      case "parameter_declaration":
+        result = {
+          celeryNode: x,
+          location: { x: 0, y: 0, z: 0 },
+          dropdown: { label: "stub = parameter_declaration", value: "0" },
+          resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+          editable: true,
+        };
+        break;
+      case "variable_declaration":
+      default:
+        result = {
+          celeryNode: x,
+          location: { x: 0, y: 0, z: 0 },
+          dropdown: { label: "stub = parameter_declaration", value: "0" },
+          editable: true,
+          resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+        };
+        break;
     }
-  });
+    return ({
+      ...acc,
+      [x.args.label]: result
+    });
+  };
   return collection.reduce(reducer, {});
 };
 

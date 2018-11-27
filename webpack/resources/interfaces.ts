@@ -1,4 +1,12 @@
-import { Dictionary, ScopeDeclarationBodyItem, Vector3 } from "farmbot/dist";
+import {
+  Dictionary,
+  ScopeDeclarationBodyItem,
+  Vector3,
+  Coordinate,
+  Identifier,
+  Point,
+  Tool
+} from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
 import { CowardlyDictionary } from "../util";
@@ -19,6 +27,7 @@ export interface JustAnIdea {
   dropdown: DropDownItem;
   location: Vector3;
   editable: boolean;
+  resource: Coordinate | Identifier | Point | Tool;
 }
 
 export const justAnIdea =
@@ -26,8 +35,9 @@ export const justAnIdea =
     return {
       celeryNode,
       dropdown: { label: "parent", value: "0" },
+      editable: true,
       location: { x: 0, y: 0, z: 0, },
-      editable: true
+      resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } },
     };
   };
 export type UUID = string;

@@ -51,7 +51,8 @@ const mrGoodVar: VariableDeclaration = {
 const fakeProps = (): LocalsListProps => {
   const sequence = fakeSequence();
   return {
-    deprecatedSequence,
+    variableData: {},
+    deprecatedSequence: sequence,
     deprecatedResources: buildResourceIndex([sequence]).index,
     dispatch: jest.fn()
   };

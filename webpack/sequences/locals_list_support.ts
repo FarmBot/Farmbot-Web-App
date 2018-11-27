@@ -20,7 +20,7 @@ type DataValue = VariableDeclaration["args"]["data_value"];
 type ParentType = ParameterDeclaration | VariableDeclaration;
 
 export interface LocalsListProps {
-  varialbleData: VariableNameSet;
+  variableData: VariableNameSet;
   deprecatedSequence: TaggedSequence;
   deprecatedResources: ResourceIndex;
   dispatch: Function;
