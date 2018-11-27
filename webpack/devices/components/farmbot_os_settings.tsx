@@ -146,6 +146,7 @@ export class FarmbotOsSettings
               osReleaseNotes={this.state.osReleaseNotes}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
             <AutoUpdateRow
               dispatch={this.props.dispatch}
