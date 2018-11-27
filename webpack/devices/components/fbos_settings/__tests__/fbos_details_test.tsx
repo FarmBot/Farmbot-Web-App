@@ -6,7 +6,7 @@ jest.mock("../../../../device", () => ({
 }));
 
 import * as React from "react";
-import { FbosDetails, colorFromTemp } from "../fbos_details";
+import { FbosDetails, colorFromTemp, betaReleaseOptIn } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { FbosDetailsProps } from "../interfaces";
@@ -17,6 +17,7 @@ describe("<FbosDetails/>", () => {
     return {
       botInfoSettings: bot.hardware.informational_settings,
       dispatch: jest.fn(x => x(jest.fn(), fakeState)),
+      shouldDisplay: () => false,
       sourceFbosConfig: x =>
         ({ value: bot.hardware.configuration[x], consistent: true }),
     };
@@ -145,6 +146,56 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.uptime = 172800;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 days");
+  });
+});
+
+describe("betaReleaseOptIn()", () => {
+  it("uses `beta_opt_in`: beta enabled", () => {
+    const result = betaReleaseOptIn({
+      sourceFbosConfig: () => ({ value: true, consistent: true }),
+      shouldDisplay: () => false
+    });
+    expect(result).toEqual({
+      betaOptIn: { consistent: true, value: true },
+      betaOptInValue: true,
+      update: { beta_opt_in: false }
+    });
+  });
+
+  it("uses `beta_opt_in`: beta disabled", () => {
+    const result = betaReleaseOptIn({
+      sourceFbosConfig: () => ({ value: false, consistent: true }),
+      shouldDisplay: () => false
+    });
+    expect(result).toEqual({
+      betaOptIn: { consistent: true, value: false },
+      betaOptInValue: false,
+      update: { beta_opt_in: true }
+    });
+  });
+
+  it("uses `update_channel`: beta enabled", () => {
+    const result = betaReleaseOptIn({
+      sourceFbosConfig: () => ({ value: "beta", consistent: true }),
+      shouldDisplay: () => true
+    });
+    expect(result).toEqual({
+      betaOptIn: { consistent: true, value: true },
+      betaOptInValue: true,
+      update: { update_channel: "stable" }
+    });
+  });
+
+  it("uses `update_channel`: beta disabled", () => {
+    const result = betaReleaseOptIn({
+      sourceFbosConfig: () => ({ value: "stable", consistent: true }),
+      shouldDisplay: () => true
+    });
+    expect(result).toEqual({
+      betaOptIn: { consistent: true, value: false },
+      betaOptInValue: false,
+      update: { update_channel: "beta" }
+    });
   });
 });
 

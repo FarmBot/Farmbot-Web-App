@@ -33,6 +33,7 @@ describe("<OsUpdateButton/>", () => {
     availableBetaCommit: string | undefined;
     betaOptIn: boolean | undefined;
     onBeta: boolean | undefined;
+    update_available?: boolean | undefined;
   }
 
   const defaultTestProps = (): TestProps => ({
@@ -88,12 +89,15 @@ describe("<OsUpdateButton/>", () => {
     testProps: TestProps,
     expected: Results) => {
     const {
-      installedVersion, installedCommit, onBeta,
+      installedVersion, installedCommit, onBeta, update_available,
       availableVersion, availableBetaVersion, availableBetaCommit, betaOptIn
     } = testProps;
     bot.hardware.informational_settings.controller_version = installedVersion;
     bot.hardware.informational_settings.commit = installedCommit;
     bot.hardware.informational_settings.currently_on_beta = onBeta;
+    // tslint:disable-next-line:no-any // TODO: fix FBJS
+    (bot.hardware.informational_settings as any).update_available =
+      update_available || false;
     bot.currentOSVersion = availableVersion;
     bot.currentBetaOSVersion = availableBetaVersion;
     bot.currentBetaOSCommit = availableBetaCommit;
@@ -239,6 +243,14 @@ describe("<OsUpdateButton/>", () => {
     testProps.onBeta = false;
     testProps.availableBetaVersion = "3.1.7-beta";
     const expectedResults = upToDate("3.1.7-beta");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("handles FBOS update available override", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "3.1.6";
+    testProps.update_available = true;
+    const expectedResults = updateNeeded("3.1.6");
     testButtonState(testProps, expectedResults);
   });
 

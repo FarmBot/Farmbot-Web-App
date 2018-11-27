@@ -53,12 +53,14 @@ export interface FarmbotOsRowProps {
   osReleaseNotes: string;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 
 export interface FbosDetailsProps {
   botInfoSettings: InformationalSettings;
   dispatch: Function;
+  shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
 }
 
