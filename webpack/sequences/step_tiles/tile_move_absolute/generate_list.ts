@@ -56,7 +56,7 @@ export function generateList(input: ResourceIndex,
   const toolDDI: DropDownItem[] = activeTools(input)
     .map(tool => formatTools(tool));
   return _(points)
-    .map(formatPoint())
+    .map(formatPoint)
     .concat(toolDDI)
     .filter(x => parseInt("" + x.value) > 0)
     .concat(HEADINGS)
@@ -67,7 +67,7 @@ export function generateList(input: ResourceIndex,
     .value();
 }
 
-const formatPoint = () => (p: PointerType): DropDownItem => {
+const formatPoint = (p: PointerType): DropDownItem => {
   const { id, name, pointer_type, x, y, z } = p.body;
   return {
     label: dropDownName(name, { x, y, z }),
