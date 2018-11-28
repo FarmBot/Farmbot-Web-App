@@ -15,6 +15,7 @@ export let initialState: DesignerState = {
   hoveredPlantListItem: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
+  cropSearchInProgress: false,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   currentPoint: undefined,
   openedSavedGarden: undefined,
@@ -22,9 +23,14 @@ export let initialState: DesignerState = {
 
 export let designer = generateReducer<DesignerState>(initialState)
   .add<string>(Actions.SEARCH_QUERY_CHANGE, (s, { payload }) => {
+    s.cropSearchInProgress = true;
     const state = cloneDeep(s);
     state.cropSearchQuery = payload;
     return state;
+  })
+  .add<boolean>(Actions.OF_SEARCH_RESULTS_NO, (s) => {
+    s.cropSearchInProgress = false;
+    return s;
   })
   .add<string[] | undefined>(Actions.SELECT_PLANT, (s, { payload }) => {
     s.selectedPlants = payload;
@@ -44,6 +50,7 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
     s.cropSearchResults = a.payload;
+    s.cropSearchInProgress = false;
     return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {

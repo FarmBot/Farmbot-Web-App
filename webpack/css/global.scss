@@ -708,6 +708,20 @@ ul {
   width: 50%;
 }
 
+.empty-state {
+  text-align: center;
+  h5 {
+    font-weight: bold;
+  }
+  &.plants {
+    p,
+    h5,
+    a {
+      color: $dark_green;
+    }
+  }
+}
+
 .farmware-selection-panel {
   .filter-search {
     i {

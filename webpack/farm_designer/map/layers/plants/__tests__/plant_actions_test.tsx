@@ -30,6 +30,7 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 import { movePlant } from "../../../../actions";
 import { error } from "farmbot-toastr";
+import { fakeCropLiveSearchResult } from "../../../../../__test_support__/fake_crop_search_result";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
@@ -82,18 +83,7 @@ describe("createPlant", () => {
 describe("dropPlant", () => {
   const fakeProps = () => ({
     gardenCoords: { x: 10, y: 20 },
-    cropSearchResults: [{
-      crop: {
-        name: "Mint",
-        slug: "mint",
-        binomial_name: "",
-        common_names: [],
-        description: "",
-        sun_requirements: "",
-        sowing_method: "",
-        processing_pictures: 0
-      }, image: ""
-    }],
+    cropSearchResults: [fakeCropLiveSearchResult()],
     openedSavedGarden: undefined,
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),

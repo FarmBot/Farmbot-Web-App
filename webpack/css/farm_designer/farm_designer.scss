@@ -189,6 +189,18 @@
   }
 }
 
+.thin-search {
+  .spinner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-right: 1rem;
+  }
+}
+
 .hovered-plant-copy {
   cursor: pointer;
   transform-origin: center;
