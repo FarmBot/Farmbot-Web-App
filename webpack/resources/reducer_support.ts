@@ -233,10 +233,13 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
     return;
   }
   const { kind } = arrayUnwrap(resources);
-
-  // Clean up indexes (if needed)
-  const before = BEFORE_HOOKS[kind];
-  before && before(db, strategy);
+  try {
+    // Clean up indexes (if needed)
+    const before = BEFORE_HOOKS[kind];
+    before && before(db, strategy);
+  } catch (error) {
+    console.error(`BEFORE_HOOK for ${kind} failed`);
+  }
 
   // Run indexers
   ups.map(callback => {
@@ -244,14 +247,21 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
   });
 
   // Finalize indexing (if needed)
-  const after = AFTER_HOOKS[kind];
-  after && after(db, strategy);
+  try {
+    const after = AFTER_HOOKS[kind];
+    after && after(db, strategy);
+  } catch (error) {
+    console.error(`AFTER_HOOK for ${kind} failed`);
+  }
 };
 
 export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
-  downs
-    .map(callback => arrayWrap(resource).map(r => callback(r, db)));
+  downs.map(callback => arrayWrap(resource).map(r => callback(r, db)));
   // Finalize indexing (if needed)
-  const after = AFTER_HOOKS[resource.kind];
-  after && after(db, "ongoing");
+  try {
+    const after = AFTER_HOOKS[resource.kind];
+    after && after(db, "ongoing");
+  } catch(e) {
+    console.log(`AFTER_HOOK in removal of ${resource.kind} failed`);
+  }
 }
