@@ -85,12 +85,11 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   return <div className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch} syncStatus={props.syncStatus} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
-    {props.shouldDisplay(Feature.variables) &&
-      <LocalsList
-        variableData={props.resources.sequenceMeta[sequence.uuid] || {}}
-        deprecatedSequence={sequence}
-        dispatch={dispatch}
-        deprecatedResources={props.resources} />}
+    <LocalsList
+      variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
+      deprecatedSequence={sequence}
+      dispatch={dispatch}
+      deprecatedResources={props.resources} />
   </div>;
 };
 

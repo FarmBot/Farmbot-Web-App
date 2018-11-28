@@ -10,7 +10,7 @@ describe("<ParentSelector/>", () => {
     const sequence = fakeSequence();
     const selected: Identifier = { kind: "identifier", args: { label: "parent" } };
     const { index } = buildResourceIndex([sequence]);
-    index.sequenceMeta[sequence.uuid] = {
+    index.sequenceMetas[sequence.uuid] = {
       "parent": {
         celeryNode: {
           kind: "parameter_declaration",
@@ -19,13 +19,13 @@ describe("<ParentSelector/>", () => {
         location: { x: 0, y: 0, z: 0 },
         dropdown: { label: "Parent", value: "0" },
         editable: true,
-        resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+        variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
       }
     };
     const el = shallow(<ParentSelector
       targetUuid={sequence.uuid}
       selected={selected}
-      resources={index}
+      deprecatedResources={index}
       onChange={jest.fn()} />);
     expect(el).toBeDefined();
     expect(el.text()).toContain("Set 'parent' value");

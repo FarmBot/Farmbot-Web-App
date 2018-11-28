@@ -14,7 +14,6 @@ import {
   fakeSequence,
   fakeTool
 } from "../../__test_support__/fake_state/resources";
-import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
 import {
@@ -27,21 +26,19 @@ import {
 import {
   extractParent,
   setParent,
-  handleVariableChange,
   changeAxis,
   guessFromDataType,
   guessVecFromLabel,
-  guessXYZ,
   ParentVariableFormProps,
   PARENT,
   LocalsListProps,
 } from "../locals_list_support";
+import { DELETE_ME_LATER } from "../../resources/interfaces";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
 t.body.id = 5;
 const tool: Tool = { kind: "tool", args: { tool_id: t.body.id } };
-const resources = buildResourceIndex([t]).index;
 const mrGoodVar: VariableDeclaration = {
   // https://en.wikipedia.org/wiki/Mr._Goodbar
   kind: "variable_declaration",
@@ -153,32 +150,13 @@ describe("setParent()", () => {
   });
 });
 
-describe("handleVariableChange()", () => {
-  it("calls dispatch() correctly", () => {
-    const dispatch = jest.fn();
-    const seq = fakeSequence();
-    const cb = handleVariableChange(dispatch, seq);
-    cb(coord);
-    expect(dispatch)
-      .toHaveBeenCalledWith(overwrite(seq, setParent(seq, coord)));
-  });
-});
-
 type E = React.SyntheticEvent<HTMLInputElement>;
 
 describe("changeAxis()", () => {
   const onChange = jest.fn();
 
-  it("is never not a coordinate", () => {
-    const cb = changeAxis("x", onChange, tool);
-    const fakeEvent = { currentTarget: { value: "23" } };
-    const example =
-      () => cb(fakeEvent as E);
-    expect(example).toThrow();
-  });
-
   it("handles coordinates", () => {
-    const cb = changeAxis("x", onChange, coord);
+    const cb = changeAxis("x", onChange, coord.args);
     const fakeEvent = { currentTarget: { value: "23" } };
     const expectedCoord = defensiveClone(coord);
     expectedCoord.args.x = 23;
@@ -243,45 +221,11 @@ describe("guessVecFromLabel()", () => {
   });
 });
 
-describe("guessXYZ", () => {
-  it("Gives labels precedence", () => {
-    const result = guessXYZ("Point_1512679072 (20, 50, 0)",
-      mrGoodVar,
-      resources);
-    expect(result.x).toEqual(20);
-    expect(result.y).toEqual(50);
-    expect(result.z).toEqual(0);
-  });
-
-  it("Gives labels precedence", () => {
-    const result =
-      guessXYZ("None",
-        mrGoodVar,
-        resources);
-    const target = mrGoodVar.args.data_value;
-    if (target.kind === "coordinate") {
-      expect(result.x).toEqual(target.args.x);
-      expect(result.y).toEqual(target.args.y);
-      expect(result.z).toEqual(target.args.z);
-    } else {
-      fail();
-    }
-  });
-
-  it("falls back to 0,0,0 on all other cases", () => {
-    const result = guessXYZ("None", {
-      kind: "variable_declaration",
-      args: { label: "parent", data_value: tool }
-    },
-      resources);
-    expect(Object.values(result)).toEqual([0, 0, 0]);
-  });
-});
-
 describe("<ParentVariableForm/>", () => {
   it("renders correct UI components", () => {
     const props: ParentVariableFormProps = {
-      parent: mrGoodVar,
+      betterParent: DELETE_ME_LATER,
+      deprecatedParent: mrGoodVar,
       sequence: fakeSequence(),
       resources: buildResourceIndex().index,
       onChange: jest.fn()

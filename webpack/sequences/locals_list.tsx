@@ -1,38 +1,28 @@
 import * as React from "react";
 import {
   ParentVariableFormProps,
-  guessXYZ,
   PARENT,
   changeAxis,
-  LocalsListProps,
-  extractParent,
-  handleVariableChange
+  LocalsListProps
 } from "./locals_list_support";
 import { Row, Col, FBSelect } from "../ui";
 import { t } from "i18next";
 import {
   generateList
 } from "./step_tiles/tile_move_absolute/generate_list";
-import {
-  formatSelectedDropdown
-} from "./step_tiles/tile_move_absolute/format_selected_dropdown";
-import {
-  EMPTY_COORD,
-  handleSelect
-} from "./step_tiles/tile_move_absolute/handle_select";
 import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
+
+const REWRITE_THIS = () => {
+  console.error("Re write this callback, OK? RC");
+};
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
 export const ParentVariableForm =
-  ({ parent, sequence, resources, onChange }: ParentVariableFormProps) => {
-    const data_value = (parent.kind == "variable_declaration") ?
-      parent.args.data_value : EMPTY_COORD;
-    const ddiLabel = formatSelectedDropdown(resources, data_value);
-    const { x, y, z } = guessXYZ(ddiLabel.label, parent, resources);
-
-    const isDisabled = (parent.kind == "parameter_declaration") ||
-      data_value.kind !== "coordinate";
+  (props: ParentVariableFormProps) => {
+    const { sequence, resources, onChange } = props;
+    const { x, y, z } = props.betterParent.location;
+    const isDisabled = !props.betterParent.editable;
 
     return <div className="parent-variable-form">
       <Row>
@@ -42,14 +32,14 @@ export const ParentVariableForm =
             key={JSON.stringify(sequence)}
             allowEmpty={true}
             list={generateList(resources, [PARENT])}
-            selectedItem={ddiLabel}
-            onChange={ddi => onChange(handleSelect(resources, ddi))} />
+            selectedItem={props.betterParent.dropdown}
+            onChange={REWRITE_THIS} />
         </Col>
       </Row>
       <Row>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("x", onChange, data_value)}
+            onCommit={changeAxis("x", onChange, props.betterParent.location)}
             disabled={isDisabled}
             name="location-x-variabledeclr"
             value={"" + x}>
@@ -58,7 +48,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("y", onChange, data_value)}
+            onCommit={changeAxis("y", onChange, props.betterParent.location)}
             disabled={isDisabled}
             name="location-y-variabledeclr"
             value={"" + y}>
@@ -67,7 +57,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("z", onChange, data_value)}
+            onCommit={changeAxis("z", onChange, props.betterParent.location)}
             name="location-z-variabledeclr"
             disabled={isDisabled}
             value={"" + z}>
@@ -81,12 +71,13 @@ export const ParentVariableForm =
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
-  const parent = extractParent(props.deprecatedSequence.body.args.locals.body);
-  return parent
+  const betterParent = props.variableData["parent"];
+  return betterParent
     ? <ParentVariableForm
-      parent={parent}
+      betterParent={betterParent}
+      deprecatedParent={betterParent.celeryNode}
       sequence={props.deprecatedSequence}
       resources={props.deprecatedResources}
-      onChange={handleVariableChange(props.dispatch, props.deprecatedSequence)} />
+      onChange={REWRITE_THIS} />
     : <div />;
 };

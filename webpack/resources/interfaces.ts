@@ -1,11 +1,5 @@
 import {
   Dictionary,
-  ScopeDeclarationBodyItem,
-  Vector3,
-  Coordinate,
-  Identifier,
-  Point,
-  Tool
 } from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
@@ -20,28 +14,21 @@ import { RegimenState } from "../regimens/reducer";
 import { FarmwareState } from "../farmware/interfaces";
 import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
-import { DropDownItem } from "../ui";
+import { SequenceMeta } from "./sequence_meta";
 
-export interface JustAnIdea {
-  celeryNode: ScopeDeclarationBodyItem;
-  dropdown: DropDownItem;
-  location: Vector3;
-  editable: boolean;
-  resource: Coordinate | Identifier | Point | Tool;
-}
+export const DELETE_ME_LATER: SequenceMeta = {
+  celeryNode: {
+    kind: "parameter_declaration",
+    args: { label: "parent", data_type: "point" }
+  },
+  dropdown: { label: "parent", value: "0" },
+  editable: true,
+  location: { x: 0, y: 0, z: 0, },
+  variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } },
+};
 
-export const justAnIdea =
-  (_ri: ResourceIndex, celeryNode: ScopeDeclarationBodyItem): JustAnIdea => {
-    return {
-      celeryNode,
-      dropdown: { label: "parent", value: "0" },
-      editable: true,
-      location: { x: 0, y: 0, z: 0, },
-      resource: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } },
-    };
-  };
 export type UUID = string;
-export type VariableNameSet = Record<string, JustAnIdea>;
+export type VariableNameSet = Record<string, SequenceMeta>;
 export type UUIDSet = Record<UUID, true>;
 
 export interface ResourceIndex {
@@ -71,7 +58,7 @@ export interface ResourceIndex {
    *   ...
    * }
    */
-  sequenceMeta: Record<UUID, VariableNameSet>;
+  sequenceMetas: Record<UUID, VariableNameSet>;
   /**
    * PROBLEM:
    *  * We need to _efficiently_ track which resources are in_use.

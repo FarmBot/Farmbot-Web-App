@@ -61,7 +61,7 @@ export const emptyState = (): RestResources => {
       },
       byKindAndId: {},
       references: {},
-      sequenceMeta: {},
+      sequenceMetas: {},
       inUse: {
         "Regimen.FarmEvent": {},
         "Sequence.FarmEvent": {},

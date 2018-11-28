@@ -7,19 +7,20 @@ import { CALLBACK } from "../tile_move_absolute/interfaces";
 
 interface Props {
   targetUuid: string;
-  resources: ResourceIndex;
+  deprecatedResources: ResourceIndex;
   selected: Coordinate | Identifier | Point | Tool;
   onChange: CALLBACK;
 }
 
-export function ParentSelector({ resources, selected, onChange, targetUuid }: Props) {
-  const meta = Object.values(resources.sequenceMeta[targetUuid] || {});
+export function ParentSelector(p: Props) {
+  const { deprecatedResources, selected, onChange, targetUuid } = p;
+  const meta = Object.values(deprecatedResources.sequenceMetas[targetUuid] || {});
   return <div>
     {meta.map(val => {
       return <div key={val.celeryNode.args.label}>
         <label>{t(`Set '${val.celeryNode.args.label}' value to:`)}</label>
         <TileMoveAbsSelect
-          resources={resources}
+          resources={deprecatedResources}
           selectedItem={selected}
           onChange={onChange}
           shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
