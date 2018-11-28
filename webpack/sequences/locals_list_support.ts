@@ -90,16 +90,6 @@ export const setParent =
     return nextSeq;
   };
 
-/** Callback generator called when user changes the x/y/z of a variable in the
- * sequence generator. */
-export const changeAxis =
-  (axis: keyof Vector3, onChange: OnChange, data_type: Vector3) =>
-    (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const nextDT = defensiveClone(data_type);
-      nextDT[axis] = parseInt(e.currentTarget.value, 10);
-      onChange(nextDT);
-    };
-
 /** If variable is a coordinate, just use the coordinates. */
 export const guessFromDataType =
   (x: DataValue): Vector3 | undefined => (x.kind === "coordinate") ?

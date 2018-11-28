@@ -2,7 +2,6 @@ import * as React from "react";
 import {
   ParentVariableFormProps,
   PARENT,
-  changeAxis,
   LocalsListProps
 } from "./locals_list_support";
 import { Row, Col, FBSelect } from "../ui";
@@ -20,7 +19,7 @@ const REWRITE_THIS = () => {
  * Allows the user to chose the value of the `parent` variable, etc. */
 export const ParentVariableForm =
   (props: ParentVariableFormProps) => {
-    const { sequence, resources, onChange } = props;
+    const { sequence, resources } = props;
     const { x, y, z } = props.betterParent.location;
     const isDisabled = !props.betterParent.editable;
 
@@ -39,7 +38,7 @@ export const ParentVariableForm =
       <Row>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("x", onChange, props.betterParent.location)}
+            onCommit={REWRITE_THIS}
             disabled={isDisabled}
             name="location-x-variabledeclr"
             value={"" + x}>
@@ -48,7 +47,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("y", onChange, props.betterParent.location)}
+            onCommit={REWRITE_THIS}
             disabled={isDisabled}
             name="location-y-variabledeclr"
             value={"" + y}>
@@ -57,7 +56,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("z", onChange, props.betterParent.location)}
+            onCommit={REWRITE_THIS}
             name="location-z-variabledeclr"
             disabled={isDisabled}
             value={"" + z}>

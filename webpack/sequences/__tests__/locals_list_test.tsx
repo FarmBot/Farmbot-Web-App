@@ -14,7 +14,6 @@ import {
   fakeSequence,
   fakeTool
 } from "../../__test_support__/fake_state/resources";
-import { defensiveClone } from "../../util";
 import { shallow } from "enzyme";
 import {
   buildResourceIndex
@@ -26,7 +25,6 @@ import {
 import {
   extractParent,
   setParent,
-  changeAxis,
   guessFromDataType,
   guessVecFromLabel,
   ParentVariableFormProps,
@@ -147,21 +145,6 @@ describe("setParent()", () => {
       (parent.kind === "variable_declaration") &&
         expect(parent.args.data_value).toBe(item);
     });
-  });
-});
-
-type E = React.SyntheticEvent<HTMLInputElement>;
-
-describe("changeAxis()", () => {
-  const onChange = jest.fn();
-
-  it("handles coordinates", () => {
-    const cb = changeAxis("x", onChange, coord.args);
-    const fakeEvent = { currentTarget: { value: "23" } };
-    const expectedCoord = defensiveClone(coord);
-    expectedCoord.args.x = 23;
-    cb(fakeEvent as E);
-    expect(onChange).toHaveBeenCalledWith(expectedCoord);
   });
 });
 
