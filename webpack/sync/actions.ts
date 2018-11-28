@@ -46,7 +46,14 @@ const download = (dispatch: Function) =>
 export async function fetchSyncData(dispatch: Function) {
   const get = download(dispatch);
 
-  /** Resources are placed into groups based on their dependencies. */
+  /** Resources are placed into groups based on their dependencies.
+   * For example, if:
+   *  * a Regimen relies on a Sequence
+   *  * a Sequence relies on a tool
+   *  * a tool has no deps.
+   * then they must be loaded in the order Regimen => Sequence => Tool to avoid
+   * conflicts.
+  */
   const group = {
     0: () => [
       get("Device", API.current.devicePath),
@@ -55,28 +62,28 @@ export async function fetchSyncData(dispatch: Function) {
       get("FarmwareEnv", API.current.farmwareEnvPath),
       get("FarmwareInstallation", API.current.farmwareInstallationPath),
       get("WebAppConfig", API.current.webAppConfigPath),
+      get("SavedGarden", API.current.savedGardensPath),
     ],
     1: () => [
+      get("PlantTemplate", API.current.plantTemplatePath),
       get("Peripheral", API.current.peripheralsPath),
       get("Point", API.current.pointsPath),
-      get("SensorReading", API.current.sensorReadingPath),
       get("Sensor", API.current.sensorPath),
       get("Tool", API.current.toolsPath)
     ],
     2: () => [
+      get("SensorReading", API.current.sensorReadingPath),
       get("Sequence", API.current.sequencesPath)
     ],
     3: () => [
       get("Regimen", API.current.regimensPath),
-      get("PinBinding", API.current.pinBindingPath)
+      get("PinBinding", API.current.pinBindingPath),
     ],
     4: () => [
       get("FarmEvent", API.current.farmEventsPath),
       get("DiagnosticDump", API.current.diagnosticDumpsPath),
       get("Image", API.current.imagesPath),
       get("Log", API.current.filteredLogsPath),
-      get("PlantTemplate", API.current.plantTemplatePath),
-      get("SavedGarden", API.current.savedGardensPath),
       get("User", API.current.usersPath),
       get("WebcamFeed", API.current.webcamFeedPath)
     ],
