@@ -32,7 +32,10 @@ export const ParentVariableForm =
             allowEmpty={true}
             list={generateList(resources, [PARENT])}
             selectedItem={props.betterParent.dropdown}
-            onChange={REWRITE_THIS} />
+            onChange={(x) => {
+              console.log("REIMPLEMENT ME:");
+              console.dir(x);
+              } />
         </Col>
       </Row>
       <Row>
