@@ -79,7 +79,7 @@ module.exports = {
   "Could not download OS update information.": "Não foi possível transferir as informações de atualização do Sistema Operacional.",
   "Could not download sync data": "Não foi possível transferir os dados de sincronização",
   "Could not fetch bot status. Is FarmBot online?": "Não foi possível verificar o estado do farmbot. Verifique se o mesmo se encontra conectado",
-  "Couldn\'t save device.": "Não foi possível salvar dados sobre o o dispositivo",
+  "Couldn't save device.": "Não foi possível salvar dados sobre o o dispositivo",
   "downloading device credentials": "transferindo credenciais do dispositivo",
   "Error establishing socket connection": "Erro ao estabelecer conexão com os soquetes",
   "Error while saving device.": "Erro ao salvar detalhes do dispositivo.",
@@ -167,7 +167,7 @@ module.exports = {
   "Unable to delete regimen.": "Erro ao deletar programação.",
   "Unable to delete sequence": "Erro ao deletar sequência.",
   "Unable to save '{{SequenceName}}'": "Não foi possível salvar '{{SequenceName}}'",
-  "Unable to save regimen.": "A programação não pode ser salva.",
+  "Unable to save regimen.": "A programação não pode ser salva."
 
 
 

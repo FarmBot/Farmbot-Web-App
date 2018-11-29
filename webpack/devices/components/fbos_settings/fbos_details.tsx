@@ -158,8 +158,9 @@ export function FbosDetails(props: FbosDetailsProps) {
     <CommitDisplay title={"Firmware commit"}
       repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
-    {isNumber(memory_usage) && <p><b>Memory usage: </b>{memory_usage}MB</p>}
-    {isNumber(disk_usage) && <p><b>Disk usage: </b>{disk_usage}%</p>}
+    {isNumber(memory_usage) &&
+      <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}
+    {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay wifiStrength={wifi_level} />
     <BetaReleaseOptInButton

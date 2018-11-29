@@ -1,7 +1,7 @@
 import { fetchLabFeatures } from "../labs_features_list_data";
 
 describe("fetchLabFeatures", () => {
-  window.location.reload = jest.fn();
+  Object.defineProperty(window.location, "reload", { value: jest.fn() });
   it("basically just initializes stuff", () => {
     const val = fetchLabFeatures(jest.fn());
     expect(val.length).toBe(9);

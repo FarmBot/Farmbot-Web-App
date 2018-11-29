@@ -495,6 +495,10 @@ export namespace Content {
     your network settings.
     View Device > Connectivity for more details.`);
 
+  export const WEB_APP_DISCONNECTED =
+    trim(`Your web browser is unable to communicate with the
+    web app server. Make sure you are connected to the Internet.`);
+
   export const MALFORMED_MESSAGE_REC_UPGRADE =
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);

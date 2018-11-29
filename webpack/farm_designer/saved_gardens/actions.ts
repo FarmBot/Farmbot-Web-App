@@ -25,7 +25,8 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
   .then(() => {
     history.push("/app/designer/plants");
     dispatch(unselectSavedGarden);
-    info(t("while your garden is applied."), t("Please wait"), "blue");
+    const busyToastTitle = t("Please wait");
+    info(t("while your garden is applied."), busyToastTitle, "blue");
   });
 
 export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
