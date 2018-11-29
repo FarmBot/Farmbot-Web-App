@@ -15,13 +15,13 @@ const COLOR_MAPPING: Record<SyncStatus, string> = {
 };
 
 const TEXT_MAPPING: Record<SyncStatus, string> = {
-  "synced": "SYNCED",
-  "sync_now": "SYNC NOW",
-  "syncing": "SYNCING",
-  "sync_error": "SYNC ERROR",
-  "booting": "BOOTING",
-  "unknown": "DISCONNECTED",
-  "maintenance": "MAINTENANCE DOWNTIME"
+  "synced": t("SYNCED"),
+  "sync_now": t("SYNC NOW"),
+  "syncing": t("SYNCING"),
+  "sync_error": t("SYNC ERROR"),
+  "booting": t("BOOTING"),
+  "unknown": t("DISCONNECTED"),
+  "maintenance": t("MAINTENANCE DOWNTIME")
 };
 
 /** Animation during syncing action */
@@ -37,7 +37,7 @@ export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) 
   const color = !consistent && sync_status === "sync_now"
     ? "gray"
     : (COLOR_MAPPING[sync_status] || "red");
-  const text = t(TEXT_MAPPING[sync_status] || "DISCONNECTED");
+  const text = TEXT_MAPPING[sync_status] || t("DISCONNECTED");
   const spinnerEl = (sync_status === "syncing") ? spinner : "";
 
   return <button

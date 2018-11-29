@@ -15,7 +15,7 @@ export const xyzTableEntry =
   (x: number | undefined, y: number | undefined, z: number | undefined) =>
     (isNumber(x) && isNumber(y) && isNumber(z))
       ? `${x}, ${y}, ${z}`
-      : "Unknown";
+      : t("Unknown");
 
 /** A log is displayed in a single row of the logs table. */
 const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
@@ -29,10 +29,10 @@ const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
           {verbosity}
         </p>
       </div>
-      {startCase(type)}
+      {t(startCase(type))}
     </td>
     <td>
-      {message || "Loading"}
+      {message || t("Loading")}
     </td>
     <td>
       {xyzTableEntry(x, y, z)}

@@ -77,8 +77,9 @@ export class SequencesList extends
       <button
         className="fb-button green add"
         onClick={() => {
-          dispatch(init("Sequence", this.emptySequenceBody()));
-          push("/app/sequences/new_sequence_" + (sequences.length++));
+          const newSequence = this.emptySequenceBody();
+          dispatch(init("Sequence", newSequence));
+          push("/app/sequences/" + urlFriendly(newSequence.name));
         }}>
         <i className="fa fa-plus" />
       </button>
