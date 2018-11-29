@@ -56,6 +56,7 @@ export async function fetchSyncData(dispatch: Function) {
   */
   const group = {
     0: () => Promise.all<{}>([
+      get("User", API.current.usersPath),
       get("Device", API.current.devicePath),
       get("FbosConfig", API.current.fbosConfigPath),
       get("FirmwareConfig", API.current.firmwareConfigPath),
@@ -84,7 +85,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("DiagnosticDump", API.current.diagnosticDumpsPath),
       get("Image", API.current.imagesPath),
       get("Log", API.current.filteredLogsPath),
-      get("User", API.current.usersPath),
       get("WebcamFeed", API.current.webcamFeedPath)
     ]),
   };
