@@ -344,32 +344,27 @@ type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
 /** In the real app, resources are loaded in a particular order.
  * This table serves as a reference to prevent referential integrity issues. */
 const KIND_PRIORITY: ResourceLookupTable = {
-  // GROUP 0
+  User: 0,
   Device: 0,
-  FarmwareEnv: 0,
-  FarmwareInstallation: 0,
   FbosConfig: 0,
   FirmwareConfig: 0,
+  FarmwareEnv: 0,
+  FarmwareInstallation: 0,
   WebAppConfig: 0,
-  // Group 1
+  SavedGarden: 0,
+  PlantTemplate: 1,
   Peripheral: 1,
   Point: 1,
-  SensorReading: 1,
   Sensor: 1,
   Tool: 1,
-  // Group 2
+  SensorReading: 2,
   Sequence: 2,
-  // Group 3
-  PinBinding: 3,
   Regimen: 3,
-  // Group 4
+  PinBinding: 3,
   FarmEvent: 4,
   DiagnosticDump: 4,
   Image: 4,
   Log: 4,
-  PlantTemplate: 4,
-  SavedGarden: 4,
-  User: 4,
   WebcamFeed: 4,
   Crop: 4,
 };
