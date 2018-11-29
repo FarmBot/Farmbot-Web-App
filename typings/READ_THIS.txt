@@ -1,7 +1,0 @@
-I hope that we can someday not use this folder and use all the @types/* repositories.
-
-Some (legacy) libraries don't work with the newer typings (eg: react-redux).
-
-In those rare circumstances, we can put them in here.
-
-Hopefully, this folder will go away some day.

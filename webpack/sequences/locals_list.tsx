@@ -19,7 +19,7 @@ export const ParentVariableForm =
     const { sequence, resources, onChange } = props;
     const { x, y, z } = props.parent.location;
     const isDisabled = !props.parent.editable;
-
+    const list = generateList(resources, [PARENT]);
     return <div className="parent-variable-form">
       <Row>
         <Col xs={12}>
@@ -27,9 +27,11 @@ export const ParentVariableForm =
           <FBSelect
             key={JSON.stringify(sequence)}
             allowEmpty={true}
-            list={generateList(resources, [PARENT])}
+            list={list}
             selectedItem={props.parent.dropdown}
             onChange={(ddi) => {
+              const list2 = generateList(resources, [PARENT]);
+              console.dir(list2);
               console.error("FINISH ME");
               handleSelect(props.resources, ddi);
               onChange({ x: -23, y: -23, z: -23 });

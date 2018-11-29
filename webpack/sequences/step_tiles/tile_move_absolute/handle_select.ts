@@ -2,50 +2,73 @@
  * figures out the corresponding Tool | Coordinate | Point */
 import { DropDownItem } from "../../../ui/index";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { KnownGroupTag, LocationData } from "./interfaces";
-import { findPointerByTypeAndId, findToolById } from "../../../resources/selectors";
-import { bail } from "../../../util";
-import { ParameterDeclaration, Coordinate } from "farmbot";
+import { LocationData } from "./interfaces";
+import {
+  ParameterDeclaration,
+  Coordinate,
+  ScopeDeclaration,
+  ScopeDeclarationBodyItem,
+  VariableDeclaration
+} from "farmbot";
 
 export type CeleryVariable = LocationData | ParameterDeclaration;
-export const EMPTY_COORD: Coordinate = {
-  kind: "coordinate",
-  args: { x: 0, y: 0, z: 0 }
-};
+export const EMPTY_COORD: Coordinate =
+  ({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
 
-/** Takes a DropDownItem and turns it into data suitable
-* for MoveAbsolute["args"]["location"] */
-export let handleSelect = (index: ResourceIndex, input: DropDownItem): CeleryVariable => {
-  const tag = input.headingId as (KnownGroupTag | "parameter");
-  const label = "" + input.value;
-  const id = parseInt(label);
-  switch (tag) {
-    case "ToolSlot":
-    case "GenericPointer":
-    case "Plant":
-      const p = findPointerByTypeAndId(index, tag, id);
-      if (p && p.body.id) {
-        return {
-          kind: "point",
-          args: { pointer_type: tag, pointer_id: p.body.id }
-        };
-      } else {
-        return bail("Bad point_id: " + JSON.stringify(p));
+const toolVar = (value: string | number): VariableDeclaration => ({
+  kind: "variable_declaration",
+  args: {
+    label: "parent",
+    data_value: {
+      kind: "tool",
+      args: {
+        tool_id: parseInt("" + value)
       }
-    case "Tool":
-      const tool_id = findToolById(index, id)
-        .body
-        .id || bail("No id");
-      return { kind: "tool", args: { tool_id } };
-    case "identifier":
-      return { kind: "identifier", args: { label } };
-    case "parameter":
-      // AUTHOR'S NOTE: At the time of writing, the only parameter supported
-      // is `parent` which is always has a `data_type` of `point`. This will
-      // need to be updated later.
-      const data_type = "point";
-      return { kind: "parameter_declaration", args: { label, data_type } };
-    default:
-      return EMPTY_COORD;
+    }
+  }
+});
+
+const pointVar =
+  (pointer_type: "Plant" | "GenericPointer", value: string | number): VariableDeclaration => ({
+    kind: "variable_declaration",
+    args: {
+      label: "parent",
+      data_value: {
+        kind: "point",
+        args: { pointer_type, pointer_id: parseInt("" + value) }
+      }
+    }
+  });
+
+const manualEntry: VariableDeclaration = {
+  kind: "variable_declaration",
+  args: {
+    label: "parent",
+    data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
   }
 };
+
+const parentParameter: ParameterDeclaration = {
+  kind: "parameter_declaration",
+  args: { label: "parent", data_type: "point" }
+};
+const createNewParent =
+  (_index: ResourceIndex, input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
+    switch (input.headingId) {
+      case "Plant":
+      case "GenericPointer": return pointVar(input.headingId, input.value);
+      case "Tool": return toolVar(input.value);
+      case "parameter": return parentParameter; // Caller decides X/Y/Z
+      case "Other": return manualEntry;
+    }
+    return undefined;
+  };
+
+export let handleSelect =
+  (index: ResourceIndex, input: DropDownItem): ScopeDeclaration => {
+    const sd: ScopeDeclaration =
+      ({ kind: "scope_declaration", args: {}, body: [] });
+    const parent = createNewParent(index, input);
+    parent && sd.body /** lol */ && sd.body.push(parent);
+    return sd;
+  };
