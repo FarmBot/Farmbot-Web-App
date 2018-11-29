@@ -101,6 +101,7 @@ export interface DesignerState {
   hoveredPlantListItem: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
+  cropSearchInProgress: boolean;
   chosenLocation: BotPosition;
   currentPoint: CurrentPointPayl | undefined;
   openedSavedGarden: string | undefined;
@@ -230,6 +231,7 @@ export interface CropCatalogProps {
   cropSearchResults: CropLiveSearchResult[];
   OFSearch: (searchTerm: string) =>
     (dispatch: Function) => void;
+  cropSearchInProgress: boolean;
 }
 
 export interface CropInfoProps {

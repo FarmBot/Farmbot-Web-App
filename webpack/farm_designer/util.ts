@@ -31,7 +31,10 @@ export let OFSearch = (searchTerm: string) =>
           return { crop, image: (images[id] || DEFAULT_ICON) };
         });
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
-      });
+      })
+      .catch(() =>
+        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined })
+      );
   };
 
 function isExecutableType(x?: string): x is ExecutableType {

@@ -103,7 +103,7 @@ export function mapStateToProps(props: Everything): CropInfoProps {
     props.resources.consumers.farm_designer;
   return {
     OFSearch,
-    dispatch: Function,
+    dispatch: props.dispatch,
     cropSearchResults: cropSearchResults || [],
     openedSavedGarden,
     botPosition: validBotLocationData(props.bot.hardware.location_data).position

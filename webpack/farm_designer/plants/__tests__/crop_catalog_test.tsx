@@ -2,6 +2,8 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+jest.mock("lodash", () => ({ debounce: jest.fn(x => x) }));
+
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
@@ -10,14 +12,18 @@ import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { history } from "../../../history";
+import {
+  fakeCropLiveSearchResult
+} from "../../../__test_support__/fake_crop_search_result";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => {
     return {
       dispatch: jest.fn(),
-      OFSearch: jest.fn(),
+      OFSearch: jest.fn(() => jest.fn()),
       cropSearchResults: [],
       cropSearchQuery: "",
+      cropSearchInProgress: false,
     };
   };
 
@@ -38,11 +44,29 @@ describe("<CropCatalog />", () => {
       payload: "apple",
       type: Actions.SEARCH_QUERY_CHANGE
     });
+    // Requires lodash.debouce to be mocked
+    expect(p.OFSearch).toHaveBeenCalledWith("apple");
   });
 
   it("goes back", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+  });
+
+  it("search term is too short", () => {
+    const p = fakeProps();
+    p.cropSearchQuery = "ab";
+    const wrapper = mount(<CropCatalog {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("too short");
+  });
+
+  it("shows result update spinner", () => {
+    const p = fakeProps();
+    p.cropSearchQuery = "abc";
+    p.cropSearchInProgress = true;
+    p.cropSearchResults = [fakeCropLiveSearchResult()];
+    const wrapper = shallow(<CropCatalog {...p} />);
+    expect(wrapper.find("Spinner").length).toEqual(1);
   });
 });
