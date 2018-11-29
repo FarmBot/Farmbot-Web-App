@@ -40,6 +40,7 @@ const download = (dispatch: Function) =>
   <T extends TR>(kind: T["kind"], url: string) => axios
     .get<T["body"] | T["body"][]>(url)
     .then(({ data }) => {
+      console.log("Done fetching data for " + kind);
       dispatch(resourceReady(kind, newTaggedResource(kind, data)));
     }, Session.clear);
 
@@ -55,7 +56,7 @@ export async function fetchSyncData(dispatch: Function) {
    * conflicts.
   */
   const group = {
-    0: () => [
+    0: () => Promise.all<{}>([
       get("Device", API.current.devicePath),
       get("FbosConfig", API.current.fbosConfigPath),
       get("FirmwareConfig", API.current.firmwareConfigPath),
@@ -63,31 +64,35 @@ export async function fetchSyncData(dispatch: Function) {
       get("FarmwareInstallation", API.current.farmwareInstallationPath),
       get("WebAppConfig", API.current.webAppConfigPath),
       get("SavedGarden", API.current.savedGardensPath),
-    ],
-    1: () => [
+    ]),
+    1: () => Promise.all<{}>([
       get("PlantTemplate", API.current.plantTemplatePath),
       get("Peripheral", API.current.peripheralsPath),
       get("Point", API.current.pointsPath),
       get("Sensor", API.current.sensorPath),
       get("Tool", API.current.toolsPath)
-    ],
-    2: () => [
+    ]),
+    2: () => Promise.all<{}>([
       get("SensorReading", API.current.sensorReadingPath),
       get("Sequence", API.current.sequencesPath)
-    ],
-    3: () => [
+    ]),
+    3: () => Promise.all<{}>([
       get("Regimen", API.current.regimensPath),
       get("PinBinding", API.current.pinBindingPath),
-    ],
-    4: () => [
+    ]),
+    4: () => Promise.all<{}>([
       get("FarmEvent", API.current.farmEventsPath),
       get("DiagnosticDump", API.current.diagnosticDumpsPath),
       get("Image", API.current.imagesPath),
       get("Log", API.current.filteredLogsPath),
       get("User", API.current.usersPath),
       get("WebcamFeed", API.current.webcamFeedPath)
-    ],
+    ]),
   };
-  const mapper = async (num: keyof typeof group) => await group[num]();
+  const mapper = async (num: keyof typeof group) => {
+    console.log("Running group " + num);
+    const x = group[num]();
+    await x;
+  };
   [0, 1, 2, 3, 4].map(mapper);
 }
