@@ -44,6 +44,9 @@ import {
 import { getGardenCoordinates } from "../util";
 import { chooseLocation } from "../../plants/move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
+import {
+  fakeDesignerState
+} from "../../../__test_support__/fake_designer_state";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -57,16 +60,7 @@ const fakeProps = (): GardenMapProps => ({
   selectedPlant: undefined,
   crops: [],
   dispatch: jest.fn(),
-  designer: {
-    selectedPlants: undefined,
-    hoveredPlant: { plantUUID: "", icon: "" },
-    hoveredPlantListItem: undefined,
-    cropSearchQuery: "",
-    cropSearchResults: [],
-    chosenLocation: { x: undefined, y: undefined, z: undefined },
-    currentPoint: undefined,
-    openedSavedGarden: undefined,
-  },
+  designer: fakeDesignerState(),
   plants: [],
   points: [],
   toolSlots: [],
