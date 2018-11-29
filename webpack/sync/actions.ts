@@ -35,14 +35,14 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
     } as T;
   });
 };
+const fail = Session.clear;
 
 const download = (dispatch: Function) =>
   <T extends TR>(kind: T["kind"], url: string) => axios
     .get<T["body"] | T["body"][]>(url)
     .then(({ data }) => {
-      console.log("Done fetching data for " + kind);
       dispatch(resourceReady(kind, newTaggedResource(kind, data)));
-    }, Session.clear);
+    }, fail);
 
 export async function fetchSyncData(dispatch: Function) {
   const get = download(dispatch);
@@ -88,10 +88,6 @@ export async function fetchSyncData(dispatch: Function) {
       get("WebcamFeed", API.current.webcamFeedPath)
     ]),
   };
-  group[0]()
-    .then(() => group[1]())
-    .then(() => group[2]())
-    .then(() => group[3]())
-    .then(() => group[4]())
-    .catch(Session.clear);
+  const step = (num: keyof typeof group) => group[num];
+  step(0)().then(step(1)).then(step(2)).then(step(3)).then(step(4)).catch(fail);
 }
