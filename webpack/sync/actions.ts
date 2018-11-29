@@ -46,7 +46,6 @@ const download = (dispatch: Function) =>
 
 export async function fetchSyncData(dispatch: Function) {
   const get = download(dispatch);
-
   /** Resources are placed into groups based on their dependencies.
    * For example, if:
    *  * a Regimen relies on a Sequence
@@ -89,10 +88,24 @@ export async function fetchSyncData(dispatch: Function) {
       get("WebcamFeed", API.current.webcamFeedPath)
     ]),
   };
-  const mapper = async (num: keyof typeof group) => {
-    console.log("Running group " + num);
-    const x = group[num]();
-    await x;
-  };
-  [0, 1, 2, 3, 4].map(mapper);
+  console.log("Begin group 0");
+  group[0]()
+    .then(() => {
+      console.log("Begin group 1")
+      group[1]();
+    })
+    .then(() => {
+      console.log("Begin group 2")
+      group[2]();
+    })
+    .then(() => {
+      console.log("Begin group 3")
+      group[3]();
+    })
+    .then(() => {
+      console.log("Begin group 4")
+      group[4]();
+    })
+    .then(() => console.log("Done with all groups"))
+    .catch(Session.clear);
 }
