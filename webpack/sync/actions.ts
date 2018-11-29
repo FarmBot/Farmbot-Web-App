@@ -92,19 +92,19 @@ export async function fetchSyncData(dispatch: Function) {
   group[0]()
     .then(() => {
       console.log("Begin group 1")
-      group[1]();
+      return group[1]();
     })
     .then(() => {
       console.log("Begin group 2")
-      group[2]();
+      return group[2]();
     })
     .then(() => {
       console.log("Begin group 3")
-      group[3]();
+      return group[3]();
     })
     .then(() => {
       console.log("Begin group 4")
-      group[4]();
+      return group[4]();
     })
     .then(() => console.log("Done with all groups"))
     .catch(Session.clear);
