@@ -10,8 +10,9 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId } from "./selectors";
-import { findSlotByToolId } from "./selectors_by_id";
+import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import { capitalize } from "lodash";
+import { formatPoint } from "../sequences/step_tiles/tile_move_absolute/generate_list";
 
 type ValueOfVariable = Coordinate | Identifier | Point | Tool;
 
@@ -52,18 +53,34 @@ const determineLocation =
     return vector000;
   };
 
-const determineDropdown = (node: ScopeDeclarationBodyItem): DropDownItem => {
-  console.error("Fix this next");
-  if (node.kind === "variable_declaration") {
-    const { data_value } = node.args;
-    return { label: data_value.kind, value: "X" };
-  }
+const determineDropdown =
+  (n: ScopeDeclarationBodyItem, i: ResourceIndex): DropDownItem => {
+    if (n.kind === "parameter_declaration") {
+      return { label: capitalize(n.args.label), value: "?" };
+    }
 
-  return { label: capitalize(node.args.label), value: "?" };
-};
+    const { data_value } = n.args;
+    switch (data_value.kind) {
+      case "coordinate":
+        return { label: "TODO Fixme", value: "?" };
+      case "identifier":
+        return { label: capitalize(data_value.args.label), value: "?" };
+      case "point":
+        const { pointer_id, pointer_type } = data_value.args;
+        const pointer =
+          findPointerByTypeAndId(i, pointer_type, pointer_id);
+        return formatPoint(pointer);
+      case "tool":
+        const toolName =
+          findToolById(i, data_value.args.tool_id).body.name || "Untitled tool";
+        return { label: toolName, value: "X" };
+    }
+    throw new Error("Is there a new data_value.kind?");
+  };
 
-const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
-  return node.kind === "variable_declaration";
+const determineEditable = (_node: ScopeDeclarationBodyItem): boolean => {
+  return _node.kind == "variable_declaration" &&
+    _node.args.data_value.kind == "coordinate";
 };
 
 const determineVariableValue =
@@ -80,7 +97,7 @@ export const createSequenceMeta: VLT = (index, resource) => {
       [celeryNode.args.label]: {
         celeryNode, location,
         editable: determineEditable(celeryNode),
-        dropdown: determineDropdown(celeryNode),
+        dropdown: determineDropdown(celeryNode, index),
         variableValue: determineVariableValue(celeryNode),
       }
     });

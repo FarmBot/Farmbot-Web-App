@@ -5,7 +5,7 @@ import {
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
-import { PointerType, TaggedTool } from "farmbot";
+import { TaggedTool, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../../ui/index";
 import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
@@ -40,12 +40,14 @@ export const NAME_MAP: Record<PointerTypeName | typeof TOOL, string> = {
 const HEADINGS: DropDownItem[] = [
   ...Object.keys(NAME_MAP)
     .filter(x => x !== "ToolSlot")
-    .map((name: PointerTypeName | typeof TOOL) => ({
-      label: t(NAME_MAP[name]),
-      heading: true,
-      value: 0,
-      headingId: name
-    }))
+    .map((name: PointerTypeName | typeof TOOL) => {
+      return ({
+        label: t(NAME_MAP[name]),
+        heading: true,
+        value: 0,
+        headingId: name
+      });
+    })
 ];
 
 export function generateList(input: ResourceIndex,
@@ -67,12 +69,12 @@ export function generateList(input: ResourceIndex,
     .value();
 }
 
-const formatPoint = (p: PointerType): DropDownItem => {
+export const formatPoint = (p: TaggedPoint): DropDownItem => {
   const { id, name, pointer_type, x, y, z } = p.body;
   return {
     label: dropDownName(name, { x, y, z }),
     value: "" + id,
-    headingId: pointer_type
+    headingId: "?" + pointer_type
   };
 };
 
