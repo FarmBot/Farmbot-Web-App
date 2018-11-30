@@ -16,17 +16,6 @@ import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
 
-export const DELETE_ME_LATER: SequenceMeta = {
-  celeryNode: {
-    kind: "parameter_declaration",
-    args: { label: "parent", data_type: "point" }
-  },
-  dropdown: { label: "parent", value: "0" },
-  editable: true,
-  location: { x: 0, y: 0, z: 0, },
-  variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } },
-};
-
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta>;
 export type UUIDSet = Record<UUID, true>;

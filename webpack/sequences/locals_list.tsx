@@ -9,9 +9,7 @@ import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_s
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
 import { editCurrentSequence } from "./actions";
 
-const REWRITE_THIS = () => {
-  console.error("Re write this callback, OK? RC");
-};
+const REWRITE_THIS = () => console.error("Re write this callback, OK? RC");
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */

@@ -37,7 +37,7 @@ export const NAME_MAP: Record<PointerTypeName | typeof TOOL, string> = {
   "Tool": "Tools",
 };
 
-const HEADINGS: DropDownItem[] = [
+const HEADINGS: () => DropDownItem[] = () => [
   ...Object.keys(NAME_MAP)
     .filter(x => x !== "ToolSlot")
     .map((name: PointerTypeName | typeof TOOL) => {
@@ -55,13 +55,13 @@ export function generateList(input: ResourceIndex,
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllActivePoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] = activeTools(input)
-    .map(tool => formatTools(tool));
+  const toolDDI: DropDownItem[] =
+    activeTools(input).map(tool => formatTools(tool));
   return _(points)
     .map(formatPoint)
     .concat(toolDDI)
     .filter(x => parseInt("" + x.value) > 0)
-    .concat(HEADINGS)
+    .concat(HEADINGS())
     .sortBy(SORT_KEY)
     .reverse()
     .concat({ label: t("Other"), heading: true, value: 0, headingId: "Other" })
@@ -74,7 +74,7 @@ export const formatPoint = (p: TaggedPoint): DropDownItem => {
   return {
     label: dropDownName(name, { x, y, z }),
     value: "" + id,
-    headingId: "?" + pointer_type
+    headingId: pointer_type
   };
 };
 
