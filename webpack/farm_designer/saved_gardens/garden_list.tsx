@@ -9,6 +9,7 @@ import {
   SavedGardenInfoProps
 } from "./interfaces";
 import { edit, save } from "../../api/crud";
+import { trim } from "../../util";
 
 /** Name input and PlantTemplate count for a single SavedGarden. */
 export const GardenInfo = (props: SavedGardenInfoProps) => {
@@ -51,8 +52,8 @@ const ApplyGardenButton =
     <button
       className="fb-button green"
       onClick={() => props.plantPointerCount > 0
-        ? error(t("Please clear current garden first. ({{plantCount}} plants)",
-          { plantCount: props.plantPointerCount }))
+        ? error(trim(`${t("Please clear current garden first.")}
+        (${props.plantPointerCount} ${t("plants")})`))
         : props.dispatch(applyGarden(props.gardenId))}>
       {t("apply")}
     </button>;

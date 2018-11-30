@@ -7,6 +7,10 @@ import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 import { getPlants } from "../state_to_props";
 import { TaggedPlant } from "../map/interfaces";
+import {
+  EmptyStateWrapper, EmptyStateGraphic
+} from "../../ui/empty_state_wrapper";
+import { Content } from "../../constants";
 
 interface Props {
   plants: TaggedPlant[];
@@ -47,17 +51,24 @@ export class Plants extends React.Component<Props, State> {
               placeholder={t("Search your plants...")} />
           </div>
           <div className="plant-panel-content">
-            {this.props.plants
-              .filter(p => p.body.name.toLowerCase()
-                .includes(this.state.searchTerm.toLowerCase()))
-              .map(p => {
-                const hovered = this.props.hoveredPlantListItem === p.uuid;
-                return <PlantInventoryItem
-                  key={p.uuid}
-                  tpp={p}
-                  hovered={hovered}
-                  dispatch={this.props.dispatch} />;
-              })}
+            <EmptyStateWrapper
+              notEmpty={this.props.plants.length > 0}
+              graphic={EmptyStateGraphic.plants}
+              title={t("Get growing!")}
+              text={Content.NO_PLANTS}
+              colorScheme={"plants"}>
+              {this.props.plants
+                .filter(p => p.body.name.toLowerCase()
+                  .includes(this.state.searchTerm.toLowerCase()))
+                .map(p => {
+                  const hovered = this.props.hoveredPlantListItem === p.uuid;
+                  return <PlantInventoryItem
+                    key={p.uuid}
+                    tpp={p}
+                    hovered={hovered}
+                    dispatch={this.props.dispatch} />;
+                })}
+            </EmptyStateWrapper>
           </div>
         </div>
       </div>

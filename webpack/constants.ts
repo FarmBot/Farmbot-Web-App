@@ -495,6 +495,10 @@ export namespace Content {
     your network settings.
     View Device > Connectivity for more details.`);
 
+  export const WEB_APP_DISCONNECTED =
+    trim(`Your web browser is unable to communicate with the
+    web app server. Make sure you are connected to the Internet.`);
+
   export const MALFORMED_MESSAGE_REC_UPGRADE =
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
@@ -521,8 +525,8 @@ export namespace Content {
 
   // Sequences
   export const NO_SEQUENCE_SELECTED =
-    trim(`No Sequence selected. Click one in the Sequences panel to edit,
-    or click "+" to create a new one.`);
+    trim(`Click one in the Sequences panel to edit, or click "+" to create
+    a new one.`);
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
@@ -534,8 +538,8 @@ export namespace Content {
 
   // Regimens
   export const NO_REGIMEN_SELECTED =
-    trim(`No Regimen selected. Click one in the Regimens panel to edit, or
-    click "+" in the Regimens panel to create a new one.`);
+    trim(`Click one in the Regimens panel to edit, or click "+" to create
+    a new one.`);
 
   export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
     regimen. Consider wrapping it in a parent sequence that calls it via
@@ -562,6 +566,18 @@ export namespace Content {
     trim(`Create new gardens from scratch or by copying plants from the
     current garden. View and edit saved gardens, and, when ready, apply them
     to the main garden.`);
+
+  export const NO_PLANTS =
+    trim(`Press "+" to add a plant to your garden.`);
+
+  export const ENTER_CROP_SEARCH_TERM =
+    trim(`Search for a crop to add to your garden.`);
+
+  export const CROP_NOT_FOUND_INTRO =
+    trim(`Would you like to`);
+
+  export const CROP_NOT_FOUND_LINK =
+    trim(`add this crop on OpenFarm?`);
 
   // Farm Events
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
@@ -705,6 +721,7 @@ export enum Actions {
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
+  OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",

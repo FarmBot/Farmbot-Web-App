@@ -1,39 +1,40 @@
 import { DropDownItem } from "../../../ui";
+import { t } from "i18next";
 
-export const MOUNTED_TO = "Mounted to:";
+export const MOUNTED_TO = t("Mounted to:");
 
-export const DISMOUNT: DropDownItem = { label: "Not Mounted", value: 0 };
+export const DISMOUNT: DropDownItem = { label: t("Not Mounted"), value: 0 };
 
 /** Legal "actions" for "Mark As.." block when marking Point resources */
 export const POINT_OPTIONS: DropDownItem[] = [
-  { label: "Removed", value: "removed" }
+  { label: t("Removed"), value: "removed" }
 ];
 
 /** Legal "actions" in the "Mark As.." block when operating on
  * a Plant resource. */
 export const PLANT_OPTIONS: DropDownItem[] = [
-  { label: "Planned", value: "planned" },
-  { label: "Planted", value: "planted" },
-  { label: "Harvested", value: "harvested" },
+  { label: t("Planned"), value: "planned" },
+  { label: t("Planted"), value: "planted" },
+  { label: t("Harvested"), value: "harvested" },
 ];
 
 const value = 0; // Not used in headings.
 
 export const PLANT_HEADER: DropDownItem = {
   headingId: "Plant",
-  label: "Plants",
+  label: t("Plants"),
   value,
   heading: true
 };
 
 export const POINT_HEADER: DropDownItem = {
   headingId: "GenericPointer",
-  label: "Points",
+  label: t("Points"),
   value,
   heading: true
 };
 
 export const TOP_HALF = [
-  { headingId: "Device", label: "Device", value, heading: true, },
-  { headingId: "Device", label: "Tool Mount", value }
+  { headingId: "Device", label: t("Device"), value, heading: true, },
+  { headingId: "Device", label: t("Tool Mount"), value }
 ];

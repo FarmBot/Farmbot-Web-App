@@ -157,4 +157,4 @@ module.exports = {
   "Z": "Z",
   "Z (mm)": "Z (mm)",
   "Z AXIS": "Z轴"
-};
+}

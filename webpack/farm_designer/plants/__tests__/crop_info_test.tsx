@@ -18,27 +18,19 @@ import { shallow, mount } from "enzyme";
 import { CropInfoProps } from "../../interfaces";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
+import {
+  fakeCropLiveSearchResult
+} from "../../../__test_support__/fake_crop_search_result";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
+    const cropSearchResult = fakeCropLiveSearchResult();
+    cropSearchResult.crop.svg_icon = "fake_mint_svg";
+    cropSearchResult.crop.row_spacing = 100;
     return {
       OFSearch: jest.fn(),
       dispatch: jest.fn(),
-      cropSearchResults: [{
-        image: "a",
-        crop: {
-          name: "Mint",
-          slug: "mint",
-          binomial_name: "",
-          common_names: [""],
-          description: "",
-          sun_requirements: "",
-          sowing_method: "",
-          row_spacing: 100,
-          processing_pictures: 1,
-          svg_icon: "fake_mint_svg"
-        }
-      }],
+      cropSearchResults: [cropSearchResult],
       openedSavedGarden: undefined,
       botPosition: { x: undefined, y: undefined, z: undefined },
     };

@@ -221,7 +221,6 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
     return;
   }
   const { kind } = arrayUnwrap(resources);
-
   // Clean up indexes (if needed)
   const before = BEFORE_HOOKS[kind];
   before && before(db, strategy);
@@ -237,8 +236,7 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
 };
 
 export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
-  downs
-    .map(callback => arrayWrap(resource).map(r => callback(r, db)));
+  downs.map(callback => arrayWrap(resource).map(r => callback(r, db)));
   // Finalize indexing (if needed)
   const after = AFTER_HOOKS[resource.kind];
   after && after(db, "ongoing");

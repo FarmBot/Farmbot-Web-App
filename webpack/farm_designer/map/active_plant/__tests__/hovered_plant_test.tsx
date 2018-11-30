@@ -5,6 +5,9 @@ import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps
 } from "../../../../__test_support__/map_transform_props";
+import {
+  fakeDesignerState
+} from "../../../../__test_support__/fake_designer_state";
 
 describe("<HoveredPlant/>", () => {
   function fakeProps(): HoveredPlantProps {
@@ -12,19 +15,7 @@ describe("<HoveredPlant/>", () => {
       visible: true,
       dragging: false,
       currentPlant: undefined,
-      designer: {
-        selectedPlants: undefined,
-        hoveredPlant: {
-          plantUUID: undefined,
-          icon: ""
-        },
-        hoveredPlantListItem: undefined,
-        cropSearchQuery: "",
-        cropSearchResults: [],
-        chosenLocation: { x: undefined, y: undefined, z: undefined },
-        currentPoint: undefined,
-        openedSavedGarden: undefined,
-      },
+      designer: fakeDesignerState(),
       hoveredPlant: fakePlant(),
       isEditing: false,
       mapTransformProps: fakeMapTransformProps(),
