@@ -23,7 +23,6 @@ import {
   ParentVariableFormProps,
   LocalsListProps,
 } from "../locals_list_support";
-import { DELETE_ME_LATER } from "../../resources/interfaces";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
