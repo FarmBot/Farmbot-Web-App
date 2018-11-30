@@ -1,9 +1,9 @@
-import { handleSelect } from "../handle_select";
+import { convertDDItoScopeDeclr } from "../handle_select";
 import { fakeResourceIndex } from "../test_helpers";
 
 describe("handleSelect()", () => {
   it("returns location data: point", () => {
-    const location = handleSelect(fakeResourceIndex(),
+    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
       {
         headingId: "GenericPointer",
         label: "Point 1 (10, 20, 30)",
@@ -15,7 +15,7 @@ describe("handleSelect()", () => {
   });
 
   it("returns location data: tool", () => {
-    const location = handleSelect(fakeResourceIndex(),
+    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
       {
         headingId: "Tool",
         label: "Generic Tool",
@@ -25,7 +25,7 @@ describe("handleSelect()", () => {
   });
 
   it("returns location data: default", () => {
-    const location = handleSelect(fakeResourceIndex(),
+    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
       { label: "None", value: "" });
     expect(location).toEqual({
       kind: "coordinate", args: { x: 0, y: 0, z: 0 }
@@ -33,7 +33,7 @@ describe("handleSelect()", () => {
   });
 
   it("returns location data: identifier", () => {
-    const location = handleSelect(fakeResourceIndex(),
+    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
       {
         headingId: "identifier",
         label: "Parent",

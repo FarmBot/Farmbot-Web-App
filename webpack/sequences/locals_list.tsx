@@ -5,8 +5,9 @@ import {
   generateList
 } from "./step_tiles/tile_move_absolute/generate_list";
 import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
-import { handleSelect } from "./step_tiles/tile_move_absolute/handle_select";
+import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_select";
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
+import { editCurrentSequence } from "./actions";
 
 const REWRITE_THIS = () => {
   console.error("Re write this callback, OK? RC");
@@ -29,13 +30,7 @@ export const ParentVariableForm =
             allowEmpty={true}
             list={list}
             selectedItem={props.parent.dropdown}
-            onChange={(ddi) => {
-              const list2 = generateList(resources, [PARENT]);
-              console.dir(list2);
-              console.error("FINISH ME");
-              handleSelect(props.resources, ddi);
-              onChange({ x: -23, y: -23, z: -23 });
-            }} />
+            onChange={(ddi) => onChange(convertDDItoScopeDeclr(props.resources, ddi))} />
         </Col>
       </Row>
       <Row>
@@ -79,6 +74,11 @@ export const LocalsList = (props: LocalsListProps) => {
       parent={parent}
       sequence={props.deprecatedSequence}
       resources={props.deprecatedResources}
-      onChange={REWRITE_THIS} />
+      onChange={(locals) => {
+        const oldArgs = props.deprecatedSequence.body.args;
+        const args: typeof props.deprecatedSequence.body.args =
+          ({ ...oldArgs, locals });
+        editCurrentSequence(props.dispatch, props.deprecatedSequence, { args });
+      }} />
     : <div />;
 };

@@ -86,7 +86,10 @@ export let resourceReducer =
       const before = defensiveClone(target.body);
       merge(target, { body: update });
       const didChange = !equals(before, target.body);
-      didChange && mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
+      if (didChange) {
+        mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
+        indexUpsert(s.index, [target], "ongoing");
+      }
       return s;
     })
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {

@@ -1,11 +1,11 @@
 import {
   TaggedSequence,
-  Vector3,
+  ScopeDeclaration,
 } from "farmbot";
 import { ResourceIndex, VariableNameSet } from "../resources/interfaces";
 import { SequenceMeta } from "../resources/sequence_meta";
 
-type OnChange = (data_type: Vector3) => void;
+type OnChange = (data_type: ScopeDeclaration) => void;
 
 export interface LocalsListProps {
   variableData: VariableNameSet;

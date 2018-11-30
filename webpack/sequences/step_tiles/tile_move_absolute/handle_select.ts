@@ -64,7 +64,7 @@ const createNewParent =
     return undefined;
   };
 
-export let handleSelect =
+export let convertDDItoScopeDeclr =
   (index: ResourceIndex, input: DropDownItem): ScopeDeclaration => {
     const sd: ScopeDeclaration =
       ({ kind: "scope_declaration", args: {}, body: [] });

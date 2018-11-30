@@ -17,7 +17,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { FBSelect } from "../../ui/index";
 import {
-  InputBox, generateList, handleSelect
+  InputBox, generateList, convertDDItoScopeDeclr
 } from "../step_tiles/tile_move_absolute/index";
 import {
   ParentVariableFormProps,
@@ -65,7 +65,7 @@ describe("<ParentVariableForm/>", () => {
     const choice = choices[1];
     p.onChange(choice);
     expect(props.onChange)
-      .toHaveBeenCalledWith(handleSelect(props.resources, choice));
+      .toHaveBeenCalledWith(convertDDItoScopeDeclr(props.resources, choice));
     expect(inputs.length).toBe(3);
   });
 });

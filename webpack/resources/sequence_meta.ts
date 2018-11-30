@@ -53,8 +53,13 @@ const determineLocation =
   };
 
 const determineDropdown = (node: ScopeDeclarationBodyItem): DropDownItem => {
-  const value = "?"; // TBD
-  return { label: capitalize(node.args.label), value };
+  console.error("Fix this next");
+  if (node.kind === "variable_declaration") {
+    const { data_value } = node.args;
+    return { label: data_value.kind, value: "X" };
+  }
+
+  return { label: capitalize(node.args.label), value: "?" };
 };
 
 const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
