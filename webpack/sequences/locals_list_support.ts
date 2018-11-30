@@ -23,8 +23,3 @@ export interface ParentVariableFormProps {
 
 export const PARENT =
   ({ value: "parent", label: "Parent", headingId: "parameter" });
-
-export const extractParent =
-  (i: ResourceIndex, uuid: string): SequenceMeta | undefined => {
-    return (i.sequenceMetas[uuid] || {}).parent;
-  };

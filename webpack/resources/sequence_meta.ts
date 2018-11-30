@@ -3,25 +3,24 @@ import {
   ScopeDeclarationBodyItem,
   TaggedSequence,
   Vector3,
-  Coordinate,
-  Identifier,
-  Point,
-  Tool,
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId } from "./selectors";
 import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import { capitalize } from "lodash";
-import { formatPoint } from "../sequences/step_tiles/tile_move_absolute/generate_list";
-
-type ValueOfVariable = Coordinate | Identifier | Point | Tool;
+import {
+  formatPoint
+} from "../sequences/step_tiles/tile_move_absolute/generate_list";
+import {
+  LocationData
+} from "../sequences/step_tiles/tile_move_absolute/interfaces";
 
 export interface SequenceMeta {
   celeryNode: ScopeDeclarationBodyItem;
   dropdown: DropDownItem;
   location: Vector3;
   editable: boolean;
-  variableValue: ValueOfVariable;
+  variableValue: LocationData;
 }
 
 type R =
@@ -84,7 +83,7 @@ const determineEditable = (_node: ScopeDeclarationBodyItem): boolean => {
 };
 
 const determineVariableValue =
-  (_node: ScopeDeclarationBodyItem): ValueOfVariable => {
+  (_node: ScopeDeclarationBodyItem): LocationData => {
     return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
   };
 
@@ -104,3 +103,13 @@ export const createSequenceMeta: VLT = (index, resource) => {
   };
   return collection.reduce(reducer, {});
 };
+
+export const extractParent =
+  (i: ResourceIndex, uuid: string): SequenceMeta | undefined => {
+    return findVariableByName(i, uuid, "parent");
+  };
+
+export const findVariableByName =
+  (i: ResourceIndex, uuid: string, label: string): SequenceMeta | undefined => {
+    return (i.sequenceMetas[uuid] || {})[label];
+  };

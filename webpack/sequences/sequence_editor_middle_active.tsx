@@ -15,7 +15,7 @@ import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 import { LocalsList } from "./locals_list";
 import { Feature } from "../devices/interfaces";
-import { extractParent } from "./locals_list_support";
+import { extractParent } from "../resources/sequence_meta";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>

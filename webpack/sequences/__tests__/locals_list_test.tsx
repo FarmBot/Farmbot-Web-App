@@ -46,7 +46,16 @@ const fakeProps = (): LocalsListProps => {
 describe("<ParentVariableForm/>", () => {
   it("renders correct UI components", () => {
     const props: ParentVariableFormProps = {
-      parent: DELETE_ME_LATER,
+      parent: {
+        celeryNode: {
+          kind: "parameter_declaration",
+          args: { label: "label", data_type: "coordinate" }
+        },
+        editable: false,
+        variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+        dropdown: { label: "label", value: 0 },
+        location: { x: 0, y: 0, z: 0 }
+      },
       sequence: fakeSequence(),
       resources: buildResourceIndex().index,
       onChange: jest.fn()
