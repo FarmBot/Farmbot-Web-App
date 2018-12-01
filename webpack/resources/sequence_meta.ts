@@ -113,3 +113,35 @@ export const findVariableByName =
   (i: ResourceIndex, uuid: string, label: string): SequenceMeta | undefined => {
     return (i.sequenceMetas[uuid] || {})[label];
   };
+
+/**
+* Convert specially formatted DropDownItem into the object it represents.
+*
+* @param i Resource Index.
+* @param d Dropdown item where Heading ID is one of
+*   "GenericPointer"|"Plant"|"Tool"|"identifier" and where d.value is a
+*   resource ID or a celeryScript identifier `label`.
+* @param sequenceUuid UUID of the current sequence (for finding `label` values)
+*/
+export const convertDdiToCelery =
+  (i: ResourceIndex, d: DropDownItem, sequenceUuid: string) => {
+    type SequenceMetaResult = { kind: "SequenceMeta", body: SequenceMeta };
+    type NotFoundResult = { kind: "None", body: undefined };
+    const seqMeta = (body: SequenceMeta): SequenceMetaResult =>
+      ({ kind: "SequenceMeta", body });
+    const notFoundResult: NotFoundResult =
+      ({ kind: "None", body: undefined });
+
+    switch (d.headingId) {
+      case "GenericPointer":
+      case "Plant":
+      case "Tool":
+        const id = parseInt("" + d.value, 10);
+        return findPointerByTypeAndId(i, d.headingId, id);
+      case "identifier":
+        const body = findVariableByName(i, sequenceUuid, "" + d.value);
+        if (body) { return seqMeta(body); }
+    }
+
+    return notFoundResult;
+  };

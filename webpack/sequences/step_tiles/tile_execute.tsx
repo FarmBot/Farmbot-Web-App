@@ -85,6 +85,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
           {selected && <Col xs={12}>
             <ParentSelector
               targetUuid={calleeUuid || "NOT_SET_YET"}
+              currentUuid={currentSequence.uuid}
               deprecatedResources={resources}
               selected={selected.variableValue}
               onChange={() => { console.error("TODO: tile_execute.tsx"); }} />

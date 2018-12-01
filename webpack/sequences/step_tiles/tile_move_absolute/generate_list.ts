@@ -30,7 +30,9 @@ export const PARENT_DDI: DropDownItem[] = [{
   headingId: "identifier",
 }];
 
-export const NAME_MAP: Record<PointerTypeName | typeof TOOL, string> = {
+type DropdownHeadingId = PointerTypeName | typeof TOOL;
+
+export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "GenericPointer": "Map Points",
   "Plant": "Plants",
   "ToolSlot": "Tool Slots",
@@ -40,7 +42,7 @@ export const NAME_MAP: Record<PointerTypeName | typeof TOOL, string> = {
 const HEADINGS: () => DropDownItem[] = () => [
   ...Object.keys(NAME_MAP)
     .filter(x => x !== "ToolSlot")
-    .map((name: PointerTypeName | typeof TOOL) => {
+    .map((name: DropdownHeadingId) => {
       return ({
         label: t(NAME_MAP[name]),
         heading: true,

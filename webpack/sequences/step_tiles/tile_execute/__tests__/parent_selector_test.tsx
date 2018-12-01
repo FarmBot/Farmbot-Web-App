@@ -24,6 +24,7 @@ describe("<ParentSelector/>", () => {
     };
     const el = shallow(<ParentSelector
       targetUuid={sequence.uuid}
+      currentUuid={sequence.uuid}
       selected={selected}
       deprecatedResources={index}
       onChange={jest.fn()} />);

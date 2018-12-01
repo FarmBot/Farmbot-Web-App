@@ -12,8 +12,10 @@ import { TileMoveAbsProps } from "../interfaces";
 
 describe("<TileMoveAbsSelect/>", () => {
   function fakeProps(): TileMoveAbsProps {
+    const resources = buildResourceIndex().index;
     return {
-      resources: buildResourceIndex().index,
+      resources,
+      uuid: resources.byKind.Sequence[0] || "Sequence.-00.-00",
       selectedItem: {
         kind: "tool",
         args: { tool_id: 123 }

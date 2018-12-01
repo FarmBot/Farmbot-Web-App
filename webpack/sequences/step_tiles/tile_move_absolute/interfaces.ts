@@ -7,6 +7,8 @@ export type CALLBACK = (out: LocationData) => void;
 
 export interface TileMoveAbsProps {
   resources: ResourceIndex;
+  /** UUID of current sequence */
+  uuid: string;
   selectedItem: LocationData;
   onChange: CALLBACK;
   shouldDisplay: ShouldDisplay;

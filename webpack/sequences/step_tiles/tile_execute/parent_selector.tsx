@@ -6,6 +6,7 @@ import { CALLBACK, LocationData } from "../tile_move_absolute/interfaces";
 
 interface Props {
   targetUuid: string;
+  currentUuid: string;
   deprecatedResources: ResourceIndex;
   selected: LocationData;
   onChange: CALLBACK;
@@ -22,6 +23,7 @@ export function ParentSelector(p: Props) {
           resources={deprecatedResources}
           selectedItem={selected}
           onChange={onChange}
+          uuid={targetUuid}
           shouldDisplay={() => /* Handled by the parent of this comp. */ true} />
       </div>;
     })}

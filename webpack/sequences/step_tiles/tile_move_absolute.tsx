@@ -182,6 +182,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
             <label>{t("Import coordinates from")}</label>
             <TileMoveAbsSelect
               resources={this.resources}
+              uuid={this.props.currentSequence.uuid}
               selectedItem={this.args.location}
               onChange={(location) => this.updateArgs({ location })}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />
