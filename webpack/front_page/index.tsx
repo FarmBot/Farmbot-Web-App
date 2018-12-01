@@ -1,6 +1,7 @@
+import "../css/_index.scss";
+import "../css/splash.scss";
 import { detectLanguage } from "../i18n";
 import * as i18next from "i18next";
-import "../css/_index.scss";
 import { stopIE } from "../util/stop_ie";
 import { attachFrontPage } from "./front_page";
 

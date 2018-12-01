@@ -14,6 +14,7 @@ import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
+import { Splash } from "./splash";
 
 export const attachFrontPage = () => {
   attachToRoot(FrontPage, {});
@@ -258,9 +259,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             </Col>
           </h2>
         </Row>
-        <img
-          className={showFor(["md", "lg", "xl"], "col-md-7")}
-          src="/app-resources/img/farmbot-desktop.png" />
+        <Splash />
         <img
           className={showFor(["sm"], "col-md-7")}
           src="/app-resources/img/farmbot-tablet.png" />
