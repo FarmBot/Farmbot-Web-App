@@ -16,7 +16,7 @@ describe("<PlantInventory />", () => {
         hoveredPlantListItem={undefined} />);
     ["Map",
       "Plants",
-      "Farm Events",
+      "Events",
       "Strawberry Plant",
       "11 days old"
     ].map(string => expect(wrapper.text()).toContain(string));

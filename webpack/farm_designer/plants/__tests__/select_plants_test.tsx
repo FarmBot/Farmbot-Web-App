@@ -93,8 +93,8 @@ describe("<SelectPlants />", () => {
   it("restores selected on back", () => {
     const p = fakeProps();
     p.selected = ["plant.1"];
-    const wrapper = shallow(<SelectPlants {...p} />);
-    wrapper.find("BackArrow").simulate("click");
+    const wrapper = mount(<SelectPlants {...p} />);
+    wrapper.find(".back-arrow").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { icon: "fake icon", plantUUID: "plant.1" },
       type: Actions.TOGGLE_HOVERED_PLANT

@@ -726,6 +726,13 @@ ul {
       color: $dark_green;
     }
   }
+  &.events {
+    p,
+    h5,
+    a {
+      color: $magenta;
+    }
+  }
 }
 
 .farmware-selection-panel {

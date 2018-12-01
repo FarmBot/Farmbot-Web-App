@@ -8,7 +8,6 @@ import {
 import { ExecutableQuery } from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
 import {
-  BackArrow,
   BlurableInput,
   Col, Row,
   SaveBtn,
@@ -32,6 +31,9 @@ import { first } from "lodash";
 import {
   TimeUnit, ExecutableType, FarmEvent
 } from "farmbot/dist/resources/api_resources";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../plants/designer_panel";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -295,20 +297,16 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const repeats = this.fieldGet("timeUnit") !== NEVER;
     const allowRepeat = (!this.isReg && repeats);
     const forceMidnight = this.isReg && this.props.allowRegimenBackscheduling;
-    return <div className="panel-container magenta-panel add-farm-event-panel">
-      <div className="panel-header magenta-panel">
-        <p className="panel-title">
-          <BackArrow onClick={() => {
-            if (!this.props.farmEvent.body.id) {
-              // Throw out unsaved farmevents.
-              this.props.dispatch(destroyOK(this.props.farmEvent));
-              return;
-            }
-          }} />
-          {this.props.title}
-        </p>
-      </div>
-      <div className="panel-content">
+    return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
+      <DesignerPanelHeader
+        panelName={"add-farm-event"}
+        panelColor={"magenta"}
+        title={this.props.title}
+        onBack={!this.props.farmEvent.body.id ? () =>
+          // Throw out unsaved farmevents.
+          this.props.dispatch(destroyOK(this.props.farmEvent))
+          : undefined} />
+      <DesignerPanelContent panelName={"add-farm-event"}>
         <label>
           {t("Sequence or Regimen")}
         </label>
@@ -370,7 +368,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           {t("Delete")}
         </button>
         <TzWarning deviceTimezone={this.props.deviceTimezone} />
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }

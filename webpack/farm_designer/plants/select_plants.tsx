@@ -5,11 +5,13 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { BackArrow } from "../../ui/index";
 import { unselectPlant } from "../actions";
 import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "./designer_panel";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -77,58 +79,53 @@ export class SelectPlants
     }
   }
 
+  ActionButtons = () =>
+    <div className="panel-action-buttons">
+      <button className="fb-button red"
+        onClick={() => this.destroySelected(this.props.selected)}>
+        {t("Delete selected")}
+      </button>
+      <button className="fb-button gray"
+        onClick={() => this.props.dispatch({
+          type: Actions.SELECT_PLANT,
+          payload: this.props.plants.map(p => p.uuid)
+        })}>
+        {t("Select all")}
+      </button>
+      <button className="fb-button gray"
+        onClick={() => this.props.dispatch({
+          type: Actions.SELECT_PLANT,
+          payload: undefined
+        })}>
+        {t("Select none")}
+      </button>
+    </div>;
+
   render() {
     const { selected, plants, dispatch } = this.props;
     const selectedPlantData = selected ? selected.map(uuid => {
       return plants.filter(p => { return p.uuid == uuid; })[0];
     }) : undefined;
 
-    return <div
-      className="panel-container green-panel plant-selection-panel">
-      <div className="panel-header green-panel">
-        <p className="panel-title">
-          <BackArrow onClick={this.unstashSelectedPlant} />
-          {t("Select plants")}
-        </p>
+    return <DesignerPanel panelName={"plant-selection"} panelColor={"green"}>
+      <DesignerPanelHeader
+        panelName={"plant-selection"}
+        panelColor={"green"}
+        title={t("Select plants")}
+        onBack={this.unstashSelectedPlant}
+        description={Content.BOX_SELECT_DESCRIPTION} />
 
-        <div className="panel-title">
-          <button className="fb-button red"
-            onClick={() => this.destroySelected(selected)}>
-            {t("Delete selected")}
-          </button>
-          <button className="fb-button gray"
-            onClick={() => this.props.dispatch({
-              type: Actions.SELECT_PLANT,
-              payload: plants.map(p => p.uuid)
-            })}>
-            {t("Select all")}
-          </button>
-          <button className="fb-button gray"
-            onClick={() => this.props.dispatch({
-              type: Actions.SELECT_PLANT,
-              payload: undefined
-            })}>
-            {t("Select none")}
-          </button>
-        </div>
+      <this.ActionButtons />
 
-        <div className="panel-header-description">
-          {t(Content.BOX_SELECT_DESCRIPTION)}
-        </div>
-
-      </div>
-
-      <div className="panel-content">
-        <div className="thin-search-wrapper">
-          {selectedPlantData && selectedPlantData[0] &&
-            selectedPlantData.map(p =>
-              <PlantInventoryItem
-                key={p.uuid}
-                tpp={p}
-                hovered={false}
-                dispatch={dispatch} />)}
-        </div>
-      </div>
-    </div>;
+      <DesignerPanelContent panelName={"plant-selection"}>
+        {selectedPlantData && selectedPlantData[0] &&
+          selectedPlantData.map(p =>
+            <PlantInventoryItem
+              key={p.uuid}
+              tpp={p}
+              hovered={false}
+              dispatch={dispatch} />)}
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }

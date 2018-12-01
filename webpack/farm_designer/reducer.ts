@@ -28,6 +28,10 @@ export let designer = generateReducer<DesignerState>(initialState)
     state.cropSearchQuery = payload;
     return state;
   })
+  .add<boolean>(Actions.OF_SEARCH_RESULTS_START, (s) => {
+    s.cropSearchInProgress = true;
+    return s;
+  })
   .add<boolean>(Actions.OF_SEARCH_RESULTS_NO, (s) => {
     s.cropSearchInProgress = false;
     return s;

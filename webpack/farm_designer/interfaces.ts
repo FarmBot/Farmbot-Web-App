@@ -225,20 +225,22 @@ export interface HoveredPlantPayl {
   icon: string;
 }
 
+export type OpenfarmSearch = (query: string) => (dispatch: Function) => void;
+
 export interface CropCatalogProps {
   cropSearchQuery: string;
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
-  OFSearch: (searchTerm: string) =>
-    (dispatch: Function) => void;
+  openfarmSearch: OpenfarmSearch;
   cropSearchInProgress: boolean;
 }
 
 export interface CropInfoProps {
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
+  cropSearchInProgress: boolean;
   openedSavedGarden: string | undefined;
-  OFSearch: (query: string) => (dispatch: Function) => void;
+  openfarmSearch: OpenfarmSearch;
   botPosition: BotPosition;
 }
 

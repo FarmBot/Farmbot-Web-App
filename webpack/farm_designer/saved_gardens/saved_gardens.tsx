@@ -13,6 +13,9 @@ import { SavedGardensProps } from "./interfaces";
 import { closeSavedGarden } from "./actions";
 import { TaggedSavedGarden } from "farmbot";
 import { Content } from "../../constants";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../plants/designer_panel";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -35,21 +38,15 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
   }
 
   render() {
-    return <div
-      className="panel-container green-panel saved-garden-panel">
-      <div className="panel-header green-panel">
-        <p className="panel-title">
-          <i className="fa fa-arrow-left plant-panel-back-arrow"
-            onClick={() => history.push("/app/designer/plants")} />
-          {t("Saved Gardens")}
-        </p>
+    return <DesignerPanel panelName={"saved-garden"} panelColor={"green"}>
+      <DesignerPanelHeader
+        panelName={"saved-garden"}
+        panelColor={"green"}
+        title={t("Saved Gardens")}
+        description={Content.SAVED_GARDENS}
+        backTo={"/app/designer/plants"} />
 
-        <div className="panel-header-description">
-          {t(Content.SAVED_GARDENS)}
-        </div>
-      </div>
-
-      <div className="panel-content saved-garden-panel-content">
+      <DesignerPanelContent panelName={"saved-garden"}>
         <GardenSnapshot
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}
@@ -58,8 +55,8 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
         {this.props.savedGardens.length > 0
           ? <SavedGardenList {...this.props} />
           : <p>{t("No saved gardens yet.")}</p>}
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }
 
