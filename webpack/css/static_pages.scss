@@ -1,7 +1,7 @@
 .static-page {
   min-height: 100vh;
   max-height: 100%;
-  * {
+  .row {
     margin: 0 auto;
   }
   background: linear-gradient(-135deg, #6db1ec, #35a274);
@@ -19,6 +19,7 @@
   }
   h2 {
     margin-top: 1rem;
+    margin-bottom: 8rem;
     font-size: 2.2rem;
     line-height: 2.6rem;
   }
@@ -31,10 +32,14 @@
     padding-right: 1rem;
   }
   .widget-wrapper {
+    margin-top: 1.5rem;
+    text-align: start;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   }
   .inner-width {
+    margin: auto;
     max-width: 1024px;
+    text-align: center;
   }
   .forgot-password {
     display: inline-block;
@@ -71,17 +76,7 @@
   }
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 736px) {
-  h2 {
-    margin-bottom: 8rem !important;
-  }
-}
-
-@media only screen and (min-device-width: 768px) {
-  h2 {
-    margin-bottom: 6rem !important;
-  }
-  .widget-wrapper:first-child {
-    margin-top: 1rem;
-  }
+img {
+  width: 55%;
+  margin-bottom: 2rem;
 }

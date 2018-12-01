@@ -40,7 +40,7 @@ export class Login extends React.Component<LoginProps, {}> {
       onLoginPasswordChange,
       onToggleForgotPassword,
     } = this.props;
-    return <Col xs={12} sm={5}>
+    return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
       <Widget>
         <WidgetHeader title={"Login"} />
         <WidgetBody>
