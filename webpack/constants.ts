@@ -512,6 +512,10 @@ export namespace Content {
     broken and may break or otherwise hinder your usage of the rest of the
     app. This feature may disappear or break at any time.`);
 
+  export const NEW_TOS =
+    trim(`Before logging in, you must agree to our latest Terms of Service and
+    Privacy Policy`);
+
   // Front Page
   export const TOS_UPDATE =
     trim(`The terms of service have recently changed. You must accept the

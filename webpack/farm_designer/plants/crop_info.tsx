@@ -19,17 +19,15 @@ interface InforFieldProps {
   children?: React.ReactNode;
 }
 
-function InfoField(props: InforFieldProps) {
-  const { title } = props;
-  return <li>
+const InfoField = (props: InforFieldProps) =>
+  <li>
     <p>
-      {_.startCase(title)}
+      {t(_.startCase(props.title))}
     </p>
     <div>
       {props.children}
     </div>
   </li>;
-}
 
 const CropInfoList = (crop: OpenFarm.OFCrop) => {
   return <div className="object-list">

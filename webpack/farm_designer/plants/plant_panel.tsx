@@ -125,7 +125,7 @@ export function PlantPanel(props: PlantPanelProps) {
             uuid={uuid}
             plantStatus={plantStatus}
             updatePlant={updatePlant} />
-          : plantStatus}
+          : t(_.startCase(plantStatus))}
       </ListItem>
     </ul>
     <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
