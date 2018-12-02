@@ -193,8 +193,8 @@ var HelperNamespace = (function () {
       // merge new tags with existing translation
       var result = {};
       var unexistingTag = {};
-      let existing = 0;
-      let translated = 0;
+      var existing = 0;
+      var translated = 0;
       // all current tags in English
       Object.keys(jsonCurrentTagData).sort(localeSort).map(key => {
         result[key] = jsonCurrentTagData[key];
