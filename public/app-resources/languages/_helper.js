@@ -196,7 +196,7 @@ var HelperNamespace = (function () {
       var existing = 0;
       var translated = 0;
       // all current tags in English
-      Object.keys(jsonCurrentTagData).sort(localeSort).map(key => {
+      Object.keys(jsonCurrentTagData).sort(localeSort).map(function (key) {
         result[key] = jsonCurrentTagData[key];
         if (debug) { result[key] = debug[0].repeat(key.length) }
       })
