@@ -26,7 +26,7 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
+import { TileMoveAbsSelect, InputBox, EMPTY_COORD } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 // import { extractParent } from "../locals_list";
 import {
@@ -37,6 +37,7 @@ import {
   conflictsString
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
+import { convertDropdownToLocation } from "../../resources/sequence_meta";
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
@@ -177,7 +178,20 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
               resources={this.resources}
               uuid={this.props.currentSequence.uuid}
               selectedItem={this.args.location}
-              onChange={(location) => this.updateArgs({ location })}
+              onChange={(result) => {
+                switch (result.kind) {
+                  case "None":
+                    return this.updateArgs({ location: EMPTY_COORD });
+                  case "Point":
+                  case "Tool":
+                  case "BoundVariable":
+                    return this.updateArgs({
+                      location: convertDropdownToLocation(result)
+                    });
+                  case "UnboundVariable": // Create parent, attach to it
+                    throw new Error("Fix this!");
+                }
+              }}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />
           </Col>
           <Col xs={3}>
