@@ -105,22 +105,21 @@ var HelperNamespace = (function () {
   }
 
   /** Print some translation file status metrics. */
-  function generateSummary({
-    foundTags, unmatchedTags, allTags, countTranslated, countExisting, langCode
-  }) {
-    const current = Object.keys(foundTags).length;
-    const orphans = Object.keys(unmatchedTags).length;
-    const total = Object.keys(allTags).length;
-    const percent = Math.round(countTranslated / current * 100);
-    const existingUntranslated = countExisting - countTranslated;
+  function generateSummary(args) {
+    // {foundTags, unmatchedTags, allTags, countTranslated, countExisting, langCode}
+    const current = Object.keys(args.foundTags).length;
+    const orphans = Object.keys(args.unmatchedTags).length;
+    const total = Object.keys(args.allTags).length;
+    const percent = Math.round(args.countTranslated / current * 100);
+    const existingUntranslated = args.countExisting - args.countTranslated;
     console.log(current + ' strings found.');
-    console.log('  ' + countExisting + ' existing items match.');
-    console.log('    ' + countTranslated + ' existing translations match.');
+    console.log('  ' + args.countExisting + ' existing items match.');
+    console.log('    ' + args.countTranslated + ' existing translations match.');
     console.log('    ' + existingUntranslated + ' existing untranslated items.');
-    console.log('  ' + (current - countExisting) + ' new items added.');
+    console.log('  ' + (current - args.countExisting) + ' new items added.');
     console.log(percent + '% of found strings translated.');
     console.log(orphans + ' unused, outdated, or extra items.');
-    console.log('Updated file (' + langCode + '.js) with ' + total + ' items.');
+    console.log('Updated file (' + args.langCode + '.js) with ' + total + ' items.');
   }
 
   /**
