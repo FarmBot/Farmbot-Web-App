@@ -148,8 +148,6 @@ export const convertDdiToCelery: ConverterFn = (
     case "GenericPointer":
     case "ToolSlot":
     case "Plant":
-      console.error("Crashes here");
-      debugger;
       return findByKindAndId<TaggedPoint>(index, "Point", id);
     case "Tool": return findToolById(index, id);
     case "identifier":

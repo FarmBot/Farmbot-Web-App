@@ -94,13 +94,6 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    // const { locals } = this.props.currentSequence.body.args;
-    // if (!locals) { return "-9"; }
-    // const { body } = this.props.currentSequence.body.args.locals;
-    // const parent = extractParent(body);
-    // const maybe = ((parent && parent.args.data_value) || this.args.location);
-    // const l = this.args.location.kind === "identifier" ?
-    //   maybe : this.args.location;
     const l = this.args.location;
     switch (l.kind) {
       case "coordinate":
@@ -110,9 +103,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = (this.slot) ? this.slot.body[axis] : undefined;
         break;
       case "point":
-        const { pointer_id, pointer_type } = l.args;
+        const { pointer_id } = l.args;
         number = findPointerByTypeAndId(this.resources,
-          pointer_type,
+          "Point",
           pointer_id).body[axis];
         break;
     }

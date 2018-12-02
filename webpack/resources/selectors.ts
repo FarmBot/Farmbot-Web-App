@@ -11,7 +11,6 @@ import {
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedDevice,
-  PointType,
 } from "farmbot";
 import {
   isTaggedPlantPointer,
@@ -69,13 +68,12 @@ export function groupPointsByType(index: ResourceIndex) {
 export function findPointerByTypeAndId(index: ResourceIndex,
   pt: string,
   id: number) {
-  const p = betterCompact(Object
-    .keys(index.byPointType[pt as PointType] || {})
-    .map(uuid => index.references[uuid])
-    .map(x => x && (x.kind === "Point") ? x : undefined))
-    .filter(({ body }) => (body.id === id) && (body.pointer_type === pt))[0];
-  if (p) {
-    return p;
+  const pni = joinKindAndId("Point", id);
+  const uuid = "" + index.byKindAndId[pni];
+  const resource = index.references[uuid];
+
+  if (resource && resource.kind === "Point") {
+    return resource;
   } else {
     // We might have a sequence dependency leak if this exception is ever
     // thrown.
