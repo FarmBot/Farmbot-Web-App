@@ -4,7 +4,10 @@ import { FBSelect } from "../../../ui/index";
 import { formatSelectedDropdown } from "./format_selected_dropdown";
 import { generateList, PARENT_DDI } from "./generate_list";
 import { TileMoveAbsProps } from "./interfaces";
-import { convertDdiToCelery } from "../../../resources/sequence_meta";
+import {
+  convertDdiToCelery,
+  convertDropdownToLocation
+} from "../../../resources/sequence_meta";
 
 export function TileMoveAbsSelect(props: TileMoveAbsProps) {
   const { selectedItem, resources, shouldDisplay } = props;
@@ -17,13 +20,9 @@ export function TileMoveAbsSelect(props: TileMoveAbsProps) {
     selectedItem={formatSelectedDropdown(resources, i)}
     onChange={(ddi) => {
       const result = convertDdiToCelery(resources, ddi, props.uuid);
-      switch (result.kind) {
-        case "Point":
-          console.error("TODO");
-          return;
-        case "SequenceMeta":
-          console.error("TODO");
-          return;
+      if (result.kind !== "None") {
+        const loc = convertDropdownToLocation(result);
+        props.onChange(loc);
       }
     }} />;
 }

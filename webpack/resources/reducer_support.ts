@@ -54,6 +54,19 @@ const BY_KIND: Indexer = {
   down(r, i) { delete i.byKind[r.kind][r.uuid]; },
 };
 
+const BY_POINT_TYPE: Indexer = {
+  up(r, i) {
+    if (r.kind === "Point") {
+      i.byPointType[r.body.pointer_type][r.uuid] = r.uuid;
+    }
+  },
+  down(r, i) {
+    if (r.kind === "Point") {
+      delete i.byPointType[r.body.pointer_type][r.uuid];
+    }
+  },
+};
+
 const BY_KIND_AND_ID: Indexer = {
   up: (r, i) => {
     if (r.body.id) {
@@ -130,6 +143,7 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
+  BY_POINT_TYPE
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;

@@ -3,6 +3,8 @@ import {
   ScopeDeclarationBodyItem,
   TaggedSequence,
   Vector3,
+  TaggedPoint,
+  TaggedTool,
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId } from "./selectors";
@@ -14,6 +16,10 @@ import {
 import {
   LocationData
 } from "../sequences/step_tiles/tile_move_absolute/interfaces";
+import {
+  EMPTY_COORD
+} from "../sequences/step_tiles/tile_move_absolute/handle_select";
+import { findByKindAndId } from "./selectors_by_kind";
 
 export interface SequenceMeta {
   celeryNode: ScopeDeclarationBodyItem;
@@ -114,34 +120,56 @@ export const findVariableByName =
     return (i.sequenceMetas[uuid] || {})[label];
   };
 
-/**
-* Convert specially formatted DropDownItem into the object it represents.
-*
-* @param i Resource Index.
-* @param d Dropdown item where Heading ID is one of
-*   "GenericPointer"|"Plant"|"Tool"|"identifier" and where d.value is a
-*   resource ID or a celeryScript identifier `label`.
-* @param sequenceUuid UUID of the current sequence (for finding `label` values)
-*/
-export const convertDdiToCelery =
-  (i: ResourceIndex, d: DropDownItem, sequenceUuid: string) => {
-    type SequenceMetaResult = { kind: "SequenceMeta", body: SequenceMeta };
-    type NotFoundResult = { kind: "None", body: undefined };
-    const seqMeta = (body: SequenceMeta): SequenceMetaResult =>
-      ({ kind: "SequenceMeta", body });
-    const notFoundResult: NotFoundResult =
-      ({ kind: "None", body: undefined });
+// ==== SUPPORT INTERFACES
+type SequenceMetaResult = { kind: "SequenceMeta", body: SequenceMeta };
+type NotFoundResult = { kind: "None", body: undefined };
+export type MoveAbsDropDownContents =
+  | SequenceMetaResult
+  | NotFoundResult
+  | TaggedPoint
+  | TaggedTool;
+type ConverterFn = (i: ResourceIndex,
+  d: DropDownItem,
+  sequenceUuid: string) => MoveAbsDropDownContents;
+const NONE: NotFoundResult = { kind: "None", body: undefined };
+// ====
 
-    switch (d.headingId) {
-      case "GenericPointer":
-      case "Plant":
+/** Convert specially formatted DropDownItem into the object it represents. */
+export const convertDdiToCelery: ConverterFn = (
+  index,
+  /** Dropdown item where headingId is a KnownGroupTag. d.value is a resource
+   * ID or a celeryScript identifier `label`.*/
+  dropDown,
+  /**UUID of the current sequence (for finding `label` values) */
+  currentUuid) => {
+  const id = parseInt("" + dropDown.value, 10);
+
+  switch (dropDown.headingId) {
+    case "GenericPointer":
+    case "ToolSlot":
+    case "Plant":
+      console.error("Crashes here");
+      debugger;
+      return findByKindAndId<TaggedPoint>(index, "Point", id);
+    case "Tool": return findToolById(index, id);
+    case "identifier":
+      const body = findVariableByName(index, currentUuid, "" + dropDown.value);
+      if (body) { return { kind: "SequenceMeta", body }; }
+  }
+
+  return NONE;
+};
+
+export const convertDropdownToLocation =
+  (input: MoveAbsDropDownContents): LocationData => {
+    switch (input.kind) {
       case "Tool":
-        const id = parseInt("" + d.value, 10);
-        return findPointerByTypeAndId(i, d.headingId, id);
-      case "identifier":
-        const body = findVariableByName(i, sequenceUuid, "" + d.value);
-        if (body) { return seqMeta(body); }
+        return { kind: "tool", args: { tool_id: input.body.id || 0 } };
+      case "Point":
+        const args =
+          ({ pointer_id: input.body.id || 0, pointer_type: input.kind });
+        return { kind: "point", args };
+      case "SequenceMeta": return input.body.variableValue;
+      default: return EMPTY_COORD;
     }
-
-    return notFoundResult;
   };

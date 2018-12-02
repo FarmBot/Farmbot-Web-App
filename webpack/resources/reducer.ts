@@ -32,7 +32,8 @@ export const emptyState = (): RestResources => {
     },
     loaded: [],
     index: {
-      all: {}, // TODO: Make this a map to reduce iterations?
+      all: {},
+      byPointType: { Plant: {}, ToolSlot: {}, GenericPointer: {} },
       byKind: {
         WebcamFeed: {},
         Device: {},

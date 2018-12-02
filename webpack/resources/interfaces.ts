@@ -1,5 +1,5 @@
 import {
-  Dictionary,
+  Dictionary, PointType,
 } from "farmbot/dist";
 import { SequenceReducerState } from "../sequences/interfaces";
 import { DesignerState } from "../farm_designer/interfaces";
@@ -22,6 +22,7 @@ export type UUIDSet = Record<UUID, true>;
 
 export interface ResourceIndex {
   all: UUIDSet;
+  byPointType: Record<PointType, Record<UUID, UUID>>;
   byKind: Record<ResourceName, Record<UUID, UUID>>;
   byKindAndId: CowardlyDictionary<UUID>;
   references: Dictionary<TaggedResource | undefined>;

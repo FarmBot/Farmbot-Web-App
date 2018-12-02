@@ -11,6 +11,7 @@ import {
   TaggedToolSlotPointer,
   TaggedUser,
   TaggedDevice,
+  PointType,
 } from "farmbot";
 import {
   isTaggedPlantPointer,
@@ -66,16 +67,19 @@ export function groupPointsByType(index: ResourceIndex) {
 }
 
 export function findPointerByTypeAndId(index: ResourceIndex,
-  type_: string,
+  pt: string,
   id: number) {
-  const p = selectAllActivePoints(index)
-    .filter(({ body }) => (body.id === id) && (body.pointer_type === type_))[0];
+  const p = betterCompact(Object
+    .keys(index.byPointType[pt as PointType] || {})
+    .map(uuid => index.references[uuid])
+    .map(x => x && (x.kind === "Point") ? x : undefined))
+    .filter(({ body }) => (body.id === id) && (body.pointer_type === pt))[0];
   if (p) {
     return p;
   } else {
     // We might have a sequence dependency leak if this exception is ever
     // thrown.
-    throw new Error(`Tried to fetch bad point ${type_} ${id}`);
+    throw new Error(`Tried to fetch bad point ${pt} ${id}`);
   }
 }
 
