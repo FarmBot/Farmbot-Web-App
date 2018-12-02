@@ -121,17 +121,21 @@ export const findVariableByName =
   };
 
 // ==== SUPPORT INTERFACES
-type SequenceMetaResult = { kind: "SequenceMeta", body: SequenceMeta };
-type NotFoundResult = { kind: "None", body: undefined };
+/** User selected a pre-existing variable. */
+type BoundVariableResult = { kind: "BoundVariable", body: SequenceMeta };
+/** User selected a variable that does not exist in current scope. */
+type UnboundVariableResult = { kind: "UnboundVariable", body: { label: string } };
+type EmptyResult = { kind: "None", body: undefined };
 export type MoveAbsDropDownContents =
-  | SequenceMetaResult
-  | NotFoundResult
+  | BoundVariableResult
+  | UnboundVariableResult
+  | EmptyResult
   | TaggedPoint
   | TaggedTool;
 type ConverterFn = (i: ResourceIndex,
   d: DropDownItem,
   sequenceUuid: string) => MoveAbsDropDownContents;
-const NONE: NotFoundResult = { kind: "None", body: undefined };
+const NONE: EmptyResult = { kind: "None", body: undefined };
 // ====
 
 /** Convert specially formatted DropDownItem into the object it represents. */
@@ -151,8 +155,11 @@ export const convertDdiToCelery: ConverterFn = (
       return findByKindAndId<TaggedPoint>(index, "Point", id);
     case "Tool": return findToolById(index, id);
     case "identifier":
-      const body = findVariableByName(index, currentUuid, "" + dropDown.value);
-      if (body) { return { kind: "SequenceMeta", body }; }
+      const label = "" + dropDown.value;
+      const body = findVariableByName(index, currentUuid, label);
+      return body ?
+        { kind: "BoundVariable", body }
+        : { kind: "UnboundVariable", body: { label } };
   }
 
   return NONE;
@@ -167,7 +174,7 @@ export const convertDropdownToLocation =
         const args =
           ({ pointer_id: input.body.id || 0, pointer_type: input.kind });
         return { kind: "point", args };
-      case "SequenceMeta": return input.body.variableValue;
+      case "BoundVariable": return input.body.variableValue;
       default: return EMPTY_COORD;
     }
   };
