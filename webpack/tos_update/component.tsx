@@ -7,7 +7,8 @@ import { Session } from "../session";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import "../css/_index.scss";
-import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui/index";
+import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
+import { TermsCheckbox } from "../front_page/terms_checkbox";
 
 interface Props { }
 interface State {
@@ -20,7 +21,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
   constructor(props: Props) {
     super(props);
     this.submit = this.submit.bind(this);
-    this.state = { agree_to_terms: true };
+    this.state = { agree_to_terms: false };
   }
 
   set = (name: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
@@ -49,6 +50,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
 
   tosForm() {
     if (this.tosLoadOk) {
+      const agree = this.state.agree_to_terms;
       return <form onSubmit={this.submit}>
         <div className="input-group">
           <label> {t("Email")} </label>
@@ -59,23 +61,19 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
           <input type="password"
             onChange={this.set("password").bind(this)}>
           </input>
-          <ul>
-            <li>
-              <a href={globalConfig.TOS_URL}>
-                {t("Terms of Service")}
-              </a>
-              <span className="fa fa-external-link" />
-            </li>
-            <li>
-              <a href={globalConfig.PRIV_URL}>
-                {t("Privacy Policy")}
-              </a>
-              <span className="fa fa-external-link" />
-            </li>
-          </ul>
+          <TermsCheckbox
+            privUrl={globalConfig.PRIV_URL}
+            tosUrl={globalConfig.TOS_URL}
+            onChange={e =>
+              this.setState({ agree_to_terms: e.currentTarget.checked })}
+            agree={agree} />
           <Row>
             <Col xs={12}>
-              <button className="green fb-button">
+              <button
+                className="green fb-button"
+                onClick={() =>
+                  !agree && logError(t("Please agree to the terms."))}
+                type={agree ? "submit" : "button"}>
                 {t("I Agree to the Terms of Service")}
               </button>
             </Col>
@@ -88,7 +86,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
           {t("Something went wrong while rendering this page.")}
         </p>
         <p>
-          {t("Please send us an email at contact@farmbot.io or see the ")}
+          {t("Please send us an email at contact@farm.bot or see the ")}
           <a href="http://forum.farmbot.org/">
             {t("FarmBot forum.")}
           </a>

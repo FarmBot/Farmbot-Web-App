@@ -3,7 +3,7 @@ import { PureFarmEvents } from "../farm_events";
 import {
   calendarRows
 } from "../../../__test_support__/farm_event_calendar_support";
-import { render, shallow } from "enzyme";
+import { render, shallow, mount } from "enzyme";
 import { get } from "lodash";
 import { Content } from "../../../constants";
 import { defensiveClone } from "../../../util";
@@ -13,7 +13,7 @@ describe("<PureFarmEvents/>", () => {
     const wrapper = render(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={false} />);
-    ["Map", "Plants", "Farm Events"].map(string =>
+    ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
@@ -60,8 +60,8 @@ describe("<PureFarmEvents/>", () => {
     expect(txt).toContain("Every 4 hours");
   });
 
-  it("filters farm events", () => {
-    const wrapper = shallow(<PureFarmEvents
+  it("filters farm events: finds none", () => {
+    const wrapper = mount(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={true} />);
     wrapper.find("input").simulate("change",
@@ -69,8 +69,8 @@ describe("<PureFarmEvents/>", () => {
     expect(wrapper.text()).not.toContain("every 4 hours");
   });
 
-  it("filters farm events", () => {
-    const wrapper = shallow(<PureFarmEvents
+  it("filters farm events: finds some", () => {
+    const wrapper = mount(<PureFarmEvents
       calendarRows={calendarRows}
       timezoneIsSet={true} />);
     wrapper.find("input").simulate("change",

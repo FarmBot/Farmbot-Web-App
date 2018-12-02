@@ -6,10 +6,12 @@ import { Link } from "../link";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
-    <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
-      <i className="fa fa-cog"></i>
-      {t("Account Settings")}
-    </Link>
+    <div>
+      <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-cog"></i>
+        {t("Account Settings")}
+      </Link>
+    </div>
     {localStorage.getItem("FUTURE_FEATURES") &&
       <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-question-circle"></i>

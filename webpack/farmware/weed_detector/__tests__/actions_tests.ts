@@ -21,7 +21,7 @@ const mockInc = jest.fn();
 const mockFinish = jest.fn();
 jest.mock("../../../util", () => ({
   Progress: () => ({ inc: mockInc, finish: mockFinish }),
-  trim: () => { },
+  trim: jest.fn(x => x),
 }));
 
 import { deletePoints } from "../actions";
@@ -90,8 +90,10 @@ describe("deletePoints()", () => {
     expect(mockInc).toHaveBeenCalledTimes(1);
     expect(mockFinish).toHaveBeenCalledTimes(1);
     expect(success).not.toHaveBeenCalledWith();
-    expect(error).toHaveBeenCalledWith(
-      "Some weeds failed to delete. Are they in use by sequences?");
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Some weeds failed to delete."));
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Are they in use by sequences?"));
   });
 
   it("chunks points", async () => {

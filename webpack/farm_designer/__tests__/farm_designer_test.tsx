@@ -88,7 +88,7 @@ describe("<FarmDesigner/>", () => {
   it("renders nav titles", () => {
     mockPath = "/app/designer/plants";
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    ["Map", "Plants", "Farm Events"].map(string =>
+    ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeTruthy();
     expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeFalsy();
@@ -98,7 +98,7 @@ describe("<FarmDesigner/>", () => {
   it("hides panel", () => {
     mockPath = "/app/designer";
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    ["Map", "Plants", "Farm Events"].map(string =>
+    ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeFalsy();
     expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeTruthy();

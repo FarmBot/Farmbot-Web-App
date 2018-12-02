@@ -67,4 +67,12 @@ describe("<TosUpdate/>", () => {
     expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, expectation);
   });
+
+  it("shows TOS and Privacy links", () => {
+    const el = mount(<TosUpdate />);
+    ["Privacy Policy", "Terms of Use"].map(string =>
+      expect(el.text()).toContain(string));
+    ["https://farmbot.io/privacy/", "https://farmbot.io/tos/"]
+      .map(string => expect(el.html()).toContain(string));
+  });
 });

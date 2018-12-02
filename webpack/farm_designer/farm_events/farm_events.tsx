@@ -3,12 +3,16 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
-import { FarmEventProps, CalendarOccurrence, FarmEventState } from "../interfaces";
+import {
+  FarmEventProps, CalendarOccurrence, FarmEventState
+} from "../interfaces";
 import * as _ from "lodash";
 import * as moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
+import { DesignerPanel, DesignerPanelContent } from "../plants/designer_panel";
+import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -97,7 +101,7 @@ export class PureFarmEvents
    * not set a timezone for the bot (defaults to 0 UTC offset, which could be
    * far from user's local time). */
   tzwarning = () => {
-    return <div className="panel-content">
+    return <DesignerPanelContent panelName={"farm-event"}>
       <Row>
       </Row>
 
@@ -110,21 +114,28 @@ export class PureFarmEvents
           <Link to="/app/device">{t(Content.SET_TIMEZONE_BODY)}</Link>
         </p>
       </div>
-    </div>;
+    </DesignerPanelContent>;
   };
 
   normalContent = () => {
-    return <div className="panel-content">
+    return <DesignerPanelContent panelName={"farm-event"}>
       <Row>
         <i className="fa fa-calendar" onClick={this.resetCalendar} />
         <input
           value={this.state.searchTerm}
           onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
-          placeholder={t("Search FarmEvents...")} />
+          placeholder={t("Search events...")} />
       </Row>
 
       <div className="farm-events">
-        {this.renderCalendarRows()}
+        <EmptyStateWrapper
+          notEmpty={this.props.calendarRows.length > 0}
+          title={t("No events scheduled.")}
+          text={t(Content.NOTHING_SCHEDULED)}
+          colorScheme="events"
+          graphic={EmptyStateGraphic.no_farm_events}>
+          {this.renderCalendarRows()}
+        </EmptyStateWrapper>
       </div>
 
       <Link to="/app/designer/farm_events/add">
@@ -132,14 +143,14 @@ export class PureFarmEvents
           <i className="fa fa-2x fa-plus" />
         </button>
       </Link>
-    </div>;
+    </DesignerPanelContent>;
   };
 
   render() {
-    return <div className="panel-container magenta-panel farm-event-panel">
+    return <DesignerPanel panelName={"farm-event"} panelColor={"magenta"}>
       <DesignerNavTabs />
       {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
-    </div>;
+    </DesignerPanel>;
   }
 }
 

@@ -28,7 +28,7 @@ jest.mock("../../api", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { FrontPage, setField, PartialFromEvent } from "../front_page";
+import { FrontPage, setField, PartialFormEvent } from "../front_page";
 import axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
@@ -96,7 +96,8 @@ describe("<FrontPage />", () => {
     expect(window.location.assign).toHaveBeenCalledWith("/tos_update");
   });
 
-  it("submits registration", () => {
+  it("submits registration: success", async () => {
+    mockAxiosResponse = Promise.resolve({ data: "new data" });
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({
       regEmail: "foo@bar.io",
@@ -105,22 +106,77 @@ describe("<FrontPage />", () => {
       regConfirmation: "password",
       agreeToTerms: true
     });
-    el.instance().submitRegistration(fakeEvent as FormEvent);
+    await el.instance().submitRegistration(fakeEvent as FormEvent);
     expect(axios.post).toHaveBeenCalledWith("usersPath", {
       user: {
         agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
         password: "password", password_confirmation: "password"
       }
     });
+    expect(success).toHaveBeenCalledWith(
+      expect.stringContaining("Almost done!"), "Success");
+    expect(el.instance().state.registrationSent).toEqual(true);
   });
 
-  it("submits forgot password", () => {
+  it("submits registration: failure", async () => {
+    mockAxiosResponse = Promise.reject({ response: { data: ["failure"] } });
     const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io" });
-    el.instance().submitForgotPassword(
+    el.setState({
+      regEmail: "foo@bar.io",
+      regName: "Foo Bar",
+      regPassword: "password",
+      regConfirmation: "password",
+      agreeToTerms: true
+    });
+    await el.instance().submitRegistration(fakeEvent as FormEvent);
+    await expect(axios.post).toHaveBeenCalledWith("usersPath", {
+      user: {
+        agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
+        password: "password", password_confirmation: "password"
+      }
+    });
+    await expect(error).toHaveBeenCalledWith(
+      expect.stringContaining("failure"));
+    expect(el.instance().state.registrationSent).toEqual(false);
+  });
+
+  it("submits forgot password: success", async () => {
+    mockAxiosResponse = Promise.resolve({ data: "" });
+    const el = mount<FrontPage>(<FrontPage />);
+    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    await el.instance().submitForgotPassword(
       fakeEvent as React.FormEvent<HTMLFormElement>);
-    expect(axios.post).toHaveBeenCalledWith("resetPath",
+    await expect(axios.post).toHaveBeenCalledWith("resetPath",
       { email: "foo@bar.io" });
+    await expect(success).toHaveBeenCalledWith(
+      "Email has been sent.", "Forgot Password");
+    expect(el.instance().state.activePanel).toEqual("login");
+  });
+
+  it("submits forgot password: error", async () => {
+    mockAxiosResponse = Promise.reject({ response: { data: ["failure"] } });
+    const el = mount<FrontPage>(<FrontPage />);
+    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    await el.instance().submitForgotPassword(
+      fakeEvent as React.FormEvent<HTMLFormElement>);
+    await expect(axios.post).toHaveBeenCalledWith("resetPath",
+      { email: "foo@bar.io" });
+    await expect(error).toHaveBeenCalledWith(
+      expect.stringContaining("failure"));
+    expect(el.instance().state.activePanel).toEqual("forgotPassword");
+  });
+
+  it("submits forgot password: no email error", async () => {
+    mockAxiosResponse = Promise.reject({ response: { data: ["not found"] } });
+    const el = mount<FrontPage>(<FrontPage />);
+    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    await el.instance().submitForgotPassword(
+      fakeEvent as React.FormEvent<HTMLFormElement>);
+    await expect(axios.post).toHaveBeenCalledWith("resetPath",
+      { email: "foo@bar.io" });
+    await expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "not associated with an account"));
+    expect(el.instance().state.activePanel).toEqual("forgotPassword");
   });
 
   it("renders proper panels", () => {
@@ -135,8 +191,8 @@ describe("<FrontPage />", () => {
 
   it("has a generalized form field setter fn", () => {
     const spy = jest.fn();
-    type Input = Partial<PartialFromEvent["currentTarget"]>;
-    const fakeEv = (input: Input): PartialFromEvent => {
+    type Input = Partial<PartialFormEvent["currentTarget"]>;
+    const fakeEv = (input: Input): PartialFormEvent => {
       return {
         currentTarget: {
           checked: true,

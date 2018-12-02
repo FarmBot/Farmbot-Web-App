@@ -21,7 +21,9 @@ describe("<AddPlant />", () => {
     const cropSearchResult = fakeCropLiveSearchResult();
     cropSearchResult.crop.svg_icon = "fake_mint_svg";
     return {
-      cropSearchResults: [cropSearchResult]
+      cropSearchResults: [cropSearchResult],
+      dispatch: jest.fn(),
+      openfarmSearch: jest.fn(),
     };
   };
 
@@ -36,7 +38,7 @@ describe("<AddPlant />", () => {
 
   it("goes back", () => {
     const wrapper = mount(<AddPlant {...fakeProps()} />);
-    const doneBtn = wrapper.find("a").at(1);
+    const doneBtn = wrapper.find("a").first();
     expect(doneBtn.text()).toEqual("Done");
     doneBtn.simulate("click");
     expect(history.push).toHaveBeenCalledWith(

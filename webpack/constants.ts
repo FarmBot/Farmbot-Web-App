@@ -512,6 +512,10 @@ export namespace Content {
     broken and may break or otherwise hinder your usage of the rest of the
     app. This feature may disappear or break at any time.`);
 
+  export const NEW_TOS =
+    trim(`Before logging in, you must agree to our latest Terms of Service and
+    Privacy Policy`);
+
   // Front Page
   export const TOS_UPDATE =
     trim(`The terms of service have recently changed. You must accept the
@@ -580,6 +584,9 @@ export namespace Content {
     trim(`add this crop on OpenFarm?`);
 
   // Farm Events
+  export const NOTHING_SCHEDULED =
+    trim(`Press "+" to schedule an event.`);
+
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that
     running a regimen too late in the day may result in skipped
@@ -720,6 +727,7 @@ export enum Actions {
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",

@@ -32,7 +32,7 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
       </Link>
       <Link to="/app/designer/farm_events"
         className={tab === "FarmEvents" ? "active" : ""}>
-        {t("Farm Events")}
+        {t("Events")}
       </Link>
     </div>
   </div>;

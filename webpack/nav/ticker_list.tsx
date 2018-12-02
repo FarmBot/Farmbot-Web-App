@@ -60,11 +60,11 @@ const Ticker = (log: TaggedLog, timeOffset: number) => {
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">
       <Markdown>
-        {message.replace(/\s+/g, " ") || "Loading"}
+        {message.replace(/\s+/g, " ") || t("Loading")}
       </Markdown>
     </label>
     <label className="status-ticker-created-at">
-      {time}
+      {t(time)}
     </label>
   </div>;
 };
