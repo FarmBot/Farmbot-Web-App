@@ -20,7 +20,7 @@ describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => {
     return {
       dispatch: jest.fn(),
-      OFSearch: jest.fn(() => jest.fn()),
+      openfarmSearch: jest.fn(() => jest.fn()),
       cropSearchResults: [],
       cropSearchQuery: "",
       cropSearchInProgress: false,
@@ -45,7 +45,7 @@ describe("<CropCatalog />", () => {
       type: Actions.SEARCH_QUERY_CHANGE
     });
     // Requires lodash.debouce to be mocked
-    expect(p.OFSearch).toHaveBeenCalledWith("apple");
+    expect(p.openfarmSearch).toHaveBeenCalledWith("apple");
   });
 
   it("goes back", () => {

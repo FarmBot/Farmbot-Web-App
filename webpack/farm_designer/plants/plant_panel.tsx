@@ -10,6 +10,7 @@ import { PlantStage } from "farmbot";
 import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
+import { DesignerPanelContent } from "./designer_panel";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -96,7 +97,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const isEditing = !!onDestroy;
   if (isEditing) { x = round(x); y = round(y); }
   const destroy = () => onDestroy && onDestroy(uuid);
-  return <div className="panel-content">
+  return <DesignerPanelContent panelName={"plants"}>
     <label>
       {t("Plant Info")}
     </label>
@@ -125,7 +126,7 @@ export function PlantPanel(props: PlantPanelProps) {
             uuid={uuid}
             plantStatus={plantStatus}
             updatePlant={updatePlant} />
-          : plantStatus}
+          : t(_.startCase(plantStatus))}
       </ListItem>
     </ul>
     <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
@@ -147,5 +148,5 @@ export function PlantPanel(props: PlantPanelProps) {
       onClick={() => history.push("/app/designer/plants/select")} >
       {t("Delete multiple")}
     </button>
-  </div>;
+  </DesignerPanelContent>;
 }

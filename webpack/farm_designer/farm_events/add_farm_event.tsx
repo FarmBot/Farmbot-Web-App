@@ -11,9 +11,11 @@ import {
   AddEditFarmEventProps,
   TaggedExecutable
 } from "../interfaces";
-import { BackArrow } from "../../ui/index";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Link } from "../../link";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../plants/designer_panel";
 
 interface State {
   uuid: string;
@@ -80,16 +82,17 @@ export class AddFarmEvent
   }
 
   placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
-    return <div className="panel-container magenta-panel add-farm-event-panel">
-      <div className="panel-header magenta-panel">
-        <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>
-      </div>
-      <div className="panel-content">
+    return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
+      <DesignerPanelHeader
+        panelName={"add-farm-event"}
+        panelColor={"magenta"}
+        title={t("No Executables")} />
+      <DesignerPanelContent panelName={"add-farm-event"}>
         <label>
           {children}
         </label>
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 
   render() {

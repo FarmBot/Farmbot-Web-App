@@ -109,6 +109,14 @@ describe("designer reducer", () => {
     expect(newState.cropSearchInProgress).toEqual(false);
   });
 
+  it("starts search", () => {
+    const action: ReduxAction<undefined> = {
+      type: Actions.OF_SEARCH_RESULTS_START, payload: undefined
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropSearchInProgress).toEqual(true);
+  });
+
   it("ends search", () => {
     const state = oldState();
     state.cropSearchInProgress = true;

@@ -47,7 +47,7 @@ describe("<PlantInfo />", () => {
     p.openedSavedGarden = undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.find("Link").first().props().to)
-      .toEqual("/app/designer/plants");
+      .toContain("/app/designer/plants");
   });
 
   it("has link to plant templates", () => {
@@ -55,6 +55,6 @@ describe("<PlantInfo />", () => {
     p.openedSavedGarden = "savedGardenUuid";
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.find("Link").first().props().to)
-      .toEqual("/app/designer/saved_gardens/templates");
+      .toContain("/app/designer/saved_gardens/templates");
   });
 });
