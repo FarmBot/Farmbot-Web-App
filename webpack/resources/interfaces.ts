@@ -15,7 +15,7 @@ import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
 
 export type UUID = string;
-export type VariableNameSet = Record<string, SequenceMeta>;
+export type VariableNameSet = Record<string, SequenceMeta | undefined>;
 export type UUIDSet = Record<UUID, true>;
 
 export interface ResourceIndex {

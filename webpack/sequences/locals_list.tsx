@@ -66,7 +66,7 @@ export const ParentVariableForm =
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
-  const parent = props.variableData["parent"];
+  const { parent } = props.variableData;
   return parent
     ? <ParentVariableForm
       parent={parent}

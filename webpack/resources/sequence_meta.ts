@@ -36,6 +36,9 @@ type VLT =
 const vec = (x: number, y: number, z: number): Vector3 => ({ x, y, z });
 const vector000: Vector3 = vec(0, 0, 0);
 
+/** Converts a "scope declaration body item" (AKA a CeleryScript variable) into
+ * a 3 dimensional location vector. If unable a vector cannot be determined,
+ * (0, 0, 0) is returned. */
 const determineLocation =
   (index: ResourceIndex, node: ScopeDeclarationBodyItem): Vector3 => {
     if (node.kind == "parameter_declaration") {
@@ -56,6 +59,8 @@ const determineLocation =
     return vector000;
   };
 
+/** Given a CeleryScript variable declaration and a resource index
+ * Returns a DropDownItem representation of said variable. */
 const determineDropdown =
   (n: ScopeDeclarationBodyItem, i: ResourceIndex): DropDownItem => {
     if (n.kind === "parameter_declaration") {
@@ -82,16 +87,21 @@ const determineDropdown =
     throw new Error("WARNING: Unknown, possibly new data_value.kind?");
   };
 
-const determineEditable = (_node: ScopeDeclarationBodyItem): boolean => {
-  return _node.kind == "variable_declaration" &&
-    _node.args.data_value.kind == "coordinate";
+/** Can this CeleryScript variable be edited? Should we gray out the form? */
+const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
+  return node.kind == "variable_declaration" &&
+    node.args.data_value.kind == "coordinate";
 };
 
+/** Resolve the value of a variable. If not possible, return empty coord. */
 const determineVariableValue =
   (_node: ScopeDeclarationBodyItem): LocationData => {
-    return { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+    console.error("Finish this");
+    return { kind: "coordinate", args: vector000 };
   };
 
+/** Creates the sequence meta data lookup table for an entire ResourceIndex.
+ * Used to overwrite the entire index on any data change. */
 export const createSequenceMeta: VLT = (index, resource) => {
   const collection = resource.body.args.locals.body || [];
   const reducer: R = (acc, celeryNode) => {
@@ -109,11 +119,15 @@ export const createSequenceMeta: VLT = (index, resource) => {
   return collection.reduce(reducer, {});
 };
 
+/** Returns the `parent` variable (or nothing) for a particular UUID. */
 export const extractParent =
   (i: ResourceIndex, uuid: string): SequenceMeta | undefined => {
     return findVariableByName(i, uuid, "parent");
   };
 
+/** Search a sequence's scope declaration for a particular variable by name.
+ * As of 2018, the UI only cares about "parent" though celeryscript itself has
+ * no restriction on variable names / count. */
 export const findVariableByName =
   (i: ResourceIndex, uuid: string, label: string): SequenceMeta | undefined => {
     return (i.sequenceMetas[uuid] || {})[label];
@@ -125,19 +139,25 @@ type BoundVariableResult = { kind: "BoundVariable", body: SequenceMeta };
 /** User selected a variable that does not exist in current scope. */
 type UnboundVariableResult = { kind: "UnboundVariable", body: { label: string } };
 type EmptyResult = { kind: "None", body: undefined };
+/** When you have a DDI that references a variable, there are several possible
+ * outcomes when it is "decoded" back into its original value. This is a tagged
+ * union representing all possible outcomes. */
 export type MoveAbsDropDownContents =
-  | BoundVariableResult
-  | UnboundVariableResult
-  | EmptyResult
-  | TaggedPoint
-  | TaggedTool;
+  | BoundVariableResult /** The DDI references a real variable */
+  | UnboundVariableResult /** The DDI references a nonexistent variable */
+  | EmptyResult /** Something went wrong, probably. */
+  | TaggedPoint /** The DDI refers to a point resource. */
+  | TaggedTool; /** The DDI refers to a tool resource. */
+/** A function that can determine the original value of a celeryscript variable
+ *  DropDownItem */
 type ConverterFn = (i: ResourceIndex,
   d: DropDownItem,
   sequenceUuid: string) => MoveAbsDropDownContents;
 const NONE: EmptyResult = { kind: "None", body: undefined };
 // ====
 
-/** Convert specially formatted DropDownItem into the object it represents. */
+/** Convert specially formatted DropDownItem (CeleryScript variable) into the
+ * object it represents (Tool, Point, Identifier, etc...). */
 export const convertDdiToCelery: ConverterFn = (
   index,
   /** Dropdown item where headingId is a KnownGroupTag. d.value is a resource
@@ -164,6 +184,7 @@ export const convertDdiToCelery: ConverterFn = (
   return NONE;
 };
 
+/** Helps decode DDIs that were created via generateList() */
 export const convertDropdownToLocation =
   (input: MoveAbsDropDownContents): LocationData => {
     switch (input.kind) {
