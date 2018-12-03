@@ -195,31 +195,18 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                     });
                   case "BoundVariable":
                   case "UnboundVariable":
-                    const { label } = result.kind === "BoundVariable" ?
-                      result.body.celeryNode.args : result.body;
-                    type X = MoveAbsolute;
                     // Create a parent and attach to it
                     // STEP 1, Clone current sequence.
                     const clone = defensiveClone(currentSequence.body);
-                    // STEP 2, Add a stubbed out parent variable.
-                    if (result.kind === "UnboundVariable") {
-                      clone.args.locals.body = clone.args.locals.body || [];
-                      clone.args.locals.body.push({
-                        kind: "parameter_declaration",
-                        args: { label, data_type: "coordinate" }
-                      });
-                    }
-
-                    // STEP 3, Make TS happy :)
-                    clone.body = clone.body || [];
-                    // STEP 4, Clone current step and do typecase to avoid
-                    //   extra conditionals
-                    const s = clone.body[this.props.index] as X;
-                    // STEP 5, Attach the newly created `parent` variable to
-                    //   step.args.location
-                    s.args.location =
-                      ({ kind: "identifier", args: { label } });
-                    // Look at `s`
+                    // STEP 2, do typecase to avoid extra conditionals
+                    const s =
+                      (clone.body || [])[this.props.index] as MoveAbsolute;
+                    // STEP 3, Figure out the `label` of the variable
+                    //  (As of Dec '18, it is only "parent")
+                    const { label } = result.kind === "BoundVariable" ?
+                      result.body.celeryNode.args : result.body;
+                    // Step 4: Attach the `identifier` to the current step:
+                    s.args.location = ({ kind: "identifier", args: { label } });
                     return dispatch(overwrite(currentSequence, clone));
                 }
               }}

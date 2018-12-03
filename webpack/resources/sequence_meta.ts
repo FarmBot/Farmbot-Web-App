@@ -34,7 +34,7 @@ type R =
 type VLT =
   (_ri: ResourceIndex, tr: TaggedSequence) => VariableNameSet;
 const vec = (x: number, y: number, z: number): Vector3 => ({ x, y, z });
-// const vector000: Vector3 = vec(0, 0, 0);
+const vec000: Vector3 = vec(0, 0, 0);
 
 /** Converts a "scope declaration body item" (AKA a CeleryScript variable) into
  * a 3 dimensional location vector. If unable a vector cannot be determined,
@@ -43,7 +43,7 @@ const determineLocation =
   (index: ResourceIndex, node: ScopeDeclarationBodyItem): Vector3 => {
     if (node.kind == "parameter_declaration") {
       // The location of parameter_declarations can't be known until runtime
-      return vec(1, 0, 0);
+      return vec000;
     }
 
     const variableContents = node.args.data_value;
@@ -54,9 +54,9 @@ const determineLocation =
         return findPointerByTypeAndId(index, pointer_type, pointer_id).body;
       case "tool":
         const ts = findSlotByToolId(index, variableContents.args.tool_id);
-        return ts ? ts.body : vec(4, 0, 0);
+        return ts ? ts.body : vec000;
     }
-    return vec(2, 0, 0);
+    return vec000;
   };
 
 /** Given a CeleryScript variable declaration and a resource index
@@ -97,7 +97,7 @@ const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
 const determineVariableValue =
   (_node: ScopeDeclarationBodyItem, _i: ResourceIndex): LocationData => {
     return _node.kind === "parameter_declaration" ?
-      { kind: "coordinate", args: vec(3, 0, 0) } : _node.args.data_value;
+      { kind: "coordinate", args: vec000 } : _node.args.data_value;
   };
 
 /** Creates the sequence meta data lookup table for an entire ResourceIndex.
