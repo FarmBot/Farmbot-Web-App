@@ -38,6 +38,8 @@ import {
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 import { convertDropdownToLocation } from "../../resources/sequence_meta";
+import { editCurrentSequence } from "../actions";
+import { EMPTY_LOCALS_LIST } from "./tile_move_absolute/handle_select";
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
@@ -109,6 +111,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
           "Point",
           pointer_id).body[axis];
         break;
+      // case "identifier":
+      // extractParent(this.props.index)
     }
     return (number || 0).toString();
   }
@@ -188,8 +192,32 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                     return this.updateArgs({
                       location: convertDropdownToLocation(result)
                     });
-                  case "UnboundVariable": // Create parent, attach to it
-                    throw new Error("Fix this!");
+                  case "UnboundVariable":
+                    type X = MoveAbsolute;
+                    // Create a parent and attach to it
+                    // STEP 1, Clone current sequence.
+                    const clone = defensiveClone(currentSequence.body);
+                    // STEP 2, Add a stubbed out parent variable.
+                    clone.args.locals = EMPTY_LOCALS_LIST;
+                    // STEP 3, Make TS happy :)
+                    clone.body = clone.body || [];
+                    // STEP 4, Clone current step and do typecase to avoid
+                    //   extra conditionals
+                    const s = clone.body[this.props.index] as X;
+                    // STEP 5, Attach the newly created `parent` variable to
+                    //   step.args.location
+                    (clone.body[this.props.index] as X).args = {
+                      ...s.args,
+                      location: {
+                        kind: "identifier",
+                        args: { label: result.body.label }
+                      }
+                    };
+
+                    return editCurrentSequence(dispatch,
+                      currentSequence,
+                      clone
+                    );
                 }
               }}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />

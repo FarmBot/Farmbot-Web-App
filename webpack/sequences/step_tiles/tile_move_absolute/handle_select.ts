@@ -48,17 +48,24 @@ const manualEntry: VariableDeclaration = {
   }
 };
 
-const parentParameter: ParameterDeclaration = {
+export const EMPTY_PARENT: ParameterDeclaration = {
   kind: "parameter_declaration",
   args: { label: "parent", data_type: "point" }
 };
+
+export const EMPTY_LOCALS_LIST: ScopeDeclaration = {
+  kind: "scope_declaration",
+  args: {},
+  body: [EMPTY_PARENT]
+};
+
 const createNewParent =
   (_index: ResourceIndex, input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
     switch (input.headingId) {
       case "Plant":
       case "GenericPointer": return pointVar(input.headingId, input.value);
       case "Tool": return toolVar(input.value);
-      case "parameter": return parentParameter; // Caller decides X/Y/Z
+      case "parameter": return EMPTY_PARENT; // Caller decides X/Y/Z
       case "Other": return manualEntry;
     }
     return undefined;
