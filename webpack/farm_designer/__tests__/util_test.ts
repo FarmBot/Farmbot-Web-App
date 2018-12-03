@@ -18,17 +18,21 @@ describe("executableType", () => {
 });
 
 describe("OFSearch()", () => {
+  const START = expect.objectContaining({
+    type: Actions.OF_SEARCH_RESULTS_START
+  });
+  const NO = expect.objectContaining({ type: Actions.OF_SEARCH_RESULTS_NO });
+
   it("searches: no image", async () => {
     mockPromise = Promise.resolve({ data: { data: [{ attributes: {} }] } });
     const dispatch = jest.fn();
     await OFSearch("mint")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [
         { crop: {}, image: "/app-resources/img/generic-plant.svg" }]
     });
-    await expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.OF_SEARCH_RESULTS_NO
-    }));
+    await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });
 
   it("searches: image", async () => {
@@ -43,24 +47,22 @@ describe("OFSearch()", () => {
     });
     const dispatch = jest.fn();
     await OFSearch("mint")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [
         { crop: {}, image: "thumbnail_url" }]
     });
-    await expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.OF_SEARCH_RESULTS_NO
-    }));
+    await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });
 
   it("fails search", async () => {
     mockPromise = Promise.reject();
     const dispatch = jest.fn();
     await OFSearch("mint")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
       type: Actions.OF_SEARCH_RESULTS_OK
     }));
-    await expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined
-    });
+    await expect(dispatch).toHaveBeenCalledWith(NO);
   });
 });

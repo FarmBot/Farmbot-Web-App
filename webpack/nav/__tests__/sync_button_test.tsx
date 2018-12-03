@@ -42,9 +42,9 @@ describe("<SyncButton/>", function () {
   it("defaults to `disconnected` and `red` when uncertain", () => {
     const p = fakeProps();
     // tslint:disable-next-line:no-any
-    p.bot.hardware.informational_settings.sync_status = "mistake" as any;
+    p.bot.hardware.informational_settings.sync_status = "new" as any;
     const result = shallow(<SyncButton {...p} />);
-    expect(result.text()).toContain("DISCONNECTED");
+    expect(result.text()).toContain("new");
     expect(result.hasClass("red")).toBeTruthy();
   });
 

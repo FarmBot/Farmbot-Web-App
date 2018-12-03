@@ -55,6 +55,10 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
       this.validSearchTerm;
   }
 
+  componentDidMount() {
+    this.props.openfarmSearch(this.props.cropSearchQuery)(this.props.dispatch);
+  }
+
   render() {
     return <DesignerPanel panelName={"crop-catalog"} panelColor={"green"}>
       <DesignerPanelHeader

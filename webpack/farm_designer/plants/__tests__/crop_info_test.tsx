@@ -27,7 +27,6 @@ import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
 import { unselectPlant } from "../../actions";
-import { Actions } from "../../../constants";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -118,8 +117,5 @@ describe("searchForCurrentCrop()", () => {
     searchForCurrentCrop(fakeOFSearch)(dispatch);
     expect(fakeOFSearch).toHaveBeenCalledWith("mint");
     expect(unselectPlant).toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.OF_SEARCH_RESULTS_START
-    }));
   });
 });

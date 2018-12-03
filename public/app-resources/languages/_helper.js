@@ -94,6 +94,18 @@ var HelperNamespace = (function () {
     console.dir(getAllTags());
   }
 
+  /** For debugging. Replace all translations with a debug string. */
+  function replaceWithDebugString(key, debugString, debugStringOption) {
+    const debugChar = debugString[0];
+    switch (debugStringOption) {
+      case 'r': return debugString; // replace with: string as provided
+      case 's': return debugChar; // single character
+      case 'n': return key.replace(/\S/g, debugChar); // maintain whitespace
+      case 'l': return debugChar.repeat(key.length) // replace whitespace
+      default: return key;
+    }
+  }
+
   /**
    * Label a section of tags with a comment before the first tag in the section.
    */
@@ -105,22 +117,21 @@ var HelperNamespace = (function () {
   }
 
   /** Print some translation file status metrics. */
-  function generateSummary({
-    foundTags, unmatchedTags, allTags, countTranslated, countExisting, langCode
-  }) {
-    const current = Object.keys(foundTags).length;
-    const orphans = Object.keys(unmatchedTags).length;
-    const total = Object.keys(allTags).length;
-    const percent = Math.round(countTranslated / current * 100);
-    const existingUntranslated = countExisting - countTranslated;
+  function generateSummary(args) {
+    // {foundTags, unmatchedTags, allTags, countTranslated, countExisting, langCode}
+    const current = Object.keys(args.foundTags).length;
+    const orphans = Object.keys(args.unmatchedTags).length;
+    const total = Object.keys(args.allTags).length;
+    const percent = Math.round(args.countTranslated / current * 100);
+    const existingUntranslated = args.countExisting - args.countTranslated;
     console.log(current + ' strings found.');
-    console.log('  ' + countExisting + ' existing items match.');
-    console.log('    ' + countTranslated + ' existing translations match.');
+    console.log('  ' + args.countExisting + ' existing items match.');
+    console.log('    ' + args.countTranslated + ' existing translations match.');
     console.log('    ' + existingUntranslated + ' existing untranslated items.');
-    console.log('  ' + (current - countExisting) + ' new items added.');
+    console.log('  ' + (current - args.countExisting) + ' new items added.');
     console.log(percent + '% of found strings translated.');
     console.log(orphans + ' unused, outdated, or extra items.');
-    console.log('Updated file (' + langCode + '.js) with ' + total + ' items.');
+    console.log('Updated file (' + args.langCode + '.js) with ' + total + ' items.');
   }
 
   /**
@@ -190,23 +201,28 @@ var HelperNamespace = (function () {
 
       // For debugging
       const debug = process.argv[3];
+      const debugOption = process.argv[4];
 
       // merge new tags with existing translation
       var result = {};
       var unexistingTag = {};
-      let existing = 0;
-      let translated = 0;
+      var existing = 0;
+      var translated = 0;
       // all current tags in English
-      Object.keys(jsonCurrentTagData).sort(localeSort).map(key => {
+      Object.keys(jsonCurrentTagData).sort(localeSort).map(function (key) {
         result[key] = jsonCurrentTagData[key];
-        if (debug) { result[key] = debug[0].repeat(key.length) }
+        if (debug) {
+          result[key] = replaceWithDebugString(key, debug, debugOption);
+        }
       })
       for (var key in ordered) {
         // replace current tag with an existing translation
         if (result.hasOwnProperty(key)) {
           delete result[key];
           result[key] = ordered[key];
-          if (debug) { result[key] = debug[0].repeat(key.length) }
+          if (debug) {
+            result[key] = replaceWithDebugString(key, debug, debugOption);
+          }
           existing++;
           if (key !== result[key]) { translated++; }
         }

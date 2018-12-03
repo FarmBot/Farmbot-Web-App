@@ -12,7 +12,7 @@ interface CenterProps {
 }
 
 export function CenterPanel(props: CenterProps) {
-  return <Col sm={props.width || 6}>
+  return <Col sm={props.width || 6} lg={6}>
     <div className={props.className}>
       <h3>
         <i>{t(props.title)}</i>

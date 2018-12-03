@@ -58,8 +58,8 @@ namespace :coverage do
 
     puts "=" * 37
     puts "COVERAGE RESULTS"
-    puts "This build:    #{build_percent.round(8)}% #{CURRENT_COMMIT[0,7]}"
-    puts "Staging build: #{staging_percent.round(8)}% #{latest_commit_staging[0,7]}"
+    puts "This build:    #{build_percent.round(8)}% #{CURRENT_COMMIT[0,8]}"
+    puts "Staging build: #{staging_percent.round(8)}% #{latest_commit_staging[0,8]}"
     puts "=" * 37
     puts "Difference:    #{diff.round(8)}%"
     puts "Pass?:         #{pass ? "yes" : "no"}"
