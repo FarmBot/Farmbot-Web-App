@@ -38,9 +38,6 @@ import {
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 import { convertDropdownToLocation, extractParent } from "../../resources/sequence_meta";
-import { editCurrentSequence } from "../actions";
-import { EMPTY_LOCALS_LIST } from "./tile_move_absolute/handle_select";
-
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
   speed: number;
@@ -193,17 +190,26 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                     return this.updateArgs({ location: EMPTY_COORD });
                   case "Point":
                   case "Tool":
-                  case "BoundVariable":
                     return this.updateArgs({
                       location: convertDropdownToLocation(result)
                     });
+                  case "BoundVariable":
                   case "UnboundVariable":
+                    const { label } = result.kind === "BoundVariable" ?
+                      result.body.celeryNode.args : result.body;
                     type X = MoveAbsolute;
                     // Create a parent and attach to it
                     // STEP 1, Clone current sequence.
                     const clone = defensiveClone(currentSequence.body);
                     // STEP 2, Add a stubbed out parent variable.
-                    clone.args.locals = EMPTY_LOCALS_LIST;
+                    if (result.kind === "UnboundVariable") {
+                      clone.args.locals.body = clone.args.locals.body || [];
+                      clone.args.locals.body.push({
+                        kind: "parameter_declaration",
+                        args: { label, data_type: "coordinate" }
+                      });
+                    }
+
                     // STEP 3, Make TS happy :)
                     clone.body = clone.body || [];
                     // STEP 4, Clone current step and do typecase to avoid
@@ -212,7 +218,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                     // STEP 5, Attach the newly created `parent` variable to
                     //   step.args.location
                     s.args.location =
-                      ({ kind: "identifier", args: { label: result.body.label } });
+                      ({ kind: "identifier", args: { label } });
                     // Look at `s`
                     return dispatch(overwrite(currentSequence, clone));
                 }
