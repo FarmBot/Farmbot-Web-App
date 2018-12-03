@@ -23,7 +23,7 @@ class GlobalConfig < ApplicationRecord
   {
     "NODE_ENV"                 => Rails.env || "development",
     "LONG_REVISION"            => LONG_REVISION,
-    "SHORT_REVISION"           => LONG_REVISION.first(7),
+    "SHORT_REVISION"           => LONG_REVISION.first(8),
   }.map do |(key, value)|
     self.find_or_create_by(key: key).update_attributes(key: key, value: value)
   end

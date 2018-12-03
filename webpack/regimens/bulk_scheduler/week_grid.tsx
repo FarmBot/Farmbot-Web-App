@@ -21,26 +21,30 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
     <Row>
       <Col xs={12}>
         <div className="week-grid-meta-buttons">
-          <button
-            className="green widget-control fb-button"
-            onClick={() => dispatch(pushWeek())}>
-            <i className="fa fa-plus" /> {t("Week")}
-          </button>
-          <button
-            className="red widget-control fb-button"
-            onClick={() => dispatch(popWeek())}>
-            <i className="fa fa-minus" /> {t("Week")}
-          </button>
-          <button
-            className="gray widget-control fb-button"
-            onClick={() => dispatch(deselectDays())}>
-            {t("Deselect all")}
-          </button>
-          <button
-            className="gray widget-control fb-button"
-            onClick={() => dispatch(selectDays())}>
-            {t("Select all")}
-          </button>
+          <div>
+            <button
+              className="green widget-control fb-button"
+              onClick={() => dispatch(pushWeek())}>
+              <i className="fa fa-plus" /> {t("Week")}
+            </button>
+            <button
+              className="red widget-control fb-button"
+              onClick={() => dispatch(popWeek())}>
+              <i className="fa fa-minus" /> {t("Week")}
+            </button>
+          </div>
+          <div>
+            <button
+              className="gray widget-control fb-button"
+              onClick={() => dispatch(deselectDays())}>
+              {t("Deselect all")}
+            </button>
+            <button
+              className="gray widget-control fb-button"
+              onClick={() => dispatch(selectDays())}>
+              {t("Select all")}
+            </button>
+          </div>
         </div>
       </Col>
     </Row>
