@@ -3,6 +3,7 @@ import { t } from "i18next";
 import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
+import { shortRevision } from "../util";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -34,7 +35,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       <a
         href="https://github.com/FarmBot/Farmbot-Web-App"
         target="_blank">
-        {(globalConfig.SHORT_REVISION || "NONE").slice(0, 7)}
+        {shortRevision().slice(0, 7)}<p>{shortRevision().slice(7, 8)}</p>
       </a>
     </div>
   </div>;

@@ -94,6 +94,18 @@ var HelperNamespace = (function () {
     console.dir(getAllTags());
   }
 
+  /** For debugging. Replace all translations with a debug string. */
+  function replaceWithDebugString(key, debugString, debugStringOption) {
+    const debugChar = debugString[0];
+    switch (debugStringOption) {
+      case 'r': return debugString; // replace with: string as provided
+      case 's': return debugChar; // single character
+      case 'n': return key.replace(/\S/g, debugChar); // maintain whitespace
+      case 'l': return debugChar.repeat(key.length) // replace whitespace
+      default: return key;
+    }
+  }
+
   /**
    * Label a section of tags with a comment before the first tag in the section.
    */
@@ -189,6 +201,7 @@ var HelperNamespace = (function () {
 
       // For debugging
       const debug = process.argv[3];
+      const debugOption = process.argv[4];
 
       // merge new tags with existing translation
       var result = {};
@@ -198,14 +211,18 @@ var HelperNamespace = (function () {
       // all current tags in English
       Object.keys(jsonCurrentTagData).sort(localeSort).map(function (key) {
         result[key] = jsonCurrentTagData[key];
-        if (debug) { result[key] = debug[0].repeat(key.length) }
+        if (debug) {
+          result[key] = replaceWithDebugString(key, debug, debugOption);
+        }
       })
       for (var key in ordered) {
         // replace current tag with an existing translation
         if (result.hasOwnProperty(key)) {
           delete result[key];
           result[key] = ordered[key];
-          if (debug) { result[key] = debug[0].repeat(key.length) }
+          if (debug) {
+            result[key] = replaceWithDebugString(key, debug, debugOption);
+          }
           existing++;
           if (key !== result[key]) { translated++; }
         }

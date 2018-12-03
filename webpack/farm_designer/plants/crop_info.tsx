@@ -209,11 +209,14 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 /** Get OpenFarm crop search results for crop info page contents. */
 export const searchForCurrentCrop = (openfarmSearch: OpenfarmSearch) =>
   (dispatch: Function) => {
-    dispatch({ type: Actions.OF_SEARCH_RESULTS_START, payload: true });
     const crop = getPathArray()[5];
     openfarmSearch(crop)(dispatch);
     unselectPlant(dispatch)();
   };
+
+/** Clear the current crop search results. */
+const clearCropSearchResults = (dispatch: Function) => () =>
+  dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
 
 @connect(mapStateToProps)
 export class CropInfo extends React.Component<CropInfoProps, {}> {
@@ -233,6 +236,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
         panelColor={"green"}
         title={result.crop.name}
         backTo={basePath}
+        onBack={clearCropSearchResults(this.props.dispatch)}
         style={{ background: backgroundURL }}
         description={result.crop.description}>
         <AddToMapButton basePath={basePath} crop={crop} />

@@ -111,6 +111,11 @@ nav {
       label {
         color: $white;
       }
+      p {
+        display: inline;
+        color: $gray;
+        font-size: 1.2rem;
+      }
     }
   }
   .bp3-overlay-content {
