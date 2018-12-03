@@ -26,7 +26,7 @@ describe("<ParentSelector/>", () => {
       targetUuid={sequence.uuid}
       currentUuid={sequence.uuid}
       selected={selected}
-      deprecatedResources={index}
+      resources={index}
       onChange={jest.fn()} />);
     expect(el).toBeDefined();
     expect(el.text()).toContain("Set 'parent' value");

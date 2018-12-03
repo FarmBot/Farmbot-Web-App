@@ -96,6 +96,7 @@ const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
 /** Resolve the value of a variable. If not possible, return empty coord. */
 const determineVariableValue =
   (_node: ScopeDeclarationBodyItem): LocationData => {
+    // UNFINISHED
     console.error("Finish this");
     return { kind: "coordinate", args: vector000 };
   };

@@ -8,20 +8,20 @@ import { betterCompact } from "../../../util/util";
 interface Props {
   targetUuid: string;
   currentUuid: string;
-  deprecatedResources: ResourceIndex;
+  resources: ResourceIndex;
   selected: LocationData;
   onChange: CALLBACK;
 }
 
 export function ParentSelector(p: Props) {
-  const { deprecatedResources, selected, onChange, targetUuid } = p;
-  const meta = Object.values(deprecatedResources.sequenceMetas[targetUuid] || {});
+  const { resources, selected, onChange, targetUuid } = p;
+  const meta = Object.values(resources.sequenceMetas[targetUuid] || {});
   return <div>
     {betterCompact(meta).map(val => {
       return <div key={val.celeryNode.args.label}>
         <label>{t(`Set '${val.celeryNode.args.label}' value to:`)}</label>
         <TileMoveAbsSelect
-          resources={deprecatedResources}
+          resources={resources}
           selectedItem={selected}
           onChange={onChange}
           uuid={targetUuid}
