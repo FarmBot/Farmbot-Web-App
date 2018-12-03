@@ -59,9 +59,10 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     } = this.props;
     const className = "execute-step";
     const { sequence_id } = currentStep.args;
-    const calleeUuid = sequence_id &&
-      findSequenceById(resources, sequence_id).uuid;
-    const selected = calleeUuid && extractParent(resources, calleeUuid);
+    const calleeUuid = sequence_id ?
+      findSequenceById(resources, sequence_id).uuid : undefined;
+    const selected = calleeUuid ?
+      extractParent(resources, calleeUuid) : undefined;
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -82,14 +83,16 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
           </Col>
         </Row>
         <Row>
-          {selected && <Col xs={12}>
-            <ParentSelector
-              targetUuid={calleeUuid || "NOT_SET_YET"}
-              currentUuid={currentSequence.uuid}
-              deprecatedResources={resources}
-              selected={selected.variableValue}
-              onChange={() => { console.error("TODO: tile_execute.tsx"); }} />
-          </Col>}
+          {selected &&
+            selected.celeryNode.kind == "parameter_declaration" &&
+            <Col xs={12}>
+              <ParentSelector
+                targetUuid={calleeUuid || "NOT_SET_YET"}
+                currentUuid={currentSequence.uuid}
+                deprecatedResources={resources}
+                selected={selected.variableValue}
+                onChange={() => { console.error("TODO: tile_execute.tsx"); }} />
+            </Col>}
         </Row>
       </StepContent>
     </StepWrapper>;
