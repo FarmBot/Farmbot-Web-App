@@ -95,10 +95,9 @@ const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
 
 /** Resolve the value of a variable. If not possible, return empty coord. */
 const determineVariableValue =
-  (_node: ScopeDeclarationBodyItem): LocationData => {
-    // UNFINISHED
-    console.error("Finish this");
-    return { kind: "coordinate", args: vector000 };
+  (_node: ScopeDeclarationBodyItem, _i: ResourceIndex): LocationData => {
+    return _node.kind === "parameter_declaration" ?
+      { kind: "coordinate", args: vector000 } : _node.args.data_value;
   };
 
 /** Creates the sequence meta data lookup table for an entire ResourceIndex.
@@ -113,7 +112,7 @@ export const createSequenceMeta: VLT = (index, resource) => {
         celeryNode, location,
         editable: determineEditable(celeryNode),
         dropdown: determineDropdown(celeryNode, index),
-        variableValue: determineVariableValue(celeryNode),
+        variableValue: determineVariableValue(celeryNode, index),
       }
     });
   };
