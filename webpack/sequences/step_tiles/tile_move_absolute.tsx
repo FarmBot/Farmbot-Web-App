@@ -37,7 +37,7 @@ import {
   conflictsString
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
-import { convertDropdownToLocation } from "../../resources/sequence_meta";
+import { convertDropdownToLocation, extractParent } from "../../resources/sequence_meta";
 import { editCurrentSequence } from "../actions";
 import { EMPTY_LOCALS_LIST } from "./tile_move_absolute/handle_select";
 
@@ -111,8 +111,13 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
           "Point",
           pointer_id).body[axis];
         break;
-      // case "identifier":
-      // extractParent(this.props.index)
+      case "identifier":
+        const { resources, currentSequence } = this.props;
+        const p = extractParent(resources, currentSequence.uuid);
+        if (p) {
+          number = p.location[axis];
+          break;
+        }
     }
     return (number || 0).toString();
   }
