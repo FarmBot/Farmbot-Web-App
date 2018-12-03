@@ -211,18 +211,10 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
                     const s = clone.body[this.props.index] as X;
                     // STEP 5, Attach the newly created `parent` variable to
                     //   step.args.location
-                    (clone.body[this.props.index] as X).args = {
-                      ...s.args,
-                      location: {
-                        kind: "identifier",
-                        args: { label: result.body.label }
-                      }
-                    };
-
-                    return editCurrentSequence(dispatch,
-                      currentSequence,
-                      clone
-                    );
+                    s.args.location =
+                      ({ kind: "identifier", args: { label: result.body.label } });
+                    // Look at `s`
+                    return dispatch(overwrite(currentSequence, clone));
                 }
               }}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />

@@ -8,9 +8,19 @@ import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
 import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_select";
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
 import { editCurrentSequence } from "./actions";
+import { isNumber } from "lodash";
+import { defensiveClone } from "../util/util";
 
 // UNFINISHED
-const REWRITE_THIS = () => console.error("Re write this callback, OK? RC");
+const REWRITE_THIS = (x: React.SyntheticEvent<HTMLInputElement>) => {
+  console.error("Re write this callback, OK? RC");
+  const num = parseFloat(x.currentTarget.value);
+  if (isNumber(num)) {
+    console.dir(num);
+  } else {
+    console.error("Unfinished biznis");
+  }
+};
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
@@ -74,10 +84,10 @@ export const LocalsList = (props: LocalsListProps) => {
       sequence={props.sequence}
       resources={props.resources}
       onChange={(locals) => {
-        const oldArgs = props.sequence.body.args;
-        const args: typeof props.sequence.body.args =
-          ({ ...oldArgs, locals });
-        editCurrentSequence(props.dispatch, props.sequence, { args });
+        const clone = defensiveClone(props.sequence.body); // unfortunate
+        clone.args.locals = locals;
+        console.dir(locals.body || []);
+        editCurrentSequence(props.dispatch, props.sequence, clone);
       }} />
     : <div />;
 };
