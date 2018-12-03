@@ -1,44 +1,34 @@
 import { convertDDItoScopeDeclr } from "../handle_select";
-import { fakeResourceIndex } from "../test_helpers";
 
 describe("handleSelect()", () => {
   it("returns location data: point", () => {
-    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
-      {
-        headingId: "GenericPointer",
-        label: "Point 1 (10, 20, 30)",
-        value: 2
-      });
+    const ddi =
+      ({ headingId: "GenericPointer", label: "Point 1 (10, 20, 30)", value: 2 });
+    const location = convertDDItoScopeDeclr(ddi);
     expect(location).toEqual({
-      kind: "point", args: { pointer_id: 2, pointer_type: "GenericPointer" }
+      kind: "point",
+      args: {
+        pointer_id: 2,
+        pointer_type: "GenericPointer"
+      }
     });
   });
 
   it("returns location data: tool", () => {
-    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
-      {
-        headingId: "Tool",
-        label: "Generic Tool",
-        value: 1
-      });
+    const ddi = { headingId: "Tool", label: "Generic Tool", value: 1 };
+    const location = convertDDItoScopeDeclr(ddi);
     expect(location).toEqual({ kind: "tool", args: { tool_id: 1 } });
   });
 
   it("returns location data: default", () => {
-    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
-      { label: "None", value: "" });
-    expect(location).toEqual({
-      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-    });
+    const location = convertDDItoScopeDeclr({ label: "None", value: "" });
+    expect(location)
+      .toEqual({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
   });
 
   it("returns location data: identifier", () => {
-    const location = convertDDItoScopeDeclr(fakeResourceIndex(),
-      {
-        headingId: "identifier",
-        label: "Parent",
-        value: "parent"
-      });
+    const ddi = ({ headingId: "identifier", label: "Parent", value: "parent" });
+    const location = convertDDItoScopeDeclr(ddi);
     expect(location).toEqual({
       kind: "identifier", args: { label: "parent" }
     });

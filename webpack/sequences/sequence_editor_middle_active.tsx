@@ -87,9 +87,9 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <LocalsList
       variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
-      deprecatedSequence={sequence}
+      sequence={sequence}
       dispatch={dispatch}
-      deprecatedResources={props.resources} />
+      resources={props.resources} />
   </div>;
 };
 

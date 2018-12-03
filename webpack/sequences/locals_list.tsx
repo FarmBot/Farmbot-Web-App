@@ -28,7 +28,7 @@ export const ParentVariableForm =
             allowEmpty={true}
             list={list}
             selectedItem={props.parent.dropdown}
-            onChange={(ddi) => onChange(convertDDItoScopeDeclr(props.resources, ddi))} />
+            onChange={(ddi) => onChange(convertDDItoScopeDeclr(ddi))} />
         </Col>
       </Row>
       <Row>
@@ -70,13 +70,13 @@ export const LocalsList = (props: LocalsListProps) => {
   return parent
     ? <ParentVariableForm
       parent={parent}
-      sequence={props.deprecatedSequence}
-      resources={props.deprecatedResources}
+      sequence={props.sequence}
+      resources={props.resources}
       onChange={(locals) => {
-        const oldArgs = props.deprecatedSequence.body.args;
-        const args: typeof props.deprecatedSequence.body.args =
+        const oldArgs = props.sequence.body.args;
+        const args: typeof props.sequence.body.args =
           ({ ...oldArgs, locals });
-        editCurrentSequence(props.dispatch, props.deprecatedSequence, { args });
+        editCurrentSequence(props.dispatch, props.sequence, { args });
       }} />
     : <div />;
 };

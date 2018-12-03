@@ -33,7 +33,6 @@ export const emptyState = (): RestResources => {
     loaded: [],
     index: {
       all: {},
-      byPointType: { Plant: {}, ToolSlot: {}, GenericPointer: {} },
       byKind: {
         WebcamFeed: {},
         Device: {},

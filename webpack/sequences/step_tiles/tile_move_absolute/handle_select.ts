@@ -1,7 +1,6 @@
 /** Given a drop down item and a ResourceIndex,
  * figures out the corresponding Tool | Coordinate | Point */
 import { DropDownItem } from "../../../ui/index";
-import { ResourceIndex } from "../../../resources/interfaces";
 import { LocationData } from "./interfaces";
 import {
   ParameterDeclaration,
@@ -60,7 +59,7 @@ export const EMPTY_LOCALS_LIST: ScopeDeclaration = {
 };
 
 const createNewParent =
-  (_index: ResourceIndex, input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
+  (input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
     switch (input.headingId) {
       case "Plant":
       case "GenericPointer": return pointVar(input.headingId, input.value);
@@ -72,10 +71,10 @@ const createNewParent =
   };
 
 export let convertDDItoScopeDeclr =
-  (index: ResourceIndex, input: DropDownItem): ScopeDeclaration => {
+  (input: DropDownItem): ScopeDeclaration => {
     const sd: ScopeDeclaration =
       ({ kind: "scope_declaration", args: {}, body: [] });
-    const parent = createNewParent(index, input);
+    const parent = createNewParent(input);
     parent && sd.body /** lol */ && sd.body.push(parent);
     return sd;
   };

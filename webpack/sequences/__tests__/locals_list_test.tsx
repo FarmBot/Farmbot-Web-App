@@ -37,8 +37,8 @@ const fakeProps = (): LocalsListProps => {
   const sequence = fakeSequence();
   return {
     variableData: {},
-    deprecatedSequence: sequence,
-    deprecatedResources: buildResourceIndex([sequence]).index,
+    sequence: sequence,
+    resources: buildResourceIndex([sequence]).index,
     dispatch: jest.fn()
   };
 };
@@ -73,7 +73,7 @@ describe("<ParentVariableForm/>", () => {
     const choice = choices[1];
     p.onChange(choice);
     expect(props.onChange)
-      .toHaveBeenCalledWith(convertDDItoScopeDeclr(props.resources, choice));
+      .toHaveBeenCalledWith(convertDDItoScopeDeclr(choice));
     expect(inputs.length).toBe(3);
   });
 });
@@ -81,14 +81,14 @@ describe("<ParentVariableForm/>", () => {
 describe("<LocalsList/>", () => {
   it("renders nothing", () => {
     const p = fakeProps();
-    p.deprecatedSequence.body.args.locals = { kind: "scope_declaration", args: {} };
+    p.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
     const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(0);
   });
 
   it("renders something", () => {
     const p = fakeProps();
-    p.deprecatedSequence.body.args.locals = {
+    p.sequence.body.args.locals = {
       kind: "scope_declaration",
       args: {},
       body: [mrGoodVar]

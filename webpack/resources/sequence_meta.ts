@@ -47,10 +47,8 @@ const determineLocation =
     switch (variableContents.kind) {
       case "coordinate": return variableContents.args;
       case "point":
-        const p = findPointerByTypeAndId(index,
-          variableContents.args.pointer_type,
-          variableContents.args.pointer_id).body;
-        return vec(p.x, p.y, p.z);
+        const { pointer_type, pointer_id } = variableContents.args;
+        return findPointerByTypeAndId(index, pointer_type, pointer_id).body;
       case "tool":
         const ts = findSlotByToolId(index, variableContents.args.tool_id);
         return ts ? ts.body : vector000;
@@ -67,7 +65,8 @@ const determineDropdown =
     const { data_value } = n.args;
     switch (data_value.kind) {
       case "coordinate":
-        return { label: "TODO Fixme", value: "?" };
+        const { x, y, z } = data_value.args;
+        return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
       case "identifier":
         return { label: capitalize(data_value.args.label), value: "?" };
       case "point":
@@ -80,7 +79,7 @@ const determineDropdown =
           findToolById(i, data_value.args.tool_id).body.name || "Untitled tool";
         return { label: toolName, value: "X" };
     }
-    throw new Error("Is there a new data_value.kind?");
+    throw new Error("WARNING: Unknown, possibly new data_value.kind?");
   };
 
 const determineEditable = (_node: ScopeDeclarationBodyItem): boolean => {

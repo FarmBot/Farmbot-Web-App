@@ -9,8 +9,8 @@ type OnChange = (data_type: ScopeDeclaration) => void;
 
 export interface LocalsListProps {
   variableData: VariableNameSet;
-  deprecatedSequence: TaggedSequence;
-  deprecatedResources: ResourceIndex;
+  sequence: TaggedSequence;
+  resources: ResourceIndex;
   dispatch: Function;
 }
 
