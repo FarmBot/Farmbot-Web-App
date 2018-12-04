@@ -107,6 +107,7 @@ export function PlantPanel(props: PlantPanelProps) {
       </ListItem>
       <ListItem name={t("Plant Type")}>
         <Link
+          title={t("View crop info")}
           to={`/app/designer/plants/crop_search/` + slug}>
           {_.startCase(slug)}
         </Link>

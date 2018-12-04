@@ -38,11 +38,13 @@ export const ZoomControls = ({ zoom, getConfigValue }: {
   return <div className="zoom-buttons">
     <button
       className={"fb-button gray zoom " + plusBtnClass}
+      title={t("zoom in")}
       onClick={zoom(1)}>
       <i className="fa fa-2x fa-plus" />
     </button>
     <button
       className={"fb-button gray zoom zoom-out " + minusBtnClass}
+      title={t("zoom out")}
       onClick={zoom(-1)}>
       <i className="fa fa-2x fa-minus" />
     </button>

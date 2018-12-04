@@ -13,8 +13,8 @@ export interface LayerToggleProps {
 /** A flipper type switch for showing/hiding the layers of the garden map. */
 export function LayerToggle(props: LayerToggleProps) {
   const { label, value, onClick, popover, submenuTitle } = props;
-  const title = submenuTitle ? submenuTitle : t("more");
-  const klassName = "fb-button fb-toggle-button " + (value ? "green" : "red");
+  const title = submenuTitle || t("more");
+  const classNames = `fb-button fb-toggle-button ${value ? "green" : "red"}`;
   return <fieldset>
     <label>
       <span>
@@ -29,6 +29,7 @@ export function LayerToggle(props: LayerToggleProps) {
           </Popover>}
       </span>
     </label>
-    <button className={klassName} onClick={onClick} />
+    <button className={classNames} onClick={onClick}
+      title={`${value ? t("hide") : t("show")} ${t(label.replace("?", ""))}`} />
   </fieldset>;
 }

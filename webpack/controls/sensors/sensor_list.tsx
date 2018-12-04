@@ -54,6 +54,7 @@ export function SensorList(props: SensorListProps) {
           <button
             className={"fb-button gray"}
             disabled={disabled}
+            title={t(`read ${label} sensor`)}
             onClick={() => readPin(pin || 0, `pin${pin}`, mode)}>
             {t("read sensor")}
           </button>

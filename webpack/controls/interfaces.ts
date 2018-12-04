@@ -62,6 +62,7 @@ export interface ToggleButtonProps {
   customText?: { textFalse: string, textTrue: string };
   dim?: boolean;
   grayscale?: boolean;
+  title?: string;
 }
 
 export interface WebcamFeed {
