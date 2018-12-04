@@ -60,7 +60,7 @@ export const EMPTY_LOCALS_LIST: ScopeDeclaration = {
 
 const createNewParent =
   (input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
-    if (input.isNull) { return manualEntry; }
+    if (input.isNull) { return manualEntry; } // Caller decides X/Y/Z
     switch (input.headingId) {
       case "Plant":
       case "GenericPointer": return pointVar(input.headingId, input.value);

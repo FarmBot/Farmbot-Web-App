@@ -30,6 +30,6 @@ describe("<TileMoveAbsSelect/>", () => {
     const el = shallow(<TileMoveAbsSelect {...props} />);
     el.simulate("change", { label: "test ddi", value: 123, headingId: "tool" });
     expect(props.onChange)
-      .toHaveBeenCalledWith({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
+      .toHaveBeenCalledWith({ kind: "None", body: undefined });
   });
 });
