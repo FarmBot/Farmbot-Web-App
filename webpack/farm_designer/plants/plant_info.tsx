@@ -25,6 +25,7 @@ export class PlantInfo extends PlantInfoBase {
         onBack={unselectPlant(this.props.dispatch)}>
         <Link
           to={`/app/designer/${this.plantCategory}/${plantId}/edit`}
+          title={t("Edit this plant")}
           className="right-button">
           {t("Edit")}
         </Link>

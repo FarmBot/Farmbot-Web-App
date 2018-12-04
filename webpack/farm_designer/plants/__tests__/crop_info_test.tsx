@@ -36,6 +36,7 @@ describe("<CropInfo />", () => {
     return {
       openfarmSearch: jest.fn(),
       dispatch: jest.fn(),
+      cropSearchQuery: undefined,
       cropSearchResults: [cropSearchResult],
       cropSearchInProgress: false,
       openedSavedGarden: undefined,

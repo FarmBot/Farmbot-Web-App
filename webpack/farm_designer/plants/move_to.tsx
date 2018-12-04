@@ -127,6 +127,7 @@ export const MoveModeLink = () =>
   <div className="move-to-mode">
     <button
       className="fb-button gray"
+      title={t("open move mode panel")}
       onClick={() => history.push("/app/designer/plants/move_to")}>
       {t("move mode")}
     </button>

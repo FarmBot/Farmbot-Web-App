@@ -46,12 +46,6 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
     }
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
-    if (payload.kind === "Regimen") {
-      s.currentRegimen = payload.uuid;
-    }
-    return s;
-  })
   .add<void>(Actions.PUSH_WEEK, (s) => {
     s.weeks.push(newWeek());
     return s;

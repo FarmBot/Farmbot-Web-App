@@ -166,9 +166,10 @@ const CropDragInfoTile =
 
 /** Text and link for crop editing. */
 const EditOnOpenFarm = ({ slug }: { slug: string }) =>
-  <div>
+  <div className="edit-on-openfarm">
     <span>{t("Edit on")}&nbsp;</span>
-    <a href={OpenFarm.browsingCropUrl + slug} target="_blank">
+    <a href={OpenFarm.browsingCropUrl + slug} target="_blank"
+      title={t("Open OpenFarm.cc in a new tab")} >
       {"OpenFarm"}
     </a>
   </div>;
@@ -178,6 +179,7 @@ const AddToMapButton =
   ({ basePath, crop }: { basePath: string, crop: string }) =>
     <a
       className="right-button"
+      title={t("Enter click-to-add mode")}
       onClick={() => history.push(basePath + crop + "/add")}>
       {t("Add to map")}
     </a>;
@@ -195,11 +197,13 @@ export const getCropHeaderProps = (props: {
 };
 
 export function mapStateToProps(props: Everything): CropInfoProps {
-  const { cropSearchResults, openedSavedGarden, cropSearchInProgress } =
-    props.resources.consumers.farm_designer;
+  const {
+    cropSearchResults, openedSavedGarden, cropSearchInProgress, cropSearchQuery
+  } = props.resources.consumers.farm_designer;
   return {
     openfarmSearch: OFSearch,
     dispatch: props.dispatch,
+    cropSearchQuery,
     cropSearchResults,
     cropSearchInProgress,
     openedSavedGarden,
@@ -214,16 +218,21 @@ export const searchForCurrentCrop = (openfarmSearch: OpenfarmSearch) =>
     unselectPlant(dispatch)();
   };
 
-/** Clear the current crop search results. */
-const clearCropSearchResults = (dispatch: Function) => () =>
-  dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
-
 @connect(mapStateToProps)
 export class CropInfo extends React.Component<CropInfoProps, {}> {
 
   componentDidMount() {
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmSearch));
   }
+
+  /** Clear the current crop search results. */
+  clearCropSearchResults = (crop: string) => () => {
+    const { dispatch } = this.props;
+    if (!this.props.cropSearchQuery) {
+      dispatch({ type: Actions.SEARCH_QUERY_CHANGE, payload: crop });
+    }
+    dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
+  };
 
   render() {
     const { cropSearchResults, cropSearchInProgress } = this.props;
@@ -236,7 +245,7 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
         panelColor={"green"}
         title={result.crop.name}
         backTo={basePath}
-        onBack={clearCropSearchResults(this.props.dispatch)}
+        onBack={this.clearCropSearchResults(crop)}
         style={{ background: backgroundURL }}
         description={result.crop.description}>
         <AddToMapButton basePath={basePath} crop={crop} />

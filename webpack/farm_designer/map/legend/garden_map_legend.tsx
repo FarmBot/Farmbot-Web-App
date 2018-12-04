@@ -11,6 +11,7 @@ import { MoveModeLink } from "../../plants/move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
+import { futureFeaturesEnabled } from "../../../account/dev_widget";
 
 const OriginSelector = ({ quadrant, update }: {
   quadrant: BotOriginQuadrant,
@@ -38,11 +39,13 @@ export const ZoomControls = ({ zoom, getConfigValue }: {
   return <div className="zoom-buttons">
     <button
       className={"fb-button gray zoom " + plusBtnClass}
+      title={t("zoom in")}
       onClick={zoom(1)}>
       <i className="fa fa-2x fa-plus" />
     </button>
     <button
       className={"fb-button gray zoom zoom-out " + minusBtnClass}
+      title={t("zoom out")}
       onClick={zoom(-1)}>
       <i className="fa fa-2x fa-minus" />
     </button>
@@ -76,7 +79,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       label={t("Points?")}
       onClick={toggle("show_points")}
       submenuTitle={t("extras")}
-      popover={!!localStorage.getItem("FUTURE_FEATURES")
+      popover={futureFeaturesEnabled()
         ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
         : undefined} />
     <LayerToggle
@@ -97,7 +100,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
-    {localStorage.getItem("FUTURE_FEATURES") &&
+    {futureFeaturesEnabled() &&
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}

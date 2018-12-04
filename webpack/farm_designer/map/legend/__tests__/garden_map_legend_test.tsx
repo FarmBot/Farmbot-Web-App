@@ -18,6 +18,7 @@ import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
+import { enableFutureFeatures } from "../../../../account/dev_widget";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -47,7 +48,7 @@ describe("<GardenMapLegend />", () => {
   });
 
   it("shows submenu", () => {
-    localStorage.setItem("FUTURE_FEATURES", "true");
+    enableFutureFeatures();
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");

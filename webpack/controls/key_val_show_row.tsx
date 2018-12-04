@@ -11,12 +11,13 @@ export interface KeyValRowProps {
   onClick(): void;
   disabled: boolean;
   toggleValue?: number | undefined;
+  title?: string;
 }
 
 /** A row containing two textboxes and a delete button. Useful for maintaining
  * lists of things (peripherals, feeds, tools etc). */
 export function KeyValShowRow(p: KeyValRowProps) {
-  const { label, value, toggleValue, disabled, onClick } = p;
+  const { label, value, toggleValue, disabled, onClick, title } = p;
   return <Row>
     <Col xs={4}>
       <label>{label}</label>
@@ -28,6 +29,7 @@ export function KeyValShowRow(p: KeyValRowProps) {
       <ToggleButton
         toggleValue={toggleValue}
         toggleAction={onClick}
+        title={title}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
         disabled={disabled} />
     </Col>

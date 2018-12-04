@@ -14,6 +14,7 @@ import * as _ from "lodash";
 
 export interface HoveredPlantProps {
   visible: boolean;
+  spreadLayerVisible: boolean;
   currentPlant: TaggedPlant | undefined;
   designer: DesignerState;
   hoveredPlant: TaggedPlant | undefined;
@@ -39,7 +40,7 @@ export class HoveredPlant extends
   render() {
     const {
       currentPlant, mapTransformProps, dragging, isEditing, visible, designer,
-      animate
+      animate, spreadLayerVisible
     } = this.props;
     const { icon } = designer.hoveredPlant;
     const hovered = !!icon;
@@ -57,7 +58,7 @@ export class HoveredPlant extends
                 plant={currentPlant}
                 key={currentPlant.uuid}
                 mapTransformProps={mapTransformProps}
-                selected={false}
+                visible={!spreadLayerVisible}
                 animate={animate} />
 
               <Circle

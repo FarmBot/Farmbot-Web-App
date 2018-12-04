@@ -10,6 +10,7 @@ import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
+import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
@@ -80,6 +81,7 @@ export class SequencesList extends
           const newSequence = this.emptySequenceBody();
           dispatch(init("Sequence", newSequence));
           push("/app/sequences/" + urlFriendly(newSequence.name));
+          setActiveSequenceByName();
         }}>
         <i className="fa fa-plus" />
       </button>

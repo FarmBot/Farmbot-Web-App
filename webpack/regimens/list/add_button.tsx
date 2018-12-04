@@ -4,6 +4,8 @@ import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
 import { TaggedRegimen } from "farmbot";
 import { init } from "../../api/crud";
+import { setActiveRegimenByName } from "../set_active_regimen_by_name";
+import { urlFriendly } from "../../util";
 
 const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
   name: (t("New regimen ") + (length++)),
@@ -14,13 +16,14 @@ const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
 export function AddRegimen(props: AddRegimenProps) {
   props.className ? props.className : "";
   const classes = "fb-button green add " + props.className;
-  let { length } = props;
-  const { dispatch } = props;
+  const { dispatch, length } = props;
   return <button
     className={classes}
     onClick={() => {
-      dispatch(init("Regimen", emptyRegimenBody(length)));
-      push("/app/regimens/new_regimen_" + (length++));
+      const newRegimen = emptyRegimenBody(length);
+      dispatch(init("Regimen", newRegimen));
+      push("/app/regimens/" + urlFriendly(newRegimen.name));
+      setActiveRegimenByName();
     }}>
     {props.children || <i className="fa fa-plus" />}
   </button>;
