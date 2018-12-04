@@ -76,15 +76,10 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   updateArgs = (update: Partial<Args>) => {
     const copy = defensiveClone(this.props.currentSequence).body;
-    const step = (copy.body || [])[this.props.index];
-    if (step && step.kind === "move_absolute") {
-      // TODO: Hacky...Something off with the copying here
-      delete step.args.location.args;
-      step.args = betterMerge(step.args, update);
-      this.props.dispatch(overwrite(this.props.currentSequence, copy));
-    } else {
-      throw new Error("Impossible condition.");
-    }
+    const step = (copy.body || [])[this.props.index] as MoveAbsolute;
+    delete step.args.location.args;
+    step.args = betterMerge(step.args, update);
+    this.props.dispatch(overwrite(this.props.currentSequence, copy));
   }
 
   getAxisValue = (axis: Xyz): string => {

@@ -49,6 +49,14 @@ describe("<TileMoveAbsolute/>", () => {
     };
   };
 
+  function ordinaryMoveAbs() {
+    const p = fakeProps();
+    p.currentSequence.body.body = [p.currentStep];
+    p.index = 0;
+    p.dispatch = jest.fn();
+    return new TileMoveAbsolute(p);
+  }
+
   function checkField(
     block: ReactWrapper, position: number, label: string, value: string | number
   ) {
@@ -167,10 +175,26 @@ describe("<TileMoveAbsolute/>", () => {
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
+  describe("updateArgs", () => {
+    it("is a work in progress", () => {
+      const tma = ordinaryMoveAbs();
+      tma.updateArgs({});
+      expect(tma.props.dispatch).toHaveBeenCalled();
+      const action = expect.objectContaining({
+        type: "OVERWRITE_RESOURCE",
+        payload: expect.objectContaining({
+          uuid: tma.props.currentSequence.uuid,
+          update: {}
+        })
+      });
+      expect(tma.props.dispatch).toHaveBeenCalledWith(action);
+      debugger;
+    });
+  });
+
   describe("handleSelect", () => {
     it("handles empty selections", () => {
-      const p = fakeProps();
-      const tma = new TileMoveAbsolute(p);
+      const tma = ordinaryMoveAbs();
       tma.updateArgs = jest.fn();
       tma.handleSelect({ kind: "None", body: undefined });
       const location = { kind: "coordinate", args: { x: 0, y: 0, z: 0, } };
@@ -178,7 +202,7 @@ describe("<TileMoveAbsolute/>", () => {
     });
 
     it("handles point / tool selections", () => {
-      const tma = new TileMoveAbsolute(fakeProps());
+      const tma = ordinaryMoveAbs();
       tma.updateArgs = jest.fn();
       [fakePoint(), fakeTool()].map(selection => {
         tma.handleSelect(selection);
@@ -188,12 +212,7 @@ describe("<TileMoveAbsolute/>", () => {
     });
 
     it("handles bound / unbound variables", () => {
-      const p = fakeProps();
-      p.currentSequence.body.body = [
-        p.currentStep
-      ];
-      p.index = 0;
-      const tma = new TileMoveAbsolute(p);
+      const tma = ordinaryMoveAbs();
       set(tma.props, "dispatch", jest.fn());
       const x: MoveAbsDropDownContents = {
         kind: "BoundVariable",
@@ -201,7 +220,8 @@ describe("<TileMoveAbsolute/>", () => {
       };
       tma.handleSelect(x);
       expect(tma.props.dispatch).toHaveBeenCalled();
-      debugger;
+      const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
+      expect(tma.props.dispatch).toHaveBeenCalledWith(action);
     });
   });
 });
