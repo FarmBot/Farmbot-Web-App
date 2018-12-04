@@ -140,7 +140,7 @@ export class PureFarmEvents
 
       <Link to="/app/designer/farm_events/add">
         <button className="plus-button fb-button magenta">
-          <i className="fa fa-2x fa-plus" />
+          <i className="fa fa-2x fa-plus" title={t("Add event")} />
         </button>
       </Link>
     </DesignerPanelContent>;

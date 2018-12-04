@@ -13,6 +13,8 @@ import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
 import { ExportAccountPanel } from "./components/export_account_panel";
 import { requestAccountExport } from "./request_account_export";
+import { DevWidget } from "./dev_widget";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
@@ -88,6 +90,10 @@ export class Account extends React.Component<Props, State> {
         </Row>
         <Row>
           <ExportAccountPanel onClick={requestAccountExport} />
+        </Row>
+        <Row>
+          {this.props.getConfigValue("show_dev_menu" as BooleanConfigKey) &&
+            <DevWidget dispatch={this.props.dispatch} />}
         </Row>
       </Col>
     </Page>;

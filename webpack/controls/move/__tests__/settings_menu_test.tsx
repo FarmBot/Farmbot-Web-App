@@ -2,6 +2,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { BooleanSetting } from "../../../session_keys";
 import { moveWidgetSetting, MoveWidgetSettingsMenu } from "../settings_menu";
+import { enableFutureFeatures } from "../../../account/dev_widget";
 
 describe("moveWidgetSetting()", () => {
   it("renders setting", () => {
@@ -23,7 +24,7 @@ describe("<MoveWidgetSettingsMenu />", () => {
   it("displays motor plot toggle", () => {
     const noToggle = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
     expect(noToggle.text()).not.toContain("Motor position plot");
-    localStorage.setItem("FUTURE_FEATURES", "true");
+    enableFutureFeatures();
     const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
     expect(wrapper.text()).toContain("Motor position plot");
   });

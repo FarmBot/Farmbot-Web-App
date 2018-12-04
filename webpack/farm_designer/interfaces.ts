@@ -237,6 +237,7 @@ export interface CropCatalogProps {
 
 export interface CropInfoProps {
   dispatch: Function;
+  cropSearchQuery: string | undefined;
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
   openedSavedGarden: string | undefined;

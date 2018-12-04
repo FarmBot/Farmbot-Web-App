@@ -1,6 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { history as routeHistory } from "../../history";
+import { last, trim } from "lodash";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -29,11 +30,18 @@ interface DesignerPanelHeaderProps {
   children?: React.ReactNode;
 }
 
+const backToText = (to: string | undefined): string => {
+  const lastPathName = last(trim(to, "/").split("/"));
+  const s = (lastPathName || "").replace("_", " ");
+  return s ? ` ${t("to")} ${s}` : "";
+};
+
 export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) =>
   <div className={`panel-header ${props.panelColor}-panel`}
     style={props.style || {}}>
     <p className="panel-title">
       <i className="fa fa-arrow-left back-arrow"
+        title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? routeHistory.push(props.backTo) : history.back();
           props.onBack && props.onBack();

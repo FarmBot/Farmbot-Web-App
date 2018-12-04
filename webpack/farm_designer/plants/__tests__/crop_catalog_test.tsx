@@ -2,7 +2,11 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
-jest.mock("lodash", () => ({ debounce: jest.fn(x => x) }));
+jest.mock("lodash", () => ({
+  debounce: jest.fn(x => x),
+  trim: jest.fn(x => x),
+  last: () => "fake",
+}));
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 

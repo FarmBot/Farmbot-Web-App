@@ -13,6 +13,7 @@ describe("<HoveredPlant/>", () => {
   function fakeProps(): HoveredPlantProps {
     return {
       visible: true,
+      spreadLayerVisible: false,
       dragging: false,
       currentPlant: undefined,
       designer: fakeDesignerState(),

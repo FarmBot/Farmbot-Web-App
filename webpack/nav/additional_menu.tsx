@@ -4,6 +4,7 @@ import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
 import { shortRevision } from "../util";
+import { futureFeaturesEnabled } from "../account/dev_widget";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -13,7 +14,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Account Settings")}
       </Link>
     </div>
-    {localStorage.getItem("FUTURE_FEATURES") &&
+    {futureFeaturesEnabled() &&
       <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-question-circle"></i>
         {t("Help")}

@@ -1,4 +1,5 @@
 import { history } from "../history";
+import { trim } from "lodash";
 
 /** When needing to reference the url in some js universally or vice versa. */
 export function urlFriendly(stringToFormat: string) {
@@ -6,7 +7,8 @@ export function urlFriendly(stringToFormat: string) {
 }
 
 /** Get remainder of current url after the last "/". */
-export function lastUrlChunk() {
+export function lastUrlChunk(): string {
   const p = history.getCurrentLocation().pathname;
-  return p.split("/")[p.split("/").length - 1];
+  const pathArray = trim(p, "/").split("/");
+  return pathArray[pathArray.length - 1];
 }
