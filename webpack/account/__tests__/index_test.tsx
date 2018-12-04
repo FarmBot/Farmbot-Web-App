@@ -5,7 +5,7 @@ jest.mock("react-redux", () => ({
 import * as React from "react";
 import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { Account } from "../index";
 import { edit } from "../../api/crud";
 
@@ -40,5 +40,19 @@ describe("<Account />", () => {
 
     el.find("Settings").simulate("save");
     expect(props.dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("doesn't show dev widget", () => {
+    const props = mapStateToProps(fakeState());
+    props.getConfigValue = () => false;
+    const wrapper = mount(<Account {...props} />);
+    expect(wrapper.text()).not.toContain("Dev options");
+  });
+
+  it("shows dev widget", () => {
+    const props = mapStateToProps(fakeState());
+    props.getConfigValue = () => true;
+    const wrapper = mount(<Account {...props} />);
+    expect(wrapper.text()).toContain("Dev options");
   });
 });

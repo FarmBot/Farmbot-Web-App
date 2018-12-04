@@ -11,6 +11,7 @@ import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
+import { futureFeaturesEnabled } from "../../account/dev_widget";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -69,7 +70,7 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
 const MoveToPlant =
   (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
     <button className="fb-button gray"
-      hidden={!localStorage.getItem("FUTURE_FEATURES") || props.isEditing}
+      hidden={!futureFeaturesEnabled() || props.isEditing}
       onClick={() => {
         props.dispatch({
           type: Actions.CHOOSE_LOCATION,
