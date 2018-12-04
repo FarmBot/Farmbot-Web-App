@@ -104,13 +104,8 @@ const determineVariableValue =
  * Used to overwrite the entire index on any data change. */
 export const createSequenceMeta: VLT = (index, resource) => {
   const collection = resource.body.args.locals.body || [];
-  const isthe1 = (resource.body.name || "").toLowerCase().includes(" a");
-  if (!collection.length && isthe1) {
-    console.log("empty");
-  }
   const reducer: R = (acc, celeryNode) => {
     const location = determineLocation(index, celeryNode);
-    isthe1 && console.log(celeryNode.kind);
     return ({
       ...acc,
       [celeryNode.args.label]: {
