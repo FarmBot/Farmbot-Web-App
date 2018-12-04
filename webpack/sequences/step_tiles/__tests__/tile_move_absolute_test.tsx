@@ -180,13 +180,10 @@ describe("<TileMoveAbsolute/>", () => {
       const tma = ordinaryMoveAbs();
       tma.updateArgs({});
       expect(tma.props.dispatch).toHaveBeenCalled();
-      const action = expect.objectContaining({
-        type: "OVERWRITE_RESOURCE",
-        payload: expect.objectContaining({
-          uuid: tma.props.currentSequence.uuid,
-          update: {}
-        })
-      });
+      const payload =
+        expect.objectContaining({ uuid: tma.props.currentSequence.uuid });
+      const action =
+        expect.objectContaining({ type: "OVERWRITE_RESOURCE", payload });
       expect(tma.props.dispatch).toHaveBeenCalledWith(action);
       debugger;
     });
