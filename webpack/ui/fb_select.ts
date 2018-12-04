@@ -7,6 +7,9 @@ export interface DropDownItem {
   heading?: boolean;
   /** A unique ID to group headings by. */
   headingId?: string | undefined;
+  /** Mostly for legacy reasons. Indicates that the current object is the
+   * NULL_CHOICE ddi */
+  isNull?: true;
 }
 
 export interface NullChoice extends DropDownItem { label: "None"; value: ""; }

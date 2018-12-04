@@ -23,6 +23,7 @@ import {
   ParentVariableFormProps,
   LocalsListProps,
 } from "../locals_list_support";
+import { difference } from "lodash";
 
 const coord: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };
 const t = fakeTool();
@@ -43,24 +44,24 @@ const fakeProps = (): LocalsListProps => {
   };
 };
 
-describe("<ParentVariableForm/>", () => {
-  it("renders correct UI components", () => {
-    const props: ParentVariableFormProps = {
-      parent: {
-        celeryNode: {
-          kind: "parameter_declaration",
-          args: { label: "label", data_type: "coordinate" }
-        },
-        editable: false,
-        variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
-        dropdown: { label: "label", value: 0 },
-        location: { x: 0, y: 0, z: 0 }
-      },
-      sequence: fakeSequence(),
-      resources: buildResourceIndex().index,
-      onChange: jest.fn()
-    };
+const props: ParentVariableFormProps = {
+  parent: {
+    celeryNode: {
+      kind: "parameter_declaration",
+      args: { label: "label", data_type: "coordinate" }
+    },
+    editable: false,
+    variableValue: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+    dropdown: { label: "label", value: 0 },
+    location: { x: 0, y: 0, z: 0 }
+  },
+  sequence: fakeSequence(),
+  resources: buildResourceIndex().index,
+  onChange: jest.fn()
+};
 
+describe("<ParentVariableForm/>", () => {
+  fit("renders correct UI components", () => {
     const el = shallow(<ParentVariableForm {...props} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(InputBox);
@@ -69,7 +70,10 @@ describe("<ParentVariableForm/>", () => {
     const p = selects.first().props();
     expect(p.allowEmpty).toBe(true);
     const choices = generateList(props.resources, []);
-    expect(p.list).toEqual(choices);
+    const actualLabels = p.list.map(x => x.label).sort();
+    const expectedLabels = choices.map(x => x.label).sort();
+    const diff = difference(actualLabels, expectedLabels);
+    expect(diff).toEqual([]);
     const choice = choices[1];
     p.onChange(choice);
     expect(props.onChange)

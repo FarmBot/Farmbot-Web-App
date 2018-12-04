@@ -60,6 +60,7 @@ export const EMPTY_LOCALS_LIST: ScopeDeclaration = {
 
 const createNewParent =
   (input: DropDownItem): ScopeDeclarationBodyItem | undefined => {
+    if (input.isNull) { return manualEntry; }
     switch (input.headingId) {
       case "Plant":
       case "GenericPointer": return pointVar(input.headingId, input.value);
@@ -72,9 +73,8 @@ const createNewParent =
 
 export let convertDDItoScopeDeclr =
   (input: DropDownItem): ScopeDeclaration => {
+    const p = createNewParent(input);
     const sd: ScopeDeclaration =
-      ({ kind: "scope_declaration", args: {}, body: [] });
-    const parent = createNewParent(input);
-    parent && sd.body /** lol */ && sd.body.push(parent);
+      ({ kind: "scope_declaration", args: {}, body: (p ? [p] : []) });
     return sd;
   };
