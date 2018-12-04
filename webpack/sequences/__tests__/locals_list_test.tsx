@@ -22,6 +22,7 @@ import {
 import {
   ParentVariableFormProps,
   LocalsListProps,
+  PARENT,
 } from "../locals_list_support";
 import { difference } from "lodash";
 
@@ -61,7 +62,7 @@ const props: ParentVariableFormProps = {
 };
 
 describe("<ParentVariableForm/>", () => {
-  fit("renders correct UI components", () => {
+  it("renders correct UI components", () => {
     const el = shallow(<ParentVariableForm {...props} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(InputBox);
@@ -69,7 +70,7 @@ describe("<ParentVariableForm/>", () => {
     expect(selects.length).toBe(1);
     const p = selects.first().props();
     expect(p.allowEmpty).toBe(true);
-    const choices = generateList(props.resources, []);
+    const choices = generateList(props.resources, [PARENT]);
     const actualLabels = p.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -92,10 +93,14 @@ describe("<LocalsList/>", () => {
 
   it("renders something", () => {
     const p = fakeProps();
-    p.sequence.body.args.locals = {
-      kind: "scope_declaration",
-      args: {},
-      body: [mrGoodVar]
+    p.variableData = {
+      parent: {
+        celeryNode: mrGoodVar,
+        dropdown: { value: "parent", label: "parent" },
+        location: coord.args,
+        editable: false,
+        variableValue: coord
+      }
     };
     const el = shallow(<LocalsList {...p} />);
     expect(el.find(ParentVariableForm).length).toBe(1);
