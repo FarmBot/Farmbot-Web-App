@@ -1,12 +1,18 @@
 import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { fakeSequence, fakePoint, fakeTool } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { SpecialStatus } from "farmbot";
 import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
 import { emptyState } from "../../../resources/reducer";
+import {
+  convertDropdownToLocation,
+  SequenceMeta,
+  MoveAbsDropDownContents
+} from "../../../resources/sequence_meta";
+import { set } from "lodash";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = () => {
@@ -159,5 +165,43 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  describe("handleSelect", () => {
+    it("handles empty selections", () => {
+      const p = fakeProps();
+      const tma = new TileMoveAbsolute(p);
+      tma.updateArgs = jest.fn();
+      tma.handleSelect({ kind: "None", body: undefined });
+      const location = { kind: "coordinate", args: { x: 0, y: 0, z: 0, } };
+      expect(tma.updateArgs).toHaveBeenCalledWith({ location });
+    });
+
+    it("handles point / tool selections", () => {
+      const tma = new TileMoveAbsolute(fakeProps());
+      tma.updateArgs = jest.fn();
+      [fakePoint(), fakeTool()].map(selection => {
+        tma.handleSelect(selection);
+        const location = convertDropdownToLocation(selection);
+        expect(tma.updateArgs).toHaveBeenCalledWith({ location });
+      });
+    });
+
+    it("handles bound / unbound variables", () => {
+      const p = fakeProps();
+      p.currentSequence.body.body = [
+        p.currentStep
+      ];
+      p.index = 0;
+      const tma = new TileMoveAbsolute(p);
+      set(tma.props, "dispatch", jest.fn());
+      const x: MoveAbsDropDownContents = {
+        kind: "BoundVariable",
+        body: { celeryNode: { args: {} } } as SequenceMeta
+      };
+      tma.handleSelect(x);
+      expect(tma.props.dispatch).toHaveBeenCalled();
+      debugger;
+    });
   });
 });

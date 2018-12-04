@@ -7,7 +7,6 @@ import { MoveAbsState } from "../interfaces";
 import {
   Tool,
   Coordinate,
-  LegalSequenceKind,
   Point,
   Identifier,
   MoveAbsolute,
@@ -37,7 +36,11 @@ import {
   conflictsString
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
-import { convertDropdownToLocation, extractParent } from "../../resources/sequence_meta";
+import {
+  convertDropdownToLocation,
+  extractParent,
+  MoveAbsDropDownContents
+} from "../../resources/sequence_meta";
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
   speed: number;
@@ -59,15 +62,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     return (this.tool_id) ?
       findSlotByToolId(this.resources, this.tool_id) : undefined;
   }
-  get args() {
-    // Incase we rename it later:
-    const MOVE_ABSOLUTE: LegalSequenceKind = "move_absolute";
-    if (this.step.kind === MOVE_ABSOLUTE) {
-      return this.step.args;
-    } else {
-      throw new Error("Impossible celery node detected.");
-    }
-  }
+  get args(): MoveAbsolute["args"] { return (this.step as MoveAbsolute).args; }
 
   get xyzDisabled(): boolean {
     type Keys = MoveAbsolute["args"]["location"]["kind"];
@@ -155,6 +150,33 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       + conflictsString(this.settingConflicts);
   }
 
+  handleSelect = (result: MoveAbsDropDownContents) => {
+    const { currentSequence, dispatch } = this.props;
+    switch (result.kind) {
+      case "None":
+        return this.updateArgs({ location: EMPTY_COORD });
+      case "Point":
+      case "Tool":
+        return this.updateArgs({
+          location: convertDropdownToLocation(result)
+        });
+      case "BoundVariable":
+      case "UnboundVariable":
+        // Create a parent and attach to it
+        // STEP 1, Clone current sequence.
+        const clone = defensiveClone(currentSequence.body);
+        // STEP 2, do typecase to avoid extra conditionals
+        const s = (clone.body || [])[this.props.index] as MoveAbsolute;
+        // STEP 3, Figure out the `label` of the variable
+        //  (As of Dec '18, it is only "parent")
+        const { label } = result.kind === "BoundVariable" ?
+          result.body.celeryNode.args : result.body;
+        // Step 4: Attach the `identifier` to the current step:
+        s.args.location = ({ kind: "identifier", args: { label } });
+        return dispatch(overwrite(currentSequence, clone));
+    }
+  };
+
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
     if (currentSequence && !isTaggedSequence(currentSequence)) {
@@ -184,32 +206,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
               resources={this.resources}
               uuid={this.props.currentSequence.uuid}
               selectedItem={this.args.location}
-              onChange={(result) => {
-                switch (result.kind) {
-                  case "None":
-                    return this.updateArgs({ location: EMPTY_COORD });
-                  case "Point":
-                  case "Tool":
-                    return this.updateArgs({
-                      location: convertDropdownToLocation(result)
-                    });
-                  case "BoundVariable":
-                  case "UnboundVariable":
-                    // Create a parent and attach to it
-                    // STEP 1, Clone current sequence.
-                    const clone = defensiveClone(currentSequence.body);
-                    // STEP 2, do typecase to avoid extra conditionals
-                    const s =
-                      (clone.body || [])[this.props.index] as MoveAbsolute;
-                    // STEP 3, Figure out the `label` of the variable
-                    //  (As of Dec '18, it is only "parent")
-                    const { label } = result.kind === "BoundVariable" ?
-                      result.body.celeryNode.args : result.body;
-                    // Step 4: Attach the `identifier` to the current step:
-                    s.args.location = ({ kind: "identifier", args: { label } });
-                    return dispatch(overwrite(currentSequence, clone));
-                }
-              }}
+              onChange={this.handleSelect}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />
           </Col>
           <Col xs={3}>
