@@ -297,6 +297,7 @@ export class GardenMap extends
     getConfigValue={this.props.getConfigValue} />
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}
+    spreadLayerVisible={!!this.props.showSpread}
     isEditing={this.isEditing}
     mapTransformProps={this.mapTransformProps}
     currentPlant={this.getPlant()}

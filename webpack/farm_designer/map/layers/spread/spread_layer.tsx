@@ -44,7 +44,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
             plant={p}
             key={"spread-" + p.uuid}
             mapTransformProps={mapTransformProps}
-            selected={selected}
+            visible={true}
             animate={animate} />}
         <SpreadOverlapHelper
           key={"overlap-" + p.uuid}
@@ -62,7 +62,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
 interface SpreadCircleProps {
   plant: TaggedPlant;
   mapTransformProps: MapTransformProps;
-  selected: boolean;
+  visible: boolean;
   animate: boolean;
 }
 
@@ -81,11 +81,11 @@ export class SpreadCircle extends
 
   render() {
     const { radius, x, y, id } = this.props.plant.body;
-    const { selected, mapTransformProps, animate } = this.props;
+    const { visible, mapTransformProps, animate } = this.props;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
 
     return <g id={"spread-" + id}>
-      {!selected &&
+      {visible &&
         <circle
           className={"spread " + (animate ? "animate" : "")}
           id={"spread-" + id}
