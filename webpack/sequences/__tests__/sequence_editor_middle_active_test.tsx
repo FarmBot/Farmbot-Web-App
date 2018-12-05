@@ -19,7 +19,10 @@ jest.mock("../../devices/actions", () => ({
 }));
 
 let mockParent = false;
-jest.mock("../locals_list_support", () => ({ extractParent: () => mockParent }));
+jest.mock("../../resources/sequence_meta", () => ({
+  extractParent: () => mockParent,
+  createSequenceMeta: jest.fn(),
+}));
 
 jest.mock("../locals_list", () => ({ LocalsList: () => <div /> }));
 
@@ -118,9 +121,8 @@ describe("<SequenceEditorMiddleActive/>", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    // CC: @gabrielBurnworth
-    expect(wrapper.find(".sequence").props().style).toBeTruthy();
-    // .toEqual({ height: "calc(100vh - 38rem)" });
+    expect(wrapper.find(".sequence").props().style)
+      .toEqual({ height: "calc(100vh - 38rem)" });
   });
 });
 
