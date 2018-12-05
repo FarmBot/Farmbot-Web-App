@@ -94,9 +94,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         break;
       case "point":
         const { pointer_id } = l.args;
-        number = findPointerByTypeAndId(this.resources,
-          "Point",
-          pointer_id).body[axis];
+        number = findPointerByTypeAndId(this.resources, "Point", pointer_id)
+          .body[axis];
         break;
       case "identifier":
         const { resources, currentSequence } = this.props;

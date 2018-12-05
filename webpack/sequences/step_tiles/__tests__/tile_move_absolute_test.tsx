@@ -2,7 +2,7 @@ import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
 import { fakeSequence, fakePoint, fakeTool } from "../../../__test_support__/fake_state/resources";
-import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
+import { MoveAbsolute, SequenceBodyItem, Point } from "farmbot/dist";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { SpecialStatus } from "farmbot";
 import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
@@ -205,6 +205,21 @@ describe("<TileMoveAbsolute/>", () => {
     expect(extractParent(p.resources, p.currentSequence.uuid)).toBeTruthy();
     const tma = ordinaryMoveAbs(p);
     expect(tma.getAxisValue("z")).toBe("440");
+  });
+
+  it("renders x/y/z of `coordinate` nodes", () => {
+    const p = fakeProps();
+    const pointResource = fakePoint();
+    pointResource.body.x = 987;
+    const celeryPoint: Point = {
+      kind: "point",
+      args: { pointer_type: "Point", pointer_id: pointResource.body.id || 0 }
+    };
+    p.currentStep.args.location = celeryPoint;
+    p.currentSequence.body.body = [p.currentStep];
+    p.resources = buildResourceIndex([p.currentSequence, pointResource]).index;
+    const tma = ordinaryMoveAbs(p);
+    expect(tma.getAxisValue("x")).toBe("987");
   });
 
   describe("updateArgs", () => {

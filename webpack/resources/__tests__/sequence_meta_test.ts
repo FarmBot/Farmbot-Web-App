@@ -3,6 +3,11 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { sanitizeNodes } from "../../sequences/step_tiles/tile_move_absolute/variables_support";
 
+describe("convertDdiToCelery", () => {
+  it("Converts a celery Plant to a TaggedPlant", () => {
+    pending();
+  });
+});
 describe("createSequenceMeta", () => {
   const s = fakeSequence();
   s.body.body = [{ // <= Add var. reference
