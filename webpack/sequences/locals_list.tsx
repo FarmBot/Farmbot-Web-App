@@ -9,7 +9,7 @@ import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_s
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
 import { editCurrentSequence } from "./actions";
 import { defensiveClone } from "../util/util";
-import { Xyz } from "farmbot";
+import { Xyz, ScopeDeclaration, TaggedSequence } from "farmbot";
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
@@ -78,6 +78,18 @@ export const ParentVariableForm =
     </div>;
   };
 
+interface LocalListCbProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+}
+
+export const localListCallback =
+  ({ dispatch, sequence }: LocalListCbProps) => (locals: ScopeDeclaration) => {
+    const clone = defensiveClone(sequence.body); // unfortunate
+    clone.args.locals = locals;
+    editCurrentSequence(dispatch, sequence, clone);
+  };
+
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
@@ -87,10 +99,6 @@ export const LocalsList = (props: LocalsListProps) => {
       parent={parent}
       sequence={props.sequence}
       resources={props.resources}
-      onChange={(locals) => {
-        const clone = defensiveClone(props.sequence.body); // unfortunate
-        clone.args.locals = locals;
-        editCurrentSequence(props.dispatch, props.sequence, clone);
-      }} />
+      onChange={localListCallback(props)} />
     : <div />;
 };

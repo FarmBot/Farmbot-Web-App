@@ -84,6 +84,7 @@ describe("<ParentVariableForm/>", () => {
 });
 
 describe("<LocalsList/>", () => {
+
   it("renders nothing", () => {
     const p = fakeProps();
     p.sequence.body.args.locals = { kind: "scope_declaration", args: {} };
