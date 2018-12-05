@@ -184,7 +184,8 @@ describe("maybeGetSequence", () => {
     expect(result).toBeTruthy();
     result && expect(result.uuid).toBe(s.uuid);
   });
-})
+});
+
 describe("findAllById()", () => {
   it("returns", () => {
     const result = Selector.findAllById(fakeIndex, [23], "Sequence");
