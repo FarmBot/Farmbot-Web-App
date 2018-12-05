@@ -114,6 +114,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("has correct height with variable form", () => {
+    pending();
     mockParent = true;
     const p = fakeProps();
     p.shouldDisplay = () => true;
