@@ -14,6 +14,7 @@ import {
   extractParent
 } from "../../../resources/sequence_meta";
 import { set } from "lodash";
+import { DeepPartial } from "redux";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = () => {
@@ -173,6 +174,17 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  it("updates input value", () => {
+    type DomEvent = React.SyntheticEvent<HTMLInputElement>;
+    const e: DeepPartial<DomEvent> = ({ currentTarget: { value: "23.456" } });
+    const tma = ordinaryMoveAbs();
+    const mock = jest.fn();
+    tma.updateArgs = mock;
+    const cb = tma.updateInputValue("x", "location");
+    cb(e as DomEvent);
+    expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
   });
 
   it("renders x/y/z of `identifier` nodes", () => {
