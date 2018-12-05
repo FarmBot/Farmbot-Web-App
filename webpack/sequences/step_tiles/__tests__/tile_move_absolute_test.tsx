@@ -10,7 +10,8 @@ import { emptyState } from "../../../resources/reducer";
 import {
   convertDropdownToLocation,
   SequenceMeta,
-  MoveAbsDropDownContents
+  MoveAbsDropDownContents,
+  extractParent
 } from "../../../resources/sequence_meta";
 import { set } from "lodash";
 
@@ -49,8 +50,7 @@ describe("<TileMoveAbsolute/>", () => {
     };
   };
 
-  function ordinaryMoveAbs() {
-    const p = fakeProps();
+  function ordinaryMoveAbs(p = fakeProps()) {
     p.currentSequence.body.body = [p.currentStep];
     p.index = 0;
     p.dispatch = jest.fn();
@@ -175,8 +175,28 @@ describe("<TileMoveAbsolute/>", () => {
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
+  it("renders x/y/z of `identifier` nodes", () => {
+    const p = fakeProps();
+    p.currentStep.args.location =
+      ({ kind: "identifier", args: { label: "parent" } });
+    p.currentSequence.body.args.locals.body = [
+      {
+        kind: "variable_declaration",
+        args: {
+          label: "parent",
+          data_value: { kind: "coordinate", args: { x: 220, y: 330, z: 440 } }
+        }
+      }
+    ];
+    p.currentSequence.body.body = [p.currentStep];
+    p.resources = buildResourceIndex([p.currentSequence]).index;
+    expect(extractParent(p.resources, p.currentSequence.uuid)).toBeTruthy();
+    const tma = ordinaryMoveAbs(p);
+    expect(tma.getAxisValue("z")).toBe("440");
+  });
+
   describe("updateArgs", () => {
-    it("is a work in progress", () => {
+    it("calls OVERWRITE_RESOURCE for the correct resource", () => {
       const tma = ordinaryMoveAbs();
       tma.updateArgs({});
       expect(tma.props.dispatch).toHaveBeenCalled();
@@ -185,7 +205,6 @@ describe("<TileMoveAbsolute/>", () => {
       const action =
         expect.objectContaining({ type: "OVERWRITE_RESOURCE", payload });
       expect(tma.props.dispatch).toHaveBeenCalledWith(action);
-      debugger;
     });
   });
 
