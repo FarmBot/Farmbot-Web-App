@@ -24,8 +24,9 @@ describe("localListCallback", () => {
         }
       ]
     });
+    const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
     expect(dispatch)
-      .toHaveBeenCalledWith(expect.objectContaining({ type: "EDIT_RESOURCE" }));
+      .toHaveBeenCalledWith(action);
     expect(dispatch)
       .toHaveBeenCalledWith(expect.objectContaining({
         payload: expect.objectContaining({ uuid: sequence.uuid })
