@@ -97,7 +97,7 @@ const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
 const determineVariableValue =
   (_node: ScopeDeclarationBodyItem, _i: ResourceIndex): LocationData => {
     return _node.kind === "parameter_declaration" ?
-      { kind: "coordinate", args: vec000 } : _node.args.data_value;
+      EMPTY_COORD : _node.args.data_value;
   };
 
 /** Creates the sequence meta data lookup table for an entire ResourceIndex.

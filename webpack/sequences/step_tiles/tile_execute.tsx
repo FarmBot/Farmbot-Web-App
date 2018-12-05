@@ -3,7 +3,7 @@ import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { Row, Col, DropDownItem } from "../../ui/index";
-import { Execute } from "farmbot/dist";
+import { Execute, VariableDeclaration } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
@@ -18,6 +18,7 @@ import {
   convertDropdownToLocation,
   MoveAbsDropDownContents
 } from "../../resources/sequence_meta";
+import { EMPTY_COORD } from "./tile_move_absolute/handle_select";
 const assignVariable =
   (props: ExecBlockParams) => (contents: MoveAbsDropDownContents) => {
     const { dispatch, currentSequence, currentStep, index } = props;
@@ -81,8 +82,12 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     const { sequence_id } = currentStep.args;
     const calleeUuid = sequence_id ?
       findSequenceById(resources, sequence_id).uuid : undefined;
-    const selected = calleeUuid ?
+    const calledSequence = calleeUuid ?
       extractParent(resources, calleeUuid) : undefined;
+    const whatever: VariableDeclaration | undefined =
+      (this.props.currentStep.body || [])[0];
+    const selectedParameter =
+      whatever ? whatever.args.data_value : EMPTY_COORD;
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -103,14 +108,14 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
           </Col>
         </Row>
         <Row>
-          {selected &&
-            selected.celeryNode.kind == "parameter_declaration" &&
+          {calledSequence &&
+            calledSequence.celeryNode.kind == "parameter_declaration" &&
             <Col xs={12}>
               <ParentSelector
                 targetUuid={calleeUuid || "NOT_SET_YET"}
                 currentUuid={currentSequence.uuid}
                 resources={resources}
-                selected={selected.variableValue}
+                selected={selectedParameter}
                 onChange={assignVariable(this.props)} />
             </Col>}
         </Row>
