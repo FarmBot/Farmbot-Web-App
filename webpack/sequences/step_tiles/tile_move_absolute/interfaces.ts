@@ -1,12 +1,15 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { MoveAbsolute, PointType } from "farmbot/dist";
 import { ShouldDisplay } from "../../../devices/interfaces";
+import { MoveAbsDropDownContents } from "../../../resources/sequence_meta";
 export const TOOL: "Tool" = "Tool";
 
-export type CALLBACK = (out: LocationData) => void;
+export type CALLBACK = (out: MoveAbsDropDownContents) => void;
 
 export interface TileMoveAbsProps {
   resources: ResourceIndex;
+  /** UUID of current sequence */
+  uuid: string;
   selectedItem: LocationData;
   onChange: CALLBACK;
   shouldDisplay: ShouldDisplay;

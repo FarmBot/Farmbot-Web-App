@@ -1,12 +1,20 @@
 import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { MoveAbsolute, SequenceBodyItem } from "farmbot/dist";
+import { fakeSequence, fakePoint, fakeTool } from "../../../__test_support__/fake_state/resources";
+import { MoveAbsolute, SequenceBodyItem, Point } from "farmbot/dist";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { SpecialStatus } from "farmbot";
 import { fakeHardwareFlags } from "../../../__test_support__/sequence_hardware_settings";
 import { emptyState } from "../../../resources/reducer";
+import {
+  convertDropdownToLocation,
+  SequenceMeta,
+  MoveAbsDropDownContents,
+  extractParent
+} from "../../../resources/sequence_meta";
+import { set } from "lodash";
+import { DeepPartial } from "redux";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = () => {
@@ -42,6 +50,13 @@ describe("<TileMoveAbsolute/>", () => {
       confirmStepDeletion: false,
     };
   };
+
+  function ordinaryMoveAbs(p = fakeProps()) {
+    p.currentSequence.body.body = [p.currentStep];
+    p.index = 0;
+    p.dispatch = jest.fn();
+    return new TileMoveAbsolute(p);
+  }
 
   function checkField(
     block: ReactWrapper, position: number, label: string, value: string | number
@@ -159,5 +174,97 @@ describe("<TileMoveAbsolute/>", () => {
     p.hardwareFlags.stopAtMax.x = true;
     const wrapper = mount(<TileMoveAbsolute {...p} />);
     expect(wrapper.text()).toContain(CONFLICT_TEXT_BASE + ": x");
+  });
+
+  it("updates input value", () => {
+    type DomEvent = React.SyntheticEvent<HTMLInputElement>;
+    const e: DeepPartial<DomEvent> = ({ currentTarget: { value: "23.456" } });
+    const tma = ordinaryMoveAbs();
+    const mock = jest.fn();
+    tma.updateArgs = mock;
+    const cb = tma.updateInputValue("x", "location");
+    cb(e as DomEvent);
+    expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
+  });
+
+  it("renders x/y/z of `identifier` nodes", () => {
+    const p = fakeProps();
+    p.currentStep.args.location =
+      ({ kind: "identifier", args: { label: "parent" } });
+    p.currentSequence.body.args.locals.body = [
+      {
+        kind: "variable_declaration",
+        args: {
+          label: "parent",
+          data_value: { kind: "coordinate", args: { x: 220, y: 330, z: 440 } }
+        }
+      }
+    ];
+    p.currentSequence.body.body = [p.currentStep];
+    p.resources = buildResourceIndex([p.currentSequence]).index;
+    expect(extractParent(p.resources, p.currentSequence.uuid)).toBeTruthy();
+    const tma = ordinaryMoveAbs(p);
+    expect(tma.getAxisValue("z")).toBe("440");
+  });
+
+  it("renders x/y/z of `coordinate` nodes", () => {
+    const p = fakeProps();
+    const pointResource = fakePoint();
+    pointResource.body.x = 987;
+    const celeryPoint: Point = {
+      kind: "point",
+      args: { pointer_type: "Point", pointer_id: pointResource.body.id || 0 }
+    };
+    p.currentStep.args.location = celeryPoint;
+    p.currentSequence.body.body = [p.currentStep];
+    p.resources = buildResourceIndex([p.currentSequence, pointResource]).index;
+    const tma = ordinaryMoveAbs(p);
+    expect(tma.getAxisValue("x")).toBe("987");
+  });
+
+  describe("updateArgs", () => {
+    it("calls OVERWRITE_RESOURCE for the correct resource", () => {
+      const tma = ordinaryMoveAbs();
+      tma.updateArgs({});
+      expect(tma.props.dispatch).toHaveBeenCalled();
+      const payload =
+        expect.objectContaining({ uuid: tma.props.currentSequence.uuid });
+      const action =
+        expect.objectContaining({ type: "OVERWRITE_RESOURCE", payload });
+      expect(tma.props.dispatch).toHaveBeenCalledWith(action);
+    });
+  });
+
+  describe("handleSelect", () => {
+    it("handles empty selections", () => {
+      const tma = ordinaryMoveAbs();
+      tma.updateArgs = jest.fn();
+      tma.handleSelect({ kind: "None", body: undefined });
+      const location = { kind: "coordinate", args: { x: 0, y: 0, z: 0, } };
+      expect(tma.updateArgs).toHaveBeenCalledWith({ location });
+    });
+
+    it("handles point / tool selections", () => {
+      const tma = ordinaryMoveAbs();
+      tma.updateArgs = jest.fn();
+      [fakePoint(), fakeTool()].map(selection => {
+        tma.handleSelect(selection);
+        const location = convertDropdownToLocation(selection);
+        expect(tma.updateArgs).toHaveBeenCalledWith({ location });
+      });
+    });
+
+    it("handles bound / unbound variables", () => {
+      const tma = ordinaryMoveAbs();
+      set(tma.props, "dispatch", jest.fn());
+      const x: MoveAbsDropDownContents = {
+        kind: "BoundVariable",
+        body: { celeryNode: { args: {} } } as SequenceMeta
+      };
+      tma.handleSelect(x);
+      expect(tma.props.dispatch).toHaveBeenCalled();
+      const action = expect.objectContaining({ type: "OVERWRITE_RESOURCE" });
+      expect(tma.props.dispatch).toHaveBeenCalledWith(action);
+    });
   });
 });

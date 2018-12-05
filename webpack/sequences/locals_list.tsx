@@ -1,39 +1,48 @@
 import * as React from "react";
-import {
-  ParentVariableFormProps,
-  guessXYZ,
-  PARENT,
-  changeAxis,
-  LocalsListProps,
-  extractParent,
-  handleVariableChange
-} from "./locals_list_support";
 import { Row, Col, FBSelect } from "../ui";
 import { t } from "i18next";
 import {
   generateList
 } from "./step_tiles/tile_move_absolute/generate_list";
-import {
-  formatSelectedDropdown
-} from "./step_tiles/tile_move_absolute/format_selected_dropdown";
-import {
-  EMPTY_COORD,
-  handleSelect
-} from "./step_tiles/tile_move_absolute/handle_select";
 import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
+import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_select";
+import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
+import { defensiveClone } from "../util/util";
+import {
+  Xyz,
+  ScopeDeclaration,
+  TaggedSequence,
+} from "farmbot";
+import { overwrite } from "../api/crud";
+
+interface AxisEditProps {
+  sequence: TaggedSequence;
+  axis: Xyz;
+  onChange: (sd: ScopeDeclaration) => void;
+}
+
+export const manuallyEditAxis = ({ sequence, axis, onChange }: AxisEditProps) =>
+  (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const num = parseFloat(e.currentTarget.value);
+    const locals = defensiveClone(sequence.body.args.locals);
+    locals.body = locals.body || [];
+    const [declaration] = locals.body;
+    if (declaration &&
+      declaration.kind === "variable_declaration" &&
+      declaration.args.data_value.kind === "coordinate") {
+      declaration.args.data_value.args[axis] = num;
+      !isNaN(num) && onChange(locals);
+    }
+  };
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
 export const ParentVariableForm =
-  ({ parent, sequence, resources, onChange }: ParentVariableFormProps) => {
-    const data_value = (parent.kind == "variable_declaration") ?
-      parent.args.data_value : EMPTY_COORD;
-    const ddiLabel = formatSelectedDropdown(resources, data_value);
-    const { x, y, z } = guessXYZ(ddiLabel.label, parent, resources);
-
-    const isDisabled = (parent.kind == "parameter_declaration") ||
-      data_value.kind !== "coordinate";
-
+  (props: ParentVariableFormProps) => {
+    const { sequence, resources, onChange } = props;
+    const { x, y, z } = props.parent.location;
+    const isDisabled = !props.parent.editable;
+    const list = generateList(resources, [PARENT]);
     return <div className="parent-variable-form">
       <Row>
         <Col xs={12}>
@@ -41,15 +50,15 @@ export const ParentVariableForm =
           <FBSelect
             key={JSON.stringify(sequence)}
             allowEmpty={true}
-            list={generateList(resources, [PARENT])}
-            selectedItem={ddiLabel}
-            onChange={ddi => onChange(handleSelect(resources, ddi))} />
+            list={list}
+            selectedItem={props.parent.dropdown}
+            onChange={(ddi) => onChange(convertDDItoScopeDeclr(ddi))} />
         </Col>
       </Row>
       <Row>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("x", onChange, data_value)}
+            onCommit={manuallyEditAxis({ ...props, axis: "x" })}
             disabled={isDisabled}
             name="location-x-variabledeclr"
             value={"" + x}>
@@ -58,7 +67,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("y", onChange, data_value)}
+            onCommit={manuallyEditAxis({ ...props, axis: "y" })}
             disabled={isDisabled}
             name="location-y-variabledeclr"
             value={"" + y}>
@@ -67,7 +76,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={changeAxis("z", onChange, data_value)}
+            onCommit={manuallyEditAxis({ ...props, axis: "z" })}
             name="location-z-variabledeclr"
             disabled={isDisabled}
             value={"" + z}>
@@ -78,15 +87,27 @@ export const ParentVariableForm =
     </div>;
   };
 
+interface LocalListCbProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+}
+
+export const localListCallback =
+  ({ dispatch, sequence }: LocalListCbProps) => (locals: ScopeDeclaration) => {
+    const clone = defensiveClone(sequence.body); // unfortunate
+    clone.args.locals = locals;
+    dispatch(overwrite(sequence, clone));
+  };
+
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
-  const parent = extractParent(props.sequence.body.args.locals.body);
+  const { parent } = props.variableData;
   return parent
     ? <ParentVariableForm
       parent={parent}
       sequence={props.sequence}
       resources={props.resources}
-      onChange={handleVariableChange(props.dispatch, props.sequence)} />
+      onChange={localListCallback(props)} />
     : <div />;
 };

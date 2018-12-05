@@ -15,7 +15,7 @@ import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 import { LocalsList } from "./locals_list";
 import { Feature } from "../devices/interfaces";
-import { extractParent } from "./locals_list_support";
+import { extractParent } from "../resources/sequence_meta";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -85,19 +85,23 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   return <div className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch} syncStatus={props.syncStatus} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
-    {props.shouldDisplay(Feature.variables) &&
-      <LocalsList {...sequenceAndDispatch} resources={props.resources} />}
+    <LocalsList
+      variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
+      sequence={sequence}
+      dispatch={dispatch}
+      resources={props.resources} />
   </div>;
 };
 
 export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   get stepSectionHeight() {
+    const { resources, sequence } = this.props;
     const variable = this.props.shouldDisplay(Feature.variables)
-      ? !!extractParent(this.props.sequence.body.args.locals.body)
-      : false;
+      ? !!extractParent(resources, sequence.uuid) : false;
     return `calc(100vh - ${variable ? "38" : "25"}rem)`;
   }
+
   render() {
     const { dispatch, sequence } = this.props;
     return <div className="sequence-editor-content">

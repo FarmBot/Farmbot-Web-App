@@ -24,7 +24,8 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
 
   NULL_CHOICE = Object.freeze({
     label: this.props.customNullLabel || "None",
-    value: ""
+    value: "",
+    isNull: true
   } as DropDownItem);
 
   get item() { return this.props.selectedItem || this.NULL_CHOICE; }

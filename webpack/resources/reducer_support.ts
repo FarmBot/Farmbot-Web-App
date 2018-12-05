@@ -9,12 +9,8 @@ import { sequenceReducer as sequences } from "../sequences/reducer";
 import { RestResources } from "./interfaces";
 import { isTaggedResource } from "./tagged_resources";
 import { arrayWrap, arrayUnwrap } from "./util";
-import {
-  TaggedResource,
-  ScopeDeclarationBodyItem,
-  TaggedSequence
-} from "farmbot";
-import { ResourceIndex, VariableNameSet } from "./interfaces";
+import { TaggedResource, TaggedSequence } from "farmbot";
+import { ResourceIndex } from "./interfaces";
 import {
   sanitizeNodes
 } from "../sequences/step_tiles/tile_move_absolute/variables_support";
@@ -26,6 +22,7 @@ import {
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
+import { createSequenceMeta } from "./sequence_meta";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -69,15 +66,6 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
-export const createVariableNameLookup =
-  (acc: VariableNameSet, { args }: ScopeDeclarationBodyItem) => {
-    return { ...acc, ...({ [args.label]: { label: args.label } }) };
-  };
-
-export function variableLookupTable(tr: TaggedSequence): VariableNameSet {
-  return (tr.body.args.locals.body || []).reduce(createVariableNameLookup, {});
-}
-
 export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
   ids.map(id => {
     const uuid = i.byKindAndId[joinKindAndId("Sequence", id)];
@@ -91,7 +79,7 @@ export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: Resou
 export const updateOtherSequenceIndexes =
   (tr: TaggedSequence, i: ResourceIndex) => {
     i.references[tr.uuid] = tr;
-    i.sequenceMeta[tr.uuid] = variableLookupTable(tr);
+    i.sequenceMetas[tr.uuid] = createSequenceMeta(i, tr);
   };
 
 const reindexSequences = (i: ResourceIndex) => (s: TaggedSequence) => {

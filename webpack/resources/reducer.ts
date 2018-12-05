@@ -32,7 +32,7 @@ export const emptyState = (): RestResources => {
     },
     loaded: [],
     index: {
-      all: {}, // TODO: Make this a map to reduce iterations?
+      all: {},
       byKind: {
         WebcamFeed: {},
         Device: {},
@@ -61,7 +61,7 @@ export const emptyState = (): RestResources => {
       },
       byKindAndId: {},
       references: {},
-      sequenceMeta: {},
+      sequenceMetas: {},
       inUse: {
         "Regimen.FarmEvent": {},
         "Sequence.FarmEvent": {},
@@ -86,7 +86,10 @@ export let resourceReducer =
       const before = defensiveClone(target.body);
       merge(target, { body: update });
       const didChange = !equals(before, target.body);
-      didChange && mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
+      if (didChange) {
+        mutateSpecialStatus(target.uuid, s.index, SpecialStatus.DIRTY);
+        indexUpsert(s.index, [target], "ongoing");
+      }
       return s;
     })
     .add<EditResourceParams>(Actions.OVERWRITE_RESOURCE, (s, { payload }) => {

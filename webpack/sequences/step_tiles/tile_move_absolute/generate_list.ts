@@ -5,7 +5,7 @@ import {
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
 import { PointerTypeName } from "../../../interfaces";
-import { PointerType, TaggedTool } from "farmbot";
+import { TaggedTool, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../../ui/index";
 import { Vector3 } from "farmbot/dist";
 import { TOOL } from "./interfaces";
@@ -30,22 +30,26 @@ export const PARENT_DDI: DropDownItem[] = [{
   headingId: "identifier",
 }];
 
-export const NAME_MAP: Record<PointerTypeName | typeof TOOL, string> = {
+type DropdownHeadingId = PointerTypeName | typeof TOOL;
+
+export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "GenericPointer": "Map Points",
   "Plant": "Plants",
   "ToolSlot": "Tool Slots",
   "Tool": "Tools",
 };
 
-const HEADINGS: DropDownItem[] = [
+const HEADINGS: () => DropDownItem[] = () => [
   ...Object.keys(NAME_MAP)
     .filter(x => x !== "ToolSlot")
-    .map((name: PointerTypeName | typeof TOOL) => ({
-      label: t(NAME_MAP[name]),
-      heading: true,
-      value: 0,
-      headingId: name
-    }))
+    .map((name: DropdownHeadingId) => {
+      return ({
+        label: t(NAME_MAP[name]),
+        heading: true,
+        value: 0,
+        headingId: name
+      });
+    })
 ];
 
 export function generateList(input: ResourceIndex,
@@ -53,13 +57,13 @@ export function generateList(input: ResourceIndex,
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllActivePoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] = activeTools(input)
-    .map(tool => formatTools(tool));
+  const toolDDI: DropDownItem[] =
+    activeTools(input).map(tool => formatTools(tool));
   return _(points)
-    .map(formatPoint())
+    .map(formatPoint)
     .concat(toolDDI)
     .filter(x => parseInt("" + x.value) > 0)
-    .concat(HEADINGS)
+    .concat(HEADINGS())
     .sortBy(SORT_KEY)
     .reverse()
     .concat({ label: t("Other"), heading: true, value: 0, headingId: "Other" })
@@ -67,7 +71,7 @@ export function generateList(input: ResourceIndex,
     .value();
 }
 
-const formatPoint = () => (p: PointerType): DropDownItem => {
+export const formatPoint = (p: TaggedPoint): DropDownItem => {
   const { id, name, pointer_type, x, y, z } = p.body;
   return {
     label: dropDownName(name, { x, y, z }),
