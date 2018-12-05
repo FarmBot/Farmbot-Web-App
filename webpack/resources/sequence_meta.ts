@@ -190,8 +190,10 @@ export const convertDropdownToLocation =
       case "Tool":
         return { kind: "tool", args: { tool_id: input.body.id || 0 } };
       case "Point":
-        const args =
-          ({ pointer_id: input.body.id || 0, pointer_type: input.kind });
+        const args = {
+          pointer_id: input.body.id || 0,
+          pointer_type: input.body.pointer_type
+        };
         return { kind: "point", args };
       case "BoundVariable": return input.body.variableValue;
       default: return EMPTY_COORD;

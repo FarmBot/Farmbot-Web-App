@@ -17,7 +17,5 @@ export function TileMoveAbsSelect(props: TileMoveAbsProps) {
     allowEmpty={true}
     list={list}
     selectedItem={formatSelectedDropdown(resources, i)}
-    onChange={(ddi) => {
-      props.onChange(convertDdiToCelery(resources, ddi, props.uuid));
-    }} />;
+    onChange={(d) => props.onChange(convertDdiToCelery(resources, d, props.uuid))} />;
 }

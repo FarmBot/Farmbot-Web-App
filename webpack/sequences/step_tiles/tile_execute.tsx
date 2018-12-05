@@ -27,12 +27,13 @@ const assignVariable =
       sequence: currentSequence,
       index: index,
       executor(step) {
-        if (step.kind === "execute") {
-          step.body = [{
-            kind: "variable_declaration",
-            args: { label: "parent", data_value }
-          }];
-        }
+        step.body = [{
+          kind: "variable_declaration",
+          args: {
+            label: "parent",
+            data_value
+          }
+        }];
       }
     }));
   };
