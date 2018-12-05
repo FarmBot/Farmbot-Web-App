@@ -13,8 +13,29 @@ import { SequenceSelectBox } from "../sequence_select_box";
 import { ShouldDisplay } from "../../devices/interfaces";
 import { ParentSelector } from "./tile_execute/parent_selector";
 import { findSequenceById } from "../../resources/selectors_by_id";
-import { extractParent } from "../../resources/sequence_meta";
-
+import {
+  extractParent,
+  convertDropdownToLocation,
+  MoveAbsDropDownContents
+} from "../../resources/sequence_meta";
+const assignVariable =
+  (props: ExecBlockParams) => (contents: MoveAbsDropDownContents) => {
+    const { dispatch, currentSequence, currentStep, index } = props;
+    const data_value = convertDropdownToLocation(contents);
+    dispatch(editStep({
+      step: currentStep,
+      sequence: currentSequence,
+      index: index,
+      executor(step) {
+        if (step.kind === "execute") {
+          step.body = [{
+            kind: "variable_declaration",
+            args: { label: "parent", data_value }
+          }];
+        }
+      }
+    }));
+  };
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
     return <RefactoredExecuteBlock currentStep={p.currentStep}
@@ -91,10 +112,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
                 currentUuid={currentSequence.uuid}
                 resources={resources}
                 selected={selected.variableValue}
-                onChange={() => {
-                  // UNFINISHED
-                  console.error("TODO: tile_execute.tsx");
-                }} />
+                onChange={assignVariable(this.props)} />
             </Col>}
         </Row>
       </StepContent>
