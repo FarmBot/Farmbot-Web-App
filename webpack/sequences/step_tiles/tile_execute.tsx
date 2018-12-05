@@ -86,8 +86,8 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
       extractParent(resources, calleeUuid) : undefined;
     const whatever: VariableDeclaration | undefined =
       (this.props.currentStep.body || [])[0];
-    const selectedParameter =
-      whatever ? whatever.args.data_value : EMPTY_COORD;
+    const selectedParameter = whatever ?
+      whatever.args.data_value : EMPTY_COORD;
     return <StepWrapper>
       <StepHeader
         className={className}

@@ -10,7 +10,8 @@ import { saveOK } from "../actions";
 import { hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
-  fakeSequence
+  fakeSequence,
+  fakePlant
 } from "../../__test_support__/fake_state/resources";
 import * as _ from "lodash";
 import { resourceReducer } from "../reducer";
@@ -136,6 +137,14 @@ describe("findPlant()", () => {
     expect(find).toThrowError();
     expect(console.warn).toBeCalled();
   });
+
+  it("finds a plant", () => {
+    const plant = fakePlant();
+    plant.body.id = 333;
+    const result = Selector
+      .findPlant(buildResourceIndex([plant]).index, plant.uuid);
+    expect(result.uuid).toBe(plant.uuid);
+  });
 });
 
 describe("selectCurrentToolSlot()", () => {
@@ -153,7 +162,29 @@ describe("getSequenceByUUID()", () => {
     expect(console.warn).toBeCalled();
   });
 });
+describe("getUserAccountSettings", () => {
+  it("throws exceptions when user is not loaded", () => {
+    const boom = () => Selector
+      .getUserAccountSettings(buildResourceIndex([]).index);
+    expect(boom)
+      .toThrow("PROBLEM: Tried to fetch user before it was available.");
+  });
+});
+describe("maybeGetSequence", () => {
+  it("returns undefined", () => {
+    const i = buildResourceIndex([]);
+    const result = Selector.maybeGetSequence(i.index, undefined);
+    expect(result).toBe(undefined);
+  });
 
+  it("returns a sequence", () => {
+    const s = fakeSequence();
+    const i = buildResourceIndex([s]);
+    const result = Selector.maybeGetSequence(i.index, s.uuid);
+    expect(result).toBeTruthy();
+    result && expect(result.uuid).toBe(s.uuid);
+  });
+})
 describe("findAllById()", () => {
   it("returns", () => {
     const result = Selector.findAllById(fakeIndex, [23], "Sequence");
