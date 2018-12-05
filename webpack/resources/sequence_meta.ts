@@ -61,7 +61,7 @@ const determineLocation =
 
 /** Given a CeleryScript variable declaration and a resource index
  * Returns a DropDownItem representation of said variable. */
-const determineDropdown =
+export const determineDropdown =
   (n: ScopeDeclarationBodyItem, i: ResourceIndex): DropDownItem => {
     if (n.kind === "parameter_declaration") {
       return { label: capitalize(n.args.label), value: "?" };
@@ -166,7 +166,6 @@ export const convertDdiToCelery: ConverterFn = (
   /**UUID of the current sequence (for finding `label` values) */
   currentUuid) => {
   const id = parseInt("" + dropDown.value, 10);
-
   switch (dropDown.headingId) {
     case "GenericPointer":
     case "ToolSlot":
