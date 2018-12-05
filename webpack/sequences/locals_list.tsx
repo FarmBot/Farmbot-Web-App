@@ -7,13 +7,13 @@ import {
 import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
 import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_select";
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
-import { editCurrentSequence } from "./actions";
 import { defensiveClone } from "../util/util";
 import {
   Xyz,
   ScopeDeclaration,
   TaggedSequence,
 } from "farmbot";
+import { overwrite } from "../api/crud";
 
 interface AxisEditProps {
   sequence: TaggedSequence;
@@ -96,7 +96,7 @@ export const localListCallback =
   ({ dispatch, sequence }: LocalListCbProps) => (locals: ScopeDeclaration) => {
     const clone = defensiveClone(sequence.body); // unfortunate
     clone.args.locals = locals;
-    editCurrentSequence(dispatch, sequence, clone);
+    dispatch(overwrite(sequence, clone));
   };
 
 /** List of local variable declarations for a sequence. If no variables are

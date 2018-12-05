@@ -75,9 +75,7 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
   }
 
   render() {
-    const {
-      dispatch, currentStep, index, currentSequence, resources
-    } = this.props;
+    const { dispatch, currentStep, index, currentSequence, resources } = this.props;
     const className = "execute-step";
     const { sequence_id } = currentStep.args;
     const calleeUuid = sequence_id ?
