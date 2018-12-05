@@ -81,7 +81,9 @@ describe("<SequenceEditorMiddleActive/>", () => {
   });
 
   it("deletes", () => {
-    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     clickButton(wrapper, 2, "Delete");
     expect(destroy).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
   });

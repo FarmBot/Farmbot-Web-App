@@ -2,9 +2,10 @@ import * as React from "react";
 import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
-import { splice, move } from "./step_tiles/index";
+import { splice, move } from "./step_tiles";
 import { t } from "i18next";
-import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui/index";
+import { push } from "../history";
+import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
@@ -51,7 +52,10 @@ const SequenceBtnGroup = ({ dispatch, sequence, syncStatus }: {
       onClick={() => execSequence(sequence.body)} />
     <button
       className="fb-button red"
-      onClick={() => dispatch(destroy(sequence.uuid))}>
+      onClick={() => {
+        dispatch(destroy(sequence.uuid)).then(
+          () => push("/app/sequences/"));
+      }}>
       {t("Delete")}
     </button>
     <button
