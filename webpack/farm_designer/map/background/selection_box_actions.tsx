@@ -1,15 +1,17 @@
 import { isNumber } from "lodash";
-import { TaggedPlant, AxisNumberProperty } from "../interfaces";
+import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { Actions } from "../../../constants";
 import { GardenMapState } from "../../interfaces";
+import { getMode } from "../util";
+import { history } from "../../../history";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
   plants: TaggedPlant[],
   box: SelectionBoxData | undefined
 ): string[] | undefined => {
-  const selected = plants.filter(p => {
+  const arraySelected = plants.filter(p => {
     if (box &&
       isNumber(box.x0) && isNumber(box.y0) &&
       isNumber(box.x1) && isNumber(box.y1)) {
@@ -21,7 +23,7 @@ export const getSelected = (
       );
     }
   }).map(p => { return p.uuid; });
-  return selected.length > 0 ? selected : undefined;
+  return arraySelected.length > 0 ? arraySelected : undefined;
 };
 
 /** Resize a selection box. */
@@ -42,10 +44,11 @@ export const resizeBox = (props: {
       };
       props.setMapState({ selectionBox: newSelectionBox });
       // Select all plants within the updated selection box
-      props.dispatch({
-        type: Actions.SELECT_PLANT,
-        payload: getSelected(props.plants, newSelectionBox)
-      });
+      const payload = getSelected(props.plants, newSelectionBox);
+      if (payload && getMode() === Mode.none) {
+        history.push("/app/designer/plants/select");
+      }
+      props.dispatch({ type: Actions.SELECT_PLANT, payload });
     }
   }
 };

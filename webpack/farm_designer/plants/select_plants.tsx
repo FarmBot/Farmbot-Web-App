@@ -14,15 +14,11 @@ import {
 } from "./designer_panel";
 
 export function mapStateToProps(props: Everything) {
+  const { selectedPlants } = props.resources.consumers.farm_designer;
   return {
-    selected: props
-      .resources
-      .consumers
-      .farm_designer
-      .selectedPlants,
+    selected: selectedPlants,
     plants: getPlants(props.resources),
     dispatch: props.dispatch,
-    currentIcon: props.resources.consumers.farm_designer.hoveredPlant.icon
   };
 }
 
@@ -30,40 +26,26 @@ export interface SelectPlantsProps {
   plants: TaggedPlant[];
   dispatch: Function;
   selected: string[];
-  currentIcon: string;
 }
 
-interface SelectPlantsState {
-  stashedUuid: string | undefined;
-  stashedIcon: string;
-}
 const YOU_SURE = "Are you sure you want to delete {{length}} plants?";
 
 @connect(mapStateToProps)
 export class SelectPlants
-  extends React.Component<SelectPlantsProps, SelectPlantsState> {
+  extends React.Component<SelectPlantsProps, {}> {
 
   componentDidMount() {
-    const { dispatch, selected, currentIcon } = this.props;
-    this.setState({
-      stashedUuid: selected ? selected[0] : undefined,
-      stashedIcon: currentIcon
-    });
-    unselectPlant(dispatch)();
-  }
-
-  componentWillUnmount() {
-    this.unstashSelectedPlant();
-  }
-
-  unstashSelectedPlant = () => {
-    const { stashedUuid, stashedIcon } = this.state;
-    this.props.dispatch({ type: Actions.SELECT_PLANT, payload: [stashedUuid] });
-    this.props.dispatch({
-      type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-        plantUUID: stashedUuid, icon: stashedIcon
-      }
-    });
+    const { dispatch, selected } = this.props;
+    if (selected && selected.length == 1) {
+      unselectPlant(dispatch)();
+    } else {
+      dispatch({
+        type: Actions.TOGGLE_HOVERED_PLANT, payload: {
+          plantUUID: undefined, icon: ""
+        }
+      });
+      dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
+    }
   }
 
   destroySelected = (plantUUIDs: string[]) => {
@@ -112,7 +94,7 @@ export class SelectPlants
         panelName={"plant-selection"}
         panelColor={"green"}
         title={t("Select plants")}
-        onBack={this.unstashSelectedPlant}
+        backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
 
       <this.ActionButtons />

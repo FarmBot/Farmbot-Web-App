@@ -1,5 +1,6 @@
 jest.mock("../../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
+  closePlantInfo: jest.fn(),
 }));
 
 import { Mode } from "../interfaces";
@@ -8,6 +9,10 @@ jest.mock("../util", () => ({
   getMode: () => mockMode,
   getMapSize: () => ({ h: undefined, w: undefined }),
   getGardenCoordinates: jest.fn(),
+  transformXY: jest.fn(() => ({ qx: 0, qy: 0 })),
+  transformForQuadrant: jest.fn(),
+  maybeNoPointer: jest.fn(),
+  round: jest.fn(),
 }));
 
 jest.mock("../layers/plants/plant_actions", () => ({
@@ -31,10 +36,10 @@ jest.mock("../../plants/move_to", () => ({ chooseLocation: jest.fn() }));
 
 import * as React from "react";
 import { GardenMap } from "../garden_map";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
-import { unselectPlant } from "../../actions";
+import { unselectPlant, closePlantInfo } from "../../actions";
 import {
   dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
 } from "../layers/plants/plant_actions";
@@ -47,6 +52,7 @@ import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
   fakeDesignerState
 } from "../../../__test_support__/fake_designer_state";
+import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -220,6 +226,24 @@ describe("<GardenMap/>", () => {
     const e = DEFAULT_EVENT;
     wrapper.find(".drop-area").simulate("dragEnter", e);
     expect(e.preventDefault).toHaveBeenCalled();
+  });
+
+  it("closes panel", () => {
+    mockMode = Mode.boxSelect;
+    const p = fakeProps();
+    p.designer.selectedPlants = undefined;
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.instance().closePanel();
+    expect(closePlantInfo).toHaveBeenCalled();
+  });
+
+  it("doesn't close panel", () => {
+    mockMode = Mode.boxSelect;
+    const p = fakeProps();
+    p.designer.selectedPlants = [fakePlant().uuid];
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.instance().closePanel();
+    expect(closePlantInfo).not.toHaveBeenCalled();
   });
 
   it("calls unselectPlant on unmount", () => {

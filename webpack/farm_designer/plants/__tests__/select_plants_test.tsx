@@ -4,15 +4,21 @@ jest.mock("react-redux", () => ({
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  history: { push: jest.fn() },
+  getPathArray: jest.fn(() => mockPath.split("/"))
+}));
+
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
 }));
 
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import { SelectPlants, SelectPlantsProps } from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
+import { destroy } from "../../../api/crud";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -30,7 +36,6 @@ describe("<SelectPlants />", () => {
       selected: ["plant.1"],
       plants: [plant1, plant2],
       dispatch: jest.fn(),
-      currentIcon: "fake icon"
     };
   }
 
@@ -90,33 +95,15 @@ describe("<SelectPlants />", () => {
       "Are you sure you want to delete 2 plants?");
   });
 
-  it("restores selected on back", () => {
+  it("deletes selected plants", () => {
     const p = fakeProps();
-    p.selected = ["plant.1"];
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
-    wrapper.find(".back-arrow").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { icon: "fake icon", plantUUID: "plant.1" },
-      type: Actions.TOGGLE_HOVERED_PLANT
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: ["plant.1"], type: Actions.SELECT_PLANT
-    });
-  });
-
-  it("unmounts", () => {
-    const p = fakeProps();
-    p.selected = [];
-    const wrapper = shallow(<SelectPlants {...p} />);
-    jest.clearAllMocks();
-    wrapper.unmount();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
-      payload: [undefined]
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_HOVERED_PLANT,
-      payload: { icon: "fake icon", plantUUID: undefined }
-    });
+    expect(wrapper.text()).toContain("Delete");
+    window.confirm = () => true;
+    wrapper.find("button").first().simulate("click");
+    expect(destroy).toHaveBeenCalledWith("plant.1", true);
+    expect(destroy).toHaveBeenCalledWith("plant.2", true);
   });
 });
