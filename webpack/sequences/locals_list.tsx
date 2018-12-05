@@ -9,7 +9,31 @@ import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_s
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
 import { editCurrentSequence } from "./actions";
 import { defensiveClone } from "../util/util";
-import { Xyz, ScopeDeclaration, TaggedSequence } from "farmbot";
+import {
+  Xyz,
+  ScopeDeclaration,
+  TaggedSequence,
+} from "farmbot";
+
+interface AxisEditProps {
+  sequence: TaggedSequence;
+  axis: Xyz;
+  onChange: (sd: ScopeDeclaration) => void;
+}
+
+export const manuallyEditAxis = ({ sequence, axis, onChange }: AxisEditProps) =>
+  (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const num = parseFloat(e.currentTarget.value);
+    const locals = defensiveClone(sequence.body.args.locals);
+    locals.body = locals.body || [];
+    const [declaration] = locals.body;
+    if (declaration &&
+      declaration.kind === "variable_declaration" &&
+      declaration.args.data_value.kind === "coordinate") {
+      declaration.args.data_value.args[axis] = num;
+      !isNaN(num) && onChange(locals);
+    }
+  };
 
 /** When sequence.args.locals actually has variables, render this form.
  * Allows the user to chose the value of the `parent` variable, etc. */
@@ -19,21 +43,6 @@ export const ParentVariableForm =
     const { x, y, z } = props.parent.location;
     const isDisabled = !props.parent.editable;
     const list = generateList(resources, [PARENT]);
-
-    const manuallyEditAxis =
-      (axis: Xyz) => (e: React.SyntheticEvent<HTMLInputElement>) => {
-        const num = parseFloat(e.currentTarget.value);
-        const locals = defensiveClone(sequence.body.args.locals);
-        locals.body = locals.body || [];
-        const [declaration] = locals.body;
-        if (declaration &&
-          declaration.kind === "variable_declaration" &&
-          declaration.args.data_value.kind === "coordinate") {
-          declaration.args.data_value.args[axis] = num;
-          !isNaN(num) && onChange(locals);
-        }
-      };
-
     return <div className="parent-variable-form">
       <Row>
         <Col xs={12}>
@@ -49,7 +58,7 @@ export const ParentVariableForm =
       <Row>
         <Col xs={4}>
           <InputBox
-            onCommit={manuallyEditAxis("x")}
+            onCommit={manuallyEditAxis({ ...props, axis: "x" })}
             disabled={isDisabled}
             name="location-x-variabledeclr"
             value={"" + x}>
@@ -58,7 +67,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={manuallyEditAxis("y")}
+            onCommit={manuallyEditAxis({ ...props, axis: "y" })}
             disabled={isDisabled}
             name="location-y-variabledeclr"
             value={"" + y}>
@@ -67,7 +76,7 @@ export const ParentVariableForm =
         </Col>
         <Col xs={4}>
           <InputBox
-            onCommit={manuallyEditAxis("z")}
+            onCommit={manuallyEditAxis({ ...props, axis: "z" })}
             name="location-z-variabledeclr"
             disabled={isDisabled}
             value={"" + z}>
