@@ -39,8 +39,10 @@ namespace :coverage do
     latest_commit_staging = open_json(REPO_URL).dig("object", "sha")
     puts "staging: #{latest_commit_staging}"
     build_url             = "https://coveralls.io/builds/#{latest_commit_staging}.json"
+    any_build_url         = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
     begin
-      staging_percent     = open_json(build_url).fetch("covered_percent")
+      staging_percent     = open_json(build_url).fetch("covered_percent") ||
+      open_json(any_build_url).fetch("covered_percent")
     rescue OpenURI::HTTPError => exception
       puts exception.message
       puts "Error getting coveralls data."
