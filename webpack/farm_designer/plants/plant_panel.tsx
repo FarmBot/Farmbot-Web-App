@@ -11,7 +11,6 @@ import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
-import { futureFeaturesEnabled } from "../../account/dev_widget";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -67,17 +66,21 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
+const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
+  (dispatch: Function): Promise<void> => {
+    dispatch({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: to.x, y: to.y, z: undefined }
+    });
+    return Promise.resolve();
+  };
+
 const MoveToPlant =
   (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
     <button className="fb-button gray"
-      hidden={!futureFeaturesEnabled() || props.isEditing}
-      onClick={() => {
-        props.dispatch({
-          type: Actions.CHOOSE_LOCATION,
-          payload: { x: props.x, y: props.y, z: undefined }
-        });
-        history.push("/app/designer/plants/move_to");
-      }}>
+      hidden={props.isEditing}
+      onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
+        .then(() => history.push("/app/designer/plants/move_to"))}>
       {t("Move FarmBot to this plant")}
     </button>;
 

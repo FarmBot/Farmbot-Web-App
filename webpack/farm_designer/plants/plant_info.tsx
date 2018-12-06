@@ -21,7 +21,7 @@ export class PlantInfo extends PlantInfoBase {
         panelName={"plant-info"}
         panelColor={"green"}
         title={name}
-        backTo={`/app/designer/${this.plantCategory}`}
+        backTo={"/app/designer/plants"}
         onBack={unselectPlant(this.props.dispatch)}>
         <Link
           to={`/app/designer/${this.plantCategory}/${plantId}/edit`}

@@ -1,7 +1,6 @@
 import {
   TaggedPlantPointer,
   TaggedGenericPointer,
-  TaggedCrop,
   TaggedPlantTemplate
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
@@ -16,7 +15,6 @@ export interface PlantLayerProps {
   dragging: boolean;
   editing: boolean;
   visible: boolean;
-  crops: TaggedCrop[];
   dispatch: Function;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;

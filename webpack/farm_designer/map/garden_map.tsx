@@ -101,18 +101,19 @@ export class GardenMap extends
           selectedPlant: this.props.selectedPlant,
         });
         break;
-      case Mode.boxSelect:
-        startNewSelectionBox({
-          gardenCoords: this.getGardenCoordinates(e),
-          setMapState: this.setMapState,
-          dispatch: this.props.dispatch,
-        });
-        break;
       case Mode.createPoint:
         startNewPoint({
           gardenCoords: this.getGardenCoordinates(e),
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
+        });
+        break;
+      case Mode.boxSelect:
+      default:
+        startNewSelectionBox({
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
         });
         break;
     }
@@ -191,15 +192,6 @@ export class GardenMap extends
           pageY: e.pageY,
         });
         break;
-      case Mode.boxSelect:
-        resizeBox({
-          selectionBox: this.state.selectionBox,
-          plants: this.props.plants,
-          gardenCoords: this.getGardenCoordinates(e),
-          setMapState: this.setMapState,
-          dispatch: this.props.dispatch,
-        });
-        break;
       case Mode.createPoint:
         resizePoint({
           gardenCoords: this.getGardenCoordinates(e),
@@ -208,6 +200,28 @@ export class GardenMap extends
           isDragging: this.state.isDragging,
         });
         break;
+      case Mode.boxSelect:
+      default:
+        resizeBox({
+          selectionBox: this.state.selectionBox,
+          plants: this.props.plants,
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
+        });
+        break;
+    }
+  }
+
+  /** Return to garden (unless selecting more plants). */
+  closePanel = () => {
+    switch (getMode()) {
+      case Mode.boxSelect:
+        return this.props.designer.selectedPlants
+          ? () => { }
+          : closePlantInfo(this.props.dispatch);
+      default:
+        return closePlantInfo(this.props.dispatch);
     }
   }
 
@@ -245,7 +259,7 @@ export class GardenMap extends
     mapTransformProps={this.mapTransformProps}
     getConfigValue={this.props.getConfigValue} />
   Grid = () => <Grid
-    onClick={closePlantInfo(this.props.dispatch)}
+    onClick={this.closePanel()}
     mapTransformProps={this.mapTransformProps} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
@@ -273,7 +287,6 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     visible={!!this.props.showPlants}
     plants={this.props.plants}
-    crops={this.props.crops}
     currentPlant={this.getPlant()}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}

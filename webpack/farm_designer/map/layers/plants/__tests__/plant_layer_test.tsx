@@ -24,7 +24,6 @@ describe("<PlantLayer/>", () => {
       dragging: false,
       editing: false,
       selectedForDel: undefined,
-      crops: [],
       dispatch: jest.fn(),
       zoomLvl: 1,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
@@ -108,5 +107,24 @@ describe("<PlantLayer/>", () => {
     const wrapper = shallow(<PlantLayer {...p} />);
     expect((wrapper.find("GardenPlant").props() as GardenPlantProps).grayscale)
       .toEqual(true);
+  });
+
+  it("allows clicking of unsaved plants", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.plants = [plant];
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect((wrapper.find("Link").props()).style).toEqual({});
+  });
+
+  it("doesn't allow clicking of unsaved plants", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.id = 0;
+    p.plants = [plant];
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect((wrapper.find("Link").props()).style)
+      .toEqual({ pointerEvents: "none" });
   });
 });

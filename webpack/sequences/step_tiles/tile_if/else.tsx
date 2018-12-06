@@ -12,6 +12,7 @@ export function Else(props: IfParams) {
     <Col xs={12} md={12}>
       <label>{t("Execute Sequence")}</label>
       <FBSelect
+        key={JSON.stringify(props.currentSequence)}
         allowEmpty={true}
         list={seqDropDown(props.resources)}
         placeholder="Sequence..."

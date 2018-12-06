@@ -2,6 +2,7 @@ import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
 import { t } from "i18next";
+import { push } from "../../history";
 import { RegimenItem } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
 import { defensiveClone } from "../../util";
@@ -22,7 +23,10 @@ export function ActiveEditor(props: ActiveEditorProps) {
           onClick={() => props.dispatch(save(props.regimen.uuid))} />
         <CopyButton regimen={props.regimen} dispatch={props.dispatch} />
         <button className="fb-button red"
-          onClick={() => props.dispatch(destroy(props.regimen.uuid))}>
+          onClick={() => {
+            props.dispatch(destroy(props.regimen.uuid)).then(
+              () => push("/app/regimens/"));
+          }}>
           {t("Delete")}
         </button>
       </div>

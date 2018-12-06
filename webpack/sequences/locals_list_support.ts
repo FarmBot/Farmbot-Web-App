@@ -12,6 +12,7 @@ export interface LocalsListProps {
   sequence: TaggedSequence;
   resources: ResourceIndex;
   dispatch: Function;
+  onChange: OnChange;
 }
 
 export interface ParentVariableFormProps {

@@ -2,9 +2,10 @@ import * as React from "react";
 import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
-import { splice, move } from "./step_tiles/index";
+import { splice, move } from "./step_tiles";
 import { t } from "i18next";
-import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui/index";
+import { push } from "../history";
+import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
@@ -13,9 +14,8 @@ import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
-import { LocalsList } from "./locals_list";
+import { LocalsList, localListCallback } from "./locals_list";
 import { Feature } from "../devices/interfaces";
-import { extractParent } from "../resources/sequence_meta";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -51,7 +51,10 @@ const SequenceBtnGroup = ({ dispatch, sequence, syncStatus }: {
       onClick={() => execSequence(sequence.body)} />
     <button
       className="fb-button red"
-      onClick={() => dispatch(destroy(sequence.uuid))}>
+      onClick={() => {
+        dispatch(destroy(sequence.uuid)).then(
+          () => push("/app/sequences/"));
+      }}>
       {t("Delete")}
     </button>
     <button
@@ -85,11 +88,13 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   return <div className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch} syncStatus={props.syncStatus} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
-    <LocalsList
-      variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
-      sequence={sequence}
-      dispatch={dispatch}
-      resources={props.resources} />
+    {props.shouldDisplay(Feature.variables) &&
+      <LocalsList
+        variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
+        sequence={sequence}
+        dispatch={dispatch}
+        resources={props.resources}
+        onChange={localListCallback(props)} />}
   </div>;
 };
 
@@ -97,9 +102,9 @@ export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   get stepSectionHeight() {
     const { resources, sequence } = this.props;
-    const variable = this.props.shouldDisplay(Feature.variables)
-      ? !!extractParent(resources, sequence.uuid) : false;
-    return `calc(100vh - ${variable ? "38" : "25"}rem)`;
+    const variables = this.props.shouldDisplay(Feature.variables)
+      && Object.keys(resources.sequenceMetas[sequence.uuid]).length > 0;
+    return `calc(100vh - ${variables ? "38" : "25"}rem)`;
   }
 
   render() {

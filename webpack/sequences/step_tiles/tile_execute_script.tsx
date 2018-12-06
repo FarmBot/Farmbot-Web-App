@@ -70,7 +70,7 @@ export function TileExecuteScript(props: StepParams) {
           <Col xs={12}>
             <label>{t("Package Name")}</label>
             <FBSelect
-              key={farmwareName + selectedFarmwareDDI(farmwareName).value}
+              key={JSON.stringify(props.currentSequence)}
               list={farmwareList(farmwareInfo)}
               selectedItem={selectedFarmwareDDI(farmwareName)}
               onChange={updateStepFarmwareSelection}
