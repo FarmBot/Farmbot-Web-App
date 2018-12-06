@@ -125,6 +125,12 @@ describe("routeMqttData", () => {
     results.status === "ERR" && expect(results.reason).toEqual(Reason.BAD_CHAN);
   });
 
+  it("tosses out resources that the FE does not care about", () => {
+    const results =
+      routeMqttData("bot/device_9/sync/DeviceSerialNumber/1", toBinary({}));
+    expect(results.status).toEqual("SKIP");
+  });
+
   it("handles well formed deletion data", () => {
     const results = routeMqttData("bot/device_9/sync/Sequence/1", toBinary({}));
     expect(results.status).toEqual("DELETE");

@@ -14,6 +14,8 @@ export function decodeBinary(payload: Buffer): SyncPayload {
   return JSON.parse((payload).toString());
 }
 
+const SKIP_THESE = ["DeviceSerialNumber"]; // Only FBOS Cares about this one.
+
 export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<TaggedResource> {
   /** Skip irrelevant messages */
   if (!chan.includes("sync")) { return { status: "SKIP" }; }
@@ -23,7 +25,8 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<Tag
   if (parts.length !== 5) { return { status: "ERR", reason: Reason.BAD_CHAN }; }
 
   const id = parseInt(parts.pop() || "0", 10);
-  const kind = parts.pop() as TaggedResource["kind"]; // TODO FIXME RC 31OCT18
+  const kind = parts.pop() as TaggedResource["kind"];
+  if (SKIP_THESE.includes(kind)) { return { status: "SKIP" }; }
   const { body, args } = decodeBinary(payload);
 
   if (body) {
