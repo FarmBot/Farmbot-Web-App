@@ -18,13 +18,10 @@ jest.mock("../../devices/actions", () => ({
   execSequence: jest.fn()
 }));
 
-let mockParent = false;
-jest.mock("../../resources/sequence_meta", () => ({
-  extractParent: () => mockParent,
-  createSequenceMeta: jest.fn(),
+jest.mock("../locals_list", () => ({
+  LocalsList: () => <div />,
+  localListCallback: jest.fn(),
 }));
-
-jest.mock("../locals_list", () => ({ LocalsList: () => <div /> }));
 
 import * as React from "react";
 import {
@@ -40,11 +37,12 @@ import { destroy, save, edit } from "../../api/crud";
 import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, Coordinate } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
+import { VariableNameSet } from "../../resources/interfaces";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const sequence = fakeSequence();
@@ -108,9 +106,9 @@ describe("<SequenceEditorMiddleActive/>", () => {
     });
   });
 
-  it("has correct height with variables", () => {
-    mockParent = false;
+  it("has correct height without variable form", () => {
     const p = fakeProps();
+    p.resources.sequenceMetas = { [p.sequence.uuid]: {} };
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style).toEqual({
@@ -118,9 +116,28 @@ describe("<SequenceEditorMiddleActive/>", () => {
     });
   });
 
+  const fakeVariableNameSet = (): VariableNameSet => {
+    const label = "parent";
+    const variableValue: Coordinate = {
+      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+    };
+    return {
+      [label]: {
+        celeryNode: {
+          kind: "variable_declaration",
+          args: { label, data_value: variableValue }
+        },
+        dropdown: { label: "", value: "" },
+        location: { x: 0, y: 0, z: 0 },
+        editable: true,
+        variableValue,
+      }
+    };
+  };
+
   it("has correct height with variable form", () => {
-    mockParent = true;
     const p = fakeProps();
+    p.resources.sequenceMetas = { [p.sequence.uuid]: fakeVariableNameSet() };
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style)

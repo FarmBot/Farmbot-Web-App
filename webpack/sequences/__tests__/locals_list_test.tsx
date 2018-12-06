@@ -41,7 +41,8 @@ const fakeProps = (): LocalsListProps => {
     variableData: {},
     sequence: sequence,
     resources: buildResourceIndex([sequence]).index,
-    dispatch: jest.fn()
+    dispatch: jest.fn(),
+    onChange: jest.fn(),
   };
 };
 

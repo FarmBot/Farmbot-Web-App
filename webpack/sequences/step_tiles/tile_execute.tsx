@@ -3,41 +3,37 @@ import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { Row, Col, DropDownItem } from "../../ui/index";
-import { Execute, VariableDeclaration } from "farmbot/dist";
+import {
+  Execute, ScopeDeclaration, VariableDeclaration, ScopeDeclarationBodyItem
+} from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
-import { ShouldDisplay } from "../../devices/interfaces";
-import { ParentSelector } from "./tile_execute/parent_selector";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { findSequenceById } from "../../resources/selectors_by_id";
-import {
-  extractParent,
-  convertDropdownToLocation,
-  MoveAbsDropDownContents
-} from "../../resources/sequence_meta";
-import { EMPTY_COORD } from "./tile_move_absolute/handle_select";
+import { betterCompact } from "../../util";
+import { LocalsList } from "../locals_list";
+
+const isVariableDeclaration =
+  (x: ScopeDeclarationBodyItem): x is VariableDeclaration =>
+    x.kind === "variable_declaration";
+
 const assignVariable =
-  (props: ExecBlockParams) => (contents: MoveAbsDropDownContents) => {
+  (props: ExecBlockParams) => (scopeDeclaration: ScopeDeclaration) => {
     const { dispatch, currentSequence, currentStep, index } = props;
-    const data_value = convertDropdownToLocation(contents);
+    const declarations = betterCompact((scopeDeclaration.body || [])
+      .map(x => isVariableDeclaration(x) ? x : undefined));
     dispatch(editStep({
       step: currentStep,
       sequence: currentSequence,
       index: index,
-      executor(step) {
-        step.body = [{
-          kind: "variable_declaration",
-          args: {
-            label: "parent",
-            data_value
-          }
-        }];
-      }
+      executor(step) { step.body = declarations; }
     }));
   };
+
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
     return <RefactoredExecuteBlock currentStep={p.currentStep}
@@ -82,12 +78,9 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
     const { sequence_id } = currentStep.args;
     const calleeUuid = sequence_id ?
       findSequenceById(resources, sequence_id).uuid : undefined;
-    const calledSequence = calleeUuid ?
-      extractParent(resources, calleeUuid) : undefined;
-    const whatever: VariableDeclaration | undefined =
-      (this.props.currentStep.body || [])[0];
-    const selectedParameter = whatever ?
-      whatever.args.data_value : EMPTY_COORD;
+    const calledSequenceVariableData =
+      (this.props.shouldDisplay(Feature.variables) && calleeUuid) ?
+        resources.sequenceMetas[calleeUuid] : undefined;
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -108,14 +101,13 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
           </Col>
         </Row>
         <Row>
-          {calledSequence &&
-            calledSequence.celeryNode.kind == "parameter_declaration" &&
+          {calledSequenceVariableData &&
             <Col xs={12}>
-              <ParentSelector
-                targetUuid={calleeUuid || "NOT_SET_YET"}
-                currentUuid={currentSequence.uuid}
+              <LocalsList
+                variableData={calledSequenceVariableData}
+                sequence={currentSequence}
+                dispatch={dispatch}
                 resources={resources}
-                selected={selectedParameter}
                 onChange={assignVariable(this.props)} />
             </Col>}
         </Row>

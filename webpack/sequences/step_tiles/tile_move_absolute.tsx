@@ -27,7 +27,6 @@ import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { TileMoveAbsSelect, InputBox, EMPTY_COORD } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
-// import { extractParent } from "../locals_list";
 import {
   StepWrapper,
   StepHeader,

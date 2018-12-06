@@ -7,7 +7,7 @@ import {
 import { InputBox } from "./step_tiles/tile_move_absolute/input_box";
 import { convertDDItoScopeDeclr } from "./step_tiles/tile_move_absolute/handle_select";
 import { ParentVariableFormProps, LocalsListProps, PARENT } from "./locals_list_support";
-import { defensiveClone } from "../util/util";
+import { defensiveClone, betterCompact } from "../util/util";
 import {
   Xyz,
   ScopeDeclaration,
@@ -52,7 +52,7 @@ export const ParentVariableForm =
             allowEmpty={true}
             list={list}
             selectedItem={props.parent.dropdown}
-            onChange={(ddi) => onChange(convertDDItoScopeDeclr(ddi))} />
+            onChange={ddi => onChange(convertDDItoScopeDeclr(ddi))} />
         </Col>
       </Row>
       <Row>
@@ -102,12 +102,13 @@ export const localListCallback =
 /** List of local variable declarations for a sequence. If no variables are
  * found, shows nothing. */
 export const LocalsList = (props: LocalsListProps) => {
-  const { parent } = props.variableData;
-  return parent
-    ? <ParentVariableForm
-      parent={parent}
-      sequence={props.sequence}
-      resources={props.resources}
-      onChange={localListCallback(props)} />
-    : <div />;
+  return <div className="locals-list">
+    {betterCompact(Object.values(props.variableData)).map(val =>
+      <ParentVariableForm
+        key={val.celeryNode.args.label}
+        parent={val}
+        sequence={props.sequence}
+        resources={props.resources}
+        onChange={props.onChange} />)}
+  </div>;
 };

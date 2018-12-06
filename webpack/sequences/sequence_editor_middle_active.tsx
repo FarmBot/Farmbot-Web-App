@@ -14,9 +14,8 @@ import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
-import { LocalsList } from "./locals_list";
+import { LocalsList, localListCallback } from "./locals_list";
 import { Feature } from "../devices/interfaces";
-import { extractParent } from "../resources/sequence_meta";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -94,7 +93,8 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
         variableData={props.resources.sequenceMetas[sequence.uuid] || {}}
         sequence={sequence}
         dispatch={dispatch}
-        resources={props.resources} />}
+        resources={props.resources}
+        onChange={localListCallback(props)} />}
   </div>;
 };
 
@@ -102,9 +102,9 @@ export class SequenceEditorMiddleActive extends
   React.Component<ActiveMiddleProps, {}> {
   get stepSectionHeight() {
     const { resources, sequence } = this.props;
-    const variable = this.props.shouldDisplay(Feature.variables)
-      ? !!extractParent(resources, sequence.uuid) : false;
-    return `calc(100vh - ${variable ? "38" : "25"}rem)`;
+    const variables = this.props.shouldDisplay(Feature.variables)
+      && Object.keys(resources.sequenceMetas[sequence.uuid]).length > 0;
+    return `calc(100vh - ${variables ? "38" : "25"}rem)`;
   }
 
   render() {
