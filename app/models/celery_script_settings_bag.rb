@@ -15,8 +15,9 @@ module CeleryScriptSettingsBag
     end
   end
 
+  MOST_VARIABLES        = [:tool, :coordinate, :point]
   # List of all celery script nodes that can be used as a varaible...
-  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
+  ANY_VARIABLE          = MOST_VARIABLES + [:identifier]
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
@@ -252,6 +253,7 @@ module CeleryScriptSettingsBag
         check_resource_type(x, resource_type, resource_id)
       end
       .node(:install_first_party_farmware, [])
+      .node(:farmevent_validation, [], MOST_VARIABLES)
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
