@@ -15,9 +15,8 @@ module CeleryScriptSettingsBag
     end
   end
 
-  MOST_VARIABLES        = [:tool, :coordinate, :point]
   # List of all celery script nodes that can be used as a varaible...
-  ANY_VARIABLE          = MOST_VARIABLES + [:identifier]
+  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
@@ -242,18 +241,23 @@ module CeleryScriptSettingsBag
       .node(:remove_farmware,       [:package])
       .node(:scope_declaration,     [], [:parameter_declaration, :variable_declaration])
       .node(:identifier,            [:label])
-      .node(:variable_declaration,  [:label, :data_value], [])
+      .node(:variable_declaration,  [:label, :data_value], []) do |node|
+        isnt_sequence = (node.parent.kind != "sequence")
+        if isnt_sequence && node.args.fetch(:data_value).kind == "identifier"
+            binding.pry
+        end
+      end
       .node(:parameter_declaration, [:label, :data_type], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
+      .node(:install_first_party_farmware, [])
+      .node(:farm_event, [], [:variable_declaration]) # NEVER SAVE THIS NODE ITS PRIVATE
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch("resource_type").value
         resource_id   = x.args.fetch("resource_id").value
         check_resource_type(x, resource_type, resource_id)
       end
-      .node(:install_first_party_farmware, [])
-      .node(:farmevent_validation, [], MOST_VARIABLES)
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
