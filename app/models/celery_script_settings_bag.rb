@@ -239,12 +239,7 @@ module CeleryScriptSettingsBag
       .node(:remove_farmware,       [:package])
       .node(:scope_declaration,     [], [:parameter_declaration, :variable_declaration])
       .node(:identifier,            [:label])
-      .node(:variable_declaration,  [:label, :data_value], []) do |node|
-        isnt_sequence = (node.parent.kind != "sequence")
-        if isnt_sequence && node.args.fetch(:data_value).kind == "identifier"
-            binding.pry
-        end
-      end
+      .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
