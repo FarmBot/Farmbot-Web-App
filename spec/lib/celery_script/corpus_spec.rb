@@ -164,7 +164,7 @@ describe CeleryScript::Corpus do
                       "value"         => 1 } }
     checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast), corpus, device)
     expect(checker.valid?).to be(true)
-    expect(checker.tree.args["resource_id"].value).to eq(0)
+    expect(checker.tree.args[:resource_id].value).to eq(0)
   end
 
   it "rejects bogus resource_updates" do
@@ -176,7 +176,7 @@ describe CeleryScript::Corpus do
                       "label"         => "foo",
                       "value"         => "Should Fail" } }
     hmm = CeleryScript::AstNode.new(ast)
-    expect(hmm.args.fetch("resource_id").value).to eq(fake_id)
+    expect(hmm.args.fetch(:resource_id).value).to eq(fake_id)
     checker = CeleryScript::Checker.new(hmm, corpus, device)
     expect(checker.valid?).to be(false)
     expect(checker.error.message)
