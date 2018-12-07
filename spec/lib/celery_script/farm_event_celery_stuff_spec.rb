@@ -6,7 +6,28 @@ describe CeleryScript::Checker do
   let(:point)  { FactoryBot.create(:generic_pointer, device: device) }
   let(:corpus) { Sequence::Corpus }
 
-  it "disallows the use of `identifier` nodes"
+  it "disallows the use of `identifier` nodes" do
+    tree    = \
+      CeleryScript::AstNode.new(kind: "farm_event",
+      args: {},
+      body: [
+        {
+          kind: "variable_declaration",
+          args: {
+            label: "foo",
+            data_value: {
+              kind: "identifier",
+              args: {
+                label: "makes no sense",
+                data_type: "coordinate"
+              }
+            }
+          }
+        }
+      ])
+    checker = CeleryScript::Checker.new(tree, corpus, device)
+    expect { checker.run! }.to raise_error(CeleryScript::TypeCheckError)
+  end
 
   it "runs through a syntactically valid program" do
   body = [

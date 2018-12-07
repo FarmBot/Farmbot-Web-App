@@ -184,12 +184,12 @@ module CeleryScript
     # Calling this method with only one paramter
     # indicates a starting condition 🏁
     def resolve_variable!(node, origin = node)
-      locals = (node.args["locals"] || node.args[:locals])
+      locals = node.args[:locals]
 
       if locals&.kind === "scope_declaration"
-        label  = (origin.args["label"] || origin.args[:label])&.value
+        label  = origin.args[:label]&.value
         result = (locals.body || []).select do |x|
-          (x.args[:label] || x.args["label"])&.value == label
+          x.args[:label]&.value == label
         end.first
         return result if result
       end
@@ -200,7 +200,7 @@ module CeleryScript
         # Keep recursing if we can't find a scope on this node.
         resolve_variable!(node.parent, origin)
       when nil # We've got an unbound variable.
-        origin.invalidate!(UNBOUND_VAR % origin.args["label"].value)
+        origin.invalidate!(UNBOUND_VAR % origin.args[:label].value)
       end
     end
   end
