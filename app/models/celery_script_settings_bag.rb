@@ -76,13 +76,12 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
   RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
 
-  Corpus = CeleryScript::Corpus
-      .new
+  Corpus = CeleryScript::Corpus.new
       .arg(:_else,        [:execute, :nothing])
       .arg(:_then,        [:execute, :nothing])
       .arg(:locals,       [:scope_declaration])
       .arg(:offset,       [:coordinate])
-      .arg(:pin_number,   [Integer, :named_pin])
+      .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENUS ARG TYPE => BAD
       .arg(:data_value,   ANY_VARIABLE)
       .arg(:location,     ANY_VARIABLE)
       .arg(:label,        [String])
