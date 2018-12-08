@@ -1,16 +1,16 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
 class Device < ApplicationRecord
-  DEFAULT_MAX_LOGS    = 100
-  DEFAULT_MAX_IMAGES  = 100
   DEFAULT_MAX_CONFIGS = 100
+  DEFAULT_MAX_IMAGES  = 100
+  DEFAULT_MAX_LOGS    = 100
 
-  TIMEZONES           = TZInfo::Timezone.all_identifiers
-  BAD_TZ              = "%{value} is not a valid timezone"
-  THROTTLE_ON         = "Device is sending too many logs (%s). " \
-                        "Suspending log storage and display until %s."
-  THROTTLE_OFF        = "Cooldown period has ended. "\
-                        "Resuming log storage."
-  CACHE_KEY           = "devices.%s"
+  TIMEZONES     = TZInfo::Timezone.all_identifiers
+  BAD_TZ        = "%{value} is not a valid timezone"
+  THROTTLE_ON   = "Device is sending too many logs (%s). " \
+                  "Suspending log storage and display until %s."
+  THROTTLE_OFF  = "Cooldown period has ended. "\
+                  "Resuming log storage."
+  CACHE_KEY     = "devices.%s"
 
   has_many  :farmware_envs,          dependent: :destroy
   has_many  :farm_events,            dependent: :destroy
@@ -30,6 +30,7 @@ class Device < ApplicationRecord
   has_many  :tools,                  dependent: :destroy
   has_many  :webcam_feeds,           dependent: :destroy
   has_many  :diagnostic_dumps,       dependent: :destroy
+  has_many  :fragments,              dependent: :destroy
   has_one   :fbos_config,            dependent: :destroy
   has_many  :in_use_tools
   has_many  :in_use_points
