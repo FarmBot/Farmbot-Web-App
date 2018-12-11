@@ -42,21 +42,59 @@ module Fragments
     end
 
     def execute
-      primitives = {}
-      fragment   = Fragment.new(device: device)
+      primitives       = {}
+      fragment         = Fragment.new(device: device)
+      null_node        = Node.new(kind: Kind.cached_by_value("nothing"),
+                                  fragment: fragment)
+      null_node.parent = null_node
+      null_node.next   = null_node
+      null_node.body   = null_node
+
       nodes      = proto_nodes.map do |flat_node|
-        real_node = Node.new(kind: Kind.cached_by_value(flat_node.fetch(K)),
-                             fragment: fragment)
-        ag        = ArgSet.new(node: real_node)
+        real_node = Node.new(kind:     Kind.cached_by_value(flat_node.fetch(K)),
+                             fragment: fragment,
+                             parent:   null_node,
+                             next:     null_node,
+                             body:     null_node,)
+        arg_set   = ArgSet.new(node: real_node, fragment: fragment)
         flat_node.without(K).map do |(k,v)|
-           if k.starts_with?("__")
-            binding.pry
-           else
-            binding.pry
+           if !k.starts_with?("__")
+            arg_name = ArgName.cached_by_value(k.gsub("__", ""))
+            primitive = primitives.fetch(v) do
+              primitives[v] = Primitive.new(value: v, fragment: fragment)
+            end
+            pp       = PrimitivePair.new(arg_name:  arg_name,
+                                         arg_set:   arg_set,
+                                         primitive: primitive)
            end
           end
+        real_node
       end
-      # binding.pry
+
+      proto_nodes.each_with_index do |flat_node, index|
+        node = nodes.fetch(index)
+        flat_node.without(K).map do |(k,v)|
+          if k.starts_with?("__")
+            case k
+            when "__parent"
+              nodes.fetch(index).parent = nodes.fetch(v.value)
+            when "__next"
+              nodes.fetch(index).next   = nodes.fetch(v.value)
+            when "__body"
+              nodes.fetch(index).body   = nodes.fetch(v.value)
+            else
+              StandardPair.new(fragment: fragment,
+                               arg_set:  node.arg_set,
+                               arg_name: ArgName.cached_by_value(k.gsub("__", "")),
+                               node:     node)
+            end
+          end
+        end
+      end
+
+      Node.transaction do
+        nodes.map(&:save!)
+      end
     end
 
     def null

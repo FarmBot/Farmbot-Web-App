@@ -2,4 +2,5 @@
 class Primitive < ApplicationRecord
   belongs_to :fragment
   has_many :primitive_pairs # Maybe has_one, idk
+  serialize  :value
 end
