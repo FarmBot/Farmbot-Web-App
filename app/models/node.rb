@@ -7,7 +7,7 @@ class Node < ApplicationRecord
   belongs_to :next,   class_name: "Node"
   belongs_to :parent, class_name: "Node"
 
-  has_one :arg_set
+  has_one :arg_set, dependent: :destroy
 
   def self.destroy_all
     Node.transaction do
