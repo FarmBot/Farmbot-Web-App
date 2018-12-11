@@ -6,48 +6,98 @@ describe CeleryScript::Checker do
   let(:point)  { FactoryBot.create(:generic_pointer, device: device) }
   let(:corpus) { Sequence::Corpus }
   H = CeleryScript::HeapAddress
-  proto_nodes = [ { :__KIND__     => "nothing",
-                    :__parent     => H[0],
-                    :__body       => H[0],
-                    :__next       => H[0] },
-                  { :__KIND__     => "farm_event",
-                    :__parent     => H[0],
-                    :__body       => H[2],
-                    :__next       => H[0] },
-                  { :__KIND__     => "variable_declaration",
-                    :__parent     => H[1],
-                    :label        => "foo",
-                    :__data_value => H[3],
-                    :__body       => H[0],
-                    :__next       => H[0] },
-                  { :__KIND__     => "identifier",
-                    :__parent     => H[2],
-                    :label        => "makes no sense",
-                    :data_type    => "coordinate",
-                    :__body       => H[0],
-                    :__next       => H[0] } ]
-  STUFF = [ ArgSet, Fragment, Node, Primitive, PrimitivePair, StandardPair ]
-  it "loads CeleryScript from the database"
+  KLASSES = [ ArgSet, Fragment, Node, Primitive, PrimitivePair, StandardPair ]
+  it "loads CeleryScript from the database" do
+    proto_nodes = [{ :__KIND__ => "nothing",
+                     :__parent => H[0],
+                     :__body   => H[0],
+                     :__next   => H[0] },
+                   { :__KIND__ => "farm_event",
+                     :__parent => H[0],
+                     :__body   => H[2],
+                     :__next   => H[0] },
+                   { :__KIND__=>"variable_declaration",
+                     :__parent=>H[1],
+                     :label=>"tool",
+                     :__data_value=>H[3],
+                     :__next=>H[4],
+                     :__body=>H[0] },
+                   { :__KIND__=>"tool",
+                     :__parent=>H[2],
+                     :tool_id=>1,
+                     :__body=>H[0],
+                     :__next=>H[0] },
+                   { :__KIND__=>"variable_declaration",
+                     :__parent=>H[2],
+                     :label=>"coordinate",
+                     :__data_value=>H[5],
+                     :__next=>H[6],
+                     :__body=>H[0] },
+                   { :__KIND__=>"coordinate",
+                     :x=>0, :y=>0, :z=>0,
+                     :__parent=>H[4],
+                     :__body=>H[0],
+                     :__next=>H[0] },
+                   { :__KIND__=>"variable_declaration",
+                     :__parent=>H[4],
+                     :label=>"point",
+                     :__data_value=>H[7],
+                     :__body=>H[0],
+                     :__next=>H[0] },
+                   { :__KIND__=>"point",
+                     :__parent=>H[6],
+                     :__body=>H[0],
+                     :__next=>H[0],
+                     :pointer_type=>"GenericPointer",
+                     :pointer_id=>1, } ]
+    fragment = Fragments::Create.run!(device: device, proto_nodes: proto_nodes)
+    point    = fragment.nodes.find_by(kind: Kind.cached_by_value("point"))
+    binding.pry
+  end
+
   it "dumps CeleryScript into the database" do
+    proto_nodes = [ { :__KIND__     => "nothing",
+                      :__parent     => H[0],
+                      :__body       => H[0],
+                      :__next       => H[0] },
+                    { :__KIND__     => "farm_event",
+                      :__parent     => H[0],
+                      :__body       => H[2],
+                      :__next       => H[0] },
+                    { :__KIND__     => "variable_declaration",
+                      :__parent     => H[1],
+                      :label        => "foo",
+                      :__data_value => H[3],
+                      :__body       => H[0],
+                      :__next       => H[0] },
+                    { :__KIND__     => "identifier",
+                      :__parent     => H[2],
+                      :label        => "makes no sense",
+                      :data_type    => "coordinate",
+                      :__body       => H[0],
+                      :__next       => H[0] } ]
+
     Node.destroy_all
     Fragment.destroy_all
-    Primitive.destroy_all
-    b4_counts = STUFF.reduce({}) do |acc, klass|
+    b4_counts = KLASSES.reduce({}) do |acc, klass|
       acc[klass] = klass.count
       acc
     end
-    device                    = FactoryBot.create(:device)
     fragment = Fragments::Create.run!(device: device, proto_nodes: proto_nodes)
-    STUFF.map do |klass|
-      flunk "#{klass} did not save" if klass.count <= b4_counts[klass]
-    end
+    KLASSES.map { |k| flunk "#{k} did not save" if k.count <= b4_counts[k] }
+    nodes = fragment.nodes.sort_by(&:id);
+    expect(nodes[0].kind.value).to eq("nothing")
+    expect(nodes[1].kind.value).to eq("farm_event")
+    expect(nodes[2].kind.value).to eq("variable_declaration")
+    expect(nodes[3].kind.value).to eq("identifier")
+    expect(nodes[3].arg_set.primitive_pairs.count).to eq 2
     Node.destroy_all
     Fragment.destroy_all
     expect(ArgSet.count).to eq(0)
     expect(Node.count).to eq(0)
     expect(PrimitivePair.count).to eq(0)
     expect(StandardPair.count).to eq(0)
-    # expect(StandardPair.count).to eq(0)
+    expect(Primitive.count).to eq(0)
   end
 
   it "disallows the use of `identifier` nodes" do
@@ -115,56 +165,4 @@ describe CeleryScript::Checker do
     expect { checker.run! }.not_to(raise_error)
   end
 end
-    # [ { :__KIND__ => "nothing",
-    #     :__parent => H[0],
-    #     :__body   => H[0],
-    #     :__next   => H[0] },
-    #   {
-    #     :__KIND__ => "farm_event",
-    #     :__parent => H[0],
-    #     :__body   => H[2],
-    #     :__next   => H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[1],
-    #     :label=>"tool",
-    #     :__data_value=>H[3],
-    #     :__next=>H[4],
-    #     :__body=>H[0] },
-    #   {
-    #     :__KIND__=>"tool",
-    #     :__parent=>H[2],
-    #     :tool_id=>1,
-    #     :__body=>H[0],
-    #     :__next=>H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[2],
-    #     :label=>"coordinate",
-    #     :__data_value=>H[5],
-    #     :__next=>H[6],
-    #     :__body=>H[0] },
-    #   {
-    #     :__KIND__=>"coordinate",
-    #     :__parent=>H[4],
-    #     :x=>0,
-    #     :y=>0,
-    #     :z=>0,
-    #     :__body=>H[0],
-    #     :__next=>H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[4],
-    #     :label=>"point",
-    #     :__data_value=>H[7],
-    #     :__body=>H[0],
-    #     :__next=>H[0]
-    #   },
-    #   {
-    #     :__KIND__=>"point",
-    #     :__parent=>H[6],
-    #     :__body=>H[0],
-    #     :__next=>H[0]}
-    #     :pointer_type=>"GenericPointer",
-    #     :pointer_id=>1,
-    # ]
+

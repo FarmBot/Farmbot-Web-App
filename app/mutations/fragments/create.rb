@@ -61,7 +61,10 @@ module Fragments
             primitive = primitives.fetch(v) do
               primitives[v] = Primitive.find_or_create_by(value: v, fragment: fragment)
             end
-            new_primitive_pair(arg_name: arg_name, arg_set: arg_set, primitive: primitive)
+            new_primitive_pair(arg_name:  arg_name,
+                               arg_set:   arg_set,
+                               primitive: primitive,
+                               fragment:  fragment)
            end
           end
         real_node
