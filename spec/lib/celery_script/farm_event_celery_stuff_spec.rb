@@ -80,15 +80,7 @@ module Fragments
     end
 
     def null_node
-      if @null_node
-        @null_node
-      else
-        @null_node = \
-          Node.new(kind: Kind.cached_by_value("nothing"), fragment: fragment)
-        @null_node.parent = @null_node
-        @null_node.next   = @null_node
-        @null_node.body   = @null_node
-      end
+      @null_node ||= Node.new(kind: Kind.cached_by_value("nothing"), fragment: fragment)
     end
   end
 end
@@ -101,12 +93,7 @@ describe CeleryScript::Checker do
   H = CeleryScript::HeapAddress
   it "loads CeleryScript from the database"
   it "dumps CeleryScript into the database" do
-    # PROBLEMS THAT I MUST FIX:
-    #   * FarmEvents currently don't have CeleryScript
-    #   * SOON, Regimens will need celeryscript, too
-    #   * Celeryscript only supports sequences today (bad).
-    #   * Relocatable fragments would be cool
-    device      = FactoryBot.create(:device)
+    device = FactoryBot.create(:device)
     proto_nodes = [ { :__KIND__     => "nothing",
                       :__parent     => H[0],
                       :__body       => H[0],
@@ -128,60 +115,12 @@ describe CeleryScript::Checker do
                       :__body       => H[0],
                       :__next       => H[0] } ]
     fragment = Fragments::Create.run!(device: device, proto_nodes: proto_nodes)
-    binding.pry
-    # [ { :__KIND__ => "nothing",
-    #     :__parent => H[0],
-    #     :__body   => H[0],
-    #     :__next   => H[0] },
-    #   {
-    #     :__KIND__ => "farm_event",
-    #     :__parent => H[0],
-    #     :__body   => H[2],
-    #     :__next   => H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[1],
-    #     :label=>"tool",
-    #     :__data_value=>H[3],
-    #     :__next=>H[4],
-    #     :__body=>H[0] },
-    #   {
-    #     :__KIND__=>"tool",
-    #     :__parent=>H[2],
-    #     :tool_id=>1,
-    #     :__body=>H[0],
-    #     :__next=>H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[2],
-    #     :label=>"coordinate",
-    #     :__data_value=>H[5],
-    #     :__next=>H[6],
-    #     :__body=>H[0] },
-    #   {
-    #     :__KIND__=>"coordinate",
-    #     :__parent=>H[4],
-    #     :x=>0,
-    #     :y=>0,
-    #     :z=>0,
-    #     :__body=>H[0],
-    #     :__next=>H[0] },
-    #   {
-    #     :__KIND__=>"variable_declaration",
-    #     :__parent=>H[4],
-    #     :label=>"point",
-    #     :__data_value=>H[7],
-    #     :__body=>H[0],
-    #     :__next=>H[0]
-    #   },
-    #   {
-    #     :__KIND__=>"point",
-    #     :__parent=>H[6],
-    #     :__body=>H[0],
-    #     :__next=>H[0]}
-    #     :pointer_type=>"GenericPointer",
-    #     :pointer_id=>1,
-    # ]
+    Node.destroy_all
+    Fragment.destroy_all
+    expect(ArgSet.count).to eq(0)
+    expect(Node.count).to eq(0)
+    expect(PrimitivePair.count).to eq(0)
+    expect(StandardPair.count).to eq(0)
   end
 
   it "disallows the use of `identifier` nodes" do
@@ -247,6 +186,58 @@ describe CeleryScript::Checker do
     tree    = CeleryScript::AstNode.new(**params)
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect { checker.run! }.not_to(raise_error)
-    # @flat_ir ||= Celery::Slicer.new.run!(sequence_hash)
   end
 end
+    # [ { :__KIND__ => "nothing",
+    #     :__parent => H[0],
+    #     :__body   => H[0],
+    #     :__next   => H[0] },
+    #   {
+    #     :__KIND__ => "farm_event",
+    #     :__parent => H[0],
+    #     :__body   => H[2],
+    #     :__next   => H[0] },
+    #   {
+    #     :__KIND__=>"variable_declaration",
+    #     :__parent=>H[1],
+    #     :label=>"tool",
+    #     :__data_value=>H[3],
+    #     :__next=>H[4],
+    #     :__body=>H[0] },
+    #   {
+    #     :__KIND__=>"tool",
+    #     :__parent=>H[2],
+    #     :tool_id=>1,
+    #     :__body=>H[0],
+    #     :__next=>H[0] },
+    #   {
+    #     :__KIND__=>"variable_declaration",
+    #     :__parent=>H[2],
+    #     :label=>"coordinate",
+    #     :__data_value=>H[5],
+    #     :__next=>H[6],
+    #     :__body=>H[0] },
+    #   {
+    #     :__KIND__=>"coordinate",
+    #     :__parent=>H[4],
+    #     :x=>0,
+    #     :y=>0,
+    #     :z=>0,
+    #     :__body=>H[0],
+    #     :__next=>H[0] },
+    #   {
+    #     :__KIND__=>"variable_declaration",
+    #     :__parent=>H[4],
+    #     :label=>"point",
+    #     :__data_value=>H[7],
+    #     :__body=>H[0],
+    #     :__next=>H[0]
+    #   },
+    #   {
+    #     :__KIND__=>"point",
+    #     :__parent=>H[6],
+    #     :__body=>H[0],
+    #     :__next=>H[0]}
+    #     :pointer_type=>"GenericPointer",
+    #     :pointer_id=>1,
+    # ]
