@@ -2,34 +2,16 @@ require 'spec_helper'
 
 module Fragments
   class Create < Mutations::Command
-    H     = CeleryScript::HeapAddress
-    K     = "__KIND__"
-
-    STUFF = { device:          0,  # === Maybe cache
-              fragment:        1,
-              primitives:      {},
-              args_names:      {}, # === Maybe cache
-              kinds:           {}, # === Maybe cache
-              nodes:           {},
-              arg_sets:        {},
-              primitive_pairs: {},
-              standard_pairs:  {}, }
-
-    STEPS = [ "Validate CeleryScript", #
-              "Flatten CeleryScript",  #
-              "move to background",    # ?
-              "create node",           #
-              "attach kind",
-              "create arg group",
-              "create primitive pairs",
-              "create standard pairs",
-              "stitch the nodes together", ]
-
-    KINDS = CeleryScriptSettingsBag::Corpus
-              .as_json[:nodes]
-              .pluck("name")
-              .sort
-              .map(&:to_s)
+    H      = CeleryScript::HeapAddress
+    BLANK  = ""
+    BODY   = "__body"
+    KIND   = "__KIND__"
+    NAME   = "name"
+    NEXT   = "__next"
+    PARENT = "__parent"
+    US     = "__"
+    KINDS  = \
+    CeleryScriptSettingsBag::Corpus.as_json[:nodes].pluck(NAME).sort.map(&:to_s)
 
     required do
       model :device, class: Device
@@ -38,28 +20,18 @@ module Fragments
       end
     end
 
-    def validate
-    end
-
     def execute
-      primitives       = {}
-      fragment         = Fragment.new(device: device)
-      null_node        = Node.new(kind: Kind.cached_by_value("nothing"),
-                                  fragment: fragment)
-      null_node.parent = null_node
-      null_node.next   = null_node
-      null_node.body   = null_node
-
-      nodes      = proto_nodes.map do |flat_node|
-        real_node = Node.new(kind:     Kind.cached_by_value(flat_node.fetch(K)),
+      nodes            = proto_nodes.map do |flat_node|
+        kind      = Kind.cached_by_value(flat_node.fetch(KIND))
+        real_node = Node.new(kind:     kind,
                              fragment: fragment,
                              parent:   null_node,
                              next:     null_node,
                              body:     null_node,)
         arg_set   = ArgSet.new(node: real_node, fragment: fragment)
-        flat_node.without(K).map do |(k,v)|
-           if !k.starts_with?("__")
-            arg_name = ArgName.cached_by_value(k.gsub("__", ""))
+        flat_node.without(KIND).map do |(k,v)|
+           if !k.starts_with?(US)
+            arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
             primitive = primitives.fetch(v) do
               primitives[v] = Primitive.new(value: v, fragment: fragment)
             end
@@ -73,19 +45,20 @@ module Fragments
 
       proto_nodes.each_with_index do |flat_node, index|
         node = nodes.fetch(index)
-        flat_node.without(K).map do |(k,v)|
-          if k.starts_with?("__")
+        flat_node.without(KIND).map do |(k,v)|
+          if k.starts_with?(US)
             case k
-            when "__parent"
+            when PARENT
               nodes.fetch(index).parent = nodes.fetch(v.value)
-            when "__next"
+            when NEXT
               nodes.fetch(index).next   = nodes.fetch(v.value)
-            when "__body"
+            when BODY
               nodes.fetch(index).body   = nodes.fetch(v.value)
             else
+              arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
               StandardPair.new(fragment: fragment,
                                arg_set:  node.arg_set,
-                               arg_name: ArgName.cached_by_value(k.gsub("__", "")),
+                               arg_name: arg_name,
                                node:     node)
             end
           end
@@ -95,10 +68,27 @@ module Fragments
       Node.transaction do
         nodes.map(&:save!)
       end
+      fragment
     end
 
-    def null
-      @null ||=  Node.new
+    def primitives
+      @primitives ||= {}
+    end
+
+    def fragment
+      @fragment ||= Fragment.new(device: device)
+    end
+
+    def null_node
+      if @null_node
+        @null_node
+      else
+        @null_node = \
+          Node.new(kind: Kind.cached_by_value("nothing"), fragment: fragment)
+        @null_node.parent = @null_node
+        @null_node.next   = @null_node
+        @null_node.body   = @null_node
+      end
     end
   end
 end
@@ -137,8 +127,8 @@ describe CeleryScript::Checker do
                       :data_type    => "coordinate",
                       :__body       => H[0],
                       :__next       => H[0] } ]
-    results     = Fragments::Create.run!(device:      device,
-                                         proto_nodes: proto_nodes)
+    fragment = Fragments::Create.run!(device: device, proto_nodes: proto_nodes)
+    binding.pry
     # [ { :__KIND__ => "nothing",
     #     :__parent => H[0],
     #     :__body   => H[0],
