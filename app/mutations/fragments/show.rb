@@ -32,43 +32,18 @@ module Fragments
     end
 
     # node.body
-    def get_XYZ()
-      raise "Not implemented."
+    def get_body(node)
+      @nodes_by_id.fetch(node.body_id)
     end
 
     # node.kind.value
-    def get_XYZ()
-      raise "Not implemented."
+    def get_next(node)
+      @nodes_by_id.fetch(node.next_id)
     end
 
     # node.kind
-    def get_XYZ()
-      raise "Not implemented."
-    end
-
-    # node.next
-    def get_XYZ()
-      raise "Not implemented."
-    end
-
-    # primitive_pair.arg_name.value
-    def get_XYZ()
-      raise "Not implemented."
-    end
-
-    # primitive_pair.node
-    def get_XYZ()
-      raise "Not implemented."
-    end
-
-    # standard_pairs.arg_name.value
-    def get_XYZ()
-      raise "Not implemented."
-    end
-
-    # standard_pairs.node
-    def get_XYZ()
-      raise "Not implemented."
+    def kind(node)
+      Kind.cached_by_id(node.kind_id)
     end
   end
 
@@ -80,7 +55,7 @@ module Fragments
     end
 
     def execute
-      node2cs(entry_node.next)
+      node2cs(cache.get_next(entry_node))
     end
 
   private
@@ -91,17 +66,17 @@ module Fragments
                          acc[key] = node2cs(value)
                          acc
                        end
-      result = { kind: node.kind.value,
+      result = { kind: cache.kind(node).value,
                  args: cache.get_primitive_pairs(node).merge(standard),
-                 body: recurse_into_body(node.body) }
+                 body: recurse_into_body(cache.get_body(node)) }
       result.delete(:body) if result[:body].length == 0
       result
     end
 
     def recurse_into_body(node, body = [])
-      unless [Kind.nothing, Kind.entry_point].include?(node.kind)
+      unless [Kind.nothing, Kind.entry_point].include?(cache.kind(node))
         body.push(node2cs(node))
-        recurse_into_body(node.next, body)
+        recurse_into_body(cache.get_next(node), body)
       else
         body
       end
