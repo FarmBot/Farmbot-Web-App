@@ -32,7 +32,7 @@ module Fragments
               new_standard_pair(fragment: fragment,
                                 arg_set:  node.arg_set,
                                 arg_name: arg_name,
-                                node:     node)
+                                node:     nodes.fetch(flat_node.fetch(k).value))
             end
           end
         end

@@ -28,26 +28,24 @@ describe Fragments::Create do
                 kind: "variable_declaration",
                 args: {
                   label: "other thing",
-                  data_value: {
-                    kind: "tool",
-                    args: { tool_id: tool.id }
-                  }
+                  data_value: { kind: "tool", args: { tool_id: tool.id } }
                 }
               }
             ])
-    fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
-    nodes    = fragment.nodes.sort_by(&:id)
-    entry    = nodes[1]
-
+    fragment  = Fragments::Create.run!(device: device, flat_ast: flat_ast)
+    nodes     = fragment.nodes.sort_by(&:id)
+    entry     = nodes[1]
+    variable2 = entry.body.next
+    pair      = variable2.arg_set.standard_pairs.first
     expect(entry.kind.value).to       eq("farm_event")
     expect(entry.next.kind.value).to  eq("nothing")
     expect(entry.body.kind.value).to  eq("variable_declaration")
-    other_thing = entry.body.next
-    expect(other_thing.kind.value).to eq("variable_declaration")
-    pair = other_thing.arg_set.standard_pairs.first
-    ArgName.find(pair.arg_name_id)
-    binding.pry
-    expect(other_thing.next.kind.value).to eq("nothing")
+    expect(variable2.kind.value).to eq("variable_declaration")
+    expect(variable2.next.kind.value).to eq("nothing")
+    expect(pair.arg_name.value).to  eq("data_value")
+    expect(pair.node.kind.value).to eq("tool")
+    tool_id = pair.node.arg_set.primitive_pairs.first.arg_name.value
+    expect(tool_id).to eq("tool_id")
   end
 
   it "dumps CeleryScript into the database" do
