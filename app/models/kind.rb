@@ -7,4 +7,12 @@ class Kind < ApplicationRecord
     Rails
       .cache.fetch(KEY % v, expires_in: EXPIRY) { find_or_create_by(value: v) }
   end
+
+  def self.nothing
+    Kind.cached_by_value("nothing")
+  end
+
+  def self.entry_point
+    Kind.cached_by_value("internal_entry_point")
+  end
 end

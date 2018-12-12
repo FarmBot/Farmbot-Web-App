@@ -1,5 +1,8 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class Node < ApplicationRecord
+  EVERYTHING = \
+    { arg_set: {standard_pairs: {}, primitive_pairs: {}}, kind: {} }
+
   belongs_to :fragment
   belongs_to :kind
 
@@ -17,4 +20,3 @@ class Node < ApplicationRecord
     end
   end
 end
-

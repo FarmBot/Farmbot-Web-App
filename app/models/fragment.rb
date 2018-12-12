@@ -2,6 +2,10 @@
 # All nodes and primitives in the CeleryScript AST tree are tagged with a
 # fragment_id for performance.
 class Fragment < ApplicationRecord
+  # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
+  EVERYTHING = \
+    { nodes: Node::EVERYTHING }
+
   belongs_to :device
   has_many :primitives,      dependent: :destroy
   has_many :nodes,           dependent: :destroy

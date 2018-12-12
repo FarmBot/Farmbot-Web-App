@@ -33,7 +33,7 @@ module Fragments
         #  2. The new Fragment table expects an ENTRY node at position 0 of the
         #     flat_ast
         #  3. This is the fast solution. When all resources switch to the new
-        #     `Fragment` table, we can modify the Slicer to use ENTRY
+        #     `Fragment` table, we can modify the Slicer to use ENTRY at pos 0.
         #  TODO: Store sequence ASTs in fragment table, eventually.
         #          -RC 12 DEC 18
       nodes[0] = entry_node # <= THIS MATTERS
