@@ -1,20 +1,39 @@
 module Fragments
   class Create < Mutations::Command
-    H      = CeleryScript::HeapAddress
-    BLANK  = ""
-    BODY   = "__body"
-    KIND   = "__KIND__"
-    NAME   = "name"
-    NEXT   = "__next"
-    PARENT = "__parent"
-    US     = "__"
-    KINDS  = \
+    BAD_AST = "Node 0 must be present. Node 0 must be a 'nothing' node."
+    BLANK   = ""
+    BODY    = "__body"
+    ENTRY   = "internal_entry_point"
+    KIND    = "__KIND__"
+    NAME    = "name"
+    NEXT    = "__next"
+    PARENT  = "__parent"
+    US      = "__"
+    NOTHING = "nothing"
+    H       = CeleryScript::HeapAddress
+    KINDS   = \
     CeleryScriptSettingsBag::Corpus.as_json[:nodes].pluck(NAME).sort.map(&:to_s)
 
     required do
       model :device, class: Device
       array :flat_ast do
         hash { duck :*, methods: [] }
+      end
+    end
+
+    def validate
+      if flat_ast.dig(0, KIND) == NOTHING
+        # LEGACY SHIM:
+        #  1. CelerySlicer inserts a `nothing` node at the start of the flat_ast
+        #  2. The new Fragment table expects an ENTRY node at position 0 of the
+        #     flat_ast
+        #  3. This is the fast solution. When all resources switch to the new
+        #     `Fragment` table, we can modify the Slicer to use ENTRY
+        #  TODO: Store sequence ASTs in fragment table, eventually.
+        #          -RC 12 DEC 18
+        flat_ast[0][KIND] = ENTRY
+      else
+        add_error :flat_ast, :flat_ast, BAD_AST
       end
     end
 
@@ -96,7 +115,7 @@ module Fragments
     end
 
     def null_node
-      @null_node ||= Node.new(kind: Kind.cached_by_value("nothing"), fragment: fragment)
+      @null_node ||= Node.new(kind: Kind.cached_by_value(ENTRY), fragment: fragment)
     end
   end
 end

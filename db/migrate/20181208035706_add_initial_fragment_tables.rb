@@ -7,50 +7,50 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
 
     # A constant declaration. Ex: if the node references `tool_id: 6`, then you need a primitive with a value of 6.
     create_table :primitives do |t|
-      t.references :fragment
-      t.string     :value
+      t.references :fragment, null: false
+      t.string     :value, null: false
     end
 
     # If `node.args` in celery script contains key/value pairs, this is a key name.
     create_table :arg_names do |t|
-      t.string :value
+      t.string :value, null: false, unique: true
     end
 
     # The `node.kind` for a CS node. "sequence", "move_rel", etc...
     create_table :kinds do |t|
-      t.string :value
+      t.string :value, null: false, unique: true
     end
 
     # A node, linked to its neighboring node + kind + all that good stuff.
     create_table :nodes do |t|
-      t.references :body,   foreign_key: { to_table: :nodes }
-      t.references :fragment
-      t.references :kind
-      t.references :next,   foreign_key: { to_table: :nodes }
-      t.references :parent, foreign_key: { to_table: :nodes }
+      t.references :fragment, null: false
+      t.references :kind,     null: false
+      t.references :body,   foreign_key: { to_table: :nodes }, null: false
+      t.references :next,   foreign_key: { to_table: :nodes }, null: false
+      t.references :parent, foreign_key: { to_table: :nodes }, null: false
     end
 
     # A collection of key/value pairs.
     create_table :arg_sets do |t|
-      t.references :fragment
-      t.references :node
+      t.references :fragment, null: false
+      t.references :node,     null: false
     end
 
     # K/V Pairs that are not CeleryScript nodes. Eg: `tool_id: 6`
     create_table :primitive_pairs do |t|
-      t.references :fragment
-      t.references :arg_name
-      t.references :arg_set
-      t.references :primitive
+      t.references :fragment,  null: false
+      t.references :arg_name,  null: false
+      t.references :arg_set,   null: false
+      t.references :primitive, null: false
     end
 
     # A key/value pair that nests deeper in the tree. Ex: `location` arg in
     # `move_abs`
     create_table :standard_pairs do |t|
-      t.references :fragment
-      t.references :arg_name
-      t.references :arg_set
-      t.references :node
+      t.references :fragment, null: false
+      t.references :arg_name, null: false
+      t.references :arg_set,  null: false
+      t.references :node,     null: false
     end
   end
 end

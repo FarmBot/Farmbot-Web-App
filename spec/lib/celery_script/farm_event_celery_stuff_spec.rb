@@ -7,7 +7,7 @@ describe CeleryScript::Checker do
   let(:corpus) { Sequence::Corpus }
 
   it "disallows the use of `identifier` nodes" do
-    params = { kind: "farm_event",
+    params = { kind: "internal_farm_event",
                args: {},
                body: [ {kind: "variable_declaration",
                         args: {
@@ -65,7 +65,7 @@ describe CeleryScript::Checker do
              }
            }
          ]
-    params  = { kind: "farm_event", body: body, args: {} }
+    params  = { kind: "internal_farm_event", body: body, args: {} }
     tree    = CeleryScript::AstNode.new(**params)
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect { checker.run! }.not_to(raise_error)

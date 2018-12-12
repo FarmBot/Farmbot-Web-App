@@ -8,20 +8,17 @@ describe Fragments::Create do
   H       = CeleryScript::HeapAddress
   KLASSES = [ ArgSet, Fragment, Node, Primitive, PrimitivePair, StandardPair ]
 
-  fit "loads CeleryScript from the database" do
+  it "loads CeleryScript from the database" do
     tool     = FactoryBot.create(:tool, device: device)
     flat_ast = Fragments::Preprocessor.run!(device: device,
-            kind:   "farm_event",
+            kind:   "internal_farm_event",
             args:   {},
             body:   [
               {
                 kind: "variable_declaration",
                 args: {
                   label: "myLabel123",
-                  data_value: {
-                    kind: "coordinate",
-                    args: { x: 0, y: 1, z: 2, }
-                  }
+                  data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2, } }
                 }
               },
               {
@@ -37,11 +34,11 @@ describe Fragments::Create do
     entry     = nodes[1]
     variable2 = entry.body.next
     pair      = variable2.arg_set.standard_pairs.first
-    expect(entry.kind.value).to       eq("farm_event")
-    expect(entry.next.kind.value).to  eq("nothing")
+    expect(entry.kind.value).to       eq("internal_farm_event")
+    expect(entry.next.kind.value).to  eq("internal_entry_point")
     expect(entry.body.kind.value).to  eq("variable_declaration")
     expect(variable2.kind.value).to eq("variable_declaration")
-    expect(variable2.next.kind.value).to eq("nothing")
+    expect(variable2.next.kind.value).to eq("internal_entry_point")
     expect(pair.arg_name.value).to  eq("data_value")
     expect(pair.node.kind.value).to eq("tool")
     tool_id = pair.node.arg_set.primitive_pairs.first.arg_name.value
@@ -53,7 +50,7 @@ describe Fragments::Create do
                       :__parent     => H[0],
                       :__body       => H[0],
                       :__next       => H[0] },
-                    { :__KIND__     => "farm_event",
+                    { :__KIND__     => "internal_farm_event",
                       :__parent     => H[0],
                       :__body       => H[2],
                       :__next       => H[0] },
@@ -79,8 +76,8 @@ describe Fragments::Create do
     fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
     KLASSES.map { |k| flunk "#{k} did not save" if k.count <= b4_counts[k] }
     nodes = fragment.nodes.sort_by(&:id);
-    expect(nodes[0].kind.value).to eq("nothing")
-    expect(nodes[1].kind.value).to eq("farm_event")
+    expect(nodes[0].kind.value).to eq("internal_entry_point")
+    expect(nodes[1].kind.value).to eq("internal_farm_event")
     expect(nodes[2].kind.value).to eq("variable_declaration")
     expect(nodes[3].kind.value).to eq("identifier")
     expect(nodes[3].arg_set.primitive_pairs.count).to eq 2

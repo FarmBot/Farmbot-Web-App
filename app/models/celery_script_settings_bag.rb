@@ -244,7 +244,8 @@ module CeleryScriptSettingsBag
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
-      .node(:farm_event, [], [:variable_declaration]) # NEVER SAVE THIS NODE ITS PRIVATE
+      .node(:internal_farm_event,  [], [:variable_declaration])
+      .node(:internal_entry_point, [], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value
