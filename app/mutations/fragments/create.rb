@@ -22,7 +22,12 @@ module Fragments
     end
 
     def validate
-      if flat_ast.dig(0, KIND) == NOTHING
+      add_error :flat_ast,
+                :flat_ast,
+                BAD_AST unless flat_ast.dig(0, KIND) == NOTHING
+    end
+
+    def execute
         # LEGACY SHIM:
         #  1. CelerySlicer inserts a `nothing` node at the start of the flat_ast
         #  2. The new Fragment table expects an ENTRY node at position 0 of the
@@ -31,13 +36,7 @@ module Fragments
         #     `Fragment` table, we can modify the Slicer to use ENTRY
         #  TODO: Store sequence ASTs in fragment table, eventually.
         #          -RC 12 DEC 18
-        flat_ast[0][KIND] = ENTRY
-      else
-        add_error :flat_ast, :flat_ast, BAD_AST
-      end
-    end
-
-    def execute
+      nodes[0] = entry_node # <= THIS MATTERS
       flat_ast.each_with_index do |flat_node, index|
         node = nodes.fetch(index)
         flat_node.without(KIND).map do |(k,v)|
@@ -57,6 +56,8 @@ module Fragments
         end
       end
 
+      entry_node.next = nodes.fetch(1)
+
       Node.transaction do
         nodes.map(&:save!)
         primitive_pairs.map(&:save!)
@@ -70,9 +71,9 @@ module Fragments
         kind      = Kind.cached_by_value(flat_node.fetch(KIND))
         real_node = Node.new(kind:     kind,
                              fragment: fragment,
-                             parent:   null_node,
-                             next:     null_node,
-                             body:     null_node,)
+                             parent:   entry_node,
+                             next:     entry_node,
+                             body:     entry_node,)
         arg_set   = ArgSet.new(node: real_node, fragment: fragment)
         flat_node.without(KIND).map do |(k,v)|
            if !k.starts_with?(US)
@@ -114,8 +115,9 @@ module Fragments
       @fragment ||= Fragment.new(device: device)
     end
 
-    def null_node
-      @null_node ||= Node.new(kind: Kind.cached_by_value(ENTRY), fragment: fragment)
+    def entry_node
+      @entry_node ||= Node.new(kind:     Kind.cached_by_value(ENTRY),
+                               fragment: fragment)
     end
   end
 end
