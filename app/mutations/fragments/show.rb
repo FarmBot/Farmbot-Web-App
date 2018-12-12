@@ -1,69 +1,70 @@
 module Fragments
-  # class Cacher
-  #   MAP = {
-  #     node: {
-  #       arg_set: {
-  #         standard_pairs:  {},
-  #         primitive_pairs: {},
-  #       },
-  #       body: {},
-  #       kind: {},
-  #       next: {},
-  #     },
-  #     primitive_pair: {
-  #       arg_name: {
-  #         value: {}
-  #       },
-  #       node: {}
-  #     },
-  #     standard_pairs: {
+  class Cache # CeleryScript Fragment cache, not the other kind.
+    def initialize(fragment)
+      # @nodes_by_id            = fragment.nodes.index_by(&:id)
+      @fragment               = fragment
+      @arg_set_by_node_id     = fragment.arg_sets.index_by(&:node_id)
+      @primitive_by_id        = fragment.primitives.index_by(&:id)
+      @pri_pair_by_arg_set_id = fragment.primitive_pairs.group_by(&:arg_set_id)
+    end
 
-  #     },
-  #   }
+    # Return pair<string, Node>
+    def get_primitive_pairs(node)
+      arg_set = @arg_set_by_node_id.fetch(node.id)
+      @pri_pair_by_arg_set_id
+        .fetch(arg_set.id, [])
+        .map do |x|
+          [ArgName.cached_by_id(x.arg_name_id).value,
+           @primitive_by_id.fetch(x.primitive_id).value]
+        end
+        .to_h
+    end
 
-  #   def initialize(fragment)
-  #   end
+    # node.arg_set.standard_pairs
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.arg_set.primitive_pairs
-  #   def get_XYZ()
-  #   end
+    # node.body
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.arg_set.standard_pairs
-  #   def get_XYZ()
-  #   end
+    # node.kind.value
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.body
-  #   def get_XYZ()
-  #   end
+    # node.kind
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.kind.value
-  #   def get_XYZ()
-  #   end
+    # node.next
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.kind
-  #   def get_XYZ()
-  #   end
+    # primitive_pair.arg_name.value
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # node.next
-  #   def get_XYZ()
-  #   end
+    # primitive_pair.node
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # primitive_pair.arg_name.value
-  #   def get_XYZ()
-  #   end
+    # standard_pairs.arg_name.value
+    def get_XYZ()
+      raise "Not implemented."
+    end
 
-  #   # primitive_pair.node
-  #   def get_XYZ()
-  #   end
-
-  #   # standard_pairs.arg_name.value
-  #   def get_XYZ()
-  #   end
-
-  #   # standard_pairs.node
-  #   def get_XYZ()
-  #   end
-  # end
+    # standard_pairs.node
+    def get_XYZ()
+      raise "Not implemented."
+    end
+  end
 
   class Show < Mutations::Command
     ENTRY    = "internal_entry_point"
@@ -76,16 +77,10 @@ module Fragments
     end
 
     def execute
-      index_things_in_memory
       node2cs(entry_node.next)
     end
 
   private
-
-    def index_things_in_memory
-      # nodes.map do |node| node.arg_set end
-      binding.pry
-    end
 
     def node2cs(node)
       standard  = node.arg_set.standard_pairs.reduce({}) do |acc, item|
@@ -93,13 +88,8 @@ module Fragments
         acc
       end
 
-      primitive = node.arg_set.primitive_pairs.reduce({}) do |acc, item|
-        acc[item.arg_name.value] = item.primitive.value
-        acc
-      end
-
       result = { kind: node.kind.value,
-                 args: primitive.merge(standard),
+                 args: cache.get_primitive_pairs(node).merge(standard),
                  body: recurse_into_body(node.body) }
       result.delete(:body) if result[:body].length == 0
       result
@@ -125,6 +115,10 @@ module Fragments
 
     def fragment
       @fragment ||= device.fragments.preload(Fragment::EVERYTHING).find(fragment_id)
+    end
+
+    def cache
+      @cache ||= Cache.new(fragment)
     end
   end
 end

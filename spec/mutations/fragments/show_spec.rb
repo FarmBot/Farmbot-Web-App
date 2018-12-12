@@ -31,6 +31,8 @@ describe Fragments::Create do
     fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
     result = Fragments::Show.run!(fragment_id: fragment.id, device: device)
     diff   =  HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
+    binding.pry
+    expect([]).to eq(diff)
     expect(diff.length).to eq(0)
   end
 

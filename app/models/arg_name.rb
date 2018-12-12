@@ -9,8 +9,11 @@ class ArgName < ApplicationRecord
   has_many :standard_pairs,  autosave: true
 
   def self.cached_by_value(v)
-    Rails
-      .cache
-      .fetch(KEY % v, expires_in: EXPIRY) { find_or_create_by(value: v) }
+    key = KEY % v
+    Rails.cache.fetch(key, expires_in: EXPIRY) { find_or_create_by(value: v) }
+  end
+
+  def self.cached_by_id(id)
+    Rails.cache.fetch(KEY % id, expires_in: EXPIRY) { find(id) }
   end
 end
