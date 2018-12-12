@@ -1,10 +1,12 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class ArgName < ApplicationRecord
-  EXPIRY = 2.hours
+  EXPIRY = Rails.env.test? ? 1.second : 2.hours
   KEY    = "kind_%s"
 
   validates_uniqueness_of :value
-  has_many                :primitive_pairs, autosave: true
+
+  has_many :primitive_pairs, autosave: true
+  has_many :standard_pairs,  autosave: true
 
   def self.cached_by_value(v)
     Rails

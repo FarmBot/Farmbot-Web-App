@@ -13,13 +13,13 @@ module Fragments
 
     required do
       model :device, class: Device
-      array :proto_nodes do
+      array :flat_ast do
         hash { duck :*, methods: [] }
       end
     end
 
     def execute
-      proto_nodes.each_with_index do |flat_node, index|
+      flat_ast.each_with_index do |flat_node, index|
         node = nodes.fetch(index)
         flat_node.without(KIND).map do |(k,v)|
           if k.starts_with?(US)
@@ -40,14 +40,14 @@ module Fragments
 
       Node.transaction do
         nodes.map(&:save!)
-        @primitive_pairs.map(&:save!)
-        @standard_pairs.map(&:save!)
+        primitive_pairs.map(&:save!)
+        standard_pairs.map(&:save!)
       end
       fragment
     end
 
     def nodes
-      @nodes ||= proto_nodes.map do |flat_node|
+      @nodes ||= flat_ast.map do |flat_node|
         kind      = Kind.cached_by_value(flat_node.fetch(KIND))
         real_node = Node.new(kind:     kind,
                              fragment: fragment,
@@ -72,13 +72,19 @@ module Fragments
     end
 
     def new_standard_pair(args)
-      @standard_pairs ||= []
-      @standard_pairs.push(StandardPair.new(args))
+      standard_pairs.push(StandardPair.new(args))
     end
 
     def new_primitive_pair(args)
+      primitive_pairs.push(PrimitivePair.new(args))
+    end
+
+    def primitive_pairs
       @primitive_pairs ||= []
-      @primitive_pairs.push(PrimitivePair.new(args))
+    end
+
+    def standard_pairs
+      @standard_pairs ||= []
     end
 
     def primitives
