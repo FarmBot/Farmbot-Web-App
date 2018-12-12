@@ -29,11 +29,28 @@ describe Fragments::Create do
     }
     flat_ast = Fragments::Preprocessor.run!(origin)
     fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
-    old_logger    = config.logger
-    config.logger = Logger.new(STDOUT)
     result = Fragments::Show.run!(fragment_id: fragment.id, device: device)
     diff   =  HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
     expect(diff.length).to eq(0)
-    config.logger = old_logger
   end
+
+  it "prevents N+1" do
+    a2z    = (('a'..'z').to_a + ('0'..'9').to_a)
+    body   = a2z.map do |label|
+      {
+        kind: "variable_declaration",
+        args: {
+          label: label,
+          data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2, } }
+        }
+      }
+    end
+    origin = { device: device, kind: "internal_farm_event", args:{}, body: body }
+    fragment = \
+      Fragments::Create.run!(device: device, flat_ast: Fragments::Preprocessor.run!(origin))
+    old_logger    = config.logger
+    config.logger = Logger.new(STDOUT)
+    result = Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    config.logger = old_logger
+   end
 end
