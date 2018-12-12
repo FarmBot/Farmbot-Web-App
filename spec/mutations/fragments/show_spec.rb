@@ -29,9 +29,8 @@ describe Fragments::Create do
     }
     flat_ast = Fragments::Preprocessor.run!(origin)
     fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
-    result = Fragments::Show.run!(fragment_id: fragment.id, device: device)
-    diff   =  HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
-    binding.pry
+    result   = Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    diff     =  HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
     expect([]).to eq(diff)
     expect(diff.length).to eq(0)
   end
@@ -47,7 +46,7 @@ describe Fragments::Create do
         }
       }
     end
-    origin = { device: device, kind: "internal_farm_event", args:{}, body: body }
+    origin  = { device: device, kind: "internal_farm_event", args:{}, body: body }
     fragment = \
       Fragments::Create.run!(device: device, flat_ast: Fragments::Preprocessor.run!(origin))
     old_logger    = config.logger

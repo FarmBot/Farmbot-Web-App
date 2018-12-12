@@ -1,15 +1,15 @@
 module Fragments
   class Cache # CeleryScript Fragment cache, not the other kind.
     def initialize(fragment)
-      # @nodes_by_id            = fragment.nodes.index_by(&:id)
       @fragment               = fragment
+      @nodes_by_id            = fragment.nodes.index_by(&:id)
       @arg_set_by_node_id     = fragment.arg_sets.index_by(&:node_id)
       @primitive_by_id        = fragment.primitives.index_by(&:id)
       @pri_pair_by_arg_set_id = fragment.primitive_pairs.group_by(&:arg_set_id)
+      @std_pair_by_arg_set_id = fragment.standard_pairs.group_by(&:arg_set_id)
     end
 
-    # Return pair<string, Node>
-    def get_primitive_pairs(node)
+    def get_primitive_pairs(node) # Return Hash<string, number|boolean|string>
       arg_set = @arg_set_by_node_id.fetch(node.id)
       @pri_pair_by_arg_set_id
         .fetch(arg_set.id, [])
@@ -21,8 +21,14 @@ module Fragments
     end
 
     # node.arg_set.standard_pairs
-    def get_XYZ()
-      raise "Not implemented."
+    def get_standard_pairs(node)
+      arg_set = @arg_set_by_node_id.fetch(node.id)
+      @std_pair_by_arg_set_id
+        .fetch(arg_set.id, [])
+        .map do |x|
+          [ArgName.cached_by_id(x.arg_name_id).value,
+           @nodes_by_id.fetch(x.node_id)]
+        end
     end
 
     # node.body
@@ -73,9 +79,6 @@ module Fragments
       model   :device, class: Device
     end
 
-    def validate
-    end
-
     def execute
       node2cs(entry_node.next)
     end
@@ -83,11 +86,11 @@ module Fragments
   private
 
     def node2cs(node)
-      standard  = node.arg_set.standard_pairs.reduce({}) do |acc, item|
-        acc[item.arg_name.value] = node2cs(item.node)
-        acc
-      end
-
+      standard  = cache.get_standard_pairs(node)
+                       .reduce({}) do |acc, (key, value)|
+                         acc[key] = node2cs(value)
+                         acc
+                       end
       result = { kind: node.kind.value,
                  args: cache.get_primitive_pairs(node).merge(standard),
                  body: recurse_into_body(node.body) }
