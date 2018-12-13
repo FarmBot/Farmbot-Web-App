@@ -62,7 +62,6 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast!(label = Transport.current.current_request_id)
-    current_device.tell("Changes: " + the_changes.keys.join(", "))
     AutoSyncJob.perform_later(broadcast_payload(label),
                               current_device.id,
                               chan_name,
