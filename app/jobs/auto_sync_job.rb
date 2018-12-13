@@ -7,7 +7,8 @@ class AutoSyncJob < ApplicationJob
   def perform(broadcast_payload, id, channel, created_at_utc_integer)
     wayback = Time.at(created_at_utc_integer).utc
     mins    = ((wayback - Time.now.utc) / 1.minute).round
-
+    # klass, rid = "sync.Sequence.58".split(".").last(2).map { |x| eval(x) }
+    # Device.find(id).tell("#{klass} change: " + klass.find(rid).try(:name) || "other")
     Transport.current.amqp_send(broadcast_payload, id, channel) if (mins < 2)
   end
 end
