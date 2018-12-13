@@ -12,8 +12,4 @@ class EdgeNode < ApplicationRecord
   def broadcast?
     false
   end
-
-  def is_sequence_id?
-    kind == "sequence_id"
-  end
 end
