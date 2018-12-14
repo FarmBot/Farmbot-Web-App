@@ -3,10 +3,10 @@
 # fragment_id for performance.
 class Fragment < ApplicationRecord
   # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
-  EVERYTHING = \
-    { nodes: Node::EVERYTHING }
+  EVERYTHING = { nodes: Node::EVERYTHING }
 
   belongs_to :device
+  has_one :farm_event # Possibly undefined
   has_many :primitives,      dependent: :destroy
   has_many :nodes,           dependent: :destroy
   has_many :arg_sets,        dependent: :destroy

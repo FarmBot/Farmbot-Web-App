@@ -331,7 +331,8 @@ CREATE TABLE public.farm_events (
     executable_type character varying(280),
     executable_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    fragment_id bigint
 );
 
 
@@ -2229,6 +2230,13 @@ CREATE INDEX index_farm_events_on_executable_type_and_executable_id ON public.fa
 
 
 --
+-- Name: index_farm_events_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_farm_events_on_fragment_id ON public.farm_events USING btree (fragment_id);
+
+
+--
 -- Name: index_farmware_envs_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2798,6 +2806,14 @@ ALTER TABLE ONLY public.devices
 
 
 --
+-- Name: farm_events fk_rails_f3cdfcc8f2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farm_events
+    ADD CONSTRAINT fk_rails_f3cdfcc8f2 FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
+
+
+--
 -- Name: pin_bindings fk_rails_f72ee24d98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2920,6 +2936,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181112010427'),
 ('20181126175951'),
 ('20181204005038'),
-('20181208035706');
+('20181208035706'),
+('20181214164537');
 
 

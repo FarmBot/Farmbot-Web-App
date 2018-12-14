@@ -13,6 +13,7 @@ class FarmEvent < ApplicationRecord
   NO_YEAR            = "%m/%d"
 
   belongs_to    :device
+  belongs_to    :fragment
   belongs_to    :executable, polymorphic: true
   validate      :within_20_year_window
   validates     :device_id, presence: true
