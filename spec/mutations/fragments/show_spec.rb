@@ -1,6 +1,25 @@
 require 'spec_helper'
 
 describe Fragments::Create do
+  class StubLog
+    attr_accessor :logs
+    ALIAS_MAP = { debug?:  :yes,
+                  errror?: :no,
+                  warn?:   :no,
+                  error:   :doit,
+                  warn:    :doit,
+                  debug:   :doit, }
+
+    def logs;    @logs ||= []; end
+    def no;      false;        end
+    def yes;     true;         end
+    def reset;   @logs = [];   end
+    def count;   logs.length;  end
+    def doit(m); logs.push(m); end
+
+    ALIAS_MAP.map { |(from, to)| alias_method from, to }
+  end
+
   let(:device) { FactoryBot.create(:device) }
   let(:tool)   { FactoryBot.create(:tool, device: device) }
   let(:point)  { FactoryBot.create(:generic_pointer, device: device) }
@@ -35,25 +54,6 @@ describe Fragments::Create do
     expect(diff.length).to eq(0)
   end
 
-  class StubLog
-    attr_accessor :logs
-    ALIAS_MAP = { debug?:  :yes,
-                  errror?: :no,
-                  warn?:   :no,
-                  error:   :doit,
-                  warn:    :doit,
-                  debug:   :doit, }
-
-    def logs;    @logs ||= []; end
-    def no;      false;        end
-    def yes;     true;         end
-    def reset;   @logs = [];   end
-    def count;   logs.length;  end
-    def doit(m); logs.push(m); end
-
-    ALIAS_MAP.map { |(from, to)| alias_method from, to }
-  end
-
   it "prevents N+1" do
     a2z    = (('a'..'z').to_a + ('0'..'9').to_a)
     body   = a2z.map do |label|
@@ -65,18 +65,28 @@ describe Fragments::Create do
         }
       }
     end
-    old_logger    = config.logger
-    nplusone      = StubLog.new #
-    config.logger = nplusone
     origin        = { device: device,
                       kind:   "internal_farm_event",
                       args:   {},
                       body:   body }
-    fragment = \
-      Fragments::Create.run!(device: device, flat_ast: Fragments::Preprocessor.run!(origin))
-    # Do a dry-run to warm the cache up:
-    result = Fragments::Show.run!(fragment_id: fragment.id, device: device)
+
+    old_logger    = config.logger
+    spy_logger    = StubLog.new
+    config.logger = spy_logger
+    fragment =  Fragments::Create.run!(device:   device,
+                                       flat_ast: Fragments::Preprocessor.run!(origin))
+
+    # Warm the cache up with two dry-runs:
+    Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    spy_logger.reset
+    expect(spy_logger.count).to eq(0)
+    Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    # If you break this test, it is a sign that:
+    # * you have introduced a database
+    # * you have introduced someo other issue that's causing rails to
+    #   create debug logs (coincidence?)
+    expect(spy_logger.count).to be < 14 # See note above
     config.logger = old_logger
-    raise "Make sure no N+1s are introduced here."
    end
 end
