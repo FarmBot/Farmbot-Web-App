@@ -9,20 +9,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
 -- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -1265,7 +1251,8 @@ CREATE TABLE public.web_app_configs (
     home_button_homing boolean DEFAULT false,
     show_motor_plot boolean DEFAULT false,
     show_historic_points boolean DEFAULT false,
-    show_sensor_readings boolean DEFAULT false
+    show_sensor_readings boolean DEFAULT false,
+    show_dev_menu boolean DEFAULT false
 );
 
 
@@ -2218,19 +2205,19 @@ ALTER TABLE ONLY public.points
 
 
 --
+-- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
-
-
---
--- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2406,10 +2393,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180925203846'),
 ('20180926161918'),
 ('20181014221342'),
-('20181014231010'),
 ('20181019023351'),
 ('20181025182807'),
 ('20181112010427'),
-('20181126175951');
+('20181126175951'),
+('20181204005038');
 
 

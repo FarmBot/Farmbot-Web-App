@@ -5,26 +5,23 @@ import { init } from "../../api/crud";
 import { TaggedRegimen } from "farmbot";
 import { defensiveClone, urlFriendly } from "../../util";
 import { push } from "../../history";
+import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 
-export function CopyButton({ dispatch, regimen }: CopyButtnProps) {
-  if (regimen) {
-    return <button
-      className="fb-button yellow"
-      onClick={() => dispatch(copy(regimen))}>
-      {t("Copy")}
-    </button>;
-  } else {
-    return <span />;
-  }
-}
+export const CopyButton = ({ dispatch, regimen }: CopyButtnProps) =>
+  <button
+    className="fb-button yellow"
+    onClick={() => dispatch(copyRegimen(regimen))}>
+    {t("Copy")}
+  </button>;
 
 let count = 1;
-function copy(regimen: TaggedRegimen | undefined) {
-  if (regimen) {
-    const r = defensiveClone(regimen);
-    r.body.name = r.body.name + t(" copy ") + (count++);
-    push("/app/regimens/" + urlFriendly(r.body.name));
-    r.body.id = undefined;
-    return regimen && init(r.kind, r.body);
-  }
-}
+
+export const copyRegimen = (payload: TaggedRegimen) =>
+  (dispatch: Function) => {
+    const copy = defensiveClone(payload);
+    copy.body.id = undefined;
+    copy.body.name = copy.body.name + t(" copy ") + (count++);
+    dispatch(init(copy.kind, copy.body));
+    push("/app/regimens/" + urlFriendly(copy.body.name));
+    setActiveRegimenByName();
+  };
