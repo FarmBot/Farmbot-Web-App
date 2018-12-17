@@ -21,7 +21,7 @@ module FarmEvents
     optional do
       time :start_time, default: Time.current, after: Time.now - 20.years
       time :end_time, before: Time.now + 20.years
-      # body
+      body
     end
 
     def validate
@@ -33,10 +33,11 @@ module FarmEvents
     def execute
       FarmEvent.transaction do
         p = inputs.merge(executable: executable,
-                        #  fragment: create_fragment
+                         fragment: create_fragment
                          )
         # Needs to be set this way for cleanup operations:
         p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
+        p.delete(:body)
         FarmEvent.create!(p)
       end
     end
