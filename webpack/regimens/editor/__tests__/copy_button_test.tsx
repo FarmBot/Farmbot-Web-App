@@ -1,51 +1,42 @@
-jest.mock("../../../history", () => ({ push: jest.fn() }));
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  history: { getCurrentLocation: () => ({ pathname: "" }) }
+}));
 
-jest.unmock("../../../api/crud");
+jest.mock("../../../api/crud", () => ({ init: jest.fn() }));
+
+jest.mock("../../set_active_regimen_by_name", () => ({
+  setActiveRegimenByName: jest.fn()
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { SpecialStatus } from "farmbot";
-import { Actions } from "../../../constants";
 import { push } from "../../../history";
+import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
+import { init } from "../../../api/crud";
+import { CopyButtnProps } from "../interfaces";
 
-describe("Copy button", () => {
+describe("<CopyButton />", () => {
+  const fakeProps = (): CopyButtnProps => ({
+    dispatch: jest.fn(x => x(jest.fn())),
+    regimen: fakeRegimen(),
+  });
 
-  it("Initializes a new regimen on click", () => {
-    const dispatch = jest.fn();
-    const regimen = fakeRegimen();
-    const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
-    expect(el.find("button").length).toBe(1);
-    el.simulate("click");
-    expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        body: expect.objectContaining({
-          name: expect.stringContaining("Foo copy")
-        }),
-        specialStatus: SpecialStatus.DIRTY,
-        kind: "Regimen"
-      }),
-      type: Actions.INIT_RESOURCE
+  it("initializes a new regimen on click", () => {
+    const p = fakeProps();
+    p.regimen.body.regimen_items = [{
+      regimen_id: 1, sequence_id: 1, time_offset: 1
+    }];
+    const { regimen_items } = p.regimen.body;
+    const wrapper = mount(<CopyButton {...p} />);
+    wrapper.simulate("click");
+    expect(p.dispatch).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Regimen", {
+      color: "red", name: "Foo copy 1", regimen_items
     });
     expect(push).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
+    expect(setActiveRegimenByName).toHaveBeenCalled();
   });
-
-  it("Render a button when given a regimen", () => {
-    const dispatch = jest.fn();
-    const regimen = fakeRegimen();
-    const el = mount(<CopyButton dispatch={dispatch} regimen={regimen} />);
-    expect(el.find("button").length).toBe(1);
-    el.simulate("click");
-    expect(dispatch).toHaveBeenCalledTimes(1);
-  });
-
-  it("renders nothing if not given a regimen", () => {
-    const dispatch = jest.fn();
-    const el = mount(<CopyButton dispatch={dispatch} />);
-    expect(el.find("button").length).toBe(0);
-    el.simulate("click");
-    expect(dispatch).not.toHaveBeenCalled();
-  });
-
 });

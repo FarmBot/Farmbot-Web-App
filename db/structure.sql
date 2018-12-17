@@ -865,9 +865,9 @@ CREATE TABLE public.nodes (
     id bigint NOT NULL,
     fragment_id bigint NOT NULL,
     kind_id bigint NOT NULL,
-    body_id bigint,
-    next_id bigint,
-    parent_id bigint
+    body_id bigint NOT NULL,
+    next_id bigint NOT NULL,
+    parent_id bigint NOT NULL
 );
 
 
@@ -2932,6 +2932,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180925203846'),
 ('20180926161918'),
 ('20181014221342'),
+('20181014231010'),
 ('20181019023351'),
 ('20181025182807'),
 ('20181112010427'),

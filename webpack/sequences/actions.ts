@@ -6,6 +6,7 @@ import { push } from "../history";
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
 import { t } from "i18next";
+import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
@@ -23,15 +24,15 @@ export function editCurrentSequence(dispatch: Function, seq: TaggedSequence,
 
 let count = 1;
 
-export function copySequence(payload: TaggedSequence) {
-  return function (dispatch: Function) {
+export const copySequence = (payload: TaggedSequence) =>
+  (dispatch: Function) => {
     const copy = defensiveClone(payload);
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
     dispatch(init(copy.kind, copy.body));
     push("/app/sequences/" + urlFriendly(copy.body.name));
+    setActiveSequenceByName();
   };
-}
 
 export function selectSequence(uuid: string): SelectSequence {
   return {
