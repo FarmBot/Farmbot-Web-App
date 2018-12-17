@@ -20,7 +20,7 @@ describe Api::FarmEventsController do
         repeat:          1 }
     end
 
-    fit 'processes properly formed celery script' do
+    it 'processes properly formed celery script' do
       sign_in user
       body = generic_sequence.merge(body: [
         {
@@ -29,9 +29,7 @@ describe Api::FarmEventsController do
             label: "wow",
             data_value: {
               kind: "tool",
-              args: {
-                tool_id: tool.id
-              }
+              args: { tool_id: tool.id }
             }
           }
         }
@@ -43,6 +41,7 @@ describe Api::FarmEventsController do
       expect(Fragment.count).to be > fragment_b4
       expect(FarmEvent.count).to be > farm_event_b4
       binding.pry
+      expect(json.fetch(:body)).to eq(body)
     end
 
     it 'rejects the use of identifiers in `farm_event.body`' do

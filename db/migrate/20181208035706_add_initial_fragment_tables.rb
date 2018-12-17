@@ -2,6 +2,7 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
   def change
     # A tree of CeleryScript. Could be attached to a FarmEvent, Sequence, Etc...
     create_table :fragments do |t|
+      t.timestamps
       t.references :device
     end
 
@@ -25,9 +26,9 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
     create_table :nodes do |t|
       t.references :fragment, null: false
       t.references :kind,     null: false
-      t.references :body,   foreign_key: { to_table: :nodes }, null: false
-      t.references :next,   foreign_key: { to_table: :nodes }, null: false
-      t.references :parent, foreign_key: { to_table: :nodes }, null: false
+      t.references :body,   foreign_key: { to_table: :nodes }#, null: false
+      t.references :next,   foreign_key: { to_table: :nodes }#, null: false
+      t.references :parent, foreign_key: { to_table: :nodes }#, null: false
     end
 
     # A collection of key/value pairs.
