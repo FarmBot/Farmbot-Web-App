@@ -7,7 +7,7 @@ module Fragments
       slicer    = CeleryScript::Slicer.new
       tree      = CeleryScript::AstNode.new(canonical)
       checker   = CeleryScript::Checker.new(tree, CORPUS, device)
-      # checker.run!
+      checker.run!
       slicer.run!(canonical)
     end
   end
