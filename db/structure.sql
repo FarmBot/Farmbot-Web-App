@@ -74,7 +74,7 @@ CREATE TABLE public.ar_internal_metadata (
 
 CREATE TABLE public.arg_names (
     id bigint NOT NULL,
-    value character varying NOT NULL
+    value character varying
 );
 
 
@@ -103,8 +103,8 @@ ALTER SEQUENCE public.arg_names_id_seq OWNED BY public.arg_names.id;
 
 CREATE TABLE public.arg_sets (
     id bigint NOT NULL,
-    fragment_id bigint NOT NULL,
-    node_id bigint NOT NULL
+    fragment_id bigint,
+    node_id bigint
 );
 
 
@@ -789,7 +789,7 @@ CREATE VIEW public.in_use_tools AS
 
 CREATE TABLE public.kinds (
     id bigint NOT NULL,
-    value character varying NOT NULL
+    value character varying
 );
 
 
@@ -861,11 +861,11 @@ ALTER SEQUENCE public.logs_id_seq OWNED BY public.logs.id;
 
 CREATE TABLE public.nodes (
     id bigint NOT NULL,
-    fragment_id bigint NOT NULL,
-    kind_id bigint NOT NULL,
-    body_id bigint NOT NULL,
-    next_id bigint NOT NULL,
-    parent_id bigint NOT NULL
+    body_id bigint,
+    fragment_id bigint,
+    kind_id bigint,
+    next_id bigint,
+    parent_id bigint
 );
 
 
@@ -1059,10 +1059,10 @@ ALTER SEQUENCE public.primary_nodes_id_seq OWNED BY public.primary_nodes.id;
 
 CREATE TABLE public.primitive_pairs (
     id bigint NOT NULL,
-    fragment_id bigint NOT NULL,
-    arg_name_id bigint NOT NULL,
-    arg_set_id bigint NOT NULL,
-    primitive_id bigint NOT NULL
+    fragment_id bigint,
+    arg_name_id bigint,
+    arg_set_id bigint,
+    primitive_id bigint
 );
 
 
@@ -1091,8 +1091,8 @@ ALTER SEQUENCE public.primitive_pairs_id_seq OWNED BY public.primitive_pairs.id;
 
 CREATE TABLE public.primitives (
     id bigint NOT NULL,
-    fragment_id bigint NOT NULL,
-    value character varying NOT NULL
+    fragment_id bigint,
+    value character varying
 );
 
 
@@ -1339,10 +1339,10 @@ ALTER SEQUENCE public.sequences_id_seq OWNED BY public.sequences.id;
 
 CREATE TABLE public.standard_pairs (
     id bigint NOT NULL,
-    fragment_id bigint NOT NULL,
-    arg_name_id bigint NOT NULL,
-    arg_set_id bigint NOT NULL,
-    node_id bigint NOT NULL
+    fragment_id bigint,
+    arg_name_id bigint,
+    arg_set_id bigint,
+    node_id bigint
 );
 
 
@@ -2930,7 +2930,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180925203846'),
 ('20180926161918'),
 ('20181014221342'),
-('20181014231010'),
 ('20181019023351'),
 ('20181025182807'),
 ('20181112010427'),

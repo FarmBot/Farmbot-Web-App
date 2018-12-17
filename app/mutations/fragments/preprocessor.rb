@@ -3,7 +3,7 @@ module Fragments
     CORPUS = CeleryScriptSettingsBag::Corpus
 
     def self.run!(kind:, args:, body:, device:)
-      canonical = { kind: kind, args: args, body: body }
+      canonical = {kind: kind, args: args, body: body}
       slicer    = CeleryScript::Slicer.new
       tree      = CeleryScript::AstNode.new(canonical)
       checker   = CeleryScript::Checker.new(tree, CORPUS, device)

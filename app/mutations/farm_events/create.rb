@@ -1,7 +1,9 @@
 module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
+    include FarmEvents::FragmentHelpers
     include Sequences::TransitionalHelpers
+    using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
 
@@ -19,6 +21,7 @@ module FarmEvents
     optional do
       time :start_time, default: Time.current, after: Time.now - 20.years
       time :end_time, before: Time.now + 20.years
+      # body
     end
 
     def validate
@@ -28,10 +31,14 @@ module FarmEvents
     end
 
     def execute
-      p = inputs.merge(executable: executable)
-      # Needs to be set this way for cleanup operations:
-      p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
-      FarmEvent.create!(p)
+      FarmEvent.transaction do
+        p = inputs.merge(executable: executable,
+                        #  fragment: create_fragment
+                         )
+        # Needs to be set this way for cleanup operations:
+        p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
+        FarmEvent.create!(p)
+      end
     end
 
     def validate_end_time
