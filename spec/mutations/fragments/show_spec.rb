@@ -83,7 +83,7 @@ describe Fragments::Create do
     expect(spy_logger.count).to eq(0)
     Fragments::Show.run!(fragment_id: fragment.id, device: device)
     # If you break this test, it is a sign that:
-    # * you have introduced a database
+    # * you have introduced a database performance regression.
     # * you have introduced someo other issue that's causing rails to
     #   create debug logs (coincidence?)
     expect(spy_logger.count).to be < 14 # See note above

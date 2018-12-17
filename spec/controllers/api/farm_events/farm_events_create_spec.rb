@@ -20,7 +20,23 @@ describe Api::FarmEventsController do
     end
 
     it 'processes properly formed celery script'
-    it 'rejects the use of identifiers in `farm_event.body`'
+
+    it 'rejects the use of identifiers in `farm_event.body`' do
+      sign_in user
+      wrong = { kind: "identifier", args: { label: "wrong" } }
+      body  = [
+        {
+          kind: "variable_declaration",
+          args: { label: "also_wrong", data_value: wrong }
+        }
+      ]
+      params = generic_sequence.merge(body: body)
+      post :create, params: params
+      expect(response.status).to eq(422)
+      expect(json.keys).to include(:farm_event)
+      expect(json[:farm_event].downcase).to include("unbound variable")
+    end
+
     it 'gets rejected for sending malformed `body` attrs' do
       sign_in user
       params = generic_sequence.merge({
