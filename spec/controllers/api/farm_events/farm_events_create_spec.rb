@@ -22,7 +22,7 @@ describe Api::FarmEventsController do
 
     it 'processes properly formed celery script' do
       sign_in user
-      body = generic_sequence.merge(body: [
+      payload = generic_sequence.merge(body: [
         {
           kind: "variable_declaration",
           args: {
@@ -36,12 +36,11 @@ describe Api::FarmEventsController do
       ])
       fragment_b4   = Fragment.count
       farm_event_b4 = FarmEvent.count
-      post :create, body: body.to_json
+      post :create, body: payload.to_json
       expect(response.status).to eq(200)
       expect(Fragment.count).to be > fragment_b4
       expect(FarmEvent.count).to be > farm_event_b4
-      binding.pry
-      expect(json.fetch(:body)).to eq(body)
+      expect(json.fetch(:body)).to eq(payload.fetch(:body))
     end
 
     it 'rejects the use of identifiers in `farm_event.body`' do

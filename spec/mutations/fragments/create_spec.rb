@@ -68,6 +68,7 @@ describe Fragments::Create do
                       :__next       => H[0] } ]
 
     Node.destroy_all
+    FarmEvent.destroy_all
     Fragment.destroy_all
     b4_counts = KLASSES.reduce({}) do |acc, klass|
       acc[klass] = klass.count
