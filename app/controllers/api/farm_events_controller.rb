@@ -11,11 +11,11 @@ module Api
     end
 
     def create
-      mutate FarmEvents::Create.run(params.as_json, device: current_device)
+      mutate FarmEvents::Create.run(raw_json, device: current_device)
     end
 
     def update
-      mutate FarmEvents::Update.run(params.as_json,
+      mutate FarmEvents::Update.run(raw_json,
                                     device:     current_device,
                                     farm_event: farm_event)
     end
