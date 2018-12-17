@@ -1,7 +1,7 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class ArgName < ApplicationRecord
   EXPIRY = Rails.env.test? ? 1.second : 2.hours
-  KEY    = "kind_%s"
+  KEY    = "arg_names/%s"
 
   validates_uniqueness_of :value
 

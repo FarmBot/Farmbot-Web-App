@@ -1,16 +1,12 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class Kind < ApplicationRecord
   EXPIRY = Rails.env.test? ? 1.second : 2.hours
-  KEY    = "Kind_%s"
+  KEY    = "kinds/%s"
   has_many :nodes
 
   def self.cached_by_value(v)
     Rails
       .cache.fetch(KEY % v, expires_in: EXPIRY) { find_or_create_by(value: v) }
-  end
-
-  def self.cached_by_id(id)
-    Rails.cache.fetch(KEY % id, expires_in: EXPIRY) { find(id) }
   end
 
   def self.cached_by_id(id)
