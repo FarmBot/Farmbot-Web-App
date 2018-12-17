@@ -37,7 +37,9 @@ describe Api::FarmEventsController do
       })
       post :create, params: params
       expect(response.status).to eq(422)
-      expect(json.keys).to include(:tool_id)
+      expect(json.keys).to include(:farm_event)
+      expect(json[:farm_event])
+        .to include("'variable_declaration' to have a 'label'")
     end
 
     it 'makes a farm_event' do
