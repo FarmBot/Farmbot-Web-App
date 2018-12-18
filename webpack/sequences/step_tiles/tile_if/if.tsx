@@ -57,6 +57,7 @@ export function If_(props: IfParams) {
     <Col xs={4}>
       <label>{t("Variable")}</label>
       <FBSelect
+        key={JSON.stringify(props.currentSequence)}
         list={lhsOptions}
         placeholder="Left hand side"
         onChange={updateLhs(props)}
@@ -65,6 +66,7 @@ export function If_(props: IfParams) {
     <Col xs={4}>
       <label>{t("Operator")}</label>
       <FBSelect
+        key={JSON.stringify(props.currentSequence)}
         list={operatorOptions}
         placeholder="Operation"
         onChange={updateField("op")}

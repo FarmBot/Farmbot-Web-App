@@ -1,14 +1,17 @@
-import { resourceReducer, emptyState } from "../resources/reducer";
 import {
-  ResourceName,
   SpecialStatus,
   TaggedDevice,
   TaggedLog,
   TaggedPoint,
   TaggedResource,
+  TaggedSequence,
+  TaggedRegimen,
 } from "farmbot";
 import * as _ from "lodash";
-import { Actions } from "../constants";
+import { resourceReducer, emptyState } from "../resources/reducer";
+import { resourceReady } from "../sync/actions";
+import { threeWayComparison as c3 } from "../util/move";
+import { defensiveClone } from "../util/util";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -21,6 +24,47 @@ export function fakeDevice(): TaggedDevice {
     "uuid": "Device.415.0"
   };
 }
+
+const tr0: TaggedResource = {
+  "kind": "Sequence",
+  "specialStatus": SpecialStatus.SAVED,
+  "body": {
+    "id": 23,
+    "name": "Goto 0, 0, 0",
+    "color": "gray",
+    "body": [
+      {
+        "kind": "move_absolute",
+        "args": {
+          "location": {
+            "kind": "coordinate",
+            "args": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "offset": {
+            "kind": "coordinate",
+            "args": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          "speed": 100
+        }
+      }
+    ],
+    "args": {
+      "version": 4,
+      "locals": { kind: "scope_declaration", args: {} },
+    },
+    "kind": "sequence"
+  },
+  "uuid": "Sequence.23.47"
+};
+
 const tr1: TaggedResource = {
   "kind": "User",
   "body": {
@@ -33,6 +77,7 @@ const tr1: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "uuid": "User.152.44"
 };
+
 const tr2: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "kind": "FarmEvent",
@@ -42,7 +87,7 @@ const tr2: TaggedResource = {
     "end_time": "2017-05-30T05:00:00.000Z",
     "repeat": 1,
     "time_unit": "daily",
-    "executable_id": 23,
+    "executable_id": tr0.body.id || 0,
     "executable_type": "Sequence"
   },
   "uuid": "FarmEvent.21.1"
@@ -57,7 +102,7 @@ const tr3: TaggedResource = {
     "end_time": "2017-05-29T05:00:00.000Z",
     "repeat": 2,
     "time_unit": "daily",
-    "executable_id": 24,
+    "executable_id": tr0.body.id || 0,
     "executable_type": "Sequence"
   },
   "uuid": "FarmEvent.22.2"
@@ -239,46 +284,6 @@ const tr12: TaggedResource = {
   "uuid": "Regimen.11.46"
 };
 
-const tr13: TaggedResource = {
-  "kind": "Sequence",
-  "specialStatus": SpecialStatus.SAVED,
-  "body": {
-    "id": 23,
-    "name": "Goto 0, 0, 0",
-    "color": "gray",
-    "body": [
-      {
-        "kind": "move_absolute",
-        "args": {
-          "location": {
-            "kind": "coordinate",
-            "args": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          "offset": {
-            "kind": "coordinate",
-            "args": {
-              "x": 0,
-              "y": 0,
-              "z": 0
-            }
-          },
-          "speed": 100
-        }
-      }
-    ],
-    "args": {
-      "version": 4,
-      "locals": { kind: "scope_declaration", args: {} },
-    },
-    "kind": "sequence"
-  },
-  "uuid": "Sequence.23.47"
-};
-
 const tr14: TaggedResource = {
   "specialStatus": SpecialStatus.SAVED,
   "kind": "Tool",
@@ -313,20 +318,118 @@ const log: TaggedLog = {
   uuid: "Log.1091396.70"
 };
 
-export let FAKE_RESOURCES: TaggedResource[] = [tr1, fakeDevice(), tr2, tr3, tr4,
-  tr5, tr6, tr7, tr8, tr9, tr10, tr11, tr12, tr13, tr14, tr15, log];
+export let FAKE_RESOURCES: TaggedResource[] = [
+  tr1,
+  fakeDevice(),
+  tr2,
+  tr3,
+  tr4,
+  tr5,
+  tr6,
+  tr7,
+  tr8,
+  tr9,
+  tr10,
+  tr11,
+  tr12,
+  tr0,
+  tr14,
+  tr15,
+  log
+];
+const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
+type ResourceGroupNumber = 0 | 1 | 2 | 3 | 4;
+type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
 
-export
-  function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
-    state = emptyState()) {
-  const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
-  return _(resources)
+/** In the real app, resources are loaded in a particular order.
+ * This table serves as a reference to prevent referential integrity issues. */
+const KIND_PRIORITY: ResourceLookupTable = {
+  User: 0,
+  Device: 0,
+  FbosConfig: 0,
+  FirmwareConfig: 0,
+  FarmwareEnv: 0,
+  FarmwareInstallation: 0,
+  WebAppConfig: 0,
+  SavedGarden: 0,
+  PlantTemplate: 1,
+  Peripheral: 1,
+  Point: 1,
+  Sensor: 1,
+  Tool: 1,
+  SensorReading: 2,
+  Sequence: 2,
+  Regimen: 3,
+  PinBinding: 3,
+  FarmEvent: 4,
+  DiagnosticDump: 4,
+  Image: 4,
+  Log: 4,
+  WebcamFeed: 4,
+  Crop: 4,
+};
+export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
+  state = emptyState()) {
+  const sortedResources = repairBrokeReferences(resources)
+    .sort((l, r) => c3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
+  type K = keyof typeof KIND_PRIORITY;
+  return _(sortedResources)
     .groupBy(KIND)
     .toPairs()
-    .map((x: [(TaggedResource["kind"]), TaggedResource[]]) => x)
-    .map((y: [ResourceName, TaggedResource[]]) => ({
-      type: Actions.RESOURCE_READY,
-      payload: { name: y[0], data: y[1].map(x => x.body) }
-    }))
+    .sort((l, r) => c3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
+    .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
+    .map((y) => resourceReady(y[0], y[1]))
     .reduce(resourceReducer, state);
+}
+
+const blankSeq: TaggedSequence = {
+  "kind": "Sequence",
+  "specialStatus": SpecialStatus.SAVED,
+  "body": {
+    "id": undefined,
+    "name": "Repair sequence",
+    "color": "gray",
+    "body": [],
+    "args": {
+      "version": 4,
+      "locals": { kind: "scope_declaration", args: {} },
+    },
+    "kind": "sequence"
+  },
+  "uuid": "Sequence.23.47"
+};
+
+const blankReg: TaggedRegimen = {
+  "specialStatus": SpecialStatus.SAVED,
+  "kind": "Regimen",
+  "body": {
+    "id": 11,
+    "name": "Repair Sequence",
+    "color": "gray",
+    "regimen_items": []
+  },
+  "uuid": "Regimen.11.46"
+};
+
+/** HISTORIC CONTEXT: At one point, the API kept track of `inUse` stats.
+ * This meant that we could do funny things in the test suite like set
+ * `executable_id` to nonsense values like 0 or -1. This led to an enormous
+ * number of failed tests. To circumvent this, we "repair" faulty foreign keys
+ * in TaggedResources. This applies to many legacy tests. - RC*/
+function repairBrokeReferences(resources: TaggedResource[]): TaggedResource[] {
+  const table = _(resources).groupBy(x => x.kind).value();
+  resources.map(resource => {
+    if (resource.kind === "FarmEvent") { // Find FarmEvents
+      const { executable_type, executable_id } = resource.body;
+      const missingResource = // Ensure foreign key is valid.
+        !(table[executable_type] || []).find(r => r.body.id === executable_id);
+      if (missingResource) { // If not found, add a dummy resource to the list.
+        const base =
+          defensiveClone(executable_type == "Regimen" ? blankReg : blankSeq);
+        base.body.id = executable_id;
+        resources.push(base);
+      }
+    }
+  });
+  return resources;
 }

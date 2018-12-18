@@ -13,8 +13,8 @@ import { LogsTable } from "./components/logs_table";
 import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
-import { NumberConfigKey } from "../config_storage/web_app_configs";
 import { setWebAppConfigValue } from "../config_storage/actions";
+import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime = (created_at: number, timeoffset: number) =>

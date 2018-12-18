@@ -8,11 +8,9 @@ import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
 import {
-  updateOK, updateNO, destroyOK, destroyNO, GeneralizedError
+  updateNO, destroyOK, destroyNO, GeneralizedError, saveOK
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
-import { findByUuid } from "../resources/reducer";
-import { generateUuid } from "../resources/util";
 import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
@@ -21,6 +19,9 @@ import * as _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";
+import { newTaggedResource } from "../sync/actions";
+import { arrayUnwrap } from "../resources/util";
+import { findByUuid } from "../resources/reducer_support";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -36,11 +37,10 @@ export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
 
 /** Rather than update (patch) a TaggedResource, this method will overwrite
  * everything within the `.body` property. */
-export function overwrite(tr: TaggedResource,
-  changeset: typeof tr.body,
+export function overwrite<T extends TaggedResource>(tr: T,
+  changeset: Partial<T["body"]>,
   specialStatus = SpecialStatus.DIRTY):
   ReduxAction<EditResourceParams> {
-
   return {
     type: Actions.OVERWRITE_RESOURCE,
     payload: { uuid: tr.uuid, update: changeset, specialStatus }
@@ -71,24 +71,48 @@ export function editStep({ step, sequence, index, executor }: EditStepProps) {
 }
 
 /** Initialize (but don't save) an indexed / tagged resource. */
-export function init(resource: TaggedResource,
+export function init<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"],
   /** Set to "true" when you want an `undefined` SpecialStatus. */
   clean = false): ReduxAction<TaggedResource> {
-  resource.body.id = resource.body.id || 0;
+  const resource = arrayUnwrap(newTaggedResource(kind, body));
   resource.specialStatus = SpecialStatus[clean ? "SAVED" : "DIRTY"];
-  /** Don't touch this- very important! */
-  resource.uuid = generateUuid(resource.body.id, resource.kind);
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
-export function initSave(resource: TaggedResource) {
-  return function (dispatch: Function, getState: GetState) {
-    const action = init(resource);
-    if (resource.body.id === 0) { delete resource.body.id; }
+/** Initialize and save a new resource, returning the `id`.
+ * If you don't need the `id` returned, use `initSave` instead.
+ */
+export const initSaveGetId =
+  <T extends TaggedResource>(kind: T["kind"], body: T["body"]) =>
+    (dispatch: Function) => {
+      const resource = arrayUnwrap(newTaggedResource(kind, body));
+      resource.specialStatus = SpecialStatus.DIRTY;
+      dispatch({ type: Actions.INIT_RESOURCE, payload: resource });
+      dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
+      maybeStartTracking(resource.uuid);
+      return axios.post<typeof resource.body>(
+        urlFor(resource.kind), resource.body)
+        .then(resp => {
+          dispatch(saveOK(resource));
+          return resp.data.id;
+        })
+        .catch((err: UnsafeError) => {
+          dispatch(updateNO({
+            err,
+            uuid: resource.uuid,
+            statusBeforeError: resource.specialStatus
+          }));
+          return Promise.reject(err);
+        });
+    };
+
+export function initSave<T extends TaggedResource>(kind: T["kind"],
+  body: T["body"]) {
+  return function (dispatch: Function) {
+    const action = init(kind, body);
     dispatch(action);
-    const nextState = getState().resources.index;
-    const tr = findByUuid(nextState, action.payload.uuid);
-    return dispatch(save(tr.uuid));
+    return dispatch(save(action.payload.uuid));
   };
 }
 
@@ -171,7 +195,7 @@ export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
     const resource = findByUuid(getState().resources.index, uuid);
-    const maybeProceed = confirmationChecker(resource, force);
+    const maybeProceed = confirmationChecker(resource.kind, force);
     return maybeProceed(() => {
       const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
@@ -188,6 +212,14 @@ export function destroy(uuid: string, force = false) {
       }
     }) || Promise.reject("User pressed cancel");
   };
+}
+
+export function destroyAll(resourceName: ResourceName, force = false) {
+  if (force || confirm(t("Are you sure you want to delete all items?"))) {
+    return axios.delete(urlFor(resourceName) + "all");
+  } else {
+    return Promise.reject("User pressed cancel");
+  }
 }
 
 export function saveAll(input: TaggedResource[],
@@ -226,6 +258,8 @@ export function urlFor(tag: ResourceName) {
     DiagnosticDump: API.current.diagnosticDumpsPath,
     SavedGarden: API.current.savedGardensPath,
     PlantTemplate: API.current.plantTemplatePath,
+    FarmwareEnv: API.current.farmwareEnvPath,
+    FarmwareInstallation: API.current.farmwareInstallationPath,
   };
   const url = OPTIONS[tag];
   if (url) {
@@ -261,7 +295,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
       const r2 = { body: defensiveClone(resp.data) };
       const newTR = _.assign({}, r1, r2);
       if (isTaggedResource(newTR)) {
-        dispatch(updateOK(newTR));
+        dispatch(saveOK(newTR));
       } else {
         throw new Error("Just saved a malformed TR.");
       }
@@ -281,9 +315,9 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "SavedGarden",
 ];
 
-const confirmationChecker = (resource: TaggedResource, force = false) =>
+const confirmationChecker = (resourceName: ResourceName, force = false) =>
   <T>(proceed: () => T): T | undefined => {
-    if (MUST_CONFIRM_LIST.includes(resource.kind)) {
+    if (MUST_CONFIRM_LIST.includes(resourceName)) {
       if (force || confirm(t("Are you sure you want to delete this item?"))) {
         return proceed();
       } else {

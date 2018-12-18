@@ -18,28 +18,6 @@ class FarmEvent < ApplicationRecord
   validates     :device_id, presence: true
   validates     :executable, presence: true
 
-  after_destroy :cascade_destruction
-  after_save    :maybe_cascade_save
-
-  def maybe_cascade_save
-    eid = the_changes["executable_id"]
-    if eid
-      ets = (the_changes["executable_type"] || [])
-      eid.compact.uniq.each_with_index.map do |id, inx|
-        klass = ets[inx] || executable_type
-        Resources::RESOURCES.fetch(klass).find_by(id: id)
-      end
-      .compact
-      .map { |model| model.delay.broadcast! }
-    end
-  end
-
-  def cascade_destruction
-    if executable
-      executable.delay.broadcast!
-    end
-  end
-
   def within_20_year_window
     too_early = start_time && start_time < (Time.now - 20.years)
     too_late  = end_time   && end_time   > (Time.now + 20.years)

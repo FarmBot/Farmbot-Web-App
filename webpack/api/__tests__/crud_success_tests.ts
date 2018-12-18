@@ -1,3 +1,4 @@
+let mockPost = Promise.resolve({ data: { id: 1 } });
 jest.mock("axios", () => ({
   default: {
     get: () => Promise.resolve({
@@ -7,11 +8,12 @@ jest.mock("axios", () => ({
         "timezone": "America/Chicago",
         "last_saw_api": "2017-08-30T20:42:35.854Z"
       }
-    })
+    }),
+    post: () => mockPost,
   }
 }));
 
-import { refresh } from "../crud";
+import { refresh, initSaveGetId } from "../crud";
 import { TaggedDevice, SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { Actions } from "../../constants";
@@ -59,6 +61,36 @@ describe("successful refresh()", () => {
       expect(get(second, "payload.body.name", "DID NOT FIND ANYTHING"))
         .toEqual("New Device From Server");
       done();
+    });
+  });
+});
+
+describe("initSaveGetId()", () => {
+  it("returns id", async () => {
+    const dispatch = jest.fn();
+    const result = await initSaveGetId("SavedGarden", {})(dispatch);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SAVE_RESOURCE_START,
+      payload: expect.objectContaining({ kind: "SavedGarden" })
+    });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.INIT_RESOURCE,
+      payload: expect.objectContaining({ kind: "SavedGarden" })
+    });
+    await expect(result).toEqual(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SAVE_RESOURCE_OK,
+      payload: expect.objectContaining({ kind: "SavedGarden" })
+    });
+  });
+
+  it("catches errors", async () => {
+    mockPost = Promise.reject("error");
+    const dispatch = jest.fn();
+    await initSaveGetId("SavedGarden", {})(dispatch).catch(() => { });
+    await expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions._RESOURCE_NO,
+      payload: expect.objectContaining({ err: "error" })
     });
   });
 });

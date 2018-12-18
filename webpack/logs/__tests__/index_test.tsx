@@ -9,7 +9,6 @@ import { mount } from "enzyme";
 import { Logs } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, Dictionary } from "farmbot";
-import { bot } from "../../__test_support__/fake_state/bot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { LogsProps } from "../interfaces";
@@ -27,7 +26,6 @@ describe("<Logs />", () => {
   const fakeProps = (): LogsProps => {
     return {
       logs: fakeLogs(),
-      bot,
       timeOffset: 0,
       dispatch: jest.fn(),
       sourceFbosConfig: jest.fn(),
@@ -112,22 +110,18 @@ describe("<Logs />", () => {
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
     expect(wrapper.instance().state.warn).toEqual(3);
-    instance.toggle("warn")();
+    wrapper.instance().toggle("warn")();
     expect(wrapper.instance().state.warn).toEqual(0);
-    instance.toggle("warn")();
+    wrapper.instance().toggle("warn")();
     expect(wrapper.instance().state.warn).toEqual(1);
   });
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
     expect(wrapper.instance().state.warn).toEqual(3);
-    instance.setFilterLevel("warn")(2);
+    wrapper.instance().setFilterLevel("warn")(2);
     expect(wrapper.instance().state.warn).toEqual(2);
   });
 });

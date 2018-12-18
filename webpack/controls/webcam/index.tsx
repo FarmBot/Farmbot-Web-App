@@ -4,17 +4,15 @@ import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
 import { TaggedWebcamFeed, SpecialStatus } from "farmbot";
 import { edit, save, destroy, init } from "../../api/crud";
+import { error } from "farmbot-toastr";
+import { t } from "i18next";
+import { WebcamFeed } from "farmbot/dist/resources/api_resources";
+
+const HTTP = "http://";
 
 type S = { activeMenu: "edit" | "show" };
 
 type P = { feeds: TaggedWebcamFeed[]; dispatch: Function; };
-
-const EMPTY_FEED: TaggedWebcamFeed = {
-  kind: "WebcamFeed",
-  specialStatus: SpecialStatus.DIRTY,
-  uuid: "",
-  body: { url: "", name: "" }
-};
 
 export const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) => {
   const { uuid } = f;
@@ -36,6 +34,20 @@ export const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) =>
 export class WebcamPanel extends React.Component<P, S> {
   state: S = { activeMenu: "show" };
 
+  init = () =>
+    this.props.dispatch(init("WebcamFeed", { url: HTTP, name: "" }))
+
+  edit = (tr: TaggedWebcamFeed, update: Partial<WebcamFeed>) =>
+    this.props.dispatch(edit(tr, update))
+
+  save = (tr: TaggedWebcamFeed) =>
+    tr.body.url != HTTP
+      ? this.props.dispatch(save(tr.uuid))
+      : error(t("Please enter a URL."))
+
+  destroy = (tr: TaggedWebcamFeed) =>
+    this.props.dispatch(destroy(tr.uuid))
+
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
 
     return {
@@ -46,10 +58,10 @@ export class WebcamPanel extends React.Component<P, S> {
         this.setState({ activeMenu });
       },
       feeds: this.props.feeds,
-      init: () => this.props.dispatch(init(EMPTY_FEED)),
-      edit: (tr, update) => this.props.dispatch(edit(tr, update)),
-      save: (tr) => { this.props.dispatch(save(tr.uuid)); },
-      destroy: (tr) => { this.props.dispatch(destroy(tr.uuid)); }
+      init: this.init,
+      edit: this.edit,
+      save: this.save,
+      destroy: this.destroy,
     };
   }
 

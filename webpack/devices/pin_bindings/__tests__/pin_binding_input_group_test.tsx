@@ -98,15 +98,12 @@ describe("<PinBindingInputGroup/>", () => {
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-    const expectedResult = expect.objectContaining({
-      kind: "PinBinding",
-      body: {
+    expect(initSave).toHaveBeenCalledWith("PinBinding",
+      {
         pin_num: 1,
         sequence_id: 2,
         binding_type: PinBindingType.standard
-      }
-    });
-    expect(initSave).toHaveBeenCalledWith(expectedResult);
+      });
   });
 
   it("registers pin: api (special action)", () => {
@@ -124,26 +121,22 @@ describe("<PinBindingInputGroup/>", () => {
     });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-    const expectedResult = expect.objectContaining({
-      kind: "PinBinding",
-      body: {
+    expect(initSave).toHaveBeenCalledWith("PinBinding",
+      {
         pin_num: 2,
         binding_type: PinBindingType.special,
         special_action: PinBindingSpecialAction.emergency_lock
-      }
-    });
-    expect(initSave).toHaveBeenCalledWith(expectedResult);
+      });
   });
 
   it("sets sequence id", () => {
     const p = fakeProps();
-    const s = p.resources.references[p.resources.byKind.Sequence[0]];
+    const key = Object.keys(p.resources.byKind.Sequence)[0];
+    const s = p.resources.references[key];
     const id = s && s.body.id;
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.sequenceIdInput).toEqual(undefined);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.setSequenceIdInput({ label: "label", value: id });
+    wrapper.instance().setSequenceIdInput({ label: "label", value: "" + id });
     expect(wrapper.instance().state.sequenceIdInput).toEqual(id);
   });
 
@@ -151,15 +144,13 @@ describe("<PinBindingInputGroup/>", () => {
     const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup
       {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    // tslint:disable-next-line:no-any
-    const instance = wrapper.instance() as any;
-    instance.setSelectedPin(10); // pin already bound
+    wrapper.instance().setSelectedPin(10); // pin already bound
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    instance.setSelectedPin(99); // invalid pin
+    wrapper.instance().setSelectedPin(99); // invalid pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    instance.setSelectedPin(5); // available pin
+    wrapper.instance().setSelectedPin(5); // available pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(5);
-    instance.setSelectedPin(1); // reserved pin
+    wrapper.instance().setSelectedPin(1); // reserved pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(1);
     expect(warning).toHaveBeenCalledWith(
       "Reserved Raspberry Pi pin may not work as expected.");

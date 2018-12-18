@@ -4,7 +4,7 @@ import { t } from "i18next";
 import * as _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
-import { prettyPrintApiErrors } from "../util";
+import { prettyPrintApiErrors, attachToRoot } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState, SetterCB } from "./interfaces";
@@ -14,6 +14,12 @@ import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
+import { LaptopSplash } from "./laptop_splash";
+import { TermsCheckbox } from "./terms_checkbox";
+
+export const attachFrontPage = () => {
+  attachToRoot(FrontPage, {});
+};
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
@@ -23,7 +29,7 @@ const showFor = (size: string[], extraClass?: string): string => {
   return classNames.join(" ");
 };
 
-export interface PartialFromEvent {
+export interface PartialFormEvent {
   currentTarget: {
     checked: boolean;
     defaultValue: string;
@@ -32,7 +38,7 @@ export interface PartialFromEvent {
 }
 
 export const setField =
-  (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFromEvent) => {
+  (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFormEvent) => {
     const state: Partial<FrontPageState> = {};
 
     switch (name) {
@@ -146,33 +152,12 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   handleFormUpdate: SetterCB = (state) => this.setState(state);
 
   maybeRenderTos = () => {
-    const TOS_URL = globalConfig.TOS_URL;
-    if (TOS_URL) {
-      const PRV_URL = globalConfig.PRIV_URL;
-      return <div>
-        <div className={"tos"}>
-          <label>{t("I agree to the terms of use")}</label>
-          <input type="checkbox"
-            onChange={setField("agreeToTerms", this.handleFormUpdate)}
-            value={this.state.agreeToTerms ? "false" : "true"} />
-        </div>
-        <ul>
-          <li>
-            <a
-              href={PRV_URL}
-              target="_blank">
-              {t("Privacy Policy")}
-            </a>
-          </li>
-          <li>
-            <a
-              href={TOS_URL}
-              target="_blank">
-              {t("Terms of Use")}
-            </a>
-          </li>
-        </ul>
-      </div>;
+    if (globalConfig.TOS_URL) {
+      return <TermsCheckbox
+        privUrl={globalConfig.PRIV_URL}
+        tosUrl={globalConfig.TOS_URL}
+        onChange={setField("agreeToTerms", this.handleFormUpdate)}
+        agree={this.state.agreeToTerms} />;
     }
   }
 
@@ -254,9 +239,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
             </Col>
           </h2>
         </Row>
-        <img
-          className={showFor(["md", "lg", "xl"], "col-md-7")}
-          src="/app-resources/img/farmbot-desktop.png" />
+        <LaptopSplash className={showFor(["md", "lg", "xl"], "col-md-7")} />
         <img
           className={showFor(["sm"], "col-md-7")}
           src="/app-resources/img/farmbot-tablet.png" />

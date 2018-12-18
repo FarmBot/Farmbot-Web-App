@@ -10,8 +10,6 @@ import {
   ResourceName,
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
-import { FirmwareConfig } from "../config_storage/firmware_configs";
-import { FbosConfig } from "../config_storage/fbos_configs";
 
 export let colors: Array<Color> = [
   "blue",
@@ -26,7 +24,7 @@ export let colors: Array<Color> = [
 
 /** Picks a color that is compliant with sequence / regimen color codes */
 export function randomColor(): Color {
-  return _.sample(colors) || "gray";
+  return _.sample(colors) as typeof colors[0];
 }
 
 export function defensiveClone<T>(target: T): T {
@@ -147,22 +145,6 @@ export function bitArray(...values: boolean[]) {
     });
 }
 
-// Thanks,
-// https://italonascimento.github.io
-//   /applying-a-timeout-to-your-promises/#implementing-the-timeout
-export function withTimeout<T>(ms: number, promise: Promise<T>) {
-  // Create a promise that rejects in <ms> milliseconds
-  const timeout = new Promise((_resolve, reject) => {
-    const id = setTimeout(() => {
-      clearTimeout(id);
-      reject(`Timed out in  ${ms} ms.`);
-    }, ms);
-  });
-
-  // Returns a race between our timeout and the passed in promise
-  return Promise.race([promise, timeout]) as Promise<T>;
-}
-
 /** Performs deep object comparison. ONLY WORKS ON JSON-y DATA TYPES. */
 export const equals = <T>(a: T, b: T): boolean => {
   // Some benchmarks claim that this is slower than `_.isEqual`.
@@ -197,7 +179,7 @@ export function validBotLocationData(
  * Return FirmwareConfig if the data is valid.
  */
 export function validFwConfig(
-  config: TaggedFirmwareConfig | undefined): FirmwareConfig | undefined {
+  config: TaggedFirmwareConfig | undefined): TaggedFirmwareConfig["body"] | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;
@@ -207,7 +189,7 @@ export function validFwConfig(
  * Return FbosConfig if the data is valid.
  */
 export function validFbosConfig(
-  config: TaggedFbosConfig | undefined): FbosConfig | undefined {
+  config: TaggedFbosConfig | undefined): TaggedFbosConfig["body"] | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;

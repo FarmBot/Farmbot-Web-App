@@ -30,6 +30,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
         <FbosDetails
           botInfoSettings={bot.hardware.informational_settings}
           dispatch={dispatch}
+          shouldDisplay={props.shouldDisplay}
           sourceFbosConfig={sourceFbosConfig} />
       </Popover>
     </Col>

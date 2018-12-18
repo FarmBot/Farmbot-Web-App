@@ -38,3 +38,7 @@ jobs:
           command: |
             sudo docker-compose run webpack npm run test-slow
             sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG webpack npm run coverage
+      - run:
+          name: Check Coveralls coverage on staging
+          command: |
+            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" web rake coverage:run

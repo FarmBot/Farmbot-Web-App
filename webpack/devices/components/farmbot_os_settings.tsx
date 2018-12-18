@@ -146,6 +146,7 @@ export class FarmbotOsSettings
               osReleaseNotes={this.state.osReleaseNotes}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
             <AutoUpdateRow
               dispatch={this.props.dispatch}
@@ -156,8 +157,11 @@ export class FarmbotOsSettings
                 dispatch={this.props.dispatch}
                 sourceFbosConfig={sourceFbosConfig} />}
             <CameraSelection
-              env={this.props.bot.hardware.user_env}
-              botOnline={botOnline} />
+              env={this.props.env}
+              botOnline={botOnline}
+              saveFarmwareEnv={this.props.saveFarmwareEnv}
+              shouldDisplay={this.props.shouldDisplay}
+              dispatch={this.props.dispatch} />
             <BoardType
               firmwareVersion={firmware_version}
               dispatch={this.props.dispatch}

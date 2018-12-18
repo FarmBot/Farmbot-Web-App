@@ -1,7 +1,6 @@
 import {
   TaggedPlantPointer,
   TaggedGenericPointer,
-  TaggedCrop,
   TaggedPlantTemplate
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
@@ -16,7 +15,6 @@ export interface PlantLayerProps {
   dragging: boolean;
   editing: boolean;
   visible: boolean;
-  crops: TaggedCrop[];
   dispatch: Function;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
@@ -85,7 +83,7 @@ export interface DragHelpersBaseProps {
   plantAreaOffset: AxisNumberProperty;
 }
 
-export interface DragHelperLayerProps extends DragHelpersBaseProps {
+export interface ActivePlantDragHelperProps extends DragHelpersBaseProps {
   currentPlant: TaggedPlant | undefined;
   editing: boolean;
 }
@@ -135,4 +133,16 @@ export interface SpreadOverlapHelperProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
+}
+
+/** Garden map interaction modes. */
+export enum Mode {
+  none = "none",
+  boxSelect = "boxSelect",
+  clickToAdd = "clickToAdd",
+  editPlant = "editPlant",
+  addPlant = "addPlant",
+  moveTo = "moveTo",
+  createPoint = "createPoint",
+  templateView = "templateView",
 }

@@ -5,6 +5,8 @@ import * as _ from "lodash";
 import { history, getPathArray } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
+import { getMode } from "./map/util";
+import { Mode } from "./map/interfaces";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -27,8 +29,10 @@ export const unselectPlant = (dispatch: Function) => () => {
 };
 
 export const closePlantInfo = (dispatch: Function) => () => {
-  if (!isNaN(parseInt(getPathArray().slice(-1)[0]))) {
-    // A plant is selected and plant info is open. Unselect and close it.
+  if (!isNaN(parseInt(getPathArray().slice(-1)[0]))
+    || getMode() == Mode.boxSelect) {
+    // A plant is selected and plant info or select panel is open.
+    // Unselect and close.
     unselectPlant(dispatch)();
     history.push("/app/designer/plants");
   }

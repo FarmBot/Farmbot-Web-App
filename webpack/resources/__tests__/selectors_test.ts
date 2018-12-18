@@ -3,39 +3,30 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
-  resourceReducer,
-  emptyState
-} from "../reducer";
-import {
   TaggedTool,
   TaggedToolSlotPointer,
-  SpecialStatus
 } from "farmbot";
-import { createOK } from "../actions";
-import { generateUuid, hasId } from "../util";
+import { saveOK } from "../actions";
+import { hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
-  fakeSequence
+  fakeSequence,
+  fakePlant
 } from "../../__test_support__/fake_state/resources";
-import { Actions } from "../../constants";
 import * as _ from "lodash";
+import { resourceReducer } from "../reducer";
+import { emptyState } from "../reducer";
+import { resourceReady, newTaggedResource } from "../../sync/actions";
+// import { Actions } from "../../constants";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
-const fakeTool: TaggedTool = {
-  kind: "Tool",
-  specialStatus: SpecialStatus.SAVED,
-  uuid: generateUuid(TOOL_ID, "Tool"),
-  body: {
-    name: "yadda yadda",
-    id: TOOL_ID
-  }
-};
-const fakeSlot: TaggedToolSlotPointer = {
-  kind: "Point",
-  specialStatus: SpecialStatus.SAVED,
-  uuid: generateUuid(SLOT_ID, "Point"),
-  body: {
+const fakeTool: TaggedTool = arrayUnwrap(newTaggedResource("Tool", {
+  name: "yadda yadda",
+  id: TOOL_ID
+}));
+const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
+  {
     tool_id: TOOL_ID,
     pointer_type: "ToolSlot",
     radius: 0,
@@ -46,13 +37,13 @@ const fakeSlot: TaggedToolSlotPointer = {
     pointer_id: SLOT_ID,
     meta: {},
     pullout_direction: 0
-  }
-};
+  }));
+
 const fakeIndex = buildResourceIndex().index;
 
 describe("findSlotByToolId", () => {
   it("returns undefined when not found", () => {
-    const state = resourceReducer(buildResourceIndex(), createOK(fakeTool));
+    const state = resourceReducer(buildResourceIndex(), saveOK(fakeTool));
     expect(state.index.byKindAndId["Tool." + fakeTool.body.id]);
     const result = Selector.findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeFalsy();
@@ -60,7 +51,7 @@ describe("findSlotByToolId", () => {
 
   it("returns something when there is a match", () => {
     const initialState = buildResourceIndex();
-    const state = [createOK(fakeTool), createOK(fakeSlot)]
+    const state = [saveOK(fakeTool), saveOK(fakeSlot)]
       .reduce(resourceReducer, initialState);
     const result = Selector.findSlotByToolId(state.index, TOOL_ID);
     expect(result).toBeTruthy();
@@ -75,14 +66,10 @@ describe("getFeeds", () => {
 
   it("finds the only WebcamFeed", () => {
     const feed = fakeWebcamFeed();
-    const state = [{
-      type: Actions.RESOURCE_READY,
-      payload: {
-        name: "WebcamFeed",
-        data: feed
-      }
-    }].reduce(resourceReducer, emptyState());
-    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed);
+    const state = [
+      resourceReady("WebcamFeed", feed)
+    ].reduce(resourceReducer, emptyState());
+    expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed.body);
   });
 });
 
@@ -150,6 +137,14 @@ describe("findPlant()", () => {
     expect(find).toThrowError();
     expect(console.warn).toBeCalled();
   });
+
+  it("finds a plant", () => {
+    const plant = fakePlant();
+    plant.body.id = 333;
+    const result = Selector
+      .findPlant(buildResourceIndex([plant]).index, plant.uuid);
+    expect(result.uuid).toBe(plant.uuid);
+  });
 });
 
 describe("selectCurrentToolSlot()", () => {
@@ -165,6 +160,29 @@ describe("getSequenceByUUID()", () => {
     const find = () => Selector.getSequenceByUUID(fakeIndex, "bad");
     expect(find).toThrow("BAD Sequence UUID");
     expect(console.warn).toBeCalled();
+  });
+});
+describe("getUserAccountSettings", () => {
+  it("throws exceptions when user is not loaded", () => {
+    const boom = () => Selector
+      .getUserAccountSettings(buildResourceIndex([]).index);
+    expect(boom)
+      .toThrow("PROBLEM: Tried to fetch user before it was available.");
+  });
+});
+describe("maybeGetSequence", () => {
+  it("returns undefined", () => {
+    const i = buildResourceIndex([]);
+    const result = Selector.maybeGetSequence(i.index, undefined);
+    expect(result).toBe(undefined);
+  });
+
+  it("returns a sequence", () => {
+    const s = fakeSequence();
+    const i = buildResourceIndex([s]);
+    const result = Selector.maybeGetSequence(i.index, s.uuid);
+    expect(result).toBeTruthy();
+    result && expect(result.uuid).toBe(s.uuid);
   });
 });
 

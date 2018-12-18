@@ -6,13 +6,7 @@ import { SensorForm } from "./sensor_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
 import { SensorsProps } from "../../devices/interfaces";
 import { SensorState } from "./interfaces";
-import {
-  TaggedSensor,
-  SpecialStatus
-} from "farmbot";
-import {
-  getArrayStatus,
-} from "../../resources/tagged_resources";
+import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { uniq } from "lodash";
@@ -52,33 +46,18 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
     }
   }
 
-  taggedSensor = (pin: number, label: string, mode: 0 | 1): TaggedSensor => {
-    return {
-      uuid: "WILL_BE_CHANGED_BY_REDUCER",
-      specialStatus: SpecialStatus.SAVED,
-      kind: "Sensor",
-      body: { pin, label, mode }
-    };
-  }
+  newSensor = (pin = 0, label = t("New Sensor"), mode: 0 | 1 = 0) => {
+    this.props.dispatch(init("Sensor", { pin, label, mode: mode || 0 }));
+  };
 
-  emptySensor = (): TaggedSensor => {
-    return this.taggedSensor(0, t("New Sensor"), 0);
-  }
-
-  stockSensors = (dispatch: Function) => {
-    const newSensor = (pin: number, label: string, mode: 0 | 1) => {
-      dispatch(init(this.taggedSensor(pin, label, mode)));
-    };
-
-    newSensor(63, t("Tool Verification"), 0);
-    newSensor(59, t("Soil Moisture"), 1);
+  stockSensors = () => {
+    this.newSensor(63, t("Tool Verification"), 0);
+    this.newSensor(59, t("Soil Moisture"), 1);
   }
 
   render() {
-    const { dispatch, sensors } = this.props;
     const { isEditing } = this.state;
-
-    const status = getArrayStatus(sensors);
+    const status = getArrayStatus(this.props.sensors);
 
     return <Widget className="sensors-widget">
       <WidgetHeader title={t("Sensors")} helpText={ToolTips.SENSORS}>
@@ -97,14 +76,14 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => { dispatch(init(this.emptySensor())); }}>
+          onClick={() => this.newSensor()}>
           <i className="fa fa-plus" />
         </button>
         <button
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={() => this.stockSensors(dispatch)}>
+          onClick={this.stockSensors}>
           <i className="fa fa-plus" />
           {t("Stock sensors")}
         </button>

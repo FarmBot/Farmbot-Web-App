@@ -200,7 +200,7 @@ describe("Pin and Peripheral support files", () => {
     it("converts peripherals to DropDownItems", () => {
       const p = fakePeripheral();
       const ri = buildResourceIndex([p]).index;
-      const uuid = ri.all[0];
+      const uuid = Object.keys(ri.all)[0];
       const pin_type: AllowedPinTypes = "Peripheral";
       const pin_id = p.body.id || 0;
       const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
@@ -249,7 +249,7 @@ describe("Pin and Peripheral support files", () => {
 
     it("converts sensors to the correct type", () => {
       const ri = buildResourceIndex([fakeSensor()]).index;
-      const s = ri.references[ri.byKind.Sensor[0]] as TaggedSensor;
+      const s = ri.references[Object.keys(ri.byKind.Sensor)[0]] as TaggedSensor;
       const ddi = { label: "sensor", value: s.uuid };
       const pin_type: AllowedPinTypes = "Sensor";
       const pin_id = s.body.id || NaN;
@@ -281,7 +281,7 @@ describe("Pin and Peripheral support files", () => {
       const resources = newIndex();
       const dispatch = jest.fn();
       const currentSequence =
-        resources.references[resources.byKind.Sequence[0]] as TaggedSequence;
+        resources.references[Object.keys(resources.byKind.Sequence)[0]] as TaggedSequence;
       const index = 0;
       const currentStep = (currentSequence.body.body || [])[index];
       const stepParams: StepParams = {
@@ -312,7 +312,7 @@ describe("Pin and Peripheral support files", () => {
       const s = fakeSensor();
       s.body.id = 1;
       const ri = buildResourceIndex([s]);
-      const uuid = ri.index.all[0];
+      const uuid = Object.keys(ri.index.all)[0];
       const result = celery2DropDown({
         kind: "named_pin",
         args: { pin_type: "Sensor", pin_id: 1 }

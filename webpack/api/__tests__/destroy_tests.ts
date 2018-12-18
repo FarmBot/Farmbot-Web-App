@@ -1,6 +1,6 @@
 const mockResource: { kind: string, body: { id: number | undefined } }
   = { kind: "Regimen", body: { id: 1 } };
-jest.mock("../../resources/reducer", () => ({
+jest.mock("../../resources/reducer_support", () => ({
   findByUuid: () => (mockResource)
 }));
 
@@ -13,14 +13,14 @@ jest.mock("../maybe_start_tracking", () => ({
   maybeStartTracking: jest.fn()
 }));
 
-let mockDelete: Promise<{}> = Promise.resolve({});
+let mockDelete: Promise<{} | void> = Promise.resolve({});
 jest.mock("axios", () => ({
   default: {
     delete: jest.fn(() => mockDelete)
   }
 }));
 
-import { destroy } from "../crud";
+import { destroy, destroyAll } from "../crud";
 import { API } from "../api";
 import axios from "axios";
 import { destroyOK, destroyNO } from "../../resources/actions";
@@ -97,5 +97,39 @@ describe("destroy", () => {
       statusBeforeError: undefined,
       uuid: "fakeResource"
     });
+  });
+});
+
+describe("destroyAll", () => {
+  it("confirmed", async () => {
+    window.confirm = () => true;
+    mockDelete = Promise.resolve();
+    await expect(destroyAll("FarmwareEnv")).resolves.toEqual(undefined);
+    expect(axios.delete)
+      .toHaveBeenCalledWith("http://localhost:3000/api/farmware_envs/all");
+  });
+
+  it("confirmation overridden", async () => {
+    window.confirm = () => false;
+    mockDelete = Promise.resolve();
+    await expect(destroyAll("FarmwareEnv", true)).resolves.toEqual(undefined);
+    expect(axios.delete)
+      .toHaveBeenCalledWith("http://localhost:3000/api/farmware_envs/all");
+  });
+
+  it("cancelled", async () => {
+    window.confirm = () => false;
+    mockDelete = Promise.resolve();
+    await expect(destroyAll("FarmwareEnv"))
+      .rejects.toEqual("User pressed cancel");
+    expect(axios.delete).not.toHaveBeenCalled();
+  });
+
+  it("rejected", async () => {
+    window.confirm = () => true;
+    mockDelete = Promise.reject("error");
+    await expect(destroyAll("FarmwareEnv")).rejects.toEqual("error");
+    expect(axios.delete)
+      .toHaveBeenCalledWith("http://localhost:3000/api/farmware_envs/all");
   });
 });

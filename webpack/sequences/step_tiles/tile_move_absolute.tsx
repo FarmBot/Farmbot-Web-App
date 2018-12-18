@@ -7,7 +7,6 @@ import { MoveAbsState } from "../interfaces";
 import {
   Tool,
   Coordinate,
-  LegalSequenceKind,
   Point,
   Identifier,
   MoveAbsolute,
@@ -26,9 +25,8 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { TileMoveAbsSelect, InputBox } from "./tile_move_absolute/index";
+import { TileMoveAbsSelect, InputBox, EMPTY_COORD } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
-// import { extractParent } from "../locals_list";
 import {
   StepWrapper,
   StepHeader,
@@ -37,7 +35,11 @@ import {
   conflictsString
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
-
+import {
+  convertDropdownToLocation,
+  extractParent,
+  MoveAbsDropDownContents
+} from "../../resources/sequence_meta";
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
   speed: number;
@@ -59,15 +61,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     return (this.tool_id) ?
       findSlotByToolId(this.resources, this.tool_id) : undefined;
   }
-  get args() {
-    // Incase we rename it later:
-    const MOVE_ABSOLUTE: LegalSequenceKind = "move_absolute";
-    if (this.step.kind === MOVE_ABSOLUTE) {
-      return this.step.args;
-    } else {
-      throw new Error("Impossible celery node detected.");
-    }
-  }
+  get args(): MoveAbsolute["args"] { return (this.step as MoveAbsolute).args; }
 
   get xyzDisabled(): boolean {
     type Keys = MoveAbsolute["args"]["location"]["kind"];
@@ -81,26 +75,14 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   updateArgs = (update: Partial<Args>) => {
     const copy = defensiveClone(this.props.currentSequence).body;
-    const step = (copy.body || [])[this.props.index];
-    if (step && step.kind === "move_absolute") {
-      // TODO: Hacky...Something off with the copying here
-      delete step.args.location.args;
-      step.args = betterMerge(step.args, update);
-      this.props.dispatch(overwrite(this.props.currentSequence, copy));
-    } else {
-      throw new Error("Impossible condition.");
-    }
+    const step = (copy.body || [])[this.props.index] as MoveAbsolute;
+    delete step.args.location.args;
+    step.args = betterMerge(step.args, update);
+    this.props.dispatch(overwrite(this.props.currentSequence, copy));
   }
 
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
-    // const { locals } = this.props.currentSequence.body.args;
-    // if (!locals) { return "-9"; }
-    // const { body } = this.props.currentSequence.body.args.locals;
-    // const parent = extractParent(body);
-    // const maybe = ((parent && parent.args.data_value) || this.args.location);
-    // const l = this.args.location.kind === "identifier" ?
-    //   maybe : this.args.location;
     const l = this.args.location;
     switch (l.kind) {
       case "coordinate":
@@ -110,11 +92,17 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         number = (this.slot) ? this.slot.body[axis] : undefined;
         break;
       case "point":
-        const { pointer_id, pointer_type } = l.args;
-        number = findPointerByTypeAndId(this.resources,
-          pointer_type,
-          pointer_id).body[axis];
+        const { pointer_id } = l.args;
+        number = findPointerByTypeAndId(this.resources, "Point", pointer_id)
+          .body[axis];
         break;
+      case "identifier":
+        const { resources, currentSequence } = this.props;
+        const p = extractParent(resources, currentSequence.uuid);
+        if (p) {
+          number = p.location[axis];
+          break;
+        }
     }
     return (number || 0).toString();
   }
@@ -155,6 +143,33 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       + conflictsString(this.settingConflicts);
   }
 
+  handleSelect = (result: MoveAbsDropDownContents) => {
+    const { currentSequence, dispatch } = this.props;
+    switch (result.kind) {
+      case "None":
+        return this.updateArgs({ location: EMPTY_COORD });
+      case "Point":
+      case "Tool":
+        return this.updateArgs({
+          location: convertDropdownToLocation(result)
+        });
+      case "BoundVariable":
+      case "UnboundVariable":
+        // Create a parent and attach to it
+        // STEP 1, Clone current sequence.
+        const clone = defensiveClone(currentSequence.body);
+        // STEP 2, do typecase to avoid extra conditionals
+        const s = (clone.body || [])[this.props.index] as MoveAbsolute;
+        // STEP 3, Figure out the `label` of the variable
+        //  (As of Dec '18, it is only "parent")
+        const { label } = result.kind === "BoundVariable" ?
+          result.body.celeryNode.args : result.body;
+        // Step 4: Attach the `identifier` to the current step:
+        s.args.location = ({ kind: "identifier", args: { label } });
+        return dispatch(overwrite(currentSequence, clone));
+    }
+  };
+
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
     if (currentSequence && !isTaggedSequence(currentSequence)) {
@@ -182,8 +197,9 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
             <label>{t("Import coordinates from")}</label>
             <TileMoveAbsSelect
               resources={this.resources}
+              uuid={this.props.currentSequence.uuid}
               selectedItem={this.args.location}
-              onChange={(location) => this.updateArgs({ location })}
+              onChange={this.handleSelect}
               shouldDisplay={this.props.shouldDisplay || (() => false)} />
           </Col>
           <Col xs={3}>

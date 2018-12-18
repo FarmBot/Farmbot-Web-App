@@ -16,6 +16,7 @@ export function PinMode(props: StepParams) {
   return <Col xs={6} md={3}>
     <label>{t("Pin Mode")}</label>
     <FBSelect
+      key={JSON.stringify(props.currentSequence)}
       onChange={(x) => setPinMode(x, props)}
       selectedItem={currentModeSelection(props.currentStep)}
       list={PIN_MODES} />
@@ -42,6 +43,7 @@ export function TileReadPin(props: StepParams) {
         <Col xs={6} md={6}>
           <label>{t("Pin")}</label>
           <FBSelect
+            key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsReadPin(props.resources,

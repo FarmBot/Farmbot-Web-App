@@ -25,7 +25,7 @@ import { API } from "../../api/index";
 type E = React.FormEvent<HTMLInputElement>;
 
 describe("<TosUpdate/>", () => {
-  const instance = () => shallow(<TosUpdate />).instance() as TosUpdate;
+  const instance = () => shallow<TosUpdate>(<TosUpdate />).instance();
   it("renders correctly when envs are set", () => {
     const oldTos = globalConfig.TOS_URL;
     const oldPriv = globalConfig.PRIV_URL;
@@ -66,5 +66,13 @@ describe("<TosUpdate/>", () => {
     };
     expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, expectation);
+  });
+
+  it("shows TOS and Privacy links", () => {
+    const el = mount(<TosUpdate />);
+    ["Privacy Policy", "Terms of Use"].map(string =>
+      expect(el.text()).toContain(string));
+    ["https://farmbot.io/privacy/", "https://farmbot.io/tos/"]
+      .map(string => expect(el.html()).toContain(string));
   });
 });

@@ -1,7 +1,7 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
-import { BooleanConfigKey, NumberConfigKey } from "./config_storage/web_app_configs";
 import { BooleanSetting, NumericSetting } from "./session_keys";
+import { BooleanConfigKey, NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.
@@ -56,8 +56,7 @@ export function safeBooleanSettting(name: string): BooleanConfigKey {
 }
 
 export const isNumericSetting =
-  // tslint:disable-next-line:no-any
-  (x: any): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
+  (x: unknown): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
 
 export function safeNumericSetting(name: string): NumberConfigKey {
   if (isNumericSetting(name)) {

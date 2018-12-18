@@ -14,7 +14,7 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 export const fn: Middleware = () => (dispatch) => (action: any) => {
   const needsRefresh = action
     && action.payload
-    && action.type === Actions.UPDATE_RESOURCE_OK
+    && action.type === Actions.SAVE_RESOURCE_OK
     && action.payload.kind === WEB_APP_CONFIG;
 
   needsRefresh && throttledLogRefresh(dispatch);

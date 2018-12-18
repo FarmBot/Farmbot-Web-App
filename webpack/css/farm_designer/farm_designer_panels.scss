@@ -126,6 +126,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     height: 2rem;
+    padding: 0.2rem;
   }
   .right-button {
     float: right;
@@ -148,13 +149,27 @@
 
 .plant-inventory-panel {
   .panel-content {
-    padding: 5rem 1.4rem;
+    padding: 0;
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 
 .plant-selection-panel {
+  .panel-action-buttons {
+    position: absolute;
+    z-index: 9;
+    width: 100%;
+    margin-top: 9rem;
+    background: $dark_green;
+    padding: 0.5rem;
+    button {
+      margin: 0.5rem;
+    }
+  }
   .panel-content {
-    padding: 15rem 1.4rem;
+    padding: 14rem 1.4rem;
     padding-right: 0;
     padding-left: 0;
     max-height: calc(100vh - 10rem);
@@ -170,9 +185,6 @@
 }
 
 .point-creation-panel {
-  .back-arrow {
-    vertical-align: bottom;
-  }
   .panel-content {
     .row {
       margin-left: 0;
@@ -198,16 +210,13 @@
 }
 
 .crop-catalog-panel {
-  .back-arrow {
-    margin-top: 0rem;
-    vertical-align: bottom;
+  .panel-content {
+    padding: 1rem 1rem 6rem;
   }
-  .panel-top {
-    padding: 5rem 0rem;
-    .panel-content {
-      padding: 1rem 1rem 6rem;
-    }
-  }
+}
+
+.panel-top {
+  padding: 5rem 0 0;
 }
 
 .panel-content {
@@ -218,17 +227,7 @@
   }
 }
 
-.plant-panel-content {
-  max-height: calc(100vh - 19rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .add-farm-event-panel {
-  .back-arrow {
-    margin-top: -0.2rem;
-    vertical-align: bottom;
-  }
   input {
     background: white;
   }
@@ -240,10 +239,6 @@
 .edit-farm-event-panel button.magenta {
   margin-top: 1rem;
   margin-left: 1rem;
-}
-
-.plant-panel-back-arrow {
-  margin-right: 1rem;
 }
 
 .panel-header {
@@ -263,15 +258,14 @@
 }
 
 .crop-info-panel {
+  .title {
+    width: 50%;
+  }
   .panel-header {
     position: inherit;
     background-size: 144% !important;
     background-repeat: no-repeat !important;
     background-position: top center !important;
-    .back-arrow {
-      margin-top: -0.2rem;
-      vertical-align: bottom;
-    }
   }
   .panel-content {
     max-height: calc(100vh - 19rem);
@@ -284,6 +278,9 @@
         font-size: 1.25rem;
       }
     }
+  }
+  .edit-on-openfarm {
+    margin-bottom: 1rem;
   }
 }
 
@@ -303,7 +300,7 @@
 }
 
 .saved-garden-panel-content {
-  margin-top: 3rem;
+  margin-top: 5rem;
   margin-left: 1rem;
   margin-right: 1rem;
   .row {

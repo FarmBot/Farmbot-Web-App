@@ -17,6 +17,7 @@ interface IdURL {
 const FALLBACK: OpenFarm.Included[] = [];
 export let OFSearch = (searchTerm: string) =>
   (dispatch: Function) => {
+    dispatch({ type: Actions.OF_SEARCH_RESULTS_START, payload: undefined });
     openFarmSearchQuery(searchTerm)
       .then(resp => {
         const images: { [key: string]: string } = {};
@@ -31,7 +32,10 @@ export let OFSearch = (searchTerm: string) =>
           return { crop, image: (images[id] || DEFAULT_ICON) };
         });
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
-      });
+      })
+      .catch(() =>
+        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined })
+      );
   };
 
 function isExecutableType(x?: string): x is ExecutableType {

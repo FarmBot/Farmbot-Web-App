@@ -11,10 +11,11 @@ import {
   AddEditFarmEventProps,
   TaggedExecutable
 } from "../interfaces";
-import { BackArrow } from "../../ui/index";
-import { SpecialStatus } from "farmbot";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Link } from "../../link";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../plants/designer_panel";
 
 interface State {
   uuid: string;
@@ -47,17 +48,12 @@ export class AddFarmEvent
       const executable_type: ExecutableType =
         (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
       const executable_id = this.executable.body.id || 1;
-      const action = init({
-        kind: "FarmEvent",
-        specialStatus: SpecialStatus.DIRTY,
-        uuid: "---",
-        body: {
-          end_time: moment().add(63, "minutes").toISOString(),
-          start_time: moment().add(3, "minutes").toISOString(),
-          time_unit: "never",
-          executable_id,
-          executable_type
-        }
+      const action = init("FarmEvent", {
+        end_time: moment().add(63, "minutes").toISOString(),
+        start_time: moment().add(3, "minutes").toISOString(),
+        time_unit: "never",
+        executable_id,
+        executable_type
       });
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });
@@ -86,16 +82,17 @@ export class AddFarmEvent
   }
 
   placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
-    return <div className="panel-container magenta-panel add-farm-event-panel">
-      <div className="panel-header magenta-panel">
-        <p className="panel-title"> <BackArrow /> {t("No Executables")} </p>
-      </div>
-      <div className="panel-content">
+    return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
+      <DesignerPanelHeader
+        panelName={"add-farm-event"}
+        panelColor={"magenta"}
+        title={t("No Executables")} />
+      <DesignerPanelContent panelName={"add-farm-event"}>
         <label>
           {children}
         </label>
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 
   render() {

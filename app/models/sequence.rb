@@ -55,21 +55,16 @@ class Sequence < ApplicationRecord
   end
 
   def manually_sync!
-    device.auto_sync_transaction { broadcast! } if device
+    device.auto_sync_transaction do
+      update_attributes!(updated_at: Time.now)
+      broadcast!
+    end if device
   end
 
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
   # Use `#manually_sync!` for most use cases.
   def broadcast?
     if destroyed? then true else false end
-  end
-
-  # Determines if the current sequence is used by any farmevents, regimens or
-  # sequences.
-  def in_use?
-    [sequence_usage_report.edge_node_count,
-     sequence_usage_report.farm_event_count,
-     sequence_usage_report.regimen_items_count].max != 0
   end
 
   # Eagerly load edge_node, primary_node and usage_report. This is a big deal

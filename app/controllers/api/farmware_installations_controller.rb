@@ -4,6 +4,10 @@ module Api
       render json: farmware_installations
     end
 
+    def show
+      render json: farmware_installation
+    end
+
     def destroy
       farmware_installation.destroy!
       render json: ""

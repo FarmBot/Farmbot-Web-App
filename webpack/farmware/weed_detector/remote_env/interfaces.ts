@@ -1,34 +1,12 @@
 /** Name of every env var that the weed detector farmware needs. */
 import { Primitive } from "../../../util";
+import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
+
+export const isWDENVKey =
+  (key: unknown): key is WDENVKey => (EVERY_WD_KEY as string[]).includes("" + key);
 
 /** Weed detector ENV key. */
-export type WDENVKey =
-  | "CAMERA_CALIBRATION_blur"
-  | "CAMERA_CALIBRATION_calibration_along_axis"
-  | "CAMERA_CALIBRATION_calibration_object_separation"
-  | "CAMERA_CALIBRATION_camera_offset_x"
-  | "CAMERA_CALIBRATION_camera_offset_y"
-  | "CAMERA_CALIBRATION_coord_scale"
-  | "CAMERA_CALIBRATION_H_HI"
-  | "CAMERA_CALIBRATION_H_LO"
-  | "CAMERA_CALIBRATION_image_bot_origin_location"
-  | "CAMERA_CALIBRATION_invert_hue_selection"
-  | "CAMERA_CALIBRATION_iteration"
-  | "CAMERA_CALIBRATION_morph"
-  | "CAMERA_CALIBRATION_S_HI"
-  | "CAMERA_CALIBRATION_S_LO"
-  | "CAMERA_CALIBRATION_total_rotation_angle"
-  | "CAMERA_CALIBRATION_V_HI"
-  | "CAMERA_CALIBRATION_V_LO"
-  | "WEED_DETECTOR_blur"
-  | "WEED_DETECTOR_H_HI"
-  | "WEED_DETECTOR_H_LO"
-  | "WEED_DETECTOR_iteration"
-  | "WEED_DETECTOR_morph"
-  | "WEED_DETECTOR_S_HI"
-  | "WEED_DETECTOR_S_LO"
-  | "WEED_DETECTOR_V_HI"
-  | "WEED_DETECTOR_V_LO";
+export type WDENVKey = keyof typeof WD_KEY_DEFAULTS;
 
 /** The entirety of ENV keys that the weed detector app needs to function.
  * Keys like HSV and whatnot. */

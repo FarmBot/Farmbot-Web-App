@@ -67,16 +67,18 @@ describe("<PlantPanel/>", () => {
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
-  it("navigates to 'move to' mode", () => {
+  it("navigates to 'move to' mode", async () => {
     const p = fakeProps();
+    const innerDispatch = jest.fn();
+    p.dispatch = jest.fn(x => x(innerDispatch));
     p.onDestroy = undefined;
     p.updatePlant = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 0, "Move FarmBot to this plant");
+    await clickButton(wrapper, 0, "Move FarmBot to this plant");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { "x": 12, "y": 34, "z": undefined },
-      type: Actions.CHOOSE_LOCATION
+    expect(innerDispatch).toHaveBeenLastCalledWith({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: 12, y: 34, z: undefined }
     });
   });
 });

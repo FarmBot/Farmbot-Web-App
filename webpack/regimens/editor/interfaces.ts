@@ -35,7 +35,7 @@ export interface RegimenEditorProps {
 
 export interface CopyButtnProps {
   dispatch: Function;
-  regimen?: TaggedRegimen;
+  regimen: TaggedRegimen;
 }
 
 export interface DeleteButtonProps extends RegimenProps {

@@ -1,11 +1,9 @@
 import {
   TaggedResource,
-  TaggedToolSlotPointer,
   TaggedSequence,
   TaggedRegimen,
   TaggedFarmEvent,
   TaggedTool,
-  TaggedPoint
 } from "farmbot";
 import { CowardlyDictionary } from "../util";
 import {
@@ -13,7 +11,6 @@ import {
   SlotWithTool
 } from "./interfaces";
 import {
-  selectAllTools,
   selectAllToolSlotPointers,
   maybeFindToolById
 } from "./selectors";
@@ -28,8 +25,6 @@ interface Indexer<T extends TaggedResource> {
 
 interface MapperFn<T extends TaggedResource> { (item: T): T | undefined; }
 
-type StringMap = CowardlyDictionary<string>;
-
 /** Build a function,
 *    that returns a function,
 *      that returns a dictionary,
@@ -41,7 +36,7 @@ export const buildIndexer =
     return function (index: ResourceIndex, ) {
       const noop: MapperFn<T> = (i) => i;
       const output: CowardlyDictionary<T> = {};
-      const uuids = index.byKind[kind];
+      const uuids = Object.keys(index.byKind[kind]);
       const m = mapper || noop;
       uuids.map(uuid => {
         assertUuid(kind, uuid);
@@ -57,25 +52,10 @@ export const buildIndexer =
     };
   };
 
-const slotMapper = (i: TaggedPoint): TaggedToolSlotPointer | undefined => {
-  if (i.kind == "Point" && (i.body.pointer_type === "ToolSlot")) {
-    return i as TaggedToolSlotPointer;
-  }
-  return undefined;
-};
-
-export const indexBySlotId =
-  buildIndexer<TaggedToolSlotPointer>("Point", slotMapper);
 export const indexSequenceById = buildIndexer<TaggedSequence>("Sequence");
 export const indexRegimenById = buildIndexer<TaggedRegimen>("Regimen");
 export const indexFarmEventById = buildIndexer<TaggedFarmEvent>("FarmEvent");
 export const indexByToolId = buildIndexer<TaggedTool>("Tool");
-
-export function mapToolIdToName(input: ResourceIndex) {
-  return selectAllTools(input)
-    .map(x => ({ key: "" + x.body.id, val: x.body.name }))
-    .reduce((x, y) => ({ ...{ [y.key]: y.val, ...x } }), {} as StringMap);
-}
 
 /** For those times that you need to ref a tool and slot together. */
 export function joinToolsAndSlot(index: ResourceIndex): SlotWithTool[] {

@@ -1,15 +1,15 @@
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey,
-  NumberConfigKey as NumberWebAppConfigKey,
-  StringConfigKey as StringWebAppConfigKey,
-  WebAppConfig
-} from "./web_app_configs";
 import { GetState } from "../redux/interfaces";
 import { edit, save } from "../api/crud";
-import { getWebAppConfig } from "../resources/selectors_by_kind";
+import {
+  BooleanConfigKey,
+  WebAppConfig,
+  NumberConfigKey,
+  StringConfigKey
+} from "farmbot/dist/resources/configs/web_app";
+import { getWebAppConfig } from "../resources/getters";
 
 /** Inverts boolean config key in WebAppConfig object, stored in the API. */
-export function toggleWebAppBool(key: BooleanWebAppConfigKey) {
+export function toggleWebAppBool(key: BooleanConfigKey) {
   return (dispatch: Function, getState: GetState) => {
     const conf = getWebAppConfig(getState().resources.index);
     if (conf) {
@@ -23,9 +23,9 @@ export function toggleWebAppBool(key: BooleanWebAppConfigKey) {
 }
 
 type WebAppConfigKey =
-  BooleanWebAppConfigKey
-  | NumberWebAppConfigKey
-  | StringWebAppConfigKey;
+  BooleanConfigKey
+  | NumberConfigKey
+  | StringConfigKey;
 
 type WebAppConfigValue = boolean | number | string | undefined;
 

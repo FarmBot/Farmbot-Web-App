@@ -3,14 +3,18 @@ import { t } from "i18next";
 import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
+import { shortRevision } from "../util";
+import { futureFeaturesEnabled } from "../account/dev_widget";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
-    <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
-      <i className="fa fa-cog"></i>
-      {t("Account Settings")}
-    </Link>
-    {localStorage.getItem("FUTURE_FEATURES") &&
+    <div>
+      <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-cog"></i>
+        {t("Account Settings")}
+      </Link>
+    </div>
+    {futureFeaturesEnabled() &&
       <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-question-circle"></i>
         {t("Help")}
@@ -32,7 +36,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       <a
         href="https://github.com/FarmBot/Farmbot-Web-App"
         target="_blank">
-        {(globalConfig.SHORT_REVISION || "NONE").slice(0, 8)}
+        {shortRevision().slice(0, 7)}<p>{shortRevision().slice(7, 8)}</p>
       </a>
     </div>
   </div>;

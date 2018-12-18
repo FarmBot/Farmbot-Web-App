@@ -4,9 +4,10 @@ import { t } from "i18next";
 import {
   CameraSelectionProps, CameraSelectionState
 } from "./interfaces";
-import { info, success, error } from "farmbot-toastr/dist";
+import { info, success, error } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
+import { Feature } from "../../interfaces";
 
 const CAMERA_CHOICES = [
   { label: t("USB Camera"), value: "USB" },
@@ -39,14 +40,16 @@ export class CameraSelection
   }
 
   sendOffConfig = (selectedCamera: DropDownItem) => {
-    const message = { "camera": JSON.stringify(selectedCamera.value) };
+    const { props } = this;
+    const configKey = "camera";
+    const config = { [configKey]: JSON.stringify(selectedCamera.value) };
     info(t("Sending camera configuration..."), t("Sending"));
-    getDevice()
-      .setUserEnv(message)
-      .then(() => {
-        success(t("Successfully configured camera!"), t("Success"));
-      })
-      .catch(() => error(t("An error occurred during configuration.")));
+    props.shouldDisplay(Feature.api_farmware_env)
+      ? props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]))
+      : getDevice()
+        .setUserEnv(config)
+        .then(() => success(t("Successfully configured camera!"), t("Success")))
+        .catch(() => error(t("An error occurred during configuration.")));
   }
 
   render() {

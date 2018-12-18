@@ -78,7 +78,7 @@ describe("<App />: Loading", () => {
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
-    p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point"];
+    p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point", "Tool"];
     const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).not.toContain("Loading...");
     wrapper.unmount();

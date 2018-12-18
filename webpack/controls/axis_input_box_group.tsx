@@ -59,6 +59,7 @@ export class AxisInputBoxGroup extends
         <button
           onClick={this.clicked}
           disabled={this.props.disabled || false}
+          title={t("Move to chosen location")}
           className="full-width green go fb-button" >
           {t("GO")}
         </button>

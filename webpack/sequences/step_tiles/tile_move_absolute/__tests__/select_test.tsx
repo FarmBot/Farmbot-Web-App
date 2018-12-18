@@ -12,8 +12,10 @@ import { TileMoveAbsProps } from "../interfaces";
 
 describe("<TileMoveAbsSelect/>", () => {
   function fakeProps(): TileMoveAbsProps {
+    const resources = buildResourceIndex().index;
     return {
-      resources: buildResourceIndex().index,
+      resources,
+      uuid: resources.byKind.Sequence[0] || "Sequence.-00.-00",
       selectedItem: {
         kind: "tool",
         args: { tool_id: 123 }
@@ -28,6 +30,6 @@ describe("<TileMoveAbsSelect/>", () => {
     const el = shallow(<TileMoveAbsSelect {...props} />);
     el.simulate("change", { label: "test ddi", value: 123, headingId: "tool" });
     expect(props.onChange)
-      .toHaveBeenCalledWith({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
+      .toHaveBeenCalledWith({ kind: "None", body: undefined });
   });
 });

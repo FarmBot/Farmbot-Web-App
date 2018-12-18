@@ -12,24 +12,20 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { AddPlant, AddPlantProps } from "../add_plant";
 import { history } from "../../../history";
+import {
+  fakeCropLiveSearchResult
+} from "../../../__test_support__/fake_crop_search_result";
 
 describe("<AddPlant />", () => {
-  const fakeProps = (): AddPlantProps => ({
-    cropSearchResults: [{
-      image: "a",
-      crop: {
-        name: "Mint",
-        slug: "mint",
-        binomial_name: "",
-        common_names: [""],
-        description: "",
-        sun_requirements: "",
-        sowing_method: "",
-        processing_pictures: 1,
-        svg_icon: "fake_mint_svg"
-      }
-    }]
-  });
+  const fakeProps = (): AddPlantProps => {
+    const cropSearchResult = fakeCropLiveSearchResult();
+    cropSearchResult.crop.svg_icon = "fake_mint_svg";
+    return {
+      cropSearchResults: [cropSearchResult],
+      dispatch: jest.fn(),
+      openfarmSearch: jest.fn(),
+    };
+  };
 
   it("renders", () => {
     mockPath = "/app/designer/plants/crop_search/mint/add";
@@ -42,7 +38,7 @@ describe("<AddPlant />", () => {
 
   it("goes back", () => {
     const wrapper = mount(<AddPlant {...fakeProps()} />);
-    const doneBtn = wrapper.find("a").at(1);
+    const doneBtn = wrapper.find("a").first();
     expect(doneBtn.text()).toEqual("Done");
     doneBtn.simulate("click");
     expect(history.push).toHaveBeenCalledWith(

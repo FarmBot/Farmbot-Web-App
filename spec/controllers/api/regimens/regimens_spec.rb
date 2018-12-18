@@ -15,7 +15,6 @@ describe Api::RegimensController do
       expect(response.status).to eq(200)
       expect(json.count).to eq(1)
       expect(json.first[:id]).to eq(regimen.id)
-      expect(json.first[:in_use]).to eq(true)
     end
 
     it 'doesnt fetch other peoples regimens' do

@@ -1,5 +1,5 @@
 import { getDefaultAxisLength, getGridSize } from "../index";
-import { WebAppConfig } from "../../config_storage/web_app_configs";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("getDefaultAxisLength()", () => {
   it("returns axis lengths", () => {

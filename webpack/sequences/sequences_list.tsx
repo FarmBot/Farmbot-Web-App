@@ -5,24 +5,28 @@ import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col } from "../ui/index";
-import { TaggedSequence, SpecialStatus } from "farmbot";
+import { TaggedSequence } from "farmbot";
 import { init } from "../api/crud";
 import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
+import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 
-const sequenceList = (dispatch: Function) =>
+const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
+  .body
+  .name
+  .toLowerCase()
+  .includes(searchTerm);
+const sequenceList = (dispatch: Function, usage: Record<string, boolean | undefined>) =>
   (ts: TaggedSequence) => {
-    const css = [
-      `fb-button`,
-      `block`,
-      `full-width`,
-      `${ts.body.color || "purple"}`
-    ];
+    const css =
+      [`fb-button`, `block`, `full-width`, `${ts.body.color || "purple"}`];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
     const click = () => dispatch(selectSequence(ts.uuid));
     const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
+    const inUse = !!usage[ts.uuid];
+
     return <div className="sequence-list-items" key={uuid}>
       <StepDragger
         dispatch={dispatch}
@@ -38,8 +42,7 @@ const sequenceList = (dispatch: Function) =>
           onClick={click} >
           <button className={css.join(" ")} draggable={true}>
             <label>{name}</label>
-            {ts.body.in_use &&
-              <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+            {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
           </button>
         </Link>
       </StepDragger>
@@ -56,34 +59,29 @@ export class SequencesList extends
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
 
-  emptySequence = (): TaggedSequence => {
-    return {
-      kind: "Sequence",
-      uuid: "REDUCER_MUST_CHANGE_THIS",
-      specialStatus: SpecialStatus.SAVED,
-      body: {
-        name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
-        args: {
-          version: -999,
-          locals: { kind: "scope_declaration", args: {} },
-        },
-        color: "gray",
-        kind: "sequence",
-        body: []
-      }
-    };
-  }
+  emptySequenceBody = (): TaggedSequence["body"] => ({
+    name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
+    args: {
+      version: -999,
+      locals: { kind: "scope_declaration", args: {} },
+    },
+    color: "gray",
+    kind: "sequence",
+    body: []
+  });
 
   render() {
     const { sequences, dispatch } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
-
+    const { resourceUsage } = this.props;
     return <div>
       <button
         className="fb-button green add"
         onClick={() => {
-          dispatch(init(this.emptySequence()));
-          push("/app/sequences/new_sequence_" + (sequences.length++));
+          const newSequence = this.emptySequenceBody();
+          dispatch(init("Sequence", newSequence));
+          push("/app/sequences/" + urlFriendly(newSequence.name));
+          setActiveSequenceByName();
         }}>
         <i className="fa fa-plus" />
       </button>
@@ -95,12 +93,8 @@ export class SequencesList extends
           <div className="sequence-list">
             {
               sortResourcesById(sequences)
-                .filter(seq => seq
-                  .body
-                  .name
-                  .toLowerCase()
-                  .includes(searchTerm))
-                .map(sequenceList(dispatch))
+                .filter(filterFn(searchTerm))
+                .map(sequenceList(dispatch, resourceUsage))
             }
           </div>
         </Col>

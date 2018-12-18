@@ -32,6 +32,15 @@ RSpec.describe Api::SensorsController, type: :controller do
       .to eq([:created_at, :id, :label, :mode, :pin, :updated_at])
   end
 
+  it "lists a resources" do
+    sign_in user
+    Sensor.destroy_all
+    s = FactoryBot.create(:sensor, device: user.device)
+    get :show, params: { id: s.id }
+    expect(response.status).to eq(200)
+    expect(json[:id]).to  eq(s.id)
+  end
+
   it "updates a resource" do
     sign_in user
     Sensor.destroy_all

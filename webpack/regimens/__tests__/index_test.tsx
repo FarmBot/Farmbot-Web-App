@@ -31,7 +31,8 @@ describe("<Regimens />", () => {
       dailyOffsetMs: 1000,
       weeks: [],
       bot,
-      calendar: []
+      calendar: [],
+      regimenUsageStats: {}
     };
   }
 

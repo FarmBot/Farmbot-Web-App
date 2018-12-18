@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug
 } from "../ui/index";
-import { mapStateToProps } from "./state_to_props";
+import { mapStateToProps, isPendingInstallation } from "./state_to_props";
 import { Photos } from "./images/photos";
 import { CameraCalibration } from "./camera_calibration/camera_calibration";
 import { FarmwareProps } from "../devices/interfaces";
@@ -22,6 +22,7 @@ import { FarmwareInfo } from "./farmware_info";
 import { Farmwares } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
+import { FarmwareManifest } from "farmbot";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -74,12 +75,28 @@ const getFarmwareByName =
   };
 
 /** Execute a Farmware. */
-const run = (farmwareName: string | undefined) => () => {
-  if (farmwareName) {
-    const no = commandErr("Farmware execution");
-    getDevice().execScript(farmwareName).then(() => { }, no);
-  }
+const run = (farmwareName: string) => () => {
+  getDevice().execScript(farmwareName)
+    .then(() => { }, commandErr("Farmware execution"));
 };
+
+export const BasicFarmwarePage = ({ farmwareName, farmware }: {
+  farmwareName: string,
+  farmware: FarmwareManifest | undefined
+}) =>
+  <div>
+    <button
+      className="fb-button green farmware-button"
+      disabled={isPendingInstallation(farmware)}
+      onClick={run(farmwareName)}>
+      {t("Run")}
+    </button>
+    <p>
+      {isPendingInstallation(farmware)
+        ? t("Pending installation.")
+        : t("No inputs provided.")}
+    </p>
+  </div>;
 
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
@@ -105,7 +122,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           timeOffset={this.props.timeOffset}
           dispatch={this.props.dispatch}
           images={this.props.images}
-          currentImage={this.props.currentImage} />;
+          currentImage={this.props.currentImage}
+          imageJobs={this.props.imageJobs} />;
       case "camera_calibration":
         return <CameraCalibration
           syncStatus={this.props.syncStatus}
@@ -113,6 +131,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           currentImage={this.props.currentImage}
           images={this.props.images}
           env={this.props.env}
+          saveFarmwareEnv={this.props.saveFarmwareEnv}
           iteration={envGet("CAMERA_CALIBRATION_iteration", this.props.env)}
           morph={envGet("CAMERA_CALIBRATION_morph", this.props.env)}
           blur={envGet("CAMERA_CALIBRATION_blur", this.props.env)}
@@ -122,6 +141,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
           S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
           V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+          timeOffset={this.props.timeOffset}
+          shouldDisplay={this.props.shouldDisplay}
           botToMqttStatus={this.props.botToMqttStatus} />;
       case "plant_detection":
       case "weed_detector":
@@ -130,15 +151,13 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         const farmware = getFarmwareByName(this.props.farmwares, farmwareName);
         return farmware && needsFarmwareForm(farmware)
           ? <FarmwareForm farmware={farmware}
-            user_env={this.props.user_env} />
-          : <div>
-            <button
-              className="fb-button green farmware-button"
-              onClick={run(farmwareName)}>
-              {t("Run")}
-            </button>
-            <p>{t("No inputs provided.")}</p>
-          </div>;
+            user_env={this.props.user_env}
+            shouldDisplay={this.props.shouldDisplay}
+            saveFarmwareEnv={this.props.saveFarmwareEnv}
+            dispatch={this.props.dispatch} />
+          : <BasicFarmwarePage
+            farmwareName={farmwareName}
+            farmware={farmware} />;
     }
   }
 
@@ -154,7 +173,9 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           <FarmwareList
             current={this.current}
             dispatch={this.props.dispatch}
+            shouldDisplay={this.props.shouldDisplay}
             farmwares={this.props.farmwares}
+            installations={this.props.taggedFarmwareInstallations}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
         </LeftPanel>
@@ -174,7 +195,10 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           helpText={ToolTips.FARMWARE_INFO}
           show={!!farmware}>
           <FarmwareInfo
+            dispatch={this.props.dispatch}
             farmware={farmware}
+            installations={this.props.taggedFarmwareInstallations}
+            shouldDisplay={this.props.shouldDisplay}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
         </RightPanel>

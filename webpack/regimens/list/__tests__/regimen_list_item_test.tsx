@@ -12,7 +12,8 @@ describe("<RegimenListItem/>", () => {
       length: 1,
       regimen: fakeRegimen(),
       dispatch: jest.fn(),
-      index: 0
+      index: 0,
+      inUse: false
     };
   };
 
@@ -32,14 +33,15 @@ describe("<RegimenListItem/>", () => {
   });
 
   it("shows in-use indicator", () => {
-    const props = fakeProps();
-    props.regimen.body.in_use = true;
-    const wrapper = render(<RegimenListItem {...props} />);
+    const p = fakeProps();
+    p.inUse = true;
+    const wrapper = render(<RegimenListItem {...p} />);
     expect(wrapper.find(".in-use").length).toEqual(1);
   });
 
   it("doesn't show in-use indicator", () => {
-    const wrapper = render(<RegimenListItem {...fakeProps()} />);
+    const props = fakeProps();
+    const wrapper = render(<RegimenListItem {...props} />);
     expect(wrapper.find(".in-use").length).toEqual(0);
   });
 

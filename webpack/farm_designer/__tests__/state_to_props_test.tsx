@@ -4,9 +4,15 @@ import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate, fakeSavedGarden, fakePoint, fakeWebAppConfig
+  fakePlant,
+  fakePlantTemplate,
+  fakeSavedGarden,
+  fakePoint,
+  fakeWebAppConfig,
+  fakeFarmwareEnv
 } from "../../__test_support__/fake_state/resources";
-import { WebAppConfig } from "../../config_storage/web_app_configs";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { generateUuid } from "../../resources/util";
 
 describe("mapStateToProps()", () => {
   const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
@@ -42,7 +48,7 @@ describe("mapStateToProps()", () => {
   it("returns selected plant", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakePlant()]);
-    const plantUuid = state.resources.index.byKind["Point"][0];
+    const plantUuid = Object.keys(state.resources.index.byKind["Point"])[0];
     state.resources.consumers.farm_designer.selectedPlants = [plantUuid];
     expect(mapStateToProps(state).selectedPlant).toEqual(
       expect.objectContaining({ uuid: plantUuid }));
@@ -80,6 +86,7 @@ describe("mapStateToProps()", () => {
 describe("getPlants()", () => {
   const fakeResources = () => {
     const savedGarden = fakeSavedGarden();
+    savedGarden.uuid = generateUuid(1, "SavedGarden");
     savedGarden.body.id = 1;
     const plant1 = fakePlant();
     const plant2 = fakePlant();
@@ -96,8 +103,21 @@ describe("getPlants()", () => {
 
   it("returns plant templates", () => {
     const resources = fakeResources();
-    const savedGardenUuid = resources.index.byKind["SavedGarden"][0];
+    const savedGardenUuid = Object.keys(resources.index.byKind["SavedGarden"])[0];
     resources.consumers.farm_designer.openedSavedGarden = savedGardenUuid;
     expect(getPlants(resources).length).toEqual(1);
+  });
+
+  it("returns API farmware env", () => {
+    const state = fakeState();
+    state.bot.hardware.user_env = {};
+    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    const fwEnv = fakeFarmwareEnv();
+    fwEnv.body.key = "CAMERA_CALIBRATION_total_rotation_angle";
+    fwEnv.body.value = 15;
+    state.resources = buildResourceIndex([fwEnv]);
+    const props = mapStateToProps(state);
+    expect(props.cameraCalibrationData).toEqual(
+      expect.objectContaining({ rotation: "15" }));
   });
 });

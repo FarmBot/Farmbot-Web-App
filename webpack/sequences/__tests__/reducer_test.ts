@@ -15,10 +15,6 @@ describe("sequence reducer", () => {
     expect(stateAfter.current).toBe(after);
   }
 
-  it("sets current sequence with sequence", () => {
-    resourcePayload(undefined, Actions.INIT_RESOURCE, "sequence");
-  });
-
   it("unsets current sequence with sequence", () => {
     resourcePayload("sequence", Actions.DESTROY_RESOURCE_OK, undefined);
   });

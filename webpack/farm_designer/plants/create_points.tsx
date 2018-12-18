@@ -4,13 +4,16 @@ import { connect } from "react-redux";
 import { Everything, Color } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
-  BackArrow, Row, Col, BlurableInput, ColorPicker
+  Row, Col, BlurableInput, ColorPicker
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
-import { TaggedPoint, SpecialStatus } from "farmbot";
 import { deletePoints } from "../../farmware/weed_detector/actions";
 import { clone } from "lodash";
+import { GenericPointer } from "farmbot/dist/resources/api_resources";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "./designer_panel";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -101,21 +104,16 @@ export class CreatePoints
 
   createPoint = () => {
     const { cx, cy, r, color } = this.state;
-    const p: TaggedPoint = {
-      kind: "Point",
-      uuid: "",
-      specialStatus: SpecialStatus.SAVED,
-      body: {
-        pointer_type: "GenericPointer",
-        name: "Created Point",
-        meta: { color, created_by: "farm-designer" },
-        x: (cx || 0),
-        y: (cy || 0),
-        z: 0,
-        radius: (r || 1),
-      }
+    const body: GenericPointer = {
+      pointer_type: "GenericPointer",
+      name: "Created Point",
+      meta: { color, created_by: "farm-designer" },
+      x: (cx || 0),
+      y: (cy || 0),
+      z: 0,
+      radius: (r || 1),
     };
-    this.props.dispatch(initSave(p));
+    this.props.dispatch(initSave("Point", body));
     this.cancel();
   }
 
@@ -189,23 +187,17 @@ export class CreatePoints
     </Row>
 
   render() {
-    return <div
-      className="panel-container brown-panel point-creation-panel">
-      <div className="panel-header brown-panel">
-        <p className="panel-title">
-          <BackArrow />
-          {t("Create point")}
-        </p>
-        <div className="panel-header-description">
-          {t(Content.CREATE_POINTS_DESCRIPTION)}
-        </div>
-      </div>
-
-      <div className="panel-content">
+    return <DesignerPanel panelName={"point-creation"} panelColor={"brown"}>
+      <DesignerPanelHeader
+        panelName={"point-creation"}
+        panelColor={"brown"}
+        title={t("Create point")}
+        description={Content.CREATE_POINTS_DESCRIPTION} />
+      <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
         <this.PointActions />
         <this.DeleteAllPoints />
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }

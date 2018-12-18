@@ -10,6 +10,7 @@ import { PlantStage } from "farmbot";
 import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
+import { DesignerPanelContent } from "./designer_panel";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -65,17 +66,21 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
+const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
+  (dispatch: Function): Promise<void> => {
+    dispatch({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: to.x, y: to.y, z: undefined }
+    });
+    return Promise.resolve();
+  };
+
 const MoveToPlant =
   (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
     <button className="fb-button gray"
-      hidden={!localStorage.getItem("FUTURE_FEATURES") || props.isEditing}
-      onClick={() => {
-        props.dispatch({
-          type: Actions.CHOOSE_LOCATION,
-          payload: { x: props.x, y: props.y, z: undefined }
-        });
-        history.push("/app/designer/plants/move_to");
-      }}>
+      hidden={props.isEditing}
+      onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
+        .then(() => history.push("/app/designer/plants/move_to"))}>
       {t("Move FarmBot to this plant")}
     </button>;
 
@@ -96,7 +101,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const isEditing = !!onDestroy;
   if (isEditing) { x = round(x); y = round(y); }
   const destroy = () => onDestroy && onDestroy(uuid);
-  return <div className="panel-content">
+  return <DesignerPanelContent panelName={"plants"}>
     <label>
       {t("Plant Info")}
     </label>
@@ -106,6 +111,7 @@ export function PlantPanel(props: PlantPanelProps) {
       </ListItem>
       <ListItem name={t("Plant Type")}>
         <Link
+          title={t("View crop info")}
           to={`/app/designer/plants/crop_search/` + slug}>
           {_.startCase(slug)}
         </Link>
@@ -125,7 +131,7 @@ export function PlantPanel(props: PlantPanelProps) {
             uuid={uuid}
             plantStatus={plantStatus}
             updatePlant={updatePlant} />
-          : plantStatus}
+          : t(_.startCase(plantStatus))}
       </ListItem>
     </ul>
     <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
@@ -147,5 +153,5 @@ export function PlantPanel(props: PlantPanelProps) {
       onClick={() => history.push("/app/designer/plants/select")} >
       {t("Delete multiple")}
     </button>
-  </div>;
+  </DesignerPanelContent>;
 }

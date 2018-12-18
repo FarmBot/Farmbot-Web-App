@@ -57,37 +57,42 @@
   }
 }
 
-.photos {
-  .photos-footer {
-    display: flex;
-    position: relative;
-    left: 2.5rem;
-    bottom: -1rem;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    width: 90%;
-    justify-content: space-between;
-    label {
-      font-weight: normal;
-    }
-    span {
-      font-weight: bold;
-    }
+.photos-footer {
+  display: flex;
+  position: relative;
+  bottom: 1rem;
+  justify-content: space-between;
+  label {
+    font-weight: normal;
   }
-  .image-metadatas {
-    display: flex;
-    label {
-      margin-left: 1rem;
-      margin-right: 0.5rem;
-    }
+  span {
+    font-weight: bold;
   }
-  .image-created-at {
-    span {
-      white-space: nowrap;
-    }
-    label {
-      margin-right: 0.5rem;
-    }
+}
+
+.image-metadata {
+  display: flex;
+  label {
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+.image-created-at {
+  span {
+    white-space: nowrap;
+  }
+  label {
+    margin-right: 0.5rem;
+  }
+}
+
+.farmware-button {
+  p {
+    float: right;
+    margin-top: 0.75rem;
+    margin-right: 1rem;
+    color: $medium_gray;
   }
 }
 

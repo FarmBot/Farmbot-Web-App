@@ -1,7 +1,13 @@
 .farm-event-panel {
   .fa-calendar {
-    margin: 0.5rem 0 0 1.6rem;
+    margin: 0.35rem 1rem 0 3rem;
     font-size: 2rem;
+    float: left;
+  }
+  input {
+    width: 75% !important;
+    float: right;
+    margin-right: 1.75rem;
   }
   .panel-content {
     padding: 6rem 1rem 6rem 0;
@@ -9,7 +15,7 @@
 }
 
 .farm-events {
-  max-height: calc(100vh - 19rem);
+  max-height: calc(100vh - 20rem);
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 1.8rem;

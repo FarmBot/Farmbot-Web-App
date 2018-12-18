@@ -138,6 +138,9 @@
       color: $placeholder_gray;
     }
   }
+}
+
+.panel-content {
   .select-results-container {
     top: 4rem;
     margin-bottom: 12rem;
@@ -186,6 +189,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     margin-left: 1rem;
+  }
+}
+
+.thin-search {
+  .spinner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-right: 1rem;
   }
 }
 
@@ -312,7 +327,7 @@
   left: 50%;
   z-index: 3;
   padding: 2rem;
-  background: rgba(256, 256, 256, .75);
+  background: rgba(255, 255, 255, .75);
   border-radius: 5px;
   box-shadow: 0px 1px 4px #555;
   text-align: center;
@@ -322,6 +337,14 @@
   button {
     margin: 0.5rem;
     float: unset;
+  }
+}
+
+.garden-snapshot {
+  button {
+    &.pseudo-disabled {
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -335,13 +358,22 @@
     .saved-garden-info div {
       cursor: pointer;
       padding-right: 0;
+      input {
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      p {
+        margin-top: 0.25rem;
+      }
     }
     &:hover {
       background: $light_gray;
     }
     &.selected {
       background: $gray;
-      p {
+      p,
+      input {
         font-weight: bold;
       }
     }
@@ -363,7 +395,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    background: rgba(256, 256, 256, .75);
+    background: rgba(255, 255, 255, .75);
     padding: 10px;
     border-radius: 5px;
     >*+* {

@@ -134,7 +134,7 @@ export class API {
   /** /api/sensors/ */
   get sensorPath() { return `${this.baseUrl}/api/sensors/`; }
   /** /api/farmware_envs/:id */
-  get farmwareEnvPath() { return `${this.baseUrl}/api/farmware_envs`; }
+  get farmwareEnvPath() { return `${this.baseUrl}/api/farmware_envs/`; }
   /** /api/pin_bindings/:id */
   get pinBindingPath() { return `${this.baseUrl}/api/pin_bindings/`; }
   /** /api/saved_gardens/:id */
@@ -151,6 +151,7 @@ export class API {
   get diagnosticDumpsPath() { return `${this.baseUrl}/api/diagnostic_dumps/`; }
   /** /api/farmware_installations/:id */
   get farmwareInstallationPath() {
-    return `${this.baseUrl}/api/farmware_installations`;
+    return `${this.baseUrl}/api/farmware_installations/`;
   }
+  get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
 }

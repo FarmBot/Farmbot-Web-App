@@ -22,8 +22,9 @@ const KEYS: McuParamName[] = [
   "encoder_type_z"
 ];
 
-// tslint:disable-next-line:no-any
-export function isEncoderValue(x: any): x is Encoder { return !!Encoder[x]; }
+export function isEncoderValue(x: unknown): x is Encoder {
+  return !!Encoder[parseInt("" + x)];
+}
 
 export function findByType(input: number | string | undefined) {
   return LOOKUP[input || "DEFAULT"] || LOOKUP.DEFAULT;

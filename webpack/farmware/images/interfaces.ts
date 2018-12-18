@@ -1,4 +1,4 @@
-import { TaggedImage } from "farmbot";
+import { TaggedImage, JobProgress } from "farmbot";
 
 export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
@@ -17,4 +17,5 @@ export interface PhotosProps {
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   timeOffset: number;
+  imageJobs: JobProgress[];
 }

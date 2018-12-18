@@ -55,6 +55,11 @@
   @media screen and (max-width: 974px) {
     margin-right: 10px;
   }
+  .locals-list {
+    max-height: 14rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 
 .sequence,

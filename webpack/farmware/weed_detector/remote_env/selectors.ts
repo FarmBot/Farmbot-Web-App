@@ -1,24 +1,24 @@
 
 import { WDENVKey, WD_ENV } from "./interfaces";
-import { DEFAULTS, EVERY_KEY } from "./constants";
-import { Dictionary } from "farmbot/dist";
+import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
 import { defensiveClone, betterParseNum } from "../../../util";
 import * as _ from "lodash";
 import { parseEnvKey } from "./translators";
 import { isNumber } from "lodash";
+import { UserEnv } from "../../../devices/interfaces";
 
 /** Given a half formed set of weed detector environment variables, creates a
  * fully formed set of environment variables. When a variable is missing, it is
  * replaced with a default value. */
-export function prepopulateEnv(env: Dictionary<string | undefined>): WD_ENV {
-  const output = defensiveClone(DEFAULTS);
-  EVERY_KEY.map(key => {
+export function prepopulateEnv(env: UserEnv): WD_ENV {
+  const output = defensiveClone(WD_KEY_DEFAULTS);
+  EVERY_WD_KEY.map(key => {
     const initial = env[key];
     let val: string;
     if (_.isString(initial)) {
       val = initial;
     } else {
-      val = "" + DEFAULTS[key];
+      val = "" + WD_KEY_DEFAULTS[key];
     }
     output[key] = parseEnvKey(key, val);
   });
@@ -29,5 +29,5 @@ export function prepopulateEnv(env: Dictionary<string | undefined>): WD_ENV {
  * the corresponding value. When lookup fails, provide a sane default value. */
 export function envGet(key: WDENVKey, env: Partial<WD_ENV>): number {
   return betterParseNum(
-    JSON.stringify(isNumber(env[key]) ? env[key] : ""), DEFAULTS[key]);
+    JSON.stringify(isNumber(env[key]) ? env[key] : ""), WD_KEY_DEFAULTS[key]);
 }

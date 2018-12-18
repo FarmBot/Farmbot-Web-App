@@ -3,8 +3,8 @@ import { Else } from "../else";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { emptyState } from "../../../../resources/reducer";
 import { IfParams } from "../index";
+import { emptyState } from "../../../../resources/reducer";
 
 describe("<Else/>", () => {
   function fakeProps(): IfParams {

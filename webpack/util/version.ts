@@ -102,7 +102,8 @@ export enum MinVersionOverride {
 export function shouldDisplay(
   current: string | undefined, lookupData: MinOsFeatureLookup | undefined) {
   return function (feature: Feature): boolean {
-    /** Escape hatch for platform developers doing offline development. */
+    /** Escape hatch for platform developers doing offline development.
+     * COPY/PASTE: `localStorage.IM_A_DEVELOPER = "1000.0.0"` */
     const override = localStorage.getItem("IM_A_DEVELOPER");
     const target = override || current;
     if (isString(target)) {

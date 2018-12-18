@@ -3,8 +3,8 @@ import { TileSendMessage, RefactoredSendMessage } from "../tile_send_message";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import { channel } from "../tile_send_message_support";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileSendMessage/>", () => {
   function props() {

@@ -1,10 +1,9 @@
 import { TaggedLog, ConfigurationName, ALLOWED_MESSAGE_TYPES } from "farmbot";
-import { BotState, SourceFbosConfig } from "../devices/interfaces";
+import { SourceFbosConfig } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface LogsProps {
   logs: TaggedLog[];
-  bot: BotState;
   timeOffset: number;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;

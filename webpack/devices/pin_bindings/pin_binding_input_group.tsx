@@ -11,7 +11,7 @@ import {
 import { isNumber, includes } from "lodash";
 import { Feature, ShouldDisplay } from "../interfaces";
 import { initSave } from "../../api/crud";
-import { taggedPinBinding } from "./tagged_pin_binding_init";
+import { pinBindingBody } from "./tagged_pin_binding_init";
 import { registerGpioPin } from "../actions";
 import { error, warning } from "farmbot-toastr";
 import {
@@ -67,18 +67,17 @@ export class PinBindingInputGroup
     if (isNumber(pinNumberInput)) {
       if (bindingType && (sequenceIdInput || specialActionInput)) {
         if (shouldDisplay(Feature.api_pin_bindings)) {
-          dispatch(initSave(
-            bindingType == PinBindingType.special
-              ? taggedPinBinding({
-                pin_num: pinNumberInput,
-                special_action: specialActionInput,
-                binding_type: bindingType
-              })
-              : taggedPinBinding({
-                pin_num: pinNumberInput,
-                sequence_id: sequenceIdInput,
-                binding_type: bindingType
-              })));
+          bindingType == PinBindingType.special
+            ? dispatch(initSave("PinBinding", pinBindingBody({
+              pin_num: pinNumberInput,
+              special_action: specialActionInput,
+              binding_type: bindingType
+            })))
+            : dispatch(initSave("PinBinding", pinBindingBody({
+              pin_num: pinNumberInput,
+              sequence_id: sequenceIdInput,
+              binding_type: bindingType
+            })));
         } else {
           dispatch(registerGpioPin({
             pin_number: pinNumberInput,

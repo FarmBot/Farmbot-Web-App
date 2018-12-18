@@ -3,11 +3,11 @@ import { TileFindHome, FindHomeParams } from "../tile_find_home";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome } from "farmbot/dist";
-import { emptyState } from "../../../resources/reducer";
 import {
   fakeHardwareFlags
 } from "../../../__test_support__/sequence_hardware_settings";
 import { HardwareFlags } from "../../interfaces";
+import { emptyState } from "../../../resources/reducer";
 
 describe("<TileFindHome/>", () => {
   const fakeProps = (): FindHomeParams => {

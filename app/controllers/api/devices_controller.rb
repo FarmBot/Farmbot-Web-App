@@ -30,6 +30,10 @@ module Api
       send_emails ? email_data_dump : store_data_dump
     end
 
+    def sync
+      mutate Devices::Sync.run(device: current_device)
+    end
+
   private
 
     # Store the JSON on the local filesystem for self hosted users that don't

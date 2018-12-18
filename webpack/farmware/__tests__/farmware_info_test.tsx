@@ -2,16 +2,18 @@ const mockDevice = {
   updateFarmware: jest.fn(() => Promise.resolve({})),
   removeFarmware: jest.fn(() => Promise.resolve({})),
 };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
+import { destroy } from "../../api/crud";
+import { fakeFarmwareInstallation } from "../../__test_support__/fake_state/resources";
+import { error } from "farmbot-toastr";
 
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => {
@@ -19,6 +21,9 @@ describe("<FarmwareInfo />", () => {
       farmware: fakeFarmware(),
       showFirstParty: false,
       firstPartyFarmwareNames: [],
+      dispatch: jest.fn(),
+      installations: [],
+      shouldDisplay: () => false,
     };
   };
 
@@ -64,10 +69,74 @@ describe("<FarmwareInfo />", () => {
     expect(mockDevice.updateFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
 
+  it("doesn't update Farmware", () => {
+    const p = fakeProps();
+    p.farmware = fakeFarmware();
+    // tslint:disable-next-line:no-any
+    p.farmware.name = undefined as any;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 0, "Update");
+    expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
+  });
+
   it("removes Farmware", () => {
     const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
     clickButton(wrapper, 1, "Remove");
     expect(mockDevice.removeFarmware).toHaveBeenCalledWith("My Fake Farmware");
+  });
+
+  it("doesn't remove Farmware", () => {
+    const p = fakeProps();
+    p.farmware = fakeFarmware();
+    // tslint:disable-next-line:no-any
+    p.farmware.name = undefined as any;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(mockDevice.removeFarmware).not.toHaveBeenCalled();
+  });
+
+  it("removes Farmware from API", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.shouldDisplay = () => true;
+    p.installations = [fakeFarmwareInstallation()];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(destroy).toHaveBeenCalledWith(p.installations[0].uuid);
+  });
+
+  it("errors during removal of Farmware from API: not found", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.shouldDisplay = () => true;
+    p.installations = [];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    expect(destroy).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Farmware not found.");
+  });
+
+  it("errors during removal of Farmware from API: no url", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.shouldDisplay = () => true;
+    p.installations = [fakeFarmwareInstallation()];
+    if (p.farmware) { p.farmware.url = ""; }
+    const wrapperNoUrl = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapperNoUrl, 1, "Remove");
+    expect(destroy).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Farmware not found.");
+  });
+
+  it("errors during removal of Farmware from API: rejected promise", async () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.reject("error"));
+    p.shouldDisplay = () => true;
+    p.installations = [fakeFarmwareInstallation()];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 1, "Remove");
+    await expect(destroy).toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith("Farmware not found.");
   });
 
   it("doesn't remove 1st-party Farmware", () => {

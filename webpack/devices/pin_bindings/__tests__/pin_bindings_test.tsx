@@ -20,16 +20,19 @@ describe("<PinBindings/>", () => {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
     fakeSequence1.body.name = "Sequence 1";
+
     const fakeSequence2 = fakeSequence();
     fakeSequence2.body.id = 2;
     fakeSequence2.body.name = "Sequence 2";
+
     const fakePinBinding1 = fakePinBinding();
-    fakePinBinding1.body.id = 1;
-    fakePinBinding1.body.pin_num = 0;
+    fakePinBinding1.body =
+      ({ pin_num: 10, sequence_id: 2, binding_type: PinBindingType.standard });
     const fakePinBinding2 = fakePinBinding();
     fakePinBinding2.body.id = 2;
     fakePinBinding2.body.pin_num = 26;
     fakePinBinding2.body.binding_type = PinBindingType.special;
+
     (fakePinBinding2.body as SpecialPinBinding).special_action =
       PinBindingSpecialAction.emergency_lock;
     const resources = buildResourceIndex([

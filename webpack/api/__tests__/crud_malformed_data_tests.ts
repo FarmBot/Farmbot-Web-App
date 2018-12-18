@@ -71,7 +71,7 @@ describe("updateViaAjax()", () => {
       dispatch: jest.fn(),
       index: buildResourceIndex([fakePeripheral()]).index
     };
-    payload.uuid = payload.index.all[0];
+    payload.uuid = Object.keys(payload.index.all)[0];
     updateViaAjax(payload).catch(e => {
       expect("" + e).toEqual("Error: Just saved a malformed TR.");
     });

@@ -14,7 +14,6 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  getFbosConfig,
   maybeGetDevice
 } from "../../resources/selectors";
 import {
@@ -30,6 +29,7 @@ import { sourceFbosConfigValue } from "../../devices/components/source_config_va
 import { Feature } from "../../devices/interfaces";
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
+import { getFbosConfig } from "../../resources/getters";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
@@ -42,12 +42,12 @@ export let formatDate = (input: string, timeOffset: number) => {
 };
 
 export let repeatOptions = [
-  { label: "Minutes", value: "minutely", name: "time_unit" },
-  { label: "Hours", value: "hourly", name: "time_unit" },
-  { label: "Days", value: "daily", name: "time_unit" },
-  { label: "Weeks", value: "weekly", name: "time_unit" },
-  { label: "Months", value: "monthly", name: "time_unit" },
-  { label: "Years", value: "yearly", name: "time_unit" }
+  { label: t("Minutes"), value: "minutely", name: "time_unit" },
+  { label: t("Hours"), value: "hourly", name: "time_unit" },
+  { label: t("Days"), value: "daily", name: "time_unit" },
+  { label: t("Weeks"), value: "weekly", name: "time_unit" },
+  { label: t("Months"), value: "monthly", name: "time_unit" },
+  { label: t("Years"), value: "yearly", name: "time_unit" }
 ];
 
 const handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {

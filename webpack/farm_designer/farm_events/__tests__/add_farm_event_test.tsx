@@ -20,7 +20,7 @@ describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
     const sequence = fakeSequence();
     sequence.body.id = 1;
-    const farmEvent = fakeFarmEvent("Sequence", 1);
+    const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     farmEvent.uuid = "FarmEvent";
     return {
       deviceTimezone: "",

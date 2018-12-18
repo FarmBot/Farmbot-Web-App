@@ -1,6 +1,7 @@
+
 import { t } from "i18next";
 import {
-  getAllSavedPeripherals,
+  selectAllSavedPeripherals,
   selectAllSavedSensors
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -11,10 +12,10 @@ import {
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
-import { joinKindAndId } from "../../resources/reducer";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import { joinKindAndId } from "../../resources/reducer_support";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
@@ -79,7 +80,7 @@ const boxLed2DropDown =
   });
 
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
-  const list = getAllSavedPeripherals(input).map(peripheral2DropDown);
+  const list = selectAllSavedPeripherals(input).map(peripheral2DropDown);
   return list.length ? [PERIPHERAL_HEADING, ...list] : [];
 }
 

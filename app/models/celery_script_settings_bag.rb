@@ -74,8 +74,6 @@ module CeleryScriptSettingsBag
                             "BoxLed4"    => BoxLed }
   CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
-  # KLASS_LOOKUP          =
-  #   Point::POINTER_KINDS.reduce({}) { |a, v| (a[v] = Kernel.const_get(v)) && a }
   RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
 
   Corpus = CeleryScript::Corpus
@@ -246,12 +244,13 @@ module CeleryScriptSettingsBag
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
+      .node(:install_first_party_farmware, [])
+      .node(:farm_event, [], [:variable_declaration]) # NEVER SAVE THIS NODE ITS PRIVATE
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
-        resource_type = x.args.fetch("resource_type").value
-        resource_id   = x.args.fetch("resource_id").value
+        resource_type = x.args.fetch(:resource_type).value
+        resource_id   = x.args.fetch(:resource_id).value
         check_resource_type(x, resource_type, resource_id)
       end
-      .node(:install_first_party_farmware, [])
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
@@ -266,7 +265,7 @@ module CeleryScriptSettingsBag
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
       # For convinience, we try to set it here, defaulting to 0
-      node.args["resource_id"].instance_variable_set("@value", 0)
+      node.args[:resource_id].instance_variable_set("@value", 0)
     when *RESOURCE_NAME.without("Device")
       klass       = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)

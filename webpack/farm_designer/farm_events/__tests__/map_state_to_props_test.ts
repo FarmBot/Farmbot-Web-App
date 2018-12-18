@@ -24,12 +24,12 @@ describe("mapStateToProps()", () => {
       time_offset: 28800000
     }];
 
-    const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
+    const sequenceFarmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = "2222-02-22T02:00:00.000Z";
     sequenceFarmEvent.body.end_time = "2222-02-22T02:03:00.000Z";
 
-    const regimenFarmEvent = fakeFarmEvent("Regimen", 1);
+    const regimenFarmEvent = fakeFarmEvent("Regimen", sequence.body.id);
     regimenFarmEvent.body.id = 2;
     regimenFarmEvent.body.start_time = "2222-02-23T02:00:00.000Z";
     regimenFarmEvent.body.end_time = "2222-02-23T02:03:00.000Z";
@@ -106,7 +106,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     sequence.body.id = 1;
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
-    const sequenceFarmEvent = fakeFarmEvent("Sequence", 1);
+    const sequenceFarmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = props.start_time;
     sequenceFarmEvent.body.end_time = props.end_time;
@@ -187,7 +187,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
       time_offset: 288660000
     }];
 
-    const regimenFarmEvent = fakeFarmEvent("Regimen", 1);
+    const regimenFarmEvent = fakeFarmEvent("Regimen", sequence.body.id);
     regimenFarmEvent.body.id = 2;
     regimenFarmEvent.body.start_time = "2017-12-20T01:02:00.000Z";
     regimenFarmEvent.body.end_time = "2017-12-20T01:05:00.000Z";

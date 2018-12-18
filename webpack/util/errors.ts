@@ -1,6 +1,7 @@
 import { Dictionary } from "farmbot";
 import { t } from "i18next";
 import * as _ from "lodash";
+import { Content } from "../constants";
 
 export interface AxiosErrorResponse {
   response?: {
@@ -31,8 +32,7 @@ function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
     return err.response.data;
   } else {
     return {
-      error: t("Your web browser is unable to communicate with the " +
-        "web app server. Make sure you are connected to the Internet.")
+      error: t(Content.WEB_APP_DISCONNECTED)
     };
   }
 }

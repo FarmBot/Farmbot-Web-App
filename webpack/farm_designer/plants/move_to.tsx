@@ -11,6 +11,10 @@ import { isNumber } from "lodash";
 import { Actions, Content } from "../../constants";
 import { validBotLocationData } from "../../util/util";
 import { unselectPlant } from "../actions";
+import { AxisNumberProperty } from "../map/interfaces";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "./designer_panel";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -103,26 +107,19 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
   }
 
   render() {
-    return <div
-      className="panel-container green-panel move-to-panel">
-      <div className="panel-header green-panel">
-        <p className="panel-title">
-          <i className="fa fa-arrow-left plant-panel-back-arrow"
-            onClick={() => history.push("/app/designer/plants")} />
-          {t("Move to location")}
-        </p>
-
-        <div className="panel-header-description">
-          {t(Content.MOVE_MODE_DESCRIPTION)}
-        </div>
-      </div>
-
-      <div className="panel-content move-to-panel-content">
+    return <DesignerPanel panelName={"move-to"} panelColor={"green"}>
+      <DesignerPanelHeader
+        panelName={"move-to"}
+        panelColor={"green"}
+        title={t("Move to location")}
+        backTo={"/app/designer/plants"}
+        description={Content.MOVE_MODE_DESCRIPTION} />
+      <DesignerPanelContent panelName={"move-to"}>
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
           currentBotLocation={this.props.currentBotLocation} />
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }
 
@@ -130,7 +127,21 @@ export const MoveModeLink = () =>
   <div className="move-to-mode">
     <button
       className="fb-button gray"
+      title={t("open move mode panel")}
       onClick={() => history.push("/app/designer/plants/move_to")}>
       {t("move mode")}
     </button>
   </div>;
+
+/** Mark a new bot target location on the map. */
+export const chooseLocation = (props: {
+  gardenCoords: AxisNumberProperty | undefined,
+  dispatch: Function,
+}) => {
+  if (props.gardenCoords) {
+    props.dispatch({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: props.gardenCoords.x, y: props.gardenCoords.y, z: 0 }
+    });
+  }
+};

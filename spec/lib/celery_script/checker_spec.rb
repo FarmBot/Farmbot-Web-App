@@ -37,7 +37,7 @@ describe CeleryScript::Checker do
   end
 
   it "handles unknown args" do
-    tree.body.first.args["foo"] = "bar"
+    tree.body.first.args[:foo] = "bar"
     expect(checker.valid?).to be(false)
     msg = checker.error.message
     expect(msg).to include("unexpected arguments: [:foo].")

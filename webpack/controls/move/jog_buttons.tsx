@@ -4,6 +4,7 @@ import { homeAll, findHome } from "../../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
+import { t } from "i18next";
 
 const DEFAULT_STEP_SIZE = 100;
 
@@ -27,6 +28,7 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td>
           <button
             className="i fa fa-camera arrow-button fb-button"
+            title={t("Take a photo")}
             onClick={() => getDevice().takePhoto().catch(() => { })} />
         </td>
         <td />
@@ -54,6 +56,7 @@ export function JogButtons(props: JogMovementControlsProps) {
         <td>
           <button
             className="i fa fa-home arrow-button fb-button"
+            title={doFindHome ? t("find home") : t("move to home")}
             onClick={homeBtnAction}
             disabled={arduinoBusy || false} />
         </td>

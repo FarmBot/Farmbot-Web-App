@@ -5,6 +5,12 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
+import { SpecialStatus } from "farmbot";
+jest.mock("../../../resources/tagged_resources", () => ({
+  getArrayStatus: () => SpecialStatus.SAVED,
+  isTaggedResource: () => true
+}));
+
 import * as React from "react";
 import { ToolForm } from "../tool_form";
 import { mount, shallow } from "enzyme";
@@ -39,9 +45,7 @@ describe("<ToolForm/>", () => {
     const wrapper = mount(<ToolForm {...fakeProps()} />);
     expect(wrapper.props().tools.length).toEqual(2);
     clickButton(wrapper, 2, "");
-    expect(init).toHaveBeenCalledWith(expect.objectContaining({
-      body: { name: "Tool 3" }
-    }));
+    expect(init).toHaveBeenCalledWith("Tool", { name: "Tool 3" });
   });
 
   it("adds stock tools", () => {

@@ -7,11 +7,18 @@ module CeleryScript
       BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
                            "no leaves here."
       LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
-      def initialize(parent = nil, args:, body: nil, comment: "", kind:)
+      NEVER              = :__NEVER__
+
+      def initialize(parent = nil,
+                     args:,
+                     body: nil,
+                     comment: "",
+                     kind:,
+                     uuid: nil)
           @comment, @kind, @parent = comment, kind, parent
 
           @args = args.map do |key, value|
-            [key, maybe_initialize(self, value, key)]
+            [key.to_sym, maybe_initialize(self, value, key)]
           end.to_h if args
 
           @body = body.map do |e|
@@ -20,11 +27,11 @@ module CeleryScript
           end if body
       end
 
-      def maybe_initialize(parent, leaf_or_node, key = "__NEVER__")
+      def maybe_initialize(parent, leaf_or_node, key = NEVER)
         if is_node?(leaf_or_node)
           AstNode.new(parent, leaf_or_node)
         else
-          raise TypeCheckError, LEAVES_NEED_KEYS if key == "__NEVER__"
+          raise TypeCheckError, LEAVES_NEED_KEYS if key == NEVER
           AstLeaf.new(parent, leaf_or_node, key)
         end
       end

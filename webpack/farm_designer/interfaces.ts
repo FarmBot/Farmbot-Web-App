@@ -15,12 +15,12 @@ import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interface
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
-import { SelectionBoxData } from "./map/selection_box";
-import { BooleanConfigKey } from "../config_storage/web_app_configs";
+import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
   ExecutableType, PlantPointer
 } from "farmbot/dist/resources/api_resources";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /* BotOriginQuadrant diagram
 
@@ -101,6 +101,7 @@ export interface DesignerState {
   hoveredPlantListItem: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
+  cropSearchInProgress: boolean;
   chosenLocation: BotPosition;
   currentPoint: CurrentPointPayl | undefined;
   openedSavedGarden: string | undefined;
@@ -157,6 +158,10 @@ export interface FarmEventProps {
   calendarRows: CalendarDay[];
 }
 
+export interface FarmEventState {
+  searchTerm: string;
+}
+
 export interface GardenMapProps {
   showPlants: boolean | undefined;
   showPoints: boolean | undefined;
@@ -192,8 +197,8 @@ export interface GardenMapProps {
 export interface GardenMapState {
   isDragging: boolean | undefined;
   botOriginQuadrant: BotOriginQuadrant;
-  pageX: number | undefined;
-  pageY: number | undefined;
+  qPageX: number | undefined;
+  qPageY: number | undefined;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   selectionBox: SelectionBoxData | undefined;
@@ -220,19 +225,23 @@ export interface HoveredPlantPayl {
   icon: string;
 }
 
+export type OpenfarmSearch = (query: string) => (dispatch: Function) => void;
+
 export interface CropCatalogProps {
   cropSearchQuery: string;
   dispatch: Function;
   cropSearchResults: CropLiveSearchResult[];
-  OFSearch: (searchTerm: string) =>
-    (dispatch: Function) => void;
+  openfarmSearch: OpenfarmSearch;
+  cropSearchInProgress: boolean;
 }
 
 export interface CropInfoProps {
   dispatch: Function;
+  cropSearchQuery: string | undefined;
   cropSearchResults: CropLiveSearchResult[];
+  cropSearchInProgress: boolean;
   openedSavedGarden: string | undefined;
-  OFSearch: (query: string) => (dispatch: Function) => void;
+  openfarmSearch: OpenfarmSearch;
   botPosition: BotPosition;
 }
 

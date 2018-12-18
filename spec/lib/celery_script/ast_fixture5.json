@@ -1,0 +1,41 @@
+{
+  "kind": "sequence",
+  "name": "has parameters",
+  "args": {
+    "locals": {
+      "kind": "scope_declaration",
+      "args": {},
+      "body": [
+        {
+          "kind": "parameter_declaration",
+          "args": {
+            "label": "parent",
+            "data_type": "point"
+          }
+        }
+      ]
+    }
+  },
+  "body": [
+    {
+      "kind": "move_absolute",
+      "args": {
+        "speed": 100,
+        "location": {
+          "kind": "identifier",
+          "args": {
+            "label": "parent"
+          }
+        },
+        "offset": {
+          "kind": "coordinate",
+          "args": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      }
+    }
+  ]
+}

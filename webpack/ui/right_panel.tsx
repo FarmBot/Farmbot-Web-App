@@ -12,7 +12,7 @@ interface RightPanelProps {
 }
 
 export function RightPanel(props: RightPanelProps) {
-  return <Col sm={props.width || 3}>
+  return <Col sm={props.width || 3} lg={3}>
     {props.show &&
       <div className={props.className}>
         <h3>

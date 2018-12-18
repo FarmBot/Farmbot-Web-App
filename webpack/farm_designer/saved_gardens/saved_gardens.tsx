@@ -11,16 +11,20 @@ import { GardenSnapshot } from "./garden_snapshot";
 import { SavedGardenList } from "./garden_list";
 import { SavedGardensProps } from "./interfaces";
 import { closeSavedGarden } from "./actions";
+import { TaggedSavedGarden } from "farmbot";
+import { Content } from "../../constants";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../plants/designer_panel";
+import { futureFeaturesEnabled } from "../../account/dev_widget";
 
-export function mapStateToProps(props: Everything): SavedGardensProps {
-  return {
-    savedGardens: selectAllSavedGardens(props.resources.index),
-    plantTemplates: selectAllPlantTemplates(props.resources.index),
-    dispatch: props.dispatch,
-    plantsInGarden: selectAllPlantPointers(props.resources.index).length > 0,
-    openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
-  };
-}
+export const mapStateToProps = (props: Everything): SavedGardensProps => ({
+  savedGardens: selectAllSavedGardens(props.resources.index),
+  plantTemplates: selectAllPlantTemplates(props.resources.index),
+  dispatch: props.dispatch,
+  plantPointerCount: selectAllPlantPointers(props.resources.index).length,
+  openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
+});
 
 @connect(mapStateToProps)
 export class SavedGardens extends React.Component<SavedGardensProps, {}> {
@@ -29,45 +33,48 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
     unselectPlant(this.props.dispatch)();
   }
 
+  get currentSavedGarden(): TaggedSavedGarden | undefined {
+    return this.props.savedGardens
+      .filter(x => x.uuid === this.props.openedSavedGarden)[0];
+  }
+
   render() {
-    return <div
-      className="panel-container green-panel saved-garden-panel">
-      <div className="panel-header green-panel">
-        <p className="panel-title">
-          <i className="fa fa-arrow-left plant-panel-back-arrow"
-            onClick={() => history.push("/app/designer/plants")} />
-          {t("Saved Gardens")}
-        </p>
+    return <DesignerPanel panelName={"saved-garden"} panelColor={"green"}>
+      <DesignerPanelHeader
+        panelName={"saved-garden"}
+        panelColor={"green"}
+        title={t("Saved Gardens")}
+        description={Content.SAVED_GARDENS}
+        backTo={"/app/designer/plants"} />
 
-        <div className="panel-header-description">
-          {t("Save or load a garden.")}
-        </div>
-      </div>
-
-      <div className="panel-content saved-garden-panel-content">
+      <DesignerPanelContent panelName={"saved-garden"}>
         <GardenSnapshot
-          plantsInGarden={this.props.plantsInGarden}
-          disabled={!!this.props.openedSavedGarden} />
+          currentSavedGarden={this.currentSavedGarden}
+          plantTemplates={this.props.plantTemplates}
+          dispatch={this.props.dispatch} />
         <hr />
         {this.props.savedGardens.length > 0
           ? <SavedGardenList {...this.props} />
           : <p>{t("No saved gardens yet.")}</p>}
-      </div>
-    </div>;
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }
 
+/** Link to SavedGardens panel for garden map legend. */
 export const SavedGardensLink = () =>
   <button className="fb-button green"
-    hidden={!(localStorage.getItem("FUTURE_FEATURES"))}
+    hidden={!futureFeaturesEnabled()}
     onClick={() => history.push("/app/designer/saved_gardens")}>
     {t("Saved Gardens")}
   </button>;
 
+/** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
   pathArray[3] === "saved_gardens" && parseInt(pathArray[4]) > 0
     ? parseInt(pathArray[4]) : false;
 
+/** Sticky an indicator and actions menu when a SavedGarden is open. */
 export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>

@@ -4,12 +4,8 @@ import { Actions } from "../constants";
 import { toastErrors } from "../toast_errors";
 import { stopTracking } from "../connectivity/data_consistency";
 
-export function createOK(payload: TaggedResource) {
+export function saveOK(payload: TaggedResource) {
   return { type: Actions.SAVE_RESOURCE_OK, payload };
-}
-
-export function updateOK(payload: TaggedResource) {
-  return { type: Actions.UPDATE_RESOURCE_OK, payload };
 }
 
 export function destroyOK(payload: TaggedResource) {

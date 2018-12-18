@@ -21,11 +21,13 @@ import {
   TaggedWebcamFeed,
   TaggedSavedGarden,
   TaggedPlantTemplate,
+  TaggedToolSlotPointer,
+  TaggedFarmwareEnv,
+  TaggedFarmwareInstallation,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
-import { emptyToolSlot } from "../../tools/components/empty_tool_slot";
-import { FirmwareConfig } from "../../config_storage/firmware_configs";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
+import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -34,10 +36,9 @@ export function fakeSequence(): TaggedSequence {
   return fakeResource("Sequence", {
     args: {
       version: 4,
-      label: "WIP",
       locals: { kind: "scope_declaration", args: {} },
     },
-    id: 12,
+    id: idCounter++,
     color: "red",
     name: "fake",
     kind: "sequence",
@@ -63,7 +64,6 @@ export function fakeFarmEvent(exe_type: ExecutableType,
     "time_unit": "never",
     "executable_id": exe_id,
     "executable_type": exe_type,
-    "calendar": []
   });
 }
 
@@ -86,7 +86,7 @@ export function fakeLog(): TaggedLog {
 export function fakeImage(): TaggedImage {
   return fakeResource("Image", {
     id: idCounter++,
-    device_id: 46,
+    device_id: idCounter++,
     attachment_processed_at: undefined,
     updated_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
@@ -96,15 +96,12 @@ export function fakeImage(): TaggedImage {
 }
 
 export function fakeTool(): TaggedTool {
-  return fakeResource("Tool", {
-    name: "Foo"
-  });
+  return fakeResource("Tool", { name: "Foo" });
 }
 
 export function fakeUser(): TaggedUser {
   return fakeResource("User", {
     id: idCounter++,
-    device_id: 789,
     name: "Fake User 123",
     email: "fake@fake.com",
     created_at: "---",
@@ -112,7 +109,19 @@ export function fakeUser(): TaggedUser {
   });
 }
 
-export const fakeToolSlot = emptyToolSlot;
+export function fakeToolSlot(): TaggedToolSlotPointer {
+  return fakeResource("Point", {
+    x: 0,
+    y: 0,
+    z: 0,
+    radius: 25,
+    pointer_type: "ToolSlot",
+    meta: {},
+    tool_id: undefined,
+    name: "Tool Slot",
+    pullout_direction: 0
+  });
+}
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {
@@ -133,7 +142,7 @@ export function fakeDiagnosticDump(): TaggedDiagnosticDump {
   const string = "----PLACEHOLDER DIAG STUFF ---";
   return fakeResource("DiagnosticDump", {
     id: idCounter++,
-    device_id: 123,
+    device_id: idCounter++,
     ticket_identifier: string,
     fbos_commit: string,
     fbos_version: string,
@@ -161,7 +170,7 @@ export function fakePoint(): TaggedGenericPointer {
 
 export function fakeSavedGarden(): TaggedSavedGarden {
   return fakeResource("SavedGarden", {
-    id: 1,
+    id: idCounter++,
     name: "Saved Garden 1",
   });
 }
@@ -169,7 +178,7 @@ export function fakeSavedGarden(): TaggedSavedGarden {
 export function fakePlantTemplate(): TaggedPlantTemplate {
   return fakeResource("PlantTemplate", {
     id: idCounter++,
-    saved_garden_id: 1,
+    saved_garden_id: idCounter++,
     radius: 50,
     x: 100,
     y: 200,
@@ -194,7 +203,7 @@ export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
     id: idCounter++,
     pin_num: 10,
-    sequence_id: 1,
+    sequence_id: idCounter++,
     binding_type: PinBindingType.standard,
   });
 }
@@ -231,8 +240,8 @@ export function fakePeripheral(): TaggedPeripheral {
 
 export function fakeFbosConfig(): TaggedFbosConfig {
   return fakeResource("FbosConfig", {
-    id: 1,
-    device_id: 1,
+    id: idCounter++,
+    device_id: idCounter++,
     created_at: "",
     updated_at: "",
     auto_sync: false,
@@ -253,8 +262,8 @@ export function fakeFbosConfig(): TaggedFbosConfig {
 
 export function fakeWebAppConfig(): TaggedWebAppConfig {
   return fakeResource("WebAppConfig", {
-    id: 1,
-    device_id: 1,
+    id: idCounter++,
+    device_id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
     confirm_step_deletion: false,
@@ -301,7 +310,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
 
 export function fakeFirmwareConfig(): TaggedFirmwareConfig {
   return fakeResource("FirmwareConfig", {
-    device_id: 1,
+    device_id: idCounter++,
     created_at: "",
     updated_at: "",
     encoder_enabled_x: 0,
@@ -395,4 +404,17 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     pin_guard_5_time_out: 60,
     api_migrated: false
   } as FirmwareConfig);
+}
+
+export function fakeFarmwareEnv(): TaggedFarmwareEnv {
+  return fakeResource("FarmwareEnv", {
+    key: "fake_FarmwareEnv_key",
+    value: "fake_FarmwareEnv_value"
+  });
+}
+
+export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
+  return fakeResource("FarmwareInstallation", {
+    url: "https://"
+  });
 }

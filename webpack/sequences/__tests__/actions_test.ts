@@ -1,10 +1,12 @@
-jest.mock("../../history", () => ({
-  push: jest.fn()
-}));
+jest.mock("../../history", () => ({ push: jest.fn() }));
 
 jest.mock("../../api/crud", () => ({
   init: jest.fn(),
   edit: jest.fn()
+}));
+
+jest.mock("../set_active_sequence_by_name", () => ({
+  setActiveSequenceByName: jest.fn()
 }));
 
 import {
@@ -14,23 +16,26 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { init, edit } from "../../api/crud";
 import { push } from "../../history";
 import { Actions } from "../../constants";
+import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 
 describe("copySequence()", () => {
   it("copies sequence", () => {
     const sequence = fakeSequence();
-    const copy = copySequence(sequence);
-    copy(jest.fn());
-    expect(init).toHaveBeenCalledWith(expect.objectContaining({
-      body: expect.objectContaining({
-        name: "fake copy 1"
-      })
-    }));
+    sequence.body.body = [{ kind: "wait", args: { milliseconds: 100 } }];
+    const { body } = sequence.body;
+    copySequence(sequence)(jest.fn());
+    expect(init).toHaveBeenCalledWith("Sequence",
+      expect.objectContaining({ name: "fake copy 1", body }));
   });
 
   it("updates current path", () => {
-    const copy = copySequence(fakeSequence());
-    copy(jest.fn());
+    copySequence(fakeSequence())(jest.fn());
     expect(push).toHaveBeenCalledWith("/app/sequences/fake_copy_2");
+  });
+
+  it("selcts sequence", () => {
+    copySequence(fakeSequence())(jest.fn());
+    expect(setActiveSequenceByName).toHaveBeenCalled();
   });
 });
 

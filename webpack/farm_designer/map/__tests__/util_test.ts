@@ -1,15 +1,30 @@
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+}));
+
+jest.mock("../../saved_gardens/saved_gardens", () => ({
+  savedGardenOpen: () => true,
+}));
+
 import {
   round,
   translateScreenToGarden,
   getBotSize,
   getMapSize,
   transformXY,
-  transformForQuadrant
+  transformForQuadrant,
+  getMode,
+  getGardenCoordinates,
 } from "../util";
 import { McuParams } from "farmbot";
-import { AxisNumberProperty, BotSize, MapTransformProps } from "../interfaces";
+import {
+  AxisNumberProperty, BotSize, MapTransformProps, Mode
+} from "../interfaces";
 import { StepsPerMmXY } from "../../../devices/interfaces";
-import { fakeMapTransformProps } from "../../../__test_support__/map_transform_props";
+import {
+  fakeMapTransformProps
+} from "../../../__test_support__/map_transform_props";
 
 describe("Utils", () => {
   it("rounds a number", () => {
@@ -286,5 +301,67 @@ describe("transformForQuadrant()", () => {
     mapTransformProps.quadrant = 4;
     expect(transformForQuadrant(mapTransformProps))
       .toEqual("scale(-1, -1) translate(-200, -100)");
+  });
+});
+
+describe("getMode()", () => {
+  it("returns correct Mode", () => {
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(getMode()).toEqual(Mode.clickToAdd);
+    mockPath = "/app/designer/plants/1/edit";
+    expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/saved_gardens/templates/1/edit";
+    expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/plants/select";
+    expect(getMode()).toEqual(Mode.boxSelect);
+    mockPath = "/app/designer/plants/crop_search/mint";
+    expect(getMode()).toEqual(Mode.addPlant);
+    mockPath = "/app/designer/plants/move_to";
+    expect(getMode()).toEqual(Mode.moveTo);
+    mockPath = "/app/designer/plants/create_point";
+    expect(getMode()).toEqual(Mode.createPoint);
+    mockPath = "/app/designer/saved_gardens";
+    expect(getMode()).toEqual(Mode.templateView);
+  });
+});
+
+describe("getGardenCoordinates()", () => {
+  beforeEach(() => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => ({ scrollLeft: 1, scrollTop: 2 }),
+      configurable: true
+    });
+    Object.defineProperty(window, "getComputedStyle", {
+      value: () => ({ zoom: 1 }), configurable: true
+    });
+  });
+
+  const fakeProps = () => ({
+    mapTransformProps: fakeMapTransformProps(),
+    gridOffset: { x: 10, y: 20 },
+    pageX: 500,
+    pageY: 200,
+  });
+
+  it("returns garden coordinates", () => {
+    const result = getGardenCoordinates(fakeProps());
+    expect(result).toEqual({ x: 170, y: 70 });
+  });
+
+  it("falls back to zoom level", () => {
+    Object.defineProperty(window, "getComputedStyle", {
+      value: () => ({ zoom: undefined }), configurable: true
+    });
+    const result = getGardenCoordinates(fakeProps());
+    expect(result).toEqual({ x: 170, y: 70 });
+  });
+
+  it("returns undefined", () => {
+    Object.defineProperty(document, "querySelector", {
+      value: () => { },
+      configurable: true
+    });
+    const result = getGardenCoordinates(fakeProps());
+    expect(result).toEqual(undefined);
   });
 });

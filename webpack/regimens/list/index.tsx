@@ -26,6 +26,7 @@ export class RegimensList extends
           return <RegimenListItem
             index={index}
             key={index}
+            inUse={!!this.props.usageStats[regimen.uuid]}
             regimen={regimen}
             dispatch={this.props.dispatch}
             length={this.props.regimens.length} />;

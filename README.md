@@ -9,14 +9,18 @@
 
 # Q: Do I need this?
 
-This repository is intended for *software developers* who wish to modify the [Farmbot Web App](http://my.farmbot.io/). **If you are not a developer**, you are highly encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. It requires an intermediate background in Ruby, SQL and Linux system administration.
+**End users should not run this software**.
 
+There are only a handful of use cases where running a third party server is advisable:
+
+ * Development of new features, bug fixes and pull requests.
+ * Independent security research and auditing.
+
+FarmBot, Inc. provides a publicly accessible server at [https://my.farm.bot/](https://my.farm.bot/) for end users that are not familiar with Ruby on Rails application development. Hosting your own server will require an understanding of how Ruby on Rails applications (and databases) operate. It is designed for use by software engineers. Self-hosting the Web App will not provide you with a more stable user experience and may result in accidental security issues or data loss.
+
+**If you are not a Ruby on Rails developer**, or you have never written a Ruby on Rails application, you are encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. Data loss and security issues are possible in some circumstances. Self hosting requires an intermediate background in Ruby, SQL and Linux system administration.
 
 We do not have the resources available to help novice developers learn to setup servers, environments, configurations, or perform basic Linux command line instructions.
-
-If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.* Running a self-hosted server is not easy!
-
-If you are a developer interested in contributing or would like to provision your own server, you are in the right place.
 
 # Q: Where do I report security issues?
 
@@ -32,7 +36,9 @@ For a list of example API requests and responses, see our [reference documentati
 
 # Q: How do I Setup an instance locally?
 
-We provide example setup instructions for Ubuntu 18 [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.sh).
+If you are not a software developer with Ruby on Rails experience, you should not set up a server. Data loss and security vulnerabilities are possible.
+
+We provide example setup instructions for software developers running Ubuntu 18 [here](https://github.com/FarmBot/Farmbot-Web-App/blob/master/ubuntu_example.sh).
 
 Installation was last tested against Ubuntu 18.04 in October of 2018 on an x86 based machine.
 
@@ -59,4 +65,9 @@ Thanks for your interest in internationalizing the FarmBot web app! To add trans
 
 # Want to Help?
 
-[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo). [Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
+[Low Hanging Fruit](https://github.com/FarmBot/Farmbot-Web-App/search?utf8=%E2%9C%93&q=todo).
+
+[Raise an issue](https://github.com/FarmBot/Farmbot-Web-App/issues/new?title=Question%20about%20a%20TODO) if you have any questions.
+
+If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use the hosted version of the web app at my.farm.bot.* Running a self-hosted server is not easy!
+

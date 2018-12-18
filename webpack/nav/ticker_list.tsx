@@ -55,16 +55,16 @@ const getfirstTickerLog = (getConfigValue: GetWebAppConfigValue) =>
 /** Format a single log for display in the ticker. */
 const Ticker = (log: TaggedLog, timeOffset: number) => {
   const { message, type, created_at } = log.body;
-  const time = formatLogTime(created_at, timeOffset);
+  const time = formatLogTime(created_at || NaN, timeOffset);
   return <div key={log.uuid} className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">
       <Markdown>
-        {message.replace(/\s+/g, " ") || "Loading"}
+        {message.replace(/\s+/g, " ") || t("Loading")}
       </Markdown>
     </label>
     <label className="status-ticker-created-at">
-      {time}
+      {t(time)}
     </label>
   </div>;
 };

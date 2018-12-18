@@ -21,6 +21,8 @@ import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
 import { MarkAs } from "./mark_as";
+import { TileUnknown } from "./tile_unknown";
+import { forceSetStepTag } from "../../resources/sequence_tagging";
 
 interface MoveParams {
   step: Step;
@@ -51,7 +53,7 @@ interface CopyParams {
 }
 
 export function splice({ step, sequence, index }: CopyParams) {
-  const copy = defensiveClone(step);
+  const copy = forceSetStepTag(defensiveClone(step));
   const next = defensiveClone(sequence);
   const seq = next.body;
   seq.body = seq.body || [];
@@ -137,7 +139,7 @@ export function renderCeleryNode(props: StepParams) {
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
     case "resource_update": return <MarkAs {...props} />;
-    default: return <div><hr /> ? Unknown step ? <hr /></div>;
+    default: return <TileUnknown {...props} />;
   }
 }
 

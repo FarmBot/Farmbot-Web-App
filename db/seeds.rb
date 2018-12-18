@@ -6,6 +6,7 @@ if Rails.env == "development"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 
+    DeviceSerialNumber.destroy_all
     Log.destroy_all
     TokenIssuance.destroy_all
     PinBinding.destroy_all
@@ -30,6 +31,10 @@ if Rails.env == "development"
                         agreed_to_terms_at:   Time.now)
     u = User.last
     u.update_attributes(device: Devices::Create.run!(user: u))
+    # === Parameterized Sequence stuff
+    json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json")).deep_symbolize_keys
+    Sequences::Create.run!(json, device: u.device)
+    # === Parameterized Sequence stuff
     Log.transaction do
       FactoryBot.create_list(:log, 35, device: u.device)
     end
@@ -51,7 +56,7 @@ if Rails.env == "development"
                    x:             rand(40...970),
                    y:             rand(40...470),
                    radius:        rand(10...50),
-                   name:          Faker::StarWars.call_sign,
+                   name:          Faker::Food.vegetables,
                    openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
     end
 
@@ -89,16 +94,6 @@ if Rails.env == "development"
                            {time_offset:345900000, sequence_id:s[:id]}
                          ])
     Peripherals::Create.run!(device: u.device, pin: 13, label: "LED")
-    2.times do
-        FarmEvents::Create.run!(
-          device: u.device,
-          start_time: Time.now + 1.hour,
-          end_time: Date.today + ([*(DATE_RANGE_HI)].sample).days,
-          time_unit: "daily",
-          repeat: [*(DATE_RANGE_LO)].sample,
-          executable_id: Sequence.where(device: u.device).order("RANDOM()").first.id,
-          executable_type: "Sequence")
-    end
     WebcamFeeds::Create.run!(device: u.device,
                             name: "My Feed 1",
                             url: "https://nature.nps.gov/air/webcams/parks/yosecam/yose.jpg")

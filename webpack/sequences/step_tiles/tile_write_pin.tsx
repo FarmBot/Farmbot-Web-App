@@ -30,6 +30,7 @@ export function TileWritePin(props: StepParams) {
           field="pin_value" />;
       } else {
         return <FBSelect
+          key={JSON.stringify(props.currentSequence)}
           onChange={(x) => setPinValue(x, props)}
           selectedItem={currentValueSelection(currentStep)}
           list={PIN_VALUES} />;
@@ -53,6 +54,7 @@ export function TileWritePin(props: StepParams) {
         <Col xs={6} md={6}>
           <label>{t("Pin")}</label>
           <FBSelect
+            key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsWritePin(props.resources,
@@ -65,6 +67,7 @@ export function TileWritePin(props: StepParams) {
         <Col xs={6} md={3}>
           <label>{t("Pin Mode")}</label>
           <FBSelect
+            key={JSON.stringify(props.currentSequence)}
             onChange={(x) => setPinMode(x, props)}
             selectedItem={currentModeSelection(currentStep)}
             list={PIN_MODES} />

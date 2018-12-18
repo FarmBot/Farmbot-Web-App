@@ -7,6 +7,7 @@ import { PlantPanel } from "./plant_panel";
 import { unselectPlant } from "../actions";
 import { Link } from "../../link";
 import { TaggedPlant } from "../map/interfaces";
+import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 
 @connect(mapStateToProps)
 export class PlantInfo extends PlantInfoBase {
@@ -15,31 +16,25 @@ export class PlantInfo extends PlantInfoBase {
     const info = formatPlantInfo(plant_info);
     const { name, id } = info;
     const plantId = (id || "BROKEN").toString();
-    return <div className="panel-container green-panel" >
-      <div className="panel-header green-panel">
-        <p className="panel-title">
-          <Link
-            to={`/app/designer/${this.plantCategory}`}
-            className="back-arrow">
-            <i
-              className="fa fa-arrow-left"
-              onClick={unselectPlant(this.props.dispatch)} />
-          </Link>
-          <span className="title">
-            {name}
-          </span>
-          <Link
-            to={`/app/designer/${this.plantCategory}/${plantId}/edit`}
-            className="right-button">
-            {t("Edit")}
-          </Link>
-        </p>
-      </div>
+    return <DesignerPanel panelName={"plant-info"} panelColor={"green"}>
+      <DesignerPanelHeader
+        panelName={"plant-info"}
+        panelColor={"green"}
+        title={name}
+        backTo={"/app/designer/plants"}
+        onBack={unselectPlant(this.props.dispatch)}>
+        <Link
+          to={`/app/designer/${this.plantCategory}/${plantId}/edit`}
+          title={t("Edit this plant")}
+          className="right-button">
+          {t("Edit")}
+        </Link>
+      </DesignerPanelHeader>
       <PlantPanel
         info={info}
         dispatch={this.props.dispatch}
         inSavedGarden={!!this.props.openedSavedGarden} />
-    </div>;
+    </DesignerPanel>;
   }
 
   render() {

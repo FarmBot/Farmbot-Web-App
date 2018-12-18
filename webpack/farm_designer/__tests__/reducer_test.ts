@@ -5,6 +5,7 @@ import {
   DesignerState, HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
+import { fakeCropLiveSearchResult } from "../../__test_support__/fake_crop_search_result";
 
 describe("designer reducer", () => {
   const oldState = (): DesignerState => {
@@ -17,6 +18,7 @@ describe("designer reducer", () => {
       hoveredPlantListItem: undefined,
       cropSearchQuery: "",
       cropSearchResults: [],
+      cropSearchInProgress: false,
       chosenLocation: { x: undefined, y: undefined, z: undefined },
       currentPoint: undefined,
       openedSavedGarden: undefined,
@@ -30,6 +32,7 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.cropSearchQuery).toEqual("apple");
+    expect(newState.cropSearchInProgress).toEqual(true);
   });
 
   it("selects plants", () => {
@@ -96,24 +99,31 @@ describe("designer reducer", () => {
 
   it("stores new OpenFarm assets", () => {
     const payload: CropLiveSearchResult[] = [
-      {
-        crop: {
-          name: "wow",
-          slug: "wow",
-          binomial_name: "wow",
-          common_names: [],
-          description: "wow",
-          sun_requirements: "wow",
-          sowing_method: "wow",
-          processing_pictures: 0
-        },
-        image: "lettuce"
-      }
+      fakeCropLiveSearchResult(),
     ];
     const action: ReduxAction<typeof payload> = {
       type: Actions.OF_SEARCH_RESULTS_OK, payload
     };
     const newState = designer(oldState(), action);
     expect(newState.cropSearchResults).toEqual(payload);
+    expect(newState.cropSearchInProgress).toEqual(false);
+  });
+
+  it("starts search", () => {
+    const action: ReduxAction<undefined> = {
+      type: Actions.OF_SEARCH_RESULTS_START, payload: undefined
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropSearchInProgress).toEqual(true);
+  });
+
+  it("ends search", () => {
+    const state = oldState();
+    state.cropSearchInProgress = true;
+    const action: ReduxAction<undefined> = {
+      type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined
+    };
+    const newState = designer(state, action);
+    expect(newState.cropSearchInProgress).toEqual(false);
   });
 });

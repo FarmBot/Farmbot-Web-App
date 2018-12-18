@@ -1,6 +1,7 @@
 import * as Util from "../util";
 import { times } from "lodash";
 import { validBotLocationData } from "../index";
+import { parseClassNames } from "../../ui/util";
 describe("util", () => {
   describe("safeStringFetch", () => {
     const data = {
@@ -91,24 +92,6 @@ describe("util", () => {
     });
   });
 
-  describe("withTimeout()", () => {
-    it("rejects promises that do not meet a particular deadline", (done) => {
-      const p = new Promise(res => setTimeout(() => res("Done"), 10));
-      Util.withTimeout(1, p).then(fail, (y) => {
-        expect(y).toContain("Timed out");
-        done();
-      });
-    });
-
-    it("resolves promises that meet a particular deadline", (done) => {
-      Util.withTimeout(10, new Promise(res => setTimeout(() => res("Done"), 1)))
-        .then(y => {
-          expect(y).toContain("Done");
-          done();
-        }, fail);
-    });
-  });
-
   describe("shortRevision()", () => {
     it("none", () => {
       globalConfig.SHORT_REVISION = "";
@@ -156,9 +139,40 @@ describe("util", () => {
   describe("fancyDebug()", () => {
     it("debugs in a fanciful manner", () => {
       const test = { testing: "fancy debug" };
+      console.log = jest.fn();
       const result = Util.fancyDebug(test);
       expect(result).toBe(test);
+      expect(console.log)
+        .toHaveBeenCalledWith("             testing => \"fancy debug\"");
     });
   });
 
+});
+
+describe("parseClassNames", () => {
+  it("parses class names correctly", () => {
+    const base = "hello, base.";
+    const results = parseClassNames({
+      xs: 1,
+      sm: 2,
+      md: 3,
+      lg: 4,
+      xsOffset: 5,
+      smOffset: 6,
+      mdOffset: 7,
+      lgOffset: 8,
+    }, base);
+
+    [
+      base,
+      "col-xs-1",
+      "col-sm-2",
+      "col-md-3",
+      "col-lg-4",
+      "col-xs-offset-5",
+      "col-sm-offset-6",
+      "col-md-offset-7",
+      "col-lg-offset-8",
+    ].map(string => expect(results).toContain(string));
+  });
 });

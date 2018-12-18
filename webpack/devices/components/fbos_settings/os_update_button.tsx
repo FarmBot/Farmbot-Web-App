@@ -37,7 +37,7 @@ const isWorking = (job: JobProgress | undefined) =>
   job && (job.status == "working");
 
 /** FBOS update download progress. */
-function downloadProgress(job: JobProgress | undefined) {
+export function downloadProgress(job: JobProgress | undefined) {
   if (job && isWorking(job)) {
     switch (job.unit) {
       case "bytes":
@@ -118,7 +118,9 @@ const buttonVersionStatus =
     const { currentOSVersion, currentBetaOSVersion, currentBetaOSCommit } = bot;
     // Currently installed FBOS version data.
     const botInfo = bot.hardware.informational_settings;
-    const { controller_version, commit, currently_on_beta } = botInfo;
+    const {
+      controller_version, commit, currently_on_beta, update_available
+    } = botInfo;
 
     /** Newest release version, given settings and data available. */
     const latestReleaseV =
@@ -135,8 +137,9 @@ const buttonVersionStatus =
     /** `1.0.0-beta vs 1.0.0-beta`: installed beta is older. */
     const oldBetaCommit = (latestReleaseV === currentBetaOSVersion) &&
       !betaCommitsAreEqual(commit, currentBetaOSCommit);
-    /** Button status modification required for beta release edge cases. */
-    const updateStatusOverride = uncertainty && oldBetaCommit;
+    /** Button status modification required for release edge cases. */
+    const updateStatusOverride = update_available
+      || (uncertainty && oldBetaCommit);
 
     return buttonProps(
       updateStatusOverride ? UpdateButton.needsUpdate : btnStatus,

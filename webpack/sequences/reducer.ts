@@ -16,12 +16,6 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     }
     return s;
   })
-  .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
-    if (payload.kind === "Sequence") {
-      s.current = payload.uuid;
-    }
-    return s;
-  })
   .add<string>(Actions.SELECT_SEQUENCE, function (s, { payload }) {
     s.current = payload;
     return s;

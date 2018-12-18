@@ -1,14 +1,13 @@
 import * as React from "react";
 import { t } from "i18next";
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey
-} from "../../config_storage/web_app_configs";
 import { BooleanSetting } from "../../session_keys";
 import { ToggleButton } from "../toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { futureFeaturesEnabled } from "../../account/dev_widget";
 
 export const moveWidgetSetting = (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
-  ({ label, setting }: { label: string, setting: BooleanWebAppConfigKey }) =>
+  ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
     <fieldset>
       <label>
         {t(label)}
@@ -45,7 +44,7 @@ export const MoveWidgetSettingsMenu = ({ toggle, getValue }: {
       label={t("perform homing (find home)")}
       setting={BooleanSetting.home_button_homing} />
 
-    {localStorage.getItem("FUTURE_FEATURES") &&
+    {futureFeaturesEnabled() &&
       <div>
         <p>{t("Motor position plot")}</p>
         <Setting

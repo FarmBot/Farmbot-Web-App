@@ -4,22 +4,11 @@ import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
-import { Progress, ProgressCallback } from "../../util";
+import { Progress, ProgressCallback, trim } from "../../util";
 import { getDevice } from "../../device";
-import { WDENVKey } from "./remote_env/interfaces";
-import { NumericValues } from "./image_workspace";
-import { envSave } from "./remote_env/actions";
 import { noop } from "lodash";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../constants";
-type Key = keyof NumericValues;
-type Translation = Record<Key, WDENVKey>;
-
-export let translateImageWorkspaceAndSave = (map: Translation) => {
-  return (key: Key, value: number) => {
-    envSave(map[key], value);
-  };
-};
 
 export function deletePoints(
   pointName: string, createdBy: string, cb?: ProgressCallback): Thunk {
@@ -56,8 +45,9 @@ export function deletePoints(
           prog.finish();
         })
         .catch(function () {
-          error(t("Some {{points}} failed to delete." +
-            " Are they in use by sequences?", { points: pointName }));
+          error(trim(`${t("Some {{points}} failed to delete.",
+            { points: pointName })}
+            ${t("Are they in use by sequences?")}`));
           prog.finish();
         });
     } catch (e) {

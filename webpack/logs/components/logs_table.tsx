@@ -15,13 +15,13 @@ export const xyzTableEntry =
   (x: number | undefined, y: number | undefined, z: number | undefined) =>
     (isNumber(x) && isNumber(y) && isNumber(z))
       ? `${x}, ${y}, ${z}`
-      : "Unknown";
+      : t("Unknown");
 
 /** A log is displayed in a single row of the logs table. */
 const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message } = tlog.body;
-  const time = formatLogTime(created_at, timeOffset);
+  const time = formatLogTime(created_at || NaN, timeOffset);
   return <tr key={uuid}>
     <td>
       <div className={`saucer ${type}`}>
@@ -29,10 +29,10 @@ const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
           {verbosity}
         </p>
       </div>
-      {startCase(type)}
+      {t(startCase(type))}
     </td>
     <td>
-      {message || "Loading"}
+      {message || t("Loading")}
     </td>
     <td>
       {xyzTableEntry(x, y, z)}

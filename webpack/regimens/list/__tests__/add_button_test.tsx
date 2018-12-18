@@ -1,11 +1,20 @@
 jest.unmock("../../actions");
-jest.mock("../../../history", () => ({ push: jest.fn() }));
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  history: {
+    getCurrentLocation: () => "fake/path"
+  }
+}));
+jest.mock("../../set_active_regimen_by_name", () => ({
+  setActiveRegimenByName: jest.fn()
+}));
 import * as React from "react";
 import { AddRegimen } from "../add_button";
 import { AddRegimenProps } from "../../interfaces";
 import { shallow } from "enzyme";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
+import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
 
 describe("<AddRegimen/>", () => {
   function btn(props: AddRegimenProps) {
@@ -31,6 +40,8 @@ describe("<AddRegimen/>", () => {
         kind: "Regimen"
       })
     });
+    expect(push).toHaveBeenCalledWith("/app/regimens/new_regimen_0");
+    expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 
   it("uses props.children", () => {

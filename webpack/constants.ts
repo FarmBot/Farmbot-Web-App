@@ -261,6 +261,9 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
 
+  export const UNKNOWN_STEP =
+    trim(`Unable to properly display this step.`);
+
   // Regimens
   export const BULK_SCHEDULER =
     trim(`Add sequences to your regimen by selecting a sequence from the
@@ -492,6 +495,10 @@ export namespace Content {
     your network settings.
     View Device > Connectivity for more details.`);
 
+  export const WEB_APP_DISCONNECTED =
+    trim(`Your web browser is unable to communicate with the
+    web app server. Make sure you are connected to the Internet.`);
+
   export const MALFORMED_MESSAGE_REC_UPGRADE =
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
@@ -504,6 +511,10 @@ export namespace Content {
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
     broken and may break or otherwise hinder your usage of the rest of the
     app. This feature may disappear or break at any time.`);
+
+  export const NEW_TOS =
+    trim(`Before logging in, you must agree to our latest Terms of Service and
+    Privacy Policy`);
 
   // Front Page
   export const TOS_UPDATE =
@@ -518,8 +529,8 @@ export namespace Content {
 
   // Sequences
   export const NO_SEQUENCE_SELECTED =
-    trim(`No Sequence selected. Click one in the Sequences panel to edit,
-    or click "+" to create a new one.`);
+    trim(`Click one in the Sequences panel to edit, or click "+" to create
+    a new one.`);
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
@@ -531,8 +542,8 @@ export namespace Content {
 
   // Regimens
   export const NO_REGIMEN_SELECTED =
-    trim(`No Regimen selected. Click one in the Regimens panel to edit, or
-    click "+" in the Regimens panel to create a new one.`);
+    trim(`Click one in the Regimens panel to edit, or click "+" to create
+    a new one.`);
 
   export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
     regimen. Consider wrapping it in a parent sequence that calls it via
@@ -555,7 +566,27 @@ export namespace Content {
     trim(`Drag a box around the plants you would like to select.
     Press the back arrow to exit.`);
 
+  export const SAVED_GARDENS =
+    trim(`Create new gardens from scratch or by copying plants from the
+    current garden. View and edit saved gardens, and, when ready, apply them
+    to the main garden.`);
+
+  export const NO_PLANTS =
+    trim(`Press "+" to add a plant to your garden.`);
+
+  export const ENTER_CROP_SEARCH_TERM =
+    trim(`Search for a crop to add to your garden.`);
+
+  export const CROP_NOT_FOUND_INTRO =
+    trim(`Would you like to`);
+
+  export const CROP_NOT_FOUND_LINK =
+    trim(`add this crop on OpenFarm?`);
+
   // Farm Events
+  export const NOTHING_SCHEDULED =
+    trim(`Press "+" to schedule an event.`);
+
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that
     running a regimen too late in the day may result in skipped
@@ -650,7 +681,6 @@ export enum Actions {
   INIT_RESOURCE = "INIT_RESOURCE",
   BATCH_INIT = "BATCH_INIT",
   SAVE_RESOURCE_OK = "SAVE_RESOURCE_OK",
-  UPDATE_RESOURCE_OK = "UPDATE_RESOURCE_OK",
   EDIT_RESOURCE = "EDIT_RESOURCE",
   OVERWRITE_RESOURCE = "OVERWRITE_RESOURCE",
   SAVE_RESOURCE_START = "SAVE_RESOURCE_START",
@@ -697,7 +727,9 @@ export enum Actions {
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
+  OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
   CHOOSE_LOCATION = "CHOOSE_LOCATION",
   SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",

@@ -15,6 +15,7 @@ import {
 import { destroyOK } from "../../resources/actions";
 import { SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData } from "../interfaces";
 import { unpackUUID } from "../../util";
+import { TaggedSequence } from "farmbot";
 
 describe("handleInbound()", () => {
   const dispatch = jest.fn();
@@ -37,11 +38,11 @@ describe("handleInbound()", () => {
   });
 
   it("handles UPDATE", () => {
-    const fixtr: UpdateMqttData = {
+    const fixtr: UpdateMqttData<TaggedSequence> = {
       status: "UPDATE",
       kind: "Sequence",
       id: 4,
-      body: {},
+      body: {} as TaggedSequence["body"],
       sessionId: "456"
     };
     handleInbound(dispatch, getState, fixtr);
@@ -51,15 +52,17 @@ describe("handleInbound()", () => {
   it("handles DELETE when the record is in system", () => {
     const i = getState().resources.index.byKind.Sequence;
     // Pick an ID that we know will be in the DB
-    const id = unpackUUID(Object.values(i)[0]).remoteId || -1;
-    const fixtr: DeleteMqttData = { status: "DELETE", kind: "Sequence", id };
+    const id = unpackUUID(Object.keys(i)[0]).remoteId || -1;
+    const fixtr: DeleteMqttData<TaggedSequence> = {
+      status: "DELETE", kind: "Sequence", id
+    };
     handleInbound(dispatch, getState, fixtr);
     expect(dispatch).toHaveBeenCalled();
     expect(destroyOK).toHaveBeenCalled();
   });
 
   it("handles DELETE when the record is *not* in system", () => {
-    const fixtr: DeleteMqttData = {
+    const fixtr: DeleteMqttData<TaggedSequence> = {
       status: "DELETE",
       kind: "Sequence",
       id: -1

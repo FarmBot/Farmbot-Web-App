@@ -6,9 +6,9 @@ import {
 import {
   buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
-import { WebAppConfig } from "../../config_storage/web_app_configs";
 import { SpecialStatus, TaggedWebAppConfig } from "farmbot";
 import { fakeState } from "../../__test_support__/fake_state";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("unsavedCheck", () => {
   function setItUp(specialStatus: SpecialStatus, body: Partial<WebAppConfig>) {
@@ -23,7 +23,7 @@ describe("unsavedCheck", () => {
     const output = fakeState();
     output.resources = buildResourceIndex([config]);
     // `buildResourceIndex` clears specialStatus. Set it again:
-    const uuid = output.resources.index.all[0];
+    const uuid = Object.keys(output.resources.index.all)[0];
     // tslint:disable-next-line:no-any
     (output.resources.index.references[uuid] || {} as any)
       .specialStatus = specialStatus;

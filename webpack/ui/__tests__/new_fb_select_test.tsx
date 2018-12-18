@@ -39,7 +39,7 @@ describe("<FBSelect />", () => {
     expect((wrapper.find("FilterSearch").props() as any).items)
       .toEqual([
         { label: "Item", value: "item" },
-        { label: "None", value: "" }]);
+        { label: "None", value: "", isNull: true }]);
   });
 
   it("doesn't allow empty", () => {

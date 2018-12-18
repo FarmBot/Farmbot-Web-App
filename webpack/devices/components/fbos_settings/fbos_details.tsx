@@ -6,7 +6,8 @@ import { updateConfig } from "../../actions";
 import { last, isNumber } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
-import { SourceFbosConfig } from "../../interfaces";
+import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
+import { ConfigurationName } from "farmbot";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -99,23 +100,47 @@ const UptimeDisplay = ({ uptime_sec }: { uptime_sec: number }): JSX.Element => {
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
-/** Label and toggle button for opting in to FBOS beta releases. */
-const BetaReleaseOptInButton = ({ dispatch, sourceFbosConfig }: {
-  dispatch: Function, sourceFbosConfig: SourceFbosConfig
-}): JSX.Element => {
-  const betaOptIn = sourceFbosConfig("beta_opt_in");
-  return <fieldset>
-    <label style={{ marginTop: "0.75rem" }}>
-      {t("Beta release Opt-In")}
-    </label>
-    <ToggleButton
-      toggleValue={betaOptIn.value}
-      dim={!betaOptIn.consistent}
-      toggleAction={() =>
-        (betaOptIn.value || confirm(Content.OS_BETA_RELEASES)) &&
-        dispatch(updateConfig({ beta_opt_in: !betaOptIn.value }))} />
-  </fieldset>;
+export const betaReleaseOptIn = ({ sourceFbosConfig, shouldDisplay }: {
+  sourceFbosConfig: SourceFbosConfig, shouldDisplay: ShouldDisplay
+}) => {
+  if (shouldDisplay(Feature.use_update_channel)) {
+    const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName);
+    const betaOptInValue = betaOptIn.value !== "stable";
+    return {
+      betaOptIn: { value: betaOptInValue, consistent: true }, betaOptInValue,
+      update: { update_channel: betaOptInValue ? "stable" : "beta" }
+    };
+  } else {
+    const betaOptIn = sourceFbosConfig("beta_opt_in");
+    const betaOptInValue = betaOptIn.value;
+    return {
+      betaOptIn, betaOptInValue,
+      update: { beta_opt_in: !betaOptInValue }
+    };
+  }
 };
+
+/** Label and toggle button for opting in to FBOS beta releases. */
+const BetaReleaseOptInButton =
+  ({ dispatch, sourceFbosConfig, shouldDisplay }: {
+    dispatch: Function,
+    sourceFbosConfig: SourceFbosConfig,
+    shouldDisplay: ShouldDisplay,
+  }): JSX.Element => {
+    const { betaOptIn, betaOptInValue, update } =
+      betaReleaseOptIn({ sourceFbosConfig, shouldDisplay });
+    return <fieldset>
+      <label style={{ marginTop: "0.75rem" }}>
+        {t("Beta release Opt-In")}
+      </label>
+      <ToggleButton
+        toggleValue={betaOptInValue}
+        dim={!betaOptIn.consistent}
+        toggleAction={() =>
+          (betaOptInValue || confirm(Content.OS_BETA_RELEASES)) &&
+          dispatch(updateConfig(update))} />
+    </fieldset>;
+  };
 
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {
@@ -133,12 +158,14 @@ export function FbosDetails(props: FbosDetailsProps) {
     <CommitDisplay title={"Firmware commit"}
       repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
-    {isNumber(memory_usage) && <p><b>Memory usage: </b>{memory_usage}MB</p>}
-    {isNumber(disk_usage) && <p><b>Disk usage: </b>{disk_usage}%</p>}
+    {isNumber(memory_usage) &&
+      <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}
+    {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay wifiStrength={wifi_level} />
     <BetaReleaseOptInButton
       dispatch={props.dispatch}
+      shouldDisplay={props.shouldDisplay}
       sourceFbosConfig={props.sourceFbosConfig} />
   </div>;
 }

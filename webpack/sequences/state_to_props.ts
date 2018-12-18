@@ -1,16 +1,16 @@
 import { Everything } from "../interfaces";
 import { Props, HardwareFlags, FarmwareConfigs } from "./interfaces";
 import {
-  selectAllSequences, findSequence, maybeGetDevice, getFirmwareConfig
+  selectAllSequences, findSequence, maybeGetDevice
 } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import {
   betterCompact, shouldDisplay, determineInstalledOsVersion, validFwConfig
 } from "../util";
-import { getWebAppConfig } from "../resources/selectors";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
+import { getFirmwareConfig, getWebAppConfig } from "../resources/getters";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

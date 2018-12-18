@@ -48,6 +48,14 @@ export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
   sequence: TaggedSequence;
 }
 
+export interface SequenceHeaderProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+  syncStatus: SyncStatus;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+}
+
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
 
 export const INT_NUMERIC_FIELDS = ["milliseconds", "pin_mode", "pin_number",
@@ -61,7 +69,6 @@ export interface Sequence extends CeleryScriptSequence {
   id?: number;
   color: Color;
   name: string;
-  in_use?: boolean;
 }
 
 export interface SequenceReducerState {
@@ -70,6 +77,7 @@ export interface SequenceReducerState {
 
 export interface SequencesListProps {
   sequences: TaggedSequence[];
+  resourceUsage: Record<string, boolean | undefined>;
   sequence: TaggedSequence | undefined;
   dispatch: Function;
 }

@@ -1,38 +1,55 @@
 import * as React from "react";
 import { t } from "i18next";
-import { error } from "farmbot-toastr";
-import { snapshotGarden } from "./actions";
+import { snapshotGarden, newSavedGarden, copySavedGarden } from "./actions";
+import { TaggedPlantTemplate, TaggedSavedGarden } from "farmbot";
 
 export interface GardenSnapshotProps {
-  plantsInGarden: boolean;
-  disabled: boolean;
+  currentSavedGarden: TaggedSavedGarden | undefined;
+  plantTemplates: TaggedPlantTemplate[];
+  dispatch: Function;
 }
 
 interface GardenSnapshotState {
-  name: string | undefined;
+  name: string;
 }
 
+/** New SavedGarden name input and snapshot/create buttons. */
 export class GardenSnapshot
   extends React.Component<GardenSnapshotProps, GardenSnapshotState> {
-  state = { name: undefined };
+  state = { name: "" };
+
+  snapshot = () => {
+    const { currentSavedGarden, plantTemplates } = this.props;
+    !currentSavedGarden
+      ? snapshotGarden(this.state.name)
+      : this.props.dispatch(copySavedGarden({
+        newSGName: this.state.name,
+        savedGarden: currentSavedGarden,
+        plantTemplates
+      }));
+    this.setState({ name: "" });
+  }
+
+  new = () => {
+    this.props.dispatch(newSavedGarden(this.state.name));
+    this.setState({ name: "" });
+  };
 
   render() {
-    return <div className="garden-snapshot"
-      title={this.props.disabled
-        ? t("Can't snapshot while saved garden is open.")
-        : ""}>
-      <label>{t("garden name")}</label>
+    return <div className="garden-snapshot">
+      <label>{t("new garden name")}</label>
       <input
-        disabled={this.props.disabled}
         onChange={e => this.setState({ name: e.currentTarget.value })}
         value={this.state.name} />
       <button
-        className="fb-button gray wide"
-        disabled={this.props.disabled}
-        onClick={() => this.props.plantsInGarden
-          ? snapshotGarden(this.state.name)
-          : error(t("No plants in garden. Create some plants first."))}>
-        {t("Snapshot")}
+        className={"fb-button gray wide"}
+        onClick={this.snapshot}>
+        {t("Snapshot current garden")}
+      </button>
+      <button
+        className="fb-button green wide"
+        onClick={this.new}>
+        {t("create new garden")}
       </button>
     </div>;
   }

@@ -56,6 +56,7 @@ describe("<RegimenEditor />", () => {
 
   it("deletes regimen", () => {
     const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<RegimenEditor {...p} />);
     clickButton(wrapper, 2, "delete");
     const expectedUuid = p.current && p.current.uuid;

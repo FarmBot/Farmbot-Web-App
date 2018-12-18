@@ -3,14 +3,12 @@ import { betterCompact } from "../util";
 import * as _ from "lodash";
 import { assertUuid } from "./util";
 import {
-  TaggedCrop,
   TaggedResource,
   ResourceName,
   TaggedRegimen,
   TaggedSequence,
   TaggedTool,
   TaggedFarmEvent,
-  TaggedLog,
   TaggedToolSlotPointer,
   TaggedPlantPointer,
   TaggedGenericPointer,
@@ -55,10 +53,16 @@ export function sanityCheck(x: object): x is TaggedResource {
 }
 
 export function isTaggedResource(x: object): x is TaggedResource {
-  return (isObject(x)
+  const isOk = (isObject(x)
     && isString(get(x, "kind"))
     && isString(get(x, "uuid"))
     && isObject(get(x, "body")));
+  if (isOk) {
+    return true;
+  } else {
+    console.error(JSON.stringify(x));
+    return false;
+  }
 }
 
 const is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource {
@@ -81,12 +85,8 @@ export let isTaggedSequence =
   (x: object): x is TaggedSequence => is("Sequence")(x);
 export let isTaggedTool =
   (x: object): x is TaggedTool => is("Tool")(x);
-export let isTaggedCrop =
-  (x: object): x is TaggedCrop => is("Crop")(x);
 export let isTaggedFarmEvent =
   (x: object): x is TaggedFarmEvent => is("FarmEvent")(x);
-export let isTaggedLog =
-  (x: object): x is TaggedLog => is("Log")(x);
 export let isTaggedToolSlotPointer =
   (x: object): x is TaggedToolSlotPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "ToolSlot");

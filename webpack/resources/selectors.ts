@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import { ResourceIndex } from "./interfaces";
-import { joinKindAndId } from "./reducer";
 import {
   ResourceName,
   TaggedGenericPointer,
@@ -26,6 +25,7 @@ import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
 import { findPoints, selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
+import { joinKindAndId } from "./reducer_support";
 
 export * from "./selectors_by_id";
 export * from "./selectors_by_kind";
@@ -66,16 +66,18 @@ export function groupPointsByType(index: ResourceIndex) {
 }
 
 export function findPointerByTypeAndId(index: ResourceIndex,
-  type_: string,
+  pt: string,
   id: number) {
-  const p = selectAllActivePoints(index)
-    .filter(({ body }) => (body.id === id) && (body.pointer_type === type_))[0];
-  if (p) {
-    return p;
+  const pni = joinKindAndId("Point", id);
+  const uuid = "" + index.byKindAndId[pni];
+  const resource = index.references[uuid];
+
+  if (resource && resource.kind === "Point") {
+    return resource;
   } else {
     // We might have a sequence dependency leak if this exception is ever
     // thrown.
-    throw new Error(`Tried to fetch bad point ${type_} ${id}`);
+    throw new Error(`Tried to fetch bad point ${pt} ${id}`);
   }
 }
 
@@ -186,7 +188,7 @@ export function maybeGetTimeOffset(index: ResourceIndex): number {
 }
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
-  const dev = index.references[index.byKind.Device[0] || "nope"];
+  const dev = index.references[Object.keys(index.byKind.Device)[0] || "nope"];
   return (dev && dev.kind === "Device") ?
     dev : undefined;
 }
@@ -194,16 +196,16 @@ export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
 export const getDeviceAccountSettings =
   (index: ResourceIndex): TaggedDevice => {
     const device = maybeGetDevice(index);
-    switch (index.byKind.Device.length) {
+    switch (Object.keys(index.byKind.Device).length) {
       case 0: return bail(`Tried to load device before it was loaded.`);
-      case 1: return (device) ? device : bail("Malformed device!");
+      case 1: return device ? device : bail("Malformed device!");
       default: return bail("Found more than 1 device");
     }
   };
 
 export function maybeFetchUser(index: ResourceIndex):
   TaggedUser | undefined {
-  const list = index.byKind.User;
+  const list = Object.keys(index.byKind.User);
   const uuid = list[0];
   const user = index.references[uuid || -1];
 
@@ -226,5 +228,5 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
 }
 
 export function all(index: ResourceIndex) {
-  return betterCompact(index.all.map(uuid => index.references[uuid]));
+  return betterCompact(Object.keys(index.all).map(uuid => index.references[uuid]));
 }

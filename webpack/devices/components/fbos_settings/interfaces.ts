@@ -1,7 +1,8 @@
 import {
-  SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay
+  SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay,
+  SaveFarmwareEnv, UserEnv
 } from "../../interfaces";
-import { Dictionary, InformationalSettings } from "farmbot";
+import { InformationalSettings } from "farmbot";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -14,8 +15,11 @@ export interface AutoUpdateRowProps {
 }
 
 export interface CameraSelectionProps {
-  env: Dictionary<string | undefined>;
+  env: UserEnv;
   botOnline: boolean;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  shouldDisplay: ShouldDisplay;
+  dispatch: Function;
 }
 
 export interface CameraSelectionState {
@@ -49,12 +53,14 @@ export interface FarmbotOsRowProps {
   osReleaseNotes: string;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 
 export interface FbosDetailsProps {
   botInfoSettings: InformationalSettings;
   dispatch: Function;
+  shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
 }
 

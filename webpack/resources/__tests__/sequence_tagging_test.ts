@@ -1,8 +1,8 @@
 import { TaggedSequence, SpecialStatus } from "farmbot";
 import { get } from "lodash";
-import { maybeTagSteps, getStepTag } from "../sequence_tagging";
+import { getStepTag, maybeTagStep } from "../sequence_tagging";
 
-describe("maybeTagSteps()", () => {
+describe("tagAllSteps()", () => {
   const UNTAGGED_SEQUENCE: TaggedSequence = {
     "kind": "Sequence",
     "uuid": "whatever",
@@ -36,7 +36,7 @@ describe("maybeTagSteps()", () => {
     expect(() => {
       getStepTag(body[0]);
     }).toThrow();
-    maybeTagSteps(UNTAGGED_SEQUENCE);
+    maybeTagStep(body[0]);
     expect(get(body[0], "uuid")).toBeDefined();
   });
 });
