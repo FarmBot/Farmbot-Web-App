@@ -30,11 +30,17 @@ module FarmEvents
     end
 
     def destroy_fragment
-      raise "Not implemented"
+      fragment = farm_event.fragment
+      if fragment
+        raise "Not implemented"
+        # fragment && fragment.destroy!
+      end
     end
 
     def replace_fragment
-      raise "Not implemented"
+      Fragment.transaction do
+        raise "Not implemented"
+      end
     end
   end
 end

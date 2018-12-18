@@ -7,11 +7,16 @@ class Fragment < ApplicationRecord
   SERIALIZER = "serialized"
   belongs_to :device
   has_one  :farm_event # Possibly undefined
-  has_many :primitives,      dependent: :destroy
-  has_many :nodes,           dependent: :destroy
-  has_many :arg_sets,        dependent: :destroy
-  has_many :primitive_pairs, dependent: :destroy
-  has_many :standard_pairs,  dependent: :destroy
+  has_many :nodes,          dependent: :destroy
+  has_many :primitives,     dependent: :destroy
+  has_many :primitive_pairs
+  has_many :standard_pairs
+  has_many :arg_sets
+  before_destroy :clean_nodes
+
+  def clean_nodes
+    Node.where(fragment_id: self.id).destroy_all
+  end
 
   def serialize(*x)
     Rails.cache.fetch(json_cache_key) do

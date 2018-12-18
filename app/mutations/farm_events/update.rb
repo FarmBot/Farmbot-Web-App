@@ -32,7 +32,7 @@ module FarmEvents
       p = inputs.except(:farm_event)
       # Keeps cleanup operations on schedule:
       p[:end_time] = next_start_time + 1.minute if is_one_time_event
-      farm_event.update_attributes!(p) && farm_event
+      farm_event.update_attributes!(p.except(:body)) && farm_event
     end
 
     def validate_ownership
