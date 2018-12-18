@@ -26,9 +26,10 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
     create_table :nodes do |t|
       t.references :fragment, null: false
       t.references :kind,     null: false
-      t.references :body,   foreign_key: { to_table: :nodes }#, null: false
-      t.references :next,   foreign_key: { to_table: :nodes }#, null: false
-      t.references :parent, foreign_key: { to_table: :nodes }#, null: false
+      t.references :caller,   polymorphic: true
+      t.integer    :body_id
+      t.integer    :next_id
+      t.integer    :parent_id
     end
 
     # A collection of key/value pairs.

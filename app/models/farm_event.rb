@@ -5,19 +5,17 @@
 class FarmEvent < ApplicationRecord
   NEVER              = "never"
   UNITS_OF_TIME      = %w(never minutely hourly daily weekly monthly yearly)
-  UNITS_OF_TIME      << NEVER
   EXECUTABLE_CLASSES = [Sequence, Regimen]
   FE_USE             = "still in use by some farm events"
-
   WITH_YEAR          = "%m/%d/%y"
   NO_YEAR            = "%m/%d"
 
-  belongs_to    :device
-  belongs_to    :fragment
-  belongs_to    :executable, polymorphic: true
-  validate      :within_20_year_window
-  validates     :device_id, presence: true
-  validates     :executable, presence: true
+  belongs_to :device
+  belongs_to :executable, polymorphic: true
+  validates  :device_id,  presence:    true
+  validates  :executable, presence:    true
+  validate   :within_20_year_window
+  has_one :fragment, as: :caller
 
   def within_20_year_window
     too_early = start_time && start_time < (Time.now - 20.years)

@@ -6,7 +6,8 @@ class Fragment < ApplicationRecord
   EVERYTHING = { nodes: Node::EVERYTHING }
   SERIALIZER = "serialized"
   belongs_to :device
-  has_one  :farm_event # Possibly undefined
+  belongs_to :caller, polymorphic: true
+  has_one  :farm_event,     dependent: :destroy
   has_many :nodes,          dependent: :destroy
   has_many :primitives,     dependent: :destroy
   has_many :primitive_pairs

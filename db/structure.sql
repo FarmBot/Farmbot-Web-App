@@ -865,9 +865,11 @@ CREATE TABLE public.nodes (
     id bigint NOT NULL,
     fragment_id bigint NOT NULL,
     kind_id bigint NOT NULL,
-    body_id bigint NOT NULL,
-    next_id bigint NOT NULL,
-    parent_id bigint NOT NULL
+    caller_type character varying,
+    caller_id bigint,
+    body_id integer,
+    next_id integer,
+    parent_id integer
 );
 
 
@@ -2344,10 +2346,10 @@ CREATE INDEX index_logs_on_verbosity_and_type ON public.logs USING btree (verbos
 
 
 --
--- Name: index_nodes_on_body_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_nodes_on_caller_type_and_caller_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_nodes_on_body_id ON public.nodes USING btree (body_id);
+CREATE INDEX index_nodes_on_caller_type_and_caller_id ON public.nodes USING btree (caller_type, caller_id);
 
 
 --
@@ -2362,20 +2364,6 @@ CREATE INDEX index_nodes_on_fragment_id ON public.nodes USING btree (fragment_id
 --
 
 CREATE INDEX index_nodes_on_kind_id ON public.nodes USING btree (kind_id);
-
-
---
--- Name: index_nodes_on_next_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_nodes_on_next_id ON public.nodes USING btree (next_id);
-
-
---
--- Name: index_nodes_on_parent_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_nodes_on_parent_id ON public.nodes USING btree (parent_id);
 
 
 --
@@ -2696,14 +2684,6 @@ ALTER TABLE ONLY public.pin_bindings
 
 
 --
--- Name: nodes fk_rails_8fa5cc8c6e; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT fk_rails_8fa5cc8c6e FOREIGN KEY (next_id) REFERENCES public.nodes(id);
-
-
---
 -- Name: sensors fk_rails_92e56bf2fb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2733,22 +2713,6 @@ ALTER TABLE ONLY public.primary_nodes
 
 ALTER TABLE ONLY public.farmware_envs
     ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
--- Name: nodes fk_rails_c13014071c; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT fk_rails_c13014071c FOREIGN KEY (body_id) REFERENCES public.nodes(id);
-
-
---
--- Name: nodes fk_rails_c59201c113; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT fk_rails_c59201c113 FOREIGN KEY (parent_id) REFERENCES public.nodes(id);
 
 
 --
@@ -2932,7 +2896,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20180925203846'),
 ('20180926161918'),
 ('20181014221342'),
-('20181014231010'),
 ('20181019023351'),
 ('20181025182807'),
 ('20181112010427'),
