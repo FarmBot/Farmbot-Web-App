@@ -31,7 +31,7 @@ describe("<TestButton/>", () => {
     };
   }
 
-  it("doesnt fire if unsaved", () => {
+  it("doesn't fire if unsaved", () => {
     const props = fakeProps();
     props.sequence.specialStatus = SpecialStatus.DIRTY;
     const result = mount(<TestButton {...props} />);
@@ -42,7 +42,7 @@ describe("<TestButton/>", () => {
     expect(props.onClick).not.toHaveBeenCalled();
   });
 
-  it("doesnt fire if unsynced", () => {
+  it("doesn't fire if unsynced", () => {
     const props = fakeProps();
     props.syncStatus = "sync_now";
     props.sequence.specialStatus = SpecialStatus.SAVED;

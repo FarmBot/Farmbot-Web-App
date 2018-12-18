@@ -6,7 +6,7 @@ import { defensiveClone } from "../../util";
 import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
 
-describe("botRedcuer", () => {
+describe("botReducer", () => {
   it("Starts / stops an update", () => {
     const step1 = botReducer(initialState(), {
       type: Actions.SETTING_UPDATE_START,
@@ -77,7 +77,7 @@ describe("botRedcuer", () => {
     expect(r).toEqual({});
   });
 
-  it("resets hardware state when transitioning into mainenance mode.", () => {
+  it("resets hardware state when transitioning into maintenance mode.", () => {
     const state = initialState();
     const payload = defensiveClone(state.hardware);
     payload.informational_settings.sync_status = "maintenance";

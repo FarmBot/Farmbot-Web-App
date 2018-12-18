@@ -24,7 +24,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
 
-interface InforFieldProps {
+interface InfoFieldProps {
   title: string;
   children?: React.ReactNode;
 }
@@ -37,7 +37,7 @@ interface SummaryItemProps {
 }
 
 /** Basic field: value display for OpenFarm crop properties. */
-const InfoField = (props: InforFieldProps) =>
+const InfoField = (props: InfoFieldProps) =>
   <li>
     <p>
       {t(_.startCase(props.title))}

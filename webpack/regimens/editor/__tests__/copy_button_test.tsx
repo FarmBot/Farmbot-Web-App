@@ -16,10 +16,10 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { push } from "../../../history";
 import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
 import { init } from "../../../api/crud";
-import { CopyButtnProps } from "../interfaces";
+import { CopyButtonProps } from "../interfaces";
 
 describe("<CopyButton />", () => {
-  const fakeProps = (): CopyButtnProps => ({
+  const fakeProps = (): CopyButtonProps => ({
     dispatch: jest.fn(x => x(jest.fn())),
     regimen: fakeRegimen(),
   });

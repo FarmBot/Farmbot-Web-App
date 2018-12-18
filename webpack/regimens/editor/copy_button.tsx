@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CopyButtnProps } from "./interfaces";
+import { CopyButtonProps } from "./interfaces";
 import { t } from "i18next";
 import { init } from "../../api/crud";
 import { TaggedRegimen } from "farmbot";
@@ -7,7 +7,7 @@ import { defensiveClone, urlFriendly } from "../../util";
 import { push } from "../../history";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 
-export const CopyButton = ({ dispatch, regimen }: CopyButtnProps) =>
+export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
   <button
     className="fb-button yellow"
     onClick={() => dispatch(copyRegimen(regimen))}>

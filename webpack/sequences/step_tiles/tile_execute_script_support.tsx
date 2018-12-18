@@ -215,7 +215,7 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
     Object.entries(farmwareInputs(farmwareName, defaultConfigs, currentStep));
 
   return farmwareInputEntries.length > 0 ?
-    <div className="farmmware-step-input-fields">
+    <div className="farmware-step-input-fields">
       <div className="checkbox-row">
         <div className={`fb-checkbox ${partial}`}>
           <input type="checkbox"
