@@ -22,4 +22,10 @@ class Fragment < ApplicationRecord
   def json_cache_key
     [cache_key_with_version, SERIALIZER].join("/")
   end
+
+  def self.from_celery(device:, kind:, args:, body:)
+    p        = { device: device, kind: kind, args: args, body: body }
+    flat_ast = Fragments::Preprocessor.run!(p)
+    Fragments::Create.run!(device: device, flat_ast: flat_ast)
+  end
 end

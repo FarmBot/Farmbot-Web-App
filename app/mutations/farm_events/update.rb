@@ -15,9 +15,9 @@ module FarmEvents
     end
 
     optional do
-      integer :repeat,     min: 1
-      string  :time_unit,  in: FarmEvent::UNITS_OF_TIME
-      time    :start_time, after: Time.now - 20.years
+      integer :repeat,     min:    1
+      string  :time_unit,  in:     FarmEvent::UNITS_OF_TIME
+      time    :start_time, after:  Time.now - 20.years
       time    :end_time,   before: Time.now + 20.years
       body
     end
@@ -25,6 +25,7 @@ module FarmEvents
     def validate
       validate_executable if (executable_id || executable_type)
       validate_ownership
+      handle_body_field
     end
 
     def execute

@@ -47,9 +47,75 @@ describe Api::FarmEventsController do
       expect(json[:end_time]).to include("too far in the future")
     end
 
-    it "deletes old fragment when body is `nil`"
-    it "deletes old fragment when body is `[]`"
-    it "replaces old fragment when given a new one"
-    it "inserts new fragment when there originally was none"
+    def create_fe_with_fragment
+      fragment = Fragment.from_celery(
+        device: user.device,
+        kind:   "internal_farm_event",
+        args:   {},
+        body:   [
+          {
+            kind: "variable_declaration",
+            args: {
+              label: "foo",
+              data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+            }
+          }
+        ])
+      FactoryBot.create(:farm_event, device: user.device, fragment: fragment)
+    end
+
+    def update_body(fe, body)
+      sign_in user
+      patch :update,
+        format: :json,
+        body:   { body: body }.to_json,
+        params: { id: fe.id }
+    end
+
+    it "ignores fragment when body is `nil`" do
+      fe          = create_fe_with_fragment
+      fragment_b4 = fe.fragment.id
+      expect(fe.fragment).not_to be(nil)
+      update_body(fe, nil)
+      expect(response.status).to be(200)
+      expect(fe.reload.fragment).not_to be(nil)
+      expect(fe.fragment.id).to         eq(fragment_b4)
+    end
+
+    it "deletes old fragment when body is `[]`" do
+      fe = create_fe_with_fragment
+      expect(fe.fragment).not_to be(nil)
+      update_body(fe, [])
+      expect(response.status).to be(200)
+      expect(fe.reload.fragment).to be(nil)
+      expect(json.fetch(:body)).to eq([])
+    end
+
+    it "replaces old fragment when given a new one" do
+      fe = create_fe_with_fragment
+      expect(fe.fragment).not_to be(nil)
+      update_body(fe, nil)
+      expect(response.status).to be(200)
+      expect(fe.reload.fragment).not_to be(nil)
+    end
+
+    it "inserts new fragment when there originally was none" do
+      fe = \
+        FactoryBot.create(:farm_event, device: user.device, fragment: fragment)
+      expect(fe.fragment).to be(nil)
+      body = [
+        {
+          kind: "variable_declaration",
+          args: {
+            label: "bar",
+            data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+          }
+        }
+      ]
+      update_body(fe, )
+      expect(response.status).to be(200)
+      expect(fe.reload.fragment).not_to be(nil)
+      expect(json.fetch(:body)).to eq(body)
+    end
   end
 end

@@ -19,5 +19,22 @@ module FarmEvents
         @fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
       end
     end
+
+    def handle_body_field
+      case body
+      when nil then return
+      when []  then destroy_fragment
+      else
+        replace_fragment
+      end
+    end
+
+    def destroy_fragment
+      raise "Not implemented"
+    end
+
+    def replace_fragment
+      raise "Not implemented"
+    end
   end
 end
