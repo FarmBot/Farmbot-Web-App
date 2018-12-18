@@ -1,12 +1,12 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::FarmEventsController do
   include Devise::Test::ControllerHelpers
 
-  describe '#update' do
+  describe "#update" do
     let(:user) { FactoryBot.create(:user) }
 
-    it 'allows authorized modification' do
+    it "allows authorized modification" do
       sign_in user
       id = FactoryBot.create(:farm_event, device: user.device).id
       input = { id: id, farm_event: { repeat: 66 } }
@@ -14,16 +14,16 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(200)
     end
 
-    it 'prevents unauthorized modification' do
+    it "prevents unauthorized modification" do
       sign_in user
-      id = FactoryBot.create(:farm_event).id
+      id    = FactoryBot.create(:farm_event).id
       input = { id: id, repeat: 66 }
       patch :update, format: :json, body: input.to_json, params: {id: id}
       expect(response.status).to eq(403)
-      expect(json[:error]).to include('Not your farm_event')
+      expect(json[:error]).to include("Not your farm_event")
     end
 
-    it 'sets end_time to self.start_time if no start_time is passed in' do
+    it "sets end_time to self.start_time if no start_time is passed in" do
       sign_in user
       id = FactoryBot.create(:farm_event, device: user.device).id
       patch :update,
@@ -36,7 +36,7 @@ describe Api::FarmEventsController do
       expect(fe.end_time).to eq(fe.start_time + 1.minute)
     end
 
-    it 'disallows start/end times that are outside of a 20 year window' do
+    it "disallows start/end times that are outside of a 20 year window" do
       sign_in user
       id = FactoryBot.create(:farm_event, device: user.device).id
       patch :update,
@@ -46,5 +46,10 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(422)
       expect(json[:end_time]).to include("too far in the future")
     end
+
+    it "deletes old fragment when body is `nil`"
+    it "deletes old fragment when body is `[]`"
+    it "replaces old fragment when given a new one"
+    it "inserts new fragment when there originally was none"
   end
 end

@@ -3,7 +3,9 @@ module FarmEvents
     NOT_YOURS = 'Not your farm_event.'
 
     include FarmEvents::ExecutableHelpers
+    include FarmEvents::FragmentHelpers
     include Sequences::TransitionalHelpers
+    using   Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
 
@@ -17,6 +19,7 @@ module FarmEvents
       string  :time_unit,  in: FarmEvent::UNITS_OF_TIME
       time    :start_time, after: Time.now - 20.years
       time    :end_time,   before: Time.now + 20.years
+      body
     end
 
     def validate

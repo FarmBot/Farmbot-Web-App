@@ -1,6 +1,6 @@
 # A fragment of CeleryScript code, not unlike Lua's "fragment" concept.
 # All nodes and primitives in the CeleryScript AST tree are tagged with a
-# fragment_id for performance.
+# fragment_id to simplify queries.
 class Fragment < ApplicationRecord
   # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
   EVERYTHING = { nodes: Node::EVERYTHING }
