@@ -33,7 +33,7 @@ export interface RegimenEditorProps {
   calendar: CalendarRow[];
 }
 
-export interface CopyButtnProps {
+export interface CopyButtonProps {
   dispatch: Function;
   regimen: TaggedRegimen;
 }

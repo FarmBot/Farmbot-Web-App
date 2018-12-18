@@ -335,7 +335,7 @@ export namespace Content {
 
   export const ACCOUNT_DELETE_WARNING =
     trim(`WARNING! Deleting your account will permanently delete all of your
-    Sequences , Regimens, Events, and Farm Designer data.Upon deleting your
+    Sequences, Regimens, Events, and Farm Designer data. Upon deleting your
     account, FarmBot will cease to function and become inaccessible until it is
     paired with another web app account. To do this, you will need to reboot
     your FarmBot so that is goes back into configuration mode for pairing with
@@ -354,6 +354,7 @@ export namespace Content {
   export const EXPORT_SENT =
     trim(`Export request received. Please allow up to 10 minutes for
     delivery.`);
+
   // App Settings
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when the sequence delete step
@@ -402,7 +403,7 @@ export namespace Content {
 
   export const FACTORY_RESET_WARNING =
     trim(`Factory resetting your FarmBot will destroy all data on the device,
-    revoking your FarmBot's abilily to connect to your web app account and your
+    revoking your FarmBot's ability to connect to your web app account and your
     home wifi. Upon factory resetting, your device will restart into
     Configurator mode. Factory resetting your FarmBot will not affect any data
     or settings from your web app account, allowing you to do a complete restore
@@ -429,13 +430,13 @@ export namespace Content {
     reset.`);
 
   export const TIMEZONE_GUESS_BROWSER =
-    trim(`This account did not have a timezone set. Farmbot requires a
+    trim(`This account did not have a timezone set. FarmBot requires a
     timezone to operate. We have updated your timezone settings based on
     your browser. Please verify these settings in the device settings panel.
     Device sync is recommended.`);
 
   export const TIMEZONE_GUESS_UTC =
-    trim(`Warning: Farmbot could not guess your timezone. We have defaulted
+    trim(`Warning: FarmBot could not guess your timezone. We have defaulted
     your timezone to UTC, which is less than ideal for most users. Please
     select your timezone from the dropdown. Device sync is recommended.`);
 
@@ -555,7 +556,7 @@ export namespace Content {
 
   export const MOVE_MODE_DESCRIPTION =
     trim(`Click a spot in the grid to choose a location.
-    Once selected, press button to move FarmBot to this postion.
+    Once selected, press button to move FarmBot to this position.
     Press the back arrow to exit.`);
 
   export const CREATE_POINTS_DESCRIPTION =

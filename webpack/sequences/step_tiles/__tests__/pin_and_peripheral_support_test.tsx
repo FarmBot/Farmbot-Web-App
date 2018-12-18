@@ -125,10 +125,10 @@ describe("Pin and Peripheral support files", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "not displayed";
-      p.body.label = "displayed peripherial";
+      p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
       const result = pinsAsDropDownsWritePin(ri.index, () => true);
-      expect(JSON.stringify(result)).toContain("displayed peripherial");
+      expect(JSON.stringify(result)).toContain("displayed peripheral");
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
   });

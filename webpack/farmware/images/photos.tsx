@@ -17,7 +17,7 @@ import { JobProgress, TaggedImage } from "farmbot";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
-   *  Setting a label property will over ride it to a differrent value.
+   *  Setting a label property will over ride it to a different value.
    */
   label?: string;
   attr: string;

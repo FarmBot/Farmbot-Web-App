@@ -1,7 +1,7 @@
 import {
   isNumericSetting,
   isBooleanSetting,
-  safeBooleanSettting,
+  safeBooleanSetting,
   safeNumericSetting,
   Session,
 } from "../session";
@@ -34,8 +34,8 @@ describe("isBooleanSetting", () => {
 
 describe("safeBooleanSetting", () => {
   it("safely fetches bool", () => {
-    expect(() => safeBooleanSettting("no")).toThrow();
-    expect(safeBooleanSettting("x_axis_inverted")).toBe("x_axis_inverted");
+    expect(() => safeBooleanSetting("no")).toThrow();
+    expect(safeBooleanSetting("x_axis_inverted")).toBe("x_axis_inverted");
   });
 });
 
