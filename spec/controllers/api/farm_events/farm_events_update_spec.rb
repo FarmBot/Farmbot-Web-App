@@ -49,6 +49,7 @@ describe Api::FarmEventsController do
 
     def create_fe_with_fragment
       fragment = Fragment.from_celery(
+        owner:  fe,
         device: user.device,
         kind:   "internal_farm_event",
         args:   {},

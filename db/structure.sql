@@ -600,8 +600,8 @@ CREATE TABLE public.fragments (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     device_id bigint,
-    owner_type character varying,
-    owner_id bigint
+    owner_type character varying NOT NULL,
+    owner_id bigint NOT NULL
 );
 
 

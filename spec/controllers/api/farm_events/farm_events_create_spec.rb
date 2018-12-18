@@ -10,7 +10,7 @@ describe Api::FarmEventsController do
     let(:sequence) { FakeSequence.create() }
     let(:regimen)  { FactoryBot.create(:regimen, device: user.device) }
     let(:tool)     { FactoryBot.create(:tool, device: user.device )}
-    let(:generic_sequence) do
+    let(:generic_fe) do
       { start_time:      start_time,
         next_time:       "2017-06-05T18:33:04.342Z",
         time_unit:       "never",
@@ -22,7 +22,7 @@ describe Api::FarmEventsController do
 
     it 'processes properly formed celery script' do
       sign_in user
-      payload = generic_sequence.merge(body: [
+      payload = generic_fe.merge(body: [
         {
           kind: "variable_declaration",
           args: {
@@ -40,6 +40,7 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(200)
       expect(Fragment.count).to be > fragment_b4
       expect(FarmEvent.count).to be > farm_event_b4
+      binding.pry
       expect(json.fetch(:body)).to eq(payload.fetch(:body))
     end
 
@@ -52,7 +53,7 @@ describe Api::FarmEventsController do
           args: { label: "also_wrong", data_value: wrong }
         }
       ]
-      body = generic_sequence.merge(body: body)
+      body = generic_fe.merge(body: body)
       post :create, body: body.to_json
       expect(response.status).to eq(422)
       expect(json.keys).to include(:farm_event)
@@ -61,7 +62,7 @@ describe Api::FarmEventsController do
 
     it 'gets rejected for sending malformed `body` attrs' do
       sign_in user
-      body = generic_sequence.merge({
+      body = generic_fe.merge({
         body: [
           {
             kind: "variable_declaration",
@@ -109,7 +110,7 @@ describe Api::FarmEventsController do
 
     it 'creates a one-off FarmEvent' do
       sign_in user
-      post :create, body: generic_sequence.to_json, format: :json
+      post :create, body: generic_fe.to_json, format: :json
       expect(response.status).to eq(200)
       get :index
       expect(json.length).to eq(1)

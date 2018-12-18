@@ -14,7 +14,9 @@ module FarmEvents
                     args:   {},
                     body:   body }
       flat_ast  = Fragments::Preprocessor.run!(params)
-      Fragments::Create.run!(device: device, flat_ast: flat_ast, owner: owner)
+      Fragments::Create.run!(device:   device,
+                             flat_ast: flat_ast,
+                             owner:    owner)
       owner
     end
 

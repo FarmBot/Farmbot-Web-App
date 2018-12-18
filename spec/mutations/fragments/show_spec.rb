@@ -66,6 +66,7 @@ describe Fragments::Create do
       }
     end
     origin        = { device: device,
+                      owner:  FactoryBot.create(:farm_event, device: device),
                       kind:   "internal_farm_event",
                       args:   {},
                       body:   body }

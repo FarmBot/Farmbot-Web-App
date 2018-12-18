@@ -29,9 +29,11 @@ class Fragment < ApplicationRecord
     [cache_key_with_version, SERIALIZER].join("/")
   end
 
-  def self.from_celery(device:, kind:, args:, body:)
+  def self.from_celery(device:, kind:, args:, body:, owner:)
     p        = { device: device, kind: kind, args: args, body: body }
     flat_ast = Fragments::Preprocessor.run!(p)
-    Fragments::Create.run!(device: device, flat_ast: flat_ast)
+    Fragments::Create.run!(device:   device,
+                           flat_ast: flat_ast,
+                           owner:    owner)
   end
 end

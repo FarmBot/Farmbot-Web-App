@@ -10,6 +10,7 @@ class FarmEventSerializer < ApplicationSerializer
   def body
     puts "TODO: Preload associations"
     f = object.fragment
-    f ? f.serialize.fetch(:body, []) : []
+    binding.pry if f
+    f ? f.serialize.fetch(:body) : []
   end
 end
