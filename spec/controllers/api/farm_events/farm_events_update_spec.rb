@@ -100,19 +100,25 @@ describe Api::FarmEventsController do
     end
 
     it "inserts new fragment when there originally was none" do
-      fe = \
-        FactoryBot.create(:farm_event, device: user.device, fragment: fragment)
+      fe = FactoryBot.create(:farm_event, device: user.device)
       expect(fe.fragment).to be(nil)
       body = [
         {
           kind: "variable_declaration",
           args: {
             label: "bar",
-            data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+            data_value: {
+              kind: "coordinate",
+              args: {
+                x: 1,
+                y: 2,
+                z: 3
+              }
+            }
           }
         }
       ]
-      update_body(fe, )
+      update_body(fe, body)
       expect(response.status).to be(200)
       expect(fe.reload.fragment).not_to be(nil)
       expect(json.fetch(:body)).to eq(body)
