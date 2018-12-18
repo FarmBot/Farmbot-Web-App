@@ -4,6 +4,7 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
     create_table :fragments do |t|
       t.timestamps
       t.references :device
+      t.references :owner, polymorphic: true
     end
 
     # A constant declaration. Ex: if the node references `tool_id: 6`, then you need a primitive with a value of 6.
@@ -26,7 +27,6 @@ class AddInitialFragmentTables < ActiveRecord::Migration[5.2]
     create_table :nodes do |t|
       t.references :fragment, null: false
       t.references :kind,     null: false
-      t.references :caller,   polymorphic: true
       t.integer    :body_id
       t.integer    :next_id
       t.integer    :parent_id

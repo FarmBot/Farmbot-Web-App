@@ -32,11 +32,11 @@ module FarmEvents
 
     def execute
       FarmEvent.transaction do
-        p = inputs.merge(executable: executable, fragment: create_fragment)
+        p = inputs.merge(executable: executable)
         # Needs to be set this way for cleanup operations:
         p[:end_time] = (p[:start_time] + 1.minute) if is_one_time_event
         p.delete(:body)
-        FarmEvent.create!(p)
+        wrap_fragment_with(FarmEvent.create!(p))
       end
     rescue CeleryScript::TypeCheckError => q
       add_error :farm_event, :farm_event, q.message

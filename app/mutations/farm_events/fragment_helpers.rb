@@ -7,17 +7,15 @@ module FarmEvents
       !!body
     end
 
-    def create_fragment(kind = "internal_farm_event", args = {})
-      return nil unless has_body?
-      if @fragment
-        @fragment
-      else
-        flat_ast  = Fragments::Preprocessor.run!(device: device,
-                                                 kind:   kind,
-                                                 args:   {},
-                                                 body:   body)
-        @fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
-      end
+    def wrap_fragment_with(owner)
+      return owner unless has_body?
+      params    = { device: device,
+                    kind:   "internal_farm_event",
+                    args:   {},
+                    body:   body }
+      flat_ast  = Fragments::Preprocessor.run!(params)
+      Fragments::Create.run!(device: device, flat_ast: flat_ast, owner: owner)
+      owner
     end
 
     def handle_body_field

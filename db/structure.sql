@@ -331,8 +331,7 @@ CREATE TABLE public.farm_events (
     executable_type character varying(280),
     executable_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    fragment_id bigint
+    updated_at timestamp without time zone
 );
 
 
@@ -600,7 +599,9 @@ CREATE TABLE public.fragments (
     id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    device_id bigint
+    device_id bigint,
+    owner_type character varying,
+    owner_id bigint
 );
 
 
@@ -865,8 +866,6 @@ CREATE TABLE public.nodes (
     id bigint NOT NULL,
     fragment_id bigint NOT NULL,
     kind_id bigint NOT NULL,
-    caller_type character varying,
-    caller_id bigint,
     body_id integer,
     next_id integer,
     parent_id integer
@@ -2234,13 +2233,6 @@ CREATE INDEX index_farm_events_on_executable_type_and_executable_id ON public.fa
 
 
 --
--- Name: index_farm_events_on_fragment_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_farm_events_on_fragment_id ON public.farm_events USING btree (fragment_id);
-
-
---
 -- Name: index_farmware_envs_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2273,6 +2265,13 @@ CREATE INDEX index_firmware_configs_on_device_id ON public.firmware_configs USIN
 --
 
 CREATE INDEX index_fragments_on_device_id ON public.fragments USING btree (device_id);
+
+
+--
+-- Name: index_fragments_on_owner_type_and_owner_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fragments_on_owner_type_and_owner_id ON public.fragments USING btree (owner_type, owner_id);
 
 
 --
@@ -2343,13 +2342,6 @@ CREATE INDEX index_logs_on_verbosity ON public.logs USING btree (verbosity);
 --
 
 CREATE INDEX index_logs_on_verbosity_and_type ON public.logs USING btree (verbosity, type);
-
-
---
--- Name: index_nodes_on_caller_type_and_caller_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_nodes_on_caller_type_and_caller_id ON public.nodes USING btree (caller_type, caller_id);
 
 
 --
@@ -2772,14 +2764,6 @@ ALTER TABLE ONLY public.devices
 
 
 --
--- Name: farm_events fk_rails_f3cdfcc8f2; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farm_events
-    ADD CONSTRAINT fk_rails_f3cdfcc8f2 FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
 -- Name: pin_bindings fk_rails_f72ee24d98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2901,7 +2885,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181112010427'),
 ('20181126175951'),
 ('20181204005038'),
-('20181208035706'),
-('20181214164537');
+('20181208035706');
 
 
