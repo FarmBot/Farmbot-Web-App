@@ -21,12 +21,6 @@ module Fragments
       end
     end
 
-    def validate
-      add_error :flat_ast,
-                :flat_ast,
-                BAD_AST unless flat_ast.dig(0, KIND) == NOTHING
-    end
-
     def execute
         # LEGACY SHIM:
         #  1. CelerySlicer inserts a `nothing` node at the start of the flat_ast
