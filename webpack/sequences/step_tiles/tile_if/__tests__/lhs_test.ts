@@ -49,7 +49,7 @@ const peripheral: TaggedPeripheral = {
   kind: "Peripheral",
   uuid: "---",
   specialStatus: SpecialStatus.SAVED,
-  body: { id: 99, pin: 13, label: "My perihperal" }
+  body: { id: 99, pin: 13, label: "My peripheral" }
 };
 
 const resources = buildResourceIndex([seedSequence, peripheral]);
@@ -101,7 +101,7 @@ describe("updateLhs", () => {
     expect(get(dispatch, path)).toEqual("pin5");
   });
 
-  it("handles malformeed data", () => {
+  it("handles malformed data", () => {
     const dispatch = jest.fn();
     const props = {
       currentStep,

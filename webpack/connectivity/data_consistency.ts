@@ -27,7 +27,7 @@ set(window, "outstanding_requests", outstandingRequests);
 
 /** Use this when you need to throw the FE into an inconsistent state, but dont
  * have a real UUID available. It will be removed when a "real" UUID comes
- * along. This is necesary for creating an instantaneous "syncing..." label. */
+ * along. This is necessary for creating an instantaneous "syncing..." label. */
 const PLACEHOLDER = "placeholder";
 
 /** Max wait in MS before clearing out. */
@@ -45,7 +45,7 @@ const MAX_WAIT = 11000;
 *   - On all auto_sync messages, the API attaches the same UUID under
 *     msg.args.label
 *   - When FBOS gets an auto_sync message, it replies with an `rpc_ok` message
-*     that has the same `label` as the API requeset.
+*     that has the same `label` as the API request.
 *   - We keep a list of `outstandingRequests` filled with such UUIDs.
 *   - When we get an `rpc_ok` from farmbot, we remove it from the list.
 *   - If the request takes longer than 5 seconds, remove it from the list also

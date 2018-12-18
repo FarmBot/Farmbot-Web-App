@@ -14,7 +14,7 @@ export interface KeyValRowProps {
   title?: string;
 }
 
-/** A row containing two textboxes and a delete button. Useful for maintaining
+/** A row containing a label, value, and toggle button. Useful for maintaining
  * lists of things (peripherals, feeds, tools etc). */
 export function KeyValShowRow(p: KeyValRowProps) {
   const { label, value, toggleValue, disabled, onClick, title } = p;

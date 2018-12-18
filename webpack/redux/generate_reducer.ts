@@ -32,7 +32,7 @@ export function generateReducer<State, U = unknown>(initialState: State,
       // Find the handler in the dictionary, or use the NOOP.
       const handler = (actionHandlers[action.type] || NOOP);
 
-      // Defensivly clone the action and state to avoid accidental mutations.
+      // Defensively clone the action and state to avoid accidental mutations.
       const clonedState = defensiveClone(state);
       const clonedAction = defensiveClone(action);
 

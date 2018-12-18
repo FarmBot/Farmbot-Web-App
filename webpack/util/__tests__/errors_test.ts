@@ -14,7 +14,7 @@ describe("prettyPrintApiErrors", () => {
 });
 
 describe("catchErrors", () => {
-  it("re-raises erorrs when ROllbar is not detected", () => {
+  it("re-raises errors when Rollbar is not detected", () => {
     const e = new Error("TEST");
     expect(() => catchErrors(e)).toThrow("TEST");
   });
