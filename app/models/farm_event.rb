@@ -32,4 +32,9 @@ class FarmEvent < ApplicationRecord
   def fancy_name
     start_time.strftime(start_time.year == Time.now.year ? NO_YEAR : WITH_YEAR)
   end
+
+  # Is this resource allowed to take ownership of a celeryscript fragment?
+  def fragment_owner?
+    true
+  end
 end

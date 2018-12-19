@@ -15,7 +15,7 @@ module Fragments
     CeleryScriptSettingsBag::Corpus.as_json[:nodes].pluck(NAME).sort.map(&:to_s)
 
     required do
-      model :owner, class: [Sequence, Regimen, FarmEvent]
+      duck :owner, methods: [:device, :fragment_owner?]
       array :flat_ast do
         hash { duck :*, methods: [] }
       end
@@ -106,7 +106,7 @@ module Fragments
     end
 
     def fragment
-      @fragment ||= Fragment.new(device: owner.device)
+      @fragment ||= Fragment.new(device: owner.device, owner: owner)
     end
 
     def entry_node

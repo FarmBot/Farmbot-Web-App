@@ -20,9 +20,10 @@ describe Fragments::Create do
     ALIAS_MAP.map { |(from, to)| alias_method from, to }
   end
 
-  let(:device) { FactoryBot.create(:device) }
-  let(:tool)   { FactoryBot.create(:tool, device: device) }
-  let(:point)  { FactoryBot.create(:generic_pointer, device: device) }
+  let(:device)     { FactoryBot.create(:device) }
+  let(:tool)       { FactoryBot.create(:tool, device: device) }
+  let(:point)      { FactoryBot.create(:generic_pointer, device: device) }
+  let(:farm_event) { FactoryBot.create(:farm_event, device: device) }
 
   it "reconstructs CeleryScript from the database" do
     origin = {
@@ -47,9 +48,9 @@ describe Fragments::Create do
       ]
     }
     flat_ast = Fragments::Preprocessor.run!(origin)
-    fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
+    fragment = Fragments::Create.run!(flat_ast: flat_ast, owner: farm_event)
     result   = Fragments::Show.run!(fragment_id: fragment.id, device: device)
-    diff     =  HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
+    diff     = HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
     expect([]).to eq(diff)
     expect(diff.length).to eq(0)
   end
@@ -66,7 +67,6 @@ describe Fragments::Create do
       }
     end
     origin        = { device: device,
-                      owner:  FactoryBot.create(:farm_event, device: device),
                       kind:   "internal_farm_event",
                       args:   {},
                       body:   body }

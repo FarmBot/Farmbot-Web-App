@@ -5,7 +5,7 @@ describe Api::FarmEventsController do
 
   describe "#update" do
     let(:user) { FactoryBot.create(:user) }
-
+    let(:fe)   { FactoryBot.create(:farm_event, device: user.device) }
     it "allows authorized modification" do
       sign_in user
       id = FactoryBot.create(:farm_event, device: user.device).id
