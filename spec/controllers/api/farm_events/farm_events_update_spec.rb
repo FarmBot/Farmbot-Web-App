@@ -62,7 +62,7 @@ describe Api::FarmEventsController do
             }
           }
         ])
-      FactoryBot.create(:farm_event, device: user.device, fragment: fragment)
+      fe
     end
 
     def update_body(fe, body)

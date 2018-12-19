@@ -15,7 +15,7 @@ class FarmEvent < ApplicationRecord
   validates  :device_id,  presence:    true
   validates  :executable, presence:    true
   validate   :within_20_year_window
-  has_one :fragment, as: :owner
+  has_one    :fragment,  as: :owner
 
   def within_20_year_window
     too_early = start_time && start_time < (Time.now - 20.years)
