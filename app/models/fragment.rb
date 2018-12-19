@@ -6,9 +6,12 @@ class Fragment < ApplicationRecord
   EVERYTHING = { nodes: Node::EVERYTHING }
   SERIALIZER = "serialized"
   belongs_to :device
-  belongs_to :owner, polymorphic: true, inverse_of: :fragment
-  has_many :nodes,          dependent: :destroy
-  has_many :primitives,     dependent: :destroy
+  belongs_to :owner,
+    polymorphic: true,
+    inverse_of:  :fragment,
+    dependent:   :destroy
+  has_many :primitives, dependent: :destroy
+  has_many :nodes
   has_many :primitive_pairs
   has_many :standard_pairs
   has_many :arg_sets
@@ -19,9 +22,9 @@ class Fragment < ApplicationRecord
   end
 
   def serialize(*x)
-    Rails.cache.fetch(json_cache_key) do
-      Fragments::Show.run!(fragment_id: self.id, device: self.device)
-    end
+    Rails
+      .cache
+      .fetch(json_cache_key) { Fragments::Show.run!(owner: self.owner) }
   end
 
   def json_cache_key

@@ -30,7 +30,7 @@ module FarmEvents
     end
 
     def destroy_fragment
-      farm_event.fragment.destroy! if farm_event.fragment
+        farm_event.fragment.destroy! if farm_event.fragment
     end
 
     def replace_fragment

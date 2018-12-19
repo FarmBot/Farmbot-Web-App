@@ -3,8 +3,11 @@ module Fragments
     ENTRY    = "internal_entry_point"
 
     required do
-      integer :fragment_id
-      model   :device, class: Device
+      duck :owner, methods: [:fragment_owner?, :id]
+    end
+
+    def validate
+      add_error :gone, :gone, "It gone." unless fragment
     end
 
     def execute
@@ -35,16 +38,17 @@ module Fragments
       end
     end
 
+    def fragment
+      @fragment ||= \
+        Fragment.preload(Fragment::EVERYTHING).where(owner: owner).first
+    end
+
     def entry_node
       @entry_node ||= nodes.find_by(kind: Kind.cached_by_value(ENTRY))
     end
 
     def nodes
       @nodes ||= fragment.nodes
-    end
-
-    def fragment
-      @fragment ||= device.fragments.preload(Fragment::EVERYTHING).find(fragment_id)
     end
 
     def cache

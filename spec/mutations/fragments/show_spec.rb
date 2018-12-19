@@ -49,7 +49,7 @@ describe Fragments::Create do
     }
     flat_ast = Fragments::Preprocessor.run!(origin)
     fragment = Fragments::Create.run!(flat_ast: flat_ast, owner: farm_event)
-    result   = Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    result   = Fragments::Show.run!(owner: farm_event)
     diff     = HashDiff.diff(origin.without(:device), result.deep_symbolize_keys)
     expect([]).to eq(diff)
     expect(diff.length).to eq(0)
@@ -79,11 +79,11 @@ describe Fragments::Create do
                                        flat_ast: Fragments::Preprocessor.run!(origin))
 
     # Warm the cache up with two dry-runs:
-    Fragments::Show.run!(fragment_id: fragment.id, device: device)
-    Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    Fragments::Show.run!(owner: farm_event)
+    Fragments::Show.run!(owner: farm_event)
     spy_logger.reset
     expect(spy_logger.count).to eq(0)
-    Fragments::Show.run!(fragment_id: fragment.id, device: device)
+    Fragments::Show.run!(owner: farm_event)
     # If you break this test, it is a sign that:
     # * you have introduced a database performance regression.
     # * you have introduced someo other issue that's causing rails to

@@ -26,13 +26,13 @@ module FarmEvents
       validate_executable if (executable_id || executable_type)
       validate_ownership
       handle_body_field
-    end
+  end
 
     def execute
-      p = inputs.except(:farm_event)
+      p = inputs.except(:farm_event, :body, :device)
       # Keeps cleanup operations on schedule:
       p[:end_time] = next_start_time + 1.minute if is_one_time_event
-      farm_event.update_attributes!(p.except(:body, :device)) && farm_event
+      farm_event.update_attributes!(p) && farm_event
     end
 
     def validate_ownership

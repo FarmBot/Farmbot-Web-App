@@ -62,7 +62,7 @@ describe Api::FarmEventsController do
             }
           }
         ])
-      fe
+      return fe
     end
 
     def update_body(fe, body)
@@ -87,9 +87,9 @@ describe Api::FarmEventsController do
       fe = create_fe_with_fragment
       expect(fe.fragment).not_to be(nil)
       update_body(fe, [])
-      expect(response.status).to be(200)
+      expect(response.status).to    eq(200)
       expect(fe.reload.fragment).to be(nil)
-      expect(json.fetch(:body)).to eq([])
+      expect(json.fetch(:body)).to  eq([])
     end
 
     it "replaces old fragment when given a new one" do
