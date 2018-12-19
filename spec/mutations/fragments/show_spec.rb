@@ -75,6 +75,7 @@ describe Fragments::Create do
     spy_logger    = StubLog.new
     config.logger = spy_logger
     fragment =  Fragments::Create.run!(device:   device,
+                                       owner:    farm_event,
                                        flat_ast: Fragments::Preprocessor.run!(origin))
 
     # Warm the cache up with two dry-runs:

@@ -40,7 +40,6 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(200)
       expect(Fragment.count).to be > fragment_b4
       expect(FarmEvent.count).to be > farm_event_b4
-      binding.pry
       expect(json.fetch(:body)).to eq(payload.fetch(:body))
     end
 

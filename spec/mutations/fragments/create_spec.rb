@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Fragments::Create do
-  let(:device) { FactoryBot.create(:device) }
-  let(:tool)   { FactoryBot.create(:tool, device: device) }
-  let(:point)  { FactoryBot.create(:generic_pointer, device: device) }
-
+  let(:device)     { FactoryBot.create(:device) }
+  let(:tool)       { FactoryBot.create(:tool, device: device) }
+  let(:point)      { FactoryBot.create(:generic_pointer, device: device) }
+  let(:farm_event) { FactoryBot.create(:farm_event, device: device) }
   H       = CeleryScript::HeapAddress
   KLASSES = [ ArgSet, Fragment, Node, Primitive, PrimitivePair, StandardPair ]
 
@@ -29,7 +29,9 @@ describe Fragments::Create do
                 }
               }
             ])
-    fragment  = Fragments::Create.run!(device: device, flat_ast: flat_ast)
+    fragment  = Fragments::Create.run!(device:   device,
+                                       flat_ast: flat_ast,
+                                       owner:    farm_event)
     nodes     = fragment.nodes.sort_by(&:id)
     entry     = nodes[1]
     variable2 = entry.body.next
@@ -74,7 +76,8 @@ describe Fragments::Create do
       acc[klass] = klass.count
       acc
     end
-    fragment = Fragments::Create.run!(device: device, flat_ast: flat_ast)
+    fragment = Fragments::Create.run!(owner:    farm_event,
+                                      flat_ast: flat_ast)
     KLASSES.map { |k| flunk "#{k} did not save" if k.count <= b4_counts[k] }
     nodes = fragment.nodes.sort_by(&:id);
     expect(nodes[0].kind.value).to eq("internal_entry_point")
