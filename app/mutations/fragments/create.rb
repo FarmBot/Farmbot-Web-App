@@ -1,19 +1,19 @@
 module Fragments
   class Create < Mutations::Command
-    BAD_AST = "Node 0 must be present. Node 0 must be a 'nothing' node."
-    BLANK   = ""
-    BODY    = "__body"
-    ENTRY   = "internal_entry_point"
-    KIND    = "__KIND__"
-    NAME    = "name"
-    NEXT    = "__next"
-    PARENT  = "__parent"
-    US      = "__"
-    NOTHING = "nothing"
-    H       = CeleryScript::HeapAddress
-    KINDS   = \
+    BAD_AST  = "Node 0 must be present. Node 0 must be a 'nothing' node."
+    BLANK    = ""
+    BODY     = "__body"
+    ENTRY    = "internal_entry_point"
+    INSTANCE = "instance"
+    KIND     = "__KIND__"
+    NAME     = "name"
+    NEXT     = "__next"
+    NOTHING  = "nothing"
+    PARENT   = "__parent"
+    US       = "__"
+    H        = CeleryScript::HeapAddress
+    KINDS    = \
     CeleryScriptSettingsBag::Corpus.as_json[:nodes].pluck(NAME).sort.map(&:to_s)
-
     required do
       duck :owner, methods: [:device, :fragment_owner?]
       array :flat_ast do
@@ -69,10 +69,11 @@ module Fragments
                              next:     entry_node,
                              body:     entry_node,)
         arg_set   = ArgSet.new(node: real_node, fragment: fragment)
-        flat_node.without(KIND).map do |(k,v)|
+        flat_node.without(KIND, INSTANCE).map do |(k,v)|
            if !k.starts_with?(US)
             arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
             primitive = primitives.fetch(v) do
+              binding.pry unless Primitive::PRIMITIVES.include?(v.class)
               primitives[v] = Primitive.find_or_create_by(value: v, fragment: fragment)
             end
             new_primitive_pair(arg_name:  arg_name,

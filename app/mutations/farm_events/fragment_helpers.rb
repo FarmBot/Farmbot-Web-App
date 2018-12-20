@@ -7,8 +7,7 @@ module FarmEvents
       !!body
     end
 
-    def wrap_fragment_with(owner)
-      return owner unless has_body?
+    def create_fragment_for(owner)
       params    = { device: device,
                     kind:   "internal_farm_event",
                     args:   {},
@@ -17,6 +16,11 @@ module FarmEvents
       Fragments::Create.run!(device:   device,
                              flat_ast: flat_ast,
                              owner:    owner)
+    end
+
+    def wrap_fragment_with(owner)
+      return owner unless has_body?
+      create_fragment_for(owner)
       owner
     end
 
@@ -30,12 +34,13 @@ module FarmEvents
     end
 
     def destroy_fragment
-        farm_event.fragment.destroy! if farm_event.fragment
+      farm_event.fragment.destroy! if farm_event.fragment
     end
 
     def replace_fragment
       Fragment.transaction do
-        raise "Not implemented"
+        destroy_fragment
+        create_fragment_for(farm_event)
       end
     end
   end

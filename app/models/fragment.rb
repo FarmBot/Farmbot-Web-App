@@ -37,4 +37,8 @@ class Fragment < ApplicationRecord
                            flat_ast: flat_ast,
                            owner:    owner)
   end
+
+  def broadcast?
+    false
+  end
 end

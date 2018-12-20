@@ -4,4 +4,8 @@ class StandardPair < ApplicationRecord
   belongs_to :arg_set,  autosave: true
   belongs_to :arg_name, autosave: true
   belongs_to :node,     autosave: true
+
+  def broadcast?
+    false
+  end
 end

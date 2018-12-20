@@ -20,4 +20,8 @@ class Kind < ApplicationRecord
   def self.entry_point
     Kind.cached_by_value("internal_entry_point")
   end
+
+  def broadcast?
+    false
+  end
 end

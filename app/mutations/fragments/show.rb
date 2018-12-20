@@ -4,6 +4,7 @@ module Fragments
     EMPTY_FRAGMENT = { kind: "internal_farm_event",
                        args: {},
                        body: [] }
+
     required do
       duck :owner, methods: [:fragment_owner?, :id]
     end

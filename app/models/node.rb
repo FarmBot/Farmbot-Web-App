@@ -11,4 +11,8 @@ class Node < ApplicationRecord
   belongs_to :parent, class_name: "Node", required: true
 
   has_one :arg_set, dependent: :destroy
+
+  def broadcast?
+    false
+  end
 end
