@@ -7,24 +7,21 @@ describe CeleryScript::Checker do
   let(:corpus) { Sequence::Corpus }
 
   it "disallows the use of `identifier` nodes" do
-    tree    = \
-      CeleryScript::AstNode.new(kind: "farm_event",
-      args: {},
-      body: [
-        {
-          kind: "variable_declaration",
-          args: {
-            label: "foo",
-            data_value: {
-              kind: "identifier",
-              args: {
-                label: "makes no sense",
-                data_type: "coordinate"
-              }
-            }
-          }
-        }
-      ])
+    params = { kind: "internal_farm_event",
+               args: {},
+               body: [ {kind: "variable_declaration",
+                        args: {
+                          label: "foo",
+                          data_value: {
+                            kind: "identifier",
+                            args: {
+                              label: "makes no sense",
+                              data_type: "coordinate"
+                            }
+                          }
+                        } } ]
+    }
+    tree    = CeleryScript::AstNode.new(**params)
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect { checker.run! }.to raise_error(CeleryScript::TypeCheckError)
   end
@@ -68,10 +65,10 @@ describe CeleryScript::Checker do
              }
            }
          ]
-    tree    = \
-      CeleryScript::AstNode.new(kind: "farm_event",
-      body: body, args: {})
+    params  = { kind: "internal_farm_event", body: body, args: {} }
+    tree    = CeleryScript::AstNode.new(**params)
     checker = CeleryScript::Checker.new(tree, corpus, device)
     expect { checker.run! }.not_to(raise_error)
   end
 end
+

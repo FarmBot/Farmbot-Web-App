@@ -36,7 +36,7 @@ module CeleryScript
     end
 
     def ==(other)
-      self.value == other.value
+      self.value == other.try(:value)
     end
 
     def eql?(other)
