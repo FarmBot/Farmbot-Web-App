@@ -1,17 +1,19 @@
 module Fragments
   class Show < Mutations::Command
-    ENTRY    = "internal_entry_point"
-
+    ENTRY          = "internal_entry_point"
+    EMPTY_FRAGMENT = { kind: "internal_farm_event",
+                       args: {},
+                       body: [] }
     required do
       duck :owner, methods: [:fragment_owner?, :id]
     end
 
-    def validate
-      add_error :gone, :gone, "It gone." unless fragment
-    end
-
     def execute
-      node2cs(cache.get_next(entry_node))
+      if fragment
+        node2cs(cache.get_next(entry_node))
+      else
+        EMPTY_FRAGMENT
+      end
     end
 
   private

@@ -8,8 +8,7 @@ class Fragment < ApplicationRecord
   belongs_to :device
   belongs_to :owner,
     polymorphic: true,
-    inverse_of:  :fragment,
-    dependent:   :destroy
+    inverse_of:  :fragment
   has_many :primitives, dependent: :destroy
   has_many :nodes
   has_many :primitive_pairs

@@ -170,6 +170,7 @@ describe Api::SequencesController do
 
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
+      binding.pry
       expect(response.status).to eq(200)
       dig_path = [:args, :locals, :body, 0, :args, :label]
       generated_result = CeleryScript::FetchCelery
