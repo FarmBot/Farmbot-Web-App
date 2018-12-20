@@ -11,10 +11,7 @@ class Primitive < ApplicationRecord
   validate   :primitives_only, :limit_length
 
   def primitives_only
-    unless PRIMITIVES.include?(value.class)
-      # errors.add(:value, PRIMITIVE_ONLY)
-      raise PRIMITIVE_ONLY % value.class
-    end
+    errors.add(:value, PRIMITIVE_ONLY) unless PRIMITIVES.include?(value.class)
   end
 
   def limit_length
