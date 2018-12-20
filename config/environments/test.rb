@@ -13,9 +13,4 @@ FarmBot::Application.configure do
   config.public_file_server.enabled                 = true
   config.public_file_server.headers                 = \
     { 'Cache-Control' => 'public, max-age=3600' }
-  config.after_initialize do
-    Bullet.enable        = true
-    Bullet.bullet_logger = true
-    Bullet.raise         = true
-  end
 end

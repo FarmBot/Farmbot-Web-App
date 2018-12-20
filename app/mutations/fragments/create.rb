@@ -73,8 +73,8 @@ module Fragments
            if !k.starts_with?(US)
             arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
             primitive = primitives.fetch(v) do
-              binding.pry unless Primitive::PRIMITIVES.include?(v.class)
-              primitives[v] = Primitive.find_or_create_by(value: v, fragment: fragment)
+              primitives[v] = Primitive.find_or_create_by(value:    v,
+                                                          fragment: fragment)
             end
             new_primitive_pair(arg_name:  arg_name,
                                arg_set:   arg_set,

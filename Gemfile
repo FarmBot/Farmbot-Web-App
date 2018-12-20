@@ -53,7 +53,6 @@ group :development, :test do
   gem "selenium-webdriver"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "climate_control"
-  gem "bullet"
 end
 
 group :production do

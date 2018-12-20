@@ -86,7 +86,7 @@ describe Fragments::Create do
     Fragments::Show.run!(owner: farm_event)
     # If you break this test, it is a sign that:
     # * you have introduced a database performance regression.
-    # * you have introduced someo other issue that's causing rails to
+    # * you have introduced some other issue that's causing rails to
     #   create debug logs (coincidence?)
     expect(spy_logger.count).to be < 14 # See note above
     config.logger = old_logger
