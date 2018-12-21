@@ -6,21 +6,20 @@ if Rails.env == "development"
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
 
-    DeviceSerialNumber.destroy_all
-    Log.destroy_all
-    TokenIssuance.destroy_all
-    PinBinding.destroy_all
-    User.destroy_all
-    Device.destroy_all
-    ToolSlot.destroy_all
-    Tool.destroy_all
-    Point.destroy_all
-    User.destroy_all
-    Point.destroy_all
-    Device.destroy_all
-    User.destroy_all
-    PlantTemplate.destroy_all
-    SavedGarden.destroy_all
+    [DeviceSerialNumber,
+     Log,
+     PinBinding,
+     Point,
+     Point,
+     TokenIssuance,
+     ToolSlot,
+     User,
+     PlantTemplate,
+     SavedGarden,
+     SensorReading,
+     FarmwareInstallation,
+     Device,
+     Tool].map(&:delete_all)
     Users::Create.run!(name:                  "Test",
                        email:                 "test@test.com",
                        password:              "password123",

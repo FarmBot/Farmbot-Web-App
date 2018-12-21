@@ -1,3 +1,4 @@
+module Fragments
   class Cache # CeleryScript Fragment cache, not the other kind.
     def initialize(fragment)
       @fragment               = fragment
@@ -45,3 +46,4 @@
       Kind.cached_by_id(node.kind_id)
     end
   end
+end

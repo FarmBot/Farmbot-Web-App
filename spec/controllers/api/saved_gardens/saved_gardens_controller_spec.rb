@@ -12,7 +12,7 @@ describe Api::SavedGardensController do
       sign_in user
       garden_size = saved_gardens.length
       get :index
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(json.length).to be(garden_size)
       expect(json.first[:name]).to be_kind_of(String)
     end
@@ -24,7 +24,7 @@ describe Api::SavedGardensController do
       b4 = user.device.saved_gardens.count
       params = { name: Faker::Food.vegetables }
       post :create, params: {format: :json}, body: params.to_json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(json[:name]).to be_kind_of(String)
       expect(json[:name]).to eq(params[:name])
       expect(user.device.saved_gardens.count).to be > b4
@@ -38,7 +38,7 @@ describe Api::SavedGardensController do
       b4     = garden.name
       params = { name: Faker::Food.vegetables }
       put :update, params: { format: :json, id: garden.id }, body: params.to_json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(json[:name]).to_not eq(b4)
       expect(json[:name]).to eq(params[:name])
     end
@@ -50,7 +50,7 @@ describe Api::SavedGardensController do
       garden = saved_gardens.first
       b4     = saved_gardens.length
       delete :destroy, params: { id: garden.id }
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(user.device.saved_gardens.count).to be < b4
     end
   end
@@ -64,7 +64,7 @@ describe Api::SavedGardensController do
       templates_b4 = user.device.plant_templates.count
       plants = FactoryBot.create_list(:plant, 3, device: user.device)
       post :snapshot
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(user.device.plant_templates.count).to eq(plants.length)
       expect(user.device.saved_gardens.count).to be > gardens_b4
       expect(user.device.plant_templates.count).to be > templates_b4
@@ -82,7 +82,7 @@ describe Api::SavedGardensController do
       FactoryBot.create_list(:plant_template, 3, device: user.device, saved_garden: saved_garden)
       old_plant_count = user.device.plants.count
       patch :apply, params: {id: saved_garden.id }
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(user.device.plants.count).to be > old_plant_count
     end
 
@@ -127,7 +127,7 @@ describe Api::SavedGardensController do
       FactoryBot.create_list(:plant_template, 3, device: user.device, saved_garden: saved_garden)
       old_plant_count = user.device.plants.count
       post :apply, params: {id: saved_garden.id }
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(user.device.plants.count).to be > old_plant_count
       expect(Plant.exists?(plant.id)).to be false
     end

@@ -44,7 +44,7 @@ describe Api::FarmwareEnvsController do
     put :update,
         body:   input.to_json,
         params: { id: farmware_env.id }
-    expect(response.status).to be(200)
+    expect(response.status).to eq(200)
     input.keys.map { |key| expect(json[key]).to eq(input[key]) }
   end
 
@@ -53,7 +53,7 @@ describe Api::FarmwareEnvsController do
     farmware_env = FactoryBot.create(:farmware_env, device: device)
     id            = farmware_env.id
     delete :destroy, params: { id: farmware_env.id }
-    expect(response.status).to be(200)
+    expect(response.status).to eq(200)
     expect(FarmwareEnv.exists?(id)).to be false
   end
 
@@ -62,7 +62,7 @@ describe Api::FarmwareEnvsController do
     FarmwareEnv.destroy_all
     FactoryBot.create_list(:farmware_env, 3, device: device)
     delete :destroy, params: { id: "all" }
-    expect(response.status).to be(200)
+    expect(response.status).to eq(200)
     expect(FarmwareEnv.count).to eq(0)
   end
 
