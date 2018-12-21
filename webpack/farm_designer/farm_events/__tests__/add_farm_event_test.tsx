@@ -15,6 +15,9 @@ import { AddEditFarmEventProps } from "../../interfaces";
 import {
   fakeFarmEvent, fakeSequence
 } from "../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -36,7 +39,8 @@ describe("<AddFarmEvent />", () => {
       findExecutable: () => sequence,
       timeOffset: 0,
       autoSyncEnabled: false,
-      allowRegimenBackscheduling: false,
+      shouldDisplay: () => false,
+      resources: buildResourceIndex([]).index,
     };
   }
 

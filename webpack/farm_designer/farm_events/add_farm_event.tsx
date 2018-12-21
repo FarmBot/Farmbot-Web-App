@@ -16,6 +16,7 @@ import { Link } from "../../link";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../plants/designer_panel";
+import { declarationList } from "../../sequences/locals_list/declaration_support";
 
 interface State {
   uuid: string;
@@ -48,12 +49,15 @@ export class AddFarmEvent
       const executable_type: ExecutableType =
         (this.executable.kind === "Sequence") ? "Sequence" : "Regimen";
       const executable_id = this.executable.body.id || 1;
+      const { uuid } = this.props.findExecutable(executable_type, executable_id);
+      const varData = this.props.resources.sequenceMetas[uuid];
       const action = init("FarmEvent", {
         end_time: moment().add(63, "minutes").toISOString(),
         start_time: moment().add(3, "minutes").toISOString(),
         time_unit: "never",
         executable_id,
-        executable_type
+        executable_type,
+        body: declarationList(varData),
       });
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });
@@ -112,7 +116,8 @@ export class AddFarmEvent
         title={t("Add Farm Event")}
         timeOffset={this.props.timeOffset}
         autoSyncEnabled={this.props.autoSyncEnabled}
-        allowRegimenBackscheduling={this.props.allowRegimenBackscheduling}
+        resources={this.props.resources}
+        shouldDisplay={this.props.shouldDisplay}
       />;
     } else {
       return this

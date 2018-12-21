@@ -14,24 +14,27 @@ import { t } from "i18next";
 import { capitalize } from "lodash";
 import { joinKindAndId } from "../../../resources/reducer_support";
 
-export function activeTools(resources: ResourceIndex) {
+type ToolAndLocation = { tool: TaggedTool, location: Vector3 };
+
+/** Return tool and location for all tools currently in tool slots. */
+export function activeTools(resources: ResourceIndex): ToolAndLocation[] {
   const Tool: TaggedTool["kind"] = "Tool";
   const slots = selectAllToolSlotPointers(resources);
 
   const { byKindAndId, references } = resources;
   return betterCompact(slots
-    .map(x => references[byKindAndId[joinKindAndId(Tool, x.body.tool_id)] || ""])
-    .map(tool => (tool && tool.kind === "Tool") ? tool : undefined));
+    .map(x => ({
+      tool: references[byKindAndId[joinKindAndId(Tool, x.body.tool_id)] || ""],
+      location: { x: x.body.x, y: x.body.y, z: x.body.z }
+    }))
+    .map(({ tool, location }) => (tool && tool.kind === "Tool")
+      ? { tool, location }
+      : undefined));
 }
-
-export const PARENT_DDI: DropDownItem[] = [{
-  label: "Parent",
-  value: "parent",
-  headingId: "identifier",
-}];
 
 type DropdownHeadingId = PointerTypeName | typeof TOOL;
 
+/** Location selection menu section names. */
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "GenericPointer": "Map Points",
   "Plant": "Plants",
@@ -39,6 +42,7 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Tool": "Tools",
 };
 
+/** Location selection menu section headers. */
 const HEADINGS: () => DropDownItem[] = () => [
   ...Object.keys(NAME_MAP)
     .filter(x => x !== "ToolSlot")
@@ -52,13 +56,14 @@ const HEADINGS: () => DropDownItem[] = () => [
     })
 ];
 
+/** Location selection menu items. */
 export function generateList(input: ResourceIndex,
   additionalItems: DropDownItem[]): DropDownItem[] {
   const SORT_KEY: keyof DropDownItem = "headingId";
   const points = selectAllActivePoints(input)
     .filter(x => (x.body.pointer_type !== "ToolSlot"));
   const toolDDI: DropDownItem[] =
-    activeTools(input).map(tool => formatTools(tool));
+    activeTools(input).map(({ tool, location }) => formatTools(tool, location));
   return _(points)
     .map(formatPoint)
     .concat(toolDDI)
@@ -71,6 +76,7 @@ export function generateList(input: ResourceIndex,
     .value();
 }
 
+/** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */
 export const formatPoint = (p: TaggedPoint): DropDownItem => {
   const { id, name, pointer_type, x, y, z } = p.body;
   return {
@@ -80,10 +86,11 @@ export const formatPoint = (p: TaggedPoint): DropDownItem => {
   };
 };
 
-const formatTools = (tool: TaggedTool): DropDownItem => {
+/** Create drop down item with label; i.e., "Tool (1, 2, 3)" */
+const formatTools = (tool: TaggedTool, v: Vector3): DropDownItem => {
   const { id, name } = tool.body;
   return {
-    label: dropDownName((name || "untitled")),
+    label: dropDownName((name || "untitled"), v),
     value: "" + id,
     headingId: TOOL
   };

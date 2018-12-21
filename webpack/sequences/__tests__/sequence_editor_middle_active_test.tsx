@@ -18,9 +18,9 @@ jest.mock("../../devices/actions", () => ({
   execSequence: jest.fn()
 }));
 
-jest.mock("../locals_list", () => ({
+jest.mock("../locals_list/locals_list", () => ({
   LocalsList: () => <div />,
-  localListCallback: jest.fn(),
+  localListCallback: jest.fn(() => jest.fn()),
 }));
 
 import * as React from "react";
@@ -118,19 +118,17 @@ describe("<SequenceEditorMiddleActive/>", () => {
 
   const fakeVariableNameSet = (): VariableNameSet => {
     const label = "parent";
-    const variableValue: Coordinate = {
+    const data_value: Coordinate = {
       kind: "coordinate", args: { x: 0, y: 0, z: 0 }
     };
     return {
       [label]: {
         celeryNode: {
           kind: "variable_declaration",
-          args: { label, data_value: variableValue }
+          args: { label, data_value }
         },
         dropdown: { label: "", value: "" },
-        location: { x: 0, y: 0, z: 0 },
-        editable: true,
-        variableValue,
+        vector: { x: 0, y: 0, z: 0 },
       }
     };
   };

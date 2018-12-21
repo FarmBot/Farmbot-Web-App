@@ -3,7 +3,8 @@ import * as moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import {
-  TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen
+  TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
+  VariableDeclaration
 } from "farmbot";
 import { ExecutableQuery } from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
@@ -14,7 +15,7 @@ import {
   FBSelect,
   DropDownItem
 } from "../../ui/index";
-import { destroy, save, edit } from "../../api/crud";
+import { destroy, save, overwrite } from "../../api/crud";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
 import { betterMerge } from "../../util";
@@ -34,6 +35,13 @@ import {
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../plants/designer_panel";
+import { LocalsList } from "../../sequences/locals_list/locals_list";
+import { ResourceIndex } from "../../resources/interfaces";
+import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import {
+  addOrEditVarDeclaration, declarationList
+} from "../../sequences/locals_list/declaration_support";
+import { AllowedDeclaration } from "../../sequences/locals_list/locals_list_support";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -41,6 +49,7 @@ export const NEVER: TimeUnit = "never";
  * on save.
  */
 export interface FarmEventViewModel {
+  id: number | undefined;
   startDate: string;
   startTime: string;
   endDate: string;
@@ -50,6 +59,7 @@ export interface FarmEventViewModel {
   executable_type: string;
   executable_id: string;
   timeOffset: number;
+  body?: VariableDeclaration[];
 }
 /** Breaks up a TaggedFarmEvent into a structure that can easily be used
  * by the edit form.
@@ -59,6 +69,7 @@ export function destructureFarmEvent(
   fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
 
   return {
+    id: fe.body.id,
     startDate: formatDate((fe.body.start_time).toString(), timeOffset),
     startTime: formatTime((fe.body.start_time).toString(), timeOffset),
     endDate: formatDate((fe.body.end_time || new Date()).toString(), timeOffset),
@@ -67,28 +78,30 @@ export function destructureFarmEvent(
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
     executable_id: (fe.body.executable_id || "").toString(),
-    timeOffset
+    timeOffset,
+    body: fe.body.body,
   };
 }
 
-type PartialFE = Partial<TaggedFarmEvent["body"]>;
 type recombineOptions = { forceRegimensToMidnight: boolean };
 
-/** Take a FormViewModel and recombine the fields into a Partial<FarmEvent>
+/** Take a FormViewModel and recombine the fields into a FarmEvent
  * that can be used to apply updates (such as a PUT request to the API). */
 export function recombine(vm: FarmEventViewModel,
-  options: recombineOptions): PartialFE {
+  options: recombineOptions): TaggedFarmEvent["body"] {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
   const startTime = isReg && options.forceRegimensToMidnight
     ? "00:00" : vm.startTime;
   return {
+    id: vm.id,
     start_time: offsetTime(vm.startDate, startTime, vm.timeOffset),
     end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseInt(vm.executable_id, 10),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
+    body: vm.body,
   };
 }
 
@@ -111,7 +124,8 @@ export interface EditFEProps {
   deleteBtn?: boolean;
   timeOffset: number;
   autoSyncEnabled: boolean;
-  allowRegimenBackscheduling: boolean;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
 }
 
 interface State {
@@ -147,6 +161,30 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     }
   }
 
+  get variableData() {
+    return this.props.resources.sequenceMetas[this.executable.uuid];
+  }
+
+  get declarations(): VariableDeclaration[] | undefined {
+    return this.state.fe.body || this.props.farmEvent.body.body;
+  }
+
+  editDeclaration = (declarations: VariableDeclaration[]) =>
+    (declaration: VariableDeclaration) =>
+      this.setState(betterMerge(this.state, {
+        fe: { body: addOrEditVarDeclaration(declarations)(declaration) },
+        specialStatusLocal: SpecialStatus.DIRTY
+      }));
+
+  LocalsList = () => <LocalsList
+    declarations={this.declarations}
+    variableData={this.variableData}
+    sequenceUuid={this.executable.uuid}
+    resources={this.props.resources}
+    onChange={this.editDeclaration(this.declarations || [])}
+    allowedDeclarations={AllowedDeclaration.variable}
+    shouldDisplay={this.props.shouldDisplay} />
+
   executableSet = (e: DropDownItem) => {
     if (e.value) {
       const { executable_type } = this.props.farmEvent.body;
@@ -155,10 +193,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         error(t("Cannot change from a Regimen to a Sequence."));
         history.push("/app/designer/farm_events");
       } else {
-        const update: Partial<State> = {
+        const { uuid } =
+          this.props.findExecutable(executable_type, parseInt("" + e.value));
+        const varData = this.props.resources.sequenceMetas[uuid];
+        const update: State = {
           fe: {
             executable_type: executableType(e.headingId),
-            executable_id: (e.value || "").toString()
+            executable_id: (e.value || "").toString(),
+            body: declarationList(varData),
           },
           specialStatusLocal: SpecialStatus.DIRTY
         };
@@ -224,8 +266,12 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     }
   }
 
+  get allowRegimenBackscheduling() {
+    return this.props.shouldDisplay(Feature.backscheduled_regimens);
+  }
+
   /** Rejects save of Farm Event if: */
-  maybeRejectStartTime = (f: Partial<FarmEvent>, now = moment()) => {
+  maybeRejectStartTime = (f: FarmEvent, now = moment()) => {
     /** adding a new event (editing repeats for ongoing events is allowed) */
     const newEvent = this.props.title.toLowerCase().includes("add");
     /** start time is in the past */
@@ -235,7 +281,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     /** installed FBOS does not support backscheduling of regimen farm events.
      *  (this is the main reason this is a frontend validation)
      */
-    const unsupportedOS = !this.props.allowRegimenBackscheduling;
+    const unsupportedOS = !this.allowRegimenBackscheduling;
     return newEvent && (inThePast && (sequenceEvent || unsupportedOS));
   }
 
@@ -251,14 +297,17 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   *      * If auto-sync is disabled, prompt the user to sync.
   */
   commitViewModel = (now = moment()) => {
-    const partial = recombine(betterMerge(this.viewModel, this.state.fe),
-      { forceRegimensToMidnight: this.props.allowRegimenBackscheduling });
-    if (this.maybeRejectStartTime(partial)) {
+    const viewModel = this.viewModel;
+    /** Replace farmEvent body with form updates. */
+    delete viewModel.body;
+    const updatedFarmEvent = recombine(betterMerge(viewModel, this.state.fe),
+      { forceRegimensToMidnight: this.allowRegimenBackscheduling });
+    if (this.maybeRejectStartTime(updatedFarmEvent)) {
       error(t("FarmEvent start time needs to be in the future, not the past."),
         t("Unable to save farm event."));
       return;
     }
-    this.dispatch(edit(this.props.farmEvent, partial));
+    this.dispatch(overwrite(this.props.farmEvent, updatedFarmEvent));
     const EditFEPath = window.location.pathname;
     this
       .dispatch(save(this.props.farmEvent.uuid))
@@ -293,18 +342,18 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   render() {
-    const fe = this.props.farmEvent;
+    const { farmEvent } = this.props;
     const repeats = this.fieldGet("timeUnit") !== NEVER;
     const allowRepeat = (!this.isReg && repeats);
-    const forceMidnight = this.isReg && this.props.allowRegimenBackscheduling;
+    const forceMidnight = this.isReg && this.allowRegimenBackscheduling;
     return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
       <DesignerPanelHeader
         panelName={"add-farm-event"}
         panelColor={"magenta"}
         title={this.props.title}
-        onBack={!this.props.farmEvent.body.id ? () =>
+        onBack={!farmEvent.body.id ? () =>
           // Throw out unsaved farmevents.
-          this.props.dispatch(destroyOK(this.props.farmEvent))
+          this.props.dispatch(destroyOK(farmEvent))
           : undefined} />
       <DesignerPanelContent panelName={"add-farm-event"}>
         <label>
@@ -314,6 +363,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           list={this.props.executableOptions}
           onChange={this.executableSet}
           selectedItem={this.executableGet()} />
+        <this.LocalsList />
         <label>
           {t("Starts")}
         </label>
@@ -355,12 +405,12 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           endDate={this.fieldGet("endDate")}
           endTime={this.fieldGet("endTime")} />
         <SaveBtn
-          status={fe.specialStatus || this.state.specialStatusLocal}
+          status={farmEvent.specialStatus || this.state.specialStatusLocal}
           color="magenta"
           onClick={() => this.commitViewModel()} />
         <button className="fb-button red" hidden={!this.props.deleteBtn}
           onClick={() => {
-            this.dispatch(destroy(fe.uuid)).then(() => {
+            this.dispatch(destroy(farmEvent.uuid)).then(() => {
               history.push("/app/designer/farm_events");
               success(t("Deleted farm event."), t("Deleted"));
             });

@@ -142,7 +142,7 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(200)
     end
 
-    it 'disallows use of parameterized sequences' do
+    it 'allows use of parameterized sequences' do
       sign_in user
       s     = FakeSequence.with_parameters
       input = { "end_time": Time.now.as_json,
@@ -151,9 +151,7 @@ describe Api::FarmEventsController do
                 "executable_type": "Sequence",
                 "repeat": 1 }
       post :create, body: input.to_json
-      expect(response.status).to eq(422)
-      expect(json[:sequence])
-        .to include(Sequences::TransitionalHelpers::PARAMTERS_NOT_ALLOWED)
+      expect(response.status).to eq(200)
     end
 
     it 'disallows FarmEvents too far in the future' do

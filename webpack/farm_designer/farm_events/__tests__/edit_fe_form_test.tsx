@@ -24,7 +24,12 @@ import { success, error } from "farmbot-toastr";
 import * as moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { history } from "../../../history";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
+
 const mockSequence = fakeSequence();
+
 describe("<FarmEventForm/>", () => {
   const props = (): EditFEProps => ({
     deviceTimezone: undefined,
@@ -36,7 +41,8 @@ describe("<FarmEventForm/>", () => {
     title: "title",
     timeOffset: 0,
     autoSyncEnabled: false,
-    allowRegimenBackscheduling: false,
+    shouldDisplay: () => false,
+    resources: buildResourceIndex([]).index,
   });
 
   function instance(p: EditFEProps) {
@@ -138,15 +144,17 @@ describe("<FarmEventForm/>", () => {
 
   it("sets regimen repeat to `never` as needed", () => {
     const result = recombine({
-      "startDate": "2017-08-01",
-      "startTime": "08:35",
-      "endDate": "2017-08-01",
-      "endTime": "08:33",
-      "repeat": "1",
-      "timeUnit": "daily",
-      "executable_type": "Regimen",
-      "executable_id": "1",
-      timeOffset: 0
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "daily",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeOffset: 0,
+      body: undefined,
     }, { forceRegimensToMidnight: false });
     expect(result.time_unit).toEqual("never");
     expect(result.time_unit).not.toEqual("daily");
@@ -154,32 +162,36 @@ describe("<FarmEventForm/>", () => {
 
   it("sets regimen start_time to `00:00` as needed", () => {
     const result = recombine({
-      "startDate": "2017-08-01",
-      "startTime": "08:35",
-      "endDate": "2017-08-01",
-      "endTime": "08:33",
-      "repeat": "1",
-      "timeUnit": "daily",
-      "executable_type": "Regimen",
-      "executable_id": "1",
-      timeOffset: 0
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "daily",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeOffset: 0,
+      body: undefined,
     }, { forceRegimensToMidnight: true });
     expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
   });
 
-  it(`Recombines local state back into a Partial<TaggedFarmEvent["body"]>`, () => {
+  it(`Recombines local state back into a TaggedFarmEvent["body"]`, () => {
     const result = recombine({
-      "startDate": "2017-08-01",
-      "startTime": "08:35",
-      "endDate": "2017-08-01",
-      "endTime": "08:33",
-      "repeat": "1",
-      "timeUnit": "never",
-      "executable_type": "Regimen",
-      "executable_id": "1",
-      timeOffset: 0
+      id: 1,
+      startDate: "2017-08-01",
+      startTime: "08:35",
+      endDate: "2017-08-01",
+      endTime: "08:33",
+      repeat: "1",
+      timeUnit: "never",
+      executable_type: "Regimen",
+      executable_id: "1",
+      timeOffset: 0,
     }, { forceRegimensToMidnight: false });
     expect(result).toEqual({
+      id: 1,
       start_time: "2017-08-01T08:35:00.000Z",
       end_time: "2017-08-01T08:33:00.000Z",
       repeat: 1,
@@ -199,9 +211,9 @@ describe("<FarmEventForm/>", () => {
       deviceTimezone="America/Chicago"
       executableOptions={[
         {
-          "label": "Sequence: Every Node",
-          "value": 11,
-          "headingId": "Sequence"
+          label: "Sequence: Every Node",
+          value: 11,
+          headingId: "Sequence"
         }
       ]}
       findExecutable={jest.fn(() => seq)}
@@ -209,7 +221,8 @@ describe("<FarmEventForm/>", () => {
       repeatOptions={repeatOptions}
       timeOffset={0}
       autoSyncEnabled={false}
-      allowRegimenBackscheduling={false} />);
+      resources={buildResourceIndex([]).index}
+      shouldDisplay={() => false} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
     expect(txt).toContain("Save *");
@@ -317,7 +330,7 @@ describe("<FarmEventForm/>", () => {
 
   it("displays error message on save: no items", async () => {
     const p = props();
-    p.allowRegimenBackscheduling = true;
+    p.shouldDisplay = () => true;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
@@ -329,7 +342,7 @@ describe("<FarmEventForm/>", () => {
   it("rejects start time: add with unsupported OS", () => {
     const p = props();
     p.title = "add";
-    p.allowRegimenBackscheduling = false;
+    p.shouldDisplay = () => false;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");
@@ -339,7 +352,7 @@ describe("<FarmEventForm/>", () => {
 
   it("allows start time: edit with unsupported OS", () => {
     const p = props();
-    p.allowRegimenBackscheduling = false;
+    p.shouldDisplay = () => false;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");
@@ -351,7 +364,7 @@ describe("<FarmEventForm/>", () => {
   it("allows start time: add with supported OS", () => {
     const p = props();
     p.title = "add";
-    p.allowRegimenBackscheduling = true;
+    p.shouldDisplay = () => true;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");

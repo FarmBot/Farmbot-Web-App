@@ -11,7 +11,9 @@ import {
   Identifier,
   MoveAbsolute,
   TaggedTool,
-  TaggedToolSlotPointer
+  TaggedToolSlotPointer,
+  ScopeDeclarationBodyItem,
+  VariableDeclaration
 } from "farmbot";
 import { Row, Col } from "../../ui/index";
 import {
@@ -25,7 +27,7 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { TileMoveAbsSelect, InputBox, EMPTY_COORD } from "./tile_move_absolute/index";
+import { InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import {
   StepWrapper,
@@ -36,10 +38,11 @@ import {
 } from "../step_ui/index";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  convertDropdownToLocation,
-  extractParent,
-  MoveAbsDropDownContents
+  determineDropdown, determineVector, findVariableByName
 } from "../../resources/sequence_meta";
+import { LocationForm } from "../locals_list/locals_list";
+import { AllowedDeclaration } from "../locals_list/locals_list_support";
+
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
   speed: number;
@@ -58,21 +61,16 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
   get tool_id() { return this.tool && this.tool.body.id; }
   get slot(): TaggedToolSlotPointer | undefined {
-    return (this.tool_id) ?
+    return this.tool_id ?
       findSlotByToolId(this.resources, this.tool_id) : undefined;
   }
   get args(): MoveAbsolute["args"] { return (this.step as MoveAbsolute).args; }
-
-  get xyzDisabled(): boolean {
-    type Keys = MoveAbsolute["args"]["location"]["kind"];
-    const choices: Keys[] = ["point", "tool", "identifier"];
-    return !!choices.includes(this.args.location.kind);
-  }
 
   getOffsetValue = (val: Xyz) => {
     return (this.args.offset.args[val] || 0).toString();
   }
 
+  /** Merge step args update into step args. */
   updateArgs = (update: Partial<Args>) => {
     const copy = defensiveClone(this.props.currentSequence).body;
     const step = (copy.body || [])[this.props.index] as MoveAbsolute;
@@ -81,6 +79,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     this.props.dispatch(overwrite(this.props.currentSequence, copy));
   }
 
+  /** Get axis value for settingConflicts. */
   getAxisValue = (axis: Xyz): string => {
     let number: number | undefined;
     const l = this.args.location;
@@ -98,15 +97,17 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         break;
       case "identifier":
         const { resources, currentSequence } = this.props;
-        const p = extractParent(resources, currentSequence.uuid);
-        if (p) {
-          number = p.location[axis];
+        const v =
+          findVariableByName(resources, currentSequence.uuid, l.args.label);
+        if (v && v.vector) {
+          number = v.vector[axis];
           break;
         }
     }
     return (number || 0).toString();
   }
 
+  /** Update offset value. */
   updateInputValue = (axis: Xyz, place: LocationArg) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       const num = parseFloat(e.currentTarget.value);
@@ -114,6 +115,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       this.updateArgs(_.merge({}, this.args, update));
     }
 
+  /** Determine if location conflicts with bot settings. */
   get settingConflicts(): Record<Xyz, boolean> {
     const conflicts = { x: false, y: false, z: false };
     if (this.props.hardwareFlags) {
@@ -139,36 +141,70 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
   }
 
   get settingConflictWarning() {
-    return "Movement out of bounds for: "
+    return t("Movement out of bounds for: ")
       + conflictsString(this.settingConflicts);
   }
 
-  handleSelect = (result: MoveAbsDropDownContents) => {
-    const { currentSequence, dispatch } = this.props;
-    switch (result.kind) {
-      case "None":
-        return this.updateArgs({ location: EMPTY_COORD });
-      case "Point":
-      case "Tool":
-        return this.updateArgs({
-          location: convertDropdownToLocation(result)
-        });
-      case "BoundVariable":
-      case "UnboundVariable":
-        // Create a parent and attach to it
-        // STEP 1, Clone current sequence.
-        const clone = defensiveClone(currentSequence.body);
-        // STEP 2, do typecase to avoid extra conditionals
-        const s = (clone.body || [])[this.props.index] as MoveAbsolute;
-        // STEP 3, Figure out the `label` of the variable
-        //  (As of Dec '18, it is only "parent")
-        const { label } = result.kind === "BoundVariable" ?
-          result.body.celeryNode.args : result.body;
-        // Step 4: Attach the `identifier` to the current step:
-        s.args.location = ({ kind: "identifier", args: { label } });
-        return dispatch(overwrite(currentSequence, clone));
-    }
-  };
+  /** Handle changes to step.args.location. */
+  updateLocation = (declaration: VariableDeclaration) => {
+    this.updateArgs({ location: declaration.args.data_value });
+  }
+
+  /** Prepare step.args.location data for LocationForm. */
+  get celeryNode(): ScopeDeclarationBodyItem {
+    const { location } = this.args;
+    return {
+      kind: "variable_declaration",
+      args: {
+        label: location.kind === "identifier" ? location.args.label : "",
+        data_value: location
+      }
+    };
+  }
+
+  LocationForm = () =>
+    <LocationForm
+      variable={{
+        celeryNode: this.celeryNode,
+        dropdown: determineDropdown(this.celeryNode, this.resources),
+        vector: determineVector(
+          this.celeryNode, this.resources, this.props.currentSequence.uuid),
+      }}
+      sequenceUuid={this.props.currentSequence.uuid}
+      resources={this.resources}
+      onChange={this.updateLocation}
+      shouldDisplay={this.props.shouldDisplay || (() => false)}
+      hideVariableLabel={true}
+      locationDropdownKey={JSON.stringify(this.props.currentSequence)}
+      allowedDeclarations={AllowedDeclaration.identifier}
+      width={3} />
+
+  SpeedForm = () =>
+    <Col xs={3}>
+      <label>
+        {t("Speed (%)")}
+      </label>
+      <StepInputBox
+        field={"speed"}
+        step={this.step}
+        index={this.props.index}
+        dispatch={this.props.dispatch}
+        sequence={this.props.currentSequence} />
+    </Col>
+
+  OffsetForm = () =>
+    <Row>
+      {["x", "y", "z"].map((axis: Xyz) =>
+        <Col xs={3} key={axis}>
+          <InputBox
+            onCommit={this.updateInputValue(axis, "offset")}
+            name={`offset-${axis}`}
+            value={this.getOffsetValue(axis)}>
+            {t("{{axis}}-Offset", { axis })}
+          </InputBox>
+        </Col>)}
+      <this.SpeedForm />
+    </Row>
 
   render() {
     const { currentStep, dispatch, index, currentSequence } = this.props;
@@ -192,81 +228,8 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
             conflicts={this.settingConflicts} />}
       </StepHeader>
       <StepContent className={className}>
-        <Row>
-          <Col md={12}>
-            <label>{t("Import coordinates from")}</label>
-            <TileMoveAbsSelect
-              resources={this.resources}
-              uuid={this.props.currentSequence.uuid}
-              selectedItem={this.args.location}
-              onChange={this.handleSelect}
-              shouldDisplay={this.props.shouldDisplay || (() => false)} />
-          </Col>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("x", "location")}
-              disabled={this.xyzDisabled}
-              name="location-x"
-              value={this.getAxisValue("x")}>
-              {t("X (mm)")}
-            </InputBox>
-          </Col>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("y", "location")}
-              disabled={this.xyzDisabled}
-              name="location-y"
-              value={this.getAxisValue("y")}>
-              {t("Y (mm)")}
-            </InputBox>
-          </Col>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("z", "location")}
-              name="location-z"
-              disabled={this.xyzDisabled}
-              value={this.getAxisValue("z")}>
-              {t("Z (mm)")}
-            </InputBox>
-          </Col>
-          <Col xs={3}>
-            <label>
-              {t("Speed (%)")}
-            </label>
-            <StepInputBox
-              field={"speed"}
-              step={this.step}
-              index={index}
-              dispatch={this.props.dispatch}
-              sequence={this.props.currentSequence} />
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("x", "offset")}
-              name="offset-x"
-              value={this.getOffsetValue("x")}>
-              {t("X-Offset")}
-            </InputBox>
-          </Col>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("y", "offset")}
-              name="offset-y"
-              value={this.getOffsetValue("y")}>
-              {t("Y-Offset")}
-            </InputBox>
-          </Col>
-          <Col xs={3}>
-            <InputBox
-              onCommit={this.updateInputValue("z", "offset")}
-              name="offset-z"
-              value={this.getOffsetValue("z")}>
-              {t("Z-Offset")}
-            </InputBox>
-          </Col>
-        </Row>
+        <this.LocationForm />
+        <this.OffsetForm />
       </StepContent>
     </StepWrapper>;
   }

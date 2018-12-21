@@ -3,36 +3,36 @@ import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
 import { Row, Col, DropDownItem } from "../../ui/index";
-import {
-  Execute, ScopeDeclaration, VariableDeclaration, ScopeDeclarationBodyItem
-} from "farmbot/dist";
+import { Execute, VariableDeclaration } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { SequenceSelectBox } from "../sequence_select_box";
-import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import { ShouldDisplay } from "../../devices/interfaces";
 import { findSequenceById } from "../../resources/selectors_by_id";
-import { betterCompact } from "../../util";
-import { LocalsList } from "../locals_list";
+import { LocalsList } from "../locals_list/locals_list";
+import {
+  addOrEditVarDeclaration, declarationList
+} from "../locals_list/declaration_support";
+import { AllowedDeclaration } from "../locals_list/locals_list_support";
 
-const isVariableDeclaration =
-  (x: ScopeDeclarationBodyItem): x is VariableDeclaration =>
-    x.kind === "variable_declaration";
+/** Replaces the execute step body with a new array of declarations. */
+const assignVariable = (props: ExecBlockParams) =>
+  (declarations: VariableDeclaration[]) =>
+    (variable: VariableDeclaration) => {
+      const { dispatch, currentSequence, currentStep, index } = props;
 
-const assignVariable =
-  (props: ExecBlockParams) => (scopeDeclaration: ScopeDeclaration) => {
-    const { dispatch, currentSequence, currentStep, index } = props;
-    const declarations = betterCompact((scopeDeclaration.body || [])
-      .map(x => isVariableDeclaration(x) ? x : undefined));
-    dispatch(editStep({
-      step: currentStep,
-      sequence: currentSequence,
-      index: index,
-      executor(step) { step.body = declarations; }
-    }));
-  };
+      dispatch(editStep({
+        step: currentStep,
+        sequence: currentSequence,
+        index: index,
+        executor(step) {
+          step.body = addOrEditVarDeclaration(declarations)(variable);
+        }
+      }));
+    };
 
 export function ExecuteBlock(p: StepParams) {
   if (p.currentStep.kind === "execute") {
@@ -57,9 +57,16 @@ export interface ExecBlockParams {
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
 }
-export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}> {
+export class RefactoredExecuteBlock
+  extends React.Component<ExecBlockParams, {}> {
+
+  /**
+   * Replace `sequence_id` with the new selection and fill the execute step
+   * body with variable declarations for unassigned variables.
+   */
   changeSelection = (input: DropDownItem) => {
-    const { dispatch, currentSequence, currentStep, index } = this.props;
+    const { dispatch, currentSequence, currentStep, index, resources
+    } = this.props;
     dispatch(editStep({
       sequence: currentSequence,
       step: currentStep,
@@ -67,20 +74,22 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
       executor: (step: Execute) => {
         if (_.isNumber(input.value)) {
           step.args.sequence_id = input.value;
+          const sequenceUuid = findSequenceById(resources, input.value).uuid;
+          step.body = declarationList(resources.sequenceMetas[sequenceUuid]);
         }
       }
     }));
   }
 
   render() {
-    const { dispatch, currentStep, index, currentSequence, resources } = this.props;
+    const { dispatch, currentStep, index, currentSequence, resources
+    } = this.props;
     const className = "execute-step";
     const { sequence_id } = currentStep.args;
     const calleeUuid = sequence_id ?
       findSequenceById(resources, sequence_id).uuid : undefined;
-    const calledSequenceVariableData =
-      (this.props.shouldDisplay(Feature.variables) && calleeUuid) ?
-        resources.sequenceMetas[calleeUuid] : undefined;
+    const calledSequenceVariableData = calleeUuid ?
+      resources.sequenceMetas[calleeUuid] : undefined;
     return <StepWrapper>
       <StepHeader
         className={className}
@@ -101,14 +110,17 @@ export class RefactoredExecuteBlock extends React.Component<ExecBlockParams, {}>
           </Col>
         </Row>
         <Row>
-          {calledSequenceVariableData &&
+          {!!calledSequenceVariableData &&
             <Col xs={12}>
               <LocalsList
+                declarations={currentStep.body}
                 variableData={calledSequenceVariableData}
-                sequence={currentSequence}
-                dispatch={dispatch}
+                sequenceUuid={currentSequence.uuid}
                 resources={resources}
-                onChange={assignVariable(this.props)} />
+                onChange={assignVariable(this.props)(currentStep.body || [])}
+                locationDropdownKey={JSON.stringify(currentSequence)}
+                allowedDeclarations={AllowedDeclaration.identifier}
+                shouldDisplay={this.props.shouldDisplay} />
             </Col>}
         </Row>
       </StepContent>

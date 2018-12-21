@@ -165,15 +165,10 @@ export function StepButtonCluster(props: StepButtonProps) {
   return <div>
     <Row>
       <div className="step-button-cluster">
-        {
-          ALL_THE_BUTTONS.map(function (el, inx) {
-            return <div key={inx} onClick={
-              // Follows user down the page as they add sequences.
-              () => { scrollToBottom("sequenceDiv"); }}>
-              {el}
-            </div>;
-          })
-        }
+        {ALL_THE_BUTTONS.map((stepButton, inx) =>
+          <div key={inx} onClick={() => scrollToBottom("sequenceDiv")}>
+            {stepButton}
+          </div>)}
       </div>
     </Row>
   </div>;

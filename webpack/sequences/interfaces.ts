@@ -10,7 +10,7 @@ import {
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "farmbot";
-import { ResourceIndex } from "../resources/interfaces";
+import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 
 export interface HardwareFlags {
@@ -77,9 +77,10 @@ export interface SequenceReducerState {
 
 export interface SequencesListProps {
   sequences: TaggedSequence[];
-  resourceUsage: Record<string, boolean | undefined>;
+  resourceUsage: Record<UUID, boolean | undefined>;
   sequence: TaggedSequence | undefined;
   dispatch: Function;
+  sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
 export interface SequencesListState {
