@@ -10,8 +10,8 @@ import {
   TaggedSensorReading,
   TaggedSensor,
 } from "farmbot";
-import { SlotWithTool } from "../resources/interfaces";
-import { BotPosition, StepsPerMmXY, BotLocationData } from "../devices/interfaces";
+import { SlotWithTool, ResourceIndex } from "../resources/interfaces";
+import { BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
@@ -123,7 +123,8 @@ export interface AddEditFarmEventProps {
   findExecutable: ExecutableQuery;
   timeOffset: number;
   autoSyncEnabled: boolean;
-  allowRegimenBackscheduling: boolean;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
 }
 
 /**

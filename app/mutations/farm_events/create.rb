@@ -27,7 +27,6 @@ module FarmEvents
     def validate
       validate_end_time
       validate_executable
-      guard_against_paramter_use(executable.id) if executable.is_a?(Sequence)
     end
 
     def execute

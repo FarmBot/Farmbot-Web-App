@@ -1,4 +1,4 @@
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "../is_parameterized";
 

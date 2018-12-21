@@ -2,7 +2,7 @@ import * as React from "react";
 import { t } from "i18next";
 import { SyncStatus } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
-import { isParameterized } from "./is_parameterized";
+import { isParameterized } from "./locals_list/is_parameterized";
 
 export interface TestBtnProps {
   /** Callback fired ONLY if synced. */

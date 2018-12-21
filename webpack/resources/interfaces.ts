@@ -45,7 +45,7 @@ export interface ResourceIndex {
    *   ...
    * }
    */
-  sequenceMetas: Record<UUID, VariableNameSet>;
+  sequenceMetas: Record<UUID, VariableNameSet | undefined>;
   /**
    * PROBLEM:
    *  * We need to _efficiently_ track which resources are in_use.

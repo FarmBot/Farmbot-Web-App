@@ -23,10 +23,13 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import {
-  validFbosConfig, shouldDisplay, determineInstalledOsVersion
+  validFbosConfig,
+  shouldDisplay as shouldDisplayFunc,
+  determineInstalledOsVersion
 } from "../../util";
-import { sourceFbosConfigValue } from "../../devices/components/source_config_value";
-import { Feature } from "../../devices/interfaces";
+import {
+  sourceFbosConfigValue
+} from "../../devices/components/source_config_value";
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { getFbosConfig } from "../../resources/getters";
@@ -50,7 +53,10 @@ export let repeatOptions = [
   { label: t("Years"), value: "yearly", name: "time_unit" }
 ];
 
-const handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
+const handleTime = (
+  e: React.SyntheticEvent<HTMLInputElement>,
+  currentISO: string
+) => {
   const incomingTime = e.currentTarget.value.split(":");
   const hours = parseInt(incomingTime[0]) || 0;
   const minutes = parseInt(incomingTime[1]) || 0;
@@ -135,9 +141,8 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const allowRegimenBackscheduling = shouldDisplay(
-    installedOsVersion, props.bot.minOsFeatureData)(
-      Feature.backscheduled_regimens);
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData);
 
   return {
     deviceTimezone: dev
@@ -155,6 +160,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     findExecutable,
     timeOffset: dev.body.tz_offset_hrs,
     autoSyncEnabled,
-    allowRegimenBackscheduling,
+    resources: props.resources.index,
+    shouldDisplay,
   };
 }

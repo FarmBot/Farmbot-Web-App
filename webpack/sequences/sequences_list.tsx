@@ -11,28 +11,37 @@ import { Content } from "../constants";
 import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
+import { UUID, VariableNameSet } from "../resources/interfaces";
+import { declarationList } from "./locals_list/declaration_support";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
   .name
   .toLowerCase()
   .includes(searchTerm);
-const sequenceList = (dispatch: Function, usage: Record<string, boolean | undefined>) =>
+
+const sequenceList = (props: {
+  dispatch: Function,
+  resourceUsage: Record<UUID, boolean | undefined>,
+  sequenceMetas: Record<UUID, VariableNameSet | undefined>
+}) =>
   (ts: TaggedSequence) => {
     const css =
       [`fb-button`, `block`, `full-width`, `${ts.body.color || "purple"}`];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
-    const click = () => dispatch(selectSequence(ts.uuid));
-    const name = ts.body.name + (ts.specialStatus ? "*" : "");
     const { uuid } = ts;
-    const inUse = !!usage[ts.uuid];
+    const click = () => props.dispatch(selectSequence(uuid));
+    const nameWithSaveIndicator = ts.body.name + (ts.specialStatus ? "*" : "");
+    const inUse = !!props.resourceUsage[uuid];
+    const variableData = props.sequenceMetas[uuid];
 
     return <div className="sequence-list-items" key={uuid}>
       <StepDragger
-        dispatch={dispatch}
+        dispatch={props.dispatch}
         step={{
           kind: "execute",
-          args: { sequence_id: ts.body.id || 0 }
+          args: { sequence_id: ts.body.id || 0 },
+          body: declarationList(variableData)
         }}
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>
@@ -41,8 +50,9 @@ const sequenceList = (dispatch: Function, usage: Record<string, boolean | undefi
           key={uuid}
           onClick={click} >
           <button className={css.join(" ")} draggable={true}>
-            <label>{name}</label>
-            {inUse && <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+            <label>{nameWithSaveIndicator}</label>
+            {inUse &&
+              <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
           </button>
         </Link>
       </StepDragger>
@@ -71,9 +81,8 @@ export class SequencesList extends
   });
 
   render() {
-    const { sequences, dispatch } = this.props;
+    const { sequences, dispatch, resourceUsage, sequenceMetas } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
-    const { resourceUsage } = this.props;
     return <div>
       <button
         className="fb-button green add"
@@ -91,11 +100,9 @@ export class SequencesList extends
       <Row>
         <Col xs={12}>
           <div className="sequence-list">
-            {
-              sortResourcesById(sequences)
-                .filter(filterFn(searchTerm))
-                .map(sequenceList(dispatch, resourceUsage))
-            }
+            {sortResourcesById(sequences)
+              .filter(filterFn(searchTerm))
+              .map(sequenceList({ dispatch, resourceUsage, sequenceMetas }))}
           </div>
         </Col>
       </Row>

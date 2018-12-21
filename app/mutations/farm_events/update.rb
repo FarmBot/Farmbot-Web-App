@@ -39,7 +39,6 @@ module FarmEvents
 
     def validate_ownership
       raise Errors::Forbidden, NOT_YOURS if farm_event.device != device
-      guard_against_paramter_use(executable.id) if executable.is_a?(Sequence)
     end
 
     def is_one_time_event
