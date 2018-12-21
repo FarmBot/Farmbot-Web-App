@@ -29,10 +29,11 @@ export class DevMode extends React.Component<P, S> {
     const cb = triggers[count];
     cb && cb(this.props.dispatch);
     this.setState({ count: count + 1 });
+    console.log(count);
   };
 
   render() {
-    return <div onClick={this.bump}>
+    return <div style={{ height: "100px" }} onClick={this.bump}>
       <hr />
     </div>;
   }
