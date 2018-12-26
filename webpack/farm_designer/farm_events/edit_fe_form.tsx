@@ -421,8 +421,14 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           {t("Delete")}
         </button>
         <br />
+        this.state.fe.body
         <pre>
-          {JSON.stringify(this.state.fe)}
+          {JSON.stringify(this.state.fe.body || "X")}
+        </pre>
+        <br />
+        this.props.farmEvent.body.body
+        <pre>
+          {JSON.stringify(this.props.farmEvent.body.body || "X")}
         </pre>
         <TzWarning deviceTimezone={this.props.deviceTimezone} />
       </DesignerPanelContent>

@@ -16,12 +16,12 @@ module FarmEvents
       model   :device, class: Device
       integer :repeat, min: 1
       string  :time_unit, in: FarmEvent::UNITS_OF_TIME
+      body
     end
 
     optional do
       time :start_time, default: Time.current, after: Time.now - 20.years
       time :end_time, before: Time.now + 20.years
-      body
     end
 
     def validate
