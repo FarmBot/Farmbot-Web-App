@@ -170,11 +170,11 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   editDeclaration = (declarations: VariableDeclaration[]) =>
-    (declaration: VariableDeclaration) =>
-      this.setState(betterMerge(this.state, {
-        fe: { body: addOrEditVarDeclaration(declarations)(declaration) },
-        specialStatusLocal: SpecialStatus.DIRTY
-      }));
+    (declaration: VariableDeclaration) => {
+      const body = addOrEditVarDeclaration(declarations, declaration);
+      const state = { fe: { body }, specialStatusLocal: SpecialStatus.DIRTY };
+      this.setState(betterMerge(this.state, state));
+    }
 
   LocalsList = () => <LocalsList
     declarations={this.declarations}
@@ -307,6 +307,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         t("Unable to save farm event."));
       return;
     }
+
     this.dispatch(overwrite(this.props.farmEvent, updatedFarmEvent));
     const EditFEPath = window.location.pathname;
     this
@@ -410,13 +411,19 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           onClick={() => this.commitViewModel()} />
         <button className="fb-button red" hidden={!this.props.deleteBtn}
           onClick={() => {
-            this.dispatch(destroy(farmEvent.uuid)).then(() => {
-              history.push("/app/designer/farm_events");
-              success(t("Deleted farm event."), t("Deleted"));
-            });
+            this
+              .dispatch(destroy(farmEvent.uuid))
+              .then(() => {
+                history.push("/app/designer/farm_events");
+                success(t("Deleted farm event."), t("Deleted"));
+              });
           }}>
           {t("Delete")}
         </button>
+        <br />
+        <pre>
+          {JSON.stringify(this.state.fe)}
+        </pre>
         <TzWarning deviceTimezone={this.props.deviceTimezone} />
       </DesignerPanelContent>
     </DesignerPanel>;
