@@ -298,8 +298,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   */
   commitViewModel = (now = moment()) => {
     const viewModel = this.viewModel;
-    /** Replace farmEvent body with form updates. */
-    delete viewModel.body;
     const updatedFarmEvent = recombine(betterMerge(viewModel, this.state.fe),
       { forceRegimensToMidnight: this.allowRegimenBackscheduling });
     if (this.maybeRejectStartTime(updatedFarmEvent)) {
