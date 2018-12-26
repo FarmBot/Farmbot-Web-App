@@ -11,6 +11,7 @@ module Api
     end
 
     def create
+      # binding.pry
       mutate FarmEvents::Create.run(raw_json, device: current_device)
     end
 

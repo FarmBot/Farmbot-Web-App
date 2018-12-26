@@ -9,6 +9,6 @@ class FarmEventSerializer < ApplicationSerializer
 
   def body
     f = object.fragment
-    f ? f.serialize.fetch(:body) : []
+    f ? f.serialize.fetch(:body, []) : []
   end
 end
