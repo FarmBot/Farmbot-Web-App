@@ -304,10 +304,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   */
   commitViewModel = (now = moment()) => {
     const vm = betterMerge(this.viewModel, this.state.fe);
-    // NOTE: If you rely solely on `betterMerge()` to combine array-bearing
-    //       CeleryScript nodes, the API will reject them because they contain
-    //       extra nodes. The CS Corpus does not allow extra nodes for safety
-    //       reasons
+    // NOTE:  If you rely solely on `betterMerge()` to combine array-bearing
+    //        CeleryScript nodes, the API will reject them because they contain
+    //        extra properties. The CS Corpus does not allow extra nodes for
+    //        safety reasons
     vm.body = // Overwrite default behavior of `betterMerge`.
       this.state.fe.body || this.viewModel.body || [];
     const opts = {
@@ -430,16 +430,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           }}>
           {t("Delete")}
         </button>
-        <br />
-        this.state.fe.body
-        <pre>
-          {JSON.stringify(this.state.fe.body || "X")}
-        </pre>
-        <br />
-        this.props.farmEvent.body.body
-        <pre>
-          {JSON.stringify(this.props.farmEvent.body.body || "X")}
-        </pre>
         <TzWarning deviceTimezone={this.props.deviceTimezone} />
       </DesignerPanelContent>
     </DesignerPanel>;
