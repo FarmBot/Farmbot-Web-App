@@ -82,13 +82,18 @@ export function destructureFarmEvent(
     body: fe.body.body,
   };
 }
-
-type recombineOptions = { forceRegimensToMidnight: boolean };
+const startTimeWarning = () => {
+  const message =
+    t("FarmEvent start time needs to be in the future, not the past.");
+  const title = t("Unable to save farm event.");
+  error(message, title);
+};
+type RecombineOptions = { forceRegimensToMidnight: boolean };
 
 /** Take a FormViewModel and recombine the fields into a FarmEvent
  * that can be used to apply updates (such as a PUT request to the API). */
 export function recombine(vm: FarmEventViewModel,
-  options: recombineOptions): TaggedFarmEvent["body"] {
+  options: RecombineOptions): TaggedFarmEvent["body"] {
   // Make sure that `repeat` is set to `never` when dealing with regimens.
   const isReg = vm.executable_type === "Regimen";
   const startTime = isReg && options.forceRegimensToMidnight
@@ -298,16 +303,22 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   *      * If auto-sync is disabled, prompt the user to sync.
   */
   commitViewModel = (now = moment()) => {
-    const viewModel = this.viewModel;
-    const updatedFarmEvent = recombine(betterMerge(viewModel, this.state.fe),
-      { forceRegimensToMidnight: this.allowRegimenBackscheduling });
+    const vm = betterMerge(this.viewModel, this.state.fe);
+    // NOTE: If you rely solely on `betterMerge()` to combine array-bearing
+    //       CeleryScript nodes, the API will reject them because they contain
+    //       extra nodes. The CS Corpus does not allow extra nodes for safety
+    //       reasons
+    vm.body = // Overwrite default behavior of `betterMerge`.
+      this.state.fe.body || this.viewModel.body || [];
+    const opts = {
+      forceRegimensToMidnight: this.allowRegimenBackscheduling
+    };
+    const updatedFarmEvent = recombine(vm, opts);
     if (this.maybeRejectStartTime(updatedFarmEvent)) {
-      error(t("FarmEvent start time needs to be in the future, not the past."),
-        t("Unable to save farm event."));
-      return;
+      return startTimeWarning();
     }
-    // debugger;
-    this.dispatch(overwrite(this.props.farmEvent, updatedFarmEvent));
+    const result = overwrite(this.props.farmEvent, updatedFarmEvent);
+    this.dispatch(result);
     const EditFEPath = window.location.pathname;
     this
       .dispatch(save(this.props.farmEvent.uuid))
