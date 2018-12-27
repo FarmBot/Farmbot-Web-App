@@ -29,7 +29,7 @@ const assignVariable = (props: ExecBlockParams) =>
         sequence: currentSequence,
         index: index,
         executor(step) {
-          step.body = addOrEditVarDeclaration(declarations)(variable);
+          step.body = addOrEditVarDeclaration(declarations, variable);
         }
       }));
     };

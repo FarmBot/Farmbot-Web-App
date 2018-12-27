@@ -52,12 +52,13 @@ if Rails.env == "development"
     end
 
     PLANT_COUNT.times do
+      veggie = Faker::Food.vegetables
       Plant.create(device:        u.device,
                    x:             rand(40...970),
                    y:             rand(40...470),
                    radius:        rand(10...50),
-                   name:          Faker::Food.vegetables,
-                   openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
+                   name:          veggie,
+                   openfarm_slug: veggie.downcase.gsub(" ", "-"))
     end
 
     Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }
