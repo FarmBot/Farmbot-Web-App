@@ -173,7 +173,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     (declaration: VariableDeclaration) => {
       const body = addOrEditVarDeclaration(declarations, declaration);
       const state = { fe: { body }, specialStatusLocal: SpecialStatus.DIRTY };
-      this.setState(betterMerge(this.state, state));
+      const result = betterMerge(this.state, state);
+      this.setState(result);
     }
 
   LocalsList = () => <LocalsList
@@ -305,7 +306,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         t("Unable to save farm event."));
       return;
     }
-
+    // debugger;
     this.dispatch(overwrite(this.props.farmEvent, updatedFarmEvent));
     const EditFEPath = window.location.pathname;
     this
