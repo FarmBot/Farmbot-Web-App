@@ -13,9 +13,9 @@ import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
 import { ExportAccountPanel } from "./components/export_account_panel";
 import { requestAccountExport } from "./request_account_export";
-import { DevWidget } from "./dev_widget";
+import { DevWidget } from "./dev/dev_widget";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { DevMode } from "./dev_mode";
+import { DevMode } from "./dev/dev_mode";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 

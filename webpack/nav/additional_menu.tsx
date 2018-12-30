@@ -4,7 +4,7 @@ import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
 import { shortRevision } from "../util";
-import { futureFeaturesEnabled } from "../account/dev_widget";
+import { DevSettings } from "../account/dev/dev_support";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -14,7 +14,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Account Settings")}
       </Link>
     </div>
-    {futureFeaturesEnabled() &&
+    {DevSettings.futureFeaturesEnabled() &&
       <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-question-circle"></i>
         {t("Help")}

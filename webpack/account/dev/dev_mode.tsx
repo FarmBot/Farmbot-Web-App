@@ -1,7 +1,8 @@
 import * as React from "react";
 import { warning } from "farmbot-toastr";
-import { setWebAppConfigValue } from "../config_storage/actions";
+import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { DevSettings } from "./dev_support";
 
 interface S { count: number; }
 interface P { dispatch: Function; }
@@ -11,7 +12,7 @@ const clicksLeft =
 const key = "show_dev_menu" as BooleanConfigKey;
 
 const activateDevMode = (dispatch: Function) => {
-  localStorage.setItem("IM_A_DEVELOPER", "1000.0.0");
+  DevSettings.setMaxFbosVersionOverride();
   dispatch(setWebAppConfigValue(key, true));
 };
 

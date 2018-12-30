@@ -1,4 +1,4 @@
-jest.mock("../../config_storage/actions", () => {
+jest.mock("../../../config_storage/actions", () => {
   return { setWebAppConfigValue: jest.fn() };
 });
 
@@ -8,7 +8,7 @@ import * as React from "react";
 import { range } from "lodash";
 import {
   setWebAppConfigValue
-} from "../../config_storage/actions";
+} from "../../../config_storage/actions";
 import { warning } from "farmbot-toastr";
 
 describe("<DevMode/>", () => {
