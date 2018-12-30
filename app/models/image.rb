@@ -13,7 +13,7 @@ class Image < ApplicationRecord
   end
 
   PROTO       = ENV["FORCE_SSL"] ? "https:" : "http:"
-  PLACEHOLDER = "/app-resources/img/placeholder.png\?text=Processing..."
+  PLACEHOLDER = "/placeholder_farmbot.jpg\?text=Processing..."
   CONFIG = {
     default_url: "#{PROTO}#{$API_URL}#{PLACEHOLDER}",
     styles: { x1280: "1280x1280>",
