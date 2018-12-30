@@ -32,54 +32,50 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
   const { disabled, onChange, repeat, endDate, endTime, timeUnit } = props;
   const changeHandler =
     (key: Key) => (e: Ev) => onChange(key, e.currentTarget.value);
-  if (props.hidden) {
-    return <div />;
-  } else {
-    return <div>
-      <label>
-        {t("Every")}
-      </label>
-      <Row>
-        <Col xs={4}>
-          <BlurableInput
-            disabled={disabled}
-            placeholder="(Number)"
-            type="number"
-            className="add-event-repeat-frequency"
-            name="repeat"
-            value={repeat}
-            onCommit={changeHandler("repeat")} />
-        </Col>
-        <Col xs={8}>
-          <FBSelect
-            list={repeatOptions}
-            onChange={(e) => onChange("timeUnit", "" + e.value)}
-            selectedItem={OPTN_LOOKUP[timeUnit] || OPTN_LOOKUP["daily"]} />
-        </Col>
-      </Row>
-      <label>
-        {t("Until")}
-      </label>
-      <Row>
-        <Col xs={6}>
-          <BlurableInput
-            disabled={disabled}
-            type="date"
-            className="add-event-end-date"
-            name="endDate"
-            value={endDate}
-            onCommit={changeHandler("endDate")} />
-        </Col>
-        <Col xs={6}>
-          <EventTimePicker
-            disabled={disabled}
-            className="add-event-end-time"
-            name="endTime"
-            tzOffset={props.tzOffset}
-            value={endTime}
-            onCommit={changeHandler("endTime")} />
-        </Col>
-      </Row>
-    </div>;
-  }
+  return props.hidden ? <div /> : <div>
+    <label>
+      {t("Every")}
+    </label>
+    <Row>
+      <Col xs={4}>
+        <BlurableInput
+          disabled={disabled}
+          placeholder="(Number)"
+          type="number"
+          className="add-event-repeat-frequency"
+          name="repeat"
+          value={repeat}
+          onCommit={changeHandler("repeat")} />
+      </Col>
+      <Col xs={8}>
+        <FBSelect
+          list={repeatOptions}
+          onChange={(e) => onChange("timeUnit", "" + e.value)}
+          selectedItem={OPTN_LOOKUP[timeUnit] || OPTN_LOOKUP["daily"]} />
+      </Col>
+    </Row>
+    <label>
+      {t("Until")}
+    </label>
+    <Row>
+      <Col xs={6}>
+        <BlurableInput
+          disabled={disabled}
+          type="date"
+          className="add-event-end-date"
+          name="endDate"
+          value={endDate}
+          onCommit={changeHandler("endDate")} />
+      </Col>
+      <Col xs={6}>
+        <EventTimePicker
+          disabled={disabled}
+          className="add-event-end-time"
+          name="endTime"
+          tzOffset={props.tzOffset}
+          value={endTime}
+          onCommit={changeHandler("endTime")} />
+      </Col>
+    </Row>
+  </div>;
 }

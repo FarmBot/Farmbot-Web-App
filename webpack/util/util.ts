@@ -99,7 +99,14 @@ export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
   return _.sortBy(input, (x) => x.body.id || Infinity);
 }
 
-/** Light wrapper around _.merge() to prevent common type errors / mistakes. */
+/**
+ * Light wrapper around _.merge() to prevent common type errors / mistakes.
+ *
+ * NOTE:  If you rely solely on `betterMerge()` to combine array-bearing
+ *   CeleryScript nodes, the API will reject them because they contain
+ *   extra properties. The CS Corpus does not allow extra nodes for
+ *   safety reasons.
+ */
 export function betterMerge<T, U>(target: T, update: U): T & U {
   return _.merge({}, target, update);
 }
