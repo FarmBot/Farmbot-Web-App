@@ -4,10 +4,11 @@ class FbosConfig < ApplicationRecord
 
   belongs_to :device
   after_save :maybe_sync_nerves, on: [:create, :update]
+
   NERVES_FIELD = "update_channel"
 
-  def nerves_info_changed?
-    the_changes.keys.include?(NERVES_FIELD)
+  def push_changes_to_nerves_hub(serial_number, channel)
+    NervesHub.update_channel(serial_number, channel)
   end
 
   def sync_nerves
@@ -17,8 +18,8 @@ class FbosConfig < ApplicationRecord
     self.delay.push_changes_to_nerves_hub(serial, update_channel)
   end
 
-  def push_changes_to_nerves_hub(serial_number, channel)
-    NervesHub.update_channel(serial_number, channel)
+  def nerves_info_changed?
+    the_changes.keys.include?(NERVES_FIELD)
   end
 
   def maybe_sync_nerves
