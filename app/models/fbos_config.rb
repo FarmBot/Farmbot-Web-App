@@ -14,10 +14,10 @@ class FbosConfig < ApplicationRecord
     dsn    = device.device_serial_number
     raise "NO" unless dsn
     serial = dsn.serial_number
-    self.delay.update_channel(serial, update_channel)
+    self.delay.push_changes_to_nerves_hub(serial, update_channel)
   end
 
-  def update_channel(serial_number, channel)
+  def push_changes_to_nerves_hub(serial_number, channel)
     NervesHub.update_channel(serial_number, channel)
   end
 
