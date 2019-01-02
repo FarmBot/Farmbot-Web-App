@@ -41,7 +41,11 @@ class ApplicationRecord < ActiveRecord::Base
 
   def force_serialization
     serializer = ActiveModel::Serializer.serializer_for(self)
-    return (serializer ? serializer.new(self) : self).as_json
+    if serializer
+      serializer.new(self).as_json
+    else
+      self.as_json
+    end
   end
 
   def broadcast_payload(label)

@@ -1,9 +1,9 @@
 require "net/http"
 require "openssl"
 require "base64"
-
 class NervesHub
   class NervesHubHTTPError < StandardError; end
+  class MissingSerial < StandardError; end
   # There is a lot of configuration available in this class to support:
   #   * Self Hosters
   #   * Running a local instance of Nerves-Hub
@@ -68,12 +68,31 @@ class NervesHub
     raise NervesHubHTTPError, NERVES_HUB_ERROR % [code, body]
   end
 
+  APPLICATION = "application"
+  CHANNEL     = "channel"
+
+  def self.update_channel(serial_number, channel)
+    dev = device(serial_number)
+    raise MissingSerial unless dev
+    # ["application:prod", "channel:stable"]
+    # Becomes: {"application"=>"prod", "channel"=>"stable"}
+    # NEVER DUPLICATE TAG PREFIXES (thing before ":"). Must be unique!
+    tag_map = dev
+      .fetch("tags")
+      .map { |x| x.split(":") }
+      .to_h
+    tag_map[CHANNEL] = channel
+    next_tags        = tag_map.to_a.map { |x| x.join(":") }
+    update(serial_number, next_tags)
+  end
+
   # Checks if a deivce exists in NervesHub
   # if it does     -> does a PUT request updating the tags.
   # if it does not -> does a POST request creating the device with given tags.
   def self.create_or_update(serial_number, tags)
-    current_nerves_hub_devcice = device(serial_number)
-    if current_nerves_hub_devcice
+    # Hash | nil
+    current_nerves_hub_device = device(serial_number)
+    if current_nerves_hub_device
       update(serial_number, tags)
     else
       new_device(serial_number, tags)
@@ -161,7 +180,7 @@ class NervesHub
 
   # HTTP connection.
   def self.conn
-    active? && !@conn ? set_conn : @conn
+    (active? && !@conn) ? set_conn : @conn
   end
 
 private

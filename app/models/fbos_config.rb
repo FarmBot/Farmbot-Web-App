@@ -1,8 +1,9 @@
 # An API backup of user options for Farmbot OS.
 class FbosConfig < ApplicationRecord
+  class MissingSerial < StandardError; end
+
   belongs_to :device
   after_save :maybe_sync_nerves, on: [:create, :update]
-
   NERVES_FIELD = "update_channel"
 
   def nerves_info_changed?
@@ -10,7 +11,14 @@ class FbosConfig < ApplicationRecord
   end
 
   def sync_nerves
-    binding.pry
+    dsn    = device.device_serial_number
+    raise "NO" unless dsn
+    serial = dsn.serial_number
+    self.delay.update_channel(serial, update_channel)
+  end
+
+  def update_channel(serial_number, channel)
+    NervesHub.update_channel(serial_number, channel)
   end
 
   def maybe_sync_nerves
