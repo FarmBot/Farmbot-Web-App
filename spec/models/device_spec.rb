@@ -95,4 +95,11 @@ describe Device do
     expect(results).to_not include(🚑)
     expect(results).to_not include(🍞)
   end
+
+  it "disallows duplicate serial numbers" do
+    DeviceSerialNumber.create!(device: device, serial_number: "foo_bar")
+    expect do
+      DeviceSerialNumber.create!(device: device, serial_number: "foo_bar")
+    end.to raise_error(ActiveRecord::RecordInvalid)
+  end
 end
