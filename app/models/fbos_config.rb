@@ -12,9 +12,8 @@ class FbosConfig < ApplicationRecord
   end
 
   def sync_nerves
-    dsn = device.device_serial_number
-    return unless dsn
-    serial = dsn.serial_number
+    serial = device.serial_number
+    return unless serial
     self.delay.push_changes_to_nerves_hub(serial, update_channel)
   end
 

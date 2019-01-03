@@ -1,4 +1,8 @@
 class DeviceSerialNumber < ApplicationRecord
   belongs_to :device
-  validates_uniqueness_of :serial_number
+  before_save :dont_save
+
+  def dont_save
+    raise "This table is deprecated. Stop using it."
+  end
 end

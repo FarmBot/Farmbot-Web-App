@@ -58,7 +58,7 @@ describe Api::DeviceCertsController do
       end
       expect(response.status).to eq(200)
       expect(json).to eq({})
-      expect(DeviceSerialNumber.count).to be > old_count
+      expect(DeviceSerialNumber.count).to eq(old_count)
     end
   end
 end
