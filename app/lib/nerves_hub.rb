@@ -3,7 +3,6 @@ require "openssl"
 require "base64"
 class NervesHub
   class NervesHubHTTPError < StandardError; end
-  class MissingSerial < StandardError; end
   # There is a lot of configuration available in this class to support:
   #   * Self Hosters
   #   * Running a local instance of Nerves-Hub
@@ -73,7 +72,7 @@ class NervesHub
 
   def self.update_channel(serial_number, channel)
     dev = device(serial_number)
-    raise MissingSerial unless dev
+    return unless dev
     # ["application:prod", "channel:stable"]
     # Becomes: {"application"=>"prod", "channel"=>"stable"}
     # NEVER DUPLICATE TAG PREFIXES (thing before ":"). Must be unique!
