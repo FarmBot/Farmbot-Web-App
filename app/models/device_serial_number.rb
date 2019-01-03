@@ -1,8 +1,4 @@
 class DeviceSerialNumber < ApplicationRecord
   belongs_to :device
-  before_save :dont_save
-
-  def dont_save
-    raise "This table is deprecated. Stop using it."
-  end
+  # DO NOT USE THIS TABLE. IT IS DEPRECATED. DESTROY FEB 2019.
 end

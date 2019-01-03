@@ -1,14 +1,6 @@
 require "spec_helper"
 
 describe NervesHub do
-  class StubResp
-    attr_accessor :code, :body
-
-    def initialize(code, body)
-      @code, @body = code, body
-    end
-  end
-
   def stub_connection
     double(SecureRandom.hex.first(6), :ca_file=    => nil,
                                       :cert_store  => nil,

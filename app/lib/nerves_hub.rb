@@ -76,8 +76,7 @@ class NervesHub
     # ["application:prod", "channel:stable"]
     # Becomes: {"application"=>"prod", "channel"=>"stable"}
     # NEVER DUPLICATE TAG PREFIXES (thing before ":"). Must be unique!
-    tag_map = \
-      dev.fetch("tags").map { |x| x.split(":") }.to_h
+    tag_map = dev.fetch(:tags).map { |x| x.split(":") }.to_h
     tag_map[CHANNEL] = channel
     next_tags        = tag_map.to_a.map { |x| x.join(":") }
     update(serial_number, next_tags)
