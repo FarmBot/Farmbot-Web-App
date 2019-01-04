@@ -52,6 +52,7 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
       <OsUpdateButton
         bot={bot}
         sourceFbosConfig={sourceFbosConfig}
+        shouldDisplay={props.shouldDisplay}
         botOnline={botOnline} />
     </Col>
   </Row >;

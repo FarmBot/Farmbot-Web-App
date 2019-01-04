@@ -75,7 +75,7 @@
     "react-addons-test-utils": "^15.6.2",
     "react-color": "2.14.1",
     "react-dom": "^16.6.3",
-    "react-joyride": "^2.0.0-15",
+    "react-joyride": "2.0.0-15",
     "react-redux": "^5.1.1",
     "react-test-renderer": "^16.6.3",
     "react-transition-group": "2.5.0",
