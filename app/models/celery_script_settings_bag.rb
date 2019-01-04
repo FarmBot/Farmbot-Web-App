@@ -16,7 +16,8 @@ module CeleryScriptSettingsBag
   end
 
   # List of all celery script nodes that can be used as a varaible...
-  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
+  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier,
+                           :every_location]
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
@@ -246,6 +247,7 @@ module CeleryScriptSettingsBag
       .node(:install_first_party_farmware, [])
       .node(:internal_farm_event,  [], [:variable_declaration])
       .node(:internal_entry_point, [], [])
+      .node(:every_location,       [:pointer_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value

@@ -147,7 +147,12 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
 
   /** Handle changes to step.args.location. */
   updateLocation = (declaration: VariableDeclaration) => {
-    this.updateArgs({ location: declaration.args.data_value });
+    const location = declaration.args.data_value;
+    if (location.kind === "every_location") {
+      throw new Error("Moving to every_location is not supported.");
+    } else {
+      this.updateArgs({ location });
+    }
   }
 
   /** Prepare step.args.location data for LocationForm. */
