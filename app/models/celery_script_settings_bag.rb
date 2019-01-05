@@ -69,6 +69,9 @@ module CeleryScriptSettingsBag
   BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
   BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
   BAD_SPEED             = "Speed must be a percentage between 1-100"
+  ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
+                          " as input. Please change your selection to a "\
+                          "single location."
   PIN_TYPE_MAP          = { "Peripheral" => Peripheral,
                             "Sensor"     => Sensor,
                             "BoxLed3"    => BoxLed,
@@ -195,7 +198,12 @@ module CeleryScriptSettingsBag
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
       .node(:coordinate,            [:x, :y, :z])
-      .node(:move_absolute,         [:location, :speed, :offset])
+      .node(:move_absolute,         [:location, :speed, :offset]) do |n|
+        loc = n.args[:location].try(:kind)
+        if loc == "every_location"
+          n.invalidate!(ONLY_ONE_COORD)
+        end
+      end
       .node(:move_relative,         [:x, :y, :z, :speed])
       .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
         no_rpi_analog(n)
