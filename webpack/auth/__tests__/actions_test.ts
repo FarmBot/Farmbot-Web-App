@@ -22,6 +22,7 @@ jest.mock("../../api/api", () => ({
 
 jest.mock("../../devices/actions", () => ({
   fetchReleases: jest.fn(),
+  fetchLatestGHBetaRelease: jest.fn(),
   fetchMinOsFeatureData: jest.fn(),
 }));
 
@@ -29,7 +30,7 @@ import { didLogin } from "../actions";
 import { Actions } from "../../constants";
 import { API } from "../../api/api";
 import { AuthState } from "../interfaces";
-import { fetchReleases } from "../../devices/actions";
+import { fetchReleases, fetchLatestGHBetaRelease } from "../../devices/actions";
 
 const mockToken = (): AuthState => ({
   token: {
@@ -56,7 +57,7 @@ describe("didLogin()", () => {
     mockAuth.token.unencoded.beta_os_update_server = "beta_os_update_server";
     didLogin(mockAuth, dispatch);
     expect(fetchReleases).toHaveBeenCalledWith("os_update_server");
-    expect(fetchReleases).toHaveBeenCalledWith("beta_os_update_server",
-      { beta: true });
+    expect(fetchLatestGHBetaRelease)
+      .toHaveBeenCalledWith("beta_os_update_server");
   });
 });

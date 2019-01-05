@@ -151,6 +151,37 @@ export function requestDiagnostic() {
   return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
 }
 
+const tagNameToVersionString = (tagName: string): string =>
+  tagName.toLowerCase().replace("v", "");
+
+/**
+ * Fetch FarmBot OS beta release data.
+ * Ignores a specific release provided by the url (i.e., `releases/1234`)
+ * in favor of the latest `-beta` release.
+ */
+export const fetchLatestGHBetaRelease =
+  (url: string) =>
+    (dispatch: Function) => {
+      const urlArray = url.split("/");
+      const releasesURL = urlArray.splice(0, urlArray.length - 1).join("/");
+      axios
+        .get<GithubRelease[]>(releasesURL)
+        .then(resp => {
+          const latestBeta = resp.data
+            .filter(x => x.tag_name.includes("beta"))[0];
+          const { tag_name, target_commitish } = latestBeta;
+          const version = tagNameToVersionString(tag_name);
+          dispatch({
+            type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK,
+            payload: { version, commit: target_commitish }
+          });
+        })
+        .catch(ferror => dispatch({
+          type: "FETCH_BETA_OS_UPDATE_INFO_ERROR",
+          payload: ferror
+        }));
+    };
+
 /** Fetch FarmBot OS release data. */
 export const fetchReleases =
   (url: string, options = { beta: false }) =>
@@ -159,7 +190,7 @@ export const fetchReleases =
         .get<GithubRelease>(url)
         .then(resp => {
           const { tag_name, target_commitish } = resp.data;
-          const version = tag_name.toLowerCase().replace("v", "");
+          const version = tagNameToVersionString(tag_name);
           dispatch({
             type: options.beta
               ? Actions.FETCH_BETA_OS_UPDATE_INFO_OK
