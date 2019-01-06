@@ -121,6 +121,14 @@ describe("mapStateToProps()", () => {
         time: "2018-11-15 18:13:21.167440Z"
       }]);
   });
+
+  it("handles undefined jobs", () => {
+    const state = fakeState();
+    // tslint:disable-next-line:no-any
+    state.bot.hardware.jobs = undefined as any;
+    const props = mapStateToProps(state);
+    expect(props.imageJobs).toEqual([]);
+  });
 });
 
 describe("saveOrEditFarmwareEnv()", () => {
