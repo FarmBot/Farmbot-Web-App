@@ -14,7 +14,7 @@ describe("generateList()", () => {
     const tool = items[1];
     expect(tool).toEqual({
       headingId: "Tool",
-      label: "Generic tool",
+      label: "Generic tool (100, 200, 300)",
       value: "1",
     });
     const plantHeading = items[2];

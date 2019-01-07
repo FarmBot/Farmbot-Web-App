@@ -11,7 +11,7 @@ import { MoveModeLink } from "../../plants/move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
-import { futureFeaturesEnabled } from "../../../account/dev_widget";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 const OriginSelector = ({ quadrant, update }: {
   quadrant: BotOriginQuadrant,
@@ -79,7 +79,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       label={t("Points?")}
       onClick={toggle("show_points")}
       submenuTitle={t("extras")}
-      popover={futureFeaturesEnabled()
+      popover={DevSettings.futureFeaturesEnabled()
         ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
         : undefined} />
     <LayerToggle
@@ -100,7 +100,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
-    {futureFeaturesEnabled() &&
+    {DevSettings.futureFeaturesEnabled() &&
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}

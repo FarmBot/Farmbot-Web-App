@@ -1,5 +1,5 @@
 import { TaggedSequence } from "farmbot";
-import { isParameterized } from "../../sequences/is_parameterized";
+import { isParameterized } from "../../sequences/locals_list/is_parameterized";
 import { error } from "farmbot-toastr";
 import { t } from "i18next";
 import * as moment from "moment";

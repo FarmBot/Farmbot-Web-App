@@ -6,7 +6,9 @@ import {
   FAKE_RESOURCES, buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
+import {
+  fakeHardwareFlags
+} from "../../__test_support__/sequence_hardware_settings";
 
 describe("<SequenceEditorMiddle/>", () => {
   function fakeProps(): SequenceEditorMiddleProps {

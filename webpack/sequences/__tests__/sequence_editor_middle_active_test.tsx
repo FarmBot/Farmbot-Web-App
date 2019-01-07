@@ -18,9 +18,9 @@ jest.mock("../../devices/actions", () => ({
   execSequence: jest.fn()
 }));
 
-jest.mock("../locals_list", () => ({
+jest.mock("../locals_list/locals_list", () => ({
   LocalsList: () => <div />,
-  localListCallback: jest.fn(),
+  localListCallback: jest.fn(() => jest.fn()),
 }));
 
 import * as React from "react";
@@ -37,12 +37,12 @@ import { destroy, save, edit } from "../../api/crud";
 import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
-import { SpecialStatus, Coordinate } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
-import { VariableNameSet } from "../../resources/interfaces";
+import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const sequence = fakeSequence();
@@ -115,25 +115,6 @@ describe("<SequenceEditorMiddleActive/>", () => {
       height: "calc(100vh - 25rem)"
     });
   });
-
-  const fakeVariableNameSet = (): VariableNameSet => {
-    const label = "parent";
-    const variableValue: Coordinate = {
-      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-    };
-    return {
-      [label]: {
-        celeryNode: {
-          kind: "variable_declaration",
-          args: { label, data_value: variableValue }
-        },
-        dropdown: { label: "", value: "" },
-        location: { x: 0, y: 0, z: 0 },
-        editable: true,
-        variableValue,
-      }
-    };
-  };
 
   it("has correct height with variable form", () => {
     const p = fakeProps();

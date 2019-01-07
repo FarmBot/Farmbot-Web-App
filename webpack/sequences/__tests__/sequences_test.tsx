@@ -11,7 +11,9 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { ToolTips } from "../../constants";
-import { fakeHardwareFlags } from "../../__test_support__/sequence_hardware_settings";
+import {
+  fakeHardwareFlags
+} from "../../__test_support__/sequence_hardware_settings";
 
 describe("<Sequences/>", () => {
   function fakeProps(): Props {

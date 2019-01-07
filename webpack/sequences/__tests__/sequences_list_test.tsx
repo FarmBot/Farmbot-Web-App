@@ -41,7 +41,8 @@ describe("<SequencesList />", () => {
       resourceUsage: resourceUsageList(inUse),
       dispatch: jest.fn(),
       sequence: undefined,
-      sequences
+      sequences,
+      sequenceMetas: {},
     };
   };
 

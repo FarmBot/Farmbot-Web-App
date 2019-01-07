@@ -30,6 +30,7 @@ export class Sequences extends React.Component<Props, {}> {
           helpText={t(ToolTips.SEQUENCE_LIST)}>
           <SequencesList
             resourceUsage={resourceUsageList(this.props.resources.inUse)}
+            sequenceMetas={this.props.resources.sequenceMetas}
             dispatch={this.props.dispatch}
             sequence={this.props.sequence}
             sequences={this.props.sequences} />

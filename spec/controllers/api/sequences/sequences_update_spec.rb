@@ -34,20 +34,18 @@ describe Api::SequencesController do
       patch :update, params: {id: sequence.id }, body: input.to_json, as: :json
     end
 
-    it 'disallows adding `parent` to sequences used as executable' do
-      pending "Possibly broke"
+    it 'allows adding `parent` to sequences used as executable' do
       sign_in user
       sequence = FakeSequence.create(device: user.device)
-      farm_ev  = FactoryBot.create(:farm_event, device: user.device, executable: sequence)
+      farm_ev  = FactoryBot.create(:farm_event,
+                                   device: user.device,
+                                   executable: sequence)
       try_to_add_parent(sequence)
-      expect(response.status).to eq(422)
-      expect(json[:sequence]).to include(farm_ev.fancy_name)
-      expect(json[:sequence]).to include("in use by FarmEvents")
+      expect(response.status).to eq(200)
     end
 
 
     it 'disallows adding `parent` to sequences used in a regimen' do
-      pending "Possibly broke"
       sign_in user
       sequence = FakeSequence.create(device: user.device)
       regimen  = Regimens::Create.run!(device: user.device,
@@ -58,8 +56,9 @@ describe Api::SequencesController do
                                        ])
       try_to_add_parent(sequence)
       expect(response.status).to eq(422)
-      expect(json[:sequence]).to include("Regimen(s) are using it")
-      expect(json[:sequence]).to include(regimen.fancy_name)
+      err = \
+        Sequences::CeleryScriptValidators::NO_REGIMENS
+      expect(json[:parent]).to include(err)
     end
 
     it 'does not let you use other peoples point resources' do
