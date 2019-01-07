@@ -9,6 +9,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
 -- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -52,6 +66,65 @@ CREATE TABLE public.ar_internal_metadata (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
+
+
+--
+-- Name: arg_names; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arg_names (
+    id bigint NOT NULL,
+    value character varying NOT NULL
+);
+
+
+--
+-- Name: arg_names_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arg_names_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arg_names_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arg_names_id_seq OWNED BY public.arg_names.id;
+
+
+--
+-- Name: arg_sets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.arg_sets (
+    id bigint NOT NULL,
+    fragment_id bigint NOT NULL,
+    node_id bigint NOT NULL
+);
+
+
+--
+-- Name: arg_sets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.arg_sets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arg_sets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.arg_sets_id_seq OWNED BY public.arg_sets.id;
 
 
 --
@@ -143,7 +216,8 @@ CREATE TABLE public.devices (
     throttled_at timestamp without time zone,
     mounted_tool_id bigint,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    serial_number character varying(32)
 );
 
 
@@ -519,6 +593,39 @@ ALTER SEQUENCE public.firmware_configs_id_seq OWNED BY public.firmware_configs.i
 
 
 --
+-- Name: fragments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fragments (
+    id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    device_id bigint,
+    owner_type character varying NOT NULL,
+    owner_id bigint NOT NULL
+);
+
+
+--
+-- Name: fragments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fragments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fragments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fragments_id_seq OWNED BY public.fragments.id;
+
+
+--
 -- Name: global_configs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -681,6 +788,35 @@ CREATE VIEW public.in_use_tools AS
 
 
 --
+-- Name: kinds; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kinds (
+    id bigint NOT NULL,
+    value character varying NOT NULL
+);
+
+
+--
+-- Name: kinds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.kinds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: kinds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.kinds_id_seq OWNED BY public.kinds.id;
+
+
+--
 -- Name: logs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -721,6 +857,39 @@ CREATE SEQUENCE public.logs_id_seq
 --
 
 ALTER SEQUENCE public.logs_id_seq OWNED BY public.logs.id;
+
+
+--
+-- Name: nodes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nodes (
+    id bigint NOT NULL,
+    fragment_id bigint NOT NULL,
+    kind_id bigint NOT NULL,
+    body_id integer,
+    next_id integer,
+    parent_id integer
+);
+
+
+--
+-- Name: nodes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.nodes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: nodes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.nodes_id_seq OWNED BY public.nodes.id;
 
 
 --
@@ -886,6 +1055,68 @@ CREATE SEQUENCE public.primary_nodes_id_seq
 --
 
 ALTER SEQUENCE public.primary_nodes_id_seq OWNED BY public.primary_nodes.id;
+
+
+--
+-- Name: primitive_pairs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.primitive_pairs (
+    id bigint NOT NULL,
+    fragment_id bigint NOT NULL,
+    arg_name_id bigint NOT NULL,
+    arg_set_id bigint NOT NULL,
+    primitive_id bigint NOT NULL
+);
+
+
+--
+-- Name: primitive_pairs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.primitive_pairs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: primitive_pairs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.primitive_pairs_id_seq OWNED BY public.primitive_pairs.id;
+
+
+--
+-- Name: primitives; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.primitives (
+    id bigint NOT NULL,
+    fragment_id bigint NOT NULL,
+    value character varying NOT NULL
+);
+
+
+--
+-- Name: primitives_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.primitives_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: primitives_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.primitives_id_seq OWNED BY public.primitives.id;
 
 
 --
@@ -1107,6 +1338,38 @@ ALTER SEQUENCE public.sequences_id_seq OWNED BY public.sequences.id;
 
 
 --
+-- Name: standard_pairs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.standard_pairs (
+    id bigint NOT NULL,
+    fragment_id bigint NOT NULL,
+    arg_name_id bigint NOT NULL,
+    arg_set_id bigint NOT NULL,
+    node_id bigint NOT NULL
+);
+
+
+--
+-- Name: standard_pairs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.standard_pairs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: standard_pairs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.standard_pairs_id_seq OWNED BY public.standard_pairs.id;
+
+
+--
 -- Name: token_issuances; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1309,6 +1572,20 @@ ALTER SEQUENCE public.webcam_feeds_id_seq OWNED BY public.webcam_feeds.id;
 
 
 --
+-- Name: arg_names id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arg_names ALTER COLUMN id SET DEFAULT nextval('public.arg_names_id_seq'::regclass);
+
+
+--
+-- Name: arg_sets id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arg_sets ALTER COLUMN id SET DEFAULT nextval('public.arg_sets_id_seq'::regclass);
+
+
+--
 -- Name: delayed_jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1379,6 +1656,13 @@ ALTER TABLE ONLY public.firmware_configs ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
+-- Name: fragments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fragments ALTER COLUMN id SET DEFAULT nextval('public.fragments_id_seq'::regclass);
+
+
+--
 -- Name: global_configs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1393,10 +1677,24 @@ ALTER TABLE ONLY public.images ALTER COLUMN id SET DEFAULT nextval('public.image
 
 
 --
+-- Name: kinds id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kinds ALTER COLUMN id SET DEFAULT nextval('public.kinds_id_seq'::regclass);
+
+
+--
 -- Name: logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.logs ALTER COLUMN id SET DEFAULT nextval('public.logs_id_seq'::regclass);
+
+
+--
+-- Name: nodes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nodes ALTER COLUMN id SET DEFAULT nextval('public.nodes_id_seq'::regclass);
 
 
 --
@@ -1432,6 +1730,20 @@ ALTER TABLE ONLY public.points ALTER COLUMN id SET DEFAULT nextval('public.point
 --
 
 ALTER TABLE ONLY public.primary_nodes ALTER COLUMN id SET DEFAULT nextval('public.primary_nodes_id_seq'::regclass);
+
+
+--
+-- Name: primitive_pairs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.primitive_pairs ALTER COLUMN id SET DEFAULT nextval('public.primitive_pairs_id_seq'::regclass);
+
+
+--
+-- Name: primitives id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.primitives ALTER COLUMN id SET DEFAULT nextval('public.primitives_id_seq'::regclass);
 
 
 --
@@ -1477,6 +1789,13 @@ ALTER TABLE ONLY public.sequences ALTER COLUMN id SET DEFAULT nextval('public.se
 
 
 --
+-- Name: standard_pairs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.standard_pairs ALTER COLUMN id SET DEFAULT nextval('public.standard_pairs_id_seq'::regclass);
+
+
+--
 -- Name: token_issuances id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1517,6 +1836,22 @@ ALTER TABLE ONLY public.webcam_feeds ALTER COLUMN id SET DEFAULT nextval('public
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: arg_names arg_names_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arg_names
+    ADD CONSTRAINT arg_names_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arg_sets arg_sets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.arg_sets
+    ADD CONSTRAINT arg_sets_pkey PRIMARY KEY (id);
 
 
 --
@@ -1600,6 +1935,14 @@ ALTER TABLE ONLY public.firmware_configs
 
 
 --
+-- Name: fragments fragments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fragments
+    ADD CONSTRAINT fragments_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: global_configs global_configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1616,11 +1959,27 @@ ALTER TABLE ONLY public.images
 
 
 --
+-- Name: kinds kinds_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kinds
+    ADD CONSTRAINT kinds_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: logs logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.logs
     ADD CONSTRAINT logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT nodes_pkey PRIMARY KEY (id);
 
 
 --
@@ -1661,6 +2020,22 @@ ALTER TABLE ONLY public.points
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT primary_nodes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: primitive_pairs primitive_pairs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.primitive_pairs
+    ADD CONSTRAINT primitive_pairs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: primitives primitives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.primitives
+    ADD CONSTRAINT primitives_pkey PRIMARY KEY (id);
 
 
 --
@@ -1720,6 +2095,14 @@ ALTER TABLE ONLY public.sequences
 
 
 --
+-- Name: standard_pairs standard_pairs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.standard_pairs
+    ADD CONSTRAINT standard_pairs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: token_issuances token_issuances_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1764,6 +2147,20 @@ ALTER TABLE ONLY public.webcam_feeds
 --
 
 CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority, run_at);
+
+
+--
+-- Name: index_arg_sets_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_arg_sets_on_fragment_id ON public.arg_sets USING btree (fragment_id);
+
+
+--
+-- Name: index_arg_sets_on_node_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_arg_sets_on_node_id ON public.arg_sets USING btree (node_id);
 
 
 --
@@ -1865,6 +2262,20 @@ CREATE INDEX index_firmware_configs_on_device_id ON public.firmware_configs USIN
 
 
 --
+-- Name: index_fragments_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fragments_on_device_id ON public.fragments USING btree (device_id);
+
+
+--
+-- Name: index_fragments_on_owner_type_and_owner_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fragments_on_owner_type_and_owner_id ON public.fragments USING btree (owner_type, owner_id);
+
+
+--
 -- Name: index_global_configs_on_key; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1932,6 +2343,20 @@ CREATE INDEX index_logs_on_verbosity ON public.logs USING btree (verbosity);
 --
 
 CREATE INDEX index_logs_on_verbosity_and_type ON public.logs USING btree (verbosity, type);
+
+
+--
+-- Name: index_nodes_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_nodes_on_fragment_id ON public.nodes USING btree (fragment_id);
+
+
+--
+-- Name: index_nodes_on_kind_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_nodes_on_kind_id ON public.nodes USING btree (kind_id);
 
 
 --
@@ -2047,6 +2472,41 @@ CREATE INDEX index_primary_nodes_on_sequence_id ON public.primary_nodes USING bt
 
 
 --
+-- Name: index_primitive_pairs_on_arg_name_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_primitive_pairs_on_arg_name_id ON public.primitive_pairs USING btree (arg_name_id);
+
+
+--
+-- Name: index_primitive_pairs_on_arg_set_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_primitive_pairs_on_arg_set_id ON public.primitive_pairs USING btree (arg_set_id);
+
+
+--
+-- Name: index_primitive_pairs_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_primitive_pairs_on_fragment_id ON public.primitive_pairs USING btree (fragment_id);
+
+
+--
+-- Name: index_primitive_pairs_on_primitive_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_primitive_pairs_on_primitive_id ON public.primitive_pairs USING btree (primitive_id);
+
+
+--
+-- Name: index_primitives_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_primitives_on_fragment_id ON public.primitives USING btree (fragment_id);
+
+
+--
 -- Name: index_regimen_items_on_regimen_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2100,6 +2560,34 @@ CREATE INDEX index_sequences_on_created_at ON public.sequences USING btree (crea
 --
 
 CREATE INDEX index_sequences_on_device_id ON public.sequences USING btree (device_id);
+
+
+--
+-- Name: index_standard_pairs_on_arg_name_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_standard_pairs_on_arg_name_id ON public.standard_pairs USING btree (arg_name_id);
+
+
+--
+-- Name: index_standard_pairs_on_arg_set_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_standard_pairs_on_arg_set_id ON public.standard_pairs USING btree (arg_set_id);
+
+
+--
+-- Name: index_standard_pairs_on_fragment_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_standard_pairs_on_fragment_id ON public.standard_pairs USING btree (fragment_id);
+
+
+--
+-- Name: index_standard_pairs_on_node_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_standard_pairs_on_node_id ON public.standard_pairs USING btree (node_id);
 
 
 --
@@ -2205,19 +2693,19 @@ ALTER TABLE ONLY public.points
 
 
 --
--- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
+
+
+--
+-- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2397,6 +2885,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181025182807'),
 ('20181112010427'),
 ('20181126175951'),
-('20181204005038');
+('20181204005038'),
+('20181208035706'),
+('20190103211708'),
+('20190103213956');
 
 

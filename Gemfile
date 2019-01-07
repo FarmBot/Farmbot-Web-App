@@ -35,8 +35,6 @@ gem "redis", "~> 4.0"
 
 group :development, :test do
   gem "thin"
-  gem "capybara"
-  # gem "deep-cover", "~> 0.4", require: false
   gem "codecov", require: false
   gem "simplecov"
   gem "database_cleaner"
