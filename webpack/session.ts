@@ -35,7 +35,7 @@ export namespace Session {
     }
   }
 
-  /** Clear localstorage and sessionstorage. */
+  /** Clear localStorage and sessionStorage. */
   export function clear(): never {
     localStorage.clear();
     sessionStorage.clear();
@@ -47,7 +47,7 @@ export namespace Session {
 export const isBooleanSetting =
   (k: unknown): k is BooleanConfigKey => !!BooleanSetting[k as BooleanConfigKey];
 
-export function safeBooleanSettting(name: string): BooleanConfigKey {
+export function safeBooleanSetting(name: string): BooleanConfigKey {
   if (isBooleanSetting(name)) {
     return name;
   } else {

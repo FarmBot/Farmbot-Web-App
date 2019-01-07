@@ -25,7 +25,7 @@ function getAlignment(
   swappedXY: Boolean
 ): Alignment {
   if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)) {
-    // Plant editing (dragging) is occuring
+    // Plant editing (dragging) is occurring
     const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
     if (activeXY.x == plantXYZ.x && activeXY.y == plantXYZ.y) {
       return Alignment.BOTH;

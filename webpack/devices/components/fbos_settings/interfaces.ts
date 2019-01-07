@@ -68,4 +68,5 @@ export interface OsUpdateButtonProps {
   bot: BotState;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
+  shouldDisplay: ShouldDisplay;
 }

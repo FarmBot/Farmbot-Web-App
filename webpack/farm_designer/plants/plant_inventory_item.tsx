@@ -20,7 +20,7 @@ interface PlantInventoryItemState {
   icon: string;
 }
 
-// The inidividual plants that show up in the farm designer sub nav.
+// The individual plants that show up in the farm designer sub nav.
 export class PlantInventoryItem extends
   React.Component<PlantInventoryItemProps, PlantInventoryItemState> {
 

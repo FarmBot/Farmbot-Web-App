@@ -33,7 +33,7 @@ describe("copySequence()", () => {
     expect(push).toHaveBeenCalledWith("/app/sequences/fake_copy_2");
   });
 
-  it("selcts sequence", () => {
+  it("selects sequence", () => {
     copySequence(fakeSequence())(jest.fn());
     expect(setActiveSequenceByName).toHaveBeenCalled();
   });

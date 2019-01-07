@@ -1,11 +1,11 @@
 import * as React from "react";
 import { t } from "i18next";
-import { JobProgress } from "farmbot/dist";
+import { JobProgress, ConfigurationName } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../actions";
 import { isString } from "lodash";
-import { BotState } from "../../interfaces";
+import { BotState, Feature } from "../../interfaces";
 
 /** FBOS update button states. */
 enum UpdateButton { upToDate, needsUpdate, unknown, none }
@@ -151,7 +151,9 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { bot, sourceFbosConfig, botOnline } = props;
 
   /** FBOS beta release opt-in setting. */
-  const betaOptIn = !!sourceFbosConfig("beta_opt_in").value;
+  const betaOptIn = props.shouldDisplay(Feature.use_update_channel)
+    ? sourceFbosConfig("update_channel" as ConfigurationName).value !== "stable"
+    : !!sourceFbosConfig("beta_opt_in").value;
   /** FBOS update availability. */
   const buttonStatusProps = buttonVersionStatus({ bot, betaOptIn });
 

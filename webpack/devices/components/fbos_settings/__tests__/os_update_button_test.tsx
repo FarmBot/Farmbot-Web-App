@@ -11,6 +11,7 @@ import { mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
+import { ShouldDisplay } from "../../../interfaces";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
@@ -23,6 +24,7 @@ describe("<OsUpdateButton/>", () => {
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
     botOnline: true,
+    shouldDisplay: () => false,
   });
 
   interface TestProps {
@@ -34,6 +36,8 @@ describe("<OsUpdateButton/>", () => {
     betaOptIn: boolean | undefined;
     onBeta: boolean | undefined;
     update_available?: boolean | undefined;
+    shouldDisplay: ShouldDisplay;
+    update_channel: string;
   }
 
   const defaultTestProps = (): TestProps => ({
@@ -44,6 +48,8 @@ describe("<OsUpdateButton/>", () => {
     availableBetaCommit: undefined,
     betaOptIn: false,
     onBeta: false,
+    shouldDisplay: () => false,
+    update_channel: "stable",
   });
 
   interface Results {
@@ -90,7 +96,8 @@ describe("<OsUpdateButton/>", () => {
     expected: Results) => {
     const {
       installedVersion, installedCommit, onBeta, update_available,
-      availableVersion, availableBetaVersion, availableBetaCommit, betaOptIn
+      availableVersion, availableBetaVersion, availableBetaCommit, betaOptIn,
+      shouldDisplay, update_channel,
     } = testProps;
     bot.hardware.informational_settings.controller_version = installedVersion;
     bot.hardware.informational_settings.commit = installedCommit;
@@ -101,8 +108,12 @@ describe("<OsUpdateButton/>", () => {
     bot.currentBetaOSVersion = availableBetaVersion;
     bot.currentBetaOSCommit = availableBetaCommit;
     bot.hardware.configuration.beta_opt_in = betaOptIn;
+    // tslint:disable-next-line:no-any
+    (bot.hardware.configuration as any).update_channel = update_channel;
 
-    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const p = fakeProps();
+    p.shouldDisplay = shouldDisplay;
+    const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     expect(osUpdateButton.text()).toBe(expected.text);
     expect(osUpdateButton.props().title).toBe(expected.title);
@@ -253,11 +264,49 @@ describe("<OsUpdateButton/>", () => {
     testButtonState(testProps, expectedResults);
   });
 
+  it("uses update_channel value", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "3.1.6";
+    testProps.shouldDisplay = () => true;
+    testProps.update_channel = "stable";
+    testProps.availableBetaVersion = "3.1.7-beta";
+    const expectedResults = upToDate("3.1.6");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("uses update_channel value: beta", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "3.1.6";
+    testProps.shouldDisplay = () => true;
+    testProps.update_channel = "beta";
+    testProps.availableBetaVersion = "3.1.7-beta";
+    const expectedResults = updateNeeded("3.1.7-beta");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("doesn't use update_channel value", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "3.1.6";
+    testProps.shouldDisplay = () => false;
+    testProps.update_channel = "beta";
+    testProps.availableBetaVersion = "3.1.7-beta";
+    const expectedResults = upToDate("3.1.6");
+    testButtonState(testProps, expectedResults);
+  });
+
   it("calls checkUpdates", () => {
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
     expect(mockDevice.checkUpdates).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles undefined jobs", () => {
+    // tslint:disable-next-line:no-any
+    bot.hardware.jobs = undefined as any;
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").first();
+    expect(osUpdateButton.text()).toEqual("UP TO DATE");
   });
 
   function bytesProgressTest(unit: string, progress: number, text: string) {

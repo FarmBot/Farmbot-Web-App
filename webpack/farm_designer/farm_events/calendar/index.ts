@@ -4,7 +4,7 @@ import * as moment from "moment";
 import * as _ from "lodash";
 
 export class Calendar {
-  /** We sort by this attribute. Left as const so that the comiler can catch
+  /** We sort by this attribute. Left as const so that the compiler can catch
    * name changes. */
   static SORT_KEY: keyof CalendarDay = "sortKey";
   static DATE_FORMAT = "MMDDYY";
