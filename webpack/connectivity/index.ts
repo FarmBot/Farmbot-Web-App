@@ -17,9 +17,8 @@ const lastCalledAt: Record<Edge, number> = {
 
 function shouldThrottle(edge: Edge, now: number): boolean {
   const then = lastCalledAt[edge];
-  const diff = then - now;
-
-  return diff > SLOWDOWN_TIME;
+  const diff = now - then;
+  return diff < SLOWDOWN_TIME;
 }
 
 function bumpThrottle(edge: Edge, now: number) {

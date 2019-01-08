@@ -1,51 +1,43 @@
-
-const mockRedux = {
-  store: {
-    dispatch: jest.fn()
-  }
-};
-
+const mockRedux = { store: { dispatch: jest.fn() } };
 jest.mock("../../redux/store", () => mockRedux);
-jest.mock("lodash", () => {
-  return {
-    // tslint:disable-next-line:no-any
-    set(target: any, key: string, val: any) { target[key] = val; },
-    times: (n: number, iter: Function) => {
-      let n2 = n;
-      while (n2 > 0) {
-        iter(n2);
-        n2--;
-      }
-    },
-    throttle: (x: Function) => x
-  };
-});
 
-jest.mock("../auto_sync_handle_inbound", () => {
-  return { handleInbound: jest.fn() };
-});
+jest.mock("../auto_sync_handle_inbound", () => ({ handleInbound: jest.fn() }));
 
 import { dispatchNetworkUp, dispatchNetworkDown } from "../index";
 import { networkUp, networkDown } from "../actions";
 import { GetState } from "../../redux/interfaces";
 import { autoSync, routeMqttData } from "../auto_sync";
 import { handleInbound } from "../auto_sync_handle_inbound";
-const NOW = (new Date());
+
+const NOW = new Date();
+const SHORT_TIME_LATER = new Date(NOW.getTime() + 500);
+const LONGER_TIME_LATER = new Date(NOW.getTime() + 5000);
+
 describe("dispatchNetworkUp", () => {
+  const NOW_UP = networkUp("bot.mqtt", NOW.toJSON(), "tests");
+  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER.toJSON(), "tests");
+
   it("calls redux directly", () => {
-    jest.resetAllMocks();
     dispatchNetworkUp("bot.mqtt", NOW, "tests");
-    expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkUp("bot.mqtt", NOW.toJSON(), "tests"));
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
+    dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER, "tests");
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
+    dispatchNetworkUp("bot.mqtt", LONGER_TIME_LATER, "tests");
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(LATER_UP);
   });
 });
 
 describe("dispatchNetworkDown", () => {
+  const NOW_DOWN = networkDown("user.api", NOW.toJSON(), "tests");
+  const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER.toJSON(), "tests");
+
   it("calls redux directly", () => {
-    jest.resetAllMocks();
     dispatchNetworkDown("user.api", NOW, "tests");
-    expect(mockRedux.store.dispatch)
-      .toHaveBeenLastCalledWith(networkDown("user.api", NOW.toJSON(), "tests"));
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);
+    dispatchNetworkDown("user.api", SHORT_TIME_LATER, "tests");
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);
+    dispatchNetworkDown("user.api", LONGER_TIME_LATER, "tests");
+    expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(LATER_DOWN);
   });
 });
 

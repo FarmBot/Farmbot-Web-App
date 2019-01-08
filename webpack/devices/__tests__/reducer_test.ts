@@ -104,9 +104,14 @@ describe("botReducer", () => {
       .toBe(step1.hardware.informational_settings.sync_status);
     expect(step2.hardware.informational_settings.sync_status).toBeUndefined();
 
-    const step3 = botReducer(step2, networkUp("bot.mqtt", undefined, "tests"));
-    expect(step3.hardware.informational_settings.sync_status)
-      .toBe(step2.statusStash);
+    const step3 = botReducer(step1, networkDown("bot.mqtt", undefined, "tests"));
+    expect(step3.statusStash)
+      .toBe(step1.hardware.informational_settings.sync_status);
+    expect(step3.hardware.informational_settings.sync_status).toBeUndefined();
+
+    const step4 = botReducer(step3, networkUp("bot.mqtt", undefined, "tests"));
+    expect(step4.hardware.informational_settings.sync_status)
+      .toBe(step3.statusStash);
   });
 
   it("handles STASH_STATUS / _RESOURCE_NO", () => {
@@ -118,7 +123,7 @@ describe("botReducer", () => {
       .toBe(step1.hardware.informational_settings.sync_status);
     const no = { type: Actions._RESOURCE_NO, payload: undefined };
     const step3 = botReducer(step2, no);
-    const step3Status = step3.hardware.informational_settings.sync_status;
-    expect(step3Status).toEqual(step3.statusStash);
+    expect(step3.hardware.informational_settings.sync_status)
+      .toBe(step3.statusStash);
   });
 });
