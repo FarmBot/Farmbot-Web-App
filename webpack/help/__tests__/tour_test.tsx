@@ -5,7 +5,7 @@ import { tourNames, TOUR_STEPS } from "../tours";
 import { mount, shallow } from "enzyme";
 import { RunTour, Tour } from "../tour";
 import { history } from "../../history";
-import { State } from "react-joyride";
+import { CallBackProps } from "react-joyride";
 
 describe("<RunTour />", () => {
   const EMPTY_DIV = "<div></div>";
@@ -22,7 +22,7 @@ describe("<RunTour />", () => {
 });
 
 describe("<Tour />", () => {
-  const fakeCallbackData = (data: Partial<State>): State => ({
+  const fakeCallbackData = (data: Partial<CallBackProps>): CallBackProps => ({
     action: data.action || "start",
     index: data.index || 0,
     controlled: false,
