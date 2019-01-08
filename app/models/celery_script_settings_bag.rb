@@ -79,7 +79,7 @@ module CeleryScriptSettingsBag
                           " as input. Please change your selection to a "\
                           "single location."
   ALLOWED_GROUP_TYPE    = %w(GenericPointer Plant Tool)
-  BAD_GROUP_TYPE        = '"%s" is not a type of point. Allowed values: %s'
+  BAD_GROUP_TYPE        = '"%s" is not a type of group. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus.new
       .arg(:_else,        [:execute, :nothing])

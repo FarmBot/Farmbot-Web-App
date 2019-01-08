@@ -10,7 +10,7 @@ describe CeleryScript::Corpus do
     })
     check1 = CeleryScript::Checker.new(not_ok, corpus, device)
     expect(check1.valid?).to eq(false)
-    expect(check1.error.message).to include("not a type of point")
+    expect(check1.error.message).to include("not a type of group")
   end
 
   it "does not all `every_location` in `move_absolute`" do
