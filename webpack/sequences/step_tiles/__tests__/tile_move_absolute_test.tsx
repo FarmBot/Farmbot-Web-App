@@ -275,6 +275,18 @@ describe("<TileMoveAbsolute/>", () => {
       });
     });
 
+    it("does not handle every_point nodes", () => {
+      const p = fakeProps();
+      const block = ordinaryMoveAbs(p);
+      const boom = () => block.updateLocation({
+        kind: "variable_declaration",
+        args: {
+          label: "parent",
+          data_value: { kind: "every_point", args: { group_type: "Plant" } }
+        }
+      });
+      expect(boom).toThrowError("Can't put `every_point` into `move_abs");
+    });
     it("handles variables", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);

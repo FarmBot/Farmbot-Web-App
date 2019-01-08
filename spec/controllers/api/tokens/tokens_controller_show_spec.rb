@@ -39,7 +39,7 @@ describe Api::TokensController do
     it 'allows good tokens' do
       request.headers["Authorization"] = "bearer #{auth_token.encoded}"
       get :show
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
     end
 
     it 'denies expired (revoked) tokens' do

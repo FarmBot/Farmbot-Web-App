@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Resources::PreProcessor do
+describe Resources::Preprocessor do
   DeliveryInfoShim = Struct.new(:routing_key)
 
   let(:pb) { FactoryBot.create(:pin_binding) }
@@ -16,7 +16,7 @@ describe Resources::PreProcessor do
   let(:preprocessed) do
     body   = {}.to_json
     chan   = Resources::CHANNEL_TPL % props
-    Resources::PreProcessor.from_amqp(DeliveryInfoShim.new(chan), body)
+    Resources::Preprocessor.from_amqp(DeliveryInfoShim.new(chan), body)
   end
 
   it "converts string types to real types" do
@@ -32,7 +32,7 @@ describe Resources::PreProcessor do
     body   = "}{"
     chan   = Resources::CHANNEL_TPL % props
     expect do
-      Resources::PreProcessor.from_amqp(DeliveryInfoShim.new(chan), body)
+      Resources::Preprocessor.from_amqp(DeliveryInfoShim.new(chan), body)
     end.to raise_error(Mutations::ValidationException, "body must be a JSON object")
   end
 
