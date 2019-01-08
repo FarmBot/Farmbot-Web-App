@@ -26,7 +26,7 @@ module Resources
     end
 
     def self.step1(delivery_info, body) # Returns params or nil
-      PreProcessor.from_amqp(delivery_info, body)
+      Preprocessor.from_amqp(delivery_info, body)
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
       raw_chan = delivery_info&.routing_key&.split(".") || []

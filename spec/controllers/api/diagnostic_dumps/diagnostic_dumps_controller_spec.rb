@@ -46,7 +46,7 @@ describe Api::DiagnosticDumpsController do
     farmware_env = FactoryBot.create(:diagnostic_dump, device: device)
     id            = farmware_env.id
     delete :destroy, params: { id: farmware_env.id }
-    expect(response.status).to be(200)
+    expect(response.status).to eq(200)
     expect(DiagnosticDump.exists?(id)).to be false
   end
 end

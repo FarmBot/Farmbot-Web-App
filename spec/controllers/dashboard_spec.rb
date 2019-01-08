@@ -58,7 +58,7 @@ describe DashboardController do
       post :direct_upload, params: params
       file = File.join("public", "direct_upload", "temp", name)
       expect(File.file?(file)).to be(true)
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       File.delete(file)
     end
   end

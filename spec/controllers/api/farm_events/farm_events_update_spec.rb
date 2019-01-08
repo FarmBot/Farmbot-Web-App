@@ -78,7 +78,7 @@ describe Api::FarmEventsController do
       fragment_b4 = fe.fragment.id
       expect(fe.fragment).not_to be(nil)
       update_body(fe, nil)
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(fe.reload.fragment).not_to be(nil)
       expect(fe.fragment.id).to         eq(fragment_b4)
     end
@@ -96,7 +96,7 @@ describe Api::FarmEventsController do
       fe = create_fe_with_fragment
       expect(fe.fragment).not_to be(nil)
       update_body(fe, nil)
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(fe.reload.fragment).not_to be(nil)
     end
 
@@ -120,7 +120,7 @@ describe Api::FarmEventsController do
         }
       ]
       update_body(fe, body)
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(fe.reload.fragment).not_to be(nil)
       expect(json.fetch(:body)).to eq(body)
     end

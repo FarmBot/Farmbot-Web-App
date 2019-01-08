@@ -12,7 +12,7 @@ describe Api::WebAppConfigsController do
       sign_in user
       device.web_app_config.destroy! # Let's test defaults.
       get :show, format: :json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       {
         :confirm_step_deletion => false,
         :disable_animations    => false,

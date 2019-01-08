@@ -20,7 +20,7 @@ describe Api::PlantTemplatesController do
       sign_in user
       templates_count = plant_templates.count
       get :index
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(json.length).to be(templates_count)
       this = json.first
       that = PlantTemplate.find(this[:id])
@@ -42,7 +42,7 @@ describe Api::PlantTemplatesController do
                 openfarm_slug:   "tomato",
                 radius:          32}
       post :create, params: {format: :json}, body: params.to_json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       params.map { |(key,value)| expect(json[key]).to eq(value) }
       expect(user.device.plant_templates.count).to be > b4
     end
@@ -61,7 +61,7 @@ describe Api::PlantTemplatesController do
                         radius:          32}
       put :update,  params: { format: :json, id: plant_template.id },
                     body:   params.to_json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       params.map { |(key,value)| expect(json[key]).to eq(value) }
     end
 
@@ -78,7 +78,7 @@ describe Api::PlantTemplatesController do
         params         = { saved_garden_id: new_garden.id }
         put :update,  params: { format: :json, id: plant_template.id },
                       body:   params.to_json
-        expect(response.status).to be(200)
+        expect(response.status).to eq(200)
         expect(json[:saved_garden_id]).to eq(new_garden.id)
     end
   end
@@ -89,7 +89,7 @@ describe Api::PlantTemplatesController do
       garden = plant_templates.first
       b4     = plant_templates.length
       delete :destroy, params: { id: garden.id }
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       expect(user.device.plant_templates.count).to be < b4
     end
   end

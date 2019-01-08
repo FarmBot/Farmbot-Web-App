@@ -12,7 +12,7 @@ describe Api::FbosConfigsController do
       sign_in user
       device.fbos_config.destroy! # Let's test defaults.
       get :show, format: :json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       {
         device_id:               device.id,
         auto_sync:               false,

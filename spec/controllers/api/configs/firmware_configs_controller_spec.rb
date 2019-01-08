@@ -12,7 +12,7 @@ describe Api::FirmwareConfigsController do
       sign_in user
       device.firmware_config.destroy! # Let's test defaults.
       get :show, format: :json
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       { encoder_enabled_x:                 1,
         encoder_enabled_y:                 1,
         encoder_enabled_z:                 1,
