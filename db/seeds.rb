@@ -5,7 +5,12 @@ if Rails.env == "development"
     DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
-
+    # CREDIT: Faker Ruby Gem
+    VEGGIES                 = %w(artichoke arugula asparagus broccoli
+    cabbage caper carob carrot cauliflower celery chive cornichon cucumber
+    eggplant endive garlic hijiki jicama kale kohlrabi leek lettuce okra onion
+    parsnip pea pepper potato pumpkin radicchio radish raspberry rhubarb spinach
+    sprout squash tomato turnip zucchini)
     [DeviceSerialNumber,
      Log,
      PinBinding,
@@ -51,7 +56,7 @@ if Rails.env == "development"
     end
 
     PLANT_COUNT.times do
-      veggie = Faker::Food.vegetables
+      veggie = VEGGIES.sample
       Plant.create(device:        u.device,
                    x:             rand(40...970),
                    y:             rand(40...470),
