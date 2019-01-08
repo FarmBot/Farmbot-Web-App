@@ -181,9 +181,11 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
   });
 
 /** Mutate syncStatus when transitioning from consistent to inconsistent. */
-const stash =
-  (s: BotState) => s.statusStash = s.hardware.informational_settings.sync_status;
+const stash = (s: BotState) => {
+  const botStatus = s.hardware.informational_settings.sync_status;
+  botStatus && (s.statusStash = botStatus);
+};
 
 /** Put the old syncStatus back where it was after bot becomes consistent. */
-const unstash =
-  (s: BotState) => s.hardware.informational_settings.sync_status = s.statusStash;
+const unstash = (s: BotState) =>
+  s.hardware.informational_settings.sync_status = s.statusStash;
