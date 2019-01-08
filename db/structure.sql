@@ -216,7 +216,8 @@ CREATE TABLE public.devices (
     throttled_at timestamp without time zone,
     mounted_tool_id bigint,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    serial_number character varying(32)
 );
 
 
@@ -2885,6 +2886,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181112010427'),
 ('20181126175951'),
 ('20181204005038'),
-('20181208035706');
+('20181208035706'),
+('20190103211708'),
+('20190103213956');
 
 

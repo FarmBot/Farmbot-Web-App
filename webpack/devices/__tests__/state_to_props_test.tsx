@@ -21,6 +21,7 @@ jest.mock("../../resources/getters", () => ({
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { TaggedFbosConfig, TaggedImage } from "farmbot";
+import { DevSettings } from "../../account/dev/dev_support";
 
 describe("mapStateToProps()", () => {
   it("uses the API as the source of FBOS settings", () => {
@@ -60,7 +61,8 @@ describe("mapStateToProps()", () => {
   it("returns API Farmware env vars", () => {
     const state = fakeState();
     state.bot.hardware.user_env = {};
-    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    state.bot.hardware.informational_settings.controller_version =
+      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     const props = mapStateToProps(state);
     expect(props.env).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"

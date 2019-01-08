@@ -37,12 +37,12 @@ import { destroy, save, edit } from "../../api/crud";
 import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
-import { SpecialStatus, Coordinate } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
-import { VariableNameSet } from "../../resources/interfaces";
+import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const sequence = fakeSequence();
@@ -115,23 +115,6 @@ describe("<SequenceEditorMiddleActive/>", () => {
       height: "calc(100vh - 25rem)"
     });
   });
-
-  const fakeVariableNameSet = (): VariableNameSet => {
-    const label = "parent";
-    const data_value: Coordinate = {
-      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-    };
-    return {
-      [label]: {
-        celeryNode: {
-          kind: "variable_declaration",
-          args: { label, data_value }
-        },
-        dropdown: { label: "", value: "" },
-        vector: { x: 0, y: 0, z: 0 },
-      }
-    };
-  };
 
   it("has correct height with variable form", () => {
     const p = fakeProps();

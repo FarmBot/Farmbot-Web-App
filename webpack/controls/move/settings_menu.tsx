@@ -4,7 +4,7 @@ import { BooleanSetting } from "../../session_keys";
 import { ToggleButton } from "../toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { futureFeaturesEnabled } from "../../account/dev_widget";
+import { DevSettings } from "../../account/dev/dev_support";
 
 export const moveWidgetSetting = (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
   ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
@@ -44,7 +44,7 @@ export const MoveWidgetSettingsMenu = ({ toggle, getValue }: {
       label={t("perform homing (find home)")}
       setting={BooleanSetting.home_button_homing} />
 
-    {futureFeaturesEnabled() &&
+    {DevSettings.futureFeaturesEnabled() &&
       <div>
         <p>{t("Motor position plot")}</p>
         <Setting

@@ -99,7 +99,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       }
     });
 
-  const { jobs } = props.bot.hardware;
+  const jobs = props.bot.hardware.jobs || {};
   const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
   const imageJobs: JobProgress[] =
     _(betterCompact(imageJobNames.map(x => jobs[x])))

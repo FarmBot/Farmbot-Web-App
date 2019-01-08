@@ -32,6 +32,7 @@ class Device < ApplicationRecord
   has_many  :diagnostic_dumps,       dependent: :destroy
   has_many  :fragments,              dependent: :destroy
   has_one   :fbos_config,            dependent: :destroy
+  has_one   :device_serial_number,   dependent: :destroy
   has_many  :in_use_tools
   has_many  :in_use_points
   has_many  :users

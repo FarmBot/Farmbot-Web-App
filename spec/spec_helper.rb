@@ -119,6 +119,14 @@ def const_reassign(target, const, value)
   target.const_set(const, value)
 end
 
+class StubResp
+  attr_accessor :code, :body
+
+  def initialize(code, body)
+    @code, @body = code, body
+  end
+end
+
 class NiceResponse
   attr_reader :r, :body
 

@@ -19,7 +19,7 @@ import {
 } from "../edit_fe_form";
 import { isString } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, VariableDeclaration } from "farmbot";
 import { success, error } from "farmbot-toastr";
 import * as moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -27,6 +27,7 @@ import { history } from "../../../history";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
+import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 
 const mockSequence = fakeSequence();
 
@@ -60,10 +61,10 @@ describe("<FarmEventForm/>", () => {
 
   it("determines if it is a one time event", () => {
     const i = instance(props());
-    expect(i.isOneTime).toBe(true);
+    expect(i.repeats).toBe(false);
     i.mergeState("timeUnit", "daily");
     i.forceUpdate();
-    expect(i.isOneTime).toBe(false);
+    expect(i.repeats).toBe(true);
   });
 
   it("has a dispatch", () => {
@@ -400,6 +401,82 @@ describe("<FarmEventForm/>", () => {
     const fakeNow = moment("2017-06-01T00:00:00.000Z");
     const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
     expect(reject).toBeFalsy();
+  });
+
+  it("edits a declaration", () => {
+    const p = props();
+    const oldDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: {
+          kind: "point", args: {
+            pointer_id: 1, pointer_type: "Plant"
+          }
+        }
+      }
+    };
+    const newDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+      }
+    };
+    const inst = instance(p);
+    inst.setState({ fe: { body: [oldDeclaration] } });
+    expect(inst.state.fe.body).toEqual([oldDeclaration]);
+    expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.SAVED);
+    inst.editDeclaration([oldDeclaration])(newDeclaration);
+    expect(inst.state.fe.body).toEqual([newDeclaration]);
+    expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.DIRTY);
+  });
+
+  it("saves an updated declaration", () => {
+    const p = props();
+    const oldDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: {
+          kind: "point", args: {
+            pointer_id: 1, pointer_type: "Plant"
+          }
+        }
+      }
+    };
+    p.farmEvent.body.body = [oldDeclaration];
+    const newDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+      }
+    };
+    const inst = instance(p);
+    inst.setState({ fe: { body: [newDeclaration] } });
+    expect(inst.updatedFarmEvent.body).toEqual([newDeclaration]);
+  });
+
+  it("saves the current declaration", () => {
+    const p = props();
+    const sequence = fakeSequence();
+    p.findExecutable = () => sequence;
+    p.resources.sequenceMetas[sequence.uuid] = fakeVariableNameSet("foo");
+    const oldDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: {
+          kind: "point", args: {
+            pointer_id: 1, pointer_type: "Plant"
+          }
+        }
+      }
+    };
+    p.farmEvent.body.body = [oldDeclaration];
+    const inst = instance(p);
+    expect(inst.updatedFarmEvent.body).toEqual([oldDeclaration]);
   });
 });
 

@@ -25,8 +25,9 @@ export const declarationList = (variableData: VariableNameSet | undefined):
 };
 
 /** Add a new var declaration or replace an existing one with the same label. */
-export const addOrEditVarDeclaration = (declarations: VariableDeclaration[]) =>
-  (updatedItem: VariableDeclaration): VariableDeclaration[] => {
+export const addOrEditVarDeclaration =
+  (declarations: VariableDeclaration[],
+    updatedItem: VariableDeclaration): VariableDeclaration[] => {
     const items = reduceVarDeclarations(declarations);
     items[updatedItem.args.label] = updatedItem;
     return Object.values(items);

@@ -16,7 +16,7 @@ import { Content } from "../../constants";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../plants/designer_panel";
-import { futureFeaturesEnabled } from "../../account/dev_widget";
+import { DevSettings } from "../../account/dev/dev_support";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -64,7 +64,7 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
 /** Link to SavedGardens panel for garden map legend. */
 export const SavedGardensLink = () =>
   <button className="fb-button green"
-    hidden={!futureFeaturesEnabled()}
+    hidden={!DevSettings.futureFeaturesEnabled()}
     onClick={() => history.push("/app/designer/saved_gardens")}>
     {t("Saved Gardens")}
   </button>;

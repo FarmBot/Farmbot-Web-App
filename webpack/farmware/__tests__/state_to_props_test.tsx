@@ -15,6 +15,7 @@ import {
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { JobProgress } from "farmbot";
+import { DevSettings } from "../../account/dev/dev_support";
 
 describe("mapStateToProps()", () => {
 
@@ -48,7 +49,8 @@ describe("mapStateToProps()", () => {
   it("returns API farmware env", () => {
     const state = fakeState();
     state.bot.hardware.user_env = {};
-    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    state.bot.hardware.informational_settings.controller_version =
+      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     state.resources = buildResourceIndex([fakeFarmwareEnv()]);
     const props = mapStateToProps(state);
     expect(props.user_env).toEqual({
@@ -58,7 +60,8 @@ describe("mapStateToProps()", () => {
 
   it("includes API FarmwareInstallations", () => {
     const state = fakeState();
-    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    state.bot.hardware.informational_settings.controller_version =
+      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     const farmware1 = fakeFarmwareInstallation();
     farmware1.body.id = 2;
     const farmware2 = fakeFarmwareInstallation();
@@ -117,6 +120,14 @@ describe("mapStateToProps()", () => {
         unit: "percent",
         time: "2018-11-15 18:13:21.167440Z"
       }]);
+  });
+
+  it("handles undefined jobs", () => {
+    const state = fakeState();
+    // tslint:disable-next-line:no-any
+    state.bot.hardware.jobs = undefined as any;
+    const props = mapStateToProps(state);
+    expect(props.imageJobs).toEqual([]);
   });
 });
 

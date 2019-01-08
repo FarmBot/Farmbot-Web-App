@@ -74,7 +74,7 @@ describe Api::ImagesController do
       expect(Image.count).to be > before_count
       expect(json[:device_id]).to eq(user.device.id)
       expect(json.key?(:attachment_processed_at)).to be_truthy
-      expect(json[:attachment_url]).to include("placeholder.png")
+      expect(json[:attachment_url]).to include("placeholder_farmbot.jpg")
       expect(json.dig :meta, :x).to eq(1)
       expect(json.dig :meta, :y).to eq(nil)
       expect(json.dig :meta, :z).to eq(3)

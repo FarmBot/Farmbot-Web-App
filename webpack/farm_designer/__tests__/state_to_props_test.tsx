@@ -13,6 +13,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
+import { DevSettings } from "../../account/dev/dev_support";
 
 describe("mapStateToProps()", () => {
   const DISCARDED_AT = "2018-01-01T00:00:00.000Z";
@@ -111,7 +112,8 @@ describe("getPlants()", () => {
   it("returns API farmware env", () => {
     const state = fakeState();
     state.bot.hardware.user_env = {};
-    state.bot.hardware.informational_settings.controller_version = "1000.0.0";
+    state.bot.hardware.informational_settings.controller_version =
+      DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     const fwEnv = fakeFarmwareEnv();
     fwEnv.body.key = "CAMERA_CALIBRATION_total_rotation_angle";
     fwEnv.body.value = 15;

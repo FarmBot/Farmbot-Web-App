@@ -53,7 +53,7 @@ services:
      - ./docker_volumes/rabbit:/farmbot
   webpack:     # ====================
     <<: *base_config
-    image: node:8.12.0
+    image: node:10.15.0
     working_dir: /farmbot
     command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
     volumes:
