@@ -34,13 +34,21 @@ module FarmEvents
     end
 
     def destroy_fragment
-      farm_event.fragment.destroy! if farm_event.fragment
+      owner.fragment.destroy! if owner.fragment
     end
 
     def replace_fragment
       Fragment.transaction do
         destroy_fragment
-        create_fragment_for(farm_event)
+        create_fragment_for(owner)
+      end
+    end
+
+    def owner
+      case self.class.parent.name
+      when "FarmEvents" then farm_event
+      else
+        binding.pry
       end
     end
   end

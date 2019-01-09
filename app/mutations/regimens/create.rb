@@ -1,6 +1,8 @@
 module Regimens
   class Create < Mutations::Command
     include Sequences::TransitionalHelpers
+    include FarmEvents::FragmentHelpers
+    using Sequences::CanonicalCeleryHelpers
 
     required do
       model  :device, class: Device
@@ -14,6 +16,8 @@ module Regimens
       end
     end
 
+    optional { body }
+
     def validate
       no_parameterized_regimen_items_plz
     end
@@ -22,7 +26,7 @@ module Regimens
       inputs[:regimen_items].map! do |i|
         RegimenItem.new(i)
       end
-      Regimen.create!(inputs)
+      wrap_fragment_with(Regimen.create!(inputs))
     end
   end
 end

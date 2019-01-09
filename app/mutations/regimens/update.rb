@@ -2,6 +2,8 @@ module Regimens
   class Update < Mutations::Command
     BAD_RECORD = "Failed to instantiate nested RegimenItem. Offending item: "
     include Sequences::TransitionalHelpers
+    include FarmEvents::FragmentHelpers
+    using Sequences::CanonicalCeleryHelpers
 
     required do
       model :device, class: Device
@@ -15,6 +17,8 @@ module Regimens
         end
       end
     end
+
+    optional { body }
 
     def validate
       no_parameterized_regimen_items_plz

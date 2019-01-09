@@ -258,6 +258,7 @@ module CeleryScriptSettingsBag
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
       .node(:internal_farm_event,   [], [:variable_declaration])
+      .node(:internal_regimen,      [], [:variable_declaration])
       .node(:internal_entry_point,  [], [])
       .node(:every_point,           [:group_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|

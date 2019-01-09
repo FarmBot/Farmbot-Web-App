@@ -1,27 +1,51 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::RegimensController do
 
   include Devise::Test::ControllerHelpers
 
-  describe '#create' do
-    let(:user) { FactoryBot.create(:user) }
-    let(:sequence) { FakeSequence.create( device: user.device) }
-    it 'disallows use of parameterized sequences in regimen items' do
+  describe "#create" do
+    let(:user)     { FactoryBot.create(:user) }
+    let(:sequence) { FakeSequence.create(device: user.device) }
+
+    it "creates a regimen that uses variables" do
       sign_in user
       s       = FakeSequence.with_parameters
-      payload = {
-                  device: s.device,
+      payload = { device: s.device,
                   name:   "specs",
                   color:  "red",
-                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ]
-                }
+                  body: [
+                    {
+                      kind: "variable_declaration",
+                      args: {
+                        label: "parent",
+                        data_value: {
+
+                        }
+                      }
+                    }
+                  ],
+                  regimen_items: [
+                    { time_offset: 100, sequence_id: s.id }
+                  ] }
+      post :create, params: payload
+      expect(response.status).to eq(200)
+      binding.pry
+    end
+
+    it "disallows use of parameterized sequences in regimen items" do
+      sign_in user
+      s       = FakeSequence.with_parameters
+      payload = { device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ] }
       post :create, params: payload
       x = Sequences::TransitionalHelpers::PARAMTERS_NOT_ALLOWED
       expect(json[:sequence]).to include(x)
     end
 
-    it 'creates a new regimen' do
+    it "creates a new regimen" do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample
 
