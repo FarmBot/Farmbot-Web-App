@@ -13,9 +13,15 @@ module Api
       render json: ""
     end
 
+    # Perform HTTP post to this endpoint when you
+    # need to force an update.
+    def refresh
+      farmware_installation.force_package_refresh!
+      render json: farmware_installation
+    end
+
     def create
-      mutate FarmwareInstallations::Create.run(raw_json,
-                                               device: current_device)
+      mutate FarmwareInstallations::Create.run(raw_json, device: current_device)
     end
 
 private

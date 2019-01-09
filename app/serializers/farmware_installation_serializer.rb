@@ -1,3 +1,3 @@
 class FarmwareInstallationSerializer < ApplicationSerializer
-  attributes :url
+  attributes :url, :package
 end

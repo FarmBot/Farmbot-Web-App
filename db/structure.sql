@@ -398,7 +398,9 @@ CREATE TABLE public.farmware_installations (
     device_id bigint,
     url character varying,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    package character varying(80),
+    package_error character varying
 );
 
 
@@ -2888,6 +2890,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181204005038'),
 ('20181208035706'),
 ('20190103211708'),
-('20190103213956');
+('20190103213956'),
+('20190108211419');
 
 
