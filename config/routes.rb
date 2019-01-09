@@ -9,7 +9,6 @@ FarmBot::Application.routes.draw do
     {
       diagnostic_dumps:       [:create, :destroy, :index],
       farm_events:            [:create, :destroy, :index, :show, :update],
-      farmware_installations: [:create, :destroy, :index, :show],
       images:                 [:create, :destroy, :index, :show],
       password_resets:        [:create, :update],
       peripherals:            [:create, :destroy, :index, :show, :update],
@@ -38,7 +37,13 @@ FarmBot::Application.routes.draw do
 
     resources(:points, except: []) { post :search, on: :collection }
 
+    resources :farmware_installations, except: [:update] do
+      post :refresh, on: :member
+    end
+
     resources :logs, except: [:update, :show] do
+      # When farmware fetching fails and the user
+      # wants to try agian.
       get :search, on: :collection
     end
 
