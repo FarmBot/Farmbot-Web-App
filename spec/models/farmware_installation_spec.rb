@@ -8,7 +8,7 @@ describe FarmwareInstallation do
 
   class Mystery < StandardError; end
 
-  it "handles unknown errors while parsing `farmware.json`" do
+  it "handles unknown errors while parsing farmware manifest" do
     error    = Mystery.new("wow!")
     fi       = FarmwareInstallation.create(device: device, url: FAKE_URL)
     expect(fi).to receive(:open).and_raise(error)

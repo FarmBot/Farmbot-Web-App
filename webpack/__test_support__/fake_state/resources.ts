@@ -415,6 +415,8 @@ export function fakeFarmwareEnv(): TaggedFarmwareEnv {
 
 export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
   return fakeResource("FarmwareInstallation", {
-    url: "https://"
+    url: "https://",
+    package: undefined,
+    package_error: undefined,
   });
 }
