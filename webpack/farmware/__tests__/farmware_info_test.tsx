@@ -6,14 +6,19 @@ jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
+jest.mock("../actions", () => ({ retryFetchPackageName: jest.fn() }));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { destroy } from "../../api/crud";
-import { fakeFarmwareInstallation } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFarmwareInstallation
+} from "../../__test_support__/fake_state/resources";
 import { error } from "farmbot-toastr";
+import { retryFetchPackageName } from "../actions";
 
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => {
@@ -162,5 +167,58 @@ describe("<FarmwareInfo />", () => {
       expect.stringContaining("you sure"));
     expect(mockDevice.removeFarmware)
       .toHaveBeenCalledWith("Fake 1st-Party Farmware");
+  });
+
+  it("displays package name fetch error", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const farmwareInstallation = fakeFarmwareInstallation();
+    farmwareInstallation.body.package_error = "package name fetch error";
+    p.installations = [farmwareInstallation];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.text()).toContain(farmwareInstallation.body.package_error);
+    expect(wrapper.html()).toContain("error-with-button");
+  });
+
+  it("retries package name fetch", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const farmwareInstallation = fakeFarmwareInstallation();
+    farmwareInstallation.body.package_error = "package name fetch error";
+    p.installations = [farmwareInstallation];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    clickButton(wrapper, 2, "retry");
+    expect(retryFetchPackageName)
+      .toHaveBeenCalledWith(farmwareInstallation.body.id);
+  });
+
+  it("doesn't display package name fetch error", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const farmwareInstallation = fakeFarmwareInstallation();
+    farmwareInstallation.body.package_error = undefined;
+    p.installations = [farmwareInstallation];
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.html()).not.toContain("error-with-button");
+  });
+
+  it("doesn't display version string", () => {
+    const p = fakeProps();
+    const farmware = fakeFarmware();
+    farmware.meta.version = "";
+    farmware.meta.min_os_version_major = "";
+    p.farmware = farmware;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.text()).not.toContain(".0.0");
+  });
+
+  it("displays version string", () => {
+    const p = fakeProps();
+    const farmware = fakeFarmware();
+    farmware.meta.version = "";
+    farmware.meta.min_os_version_major = "1";
+    p.farmware = farmware;
+    const wrapper = mount(<FarmwareInfo {...p} />);
+    expect(wrapper.text()).toContain("1.0.0");
   });
 });
