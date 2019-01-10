@@ -2,7 +2,6 @@ module FarmEvents
   class Create < Mutations::Command
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
-    include Sequences::TransitionalHelpers
     using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields

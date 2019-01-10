@@ -15,6 +15,7 @@ class Regimen < ApplicationRecord
   has_many   :regimen_items, dependent: :destroy
   belongs_to :device
   validates  :device, presence: true
+  has_one    :fragment,  as: :owner
 
   # PROBLEM:
   #  * sync messages send MQTT packets when models update in a background job.
@@ -31,5 +32,9 @@ class Regimen < ApplicationRecord
 
   def fancy_name
     name
+  end
+
+  def fragment_owner?
+    true
   end
 end

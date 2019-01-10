@@ -1,5 +1,7 @@
 module FarmEvents
   module FragmentHelpers
+    BAD_MODULE = \
+      "The '%s' module cannot use FragmentHelpers"
     def self.included(base); base.extend(ClassMethods); end
     module ClassMethods; end
 
@@ -8,8 +10,9 @@ module FarmEvents
     end
 
     def create_fragment_for(owner)
+      kind = owner.class.name.tableize.singularize
       params    = { device: device,
-                    kind:   "internal_farm_event",
+                    kind:   "internal_#{kind}",
                     args:   {},
                     body:   body }
       flat_ast  = Fragments::Preprocessor.run!(params)
@@ -34,13 +37,22 @@ module FarmEvents
     end
 
     def destroy_fragment
-      farm_event.fragment.destroy! if farm_event.fragment
+      owner.fragment.destroy! if owner.fragment
     end
 
     def replace_fragment
       Fragment.transaction do
         destroy_fragment
-        create_fragment_for(farm_event)
+        create_fragment_for(owner)
+      end
+    end
+
+    def owner
+      module_name = self.class.parent.name
+      case module_name
+      when "FarmEvents" then farm_event
+      when "Regimens"   then regimen
+      else;             raise BAD_MODULE % module_name
       end
     end
   end
