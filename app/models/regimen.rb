@@ -33,4 +33,8 @@ class Regimen < ApplicationRecord
   def fancy_name
     name
   end
+
+  def fragment_owner?
+    true
+  end
 end

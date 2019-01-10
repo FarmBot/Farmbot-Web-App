@@ -1,6 +1,5 @@
 module Regimens
   class Create < Mutations::Command
-    include Sequences::TransitionalHelpers
     include FarmEvents::FragmentHelpers
     using Sequences::CanonicalCeleryHelpers
 
@@ -18,15 +17,11 @@ module Regimens
 
     optional { body }
 
-    def validate
-      no_parameterized_regimen_items_plz
-    end
-
     def execute
       inputs[:regimen_items].map! do |i|
         RegimenItem.new(i)
       end
-      wrap_fragment_with(Regimen.create!(inputs))
+      wrap_fragment_with(Regimen.create!(inputs.except(:body)))
     end
   end
 end
