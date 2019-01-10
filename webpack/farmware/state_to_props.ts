@@ -13,7 +13,6 @@ import {
 import {
   determineInstalledOsVersion,
   shouldDisplay as shouldDisplayFunc,
-  trim,
   betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
@@ -57,7 +56,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const currentImage = images
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
-  const { farmwares } = props.bot.hardware.process_info;
+  const { farmwares } = _.cloneDeep(props.bot.hardware.process_info);
   const conf = getWebAppConfig(props.resources.index);
   const { currentFarmware, firstPartyFarmwareNames } =
     props.resources.consumers.farmware;
@@ -73,11 +72,17 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const taggedFarmwareInstallations =
     selectAllFarmwareInstallations(props.resources.index);
 
+  const namePendingInstall =
+    (packageName: string | undefined, id: number | undefined): string => {
+      const nameBase = packageName || `${t("Unknown Farmware")} ${id}`;
+      const pendingInstall = ` (${t("pending install")}...)`;
+      return nameBase + pendingInstall;
+    };
+
   shouldDisplay(Feature.api_farmware_installations) &&
     taggedFarmwareInstallations.map(x => {
-      const name = trim(`${t("Unknown Farmware")}
-      ${x.body.id} (${t("pending install")}...)`);
-      if (!Object.keys(farmwares).includes(name) &&
+      const name = namePendingInstall(x.body.package, x.body.id);
+      if (x.body.id && !Object.keys(farmwares).includes(name) &&
         !Object.values(farmwares).map(fw => fw.url).includes(x.body.url)) {
         farmwares[name] = {
           name,

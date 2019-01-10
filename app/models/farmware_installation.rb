@@ -5,26 +5,28 @@ class FarmwareInstallation < ApplicationRecord
   validates  :url, url: true
   validates_uniqueness_of :url, { scope: :device }
   validates_presence_of :device
-  # Prevent malice when fetching farmware.json
+  # Prevent malice when fetching a farmware manifest
   MAX_JSON_SIZE   = 5000
   OTHER_PROBLEM   = "Unknown error: %s"
   # Keep a dictionary of known errors if fetching
   # the `package` attr raises a runtime error.
   KNOWN_PROBLEMS  = {
     KeyError           =>
-      "`farmware.json` must have a `package` field that is a string.",
+      "Farmware manifest must have a `package` field that is a string.",
     OpenURI::HTTPError =>
       "The server is online, but the URL could not be opened.",
     SocketError        =>
-      "The server appears to be offline.",
+      "The server at the provided appears to be offline.",
     JSON::ParserError  =>
-      "Expected `farmware.json` to be valid JSON, "\
+      "Expected Farmware manifest to be valid JSON, "\
       "but it is not. Consider using a JSON validator.",
     ActiveRecord::ValueTooLong =>
-      "The name of the package is too long."
+      "The name of the package is too long.",
+    Errno::ECONNREFUSED =>
+      "Could not connect to the server at the provided URL."
   }
 
-  # Downloads the `farmware.json` file in a background
+  # Downloads the farmware manifest JSON file in a background
   # worker, updating the `package` column if possible.
   def force_package_refresh!
     self.delay.infer_package_name_from_url

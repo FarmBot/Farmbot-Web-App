@@ -1003,3 +1003,29 @@ ul {
     margin-top: 0.5rem;
   }
 }
+
+.documentation-widget {
+  .fa-external-link {
+    margin-left: 1rem;
+  }
+  label {
+    margin-top: 1rem;
+  }
+  a {
+    margin-left: 1rem;
+  }
+}
+
+.error-with-button {
+  margin-top: 1rem;
+  background: $pink;
+  border: 1px solid $red;
+  border-radius: 5px;
+  label, p {
+    margin: 0.5rem;
+    color: $red;
+  }
+  button {
+    margin: 0.5rem !important;
+  }
+}

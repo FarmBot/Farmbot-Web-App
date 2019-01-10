@@ -8,7 +8,7 @@ describe FarmwareInstallation do
 
   class Mystery < StandardError; end
 
-  it "handles unknown errors while parsing `farmware.json`" do
+  it "handles unknown errors while parsing farmware manifest" do
     error    = Mystery.new("wow!")
     fi       = FarmwareInstallation.create(device: device, url: FAKE_URL)
     expect(fi).to receive(:open).and_raise(error)
@@ -42,6 +42,15 @@ describe FarmwareInstallation do
     expect(fi.package_error).to eq(error)
     expect(fi.package).to eq(nil)
     const_reassign(FarmwareInstallation, :MAX_JSON_SIZE, old_value)
+  end
+
+  it "sets the package name" do
+    fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
+    fake_json = StringIO.new({package: "FOO"}.to_json)
+    expect(fi).to receive(:open).and_return(fake_json)
+    fi.infer_package_name_from_url
+    expect(fi.package_error).to eq(nil)
+    expect(fi.package).to eq("FOO")
   end
 
   it "handles non-JSON strings" do

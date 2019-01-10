@@ -1,6 +1,7 @@
 import axios from "axios";
 import { FarmwareManifestEntry } from "./interfaces";
 import { Actions } from "../constants";
+import { urlFor } from "../api/crud";
 
 const farmwareManifestUrl =
   "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests" +
@@ -20,3 +21,7 @@ export const getFirstPartyFarmwareList = () => {
       });
   };
 };
+
+export const retryFetchPackageName = (id: number | undefined) =>
+  id &&
+  axios.post(`${urlFor("FarmwareInstallation")}${id}/refresh`).then(() => { });

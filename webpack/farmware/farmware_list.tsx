@@ -66,7 +66,8 @@ export class FarmwareList
     const url = this.state.packageUrl;
     if (url) {
       this.props.shouldDisplay(Feature.api_farmware_installations)
-        ? this.props.dispatch(initSave("FarmwareInstallation", { url }))
+        ? this.props.dispatch(initSave("FarmwareInstallation",
+          { url, package: undefined, package_error: undefined }))
           .then(this.clearUrl)
         : getDevice()
           .installFarmware(url)
