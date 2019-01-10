@@ -14,7 +14,7 @@ describe Api::FarmwareInstallationsController do
       expect(response.status).to eq(200)
       expect(FarmwareInstallation.count).to be > old_installation_count
       expect(json.keys.sort)
-        .to eq([:created_at, :id, :package, :updated_at, :url])
+        .to eq([:created_at, :id, :package, :package_error, :updated_at, :url])
       expect(json[:url]).to eq(url)
       expect(FarmwareInstallation.find(json[:id]).device).to eq(user.device)
     end

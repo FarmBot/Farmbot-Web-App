@@ -44,6 +44,15 @@ describe FarmwareInstallation do
     const_reassign(FarmwareInstallation, :MAX_JSON_SIZE, old_value)
   end
 
+  it "sets the package name" do
+    fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
+    fake_json = StringIO.new({package: "FOO"}.to_json)
+    expect(fi).to receive(:open).and_return(fake_json)
+    fi.infer_package_name_from_url
+    expect(fi.package_error).to eq(nil)
+    expect(fi.package).to eq("FOO")
+  end
+
   it "handles non-JSON strings" do
     fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
     expect(fi).to receive(:open).and_return(StringIO.new("{lol"))
