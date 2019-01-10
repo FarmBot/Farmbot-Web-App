@@ -1,8 +1,8 @@
 module Regimens
   class Update < Mutations::Command
-    BAD_RECORD = "Failed to instantiate nested RegimenItem. Offending item: "
     include FarmEvents::FragmentHelpers
     using Sequences::CanonicalCeleryHelpers
+    BAD_RECORD = "Failed to instantiate nested RegimenItem. Offending item: "
 
     required do
       model :device, class: Device
@@ -24,8 +24,9 @@ module Regimens
         ActiveRecord::Base.transaction do
           regimen.regimen_items.destroy_all
           inputs[:regimen_items].map! do |ri|
-            RegimenItem.new(ri).tap{ |r| r.validate! }
+            RegimenItem.new(ri).tap { |r| r.validate! }
           end
+          handle_body_field
           regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
         end
       end

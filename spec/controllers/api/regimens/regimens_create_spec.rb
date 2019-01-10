@@ -28,7 +28,7 @@ describe Api::RegimensController do
                   regimen_items: [
                     { time_offset: 100, sequence_id: s.id }
                   ] }
-      post :create, params: payload
+      post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
@@ -51,7 +51,7 @@ describe Api::RegimensController do
       old_regimen_count = Regimen.count
       old_item_count = RegimenItem.count
 
-      post :create, params: payload
+      post :create, body: payload.to_json, format: :json
 
       expect(response.status).to eq(200)
       expect(Regimen.count).to be > old_regimen_count

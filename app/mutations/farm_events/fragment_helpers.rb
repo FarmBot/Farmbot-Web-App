@@ -1,5 +1,7 @@
 module FarmEvents
   module FragmentHelpers
+    BAD_MODULE = \
+      "The '%s' module cannot use FragmentHelpers"
     def self.included(base); base.extend(ClassMethods); end
     module ClassMethods; end
 
@@ -45,10 +47,11 @@ module FarmEvents
     end
 
     def owner
-      case self.class.parent.name
+      module_name = self.class.parent.name
+      case module_name
       when "FarmEvents" then farm_event
-      else
-        binding.pry
+      when "Regimens"   then regimen
+      else;             raise BAD_MODULE % module_name
       end
     end
   end

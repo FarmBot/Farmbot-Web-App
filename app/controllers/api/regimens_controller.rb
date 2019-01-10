@@ -11,13 +11,11 @@ module Api
     end
 
     def create
-      mutate Regimens::Create.run(params.as_json, regimen_params)
+      mutate Regimens::Create.run(raw_json, regimen_params)
     end
 
     def update
-      mutate Regimens::Update.run(params.as_json,
-                                  regimen_params,
-                                  regimen: the_regimen)
+      mutate Regimens::Update.run(raw_json, regimen_params, regimen: the_regimen)
     end
 
     def destroy

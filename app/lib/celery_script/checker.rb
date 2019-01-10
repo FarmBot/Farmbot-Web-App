@@ -166,7 +166,7 @@ module CeleryScript
       raise TypeCheckError, (BAD_LEAF % [ value.kind,
                                           value.parent.kind,
                                           allowed.inspect,
-                                          actual.inspect]) unless ok
+                                          actual.inspect ]) unless ok
     end
 
     def bad_body_kind(prnt, child, i, ok)
