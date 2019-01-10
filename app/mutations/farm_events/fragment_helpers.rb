@@ -10,8 +10,9 @@ module FarmEvents
     end
 
     def create_fragment_for(owner)
+      kind = owner.class.name.tableize.singularize
       params    = { device: device,
-                    kind:   "internal_farm_event",
+                    kind:   "internal_#{kind}",
                     args:   {},
                     body:   body }
       flat_ast  = Fragments::Preprocessor.run!(params)
