@@ -5,11 +5,16 @@ import {
 } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
 import { Actions } from "../../constants";
+import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
+import { ShouldDisplay } from "../../devices/interfaces";
 
 export interface ActiveEditorProps {
   regimen: TaggedRegimen;
   calendar: CalendarRow[];
   dispatch: Function;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+  variableData: VariableNameSet;
 }
 
 export interface RegimenItemListProps {
@@ -31,6 +36,9 @@ export interface RegimenEditorProps {
   current: TaggedRegimen | undefined;
   dispatch: Function;
   calendar: CalendarRow[];
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+  variableData: VariableNameSet;
 }
 
 export interface CopyButtonProps {

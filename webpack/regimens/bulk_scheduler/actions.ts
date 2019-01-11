@@ -9,6 +9,7 @@ import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Actions } from "../../constants";
 import { assertUuid } from "../../resources/util";
+import { mergeVariableDeclarations } from "../../sequences/locals_list/declaration_support";
 
 export function pushWeek() {
   return {
@@ -87,6 +88,8 @@ export function commitBulkEditor(): Thunk {
           const regimen = findRegimen(resources.index, currentRegimen);
           const clonedRegimen = defensiveClone(regimen).body;
           clonedRegimen.regimen_items = clonedRegimen.regimen_items.concat(groupedItems);
+          const varData = resources.index.sequenceMetas[selectedSequenceUUID];
+          clonedRegimen.body = mergeVariableDeclarations(varData, regimen.body.body);
           dispatch(overwrite(regimen, clonedRegimen));
         } else {
           return error(t("No day(s) selected."));
