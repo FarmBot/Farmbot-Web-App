@@ -8,23 +8,27 @@ if Rails.env == "development"
     # CREDIT: Faker Ruby Gem
     VEGGIES                 = %w(artichoke arugula asparagus broccoli
     cabbage caper carob carrot cauliflower celery chive cornichon cucumber
-    eggplant endive garlic hijiki jicama kale kohlrabi leek lettuce okra onion
-    parsnip pea pepper potato pumpkin radicchio radish raspberry rhubarb spinach
+    eggplant endive garlic jicama kale kohlrabi leek lettuce okra onion
+    parsnip pepper potato pumpkin radicchio radish raspberry rhubarb spinach
     sprout squash tomato turnip zucchini)
-    [DeviceSerialNumber,
-     Log,
-     PinBinding,
-     Point,
-     Point,
-     TokenIssuance,
-     ToolSlot,
-     User,
-     PlantTemplate,
-     SavedGarden,
-     SensorReading,
-     FarmwareInstallation,
-     Device,
-     Tool].map(&:delete_all)
+    [
+      Sensor,
+      Peripheral,
+      DeviceSerialNumber,
+      Log,
+      PinBinding,
+      Point,
+      Point,
+      TokenIssuance,
+      ToolSlot,
+      User,
+      PlantTemplate,
+      SavedGarden,
+      SensorReading,
+      FarmwareInstallation,
+      Device,
+      Tool,
+    ].map(&:delete_all)
     Users::Create.run!(name:                  "Test",
                        email:                 "test@test.com",
                        password:              "password123",

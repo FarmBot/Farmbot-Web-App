@@ -3,7 +3,8 @@ class Primitive < ApplicationRecord
   PRIMITIVES     = [ FalseClass, TrueClass, Float, Integer, String, Symbol ]
   LENGTH_LIMIT   = 300
   PRIMITIVE_ONLY = "Expected primitive class. Got: %s"
-  BAD_LENGTH     = "Primitives must be shorter than 400 chars in length"
+  BAD_LENGTH     = "Primitives must be shorter than"\
+                   " #{LENGTH_LIMIT} chars in length"
 
   belongs_to :fragment
   has_many   :primitive_pairs
@@ -20,5 +21,9 @@ class Primitive < ApplicationRecord
 
   def length
     value.to_s.length
+  end
+
+  def broadcast?
+    false
   end
 end
