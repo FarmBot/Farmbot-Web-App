@@ -109,7 +109,8 @@ describe("in_use tracking at reducer level", () => {
       color: "red",
       regimen_items: [
         { sequence_id, time_offset: 12 }
-      ]
+      ],
+      body: [],
     })[0];
     const ri = buildResourceIndex([regimen, sequence]);
     expect(resourceUsageList(ri.index.inUse)[sequence.uuid]).toBe(true);

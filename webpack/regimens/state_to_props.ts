@@ -1,18 +1,25 @@
 import { Everything } from "../interfaces";
-import { Props, RegimenItem, RegimenItemCalendarRow, CalendarRow } from "./interfaces";
+import {
+  Props, RegimenItem, RegimenItemCalendarRow, CalendarRow
+} from "./interfaces";
 import {
   selectAllSequences,
   selectAllRegimens,
   maybeGetSequence,
   maybeGetRegimen,
   findId,
-  findSequence
+  findSequence,
+  maybeGetDevice,
+  findSequenceById
 } from "../resources/selectors";
 import { TaggedRegimen } from "farmbot";
 import { duration } from "moment";
 import * as moment from "moment";
-import { ResourceIndex } from "../resources/interfaces";
-import { randomColor } from "../util";
+import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
+import {
+  randomColor, determineInstalledOsVersion,
+  shouldDisplay as shouldDisplayFunc
+} from "../util";
 import * as _ from "lodash";
 import { resourceUsageList } from "../resources/in_use";
 
@@ -25,9 +32,29 @@ export function mapStateToProps(props: Everything): Props {
   const calendar = current ?
     generateCalendar(current, index, dispatch) : [];
 
+  const installedOsVersion = determineInstalledOsVersion(
+    props.bot, maybeGetDevice(props.resources.index));
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData);
+
+  const calledSequences = (): UUID[] => {
+    if (current) {
+      const sequenceIds = current.body.regimen_items.map(x => x.sequence_id);
+      return Array.from(new Set(sequenceIds)).map(x =>
+        findSequenceById(props.resources.index, x).uuid);
+    }
+    return [];
+  };
+
+  const variableData: VariableNameSet = {};
+  calledSequences().map(uuid =>
+    Object.entries(props.resources.index.sequenceMetas[uuid] || {})
+      .map(([key, value]) => !variableData[key] && (variableData[key] = value)));
+
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(index),
+    variableData,
     resources: index,
     auth: props.auth,
     current,
@@ -37,7 +64,8 @@ export function mapStateToProps(props: Everything): Props {
     weeks,
     bot,
     calendar,
-    regimenUsageStats: resourceUsageList(props.resources.index.inUse)
+    regimenUsageStats: resourceUsageList(props.resources.index.inUse),
+    shouldDisplay,
   };
 }
 

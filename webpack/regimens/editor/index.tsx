@@ -19,6 +19,9 @@ export function RegimenEditor(props: RegimenEditorProps) {
     {regimen && <ActiveEditor
       dispatch={dispatch}
       regimen={regimen}
-      calendar={calendar} />}
+      calendar={calendar}
+      resources={props.resources}
+      variableData={props.variableData}
+      shouldDisplay={props.shouldDisplay} />}
   </EmptyStateWrapper>;
 }

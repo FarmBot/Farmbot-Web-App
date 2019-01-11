@@ -25,9 +25,11 @@ describe("resource reducer", () => {
 
     expect(sequence.kind).toBe("Sequence");
     const next = resourceReducer(state, overwrite(sequence, {
+      kind: "sequence",
       name: "wow",
       args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
-      body: []
+      body: [],
+      color: "red"
     }));
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);

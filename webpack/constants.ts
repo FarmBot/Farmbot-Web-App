@@ -546,10 +546,6 @@ export namespace Content {
     trim(`Click one in the Regimens panel to edit, or click "+" to create
     a new one.`);
 
-  export const NO_PARAMETERS = trim(`Can't directly use this sequence in a
-    regimen. Consider wrapping it in a parent sequence that calls it via
-    "execute" instead.`);
-
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
     trim(`Outside of planting area. Plants must be placed within the grid.`);

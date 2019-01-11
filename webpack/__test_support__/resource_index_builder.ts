@@ -279,7 +279,8 @@ const tr12: TaggedResource = {
         "sequence_id": 23,
         "time_offset": 345900000
       }
-    ]
+    ],
+    body: [],
   },
   "uuid": "Regimen.11.46"
 };
@@ -406,7 +407,8 @@ const blankReg: TaggedRegimen = {
     "id": 11,
     "name": "Repair Sequence",
     "color": "gray",
-    "regimen_items": []
+    "regimen_items": [],
+    body: [],
   },
   "uuid": "Regimen.11.46"
 };

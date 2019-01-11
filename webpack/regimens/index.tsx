@@ -40,7 +40,10 @@ export class Regimens extends React.Component<Props, {}> {
           <RegimenEditor
             dispatch={this.props.dispatch}
             calendar={this.props.calendar}
-            current={this.props.current} />
+            current={this.props.current}
+            resources={this.props.resources}
+            variableData={this.props.variableData}
+            shouldDisplay={this.props.shouldDisplay} />
         </CenterPanel>
         <RightPanel
           className="bulk-scheduler"

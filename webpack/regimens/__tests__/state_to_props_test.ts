@@ -4,6 +4,8 @@ import { TaggedResource } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";
 import { selectAllRegimens } from "../../resources/selectors";
+import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
+import { fakeRegimen, fakeSequence } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
   it("returns props: no regimen selected", () => {
@@ -41,5 +43,18 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     props.current ? expect(props.current.uuid).toEqual(uuid) : fail;
     expect(props.calendar[0].items[0].item.time_offset).toEqual(1000);
+  });
+
+  it("returns variableData", () => {
+    const reg = fakeRegimen();
+    const seq = fakeSequence();
+    reg.body.regimen_items = [{ sequence_id: seq.body.id || 0, time_offset: 1000 }];
+    const state = fakeState();
+    state.resources = buildResourceIndex([reg, seq]);
+    state.resources.consumers.regimens.currentRegimen = reg.uuid;
+    const varData = fakeVariableNameSet();
+    state.resources.index.sequenceMetas[seq.uuid] = varData;
+    const props = mapStateToProps(state);
+    expect(props.variableData).toEqual(varData);
   });
 });
