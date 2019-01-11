@@ -36,7 +36,7 @@ export function ActiveEditor(props: ActiveEditorProps) {
         sequenceUuid={props.regimen.uuid}
         resources={props.resources}
         onChange={editRegimenDeclarations(regimenProps)(props.regimen.body.body)}
-        allowedDeclarations={AllowedDeclaration.variable}
+        allowedDeclarations={AllowedDeclaration.parameter}
         shouldDisplay={props.shouldDisplay} />
       <hr />
     </div>

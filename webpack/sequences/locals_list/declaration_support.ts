@@ -1,8 +1,9 @@
-import { VariableNameSet } from "../../resources/interfaces";
-import { VariableDeclaration, Dictionary } from "farmbot";
+import { VariableNameSet, ResourceIndex } from "../../resources/interfaces";
+import { VariableDeclaration, Dictionary, ScopeDeclarationBodyItem } from "farmbot";
 import { betterCompact } from "../../util";
 import { isParameterDeclaration } from "./locals_list";
 import { EMPTY_COORD } from "./handle_select";
+import { determineVector, determineDropdown } from "../../resources/sequence_meta";
 
 /**
  * Create default variable declarations in (execute step, farm event) body
@@ -55,4 +56,19 @@ export const mergeVariableDeclarations = (
     /** Add the remaining new variables to the Regimen body. */
     .map(([k, v]) => regimenVars[k] = v);
   return Object.values(regimenVars);
+};
+
+export const getRegimenVariableData = (
+  declarations: ScopeDeclarationBodyItem[],
+  resources: ResourceIndex
+): VariableNameSet => {
+  const varData: VariableNameSet = {};
+  declarations.map(declaration => {
+    varData[declaration.args.label] = {
+      celeryNode: declaration,
+      vector: determineVector(declaration, resources),
+      dropdown: determineDropdown(declaration, resources),
+    };
+  });
+  return varData;
 };
