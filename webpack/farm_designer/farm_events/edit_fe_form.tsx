@@ -39,7 +39,7 @@ import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import {
-  addOrEditVarDeclaration, declarationList
+  addOrEditVarDeclaration, declarationList, getRegimenVariableData
 } from "../../sequences/locals_list/declaration_support";
 import {
   AllowedDeclaration
@@ -185,6 +185,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   get variableData() {
+    if (this.executable.kind === "Regimen") {
+      const regimenVariables = this.executable.body.body;
+      return getRegimenVariableData(regimenVariables, this.props.resources);
+    }
     return this.props.resources.sequenceMetas[this.executable.uuid];
   }
 

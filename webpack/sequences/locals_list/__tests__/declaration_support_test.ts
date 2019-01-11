@@ -1,7 +1,14 @@
-import { declarationList, mergeVariableDeclarations } from "../declaration_support";
+import {
+  declarationList, mergeVariableDeclarations, getRegimenVariableData
+} from "../declaration_support";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
-import { VariableDeclaration, ParameterDeclaration } from "farmbot";
+import {
+  VariableDeclaration, ParameterDeclaration, ScopeDeclarationBodyItem
+} from "farmbot";
 import { cloneDeep } from "lodash";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("declarationList()", () => {
   it("returns undefined", () => {
@@ -93,5 +100,46 @@ describe("mergeVariableDeclarations()", () => {
 
     const result = mergeVariableDeclarations(varData, declarations);
     expect(result).toEqual(expected);
+  });
+});
+
+describe("getRegimenVariableData()", () => {
+  it("returns variable data", () => {
+    const declarations: ScopeDeclarationBodyItem[] = [
+      {
+        kind: "variable_declaration", args: {
+          label: "parent2", data_value: {
+            kind: "coordinate", args: { x: 1, y: 2, z: 3 }
+          }
+        }
+      },
+      {
+        kind: "parameter_declaration", args: {
+          label: "parent1", data_type: "point"
+        }
+      },
+    ];
+    const result = getRegimenVariableData(declarations, buildResourceIndex().index);
+    expect(result).toEqual({
+      parent1: {
+        celeryNode: {
+          kind: "parameter_declaration",
+          args: { label: "parent1", data_type: "point" }
+        },
+        dropdown: { label: "Parent1", value: "?" },
+        vector: undefined
+      },
+      parent2: {
+        celeryNode: {
+          kind: "variable_declaration",
+          args: {
+            label: "parent2",
+            data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
+          }
+        },
+        dropdown: { label: "Coordinate (1, 2, 3)", value: "?" },
+        vector: { x: 1, y: 2, z: 3 }
+      }
+    });
   });
 });
