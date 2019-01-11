@@ -249,7 +249,7 @@ module CeleryScriptSettingsBag
       .node(:install_farmware,      [:url])
       .node(:update_farmware,       [:package])
       .node(:remove_farmware,       [:package])
-      .node(:scope_declaration,     [], [:parameter_declaration, :variable_declaration])
+      .node(:scope_declaration,     [], [:variable_declaration, :parameter_declaration])
       .node(:identifier,            [:label])
       .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
@@ -258,7 +258,7 @@ module CeleryScriptSettingsBag
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
       .node(:internal_farm_event,   [], [:variable_declaration])
-      .node(:internal_regimen,      [], [:variable_declaration])
+      .node(:internal_regimen,      [], [:variable_declaration, :parameter_declaration])
       .node(:internal_entry_point,  [], [])
       .node(:every_point,           [:group_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|

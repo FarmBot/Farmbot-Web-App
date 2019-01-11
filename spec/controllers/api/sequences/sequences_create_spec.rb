@@ -134,7 +134,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expctd =
-        "Expected one of: [:parameter_declaration, :variable_declaration]"
+        "Expected one of: [:variable_declaration, :parameter_declaration]"
       expect(json[:body]).to include(expctd)
     end
 
