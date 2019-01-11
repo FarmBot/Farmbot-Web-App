@@ -29,7 +29,7 @@ describe("<BulkScheduler />", () => {
       weeks,
       sequences: [fakeSequence(), fakeSequence()],
       resources: buildResourceIndex([]).index,
-      dispatch: jest.fn()
+      dispatch: jest.fn(),
     };
   }
 
@@ -53,7 +53,8 @@ describe("<BulkScheduler />", () => {
   it("changes time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkScheduler {...p} />);
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().TimeSelection());
     const timeInput = wrapper.find("BlurableInput").first();
     expect(timeInput.props().value).toEqual("01:00");
     timeInput.simulate("commit", { currentTarget: { value: "02:00" } });
@@ -66,7 +67,8 @@ describe("<BulkScheduler />", () => {
   it("sets current time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkScheduler {...p} />);
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().TimeSelection());
     const currentTimeBtn = wrapper.find(".fa-clock-o").first();
     currentTimeBtn.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -78,7 +80,8 @@ describe("<BulkScheduler />", () => {
   it("changes sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkScheduler {...p} />);
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().SequenceSelectBox());
     const sequenceInput = wrapper.find("FBSelect").first();
     sequenceInput.simulate("change", { value: "Sequence" });
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -90,7 +93,8 @@ describe("<BulkScheduler />", () => {
   it("doesn't change sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const wrapper = shallow(<BulkScheduler {...p} />);
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    const wrapper = shallow(panel.instance().SequenceSelectBox());
     const sequenceInput = wrapper.find("FBSelect").first();
     const change = () => sequenceInput.simulate("change", { value: 4 });
     expect(change).toThrowError("WARNING: Not a sequence UUID.");

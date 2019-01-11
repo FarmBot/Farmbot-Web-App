@@ -32,7 +32,9 @@ describe("<Regimens />", () => {
       weeks: [],
       bot,
       calendar: [],
-      regimenUsageStats: {}
+      regimenUsageStats: {},
+      shouldDisplay: () => false,
+      variableData: {},
     };
   }
 

@@ -34,7 +34,7 @@ describe("<CopyButton />", () => {
     wrapper.simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Regimen", {
-      color: "red", name: "Foo copy 1", regimen_items
+      color: "red", name: "Foo copy 1", regimen_items, body: []
     });
     expect(push).toHaveBeenCalledWith("/app/regimens/foo_copy_1");
     expect(setActiveRegimenByName).toHaveBeenCalled();

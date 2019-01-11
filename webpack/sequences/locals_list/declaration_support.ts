@@ -40,3 +40,19 @@ const reduceVarDeclarations = (declarations: VariableDeclaration[]):
   declarations.map(d => items[d.args.label] = d);
   return items;
 };
+
+/** Add new variable declarations if they don't already exist. */
+export const mergeVariableDeclarations = (
+  varData: VariableNameSet | undefined,
+  declarations: VariableDeclaration[]
+): VariableDeclaration[] => {
+  /** New variables required by the chosen sequence. */
+  const newVars = reduceVarDeclarations(declarationList(varData) || []);
+  const regimenVars = reduceVarDeclarations(declarations);
+  Object.entries(newVars)
+    /** Filter out variables already in the Regimen. */
+    .filter(([k, _]) => !Object.keys(regimenVars).includes(k))
+    /** Add the remaining new variables to the Regimen body. */
+    .map(([k, v]) => regimenVars[k] = v);
+  return Object.values(regimenVars);
+};

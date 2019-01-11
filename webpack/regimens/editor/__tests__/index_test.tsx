@@ -14,6 +14,9 @@ import { RegimenEditorProps } from "../interfaces";
 import { destroy, save } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "farmbot";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<RegimenEditor />", () => {
   function fakeProps(): RegimenEditorProps {
@@ -36,7 +39,10 @@ describe("<RegimenEditor />", () => {
             sequence_id: 0, time_offset: 1000
           }
         }]
-      }]
+      }],
+      resources: buildResourceIndex([]).index,
+      shouldDisplay: () => false,
+      variableData: {},
     };
   }
 
