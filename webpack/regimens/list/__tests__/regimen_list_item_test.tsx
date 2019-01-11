@@ -1,3 +1,8 @@
+let mockPath = "/app/regimens";
+jest.mock("../../../history", () => ({
+  history: { getCurrentLocation: () => ({ pathname: mockPath }) },
+}));
+
 import * as React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
@@ -5,6 +10,7 @@ import { render, shallow } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { Actions } from "../../../constants";
+import { urlFriendly } from "../../../util";
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => {
@@ -53,5 +59,19 @@ describe("<RegimenListItem/>", () => {
       type: Actions.SELECT_REGIMEN,
       payload: props.regimen.uuid
     });
+  });
+
+  it("doesn't set regimen as active", () => {
+    const p = fakeProps();
+    mockPath = "/app/regimens";
+    const wrapper = render(<RegimenListItem {...p} />);
+    expect(wrapper.find(".active").length).toEqual(0);
+  });
+
+  it("sets active regimen", () => {
+    const p = fakeProps();
+    mockPath = "/app/regimens/" + urlFriendly(p.regimen.body.name);
+    const wrapper = render(<RegimenListItem {...p} />);
+    expect(wrapper.find(".active").length).toEqual(1);
   });
 });

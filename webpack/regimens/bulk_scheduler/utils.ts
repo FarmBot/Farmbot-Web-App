@@ -1,14 +1,5 @@
-import { TaggedSequence } from "farmbot";
-import { isParameterized } from "../../sequences/locals_list/is_parameterized";
-import { error } from "farmbot-toastr";
-import { t } from "i18next";
 import * as moment from "moment";
 import * as _ from "lodash";
-import { Content } from "../../constants";
-
-export function maybeWarnAboutParameters(s: undefined | TaggedSequence) {
-  s && isParameterized(s.body) && error(t(Content.NO_PARAMETERS));
-}
 
 export function msToTime(ms: number) {
   if (_.isNumber(ms)) {

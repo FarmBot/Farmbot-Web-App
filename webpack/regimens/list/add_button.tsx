@@ -10,7 +10,8 @@ import { urlFriendly } from "../../util";
 const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
   name: (t("New regimen ") + (length++)),
   color: "gray",
-  regimen_items: []
+  regimen_items: [],
+  body: [],
 });
 
 export function AddRegimen(props: AddRegimenProps) {

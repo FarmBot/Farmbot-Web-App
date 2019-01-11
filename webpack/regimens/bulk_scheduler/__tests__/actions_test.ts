@@ -22,7 +22,8 @@ describe("commitBulkEditor()", () => {
       "color": "gray",
       "regimen_items": [
         { regimen_id, sequence_id, time_offset: 1000 }
-      ]
+      ],
+      body: [],
     };
     const reg = newTaggedResource("Regimen", regBody)[0];
     const seqBody: TaggedSequence["body"] = {

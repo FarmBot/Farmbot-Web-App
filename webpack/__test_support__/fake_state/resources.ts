@@ -50,7 +50,8 @@ export function fakeRegimen(): TaggedRegimen {
   return fakeResource("Regimen", {
     name: "Foo",
     color: "red",
-    regimen_items: []
+    regimen_items: [],
+    body: [],
   });
 }
 

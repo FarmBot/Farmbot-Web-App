@@ -1,9 +1,9 @@
 import { Color } from "../interfaces";
 import { Week } from "./bulk_scheduler/interfaces";
 import { AuthState } from "../auth/interfaces";
-import { BotState } from "../devices/interfaces";
+import { BotState, ShouldDisplay } from "../devices/interfaces";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
-import { ResourceIndex, UUID } from "../resources/interfaces";
+import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 
 export interface CalendarRow {
   day: string;
@@ -13,6 +13,7 @@ export interface CalendarRow {
 export interface Props {
   dispatch: Function;
   sequences: TaggedSequence[];
+  variableData: VariableNameSet;
   auth: AuthState | undefined;
   bot: BotState;
   current: TaggedRegimen | undefined;
@@ -22,7 +23,8 @@ export interface Props {
   dailyOffsetMs: number;
   weeks: Week[];
   calendar: CalendarRow[];
-  regimenUsageStats: Record<UUID, boolean | undefined>
+  regimenUsageStats: Record<UUID, boolean | undefined>;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface RegimenItemCalendarRow {
@@ -39,7 +41,7 @@ export interface RegimenItemCalendarRow {
 
 /** Used by UI widgets that modify a regimen */
 export interface RegimenProps {
-  regimen?: TaggedRegimen;
+  regimen: TaggedRegimen;
   dispatch: Function;
 }
 
