@@ -16,4 +16,8 @@ class ArgName < ApplicationRecord
   def self.cached_by_id(id)
     Rails.cache.fetch(KEY % id, expires_in: EXPIRY) { find(id) }
   end
+
+  def broadcast?
+    false
+  end
 end

@@ -22,4 +22,8 @@ class Primitive < ApplicationRecord
   def length
     value.to_s.length
   end
+
+  def broadcast?
+    false
+  end
 end
