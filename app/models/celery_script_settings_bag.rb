@@ -78,8 +78,8 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
                           " as input. Please change your selection to a "\
                           "single location."
-  ALLOWED_GROUP_TYPE    = %w(GenericPointer Plant Tool)
-  BAD_GROUP_TYPE        = '"%s" is not a type of group. Allowed values: %s'
+  ALLOWED_EVERY_POINT_TYPE    = %w(Tool GenericPointer Plant ToolSlot)
+  BAD_EVERY_POINT_TYPE        = '"%s" is not a type of group. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus.new
       .arg(:_else,        [:execute, :nothing])
@@ -188,9 +188,9 @@ module CeleryScriptSettingsBag
           BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME]
         end
       end
-      .arg(:group_type, [String]) do |node|
-        within(ALLOWED_GROUP_TYPE, node) do |val|
-          BAD_GROUP_TYPE % [val.to_s, ALLOWED_GROUP_TYPE.inspect]
+      .arg(:every_point_type, [String]) do |node|
+        within(ALLOWED_EVERY_POINT_TYPE, node) do |val|
+          BAD_EVERY_POINT_TYPE % [val.to_s, ALLOWED_EVERY_POINT_TYPE.inspect]
         end
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
@@ -260,7 +260,7 @@ module CeleryScriptSettingsBag
       .node(:internal_farm_event,   [], [:variable_declaration])
       .node(:internal_regimen,      [], [:variable_declaration, :parameter_declaration])
       .node(:internal_entry_point,  [], [])
-      .node(:every_point,           [:group_type], [])
+      .node(:every_point,           [:every_point_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value
