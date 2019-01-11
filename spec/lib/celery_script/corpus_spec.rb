@@ -3,10 +3,12 @@ require 'spec_helper'
 describe CeleryScript::Corpus do
   let(:device) { FactoryBot.create(:device) }
   let(:corpus) { Sequence::Corpus }
-  it "Enforces correct `group_type`s`" do
+  it "Enforces correct `every_point_type`s`" do
     not_ok = CeleryScript::AstNode.new({
       kind: "every_point",
-      args: { group_type: "Veggies" }
+      args: {
+        every_point_type: "Veggies"
+      }
     })
     check1 = CeleryScript::Checker.new(not_ok, corpus, device)
     expect(check1.valid?).to eq(false)
@@ -19,7 +21,7 @@ describe CeleryScript::Corpus do
       args: {
         location: {
           kind: "every_point",
-          args: { group_type: "Plant" }
+          args: { every_point_type: "Plant" }
         },
         offset: {
           kind: "coordinate",
