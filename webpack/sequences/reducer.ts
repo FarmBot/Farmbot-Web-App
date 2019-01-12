@@ -4,7 +4,8 @@ import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
 
 export const initialState: SequenceReducerState = {
-  current: undefined
+  current: undefined,
+  menuOpen: false,
 };
 
 export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
@@ -18,5 +19,9 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
   })
   .add<string>(Actions.SELECT_SEQUENCE, function (s, { payload }) {
     s.current = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_SEQUENCE_POPUP_STATE, function (s, { payload }) {
+    s.menuOpen = payload;
     return s;
   });

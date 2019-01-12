@@ -1,6 +1,7 @@
 import { sequenceReducer } from "../reducer";
 import { Actions } from "../../constants";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { SequenceReducerState } from "../interfaces";
 
 describe("sequence reducer", () => {
   function resourcePayload(
@@ -9,7 +10,7 @@ describe("sequence reducer", () => {
     after: string | undefined) {
     const sequence = fakeSequence();
     sequence.uuid = "sequence";
-    const state = { current: before };
+    const state: SequenceReducerState = { current: before, menuOpen: false };
     const action = { type: actionType, payload: sequence };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe(after);
@@ -20,7 +21,7 @@ describe("sequence reducer", () => {
   });
 
   it("sets current sequence with string", () => {
-    const state = { current: undefined };
+    const state: SequenceReducerState = { current: undefined, menuOpen: false };
     const action = { type: Actions.SELECT_SEQUENCE, payload: "sequence" };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe("sequence");

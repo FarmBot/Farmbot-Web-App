@@ -31,6 +31,7 @@ export interface Props {
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
+  menuOpen: boolean;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -42,6 +43,7 @@ export interface SequenceEditorMiddleProps {
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
+  menuOpen: boolean;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -54,6 +56,7 @@ export interface SequenceHeaderProps {
   syncStatus: SyncStatus;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
+  menuOpen: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -73,6 +76,7 @@ export interface Sequence extends CeleryScriptSequence {
 
 export interface SequenceReducerState {
   current: string | undefined;
+  menuOpen: boolean;
 }
 
 export interface SequencesListProps {

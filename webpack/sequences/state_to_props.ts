@@ -87,5 +87,6 @@ export function mapStateToProps(props: Everything): Props {
     },
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
     confirmStepDeletion,
+    menuOpen: props.resources.consumers.sequences.menuOpen,
   };
 }

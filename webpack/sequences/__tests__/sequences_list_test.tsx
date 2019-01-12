@@ -3,8 +3,8 @@ jest.mock("../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: "" }) }
 }));
 
-jest.mock("../actions", () => ({
-  selectSequence: jest.fn()
+jest.mock("../set_active_sequence_by_name", () => ({
+  setActiveSequenceByName: jest.fn()
 }));
 
 jest.mock("../../api/crud", () => ({
@@ -19,11 +19,11 @@ import { SequencesListProps } from "../interfaces";
 import { Actions } from "../../constants";
 import { init } from "../../api/crud";
 import { push } from "../../history";
-import { selectSequence } from "../actions";
 import { resourceUsageList } from "../../resources/in_use";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { resourceReducer } from "../../resources/reducer";
 import { resourceReady } from "../../sync/actions";
+import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 
 describe("<SequencesList />", () => {
   const fakeSequences = () => {
@@ -119,6 +119,6 @@ describe("<SequencesList />", () => {
     const p = fakeProps();
     const wrapper = shallow(<SequencesList {...p} />);
     wrapper.find("Link").first().simulate("click");
-    expect(selectSequence).toHaveBeenCalledWith(p.sequences[0].uuid);
+    expect(setActiveSequenceByName).toHaveBeenCalled();
   });
 });

@@ -32,6 +32,7 @@ describe("<Sequences/>", () => {
       },
       shouldDisplay: jest.fn(),
       confirmStepDeletion: false,
+      menuOpen: false,
     };
   }
 
