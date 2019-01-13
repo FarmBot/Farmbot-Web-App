@@ -23,6 +23,8 @@ export interface RepeatFormProps {
   endDate: string;
   endTime: string;
   tzOffset: number;
+  dateError?: string;
+  timeError?: string;
 }
 
 const indexKey: keyof DropDownItem = "value";
@@ -45,7 +47,8 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
           className="add-event-repeat-frequency"
           name="repeat"
           value={repeat}
-          onCommit={changeHandler("repeat")} />
+          onCommit={changeHandler("repeat")}
+          min={1} />
       </Col>
       <Col xs={8}>
         <FBSelect
@@ -65,7 +68,8 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
           className="add-event-end-date"
           name="endDate"
           value={endDate}
-          onCommit={changeHandler("endDate")} />
+          onCommit={changeHandler("endDate")}
+          error={props.dateError} />
       </Col>
       <Col xs={6}>
         <EventTimePicker
@@ -74,7 +78,8 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
           name="endTime"
           tzOffset={props.tzOffset}
           value={endTime}
-          onCommit={changeHandler("endTime")} />
+          onCommit={changeHandler("endTime")}
+          error={props.timeError} />
       </Col>
     </Row>
   </div>;

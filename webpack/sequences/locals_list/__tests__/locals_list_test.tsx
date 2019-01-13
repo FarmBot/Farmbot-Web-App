@@ -8,13 +8,13 @@ import { shallow, mount } from "enzyme";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
-import { FBSelect } from "../../../ui/index";
+import { FBSelect, BlurableInput } from "../../../ui/index";
 import {
   LocationFormProps, LocalsListProps, PARENT, AllowedDeclaration
 } from "../locals_list_support";
 import { difference } from "lodash";
 import { VariableNameSet } from "../../../resources/interfaces";
-import { InputBox, generateList } from "../../step_tiles/tile_move_absolute/index";
+import { generateList } from "../../step_tiles/tile_move_absolute/generate_list";
 import { convertDDItoDeclaration } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -38,7 +38,7 @@ describe("<LocationForm/>", () => {
     const p = fakeProps();
     const el = shallow(<LocationForm {...p} />);
     const selects = el.find(FBSelect);
-    const inputs = el.find(InputBox);
+    const inputs = el.find(BlurableInput);
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();

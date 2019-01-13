@@ -10,11 +10,11 @@ import { updateMCU } from "../../../actions";
 import {
   fakeFirmwareConfig
 } from "../../../../__test_support__/fake_state/resources";
-import { warning } from "farmbot-toastr";
+import { warning, error } from "farmbot-toastr";
 
 describe("<HomingAndCalibration />", () => {
   function testAxisLengthInput(
-    fw: string, provided: string, expected: string) {
+    fw: string, provided: string, expected: string | undefined) {
     const dispatch = jest.fn();
     bot.controlPanelState.homing_and_calibration = true;
     bot.hardware.informational_settings.firmware_version = fw;
@@ -31,23 +31,26 @@ describe("<HomingAndCalibration />", () => {
     const input = result.find("input").first().props();
     input.onChange && input.onChange(e);
     input.onSubmit && input.onSubmit(e);
-    expect(updateMCU)
-      .toHaveBeenCalledWith("movement_axis_nr_steps_x", expected);
+    expected
+      ? expect(updateMCU)
+        .toHaveBeenCalledWith("movement_axis_nr_steps_x", expected)
+      : expect(updateMCU).not.toHaveBeenCalled();
   }
   it("short int", () => {
-    testAxisLengthInput("5.0.0", "100000", "32000");
-    expect(warning)
-      .toHaveBeenCalledWith("Maximum input is 32,000. Rounding down.");
+    testAxisLengthInput("5.0.0", "100000", undefined);
+    expect(error)
+      .toHaveBeenCalledWith("Value must be less than or equal to 32000.");
   });
 
   it("long int: too long", () => {
-    testAxisLengthInput("6.0.0", "10000000000", "2000000000");
-    expect(warning)
-      .toHaveBeenCalledWith("Maximum input is 2,000,000,000. Rounding down.");
+    testAxisLengthInput("6.0.0", "10000000000", undefined);
+    expect(error)
+      .toHaveBeenCalledWith("Value must be less than or equal to 2000000000.");
   });
 
   it("long int: ok", () => {
     testAxisLengthInput("6.0.0", "100000", "100000");
     expect(warning).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 });

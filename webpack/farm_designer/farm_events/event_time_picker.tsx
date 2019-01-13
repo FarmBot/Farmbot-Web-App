@@ -11,6 +11,7 @@ interface Props {
   hidden?: boolean;
   name: string;
   className: string;
+  error?: string;
 }
 
 export function EventTimePicker(props: Props) {
@@ -22,5 +23,6 @@ export function EventTimePicker(props: Props) {
     type="time"
     className="add-event-start-time"
     value={value}
-    onCommit={onCommit} />;
+    onCommit={onCommit}
+    error={props.error} />;
 }

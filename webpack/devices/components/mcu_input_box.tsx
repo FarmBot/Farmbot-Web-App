@@ -4,7 +4,7 @@ import { warning } from "farmbot-toastr";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
-import { clampUnsignedInteger, IntegerSize } from "../../util";
+import { clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize } from "../../util";
 import { t } from "i18next";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
@@ -63,6 +63,8 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
       type="number"
       className={this.className}
       value={this.value}
-      onCommit={this.commit} />;
+      onCommit={this.commit}
+      min={0}
+      max={getMaxInputFromIntSize(this.props.intSize)} />;
   }
 }

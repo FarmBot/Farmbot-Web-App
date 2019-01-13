@@ -217,3 +217,12 @@ export function unpackUUID(uuid: string): BetterUUID {
     remoteId: id > 0 ? id : undefined
   };
 }
+
+/**
+ * Integer parsed from float
+ * since number type inputs allow floating point notation.
+ */
+export const parseIntInput = (input: string): number => {
+  const int = parseInt("" + parseFloat(input).toFixed(1), 10);
+  return int === 0 ? 0 : int;
+};

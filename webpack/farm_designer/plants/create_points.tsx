@@ -14,6 +14,7 @@ import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
+import { parseIntInput } from "../../util";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -77,7 +78,7 @@ export class CreatePoints
 
   update = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const value = parseInt(e.currentTarget.value);
+      const value = parseIntInput(e.currentTarget.value);
       this.setState({ [key]: value });
       if (this.props.currentPoint) {
         const point = clone(this.props.currentPoint);
@@ -142,7 +143,8 @@ export class CreatePoints
           name="r"
           type="number"
           onCommit={this.update("r")}
-          value={r || 0} />
+          value={r || 0}
+          min={0} />
       </Col>
       <Col xs={3}>
         <label>{t("color")}</label>

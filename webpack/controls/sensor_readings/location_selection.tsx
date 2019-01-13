@@ -6,6 +6,7 @@ import { Xyz } from "../../devices/interfaces";
 import { AxisInputBox } from "../axis_input_box";
 import { isNumber } from "lodash";
 import { LocationSelectionProps } from "./interfaces";
+import { parseIntInput } from "../../util";
 
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
@@ -33,8 +34,9 @@ export const LocationSelection =
             }} />)}
         <Col xs={3}>
           <BlurableInput
+            type="number"
             value={deviation}
-            onCommit={e => setDeviation(parseInt(e.currentTarget.value))} />
+            onCommit={e => setDeviation(parseIntInput(e.currentTarget.value))} />
         </Col>
       </Row>
     </div>;

@@ -15,7 +15,7 @@ import {
   ScopeDeclarationBodyItem,
   VariableDeclaration
 } from "farmbot";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, BlurableInput } from "../../ui/index";
 import {
   isTaggedSequence,
 } from "../../resources/tagged_resources";
@@ -27,7 +27,6 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import {
   StepWrapper,
@@ -201,12 +200,13 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     <Row>
       {["x", "y", "z"].map((axis: Xyz) =>
         <Col xs={3} key={axis}>
-          <InputBox
+          <label>
+            {t("{{axis}}-Offset", { axis })}
+          </label>
+          <BlurableInput type="number"
             onCommit={this.updateInputValue(axis, "offset")}
             name={`offset-${axis}`}
-            value={this.getOffsetValue(axis)}>
-            {t("{{axis}}-Offset", { axis })}
-          </InputBox>
+            value={this.getOffsetValue(axis)} />
         </Col>)}
       <this.SpeedForm />
     </Row>

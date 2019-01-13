@@ -1,14 +1,16 @@
-jest.mock("../../../history", () => ({
-  history: {
-    push: jest.fn()
-  }
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
+
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+  overwrite: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen
 } from "../../../__test_support__/fake_state/resources";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
   EditFEForm,
   EditFEProps,
@@ -17,7 +19,7 @@ import {
   destructureFarmEvent,
   offsetTime
 } from "../edit_fe_form";
-import { isString } from "lodash";
+import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, VariableDeclaration } from "farmbot";
 import { success, error } from "farmbot-toastr";
@@ -28,6 +30,8 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
+import { clickButton } from "../../../__test_support__/helpers";
+import { destroy } from "../../../api/crud";
 
 const mockSequence = fakeSequence();
 
@@ -261,11 +265,7 @@ describe("<FarmEventForm/>", () => {
     const p = props();
     const state = fakeState();
     state.resources.index.references = { [p.farmEvent.uuid]: p.farmEvent };
-    p.dispatch = jest.fn((x) => {
-      x(() => { }, () => state);
-      return Promise.resolve();
-    })
-      .mockImplementationOnce(() => Promise.resolve());
+    p.dispatch = jest.fn(x => { isFunction(x) && x(); return Promise.resolve(); });
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
@@ -477,6 +477,46 @@ describe("<FarmEventForm/>", () => {
     p.farmEvent.body.body = [oldDeclaration];
     const inst = instance(p);
     expect(inst.updatedFarmEvent.body).toEqual([oldDeclaration]);
+  });
+
+  it("deletes a farmEvent", async () => {
+    const p = props();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const inst = instance(p);
+    const wrapper = shallow(<inst.FarmEventDeleteButton />);
+    clickButton(wrapper, 0, "delete");
+    await expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
+    expect(success).toHaveBeenCalledWith("Deleted farm event.", "Deleted");
+  });
+
+  it("sets repeat", () => {
+    const p = props();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const e = {
+      currentTarget: { checked: true }
+    } as React.ChangeEvent<HTMLInputElement>;
+    const inst = instance(p);
+    inst.toggleRepeat(e);
+    expect(inst.state).toEqual({
+      fe: { timeUnit: "daily" },
+      specialStatusLocal: SpecialStatus.DIRTY
+    });
+  });
+
+  it("sets repeat: regimen", () => {
+    const p = props();
+    p.farmEvent.body.executable_type = "Regimen";
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const e = {
+      currentTarget: { checked: true }
+    } as React.ChangeEvent<HTMLInputElement>;
+    const inst = instance(p);
+    inst.toggleRepeat(e);
+    expect(inst.state).toEqual({
+      fe: { timeUnit: "never" },
+      specialStatusLocal: SpecialStatus.DIRTY
+    });
   });
 });
 

@@ -45,4 +45,39 @@ describe("<BlurableInput />", () => {
     expect(error).toHaveBeenCalledWith(
       "Value must be less than or equal to 100.");
   });
+
+  it("checks for non-number input", () => {
+    const p = fakeProps();
+    p.type = "number";
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "" } });
+    expect(wrapper.instance().state.buffer).toEqual("");
+    expect(wrapper.instance().state.error).toEqual("Please enter a number.");
+    wrapper.find("input").simulate("submit");
+    expect(p.onCommit).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("checks for non-number input", () => {
+    const p = fakeProps();
+    p.type = "number";
+    p.allowEmpty = true;
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "" } });
+    expect(wrapper.instance().state.buffer).toEqual("");
+    expect(wrapper.instance().state.error).toEqual(undefined);
+    wrapper.find("input").simulate("submit");
+    expect(p.onCommit).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("parses number", () => {
+    const p = fakeProps();
+    p.type = "number";
+    const wrapper = shallow<BlurableInput>(<BlurableInput {...p} />);
+    const e = { currentTarget: { value: "-1.1e+2" } };
+    wrapper.setState({ buffer: e.currentTarget.value });
+    wrapper.find("input").simulate("change", e);
+    expect(wrapper.instance().state.buffer).toEqual(e.currentTarget.value);
+  });
 });

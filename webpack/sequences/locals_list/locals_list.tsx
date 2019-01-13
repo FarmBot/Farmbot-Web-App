@@ -1,9 +1,7 @@
 import * as React from "react";
-import { Row, Col, FBSelect } from "../../ui";
+import { Row, Col, FBSelect, BlurableInput } from "../../ui";
 import { t } from "i18next";
-import {
-  generateList, InputBox
-} from "../step_tiles/tile_move_absolute/index";
+import { generateList } from "../step_tiles/tile_move_absolute/generate_list";
 import {
   convertDDItoDeclaration, addOrEditDeclaration
 } from "../locals_list/handle_select";
@@ -112,13 +110,14 @@ export const LocationForm =
         <Row>
           {["x", "y", "z"].map((axis: Xyz) =>
             <Col xs={props.width || 4} key={axis}>
-              <InputBox
-                onCommit={manuallyEditAxis({ ...axisPartialProps, axis })}
-                disabled={isDisabled}
-                name={`location-${axis}`}
-                value={"" + vector[axis]}>
+              <label>
                 {t("{{axis}} (mm)", { axis })}
-              </InputBox>
+              </label>
+              <BlurableInput type="number"
+                disabled={isDisabled}
+                onCommit={manuallyEditAxis({ ...axisPartialProps, axis })}
+                name={`location-${axis}`}
+                value={"" + vector[axis]} />
             </Col>)}
         </Row>}
     </div>;

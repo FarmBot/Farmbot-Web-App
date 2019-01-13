@@ -31,6 +31,27 @@ input:not([role="combobox"]) {
   &.dim {
     background: darken($white, 2%) !important;
   }
+  &.error {
+    border: 2px solid $red;
+    background-color: $white !important;
+    color: $red;
+  }
+}
+
+.input-error-wrapper {
+  height: 0;
+}
+
+.input-error {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  color: $white;
+  background: $red;
+  padding: 2px;
+  font-size: 12px;
 }
 
 .day-selector-wrapper {

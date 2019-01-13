@@ -19,7 +19,7 @@ describe("McuInputBox", () => {
     };
   };
 
-  it("clamps numbers", () => {
+  it("clamps negative numbers", () => {
     const mib = new McuInputBox(fakeProps());
     const result = mib.clampInputAndWarn("-1", "short");
     expect(result).toEqual(0);
@@ -27,7 +27,15 @@ describe("McuInputBox", () => {
       .toHaveBeenCalledWith("Must be a positive number. Rounding up to 0.");
   });
 
-  it("clamps numbers", () => {
+  it("clamps large numbers", () => {
+    const mib = new McuInputBox(fakeProps());
+    const result = mib.clampInputAndWarn("100000", "short");
+    expect(result).toEqual(32000);
+    expect(warning)
+      .toHaveBeenCalledWith("Maximum input is 32,000. Rounding down.");
+  });
+
+  it("handles bad input", () => {
     const mib = new McuInputBox(fakeProps());
     expect(() => mib.clampInputAndWarn("QQQ", "short"))
       .toThrowError("Bad input in mcu_input_box. Impossible?");

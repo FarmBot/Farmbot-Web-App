@@ -4,6 +4,7 @@ import { BlurableInput } from "../../ui/index";
 import { SourceFbosConfig } from "../interfaces";
 import { ConfigurationName } from "farmbot/dist";
 import { updateConfig } from "../actions";
+import { parseIntInput } from "../../util";
 
 export interface BotConfigInputBoxProps {
   setting: ConfigurationName;
@@ -12,6 +13,9 @@ export interface BotConfigInputBoxProps {
   sourceFbosConfig: SourceFbosConfig;
 }
 
+/**
+ * Currently only used for `network_not_found_timer` and `steps_per_mm_?`.
+ */
 export class BotConfigInputBox
   extends React.Component<BotConfigInputBoxProps, {}> {
 
@@ -21,7 +25,7 @@ export class BotConfigInputBox
 
   change = (key: ConfigurationName, dispatch: Function) => {
     return (event: React.FormEvent<HTMLInputElement>) => {
-      const next = parseInt(event.currentTarget.value, 10);
+      const next = parseIntInput(event.currentTarget.value);
       const current = this.config.value;
       if (!_.isNaN(next) && (next !== current)) {
         dispatch(updateConfig({ [key]: next }));
