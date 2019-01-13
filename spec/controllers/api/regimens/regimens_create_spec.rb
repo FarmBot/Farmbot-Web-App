@@ -20,7 +20,7 @@ describe Api::RegimensController do
                       args: {
                         label: "parent",
                         data_value: {
-                          kind: "every_point", args: { group_type: "Plant" }
+                          kind: "every_point", args: { every_point_type: "Plant" }
                         }
                       }
                     }
@@ -33,7 +33,7 @@ describe Api::RegimensController do
       declr = json.fetch(:body).first
       expect(declr).to be
       expect(declr.fetch(:kind)).to eq("variable_declaration")
-      path = [:args, :data_value, :args, :group_type]
+      path = [:args, :data_value, :args, :every_point_type]
       expect(declr.dig(*path)).to eq("Plant")
     end
 
