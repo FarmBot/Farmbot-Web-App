@@ -8,8 +8,11 @@ import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 
 const getVersionString =
-  (fbosVersion: string | undefined, onBeta: boolean | undefined) =>
-    `${fbosVersion || t(" unknown (offline)")}${onBeta ? "-beta" : ""}`;
+  (fbosVersion: string | undefined, onBeta: boolean | undefined): string => {
+    const needsExtension = fbosVersion && !fbosVersion.includes("-") && onBeta;
+    const extension = needsExtension ? "-beta" : "";
+    return fbosVersion ? fbosVersion + extension : t(" unknown (offline)");
+  };
 
 export function FarmbotOsRow(props: FarmbotOsRowProps) {
   const { sourceFbosConfig, dispatch, bot, osReleaseNotes, botOnline } = props;
