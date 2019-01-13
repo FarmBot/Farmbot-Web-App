@@ -26,6 +26,7 @@ describe("<SequenceEditorMiddle/>", () => {
       },
       shouldDisplay: jest.fn(),
       confirmStepDeletion: false,
+      menuOpen: false,
     };
   }
 

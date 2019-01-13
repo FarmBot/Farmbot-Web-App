@@ -611,6 +611,24 @@ ul {
   }
 }
 
+.fb-button-popover-wrapper {
+  float: right;
+  margin-right: 1rem;
+}
+
+.parameter-assignment-menu {
+  .test-button-div {
+    text-align: center;
+  }
+  .fb-button {
+    float: none;
+  }
+}
+
+.parameter-assignment-menu-popover {
+  max-width: 400px;
+}
+
 .note {
   font-style: italic;
   font-size: 1.2rem;

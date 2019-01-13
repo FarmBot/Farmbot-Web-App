@@ -25,7 +25,8 @@ export class SequenceEditorMiddle
         hardwareFlags={this.props.hardwareFlags}
         farmwareInfo={this.props.farmwareInfo}
         shouldDisplay={this.props.shouldDisplay}
-        confirmStepDeletion={this.props.confirmStepDeletion} />}
+        confirmStepDeletion={this.props.confirmStepDeletion}
+        menuOpen={this.props.menuOpen} />}
     </EmptyStateWrapper>;
   }
 }

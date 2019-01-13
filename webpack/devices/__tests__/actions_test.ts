@@ -35,7 +35,7 @@ jest.mock("axios", () => ({
 
 import * as actions from "../actions";
 import {
-  fakeSequence, fakeFbosConfig, fakeFirmwareConfig
+  fakeFbosConfig, fakeFirmwareConfig
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -106,6 +106,12 @@ describe("emergencyLock() / emergencyUnlock", function () {
     actions.emergencyUnlock();
     expect(mockDevice.emergencyUnlock).toHaveBeenCalled();
   });
+
+  it("doesn't call emergencyUnlock", () => {
+    window.confirm = () => false;
+    actions.emergencyUnlock();
+    expect(mockDevice.emergencyUnlock).not.toHaveBeenCalled();
+  });
 });
 
 describe("sync()", function () {
@@ -139,16 +145,19 @@ describe("sync()", function () {
 
 describe("execSequence()", function () {
   it("calls execSequence", async () => {
-    const s = fakeSequence().body;
-    await actions.execSequence(s);
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(s.id);
+    await actions.execSequence(1);
+    expect(mockDevice.execSequence).toHaveBeenCalledWith(1);
+    expect(success).toHaveBeenCalled();
+  });
+
+  it("calls execSequence with variables", async () => {
+    await actions.execSequence(1, []);
+    expect(mockDevice.execSequence).toHaveBeenCalledWith(1, []);
     expect(success).toHaveBeenCalled();
   });
 
   it("implodes when executing unsaved sequences", () => {
-    const ok = fakeSequence().body;
-    ok.id = undefined;
-    expect(() => actions.execSequence(ok)).toThrow();
+    expect(() => actions.execSequence(undefined)).toThrow();
     expect(mockDevice.execSequence).not.toHaveBeenCalled();
   });
 });
