@@ -14,7 +14,7 @@ import {
 } from "../locals_list_support";
 import { difference } from "lodash";
 import { VariableNameSet } from "../../../resources/interfaces";
-import { generateList } from "../../step_tiles/tile_move_absolute/generate_list";
+import { locationFormList } from "../../step_tiles/tile_move_absolute/generate_list";
 import { convertDDItoDeclaration } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -43,7 +43,7 @@ describe("<LocationForm/>", () => {
     expect(selects.length).toBe(1);
     const select = selects.first().props();
     expect(select.allowEmpty).toBe(true);
-    const choices = generateList(p.resources, [PARENT]);
+    const choices = locationFormList(p.resources, [PARENT], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);

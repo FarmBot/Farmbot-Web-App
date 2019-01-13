@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Row, Col, FBSelect, BlurableInput } from "../../ui";
 import { t } from "i18next";
-import { generateList } from "../step_tiles/tile_move_absolute/generate_list";
+import { locationFormList } from "../step_tiles/tile_move_absolute/generate_list";
 import {
   convertDDItoDeclaration, addOrEditDeclaration
 } from "../locals_list/handle_select";
 import {
-  LocationFormProps, LocalsListProps, PARENT, AllowedDeclaration
+  LocationFormProps, LocalsListProps, PARENT, AllowedDeclaration,
 } from "../locals_list/locals_list_support";
 import { defensiveClone, betterCompact } from "../../util/util";
 import {
@@ -73,7 +73,8 @@ export const LocationForm =
   (props: LocationFormProps) => {
     const {
       sequenceUuid, resources, onChange, declarations, variable,
-      hideVariableLabel, locationDropdownKey, allowedDeclarations
+      hideVariableLabel, locationDropdownKey, allowedDeclarations,
+      disallowGroups
     } = props;
     const { celeryNode, dropdown, vector } =
       maybeUseStepData({
@@ -84,7 +85,7 @@ export const LocationForm =
     const useIdentifier = allowedDeclarations === AllowedDeclaration.identifier;
     const variableListItems = (props.shouldDisplay(Feature.variables) &&
       allowedDeclarations !== AllowedDeclaration.variable) ? [PARENT] : [];
-    const list = generateList(resources, variableListItems);
+    const list = locationFormList(resources, variableListItems, !disallowGroups);
     /** Variable name. */
     const { label } = celeryNode.args;
     const declaration = defensiveClone(celeryNode);

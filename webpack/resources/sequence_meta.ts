@@ -9,7 +9,7 @@ import { findPointerByTypeAndId } from "./selectors";
 import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import { capitalize } from "lodash";
 import {
-  formatPoint
+  formatPoint, safeEveryPointType, everyPointDDI
 } from "../sequences/step_tiles/tile_move_absolute/generate_list";
 
 export interface SequenceMeta {
@@ -64,6 +64,9 @@ export const determineDropdown =
         return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
       case "identifier":
         return { label: capitalize(data_value.args.label), value: "?" };
+      case "every_point":
+        const { every_point_type } = data_value.args;
+        return everyPointDDI(safeEveryPointType(every_point_type));
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
         const pointer =

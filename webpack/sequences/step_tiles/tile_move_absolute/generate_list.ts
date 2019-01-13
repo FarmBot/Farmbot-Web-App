@@ -32,7 +32,7 @@ export function activeTools(resources: ResourceIndex): ToolAndLocation[] {
       : undefined));
 }
 
-type DropdownHeadingId = PointerTypeName | typeof TOOL;
+type DropdownHeadingId = PointerTypeName | typeof TOOL | "Other";
 
 /** Location selection menu section names. */
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
@@ -40,38 +40,47 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Plant": "Plants",
   "ToolSlot": "Tool Slots",
   "Tool": "Tools",
+  "Other": "Other",
 };
 
-/** Location selection menu section headers. */
-const HEADINGS: () => DropDownItem[] = () => [
-  ...Object.keys(NAME_MAP)
-    .filter(x => x !== "ToolSlot")
-    .map((name: DropdownHeadingId) => {
-      return ({
-        label: t(NAME_MAP[name]),
-        heading: true,
-        value: 0,
-        headingId: name
-      });
-    })
-];
+const heading = (name: DropdownHeadingId) => ({
+  label: t(NAME_MAP[name]),
+  heading: true,
+  value: 0,
+  headingId: name
+});
+
+const ddiFrom = (points: TaggedPoint[], pointerType: PointerTypeName) => points
+  .filter(x => x.body.pointer_type === pointerType)
+  .map(formatPoint)
+  .filter(x => parseInt("" + x.value) > 0);
+
+const maybeGroup = (display: boolean) =>
+  (groupDDI: DropDownItem): DropDownItem[] =>
+    display ? [groupDDI] : [];
 
 /** Location selection menu items. */
-export function generateList(input: ResourceIndex,
-  additionalItems: DropDownItem[]): DropDownItem[] {
-  const SORT_KEY: keyof DropDownItem = "headingId";
+export function locationFormList(input: ResourceIndex,
+  additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
   const points = selectAllActivePoints(input)
-    .filter(x => (x.body.pointer_type !== "ToolSlot"));
-  const toolDDI: DropDownItem[] =
-    activeTools(input).map(({ tool, location }) => formatTools(tool, location));
-  return _(points)
-    .map(formatPoint)
+    .filter(x => x.body.pointer_type !== "ToolSlot");
+  const plantDDI = ddiFrom(points, "Plant");
+  const genericPointerDDI = ddiFrom(points, "GenericPointer");
+  const toolDDI: DropDownItem[] = activeTools(input)
+    .map(({ tool, location }) => formatTools(tool, location))
+    .filter(x => parseInt("" + x.value) > 0);
+  const group = maybeGroup(!!displayGroups);
+  return _(heading("Tool"))
     .concat(toolDDI)
-    .filter(x => parseInt("" + x.value) > 0)
-    .concat(HEADINGS())
-    .sortBy(SORT_KEY)
-    .reverse()
-    .concat({ label: t("Other"), heading: true, value: 0, headingId: "Other" })
+    .concat(group(everyPointDDI("Tool")))
+    .concat(group(everyPointDDI("ToolSlot")))
+    .concat(heading("Plant"))
+    .concat(plantDDI)
+    .concat(group(everyPointDDI("Plant")))
+    .concat(heading("GenericPointer"))
+    .concat(genericPointerDDI)
+    .concat(group(everyPointDDI("GenericPointer")))
+    .concat(heading("Other"))
     .concat(additionalItems)
     .value();
 }
@@ -102,3 +111,26 @@ export function dropDownName(name: string, v?: Vector3) {
   if (v) { label += ` (${v.x}, ${v.y}, ${v.z})`; }
   return capitalize(label);
 }
+
+export const EVERY_POINT_LABEL = {
+  "Plant": "All plants",
+  "GenericPointer": "All map points",
+  "Tool": "All tools",
+  "ToolSlot": "All tool slots",
+};
+
+export type EveryPointType = keyof typeof EVERY_POINT_LABEL;
+
+const isEveryPointType = (x: string): x is EveryPointType =>
+  Object.keys(EVERY_POINT_LABEL).includes(x);
+
+export const safeEveryPointType = (x: string): EveryPointType => {
+  if (isEveryPointType(x)) {
+    return x;
+  } else {
+    throw new Error(`'${x}' is not of type EveryPointType`);
+  }
+};
+
+export const everyPointDDI = (value: EveryPointType) =>
+  ({ value, label: EVERY_POINT_LABEL[value], headingId: "every_point" });

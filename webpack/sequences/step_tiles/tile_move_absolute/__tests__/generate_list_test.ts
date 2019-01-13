@@ -1,9 +1,9 @@
-import { generateList, dropDownName } from "../generate_list";
+import { locationFormList, dropDownName } from "../generate_list";
 import { fakeResourceIndex } from "../test_helpers";
 
-describe("generateList()", () => {
+describe("locationFormList()", () => {
   it("returns dropdown list", () => {
-    const items = generateList(fakeResourceIndex(), []);
+    const items = locationFormList(fakeResourceIndex(), []);
     const toolHeading = items[0];
     expect(toolHeading).toEqual({
       headingId: "Tool",
@@ -24,7 +24,7 @@ describe("generateList()", () => {
       value: 0,
       heading: true,
     });
-    const plant = items[4];
+    const plant = items[3];
     expect(plant).toEqual({
       headingId: "Plant",
       label: "Plant 1 (1, 2, 3)",

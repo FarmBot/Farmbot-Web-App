@@ -1,7 +1,8 @@
 import {
   createSequenceMeta,
   determineDropdown,
-  findVariableByName
+  findVariableByName,
+  determineVector
 } from "../sequence_meta";
 import {
   fakeSequence,
@@ -36,37 +37,70 @@ describe("determineDropdown", () => {
     expect(r.label).toBe("Coordinate (0, 1, 2)");
     expect(r.value).toBe("?");
   });
-});
 
-it("Returns a label for `identifier`", () => {
-  const r = determineDropdown({
-    kind: "variable_declaration",
-    args: {
-      label: "x",
-      data_value: { kind: "identifier", args: { label: "parent1" } }
-    }
-  }, buildResourceIndex([]).index);
-  expect(r.label).toBe("Parent1");
-  expect(r.value).toBe("?");
-});
+  it("Returns a label for `identifier`", () => {
+    const r = determineDropdown({
+      kind: "variable_declaration",
+      args: {
+        label: "x",
+        data_value: { kind: "identifier", args: { label: "parent1" } }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("Parent1");
+    expect(r.value).toBe("?");
+  });
 
-it("Returns a label for `point`", () => {
-  const point = fakePoint();
-  const r = determineDropdown({
-    kind: "variable_declaration",
-    args: {
-      label: "x",
-      data_value: {
-        kind: "point",
-        args: {
-          pointer_id: point.body.id || -0,
-          pointer_type: "Point"
+  it("Returns a label for `every_point`", () => {
+    const r = determineDropdown({
+      kind: "variable_declaration",
+      args: {
+        label: "x",
+        data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
+      }
+    }, buildResourceIndex([]).index);
+    expect(r.label).toBe("All plants");
+    expect(r.value).toBe("Plant");
+  });
+
+  it("Returns a label for `point`", () => {
+    const point = fakePoint();
+    const r = determineDropdown({
+      kind: "variable_declaration",
+      args: {
+        label: "x",
+        data_value: {
+          kind: "point",
+          args: {
+            pointer_id: point.body.id || -0,
+            pointer_type: "Point"
+          }
         }
       }
-    }
-  }, buildResourceIndex([point]).index);
-  expect(r.label).toBe(formatPoint(point).label);
-  expect(r.value).toBe("" + point.body.id);
+    }, buildResourceIndex([point]).index);
+    expect(r.label).toBe(formatPoint(point).label);
+    expect(r.value).toBe("" + point.body.id);
+  });
+});
+
+describe("determineVector()", () => {
+  it("determines vector for point", () => {
+    const point = fakePoint();
+    const v = determineVector({
+      kind: "variable_declaration",
+      args: {
+        label: "x",
+        data_value: {
+          kind: "point",
+          args: {
+            pointer_id: point.body.id || -0,
+            pointer_type: "Point"
+          }
+        }
+      }
+    }, buildResourceIndex([point]).index);
+    const { x, y, z } = point.body;
+    expect(v).toEqual(expect.objectContaining({ x, y, z }));
+  });
 });
 
 describe("createSequenceMeta", () => {

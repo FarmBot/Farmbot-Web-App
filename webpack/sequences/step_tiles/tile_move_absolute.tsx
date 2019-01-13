@@ -181,6 +181,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       hideVariableLabel={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedDeclarations={AllowedDeclaration.identifier}
+      disallowGroups={true}
       width={3} />
 
   SpeedForm = () =>

@@ -9,13 +9,14 @@ import {
   Dictionary,
   Identifier,
   Point,
-  Tool
+  Tool,
+  EveryPoint
 } from "farmbot";
 
 export const EMPTY_COORD: Coordinate =
   ({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
 
-type DataValue = Coordinate | Identifier | Point | Tool;
+type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
 const createVariableDeclaration =
   (label: string, data_value: DataValue): VariableDeclaration =>
     ({
@@ -38,6 +39,14 @@ const pointVar = (
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
+
+const everyPointVar =
+  (value: string | number) =>
+    ({ label }: { label: string }): VariableDeclaration =>
+      createVariableDeclaration(label, {
+        kind: "every_point",
+        args: { every_point_type: "" + value }
+      });
 
 const manualEntry = ({ label }: { label: string }): VariableDeclaration =>
   createVariableDeclaration(label, {
@@ -71,13 +80,14 @@ const newDeclarationCreator = (ddi: DropDownItem):
     newVarLabel?: string,
     useIdentifier?: boolean
   }) => ScopeDeclarationBodyItem | undefined => {
-  if (ddi.isNull) { return manualEntry; } // Caller decides X/Y/Z
+  if (ddi.isNull) { return manualEntry; } // Coordinate
   switch (ddi.headingId) {
     case "Plant":
     case "GenericPointer": return pointVar(ddi.headingId, ddi.value);
     case "Tool": return toolVar(ddi.value);
     case "parameter": return newParameter; // Caller decides X/Y/Z
-    case "Other": return manualEntry;
+    case "every_point": return everyPointVar(ddi.value);
+    case "Other": return manualEntry; // Coordinate
   }
   return () => undefined;
 };
