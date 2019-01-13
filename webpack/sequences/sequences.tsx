@@ -47,7 +47,8 @@ export class Sequences extends React.Component<Props, {}> {
             hardwareFlags={this.props.hardwareFlags}
             farmwareInfo={this.props.farmwareInfo}
             shouldDisplay={this.props.shouldDisplay}
-            confirmStepDeletion={this.props.confirmStepDeletion} />
+            confirmStepDeletion={this.props.confirmStepDeletion}
+            menuOpen={this.props.menuOpen} />
         </CenterPanel>
         <RightPanel
           className="step-button-cluster-panel"

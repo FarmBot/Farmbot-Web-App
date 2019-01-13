@@ -282,7 +282,7 @@ describe("<TileMoveAbsolute/>", () => {
         kind: "variable_declaration",
         args: {
           label: "parent",
-          data_value: { kind: "every_point", args: { group_type: "Plant" } }
+          data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
         }
       });
       expect(boom).toThrowError("Can't put `every_point` into `move_abs");

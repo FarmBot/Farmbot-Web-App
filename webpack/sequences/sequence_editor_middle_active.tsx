@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
-import { execSequence } from "../devices/actions";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles";
 import { t } from "i18next";
@@ -12,11 +11,12 @@ import { copySequence } from "./actions";
 import { TaggedSequence, SyncStatus } from "farmbot";
 import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
-import { warning } from "farmbot-toastr";
 import { AllSteps } from "./all_steps";
 import { LocalsList, localListCallback } from "./locals_list/locals_list";
 import { betterCompact } from "../util";
 import { AllowedDeclaration } from "./locals_list/locals_list_support";
+import { ResourceIndex } from "../resources/interfaces";
+import { ShouldDisplay } from "../devices/interfaces";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -39,17 +39,28 @@ export const onDrop =
       }
     };
 
-const SequenceBtnGroup = ({ dispatch, sequence, syncStatus }: {
-  dispatch: Function, sequence: TaggedSequence, syncStatus: SyncStatus
-}) =>
+interface SequenceBtnGroupProps {
+  dispatch: Function;
+  sequence: TaggedSequence;
+  syncStatus: SyncStatus;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay;
+  menuOpen: boolean;
+}
+
+const SequenceBtnGroup = ({
+  dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen
+}: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
       onClick={() => dispatch(save(sequence.uuid))} />
     <TestButton
       syncStatus={syncStatus}
       sequence={sequence}
-      onFail={warning}
-      onClick={() => execSequence(sequence.body)} />
+      resources={resources}
+      shouldDisplay={shouldDisplay}
+      menuOpen={menuOpen}
+      dispatch={dispatch} />
     <button
       className="fb-button red"
       onClick={() => {
@@ -90,7 +101,11 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   const declarations = betterCompact(Object.values(variableData))
     .map(d => d.celeryNode);
   return <div className="sequence-editor-tools">
-    <SequenceBtnGroup {...sequenceAndDispatch} syncStatus={props.syncStatus} />
+    <SequenceBtnGroup {...sequenceAndDispatch}
+      syncStatus={props.syncStatus}
+      resources={props.resources}
+      shouldDisplay={props.shouldDisplay}
+      menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <LocalsList
       variableData={variableData}
@@ -122,7 +137,8 @@ export class SequenceEditorMiddleActive extends
         sequence={sequence}
         resources={this.props.resources}
         syncStatus={this.props.syncStatus}
-        shouldDisplay={this.props.shouldDisplay} />
+        shouldDisplay={this.props.shouldDisplay}
+        menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"
         style={{ height: this.stepSectionHeight }}>

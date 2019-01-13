@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
 import { push } from "../history";
-import { selectSequence } from "./actions";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
 import { Row, Col } from "../ui/index";
@@ -30,7 +29,6 @@ const sequenceList = (props: {
       [`fb-button`, `block`, `full-width`, `${ts.body.color || "purple"}`];
     lastUrlChunk() === urlFriendly(ts.body.name) && css.push("active");
     const { uuid } = ts;
-    const click = () => props.dispatch(selectSequence(uuid));
     const nameWithSaveIndicator = ts.body.name + (ts.specialStatus ? "*" : "");
     const inUse = !!props.resourceUsage[uuid];
     const variableData = props.sequenceMetas[uuid];
@@ -48,7 +46,7 @@ const sequenceList = (props: {
         <Link
           to={`/app/sequences/${urlFriendly(ts.body.name) || ""}`}
           key={uuid}
-          onClick={click} >
+          onClick={setActiveSequenceByName}>
           <button className={css.join(" ")} draggable={true}>
             <label>{nameWithSaveIndicator}</label>
             {inUse &&

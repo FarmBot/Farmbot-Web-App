@@ -21,6 +21,7 @@ jest.mock("../../devices/actions", () => ({
 jest.mock("../locals_list/locals_list", () => ({
   LocalsList: () => <div />,
   localListCallback: jest.fn(() => jest.fn()),
+  isParameterDeclaration: jest.fn(),
 }));
 
 import * as React from "react";
@@ -45,23 +46,26 @@ import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 
 describe("<SequenceEditorMiddleActive/>", () => {
-  const sequence = fakeSequence();
-  sequence.specialStatus = SpecialStatus.DIRTY;
-  const fakeProps = (): ActiveMiddleProps => ({
-    dispatch: jest.fn(),
-    sequence,
-    resources: buildResourceIndex(FAKE_RESOURCES).index,
-    syncStatus: "synced",
-    hardwareFlags: fakeHardwareFlags(),
-    farmwareInfo: {
-      farmwareNames: [],
-      firstPartyFarmwareNames: [],
-      showFirstPartyFarmware: false,
-      farmwareConfigs: {},
-    },
-    shouldDisplay: jest.fn(),
-    confirmStepDeletion: false,
-  });
+  const fakeProps = (): ActiveMiddleProps => {
+    const sequence = fakeSequence();
+    sequence.specialStatus = SpecialStatus.DIRTY;
+    return {
+      dispatch: jest.fn(),
+      sequence,
+      resources: buildResourceIndex(FAKE_RESOURCES).index,
+      syncStatus: "synced",
+      hardwareFlags: fakeHardwareFlags(),
+      farmwareInfo: {
+        farmwareNames: [],
+        firstPartyFarmwareNames: [],
+        showFirstPartyFarmware: false,
+        farmwareConfigs: {},
+      },
+      shouldDisplay: jest.fn(),
+      confirmStepDeletion: false,
+      menuOpen: false,
+    };
+  };
 
   it("saves", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
@@ -75,7 +79,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.sequence.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     clickButton(wrapper, 1, "Test");
-    expect(execSequence).toHaveBeenCalledWith(p.sequence.body);
+    expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 
   it("deletes", () => {
