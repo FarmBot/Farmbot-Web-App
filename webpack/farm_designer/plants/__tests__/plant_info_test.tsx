@@ -21,6 +21,7 @@ describe("<PlantInfo />", () => {
       findPlant: fakePlant,
       dispatch: jest.fn(),
       openedSavedGarden: undefined,
+      timeOffset: 0,
     };
   }
 

@@ -2,7 +2,7 @@ import * as moment from "moment";
 import { Everything } from "../../interfaces";
 import { EditPlantInfoProps } from "../interfaces";
 import {
-  maybeFindPlantById, maybeFindPlantTemplateById
+  maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeOffset
 } from "../../resources/selectors";
 import { history } from "../../history";
 import { PlantStage } from "farmbot";
@@ -27,6 +27,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     findPlant,
     push: history.push,
     dispatch: props.dispatch,
+    timeOffset: maybeGetTimeOffset(props.resources.index),
   };
 }
 
@@ -41,7 +42,7 @@ export interface FormattedPlantInfo {
   name: string;
   uuid: string;
   daysOld: number;
-  plantedAt: string;
+  plantedAt: moment.Moment;
   slug: string;
   plantStatus: PlantStage;
 }
@@ -61,7 +62,7 @@ export function formatPlantInfo(rsrc: TaggedPlant): FormattedPlantInfo {
     x: p.x,
     y: p.y,
     uuid: rsrc.uuid,
-    plantedAt: plantedAt.format("MMMM Do YYYY, h:mma"),
+    plantedAt,
     plantStatus: _.get(p, "plant_stage", "planned"),
   };
 }

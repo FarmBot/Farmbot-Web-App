@@ -212,6 +212,7 @@ export interface EditPlantInfoProps {
   dispatch: Function;
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
   openedSavedGarden: string | undefined;
+  timeOffset: number;
 }
 
 export interface DraggableEvent {

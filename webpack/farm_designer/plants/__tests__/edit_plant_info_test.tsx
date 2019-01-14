@@ -22,6 +22,7 @@ describe("<EditPlantInfo />", () => {
       dispatch: jest.fn(),
       findPlant: fakePlant,
       openedSavedGarden: undefined,
+      timeOffset: 0,
     };
   };
 
