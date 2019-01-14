@@ -18,7 +18,7 @@ import {
 import { destroy, save, overwrite } from "../../api/crud";
 import { history } from "../../history";
 // TIL: https://stackoverflow.com/a/24900248/1064917
-import { betterMerge } from "../../util";
+import { betterMerge, parseIntInput } from "../../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
@@ -109,7 +109,7 @@ export function recombine(vm: FarmEventViewModel,
     end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
-    executable_id: parseInt(vm.executable_id, 10),
+    executable_id: parseIntInput(vm.executable_id),
     executable_type: vm.executable_type as ("Sequence" | "Regimen"),
     body: vm.body,
   };
@@ -418,6 +418,26 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         &nbsp;{t("Repeats?")}
       </label> : <div />
 
+  dateCheck = (): string | undefined => {
+    const startDate = this.fieldGet("startDate");
+    const endDate = this.fieldGet("endDate");
+    if (!moment(endDate).isSameOrAfter(moment(startDate))) {
+      return t("End date must not be before start date.");
+    }
+  }
+
+  timeCheck = (): string | undefined => {
+    const startDate = this.fieldGet("startDate");
+    const startTime = this.fieldGet("startTime");
+    const endDate = this.fieldGet("endDate");
+    const endTime = this.fieldGet("endTime");
+    const start = offsetTime(startDate, startTime, this.props.timeOffset);
+    const end = offsetTime(endDate, endTime, this.props.timeOffset);
+    if (moment(start).isSameOrAfter(moment(end))) {
+      return t("End time must be after start time.");
+    }
+  }
+
   RepeatForm = () => {
     const allowRepeat = !this.isReg && this.repeats;
     return <div>
@@ -430,7 +450,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         timeUnit={this.fieldGet("timeUnit") as TimeUnit}
         repeat={this.fieldGet("repeat")}
         endDate={this.fieldGet("endDate")}
-        endTime={this.fieldGet("endTime")} />
+        endTime={this.fieldGet("endTime")}
+        dateError={this.dateCheck()}
+        timeError={this.timeCheck()} />
     </div>;
   }
 

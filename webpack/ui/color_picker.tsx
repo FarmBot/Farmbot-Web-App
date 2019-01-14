@@ -1,17 +1,17 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
 import { Saucer } from "../ui/index";
-import { Color } from "../interfaces";
+import { ResourceColor } from "../interfaces";
 import { colors } from "../util";
 
 interface PickerProps {
-  current: Color;
-  onChange?: (color: Color) => void;
+  current: ResourceColor;
+  onChange?: (color: ResourceColor) => void;
 }
 
 export class ColorPicker extends React.Component<PickerProps, {}> {
 
-  private renderColors(color: Color, key: number) {
+  private renderColors(color: ResourceColor, key: number) {
     const isActive = color === this.props.current;
     const cb = this.props.onChange || function () { };
     return <div key={key} onClick={() => cb(color)} >

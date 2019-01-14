@@ -1,7 +1,6 @@
 import * as Util from "../util";
 import { times } from "lodash";
-import { validBotLocationData } from "../index";
-import { parseClassNames } from "../../ui/util";
+
 describe("util", () => {
   describe("safeStringFetch", () => {
     const data = {
@@ -127,7 +126,7 @@ describe("util", () => {
 
   describe("validBotLocationData()", () => {
     it("returns valid location_data object", () => {
-      const result = validBotLocationData(undefined);
+      const result = Util.validBotLocationData(undefined);
       expect(result).toEqual({
         position: { x: undefined, y: undefined, z: undefined },
         scaled_encoders: { x: undefined, y: undefined, z: undefined },
@@ -149,30 +148,14 @@ describe("util", () => {
 
 });
 
-describe("parseClassNames", () => {
-  it("parses class names correctly", () => {
-    const base = "hello, base.";
-    const results = parseClassNames({
-      xs: 1,
-      sm: 2,
-      md: 3,
-      lg: 4,
-      xsOffset: 5,
-      smOffset: 6,
-      mdOffset: 7,
-      lgOffset: 8,
-    }, base);
-
-    [
-      base,
-      "col-xs-1",
-      "col-sm-2",
-      "col-md-3",
-      "col-lg-4",
-      "col-xs-offset-5",
-      "col-sm-offset-6",
-      "col-md-offset-7",
-      "col-lg-offset-8",
-    ].map(string => expect(results).toContain(string));
+describe("parseIntInput()", () => {
+  it("parses int from number input", () => {
+    expect(Util.parseIntInput("-1.1e+2")).toEqual(-110);
+    expect(Util.parseIntInput("-1.1e-1")).toEqual(0);
+    expect(Util.parseIntInput("1.1E1")).toEqual(11);
+    expect(Util.parseIntInput("+123")).toEqual(123);
+    expect(Util.parseIntInput("1.5")).toEqual(1);
+    expect(Util.parseIntInput("e")).toEqual(NaN);
+    expect(Util.parseIntInput("")).toEqual(NaN);
   });
 });

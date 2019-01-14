@@ -4,13 +4,14 @@ import { t } from "i18next";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
-import { FBSelect, DropDownItem } from "../../ui";
+import { FBSelect, DropDownItem, BlurableInput, Row, Col } from "../../ui";
 import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
 import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
+import { parseIntInput } from "../../util";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -18,6 +19,7 @@ export interface PlantPanelProps {
   updatePlant?(uuid: string, update: PlantOptions): void;
   inSavedGarden: boolean;
   dispatch: Function;
+  timeOffset?: number;
 }
 
 export const PLANT_STAGES: DropDownItem[] = [
@@ -41,10 +43,13 @@ export const PLANT_STAGES_DDI = {
   },
 };
 
-export interface EditPlantStatusProps {
-  plantStatus: PlantStage,
-  updatePlant(uuid: string, update: PlantOptions): void;
+interface EditPlantProperty {
   uuid: string;
+  updatePlant(uuid: string, update: PlantOptions): void;
+}
+
+export interface EditPlantStatusProps extends EditPlantProperty {
+  plantStatus: PlantStage;
 }
 
 export function EditPlantStatus(props: EditPlantStatusProps) {
@@ -66,6 +71,43 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
     }} />;
 }
 
+export interface EditDatePlantedProps extends EditPlantProperty {
+  datePlanted: moment.Moment;
+  timeOffset: number;
+}
+
+export const EditDatePlanted = (props: EditDatePlantedProps) => {
+  const { datePlanted, updatePlant, uuid, timeOffset } = props;
+  return <BlurableInput
+    type="date"
+    value={datePlanted.utcOffset(timeOffset).format("YYYY-MM-DD")}
+    onCommit={e => updatePlant(uuid, {
+      planted_at: moment(e.currentTarget.value)
+        .utcOffset(timeOffset).toISOString()
+    })} />;
+};
+
+export interface EditPlantLocationProps extends EditPlantProperty {
+  location: Record<"x" | "y", number>;
+}
+
+export const EditPlantLocation = (props: EditPlantLocationProps) => {
+  const { location, updatePlant, uuid } = props;
+  return <Row>
+    {["x", "y"].map((axis: "x" | "y") =>
+      <Col xs={6} key={axis}>
+        <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
+        <BlurableInput
+          type="number"
+          value={location[axis]}
+          min={0}
+          onCommit={e => updatePlant(uuid, {
+            [axis]: round(parseIntInput(e.currentTarget.value))
+          })} />
+      </Col>)}
+  </Row>;
+};
+
 const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
   (dispatch: Function): Promise<void> => {
     dispatch({
@@ -86,12 +128,12 @@ const MoveToPlant =
 
 const ListItem = (props: { name: string, children: React.ReactChild }) =>
   <li>
-    <b>
+    <p>
       {props.name}:&nbsp;
-    </b>
-    <span>
+    </p>
+    <div>
       {props.children}
-    </span>
+    </div>
   </li>;
 
 export function PlantPanel(props: PlantPanelProps) {
@@ -117,13 +159,23 @@ export function PlantPanel(props: PlantPanelProps) {
         </Link>
       </ListItem>
       <ListItem name={t("Started")}>
-        {plantedAt}
+        {(updatePlant && _.isNumber(props.timeOffset) && !inSavedGarden)
+          ? <EditDatePlanted
+            uuid={uuid}
+            datePlanted={plantedAt}
+            timeOffset={props.timeOffset}
+            updatePlant={updatePlant} />
+          : plantedAt.format("MMMM Do YYYY, h:mma")}
       </ListItem>
       <ListItem name={t("Age")}>
         {`${daysOld} ${t("days old")}`}
       </ListItem>
       <ListItem name={t("Location")}>
-        {`(${x}, ${y})`}
+        {updatePlant
+          ? <EditPlantLocation uuid={uuid}
+            location={{ x, y }}
+            updatePlant={updatePlant} />
+          : `(${x}, ${y})`}
       </ListItem>
       <ListItem name={t("Status")}>
         {(updatePlant && !inSavedGarden)

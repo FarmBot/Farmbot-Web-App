@@ -1,4 +1,4 @@
-import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
+import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute } from "farmbot";
 import { sanitizeNodes } from "../variables_support";
 import { get } from "lodash";

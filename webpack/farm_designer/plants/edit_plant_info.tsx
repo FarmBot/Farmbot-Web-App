@@ -22,6 +22,7 @@ export class EditPlantInfo extends PlantInfoBase {
         onDestroy={this.destroy}
         updatePlant={this.updatePlant}
         dispatch={this.props.dispatch}
+        timeOffset={this.props.timeOffset}
         inSavedGarden={!!this.props.openedSavedGarden} />
     </DesignerPanel>;
   }

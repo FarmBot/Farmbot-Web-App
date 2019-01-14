@@ -1,4 +1,4 @@
-import { fakeResourceIndex } from "../../tile_move_absolute/test_helpers";
+import { fakeResourceIndex } from "../../../locals_list/test_helpers";
 import { resourceUpdate } from "../assertion_support";
 import { unpackStep, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import {

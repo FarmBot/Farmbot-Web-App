@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { connect } from "react-redux";
-import { Everything, Color } from "../../interfaces";
+import { Everything, ResourceColor } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
   Row, Col, BlurableInput, ColorPicker
@@ -14,6 +14,7 @@ import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
+import { parseIntInput } from "../../util";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -77,7 +78,7 @@ export class CreatePoints
 
   update = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const value = parseInt(e.currentTarget.value);
+      const value = parseIntInput(e.currentTarget.value);
       this.setState({ [key]: value });
       if (this.props.currentPoint) {
         const point = clone(this.props.currentPoint);
@@ -90,7 +91,7 @@ export class CreatePoints
     };
   }
 
-  changeColor = (color: Color) => {
+  changeColor = (color: ResourceColor) => {
     this.setState({ color });
     if (this.props.currentPoint) {
       const { cx, cy, r } = this.props.currentPoint;
@@ -142,12 +143,13 @@ export class CreatePoints
           name="r"
           type="number"
           onCommit={this.update("r")}
-          value={r || 0} />
+          value={r || 0}
+          min={0} />
       </Col>
       <Col xs={3}>
         <label>{t("color")}</label>
         <ColorPicker
-          current={color as Color || "green"}
+          current={color as ResourceColor || "green"}
           onChange={this.changeColor} />
       </Col>
     </Row>;

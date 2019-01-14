@@ -33,3 +33,9 @@ export interface FarmwareConfigMenuProps {
 }
 
 export type Farmwares = Dictionary<FarmwareManifest | undefined>;
+
+export interface FarmwareEnv {
+  id?: number;
+  key: string;
+  value: string | number | boolean;
+}

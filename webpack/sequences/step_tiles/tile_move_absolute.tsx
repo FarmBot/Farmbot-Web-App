@@ -15,7 +15,7 @@ import {
   ScopeDeclarationBodyItem,
   VariableDeclaration
 } from "farmbot";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, BlurableInput } from "../../ui/index";
 import {
   isTaggedSequence,
 } from "../../resources/tagged_resources";
@@ -27,7 +27,6 @@ import {
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
-import { InputBox } from "./tile_move_absolute/index";
 import { ToolTips } from "../../constants";
 import {
   StepWrapper,
@@ -40,8 +39,11 @@ import { StepInputBox } from "../inputs/step_input_box";
 import {
   determineDropdown, determineVector, findVariableByName
 } from "../../resources/sequence_meta";
-import { LocationForm } from "../locals_list/locals_list";
+import { LocationForm } from "../locals_list/location_form";
 import { AllowedDeclaration } from "../locals_list/locals_list_support";
+
+/** Union of all types found in a move_abs "args" attribute. */
+export type LocationData = MoveAbsolute["args"]["location"];
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;
@@ -182,6 +184,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
       hideVariableLabel={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedDeclarations={AllowedDeclaration.identifier}
+      disallowGroups={true}
       width={3} />
 
   SpeedForm = () =>
@@ -201,12 +204,13 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     <Row>
       {["x", "y", "z"].map((axis: Xyz) =>
         <Col xs={3} key={axis}>
-          <InputBox
+          <label>
+            {t("{{axis}}-Offset", { axis })}
+          </label>
+          <BlurableInput type="number"
             onCommit={this.updateInputValue(axis, "offset")}
             name={`offset-${axis}`}
-            value={this.getOffsetValue(axis)}>
-            {t("{{axis}}-Offset", { axis })}
-          </InputBox>
+            value={this.getOffsetValue(axis)} />
         </Col>)}
       <this.SpeedForm />
     </Row>

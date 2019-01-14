@@ -9,7 +9,7 @@ import {
 import {
   SequenceResource as Sequence
 } from "farmbot/dist/resources/api_resources";
-import { maybeTagStep } from "../../../resources/sequence_tagging";
+import { maybeTagStep } from "../../resources/sequence_tagging";
 
 // ======= TYPE DECLARATIONS =======
 /** Less strict version of CeleryScript args. It's traversable, or unknown. */

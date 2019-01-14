@@ -38,6 +38,8 @@ interface CommonProps {
    * chooses between reassignment vs. creation for new variables,
    * and determines which variables to display in the form. */
   allowedDeclarations: AllowedDeclaration;
+  /** Don't display group dropdown items. */
+  disallowGroups?: boolean;
 }
 
 export interface LocalsListProps extends CommonProps {

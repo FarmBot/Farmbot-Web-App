@@ -7,6 +7,7 @@ import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
 import { t } from "i18next";
 import { PhotoFooter } from "../images/photos";
+import { parseIntInput } from "../../util";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -53,7 +54,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
   /** Generates a function to handle changes to blur/morph/iteration. */
   numericChange = (key: NumericKeyName) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
-      this.props.onChange(key, parseInt(e.currentTarget.value, 10) || 0);
+      this.props.onChange(key, parseIntInput(e.currentTarget.value) || 0);
     };
 
   maybeProcessPhoto = () => {

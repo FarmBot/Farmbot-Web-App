@@ -51,7 +51,7 @@ describe("convertDDItoDeclaration()", () => {
     const variable = convertDDItoDeclaration({ label: "parent" })(ddi);
     const expected: ScopeDeclarationBodyItem = {
       kind: "parameter_declaration",
-      args: { data_type: "point", label: "parent" }
+      args: { label: "parent", data_type: "point" }
     };
     expect(variable).toEqual(expected);
   });
@@ -64,9 +64,25 @@ describe("convertDDItoDeclaration()", () => {
     const expected: ScopeDeclarationBodyItem = {
       kind: "variable_declaration",
       args: {
+        label: "parent",
         data_value: {
           kind: "identifier", args: { label: "parent0" }
-        }, label: "parent"
+        }
+      }
+    };
+    expect(variable).toEqual(expected);
+  });
+
+  it("returns location data: every_point", () => {
+    const ddi = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
+    const variable = convertDDItoDeclaration({ label: "label" })(ddi);
+    const expected: ScopeDeclarationBodyItem = {
+      kind: "variable_declaration",
+      args: {
+        label: "label",
+        data_value: {
+          kind: "every_point", args: { every_point_type: "Plant" }
+        }
       }
     };
     expect(variable).toEqual(expected);

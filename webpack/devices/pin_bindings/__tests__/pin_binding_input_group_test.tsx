@@ -28,7 +28,7 @@ import {
 import { error, warning } from "farmbot-toastr";
 import {
   fakeResourceIndex
-} from "../../../sequences/step_tiles/tile_move_absolute/test_helpers";
+} from "../../../sequences/locals_list/test_helpers";
 import {
   PinBindingType, PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";

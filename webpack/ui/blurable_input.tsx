@@ -1,8 +1,9 @@
 import * as React from "react";
-import { equals } from "../util";
+import { equals, parseIntInput } from "../util";
 import { isNumber } from "lodash";
 import { error } from "farmbot-toastr";
 import { t } from "i18next";
+import { InputError } from "./input_error";
 
 export interface BIProps {
   value: string | number;
@@ -25,49 +26,69 @@ export interface BIProps {
   className?: string;
   placeholder?: string;
   hidden?: boolean;
+  error?: string;
+  title?: string;
 }
 
 interface BIState {
   buffer: string;
   isEditing: boolean;
+  error: string | undefined;
 }
 
 export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
-  state: BIState = { buffer: "", isEditing: false };
+  state: BIState = { buffer: "", isEditing: false, error: undefined };
 
-  withinLimits = (): boolean => {
+  get error() { return this.props.error || this.state.error; }
+
+  withinLimits = (options?: { toasts?: boolean }): boolean => {
+    const onError = (msg: string) => {
+      this.setState({ error: msg });
+      options && options.toasts && error(msg);
+    };
+
     if (this.props.type === "number") {
-      const value = parseInt(this.state.buffer);
+      const value = parseIntInput(this.state.buffer);
       if (isNumber(this.props.min) && value < this.props.min) {
-        error(t("Value must be greater than or equal to {{min}}.",
+        onError(t("Value must be greater than or equal to {{min}}.",
           { min: this.props.min }));
         return false;
       }
       if (isNumber(this.props.max) && value > this.props.max) {
-        error(t("Value must be less than or equal to {{max}}.",
+        onError(t("Value must be less than or equal to {{max}}.",
           { max: this.props.max }));
         return false;
       }
+      /** `e.currentTarget.value` is "" for any invalid number input. */
+      if ((this.state.buffer === "") && !this.props.allowEmpty) {
+        onError(t("Please enter a number."));
+        return false;
+      }
     }
+    this.setState({ error: undefined });
     return true;
   }
 
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const bufferOk = this.state.buffer || this.props.allowEmpty;
-    const shouldPassToParent = bufferOk && this.withinLimits();
+    const shouldPassToParent = bufferOk && this.withinLimits({ toasts: true });
     shouldPassToParent && this.props.onCommit(e);
-    this.setState({ isEditing: false, buffer: "" });
+    this.setState({ isEditing: false, buffer: "", error: undefined });
   }
 
   focus = () => {
     const { value } = this.props;
-    this.setState({ isEditing: true, buffer: "" + (value || "") });
+    this.setState({
+      isEditing: true,
+      buffer: "" + (value || ""),
+      error: undefined
+    });
   }
 
   updateBuffer = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ buffer: e.currentTarget.value });
+    this.setState({ buffer: e.currentTarget.value }, this.withinLimits);
   }
 
   usualProps = () => {
@@ -86,7 +107,8 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       max: this.props.max,
       type: this.props.type || "text",
       disabled: this.props.disabled,
-      className: this.props.className,
+      className: (this.props.className || "") + (this.error ? " error" : ""),
+      title: this.props.title || "",
       placeholder: this.props.placeholder,
     };
   }
@@ -96,6 +118,9 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   render() {
-    return <input {...this.usualProps()} />;
+    return <div>
+      <InputError error={this.error} />
+      <input {...this.usualProps()} />
+    </div>;
   }
 }

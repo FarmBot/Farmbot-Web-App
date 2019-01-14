@@ -1,4 +1,4 @@
-import { Color } from "../interfaces";
+import { ResourceColor } from "../interfaces";
 import { Week } from "./bulk_scheduler/interfaces";
 import { AuthState } from "../auth/interfaces";
 import { BotState, ShouldDisplay } from "../devices/interfaces";
@@ -50,7 +50,7 @@ export interface Regimen {
   id?: number;
   /** Friendly identifier for humans to easily identify regimens. */
   name: string;
-  color: Color;
+  color: ResourceColor;
   regimen_items: RegimenItem[];
 }
 

@@ -6,7 +6,7 @@ import { TaggedSequence, SpecialStatus } from "farmbot";
 import { TileMoveRelative } from "../step_tiles/tile_move_relative";
 import { TileReadPin } from "../step_tiles/tile_read_pin";
 import { TileWritePin } from "../step_tiles/tile_write_pin";
-import { sanitizeNodes } from "../step_tiles/tile_move_absolute/variables_support";
+import { sanitizeNodes } from "../locals_list/variables_support";
 
 describe("<AllSteps/>", () => {
   const TEST_CASE: TaggedSequence = {

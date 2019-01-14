@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import * as _ from "lodash";
-import { Color } from "../interfaces";
+import { ResourceColor } from "../interfaces";
 import { box } from "boxed_value";
 import {
   TaggedResource,
@@ -11,7 +11,7 @@ import {
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
 
-export let colors: Array<Color> = [
+export let colors: Array<ResourceColor> = [
   "blue",
   "green",
   "yellow",
@@ -23,7 +23,7 @@ export let colors: Array<Color> = [
 ];
 
 /** Picks a color that is compliant with sequence / regimen color codes */
-export function randomColor(): Color {
+export function randomColor(): ResourceColor {
   return _.sample(colors) as typeof colors[0];
 }
 
@@ -217,3 +217,12 @@ export function unpackUUID(uuid: string): BetterUUID {
     remoteId: id > 0 ? id : undefined
   };
 }
+
+/**
+ * Integer parsed from float
+ * since number type inputs allow floating point notation.
+ */
+export const parseIntInput = (input: string): number => {
+  const int = parseInt("" + parseFloat(input).toFixed(1), 10);
+  return int === 0 ? 0 : int;
+};
