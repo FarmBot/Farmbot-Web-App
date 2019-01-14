@@ -11,10 +11,10 @@ import {
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import {
   sanitizeNodes
-} from "../../sequences/step_tiles/tile_move_absolute/variables_support";
+} from "../../sequences/locals_list/variables_support";
 import {
   formatPoint
-} from "../../sequences/step_tiles/tile_move_absolute/generate_list";
+} from "../../sequences/locals_list/location_form_list";
 
 describe("determineDropdown", () => {
   it("Returns a label for `parameter_declarations`", () => {

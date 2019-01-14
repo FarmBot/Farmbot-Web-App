@@ -2,7 +2,7 @@ import { get, set } from "lodash";
 import { SequenceBodyItem, uuid } from "farmbot/dist";
 import {
   Traversable
-} from "../sequences/step_tiles/tile_move_absolute/variables_support";
+} from "../sequences/locals_list/variables_support";
 
 /** HISTORICAL NOTES:
  *   This file is the result of some very subtle bugs relating to dynamic

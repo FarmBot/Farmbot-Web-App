@@ -39,8 +39,11 @@ import { StepInputBox } from "../inputs/step_input_box";
 import {
   determineDropdown, determineVector, findVariableByName
 } from "../../resources/sequence_meta";
-import { LocationForm } from "../locals_list/locals_list";
+import { LocationForm } from "../locals_list/location_form";
 import { AllowedDeclaration } from "../locals_list/locals_list_support";
+
+/** Union of all types found in a move_abs "args" attribute. */
+export type LocationData = MoveAbsolute["args"]["location"];
 
 interface Args {
   location: Tool | Coordinate | Point | Identifier;

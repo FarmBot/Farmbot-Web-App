@@ -1,4 +1,4 @@
-import { locationFormList, dropDownName } from "../generate_list";
+import { locationFormList, dropDownName } from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 
 describe("locationFormList()", () => {

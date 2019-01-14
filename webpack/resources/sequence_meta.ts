@@ -10,7 +10,7 @@ import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import { capitalize } from "lodash";
 import {
   formatPoint, safeEveryPointType, everyPointDDI
-} from "../sequences/step_tiles/tile_move_absolute/generate_list";
+} from "../sequences/locals_list/location_form_list";
 
 export interface SequenceMeta {
   celeryNode: ScopeDeclarationBodyItem;

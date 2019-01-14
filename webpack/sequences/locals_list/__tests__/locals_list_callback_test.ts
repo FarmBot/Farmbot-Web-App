@@ -1,9 +1,8 @@
-import {
-  localListCallback, manuallyEditAxis, AxisEditProps
-} from "../locals_list";
+import { localListCallback } from "../locals_list";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { inputEvent } from "../../../__test_support__/fake_input_event";
 import { VariableDeclaration, ScopeDeclarationBodyItem } from "farmbot";
+import { AxisEditProps, manuallyEditAxis } from "../location_form";
 
 describe("localListCallback", () => {
   it("handles a new local declaration", () => {

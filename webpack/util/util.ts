@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import * as _ from "lodash";
-import { Color } from "../interfaces";
+import { ResourceColor } from "../interfaces";
 import { box } from "boxed_value";
 import {
   TaggedResource,
@@ -11,7 +11,7 @@ import {
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
 
-export let colors: Array<Color> = [
+export let colors: Array<ResourceColor> = [
   "blue",
   "green",
   "yellow",
@@ -23,7 +23,7 @@ export let colors: Array<Color> = [
 ];
 
 /** Picks a color that is compliant with sequence / regimen color codes */
-export function randomColor(): Color {
+export function randomColor(): ResourceColor {
   return _.sample(colors) as typeof colors[0];
 }
 

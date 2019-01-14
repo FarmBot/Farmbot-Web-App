@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { connect } from "react-redux";
-import { Everything, Color } from "../../interfaces";
+import { Everything, ResourceColor } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
   Row, Col, BlurableInput, ColorPicker
@@ -91,7 +91,7 @@ export class CreatePoints
     };
   }
 
-  changeColor = (color: Color) => {
+  changeColor = (color: ResourceColor) => {
     this.setState({ color });
     if (this.props.currentPoint) {
       const { cx, cy, r } = this.props.currentPoint;
@@ -149,7 +149,7 @@ export class CreatePoints
       <Col xs={3}>
         <label>{t("color")}</label>
         <ColorPicker
-          current={color as Color || "green"}
+          current={color as ResourceColor || "green"}
           onChange={this.changeColor} />
       </Col>
     </Row>;

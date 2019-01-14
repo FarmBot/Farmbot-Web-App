@@ -72,3 +72,21 @@ export interface WebcamFeed {
   updated_at?: string;
   created_at?: string;
 }
+
+export interface Sensor {
+  id?: number;
+  pin: number | undefined;
+  label: string;
+  mode: number;
+}
+
+export interface SensorReading {
+  id?: number | undefined;
+  x: number | undefined;
+  y: number | undefined;
+  z: number | undefined;
+  value: number;
+  mode: number;
+  pin: number;
+  created_at: string;
+}

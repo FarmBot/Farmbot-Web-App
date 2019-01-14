@@ -1,19 +1,19 @@
-import { ResourceIndex } from "../../../resources/interfaces";
+import { ResourceIndex } from "../../resources/interfaces";
 import {
   selectAllToolSlotPointers,
   selectAllActivePoints
-} from "../../../resources/selectors";
-import { betterCompact } from "../../../util";
-import { PointerTypeName } from "../../../interfaces";
+} from "../../resources/selectors";
+import { betterCompact } from "../../util";
 import { TaggedTool, TaggedPoint } from "farmbot";
-import { DropDownItem } from "../../../ui/index";
+import { DropDownItem } from "../../ui";
 import { Vector3 } from "farmbot/dist";
-import { TOOL } from "./interfaces";
 import * as _ from "lodash";
 import { t } from "i18next";
 import { capitalize } from "lodash";
-import { joinKindAndId } from "../../../resources/reducer_support";
+import { joinKindAndId } from "../../resources/reducer_support";
+import { Point } from "farmbot/dist/resources/api_resources";
 
+const TOOL: "Tool" = "Tool";
 type ToolAndLocation = { tool: TaggedTool, location: Vector3 };
 
 /** Return tool and location for all tools currently in tool slots. */
@@ -32,6 +32,7 @@ export function activeTools(resources: ResourceIndex): ToolAndLocation[] {
       : undefined));
 }
 
+type PointerTypeName = Point["pointer_type"];
 type DropdownHeadingId = PointerTypeName | typeof TOOL | "Other";
 
 /** Location selection menu section names. */

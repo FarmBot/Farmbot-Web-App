@@ -30,7 +30,6 @@ import "../regimens/editor/interfaces";
 import "../regimens/interfaces";
 import "../resources/interfaces";
 import "../sequences/interfaces";
-import "../sequences/step_tiles/tile_move_absolute/interfaces";
 import "../tools/interfaces";
 
 describe("interfaces", () => {

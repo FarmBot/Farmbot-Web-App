@@ -1,4 +1,4 @@
-import { Color } from "../interfaces";
+import { ResourceColor } from "../interfaces";
 import {
   Sequence as CeleryScriptSequence,
   SequenceBodyItem,
@@ -70,7 +70,7 @@ export const NUMERIC_FIELDS = INT_NUMERIC_FIELDS.concat(FLOAT_NUMERIC_FIELDS);
 
 export interface Sequence extends CeleryScriptSequence {
   id?: number;
-  color: Color;
+  color: ResourceColor;
   name: string;
 }
 

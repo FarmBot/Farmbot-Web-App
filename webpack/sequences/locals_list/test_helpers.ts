@@ -1,7 +1,7 @@
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { ResourceIndex } from "../../../resources/interfaces";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { ResourceIndex } from "../../resources/interfaces";
 import { TaggedResource } from "farmbot";
-import { newTaggedResource } from "../../../sync/actions";
+import { newTaggedResource } from "../../sync/actions";
 
 export function fakeResourceIndex(): ResourceIndex {
   const fakeResources: TaggedResource[] = [

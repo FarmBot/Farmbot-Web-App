@@ -2,38 +2,13 @@ import { AuthState } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
 import { BotState } from "./devices/interfaces";
 import { Color as FarmBotJsColor } from "farmbot";
-import { Point } from "farmbot/dist/resources/api_resources";
 import { DraggableState } from "./draggable/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
 
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
-export type Color = FarmBotJsColor;
-
-export interface Sensor {
-  id?: number;
-  pin: number | undefined;
-  label: string;
-  mode: number;
-}
-
-export interface SensorReading {
-  id?: number | undefined;
-  x: number | undefined;
-  y: number | undefined;
-  z: number | undefined;
-  value: number;
-  mode: number;
-  pin: number;
-  created_at: string;
-}
-
-export interface FarmwareEnv {
-  id?: number;
-  key: string;
-  value: string | number | boolean;
-}
+export type ResourceColor = FarmBotJsColor;
 
 export interface Everything {
   config: ConfigState;
@@ -51,5 +26,3 @@ export interface Everything {
  */
 // tslint:disable-next-line:no-any
 export type UnsafeError = any;
-
-export type PointerTypeName = Point["pointer_type"];
