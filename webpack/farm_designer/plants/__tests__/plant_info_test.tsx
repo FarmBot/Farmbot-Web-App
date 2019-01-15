@@ -27,9 +27,8 @@ describe("<PlantInfo />", () => {
 
   it("renders", () => {
     const wrapper = mount(<PlantInfo {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Strawberry Plant 1");
-    expect(wrapper.text().replace(/\s+/g, " "))
-      .toContain("Plant Type: Strawberry");
+    ["Strawberry Plant 1", "Plant Type", "Strawberry"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const buttons = wrapper.find("button");
     expect(buttons.first().text()).toEqual("Move FarmBot to this plant");
     expect(buttons.first().props().hidden).toBeFalsy();

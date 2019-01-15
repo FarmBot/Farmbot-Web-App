@@ -129,7 +129,7 @@ const MoveToPlant =
 const ListItem = (props: { name: string, children: React.ReactChild }) =>
   <li>
     <p>
-      {props.name}:&nbsp;
+      {props.name}
     </p>
     <div>
       {props.children}

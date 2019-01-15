@@ -25,6 +25,10 @@
     .button-group {
       margin-right: 15px;
     }
+    .title-help-text {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
   }
 }
 
@@ -35,7 +39,14 @@
     padding-left: 15px;
   }
   .title-help-text {
-    padding-left: 3rem;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  @media screen and (max-width: 974px) {
+    .title-help-text {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
   }
 }
 

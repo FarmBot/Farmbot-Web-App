@@ -118,7 +118,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   }
 
   render() {
-    return <div>
+    return <div className="input">
       <InputError error={this.error} />
       <input {...this.usualProps()} />
     </div>;
