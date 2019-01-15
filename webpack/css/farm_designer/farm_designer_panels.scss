@@ -229,7 +229,7 @@
 
 .add-farm-event-panel {
   input {
-    background: white;
+    background: $white;
   }
 }
 
@@ -290,6 +290,9 @@
     p {
       font-size: 1.25rem;
     }
+  }
+  input {
+    background: $white;
   }
 }
 

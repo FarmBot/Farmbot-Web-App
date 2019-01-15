@@ -29,7 +29,7 @@ describe("<PlantInfo />", () => {
     const wrapper = mount(<PlantInfo {...fakeProps()} />);
     expect(wrapper.text()).toContain("Strawberry Plant 1");
     expect(wrapper.text().replace(/\s+/g, " "))
-      .toContain("Plant Type: Strawberry");
+      .toContain("Plant Type Strawberry");
     const buttons = wrapper.find("button");
     expect(buttons.first().text()).toEqual("Move FarmBot to this plant");
     expect(buttons.first().props().hidden).toBeFalsy();
