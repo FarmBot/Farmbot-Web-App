@@ -9,7 +9,7 @@ import { findPointerByTypeAndId } from "./selectors";
 import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import { capitalize } from "lodash";
 import {
-  formatPoint, safeEveryPointType, everyPointDDI
+  formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI
 } from "../sequences/locals_list/location_form_list";
 
 export interface SequenceMeta {
@@ -76,6 +76,9 @@ export const determineDropdown =
         const toolName = findToolById(resources, data_value.args.tool_id)
           .body.name || "Untitled tool";
         return { label: toolName, value: "X" };
+      // tslint:disable-next-line:no-any // Empty, user must make a selection.
+      case "nothing" as any:
+        return NO_VALUE_SELECTED_DDI();
     }
     throw new Error("WARNING: Unknown, possibly new data_value.kind?");
   };

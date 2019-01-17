@@ -10,11 +10,16 @@ import {
   Identifier,
   Point,
   Tool,
-  EveryPoint
+  EveryPoint,
 } from "farmbot";
 
-export const EMPTY_COORD: Coordinate =
-  ({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
+/**
+ * Empty `data_value` for location form initial state.
+ * This is specifically an invalid variable declaration data value to force the
+ * user to make a valid selection to successfully save the variable declaration.
+ */
+// tslint:disable-next-line:no-any
+export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
 const createVariableDeclaration =
@@ -24,8 +29,15 @@ const createVariableDeclaration =
       args: { label, data_value }
     });
 
+interface NewVarProps {
+  label: string;
+}
+
+const nothingVar = ({ label }: NewVarProps): VariableDeclaration =>
+  createVariableDeclaration(label, NOTHING_SELECTED);
+
 const toolVar = (value: string | number) =>
-  ({ label }: { label: string }): VariableDeclaration =>
+  ({ label }: NewVarProps): VariableDeclaration =>
     createVariableDeclaration(label, {
       kind: "tool",
       args: { tool_id: parseInt("" + value) }
@@ -34,24 +46,28 @@ const toolVar = (value: string | number) =>
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer",
   value: string | number
-) => ({ label }: { label: string }): VariableDeclaration =>
+) => ({ label }: NewVarProps): VariableDeclaration =>
     createVariableDeclaration(label, {
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
 
-const everyPointVar =
-  (value: string | number) =>
-    ({ label }: { label: string }): VariableDeclaration =>
-      createVariableDeclaration(label, {
-        kind: "every_point",
-        args: { every_point_type: "" + value }
-      });
+const everyPointVar = (value: string | number) =>
+  ({ label }: NewVarProps): VariableDeclaration =>
+    createVariableDeclaration(label, {
+      kind: "every_point",
+      args: { every_point_type: "" + value }
+    });
 
-const manualEntry = ({ label }: { label: string }): VariableDeclaration =>
+const manualEntry = ({ label }: NewVarProps): VariableDeclaration =>
   createVariableDeclaration(label, {
     kind: "coordinate", args: { x: 0, y: 0, z: 0 }
   });
+
+interface NewDeclarationProps extends NewVarProps {
+  newVarLabel?: string;
+  useIdentifier?: boolean;
+}
 
 /**
  * Create a parameter declaration or a variable declaration containing an
@@ -59,42 +75,38 @@ const manualEntry = ({ label }: { label: string }): VariableDeclaration =>
  * `data_type` type will need to be updated to support types other than "point"
  */
 export const newParameter =
-  ({ label, newVarLabel, useIdentifier, data_type }: {
-    label: string,
-    newVarLabel?: string,
-    data_type?: "point",
-    useIdentifier?: boolean
-  }): ScopeDeclarationBodyItem =>
+  ({ label, newVarLabel, useIdentifier }: NewDeclarationProps):
+    ScopeDeclarationBodyItem =>
     (useIdentifier && newVarLabel)
       // Create a new variable (reassignment)
       ? createVariableDeclaration(label,
         { kind: "identifier", args: { label: newVarLabel } })
       : { // Unassign variable (will not create a new variable name)
         kind: "parameter_declaration",
-        args: { label, data_type: data_type || "point" }
+        args: { label, data_type: "point" }
       };
 
 const newDeclarationCreator = (ddi: DropDownItem):
-  ({ label, newVarLabel, useIdentifier }: {
-    label: string,
-    newVarLabel?: string,
-    useIdentifier?: boolean
-  }) => ScopeDeclarationBodyItem | undefined => {
-  if (ddi.isNull) { return manualEntry; } // Coordinate
+  (props: NewDeclarationProps) => ScopeDeclarationBodyItem | undefined => {
+  if (ddi.isNull) { return nothingVar; } // Empty form. Nothing selected yet.
   switch (ddi.headingId) {
     case "Plant":
     case "GenericPointer": return pointVar(ddi.headingId, ddi.value);
     case "Tool": return toolVar(ddi.value);
     case "parameter": return newParameter; // Caller decides X/Y/Z
     case "every_point": return everyPointVar(ddi.value);
-    case "Other": return manualEntry; // Coordinate
+    case "Coordinate": return manualEntry;
   }
   return () => undefined;
 };
 
+interface ConvertDDIToDeclProps extends NewVarProps {
+  useIdentifier?: boolean;
+}
+
 /** Convert a drop down selection to a declaration. */
 export const convertDDItoDeclaration =
-  ({ label, useIdentifier }: { label: string, useIdentifier?: boolean }) =>
+  ({ label, useIdentifier }: ConvertDDIToDeclProps) =>
     (ddi: DropDownItem): ScopeDeclarationBodyItem | undefined => {
       const newVarLabel =
         ddi.headingId === "parameter" ? "" + ddi.value : undefined;

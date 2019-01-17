@@ -25,6 +25,7 @@ import { warning } from "farmbot-toastr";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { clickButton } from "../../__test_support__/helpers";
+import { NOTHING_SELECTED } from "../locals_list/handle_select";
 
 describe("<TestButton/>", () => {
   function fakeSequence(): TaggedSequence {
@@ -134,7 +135,7 @@ describe("<TestButton/>", () => {
     expect(wrapper.state().declarations).toEqual([declaration]);
   });
 
-  it("calls sequence with declarations", () => {
+  it("calls sequence with declarations when synced", () => {
     const declaration: ParameterDeclaration = {
       kind: "parameter_declaration",
       args: { label: "label", data_type: "point" }
@@ -150,16 +151,12 @@ describe("<TestButton/>", () => {
     clickButton(wrapper, 1, "test");
     expect(mockDevice.execSequence).toHaveBeenCalledWith(props.sequence.body.id, [{
       kind: "variable_declaration",
-      args: {
-        label: "label", data_value: {
-          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-        }
-      }
+      args: { label: "label", data_value: NOTHING_SELECTED }
     }
     ]);
   });
 
-  it("calls sequence with declarations", () => {
+  it("doesn't call sequence with declarations when not synced", () => {
     const declaration: ParameterDeclaration = {
       kind: "parameter_declaration",
       args: { label: "label", data_type: "point" }

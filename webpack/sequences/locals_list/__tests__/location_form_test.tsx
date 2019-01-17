@@ -40,7 +40,6 @@ describe("<LocationForm/>", () => {
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    expect(select.allowEmpty).toBe(true);
     const choices = locationFormList(p.resources, [PARENT], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();

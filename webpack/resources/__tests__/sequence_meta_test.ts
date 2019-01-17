@@ -13,7 +13,7 @@ import {
   sanitizeNodes
 } from "../../sequences/locals_list/variables_support";
 import {
-  formatPoint
+  formatPoint, NO_VALUE_SELECTED_DDI
 } from "../../sequences/locals_list/location_form_list";
 
 describe("determineDropdown", () => {
@@ -123,11 +123,11 @@ describe("createSequenceMeta", () => {
     expect(parent).toBeTruthy();
     if (parent && extracted) {
       expect(parent.celeryNode.args.label).toEqual("parent");
-      expect(parent.dropdown.label).toEqual("Coordinate (0, 0, 0)");
-      expect(parent.vector).toEqual({ x: 0, y: 0, z: 0 });
+      expect(parent.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
+      expect(parent.vector).toEqual(undefined);
       expect(extracted.celeryNode.args.label).toEqual("parent");
-      expect(extracted.dropdown.label).toEqual("Coordinate (0, 0, 0)");
-      expect(extracted.vector).toEqual({ x: 0, y: 0, z: 0 });
+      expect(extracted.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
+      expect(extracted.vector).toEqual(undefined);
     }
   });
 });
