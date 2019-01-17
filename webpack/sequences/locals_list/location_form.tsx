@@ -93,7 +93,7 @@ export const LocationForm =
             key={locationDropdownKey}
             list={list}
             selectedItem={dropdown}
-            customNullLabel={NO_VALUE_SELECTED_DDI.label}
+            customNullLabel={NO_VALUE_SELECTED_DDI().label}
             onChange={ddi =>
               onChange(convertDDItoDeclaration({ label, useIdentifier })(ddi))} />
         </Col>

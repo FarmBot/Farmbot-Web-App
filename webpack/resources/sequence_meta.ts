@@ -78,7 +78,7 @@ export const determineDropdown =
         return { label: toolName, value: "X" };
       // tslint:disable-next-line:no-any // Empty, user must make a selection.
       case "nothing" as any:
-        return NO_VALUE_SELECTED_DDI;
+        return NO_VALUE_SELECTED_DDI();
     }
     throw new Error("WARNING: Unknown, possibly new data_value.kind?");
   };

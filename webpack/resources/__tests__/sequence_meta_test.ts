@@ -123,10 +123,10 @@ describe("createSequenceMeta", () => {
     expect(parent).toBeTruthy();
     if (parent && extracted) {
       expect(parent.celeryNode.args.label).toEqual("parent");
-      expect(parent.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI.label);
+      expect(parent.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
       expect(parent.vector).toEqual(undefined);
       expect(extracted.celeryNode.args.label).toEqual("parent");
-      expect(extracted.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI.label);
+      expect(extracted.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
       expect(extracted.vector).toEqual(undefined);
     }
   });

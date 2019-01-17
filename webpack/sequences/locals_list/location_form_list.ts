@@ -61,13 +61,13 @@ const maybeGroup = (display: boolean) =>
     display ? [groupDDI] : [];
 
 /** Location selection menu items. */
-export function locationFormList(input: ResourceIndex,
+export function locationFormList(resources: ResourceIndex,
   additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
-  const points = selectAllActivePoints(input)
+  const points = selectAllActivePoints(resources)
     .filter(x => x.body.pointer_type !== "ToolSlot");
   const plantDDI = ddiFrom(points, "Plant");
   const genericPointerDDI = ddiFrom(points, "GenericPointer");
-  const toolDDI: DropDownItem[] = activeTools(input)
+  const toolDDI: DropDownItem[] = activeTools(resources)
     .map(({ tool, location }) => formatTools(tool, location))
     .filter(x => parseInt("" + x.value) > 0);
   const group = maybeGroup(!!displayGroups);
@@ -83,7 +83,7 @@ export function locationFormList(input: ResourceIndex,
     .concat(group(everyPointDDI("GenericPointer")))
     .concat(heading("Other"))
     .concat(additionalItems)
-    .concat(COORDINATE_DDI)
+    .concat(COORDINATE_DDI())
     .value();
 }
 
@@ -135,10 +135,10 @@ export const safeEveryPointType = (x: string): EveryPointType => {
 };
 
 export const everyPointDDI = (value: EveryPointType): DropDownItem =>
-  ({ value, label: EVERY_POINT_LABEL[value], headingId: "every_point" });
+  ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
 
-const COORDINATE_DDI: DropDownItem =
+const COORDINATE_DDI = (): DropDownItem =>
   ({ value: "", label: t("Coordinate"), headingId: "Coordinate" });
 
-export const NO_VALUE_SELECTED_DDI: DropDownItem =
-  ({ label: t("Select a value"), value: "", isNull: true });
+export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
+  ({ label: t("Select a location"), value: "", isNull: true });

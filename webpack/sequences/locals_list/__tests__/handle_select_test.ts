@@ -37,7 +37,7 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: default", () => {
-    const variable = convertDDItoDeclaration({ label })(NO_VALUE_SELECTED_DDI);
+    const variable = convertDDItoDeclaration({ label })(NO_VALUE_SELECTED_DDI());
     expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
   });
 
