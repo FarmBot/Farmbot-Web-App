@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col, FBSelect, BlurableInput } from "../../ui";
 import { t } from "i18next";
-import { locationFormList } from "./location_form_list";
+import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoDeclaration } from "../locals_list/handle_select";
 import {
   LocationFormProps, PARENT, AllowedDeclaration,
@@ -91,10 +91,9 @@ export const LocationForm =
           <label>{formTitle}</label>
           <FBSelect
             key={locationDropdownKey}
-            allowEmpty={true}
             list={list}
             selectedItem={dropdown}
-            customNullLabel={t("Coordinate")}
+            customNullLabel={NO_VALUE_SELECTED_DDI.label}
             onChange={ddi =>
               onChange(convertDDItoDeclaration({ label, useIdentifier })(ddi))} />
         </Col>

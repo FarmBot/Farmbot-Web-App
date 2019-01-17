@@ -2,8 +2,8 @@ import { VariableNameSet, ResourceIndex } from "../../resources/interfaces";
 import { VariableDeclaration, Dictionary, ScopeDeclarationBodyItem } from "farmbot";
 import { betterCompact } from "../../util";
 import { isParameterDeclaration } from "./locals_list";
-import { EMPTY_COORD } from "./handle_select";
 import { determineVector, determineDropdown } from "../../resources/sequence_meta";
+import { NOTHING_SELECTED } from "./handle_select";
 
 /**
  * Create default variable declarations in (execute step, farm event) body
@@ -17,7 +17,7 @@ export const declarationList = (variableData: VariableNameSet | undefined):
     .map(v => {
       const declaration: VariableDeclaration = {
         kind: "variable_declaration", args: {
-          label: v.args.label, data_value: EMPTY_COORD
+          label: v.args.label, data_value: NOTHING_SELECTED
         }
       };
       return declaration;

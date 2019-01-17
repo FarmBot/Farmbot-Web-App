@@ -10,6 +10,7 @@ import {
   SequenceResource as Sequence
 } from "farmbot/dist/resources/api_resources";
 import { maybeTagStep } from "../../resources/sequence_tagging";
+import { NOTHING_SELECTED } from "./handle_select";
 
 // ======= TYPE DECLARATIONS =======
 /** Less strict version of CeleryScript args. It's traversable, or unknown. */
@@ -48,10 +49,7 @@ const isExecute = (x: Traversable): x is Execute => {
 
 const newVar = (label: string): VariableDeclaration => ({
   kind: "variable_declaration",
-  args: {
-    label,
-    data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
-  }
+  args: { label, data_value: NOTHING_SELECTED }
 });
 
 export function climb(t: Traversable | unknown, cb: TreeClimberCB) {

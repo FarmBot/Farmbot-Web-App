@@ -1,5 +1,6 @@
-import { convertDDItoDeclaration } from "../handle_select";
+import { convertDDItoDeclaration, NOTHING_SELECTED } from "../handle_select";
 import { ScopeDeclarationBodyItem, Point, Tool, Coordinate } from "farmbot";
+import { NO_VALUE_SELECTED_DDI } from "../location_form_list";
 
 const label = "parent";
 const expectedVariable = (data_value: Point | Tool | Coordinate) =>
@@ -36,14 +37,8 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: default", () => {
-    const variable = convertDDItoDeclaration({ label })({
-      label: "None",
-      value: "",
-      isNull: true
-    });
-    expect(variable).toEqual(expectedVariable({
-      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-    }));
+    const variable = convertDDItoDeclaration({ label })(NO_VALUE_SELECTED_DDI);
+    expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
   });
 
   it("returns location data: parameter_declaration", () => {

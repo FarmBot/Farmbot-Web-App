@@ -9,6 +9,16 @@ import { cloneDeep } from "lodash";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
+import { NOTHING_SELECTED } from "../handle_select";
+
+const coordinateVar = (label: string): VariableDeclaration =>
+  ({
+    kind: "variable_declaration", args: {
+      label, data_value: {
+        kind: "coordinate", args: { x: 1, y: 2, z: 3 }
+      }
+    }
+  });
 
 describe("declarationList()", () => {
   it("returns undefined", () => {
@@ -28,43 +38,22 @@ describe("declarationList()", () => {
         vector: undefined,
       },
       parent2: {
-        celeryNode: {
-          kind: "variable_declaration", args: {
-            label: "parent2", data_value: {
-              kind: "coordinate", args: { x: 1, y: 2, z: 3 }
-            }
-          }
-        },
+        celeryNode: coordinateVar("parent2"),
         dropdown: { label: "Parent2", value: "parent2" },
         vector: { x: 1, y: 2, z: 3 },
       }
     });
     expect(result).toEqual([{
       kind: "variable_declaration",
-      args: {
-        label: "parent1",
-        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
-      }
+      args: { label: "parent1", data_value: NOTHING_SELECTED }
     }]);
   });
 });
 
 describe("mergeVariableDeclarations()", () => {
   const declarations: VariableDeclaration[] = [
-    {
-      kind: "variable_declaration", args: {
-        label: "parent1", data_value: {
-          kind: "coordinate", args: { x: 1, y: 2, z: 3 }
-        }
-      }
-    },
-    {
-      kind: "variable_declaration", args: {
-        label: "parent2", data_value: {
-          kind: "coordinate", args: { x: 1, y: 2, z: 3 }
-        }
-      }
-    },
+    coordinateVar("parent1"),
+    coordinateVar("parent2"),
   ];
 
   it("doesn't overwrite declarations", () => {
@@ -92,9 +81,7 @@ describe("mergeVariableDeclarations()", () => {
     const expected = cloneDeep(declarations);
     expected.push({
       kind: "variable_declaration", args: {
-        label, data_value: {
-          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-        }
+        label, data_value: NOTHING_SELECTED
       }
     });
 
@@ -106,13 +93,7 @@ describe("mergeVariableDeclarations()", () => {
 describe("getRegimenVariableData()", () => {
   it("returns variable data", () => {
     const declarations: ScopeDeclarationBodyItem[] = [
-      {
-        kind: "variable_declaration", args: {
-          label: "parent2", data_value: {
-            kind: "coordinate", args: { x: 1, y: 2, z: 3 }
-          }
-        }
-      },
+      coordinateVar("parent2"),
       {
         kind: "parameter_declaration", args: {
           label: "parent1", data_type: "point"
@@ -130,13 +111,7 @@ describe("getRegimenVariableData()", () => {
         vector: undefined
       },
       parent2: {
-        celeryNode: {
-          kind: "variable_declaration",
-          args: {
-            label: "parent2",
-            data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
-          }
-        },
+        celeryNode: coordinateVar("parent2"),
         dropdown: { label: "Coordinate (1, 2, 3)", value: "?" },
         vector: { x: 1, y: 2, z: 3 }
       }

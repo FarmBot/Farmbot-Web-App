@@ -83,6 +83,7 @@ export function locationFormList(input: ResourceIndex,
     .concat(group(everyPointDDI("GenericPointer")))
     .concat(heading("Other"))
     .concat(additionalItems)
+    .concat(COORDINATE_DDI)
     .value();
 }
 
@@ -133,5 +134,11 @@ export const safeEveryPointType = (x: string): EveryPointType => {
   }
 };
 
-export const everyPointDDI = (value: EveryPointType) =>
+export const everyPointDDI = (value: EveryPointType): DropDownItem =>
   ({ value, label: EVERY_POINT_LABEL[value], headingId: "every_point" });
+
+const COORDINATE_DDI: DropDownItem =
+  ({ value: "", label: t("Coordinate"), headingId: "Coordinate" });
+
+export const NO_VALUE_SELECTED_DDI: DropDownItem =
+  ({ label: t("Select a value"), value: "", isNull: true });
