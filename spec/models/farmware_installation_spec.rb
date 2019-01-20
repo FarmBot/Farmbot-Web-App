@@ -63,9 +63,9 @@ describe FarmwareInstallation do
   end
 
   it "handles `package` fetch errors" do
-    malformed_url = "http://#{SecureRandom.base58.downcase}.com"
     fi            = FarmwareInstallation.create!(device: device,
-                                                 url:    malformed_url)
+                                                 url:    "http://lycos.com")
+    expect(fi).to receive(:open).and_raise(SocketError.new("No!"))
     fi.infer_package_name_from_url
     error = FarmwareInstallation::KNOWN_PROBLEMS.fetch(SocketError)
     expect(fi.package_error).to eq(error)
