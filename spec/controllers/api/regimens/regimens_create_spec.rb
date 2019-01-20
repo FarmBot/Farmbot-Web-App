@@ -59,5 +59,29 @@ describe Api::RegimensController do
       expect(json[:name]).to eq(name)
       expect(json[:color]).to eq(color)
     end
+
+    it "handles CeleryScript::TypeCheckError" do
+      sign_in user
+      s       = FakeSequence.with_parameters
+      payload = { device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "variable_declaration",
+                      args: {
+                        label: "parent",
+                        data_value: { kind: "nothing", args: { } }
+                      }
+                    }
+                  ],
+                  regimen_items: [
+                    { time_offset: 100, sequence_id: s.id }
+                  ] }
+      post :create, body: payload.to_json, format: :json
+      expect(response.status).to eq(422)
+      expect(json.fetch(:error))
+        .to include("must provide a value for all parameters")
+    end
   end
 end

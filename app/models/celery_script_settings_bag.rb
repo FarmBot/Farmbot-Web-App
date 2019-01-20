@@ -78,8 +78,9 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
                           " as input. Please change your selection to a "\
                           "single location."
-  ALLOWED_EVERY_POINT_TYPE    = %w(Tool GenericPointer Plant ToolSlot)
-  BAD_EVERY_POINT_TYPE        = '"%s" is not a type of group. Allowed values: %s'
+  SCOPE_DECLARATIONS    = [:variable_declaration, :parameter_declaration]
+  ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
+  BAD_EVERY_POINT_TYPE     = '"%s" is not a type of group. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus.new
       .arg(:_else,        [:execute, :nothing])
@@ -249,7 +250,7 @@ module CeleryScriptSettingsBag
       .node(:install_farmware,      [:url])
       .node(:update_farmware,       [:package])
       .node(:remove_farmware,       [:package])
-      .node(:scope_declaration,     [], [:variable_declaration, :parameter_declaration])
+      .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
       .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
@@ -258,7 +259,7 @@ module CeleryScriptSettingsBag
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
       .node(:internal_farm_event,   [], [:variable_declaration])
-      .node(:internal_regimen,      [], [:variable_declaration, :parameter_declaration])
+      .node(:internal_regimen,      [], SCOPE_DECLARATIONS)
       .node(:internal_entry_point,  [], [])
       .node(:every_point,           [:every_point_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|

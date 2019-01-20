@@ -264,7 +264,13 @@ describe CeleryScript::Checker do
           body: [
             {
               kind: "variable_declaration",
-              args: { label: "parent", data_value: { kind: "nothing", args: { } } }
+              args: {
+                label: "parent",
+                data_value: {
+                  kind: "nothing",
+                  args: { }
+                }
+              }
             }
           ]
         }
@@ -283,6 +289,7 @@ describe CeleryScript::Checker do
     tree = CeleryScript::AstNode.new(ast)
     chk  = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
-    expect(chk.error.message).to include('but got "nothing"')
+    message = "must provide a value for all parameters"
+    expect(chk.error.message).to include(message)
   end
 end
