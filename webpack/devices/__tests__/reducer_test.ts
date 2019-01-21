@@ -84,7 +84,7 @@ describe("botReducer", () => {
     payload.location_data.position.x = -1;
     payload.location_data.position.y = -1;
     payload.location_data.position.z = -1;
-    const action = { type: Actions.BOT_CHANGE, payload };
+    const action = { type: Actions.LEGACY_BOT_CHANGE, payload };
     // Make the starting state different than initialState();
     const result = botReducer(state, action);
     // Resets .hardware to initialState()
