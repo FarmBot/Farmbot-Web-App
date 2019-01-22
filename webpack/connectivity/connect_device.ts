@@ -35,8 +35,8 @@ export const HACKY_FLAGS = {
   alreadyToldUserAboutMalformedMsg: false
 };
 
-/** Action creator that is called when FarmBot OS emits a status update.
- * Coordinate updates, movement, etc.*/
+/** Action creator that is called when FarmBot OS emits a legacy (FBOS < v8)
+ * status update. Coordinate updates, movement, etc.*/
 export const incomingLegacyStatus = (statusMessage: HardwareState) =>
   ({ type: Actions.LEGACY_BOT_CHANGE, payload: statusMessage });
 
@@ -129,7 +129,7 @@ const legacyChecks = (getState: GetState) => {
   }
 };
 
-/** Legacy handler for bots that have not upgraded to FBOS v7 yet.
+/** Legacy handler for bots that have not upgraded to FBOS v8 yet.
  *    - RC 21 JAN 18 */
 const onLegacyStatus =
   (dispatch: Function, getState: GetState) => slowDown((msg: BotStateTree) => {
