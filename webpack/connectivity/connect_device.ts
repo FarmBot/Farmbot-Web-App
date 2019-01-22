@@ -178,7 +178,7 @@ const attachEventListeners =
       bot.on("sent", onSent(bot.client));
       bot.on("logs", onLogs(dispatch, getState));
       bot.on("legacy_status", onLegacyStatus(dispatch, getState));
-      bot.on("status", onStatus(dispatch, getState));
+      bot.on("status_v8", onStatus(dispatch, getState));
       bot.on("malformed", onMalformed);
       bot.client.on("message", autoSync(dispatch, getState));
       bot.client.on("reconnect", onReconnect);
