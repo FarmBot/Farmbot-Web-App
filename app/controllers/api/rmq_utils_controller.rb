@@ -7,8 +7,25 @@ module Api
   class RmqUtilsController < Api::AbstractController
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX     = \
-      /(bot\.device_)\d*\.(nerves_hub|from_clients|from_device|logs|status|sync|resources_v0|from_api|\#|\*)\.?.*/
+
+    TOPIC_REGEX = %r{
+        bot\.device_\d*\.
+
+        (
+           nerves_hub(\.|\z)
+          |from_clients(\.|\z)
+          |from_device(\.|\z)
+          |logs(\.|\z)
+          |status(\.|\z)
+          |status_v8(\.|\z)
+          |sync(\.|\z)
+          |resources_v0(\.|\z)
+          |from_api(\.|\z)
+          |\#
+          |\*
+        )
+      }x
+
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }

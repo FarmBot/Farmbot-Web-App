@@ -118,4 +118,42 @@ describe Api::RmqUtilsController do
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end
+
+  def random_channel(extra_stuff = "")
+    "bot.device_#{rand(1..9999)}" + extra_stuff
+  end
+
+  it "validates topic names" do
+    r = Api::RmqUtilsController::TOPIC_REGEX
+    [ "*",
+      "#",
+      "foo",
+      "foo.*",
+      "bot.*",
+      random_channel,
+      random_channel(".nope"),
+      random_channel(".status_v3.*"),
+      random_channel(".status_v3"),
+    ].map { |x| expect(x.match(r)).to be(nil) }
+
+    [ ".from_api.*",
+      ".from_api",
+      ".from_clients.*",
+      ".from_clients",
+      ".from_device.*",
+      ".from_device",
+      ".logs.*",
+      ".logs",
+      ".nerves_hub.*",
+      ".nerves_hub",
+      ".resources_v0.*",
+      ".resources_v0",
+      ".status.*",
+      ".status",
+      ".sync.*",
+      ".sync",
+      ".status_v8.*",
+      ".status_v8",
+    ].map { |x| expect(random_channel(x).match(r)).to be }
+  end
 end

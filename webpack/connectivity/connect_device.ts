@@ -140,11 +140,11 @@ const onLegacyStatus =
 
 const onStatus =
   (dispatch: Function, getState: GetState) =>
-    slowDown((msg: DeepPartial<BotStateTree>) => {
+    (msg: DeepPartial<BotStateTree>) => {
       setBothUp();
       dispatch(incomingStatus(msg));
       legacyChecks(getState);
-    });
+    };
 
 type Client = { connected?: boolean };
 
