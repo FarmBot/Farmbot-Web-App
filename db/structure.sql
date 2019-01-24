@@ -399,8 +399,7 @@ CREATE TABLE public.farmware_installations (
     url character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    package character varying(80),
-    package_error character varying
+    package character varying(80)
 );
 
 

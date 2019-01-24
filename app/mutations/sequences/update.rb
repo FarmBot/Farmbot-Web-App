@@ -54,30 +54,5 @@ module Sequences
       FarmEvent => BASE + "it is in use by FarmEvents on these dates: %{items}",
       Regimen   => BASE + "the following Regimen(s) are using it: %{items}",
     }
-
-    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
-    # def regimens_cant_have_parameters
-    #   maybe_stop_parameter_use(resource: Regimen,
-    #                            items: Regimen
-    #                            .includes(:regimen_items)
-    #                            .where(regimen_items: {sequence_id: sequence.id})
-    #                            .map(&:fancy_name))
-    # end
-
-    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
-    # def farm_events_cant_have_parameters
-    #   maybe_stop_parameter_use(resource: FarmEvent,
-    #                            items: FarmEvent
-    #                             .where(executable: sequence)
-    #                             .map(&:fancy_name))
-    # end
-
-    # TODO: Bring this back after "sequence variables" rollout. - RC 12 SEP 2018
-    # def maybe_stop_parameter_use(resource:, items:)
-    #   add_error :sequence, :sequence, EXPL.fetch(resource) % {
-    #     resource: resource,
-    #     items: items.join(", ")
-    #   } if items.present?
-    # end
   end
 end
