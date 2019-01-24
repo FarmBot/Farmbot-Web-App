@@ -34,7 +34,7 @@ class RabbitWorker
   end
 
   def self.go!
-    loop do # TODO: What if only one service
+    loop do
       ThreadsWait.all_waits(self.new.threads)
     end
   end
