@@ -1,5 +1,14 @@
 # How to install FarmBot Web API on a Fresh Ubuntu 18.04.1 LTS Machine
 
+# IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
+# longterm support to self-hosted users. For users who have never administered a
+# Ruby on Rails applications, this presents an extremely high risk of data loss.
+#
+# IF YOU ARE NOT A DEVELOPER you are highly encouraged to use the my.farm.bot
+# servers. Self hosted documentation is provided with the assumption that you
+# have experience with Ruby/Javascript development. Self-hosting a Farmbot
+# server is not a simple task.
+
 # Remove old (possibly broke) docker versions
 sudo apt-get remove docker docker-engine docker.io
 
@@ -44,6 +53,16 @@ sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING
 sudo docker-compose run web npm run build
 # Run the server! ٩(^‿^)۶
 sudo docker-compose up
+
+# ===
+  # To update to later versions of FarmBot,
+  # shut down the server, create a database backup
+  # and run commands below.
+  git pull https://github.com/FarmBot/Farmbot-Web-App.git master
+  sudo docker-compose run web bundle install
+  sudo docker-compose run web npm install
+  sudo docker-compose run web rails db:migrate
+# ===
 
 # At this point, setup is complete. Content should be visible at ===============
 #  http://YOUR_HOST:3000/.
