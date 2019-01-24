@@ -5,6 +5,8 @@ import * as _ from "lodash";
 import { defensiveClone } from "../../util";
 import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
+import { incomingStatus } from "../../connectivity/connect_device";
+import { Vector3 } from "farmbot";
 
 describe("botReducer", () => {
   it("Starts / stops an update", () => {
@@ -75,6 +77,16 @@ describe("botReducer", () => {
       payload: {}
     }).minOsFeatureData;
     expect(r).toEqual({});
+  });
+
+  it("Handles status_v8 info", () => {
+    const n = () => Math.round(Math.random() * 1000);
+    const position: Vector3 = { x: n(), y: n(), z: n() };
+    const state = initialState();
+    state.hardware.informational_settings.sync_status = "synced";
+    const action = incomingStatus({ location_data: { position } });
+    const r = botReducer(state, action);
+    expect(r.hardware.location_data.position).toEqual(position);
   });
 
   it("resets hardware state when transitioning into maintenance mode.", () => {

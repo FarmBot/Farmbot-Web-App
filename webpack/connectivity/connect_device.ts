@@ -2,7 +2,7 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
-import { noop, throttle } from "lodash";
+import { noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -26,6 +26,7 @@ import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
 import { ChannelName } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
+import { slowDown } from "./slow_down";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -110,11 +111,6 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   }).catch(() => { }); // This is internal stuff, don't alert user.
 };
-
-/** Too many status updates === too many screen redraws. */
-const slowDown = (fn: (...args: unknown[]) => unknown) =>
-  throttle(fn, 600, { leading: false, trailing: true });
-
 const setBothUp = () => bothUp("Got a status message");
 
 const legacyChecks = (getState: GetState) => {
@@ -131,14 +127,15 @@ const legacyChecks = (getState: GetState) => {
 
 /** Legacy handler for bots that have not upgraded to FBOS v8 yet.
  *    - RC 21 JAN 18 */
-const onLegacyStatus =
-  (dispatch: Function, getState: GetState) => slowDown((msg: BotStateTree) => {
-    setBothUp();
-    dispatch(incomingLegacyStatus(msg));
-    legacyChecks(getState);
-  });
+export const onLegacyStatus =
+  (dispatch: Function, getState: GetState) =>
+    slowDown((msg: BotStateTree) => {
+      setBothUp();
+      dispatch(incomingLegacyStatus(msg));
+      legacyChecks(getState);
+    });
 
-const onStatus =
+export const onStatus =
   (dispatch: Function, getState: GetState) =>
     (msg: DeepPartial<BotStateTree>) => {
       setBothUp();

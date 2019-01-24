@@ -11,6 +11,7 @@ import { connectivityReducer } from "../connectivity/reducer";
 import { versionOK, fancyDebug } from "../util";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
+import { incomingLegacyStatus } from "../connectivity/connect_device";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -133,6 +134,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
       ...s.hardware,
       ...(payload as typeof s.hardware)
     };
+    legacyStatusHandler(s, incomingLegacyStatus(s.hardware));
     return s;
   })
   .add<HardwareState>(Actions.LEGACY_BOT_CHANGE, legacyStatusHandler)

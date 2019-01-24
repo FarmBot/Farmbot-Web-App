@@ -537,21 +537,21 @@ describe("updateConfig()", () => {
   });
 });
 
-// describe("registerGpioPin()", () => {
-//   it("catches error", async () => {
-//     await actions.registerGpioPin({ pin_number: 1, sequence_id: 1 })(jest.fn());
-//     await expect(mockDevice.registerGpio).toHaveBeenCalled();
-//     expect(error).toHaveBeenCalledWith("Register GPIO Pin failed");
-//   });
-// });
+describe("registerGpioPin()", () => {
+  // CC: @gabrielburworth - leaving this in place for now. Feel free to delete
+  // or modify based on future needs.
+  it("is deprecated. Delete this later.", async () => {
+    await actions.registerGpioPin({ pin_number: 1, sequence_id: 1 })(jest.fn());
+    await expect(mockDevice.registerGpio).not.toHaveBeenCalled();
+  });
+});
 
-// describe("unregisterGpioPin()", () => {
-//   it("catches error", async () => {
-//     await actions.unregisterGpioPin(1)(jest.fn());
-//     await expect(mockDevice.unregisterGpio).toHaveBeenCalled();
-//     expect(error).toHaveBeenCalledWith("Unregister GPIO Pin failed");
-//   });
-// });
+describe("unregisterGpioPin()", () => {
+  it("is deprecated. Delete this later.", async () => {
+    await actions.unregisterGpioPin(1)(jest.fn());
+    await expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
+  });
+});
 
 describe("badVersion()", () => {
   it("warns of old FBOS version", () => {
