@@ -8,8 +8,10 @@ import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
-import { versionOK } from "../util";
+import { versionOK, fancyDebug } from "../util";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
+import { DeepPartial } from "redux";
+import { incomingLegacyStatus } from "../connectivity/connect_device";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -126,36 +128,16 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
       s.minOsFeatureData = payload;
       return s;
     })
-  .add<HardwareState>(Actions.BOT_CHANGE, (state, { payload }) => {
-    state.hardware = payload;
-    const { informational_settings } = state.hardware;
-    const syncStatus = informational_settings.sync_status;
-    /** USE CASE: You reboot the bot. The old state values are still hanging
-     * around. You think the bot is broke, but it isn't. The FE is holding on
-     * to stale data. */
-    if (syncStatus === "maintenance") {
-      const emptyState = initialState();
-      state.hardware = emptyState.hardware;
-      state.hardware.informational_settings.sync_status = "maintenance";
-      return state;
-    }
-
-    const info = {
-      consistent: state.consistent,
-      syncStatus,
-      fbosVersion: informational_settings.controller_version,
-      autoSync: !!state.hardware.configuration.auto_sync
+  .add<DeepPartial<HardwareState>>(Actions.STATUS_UPDATE, (s, { payload }) => {
+    fancyDebug({ payload });
+    s.hardware = {
+      ...s.hardware,
+      ...(payload as typeof s.hardware)
     };
-    state.consistent = info.consistent;
-    info.consistent = state.consistent;
-
-    const nextSyncStatus = maybeNegateStatus(info);
-
-    versionOK(informational_settings.controller_version,
-      EXPECTED_MAJOR, EXPECTED_MINOR);
-    state.hardware.informational_settings.sync_status = nextSyncStatus;
-    return state;
+    legacyStatusHandler(s, incomingLegacyStatus(s.hardware));
+    return s;
   })
+  .add<HardwareState>(Actions.LEGACY_BOT_CHANGE, legacyStatusHandler)
   .add<void>(Actions.STASH_STATUS, (s) => {
     stash(s);
     return s;
@@ -189,3 +171,36 @@ const stash = (s: BotState) => {
 /** Put the old syncStatus back where it was after bot becomes consistent. */
 const unstash = (s: BotState) =>
   s.hardware.informational_settings.sync_status = s.statusStash;
+
+function legacyStatusHandler(state: BotState,
+  action: ReduxAction<HardwareState>): BotState {
+  const { payload } = action;
+  state.hardware = payload;
+  const { informational_settings } = state.hardware;
+  const syncStatus = informational_settings.sync_status;
+  /** USE CASE: You reboot the bot. The old state values are still hanging
+   * around. You think the bot is broke, but it isn't. The FE is holding on
+   * to stale data. */
+  if (syncStatus === "maintenance") {
+    const emptyState = initialState();
+    state.hardware = emptyState.hardware;
+    state.hardware.informational_settings.sync_status = "maintenance";
+    return state;
+  }
+
+  const info = {
+    consistent: state.consistent,
+    syncStatus,
+    fbosVersion: informational_settings.controller_version,
+    autoSync: !!state.hardware.configuration.auto_sync
+  };
+  state.consistent = info.consistent;
+  info.consistent = state.consistent;
+
+  const nextSyncStatus = maybeNegateStatus(info);
+
+  versionOK(informational_settings.controller_version,
+    EXPECTED_MAJOR, EXPECTED_MINOR);
+  state.hardware.informational_settings.sync_status = nextSyncStatus;
+  return state;
+}

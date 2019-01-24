@@ -5,6 +5,8 @@ import * as _ from "lodash";
 import { defensiveClone } from "../../util";
 import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
+import { incomingStatus } from "../../connectivity/connect_device";
+import { Vector3 } from "farmbot";
 
 describe("botReducer", () => {
   it("Starts / stops an update", () => {
@@ -77,6 +79,16 @@ describe("botReducer", () => {
     expect(r).toEqual({});
   });
 
+  it("Handles status_v8 info", () => {
+    const n = () => Math.round(Math.random() * 1000);
+    const position: Vector3 = { x: n(), y: n(), z: n() };
+    const state = initialState();
+    state.hardware.informational_settings.sync_status = "synced";
+    const action = incomingStatus({ location_data: { position } });
+    const r = botReducer(state, action);
+    expect(r.hardware.location_data.position).toEqual(position);
+  });
+
   it("resets hardware state when transitioning into maintenance mode.", () => {
     const state = initialState();
     const payload = defensiveClone(state.hardware);
@@ -84,7 +96,7 @@ describe("botReducer", () => {
     payload.location_data.position.x = -1;
     payload.location_data.position.y = -1;
     payload.location_data.position.z = -1;
-    const action = { type: Actions.BOT_CHANGE, payload };
+    const action = { type: Actions.LEGACY_BOT_CHANGE, payload };
     // Make the starting state different than initialState();
     const result = botReducer(state, action);
     // Resets .hardware to initialState()

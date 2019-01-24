@@ -2,7 +2,7 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
-import { noop, throttle } from "lodash";
+import { noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -25,6 +25,8 @@ import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
 import { ChannelName } from "../sequences/interfaces";
+import { DeepPartial } from "redux";
+import { slowDown } from "./slow_down";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -34,10 +36,13 @@ export const HACKY_FLAGS = {
   alreadyToldUserAboutMalformedMsg: false
 };
 
-/** Action creator that is called when FarmBot OS emits a status update.
- * Coordinate updates, movement, etc.*/
-export let incomingStatus = (statusMessage: HardwareState) =>
-  ({ type: Actions.BOT_CHANGE, payload: statusMessage });
+/** Action creator that is called when FarmBot OS emits a legacy (FBOS < v8)
+ * status update. Coordinate updates, movement, etc.*/
+export const incomingLegacyStatus = (statusMessage: HardwareState) =>
+  ({ type: Actions.LEGACY_BOT_CHANGE, payload: statusMessage });
+
+export const incomingStatus =
+  (payload: DeepPartial<HardwareState>) => ({ type: Actions.STATUS_UPDATE, payload });
 
 /** Determine if an incoming log has a certain channel. If it is, execute the
  * supplied callback. */
@@ -106,20 +111,37 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
   }).catch(() => { }); // This is internal stuff, don't alert user.
 };
-const onStatus = (dispatch: Function, getState: GetState) =>
-  (throttle(function (msg: BotStateTree) {
-    bothUp("Got a status message");
-    dispatch(incomingStatus(msg));
-    if (HACKY_FLAGS.needVersionCheck) {
-      const IS_OK = versionOK(getState()
-        .bot
-        .hardware
-        .informational_settings
-        .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
-      if (!IS_OK) { badVersion(); }
-      HACKY_FLAGS.needVersionCheck = false;
-    }
-  }, 600, { leading: false, trailing: true }));
+const setBothUp = () => bothUp("Got a status message");
+
+const legacyChecks = (getState: GetState) => {
+  if (HACKY_FLAGS.needVersionCheck) {
+    const IS_OK = versionOK(getState()
+      .bot
+      .hardware
+      .informational_settings
+      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+    if (!IS_OK) { badVersion(); }
+    HACKY_FLAGS.needVersionCheck = false;
+  }
+};
+
+/** Legacy handler for bots that have not upgraded to FBOS v8 yet.
+ *    - RC 21 JAN 18 */
+export const onLegacyStatus =
+  (dispatch: Function, getState: GetState) =>
+    slowDown((msg: BotStateTree) => {
+      setBothUp();
+      dispatch(incomingLegacyStatus(msg));
+      legacyChecks(getState);
+    });
+
+export const onStatus =
+  (dispatch: Function, getState: GetState) =>
+    (msg: DeepPartial<BotStateTree>) => {
+      setBothUp();
+      dispatch(incomingStatus(msg));
+      legacyChecks(getState);
+    };
 
 type Client = { connected?: boolean };
 
@@ -152,7 +174,8 @@ const attachEventListeners =
       bot.on("offline", onOffline);
       bot.on("sent", onSent(bot.client));
       bot.on("logs", onLogs(dispatch, getState));
-      bot.on("status", onStatus(dispatch, getState));
+      bot.on("legacy_status", onLegacyStatus(dispatch, getState));
+      bot.on("status_v8", onStatus(dispatch, getState));
       bot.on("malformed", onMalformed);
       bot.client.on("message", autoSync(dispatch, getState));
       bot.client.on("reconnect", onReconnect);

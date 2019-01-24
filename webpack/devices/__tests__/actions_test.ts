@@ -538,18 +538,18 @@ describe("updateConfig()", () => {
 });
 
 describe("registerGpioPin()", () => {
-  it("catches error", async () => {
+  // CC: @gabrielburworth - leaving this in place for now. Feel free to delete
+  // or modify based on future needs.
+  it("is deprecated. Delete this later.", async () => {
     await actions.registerGpioPin({ pin_number: 1, sequence_id: 1 })(jest.fn());
-    await expect(mockDevice.registerGpio).toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith("Register GPIO Pin failed");
+    await expect(mockDevice.registerGpio).not.toHaveBeenCalled();
   });
 });
 
 describe("unregisterGpioPin()", () => {
-  it("catches error", async () => {
+  it("is deprecated. Delete this later.", async () => {
     await actions.unregisterGpioPin(1)(jest.fn());
-    await expect(mockDevice.unregisterGpio).toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith("Unregister GPIO Pin failed");
+    await expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
   });
 });
 

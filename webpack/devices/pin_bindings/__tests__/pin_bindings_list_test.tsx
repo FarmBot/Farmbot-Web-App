@@ -67,16 +67,14 @@ describe("<PinBindingsList/>", () => {
     expect(buttons.length).toBe(2);
   });
 
-  it("unregisters pin: bot", () => {
-    const p = fakeProps();
-    p.dispatch = jest.fn(x => x(jest.fn()));
-    const wrapper = mount(<PinBindingsList {...p} />);
-    const buttons = wrapper.find("button");
-    buttons.first().simulate("click");
-    expect(mockDevice.unregisterGpio).toHaveBeenCalledWith({
-      pin_number: 10
-    });
-  });
+  // it("unregisters pin: bot", () => {
+  //   const p = fakeProps();
+  //   p.dispatch = jest.fn(x => x(jest.fn()));
+  //   const wrapper = mount(<PinBindingsList {...p} />);
+  //   const buttons = wrapper.find("button");
+  //   buttons.first().simulate("click");
+  //   expect(mockDevice.unregisterGpio).toHaveBeenCalledWith({ pin_number: 10 });
+  // });
 
   it("unregisters pin: api", () => {
     const p = fakeProps();
