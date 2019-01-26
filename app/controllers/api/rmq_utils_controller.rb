@@ -17,6 +17,8 @@ module Api
       sync
       resources_v0
       from_api
+      \\#
+      \\*
     ).map { |x| x + "(\\.|\\z)" }.join("|")
 
     # The only valid format for AMQP / MQTT topics.
