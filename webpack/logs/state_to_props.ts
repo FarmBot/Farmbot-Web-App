@@ -14,7 +14,7 @@ import { getFbosConfig } from "../resources/getters";
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(
   numberOfLogs: number, ri: ResourceIndex): TaggedLog[] {
-  return _(selectAllLogs(ri))
+  return _.chain(selectAllLogs(ri))
     .sortBy("body.created_at")
     .reverse()
     .take(numberOfLogs)

@@ -6,6 +6,7 @@
       "es2017.object"
     ],
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "experimentalDecorators": true,
     "jsx": "react",

@@ -6,7 +6,7 @@ import { startCase } from "lodash";
 
 export function findBySlug(
   crops: CropLiveSearchResult[], slug?: string): CropLiveSearchResult {
-  const crop = _(crops).find((result) => result.crop.slug === slug);
+  const crop = _.chain(crops).find((result) => result.crop.slug === slug).value();
   return crop || {
     crop: {
       name: startCase((slug || t("Name")).split("-").join(" ")),

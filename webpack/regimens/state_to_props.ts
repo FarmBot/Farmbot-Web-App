@@ -14,7 +14,7 @@ import {
 } from "../resources/selectors";
 import { TaggedRegimen } from "farmbot";
 import { duration } from "moment";
-import * as moment from "moment";
+import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
   randomColor, determineInstalledOsVersion,
@@ -83,7 +83,7 @@ function generateCalendar(regimen: TaggedRegimen,
   const rows = regimen.body.regimen_items.map(mapper);
   const dict = _.groupBy(rows, "day");
   const makeRows = (day: string): CalendarRow => ({ day: day, items: dict[day] });
-  const days = _(dict)
+  const days = _.chain(dict)
     .keys()
     .map(x => parseInt(x))
     .sort((a, b) => a - b)
@@ -92,7 +92,7 @@ function generateCalendar(regimen: TaggedRegimen,
   return days
     .map(makeRows)
     .map((x) => {
-      x.items = _(x.items).sortBy(SORT_KEY).value();
+      x.items = _.chain(x.items).sortBy(SORT_KEY).value();
       return x;
     });
 }

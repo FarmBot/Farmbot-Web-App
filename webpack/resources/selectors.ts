@@ -57,7 +57,7 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
 export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
 
 export function groupPointsByType(index: ResourceIndex) {
-  return _(selectAllActivePoints(index))
+  return _.chain(selectAllActivePoints(index))
     // If this fails to compile....
     .tap(x => x[0].body.pointer_type)
     // ... this line must be updated:

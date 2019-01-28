@@ -3,7 +3,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { filterSensorReadings } from "../filter_readings";
 import { SensorReadingsState } from "../interfaces";
-import * as moment from "moment";
+import moment from "moment";
 import { Xyz } from "../../../devices/interfaces";
 
 describe("filterSensorReadings()", () => {

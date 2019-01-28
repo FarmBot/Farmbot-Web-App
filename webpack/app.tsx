@@ -26,8 +26,8 @@ import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig } from "./resources/getters";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
-const fastClick = require("fastclick");
-fastClick.attach(document.body);
+// const fastClick = require("fastclick");
+// fastClick.attach(document.body);
 
 /** For the logger module */
 init();

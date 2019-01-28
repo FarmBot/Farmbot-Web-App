@@ -77,7 +77,7 @@ describe("selectAllLogs", () => {
   it("stays truthful to its name by finding all logs", () => {
     const results = Selector.selectAllLogs(fakeIndex);
     expect(results.length).toBeGreaterThan(0);
-    const kinds = _(results).map("kind").uniq().value();
+    const kinds = _.chain(results).map("kind").uniq().value();
     expect(kinds.length).toEqual(1);
     expect(kinds[0]).toEqual("Log");
   });

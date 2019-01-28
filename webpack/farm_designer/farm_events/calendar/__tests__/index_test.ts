@@ -4,7 +4,7 @@ import {
   TIME,
   fakeFarmEventWithExecutable
 } from "../../../../__test_support__/farm_event_calendar_support";
-import * as moment from "moment";
+import moment from "moment";
 
 describe("calendar", () => {
   it("constructs itself with defaults", () => {

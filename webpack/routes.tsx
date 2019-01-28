@@ -1,6 +1,5 @@
 import "./css/_index.scss";
 import * as React from "react";
-import { Provider } from "react-redux";
 import { store as _store } from "./redux/store";
 import { history } from "./history";
 import { Store } from "./redux/interfaces";
@@ -11,6 +10,7 @@ import { ErrorBoundary } from "./error_boundary";
 import { Router } from "takeme";
 import { UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
+import { Provider } from "react-redux";
 
 interface RootComponentProps { store: Store; }
 

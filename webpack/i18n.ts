@@ -1,5 +1,6 @@
 import axios from "axios";
 import { InitOptions } from "i18next";
+
 /** @public */
 export function generateUrl(langCode: string, host: string, port: string) {
   const lang = langCode.slice(0, 2);
@@ -15,15 +16,17 @@ export function getUserLang(
     .catch(() => "en");
 }
 
-export function generateI18nConfig(lang: string): InitOptions {
-  const translation = require(`../public/app-resources/languages/${lang}.js`);
-
-  return {
-    nsSeparator: "",
-    keySeparator: "",
-    lng: lang,
-    resources: { [lang]: { translation } }
-  };
+export function generateI18nConfig(lang: string): Promise<InitOptions> {
+  return axios
+    .get<string>(`/app-resources/languages/${lang}.js`)
+    .then(_x => {
+      return {
+        nsSeparator: "",
+        keySeparator: "",
+        lng: lang,
+        resources: { [lang]: { translation: {} } }
+      };
+    });
 }
 
 export const detectLanguage =

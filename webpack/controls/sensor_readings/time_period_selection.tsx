@@ -1,7 +1,7 @@
 import * as React from "react";
 import { FBSelect, Row, Col, BlurableInput } from "../../ui";
 import { t } from "i18next";
-import * as moment from "moment";
+import moment from "moment";
 import { TaggedSensorReading } from "farmbot";
 import { TimePeriodSelectionProps, DateDisplayProps } from "./interfaces";
 import { cloneDeep } from "lodash";

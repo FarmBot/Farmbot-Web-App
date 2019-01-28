@@ -1,5 +1,5 @@
 import { TaggedFarmEvent } from "farmbot";
-import * as moment from "moment";
+import moment from "moment";
 
 /**
  * PROBLEMS SOLVED:

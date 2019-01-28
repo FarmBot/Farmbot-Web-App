@@ -1,6 +1,6 @@
 import { AddEditFarmEventProps } from "../interfaces";
 import { Everything } from "../../interfaces";
-import * as moment from "moment";
+import moment from "moment";
 import { t } from "i18next";
 import { history, getPathArray } from "../../history";
 import {

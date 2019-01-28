@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import * as _ from "lodash";
 
 export function msToTime(ms: number) {

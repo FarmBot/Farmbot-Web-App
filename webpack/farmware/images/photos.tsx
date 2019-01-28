@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as _ from "lodash";
-import * as moment from "moment";
+import moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { ImageFlipper } from "./image_flipper";

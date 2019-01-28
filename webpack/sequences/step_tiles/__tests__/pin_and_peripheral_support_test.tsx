@@ -61,7 +61,7 @@ describe("Pin and Peripheral support files", () => {
       .toBe(PIN_RANGE.length + 1); // 54 pins plus the header.
     expect(pinDropdowns(n => n)[0]).toBe(PIN_HEADING);
     // Grab all uniq heading IDs- we expect only 1.
-    const values = _(pinDropdowns(n => n))
+    const values = _.chain(pinDropdowns(n => n))
       .tail()
       .map((x: DropDownItem) => x.headingId)
       .uniq()

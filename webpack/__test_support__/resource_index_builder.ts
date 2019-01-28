@@ -374,13 +374,14 @@ export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   const sortedResources = repairBrokeReferences(resources)
     .sort((l, r) => c3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
   type K = keyof typeof KIND_PRIORITY;
-  return _(sortedResources)
+  return _.chain(sortedResources)
     .groupBy(KIND)
     .toPairs()
     .sort((l, r) => c3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
     .map((x: [TaggedResource["kind"], TaggedResource[]]) => x)
     .map((y) => resourceReady(y[0], y[1]))
-    .reduce(resourceReducer, state);
+    .reduce(resourceReducer, state)
+    .value();
 }
 
 const blankSeq: TaggedSequence = {
@@ -419,7 +420,7 @@ const blankReg: TaggedRegimen = {
  * number of failed tests. To circumvent this, we "repair" faulty foreign keys
  * in TaggedResources. This applies to many legacy tests. - RC*/
 function repairBrokeReferences(resources: TaggedResource[]): TaggedResource[] {
-  const table = _(resources).groupBy(x => x.kind).value();
+  const table = _.chain(resources).groupBy(x => x.kind).value();
   resources.map(resource => {
     if (resource.kind === "FarmEvent") { // Find FarmEvents
       const { executable_type, executable_id } = resource.body;

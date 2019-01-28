@@ -8,7 +8,7 @@ import {
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
-import * as moment from "moment";
+import moment from "moment";
 import { countBy } from "lodash";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
 

@@ -76,7 +76,7 @@ export function mapStateToProps(props: Everything): Props {
       return { label, value };
     });
 
-  const latestImages = _(selectAllImages(props.resources.index))
+  const latestImages = _.chain(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
     .value();
@@ -100,7 +100,7 @@ export function mapStateToProps(props: Everything): Props {
     calibrationZ: env["CAMERA_CALIBRATION_camera_z"],
   };
 
-  const sensorReadings = _(selectAllSensorReadings(props.resources.index))
+  const sensorReadings = _.chain(selectAllSensorReadings(props.resources.index))
     .sortBy(x => x.body.created_at)
     .reverse()
     .take(500)

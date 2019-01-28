@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import * as moment from "moment";
+import moment from "moment";
 import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
 import { Actions } from "../../constants";

@@ -23,7 +23,7 @@ export function mapStateToProps(props: Everything): Props {
 
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
-    return _(tools)
+    return _.chain(tools)
       .map(tool => ({
         label: tool.body.name || "untitled",
         value: (tool.body.id as number)
@@ -33,7 +33,7 @@ export function mapStateToProps(props: Everything): Props {
       .value();
   };
 
-  const activeTools = _(toolSlots).map(x => x.body.tool_id).compact().value();
+  const activeTools = _.chain(toolSlots).map(x => x.body.tool_id).compact().value();
 
   const isActive =
     (t: TaggedTool) => !!(t.body.id && activeTools.includes(t.body.id));

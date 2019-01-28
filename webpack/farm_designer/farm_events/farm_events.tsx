@@ -7,7 +7,7 @@ import {
   FarmEventProps, CalendarOccurrence, FarmEventState
 } from "../interfaces";
 import * as _ from "lodash";
-import * as moment from "moment";
+import moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
@@ -31,7 +31,7 @@ export class PureFarmEvents
 
   innerRows = (items: CalendarOccurrence[]) => {
 
-    return _(items)
+    return _.chain(items)
       .sortBy(x => x.sortKey)
       .value()
       .filter(filterSearch(this.searchTerm))

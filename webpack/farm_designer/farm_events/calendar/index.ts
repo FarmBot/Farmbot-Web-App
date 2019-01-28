@@ -1,6 +1,6 @@
 import { Dictionary } from "farmbot/dist";
 import { CalendarOccurrence, CalendarDay } from "../../interfaces";
-import * as moment from "moment";
+import moment from "moment";
 import * as _ from "lodash";
 
 export class Calendar {
@@ -47,7 +47,7 @@ export class Calendar {
           items: _.sortBy(items, Calendar.SORT_KEY)
         };
       });
-    return _(all).sortBy(Calendar.SORT_KEY).value();
+    return _.chain(all).sortBy(Calendar.SORT_KEY).value();
   }
 
   findByDate(m: moment.Moment): CalendarOccurrence[] {

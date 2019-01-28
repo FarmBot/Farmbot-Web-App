@@ -48,7 +48,7 @@ export const reduceFarmwareEnv =
   };
 
 export function mapStateToProps(props: Everything): FarmwareProps {
-  const images = _(selectAllImages(props.resources.index))
+  const images = _.chain(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
     .value();
@@ -107,7 +107,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const jobs = props.bot.hardware.jobs || {};
   const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
   const imageJobs: JobProgress[] =
-    _(betterCompact(imageJobNames.map(x => jobs[x])))
+    _.chain(betterCompact(imageJobNames.map(x => jobs[x])))
       .sortBy("time")
       .reverse()
       .value();

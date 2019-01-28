@@ -1,5 +1,5 @@
 import { occurrence } from "../occurrence";
-import * as moment from "moment";
+import moment from "moment";
 import {
   TIME,
   fakeFarmEventWithExecutable

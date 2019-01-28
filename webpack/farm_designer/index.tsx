@@ -11,7 +11,7 @@ import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize, round } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
-import * as moment from "moment";
+import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";

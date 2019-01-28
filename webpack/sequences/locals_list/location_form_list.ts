@@ -71,7 +71,7 @@ export function locationFormList(resources: ResourceIndex,
     .map(({ tool, location }) => formatTools(tool, location))
     .filter(x => parseInt("" + x.value) > 0);
   const group = maybeGroup(!!displayGroups);
-  return _(heading("Tool"))
+  return _.chain(heading("Tool"))
     .concat(toolDDI)
     .concat(group(everyPointDDI("Tool")))
     .concat(group(everyPointDDI("ToolSlot")))
