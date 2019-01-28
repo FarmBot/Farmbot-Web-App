@@ -1,3 +1,5 @@
+.cache
+dist/ # Parcel "accidents" happen here.
 .env
 .vscode
 log/
