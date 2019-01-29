@@ -1,5 +1,5 @@
 import {
-  BotState, SourceFbosConfig, Xyz, SourceFwConfig,
+  BotState, Xyz, SourceFwConfig,
   ControlPanelState, ShouldDisplay
 } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
@@ -74,7 +74,6 @@ export interface MotorsProps {
   dispatch: Function;
   firmwareVersion: string | undefined;
   controlPanelState: ControlPanelState;
-  sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
   isValidFwConfig: boolean;
 }

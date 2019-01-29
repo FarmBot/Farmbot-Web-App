@@ -90,7 +90,6 @@ export class Devices extends React.Component<Props, {}> {
               bot={this.props.bot}
               botToMqttStatus={botToMqttStatus}
               shouldDisplay={this.props.shouldDisplay}
-              sourceFbosConfig={this.props.sourceFbosConfig}
               sourceFwConfig={this.props.sourceFwConfig}
               firmwareConfig={this.props.firmwareConfig} />
             <PinBindings

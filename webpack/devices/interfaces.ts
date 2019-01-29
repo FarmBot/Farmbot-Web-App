@@ -234,7 +234,6 @@ export interface HardwareSettingsProps {
   botToMqttStatus: NetworkState;
   bot: BotState;
   shouldDisplay: ShouldDisplay;
-  sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
 }
