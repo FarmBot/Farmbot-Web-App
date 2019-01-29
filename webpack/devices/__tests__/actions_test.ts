@@ -15,8 +15,6 @@ const mockDevice = {
   sync: jest.fn(() => { return Promise.resolve(); }),
   readStatus: jest.fn(() => Promise.resolve()),
   updateConfig: jest.fn(() => Promise.resolve()),
-  registerGpio: jest.fn(() => Promise.reject()),
-  unregisterGpio: jest.fn(() => Promise.reject()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
 
@@ -534,22 +532,6 @@ describe("updateConfig()", () => {
       },
       type: Actions.EDIT_RESOURCE
     });
-  });
-});
-
-describe("registerGpioPin()", () => {
-  // CC: @gabrielburworth - leaving this in place for now. Feel free to delete
-  // or modify based on future needs.
-  it("is deprecated. Delete this later.", async () => {
-    await actions.registerGpioPin({ pin_number: 1, sequence_id: 1 })(jest.fn());
-    await expect(mockDevice.registerGpio).not.toHaveBeenCalled();
-  });
-});
-
-describe("unregisterGpioPin()", () => {
-  it("is deprecated. Delete this later.", async () => {
-    await actions.unregisterGpioPin(1)(jest.fn());
-    await expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
   });
 });
 

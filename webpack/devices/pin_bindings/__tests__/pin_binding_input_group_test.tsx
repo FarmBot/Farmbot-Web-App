@@ -48,7 +48,6 @@ describe("<PinBindingInputGroup/>", () => {
       ],
       dispatch: jest.fn(),
       resources: resources,
-      shouldDisplay: () => false,
     };
   }
 
@@ -75,22 +74,9 @@ describe("<PinBindingInputGroup/>", () => {
     expect(error).toHaveBeenCalledWith("Please select a sequence or action.");
   });
 
-  // it("registers pin: bot", () => {
-  //   const p = fakeProps();
-  //   p.dispatch = jest.fn(x => x(jest.fn()));
-  //   const wrapper = mount(<PinBindingInputGroup {...p} />);
-  //   const buttons = wrapper.find("button");
-  //   expect(buttons.last().text()).toEqual("BIND");
-  //   wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
-  //   buttons.last().simulate("click");
-  //   expect(mockDevice.registerGpio)
-  //     .toHaveBeenCalledWith({ pin_number: 1, sequence_id: 2 });
-  // });
-
   it("registers pin: api", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindingInputGroup {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
@@ -108,7 +94,6 @@ describe("<PinBindingInputGroup/>", () => {
   it("registers pin: api (special action)", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindingInputGroup {...p} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
@@ -202,7 +187,6 @@ describe("<BindingTypeDropDown />", () => {
     const setBindingType = jest.fn();
     const wrapper = shallow(<BindingTypeDropDown
       bindingType={PinBindingType.standard}
-      shouldDisplay={() => true}
       setBindingType={setBindingType} />);
     const ddi = { label: "", value: PinBindingType.special };
     wrapper.find("FBSelect").simulate("change", ddi);

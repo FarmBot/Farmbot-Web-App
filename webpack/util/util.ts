@@ -172,7 +172,7 @@ export function scrollToBottom(elementId: string) {
 
 export function validBotLocationData(
   botLocationData: BotLocationData | undefined): BotLocationData {
-  if (botLocationData) {
+  if (botLocationData && botLocationData.position && botLocationData.position.x) {
     return botLocationData;
   }
   return {

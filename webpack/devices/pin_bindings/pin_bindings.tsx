@@ -1,14 +1,9 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui/index";
+import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui";
 import { ToolTips } from "../../constants";
-import { Feature, BotState } from "../interfaces";
 import { selectAllPinBindings } from "../../resources/selectors";
-import { MustBeOnline } from "../must_be_online";
-import {
-  PinBindingsProps,
-  PinBindingListItems
-} from "./interfaces";
+import { PinBindingsProps, PinBindingListItems } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
 import { PinBindingInputGroup } from "./pin_binding_input_group";
 import {
@@ -58,25 +53,28 @@ const apiPinBindings = (resources: ResourceIndex): PinBindingListItems[] => {
   return userBindings.concat(sysBtnBindingData);
 };
 
-/** Return bot state pin binding data. */
-const botPinBindings = (bot: BotState): PinBindingListItems[] => {
-  const { gpio_registry } = bot.hardware;
-  return Object.entries(gpio_registry || {})
-    .map(([pin_number, sequence_id]) => {
-      return {
-        pin_number: parseInt(pin_number),
-        sequence_id: parseInt(sequence_id || "")
-      };
-    });
-};
+const PinBindingsListHeader = () =>
+  <Row>
+    <Col xs={PinBindingColWidth.pin}>
+      <label>
+        {t("Pin Number")}
+      </label>
+    </Col>
+    <Col xs={PinBindingColWidth.type}>
+      <label>
+        {t("Binding")}
+      </label>
+    </Col>
+    <Col xs={PinBindingColWidth.target}>
+      <label>
+        {t("target")}
+      </label>
+    </Col>
+  </Row>;
 
 export const PinBindings = (props: PinBindingsProps) => {
-  const { dispatch, resources, shouldDisplay, botToMqttStatus, bot } = props;
-
-  const pinBindings =
-    shouldDisplay(Feature.api_pin_bindings)
-      ? apiPinBindings(resources)
-      : botPinBindings(bot);
+  const { dispatch, resources } = props;
+  const pinBindings = apiPinBindings(resources);
 
   return <Widget className="pin-bindings-widget">
     <WidgetHeader
@@ -91,44 +89,18 @@ export const PinBindings = (props: PinBindingsProps) => {
           {ToolTips.PIN_BINDING_WARNING}
         </div>
       </Popover>
-      <StockPinBindingsButton
-        dispatch={dispatch}
-        shouldDisplay={shouldDisplay} />
+      <StockPinBindingsButton dispatch={dispatch} />
     </WidgetHeader>
     <WidgetBody>
-      <MustBeOnline
-        syncStatus={bot.hardware.informational_settings.sync_status}
-        networkState={botToMqttStatus}
-        lockOpen={shouldDisplay(Feature.api_pin_bindings)
-          || process.env.NODE_ENV !== "production"}>
-        <Row>
-          <Col xs={PinBindingColWidth.pin}>
-            <label>
-              {t("Pin Number")}
-            </label>
-          </Col>
-          <Col xs={PinBindingColWidth.type}>
-            <label>
-              {t("Binding")}
-            </label>
-          </Col>
-          <Col xs={PinBindingColWidth.target}>
-            <label>
-              {t("target")}
-            </label>
-          </Col>
-        </Row>
-        <PinBindingsList
-          pinBindings={pinBindings}
-          dispatch={dispatch}
-          resources={resources}
-          shouldDisplay={shouldDisplay} />
-        <PinBindingInputGroup
-          pinBindings={pinBindings}
-          dispatch={dispatch}
-          resources={resources}
-          shouldDisplay={shouldDisplay} />
-      </MustBeOnline>
+      <PinBindingsListHeader />
+      <PinBindingsList
+        pinBindings={pinBindings}
+        dispatch={dispatch}
+        resources={resources} />
+      <PinBindingInputGroup
+        pinBindings={pinBindings}
+        dispatch={dispatch}
+        resources={resources} />
     </WidgetBody>
   </Widget>;
 };

@@ -45,27 +45,12 @@ describe("<PinBindings/>", () => {
     };
     return {
       dispatch: jest.fn(),
-      bot: bot,
       resources: resources,
-      botToMqttStatus: "up",
-      shouldDisplay: () => false,
     };
   }
 
-  it("renders: bot", () => {
-    const wrapper = mount(<PinBindings {...fakeProps()} />);
-    ["pin bindings", "pin number", "none", "bind"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    ["pi gpio 10", "sequence 1", "pi gpio 11", "sequence 2"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(6);
-    expect(wrapper.text().toLowerCase()).not.toContain("stock bindings");
-  });
-
-  it("renders: api", () => {
+  it("renders", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     const wrapper = mount(<PinBindings {...p} />);
     ["pin bindings", "pin number", "none", "bind", "stock bindings"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
