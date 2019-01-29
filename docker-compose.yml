@@ -54,7 +54,7 @@ services:
   webpack:     # ====================
     <<: *base_config
     <<: *rails
-    depends_on: ["db","mqtt"]
+    depends_on: ["db","mqtt", "web"]
     command: bundle exec rake api:serve_assets
     ports: ["3808:3808"] # Webpack Dev Server
   delayed_job: # ====================

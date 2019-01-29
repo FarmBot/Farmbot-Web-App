@@ -1,19 +1,29 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
-  SOURCE      = "../../webpack"
-  DESTINATION = "../public/webpack"
 
-  CSS_ASSETS  = {
+  OUTPUT_PATH = "/dist"
+
+  CSS_INPUTS  = {
     front_page: "/css/laptop_splash.scss",
     default:    "/css/_index.scss",
   }.with_indifferent_access
 
-  JS_ASSETS   = {
+  JS_INPUTS   = {
     main_app:       "/entry.tsx",
     front_page:     "/front_page/index.tsx",
     password_reset: "/password_reset/index.tsx",
     tos_update:     "/tos_update/index.tsx",
   }.with_indifferent_access
+
+  CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (key, value)|
+    acc[key] = OUTPUT_PATH + value.gsub(/\.scss$/, ".css")
+    acc
+  end
+
+  JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (key, value)|
+    acc[key] = OUTPUT_PATH + value.gsub(/\.tsx?$/, ".js")
+    acc
+  end
 
   [:main_app, :front_page, :verify, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
@@ -62,17 +72,17 @@ class DashboardController < ApplicationController
   end
 
 private
-
   def load_css_assets
     @css_assets ||= [action_name, :default].reduce([]) do |list, action|
-      asset = CSS_ASSETS[action]
+      asset = CSS_OUTPUTS[action] # Not every endpoint has custom CSS.
       list.push(asset) if asset
       list
     end
   end
 
   def load_js_assets
-    @js_assets ||= [ JS_ASSETS.fetch(action_name) ]
+    # Every DashboardController has a JS SBundle.
+    @js_assets ||= [ JS_OUTPUTS.fetch(action_name) ]
   end
 
   def set_global_config

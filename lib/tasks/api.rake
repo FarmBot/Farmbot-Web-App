@@ -52,18 +52,23 @@ namespace :api do
 
   desc "Serve javascript assets (via Parcel bundler)"
   task serve_assets: :environment do
-    css    = DashboardController::CSS_ASSETS.values
-    js     = DashboardController::JS_ASSETS.values
+    css    = DashboardController::CSS_INPUTS.values
+    js     = DashboardController::JS_INPUTS.values
     assets = (js + css)
       .sort
       .uniq
       .map { |x| "webpack" + x }
       .join(" ")
-    cli = [
+
+      cli = [
       "node_modules/parcel-bundler/bin/cli.js",
-      "watch",
+      "build",
       assets,
       "--out-dir public/dist",
+      "--public-url /dist",
+      # "--hmr-hostname #{ENV.fetch("API_HOST")}",
+      # "--hmr-port 3808",
+      "--bundle-node-modules",
       "--log-level 5",
     ].join(" ")
     # /dist/front_page/index.jd
