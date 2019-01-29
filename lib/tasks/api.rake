@@ -50,6 +50,28 @@ namespace :api do
     sh "sudo docker-compose up --scale webpack=0"
   end
 
+  desc "Serve javascript assets (via Parcel bundler)"
+  task serve_assets: :environment do
+    css    = DashboardController::CSS_ASSETS.values
+    js     = DashboardController::JS_ASSETS.values
+    assets = (js + css)
+      .sort
+      .uniq
+      .map { |x| "webpack" + x }
+      .join(" ")
+    cli = [
+      "node_modules/parcel-bundler/bin/cli.js",
+      "watch",
+      assets,
+      "--out-dir public/dist",
+      "--log-level 5",
+    ].join(" ")
+    # /dist/front_page/index.jd
+    # /dist/front_page/index.js
+    puts "=== Running: \n#{cli}"
+    sh cli
+  end
+
   desc "Reset _everything_, including your database"
   task :reset do
     puts "This is going to destroy _ALL_ of your local Farmbot SQL data and "\

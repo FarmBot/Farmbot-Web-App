@@ -14,12 +14,6 @@ window.process = {
 }
 </script>
 <%= render "addons" %>
+<%= javascript_include_tag *@js_assets %>
 <meta content="width=device-width, initial-scale=1" name="viewport">
-<%= stylesheet_link_tag "application" %>
-<%= stylesheet_link_tag "/webpack/_index.css" %>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
-<%# Rails.env.production? ? javascript_include_tag(*webpack_asset_paths("new_commons")) : "" %>
-<% if false %>
-  <script async src="http://<%= ENV["API_HOST"] %>:8080/target/target-script-min.js#anonymous">
-  </script>
-<% end %>

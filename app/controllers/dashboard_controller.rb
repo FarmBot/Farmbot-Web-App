@@ -1,30 +1,25 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
-  OUTPUT_DIR = "public/webpack"
-  BUNDLES = {
-    app_bundle:     "./webpack/entry.tsx",
-    app_bundle:     "./webpack/entry.tsx",
-    front_page:     "./webpack/front_page/index.tsx",
-    front_page:     "./webpack/front_page/index.tsx",
-    password_reset: "./webpack/password_reset/index.tsx",
-    password_reset: "./webpack/password_reset/index.tsx",
-    tos_update:     "./webpack/tos_update/index.tsx",
-    tos_update:     "./webpack/tos_update/index.tsx",
-  }
-  def tos_update
-    # I want to keep an eye on this one in prod.
-    # If `tos_update` is firing without us knowing about it, it could cause a
-    # service outage.
-    Rollbar.info("TOS UPDATE????")
-    render :tos_update, layout: false
-  end
+  SOURCE      = "../../webpack"
+  DESTINATION = "../public/webpack"
 
-  [:main_app, :front_page, :verify, :password_reset].map do |actn|
+  CSS_ASSETS  = {
+    front_page: "/css/laptop_splash.scss",
+    default:    "/css/_index.scss",
+  }.with_indifferent_access
+
+  JS_ASSETS   = {
+    main_app:       "/entry.tsx",
+    front_page:     "/front_page/index.tsx",
+    password_reset: "/password_reset/index.tsx",
+    tos_update:     "/tos_update/index.tsx",
+  }.with_indifferent_access
+
+  [:main_app, :front_page, :verify, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
       begin
-        response.headers["Cache-Control"] = "no-cache, no-store"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
+        load_css_assets
+        load_js_assets
         render actn, layout: false
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
@@ -67,6 +62,18 @@ class DashboardController < ApplicationController
   end
 
 private
+
+  def load_css_assets
+    @css_assets ||= [action_name, :default].reduce([]) do |list, action|
+      asset = CSS_ASSETS[action]
+      list.push(asset) if asset
+      list
+    end
+  end
+
+  def load_js_assets
+    @js_assets ||= [ JS_ASSETS.fetch(action_name) ]
+  end
 
   def set_global_config
     @global_config = GlobalConfig.dump.to_json
