@@ -22,8 +22,7 @@ export class HardwareSettings extends
 
   render() {
     const {
-      bot, dispatch, sourceFbosConfig, sourceFwConfig, controlPanelState,
-      firmwareConfig
+      bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
     const firmwareVersion = informational_settings.firmware_version;
@@ -78,7 +77,6 @@ export class HardwareSettings extends
             dispatch={dispatch}
             firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
-            sourceFbosConfig={sourceFbosConfig}
             sourceFwConfig={sourceFwConfig}
             isValidFwConfig={!!firmwareConfig} />
           <EncodersAndEndStops

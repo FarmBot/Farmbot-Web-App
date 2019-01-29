@@ -55,7 +55,6 @@ describe("<PinBindingsList/>", () => {
       ],
       dispatch: jest.fn(),
       resources: resources,
-      shouldDisplay: () => false,
     };
   }
 
@@ -67,22 +66,12 @@ describe("<PinBindingsList/>", () => {
     expect(buttons.length).toBe(2);
   });
 
-  // it("unregisters pin: bot", () => {
-  //   const p = fakeProps();
-  //   p.dispatch = jest.fn(x => x(jest.fn()));
-  //   const wrapper = mount(<PinBindingsList {...p} />);
-  //   const buttons = wrapper.find("button");
-  //   buttons.first().simulate("click");
-  //   expect(mockDevice.unregisterGpio).toHaveBeenCalledWith({ pin_number: 10 });
-  // });
-
   it("unregisters pin: api", () => {
     const p = fakeProps();
     const s = fakeSequence();
     s.body.id = 1;
     const b = fakePinBinding();
     p.resources = buildResourceIndex([b, s]).index;
-    p.shouldDisplay = () => true;
     p.pinBindings = [{ pin_number: 10, sequence_id: 1, uuid: b.uuid }];
     const wrapper = mount(<PinBindingsList {...p} />);
     const buttons = wrapper.find("button");
@@ -93,7 +82,6 @@ describe("<PinBindingsList/>", () => {
 
   it("restricts deletion of built-in bindings", () => {
     const p = fakeProps();
-    p.shouldDisplay = () => true;
     p.pinBindings = sysBtnBindingData;
     const wrapper = mount(<PinBindingsList {...p} />);
     const buttons = wrapper.find("button");

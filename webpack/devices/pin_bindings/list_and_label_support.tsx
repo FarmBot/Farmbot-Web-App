@@ -6,7 +6,6 @@ import {
 import { DropDownItem } from "../../ui";
 import { gpio } from "./rpi_gpio_diagram";
 import { flattenDeep, isNumber } from "lodash";
-import { ShouldDisplay, Feature } from "../interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
 
 export const bindingTypeLabelLookup: { [x: string]: string } = {
@@ -15,12 +14,9 @@ export const bindingTypeLabelLookup: { [x: string]: string } = {
   "": t("Sequence"),
 };
 
-export const bindingTypeList = (shouldDisplay: ShouldDisplay): DropDownItem[] =>
+export const bindingTypeList = (): DropDownItem[] =>
   Object.entries(bindingTypeLabelLookup)
     .filter(([value, _]) => !(value == ""))
-    .filter(([value, _]) =>
-      shouldDisplay(Feature.api_pin_bindings)
-      || !(value == PinBindingType.special))
     .map(([value, label]) => ({ label, value }));
 
 export const specialActionLabelLookup: { [x: string]: string } = {
@@ -62,11 +58,19 @@ enum LEDPin {
   btn5 = 21,
 }
 
-const sysLedBindings = Object.values(LEDPin);
-/** All pin numbers used by FarmBot OS that cannot be used in pin bindings. */
-export const sysBindings = sysLedBindings.concat(sysBtnBindings);
+/** Other pins used by FarmBot OS that cannot be used in pin bindings. */
+enum SystemPins {
+  sda = 2,
+  scl = 3,
+  reset = 19,
+}
 
-const piI2cPins = [0, 1, 2, 3];
+const sysLedBindings = Object.values(LEDPin);
+const otherSysBindings = Object.values(SystemPins);
+/** All pin numbers used by FarmBot OS that cannot be used in pin bindings. */
+export const sysBindings = sysLedBindings.concat(sysBtnBindings, otherSysBindings);
+
+const piI2cPins = [0, 1];
 /** Pin numbers used for special purposes by the RPi. (internal pullup, etc.) */
 export const reservedPiGPIO = piI2cPins;
 
@@ -88,7 +92,6 @@ export const validGpioPins: number[] =
   flattenDeep(gpio)
     .filter(x => isNumber(x))
     .map((x: number) => x);
-// .filter(n => !reservedPiGPIO.includes(n));
 
 /** Sort fn for pin numbers using their labels. */
 export const sortByNameAndPin = (a: number, b: number) => {

@@ -5,7 +5,6 @@ import {
   PinBinding
 } from "farmbot/dist/resources/api_resources";
 import { PinBindingListItems } from "./interfaces";
-import { ShouldDisplay, Feature } from "../interfaces";
 import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";
 import { t } from "i18next";
@@ -36,20 +35,16 @@ export const pinBindingBody =
   };
 
 /** Add default pin bindings. */
-export const StockPinBindingsButton =
-  ({ shouldDisplay, dispatch }: {
-    shouldDisplay: ShouldDisplay, dispatch: Function
-  }) =>
-    <div className="stock-pin-bindings-button">
-      {shouldDisplay(Feature.api_pin_bindings) &&
-        <button
-          className="fb-button green"
-          onClick={() => stockPinBindings.map(binding =>
-            dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
-          <i className="fa fa-plus" />
-          {t("v1.4 Stock Bindings")}
-        </button>}
-    </div>;
+export const StockPinBindingsButton = ({ dispatch }: { dispatch: Function }) =>
+  <div className="stock-pin-bindings-button">
+    <button
+      className="fb-button green"
+      onClick={() => stockPinBindings.map(binding =>
+        dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
+      <i className="fa fa-plus" />
+      {t("v1.4 Stock Bindings")}
+    </button>
+  </div>;
 
 /** FarmBot OS built-in pin binding data used by Pin Bindings widget. */
 export const sysBtnBindingData: PinBindingListItems[] = [];

@@ -14,11 +14,6 @@ describe("<StockPinBindingsButton />", () => {
     dispatch: jest.fn(),
   });
 
-  it("doesn't render button", () => {
-    const wrapper = mount(<StockPinBindingsButton {...fakeProps()} />);
-    expect(wrapper.find("button").length).toEqual(0);
-  });
-
   it("adds bindings", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;

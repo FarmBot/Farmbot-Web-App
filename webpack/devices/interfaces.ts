@@ -186,6 +186,7 @@ export interface McuInputBoxProps {
   dispatch: Function;
   intSize?: IntegerSize;
   float?: boolean;
+  scale?: number;
   filter?: number;
   gray?: boolean;
 }
@@ -234,7 +235,6 @@ export interface HardwareSettingsProps {
   botToMqttStatus: NetworkState;
   bot: BotState;
   shouldDisplay: ShouldDisplay;
-  sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
 }

@@ -1,5 +1,5 @@
 import {
-  BotState, SourceFbosConfig, Xyz, SourceFwConfig,
+  BotState, Xyz, SourceFwConfig,
   ControlPanelState, ShouldDisplay
 } from "../interfaces";
 import { McuParamName, McuParams } from "farmbot/dist";
@@ -48,8 +48,11 @@ export interface NumericMCUInputGroupProps {
   tooltip?: string | undefined;
   name: string;
   x: McuParamName;
+  xScale?: number;
   y: McuParamName;
+  yScale?: number;
   z: McuParamName;
+  zScale?: number;
   float?: boolean;
   intSize?: IntegerSize;
   gray?: Record<Xyz, boolean>;
@@ -74,7 +77,6 @@ export interface MotorsProps {
   dispatch: Function;
   firmwareVersion: string | undefined;
   controlPanelState: ControlPanelState;
-  sourceFbosConfig: SourceFbosConfig;
   sourceFwConfig: SourceFwConfig;
   isValidFwConfig: boolean;
 }
