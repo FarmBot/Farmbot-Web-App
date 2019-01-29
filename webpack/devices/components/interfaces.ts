@@ -48,8 +48,11 @@ export interface NumericMCUInputGroupProps {
   tooltip?: string | undefined;
   name: string;
   x: McuParamName;
+  xScale?: number;
   y: McuParamName;
+  yScale?: number;
   z: McuParamName;
+  zScale?: number;
   float?: boolean;
   intSize?: IntegerSize;
   gray?: Record<Xyz, boolean>;

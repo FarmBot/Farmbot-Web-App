@@ -4,7 +4,9 @@ import { warning } from "farmbot-toastr";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
-import { clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize } from "../../util";
+import {
+  clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize
+} from "../../util";
 import { t } from "i18next";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
@@ -20,6 +22,12 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     const { filter } = this.props;
     const goodValue = !_.isUndefined(v) && !(filter && v > filter);
     return goodValue ? (v || 0).toString() : "";
+  }
+
+  get showValue() {
+    return this.props.scale
+      ? "" + parseInt(this.value) / this.props.scale
+      : this.value;
   }
 
   get className() {
@@ -49,11 +57,14 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
   commit = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
-    const actuallyDifferent = this.value !== value;
+    const scaledValue = this.props.scale
+      ? "" + Math.round(parseFloat(value) * this.props.scale)
+      : value;
+    const actuallyDifferent = this.value !== scaledValue;
     if (actuallyDifferent) {
       const result = this.props.float
-        ? Math.max(0, parseFloat(value))
-        : this.clampInputAndWarn(value, this.props.intSize);
+        ? Math.max(0, parseFloat(scaledValue))
+        : this.clampInputAndWarn(scaledValue, this.props.intSize);
       this.props.dispatch(updateMCU(this.key, result.toString()));
     }
   }
@@ -62,7 +73,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
     return <BlurableInput
       type="number"
       className={this.className}
-      value={this.value}
+      value={this.showValue}
       onCommit={this.commit}
       min={0}
       max={getMaxInputFromIntSize(this.props.intSize)} />;

@@ -60,4 +60,15 @@ describe("McuInputBox", () => {
       { currentTarget: { value: "5.5" } });
     expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "5");
   });
+
+  it("scales values", () => {
+    const p = fakeProps();
+    p.scale = 10;
+    bot.hardware.mcu_params.encoder_enabled_x = 7;
+    const wrapper = shallow(<McuInputBox {...p} />);
+    expect(wrapper.props().value).toEqual("0.7");
+    wrapper.find("BlurableInput").simulate("commit",
+      { currentTarget: { value: "5.5" } });
+    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
+  });
 });
