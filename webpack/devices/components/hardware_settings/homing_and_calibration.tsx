@@ -76,11 +76,14 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <NumericMCUInputGroup
-        name={t("Axis Length (steps)")}
+        name={t("Axis Length (mm)")}
         tooltip={ToolTips.LENGTH}
         x={"movement_axis_nr_steps_x"}
+        xScale={sourceFwConfig("movement_step_per_mm_x").value}
         y={"movement_axis_nr_steps_y"}
+        yScale={sourceFwConfig("movement_step_per_mm_y").value}
         z={"movement_axis_nr_steps_z"}
+        zScale={sourceFwConfig("movement_step_per_mm_z").value}
         gray={{
           x: !sourceFwConfig("movement_stop_at_max_x").value,
           y: !sourceFwConfig("movement_stop_at_max_y").value,

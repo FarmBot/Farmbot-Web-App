@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Feature } from "../interfaces";
 import {
   bindingTypeLabelLookup, specialActionLabelLookup,
   generatePinLabel, sortByNameAndPin
@@ -9,23 +8,18 @@ import { destroy } from "../../api/crud";
 import { error } from "farmbot-toastr";
 import { Row, Col } from "../../ui";
 import { findSequenceById } from "../../resources/selectors";
-import { unregisterGpioPin } from "../actions";
 import { PinBindingColWidth } from "./pin_bindings";
 import { PinBindingsListProps } from "./interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
-  const { pinBindings, resources, shouldDisplay, dispatch } = props;
+  const { pinBindings, resources, dispatch } = props;
 
   const deleteBinding = (pin: number, uuid?: string) => {
-    if (shouldDisplay(Feature.api_pin_bindings)) {
-      if (!sysBtnBindings.includes(pin)) {
-        dispatch(destroy(uuid || ""));
-      } else {
-        error(t("Cannot delete built-in pin binding."));
-      }
+    if (!sysBtnBindings.includes(pin)) {
+      dispatch(destroy(uuid || ""));
     } else {
-      dispatch(unregisterGpioPin(pin));
+      error(t("Cannot delete built-in pin binding."));
     }
   };
 

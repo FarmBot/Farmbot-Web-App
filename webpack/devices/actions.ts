@@ -410,29 +410,6 @@ export function updateConfig(config: Configuration) {
   };
 }
 
-/** Register a sequence to an RPi GPIO pin (FBOS < 6.4.4). */
-export function registerGpioPin(
-  _pinBinding: { pin_number: number, sequence_id: number }) {
-  // const noun = "Register GPIO Pin";
-  return function (_dispatch: Function) {
-    // getDevice()
-    //   .registerGpio(pinBinding)
-    //   .then(() => updateOK(dispatch))
-    //   .catch(() => updateNO(dispatch, noun));
-  };
-}
-
-/** Remove binding from an RPi GPIO pin (FBOS < 6.4.4). */
-export function unregisterGpioPin(_pin_number: number) {
-  // const noun = "Unregister GPIO Pin";
-  return function (_dispatch: Function) {
-    // getDevice()
-    //   .unregisterGpio({ pin_number })
-    //   .then(() => updateOK(dispatch))
-    //   .catch(() => updateNO(dispatch, noun));
-  };
-}
-
 /** Change jog button movement amount. */
 export function changeStepSize(integer: number) {
   return {

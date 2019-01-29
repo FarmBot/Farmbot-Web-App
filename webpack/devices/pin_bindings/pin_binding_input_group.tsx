@@ -9,10 +9,8 @@ import {
   PinBindingInputGroupState
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
-import { Feature, ShouldDisplay } from "../interfaces";
 import { initSave } from "../../api/crud";
 import { pinBindingBody } from "./tagged_pin_binding_init";
-import { registerGpioPin } from "../actions";
 import { error, warning } from "farmbot-toastr";
 import {
   validGpioPins, sysBindings, generatePinLabel, RpiPinList,
@@ -48,7 +46,7 @@ export class PinBindingInputGroup
         error(t("Invalid Raspberry Pi GPIO pin number."));
       }
     } else {
-      error(t("Raspberry Pi GPIO pin already bound."));
+      error(t("Raspberry Pi GPIO pin already bound or in use."));
     }
   }
 
@@ -60,30 +58,23 @@ export class PinBindingInputGroup
 
   /** Validate and save a pin binding. */
   bindPin = () => {
-    const { shouldDisplay, dispatch } = this.props;
+    const { dispatch } = this.props;
     const {
       pinNumberInput, sequenceIdInput, bindingType, specialActionInput
     } = this.state;
     if (isNumber(pinNumberInput)) {
       if (bindingType && (sequenceIdInput || specialActionInput)) {
-        if (shouldDisplay(Feature.api_pin_bindings)) {
-          bindingType == PinBindingType.special
-            ? dispatch(initSave("PinBinding", pinBindingBody({
-              pin_num: pinNumberInput,
-              special_action: specialActionInput,
-              binding_type: bindingType
-            })))
-            : dispatch(initSave("PinBinding", pinBindingBody({
-              pin_num: pinNumberInput,
-              sequence_id: sequenceIdInput,
-              binding_type: bindingType
-            })));
-        } else {
-          dispatch(registerGpioPin({
-            pin_number: pinNumberInput,
-            sequence_id: sequenceIdInput || 0
-          }));
-        }
+        bindingType == PinBindingType.special
+          ? dispatch(initSave("PinBinding", pinBindingBody({
+            pin_num: pinNumberInput,
+            special_action: specialActionInput,
+            binding_type: bindingType
+          })))
+          : dispatch(initSave("PinBinding", pinBindingBody({
+            pin_num: pinNumberInput,
+            sequence_id: sequenceIdInput,
+            binding_type: bindingType
+          })));
         this.setState({
           pinNumberInput: undefined,
           sequenceIdInput: undefined,
@@ -116,7 +107,6 @@ export class PinBindingInputGroup
     const {
       pinNumberInput, bindingType, specialActionInput, sequenceIdInput
     } = this.state;
-    const { shouldDisplay, resources } = this.props;
 
     return <Row>
       <Col xs={PinBindingColWidth.pin}>
@@ -128,7 +118,6 @@ export class PinBindingInputGroup
       <Col xs={PinBindingColWidth.type}>
         <BindingTypeDropDown
           bindingType={bindingType}
-          shouldDisplay={shouldDisplay}
           setBindingType={this.setBindingType} />
       </Col>
       <Col xs={PinBindingColWidth.target}>
@@ -138,7 +127,7 @@ export class PinBindingInputGroup
             setSpecialAction={this.setSpecialAction} />
           : <SequenceTargetDropDown
             sequenceIdInput={sequenceIdInput}
-            resources={resources}
+            resources={this.props.resources}
             setSequenceIdInput={this.setSequenceIdInput} />}
       </Col>
       <Col xs={PinBindingColWidth.button}>
@@ -189,10 +178,9 @@ export const PinNumberInputGroup = (props: {
 /** binding type selection: sequence or action */
 export const BindingTypeDropDown = (props: {
   bindingType: PinBindingType,
-  shouldDisplay: ShouldDisplay,
   setBindingType: (ddi: DropDownItem) => void,
 }) => {
-  const { bindingType, shouldDisplay, setBindingType } = props;
+  const { bindingType, setBindingType } = props;
   return <FBSelect
     key={"binding_type_input_" + bindingType}
     onChange={setBindingType}
@@ -200,7 +188,7 @@ export const BindingTypeDropDown = (props: {
       label: bindingTypeLabelLookup[bindingType],
       value: bindingType
     }}
-    list={bindingTypeList(shouldDisplay)} />;
+    list={bindingTypeList()} />;
 };
 
 /** sequence selection */

@@ -1,5 +1,3 @@
-import { BotState, ShouldDisplay } from "../interfaces";
-import { NetworkState } from "../../connectivity/interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import {
   PinBindingType,
@@ -7,11 +5,8 @@ import {
 } from "farmbot/dist/resources/api_resources";
 
 export interface PinBindingsProps {
-  bot: BotState;
   dispatch: Function;
-  botToMqttStatus: NetworkState;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface PinBindingListItems {
@@ -25,14 +20,12 @@ export interface PinBindingListItems {
 export interface PinBindingsListProps {
   pinBindings: PinBindingListItems[];
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
 
 export interface PinBindingInputGroupProps {
   dispatch: Function;
   resources: ResourceIndex;
-  shouldDisplay: ShouldDisplay;
   pinBindings: PinBindingListItems[];
 }
 

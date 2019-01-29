@@ -12,7 +12,6 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
-import { StepsPerMmSettings } from "./steps_per_mm_settings";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -33,7 +32,7 @@ const SingleSettingRow =
 
 export function Motors(props: MotorsProps) {
   const {
-    dispatch, firmwareVersion, sourceFbosConfig, controlPanelState,
+    dispatch, firmwareVersion, controlPanelState,
     sourceFwConfig, isValidFwConfig
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
@@ -97,13 +96,15 @@ export function Motors(props: MotorsProps) {
         z={"movement_steps_acc_dec_z"}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
-      <StepsPerMmSettings
-        dispatch={dispatch}
-        firmwareVersion={firmwareVersion}
-        controlPanelState={controlPanelState}
-        sourceFwConfig={sourceFwConfig}
-        sourceFbosConfig={sourceFbosConfig}
-        isValidFwConfig={isValidFwConfig} />
+      <NumericMCUInputGroup
+        name={t("Steps per MM")}
+        tooltip={ToolTips.STEPS_PER_MM}
+        x={"movement_step_per_mm_x"}
+        y={"movement_step_per_mm_y"}
+        z={"movement_step_per_mm_z"}
+        float={false}
+        sourceFwConfig={props.sourceFwConfig}
+        dispatch={props.dispatch} />
       <BooleanMCUInputGroup
         name={t("Always Power Motors")}
         tooltip={ToolTips.ALWAYS_POWER_MOTORS}
