@@ -8,7 +8,6 @@ import { shortRevision } from "./util";
 import { stopIE } from "./util/stop_ie";
 import { init } from "i18next";
 import { attachAppToDom } from "./routes";
-
 stopIE();
 
 console.log(shortRevision());

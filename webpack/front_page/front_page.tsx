@@ -17,9 +17,8 @@ import { Content } from "../constants";
 import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 
-export const attachFrontPage = () => {
-  attachToRoot(FrontPage, {});
-};
+export const attachFrontPage =
+  () => attachToRoot(FrontPage, {});
 
 const showFor = (size: string[], extraClass?: string): string => {
   const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];

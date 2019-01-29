@@ -1,5 +1,3 @@
-import "../css/_index.scss";
-import "../css/laptop_splash.scss";
 import { detectLanguage } from "../i18n";
 import * as i18next from "i18next";
 import { stopIE } from "../util/stop_ie";

@@ -1,4 +1,3 @@
-import "./css/_index.scss";
 import * as React from "react";
 import { store as _store } from "./redux/store";
 import { history } from "./history";

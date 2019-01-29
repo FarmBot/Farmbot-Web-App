@@ -1,6 +1,16 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
-
+  OUTPUT_DIR = "public/webpack"
+  BUNDLES = {
+    app_bundle:     "./webpack/entry.tsx",
+    app_bundle:     "./webpack/entry.tsx",
+    front_page:     "./webpack/front_page/index.tsx",
+    front_page:     "./webpack/front_page/index.tsx",
+    password_reset: "./webpack/password_reset/index.tsx",
+    password_reset: "./webpack/password_reset/index.tsx",
+    tos_update:     "./webpack/tos_update/index.tsx",
+    tos_update:     "./webpack/tos_update/index.tsx",
+  }
   def tos_update
     # I want to keep an eye on this one in prod.
     # If `tos_update` is firing without us knowing about it, it could cause a

@@ -6,7 +6,6 @@ import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import "../css/_index.scss";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 

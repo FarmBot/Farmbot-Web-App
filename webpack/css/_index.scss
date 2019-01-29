@@ -1,8 +1,7 @@
 // Blueprint
-@import "~normalize.css";
-@import "~@blueprintjs/core/lib/css/blueprint";
-@import "~@blueprintjs/icons/lib/css/blueprint-icons";
-// Partials
+// @import "~normalize.css";
+@import "@blueprintjs/core/lib/css/blueprint";
+// @import "@blueprintjs/icons/lib/css/blueprint-icons"; // Partials
 @import "animations";
 @import "colors";
 @import "fonts";

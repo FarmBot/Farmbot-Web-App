@@ -4,8 +4,6 @@ const CWD = process.cwd()
 
 module.exports = {
   "includePaths": [
-    path.resolve(CWD, 'node_modules'),
-    path.resolve(CWD, 'node_modules', "@blueprintjs"),
-    path.resolve(CWD, 'webpack')
+    "node_modules"
   ]
 }
