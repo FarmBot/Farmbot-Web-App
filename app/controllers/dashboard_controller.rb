@@ -1,7 +1,7 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
 
-  OUTPUT_PATH = "/dist"
+  OUTPUT_URL_PATH = "/dist"
 
   CSS_INPUTS  = {
     front_page: "/css/laptop_splash.scss",
@@ -16,12 +16,12 @@ class DashboardController < ApplicationController
   }.with_indifferent_access
 
   CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = OUTPUT_PATH + value.gsub(/\.scss$/, ".css")
+    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.scss$/, ".css")
     acc
   end
 
   JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = OUTPUT_PATH + value.gsub(/\.tsx?$/, ".js")
+    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.tsx?$/, ".js")
     acc
   end
 
