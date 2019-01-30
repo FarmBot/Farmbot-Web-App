@@ -68,10 +68,8 @@ namespace :api do
       "--public-url /dist",
       "--hmr-hostname #{ENV.fetch("API_HOST")}",
       "--hmr-port 3808",
-      "--dev",
       "--bundle-node-modules",
       "--log-level 5",
-      "--experimental-scope-hoisting",
     ].join(" ")
     puts "=== Running: \n#{cli}"
     sh cli
