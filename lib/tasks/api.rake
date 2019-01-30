@@ -62,17 +62,17 @@ namespace :api do
 
       cli = [
       "node_modules/parcel-bundler/bin/cli.js",
-      "build",
+      "watch",
       assets,
       "--out-dir public/dist",
       "--public-url /dist",
-      # "--hmr-hostname #{ENV.fetch("API_HOST")}",
-      # "--hmr-port 3808",
+      "--hmr-hostname #{ENV.fetch("API_HOST")}",
+      "--hmr-port 3808",
+      "--dev",
       "--bundle-node-modules",
       "--log-level 5",
+      "--experimental-scope-hoisting",
     ].join(" ")
-    # /dist/front_page/index.jd
-    # /dist/front_page/index.js
     puts "=== Running: \n#{cli}"
     sh cli
   end
