@@ -19,8 +19,7 @@ export class API {
    *  factors such as hostname and protocol (HTTP vs. HTTPS). */
   static inferPort(location = window.location): string {
 
-    // ATTEMPT 1: Most devs running a webpack server on localhost
-    //            run the API on port 3000.
+    // ATTEMPT 1: Most devs run a server on localhost with the API on port 3000.
     if (location.port === "3808") { return "3000"; }
 
     // ATTEMPT 2: If they provide an explicit port (as in ://localhost:3000)

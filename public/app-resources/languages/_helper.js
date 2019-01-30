@@ -61,7 +61,7 @@ var HelperNamespace = (function () {
    * Get all the tags in the files with extension .ts of the current project
    */
   function getAllTags() {
-    const srcPath = __dirname + '/../../../webpack';
+    const srcPath = __dirname + '/../../../frontend';
 
     var listFilteredFiles = walkSync(srcPath, [], '.ts');
     var allTags = listFilteredFiles.map(function (x) {

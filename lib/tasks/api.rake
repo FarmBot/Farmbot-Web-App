@@ -45,9 +45,9 @@ namespace :api do
     ENV["FOREVER"] ? loop { check_for_digests } : check_for_digests
   end
 
-  desc "Run Rails _ONLY_. No Webpack."
+  desc "Run Rails _ONLY_. No parcel."
   task only: :environment do
-    sh "sudo docker-compose up --scale webpack=0"
+    sh "sudo docker-compose up --scale parcel=0"
   end
 
   desc "Serve javascript assets (via Parcel bundler)"
@@ -57,7 +57,7 @@ namespace :api do
     assets = (js + css)
       .sort
       .uniq
-      .map { |x| "webpack" + x }
+      .map { |x| "frontend" + x }
       .join(" ")
 
       cli = [

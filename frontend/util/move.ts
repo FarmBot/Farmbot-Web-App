@@ -12,7 +12,7 @@ export const threeWayComparison = (l: number, r: number): Comparison => {
  * is a pure function so a new array will be returned, instead of altering the
  * array argument.
  * SOURCE:
- *   https://github.com/granteagon/move/blob/master/webpack/index.js */
+ *   https://github.com/granteagon/move */
 export function move<T>(array: T[], fromIndex: number, toIndex: number) {
 
   const item = array[fromIndex];

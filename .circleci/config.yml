@@ -30,14 +30,14 @@ jobs:
       - run:
           name: Run linters
           command: |
-            sudo docker-compose run webpack npm run tslint
-            sudo docker-compose run webpack npm run sass-lint
-            sudo docker-compose run webpack npm run typecheck
+            sudo docker-compose run parcel npm run tslint
+            sudo docker-compose run parcel npm run sass-lint
+            sudo docker-compose run parcel npm run typecheck
       - run:
           name: Run JS tests
           command: |
-            sudo docker-compose run webpack npm run test-slow
-            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG webpack npm run coverage
+            sudo docker-compose run parcel npm run test-slow
+            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG parcel npm run coverage
       - run:
           name: Check Coveralls coverage on staging
           command: |

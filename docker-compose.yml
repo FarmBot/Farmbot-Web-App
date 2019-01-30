@@ -51,7 +51,7 @@ services:
      - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
     volumes:
      - ./docker_volumes/rabbit:/farmbot
-  webpack:     # ====================
+  parcel:     # ====================
     <<: *base_config
     <<: *rails
     depends_on: ["db","mqtt", "web"]
