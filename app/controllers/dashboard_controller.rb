@@ -3,34 +3,34 @@ class DashboardController < ApplicationController
 
   OUTPUT_URL_PATH = "/dist"
 
-  CSS_INPUTS  = {
+  CSS_INPUTS  = HashWithIndifferentAccess.new({
     front_page: "/css/laptop_splash.scss",
     default:    "/css/_index.scss",
-  }.with_indifferent_access
+  })
 
-  JS_INPUTS   = {
+  JS_INPUTS   = HashWithIndifferentAccess.new({
     main_app:       "/entry.tsx",
     front_page:     "/front_page/index.tsx",
     password_reset: "/password_reset/index.tsx",
     tos_update:     "/tos_update/index.tsx",
-  }.with_indifferent_access
+  })
 
-  CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (key, value)|
+  CSS_OUTPUTS = HashWithIndifferentAccess.new(CSS_INPUTS.reduce({}) do |acc, (key, value)|
     acc[key] = OUTPUT_URL_PATH + value.gsub(/\.scss$/, ".css")
     acc
-  end
+  end)
 
-  JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (key, value)|
+  JS_OUTPUTS = HashWithIndifferentAccess.new(JS_INPUTS.reduce({}) do |acc, (key, value)|
     acc[key] = OUTPUT_URL_PATH + value.gsub(/\.tsx?$/, ".js")
     acc
-  end
+  end)
 
-  [:main_app, :front_page, :verify, :password_reset, :tos_update].map do |actn|
+  [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
       begin
         load_css_assets
         load_js_assets
-        render actn, layout: false
+        render actn, layout: "dashboard"
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
       end
