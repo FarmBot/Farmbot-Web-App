@@ -68,7 +68,8 @@ namespace :api do
       "--public-url /dist",
       "--hmr-hostname #{ENV.fetch("API_HOST")}",
       "--hmr-port 3808",
-      "--log-level 5",
+      # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
+      "--no-source-maps",
     ].join(" ")
     puts "=== Running: \n#{cli}"
     sh cli

@@ -37,11 +37,10 @@ export namespace Session {
 
   /** Clear localStorage and sessionStorage. */
   export function clear(): never {
-    // localStorage.clear();
-    // sessionStorage.clear();
-    // location.assign(window.location.origin || "/");
-    throw new Error("WIP");
-    // return undefined as never;
+    localStorage.clear();
+    sessionStorage.clear();
+    location.assign(window.location.origin || "/");
+    return undefined as never;
   }
 }
 
