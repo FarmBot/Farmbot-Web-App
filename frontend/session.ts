@@ -40,7 +40,8 @@ export namespace Session {
     // localStorage.clear();
     // sessionStorage.clear();
     // location.assign(window.location.origin || "/");
-    return undefined as never;
+    // return undefined as never;
+    throw new Error("Boop!");
   }
 }
 
