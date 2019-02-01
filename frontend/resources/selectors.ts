@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { ResourceIndex } from "./interfaces";
 import {
   ResourceName,

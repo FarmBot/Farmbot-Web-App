@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { t } from "i18next";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";

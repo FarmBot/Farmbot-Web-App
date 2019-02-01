@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Component } from "react";
 import { StepSizeSelectorProps } from "./interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export class StepSizeSelector extends Component<StepSizeSelectorProps, {}> {
   cssForIndex(num: number) {

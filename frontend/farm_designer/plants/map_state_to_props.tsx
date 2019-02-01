@@ -6,7 +6,7 @@ import {
 } from "../../resources/selectors";
 import { history } from "../../history";
 import { PlantStage } from "farmbot";
-import * as _ from "lodash";
+import _ from "lodash";
 import { TaggedPlant } from "../map/interfaces";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {

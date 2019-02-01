@@ -1,6 +1,6 @@
 import { DataChangeType, Dictionary } from "farmbot/dist";
 import { box } from "boxed_value";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export let METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",

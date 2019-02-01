@@ -7,7 +7,7 @@ import {
   AxisInputBoxGroupState,
   Vector
 } from "./interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends

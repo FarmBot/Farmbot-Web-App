@@ -1,5 +1,5 @@
 import { box } from "boxed_value";
-import * as _ from "lodash";
+import _ from "lodash";
 import { WDENVKey, Translation, FormatTranslationMap } from "./interfaces";
 
 /** I would rather not deal with all the weird edge cases that come with

@@ -6,7 +6,7 @@ import {
   FBSelect, NULL_CHOICE, DropDownItem
 } from "../../ui/index";
 import { SettingsMenuProps } from "./interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS
 } from "./constants";

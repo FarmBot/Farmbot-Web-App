@@ -6,7 +6,7 @@ import {
 } from "./interceptor_support";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Content } from "./constants";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./connectivity/index";

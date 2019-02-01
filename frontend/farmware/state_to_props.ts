@@ -6,7 +6,7 @@ import {
   FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
 } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations
 } from "../resources/selectors_by_kind";

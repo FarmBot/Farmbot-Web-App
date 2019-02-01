@@ -17,7 +17,7 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import { isNumber } from "lodash";
-import * as _ from "lodash";
+import _ from "lodash";
 import { joinKindAndId } from "./reducer_support";
 import { findAll } from "./find_all";
 

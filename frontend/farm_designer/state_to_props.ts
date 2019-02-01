@@ -12,7 +12,7 @@ import {
   selectAllSensors,
   maybeGetDevice
 } from "../resources/selectors";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   validBotLocationData, validFwConfig, unpackUUID,
   shouldDisplay as shouldDisplayFunc,

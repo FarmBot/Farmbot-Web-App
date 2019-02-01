@@ -3,7 +3,7 @@ import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, TaggedSequence } from "farmbot";
-import * as _ from "lodash";
+import _ from "lodash";
 import { StepParams, ChannelName } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";

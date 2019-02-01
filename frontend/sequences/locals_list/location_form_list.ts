@@ -7,7 +7,7 @@ import { betterCompact } from "../../util";
 import { TaggedTool, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { Vector3 } from "farmbot/dist";
-import * as _ from "lodash";
+import _ from "lodash";
 import { t } from "i18next";
 import { capitalize } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { LogsFilterMenuProps } from "../interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Slider } from "@blueprintjs/core";
 import { t } from "i18next";
 import { Filters } from "../interfaces";

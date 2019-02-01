@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { GardenPlant } from "./garden_plant";
 import { PlantLayerProps } from "../../interfaces";
 import { unpackUUID } from "../../../../util";

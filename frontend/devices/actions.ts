@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import axios from "axios";
-import * as _ from "lodash";
+import _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";

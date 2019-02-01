@@ -5,7 +5,7 @@ import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";
 import { SpecialStatus, TaggedWebcamFeed } from "farmbot";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export function sortedFeeds(feeds: TaggedWebcamFeed[]): TaggedWebcamFeed[] {
   return _.sortBy(feeds, (f) => { return f.body.id || Infinity; });

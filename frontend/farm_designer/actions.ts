@@ -1,7 +1,7 @@
 import { MovePlantProps, DraggableEvent } from "./interfaces";
 import { defensiveClone } from "../util";
 import { edit } from "../api/crud";
-import * as _ from "lodash";
+import _ from "lodash";
 import { history, getPathArray } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";

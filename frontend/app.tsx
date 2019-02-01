@@ -1,7 +1,7 @@
 import * as React from "react";
 import { t } from "i18next";
 import { connect } from "react-redux";
-import * as _ from "lodash";
+import _ from "lodash";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
 import { Everything } from "./interfaces";

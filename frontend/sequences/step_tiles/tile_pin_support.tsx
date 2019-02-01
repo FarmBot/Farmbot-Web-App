@@ -1,6 +1,6 @@
 import { t } from "i18next";
 import { editStep } from "../../api/crud";
-import * as _ from "lodash";
+import _ from "lodash";
 import { WritePin, SequenceBodyItem } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";

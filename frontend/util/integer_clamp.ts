@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { parseIntInput } from "./util";
 
 /** The firmware will have an integer overflow if you don't check this one. */

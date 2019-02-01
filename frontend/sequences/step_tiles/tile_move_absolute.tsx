@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
 import { Component } from "react";

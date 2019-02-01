@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import axios from "axios";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";

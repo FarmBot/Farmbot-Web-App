@@ -20,7 +20,7 @@ import {
   randomColor, determineInstalledOsVersion,
   shouldDisplay as shouldDisplayFunc
 } from "../util";
-import * as _ from "lodash";
+import _ from "lodash";
 import { resourceUsageList } from "../resources/in_use";
 
 export function mapStateToProps(props: Everything): Props {

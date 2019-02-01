@@ -72,7 +72,7 @@ module FarmBot
         "#{ENV.fetch("API_HOST")}:3000",
         "#{ENV.fetch("API_HOST")}:3808",
       ]
-      config.csp                               = {
+      config.csp = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://

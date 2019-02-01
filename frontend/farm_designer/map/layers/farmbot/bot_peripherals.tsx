@@ -2,7 +2,7 @@ import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";

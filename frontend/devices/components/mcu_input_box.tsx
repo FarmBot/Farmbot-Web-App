@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { warning } from "farmbot-toastr";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";

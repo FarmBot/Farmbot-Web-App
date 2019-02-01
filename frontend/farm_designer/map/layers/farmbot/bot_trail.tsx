@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";

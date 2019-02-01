@@ -15,7 +15,7 @@ import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";

@@ -1,6 +1,6 @@
 import { Everything } from "../interfaces";
 import { selectAllLogs, maybeGetTimeOffset } from "../resources/selectors";
-import * as _ from "lodash";
+import _ from "lodash";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue

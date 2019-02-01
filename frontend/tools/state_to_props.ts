@@ -1,6 +1,6 @@
 import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   selectAllToolSlotPointers,
   selectAllTools,

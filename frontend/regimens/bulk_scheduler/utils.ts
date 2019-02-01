@@ -1,5 +1,5 @@
 import moment from "moment";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export function msToTime(ms: number) {
   if (_.isNumber(ms)) {

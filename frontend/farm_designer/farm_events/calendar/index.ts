@@ -1,7 +1,7 @@
 import { Dictionary } from "farmbot/dist";
 import { CalendarOccurrence, CalendarDay } from "../../interfaces";
 import moment from "moment";
-import * as _ from "lodash";
+import _ from "lodash";
 
 export class Calendar {
   /** We sort by this attribute. Left as const so that the compiler can catch

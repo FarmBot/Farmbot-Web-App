@@ -3,7 +3,7 @@ import { Col, BlurableInput } from "../ui/index";
 import { t } from "i18next";
 import { FarmwareManifest, Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv
 } from "../devices/interfaces";

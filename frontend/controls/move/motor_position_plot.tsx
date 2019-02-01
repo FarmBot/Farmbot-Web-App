@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Xyz, LocationName, Dictionary } from "farmbot";
 import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";

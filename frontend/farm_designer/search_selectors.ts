@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { CropLiveSearchResult } from "./interfaces";
 import { t } from "i18next";
 import { DEFAULT_ICON } from "../open_farm/icons";

@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from "axios";
-import * as _ from "lodash";
+import _ from "lodash";
 import { OpenFarm, CropSearchResult } from "./openfarm";
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { Actions } from "../constants";

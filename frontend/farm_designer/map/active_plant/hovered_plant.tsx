@@ -4,7 +4,7 @@ import { transformXY, round } from "../util";
 import { MapTransformProps, TaggedPlant } from "../interfaces";
 import { SpreadCircle } from "../layers/spread/spread_layer";
 import { Circle } from "../layers/plants/circle";
-import * as _ from "lodash";
+import _ from "lodash";
 
 /**
  * For showing the map plant hovered in the plant panel.

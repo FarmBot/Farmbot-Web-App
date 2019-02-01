@@ -1,6 +1,5 @@
-import { isObject, isString, get } from "lodash";
+import { isObject, isString, get, chain } from "lodash";
 import { betterCompact } from "../util";
-import * as _ from "lodash";
 import { assertUuid } from "./util";
 import {
   TaggedResource,
@@ -33,7 +32,7 @@ export interface TaggedResourceBase {
 /** Given an array of TaggedResources, returns the most "important" special status.
  * the hierarchy is SAVED => DIRTY => SAVING  */
 export function getArrayStatus(i: TaggedResource[]): SpecialStatus {
-  const r = betterCompact(_(i).map(x => x.specialStatus).uniq().value());
+  const r = betterCompact(chain(i).map(x => x.specialStatus).uniq().value());
   if (r.length) {
     return (r.includes(SpecialStatus.SAVING)) ?
       SpecialStatus.SAVING : SpecialStatus.DIRTY;

@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import _ from "lodash";
 import { Dictionary, TaggedResource } from "farmbot";
 import { Week, DAYS } from "./bulk_scheduler/interfaces";
 import { generateReducer } from "../redux/generate_reducer";

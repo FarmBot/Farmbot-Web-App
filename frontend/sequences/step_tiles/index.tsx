@@ -16,7 +16,7 @@ import { TileSendMessage } from "./tile_send_message";
 import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
-import * as _ from "lodash";
+import _ from "lodash";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";

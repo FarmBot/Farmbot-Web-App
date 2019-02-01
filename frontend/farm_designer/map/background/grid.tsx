@@ -1,7 +1,7 @@
 import * as React from "react";
 import { GridProps } from "../interfaces";
 import { transformXY, transformForQuadrant } from "../util";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Color } from "../../../ui/index";
 
 export function Grid(props: GridProps) {

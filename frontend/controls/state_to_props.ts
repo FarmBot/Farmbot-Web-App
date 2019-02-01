@@ -9,7 +9,7 @@ import {
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
-import * as _ from "lodash";
+import _ from "lodash";
 import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";

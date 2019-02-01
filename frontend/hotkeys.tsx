@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as _ from "lodash";
+import _ from "lodash";
 import { t } from "i18next";
 import { links } from "./nav/nav_links";
 import { sync } from "./devices/actions";

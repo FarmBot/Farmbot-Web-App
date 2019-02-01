@@ -1,6 +1,6 @@
 import { Dictionary } from "farmbot";
 import { t } from "i18next";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Content } from "../constants";
 
 export interface AxiosErrorResponse {

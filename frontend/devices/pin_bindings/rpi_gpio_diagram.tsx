@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Color } from "../../ui/colors";
-import * as _ from "lodash";
+import _ from "lodash";
 import { reservedPiGPIO } from "./list_and_label_support";
 
 export interface RpiGpioDiagramProps {

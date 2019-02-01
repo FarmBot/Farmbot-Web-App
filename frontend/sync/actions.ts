@@ -36,10 +36,11 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
   });
 };
 
-console.log("TADA!");
+console.log("Yes, HMR works on refresh");
 
 function fail(e: Error) {
-  // Session.clear();
+  console.log("WEE OOO");
+  Session.clear();
   throw e;
 }
 

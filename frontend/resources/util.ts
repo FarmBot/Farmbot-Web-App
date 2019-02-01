@@ -1,7 +1,7 @@
 import { ResourceName } from "farmbot";
 import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";
-import * as _ from "lodash";
+import _ from "lodash";
 import { ResourceIndex } from "./interfaces";
 import { joinKindAndId } from "./reducer_support";
 

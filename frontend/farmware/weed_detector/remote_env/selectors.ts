@@ -2,7 +2,7 @@
 import { WDENVKey, WD_ENV } from "./interfaces";
 import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
 import { defensiveClone, betterParseNum } from "../../../util";
-import * as _ from "lodash";
+import _ from "lodash";
 import { parseEnvKey } from "./translators";
 import { isNumber } from "lodash";
 import { UserEnv } from "../../../devices/interfaces";

@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import * as _ from "lodash";
+import _ from "lodash";
 import { ResourceColor } from "../interfaces";
 import { box } from "boxed_value";
 import {
