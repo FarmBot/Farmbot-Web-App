@@ -18,7 +18,7 @@ module FarmBot
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
     LOCAL_API_HOST = ENV.fetch("API_HOST", "parcel")
-    WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
+    PARCELJS_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -69,7 +69,7 @@ module FarmBot
             "raw.githubusercontent.com",
             "openfarm.cc",
             "api.rollbar.com",
-            WEBPACK_URL,
+            PARCELJS_URL,
             ENV["FORCE_SSL"] ? "wss:" : "ws:"
           ] + (Rails.env.production? ? %w() : %w(localhost:3000 localhost:3808)),
         font_src: %w(
@@ -100,7 +100,7 @@ module FarmBot
           "cdnjs.cloudflare.com",
           "chrome-extension:",
           "localhost:3808",
-          WEBPACK_URL,
+          PARCELJS_URL,
         ],
         style_src: %w(
           'self'

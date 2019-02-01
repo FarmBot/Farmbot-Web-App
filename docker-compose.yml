@@ -56,7 +56,7 @@ services:
     <<: *rails
     depends_on: ["db","mqtt", "web"]
     command: bundle exec rake api:serve_assets
-    ports: ["3808:3808"] # Webpack Dev Server
+    ports: ["3808:3808"] # Parcel HMR Server
   delayed_job: # ====================
     <<: *base_config
     <<: *rails

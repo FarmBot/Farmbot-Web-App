@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "jest-skipped-reporter": "0.0.4",
+    "madge": "3.4.3",
     "sass": "1.16.1"
   },
   "jest": {
