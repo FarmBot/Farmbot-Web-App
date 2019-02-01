@@ -59,19 +59,24 @@ module FarmBot
         origin-when-cross-origin
         strict-origin-when-cross-origin
       )
+      connect_src = ALL_LOCAL_URIS + [
+        ENV["MQTT_HOST"],
+        "api.github.com",
+        "raw.githubusercontent.com",
+        "openfarm.cc",
+        "api.rollbar.com",
+        PARCELJS_URL,
+        ENV["FORCE_SSL"] ? "wss:" : "ws:",
+        "localhost:3000",
+        "localhost:3808",
+        "#{ENV.fetch("API_HOST")}:3000",
+        "#{ENV.fetch("API_HOST")}:3808",
+      ]
       config.csp                               = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
-        connect_src: ALL_LOCAL_URIS + [
-            ENV["MQTT_HOST"],
-            "api.github.com",
-            "raw.githubusercontent.com",
-            "openfarm.cc",
-            "api.rollbar.com",
-            PARCELJS_URL,
-            ENV["FORCE_SSL"] ? "wss:" : "ws:"
-          ] + (Rails.env.production? ? %w() : %w(localhost:3000 localhost:3808)),
+        connect_src: connect_src,
         font_src: %w(
           'self'
           data:

@@ -35,7 +35,13 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
     } as T;
   });
 };
-const fail = Session.clear;
+
+console.log("TADA!");
+
+function fail(e: Error) {
+  // Session.clear();
+  throw e;
+}
 
 const download = (dispatch: Function) =>
   <T extends TR>(kind: T["kind"], url: string) => axios
