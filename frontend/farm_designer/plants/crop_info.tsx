@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import _ from "lodash";
 import { svgToUrl } from "../../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch
@@ -23,6 +22,7 @@ import { Actions } from "../../constants";
 import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
+import { startCase, isArray, chain, isNumber } from "lodash";
 
 interface InfoFieldProps {
   title: string;
@@ -40,7 +40,7 @@ interface SummaryItemProps {
 const InfoField = (props: InfoFieldProps) =>
   <li>
     <p>
-      {t(_.startCase(props.title))}
+      {t(startCase(props.title))}
     </p>
     <div>
       {props.children}
@@ -87,7 +87,7 @@ const CmProperty = ({ i, field, value }: SummaryItemProps) =>
 /** Comma-separated list of crop common names. */
 const CommonNames = ({ i, field, value }: SummaryItemProps) =>
   <InfoField key={i} title={field}>
-    {(_.isArray(value)
+    {(isArray(value)
       ? value.join(", ")
       : value) || NO_VALUE}
   </InfoField>;
@@ -119,7 +119,7 @@ const handleDisplay = ([field, value]: string[], i: number) => {
 const CropInfoList = (crop: OpenFarm.OFCrop) => {
   return <div className="object-list">
     <ul>
-      {_(crop)
+      {chain(crop)
         .omit(OMITTED_PROPERTIES)
         .toPairs()
         .map(handleDisplay)
@@ -138,7 +138,7 @@ const AddPlantHereButton = (props: {
 }) => {
   const { botPosition, openedSavedGarden, cropName, slug, dispatch } = props;
   const { x, y } = botPosition;
-  const botXY = _.isNumber(x) && _.isNumber(y) ?
+  const botXY = isNumber(x) && isNumber(y) ?
     { x: round(x), y: round(y) } : undefined;
   const botXYLabel = botXY ? `(${botXY.x}, ${botXY.y})` : "(unknown)";
   const click = () => botXY

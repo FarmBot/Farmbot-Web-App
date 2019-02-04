@@ -1,12 +1,11 @@
-import _ from "lodash";
 import { CropLiveSearchResult } from "./interfaces";
 import { t } from "i18next";
 import { DEFAULT_ICON } from "../open_farm/icons";
-import { startCase } from "lodash";
+import { startCase, chain } from "lodash";
 
 export function findBySlug(
   crops: CropLiveSearchResult[], slug?: string): CropLiveSearchResult {
-  const crop = _.chain(crops).find((result) => result.crop.slug === slug).value();
+  const crop = chain(crops).find((result) => result.crop.slug === slug).value();
   return crop || {
     crop: {
       name: startCase((slug || t("Name")).split("-").join(" ")),

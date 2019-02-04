@@ -1,9 +1,9 @@
 import * as React from "react";
 import { LogsFilterMenuProps } from "../interfaces";
-import _ from "lodash";
 import { Slider } from "@blueprintjs/core";
 import { t } from "i18next";
 import { Filters } from "../interfaces";
+import { startCase } from "lodash";
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */
@@ -32,7 +32,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         return <fieldset key={logType}>
           <label>
             <div className={`saucer ${logType}`} />
-            {t(_.startCase(logType))}
+            {t(startCase(logType))}
           </label>
           <button
             className={"fb-button fb-toggle-button " + btnColor(logType)}

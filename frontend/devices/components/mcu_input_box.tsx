@@ -1,5 +1,4 @@
 import * as React from "react";
-import _ from "lodash";
 import { warning } from "farmbot-toastr";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
@@ -8,6 +7,7 @@ import {
   clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize
 } from "../../util";
 import { t } from "i18next";
+import { isUndefined } from "lodash";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 
@@ -20,7 +20,7 @@ export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
   get value() {
     const v = this.config.value;
     const { filter } = this.props;
-    const goodValue = !_.isUndefined(v) && !(filter && v > filter);
+    const goodValue = !isUndefined(v) && !(filter && v > filter);
     return goodValue ? (v || 0).toString() : "";
   }
 

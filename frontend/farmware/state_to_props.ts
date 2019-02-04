@@ -6,7 +6,6 @@ import {
   FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
 } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
-import _ from "lodash";
 import {
   selectAllFarmwareEnvs, selectAllFarmwareInstallations
 } from "../resources/selectors_by_kind";
@@ -20,6 +19,7 @@ import { TaggedFarmwareEnv, FarmwareManifest, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { t } from "i18next";
 import { getWebAppConfig } from "../resources/getters";
+import { chain, cloneDeep } from "lodash";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -48,7 +48,7 @@ export const reduceFarmwareEnv =
   };
 
 export function mapStateToProps(props: Everything): FarmwareProps {
-  const images = _.chain(selectAllImages(props.resources.index))
+  const images = chain(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
     .value();
@@ -56,7 +56,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const currentImage = images
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
-  const { farmwares } = _.cloneDeep(props.bot.hardware.process_info);
+  const { farmwares } = cloneDeep(props.bot.hardware.process_info);
   const conf = getWebAppConfig(props.resources.index);
   const { currentFarmware, firstPartyFarmwareNames } =
     props.resources.consumers.farmware;
@@ -107,7 +107,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const jobs = props.bot.hardware.jobs || {};
   const imageJobNames = Object.keys(jobs).filter(x => x != "FBOS_OTA");
   const imageJobs: JobProgress[] =
-    _.chain(betterCompact(imageJobNames.map(x => jobs[x])))
+    chain(betterCompact(imageJobNames.map(x => jobs[x])))
       .sortBy("time")
       .reverse()
       .value();

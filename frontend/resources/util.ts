@@ -1,7 +1,7 @@
 import { ResourceName } from "farmbot";
 import { Dictionary } from "farmbot/dist";
 import { betterCompact } from "../util";
-import _ from "lodash";
+import { isArray } from "lodash";
 import { ResourceIndex } from "./interfaces";
 import { joinKindAndId } from "./reducer_support";
 
@@ -11,12 +11,12 @@ export function generateUuid(id: number | undefined, kind: ResourceName) {
 }
 
 export function arrayWrap<T>(input: T | (T[])): T[] {
-  return _.isArray(input) ? input : [input];
+  return isArray(input) ? input : [input];
 }
 
 /** For when you have an array that is guaranteed to have a length of 1 */
 export function arrayUnwrap<T>(input: T | T[]): T {
-  return _.isArray(input) ? input[0] : input;
+  return isArray(input) ? input[0] : input;
 }
 
 export function entries<T>(input: Dictionary<T | undefined>): T[] {

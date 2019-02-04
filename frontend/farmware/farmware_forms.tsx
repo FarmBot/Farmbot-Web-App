@@ -3,10 +3,10 @@ import { Col, BlurableInput } from "../ui/index";
 import { t } from "i18next";
 import { FarmwareManifest, Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
-import _ from "lodash";
 import {
   ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv
 } from "../devices/interfaces";
+import { kebabCase, toString, snakeCase } from "lodash";
 
 export interface FarmwareFormProps {
   farmware: FarmwareManifest;
@@ -18,7 +18,7 @@ export interface FarmwareFormProps {
 
 /** Namespace a Farmware config with the Farmware name. */
 export function getConfigEnvName(farmwareName: string, configName: string) {
-  return `${_.snakeCase(farmwareName)}_${configName}`;
+  return `${snakeCase(farmwareName)}_${configName}`;
 }
 
 /** Farmware description and version info for help text contents. */
@@ -71,7 +71,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
   /** Get a Farmware input value from FBOS. */
   function getValue(farmwareName: string, currentConfig: FarmwareConfig) {
     return (user_env[getConfigEnvName(farmwareName, currentConfig.name)]
-      || _.toString(currentConfig.value));
+      || toString(currentConfig.value));
   }
 
   /** Execute a Farmware using the provided inputs. */
@@ -86,7 +86,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
 
   const { farmware, user_env } = props;
   return <Col key={farmware.name}>
-    <div className={_.kebabCase(farmware.name)}>
+    <div className={kebabCase(farmware.name)}>
       <button
         className="fb-button green farmware-button"
         onClick={() => run(farmware.name, farmware.config)}>

@@ -6,8 +6,8 @@ import {
 } from "../../resources/selectors";
 import { history } from "../../history";
 import { PlantStage } from "farmbot";
-import _ from "lodash";
 import { TaggedPlant } from "../map/interfaces";
+import { isNumber, get } from "lodash";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const openedSavedGarden =
@@ -15,7 +15,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const gardenOpen = !!openedSavedGarden;
   const findPlant = (id: string | undefined) => {
     const num = parseInt(id || "NOPE", 10);
-    if (_.isNumber(num) && !_.isNaN(num)) {
+    if (isNumber(num) && !isNaN(num)) {
       return gardenOpen
         ? maybeFindPlantTemplateById(props.resources.index, num)
         : maybeFindPlantById(props.resources.index, num);
@@ -49,9 +49,9 @@ export interface FormattedPlantInfo {
 
 export function formatPlantInfo(rsrc: TaggedPlant): FormattedPlantInfo {
   const p = rsrc.body;
-  const plantedAt = _.get(p, "planted_at", moment())
-    ? moment(_.get(p, "planted_at", moment()))
-    : moment(_.get(p, "created_at", moment()));
+  const plantedAt = get(p, "planted_at", moment())
+    ? moment(get(p, "planted_at", moment()))
+    : moment(get(p, "created_at", moment()));
   const currentDay = moment();
   const daysOld = currentDay.diff(plantedAt, "days") + 1;
   return {
@@ -63,6 +63,6 @@ export function formatPlantInfo(rsrc: TaggedPlant): FormattedPlantInfo {
     y: p.y,
     uuid: rsrc.uuid,
     plantedAt,
-    plantStatus: _.get(p, "plant_stage", "planned"),
+    plantStatus: get(p, "plant_stage", "planned"),
   };
 }

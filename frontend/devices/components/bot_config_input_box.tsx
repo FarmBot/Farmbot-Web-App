@@ -1,10 +1,10 @@
 import * as React from "react";
-import _ from "lodash";
 import { BlurableInput } from "../../ui/index";
 import { SourceFbosConfig } from "../interfaces";
 import { ConfigurationName } from "farmbot/dist";
 import { updateConfig } from "../actions";
 import { parseIntInput } from "../../util";
+import { isNumber, isBoolean, isNaN } from "lodash";
 
 export interface BotConfigInputBoxProps {
   setting: ConfigurationName;
@@ -27,7 +27,7 @@ export class BotConfigInputBox
     return (event: React.FormEvent<HTMLInputElement>) => {
       const next = parseIntInput(event.currentTarget.value);
       const current = this.config.value;
-      if (!_.isNaN(next) && (next !== current)) {
+      if (!isNaN(next) && (next !== current)) {
         dispatch(updateConfig({ [key]: next }));
       }
     };
@@ -35,7 +35,7 @@ export class BotConfigInputBox
 
   render() {
     const current = this.config.value;
-    const boxValue = (_.isNumber(current) || _.isBoolean(current))
+    const boxValue = (isNumber(current) || isBoolean(current))
       ? current.toString() : "";
 
     return <BlurableInput

@@ -4,7 +4,7 @@ import { transformXY, round } from "../util";
 import { MapTransformProps, TaggedPlant } from "../interfaces";
 import { SpreadCircle } from "../layers/spread/spread_layer";
 import { Circle } from "../layers/plants/circle";
-import _ from "lodash";
+import { noop } from "lodash";
 
 /**
  * For showing the map plant hovered in the plant panel.
@@ -73,7 +73,7 @@ export class HoveredPlant extends
             <image
               visibility={hovered ? "visible" : "hidden"}
               style={isEditing ? {} : { pointerEvents: "none" }}
-              onClick={_.noop}
+              onClick={noop}
               className="hovered-plant-copy"
               opacity={alpha}
               x={qx - scaledRadius}

@@ -1,7 +1,7 @@
 import { Dictionary } from "farmbot/dist";
 import { CalendarOccurrence, CalendarDay } from "../../interfaces";
 import moment from "moment";
-import _ from "lodash";
+import { chain, sortBy } from "lodash";
 
 export class Calendar {
   /** We sort by this attribute. Left as const so that the compiler can catch
@@ -44,10 +44,10 @@ export class Calendar {
           year: parseInt(item.mmddyy.slice(4, 6)),
           month: Calendar.MONTHS[item.mmddyy.slice(0, 2)] || "???",
           day: parseInt(item.mmddyy.slice(2, 4)),
-          items: _.sortBy(items, Calendar.SORT_KEY)
+          items: sortBy(items, Calendar.SORT_KEY)
         };
       });
-    return _.chain(all).sortBy(Calendar.SORT_KEY).value();
+    return chain(all).sortBy(Calendar.SORT_KEY).value();
   }
 
   findByDate(m: moment.Moment): CalendarOccurrence[] {

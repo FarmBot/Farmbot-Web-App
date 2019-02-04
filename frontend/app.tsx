@@ -1,7 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
 import { connect } from "react-redux";
-import _ from "lodash";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
 import { Everything } from "./interfaces";
@@ -24,6 +23,7 @@ import { getWebAppConfigValue, GetWebAppConfigValue } from "./config_storage/act
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig } from "./resources/getters";
+import { intersection } from "lodash";
 
 /** Remove 300ms delay on touch devices - https://github.com/ftlabs/fastclick */
 // const fastClick = require("fastclick");
@@ -89,7 +89,7 @@ const MUST_LOAD: ResourceName[] = [
 export class App extends React.Component<AppProps, {}> {
   private get isLoaded() {
     return (MUST_LOAD.length ===
-      _.intersection(this.props.loaded, MUST_LOAD).length);
+      intersection(this.props.loaded, MUST_LOAD).length);
   }
 
   /**

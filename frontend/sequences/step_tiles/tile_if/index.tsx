@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
@@ -18,6 +17,7 @@ import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns
 } from "../pin_and_peripheral_support";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
+import { isNumber, isString } from "lodash";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -60,7 +60,7 @@ export function seqDropDown(i: ResourceIndex) {
   selectAllSequences(i)
     .map(function (x) {
       const { body } = x;
-      if (_.isNumber(body.id)) {
+      if (isNumber(body.id)) {
         results.push({ label: body.name, value: body.id });
       }
     });
@@ -72,7 +72,7 @@ export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
     case "execute":
       const id = input.args.sequence_id;
       const seq = findSequenceById(index, id).body;
-      if (_.isNumber(seq.id)) {
+      if (isNumber(seq.id)) {
         return { label: seq.name, value: seq.id };
       } else {
         throw new Error("Failed seq id type assertion.");
@@ -134,7 +134,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
     } else {
       const value = (block.kind === "execute") && block.args.sequence_id;
       const label = value && findSequenceById(props.resources, value).body.name;
-      if (_.isNumber(value) && _.isString(label)) {
+      if (isNumber(value) && isString(label)) {
         return { label, value };
       } else {
         throw new Error("Failed type assertion");
@@ -151,7 +151,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
   }
 
   function onChange(e: DropDownItem) {
-    if (e.value && _.isNumber(e.value)) {
+    if (e.value && isNumber(e.value)) {
       const v = e.value;
       overwriteStep({ kind: "execute", args: { sequence_id: v } });
     } else {

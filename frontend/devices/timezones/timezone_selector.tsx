@@ -2,7 +2,7 @@ import * as React from "react";
 import { FBSelect, DropDownItem } from "../../ui/index";
 import { list } from "./tz_list";
 import { inferTimezone } from "./guess_timezone";
-import _ from "lodash";
+import { isString } from "lodash";
 
 const CHOICES: DropDownItem[] = list.map(x => ({ label: x, value: x }));
 
@@ -30,7 +30,7 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   }
 
   itemSelected = (d: DropDownItem): void => {
-    if (_.isString(d.value)) {
+    if (isString(d.value)) {
       this.props.onUpdate(d.value);
     }
   }

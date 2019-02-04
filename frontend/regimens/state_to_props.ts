@@ -20,8 +20,8 @@ import {
   randomColor, determineInstalledOsVersion,
   shouldDisplay as shouldDisplayFunc
 } from "../util";
-import _ from "lodash";
 import { resourceUsageList } from "../resources/in_use";
+import { groupBy, chain } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
@@ -81,9 +81,9 @@ function generateCalendar(regimen: TaggedRegimen,
   dispatch: Function): CalendarRow[] {
   const mapper = createRows(index, dispatch, regimen);
   const rows = regimen.body.regimen_items.map(mapper);
-  const dict = _.groupBy(rows, "day");
+  const dict = groupBy(rows, "day");
   const makeRows = (day: string): CalendarRow => ({ day: day, items: dict[day] });
-  const days = _.chain(dict)
+  const days = chain(dict)
     .keys()
     .map(x => parseInt(x))
     .sort((a, b) => a - b)
@@ -92,7 +92,7 @@ function generateCalendar(regimen: TaggedRegimen,
   return days
     .map(makeRows)
     .map((x) => {
-      x.items = _.chain(x.items).sortBy(SORT_KEY).value();
+      x.items = chain(x.items).sortBy(SORT_KEY).value();
       return x;
     });
 }

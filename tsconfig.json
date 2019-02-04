@@ -6,8 +6,8 @@
       "es2017.object"
     ],
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "jsx": "react",
     "module": "esnext",

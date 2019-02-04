@@ -1,7 +1,7 @@
 import { Dictionary } from "farmbot";
 import { t } from "i18next";
-import _ from "lodash";
 import { Content } from "../constants";
+import { capitalize, map } from "lodash";
 
 export interface AxiosErrorResponse {
   response?: {
@@ -13,7 +13,7 @@ export interface AxiosErrorResponse {
 
 const mapper = (v: string, k: string) => {
   // "Reason: Explanation lorem ipsum dolor ipsum."
-  const reason = _.capitalize(("" + k).split("_").join(" "));
+  const reason = capitalize(("" + k).split("_").join(" "));
   const explanation = v.toString();
 
   return t(`${reason}: ${explanation}`);
@@ -23,7 +23,7 @@ const mapper = (v: string, k: string) => {
  *  pairs returned by the /api/xyz endpoint. */
 export function prettyPrintApiErrors(err: AxiosErrorResponse) {
   const errors = safelyFetchErrors(err);
-  return _.map(errors, mapper).join(" ");
+  return map(errors, mapper).join(" ");
 }
 
 function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {

@@ -6,13 +6,13 @@ import { mapStateToProps } from "./map_state_to_props";
 import {
   FarmEventProps, CalendarOccurrence, FarmEventState
 } from "../interfaces";
-import _ from "lodash";
 import moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 import { DesignerPanel, DesignerPanelContent } from "../plants/designer_panel";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
+import { chain, some, uniq, map } from "lodash";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -31,7 +31,7 @@ export class PureFarmEvents
 
   innerRows = (items: CalendarOccurrence[]) => {
 
-    return _.chain(items)
+    return chain(items)
       .sortBy(x => x.sortKey)
       .value()
       .filter(filterSearch(this.searchTerm))
@@ -67,7 +67,7 @@ export class PureFarmEvents
       return day.year == year;
     })
       .filter(item => !this.searchTerm ||
-        _.some(item.items.map(filterSearch(this.searchTerm))))
+        some(item.items.map(filterSearch(this.searchTerm))))
       .map(item => {
         return <div className="farm-event" key={item.sortKey}>
           <div className="farm-event-date">
@@ -86,7 +86,7 @@ export class PureFarmEvents
   }
 
   renderCalendarRows() {
-    const years = _.uniq(_.map(this.props.calendarRows, "year"));
+    const years = uniq(map(this.props.calendarRows, "year"));
     return years.map(year => {
       return <div key={moment(year, "YY").unix()}>
         <div className="farm-event-year">

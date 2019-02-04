@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
 import { t } from "i18next";
@@ -14,6 +13,7 @@ import {
 import { ALLOWED_OPS } from "farmbot/dist";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
+import { isString } from "lodash";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {
@@ -42,7 +42,7 @@ export function If_(props: IfParams) {
       const seqCopy = defensiveClone(sequence).body;
       const val = e.value;
       seqCopy.body = seqCopy.body || [];
-      if (_.isString(val)) {
+      if (isString(val)) {
         stepCopy.args[field] = val;
       }
       seqCopy.body[index] = stepCopy;

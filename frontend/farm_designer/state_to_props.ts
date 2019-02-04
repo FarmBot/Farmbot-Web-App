@@ -12,7 +12,6 @@ import {
   selectAllSensors,
   maybeGetDevice
 } from "../resources/selectors";
-import _ from "lodash";
 import {
   validBotLocationData, validFwConfig, unpackUUID,
   shouldDisplay as shouldDisplayFunc,
@@ -22,7 +21,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { Props } from "./interfaces";
 import { TaggedPlant } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
-import { isString } from "lodash";
+import { isString, uniq, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { reduceFarmwareEnv } from "../farmware/state_to_props";
@@ -66,7 +65,7 @@ export function mapStateToProps(props: Everything): Props {
 
   const { movement_step_per_mm_x, movement_step_per_mm_y } = firmwareSettings;
 
-  const peripherals = _.uniq(selectAllPeripherals(props.resources.index))
+  const peripherals = uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
       const label = x.body.label;
       const pinStatus = x.body.pin
@@ -76,7 +75,7 @@ export function mapStateToProps(props: Everything): Props {
       return { label, value };
     });
 
-  const latestImages = _.chain(selectAllImages(props.resources.index))
+  const latestImages = chain(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
     .reverse()
     .value();
@@ -100,7 +99,7 @@ export function mapStateToProps(props: Everything): Props {
     calibrationZ: env["CAMERA_CALIBRATION_camera_z"],
   };
 
-  const sensorReadings = _.chain(selectAllSensorReadings(props.resources.index))
+  const sensorReadings = chain(selectAllSensorReadings(props.resources.index))
     .sortBy(x => x.body.created_at)
     .reverse()
     .take(500)

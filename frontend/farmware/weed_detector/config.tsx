@@ -6,13 +6,13 @@ import {
   FBSelect, NULL_CHOICE, DropDownItem
 } from "../../ui/index";
 import { SettingsMenuProps } from "./interfaces";
-import _ from "lodash";
 import {
   SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS
 } from "./constants";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";
+import { isNumber } from "lodash";
 
 export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
   NumberBox = ({ conf, label }: {
@@ -32,7 +32,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
   };
 
   setDDI = (k: keyof WD_ENV) => (d: DropDownItem) => {
-    if (_.isNumber(d.value)) {
+    if (isNumber(d.value)) {
       this.props.onChange(k, d.value);
     } else {
       throw new Error("Weed detector got a non-numeric value");

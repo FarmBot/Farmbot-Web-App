@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Color } from "../../ui/colors";
-import _ from "lodash";
 import { reservedPiGPIO } from "./list_and_label_support";
+import { range, isNumber, includes, noop } from "lodash";
 
 export interface RpiGpioDiagramProps {
   boundPins: number[] | undefined;
@@ -55,7 +55,7 @@ export class RpiGpioDiagram
       <circle fill={Color.gray} strokeWidth={1.5} stroke={"yellow"}
         cx={5} cy={4} r={2} />
       {[3, 5.5].map((x, xi) => {
-        return _.range(8, 56, 2.5).map((y, yi) => {
+        return range(8, 56, 2.5).map((y, yi) => {
           const pin = gpio[yi][xi];
           const normalColor = () => {
             switch (pin) {
@@ -72,10 +72,10 @@ export class RpiGpioDiagram
                 return Color.green;
             }
           };
-          const color = _.isNumber(pin) && reservedPiGPIO.includes(pin)
+          const color = isNumber(pin) && reservedPiGPIO.includes(pin)
             ? Color.magenta
             : normalColor();
-          const pinColor = _.includes(this.props.boundPins, pin)
+          const pinColor = includes(this.props.boundPins, pin)
             ? Color.darkGray
             : color;
           return <rect strokeWidth={0.5} key={`gpio_${pin}_${xi}_${yi}`}
@@ -84,7 +84,7 @@ export class RpiGpioDiagram
             onMouseEnter={this.hover(pin)}
             onMouseLeave={this.hover(undefined)}
             onClick={() =>
-              _.isNumber(pin) ? this.props.setSelectedPin(pin) : _.noop} />;
+              isNumber(pin) ? this.props.setSelectedPin(pin) : noop} />;
         });
       })}
       <rect fill={Color.white}

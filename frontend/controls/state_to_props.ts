@@ -9,16 +9,16 @@ import {
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { maybeFetchUser } from "../resources/selectors";
-import _ from "lodash";
 import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
+import { uniq } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
-  const peripherals = _.uniq(selectAllPeripherals(props.resources.index));
-  const sensors = _.uniq(selectAllSensors(props.resources.index));
+  const peripherals = uniq(selectAllPeripherals(props.resources.index));
+  const sensors = uniq(selectAllSensors(props.resources.index));
   const resources = props.resources;
   const bot2mqtt = props.bot.connectivity["bot.mqtt"];
   const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";

@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as React from "react";
 import { StepParams } from "../interfaces";
 import { t } from "i18next";
@@ -17,6 +16,7 @@ import {
   addOrEditVarDeclaration, declarationList
 } from "../locals_list/declaration_support";
 import { AllowedDeclaration } from "../locals_list/locals_list_support";
+import { isNumber } from "lodash";
 
 /** Replaces the execute step body with a new array of declarations. */
 const assignVariable = (props: ExecBlockParams) =>
@@ -72,7 +72,7 @@ export class RefactoredExecuteBlock
       step: currentStep,
       index: index,
       executor: (step: Execute) => {
-        if (_.isNumber(input.value)) {
+        if (isNumber(input.value)) {
           step.args.sequence_id = input.value;
           const sequenceUuid = findSequenceById(resources, input.value).uuid;
           step.body = declarationList(resources.sequenceMetas[sequenceUuid]);

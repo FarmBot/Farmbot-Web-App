@@ -8,8 +8,8 @@ import {
 import { GetState } from "../redux/interfaces";
 import { dispatchNetworkDown } from ".";
 import { Log } from "farmbot/dist/resources/api_resources";
-import _ from "lodash";
 import { globalQueue } from "./batch_queue";
+import { isUndefined, get } from "lodash";
 
 const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
   "type",
@@ -25,7 +25,7 @@ function legacyKeyTransformation(log: Log,
   key: keyof Log) {
   const before = log[key];
   // You don't want to use || here, trust me. -RC
-  log[key] = !_.isUndefined(before) ? before : _.get(log, ["meta", key], undefined);
+  log[key] = !isUndefined(before) ? before : get(log, ["meta", key], undefined);
 }
 
 export const onLogs =

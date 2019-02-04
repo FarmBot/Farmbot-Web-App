@@ -29,7 +29,7 @@
     "@types/enzyme": "3.1.15",
     "@types/fastclick": "1.0.28",
     "@types/jest": "23.3.12",
-    "@types/lodash": "4.14.119",
+    "@types/lodash": "4.14.120",
     "@types/markdown-it": "0.0.7",
     "@types/moxios": "0.4.8",
     "@types/node": "10.12.18",
@@ -100,9 +100,6 @@
         "LONG_REVISION": "------------",
         "SHORT_REVISION": "--------"
       }
-    },
-    "moduleNameMapper": {
-      "^.*\\.scss$": "<rootDir>/frontend/__test_support__/stub.ts"
     },
     "setupFiles": [
       "./frontend/__test_support__/setup_enzyme.js",

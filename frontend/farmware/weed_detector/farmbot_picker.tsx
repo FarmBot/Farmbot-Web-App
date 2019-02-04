@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Hue, Saturation } from "react-color/lib/components/common";
 import { FarmbotPickerProps } from "./interfaces";
-import _ from "lodash";
 import { Color } from "../../ui/index";
+import { noop } from "lodash";
 
 /** Wrapper class around `react-color`'s `<Saturation />` and `<Hue />`.
  *  Add an extra white box feature for showing user weed detection settings.
@@ -108,7 +108,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
         <Hue
           {...dontTouchThis}
           pointer={this.customPointer}
-          onChange={_.noop} />
+          onChange={noop} />
         {getHueBoxes(this.props.h, !!this.props.invertHue)
           .map((box, i) => <div key={i} style={box} />)}
       </div>
@@ -117,7 +117,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
         <Saturation
           {...dontTouchThis}
           pointer={this.customPointer}
-          onChange={_.noop} />
+          onChange={noop} />
         <div style={this.saturationboxCSS()} />
       </div>
     </div>;

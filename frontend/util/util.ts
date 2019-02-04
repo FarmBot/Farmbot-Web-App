@@ -1,5 +1,4 @@
 import { t } from "i18next";
-import _ from "lodash";
 import { ResourceColor } from "../interfaces";
 import { box } from "boxed_value";
 import {
@@ -10,6 +9,13 @@ import {
   ResourceName,
 } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
+import {
+  sample,
+  padStart,
+  sortBy,
+  merge,
+  isNumber
+} from "lodash";
 
 export let colors: Array<ResourceColor> = [
   "blue",
@@ -24,7 +30,7 @@ export let colors: Array<ResourceColor> = [
 
 /** Picks a color that is compliant with sequence / regimen color codes */
 export function randomColor(): ResourceColor {
-  return _.sample(colors) as typeof colors[0];
+  return sample(colors) as typeof colors[0];
 }
 
 export function defensiveClone<T>(target: T): T {
@@ -62,7 +68,7 @@ export function fancyDebug<T extends {}>(d: T): T {
     .keys(d)
     .map(key => [key, (d as Dictionary<string>)[key]])
     .map((x) => {
-      const key = _.padStart(x[0], 20, " ");
+      const key = padStart(x[0], 20, " ");
       const val = (JSON.stringify(x[1]) || "Nothing").slice(0, 52);
 
       return `${key} => ${val}`;
@@ -82,10 +88,10 @@ export type CowardlyDictionary<T> = Dictionary<T | undefined>;
 export const NOT_SAVED = -1;
 
 export function isUndefined(x: object | undefined): x is undefined {
-  return _.isUndefined(x);
+  return isUndefined(x);
 }
 
-/** Better than Array.proto.filter and _.compact() because the type checker
+/** Better than Array.proto.filter and compact() because the type checker
  * knows what's going on.
  */
 export function betterCompact<T>(input: (T | undefined)[]): T[] {
@@ -96,11 +102,11 @@ export function betterCompact<T>(input: (T | undefined)[]): T[] {
 
 /** Sorts a list of tagged resources. Unsaved resource get put on the end. */
 export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
-  return _.sortBy(input, (x) => x.body.id || Infinity);
+  return sortBy(input, (x) => x.body.id || Infinity);
 }
 
 /**
- * Light wrapper around _.merge() to prevent common type errors / mistakes.
+ * Light wrapper around merge() to prevent common type errors / mistakes.
  *
  * NOTE:  If you rely solely on `betterMerge()` to combine array-bearing
  *   CeleryScript nodes, the API will reject them because they contain
@@ -108,7 +114,7 @@ export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
  *   safety reasons.
  */
 export function betterMerge<T, U>(target: T, update: U): T & U {
-  return _.merge({}, target, update);
+  return merge({}, target, update);
 }
 
 /** Like parseFloat, but allows you to control fallback value instead of
@@ -117,7 +123,7 @@ export function betterParseNum(num: string | undefined,
   fallback: number): number {
   try {
     const maybe = JSON.parse("" + num);
-    if (_.isNumber(maybe) && !_.isNaN(maybe)) {
+    if (isNumber(maybe) && !isNaN(maybe)) {
       return maybe;
     }
   } catch (_) {

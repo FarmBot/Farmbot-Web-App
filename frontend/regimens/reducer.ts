@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { times } from "lodash";
 import { Dictionary, TaggedResource } from "farmbot";
 import { Week, DAYS } from "./bulk_scheduler/interfaces";
 import { generateReducer } from "../redux/generate_reducer";
@@ -28,7 +28,7 @@ function newWeek() {
 function newState(): RegimenState {
   return {
     dailyOffsetMs: 300000,
-    weeks: _.times(10, newWeek),
+    weeks: times(10, newWeek),
     selectedSequenceUUID: undefined,
     currentRegimen: undefined
   };

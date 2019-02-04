@@ -13,10 +13,10 @@ import {
   fakeSequence,
   fakePlant
 } from "../../__test_support__/fake_state/resources";
-import * as _ from "lodash";
 import { resourceReducer } from "../reducer";
 import { emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
+import { chain } from "lodash";
 // import { Actions } from "../../constants";
 
 const TOOL_ID = 99;
@@ -77,7 +77,7 @@ describe("selectAllLogs", () => {
   it("stays truthful to its name by finding all logs", () => {
     const results = Selector.selectAllLogs(fakeIndex);
     expect(results.length).toBeGreaterThan(0);
-    const kinds = _.chain(results).map("kind").uniq().value();
+    const kinds = chain(results).map("kind").uniq().value();
     expect(kinds.length).toEqual(1);
     expect(kinds[0]).toEqual("Log");
   });

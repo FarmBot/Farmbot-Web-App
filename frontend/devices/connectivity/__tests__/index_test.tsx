@@ -2,9 +2,9 @@ import * as React from "react";
 import { render, mount } from "enzyme";
 import { ConnectivityPanel } from "../index";
 import { StatusRowProps } from "../connectivity_row";
-import * as _ from "lodash";
 import { SpecialStatus } from "farmbot";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { fill } from "lodash";
 
 describe("<ConnectivityPanel/>", () => {
   function test() {
@@ -16,7 +16,7 @@ describe("<ConnectivityPanel/>", () => {
       connectionStatus: false,
       children: "Can't do things with stuff."
     };
-    const rowData: StatusRowProps[] = _.fill(Array(5), statusRow);
+    const rowData: StatusRowProps[] = fill(Array(5), statusRow);
 
     return {
       component: <ConnectivityPanel

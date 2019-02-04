@@ -1,4 +1,3 @@
-import _ from "lodash";
 import * as React from "react";
 import { t } from "i18next";
 import { Component } from "react";
@@ -41,6 +40,7 @@ import {
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
 import { AllowedDeclaration } from "../locals_list/locals_list_support";
+import { merge, some } from "lodash";
 
 /** Union of all types found in a move_abs "args" attribute. */
 export type LocationData = MoveAbsolute["args"]["location"];
@@ -114,7 +114,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       const num = parseFloat(e.currentTarget.value);
       const update = { [place]: { args: { [axis]: num } } };
-      this.updateArgs(_.merge({}, this.args, update));
+      this.updateArgs(merge({}, this.args, update));
     }
 
   /** Determine if location conflicts with bot settings. */
@@ -231,7 +231,7 @@ export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
         dispatch={dispatch}
         index={index}
         confirmStepDeletion={this.props.confirmStepDeletion}>
-        {_.some(this.settingConflicts) &&
+        {some(this.settingConflicts) &&
           <StepWarning
             warning={this.settingConflictWarning}
             conflicts={this.settingConflicts} />}

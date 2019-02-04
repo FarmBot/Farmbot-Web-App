@@ -16,8 +16,7 @@ import {
   TaggedToolSlotPointer,
 } from "farmbot";
 import { ResourceIndex } from "./interfaces";
-import { isNumber } from "lodash";
-import _ from "lodash";
+import { isNumber, find } from "lodash";
 import { joinKindAndId } from "./reducer_support";
 import { findAll } from "./find_all";
 
@@ -84,7 +83,7 @@ export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {
   const every = Object
     .keys(index.references)
     .map(x => index.references[x]);
-  const tts = _.find(every, query);
+  const tts = find(every, query);
   if (tts && !isNumber(tts) && isTaggedToolSlotPointer(tts) && sanityCheck(tts)) {
     return tts;
   } else {

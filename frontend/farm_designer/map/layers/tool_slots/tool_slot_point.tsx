@@ -2,9 +2,9 @@ import * as React from "react";
 import { SlotWithTool } from "../../../../resources/interfaces";
 import { transformXY } from "../../util";
 import { MapTransformProps } from "../../interfaces";
-import _ from "lodash";
 import { ToolbaySlot, ToolNames, Tool } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
+import { includes } from "lodash";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -28,8 +28,8 @@ export class ToolSlotPoint extends
 
   reduceToolName = (raw: string | undefined) => {
     const lower = (raw || "").toLowerCase();
-    if (_.includes(lower, "seed bin")) { return ToolNames.seedBin; }
-    if (_.includes(lower, "seed tray")) { return ToolNames.seedTray; }
+    if (includes(lower, "seed bin")) { return ToolNames.seedBin; }
+    if (includes(lower, "seed tray")) { return ToolNames.seedTray; }
     return ToolNames.tool;
   }
 

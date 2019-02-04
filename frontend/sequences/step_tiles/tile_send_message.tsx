@@ -3,7 +3,6 @@ import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, TaggedSequence } from "farmbot";
-import _ from "lodash";
 import { StepParams, ChannelName } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
@@ -15,6 +14,7 @@ import {
   MESSAGE_STATUSES_DDI
 } from "./tile_send_message_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { isString } from "lodash";
 
 export function TileSendMessage(props: StepParams) {
   if (props.currentStep.kind === "send_message") {
@@ -84,7 +84,7 @@ export class RefactoredSendMessage
       step: this.step,
       index: this.index,
       executor: (step: SendMessage) => {
-        if (_.isString(x.value)) {
+        if (isString(x.value)) {
           step.args.message_type = x.value;
         } else {
           throw new Error("Strings only in send_message.");

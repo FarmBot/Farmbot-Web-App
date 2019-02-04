@@ -7,11 +7,11 @@ import {
   TaggedSequence,
   TaggedRegimen,
 } from "farmbot";
-import * as _ from "lodash";
 import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
 import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
+import { chain } from "lodash";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -374,7 +374,7 @@ export function buildResourceIndex(resources: TaggedResource[] = FAKE_RESOURCES,
   const sortedResources = repairBrokeReferences(resources)
     .sort((l, r) => c3(KIND_PRIORITY[l.kind], KIND_PRIORITY[r.kind]));
   type K = keyof typeof KIND_PRIORITY;
-  return _.chain(sortedResources)
+  return chain(sortedResources)
     .groupBy(KIND)
     .toPairs()
     .sort((l, r) => c3(KIND_PRIORITY[l[0] as K || 4], KIND_PRIORITY[r[0] as K || 4]))
@@ -420,7 +420,7 @@ const blankReg: TaggedRegimen = {
  * number of failed tests. To circumvent this, we "repair" faulty foreign keys
  * in TaggedResources. This applies to many legacy tests. - RC*/
 function repairBrokeReferences(resources: TaggedResource[]): TaggedResource[] {
-  const table = _.chain(resources).groupBy(x => x.kind).value();
+  const table = chain(resources).groupBy(x => x.kind).value();
   resources.map(resource => {
     if (resource.kind === "FarmEvent") { // Find FarmEvents
       const { executable_type, executable_id } = resource.body;

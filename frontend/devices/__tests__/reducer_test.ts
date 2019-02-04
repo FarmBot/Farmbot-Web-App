@@ -1,12 +1,12 @@
 import { botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
 import { ControlPanelState } from "../interfaces";
-import * as _ from "lodash";
 import { defensiveClone } from "../../util";
 import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
 import { incomingStatus } from "../../connectivity/connect_device";
 import { Vector3 } from "farmbot";
+import { values, omit } from "lodash";
 
 describe("botReducer", () => {
   it("Starts / stops an update", () => {
@@ -49,8 +49,8 @@ describe("botReducer", () => {
     });
 
     const bulkToggable =
-      _.omit(state.controlPanelState, "power_and_reset", "diagnostic_dumps");
-    _.values(bulkToggable).map(value => {
+      omit(state.controlPanelState, "power_and_reset", "diagnostic_dumps");
+    values(bulkToggable).map(value => {
       expect(value).toBeTruthy();
     });
   });

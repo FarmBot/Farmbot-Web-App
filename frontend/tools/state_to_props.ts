@@ -1,6 +1,5 @@
 import { Everything } from "../interfaces";
 import { Props } from "./interfaces";
-import _ from "lodash";
 import {
   selectAllToolSlotPointers,
   selectAllTools,
@@ -13,6 +12,7 @@ import { edit } from "../api/crud";
 import { DropDownItem, NULL_CHOICE } from "../ui";
 import { validBotLocationData } from "../util";
 import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
+import { chain, isNumber, noop } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   const toolSlots = selectAllToolSlotPointers(props.resources.index);
@@ -23,17 +23,17 @@ export function mapStateToProps(props: Everything): Props {
 
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
-    return _.chain(tools)
+    return chain(tools)
       .map(tool => ({
         label: tool.body.name || "untitled",
         value: (tool.body.id as number)
       }))
-      .filter(ddi => _.isNumber(ddi.value) && ddi.value > 0)
+      .filter(ddi => isNumber(ddi.value) && ddi.value > 0)
       .compact()
       .value();
   };
 
-  const activeTools = _.chain(toolSlots).map(x => x.body.tool_id).compact().value();
+  const activeTools = chain(toolSlots).map(x => x.body.tool_id).compact().value();
 
   const isActive =
     (t: TaggedTool) => !!(t.body.id && activeTools.includes(t.body.id));
@@ -72,7 +72,7 @@ export function mapStateToProps(props: Everything): Props {
     getToolByToolSlotUUID,
     changeToolSlot,
     isActive,
-    dispatch: _.noop,
+    dispatch: noop,
     botPosition,
   };
 

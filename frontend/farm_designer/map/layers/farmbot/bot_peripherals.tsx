@@ -2,10 +2,10 @@ import * as React from "react";
 import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { getMapSize, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
-import _ from "lodash";
 import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";
+import { range } from "lodash";
 
 export interface BotPeripheralsProps {
   position: BotPosition;
@@ -73,11 +73,11 @@ function waterFigure(
       </g>
     </defs>
 
-    {_.range(0, copies).map(s => {
+    {range(0, copies).map(s => {
       return <g
         className={`water-spray delay-${s} ${animateClass}`} key={`spray-${s}`}>
         <use xlinkHref="#water-circle" />
-        {_.range(0, 360, 15).map(rotation => {
+        {range(0, 360, 15).map(rotation => {
           return <use xlinkHref="#water-line" key={`spray-line-${rotation}`}
             transform={`rotate(${rotation}, ${cx}, ${cy})`} />;
         })}
@@ -110,7 +110,7 @@ function vacuumFigure(
       </g>
     </defs>
 
-    {_.range(0, copies).map(s => {
+    {range(0, copies).map(s => {
       return <g
         className={`vacuum delay-${s} ${animateClass}`} key={`vacuum-${s}`}>
         <use xlinkHref="#vacuum-wave" />

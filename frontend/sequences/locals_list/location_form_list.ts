@@ -7,9 +7,8 @@ import { betterCompact } from "../../util";
 import { TaggedTool, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { Vector3 } from "farmbot/dist";
-import _ from "lodash";
 import { t } from "i18next";
-import { capitalize } from "lodash";
+import { capitalize, chain } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";
 import { Point } from "farmbot/dist/resources/api_resources";
 
@@ -71,7 +70,7 @@ export function locationFormList(resources: ResourceIndex,
     .map(({ tool, location }) => formatTools(tool, location))
     .filter(x => parseInt("" + x.value) > 0);
   const group = maybeGroup(!!displayGroups);
-  return _.chain(heading("Tool"))
+  return chain(heading("Tool"))
     .concat(toolDDI)
     .concat(group(everyPointDDI("Tool")))
     .concat(group(everyPointDDI("ToolSlot")))

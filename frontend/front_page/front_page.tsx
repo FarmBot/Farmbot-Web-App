@@ -1,7 +1,6 @@
 import * as React from "react";
 import axios from "axios";
 import { t } from "i18next";
-import _ from "lodash";
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, attachToRoot } from "../util";
@@ -16,6 +15,7 @@ import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
 import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
+import { get } from "lodash";
 
 export const attachFrontPage =
   () => attachToRoot(FrontPage, {});
@@ -85,7 +85,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         Session.replaceToken(resp.data);
         window.location.href = "/app/controls";
       }).catch((error: Error) => {
-        switch (_.get(error, "response.status")) {
+        switch (get(error, "response.status")) {
           case 451: // TOS was updated; User must agree to terms.
             window.location.assign("/tos_update");
             break;

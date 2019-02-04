@@ -1,4 +1,3 @@
-import _ from "lodash";
 import axios from "axios";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
@@ -6,7 +5,7 @@ import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
 import { Progress, ProgressCallback, trim } from "../../util";
 import { getDevice } from "../../device";
-import { noop } from "lodash";
+import { noop, chunk } from "lodash";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../constants";
 
@@ -21,12 +20,12 @@ export function deletePoints(
       const ids = resp.data.map(x => x.id);
       // If you delete too many points, you will violate the URL length
       // limitation of 2,083. Chunking helps fix that.
-      const chunks = _.chunk(ids, 179 /* Prime numbers, why not? */);
+      const chunks = chunk(ids, 179 /* Prime numbers, why not? */);
       const prog = new Progress(chunks.length, cb || noop);
       prog.inc();
-      const promises = chunks.map(function (chunk) {
+      const promises = chunks.map(function (c) {
         return axios
-          .delete(API.current.pointsPath + chunk.join(","))
+          .delete(API.current.pointsPath + c.join(","))
           .then(function (x) {
             prog.inc();
             return x;

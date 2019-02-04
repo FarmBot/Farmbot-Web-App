@@ -23,7 +23,7 @@ import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";
 import { betterCompact } from "../../util";
 import { SpecialStatus, TaggedUser } from "farmbot";
-import * as _ from "lodash";
+import { uniq } from "lodash";
 
 describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
@@ -54,7 +54,7 @@ describe("AJAX data tracking", () => {
     expect(maybeStartTracking).toHaveBeenCalled();
     const list = (maybeStartTracking as jest.Mock).mock.calls;
     const uuids: string[] =
-      _.uniq(list.map((x: string[]) => x[0]));
+      uniq(list.map((x: string[]) => x[0]));
     expect(uuids.length).toEqual(r.length);
   });
 

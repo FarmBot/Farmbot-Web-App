@@ -5,10 +5,10 @@ import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";
 import { SpecialStatus, TaggedWebcamFeed } from "farmbot";
-import _ from "lodash";
+import { sortBy } from "lodash";
 
 export function sortedFeeds(feeds: TaggedWebcamFeed[]): TaggedWebcamFeed[] {
-  return _.sortBy(feeds, (f) => { return f.body.id || Infinity; });
+  return sortBy(feeds, (f) => { return f.body.id || Infinity; });
 }
 
 export function Edit(props: WebcamPanelProps) {

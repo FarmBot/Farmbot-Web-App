@@ -1,16 +1,16 @@
 import * as React from "react";
 import { Component } from "react";
 import { StepSizeSelectorProps } from "./interfaces";
-import _ from "lodash";
+import { first, last } from "lodash";
 
 export class StepSizeSelector extends Component<StepSizeSelectorProps, {}> {
   cssForIndex(num: number) {
     const choices = this.props.choices;
     let css = "move-amount no-radius fb-button ";
-    if (num === _.first(choices)) {
+    if (num === first(choices)) {
       css += "leftmost ";
     }
-    if (num === _.last(choices)) {
+    if (num === last(choices)) {
       css += "rightmost ";
     }
     if (num === this.props.selected) {

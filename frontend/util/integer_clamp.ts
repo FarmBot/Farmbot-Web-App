@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { parseIntInput } from "./util";
 
 /** The firmware will have an integer overflow if you don't check this one. */
@@ -31,7 +30,7 @@ export function clampUnsignedInteger(
   const result = parseIntInput(input);
 
   // Clamp to prevent overflow.
-  if (_.isNaN(result)) { return { outcome: "malformed", result: undefined }; }
+  if (isNaN(result)) { return { outcome: "malformed", result: undefined }; }
   const max = getMaxInputFromIntSize(size);
   if (result > max) { return { outcome: "high", result: max }; }
   if (result < MIN_INPUT) { return { outcome: "low", result: MIN_INPUT }; }

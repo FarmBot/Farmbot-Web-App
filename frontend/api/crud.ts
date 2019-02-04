@@ -15,13 +15,13 @@ import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
-import _ from "lodash";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
 import { t } from "i18next";
 import { newTaggedResource } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
+import { assign, noop } from "lodash";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -135,7 +135,7 @@ export function refresh(resource: TaggedResource, urlNeedsId = false) {
       .then(resp => {
         const r1 = defensiveClone(resource);
         const r2 = { body: defensiveClone(resp.data) };
-        const newTR = _.assign({}, r1, r2);
+        const newTR = assign({}, r1, r2);
         if (isTaggedResource(newTR)) {
           dispatch(refreshOK(newTR));
         } else {
@@ -223,8 +223,8 @@ export function destroyAll(resourceName: ResourceName, force = false) {
 }
 
 export function saveAll(input: TaggedResource[],
-  callback: () => void = _.noop,
-  errBack: (err: UnsafeError) => void = _.noop) {
+  callback: () => void = noop,
+  errBack: (err: UnsafeError) => void = noop) {
   return function (dispatch: Function) {
     const p = input
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
@@ -293,7 +293,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
     .then(function (resp) {
       const r1 = defensiveClone(resource);
       const r2 = { body: defensiveClone(resp.data) };
-      const newTR = _.assign({}, r1, r2);
+      const newTR = assign({}, r1, r2);
       if (isTaggedResource(newTR)) {
         dispatch(saveOK(newTR));
       } else {

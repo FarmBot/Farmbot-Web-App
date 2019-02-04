@@ -1,9 +1,9 @@
 import * as React from "react";
-import _ from "lodash";
 import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
+import { get, isNumber, takeRight, isEqual, round, first } from "lodash";
 
 type TrailRecord = {
   coord: Record<"x" | "y", number | undefined>,
@@ -17,18 +17,18 @@ export enum VirtualTrail {
 
 function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[] {
   const key = VirtualTrail.records; // sessionStorage location
-  const trailLength = _.get(sessionStorage, VirtualTrail.length, 100);
-  const arr: TrailRecord[] = JSON.parse(_.get(sessionStorage, key, "[]"));
+  const trailLength = get(sessionStorage, VirtualTrail.length, 100);
+  const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]"));
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
   if (update && update.coord &&
-    (!last || !_.isEqual(last.coord, update.coord))) { // coordinate comparison
+    (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
     arr.push(update);  // unique addition
   } else { // nothing new to add, increase water circle size if watering
-    if (watering && last && _.isNumber(last.water)) { last.water += 1; }
+    if (watering && last && isNumber(last.water)) { last.water += 1; }
   }
   sessionStorage.setItem(key, JSON.stringify(arr)); // save array
-  return _.takeRight(arr, trailLength);
+  return takeRight(arr, trailLength);
 }
 
 export interface BotTrailProps {
@@ -42,7 +42,7 @@ export function BotTrail(props: BotTrailProps) {
     transformXY(ox, oy, props.mapTransformProps);
 
   const { x, y } = props.position;
-  const watering = !!_.first(props.peripherals
+  const watering = !!first(props.peripherals
     .filter(p => p.label.toLowerCase().includes("water"))
     .map(p => p.value));
 
@@ -51,10 +51,10 @@ export function BotTrail(props: BotTrailProps) {
   return <g className="virtual-bot-trail">
     {array.map((cur: TrailRecord, i: number) => {
       const prev = (array[i - 1] || { coord: undefined }).coord; // prev coord
-      const opacity = _.round(Math.max(0.25, i / (array.length - 1)), 2);
-      if (i > 0 && cur && prev && _.isNumber(prev.x) && _.isNumber(prev.y)
-        && _.isNumber(cur.coord.x) && _.isNumber(cur.coord.y)
-        && _.isNumber(cur.water)) {
+      const opacity = round(Math.max(0.25, i / (array.length - 1)), 2);
+      if (i > 0 && cur && prev && isNumber(prev.x) && isNumber(prev.y)
+        && isNumber(cur.coord.x) && isNumber(cur.coord.y)
+        && isNumber(cur.water)) {
         const p1 = toQ(cur.coord.x, cur.coord.y);
         const p2 = toQ(prev.x, prev.y);
         return <g key={i}>

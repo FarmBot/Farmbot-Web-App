@@ -1,6 +1,6 @@
 import { box } from "boxed_value";
-import _ from "lodash";
 import { WDENVKey, Translation, FormatTranslationMap } from "./interfaces";
+import { snakeCase, get, isUndefined } from "lodash";
 
 /** I would rather not deal with all the weird edge cases that come with
  * supporting strings and numbers right now. It adds too many edge cases for the
@@ -97,10 +97,10 @@ export const TRANSLATORS: FormatTranslationMap = {};
 export function getSpecialValue(key: string | number):
   SPECIAL_VALUES {
 
-  const k = _.snakeCase(("" + key).toUpperCase()).toUpperCase();
-  const v = _.get(SPECIAL_VALUES, k, NaN);
+  const k = snakeCase(("" + key).toUpperCase()).toUpperCase();
+  const v = get(SPECIAL_VALUES, k, NaN);
 
-  if (_.isUndefined(v) || _.isNaN(v)) {
+  if (isUndefined(v) || isNaN(v)) {
     throw new Error("Not a SPECIAL_VALUE: " + k);
   } else {
     return v;

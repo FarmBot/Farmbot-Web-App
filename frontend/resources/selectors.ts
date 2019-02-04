@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { ResourceIndex } from "./interfaces";
 import {
   ResourceName,
@@ -26,6 +25,7 @@ import { findAllById } from "./selectors_by_id";
 import { findPoints, selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
+import { chain } from "lodash";
 
 export * from "./selectors_by_id";
 export * from "./selectors_by_kind";
@@ -57,7 +57,7 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
 export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
 
 export function groupPointsByType(index: ResourceIndex) {
-  return _.chain(selectAllActivePoints(index))
+  return chain(selectAllActivePoints(index))
     // If this fails to compile....
     .tap(x => x[0].body.pointer_type)
     // ... this line must be updated:

@@ -2,9 +2,8 @@
 import { WDENVKey, WD_ENV } from "./interfaces";
 import { WD_KEY_DEFAULTS, EVERY_WD_KEY } from "./constants";
 import { defensiveClone, betterParseNum } from "../../../util";
-import _ from "lodash";
 import { parseEnvKey } from "./translators";
-import { isNumber } from "lodash";
+import { isNumber, isString } from "lodash";
 import { UserEnv } from "../../../devices/interfaces";
 
 /** Given a half formed set of weed detector environment variables, creates a
@@ -15,7 +14,7 @@ export function prepopulateEnv(env: UserEnv): WD_ENV {
   EVERY_WD_KEY.map(key => {
     const initial = env[key];
     let val: string;
-    if (_.isString(initial)) {
+    if (isString(initial)) {
       val = initial;
     } else {
       val = "" + WD_KEY_DEFAULTS[key];

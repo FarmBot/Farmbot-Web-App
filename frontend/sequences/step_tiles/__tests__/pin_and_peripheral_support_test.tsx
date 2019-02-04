@@ -20,7 +20,6 @@ import {
   celery2DropDown,
   BoxLed,
 } from "../pin_and_peripheral_support";
-import * as _ from "lodash";
 import {
   fakePeripheral,
   fakeSensor,
@@ -32,6 +31,7 @@ import {
 } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
+import { chain } from "lodash";
 
 describe("Pin and Peripheral support files", () => {
   const newIndex = () => {
@@ -61,7 +61,7 @@ describe("Pin and Peripheral support files", () => {
       .toBe(PIN_RANGE.length + 1); // 54 pins plus the header.
     expect(pinDropdowns(n => n)[0]).toBe(PIN_HEADING);
     // Grab all uniq heading IDs- we expect only 1.
-    const values = _.chain(pinDropdowns(n => n))
+    const values = chain(pinDropdowns(n => n))
       .tail()
       .map((x: DropDownItem) => x.headingId)
       .uniq()

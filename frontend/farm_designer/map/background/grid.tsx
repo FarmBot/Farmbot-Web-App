@@ -1,8 +1,8 @@
 import * as React from "react";
 import { GridProps } from "../interfaces";
 import { transformXY, transformForQuadrant } from "../util";
-import _ from "lodash";
 import { Color } from "../../../ui/index";
+import { range } from "lodash";
 
 export function Grid(props: GridProps) {
   const { mapTransformProps } = props;
@@ -59,12 +59,12 @@ export function Grid(props: GridProps) {
 
     <g id="axis-values" fontFamily="Arial" fontSize="10"
       textAnchor="middle" dominantBaseline="central" fill="rgba(0, 0, 0, 0.3)">
-      {_.range(100, gridSize.x, 100).map((i) => {
+      {range(100, gridSize.x, 100).map((i) => {
         const location = transformXY(i, -10, mapTransformProps);
         return <text key={"x-label-" + i}
           x={location.qx} y={location.qy}>{i}</text>;
       })}
-      {_.range(100, gridSize.y, 100).map((i) => {
+      {range(100, gridSize.y, 100).map((i) => {
         const location = transformXY(-15, i, mapTransformProps);
         return <text key={"y-label-" + i}
           x={location.qx} y={location.qy}>{i}</text>;

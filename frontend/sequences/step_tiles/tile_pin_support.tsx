@@ -1,9 +1,9 @@
 import { t } from "i18next";
 import { editStep } from "../../api/crud";
-import _ from "lodash";
 import { WritePin, SequenceBodyItem } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
+import { isNumber } from "lodash";
 
 export const PIN_MODES = [
   { value: 1, label: t("Analog") },
@@ -42,7 +42,7 @@ export function setPinMode(
     step: currentStep,
     index: index,
     executor: (step: WritePin) => {
-      if (_.isNumber(x.value)) {
+      if (isNumber(x.value)) {
         step.args.pin_mode = x.value;
       } else {
         throw new Error("Numbers only in pin_mode.");
@@ -58,7 +58,7 @@ export function setPinValue(
     step: currentStep,
     index: index,
     executor: (step: WritePin) => {
-      if (_.isNumber(x.value)) {
+      if (isNumber(x.value)) {
         step.args.pin_value = x.value;
       } else {
         throw new Error("Numbers only in pin_value.");

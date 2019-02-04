@@ -1,5 +1,4 @@
 import * as React from "react";
-import _ from "lodash";
 import moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
@@ -14,6 +13,7 @@ import {
   downloadProgress
 } from "../../devices/components/fbos_settings/os_update_button";
 import { JobProgress, TaggedImage } from "farmbot";
+import { startCase } from "lodash";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -26,7 +26,7 @@ interface MetaInfoProps {
 }
 
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
-  const top = label || _.startCase(attr.split("_").join());
+  const top = label || startCase(attr.split("_").join());
   const bottom = safeStringFetch(obj, attr);
   return <div>
     <label>{top}:</label>

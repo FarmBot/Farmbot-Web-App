@@ -7,7 +7,7 @@ import {
   AxisInputBoxGroupState,
   Vector
 } from "./interfaces";
-import _ from "lodash";
+import { isNumber } from "lodash";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends
@@ -29,9 +29,9 @@ export class AxisInputBoxGroup extends
       z2 = p.z;
 
     return {
-      x: _.isNumber(x) ? x : (x2 || 0),
-      y: _.isNumber(y) ? y : (y2 || 0),
-      z: _.isNumber(z) ? z : (z2 || 0)
+      x: isNumber(x) ? x : (x2 || 0),
+      y: isNumber(y) ? y : (y2 || 0),
+      z: isNumber(z) ? z : (z2 || 0)
     };
   }
 

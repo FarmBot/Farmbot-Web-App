@@ -16,13 +16,13 @@ import { TileSendMessage } from "./tile_send_message";
 import { TileWritePin } from "./tile_write_pin";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
-import _ from "lodash";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
 import { t } from "i18next";
 import { MarkAs } from "./mark_as";
 import { TileUnknown } from "./tile_unknown";
 import { forceSetStepTag } from "../../resources/sequence_tagging";
+import { compact, assign } from "lodash";
 
 interface MoveParams {
   step: Step;
@@ -41,7 +41,7 @@ export function move({ step, sequence, to, from }: MoveParams) {
   } else {
     seq.body.splice(to, 0, defensiveClone(copy));
     delete seq.body[from];
-    seq.body = _.compact(seq.body);
+    seq.body = compact(seq.body);
   }
   return overwrite(sequence, next.body);
 }
@@ -76,7 +76,7 @@ export function remove(props: RemoveParams) {
     const update = defensiveClone(original);
     update.body.body = (update.body.body || []);
     delete update.body.body[index];
-    update.body.body = _.compact(update.body.body);
+    update.body.body = compact(update.body.body);
     dispatch(overwrite(original, update.body));
   }
 }
@@ -93,7 +93,7 @@ export function updateStep(props: StepInputProps) {
     if (isNumeric) {
       numericNonsense(val, stepCopy, field);
     } else {
-      _.assign(stepCopy.args, { [field]: val });
+      assign(stepCopy.args, { [field]: val });
     }
 
     seqCopy.body[index] = stepCopy;
@@ -122,7 +122,7 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   const parsedNumber = FLOAT_NUMERIC_FIELDS.includes(field)
     ? parseFloat(val)
     : parseInt(val, 10);
-  return _.assign(copy.args, { [field]: parsedNumber });
+  return assign(copy.args, { [field]: parsedNumber });
 }
 
 export function renderCeleryNode(props: StepParams) {

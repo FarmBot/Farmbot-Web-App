@@ -1,6 +1,6 @@
 import { t } from "i18next";
-import _ from "lodash";
 import { Content } from "../../constants";
+import { isString } from "lodash";
 
 /** Used for every new account the first time the Device page is loaded. */
 const ONLY_ONCE = {
@@ -33,7 +33,7 @@ export function inferTimezone(current: string | undefined): string {
 export function timezoneMismatch(botTime: string | undefined,
   userTime: string | undefined = maybeResolveTZ()): boolean {
 
-  if (_.isString(botTime) && _.isString(userTime)) {
+  if (isString(botTime) && isString(userTime)) {
     return botTime.toUpperCase() !== userTime.toUpperCase();
   } else {
     // Don't show warnings if TZ data is unavailable.

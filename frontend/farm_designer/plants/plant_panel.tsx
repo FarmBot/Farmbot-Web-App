@@ -1,5 +1,4 @@
 import * as React from "react";
-import _ from "lodash";
 import { t } from "i18next";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
@@ -12,6 +11,7 @@ import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
 import { parseIntInput } from "../../util";
+import { startCase, isNumber } from "lodash";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -149,17 +149,17 @@ export function PlantPanel(props: PlantPanelProps) {
     </label>
     <ul>
       <ListItem name={t("Full Name")}>
-        {_.startCase(name)}
+        {startCase(name)}
       </ListItem>
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
           to={`/app/designer/plants/crop_search/` + slug}>
-          {_.startCase(slug)}
+          {startCase(slug)}
         </Link>
       </ListItem>
       <ListItem name={t("Started")}>
-        {(updatePlant && _.isNumber(props.timeOffset) && !inSavedGarden)
+        {(updatePlant && isNumber(props.timeOffset) && !inSavedGarden)
           ? <EditDatePlanted
             uuid={uuid}
             datePlanted={plantedAt}
@@ -183,7 +183,7 @@ export function PlantPanel(props: PlantPanelProps) {
             uuid={uuid}
             plantStatus={plantStatus}
             updatePlant={updatePlant} />
-          : t(_.startCase(plantStatus))}
+          : t(startCase(plantStatus))}
       </ListItem>
     </ul>
     <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />

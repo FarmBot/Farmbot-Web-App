@@ -1,6 +1,5 @@
 import { t } from "i18next";
 import axios from "axios";
-import _ from "lodash";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
@@ -22,6 +21,7 @@ import { Log } from "farmbot/dist/resources/api_resources";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
+import { isObject, isString, get, noop } from "lodash";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -37,7 +37,7 @@ const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 
 // tslint:disable-next-line:no-any
 export function isLog(x: any): x is Log {
-  const yup = _.isObject(x) && _.isString(_.get(x, "message" as keyof Log));
+  const yup = isObject(x) && isString(get(x, "message" as keyof Log));
   if (yup) {
     if (oneOf(BAD_WORDS, x.message.toUpperCase())) {// SECURITY CRITICAL CODE.
       throw new Error("Refusing to display log: " + JSON.stringify(x));
@@ -219,7 +219,7 @@ export const fetchReleases =
  * @param x axios response data
  */
 function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
-  return _.isObject(x) &&
+  return isObject(x) &&
     Object.entries(x).every(([key, val]) =>
       typeof key === "string" && // feature name
       typeof val === "string" && // version string
@@ -296,7 +296,7 @@ export function settingToggle(
     } else {
       return getDevice()
         .updateMcu(update)
-        .then(_.noop, commandErr(noun));
+        .then(noop, commandErr(noun));
     }
   };
 }
@@ -304,28 +304,28 @@ export function settingToggle(
 export function moveRelative(props: MoveRelProps) {
   return getDevice()
     .moveRelative(props)
-    .then(_.noop, commandErr("Relative movement"));
+    .then(noop, commandErr("Relative movement"));
 }
 
 export function moveAbs(props: MoveRelProps) {
   const noun = "Absolute movement";
   return getDevice()
     .moveAbsolute(props)
-    .then(_.noop, commandErr(noun));
+    .then(noop, commandErr(noun));
 }
 
 export function pinToggle(pin_number: number) {
   const noun = "Setting toggle";
   return getDevice()
     .togglePin({ pin_number })
-    .then(_.noop, commandErr(noun));
+    .then(noop, commandErr(noun));
 }
 
 export function readPin(pin_number: number, label: string, pin_mode: number) {
   const noun = "Read pin";
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
-    .then(_.noop, commandErr(noun));
+    .then(noop, commandErr(noun));
 }
 
 export function homeAll(speed: number) {
@@ -405,7 +405,7 @@ export function updateConfig(config: Configuration) {
     } else {
       getDevice()
         .updateConfig(config)
-        .then(_.noop, commandErr(noun));
+        .then(noop, commandErr(noun));
     }
   };
 }

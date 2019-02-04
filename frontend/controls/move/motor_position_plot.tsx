@@ -1,10 +1,10 @@
 import * as React from "react";
-import _ from "lodash";
 import { Xyz, LocationName, Dictionary } from "farmbot";
 import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
 import { trim } from "../../util";
 import { t } from "i18next";
+import { cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range } from "lodash";
 
 const HEIGHT = 50;
 const HISTORY_LENGTH_SECONDS = 120;
@@ -32,9 +32,9 @@ type Entry = {
 type Paths = Record<LocationName, Record<Xyz, string>>;
 
 const getArray = (): Entry[] =>
-  JSON.parse(_.get(sessionStorage, MotorPositionHistory.array, "[]"));
+  JSON.parse(get(sessionStorage, MotorPositionHistory.array, "[]"));
 
-const getReversedArray = (): Entry[] => _.cloneDeep(getArray()).reverse();
+const getReversedArray = (): Entry[] => cloneDeep(getArray()).reverse();
 
 const getLastEntry = (): Entry | undefined => {
   const array = getArray();
@@ -43,21 +43,21 @@ const getLastEntry = (): Entry | undefined => {
 
 const findYLimit = (): number => {
   const array = getArray();
-  const arrayAbsMax = _.max(array.map(entry =>
-    _.max(["position", "scaled_encoders"].map((name: LocationName) =>
-      _.max(["x", "y", "z"].map((axis: Xyz) =>
+  const arrayAbsMax = max(array.map(entry =>
+    max(["position", "scaled_encoders"].map((name: LocationName) =>
+      max(["x", "y", "z"].map((axis: Xyz) =>
         Math.abs(entry.locationData[name][axis] || 0) + 1))))));
-  return Math.max(_.ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
+  return Math.max(ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
 };
 
 const updateArray = (update: Entry): Entry[] => {
   const arr = getArray();
   const last = getLastEntry();
-  if (update && _.isNumber(update.locationData.position.x) &&
-    (!last || !_.isEqual(last.timestamp, update.timestamp))) {
+  if (update && isNumber(update.locationData.position.x) &&
+    (!last || !isEqual(last.timestamp, update.timestamp))) {
     arr.push(update);
   }
-  const newArray = _.takeRight(arr, 100)
+  const newArray = takeRight(arr, 100)
     .filter(x => {
       const entryAge = (last ? last.timestamp : moment().unix()) - x.timestamp;
       return entryAge <= HISTORY_LENGTH_SECONDS;
@@ -82,8 +82,8 @@ const getPaths = (): Paths => {
         ["x", "y", "z"].map((axis: Xyz) => {
           const lastPos = last.locationData[name][axis];
           const pos = entry.locationData[name][axis];
-          if (_.isNumber(lastPos) && _.isFinite(lastPos)
-            && _.isNumber(maxY) && _.isNumber(pos)) {
+          if (isNumber(lastPos) && isFinite(lastPos)
+            && isNumber(maxY) && isNumber(pos)) {
             if (!paths[name][axis].startsWith("M")) {
               const yStart = -lastPos / maxY * HEIGHT / 2;
               paths[name][axis] = `M ${MAX_X},${yStart} `;
@@ -135,7 +135,7 @@ const XAxisLabels = () =>
       fontStyle={"italic"}>
       {t("seconds ago")}
     </text>
-    {_.range(0, HISTORY_LENGTH_SECONDS + 1, 20).map(secondsAgo =>
+    {range(0, HISTORY_LENGTH_SECONDS + 1, 20).map(secondsAgo =>
       <text key={"x_axis_label_" + secondsAgo}
         x={MAX_X - secondsAgo} y={HEIGHT / 2 + BORDER_WIDTH / 3}>
         {secondsAgo}
