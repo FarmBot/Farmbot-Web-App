@@ -1,7 +1,7 @@
 import {
   browserToMQTT, botToMQTT, botToAPI, botToFirmware, browserToAPI
 } from "../status_checks";
-import moment from "moment";
+import * as moment from "moment";
 import { ConnectionStatus } from "../../../connectivity/interfaces";
 import { betterMerge } from "../../../util";
 

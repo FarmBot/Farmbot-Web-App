@@ -6,7 +6,8 @@ import { history } from "../../history";
 import { FBSelect, DropDownItem, BlurableInput, Row, Col } from "../../ui";
 import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
-import moment from "moment";
+import { Moment } from "moment";
+import * as moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
@@ -72,7 +73,7 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
 }
 
 export interface EditDatePlantedProps extends EditPlantProperty {
-  datePlanted: moment.Moment;
+  datePlanted: Moment;
   timeOffset: number;
 }
 

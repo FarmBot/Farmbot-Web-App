@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import * as moment from "moment";
 import { transformXY } from "../../util";
 import { TaggedSensorReading } from "farmbot";
 import { MapTransformProps } from "../../interfaces";

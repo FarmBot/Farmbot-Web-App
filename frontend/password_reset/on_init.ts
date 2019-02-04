@@ -1,5 +1,5 @@
 import * as I18n from "i18next";
-import React from "react";
+import _React, { createElement } from "react";
 import { render } from "react-dom";
 import { PasswordReset } from "./password_reset";
 import { bail } from "../util";
@@ -11,7 +11,7 @@ export const onInit: I18n.Callback = async () => {
   node.id = "root";
   document.body.appendChild(node);
 
-  const reactElem = React.createElement(PasswordReset, {});
+  const reactElem = createElement(PasswordReset, {});
   const domElem = document.getElementById("root");
 
   return (domElem) ? render(reactElem, domElem) : bail(MISSING_DIV);

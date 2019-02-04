@@ -6,7 +6,7 @@ import { mapStateToProps } from "./map_state_to_props";
 import {
   FarmEventProps, CalendarOccurrence, FarmEventState
 } from "../interfaces";
-import moment from "moment";
+import * as moment from "moment";
 import { Content } from "../../constants";
 import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";

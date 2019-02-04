@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import * as moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page, ToolTip } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";

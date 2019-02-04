@@ -3,7 +3,7 @@ import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
 import { t } from "i18next";
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
-import moment from "moment";
+import * as moment from "moment";
 
 enum TableColWidth {
   sensor = 125,

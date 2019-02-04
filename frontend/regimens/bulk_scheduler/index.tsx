@@ -6,7 +6,7 @@ import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
 import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../ui/index";
-import moment from "moment";
+import * as moment from "moment";
 import { t } from "i18next";
 import { isString } from "lodash";
 import { betterCompact, bail } from "../../util";

@@ -1,4 +1,5 @@
-import moment from "moment";
+import { duration } from "moment";
+import * as moment from "moment";
 import { Moment, unitOfTime } from "moment";
 import { range } from "lodash";
 import { NEVER } from "../edit_fe_form";
@@ -76,7 +77,7 @@ export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
   if ((unit === NEVER) || !(momentUnit)) {
     return 0;
   } else {
-    return moment.duration(repeat, momentUnit).asSeconds();
+    return duration(repeat, momentUnit).asSeconds();
   }
 }
 

@@ -5,7 +5,7 @@ import { TaggedImage } from "farmbot";
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep } from "lodash";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
-import moment from "moment";
+import * as moment from "moment";
 
 export interface ImageLayerProps {
   visible: boolean;

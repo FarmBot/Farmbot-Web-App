@@ -1,4 +1,4 @@
-import moment from "moment";
+import * as moment from "moment";
 import { CalendarOccurrence } from "../../interfaces";
 import { FarmEventWithExecutable } from "./interfaces";
 import { Calendar } from "./index";

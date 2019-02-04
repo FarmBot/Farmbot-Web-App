@@ -6,7 +6,7 @@ import {
   AxisNumberProperty, TaggedPlant, MapTransformProps
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
-import moment from "moment";
+import * as moment from "moment";
 import { unpackUUID } from "../../../../util";
 import { isNumber, isString } from "lodash";
 import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";

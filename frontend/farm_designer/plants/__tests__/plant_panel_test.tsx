@@ -11,7 +11,7 @@ import { FormattedPlantInfo } from "../map_state_to_props";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
-import moment from "moment";
+import * as moment from "moment";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {

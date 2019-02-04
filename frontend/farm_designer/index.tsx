@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Component, createElement } from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
@@ -11,7 +12,7 @@ import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import { getBotSize, round } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
-import moment from "moment";
+import * as moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
@@ -38,7 +39,7 @@ export const getGridSize =
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
 @connect(mapStateToProps)
-export class FarmDesigner extends React.Component<Props, Partial<State>> {
+export class FarmDesigner extends Component<Props, Partial<State>> {
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {
@@ -92,7 +93,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
   }
 
   childComponent(props: Props) {
-    return this.props.children || React.createElement(Plants, props);
+    return this.props.children || createElement(Plants, props);
   }
 
   get mapOnly() {

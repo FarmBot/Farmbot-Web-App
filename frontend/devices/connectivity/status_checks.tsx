@@ -1,5 +1,5 @@
 import { isUndefined } from "lodash";
-import moment from "moment";
+import * as moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
 import { t } from "i18next";

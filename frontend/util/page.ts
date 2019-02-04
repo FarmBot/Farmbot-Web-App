@@ -1,4 +1,8 @@
-import * as React from "react";
+import {
+  createElement,
+  ComponentClass,
+  Attributes
+} from "react";
 import { render } from "react-dom";
 import { t } from "i18next";
 import { capitalize } from "lodash";
@@ -10,13 +14,13 @@ export function updatePageInfo(pageName: string) {
   // Possibly add meta "content" here dynamically as well
 }
 
-export function attachToRoot<P>(type: React.ComponentClass<P>,
-  props?: React.Attributes & P) {
+export function attachToRoot<P>(type: ComponentClass<P>,
+  props?: Attributes & P) {
   const node = document.createElement("DIV");
   node.id = "root";
   document.body.appendChild(node);
 
-  const reactElem = React.createElement(type, props);
+  const reactElem = createElement(type, props);
   const domElem = document.getElementById("root");
 
   domElem && render(reactElem, domElem);

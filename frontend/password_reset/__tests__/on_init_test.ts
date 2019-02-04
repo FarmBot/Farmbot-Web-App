@@ -1,4 +1,6 @@
-jest.mock("react-dom", () => ({ render: jest.fn() }));
+jest.mock("react-dom", () => ({
+  render: jest.fn()
+}));
 
 import { onInit } from "../on_init";
 import { render } from "react-dom";

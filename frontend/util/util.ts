@@ -14,7 +14,8 @@ import {
   padStart,
   sortBy,
   merge,
-  isNumber
+  isNumber,
+  isUndefined as lodashIsUndefined
 } from "lodash";
 
 export let colors: Array<ResourceColor> = [
@@ -88,7 +89,7 @@ export type CowardlyDictionary<T> = Dictionary<T | undefined>;
 export const NOT_SAVED = -1;
 
 export function isUndefined(x: object | undefined): x is undefined {
-  return isUndefined(x);
+  return lodashIsUndefined(x);
 }
 
 /** Better than Array.proto.filter and compact() because the type checker

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Component } from "react";
 import { BulkScheduler } from "./bulk_scheduler/index";
 import { RegimensList } from "./list/index";
 import { RegimenEditor } from "./editor/index";
@@ -12,7 +13,7 @@ import { t } from "i18next";
 import { ToolTips } from "../constants";
 
 @connect(mapStateToProps)
-export class Regimens extends React.Component<Props, {}> {
+export class Regimens extends Component<Props, {}> {
   componentWillMount() {
     if (!this.props.current) { setActiveRegimenByName(); }
   }

@@ -1,5 +1,5 @@
 import { computeBestTime, getStatus, maxDate } from "../reducer_support";
-import moment from "moment";
+import * as moment from "moment";
 import { ConnectionStatus } from "../interfaces";
 
 // RELEVANT:

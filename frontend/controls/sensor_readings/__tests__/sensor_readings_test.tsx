@@ -5,7 +5,7 @@ import { SensorReadingsProps } from "../interfaces";
 import {
   fakeSensorReading, fakeSensor
 } from "../../../__test_support__/fake_state/resources";
-import moment from "moment";
+import * as moment from "moment";
 
 describe("<SensorReadings />", () => {
   function fakeProps(): SensorReadingsProps {

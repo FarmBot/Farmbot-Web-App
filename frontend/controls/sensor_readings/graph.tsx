@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import * as moment from "moment";
 import { range, clamp } from "lodash";
 import { t } from "i18next";
 import { SensorReadingPlotProps } from "./interfaces";

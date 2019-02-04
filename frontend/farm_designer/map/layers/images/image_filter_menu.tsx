@@ -5,7 +5,7 @@ import { offsetTime } from "../../../farm_events/edit_fe_form";
 import {
   setWebAppConfigValue, GetWebAppConfigValue
 } from "../../../../config_storage/actions";
-import moment from "moment";
+import * as moment from "moment";
 import {
   formatDate, formatTime
 } from "../../../farm_events/map_state_to_props_add_edit";

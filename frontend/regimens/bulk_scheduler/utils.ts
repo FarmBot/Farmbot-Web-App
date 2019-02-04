@@ -1,9 +1,9 @@
-import moment from "moment";
+import { duration } from "moment";
 import { isNumber, padStart } from "lodash";
 
 export function msToTime(ms: number) {
   if (isNumber(ms)) {
-    const d = moment.duration(ms);
+    const d = duration(ms);
     const h = padStart(d.hours().toString(), 2, "0");
     const m = padStart(d.minutes().toString(), 2, "0");
     return `${h}:${m}`;

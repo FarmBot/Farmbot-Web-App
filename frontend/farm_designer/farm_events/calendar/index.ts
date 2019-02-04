@@ -1,6 +1,6 @@
 import { Dictionary } from "farmbot/dist";
 import { CalendarOccurrence, CalendarDay } from "../../interfaces";
-import moment from "moment";
+import * as moment from "moment";
 import { chain, sortBy } from "lodash";
 
 export class Calendar {

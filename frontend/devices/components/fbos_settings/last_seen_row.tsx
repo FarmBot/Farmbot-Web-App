@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
 import { t } from "i18next";
-import moment from "moment";
+import * as moment from "moment";
 import { TaggedDevice } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { Content } from "../../../constants";
