@@ -28,6 +28,9 @@ class DashboardController < ApplicationController
   [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
       begin
+        # If you don't do this, you will hit hard to debug
+        # CSP errors on local when changing API_HOST.
+        response.headers["Cache-Control"] = "no-cache, no-store"
         load_css_assets
         load_js_assets
         render actn, layout: "dashboard"

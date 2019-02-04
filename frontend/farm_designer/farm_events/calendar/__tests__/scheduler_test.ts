@@ -6,7 +6,7 @@ import {
   maxDisplayItems,
   gracePeriodSeconds
 } from "../scheduler";
-import * as moment from "moment";
+import moment from "moment";
 import { Moment } from "moment";
 import { range, padStart } from "lodash";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";

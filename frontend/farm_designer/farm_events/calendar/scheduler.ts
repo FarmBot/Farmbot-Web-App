@@ -1,5 +1,5 @@
 import { duration } from "moment";
-import * as moment from "moment";
+import moment from "moment";
 import { Moment, unitOfTime } from "moment";
 import { range } from "lodash";
 import { NEVER } from "../edit_fe_form";

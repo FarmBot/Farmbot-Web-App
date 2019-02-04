@@ -14,7 +14,7 @@ import {
 } from "../resources/selectors";
 import { TaggedRegimen } from "farmbot";
 import { duration } from "moment";
-import * as moment from "moment";
+import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
   randomColor, determineInstalledOsVersion,

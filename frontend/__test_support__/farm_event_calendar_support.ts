@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import {
   FarmEventWithExecutable
 } from "../farm_designer/farm_events/calendar/interfaces";

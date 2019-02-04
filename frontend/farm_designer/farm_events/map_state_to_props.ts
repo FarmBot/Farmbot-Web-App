@@ -1,5 +1,5 @@
 import { Everything } from "../../interfaces";
-import * as moment from "moment";
+import moment from "moment";
 import { FarmEventProps } from "../interfaces";
 import { joinFarmEventsToExecutable } from "./calendar/selectors";
 import { Calendar } from "./calendar/index";

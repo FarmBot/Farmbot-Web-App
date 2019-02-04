@@ -7,7 +7,7 @@ import { FBSelect, DropDownItem, BlurableInput, Row, Col } from "../../ui";
 import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
 import { Moment } from "moment";
-import * as moment from "moment";
+import moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";

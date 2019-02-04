@@ -2,7 +2,7 @@ import { TaggedSensorReading } from "farmbot";
 import { SensorReadingsState } from "./interfaces";
 import { every, isNumber } from "lodash";
 import { Xyz } from "../../devices/interfaces";
-import * as moment from "moment";
+import moment from "moment";
 
 /** One day in seconds. */
 const oneDay = 3600 * 24;

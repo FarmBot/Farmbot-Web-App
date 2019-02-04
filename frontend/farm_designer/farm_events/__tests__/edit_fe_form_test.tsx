@@ -23,7 +23,7 @@ import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, VariableDeclaration } from "farmbot";
 import { success, error } from "farmbot-toastr";
-import * as moment from "moment";
+import moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { history } from "../../../history";
 import {

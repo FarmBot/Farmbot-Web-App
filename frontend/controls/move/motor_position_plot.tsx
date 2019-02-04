@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Xyz, LocationName, Dictionary } from "farmbot";
-import * as moment from "moment";
+import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
 import { trim } from "../../util";
 import { t } from "i18next";

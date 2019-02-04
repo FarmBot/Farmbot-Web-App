@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "i18next";
-import * as moment from "moment";
+import moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
 import { init, destroy } from "../../api/crud";

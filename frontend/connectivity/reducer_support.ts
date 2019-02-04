@@ -1,5 +1,5 @@
 import { ConnectionStatus } from "./interfaces";
-import * as m from "moment";
+import m from "moment";
 import { isString, max } from "lodash";
 
 export function maxDate(l: m.Moment, r: m.Moment): string {

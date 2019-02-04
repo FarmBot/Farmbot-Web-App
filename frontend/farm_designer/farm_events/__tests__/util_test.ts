@@ -1,6 +1,6 @@
 import { maybeWarnAboutMissedTasks } from "../util";
 import { fakeFarmEvent } from "../../../__test_support__/fake_state/resources";
-import * as moment from "moment";
+import moment from "moment";
 
 describe("maybeWarnAboutMissedTasks()", () => {
   function testWarn(time: string): () => void {
