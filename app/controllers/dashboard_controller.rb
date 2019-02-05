@@ -1,7 +1,7 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
 
-  OUTPUT_URL_PATH = "/dist"
+  OUTPUT_URL_PATH = "/assets/parcel"
 
   CSS_INPUTS  = HashWithIndifferentAccess.new({
     front_page: "/css/laptop_splash.scss",

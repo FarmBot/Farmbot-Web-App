@@ -24,3 +24,4 @@ public/direct_upload/temp/*.jpg
 public/dist
 public/system
 tmp
+assets/
