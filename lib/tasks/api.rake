@@ -66,11 +66,12 @@ namespace :api do
       assets,
       "--out-dir public/dist",
       "--public-url /dist",
-      # "--no-hmr",
       "--hmr-hostname #{ENV.fetch("API_HOST")}",
       "--hmr-port 3808",
+      # WHY ARE SOURCE MAPS DISABLED?
       # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
       # https://github.com/parcel-bundler/parcel/issues/2607
+      # TODO: Upgrade parcel when issue ^ is fixed.
       "--no-source-maps",
     ].join(" ")
     puts "=== Running: \n#{cli}"
