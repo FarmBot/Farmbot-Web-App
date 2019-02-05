@@ -20,8 +20,8 @@ log/
 mqtt/
 node_modules
 package-lock.json
+public/assets/
 public/direct_upload/temp/*.jpg
 public/dist
 public/system
 tmp
-assets/
