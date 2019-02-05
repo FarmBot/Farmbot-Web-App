@@ -10,7 +10,6 @@
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "build": "TARGET=production echo Rick- fix this 30 jan",
     "start": "echo 'DEPRECATED. Remove `start` from npm scripts'",
-    "heroku-postbuild": "echo ==== Rick- fix this!",
     "test-slow": "jest --coverage --ci --maxWorkers=6 --colors",
     "test": "jest --no-coverage --cache -w 5 --colors",
     "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
