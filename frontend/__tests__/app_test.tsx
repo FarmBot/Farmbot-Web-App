@@ -1,7 +1,3 @@
-jest.mock("fastclick", () => ({
-  attach: jest.fn(),
-}));
-
 jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));

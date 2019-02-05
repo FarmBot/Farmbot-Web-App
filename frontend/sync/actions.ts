@@ -36,8 +36,8 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
   });
 };
 
-function fail(e: Error) {
-  console.error("DATA SYNC ERROR!!");
+export function syncFail(e: Error) {
+  console.error("DATA SYNC ERROR!");
   Session.clear();
   throw e;
 }
@@ -47,7 +47,7 @@ const download = (dispatch: Function) =>
     .get<T["body"] | T["body"][]>(url)
     .then(({ data }) => {
       dispatch(resourceReady(kind, newTaggedResource(kind, data)));
-    }, fail);
+    }, syncFail);
 
 export async function fetchSyncData(dispatch: Function) {
   const get = download(dispatch);
@@ -94,5 +94,5 @@ export async function fetchSyncData(dispatch: Function) {
     ]),
   };
   const step = (num: keyof typeof group) => group[num];
-  step(0)().then(step(1)).then(step(2)).then(step(3)).then(step(4)).catch(fail);
+  step(0)().then(step(1)).then(step(2)).then(step(3)).then(step(4)).catch(syncFail);
 }

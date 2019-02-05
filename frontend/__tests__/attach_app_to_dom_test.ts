@@ -10,11 +10,6 @@ jest.mock("../redux/store", () => {
   return { store: { dispatch: jest.fn() } };
 });
 
-jest.mock("fastclick", () => {
-  // Incidental stub. Can be removed if fastclick is ever removed.
-  return { attach: jest.fn() };
-});
-
 jest.mock("../config/actions", () => {
   // Stubbing this to make testing easier.
   return { ready: () => ({ type: "YES_IT_WAS_CALLED" }) };
