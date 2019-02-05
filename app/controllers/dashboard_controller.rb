@@ -1,21 +1,39 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
 
-  def tos_update
-    # I want to keep an eye on this one in prod.
-    # If `tos_update` is firing without us knowing about it, it could cause a
-    # service outage.
-    Rollbar.info("TOS UPDATE????")
-    render :tos_update, layout: false
-  end
+  OUTPUT_URL_PATH = "/dist"
 
-  [:main_app, :front_page, :verify, :password_reset].map do |actn|
+  CSS_INPUTS  = HashWithIndifferentAccess.new({
+    front_page: "/css/laptop_splash.scss",
+    default:    "/css/_index.scss",
+  })
+
+  JS_INPUTS   = HashWithIndifferentAccess.new({
+    main_app:       "/entry.tsx",
+    front_page:     "/front_page/index.tsx",
+    password_reset: "/password_reset/index.tsx",
+    tos_update:     "/tos_update/index.tsx",
+  })
+
+  CSS_OUTPUTS = HashWithIndifferentAccess.new(CSS_INPUTS.reduce({}) do |acc, (key, value)|
+    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.scss$/, ".css")
+    acc
+  end)
+
+  JS_OUTPUTS = HashWithIndifferentAccess.new(JS_INPUTS.reduce({}) do |acc, (key, value)|
+    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.tsx?$/, ".js")
+    acc
+  end)
+
+  [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
       begin
+        # If you don't do this, you will hit hard to debug
+        # CSP errors on local when changing API_HOST.
         response.headers["Cache-Control"] = "no-cache, no-store"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
-        render actn, layout: false
+        load_css_assets
+        load_js_assets
+        render actn, layout: "dashboard"
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
       end
@@ -57,6 +75,18 @@ class DashboardController < ApplicationController
   end
 
 private
+  def load_css_assets
+    @css_assets ||= [action_name, :default].reduce([]) do |list, action|
+      asset = CSS_OUTPUTS[action] # Not every endpoint has custom CSS.
+      list.push(asset) if asset
+      list
+    end
+  end
+
+  def load_js_assets
+    # Every DashboardController has a JS SBundle.
+    @js_assets ||= [ JS_OUTPUTS.fetch(action_name) ]
+  end
 
   def set_global_config
     @global_config = GlobalConfig.dump.to_json

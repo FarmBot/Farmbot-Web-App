@@ -28,7 +28,6 @@ gem "appsignal"
 gem "skylight"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
-gem "webpack-rails"
 gem "rabbitmq_http_api_client"
 gem "zero_downtime_migrations"
 gem "redis", "~> 4.0"

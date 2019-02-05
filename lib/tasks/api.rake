@@ -45,9 +45,36 @@ namespace :api do
     ENV["FOREVER"] ? loop { check_for_digests } : check_for_digests
   end
 
-  desc "Run Rails _ONLY_. No Webpack."
+  desc "Run Rails _ONLY_. No parcel."
   task only: :environment do
-    sh "sudo docker-compose up --scale webpack=0"
+    sh "sudo docker-compose up --scale parcel=0"
+  end
+
+  desc "Serve javascript assets (via Parcel bundler)"
+  task serve_assets: :environment do
+    css    = DashboardController::CSS_INPUTS.values
+    js     = DashboardController::JS_INPUTS.values
+    assets = (js + css)
+      .sort
+      .uniq
+      .map { |x| "frontend" + x }
+      .join(" ")
+
+      cli = [
+      "node_modules/parcel-bundler/bin/cli.js",
+      "watch",
+      assets,
+      "--out-dir public/dist",
+      "--public-url /dist",
+      # "--no-hmr",
+      "--hmr-hostname #{ENV.fetch("API_HOST")}",
+      "--hmr-port 3808",
+      # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
+      # https://github.com/parcel-bundler/parcel/issues/2607
+      "--no-source-maps",
+    ].join(" ")
+    puts "=== Running: \n#{cli}"
+    sh cli
   end
 
   desc "Reset _everything_, including your database"

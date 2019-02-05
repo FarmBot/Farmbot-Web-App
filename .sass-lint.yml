@@ -9,7 +9,7 @@ options:
   max-warnings: 0
 # File Options
 files:
-  include: 'webpack/css/**/*.s+(a|c)ss'
+  include: 'frontend/css/**/*.s+(a|c)ss'
 # Rule Configuration
 rules:
   extends-before-mixins: 2

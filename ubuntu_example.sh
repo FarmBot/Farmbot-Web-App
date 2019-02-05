@@ -49,7 +49,7 @@ sudo docker-compose run web npm install
 sudo docker-compose run web bundle exec rails db:create db:migrate
 # Generate a set of *.pem files for data encryption
 sudo docker-compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
-# Build the UI assets via WebPack
+# Build the UI assets via ParcelJS
 sudo docker-compose run web npm run build
 # Run the server! ٩(^‿^)۶
 sudo docker-compose up

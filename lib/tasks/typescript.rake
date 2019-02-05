@@ -32,7 +32,7 @@ class Typescript
   def self.generate(klass)
     @klass  = klass
     results = ERB.new(INTERFACE_TPL).result(binding)
-    File.open("webpack/config_storage/#{klass.table_name}.ts", "w") do |f|
+    File.open("frontend/config_storage/#{klass.table_name}.ts", "w") do |f|
       f.write(results.strip + "\n")
     end
   end
@@ -74,7 +74,7 @@ namespace :typescript do
 
   desc "Pick a random file that (maybe) needs unit tests"
   task :random => :environment do
-    ideas = Dir["coverage/webpack/**/*.html"].sample(4)
+    ideas = Dir["coverage/frontend/**/*.html"].sample(4)
     spawn("firefox #{ideas.join(" ")}")
   end
 end

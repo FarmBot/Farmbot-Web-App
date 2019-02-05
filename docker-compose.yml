@@ -51,14 +51,12 @@ services:
      - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
     volumes:
      - ./docker_volumes/rabbit:/farmbot
-  webpack:     # ====================
+  parcel:     # ====================
     <<: *base_config
-    image: node:10.15.0
-    working_dir: /farmbot
-    command: ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
-    volumes:
-      - .:/farmbot
-    ports: ["3808:3808"] # Webpack Dev Server
+    <<: *rails
+    depends_on: ["db","mqtt", "web"]
+    command: bundle exec rake api:serve_assets
+    ports: ["3808:3808"] # Parcel HMR Server
   delayed_job: # ====================
     <<: *base_config
     <<: *rails
