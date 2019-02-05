@@ -25,6 +25,25 @@ class DashboardController < ApplicationController
     acc
   end)
 
+  PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
+    .sort
+    .uniq
+    .map { |x| "frontend" + x }
+    .join(" ")
+
+  PARCEL_HMR_OPTS   = [
+    "--hmr-hostname #{ENV.fetch("API_HOST")}",
+    "--hmr-port 3808"
+  ].join(" ")
+
+  PARCEL_CLI_OUTRO  = [
+    # WHY ARE SOURCE MAPS DISABLED?
+    # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
+    # https://github.com/parcel-bundler/parcel/issues/2607
+    # TODO: Upgrade parcel when issue ^ is fixed.
+    "--no-source-maps",
+  ].join(" ")
+
   [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
       begin
