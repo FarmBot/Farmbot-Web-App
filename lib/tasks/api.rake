@@ -67,7 +67,7 @@ namespace :api do
   end
 
   desc "DELETE OLD ASSETS and build javascript/css assets via Parcel bundler"
-  task build_assets: :environment do
+  task parcel_compile: :environment do
     sh "rm -rf .cache/ node_modules/ public/dist/"
     sh "npm install"
     parcel "build"
@@ -124,3 +124,4 @@ namespace :api do
     end
   end
 end
+Rake::Task['assets:precompile'].enhance ['api:parcel_compile']
