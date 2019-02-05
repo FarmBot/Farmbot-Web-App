@@ -124,4 +124,4 @@ namespace :api do
     end
   end
 end
-Rake::Task['assets:precompile'].enhance ['api:parcel_compile']
+Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]
