@@ -54,15 +54,21 @@ namespace :api do
     intro = [ "node_modules/parcel-bundler/bin/cli.js",
               cmd,
               DashboardController::PARCEL_ASSET_LIST,
-              "--out-dir public#{DashboardController::OUTPUT_URL_PATH}",
-              "--public-url /dist" ].join(" ")
+              "--out-dir",
+              DashboardController::PUBLIC_OUTPUT_DIR,
+              "--public-url",
+              DashboardController::OUTPUT_URL,
+            ].join(" ")
     sh [intro, opts, DashboardController::PARCEL_CLI_OUTRO].join(" ")
   end
 
   desc "Serve javascript assets (via Parcel bundler)"
   task serve_assets: :environment do
     # Clear out cache and previous builds on initial load.
-    sh "rm -rf .cache/ public/dist/"
+    sh ["rm -rf",
+        DashboardController::CACHE_DIR,
+        DashboardController::PUBLIC_OUTPUT_DIR
+       ].join(" ")
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 

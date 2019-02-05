@@ -3,21 +3,11 @@
 .vscode
 *.log
 *.pem
-*scratchpad*
-/config/master.key
-api_docs.md
-config/application.yml
-config/credentials.yml.enc
-coverage
 coverage_api
 coverage_fe
-dist/ # Parcel "accidents" happen here.
 docker_volumes
-erd_diagram.png
-erd.pdf
 latest_corpus.ts
 log/
-mqtt/
 node_modules
 package-lock.json
 public/assets/
@@ -25,3 +15,15 @@ public/direct_upload/temp/*.jpg
 public/dist
 public/system
 tmp
+api_docs.md
+erd_diagram.png
+erd.pdf
+*scratchpad*
+scratchpad.rb
+/config/master.key
+config/credentials.yml.enc
+
+# === Legacy
+config/application.yml
+coverage
+mqtt/
