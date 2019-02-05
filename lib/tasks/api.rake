@@ -54,7 +54,7 @@ namespace :api do
     intro = [ "node_modules/parcel-bundler/bin/cli.js",
               cmd,
               DashboardController::PARCEL_ASSET_LIST,
-              "--out-dir public/dist",
+              "--out-dir public#{DashboardController::OUTPUT_URL_PATH}",
               "--public-url /dist" ].join(" ")
     sh [intro, opts, DashboardController::PARCEL_CLI_OUTRO].join(" ")
   end
@@ -68,8 +68,6 @@ namespace :api do
 
   desc "DELETE OLD ASSETS and build javascript/css assets via Parcel bundler"
   task parcel_compile: :environment do
-    sh "rm -rf .cache/ node_modules/ public/dist/"
-    sh "npm install"
     parcel "build"
   end
 
