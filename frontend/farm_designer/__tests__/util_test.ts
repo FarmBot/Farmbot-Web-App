@@ -1,7 +1,5 @@
 let mockPromise: Promise<{} | void> = Promise.resolve();
-jest.mock("axios", () => ({
-  default: { get: () => mockPromise }
-}));
+jest.mock("axios", () => ({ get: () => mockPromise }));
 
 import { executableType, OFSearch } from "../util";
 import { Actions } from "../../constants";

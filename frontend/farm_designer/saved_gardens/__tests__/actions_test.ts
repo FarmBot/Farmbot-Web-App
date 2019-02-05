@@ -1,8 +1,6 @@
 jest.mock("axios", () => ({
-  default: {
-    post: jest.fn(() => Promise.resolve()),
-    patch: jest.fn(() => Promise.resolve()),
-  }
+  post: jest.fn(() => Promise.resolve()),
+  patch: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));

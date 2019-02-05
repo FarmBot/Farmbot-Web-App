@@ -1,9 +1,7 @@
 jest.mock("axios", () => ({
-  default: {
-    post: () => Promise.reject({
-      err: "hi"
-    })
-  }
+  post: () => Promise.reject({
+    err: "hi"
+  })
 }));
 
 import { mount } from "enzyme";

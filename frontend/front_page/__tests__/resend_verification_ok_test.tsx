@@ -1,9 +1,7 @@
 jest.mock("axios", () => ({
-  default: {
-    post: () => Promise.resolve({
-      data: "whatever"
-    })
-  }
+  post: () => Promise.resolve({
+    data: "whatever"
+  })
 }));
 
 import { mount } from "enzyme";

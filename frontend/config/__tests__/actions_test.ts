@@ -7,13 +7,11 @@ const mockState = {
 };
 
 jest.mock("axios", () => ({
-  default: {
-    interceptors: {
-      response: { use: jest.fn() },
-      request: { use: jest.fn() }
-    },
-    get() { return Promise.resolve({ data: mockState }); }
-  }
+  interceptors: {
+    response: { use: jest.fn() },
+    request: { use: jest.fn() }
+  },
+  get() { return Promise.resolve({ data: mockState }); }
 }));
 
 jest.mock("../../session", () => ({

@@ -1,11 +1,12 @@
 jest.mock("axios", () => ({
-  default: {
-    interceptors: {
-      response: { use: jest.fn() },
-      request: { use: jest.fn() }
-    },
-    get() { return Promise.reject("NO"); }
+  interceptors: {
+    response: { use: jest.fn() },
+    request: { use: jest.fn() }
+  },
+  get() {
+    return Promise.reject("NO");
   }
+
 }));
 
 jest.mock("../session", () => ({ Session: { clear: jest.fn(), } }));

@@ -1,7 +1,7 @@
 const mockGet = jest.fn(() => {
   return Promise.resolve({ data: [mockLog.body] });
 });
-jest.mock("axios", () => ({ default: { get: mockGet } }));
+jest.mock("axios", () => ({ get: mockGet }));
 import { refreshLogs } from "../refresh_logs";
 import axios from "axios";
 import { API } from "../../api";

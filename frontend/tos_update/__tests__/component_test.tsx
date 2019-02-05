@@ -6,13 +6,11 @@ jest.mock("../../i18n", () => {
 
 jest.mock("axios", () => {
   return {
-    default: {
-      post: jest.fn(() => {
-        return Promise.resolve({
-          data: { token: { unencoded: {}, encoded: "========" } }
-        });
-      })
-    }
+    post: jest.fn(() => {
+      return Promise.resolve({
+        data: { token: { unencoded: {}, encoded: "========" } }
+      });
+    })
   };
 });
 

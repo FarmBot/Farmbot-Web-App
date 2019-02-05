@@ -7,10 +7,8 @@ jest.mock("../../device", () => ({
 }));
 
 jest.mock("axios", () => ({
-  default: {
-    get: () => { return Promise.resolve({ data: "" }); },
-    put: () => { return Promise.resolve({ data: "" }); },
-  }
+  get: () => { return Promise.resolve({ data: "" }); },
+  put: () => { return Promise.resolve({ data: "" }); },
 }));
 
 import { refresh, updateViaAjax } from "../crud";

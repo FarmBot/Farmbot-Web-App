@@ -11,10 +11,8 @@ jest.mock("../../../device", () => {
 let mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
 let mockDelete = Promise.resolve();
 jest.mock("axios", () => ({
-  default: {
-    post: jest.fn(() => Promise.resolve({ data: mockData })),
-    delete: jest.fn(() => mockDelete),
-  }
+  post: jest.fn(() => Promise.resolve({ data: mockData })),
+  delete: jest.fn(() => mockDelete),
 }));
 
 const mockInc = jest.fn();

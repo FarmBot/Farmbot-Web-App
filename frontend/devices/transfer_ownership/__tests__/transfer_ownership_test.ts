@@ -7,7 +7,7 @@ jest.mock("../../../device", () => ({
 }));
 
 jest.mock("axios", () => {
-  return { default: { post: jest.fn(() => ({ data: "FAKE CERT" })) } };
+  return { post: jest.fn(() => ({ data: "FAKE CERT" })) };
 });
 
 import { transferOwnership } from "../transfer_ownership";

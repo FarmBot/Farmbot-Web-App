@@ -15,9 +15,7 @@ jest.mock("../maybe_start_tracking", () => ({
 
 let mockDelete: Promise<{} | void> = Promise.resolve({});
 jest.mock("axios", () => ({
-  default: {
-    delete: jest.fn(() => mockDelete)
-  }
+  delete: jest.fn(() => mockDelete)
 }));
 
 import { destroy, destroyAll } from "../crud";

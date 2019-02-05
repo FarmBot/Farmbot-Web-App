@@ -5,7 +5,7 @@ const mock = {
 };
 
 jest.mock("axios",
-  () => ({ default: { post: jest.fn(() => Promise.resolve(mock.response)) } }));
+  () => ({ post: jest.fn(() => Promise.resolve(mock.response)) }));
 
 import { API } from "../../api";
 import { Content } from "../../constants";

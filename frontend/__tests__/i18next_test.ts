@@ -1,10 +1,8 @@
 jest.mock("axios", () => {
   return {
-    default: {
-      get: jest.fn((_url: string) => {
-        return Promise.resolve();
-      })
-    }
+    get: jest.fn((_url: string) => {
+      return Promise.resolve();
+    })
   };
 });
 import { generateUrl, getUserLang, generateI18nConfig } from "../i18n";

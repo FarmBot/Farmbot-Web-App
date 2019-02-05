@@ -1,8 +1,6 @@
 let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
-  default: {
-    get: jest.fn(() => { return Promise.resolve(mockReleaseNoteData); })
-  }
+  get: jest.fn(() => { return Promise.resolve(mockReleaseNoteData); })
 }));
 
 import * as React from "react";

@@ -5,11 +5,9 @@ jest.mock("../maybe_start_tracking", () => {
 const mockBody: Partial<TaggedUser["body"]> = { id: 23 };
 jest.mock("axios", () => {
   return {
-    default: {
-      delete: () => Promise.resolve({}),
-      post: () => Promise.resolve({ data: mockBody }),
-      put: () => Promise.resolve({ data: mockBody })
-    }
+    delete: () => Promise.resolve({}),
+    post: () => Promise.resolve({ data: mockBody }),
+    put: () => Promise.resolve({ data: mockBody })
   };
 });
 

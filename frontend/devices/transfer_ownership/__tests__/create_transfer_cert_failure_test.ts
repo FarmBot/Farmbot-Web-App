@@ -4,11 +4,9 @@ jest.mock("../../../device", () => ({ getDevice: () => (mockDevice) }));
 
 jest.mock("axios", () => {
   return {
-    default: {
-      post: jest.fn(() => {
-        return Promise.reject("NOPE");
-      })
-    }
+    post: jest.fn(() => {
+      return Promise.reject("NOPE");
+    })
   };
 });
 

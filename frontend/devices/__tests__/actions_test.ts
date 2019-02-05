@@ -26,9 +26,7 @@ jest.mock("../../device", () => ({
 
 let mockGetRelease: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({
-  default: {
-    get: jest.fn(() => { return mockGetRelease; })
-  }
+  get: jest.fn(() => { return mockGetRelease; })
 }));
 
 import * as actions from "../actions";

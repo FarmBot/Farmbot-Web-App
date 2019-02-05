@@ -1,8 +1,7 @@
 let mockAxiosResponse = Promise.resolve({ data: "" });
+
 jest.mock("axios", () => ({
-  default: {
-    post: jest.fn(() => mockAxiosResponse)
-  }
+  post: jest.fn(() => mockAxiosResponse)
 }));
 
 jest.mock("../../session", () => ({
@@ -29,7 +28,7 @@ jest.mock("../../api", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { FrontPage, setField, PartialFormEvent } from "../front_page";
-import axios from "axios";
+import * as axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
 import { success, error } from "farmbot-toastr";
@@ -62,7 +61,7 @@ describe("<FrontPage />", () => {
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeEvent as FormEvent);
     expect(API.setBaseUrl).toHaveBeenCalled();
-    expect(axios.post).toHaveBeenCalledWith(
+    expect(axios.default.post).toHaveBeenCalledWith(
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
     expect(Session.replaceToken).toHaveBeenCalledWith("new data");
@@ -74,7 +73,7 @@ describe("<FrontPage />", () => {
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeEvent as FormEvent);
     expect(API.setBaseUrl).toHaveBeenCalled();
-    expect(axios.post).toHaveBeenCalledWith(
+    expect(axios.default.post).toHaveBeenCalledWith(
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
     expect(Session.replaceToken).not.toHaveBeenCalled();
@@ -89,7 +88,7 @@ describe("<FrontPage />", () => {
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeEvent as FormEvent);
     expect(API.setBaseUrl).toHaveBeenCalled();
-    expect(axios.post).toHaveBeenCalledWith(
+    expect(axios.default.post).toHaveBeenCalledWith(
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
     await expect(Session.replaceToken).not.toHaveBeenCalled();
@@ -107,7 +106,7 @@ describe("<FrontPage />", () => {
       agreeToTerms: true
     });
     await el.instance().submitRegistration(fakeEvent as FormEvent);
-    expect(axios.post).toHaveBeenCalledWith("usersPath", {
+    expect(axios.default.post).toHaveBeenCalledWith("usersPath", {
       user: {
         agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
         password: "password", password_confirmation: "password"
@@ -129,7 +128,7 @@ describe("<FrontPage />", () => {
       agreeToTerms: true
     });
     await el.instance().submitRegistration(fakeEvent as FormEvent);
-    await expect(axios.post).toHaveBeenCalledWith("usersPath", {
+    await expect(axios.default.post).toHaveBeenCalledWith("usersPath", {
       user: {
         agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
         password: "password", password_confirmation: "password"
@@ -142,11 +141,12 @@ describe("<FrontPage />", () => {
 
   it("submits forgot password: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "" });
+    debugger;
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
     await el.instance().submitForgotPassword(
       fakeEvent as React.FormEvent<HTMLFormElement>);
-    await expect(axios.post).toHaveBeenCalledWith("resetPath",
+    await expect(axios.default.post).toHaveBeenCalledWith("resetPath",
       { email: "foo@bar.io" });
     await expect(success).toHaveBeenCalledWith(
       "Email has been sent.", "Forgot Password");
@@ -159,7 +159,7 @@ describe("<FrontPage />", () => {
     el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
     await el.instance().submitForgotPassword(
       fakeEvent as React.FormEvent<HTMLFormElement>);
-    await expect(axios.post).toHaveBeenCalledWith("resetPath",
+    await expect(axios.default.post).toHaveBeenCalledWith("resetPath",
       { email: "foo@bar.io" });
     await expect(error).toHaveBeenCalledWith(
       expect.stringContaining("failure"));
@@ -172,7 +172,7 @@ describe("<FrontPage />", () => {
     el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
     await el.instance().submitForgotPassword(
       fakeEvent as React.FormEvent<HTMLFormElement>);
-    await expect(axios.post).toHaveBeenCalledWith("resetPath",
+    await expect(axios.default.post).toHaveBeenCalledWith("resetPath",
       { email: "foo@bar.io" });
     await expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "not associated with an account"));

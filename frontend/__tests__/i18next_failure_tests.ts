@@ -1,10 +1,8 @@
 jest.mock("axios", () => {
   return {
-    default: {
-      get: jest.fn((_url: string) => {
-        return Promise.reject("Simulated failure");
-      })
-    }
+    get: jest.fn((_url: string) => {
+      return Promise.reject("Simulated failure");
+    })
   };
 });
 

@@ -1,20 +1,18 @@
 
 jest.mock("axios", function () {
   return {
-    default: {
-      get: function () {
-        return Promise.resolve({
+    get: function () {
+      return Promise.resolve({
+        data: {
+          id: 0,
           data: {
-            id: 0,
-            data: {
-              attributes: {
-                svg_icon: "<svg>Wow</svg>",
-                slug: "lettuce"
-              }
+            attributes: {
+              svg_icon: "<svg>Wow</svg>",
+              slug: "lettuce"
             }
           }
-        });
-      }
+        }
+      });
     }
   };
 });

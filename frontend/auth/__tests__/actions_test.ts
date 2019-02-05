@@ -1,12 +1,10 @@
 jest.mock("axios", () => ({
-  default: {
-    interceptors: {
-      response: { use: jest.fn() },
-      request: { use: jest.fn() }
-    },
-    post: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
-    get: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
-  }
+  interceptors: {
+    response: { use: jest.fn() },
+    request: { use: jest.fn() }
+  },
+  post: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
+  get: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
 }));
 
 jest.mock("../../api/api", () => ({

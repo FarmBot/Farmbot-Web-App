@@ -1,15 +1,13 @@
 jest.mock("axios", () => ({
-  default: {
-    get: jest.fn(() => {
-      return Promise.resolve({
-        data: [
-          { manifest: "url", name: "farmware0" },
-          { manifest: "url", name: "farmware1" }
-        ]
-      });
-    }),
-    post: jest.fn(() => Promise.resolve()),
-  }
+  get: jest.fn(() => {
+    return Promise.resolve({
+      data: [
+        { manifest: "url", name: "farmware0" },
+        { manifest: "url", name: "farmware1" }
+      ]
+    });
+  }),
+  post: jest.fn(() => Promise.resolve()),
 }));
 
 import { getFirstPartyFarmwareList, retryFetchPackageName } from "../actions";

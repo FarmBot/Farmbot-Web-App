@@ -1,16 +1,14 @@
 let mockPost = Promise.resolve({ data: { id: 1 } });
 jest.mock("axios", () => ({
-  default: {
-    get: () => Promise.resolve({
-      data: {
-        "id": 6,
-        "name": "New Device From Server",
-        "timezone": "America/Chicago",
-        "last_saw_api": "2017-08-30T20:42:35.854Z"
-      }
-    }),
-    post: () => mockPost,
-  }
+  get: () => Promise.resolve({
+    data: {
+      "id": 6,
+      "name": "New Device From Server",
+      "timezone": "America/Chicago",
+      "last_saw_api": "2017-08-30T20:42:35.854Z"
+    }
+  }),
+  post: () => mockPost,
 }));
 
 import { refresh, initSaveGetId } from "../crud";
