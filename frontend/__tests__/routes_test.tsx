@@ -1,7 +1,3 @@
-jest.mock("fastclick", () => ({
-  attach: jest.fn(),
-}));
-
 let mockAuth: AuthState | undefined = undefined;
 jest.mock("../session", () => ({
   Session: {

@@ -7,7 +7,7 @@ if Rails.env == "development"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
     # CREDIT: Faker Ruby Gem
     VEGGIES                 = %w(artichoke arugula asparagus broccoli
-    cabbage caper carrot cauliflower celery chive cornichon cucumber
+    cabbage carrot cauliflower celery chive cornichon cucumber
     eggplant endive garlic jicama kale kohlrabi leek lettuce okra onion
     parsnip pepper potato pumpkin radicchio radish raspberry rhubarb spinach
      squash tomato turnip zucchini)

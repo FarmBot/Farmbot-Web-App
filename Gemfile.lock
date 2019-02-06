@@ -336,8 +336,6 @@ GEM
       rails
     warden (1.2.7)
       rack (>= 1.0)
-    webpack-rails (0.9.11)
-      railties (>= 3.2.0)
     websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.3)
@@ -395,7 +393,6 @@ DEPENDENCIES
   thin
   tzinfo
   valid_url
-  webpack-rails
   zero_downtime_migrations
 
 RUBY VERSION

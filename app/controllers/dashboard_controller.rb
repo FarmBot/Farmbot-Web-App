@@ -1,7 +1,10 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
 
-  OUTPUT_URL_PATH = "/dist"
+  # === THESE CONSTANTS ARE CONFIGURABLE: ===
+  OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
+                                                   # <= See PUBLIC_OUTPUT_DIR
+  CACHE_DIR  = File.join(".cache")
 
   CSS_INPUTS  = HashWithIndifferentAccess.new({
     front_page: "/css/laptop_splash.scss",
@@ -15,15 +18,38 @@ class DashboardController < ApplicationController
     tos_update:     "/tos_update/index.tsx",
   })
 
+  # === THESE CONSTANTS ARE NON-CONFIGURABLE. ===
+  # They are calculated based on config above.
+  PUBLIC_OUTPUT_DIR = File.join("public", OUTPUT_URL)
+
   CSS_OUTPUTS = HashWithIndifferentAccess.new(CSS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.scss$/, ".css")
+    acc[key] = File.join(OUTPUT_URL, value.gsub(/\.scss$/, ".css"))
     acc
   end)
 
   JS_OUTPUTS = HashWithIndifferentAccess.new(JS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = OUTPUT_URL_PATH + value.gsub(/\.tsx?$/, ".js")
+    acc[key] = File.join(OUTPUT_URL, value.gsub(/\.tsx?$/, ".js"))
     acc
   end)
+
+  PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
+    .sort
+    .uniq
+    .map { |x| File.join("frontend", x) }
+    .join(" ")
+
+  PARCEL_HMR_OPTS   = [
+    "--hmr-hostname #{ENV.fetch("API_HOST")}",
+    "--hmr-port 3808"
+  ].join(" ")
+
+  PARCEL_CLI_OUTRO  = [
+    # WHY ARE SOURCE MAPS DISABLED?
+    # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
+    # https://github.com/parcel-bundler/parcel/issues/2607
+    # TODO: Upgrade parcel when issue ^ is fixed.
+    "--no-source-maps",
+  ].join(" ")
 
   [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
     define_method(actn) do
