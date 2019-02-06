@@ -1,7 +1,13 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
+  layout "dashboard"
 
   # === THESE CONSTANTS ARE CONFIGURABLE: ===
+  EVERY_STATIC_PAGE = [:confirmation_page,
+                       :front_page,
+                       :main_app,
+                       :password_reset,
+                       :tos_update,]
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
                                                    # <= See PUBLIC_OUTPUT_DIR
   CACHE_DIR  = File.join(".cache")
@@ -51,7 +57,7 @@ class DashboardController < ApplicationController
     "--no-source-maps",
   ].join(" ")
 
-  [:main_app, :front_page, :password_reset, :tos_update].map do |actn|
+  EVERY_STATIC_PAGE.map do |actn|
     define_method(actn) do
       begin
         # If you don't do this, you will hit hard to debug
@@ -59,7 +65,7 @@ class DashboardController < ApplicationController
         response.headers["Cache-Control"] = "no-cache, no-store"
         load_css_assets
         load_js_assets
-        render actn, layout: "dashboard"
+        render actn
       rescue ActionView::MissingTemplate => q
         raise ActionController::RoutingError, "Bad URL in dashboard"
       end
@@ -71,10 +77,10 @@ class DashboardController < ApplicationController
     # Two use cases:                  re-confirmation   Email change
     klass  = user.unconfirmed_email? ? Users::Reverify : Users::Verify
     @token = klass.run!(user: user).to_json
-    render :confirmation_page, layout: false
+    render :confirmation_page
   rescue User::AlreadyVerified
     @already_registered = true
-    render :confirmation_page, layout: false, status: 409
+    render :confirmation_page, status: 409
   end
 
   # Endpoint reports CSP violations, indicating a possible security problem.

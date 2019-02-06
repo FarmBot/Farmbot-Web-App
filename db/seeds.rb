@@ -28,6 +28,8 @@ if Rails.env == "development"
       FarmwareInstallation,
       Device,
       Tool,
+      Delayed::Job,
+      Delayed::Backend::ActiveRecord::Job,
     ].map(&:delete_all)
     Users::Create.run!(name:                  "Test",
                        email:                 "test@test.com",

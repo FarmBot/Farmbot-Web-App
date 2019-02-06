@@ -65,7 +65,7 @@ services:
   delayed_job: # ====================
     <<: *base_config
     <<: *rails
-    depends_on: ["db","mqtt"]
+    depends_on: ["db","mqtt", "web"]
     command: bundle exec rake jobs:work
   log_digests: # ====================
     <<: *base_config
