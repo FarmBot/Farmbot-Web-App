@@ -3,40 +3,42 @@ class DashboardController < ApplicationController
   layout "dashboard"
 
   # === THESE CONSTANTS ARE CONFIGURABLE: ===
-  EVERY_STATIC_PAGE = [:confirmation_page,
-                       :front_page,
-                       :main_app,
-                       :password_reset,
-                       :tos_update,]
+  EVERY_STATIC_PAGE = [ :front_page,
+                        :main_app,
+                        :password_reset,
+                        :tos_update, ]
+
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
                                                    # <= See PUBLIC_OUTPUT_DIR
   CACHE_DIR  = File.join(".cache")
 
-  CSS_INPUTS  = HashWithIndifferentAccess.new({
+  CSS_INPUTS  = {
     front_page: "/css/laptop_splash.scss",
     default:    "/css/_index.scss",
-  })
+  }.with_indifferent_access
 
-  JS_INPUTS   = HashWithIndifferentAccess.new({
+  JS_INPUTS   = {
     main_app:       "/entry.tsx",
     front_page:     "/front_page/index.tsx",
     password_reset: "/password_reset/index.tsx",
     tos_update:     "/tos_update/index.tsx",
-  })
+  }.with_indifferent_access
 
   # === THESE CONSTANTS ARE NON-CONFIGURABLE. ===
   # They are calculated based on config above.
   PUBLIC_OUTPUT_DIR = File.join("public", OUTPUT_URL)
 
-  CSS_OUTPUTS = HashWithIndifferentAccess.new(CSS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = File.join(OUTPUT_URL, value.gsub(/\.scss$/, ".css"))
+  CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (k, v)|
+    file     = v.gsub(/\.scss$/, ".css")
+    acc[k] = File.join(OUTPUT_URL, file)
     acc
-  end)
+  end.with_indifferent_access
 
-  JS_OUTPUTS = HashWithIndifferentAccess.new(JS_INPUTS.reduce({}) do |acc, (key, value)|
-    acc[key] = File.join(OUTPUT_URL, value.gsub(/\.tsx?$/, ".js"))
+  JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (k, v)|
+    file   = v.gsub(/\.tsx?$/, ".js")
+    acc[k] = File.join(OUTPUT_URL, file)
     acc
-  end)
+  end.with_indifferent_access
 
   PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
     .sort
