@@ -62,7 +62,7 @@ namespace :api do
     sh [intro, opts, DashboardController::PARCEL_CLI_OUTRO].join(" ")
   end
 
-  desc "Serve javascript assets (via Parcel bundler)"
+  desc "Serve javascript assets (via Parcel bundler)."
   task serve_assets: :environment do
     # Clear out cache and previous builds on initial load.
     sh ["rm -rf",
@@ -72,7 +72,7 @@ namespace :api do
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
-  desc "DELETE OLD ASSETS and build javascript/css assets via Parcel bundler"
+  desc "Don't call this directly. Use `rake assets:precompile`."
   task parcel_compile: :environment do
     parcel "build"
   end
