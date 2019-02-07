@@ -13,7 +13,6 @@ import {
   findSequenceById
 } from "../resources/selectors";
 import { TaggedRegimen } from "farmbot";
-import { duration } from "moment";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
@@ -21,7 +20,7 @@ import {
   shouldDisplay as shouldDisplayFunc
 } from "../util";
 import { resourceUsageList } from "../resources/in_use";
-import { groupBy, chain } from "lodash";
+import { groupBy, chain, sortBy } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
@@ -92,7 +91,7 @@ function generateCalendar(regimen: TaggedRegimen,
   return days
     .map(makeRows)
     .map((x) => {
-      x.items = chain(x.items).sortBy(SORT_KEY).value();
+      x.items = sortBy(x.items, SORT_KEY);
       return x;
     });
 }
@@ -102,10 +101,10 @@ const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedReg
     const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
     const { time_offset } = item;
-    const d = duration(time_offset);
+    const d = moment.duration(time_offset);
     const { name } = sequence.body;
     const color = sequence.body.color || randomColor();
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
-    const day = Math.floor(duration(time_offset).asDays()) + 1;
+    const day = Math.floor(moment.duration(time_offset).asDays()) + 1;
     return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
   };

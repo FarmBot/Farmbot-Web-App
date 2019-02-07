@@ -3,7 +3,7 @@ function flunk() {
   // IE Cannot handle it.
   const READ_THE_COMMENT_ABOVE = "This app only works with modern browsers.";
   alert(READ_THE_COMMENT_ABOVE);
-  window.location.href = "https://www.google.com/chrome/";
+  window.location.assign("https://www.google.com/chrome/");
 }
 
 const REQUIRED_GLOBALS = [

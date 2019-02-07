@@ -78,7 +78,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   render() {
     const filterBtnColor = this.filterActive ? "green" : "gray";
-    return <Page className="logs">
+    return <Page className="logs-page">
       <Row>
         <Col xs={10}>
           <h3>

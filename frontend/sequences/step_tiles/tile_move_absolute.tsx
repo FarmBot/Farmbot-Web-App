@@ -1,6 +1,5 @@
 import * as React from "react";
 import { t } from "i18next";
-import { Component } from "react";
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import {
@@ -52,7 +51,7 @@ interface Args {
 }
 type LocationArg = "location" | "offset";
 
-export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
+export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   get resources() { return this.props.resources; }
   get step() { return this.props.currentStep; }
   get tool(): TaggedTool | undefined {

@@ -55,7 +55,7 @@ export class Controls extends React.Component<Props, {}> {
   render() {
     const showWebcamWidget =
       !this.props.getWebAppConfigVal(BooleanSetting.hide_webcam_widget);
-    return <Page className="controls">
+    return <Page className="controls-page">
       {showWebcamWidget
         ?
         <Row>

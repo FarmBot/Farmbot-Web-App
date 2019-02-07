@@ -22,7 +22,7 @@ export class Sequences extends React.Component<Props, {}> {
   render() {
     const { sequence } = this.props;
     const sequenceSelected = sequence && isTaggedSequence(sequence);
-    return <Page className="Sequence">
+    return <Page className="sequence-page">
       <Row>
         <LeftPanel
           className="sequence-list-panel"

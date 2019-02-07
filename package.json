@@ -10,11 +10,12 @@
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "build": "TARGET=production echo Rick- fix this 30 jan",
     "start": "echo 'DEPRECATED. Remove `start` from npm scripts'",
-    "test-slow": "jest --coverage --ci --maxWorkers=6 --colors",
+    "test-slow": "jest --coverage --ci -w 6 --colors",
     "test": "jest --no-coverage --cache -w 5 --colors",
-    "typecheck": "./node_modules/.bin/tsc --noEmit --jsx preserve",
+    "typecheck": "./node_modules/typescript/bin/tsc --noEmit",
     "tslint": "./node_modules/tslint/bin/tslint --project .",
-    "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q"
+    "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",
+    "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss sass.log"
   },
   "keywords": [
     "farmbot"

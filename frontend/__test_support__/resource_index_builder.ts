@@ -11,7 +11,7 @@ import { resourceReducer, emptyState } from "../resources/reducer";
 import { resourceReady } from "../sync/actions";
 import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
-import { chain } from "lodash";
+import { chain, groupBy } from "lodash";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -420,7 +420,7 @@ const blankReg: TaggedRegimen = {
  * number of failed tests. To circumvent this, we "repair" faulty foreign keys
  * in TaggedResources. This applies to many legacy tests. - RC*/
 function repairBrokeReferences(resources: TaggedResource[]): TaggedResource[] {
-  const table = chain(resources).groupBy(x => x.kind).value();
+  const table = groupBy(resources, x => x.kind);
   resources.map(resource => {
     if (resource.kind === "FarmEvent") { // Find FarmEvents
       const { executable_type, executable_id } = resource.body;

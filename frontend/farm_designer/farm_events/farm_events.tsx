@@ -12,7 +12,7 @@ import { DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 import { DesignerPanel, DesignerPanelContent } from "../plants/designer_panel";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
-import { chain, some, uniq, map } from "lodash";
+import { some, uniq, map, sortBy } from "lodash";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -31,9 +31,7 @@ export class PureFarmEvents
 
   innerRows = (items: CalendarOccurrence[]) => {
 
-    return chain(items)
-      .sortBy(x => x.sortKey)
-      .value()
+    return sortBy(items, x => x.sortKey)
       .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
         const url = `/app/designer/farm_events/`

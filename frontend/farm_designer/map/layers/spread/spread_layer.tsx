@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import { round, transformXY } from "../../util";
 import { cachedCrop } from "../../../../open_farm/icons";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
@@ -71,7 +70,7 @@ interface SpreadCircleState {
 }
 
 export class SpreadCircle extends
-  Component<SpreadCircleProps, SpreadCircleState> {
+  React.Component<SpreadCircleProps, SpreadCircleState> {
   state: SpreadCircleState = { spread: undefined };
 
   componentWillMount = () => {

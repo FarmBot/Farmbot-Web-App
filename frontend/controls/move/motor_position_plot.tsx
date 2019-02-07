@@ -164,7 +164,7 @@ const PlotLines = ({ locationData }: { locationData: BotLocationData }) => {
 export const MotorPositionPlot = (props: { locationData: BotLocationData }) => {
   return <svg
     className="motor-position-plot-border"
-    style={{ marginTop: "2rem" }}
+    style={{ marginTop: "2rem", maxHeight: "250px" }}
     width="100%"
     height="100%"
     viewBox={trim(`${-BORDER_WIDTH} ${-HEIGHT / 2 - BORDER_WIDTH}

@@ -13,7 +13,7 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
     () => this.setState({ [name]: !this.state[name] });
 
   render() {
-    return <Page className="tools">
+    return <Page className="tools-page">
       <Row>
         <Col sm={7}>
           {this.state.editingBays
