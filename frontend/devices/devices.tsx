@@ -55,7 +55,7 @@ export class Devices extends React.Component<Props, {}> {
       const botToMqttLastSeen = (botToMqtt && botToMqttStatus === "up")
         ? botToMqtt.at
         : "";
-      return <Page className="devices">
+      return <Page className="device-page">
         <Row>
           <Col xs={12} sm={6}>
             <FarmbotOsSettings

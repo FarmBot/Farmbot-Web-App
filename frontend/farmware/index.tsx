@@ -164,7 +164,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   render() {
     const farmware = getFarmwareByName(
       this.props.farmwares, this.current || "take-photo");
-    return <Page className="farmware">
+    return <Page className="farmware-page">
       <Row>
         <LeftPanel
           className="farmware-list-panel"

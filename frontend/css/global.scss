@@ -402,7 +402,6 @@ fieldset {
 .webcam-stream-unavailable {
   position: relative;
   width: 100%;
-  height: 100%;
 }
 
 .webcam-stream-unavailable img {
@@ -761,7 +760,7 @@ ul {
   }
 }
 
-.farmware {
+.farmware-page {
   button {
     margin: 0.5rem;
   }
@@ -814,7 +813,7 @@ ul {
   word-wrap: break-word;
 }
 
-.logs {
+.logs-page {
   .row {
     @media screen and (max-width: 974px) {
       margin-left: 0;

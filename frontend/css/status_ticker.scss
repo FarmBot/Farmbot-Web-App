@@ -7,6 +7,7 @@
   background: $black;
   opacity: 0.9;
   .bp3-collapse {
+    width: 100% !important;
     overflow-y: scroll !important;
     max-height: 20rem !important;
   }

@@ -47,8 +47,8 @@ class DashboardController < ApplicationController
     .join(" ")
 
   PARCEL_HMR_OPTS   = [
-    "--hmr-hostname #{ENV.fetch("API_HOST")}",
-    "--hmr-port 3808"
+    "--no-hmr",
+    "--no-cache"
   ].join(" ")
 
   PARCEL_CLI_OUTRO  = [
@@ -75,6 +75,7 @@ class DashboardController < ApplicationController
   end
 
   def confirmation_page
+    load_css_assets
     user   = User.find_by!(confirmation_token: params.fetch(:token))
     # Two use cases:                  re-confirmation   Email change
     klass  = user.unconfirmed_email? ? Users::Reverify : Users::Verify

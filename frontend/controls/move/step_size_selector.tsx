@@ -1,9 +1,8 @@
 import * as React from "react";
-import { Component } from "react";
 import { StepSizeSelectorProps } from "./interfaces";
 import { first, last } from "lodash";
 
-export class StepSizeSelector extends Component<StepSizeSelectorProps, {}> {
+export class StepSizeSelector extends React.Component<StepSizeSelectorProps, {}> {
   cssForIndex(num: number) {
     const choices = this.props.choices;
     let css = "move-amount no-radius fb-button ";

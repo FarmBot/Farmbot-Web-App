@@ -31,6 +31,7 @@ jobs:
           name: Run linters
           command: |
             sudo docker-compose run parcel npm run tslint
+            sudo docker-compose run parcel npm run sass-check
             sudo docker-compose run parcel npm run sass-lint
             sudo docker-compose run parcel npm run typecheck
       - run:

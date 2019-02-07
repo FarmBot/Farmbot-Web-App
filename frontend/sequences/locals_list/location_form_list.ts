@@ -8,7 +8,7 @@ import { TaggedTool, TaggedPoint } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { Vector3 } from "farmbot/dist";
 import { t } from "i18next";
-import { capitalize, chain } from "lodash";
+import { capitalize } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";
 import { Point } from "farmbot/dist/resources/api_resources";
 
@@ -43,12 +43,12 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Other": "Other",
 };
 
-const heading = (name: DropdownHeadingId) => ({
+const heading = (name: DropdownHeadingId): DropDownItem[] => ([{
   label: t(NAME_MAP[name]),
   heading: true,
   value: 0,
   headingId: name
-});
+}]);
 
 const ddiFrom = (points: TaggedPoint[], pointerType: PointerTypeName) => points
   .filter(x => x.body.pointer_type === pointerType)
@@ -70,7 +70,7 @@ export function locationFormList(resources: ResourceIndex,
     .map(({ tool, location }) => formatTools(tool, location))
     .filter(x => parseInt("" + x.value) > 0);
   const group = maybeGroup(!!displayGroups);
-  return chain(heading("Tool"))
+  return heading("Tool")
     .concat(toolDDI)
     .concat(group(everyPointDDI("Tool")))
     .concat(group(everyPointDDI("ToolSlot")))
@@ -82,8 +82,7 @@ export function locationFormList(resources: ResourceIndex,
     .concat(group(everyPointDDI("GenericPointer")))
     .concat(heading("Other"))
     .concat(additionalItems)
-    .concat(COORDINATE_DDI())
-    .value();
+    .concat(COORDINATE_DDI());
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */

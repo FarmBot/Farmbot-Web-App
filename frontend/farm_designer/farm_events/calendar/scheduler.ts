@@ -1,4 +1,3 @@
-import { duration } from "moment";
 import moment from "moment";
 import { Moment, unitOfTime } from "moment";
 import { range } from "lodash";
@@ -77,7 +76,7 @@ export function farmEventIntervalSeconds(repeat: number, unit: TimeUnit) {
   if ((unit === NEVER) || !(momentUnit)) {
     return 0;
   } else {
-    return duration(repeat, momentUnit).asSeconds();
+    return moment.duration(repeat, momentUnit).asSeconds();
   }
 }
 
