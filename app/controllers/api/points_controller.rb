@@ -11,6 +11,16 @@ module Api
       of the following values: %s
     XYZ
 
+    # WHY 1000?:
+    #  * This limit is placed for _technical_ reasons, not business reasons.
+    #    * 2019 RPis + Frontend UI cannot reliably handle > 1000 points.
+    #  * Bots with > 800 points are outliers. Most users simply don't have that
+    #    many plants
+    #  * An XL bot at 100% capacity and 1000 evenly space plants =
+    #      5 inch point grid. Smaller bed = higher resolution.
+    POINT_HARD_LIMIT = 10 #00 # Not allowed to exceed this.
+    POINT_SOFT_LIMIT = (POINT_HARD_LIMIT * 0.8).to_i
+
     rescue_from BadPointerType do |exc|
       sorry BAD_POINTER_TYPE.split(/\n+/).join(" ") % [ALL_POINTERS], 422
     end
@@ -29,7 +39,14 @@ module Api
     end
 
     def create
-      mutate pointer_klass::Create.run(raw_json, device_params)
+      case point_count Point.where(device_id: current_device.id).count
+      when (0..POINT_SOFT_LIMIT)
+        mutate pointer_klass::Create.run(raw_json, device_params)
+      when (POINT_SOFT_LIMIT..POINT_HARD_LIMIT)
+        raise "Do a soft warning here."
+      when (POINT_HARD_LIMIT..nil) # nil means Infinity
+        raise "Do a hard warning here."
+      end
     end
 
     def update
@@ -55,6 +72,8 @@ module Api
     # STI is the current mecahnism. The method is a relic from previous
     # iterations
     def pointer_klass
+      puts "TODO: Unify these in to a single mutation in  prep for HTTP free "\
+           "resource creation"
       case raw_json&.dig(:pointer_type)
         when "GenericPointer" then Points
         when "ToolSlot"       then ToolSlots
