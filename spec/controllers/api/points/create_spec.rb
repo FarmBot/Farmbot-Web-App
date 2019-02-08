@@ -147,11 +147,5 @@ describe Api::PointsController do
       expect(ToolSlot.count).to eq old_tool_count
       expect(json[:tool_id]).to include("Can't find tool")
     end
-
-    # it "warns users when they hit the soft resource limit" do
-    #   const_reassign(User, :ENFORCE_TOS, "http://farm.bot/tos")
-    #   post :create, body: payload.to_json, params: {format: :json}
-    #   expect(response.status).to eq(200)
-    # end
   end
 end

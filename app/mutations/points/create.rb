@@ -9,11 +9,20 @@ module Points
     #    many plants
     #  * An XL bot at 100% capacity and 1000 evenly space plants =
     #      5 inch point grid. Smaller bed = higher resolution.
-    POINT_HARD_LIMIT = 1 # 1000 # Not allowed to exceed this.
-    POINT_SOFT_LIMIT = 2 # (POINT_HARD_LIMIT * 0.8).to_i
+    POINT_HARD_LIMIT = 1000 # Not allowed to exceed this.
+    POINT_SOFT_LIMIT = (POINT_HARD_LIMIT * 0.8).to_i
     BAD_TOOL_ID      = "Can't find tool with id %s"
     DEFAULT_NAME     = "Untitled %s"
     KINDS            = Point::POINTER_KINDS
+    GETTING_CLOSE    = "Your account is "\
+      "approaching the allowed point limit of "\
+      "#{POINT_HARD_LIMIT}. Consider deleting old"\
+      " points to avoid adverse performance."
+    TOO_MANY         = "Your device has hit the "\
+      "max limit for point usage (currently "\
+      "#{POINT_HARD_LIMIT}). Please delete unused"\
+      " map points and plants to create more "
+
     BAD_POINTER_TYPE = \
       "Please provide a JSON object with a `poin"\
       "ter_type` that matches one of the followi"\
@@ -57,11 +66,13 @@ module Points
   private
 
     def validate_resource_count
-      case Point.where(device_id: device.id).count
-        when (POINT_SOFT_LIMIT..POINT_HARD_LIMIT)
-          binding.pry
-        when (POINT_HARD_LIMIT..nil)
-          binding.pry
+      actual = \
+        Point.where(device_id: device.id).count
+      case actual
+        when POINT_SOFT_LIMIT
+          device.tell(GETTING_CLOSE % { actual: actual }, ["fatal_email"])
+        when POINT_HARD_LIMIT...nil
+          add_error(:point_limit, :point_limit, TOO_MANY)
       end
     end
 
