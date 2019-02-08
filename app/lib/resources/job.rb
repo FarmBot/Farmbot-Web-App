@@ -20,7 +20,6 @@ module Resources
       case action
       when DESTROY then do_deletion
       when SAVE    then do_save
-      else; never
       end
     rescue ActiveRecord::RecordNotFound
       add_error :not_found, :not_found, NOT_FOUND

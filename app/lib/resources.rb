@@ -26,25 +26,25 @@ module Resources
 
   # Map ActiveRecord class to a Mutations::Command class.
   MUTATION_MAPPING = {
-    FarmEvent             => FarmEvents,
     FarmwareInstallations => FarmwareInstallations,
-    Image                 => Images,
-    Log                   => Logs,
-    Peripheral            => Peripherals,
-    PinBinding            => PinBindings,
-    PlantTemplate         => PlantTemplates,
-    Regimen               => Regimens,
-    SavedGarden           => SavedGardens,
-    Sensor                => Sensors,
-    SensorReading         => SensorReadings,
-    Sequence              => Sequences,
-    Tool                  => Tools,
-    WebcamFeed            => WebcamFeeds,
+    FarmEvent     => FarmEvents,
+    Image         => Images,
+    Log           => Logs,
+    Peripheral    => Peripherals,
+    PinBinding    => PinBindings,
+    PlantTemplate => PlantTemplates,
+    Regimen       => Regimens,
+    SavedGarden   => SavedGardens,
+    Sensor        => Sensors,
+    SensorReading => SensorReadings,
+    Sequence      => Sequences,
+    Tool          => Tools,
+    WebcamFeed    => WebcamFeeds,
     #  SPECIAL CASES =============================
     #    These reasources don't follow usual
     #    naming coonventions.
-    Plants                => Points,
-    Point                 => Points,
-    ToolSlot              => Points,
+    Plant         => Points,
+    Point         => Points,
+    ToolSlot      => Points,
   }
 end # Resources

@@ -9,8 +9,8 @@ module Points
     #    many plants
     #  * An XL bot at 100% capacity and 1000 evenly space plants =
     #      5 inch point grid. Smaller bed = higher resolution.
-    POINT_HARD_LIMIT = 1000 # Not allowed to exceed this.
-    POINT_SOFT_LIMIT = (POINT_HARD_LIMIT * 0.8).to_i
+    POINT_HARD_LIMIT = 1 # 1000 # Not allowed to exceed this.
+    POINT_SOFT_LIMIT = 2 # (POINT_HARD_LIMIT * 0.8).to_i
     BAD_TOOL_ID      = "Can't find tool with id %s"
     DEFAULT_NAME     = "Untitled %s"
     KINDS            = Point::POINTER_KINDS
@@ -57,11 +57,12 @@ module Points
   private
 
     def validate_resource_count
-      # case Point.where(device_id: device.id).count
-      # when (0..POINT_SOFT_LIMIT)
-      # when (POINT_SOFT_LIMIT..POINT_HARD_LIMIT)
-      # when (POINT_HARD_LIMIT..nil)
-      # end
+      case Point.where(device_id: device.id).count
+        when (POINT_SOFT_LIMIT..POINT_HARD_LIMIT)
+          binding.pry
+        when (POINT_HARD_LIMIT..nil)
+          binding.pry
+      end
     end
 
     def default_name
@@ -80,10 +81,6 @@ module Points
 
     def klass_
       @klass_ ||= pointer_type.constantize
-    end
-
-    def has_tool_id
-      !!tool_id
     end
 
     def bad_tool_id?

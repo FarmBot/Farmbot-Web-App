@@ -108,12 +108,13 @@ if Rails.env == "development"
     WebcamFeeds::Create.run!(device: u.device,
                             name: "My Feed 1",
                             url: "https://nature.nps.gov/air/webcams/parks/yosecam/yose.jpg")
-    ts = ToolSlots::Create.run!(device: u.device,
-                                tool_id: t.id,
-                                name: "Slot One.",
-                                x: 10,
-                                y: 10,
-                                z: 10)
+    ts = Points::Create.run!(device: u.device,
+                             tool_id: t.id,
+                             name: "Slot One.",
+                             x: 10,
+                             y: 10,
+                             z: 10,
+                             pointer_type: "ToolSlot")
     d = u.device
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
