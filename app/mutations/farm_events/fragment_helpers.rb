@@ -48,12 +48,11 @@ module FarmEvents
     end
 
     def owner
-      module_name = self.class.parent.name
-      case module_name
-      when "FarmEvents" then farm_event
-      when "Regimens"   then regimen
-      else;             raise BAD_MODULE % module_name
-      end
+      options = {
+        FarmEvents => ->() { farm_event },
+        Regimens   => ->() { regimen    },
+      }
+      options.fetch(self.class.parent).call()
     end
   end
 end
