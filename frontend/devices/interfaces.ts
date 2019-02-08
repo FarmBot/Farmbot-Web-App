@@ -77,6 +77,7 @@ export enum Feature {
   api_farmware_installations = "api_farmware_installations",
   api_farmware_env = "api_farmware_env",
   use_update_channel = "use_update_channel",
+  long_scaling_factor = "long_scaling_factor",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;

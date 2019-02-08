@@ -76,6 +76,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_scaling_x"}
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
+        intSize={shouldDisplay(Feature.long_scaling_factor) ? "long" : "short"}
         gray={encodersDisabled}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
