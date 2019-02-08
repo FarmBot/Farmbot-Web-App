@@ -54,6 +54,13 @@ class Device < ApplicationRecord
       .limit(max_log_count || DEFAULT_MAX_LOGS)
   end
 
+  def excess_logs
+    Log
+      .where
+      .not(id: limited_log_list.pluck(:id))
+      .where(device_id: self.id)
+  end
+
   def self.current
     RequestStore.store[:device]
   end
