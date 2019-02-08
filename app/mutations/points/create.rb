@@ -3,13 +3,20 @@ require_relative "../../lib/hstore_filter"
 module Points
   class Create < Mutations::Command
     # WHY 1000?:
-    #  * This limit is placed for _technical_ reasons, not business reasons.
-    #    * 2019 RPis + Frontend UI cannot reliably handle > 1000 points.
-    #  * Bots with > 800 points are outliers. Most users simply don't have that
-    #    many plants
-    #  * An XL bot at 100% capacity and 1000 evenly space plants =
-    #      5 inch point grid. Smaller bed = higher resolution.
-    POINT_HARD_LIMIT = 1000 # Not allowed to exceed this.
+    #  * This limit is placed for _technical_
+    #    reasons, not business reasons. If it were
+    #    reasonable to have that many points, we
+    #    would certainly allow it. Real world use
+    #    has shown that devices cannot support this
+    #    many points (CPU limits).
+    #  * 2019 RPis + Frontend UI cannot reliably
+    #    handle > 1000 points.
+    #  * Bots with > 800 points are outliers. Most
+    #    users simply don't have that many plants
+    #  * An XL bot at 100% capacity and 1000
+    #    evenly space plants = 5 inch point grid.
+    #    Smaller bed = higher resolution.
+    POINT_HARD_LIMIT = 1000 # Can't exceed this.
     POINT_SOFT_LIMIT = (POINT_HARD_LIMIT * 0.8).to_i
     BAD_TOOL_ID      = "Can't find tool with id %s"
     DEFAULT_NAME     = "Untitled %s"
@@ -22,12 +29,10 @@ module Points
       "max limit for point usage (currently "\
       "#{POINT_HARD_LIMIT}). Please delete unused"\
       " map points and plants to create more "
-
     BAD_POINTER_TYPE = \
       "Please provide a JSON object with a `poin"\
       "ter_type` that matches one of the followi"\
-      "ng values: "\
-      "#{KINDS.join(", ")}"
+      "ng values: #{KINDS.join(", ")}"
 
     required do
       float  :x
@@ -70,6 +75,7 @@ module Points
         Point.where(device_id: device.id).count
       case actual
         when POINT_SOFT_LIMIT
+          device.points.discarded.destroy_all
           device.tell(GETTING_CLOSE % { actual: actual }, ["fatal_email"])
         when POINT_HARD_LIMIT...nil
           add_error(:point_limit, :point_limit, TOO_MANY)

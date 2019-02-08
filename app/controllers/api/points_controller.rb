@@ -2,11 +2,16 @@ require_relative "../../lib/hstore_filter"
 
 module Api
   class PointsController < Api::AbstractController
-    # Hard delete soft deletions after ___:
-    EXPIRY           = 2.months
+    # NOTE: Soft deleted points will be destroyed
+    # without warning when the device hits
+    # Points::Create::POINT_SOFT_LIMIT
+    HARD_DELETE_AFTER = 2.months
 
     def index
-      Point.discarded.where("discarded_at < ?", Time.now - EXPIRY).destroy_all
+      Point
+        .discarded
+        .where("discarded_at < ?", Time.now - HARD_DELETE_AFTER)
+        .destroy_all
       render json: points
     end
 

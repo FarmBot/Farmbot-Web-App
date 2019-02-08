@@ -51,11 +51,11 @@ services:
      - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
     volumes:
      - ./docker_volumes/rabbit:/farmbot
-  # typescript:
-  #   <<: *base_config
-  #   <<: *rails
-  #   depends_on: ["parcel"]
-  #   command: node_modules/typescript/bin/tsc -w --noEmit
+  typescript:
+    <<: *base_config
+    <<: *rails
+    depends_on: ["parcel"]
+    command: node_modules/typescript/bin/tsc -w --noEmit
   parcel:     # ====================
     <<: *base_config
     <<: *rails
