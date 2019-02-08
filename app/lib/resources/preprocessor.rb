@@ -18,9 +18,10 @@ module Resources
     end
 
     required do
-      string :action,      in:      ACTIONS        # "destroy"
-      string :device_name, matches: DEVICE_REGEX   # "device_3"
-      string :resource,    in:      RESOURCES.keys # "Sequence"
+      string :action,      in:      ACTIONS            # "destroy"
+      string :device_name, matches: DEVICE_REGEX       # "device_3"
+                                    # "Sequence":
+      string :resource,    in:      ELIGIBLE_RESOURCES.map(&:to_s)
     end
 
     optional do

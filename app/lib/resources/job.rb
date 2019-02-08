@@ -1,6 +1,7 @@
 module Resources
   class Job < Mutations::Command
     NOT_FOUND     = "Resource not found"
+
     required do
       duck    :body, methods: [:[], :[]=]
       duck    :resource, duck: [:where, :find_by]
