@@ -3,11 +3,11 @@ module ToolSlots
     FIELDS = [:tool_id, :pullout_direction, :x, :y, :z, :name]
 
     required do
-      model   :device, class: Device
-      string  :name,   default: "Untitled Slot"
-      float :x
-      float :y
-      float :z
+      model  :device, class: Device
+      string :name,   default: "Untitled Slot"
+      float  :x
+      float  :y
+      float  :z
     end
 
     optional do

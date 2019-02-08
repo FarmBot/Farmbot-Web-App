@@ -1,7 +1,9 @@
 class Point < ApplicationRecord
   include Discard::Model
-  MAX_AXIS_SIZE = 50_000 # No one has an axis value > 21k right now - RC
-  # Using real constants instead of strings results in circular dep. errors.
+  MAX_AXIS_SIZE = 50_000 # No one has an
+                         # axis value > 21k right now - RC
+  # Using real constants instead of strings results
+  # in circular dep. errors.
   POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
   self.inheritance_column = "pointer_type"
 
