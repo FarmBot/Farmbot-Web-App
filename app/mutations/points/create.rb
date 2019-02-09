@@ -78,6 +78,7 @@ module Points
           device.points.discarded.destroy_all
           device.tell(GETTING_CLOSE % { actual: actual }, ["fatal_email"])
         when POINT_HARD_LIMIT...nil
+          device.points.discarded.destroy_all
           add_error(:point_limit, :point_limit, TOO_MANY)
       end
     end
