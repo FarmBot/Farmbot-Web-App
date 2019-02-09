@@ -66,6 +66,7 @@ sudo docker-compose up
   # shut down the server, create a database backup
   # and run commands below.
   git pull https://github.com/FarmBot/Farmbot-Web-App.git master
+  sudo docker-compose build
   sudo docker-compose run web bundle install   # <== ⚠ UPGRADE USERS ONLY
   sudo docker-compose run web npm install      # <== ⚠ UPGRADE USERS ONLY
   sudo docker-compose run web rails db:migrate # <== ⚠ UPGRADE USERS ONLY

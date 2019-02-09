@@ -2,7 +2,7 @@
 class Device < ApplicationRecord
   DEFAULT_MAX_CONFIGS = 100
   DEFAULT_MAX_IMAGES  = 100
-  DEFAULT_MAX_LOGS    = 100
+  DEFAULT_MAX_LOGS    = 1000
 
   TIMEZONES     = TZInfo::Timezone.all_identifiers
   BAD_TZ        = "%{value} is not a valid timezone"
@@ -52,6 +52,13 @@ class Device < ApplicationRecord
       .order(created_at: :desc)
       .where(device_id: self.id)
       .limit(max_log_count || DEFAULT_MAX_LOGS)
+  end
+
+  def excess_logs
+    Log
+      .where
+      .not(id: limited_log_list.pluck(:id))
+      .where(device_id: self.id)
   end
 
   def self.current

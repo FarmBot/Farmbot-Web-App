@@ -137,12 +137,13 @@ describe Resources::Job do
 
   it "creates a point" do
     device = FactoryBot.create(:device)
-    body   = { name:   SecureRandom.uuid,
-               x:      1,
-               y:      1,
-               z:      1,
-               radius: 1,
-               meta:   {} }
+    body   = { name:         SecureRandom.uuid,
+               x:            1,
+               y:            1,
+               z:            1,
+               radius:       1,
+               meta:         {},
+               pointer_type: "GenericPointer" }
     result = Resources::Job.run!(body:        body,
                                  resource:    Point,
                                  resource_id: 0,
