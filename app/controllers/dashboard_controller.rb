@@ -65,6 +65,8 @@ class DashboardController < ApplicationController
         # If you don't do this, you will hit hard to debug
         # CSP errors on local when changing API_HOST.
         response.headers["Cache-Control"] = "no-cache, no-store"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
         load_css_assets
         load_js_assets
         render actn
