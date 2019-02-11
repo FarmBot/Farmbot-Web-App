@@ -1,6 +1,8 @@
 import * as React from "react";
 import { NetworkState } from "../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
+import { t } from "i18next";
+import { Content } from "../constants";
 
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {
@@ -23,6 +25,10 @@ export function MustBeOnline(props: MBOProps) {
   if ((botUp && netUp) || lockOpen) {
     return <div> {children} </div>;
   } else {
-    return <div className={`unavailable ${banner}`}> {children} </div>;
+    return <div
+      className={`unavailable ${banner}`}
+      title={t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
+      {children}
+    </div>;
   }
 }

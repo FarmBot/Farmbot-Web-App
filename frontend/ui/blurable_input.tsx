@@ -28,6 +28,7 @@ export interface BIProps {
   hidden?: boolean;
   error?: string;
   title?: string;
+  autoFocus?: boolean;
 }
 
 interface BIState {
@@ -110,6 +111,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       className: (this.props.className || "") + (this.error ? " error" : ""),
       title: this.props.title || "",
       placeholder: this.props.placeholder,
+      autoFocus: this.props.autoFocus,
     };
   }
 

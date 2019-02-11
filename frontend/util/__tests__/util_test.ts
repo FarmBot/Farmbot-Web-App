@@ -133,6 +133,17 @@ describe("util", () => {
         raw_encoders: { x: undefined, y: undefined, z: undefined }
       });
     });
+
+    it("returns valid location_data object when a partial is provided", () => {
+      const result = Util.validBotLocationData(
+        // tslint:disable-next-line:no-any
+        { raw_encoders: { x: 123 } } as any);
+      expect(result).toEqual({
+        position: { x: undefined, y: undefined, z: undefined },
+        scaled_encoders: { x: undefined, y: undefined, z: undefined },
+        raw_encoders: { x: 123, y: undefined, z: undefined }
+      });
+    });
   });
 
   describe("fancyDebug()", () => {

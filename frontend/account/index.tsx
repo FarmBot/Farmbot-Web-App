@@ -70,7 +70,7 @@ export class Account extends React.Component<Props, State> {
     const deleteAcct =
       (password: string) => this.props.dispatch(deleteUser({ password }));
 
-    return <Page className="account">
+    return <Page className="account-page">
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
           <Settings

@@ -77,7 +77,7 @@ export function TileExecuteScript(props: StepParams) {
               allowEmpty={true}
               customNullLabel={"Manual Input"} />
             {!isInstalled(farmwareName) &&
-              <div>
+              <div className="farmware-name-manual-input">
                 <label>{t("Manual input")}</label>
                 <StepInputBox dispatch={dispatch}
                   index={index}

@@ -119,6 +119,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       case "take_photo":
       case "photos":
         return <Photos
+          syncStatus={this.props.syncStatus}
+          botToMqttStatus={this.props.botToMqttStatus}
           timeOffset={this.props.timeOffset}
           dispatch={this.props.dispatch}
           images={this.props.images}

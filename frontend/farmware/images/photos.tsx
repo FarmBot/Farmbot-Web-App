@@ -3,7 +3,7 @@ import moment from "moment";
 import { t } from "i18next";
 import { success, error } from "farmbot-toastr";
 import { ImageFlipper } from "./image_flipper";
-import { PhotosProps } from "./interfaces";
+import { PhotosProps, PhotoButtonsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { Content } from "../../constants";
 import { selectImage } from "./actions";
@@ -12,8 +12,9 @@ import { destroy } from "../../api/crud";
 import {
   downloadProgress
 } from "../../devices/components/fbos_settings/os_update_button";
-import { JobProgress, TaggedImage } from "farmbot";
+import { TaggedImage } from "farmbot";
 import { startCase } from "lodash";
+import { MustBeOnline } from "../../devices/must_be_online";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -48,18 +49,20 @@ const PhotoMetaData = ({ image }: { image: TaggedImage | undefined }) =>
         obj={{ image: t("No meta data.") }} />}
   </div>;
 
-const PhotoButtons = (props: {
-  takePhoto: () => void,
-  deletePhoto: () => void,
-  imageJobs: JobProgress[]
-}) => {
+const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
   return <div className="farmware-button">
-    <button
-      className="fb-button green"
-      onClick={props.takePhoto}>
-      {t("Take Photo")}
-    </button>
+    <MustBeOnline
+      syncStatus={props.syncStatus}
+      networkState={props.botToMqttStatus}
+      hideBanner={true}
+      lockOpen={process.env.NODE_ENV !== "production"}>
+      <button
+        className="fb-button green"
+        onClick={props.takePhoto}>
+        {t("Take Photo")}
+      </button>
+    </MustBeOnline>
     <button
       className="fb-button red"
       onClick={props.deletePhoto}>
@@ -115,6 +118,8 @@ export class Photos extends React.Component<PhotosProps, {}> {
   render() {
     return <div className="photos">
       <PhotoButtons
+        syncStatus={this.props.syncStatus}
+        botToMqttStatus={this.props.botToMqttStatus}
         takePhoto={this.takePhoto}
         deletePhoto={this.deletePhoto}
         imageJobs={this.props.imageJobs} />

@@ -15,7 +15,8 @@
     "typecheck": "./node_modules/typescript/bin/tsc --noEmit",
     "tslint": "./node_modules/tslint/bin/tslint --project .",
     "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",
-    "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss sass.log"
+    "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss sass.log",
+    "linters": "npm run typecheck && npm run tslint && npm run sass-lint && npm run sass-check"
   },
   "keywords": [
     "farmbot"
