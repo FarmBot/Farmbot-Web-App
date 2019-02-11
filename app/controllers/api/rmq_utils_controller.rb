@@ -5,10 +5,26 @@ module Api
   # Any other response results in denial.
   # Results are cached for 10 minutes to prevent too many requests to the API.
   class RmqUtilsController < Api::AbstractController
+    # List of AMQP/MQTT topics we support in the following format:
+    # "bot.device_123.<MAIN TOPIC HERE>"
+    MAIN_TOPICS = %w(
+      nerves_hub
+      from_clients
+      from_device
+      logs
+      status
+      status_v8
+      sync
+      resources_v0
+      from_api
+      \\#
+      \\*
+    ).map { |x| x + "(\\.|\\z)" }.join("|")
+
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX     = \
-      /(bot\.device_)\d*\.(nerves_hub|from_clients|from_device|logs|status|sync|resources_v0|from_api|\#|\*)\.?.*/
+    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{MAIN_TOPICS})" )
+
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }

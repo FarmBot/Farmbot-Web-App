@@ -2,21 +2,16 @@ require_relative "../../lib/hstore_filter"
 
 module Api
   class PointsController < Api::AbstractController
-    class BadPointerType < StandardError; end
-    ALL_POINTERS     = Point::POINTER_KINDS.join(", ")
-    # How long we wait until emptying out the discarded points bin.
-    EXPIRY           = 2.months
-    BAD_POINTER_TYPE = <<~XYZ
-      Please provide a JSON object with a `pointer_type` that matches one
-      of the following values: %s
-    XYZ
-
-    rescue_from BadPointerType do |exc|
-      sorry BAD_POINTER_TYPE.split(/\n+/).join(" ") % [ALL_POINTERS], 422
-    end
+    # NOTE: Soft deleted points will be destroyed
+    # without warning when the device hits
+    # Points::Create::POINT_SOFT_LIMIT
+    HARD_DELETE_AFTER = 2.months
 
     def index
-      Point.discarded.where("discarded_at < ?", Time.now - EXPIRY).destroy_all
+      Point
+        .discarded
+        .where("discarded_at < ?", Time.now - HARD_DELETE_AFTER)
+        .destroy_all
       render json: points
     end
 
@@ -29,7 +24,7 @@ module Api
     end
 
     def create
-      mutate pointer_klass::Create.run(raw_json, device_params)
+      mutate Points::Create.run(raw_json, device_params)
     end
 
     def update
@@ -43,25 +38,7 @@ module Api
       mutate Points::Destroy.run({point_ids: ids}, device_params)
     end
 
-    private
-
-    # HISTORICAL CONTEXT:
-    # Originally, Points, Tools and Plants were all independantly created as
-    # separate tables.
-    # As time progressed, we were able to merge them into a unified "points"
-    # table and use polymorphic associations to iron out the minor differences.
-    # Polymorphic assns later proved to be error prove and inadequate, leading
-    # to a conversion to single table inheritance.
-    # STI is the current mecahnism. The method is a relic from previous
-    # iterations
-    def pointer_klass
-      case raw_json&.dig(:pointer_type)
-        when "GenericPointer" then Points
-        when "ToolSlot"       then ToolSlots
-        when "Plant"          then Plants
-        else;                 raise BadPointerType
-      end
-    end
+  private
 
     def point
       @point ||= points.find(params[:id])
@@ -75,8 +52,9 @@ module Api
       case params[:filter]
       when "all" then return Point.all
       when "old" then return Point.discarded
+      else
+        return Point.kept
       end
-      return Point.kept
     end
 
     def device_params

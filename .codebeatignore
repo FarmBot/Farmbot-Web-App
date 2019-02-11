@@ -1,8 +1,8 @@
-webpack/**/*__test*
-webpack/**/*test*.ts
-webpack/**/*test*.tsx
+frontend/**/*__test*
+frontend/**/*test*.ts
+frontend/**/*test*.tsx
 **__test**
 **__tests__**
 **test**
-webpack/entry.tsx
-webpack/password_reset/index.tsx
+frontend/entry.tsx
+frontend/password_reset/index.tsx

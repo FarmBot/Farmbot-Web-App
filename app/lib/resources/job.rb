@@ -1,6 +1,7 @@
 module Resources
   class Job < Mutations::Command
     NOT_FOUND     = "Resource not found"
+
     required do
       duck    :body, methods: [:[], :[]=]
       duck    :resource, duck: [:where, :find_by]
@@ -19,7 +20,6 @@ module Resources
       case action
       when DESTROY then do_deletion
       when SAVE    then do_save
-      else; never
       end
     rescue ActiveRecord::RecordNotFound
       add_error :not_found, :not_found, NOT_FOUND

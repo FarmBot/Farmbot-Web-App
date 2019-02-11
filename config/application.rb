@@ -17,17 +17,8 @@ module FarmBot
     config.active_job.queue_adapter    = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
-    LOCAL_API_HOST = ENV.fetch("API_HOST", "webpack")
-    WEBPACK_URL    = "http://#{LOCAL_API_HOST}:3808"
-    config.webpack.dev_server.host          = proc { request.host }
-    # PROBLEM:  Containers run in docker. Default dev_server.manifest_host is
-    #           "localhost", but our `dev_server` runs in a different docker
-    #           container.
-    # SOLUTION: Explicitly set the hostname of the container where Webpack runs.
-    #           In our case, that's `webpack`. See docker-compose.yml for all
-    #           hostnames. -RC 1 OCT 18
-    config.webpack.dev_server.manifest_host = LOCAL_API_HOST
-    config.webpack.dev_server.manifest_port = 3808
+    LOCAL_API_HOST = ENV.fetch("API_HOST", "parcel")
+    PARCELJS_URL    = "http://#{LOCAL_API_HOST}:3808"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -68,19 +59,24 @@ module FarmBot
         origin-when-cross-origin
         strict-origin-when-cross-origin
       )
-      config.csp                               = {
+      connect_src = ALL_LOCAL_URIS + [
+        ENV["MQTT_HOST"],
+        "api.github.com",
+        "raw.githubusercontent.com",
+        "openfarm.cc",
+        "api.rollbar.com",
+        PARCELJS_URL,
+        ENV["FORCE_SSL"] ? "wss:" : "ws:",
+        "localhost:3000",
+        "localhost:3808",
+        "#{ENV.fetch("API_HOST")}:3000",
+        "#{ENV.fetch("API_HOST")}:3808",
+      ]
+      config.csp = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
         block_all_mixed_content: false, # :( Some webcam feeds use http://
-        connect_src: ALL_LOCAL_URIS + [
-            ENV["MQTT_HOST"],
-            "api.github.com",
-            "raw.githubusercontent.com",
-            "openfarm.cc",
-            "api.rollbar.com",
-            WEBPACK_URL,
-            ENV["FORCE_SSL"] ? "wss:" : "ws:"
-          ] + (Rails.env.production? ? %w() : %w(localhost:3000 localhost:3808)),
+        connect_src: connect_src,
         font_src: %w(
           'self'
           data:
@@ -109,7 +105,7 @@ module FarmBot
           "cdnjs.cloudflare.com",
           "chrome-extension:",
           "localhost:3808",
-          WEBPACK_URL,
+          PARCELJS_URL,
         ],
         style_src: %w(
           'self'

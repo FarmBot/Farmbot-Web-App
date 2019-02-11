@@ -1,3 +1,5 @@
+require "./app/lib/celery_script/checker"
+
 module Api
   # A controller that contains all of the helper methods and shared logic for
   # all API endpoints.
@@ -15,6 +17,10 @@ module Api
     before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
     after_action :skip_set_cookies_header
+
+    rescue_from(CeleryScript::TypeCheckError) do |err|
+      sorry err.message, 422
+    end
 
     rescue_from(ActionController::RoutingError) { sorry "Not found", 404 }
     rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }

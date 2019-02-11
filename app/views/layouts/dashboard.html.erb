@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <%= stylesheet_link_tag 'application' %>
+    <%= stylesheet_link_tag *@css_assets %>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+    <script>
+      /** L@@K!!! THIS IS IMPORT */
+      window.globalConfig = <%= raw(@global_config) %>; // <= DONT MOVE
+      /** ALWAYS LOAD THAT FIRST!!! ^ */
+      window.process = { env: { NODE_ENV: <%= raw(Rails.env.inspect) %> } }
+    </script>
+    <%= render "addons" %>
+  </head>
+  <body>
+    <%= yield %>
+    <%= javascript_include_tag *@js_assets %>
+  </body>
+</html>

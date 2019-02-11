@@ -134,7 +134,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expctd =
-        "Expected one of: [:parameter_declaration, :variable_declaration]"
+        "Expected one of: [:variable_declaration, :parameter_declaration]"
       expect(json[:body]).to include(expctd)
     end
 
@@ -251,7 +251,6 @@ describe Api::SequencesController do
     end
 
     it 'prevents type errors from bad identifier / binding combos' do
-      $lol = true
       sign_in user
       input = { name: "type mismatch",
                 args: {
@@ -282,6 +281,35 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expect(json[:body]).to include("not a valid data_type")
+    end
+
+
+    it 'provides human readable errors for "nothing" mismatches' do
+      sign_in user
+      input = { name: "type mismatch",
+                args: {
+                  locals: {
+                    kind: "scope_declaration",
+                    args: { },
+                    body: [
+                      {
+                        kind: "variable_declaration",
+                        args: {
+                          label: "x",
+                          data_value: {
+                            kind: "nothing",
+                            args: {}
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                body: [ ]
+              }
+      post :create, body: input.to_json, params: {format: :json}
+      expect(response.status).to eq(422)
+      expect(json[:body]).to include("must provide a value for all parameters")
     end
   end
 end

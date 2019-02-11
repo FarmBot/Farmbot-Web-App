@@ -12,8 +12,10 @@ class Image < ApplicationRecord
     self.meta ||= {}
   end
 
+  PROTO       = ENV["FORCE_SSL"] ? "https:" : "http:"
+  PLACEHOLDER = "/placeholder_farmbot.jpg\?text=Processing..."
   CONFIG = {
-    default_url: "//placehold.it/640?text=Processing...",
+    default_url: "#{PROTO}#{$API_URL}#{PLACEHOLDER}",
     styles: { x1280: "1280x1280>",
               x640:  "640x640>",
               x320:  "320x320>",

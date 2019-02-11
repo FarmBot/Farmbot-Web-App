@@ -26,7 +26,7 @@ module Resources
     end
 
     def self.step1(delivery_info, body) # Returns params or nil
-      PreProcessor.from_amqp(delivery_info, body)
+      Preprocessor.from_amqp(delivery_info, body)
     rescue Mutations::ValidationException => q
       Rollbar.error(q)
       raw_chan = delivery_info&.routing_key&.split(".") || []
@@ -40,13 +40,13 @@ module Resources
       dev    = params[:device]
 
       dev.auto_sync_transaction do
-        oh_wow = Job.run!(params)
+        Job.run!(params)
         uuid   = (params[:uuid] || "NONE")
         Transport.current.amqp_send(ok(uuid), dev.id, MQTT_CHAN)
       end
     rescue Mutations::ValidationException => q
-      Rollbar.error(q)
       device = params.fetch(:device)
+      Rollbar.info("device_#{device.id} using AMQP resource mgmt")
       uuid   = params.fetch(:uuid)
       errors = q.errors.values.map do |err|
         { kind: "explanation", args: { message: err.message }}

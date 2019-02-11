@@ -1,3 +1,6 @@
+# SCHEDULED DEPRECATION:
+#   Node/PrimaryPair/PrimitivePair/Fragment will superceeded this model
+#   eventually
 # In a CeleryScript flat IR tree, primitive values are stored as edge nodes.
 # Canonical representation:
 #  `args: {speed: 100}`

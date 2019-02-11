@@ -1,14 +1,41 @@
-<html>
-  <body>
-    <% if @already_registered %>
-      You have already verified your account.
-      Please <%= link_to "log in", "/" %>.
-    <% else %>
-      <p> You are now being <%= link_to "redirected", app_landing_page_path %>. </p>
-      <script>
-        localStorage.session = JSON.stringify(<%= raw @token %>)
-        window.location.replace("<%= app_landing_page_path %>");
-      </script>
-    <% end %>
-  </body>
-</html>
+<div id="root">
+  <div class="static-page">
+    <div class="all-content-wrapper">
+      <h1 class="text-center">
+        Account verification
+      </h1>
+      <br>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="widget-wrapper">
+            <div class="widget-header">
+              <h5>
+                <% if @already_registered %>
+                  Already verified
+                <% else %>
+                  Verification success
+                <% end %>
+              </h5>
+            </div>
+            <div class="widget-body">
+              <div class="row">
+                <div class="col-xs-12">
+                  <% if @already_registered %>
+                    You have already verified your account.
+                    Please <%= link_to "log in", "/" %>.
+                  <% else %>
+                    You are now being <%= link_to "redirected", app_landing_page_path %>.
+                    <script>
+                      localStorage.session = JSON.stringify(<%= raw @token %>);
+                      window.location.replace("<%= app_landing_page_path %>");
+                    </script>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

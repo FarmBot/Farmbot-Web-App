@@ -5,7 +5,7 @@
 
 declare module "react-redux" {
   import { Component } from 'react';
-  import { Store, Dispatch, ActionCreator } from 'redux';
+  import { Store, Dispatch, Action, AnyAction, ActionCreator } from 'redux';
 
   export class ElementClass extends Component<any, any> { }
   export interface ClassDecorator {
@@ -51,16 +51,15 @@ declare module "react-redux" {
     pure: boolean;
   }
 
-  export interface Property {
+  export interface ProviderProps<A extends Action = AnyAction> {
     /**
      * The single Redux store in your application.
      */
-    store?: Store<any>;
-    children?: Function;
+    store: Store<any, A>;
   }
 
   /**
    * Makes the Redux store available to the connect() calls in the component hierarchy below.
    */
-  export let Provider: any;
+  export class Provider<A extends Action = AnyAction> extends Component<ProviderProps<A>> { }
 }

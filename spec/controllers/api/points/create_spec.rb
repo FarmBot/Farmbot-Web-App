@@ -1,12 +1,12 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::PointsController do
   include Devise::Test::ControllerHelpers
-  describe '#create' do
+  describe "#create" do
     let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
-    it 'creates a tool slot' do
+    it "creates a tool slot" do
       sign_in user
       payload = { name: "Fooo", x: 4, y: 5, z: 6, pointer_type: "ToolSlot" }
       before = ToolSlot.count
@@ -21,7 +21,7 @@ describe Api::PointsController do
       expect(json[:z]).to eq(payload[:z])
     end
 
-    it 'creates a plant' do
+    it "creates a plant" do
       sign_in user
       time = (DateTime.now - 1.day).to_json
       p = { x: 23,
@@ -47,17 +47,17 @@ describe Api::PointsController do
       end
     end
 
-    it 'validates pointer_type' do
+    it "validates pointer_type" do
       sign_in user
-      body = { pointer_type: "TypoPointer" }
+      body = { pointer_type: "TypoPointer", x: 0, y: 0 }
       post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(422)
-      expected = \
-        "Please provide a JSON object with a `pointer_type` that matches"
-      expect(json[:error]).to include(expected)
+      expected = "Please provide a JSON object "\
+                 "with a `pointer_type` that matches"
+      expect(json.fetch(:pointer_type)).to include(expected)
     end
 
-    it 'creates a point' do
+    it "creates a point" do
       sign_in user
       body = { x:            1,
                y:            2,
@@ -78,7 +78,7 @@ describe Api::PointsController do
       expect(json[:pointer_type]).to eq(body[:pointer_type])
     end
 
-    it 'requires x' do
+    it "requires x" do
       sign_in user
       body = { y:            2,
                z:            3,
@@ -95,7 +95,7 @@ describe Api::PointsController do
     it "handles bad data" do
       sign_in user
       SmarfDoc.note("This is what happens when you post bad JSON")
-      post :create, body: "{'x': 0}", params: { format: :json }
+      post :create, body: "{'x': 0, 'this isnt': 'JSON'}", params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:error]).to include("Please use _valid_ JSON.")
     end
@@ -119,7 +119,7 @@ describe Api::PointsController do
       expect(json[:pullout_direction]).to eq(direction)
     end
 
-    it 'creates a new toolslot, with a default pullout' do
+    it "creates a new toolslot, with a default pullout" do
       sign_in user
       payload = { pointer_type: "ToolSlot",
                   name: "foo",
@@ -133,7 +133,7 @@ describe Api::PointsController do
       expect(json[:pullout_direction]).to eq(0)
     end
 
-    it 'disallows bad `tool_id`s' do
+    it "disallows bad `tool_id`s" do
       sign_in user
       payload = { pointer_type: "ToolSlot",
                   name: "foo",

@@ -16,7 +16,7 @@ module CeleryScriptSettingsBag
   end
 
   # List of all celery script nodes that can be used as a varaible...
-  ANY_VARIABLE          = [:tool, :coordinate, :point, :identifier]
+  ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
@@ -75,14 +75,19 @@ module CeleryScriptSettingsBag
   CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
   ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
   RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
+  ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
+                          " as input. Please change your selection to a "\
+                          "single location."
+  SCOPE_DECLARATIONS    = [:variable_declaration, :parameter_declaration]
+  ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
+  BAD_EVERY_POINT_TYPE     = '"%s" is not a type of group. Allowed values: %s'
 
-  Corpus = CeleryScript::Corpus
-      .new
+  Corpus = CeleryScript::Corpus.new
       .arg(:_else,        [:execute, :nothing])
       .arg(:_then,        [:execute, :nothing])
       .arg(:locals,       [:scope_declaration])
       .arg(:offset,       [:coordinate])
-      .arg(:pin_number,   [Integer, :named_pin])
+      .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENUS ARG TYPE => BAD
       .arg(:data_value,   ANY_VARIABLE)
       .arg(:location,     ANY_VARIABLE)
       .arg(:label,        [String])
@@ -184,6 +189,11 @@ module CeleryScriptSettingsBag
           BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME]
         end
       end
+      .arg(:every_point_type, [String]) do |node|
+        within(ALLOWED_EVERY_POINT_TYPE, node) do |val|
+          BAD_EVERY_POINT_TYPE % [val.to_s, ALLOWED_EVERY_POINT_TYPE.inspect]
+        end
+      end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
@@ -195,7 +205,10 @@ module CeleryScriptSettingsBag
       .node(:nothing,               [])
       .node(:tool,                  [:tool_id])
       .node(:coordinate,            [:x, :y, :z])
-      .node(:move_absolute,         [:location, :speed, :offset])
+      .node(:move_absolute,         [:location, :speed, :offset]) do |n|
+        loc = n.args[:location].try(:kind)
+        n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
+      end
       .node(:move_relative,         [:x, :y, :z, :speed])
       .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
         no_rpi_analog(n)
@@ -237,7 +250,7 @@ module CeleryScriptSettingsBag
       .node(:install_farmware,      [:url])
       .node(:update_farmware,       [:package])
       .node(:remove_farmware,       [:package])
-      .node(:scope_declaration,     [], [:parameter_declaration, :variable_declaration])
+      .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
       .node(:variable_declaration,  [:label, :data_value], [])
       .node(:parameter_declaration, [:label, :data_type], [])
@@ -245,7 +258,10 @@ module CeleryScriptSettingsBag
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
-      .node(:farm_event, [], [:variable_declaration]) # NEVER SAVE THIS NODE ITS PRIVATE
+      .node(:internal_farm_event,   [], [:variable_declaration])
+      .node(:internal_regimen,      [], SCOPE_DECLARATIONS)
+      .node(:internal_entry_point,  [], [])
+      .node(:every_point,           [:every_point_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value

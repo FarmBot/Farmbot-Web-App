@@ -9,7 +9,6 @@ FarmBot::Application.routes.draw do
     {
       diagnostic_dumps:       [:create, :destroy, :index],
       farm_events:            [:create, :destroy, :index, :show, :update],
-      farmware_installations: [:create, :destroy, :index, :show],
       images:                 [:create, :destroy, :index, :show],
       password_resets:        [:create, :update],
       peripherals:            [:create, :destroy, :index, :show, :update],
@@ -38,7 +37,13 @@ FarmBot::Application.routes.draw do
 
     resources(:points, except: []) { post :search, on: :collection }
 
+    resources :farmware_installations, except: [:update] do
+      post :refresh, on: :member
+    end
+
     resources :logs, except: [:update, :show] do
+      # When farmware fetching fails and the user
+      # wants to try agian.
       get :search, on: :collection
     end
 
@@ -94,14 +99,14 @@ FarmBot::Application.routes.draw do
   # NON-API (USER FACING) URLS:
   # =======================================================================
   get  "/"              => "dashboard#front_page",    as: :front_page
+
   get  "/app"           => "dashboard#main_app",      as: :dashboard
   get  "/app/controls"  => "dashboard#main_app",      as: :app_landing_page
-  get  "/tos_update"    => "dashboard#tos_update",    as: :tos_update
-  post "/csp_reports"   => "dashboard#csp_reports",   as: :csp_report
-  post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload
-
-  get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
-  get "/verify/:token"         => "dashboard#verify",         as: :verify_user
-
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
+
+  get  "/tos_update"            => "dashboard#tos_update",        as: :tos_update
+  get  "/password_reset/*token" => "dashboard#password_reset",    as: :password_reset
+  get  "/verify/:token"         => "dashboard#confirmation_page", as: :confirmation_page
+  post "/csp_reports"           => "dashboard#csp_reports",       as: :csp_report
+  post "/direct_upload"         => "dashboard#direct_upload",     as: :direct_upload
 end

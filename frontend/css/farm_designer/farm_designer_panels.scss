@@ -1,0 +1,337 @@
+.panel-header,
+.farm-designer-panels {
+  position: fixed;
+  top: 8.9rem;
+  width: 30rem;
+}
+
+@keyframes panel-pullout {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.farm-designer-panels {
+  bottom: 0;
+  z-index: 1;
+  .panel-container {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    font-size: 1.6rem;
+    padding-bottom: 3rem;
+    label {
+      font-size: 1.3rem;
+      margin-top: 2rem;
+    }
+  }
+  div {
+    animation: panel-pullout 0s ease;
+  }
+}
+
+.panel-container {
+  overflow: hidden;
+  &.green-panel {
+    background-color: $light_green;
+  }
+  &.cyan-panel {
+    background-color: $light_cyan;
+  }
+  &.brown-panel {
+    background-color: $light_brown;
+  }
+  &.magenta-panel {
+    background-color: $light_magenta;
+  }
+  &.gray-panel {
+    background-color: $medium_light_gray;
+  }
+}
+
+.panel-header {
+  color: $light_gray;
+  &.green-panel {
+    background-color: $dark_green;
+  }
+  &.cyan-panel {
+    background-color: $cyan;
+  }
+  &.brown-panel {
+    background-color: $dark_brown;
+  }
+  &.magenta-panel {
+    background-color: $magenta;
+  }
+  &.gray-panel {
+    background-color: $dark_gray;
+  }
+}
+
+.panel-tabs {
+  display: flex;
+  a {
+    display: block;
+    flex: 1;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    line-height: 5rem;
+    height: 5rem;
+    color: $light_gray;
+    &.active {
+      border-bottom: 3px solid $white;
+      font-weight: bold;
+      color: $white;
+    }
+    &:hover {
+      color: $off_white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    &:focus {
+      color: $off_white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  }
+}
+
+.panel-title {
+  height: 50px;
+  padding-top: 1.8rem;
+  padding-left: 1.4rem;
+  padding-right: 2rem;
+  .back-arrow {
+    display: inline-block;
+    color: $off_white;
+    margin-right: 1rem;
+    font-size: 1.8rem;
+    margin-top: -1.8rem;
+    vertical-align: middle;
+    &:hover {
+      color: $white;
+    }
+  }
+  .title {
+    display: inline-block;
+    color: $white;
+    font-size: 1.8rem;
+    margin-top: 0.4rem;
+    white-space: nowrap;
+    width: 10em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2rem;
+    padding: 0.2rem;
+  }
+  .right-button {
+    float: right;
+    text-transform: uppercase;
+    font-size: 1rem;
+    border: 1px solid;
+    padding: 0.4rem 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    color: $off_white;
+    &:hover {
+      color: $white;
+    }
+  }
+  button {
+    margin-left: 4px;
+  }
+}
+
+.plant-inventory-panel {
+  .panel-content {
+    padding: 0;
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.plant-selection-panel {
+  .panel-action-buttons {
+    position: absolute;
+    z-index: 9;
+    width: 100%;
+    margin-top: 9rem;
+    background: $dark_green;
+    padding: 0.5rem;
+    button {
+      margin: 0.5rem;
+    }
+  }
+  .panel-content {
+    padding: 14rem 1.4rem;
+    padding-right: 0;
+    padding-left: 0;
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    .plant-search-item {
+      pointer-events: none;
+    }
+    img {
+      filter: grayscale(100%);
+    }
+  }
+}
+
+.point-creation-panel {
+  .panel-content {
+    .row {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    padding: 10rem 3rem;
+    padding-right: 0;
+    padding-left: 0;
+    .fb-button {
+      margin: 1rem;
+      &.delete {
+        float: left;
+      }
+    }
+    .saucer {
+      margin-top: 0.25rem;
+      margin-left: 1rem;
+    }
+    .delete-row {
+      padding-left: 1rem;
+    }
+  }
+}
+
+.crop-catalog-panel {
+  .panel-content {
+    padding: 1rem 1rem 6rem;
+  }
+}
+
+.panel-top {
+  padding: 5rem 0 0;
+}
+
+.panel-content {
+  padding: 6rem 1rem;
+  a {
+    color: $black;
+    text-decoration: underline !important;
+  }
+}
+
+.add-farm-event-panel {
+  input {
+    background: $white;
+  }
+}
+
+.add-farm-event-panel button.red,
+.edit-farm-event-panel button.red,
+.add-farm-event-panel button.magenta,
+.edit-farm-event-panel button.magenta {
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.panel-header {
+  position: fixed;
+  z-index: 2;
+  width: 300px;
+  .panel-header-description,
+  .crop-info-description {
+    font-size: 1.2rem;
+    padding: 0 1.4rem 1rem;
+  }
+  .crop-info-description {
+    max-height: 10rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.crop-info-panel {
+  .title {
+    width: 50%;
+  }
+  .panel-header {
+    position: inherit;
+    background-size: 144% !important;
+    background-repeat: no-repeat !important;
+    background-position: top center !important;
+  }
+  .panel-content {
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 2rem 1rem 6rem;
+    li {
+      margin-bottom: 1rem;
+      p {
+        font-size: 1.25rem;
+      }
+    }
+  }
+  .edit-on-openfarm {
+    margin-bottom: 1rem;
+  }
+}
+
+.plants-panel-content {
+  li {
+    margin-top: 1rem;
+    p {
+      font-size: 1.25rem;
+    }
+  }
+  input {
+    background: $white;
+  }
+}
+
+.move-to-panel-content {
+  margin-top: 4rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  button {
+    margin: 1rem;
+    margin-left: 2rem;
+    width: 88%;
+    float: left;
+  }
+  input {
+    min-width: 7rem;
+  }
+}
+
+.saved-garden-panel-content {
+  margin-top: 5rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  .row {
+    margin-top: 1rem;
+  }
+  hr {
+    width: 100%;
+    padding-top: 1rem;
+  }
+  button {
+    margin-left: 0.5rem;
+    &.wide {
+      margin: 1rem;
+      margin-left: 2rem;
+      width: 88%;
+      float: left;
+    }
+  }
+  input {
+    min-width: 7rem;
+  }
+}

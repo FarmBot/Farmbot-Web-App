@@ -20,11 +20,12 @@ module Points
       self.device    = FactoryBot.create(:device)
       self.tool      = Tools::Create.run!(device: self.device,
                                           name: "Scenario Tool")
-      self.tool_slot = ToolSlots::Create.run!(device: self.device,
-                                              name:   "Scenario Tool Slot",
-                                              x:      0,
-                                              y:      0,
-                                              z:      0)
+      self.tool_slot = Points::Create.run!(device:     self.device,
+                                           name:       "Scenario Tool Slot",
+                                           x:          0,
+                                           y:          0,
+                                           z:          0,
+                                           pointer_type: "ToolSlot")
       self.sequence  = Sequences::Create.run!(device: self.device,
                                               body:   self.body,
                                               name:   "Scenario Sequence")

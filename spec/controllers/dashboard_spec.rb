@@ -35,7 +35,7 @@ describe DashboardController do
     it 'creates a new user' do
       params =  { token: user.confirmation_token }
       expect(user.confirmed_at).to eq(nil)
-      get :verify, params: params
+      get :confirmation_page, params: params
       user.reload
       expect(user.confirmation_token).to be
       expect(user.confirmed_at).to be
@@ -46,7 +46,7 @@ describe DashboardController do
       email = "foo@bar.com"
       user.update_attributes!(unconfirmed_email: "foo@bar.com")
       params =  { token: user.confirmation_token }
-      get :verify, params: params
+      get :confirmation_page, params: params
       expect(user.reload.unconfirmed_email).to be nil
       expect(user.email).to eq email
     end
@@ -58,7 +58,7 @@ describe DashboardController do
       post :direct_upload, params: params
       file = File.join("public", "direct_upload", "temp", name)
       expect(File.file?(file)).to be(true)
-      expect(response.status).to be(200)
+      expect(response.status).to eq(200)
       File.delete(file)
     end
   end

@@ -5,13 +5,24 @@ module CeleryScript
   class Checker
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
     EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
-    BAD_LEAF    = "Expected leaf '%s' within '%s' to be one of: %s but got %s"
+    BAD_LEAF    = "Expected leaf '%{kind}' within '%{parent_kind}'"\
+                  " to be one of: %{allowed} but got %{actual}"
     MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
     UNBOUND_VAR = "Unbound variable: %s"
     T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
+    # Certain CeleryScript pairing errors are more than just a syntax error.
+    # For instance, A `nothing` node in a `variable_declaration` is often an
+    # indication that the user did not fill out a value for a variable. In these
+    # rare cases, we muct provide information beyond what is found in the
+    # BAD_LEAF template.
+    FRIENDLY_ERRORS = {
+      nothing: {
+        variable_declaration: "You must provide a value for all parameters"
+      }
+    }.with_indifferent_access
     attr_reader :tree, :corpus, :device
 
     # Device is required for security / permission checks.
@@ -43,11 +54,8 @@ module CeleryScript
     def check_leaf(node)
       allowed  = corpus.values(node)
       actual   = node.value.class
-      ok_leaf  = allowed.include?(actual)
-      raise TypeCheckError, (BAD_LEAF % [ node.kind,
-                                          node.parent.kind,
-                                          allowed.inspect,
-                                          actual.inspect]) unless ok_leaf
+
+      maybe_bad_leaf(node.kind, node.parent.kind, allowed, actual)
     end
 
     private
@@ -152,21 +160,27 @@ module CeleryScript
         #  SEE_MY_NOTE =============================^ RC 4 Oct 18
         end
       end
-      ok      = allowed.include?(actual)
-      raise TypeCheckError, (BAD_LEAF % [ value.kind,
-                                          value.parent.kind,
-                                          allowed.inspect,
-                                          actual.inspect ]) unless ok
+
+      maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
+    end
+
+    def maybe_bad_leaf(kind, parent_kind, allowed, actual)
+      unless allowed.include?(actual)
+        message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
+          kind:        kind,
+          parent_kind: parent_kind,
+          allowed:     allowed,
+          actual:      actual
+        }
+
+        raise TypeCheckError, message
+      end
     end
 
     def validate_leaf_pairing(key, value)
       actual  = value.value.class
       allowed = corpus.fetchArg(key).allowed_values
-      ok      = allowed.include?(actual)
-      raise TypeCheckError, (BAD_LEAF % [ value.kind,
-                                          value.parent.kind,
-                                          allowed.inspect,
-                                          actual.inspect]) unless ok
+      maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
     end
 
     def bad_body_kind(prnt, child, i, ok)

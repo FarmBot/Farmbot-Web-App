@@ -1,0 +1,321 @@
+.fb-button {
+  position: relative;
+  font-size: 1rem;
+  float: right;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 700;
+  padding: .2rem .8rem;
+  border-radius: 3px;
+  border: none;
+  color: $off_white;
+  transition: all 0.1s ease-in-out !important;
+  &.disabled,
+  &:disabled {
+    background: $gray !important;
+    color: $off_white !important;
+    box-shadow: 0 2px 0px 0px lighten($gray, 5%) !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+  }
+  &.is-saved,
+  &.is-saving {
+    background: $medium_gray !important;
+    box-shadow: 0 2px 0px 0px $dark_gray !important;
+    pointer-events: none;
+  }
+  .btn-spinner {
+    margin: 0.2rem 0px 0 0.6rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    animation: rotate 0.8s infinite linear;
+    border: 1px solid $white;
+    border-right-color: transparent;
+    border-radius: 50%;
+    float: right;
+    &.sync {
+      border-color: $dark_gray;
+      border-right-color: transparent;
+      margin-top: 0.4rem;
+    }
+  }
+  &:active {
+    box-shadow: none !important;
+    transform: translateY(2px);
+  }
+  &.arrow-button:active {
+    border-bottom: none !important;
+    transform: translateY(2px);
+  }
+  &.go {
+    background-color: $green;
+    padding: .4rem .8rem;
+    font-size: 1.2rem;
+  }
+  &.green {
+    background-color: $green;
+    box-shadow: 0 2px 0px 0px darken($green, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($green, 5%) !important;
+    }
+  }
+  &.blue {
+    background-color: $blue;
+    box-shadow: 0 2px 0px 0px darken($blue, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($blue, 5%) !important;
+    }
+  }
+  &.red {
+    background-color: $red;
+    box-shadow: 0 2px 0px 0px darken($red, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($red, 5%) !important;
+    }
+  }
+  &.gray {
+    background-color: $medium_gray !important;
+    box-shadow: 0 2px 0px 0px darken($medium_gray, 12%);
+    &:disabled,
+    &.disabled {
+      background: $gray !important;
+    }
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($medium_gray, 5%) !important;
+    }
+  }
+  &.yellow {
+    color: $dark_gray;
+    background-color: $yellow;
+    box-shadow: 0 2px 0px 0px darken($yellow, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($yellow, 5%) !important;
+    }
+  }
+  &.orange {
+    color: $dark_gray;
+    background-color: $orange;
+    box-shadow: 0 2px 0px 0px darken($orange, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($orange, 5%) !important;
+    }
+  }
+  &.magenta {
+    background-color: $magenta;
+    box-shadow: 0 2px 0px 0px darken($magenta, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($magenta, 5%) !important;
+    }
+  }
+  &.cyan {
+    background-color: $cyan;
+    box-shadow: 0 2px 0px 0px darken($cyan, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($cyan, 5%) !important;
+    }
+  }
+  &.brown {
+    background-color: $brown;
+    box-shadow: 0 2px 0px 0px darken($brown, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($brown, 5%) !important;
+    }
+  }
+  &.purple {
+    background-color: $purple;
+    box-shadow: 0 2px 0px 0px darken($purple, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($purple, 5%) !important;
+    }
+  }
+  &.pink {
+    background-color: $pink;
+    box-shadow: 0 2px 0px 0px darken($pink, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($pink, 5%) !important;
+    }
+  }
+  &.zoom {
+    padding: 8px 12px;
+    &.zoom-out {
+      margin-right: 10px;
+    }
+  }
+  &.no-float {
+    float: none;
+    margin-right: 1rem;
+  }
+  &.pseudo-disabled {
+    background: $medium_light_gray !important;
+    box-shadow: 0 2px 0px 0px lighten($medium_light_gray, 5%) !important;
+    &:focus,
+    &:hover,
+    &.active {
+      background: $medium_light_gray !important;
+    }
+  }
+}
+
+.block {
+  height: 3.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  color: $dark_gray;
+  &.active {
+    box-shadow: none !important;
+    border: 1px solid $white;
+  }
+  &.gray {
+    background-color: $medium_light_gray !important;
+    box-shadow: 0 2px 0px 0px darken($medium_light_gray, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($medium_light_gray, 5%) !important;
+    }
+  }
+  &:hover {
+    .block-control {
+      transition: all 0.2s ease-out;
+      opacity: 1;
+    }
+  }
+}
+
+.block-control {
+  transition: all 0.2s ease-out;
+  opacity: 0;
+  float: right;
+  font-size: 1.4rem !important;
+  padding-left: 1rem;
+}
+
+.fb-toggle-button {
+  position: relative;
+  height: 1.8rem !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: 0.3rem 0.10rem;
+  border-radius: 10px;
+  width: 5rem;
+  border-bottom: none;
+  transition: all 0.4s ease;
+  &.yellow {
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0.1rem;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: $white;
+      border-radius: 50%;
+      box-shadow: inset rgba(0, 0, 0, 0.03) 0px 0px 3px 3px;
+    }
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0.1rem;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      height: 1.6rem;
+      width: 1.6rem;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+  }
+  &.green {
+    text-align: left;
+    padding-left: 0.6rem;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0.1rem;
+      right: 0.2rem;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: $white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+    &:hover {
+      background: $green;
+    }
+    &.dim {
+      background: lighten($green, 20%) !important;
+    }
+  }
+  &.red {
+    text-align: right !important;
+    padding-right: 0.8rem;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0.1rem;
+      left: 0.2rem;
+      height: 1.6rem;
+      width: 1.6rem;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+    &.dim {
+      background: lighten($red, 10%) !important;
+    }
+  }
+  &.grayscale {
+    filter: grayscale(100%);
+  }
+}
+
+.plus-button {
+  position: fixed;
+  left: 0;
+  bottom: 5rem;
+  right: 0;
+  z-index: 3;
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  color: $off_white;
+  margin-left: 12rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 0px 0px $dark_green;
+  i {
+    line-height: 5rem;
+    font-size: 2.8rem;
+  }
+}
+
+.front-page-button {
+  margin-top: "1rem";
+  padding: ".5rem 1.6rem";
+  font-size: "1.2rem";
+  border-bottom: "none";
+}

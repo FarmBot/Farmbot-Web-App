@@ -5,22 +5,32 @@ if Rails.env == "development"
     DATE_RANGE_HI           = 3..8
     ENV['MQTT_HOST']        = "blooper.io"
     ENV['OS_UPDATE_SERVER'] = "http://non_legacy_update_url.com"
-
-    DeviceSerialNumber.destroy_all
-    Log.destroy_all
-    TokenIssuance.destroy_all
-    PinBinding.destroy_all
-    User.destroy_all
-    Device.destroy_all
-    ToolSlot.destroy_all
-    Tool.destroy_all
-    Point.destroy_all
-    User.destroy_all
-    Point.destroy_all
-    Device.destroy_all
-    User.destroy_all
-    PlantTemplate.destroy_all
-    SavedGarden.destroy_all
+    # CREDIT: Faker Ruby Gem
+    VEGGIES                 = %w(artichoke arugula asparagus broccoli
+    cabbage carrot cauliflower celery chive cucumber
+    eggplant endive garlic jicama kale kohlrabi leek lettuce okra onion
+    parsnip pepper potato pumpkin radicchio radish raspberry rhubarb spinach
+     squash tomato turnip zucchini)
+    [
+      Sensor,
+      Peripheral,
+      DeviceSerialNumber,
+      Log,
+      PinBinding,
+      Point,
+      Point,
+      TokenIssuance,
+      ToolSlot,
+      User,
+      PlantTemplate,
+      SavedGarden,
+      SensorReading,
+      FarmwareInstallation,
+      Device,
+      Tool,
+      Delayed::Job,
+      Delayed::Backend::ActiveRecord::Job,
+    ].map(&:delete_all)
     Users::Create.run!(name:                  "Test",
                        email:                 "test@test.com",
                        password:              "password123",
@@ -52,12 +62,13 @@ if Rails.env == "development"
     end
 
     PLANT_COUNT.times do
+      veggie = VEGGIES.sample
       Plant.create(device:        u.device,
                    x:             rand(40...970),
                    y:             rand(40...470),
                    radius:        rand(10...50),
-                   name:          Faker::Food.vegetables,
-                   openfarm_slug: ["tomato", "carrot", "radish", "garlic"].sample)
+                   name:          veggie,
+                   openfarm_slug: veggie.downcase.gsub(" ", "-"))
     end
 
     Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }
@@ -97,12 +108,13 @@ if Rails.env == "development"
     WebcamFeeds::Create.run!(device: u.device,
                             name: "My Feed 1",
                             url: "https://nature.nps.gov/air/webcams/parks/yosecam/yose.jpg")
-    ts = ToolSlots::Create.run!(device: u.device,
-                                tool_id: t.id,
-                                name: "Slot One.",
-                                x: 10,
-                                y: 10,
-                                z: 10)
+    ts = Points::Create.run!(device: u.device,
+                             tool_id: t.id,
+                             name: "Slot One.",
+                             x: 10,
+                             y: 10,
+                             z: 10,
+                             pointer_type: "ToolSlot")
     d = u.device
     Sensors::Create
       .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)

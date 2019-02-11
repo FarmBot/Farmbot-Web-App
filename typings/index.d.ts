@@ -1,4 +1,5 @@
 /// <reference path="react-redux.d.ts" />
+/// <reference path="i18next.d.ts" />
 
 /** This contains all of the global ENV vars passed from server => client.
  * Previously was `process.env.XYZ`. */

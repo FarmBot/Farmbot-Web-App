@@ -1,7 +1,7 @@
 module Resources
   # Takes a bunch of unsafe, string-y data that came in over AMQP and parses it
   # into fully formed
-  class PreProcessor < Mutations::Command
+  class Preprocessor < Mutations::Command
     def self.from_amqp(delivery_info, body)
       # Parse the AMQP rotuing key into an Array of strings.
       # A properly formatted routing_key will look like this after processing:
@@ -18,9 +18,10 @@ module Resources
     end
 
     required do
-      string :action,      in:      ACTIONS        # "destroy"
-      string :device_name, matches: DEVICE_REGEX   # "device_3"
-      string :resource,    in:      RESOURCES.keys # "Sequence"
+      string :action,      in:      ACTIONS            # "destroy"
+      string :device_name, matches: DEVICE_REGEX       # "device_3"
+                                    # "Sequence":
+      string :resource,    in:      ELIGIBLE_RESOURCES.map(&:to_s)
     end
 
     optional do
@@ -64,5 +65,5 @@ module Resources
       @device = Device.find_by(id: id)
       add_error :device, :device, "Can't find device ##{id}" unless @device
     end
-  end # PreProcessor
+  end # Preprocessor
 end # Resources
