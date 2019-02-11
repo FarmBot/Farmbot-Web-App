@@ -47,7 +47,7 @@ class DashboardController < ApplicationController
   PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
     .sort
     .uniq
-    .map { |x| File.join("frontend", x) }
+    .map { |x| File.join("frontend", x) + CACHE_BUST_STRING }
     .join(" ")
 
   PARCEL_HMR_OPTS   = [
