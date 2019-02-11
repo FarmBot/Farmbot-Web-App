@@ -40,14 +40,14 @@ class DashboardController < ApplicationController
 
   JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (k, v)|
     file   = v.gsub(/\.tsx?$/, ".js")
-    acc[k] = File.join(OUTPUT_URL, file) + CACHE_BUST_STRING
+    acc[k] = File.join(OUTPUT_URL, file)
     acc
   end.with_indifferent_access
 
   PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
     .sort
     .uniq
-    .map { |x| File.join("frontend", x) + CACHE_BUST_STRING }
+    .map { |x| File.join("frontend", x) }
     .join(" ")
 
   PARCEL_HMR_OPTS   = [
@@ -119,14 +119,15 @@ private
   def load_css_assets
     @css_assets ||= [action_name, :default].reduce([]) do |list, action|
       asset = CSS_OUTPUTS[action] # Not every endpoint has custom CSS.
-      list.push(asset) if asset
+      list.push(asset + CACHE_BUST_STRING) if asset
       list
     end
   end
 
   def load_js_assets
     # Every DashboardController has a JS SBundle.
-    @js_assets ||= [ JS_OUTPUTS.fetch(action_name) ]
+    @js_assets ||= \
+      [ JS_OUTPUTS.fetch(action_name) ].map { |x| x + CACHE_BUST_STRING }
   end
 
   def set_global_config
