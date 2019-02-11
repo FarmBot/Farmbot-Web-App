@@ -21,7 +21,7 @@ describe("mapStateToProps()", () => {
 
   it("sync status unknown", () => {
     const props = mapStateToProps(fakeState());
-    expect(props.botToMqttStatus).toEqual("up");
+    expect(props.botToMqttStatus).toEqual("down");
   });
 
   it("currentImage undefined", () => {
@@ -128,6 +128,15 @@ describe("mapStateToProps()", () => {
     state.bot.hardware.jobs = undefined as any;
     const props = mapStateToProps(state);
     expect(props.imageJobs).toEqual([]);
+  });
+
+  it("returns bot status", () => {
+    const state = fakeState();
+    state.bot.hardware.informational_settings.sync_status = "sync_now";
+    state.bot.connectivity["bot.mqtt"] = { state: "up", at: "" };
+    const props = mapStateToProps(state);
+    expect(props.syncStatus).toEqual("sync_now");
+    expect(props.botToMqttStatus).toEqual("up");
   });
 });
 

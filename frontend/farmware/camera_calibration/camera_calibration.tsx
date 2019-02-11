@@ -28,11 +28,19 @@ export class CameraCalibration extends
 
   render() {
     return <div className="weed-detector">
-      <button
-        onClick={this.props.dispatch(calibrate)}
-        className="fb-button green farmware-button" >
-        {t("Calibrate")}
-      </button>
+      <div className="farmware-button">
+        <MustBeOnline
+          syncStatus={this.props.syncStatus}
+          networkState={this.props.botToMqttStatus}
+          hideBanner={true}
+          lockOpen={process.env.NODE_ENV !== "production"}>
+          <button
+            onClick={this.props.dispatch(calibrate)}
+            className="fb-button green farmware-button" >
+            {t("Calibrate")}
+          </button>
+        </MustBeOnline>
+      </div>
       <Row>
         <Col sm={12}>
           <MustBeOnline

@@ -1,4 +1,5 @@
-import { TaggedImage, JobProgress } from "farmbot";
+import { TaggedImage, JobProgress, SyncStatus } from "farmbot";
+import { NetworkState } from "../../connectivity/interfaces";
 
 export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
@@ -18,4 +19,14 @@ export interface PhotosProps {
   currentImage: TaggedImage | undefined;
   timeOffset: number;
   imageJobs: JobProgress[];
+  botToMqttStatus: NetworkState;
+  syncStatus: SyncStatus | undefined;
+}
+
+export interface PhotoButtonsProps {
+  takePhoto: () => void,
+  deletePhoto: () => void,
+  imageJobs: JobProgress[],
+  botToMqttStatus: NetworkState;
+  syncStatus: SyncStatus | undefined;
 }

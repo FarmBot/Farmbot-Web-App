@@ -23,6 +23,8 @@ describe("<Photos/>", () => {
     dispatch: jest.fn(),
     timeOffset: 0,
     imageJobs: [],
+    botToMqttStatus: "up",
+    syncStatus: "synced",
   });
 
   it("shows photo", () => {

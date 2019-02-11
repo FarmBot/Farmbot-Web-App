@@ -56,11 +56,17 @@ export class WeedDetector
   render() {
     return <div className="weed-detector">
       <div className="farmware-button">
-        <button
-          onClick={this.props.dispatch(test)}
-          className="fb-button green">
-          {t("detect weeds")}
-        </button>
+        <MustBeOnline
+          syncStatus={this.props.syncStatus}
+          networkState={this.props.botToMqttStatus}
+          hideBanner={true}
+          lockOpen={process.env.NODE_ENV !== "production"}>
+          <button
+            onClick={this.props.dispatch(test)}
+            className="fb-button green">
+            {t("detect weeds")}
+          </button>
+        </MustBeOnline>
         <button
           onClick={this.clearWeeds}
           className="fb-button red">

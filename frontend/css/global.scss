@@ -576,7 +576,9 @@ ul {
   position: relative;
   z-index: 10;
   opacity: 0.40;
-  pointer-events: none;
+  * {
+    pointer-events: none;
+  }
   &.banner {
     &:after {
       content: "Not available when device is offline.";

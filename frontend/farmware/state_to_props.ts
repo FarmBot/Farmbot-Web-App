@@ -112,17 +112,21 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       .reverse()
       .value();
 
+  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
+  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
+  const syncStatus = props.bot.hardware.informational_settings.sync_status;
+
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
     currentFarmware,
     farmwares,
-    botToMqttStatus: "up",
+    botToMqttStatus,
     env: prepopulateEnv(env),
     user_env: env,
     dispatch: props.dispatch,
     currentImage,
     images,
-    syncStatus: "synced",
+    syncStatus,
     webAppConfig: conf ? conf.body : {},
     firstPartyFarmwareNames,
     shouldDisplay,
