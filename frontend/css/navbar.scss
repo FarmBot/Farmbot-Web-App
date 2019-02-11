@@ -3,7 +3,7 @@
   left: 0;
   right: 0;
   z-index: 99;
-  height: 9rem;
+  height: 8.9rem;
   background: $dark_gray;
   box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
 }
@@ -43,6 +43,9 @@ nav {
     padding: 2rem 1rem;
     letter-spacing: 1.2px;
     transition: font-weight 0.2s ease;
+    &:focus {
+      font-weight: bold;
+    }
     &:hover {
       font-weight: bold;
       color: $white;

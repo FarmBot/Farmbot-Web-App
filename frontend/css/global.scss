@@ -575,7 +575,6 @@ ul {
 .unavailable {
   position: relative;
   z-index: 10;
-  width: 100%;
   opacity: 0.40;
   pointer-events: none;
   &.banner {
@@ -868,6 +867,12 @@ ul {
   }
 }
 
+.account-page {
+  label {
+    margin-top: 5px;
+  }
+}
+
 .release-notes-button {
   font-weight: bold;
   cursor: pointer;
@@ -966,6 +971,10 @@ ul {
   }
 }
 
+.farmware-name-manual-input {
+  margin-top: 1rem;
+}
+
 .checkbox-row {
   margin-top: 1rem;
   label {
@@ -1037,7 +1046,8 @@ ul {
   background: $pink;
   border: 1px solid $red;
   border-radius: 5px;
-  label, p {
+  label,
+  p {
     margin: 0.5rem;
     color: $red;
   }

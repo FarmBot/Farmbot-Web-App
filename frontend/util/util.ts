@@ -179,14 +179,11 @@ export function scrollToBottom(elementId: string) {
 
 export function validBotLocationData(
   botLocationData: BotLocationData | undefined): BotLocationData {
-  if (botLocationData && botLocationData.position && botLocationData.position.x) {
-    return botLocationData;
-  }
-  return {
+  return betterMerge({
     position: { x: undefined, y: undefined, z: undefined },
     scaled_encoders: { x: undefined, y: undefined, z: undefined },
     raw_encoders: { x: undefined, y: undefined, z: undefined },
-  };
+  }, botLocationData);
 }
 
 /**

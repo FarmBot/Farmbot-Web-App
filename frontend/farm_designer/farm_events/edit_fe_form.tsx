@@ -218,21 +218,22 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     allowedDeclarations={AllowedDeclaration.variable}
     shouldDisplay={this.props.shouldDisplay} />
 
-  executableSet = (e: DropDownItem) => {
-    if (e.value) {
-      const { executable_type } = this.props.farmEvent.body;
-      if (executable_type === "Regimen" &&
-        executableType(e.headingId) === "Sequence") {
+  executableSet = (ddi: DropDownItem) => {
+    if (ddi.value) {
+      const prev_executable_type = this.props.farmEvent.body.executable_type;
+      const next_executable_type = executableType(ddi.headingId);
+      if (prev_executable_type === "Regimen" &&
+        next_executable_type === "Sequence") {
         error(t("Cannot change from a Regimen to a Sequence."));
         history.push("/app/designer/farm_events");
       } else {
-        const { uuid } =
-          this.props.findExecutable(executable_type, parseInt("" + e.value));
+        const { uuid } = this.props.findExecutable(
+          next_executable_type, parseInt("" + ddi.value));
         const varData = this.props.resources.sequenceMetas[uuid];
         const update: State = {
           fe: {
-            executable_type: executableType(e.headingId),
-            executable_id: (e.value || "").toString(),
+            executable_type: next_executable_type,
+            executable_id: (ddi.value || "").toString(),
           },
           specialStatusLocal: SpecialStatus.DIRTY
         };

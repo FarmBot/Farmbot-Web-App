@@ -120,6 +120,7 @@ export class RefactoredSendMessage
               field="message" />
             <div className="bottom-content">
               <div className="channel-options">
+                <label>{t("type")}</label>
                 <FBSelect
                   onChange={this.setMsgType}
                   selectedItem={this.currentSelection}
