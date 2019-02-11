@@ -8,7 +8,7 @@ import { timeout } from "promise-timeout";
 export const storeToken =
   (old: AuthState, dispatch: Function) => (_new: AuthState | undefined) => {
     const t = _new || old;
-    (!_new) && console.warn("Failed to refresh token. Something is wrong.");
+    (!_new) && console.warn("Can't refresh token. Is API_HOST set correctly?");
     dispatch(setToken(t));
     didLogin(t, dispatch);
   };

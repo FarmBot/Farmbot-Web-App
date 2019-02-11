@@ -26,6 +26,10 @@ class DashboardController < ApplicationController
 
   # === THESE CONSTANTS ARE NON-CONFIGURABLE. ===
   # They are calculated based on config above.
+
+  RELEASE_CHUNK     = GlobalConfig::LONG_REVISION == "NONE" ?
+    SecureRandom.hex.first(5) : GlobalConfig::LONG_REVISION
+  CACHE_BUST_STRING = "?version=#{RELEASE_CHUNK}"
   PUBLIC_OUTPUT_DIR = File.join("public", OUTPUT_URL)
 
   CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (k, v)|
@@ -65,6 +69,8 @@ class DashboardController < ApplicationController
         # If you don't do this, you will hit hard to debug
         # CSP errors on local when changing API_HOST.
         response.headers["Cache-Control"] = "no-cache, no-store"
+        response.headers["Pragma"]        = "no-cache"
+        response.headers["Expires"]       = "0"
         load_css_assets
         load_js_assets
         render actn
@@ -113,14 +119,15 @@ private
   def load_css_assets
     @css_assets ||= [action_name, :default].reduce([]) do |list, action|
       asset = CSS_OUTPUTS[action] # Not every endpoint has custom CSS.
-      list.push(asset) if asset
+      list.push(asset + CACHE_BUST_STRING) if asset
       list
     end
   end
 
   def load_js_assets
     # Every DashboardController has a JS SBundle.
-    @js_assets ||= [ JS_OUTPUTS.fetch(action_name) ]
+    @js_assets ||= \
+      [ JS_OUTPUTS.fetch(action_name) ].map { |x| x + CACHE_BUST_STRING }
   end
 
   def set_global_config

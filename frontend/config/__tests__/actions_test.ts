@@ -59,7 +59,7 @@ describe("Actions", () => {
     storeToken(old, dispatch)(undefined);
     expect(setToken).toHaveBeenCalledWith(old);
     expect(didLogin).toHaveBeenCalledWith(old, dispatch);
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining(
-      "Failed to refresh token"));
+    expect(console.warn)
+      .toHaveBeenCalledWith(expect.stringContaining("Can't refresh token."));
   });
 });

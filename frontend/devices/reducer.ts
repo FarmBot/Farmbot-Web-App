@@ -8,7 +8,7 @@ import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer } from "../connectivity/reducer";
-import { versionOK, fancyDebug } from "../util";
+import { versionOK } from "../util";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
 import { incomingLegacyStatus } from "../connectivity/connect_device";
@@ -129,7 +129,6 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
       return s;
     })
   .add<DeepPartial<HardwareState>>(Actions.STATUS_UPDATE, (s, { payload }) => {
-    fancyDebug({ payload });
     s.hardware = {
       ...s.hardware,
       ...(payload as typeof s.hardware)
