@@ -4,14 +4,6 @@ describe SendNervesHubInfoJob do
   let(:device) { FactoryBot.create(:device) }
 
   it "handles failure" do
-    conn = double("handles failure", :ca_file=    => nil,
-                                     :cert_store  => nil,
-                                     :cert_store= => nil,
-                                     :use_ssl     => nil,
-                                     :use_ssl=    => nil,
-                                     :cert=       => nil,
-                                     :key=        => nil,
-                                     :get         => nil,)
     params = { device_id:     device.id,
                serial_number: "xyz",
                tags:          [],
