@@ -1,7 +1,7 @@
 import * as React from "react";
 import moment from "moment";
 import { t } from "i18next";
-import { success, error } from "farmbot-toastr";
+import { success, error, warning } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
   VariableDeclaration
@@ -333,7 +333,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   /** Use the next item run time to display toast messages and return to
    * the form if necessary. */
-  nextRunTimeActions = (editFEPath: string, now = moment()) => {
+  nextRunTimeActions = (now = moment()): boolean => {
     const nextRun = this.nextItemTime(this.props.farmEvent.body, now);
     if (nextRun) {
       const nextRunText = this.props.autoSyncEnabled
@@ -343,36 +343,36 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       you must first SYNC YOUR DEVICE. If you do not sync, the event will
       not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.from(now) });
       success(nextRunText);
+      return true;
     } else {
-      history.push(editFEPath);
-      error(t(Content.INVALID_RUN_TIME), t("Warning"));
+      warning(t("All items scheduled before the start time. Nothing to run."),
+        t("Warning"));
+      return false;
     }
   }
 
   /**  Once saved, if
   *    - Regimen Farm Event:
-  *      * Return to calendar view.
   *      * If scheduled for today, warn about the possibility of missing tasks.
   *      * Display the start time difference from now and maybe prompt to sync.
+  *      * Return to calendar view if items exist to be run past the start time.
   *    - Sequence Farm Event:
   *      * Determine the time for the next item to be run.
-  *      * Return to calendar view only if more items exist to be run.
-  *      * Display the next item run time.
   *      * If auto-sync is disabled, prompt the user to sync.
+  *      * Return to calendar view only if more items exist to be run.
   */
   commitViewModel = (now = moment()) => {
     if (this.maybeRejectStartTime(this.updatedFarmEvent)) {
       return startTimeWarning();
     }
     this.dispatch(overwrite(this.props.farmEvent, this.updatedFarmEvent));
-    const editFEPath = window.location.pathname;
     this.dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
-        history.push("/app/designer/farm_events");
         this.dispatch(maybeWarnAboutMissedTasks(this.props.farmEvent,
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
-        this.nextRunTimeActions(editFEPath, now);
+        const itemsScheduled = this.nextRunTimeActions(now);
+        if (itemsScheduled) { history.push("/app/designer/farm_events"); }
       })
       .catch(() => {
         error(t("Unable to save farm event."));
