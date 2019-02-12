@@ -298,4 +298,9 @@ private
   def self.current_ca_file
     @current_ca_file ||= (try_env_ca_file || try_file_ca_file || nil)
   end
+
+  WHOOPS = "🚨 NervesHub Anomaly Detected! 🚨"
+  def self.report_problem(payload = {})
+    Rollbar.error(WHOOPS, payload)
+  end
 end
