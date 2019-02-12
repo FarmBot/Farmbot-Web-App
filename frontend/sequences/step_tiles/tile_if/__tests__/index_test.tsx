@@ -6,16 +6,16 @@ import * as React from "react";
 import { mount } from "enzyme";
 import {
   seqDropDown,
-  initialValue,
   InnerIf,
   IfParams,
   IfBlockDropDownHandler,
-  LHSOptions
+  LHSOptions,
+  ThenElseParams
 } from "../index";
 import {
   buildResourceIndex, FAKE_RESOURCES
 } from "../../../../__test_support__/resource_index_builder";
-import { Execute, If, TaggedSequence } from "farmbot";
+import { Execute, If, TaggedSequence, VariableDeclaration } from "farmbot";
 import { overwrite } from "../../../../api/crud";
 import {
   fakeSensor, fakePeripheral
@@ -59,13 +59,6 @@ describe("seqDropDown()", () => {
   });
 });
 
-describe("initialValue()", () => {
-  it("returns dropdown initial value", () => {
-    const item = initialValue(execute, fakeResourceIndex);
-    expect(item).toEqual({ label: fakeName, value: fakeId });
-  });
-});
-
 describe("LHSOptions()", () => {
   it("returns positions and pins", () => {
     const s = fakeSensor();
@@ -106,8 +99,13 @@ describe("<InnerIf />", () => {
 });
 
 describe("IfBlockDropDownHandler()", () => {
+  const fakeThenElseProps = (thenElseKey: "_then" | "_else"): ThenElseParams => ({
+    ...fakeProps(),
+    thenElseKey,
+  });
+
   it("onChange()", () => {
-    const { onChange } = IfBlockDropDownHandler(fakeProps(), "_else");
+    const { onChange } = IfBlockDropDownHandler(fakeThenElseProps("_else"));
 
     onChange(expectedItem);
     expect(overwrite).toHaveBeenCalledWith(
@@ -135,16 +133,32 @@ describe("IfBlockDropDownHandler()", () => {
   });
 
   it("selectedItem()", () => {
-    const p = fakeProps();
+    const p = fakeThenElseProps("_then");
     p.currentStep.args._then = execute;
-    const { selectedItem } = IfBlockDropDownHandler(p, "_then");
+    const { selectedItem } = IfBlockDropDownHandler(p);
     const item = selectedItem();
     expect(item).toEqual(expectedItem);
   });
 
   it("selectedItem(): null", () => {
-    const { selectedItem } = IfBlockDropDownHandler(fakeProps(), "_then");
+    const { selectedItem } = IfBlockDropDownHandler(fakeThenElseProps("_then"));
     const item = selectedItem();
     expect(item).toEqual({ label: "None", value: "" });
+  });
+
+  it("edits declarations", () => {
+    const declaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "label", data_value: {
+          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+        }
+      }
+    };
+    const p = fakeThenElseProps("_then");
+    const { assignVariable } =
+      IfBlockDropDownHandler(p);
+    assignVariable([])(declaration);
+    expect(p.currentStep.args._then.body).toEqual([declaration]);
   });
 });

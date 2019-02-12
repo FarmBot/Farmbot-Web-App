@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Else } from "../else";
+import { ThenElse } from "../then_else";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
-import { IfParams } from "../index";
+import { ThenElseParams } from "../index";
 import { emptyState } from "../../../../resources/reducer";
 
-describe("<Else/>", () => {
-  function fakeProps(): IfParams {
+describe("<ThenElse/>", () => {
+  function fakeProps(): ThenElseParams {
     const currentStep: If = {
       kind: "_if",
       args: {
@@ -25,11 +25,21 @@ describe("<Else/>", () => {
       index: 0,
       resources: emptyState().index,
       confirmStepDeletion: false,
+      thenElseKey: "_then",
     };
   }
 
-  it("renders", () => {
-    const wrapper = mount(<Else {...fakeProps()} />);
+  it("renders 'then'", () => {
+    const wrapper = mount(<ThenElse {...fakeProps()} />);
+    ["THEN", "Execute Sequence"].map(string =>
+      expect(wrapper.text()).toContain(string));
+    expect(wrapper.find("button").length).toEqual(1);
+  });
+
+  it("renders 'else'", () => {
+    const p = fakeProps();
+    p.thenElseKey = "_else";
+    const wrapper = mount(<ThenElse {...p} />);
     ["ELSE", "Execute Sequence"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(1);
