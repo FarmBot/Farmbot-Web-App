@@ -1,4 +1,5 @@
 class SendNervesHubInfoJob < ApplicationJob
+  WHOOPS = "SendNervesHubInfoJob Failure"
   queue_as :default
 
   def perform(device_id:, serial_number:, tags:)
@@ -9,5 +10,11 @@ class SendNervesHubInfoJob < ApplicationJob
       certs     = NervesHub.sign_device(resp_data.fetch(:identifier))
       Transport.current.amqp_send(certs.to_json, device_id, "nerves_hub")
     end
+  rescue => error
+    Rollbar.error(WHOOPS, { error:         error,
+                            device_id:     device_id,
+                            serial_number: serial_number,
+                            tags:          tags, })
+    raise error
   end
 end
