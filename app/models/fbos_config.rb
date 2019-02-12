@@ -13,7 +13,11 @@ class FbosConfig < ApplicationRecord
 
   def sync_nerves
     serial = device.serial_number
-    return unless serial
+    unless serial
+      problem = "Device #{device.id} missing serial"
+      NervesHub.report_problem({ problem: problem })
+      return
+    end
     self.delay.push_changes_to_nerves_hub(serial, update_channel)
   end
 
