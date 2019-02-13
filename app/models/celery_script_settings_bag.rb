@@ -213,7 +213,7 @@ module CeleryScriptSettingsBag
       .node(:channel,               [:channel_name])
       .node(:wait,                  [:milliseconds])
       .node(:send_message,          [:message, :message_type], [:channel])
-      .node(:execute,               [:sequence_id], [:variable_declaration])
+      .node(:execute,               [:sequence_id], [:parameter_application])
       .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
       .node(:sequence,              [:version, :locals], STEPS)
       .node(:home,                  [:speed, :axis], [])
@@ -246,14 +246,15 @@ module CeleryScriptSettingsBag
       .node(:remove_farmware,       [:package])
       .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
-      .node(:variable_declaration,  [:label, :data_value], [])
+      .node(:variable_declaration,  [:label, :data_value], []) # <= duplicate nodes
+      .node(:parameter_application, [:label, :data_value], []) # <= not a mistake - RC
       .node(:parameter_declaration, [:label, :default_value], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
       .node(:install_first_party_farmware, [])
-      .node(:internal_farm_event,   [], [:variable_declaration])
-      .node(:internal_regimen,      [], SCOPE_DECLARATIONS)
+      .node(:internal_farm_event,   [], [:parameter_application])
+      .node(:internal_regimen,      [], [:parameter_application])
       .node(:internal_entry_point,  [], [])
       .node(:every_point,           [:every_point_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|

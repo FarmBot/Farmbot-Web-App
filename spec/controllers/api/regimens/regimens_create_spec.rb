@@ -16,7 +16,7 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "variable_declaration",
+                      kind: "parameter_declaration",
                       args: {
                         label: "parent",
                         data_value: {
@@ -32,7 +32,7 @@ describe Api::RegimensController do
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
-      expect(declr.fetch(:kind)).to eq("variable_declaration")
+      expect(declr.fetch(:kind)).to eq("parameter_declaration")
       path = [:args, :data_value, :args, :every_point_type]
       expect(declr.dig(*path)).to eq("Plant")
     end
@@ -68,7 +68,7 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "variable_declaration",
+                      kind: "parameter_declaration",
                       args: {
                         label: "parent",
                         data_value: { kind: "nothing", args: { } }

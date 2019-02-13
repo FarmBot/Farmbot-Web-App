@@ -14,13 +14,13 @@ module CeleryScript
     T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
-    # For instance, A `nothing` node in a `variable_declaration` is often an
+    # For instance, A `nothing` node in a `parameter_declaration` is often an
     # indication that the user did not fill out a value for a variable. In these
     # rare cases, we muct provide information beyond what is found in the
     # BAD_LEAF template.
     FRIENDLY_ERRORS = {
       nothing: {
-        variable_declaration: "You must provide a value for all parameters"
+        parameter_declaration: "You must provide a value for all parameters"
       }
     }.with_indifferent_access
     attr_reader :tree, :corpus, :device

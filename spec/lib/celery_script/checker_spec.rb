@@ -228,7 +228,7 @@ describe CeleryScript::Checker do
           :args=>{},
           body: [
             {
-              kind: "variable_declaration",
+              kind: "parameter_declaration",
               args: {
                 label: "parent",
                 data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
@@ -263,7 +263,7 @@ describe CeleryScript::Checker do
           :args=>{},
           body: [
             {
-              kind: "variable_declaration",
+              kind: "parameter_declaration",
               args: {
                 label: "parent",
                 data_value: {

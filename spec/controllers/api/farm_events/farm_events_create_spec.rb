@@ -24,7 +24,7 @@ describe Api::FarmEventsController do
       sign_in user
       payload = generic_fe.merge(body: [
         {
-          kind: "variable_declaration",
+          kind: "parameter_application",
           args: {
             label: "wow",
             data_value: {
@@ -48,8 +48,11 @@ describe Api::FarmEventsController do
       wrong = { kind: "identifier", args: { label: "wrong" } }
       body  = [
         {
-          kind: "variable_declaration",
-          args: { label: "also_wrong", data_value: wrong }
+          kind: "parameter_application",
+          args: {
+            label: "also_wrong",
+            data_value: wrong
+          }
         }
       ]
       body = generic_fe.merge(body: body)
@@ -64,11 +67,11 @@ describe Api::FarmEventsController do
       body = generic_fe.merge({
         body: [
           {
-            kind: "variable_declaration",
+            kind: "parameter_application",
             args: { kind: "tool", args: { tool_id: 0 } }
           },
           {
-            kind: "variable_declaration",
+            kind: "parameter_application",
             args: { kind: "tool", args: { tool_id: 0 } }
           },
         ]
@@ -77,7 +80,7 @@ describe Api::FarmEventsController do
       expect(response.status).to eq(422)
       expect(json.keys).to include(:farm_event)
       expect(json[:farm_event])
-        .to include("'variable_declaration' to have a 'label'")
+        .to include("'parameter_application' to have a 'label'")
     end
 
     it 'makes a farm_event' do
