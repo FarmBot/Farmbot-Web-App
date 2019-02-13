@@ -1,17 +1,31 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe FbosConfig do
-    let(:device) { FactoryBot.create(:device)         }
-    let(:config) { FbosConfig.create!(device: device) }
+    let(:device) { FactoryBot.create(:device) }
+    let(:config) { FbosConfig.create!(device: device)             }
 
-    it 'triggers callbacks' do
-      conn = double("Create a cert", :ca_file=    => nil,
-                                     :cert_store  => nil,
-                                     :cert_store= => nil,
-                                     :use_ssl     => nil,
-                                     :use_ssl=    => nil,
-                                     :cert=       => nil,
-                                     :key=        => nil)
+    def fake_conn(desc)
+      double(desc, :ca_file=    => nil,
+                   :cert_store  => nil,
+                   :cert_store= => nil,
+                   :use_ssl     => nil,
+                   :use_ssl=    => nil,
+                   :cert=       => nil,
+                   :key=        => nil)
+    end
+
+    it "notifies us of broken production data" do
+      # Remove this test by May 2019.
+      config.device.update_attributes!(serial_number: nil)
+      conn = fake_conn("Report broke data")
+      NervesHub.set_conn(conn)
+      problem = "Device #{device.id} missing serial"
+      expect(NervesHub).to receive(:report_problem).with({ problem: problem })
+      config.sync_nerves
+    end
+
+    it "triggers callbacks" do
+      conn = fake_conn("Create a cert")
       NervesHub.set_conn(conn)
       url    = "/orgs/farmbot/devices/#{device.serial_number}"
       resp   = StubResp.new("200", { "data" => { "tags": [] } }.to_json)
