@@ -22,7 +22,7 @@ import {
 import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, VariableDeclaration } from "farmbot";
-import { success, error } from "farmbot-toastr";
+import { success, error, warning } from "farmbot-toastr";
 import moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { history } from "../../../history";
@@ -336,8 +336,8 @@ describe("<FarmEventForm/>", () => {
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
-    expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "This Farm Event does not appear to have a valid run time"), "Warning");
+    expect(warning).toHaveBeenCalledWith(expect.stringContaining(
+      "Nothing to run."), "Warning");
   });
 
   it("rejects start time: add with unsupported OS", () => {

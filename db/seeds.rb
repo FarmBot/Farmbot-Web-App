@@ -14,7 +14,6 @@ if Rails.env == "development"
     [
       Sensor,
       Peripheral,
-      DeviceSerialNumber,
       Log,
       PinBinding,
       Point,

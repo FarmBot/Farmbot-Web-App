@@ -1,14 +1,13 @@
 import * as React from "react";
 import { t } from "i18next";
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
-import { TaggedSequence } from "farmbot";
+import { TaggedSequence, VariableDeclaration } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
 import { isRecursive } from "../index";
 import { If_ } from "./if";
-import { Then } from "./then";
-import { Else } from "./else";
+import { ThenElse } from "./then_else";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
 import { ToolTips } from "../../../constants";
@@ -18,6 +17,7 @@ import {
 } from "../pin_and_peripheral_support";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
+import { addOrEditVarDeclaration } from "../../locals_list/declaration_support";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -27,6 +27,10 @@ export interface IfParams {
   resources: ResourceIndex;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
+}
+
+export interface ThenElseParams extends IfParams {
+  thenElseKey: "_then" | "_else";
 }
 
 export type Operator = "lhs"
@@ -67,23 +71,6 @@ export function seqDropDown(i: ResourceIndex) {
   return results;
 }
 
-export function initialValue(input: Execute | Nothing, index: ResourceIndex) {
-  switch (input.kind) {
-    case "execute":
-      const id = input.args.sequence_id;
-      const seq = findSequenceById(index, id).body;
-      if (isNumber(seq.id)) {
-        return { label: seq.name, value: seq.id };
-      } else {
-        throw new Error("Failed seq id type assertion.");
-      }
-    case "nothing":
-      return { label: t("None"), value: 0 };
-    default:
-      throw new Error("Only _else or _then");
-  }
-}
-
 export function InnerIf(props: IfParams) {
   const {
     index,
@@ -103,17 +90,17 @@ export function InnerIf(props: IfParams) {
       dispatch={dispatch}
       index={index}
       confirmStepDeletion={confirmStepDeletion}>
-      {recursive && (
+      {recursive &&
         <span>
           <i className="fa fa-exclamation-triangle"></i>
           &nbsp;{t("Recursive condition.")}
         </span>
-      )}
+      }
     </StepHeader>
     <StepContent className={className}>
       <If_ {...props} />
-      <Then {...props} />
-      <Else {...props} />
+      <ThenElse thenElseKey={"_then"} {...props} />
+      <ThenElse thenElseKey={"_else"} {...props} />
     </StepContent>
   </StepWrapper>;
 }
@@ -121,13 +108,12 @@ export function InnerIf(props: IfParams) {
 /** Creates a function that can be used in the `onChange` event of a _else or
  * _then block in the sequence editor.
  */
-export let IfBlockDropDownHandler = (props: IfParams,
-  key: "_else" | "_then") => {
+export let IfBlockDropDownHandler = (props: ThenElseParams) => {
 
-  const { dispatch, index } = props;
+  const { dispatch, index, thenElseKey } = props;
   const step = props.currentStep;
   const sequence = props.currentSequence;
-  const block = step.args[key];
+  const block = step.args[thenElseKey];
   const selectedItem = () => {
     if (block.kind === "nothing") {
       return NULL_CHOICE;
@@ -145,7 +131,7 @@ export let IfBlockDropDownHandler = (props: IfParams,
   function overwriteStep(input: Execute | Nothing) {
     const update = defensiveClone(step);
     const nextSequence = defensiveClone(sequence).body;
-    update.args[key] = input;
+    update.args[thenElseKey] = input;
     (nextSequence.body || [])[index] = update;
     dispatch(overwrite(sequence, nextSequence));
   }
@@ -159,5 +145,18 @@ export let IfBlockDropDownHandler = (props: IfParams,
     }
   }
 
-  return { onChange, selectedItem };
+  const sequenceId = selectedItem().value;
+  const calleeUuid = sequenceId ?
+    findSequenceById(props.resources, sequenceId).uuid : undefined;
+  const calledSequenceVariableData = calleeUuid ?
+    props.resources.sequenceMetas[calleeUuid] : undefined;
+
+  /** Replaces the execute step body with a new array of declarations. */
+  const assignVariable = (declarations: VariableDeclaration[]) =>
+    (variable: VariableDeclaration) => {
+      block.body = addOrEditVarDeclaration(declarations, variable);
+      overwriteStep(block);
+    };
+
+  return { onChange, selectedItem, calledSequenceVariableData, assignVariable };
 };
