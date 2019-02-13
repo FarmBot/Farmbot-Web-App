@@ -126,8 +126,6 @@ class CorpusEmitter
                 CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES)
     result.push(enum_type :ALLOWED_CHANNEL_NAMES,
                 CeleryScriptSettingsBag::ALLOWED_CHANNEL_NAMES)
-    result.push(enum_type :ALLOWED_DATA_TYPES,
-                CeleryScriptSettingsBag::ALLOWED_DATA_TYPES)
     result.push(enum_type :ALLOWED_OPS,
                 CeleryScriptSettingsBag::ALLOWED_OPS)
     result.push(enum_type :ALLOWED_PACKAGES,

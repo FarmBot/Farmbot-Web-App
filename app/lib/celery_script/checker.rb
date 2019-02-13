@@ -119,18 +119,9 @@ module CeleryScript
     #   value.invalidate!(T_MISMATCH % [label, expected, actual])
     # end SEE_MY_NOTE =============================^ RC 4 Oct 18
 
-
     def type_check_parameter(var, expected)
-      data_type = var.args[:data_type].value
-
-      # Don't delete this- it is currently unreachable code, but as soon as we
-      # allow identifiers other than `point`, `tool` and `coordinate` we will
-      # need it again (and can write tests)
-      # if !expected.include?(data_type)
-      #   bad_var!(value, label, expected, actual)
-      # end SEE_MY_NOTE =============================^ RC 4 Oct 18
+      raise "FIXME"
     end
-
 
     def validate_node_pairing(key, value)
       actual  = value.kind

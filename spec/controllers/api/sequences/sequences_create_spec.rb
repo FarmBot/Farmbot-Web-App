@@ -86,7 +86,7 @@ describe Api::SequencesController do
       expect(generated_result.dig(:args, :foo)).to eq(nil)
     end
 
-    it 'disallows typo `data_types` in `locals` declaration' do
+    it 'disallows typos in `locals` declaration' do
       input = {
         name: "Scare Birds",
         body: [],
@@ -99,8 +99,7 @@ describe Api::SequencesController do
               {
                 kind: "parameter_declaration",
                 args: {
-                  label: "parent",
-                  data_type: "PlantSpelledBackwards"
+                  label: "parent"
                 }
               }
             ]
@@ -111,10 +110,10 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid data_type")
+      expect(json[:body]).to include("not a valid default value")
     end
 
-    it 'disallows erroneous `data_types` in `locals` declaration' do
+    it 'disallows erroneous `locals` declaration' do
       input = {
         name: "Scare Birds",
         body: [],
@@ -150,7 +149,6 @@ describe Api::SequencesController do
                 kind: "parameter_declaration",
                 args: {
                   label: "parent",
-                  data_type: "point"
                 }
               }
             ]
@@ -260,7 +258,7 @@ describe Api::SequencesController do
                     body: [
                       {
                         kind: "parameter_declaration",
-                        args: { label: "parent", data_type: "wait" }
+                        args: { label: "parent" }
                       }
                     ]
                   }
@@ -280,7 +278,7 @@ describe Api::SequencesController do
               }
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid data_type")
+      expect(json[:body]).to include("not a valid default value")
     end
 
 

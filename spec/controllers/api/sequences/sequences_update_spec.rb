@@ -22,7 +22,6 @@ describe Api::SequencesController do
                   kind: "parameter_declaration",
                   args: {
                     label: "parent",
-                    data_type: "point"
                   }
                 }
               ]

@@ -16,7 +16,6 @@ describe CeleryScript::Checker do
                             kind: "identifier",
                             args: {
                               label: "makes no sense",
-                              data_type: "coordinate"
                             }
                           }
                         } } ]

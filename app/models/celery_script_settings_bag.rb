@@ -35,7 +35,6 @@ module CeleryScriptSettingsBag
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
-  ALLOWED_DATA_TYPES    = %w(tool coordinate point)
   ALLOWED_OPS           = %w(< > is not is_undefined)
   ALLOWED_AXIS          = %w(x y z all)
   ALLOWED_LHS_TYPES     = [String, :named_pin]
@@ -54,7 +53,6 @@ module CeleryScriptSettingsBag
   BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
                           'Allowed values: %s'
   BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
-  BAD_DATA_TYPE         = '"%s" is not a valid data_type. Allowed values: %s'
   BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
   BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
   BAD_RESOURCE_TYPE     = '"%s" is not a valid resource_type. Allowed values: %s'
@@ -89,6 +87,7 @@ module CeleryScriptSettingsBag
       .arg(:offset,       [:coordinate])
       .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENUS ARG TYPE => BAD
       .arg(:data_value,   ANY_VARIABLE)
+      .arg(:default_value,ANY_VARIABLE)
       .arg(:location,     ANY_VARIABLE)
       .arg(:label,        [String])
       .arg(:milliseconds, [Integer])
@@ -178,11 +177,6 @@ module CeleryScriptSettingsBag
       .arg(:speed, [Integer]) do |node|
         node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
       end
-      .arg(:data_type, [String]) do |node|
-        within(ALLOWED_DATA_TYPES, node) do |v|
-          BAD_DATA_TYPE % [v.to_s, ALLOWED_DATA_TYPES.inspect]
-        end
-      end
       .arg(:resource_id, [Integer])
       .arg(:resource_type, [String]) do |n|
         within(RESOURCE_NAME, n) do |v|
@@ -253,7 +247,7 @@ module CeleryScriptSettingsBag
       .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
       .node(:variable_declaration,  [:label, :data_value], [])
-      .node(:parameter_declaration, [:label, :data_type], [])
+      .node(:parameter_declaration, [:label, :default_value], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
       .node(:dump_info,             [], [])
