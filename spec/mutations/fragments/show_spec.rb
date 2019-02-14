@@ -32,14 +32,14 @@ describe Fragments::Create do
       args:   {},
       body:   [
         {
-          kind: "parameter_declaration",
+          kind: "parameter_application",
           args: {
             label: "myLabel123",
             data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2, } }
           }
         },
         {
-          kind: "parameter_declaration",
+          kind: "parameter_application",
           args: {
             label: "other thing",
             data_value: { kind: "tool", args: { tool_id: tool.id } }
@@ -59,10 +59,17 @@ describe Fragments::Create do
     a2z    = (('a'..'z').to_a + ('0'..'9').to_a)
     body   = a2z.map do |label|
       {
-        kind: "parameter_declaration",
+        kind: "parameter_application",
         args: {
           label: label,
-          data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2, } }
+          data_value: {
+            kind: "coordinate",
+            args: {
+              x: 0,
+              y: 1,
+              z: 2,
+            }
+          }
         }
       }
     end
@@ -77,7 +84,6 @@ describe Fragments::Create do
     fragment =  Fragments::Create.run!(device:   device,
                                        owner:    farm_event,
                                        flat_ast: Fragments::Preprocessor.run!(origin))
-
     # Warm the cache up with two dry-runs:
     Fragments::Show.run!(owner: farm_event)
     Fragments::Show.run!(owner: farm_event)

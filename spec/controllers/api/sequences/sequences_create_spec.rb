@@ -86,7 +86,7 @@ describe Api::SequencesController do
       expect(generated_result.dig(:args, :foo)).to eq(nil)
     end
 
-    it 'disallows typos in `locals` declaration' do
+    it 'disallows bad default_values' do
       input = {
         name: "Scare Birds",
         body: [],
@@ -99,7 +99,11 @@ describe Api::SequencesController do
               {
                 kind: "parameter_declaration",
                 args: {
-                  label: "parent"
+                  label: "parent",
+                  default_value: {
+                    kind: "wait",
+                    args: { milliseconds: 12 }
+                  }
                 }
               }
             ]
@@ -110,7 +114,8 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid default value")
+      expect(json[:body]).to include("Expected leaf 'wait' within "\
+                                     "'parameter_declaration' to be one of: [")
     end
 
     it 'disallows erroneous `locals` declaration' do
@@ -133,7 +138,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expctd =
-        "Expected one of: [:parameter_declaration, :parameter_declaration]"
+        "Expected one of: [:variable_declaration, :parameter_declaration]"
       expect(json[:body]).to include(expctd)
     end
 
@@ -149,6 +154,14 @@ describe Api::SequencesController do
                 kind: "parameter_declaration",
                 args: {
                   label: "parent",
+                  default_value: {
+                    kind: "coordinate",
+                    args: {
+                      x: 0,
+                      y: 0,
+                      z: 0
+                    }
+                  }
                 }
               }
             ]
@@ -168,6 +181,7 @@ describe Api::SequencesController do
 
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
+      binding.pry
       expect(response.status).to eq(200)
       dig_path = [:args, :locals, :body, 0, :args, :label]
       generated_result = CeleryScript::FetchCelery
@@ -258,7 +272,10 @@ describe Api::SequencesController do
                     body: [
                       {
                         kind: "parameter_declaration",
-                        args: { label: "parent" }
+                        args: {
+                          label: "parent",
+                          default_value: { kind: "sync", args: {} }
+                        }
                       }
                     ]
                   }
@@ -278,7 +295,7 @@ describe Api::SequencesController do
               }
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid default value")
+      expect(json[:body]).to include("but got sync")
     end
 
 
@@ -306,6 +323,7 @@ describe Api::SequencesController do
                 body: [ ]
               }
       post :create, body: input.to_json, params: {format: :json}
+      pending("We will need to talk about this one")
       expect(response.status).to eq(422)
       expect(json[:body]).to include("must provide a value for all parameters")
     end
