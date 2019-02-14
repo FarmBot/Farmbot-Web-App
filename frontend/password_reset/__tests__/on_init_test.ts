@@ -10,7 +10,7 @@ describe("onInit()", () => {
     await onInit({}, jest.fn());
     expect({}).toBeTruthy();
     expect(render).toHaveBeenCalled();
-    const [calls] = (render as jest.Mock<{}>).mock.calls;
+    const [calls] = (render as jest.Mock).mock.calls;
     expect(calls[0].type.name).toBe("PasswordReset");
     done();
   });
