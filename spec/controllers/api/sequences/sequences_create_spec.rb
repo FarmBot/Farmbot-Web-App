@@ -310,7 +310,7 @@ describe Api::SequencesController do
                         kind: "parameter_declaration",
                         args: {
                           label: "x",
-                          data_value: {
+                          default_value: {
                             kind: "nothing",
                             args: {}
                           }
@@ -322,7 +322,6 @@ describe Api::SequencesController do
                 body: [ ]
               }
       post :create, body: input.to_json, params: {format: :json}
-      pending("We will need to talk about this one")
       expect(response.status).to eq(422)
       expect(json[:body]).to include("must provide a value for all parameters")
     end

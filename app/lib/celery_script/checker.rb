@@ -119,10 +119,6 @@ module CeleryScript
     #   value.invalidate!(T_MISMATCH % [label, expected, actual])
     # end SEE_MY_NOTE =============================^ RC 4 Oct 18
 
-    def type_check_parameter(var, expected)
-      raise "FIXME"
-    end
-
     def validate_node_pairing(key, value)
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
@@ -136,8 +132,6 @@ module CeleryScript
         # catch unbound identifiers
         var = resolve_variable!(value)
         case var.kind
-        when "parameter_declaration"
-          type_check_parameter(var, allowed_types)
         when "variable_declaration"
           actual = var.args[:data_value].kind
         #   Don't delete this- it is currently unreachable code, but as soon as we

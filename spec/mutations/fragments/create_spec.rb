@@ -48,7 +48,6 @@ describe Fragments::Create do
   end
 
   it "dumps CeleryScript into the database" do
-    pending("This will need a second look.")
     flat_ast = [ { :__KIND__     => "nothing",
                       :__parent     => H[0],
                       :__body       => H[0],
