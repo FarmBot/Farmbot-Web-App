@@ -15,14 +15,14 @@ describe Fragments::Create do
             args:   {},
             body:   [
               {
-                kind: "parameter_declaration",
+                kind: "parameter_application",
                 args: {
                   label: "myLabel123",
                   data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2, } }
                 }
               },
               {
-                kind: "parameter_declaration",
+                kind: "parameter_application",
                 args: {
                   label: "other thing",
                   data_value: { kind: "tool", args: { tool_id: tool.id } }
@@ -38,8 +38,8 @@ describe Fragments::Create do
     pair      = variable2.arg_set.standard_pairs.first
     expect(entry.kind.value).to       eq("internal_farm_event")
     expect(entry.next.kind.value).to  eq("internal_entry_point")
-    expect(entry.body.kind.value).to  eq("parameter_declaration")
-    expect(variable2.kind.value).to eq("parameter_declaration")
+    expect(entry.body.kind.value).to  eq("parameter_application")
+    expect(variable2.kind.value).to eq("parameter_application")
     expect(variable2.next.kind.value).to eq("internal_entry_point")
     expect(pair.arg_name.value).to  eq("data_value")
     expect(pair.node.kind.value).to eq("tool")
@@ -57,7 +57,7 @@ describe Fragments::Create do
                       :__parent     => H[0],
                       :__body       => H[2],
                       :__next       => H[0] },
-                    { :__KIND__     => "parameter_declaration",
+                    { :__KIND__     => "parameter_application",
                       :__parent     => H[1],
                       :label        => "foo",
                       :__data_value => H[3],
@@ -83,7 +83,7 @@ describe Fragments::Create do
     nodes = fragment.nodes.sort_by(&:id);
     expect(nodes[0].kind.value).to eq("internal_entry_point")
     expect(nodes[1].kind.value).to eq("internal_farm_event")
-    expect(nodes[2].kind.value).to eq("parameter_declaration")
+    expect(nodes[2].kind.value).to eq("parameter_application")
     expect(nodes[3].kind.value).to eq("identifier")
     expect(nodes[3].arg_set.primitive_pairs.count).to eq 2
     Node.destroy_all

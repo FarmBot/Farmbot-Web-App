@@ -231,7 +231,9 @@ describe CeleryScript::Checker do
               kind: "parameter_declaration",
               args: {
                 label: "parent",
-                data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+                default_value: {
+                  kind: "coordinate",
+                  args: { x: 0, y: 0, z: 0 } }
               }
             }
           ]
@@ -266,7 +268,7 @@ describe CeleryScript::Checker do
               kind: "parameter_declaration",
               args: {
                 label: "parent",
-                data_value: {
+                default_value: {
                   kind: "nothing",
                   args: { }
                 }

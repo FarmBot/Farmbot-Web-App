@@ -16,7 +16,7 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "parameter_declaration",
+                      kind: "parameter_application",
                       args: {
                         label: "parent",
                         data_value: {
@@ -32,7 +32,7 @@ describe Api::RegimensController do
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
-      expect(declr.fetch(:kind)).to eq("parameter_declaration")
+      expect(declr.fetch(:kind)).to eq("parameter_application")
       path = [:args, :data_value, :args, :every_point_type]
       expect(declr.dig(*path)).to eq("Plant")
     end
@@ -68,7 +68,7 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "parameter_declaration",
+                      kind: "parameter_application",
                       args: {
                         label: "parent",
                         data_value: { kind: "nothing", args: { } }
@@ -81,7 +81,7 @@ describe Api::RegimensController do
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(422)
       expect(json.fetch(:error))
-        .to include("must provide a value for all parameters")
+        .to include("but got nothing")
     end
   end
 end
