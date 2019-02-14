@@ -16,6 +16,16 @@ def open_json(url)
   end
 end
 
+# Determine the branch of the current build.
+def fetch_current_branch()
+  if CURRENT_BRANCH.include? "/"
+    gh_data = open_json("#{REPO_URL}/pulls/#{CURRENT_BRANCH.split("/")[1]}")
+    return gh_data.dig("head", "ref")
+  else
+    return CURRENT_BRANCH
+  end
+end
+
 # Assemble the coverage data URL using the provided branch.
 def coverage_url(branch)
   commit = open_json("#{REPO_URL}/git/refs/heads/#{branch}").dig("object", "sha")
@@ -60,7 +70,8 @@ namespace :coverage do
     puts
 
     # Attempt to fetch remote build coverage data for the current branch.
-    remote = fetch_build_data(coverage_url(CURRENT_BRANCH))
+    current_branch = fetch_current_branch()
+    remote = fetch_build_data(coverage_url(current_branch))
 
     if remote[:percent].nil? && CURRENT_COMMIT == remote[:commit]
       puts "Coverage already calculated for #{remote[:branch]}."
@@ -68,8 +79,8 @@ namespace :coverage do
       remote[:percent] = build_percent
     end
 
-    if remote[:percent].nil? && CURRENT_BRANCH != "staging"
-      puts "Error getting coveralls data for #{CURRENT_BRANCH}."
+    if remote[:percent].nil? && current_branch != "staging"
+      puts "Error getting coveralls data for #{current_branch}."
       puts "Attempting to use staging build coveralls data."
       remote = fetch_build_data(coverage_url("staging"))
     end
