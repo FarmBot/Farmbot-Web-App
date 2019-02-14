@@ -222,7 +222,7 @@ describe("settingToggle()", () => {
     window.alert = jest.fn();
     const msg = "this is an alert.";
     actions.settingToggle(
-      "param_mov_nr_retry", jest.fn(() => ({ value: "" })),
+      "param_mov_nr_retry", jest.fn(() => ({ value: 1, consistent: true })),
       msg)(jest.fn(), fakeState);
     expect(window.alert).toHaveBeenCalledWith(msg);
   });
