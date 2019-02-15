@@ -132,8 +132,8 @@ module CeleryScript
         # catch unbound identifiers
         var = resolve_variable!(value)
         case var.kind
-        when "variable_declaration"
-          actual = var.args[:data_value].kind
+        when "parameter_declaration"
+          actual = var.args[:default_value].kind
         #   Don't delete this- it is currently unreachable code, but as soon as we
         #   allow identifiers other than `point`, `tool` and `coordinate` we will
         #   need it again (and can write tests)
