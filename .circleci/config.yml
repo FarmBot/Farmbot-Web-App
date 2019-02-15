@@ -42,4 +42,4 @@ jobs:
       - run:
           name: Check Coveralls coverage on staging
           command: |
-            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" web rake coverage:run
+            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" web rake coverage:run

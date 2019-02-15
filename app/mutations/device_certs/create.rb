@@ -10,7 +10,7 @@ module DeviceCerts
       SendNervesHubInfoJob.perform_later(device_id:     device.id,
                                          serial_number: serial_number,
                                          tags:          tags)
-      return {}
+      return device.update_attributes!(serial_number: serial_number) && device
     end
   end
 end

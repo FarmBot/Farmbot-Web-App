@@ -13,7 +13,15 @@ class FbosConfig < ApplicationRecord
 
   def sync_nerves
     serial = device.serial_number
-    return unless serial
+    unless serial
+      # This feature can be removed in May '19
+      # It is used to repair data damage on
+      # production during the initial nervehub
+      # deployment.
+      problem = "Device #{device.id} missing serial"
+      NervesHub.report_problem({ problem: problem })
+      return
+    end
     self.delay.push_changes_to_nerves_hub(serial, update_channel)
   end
 

@@ -154,38 +154,6 @@ ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 
 
 --
--- Name: device_serial_numbers; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.device_serial_numbers (
-    id bigint NOT NULL,
-    device_id bigint,
-    serial_number character varying(16) NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: device_serial_numbers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.device_serial_numbers_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: device_serial_numbers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.device_serial_numbers_id_seq OWNED BY public.device_serial_numbers.id;
-
-
---
 -- Name: devices; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -385,8 +353,7 @@ CREATE TABLE public.farmware_installations (
     url character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    package character varying(80),
-    package_error character varying
+    package character varying(80)
 );
 
 
@@ -1581,13 +1548,6 @@ ALTER TABLE ONLY public.delayed_jobs ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- Name: device_serial_numbers id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.device_serial_numbers ALTER COLUMN id SET DEFAULT nextval('public.device_serial_numbers_id_seq'::regclass);
-
-
---
 -- Name: devices id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1848,14 +1808,6 @@ ALTER TABLE ONLY public.arg_sets
 
 ALTER TABLE ONLY public.delayed_jobs
     ADD CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id);
-
-
---
--- Name: device_serial_numbers device_serial_numbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.device_serial_numbers
-    ADD CONSTRAINT device_serial_numbers_pkey PRIMARY KEY (id);
 
 
 --
@@ -2149,13 +2101,6 @@ CREATE INDEX index_arg_sets_on_fragment_id ON public.arg_sets USING btree (fragm
 --
 
 CREATE INDEX index_arg_sets_on_node_id ON public.arg_sets USING btree (node_id);
-
-
---
--- Name: index_device_serial_numbers_on_device_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_device_serial_numbers_on_device_id ON public.device_serial_numbers USING btree (device_id);
 
 
 --
@@ -2721,14 +2666,6 @@ ALTER TABLE ONLY public.edge_nodes
 
 
 --
--- Name: device_serial_numbers fk_rails_d052988096; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.device_serial_numbers
-    ADD CONSTRAINT fk_rails_d052988096 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: points fk_rails_d6f3cdbe9a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2878,6 +2815,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190103211708'),
 ('20190103213956'),
 ('20190108211419'),
-('20190209133811');
+('20190209133811'),
+('20190212215842');
 
 
