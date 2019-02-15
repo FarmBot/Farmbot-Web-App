@@ -16,14 +16,17 @@ def open_json(url)
   end
 end
 
-# Determine the branch of the current build.
-def fetch_current_branch()
+# Get pull request information from the GitHub API.
+def fetch_pull_data()
   if CURRENT_BRANCH.include? "/"
-    gh_data = open_json("#{REPO_URL}/pulls/#{CURRENT_BRANCH.split("/")[1]}")
-    return gh_data.dig("head", "ref")
-  else
-    return CURRENT_BRANCH
+    return open_json("#{REPO_URL}/pulls/#{CURRENT_BRANCH.split("/")[1]}")
   end
+  return {}
+end
+
+# Determine the base branch of the current build.
+def get_current_branch(pull_data)
+  pull_data.dig("base", "ref") || CURRENT_BRANCH
 end
 
 # Assemble the coverage data URL using the provided branch.
@@ -36,9 +39,26 @@ end
 def fetch_build_data(url)
   build_data = open_json(url)
   return {
-    branch: build_data.dig("branch"),
-    commit: build_data.dig("commit_sha"),
-    percent: build_data.dig("covered_percent")}
+    branch: build_data["branch"],
+    commit: build_data["commit_sha"],
+    percent: build_data["covered_percent"]}
+end
+
+# <commit hash> on <username>:<branch>
+def branch_info_string?(target, pull_data)
+  unless pull_data.dig(target, "sha").nil?
+    "#{pull_data.dig(target, "sha")} on #{pull_data.dig(target, "label")}"
+  end
+end
+
+# Print a coverage difference summary string.
+def print_summary_text(build_percent, remote, pull_data)
+  diff = (build_percent - remote[:percent]).round(2)
+  direction = diff > 0 ? "increased" : "decreased"
+  description = diff == 0 ? "remained the same at" : "#{direction} (#{diff}%) to"
+  puts "Coverage #{description} #{build_percent.round(3)}%"\
+  " when pulling #{branch_info_string?("head", pull_data)}"\
+  " into #{branch_info_string?("base", pull_data) || remote[:branch]}."
 end
 
 def to_percent(pair)
@@ -70,7 +90,8 @@ namespace :coverage do
     puts
 
     # Attempt to fetch remote build coverage data for the current branch.
-    current_branch = fetch_current_branch()
+    pull_request_data = fetch_pull_data()
+    current_branch = get_current_branch(pull_request_data)
     remote = fetch_build_data(coverage_url(current_branch))
 
     if remote[:percent].nil? && CURRENT_COMMIT == remote[:commit]
@@ -118,6 +139,8 @@ namespace :coverage do
     puts "Difference:     #{diff.round(8)}%"
     puts "Pass?           #{pass ? "yes" : "no"}"
     puts
+
+    print_summary_text(build_percent, remote, pull_request_data)
 
     exit pass ? 0 : 1
 
