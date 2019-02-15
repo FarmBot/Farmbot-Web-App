@@ -5,10 +5,11 @@ class Typescript
   TYPE_MAPPING = {
     "bigint"                      => "number",
     "boolean"                     => "boolean",
+    "character varying"           => "string",
+    "character varying(7)"        => "string",
+    "double precision"            => "number",
     "integer"                     => "number",
     "timestamp without time zone" => "string",
-    "character varying"           => "string",
-    "double precision"            => "number"
   }
 
   INTERFACE_TPL = <<~END
@@ -48,7 +49,9 @@ class Typescript
   def self.fields
     klass.columns.map do |col|
       t        = col.sql_type_metadata.sql_type
-      col_type = TYPE_MAPPING[t] or raise "NO! #{t.inspect} is not in TYPE_MAPPING"
+      col_type = TYPE_MAPPING.fetch(t) do
+         raise "NO! #{t.inspect} is not in TYPE_MAPPING"
+      end
       Pair.new(col.name, col_type)
     end
   end
