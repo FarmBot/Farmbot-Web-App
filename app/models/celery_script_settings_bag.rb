@@ -76,7 +76,7 @@ module CeleryScriptSettingsBag
   ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
                           " as input. Please change your selection to a "\
                           "single location."
-  SCOPE_DECLARATIONS    = [ :parameter_declaration ]
+  SCOPE_DECLARATIONS    = [ :variable_declaration, :parameter_declaration ]
   ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
   BAD_EVERY_POINT_TYPE     = '"%s" is not a type of group. Allowed values: %s'
 
@@ -246,7 +246,8 @@ module CeleryScriptSettingsBag
       .node(:remove_farmware,       [:package])
       .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
-      .node(:parameter_application, [:label, :data_value], []) # <= not a mistake - RC
+      .node(:variable_declaration,  [:label, :data_value], []) # duplicate nodes evolve independendantly
+      .node(:parameter_application, [:label, :data_value], []) # duplicate nodes evolve independendantly
       .node(:parameter_declaration, [:label, :default_value], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
