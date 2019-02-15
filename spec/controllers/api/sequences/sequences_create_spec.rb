@@ -138,7 +138,7 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expctd =
-        "Expected one of: [:parameter_declaration]"
+        "Expected one of: [:variable_declaration, :parameter_declaration]"
       expect(json[:body]).to include(expctd)
     end
 
@@ -163,6 +163,16 @@ describe Api::SequencesController do
                     }
                   }
                 }
+              },
+              {
+                kind: "variable_declaration",
+                args: {
+                  label: "parent2",
+                  data_value: {
+                    kind: "coordinate",
+                    args: { x: 9, y: 9, z: 9, }
+                  }
+                }
               }
             ]
           }
@@ -171,8 +181,24 @@ describe Api::SequencesController do
           {
             kind: "move_absolute",
             args: {
-              location: { kind: "identifier", args: { label: "parent" } },
-              offset:   { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+              location: {
+                kind: "identifier",
+                args: { label: "parent" } },
+              offset:   {
+                kind: "coordinate",
+                args: { x: 0, y: 0, z: 0 } },
+              speed:    100,
+            }
+          },
+          {
+            kind: "move_absolute",
+            args: {
+              location: {
+                kind: "identifier",
+                args: { label: "parent2" } },
+              offset:   {
+                kind: "coordinate",
+                args: { x: 0, y: 0, z: 0 } },
               speed:    100,
             }
           }
@@ -296,7 +322,6 @@ describe Api::SequencesController do
       expect(response.status).to eq(422)
       expect(json[:body]).to include("but got sync")
     end
-
 
     it 'provides human readable errors for "nothing" mismatches' do
       sign_in user

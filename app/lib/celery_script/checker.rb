@@ -133,7 +133,9 @@ module CeleryScript
         var = resolve_variable!(value)
         case var.kind
         when "parameter_declaration", "variable_declaration"
-          actual = var.args[:default_value].kind
+          key = \
+            (var.kind == "parameter_declaration") ? :default_value : :data_value
+          actual = var.args.fetch(key).kind
         #   Don't delete this- it is currently unreachable code, but as soon as we
         #   allow identifiers other than `point`, `tool` and `coordinate` we will
         #   need it again (and can write tests)
