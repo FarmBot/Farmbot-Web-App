@@ -19,15 +19,14 @@ module CeleryScriptSettingsBag
   ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
-  ALLOWED_RPC_NODES     = %w(home emergency_lock emergency_unlock read_status
-                             sync check_updates power_off reboot toggle_pin
-                             config_update calibrate execute move_absolute
-                             move_relative write_pin read_pin send_message
-                             factory_reset execute_script set_user_env wait
-                             install_farmware update_farmware take_photo zero
-                             install_first_party_farmware remove_farmware
-                             find_home register_gpio unregister_gpio
-                             set_servo_angle change_ownership dump_info)
+  ALLOWED_RPC_NODES     = \
+    %w( calibrate change_ownership check_updates dump_info
+        emergency_lock emergency_unlock execute execute_script factory_reset
+        find_home home install_farmware install_first_party_farmware _if
+        move_absolute move_relative power_off read_pin read_status reboot
+        register_gpio remove_farmware resource_update send_message
+        set_servo_angle set_user_env sync take_photo toggle_pin
+        update_farmware wait write_pin zero )
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
   RESOURCE_NAME         = %w(Device FarmEvent Image Log Peripheral Plant Point
@@ -41,9 +40,6 @@ module CeleryScriptSettingsBag
   ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
   ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
                              read_status reboot sync take_photo)
-  STEPS                 = %w(_if execute execute_script find_home move_absolute
-                             move_relative read_pin send_message take_photo wait
-                             write_pin resource_update)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
                           'argument. Allowed values: %s'
@@ -102,6 +98,7 @@ module CeleryScriptSettingsBag
       .arg(:y,            [Integer, Float])
       .arg(:z,            [Integer, Float])
       .arg(:pin_id,       [Integer])
+      .arg(:resource_id,  [Integer])
       .arg(:pin_type,     [String]) do |node|
         within(ALLOWED_PIN_TYPES, node) do |val|
           BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
@@ -177,7 +174,6 @@ module CeleryScriptSettingsBag
       .arg(:speed, [Integer]) do |node|
         node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
       end
-      .arg(:resource_id, [Integer])
       .arg(:resource_type, [String]) do |n|
         within(RESOURCE_NAME, n) do |v|
           BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME]
@@ -215,7 +211,7 @@ module CeleryScriptSettingsBag
       .node(:send_message,          [:message, :message_type], [:channel])
       .node(:execute,               [:sequence_id], [:parameter_application])
       .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
-      .node(:sequence,              [:version, :locals], STEPS)
+      .node(:sequence,              [:version, :locals], ALLOWED_RPC_NODES)
       .node(:home,                  [:speed, :axis], [])
       .node(:find_home,             [:speed, :axis], [])
       .node(:zero,                  [:axis], [])
@@ -233,9 +229,6 @@ module CeleryScriptSettingsBag
       .node(:rpc_error,             [:label], [:explanation])
       .node(:calibrate,             [:axis], [])
       .node(:pair,                  [:label, :value], [])
-      .node(:register_gpio,         [:pin_number, :sequence_id])
-      .node(:unregister_gpio,       [:pin_number])
-      .node(:config_update,         [:package], [:pair])
       .node(:factory_reset,         [:package], [])
       .node(:execute_script,        [:label], [:pair])
       .node(:set_user_env,          [], [:pair])
