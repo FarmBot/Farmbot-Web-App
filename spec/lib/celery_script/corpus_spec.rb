@@ -111,16 +111,11 @@ describe CeleryScript::Corpus do
       args: {
         location: {
           kind: "tool",
-          # Invalid:
-          args: { tool_id: "PROBLEM!" }
+          args: { tool_id: "PROBLEM!" } # <= Invalid:
         },
         offset: {
           kind: "coordinate",
-          args: {
-            "x": 0,
-            "y": 0,
-            "z": 0
-          }
+          args: { "x": 0, "y": 0, "z": 0 }
         },
         speed: 100
       }

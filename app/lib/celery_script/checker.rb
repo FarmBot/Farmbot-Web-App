@@ -143,7 +143,6 @@ module CeleryScript
           allowed:     allowed,
           actual:      actual
         }
-
         raise TypeCheckError, message
       end
     end

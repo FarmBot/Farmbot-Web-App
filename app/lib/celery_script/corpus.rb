@@ -33,14 +33,14 @@ module CeleryScript
       self
     end
 
-    def arg(name, defn = [], &blk)
+    def arg(name, defn, &blk)
+      raise "NO!" unless defn.is_a?(Array)
       @arg_def_list[name] = ArgumentSpecification.new(name, defn, blk)
       self
     end
 
-    def node(kind, args: [], body: [], &blk)
-      @node_def_list[kind] = \
-        NodeSpecification.new(kind, args, body, blk)
+    def node(kind, args: [], body: [], blk: nil)
+      @node_def_list[kind] = NodeSpecification.new(kind, args, body, blk)
       self
     end
 
