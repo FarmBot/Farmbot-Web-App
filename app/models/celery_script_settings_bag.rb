@@ -100,82 +100,82 @@ module CeleryScriptSettingsBag
   }.map { |(name, list)| Corpus.enum(name, list) }
 
   CORPUS_ARGS   = {
-    _else:         [:execute, :nothing],
-    _then:         [:execute, :nothing],
-    locals:        [:scope_declaration],
-    offset:        [:coordinate],
-    pin_number:    [Integer, :named_pin],
-    data_value:    ANY_VARIABLE,
-    default_value: ANY_VARIABLE,
-    location:      ANY_VARIABLE,
-    label:         [String],
-    milliseconds:  [Integer],
-    package:       [String],
-    pin_value:     [Integer],
-    radius:        [Integer],
-    rhs:           [Integer],
-    url:           [String],
-    value:         [String, Integer, TrueClass, FalseClass],
-    version:       [Integer],
-    x:             [Integer, Float],
-    y:             [Integer, Float],
-    z:             [Integer, Float],
-    pin_id:        [Integer],
-    resource_id:   [Integer],
-  }.map { |(name, list)| Corpus.arg(name, list) }
-
+    _else:         {defn: [:execute, :nothing]},
+    _then:         {defn: [:execute, :nothing]},
+    locals:        {defn: [:scope_declaration]},
+    offset:        {defn: [:coordinate]},
+    pin_number:    {defn: [Integer, :named_pin]},
+    data_value:    {defn: ANY_VARIABLE},
+    default_value: {defn: ANY_VARIABLE},
+    location:      {defn: ANY_VARIABLE},
+    label:         {defn: [String]},
+    milliseconds:  {defn: [Integer]},
+    package:       {defn: [String]},
+    pin_value:     {defn: [Integer]},
+    radius:        {defn: [Integer]},
+    rhs:           {defn: [Integer]},
+    url:           {defn: [String]},
+    value:         {defn: [String, Integer, TrueClass, FalseClass]},
+    version:       {defn: [Integer]},
+    x:             {defn: [Integer, Float]},
+    y:             {defn: [Integer, Float]},
+    z:             {defn: [Integer, Float]},
+    pin_id:        {defn: [Integer]},
+    resource_id:   {defn: [Integer]},
+  }.map do |(name, conf)|
+    Corpus.arg(name, conf.fetch(:defn))
+  end
 
   CORPUS_NODES  = {
-    nothing:                      [[]],
-    tool:                         [[:tool_id]],
-    coordinate:                   [[:x, :y, :z]],
-    move_relative:                [[:x, :y, :z, :speed]],
-    channel:                      [[:channel_name]],
-    wait:                         [[:milliseconds]],
-    send_message:                 [[:message, :message_type], [:channel]],
-    execute:                      [[:sequence_id], [:parameter_application]],
-    _if:                          [[:lhs, :op, :rhs, :_then, :_else], [:pair]],
-    sequence:                     [[:version, :locals], ALLOWED_RPC_NODES],
-    home:                         [[:speed, :axis], []],
-    find_home:                    [[:speed, :axis], []],
-    zero:                         [[:axis], []],
-    emergency_lock:               [[], []],
-    emergency_unlock:             [[], []],
-    read_status:                  [[], []],
-    sync:                         [[], []],
-    check_updates:                [[:package], []],
-    power_off:                    [[], []],
-    reboot:                       [[:package], []],
-    toggle_pin:                   [[:pin_number], []],
-    explanation:                  [[:message], []],
-    rpc_request:                  [[:label], ALLOWED_RPC_NODES],
-    rpc_ok:                       [[:label], []],
-    rpc_error:                    [[:label], [:explanation]],
-    calibrate:                    [[:axis], []],
-    pair:                         [[:label, :value], []],
-    factory_reset:                [[:package], []],
-    execute_script:               [[:label], [:pair]],
-    set_user_env:                 [[], [:pair]],
-    take_photo:                   [[], []],
-    point:                        [[:pointer_type, :pointer_id], []],
-    install_farmware:             [[:url]],
-    update_farmware:              [[:package]],
-    remove_farmware:              [[:package]],
-    scope_declaration:            [[], SCOPE_DECLARATIONS],
-    identifier:                   [[:label]],
-    variable_declaration:         [[:label, :data_value], []],
-    parameter_application:        [[:label, :data_value], []],
-    parameter_declaration:        [[:label, :default_value], []],
-    set_servo_angle:              [[:pin_number, :pin_value], []],
-    change_ownership:             [[], [:pair]],
-    dump_info:                    [[], []],
-    install_first_party_farmware: [[]],
-    internal_farm_event:          [[], [:parameter_application]],
-    internal_regimen:             [[], [:parameter_application]],
-    internal_entry_point:         [[], []],
-    every_point:                  [[:every_point_type], []],
-  }.map { |(name, list)| Corpus.node(name, *list) }
-
+    install_first_party_farmware: {},
+    emergency_lock:        {},
+    emergency_unlock:      {},
+    read_status:           {},
+    sync:                  {},
+    power_off:             {},
+    take_photo:            {},
+    dump_info:             {},
+    internal_entry_point:  {},
+    nothing:               {},
+    set_user_env:          { body: [:pair] },
+    scope_declaration:     { body: SCOPE_DECLARATIONS },
+    change_ownership:      { body: [:pair] },
+    internal_farm_event:   { body: [:parameter_application] },
+    internal_regimen:      { body: [:parameter_application] },
+    tool:                  { args: [:tool_id]},
+    coordinate:            { args: [:x, :y, :z]},
+    move_relative:         { args: [:x, :y, :z, :speed]},
+    channel:               { args: [:channel_name]},
+    wait:                  { args: [:milliseconds]},
+    home:                  { args: [:speed, :axis]},
+    find_home:             { args: [:speed, :axis]},
+    zero:                  { args: [:axis]},
+    check_updates:         { args: [:package]},
+    reboot:                { args: [:package]},
+    toggle_pin:            { args: [:pin_number]},
+    explanation:           { args: [:message]},
+    rpc_ok:                { args: [:label]},
+    calibrate:             { args: [:axis]},
+    pair:                  { args: [:label, :value]},
+    factory_reset:         { args: [:package]},
+    point:                 { args: [:pointer_type, :pointer_id]},
+    install_farmware:      { args: [:url]},
+    update_farmware:       { args: [:package]},
+    remove_farmware:       { args: [:package]},
+    identifier:            { args: [:label]},
+    variable_declaration:  { args: [:label, :data_value]},
+    parameter_application: { args: [:label, :data_value]},
+    parameter_declaration: { args: [:label, :default_value]},
+    set_servo_angle:       { args: [:pin_number, :pin_value]},
+    every_point:           { args: [:every_point_type]},
+    send_message:          { args: [:message, :message_type],         body: [:channel]},
+    execute:               { args: [:sequence_id],                    body: [:parameter_application]},
+    _if:                   { args: [:lhs, :op, :rhs, :_then, :_else], body: [:pair]},
+    sequence:              { args: [:version, :locals],               body: ALLOWED_RPC_NODES },
+    rpc_request:           { args: [:label],                          body: ALLOWED_RPC_NODES },
+    rpc_error:             { args: [:label],                          body: [:explanation]},
+    execute_script:        { args: [:label],                          body: [:pair]},
+  }.map { |(name, list)| Corpus.node(name, **list) }
 
   Corpus
       .arg(:pin_type,     [String]) do |node|
@@ -236,7 +236,7 @@ module CeleryScriptSettingsBag
       .arg(:every_point_type, [String]) do |node|
         enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
       end
-      .node(:named_pin, [:pin_type, :pin_id]) do |node|
+      .node(:named_pin, args: [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id    = args[:pin_id].value
@@ -244,17 +244,17 @@ module CeleryScriptSettingsBag
         bad_node = !klass.exists?(id)
         no_resource(node, klass, id) if bad_node
       end
-      .node(:move_absolute,         [:location, :speed, :offset]) do |n|
+      .node(:move_absolute, args: [:location, :speed, :offset]) do |n|
         loc = n.args[:location].try(:kind)
         n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
       end
-      .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
+      .node(:write_pin, args: [:pin_number, :pin_value, :pin_mode ]) do |n|
         no_rpi_analog(n)
       end
-      .node(:read_pin,              [:pin_number, :label, :pin_mode]) do |n|
+      .node(:read_pin, args: [:pin_number, :label, :pin_mode]) do |n|
         no_rpi_analog(n)
       end
-      .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
+      .node(:resource_update, args: RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value
         check_resource_type(x, resource_type, resource_id)
