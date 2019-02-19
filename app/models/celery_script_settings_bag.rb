@@ -29,7 +29,7 @@ module CeleryScriptSettingsBag
         update_farmware wait write_pin zero )
   ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
   ALLOWED_CHAGES        = %w(add remove update)
-  RESOURCE_NAME         = %w(Device FarmEvent Image Log Peripheral Plant Point
+  ALLOWED_RESOURCE_TYPE         = %w(Device FarmEvent Image Log Peripheral Plant Point
                              Regimen Sequence Tool ToolSlot User GenericPointer)
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
@@ -75,8 +75,22 @@ module CeleryScriptSettingsBag
   SCOPE_DECLARATIONS    = [ :variable_declaration, :parameter_declaration ]
   ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
   BAD_EVERY_POINT_TYPE     = '"%s" is not a type of group. Allowed values: %s'
-
   Corpus = CeleryScript::Corpus.new
+      .value(:boolean, [TrueClass, FalseClass])
+      .value(:float,   [Float])
+      .value(:integer, [Integer])
+      .value(:string,  [String])
+      .enum(:every_point_type, ALLOWED_EVERY_POINT_TYPE)
+      .enum(:axis,          ALLOWED_AXIS)
+      .enum(:channel_name,  ALLOWED_CHANNEL_NAMES)
+      .enum(:lhs,           ALLOWED_LHS_STRINGS)
+      .enum(:message_type,  ALLOWED_MESSAGE_TYPES)
+      .enum(:op,            ALLOWED_OPS)
+      .enum(:package,       ALLOWED_PACKAGES)
+      .enum(:pin_mode,      ALLOWED_PIN_MODES)
+      .enum(:pin_type,      ALLOWED_PIN_TYPES)
+      .enum(:pointer_type,  ALLOWED_POINTER_TYPE)
+      .enum(:resource_type, ALLOWED_RESOURCE_TYPE)
       .arg(:_else,        [:execute, :nothing])
       .arg(:_then,        [:execute, :nothing])
       .arg(:locals,       [:scope_declaration])
@@ -100,23 +114,17 @@ module CeleryScriptSettingsBag
       .arg(:pin_id,       [Integer])
       .arg(:resource_id,  [Integer])
       .arg(:pin_type,     [String]) do |node|
-        within(ALLOWED_PIN_TYPES, node) do |val|
-          BAD_PIN_TYPE % [val.to_s, ALLOWED_PIN_TYPES.inspect]
-        end
+        enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
       end
       .arg(:pointer_id,   [Integer]) do |node, device|
         bad_node = !Point.where(id: node.value, device_id: device.id).exists?
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end
       .arg(:pointer_type, [String]) do |node|
-        within(ALLOWED_POINTER_TYPE, node) do |val|
-          BAD_POINTER_TYPE % [val.to_s, ALLOWED_POINTER_TYPE.inspect]
-        end
+        enum(ALLOWED_POINTER_TYPE, node, BAD_POINTER_TYPE)
       end
       .arg(:pin_mode, [Integer]) do |node|
-        within(ALLOWED_PIN_MODES, node) do |val|
-          BAD_ALLOWED_PIN_MODES % [val.to_s, ALLOWED_PIN_MODES.inspect]
-        end
+        enum(ALLOWED_PIN_MODES, node, BAD_ALLOWED_PIN_MODES)
       end
       .arg(:sequence_id, [Integer]) do |node|
         if (node.value == 0)
@@ -127,43 +135,26 @@ module CeleryScriptSettingsBag
         end
       end
       .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
-        case node
-        when CeleryScript::AstNode
-          # Validate `named_location` and friends.
-        else
-          # Validate strings.
-          within(ALLOWED_LHS_STRINGS, node) do |val|
-            BAD_LHS % [val.to_s, ALLOWED_LHS_STRINGS.inspect]
-          end
-        end
+          x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
+          enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end
       .arg(:op,              [String]) do |node|
-        within(ALLOWED_OPS, node) do |val|
-          BAD_OP % [val.to_s, ALLOWED_OPS.inspect]
-        end
+        enum(ALLOWED_OPS, node, BAD_OP)
       end
       .arg(:channel_name,    [String]) do |node|
-        within(ALLOWED_CHANNEL_NAMES, node) do |val|
-          BAD_CHANNEL_NAME %  [val.to_s, ALLOWED_CHANNEL_NAMES.inspect]
-        end
+        enum(ALLOWED_CHANNEL_NAMES, node, BAD_CHANNEL_NAME)
       end
       .arg(:message_type,    [String]) do |node|
-        within(ALLOWED_MESSAGE_TYPES, node) do |val|
-          BAD_MESSAGE_TYPE % [val.to_s, ALLOWED_MESSAGE_TYPES.inspect]
-        end
+        enum(ALLOWED_MESSAGE_TYPES, node, BAD_MESSAGE_TYPE)
       end
       .arg(:tool_id,         [Integer]) do |node|
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end
       .arg(:package, [String]) do |node|
-        within(ALLOWED_PACKAGES, node) do |val|
-          BAD_PACKAGE % [val.to_s, ALLOWED_PACKAGES.inspect]
-        end
+        enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
       end
       .arg(:axis, [String]) do |node|
-        within(ALLOWED_AXIS, node) do |val|
-          BAD_AXIS % [val.to_s, ALLOWED_AXIS.inspect]
-        end
+        enum(ALLOWED_AXIS, node, BAD_AXIS)
       end
       .arg(:message, [String]) do |node|
         notString = !node.value.is_a?(String)
@@ -175,14 +166,10 @@ module CeleryScriptSettingsBag
         node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
       end
       .arg(:resource_type, [String]) do |n|
-        within(RESOURCE_NAME, n) do |v|
-          BAD_RESOURCE_TYPE % [v.to_s, RESOURCE_NAME]
-        end
+        enum(ALLOWED_RESOURCE_TYPE, n, BAD_RESOURCE_TYPE)
       end
       .arg(:every_point_type, [String]) do |node|
-        within(ALLOWED_EVERY_POINT_TYPE, node) do |val|
-          BAD_EVERY_POINT_TYPE % [val.to_s, ALLOWED_EVERY_POINT_TYPE.inspect]
-        end
+        enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
       end
       .node(:named_pin, [:pin_type, :pin_id]) do |node|
         args  = HashWithIndifferentAccess.new(node.args)
@@ -270,7 +257,7 @@ module CeleryScriptSettingsBag
       # the current_device.
       # For convinience, we try to set it here, defaulting to 0
       node.args[:resource_id].instance_variable_set("@value", 0)
-    when *RESOURCE_NAME.without("Device")
+    when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass       = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)
       no_resource(node, klass, resource_id) unless resource_ok
@@ -278,9 +265,11 @@ module CeleryScriptSettingsBag
   end
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
-  def self.within(array, node)
+  def self.enum(array, node, tpl)
     val = node.try(:value)
-    node.invalidate!(yield(val)) if !array.include?(val)
+    unless array.include?(val)
+      node.invalidate!(tpl % [val.to_s, array.inspect])
+    end
   end
 
   def self.no_rpi_analog(node)

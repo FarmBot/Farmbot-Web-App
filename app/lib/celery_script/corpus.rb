@@ -21,6 +21,14 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
+    def enum(*x)
+      self
+    end
+
+    def value(*x)
+      self
+    end
+
     def arg(arg_name, allowed_values, &blk)
       @arg_def_list[arg_name] = \
         ArgumentSpecification.new(arg_name, allowed_values, blk)
@@ -61,9 +69,9 @@ module CeleryScript
     end
 
     def as_json(*)
-      { "tag": Sequence::LATEST_VERSION,
-        "args": @arg_def_list.to_a.map(&:last).map{|x| x.as_json({}) },
-        "nodes": @node_def_list.to_a.map(&:last).map{|x| x.as_json({}) }}
+      { "tag":   Sequence::LATEST_VERSION,
+        "args":  @arg_def_list.values.map  { |x| x.as_json({}) },
+        "nodes": @node_def_list.values.map { |x| x.as_json({}) } }
     end
   end
 end

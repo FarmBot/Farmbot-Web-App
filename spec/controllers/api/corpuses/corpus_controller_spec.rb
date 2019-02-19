@@ -8,5 +8,8 @@ describe Api::CorpusesController do
       get :show
       expect(json.keys).to eq([:tag, :args, :nodes])
     end
+
+    it 'has enums'
+    it 'has values'
   end
 end

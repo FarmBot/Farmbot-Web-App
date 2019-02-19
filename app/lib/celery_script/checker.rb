@@ -1,5 +1,6 @@
 # Takes a corpus and an AST and tells you if it is syntactically valid.
-# PROBABLY THE MOST COMPLICATED CODE IN ALL OF FARMBOT.
+# EXTREMELY COMPLICATED CODE. If you are attempting to learn the codebase, read
+# this part last
 module CeleryScript
   class TypeCheckError < StandardError; end
   class Checker
@@ -31,6 +32,7 @@ module CeleryScript
       self.freeze
     end
 
+    # This is the type checker entry point after initialization.
     def run!
       CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
       tree
@@ -87,8 +89,8 @@ module CeleryScript
           unless has_key
             msgs = node.args.keys.join(", ")
             msgs = "nothing" if msgs.length < 1
-          msg = MISSING_ARG % [node.kind, arg, msgs]
-          raise TypeCheckError, msg
+            msg = MISSING_ARG % [node.kind, arg, msgs]
+            raise TypeCheckError, msg
           end
         end
       has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
@@ -112,45 +114,27 @@ module CeleryScript
       run_additional_validations(value, key)
     end
 
-    # Don't delete this- it is currently unreachable code, but as soon as we
-    # allow identifiers other than `point`, `tool` and `coordinate` we will
-    # need it again (and can write tests)
-    # def bad_var!(value, label, expected, actual)
-    #   value.invalidate!(T_MISMATCH % [label, expected, actual])
-    # end SEE_MY_NOTE =============================^ RC 4 Oct 18
-
     def validate_node_pairing(key, value)
       actual  = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
       # It would be safe to run type checking here.
       if (actual == "identifier")
         allowed_types  = allowed.without("identifier")
-        # Resolve the identifier.
-        # Someday, we might need to use the return value to perform more
-        # in depth type checking. We're not there yet, though.
-        # Currently we just need `resolve_variable!` to
-        # catch unbound identifiers
         var = resolve_variable!(value)
         case var.kind
         when "parameter_declaration", "variable_declaration"
           key = \
             (var.kind == "parameter_declaration") ? :default_value : :data_value
           actual = var.args.fetch(key).kind
-        #   Don't delete this- it is currently unreachable code, but as soon as we
-        #   allow identifiers other than `point`, `tool` and `coordinate` we will
-        #   need it again (and can write tests)
-        #   unless allowed_types.include?(actual)
-        #     bad_var!(value, var.args[:label].value, allowed_types, actual)
-        #   end
-        # else
-        #   raise ("Bad kind: " + var.kind)
-        #  SEE_MY_NOTE =============================^ RC 4 Oct 18
         end
       end
 
       maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
     end
 
+    # This is where leaves get invalidated.
+    # IDEA: Add a refinement to string class to allow it to quack like other
+    #       special classes.
     def maybe_bad_leaf(kind, parent_kind, allowed, actual)
       unless allowed.include?(actual)
         message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
