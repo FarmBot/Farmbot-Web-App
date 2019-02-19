@@ -23,25 +23,23 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def enum(name, values)
-      @enum_def_list[name] = EnumSpecification.new(name, values)
+    def enum(name, defn)
+      @enum_def_list[name] = EnumSpecification.new(name, defn)
       self
     end
 
-    def value(name, values)
-      @value_def_list[name] = ValueSpecification.new(name, values)
+    def value(name, defn)
+      @value_def_list[name] = ValueSpecification.new(name, defn)
       self
     end
 
-    def arg(arg_name, allowed_values, &blk)
-      @arg_def_list[arg_name] = \
-        ArgumentSpecification.new(arg_name, allowed_values, blk)
+    def arg(name, defn, &blk)
+      @arg_def_list[name] = ArgumentSpecification.new(name, defn, blk)
       self
     end
 
-    def node(kind, allowed_args, allowed_body_nodes = [], &blk)
-      @node_def_list[kind] = \
-        NodeSpecification.new(kind, allowed_args, allowed_body_nodes, blk)
+    def node(kind, args, body = [], &blk)
+      @node_def_list[kind] = NodeSpecification.new(kind, args, body, blk)
       self
     end
 

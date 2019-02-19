@@ -15,104 +15,169 @@ module CeleryScriptSettingsBag
     end
   end
 
-  # List of all celery script nodes that can be used as a varaible...
-  ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
-  PLANT_STAGES          = %w(planned planted harvested sprouted)
-  ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
-  ALLOWED_RPC_NODES     = \
-    %w( calibrate change_ownership check_updates dump_info
-        emergency_lock emergency_unlock execute execute_script factory_reset
-        find_home home install_farmware install_first_party_farmware _if
-        move_absolute move_relative power_off read_pin read_status reboot
-        register_gpio remove_farmware resource_update send_message
-        set_servo_angle set_user_env sync take_photo toggle_pin
-        update_farmware wait write_pin zero )
-  ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
-  ALLOWED_CHAGES        = %w(add remove update)
-  ALLOWED_RESOURCE_TYPE         = %w(Device FarmEvent Image Log Peripheral Plant Point
-                             Regimen Sequence Tool ToolSlot User GenericPointer)
-  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
-  ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
-  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
-  ALLOWED_OPS           = %w(< > is not is_undefined)
-  ALLOWED_AXIS          = %w(x y z all)
-  ALLOWED_LHS_TYPES     = [String, :named_pin]
-  ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
-  ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
-                             read_status reboot sync take_photo)
-  BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
-  BAD_LHS               = 'Can not put "%s" into a left hand side (LHS) '\
-                          'argument. Allowed values: %s'
-  BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
-  NO_SUB_SEQ            = 'missing a sequence selection for `execute` block.'
-  BAD_REGIMEN           = 'Regimen #%s does not exist.'
-  BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
-                          'Allowed values: %s'
-  BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
-  BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
-  BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
-  BAD_RESOURCE_TYPE     = '"%s" is not a valid resource_type. Allowed values: %s'
-  BAD_TOOL_ID           = 'Tool #%s does not exist.'
-  BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
-  BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
-  BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
-  BAD_POINTER_ID        = "Bad point ID: %s"
-  BAD_RESOURCE_ID       = "Can't find %s with id of %s"
-  NO_PIN_ID             = "%s requires a valid pin number"
-  BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
-  BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
-  BAD_SPEED             = "Speed must be a percentage between 1-100"
   PIN_TYPE_MAP          = { "Peripheral" => Peripheral,
                             "Sensor"     => Sensor,
                             "BoxLed3"    => BoxLed,
-                            "BoxLed4"    => BoxLed }
-  CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
-  ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
-  RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
-  ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations"\
-                          " as input. Please change your selection to a "\
-                          "single location."
-  SCOPE_DECLARATIONS    = [ :variable_declaration, :parameter_declaration ]
+                            "BoxLed4"    => BoxLed, }
+  ALLOWED_AXIS          = %w(x y z all)
+  ALLOWED_CHAGES        = %w(add remove update)
+  ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
-  BAD_EVERY_POINT_TYPE     = '"%s" is not a type of group. Allowed values: %s'
+  ALLOWED_LHS_STRINGS   = [*(0..69)].map{|x| "pin#{x}"}.concat(%w(x y z))
+  ALLOWED_LHS_TYPES     = [String, :named_pin]
+  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
+  ALLOWED_OPS           = %w(< > is not is_undefined)
+  ALLOWED_PACKAGES      = %w(farmbot_os arduino_firmware)
+  ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
+  ALLOWED_PIN_TYPES     = PIN_TYPE_MAP.keys
+  ALLOWED_POINTER_TYPE  = %w(GenericPointer ToolSlot Plant)
+  ALLOWED_RESOURCE_TYPE = %w(Device FarmEvent Image Log Peripheral Plant Point
+                             Regimen Sequence Tool ToolSlot User GenericPointer)
+  ALLOWED_RPC_NODES     = %w(calibrate change_ownership check_updates dump_info
+                             emergency_lock emergency_unlock execute execute_script
+                             factory_reset find_home home install_farmware
+                             install_first_party_farmware _if move_absolute
+                             move_relative power_off read_pin read_status reboot
+                             register_gpio remove_farmware resource_update
+                             send_message set_servo_angle set_user_env sync
+                             take_photo toggle_pin update_farmware wait write_pin
+                             zero )
+  ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
+                             read_status reboot sync take_photo)
+  ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
+  BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
+  BAD_AXIS              = '"%s" is not a valid axis. Allowed values: %s'
+  BAD_CHANNEL_NAME      = '"%s" is not a valid channel_name. Allowed values: %s'
+  BAD_EVERY_POINT_TYPE  = '"%s" is not a type of group. Allowed values: %s'
+  BAD_LHS               = 'Can not put "%s" into a left hand side (LHS)'\
+                          ' argument. Allowed values: %s'
+  BAD_MESSAGE           = "Messages must be between 1 and 300 characters"
+  BAD_MESSAGE_TYPE      = '"%s" is not a valid message_type. Allowed values: %s'
+  BAD_OP                = 'Can not put "%s" into an operand (OP) argument. '\
+                          'Allowed values: %s'
+  BAD_PACKAGE           = '"%s" is not a valid package. Allowed values: %s'
+  BAD_PERIPH_ID         = 'Peripheral #%s does not exist.'
+  BAD_PIN_TYPE          = '"%s" is not a type of pin. Allowed values: %s'
+  BAD_POINTER_ID        = "Bad point ID: %s"
+  BAD_POINTER_TYPE      = '"%s" is not a type of point. Allowed values: %s'
+  BAD_REGIMEN           = 'Regimen #%s does not exist.'
+  BAD_RESOURCE_ID       = "Can't find %s with id of %s"
+  BAD_RESOURCE_TYPE     = '"%s" is not a valid resource_type. Allowed values: %s'
+  BAD_SPEED             = "Speed must be a percentage between 1-100"
+  BAD_SUB_SEQ           = 'Sequence #%s does not exist.'
+  BAD_TOOL_ID           = 'Tool #%s does not exist.'
+  CANT_ANALOG           = "Analog modes are not supported for Box LEDs"
+  NO_PIN_ID             = "%s requires a valid pin number"
+  NO_SUB_SEQ            = 'missing a sequence selection for `execute` block.'
+  ONLY_ONE_COORD        = "Move Absolute does not accept a group of locations "\
+                          "as input. Please change your selection to a single"\
+                          " location."
+  PLANT_STAGES          = %w(planned planted harvested sprouted)
+  RESOURCE_UPDATE_ARGS  = [:resource_type, :resource_id, :label, :value]
+  SCOPE_DECLARATIONS    = [:variable_declaration, :parameter_declaration]
+
   Corpus = CeleryScript::Corpus.new
-      .value(:boolean, [TrueClass, FalseClass])
-      .value(:float,   [Float])
-      .value(:integer, [Integer])
-      .value(:string,  [String])
-      .enum(:every_point_type, ALLOWED_EVERY_POINT_TYPE)
-      .enum(:axis,          ALLOWED_AXIS)
-      .enum(:channel_name,  ALLOWED_CHANNEL_NAMES)
-      .enum(:lhs,           ALLOWED_LHS_STRINGS)
-      .enum(:message_type,  ALLOWED_MESSAGE_TYPES)
-      .enum(:op,            ALLOWED_OPS)
-      .enum(:package,       ALLOWED_PACKAGES)
-      .enum(:pin_mode,      ALLOWED_PIN_MODES)
-      .enum(:pin_type,      ALLOWED_PIN_TYPES)
-      .enum(:pointer_type,  ALLOWED_POINTER_TYPE)
-      .enum(:resource_type, ALLOWED_RESOURCE_TYPE)
-      .arg(:_else,        [:execute, :nothing])
-      .arg(:_then,        [:execute, :nothing])
-      .arg(:locals,       [:scope_declaration])
-      .arg(:offset,       [:coordinate])
-      .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENUS ARG TYPE => BAD
-      .arg(:data_value,   ANY_VARIABLE)
-      .arg(:default_value,ANY_VARIABLE)
-      .arg(:location,     ANY_VARIABLE)
-      .arg(:label,        [String])
-      .arg(:milliseconds, [Integer])
-      .arg(:package,      [String])
-      .arg(:pin_value,    [Integer])
-      .arg(:radius,       [Integer])
-      .arg(:rhs,          [Integer])
-      .arg(:url,          [String])
-      .arg(:value,        [String, Integer, TrueClass, FalseClass])
-      .arg(:version,      [Integer])
-      .arg(:x,            [Integer, Float])
-      .arg(:y,            [Integer, Float])
-      .arg(:z,            [Integer, Float])
-      .arg(:pin_id,       [Integer])
-      .arg(:resource_id,  [Integer])
+
+  CORPUS_VALUES = {
+     boolean: [TrueClass, FalseClass],
+     float:   [Float],
+     integer: [Integer],
+     string:  [String],
+  }.map { |(name, list)| Corpus.value(name, list) }
+
+  CORPUS_ENUM = {
+    every_point_type: ALLOWED_EVERY_POINT_TYPE,
+    axis:             ALLOWED_AXIS,
+    channel_name:     ALLOWED_CHANNEL_NAMES,
+    lhs:              ALLOWED_LHS_STRINGS,
+    message_type:     ALLOWED_MESSAGE_TYPES,
+    op:               ALLOWED_OPS,
+    package:          ALLOWED_PACKAGES,
+    pin_mode:         ALLOWED_PIN_MODES,
+    pin_type:         ALLOWED_PIN_TYPES,
+    pointer_type:     ALLOWED_POINTER_TYPE,
+    resource_type:    ALLOWED_RESOURCE_TYPE,
+  }.map { |(name, list)| Corpus.enum(name, list) }
+
+  CORPUS_ARGS   = {
+    _else:         [:execute, :nothing],
+    _then:         [:execute, :nothing],
+    locals:        [:scope_declaration],
+    offset:        [:coordinate],
+    pin_number:    [Integer, :named_pin],
+    data_value:    ANY_VARIABLE,
+    default_value: ANY_VARIABLE,
+    location:      ANY_VARIABLE,
+    label:         [String],
+    milliseconds:  [Integer],
+    package:       [String],
+    pin_value:     [Integer],
+    radius:        [Integer],
+    rhs:           [Integer],
+    url:           [String],
+    value:         [String, Integer, TrueClass, FalseClass],
+    version:       [Integer],
+    x:             [Integer, Float],
+    y:             [Integer, Float],
+    z:             [Integer, Float],
+    pin_id:        [Integer],
+    resource_id:   [Integer],
+  }.map { |(name, list)| Corpus.arg(name, list) }
+
+
+  CORPUS_NODES  = {
+    nothing:                      [[]],
+    tool:                         [[:tool_id]],
+    coordinate:                   [[:x, :y, :z]],
+    move_relative:                [[:x, :y, :z, :speed]],
+    channel:                      [[:channel_name]],
+    wait:                         [[:milliseconds]],
+    send_message:                 [[:message, :message_type], [:channel]],
+    execute:                      [[:sequence_id], [:parameter_application]],
+    _if:                          [[:lhs, :op, :rhs, :_then, :_else], [:pair]],
+    sequence:                     [[:version, :locals], ALLOWED_RPC_NODES],
+    home:                         [[:speed, :axis], []],
+    find_home:                    [[:speed, :axis], []],
+    zero:                         [[:axis], []],
+    emergency_lock:               [[], []],
+    emergency_unlock:             [[], []],
+    read_status:                  [[], []],
+    sync:                         [[], []],
+    check_updates:                [[:package], []],
+    power_off:                    [[], []],
+    reboot:                       [[:package], []],
+    toggle_pin:                   [[:pin_number], []],
+    explanation:                  [[:message], []],
+    rpc_request:                  [[:label], ALLOWED_RPC_NODES],
+    rpc_ok:                       [[:label], []],
+    rpc_error:                    [[:label], [:explanation]],
+    calibrate:                    [[:axis], []],
+    pair:                         [[:label, :value], []],
+    factory_reset:                [[:package], []],
+    execute_script:               [[:label], [:pair]],
+    set_user_env:                 [[], [:pair]],
+    take_photo:                   [[], []],
+    point:                        [[:pointer_type, :pointer_id], []],
+    install_farmware:             [[:url]],
+    update_farmware:              [[:package]],
+    remove_farmware:              [[:package]],
+    scope_declaration:            [[], SCOPE_DECLARATIONS],
+    identifier:                   [[:label]],
+    variable_declaration:         [[:label, :data_value], []],
+    parameter_application:        [[:label, :data_value], []],
+    parameter_declaration:        [[:label, :default_value], []],
+    set_servo_angle:              [[:pin_number, :pin_value], []],
+    change_ownership:             [[], [:pair]],
+    dump_info:                    [[], []],
+    install_first_party_farmware: [[]],
+    internal_farm_event:          [[], [:parameter_application]],
+    internal_regimen:             [[], [:parameter_application]],
+    internal_entry_point:         [[], []],
+    every_point:                  [[:every_point_type], []],
+  }.map { |(name, list)| Corpus.node(name, *list) }
+
+
+  Corpus
       .arg(:pin_type,     [String]) do |node|
         enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
       end
@@ -179,64 +244,16 @@ module CeleryScriptSettingsBag
         bad_node = !klass.exists?(id)
         no_resource(node, klass, id) if bad_node
       end
-      .node(:nothing,               [])
-      .node(:tool,                  [:tool_id])
-      .node(:coordinate,            [:x, :y, :z])
       .node(:move_absolute,         [:location, :speed, :offset]) do |n|
         loc = n.args[:location].try(:kind)
         n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
       end
-      .node(:move_relative,         [:x, :y, :z, :speed])
       .node(:write_pin,             [:pin_number, :pin_value, :pin_mode ]) do |n|
         no_rpi_analog(n)
       end
       .node(:read_pin,              [:pin_number, :label, :pin_mode]) do |n|
         no_rpi_analog(n)
       end
-      .node(:channel,               [:channel_name])
-      .node(:wait,                  [:milliseconds])
-      .node(:send_message,          [:message, :message_type], [:channel])
-      .node(:execute,               [:sequence_id], [:parameter_application])
-      .node(:_if,                   [:lhs, :op, :rhs, :_then, :_else], [:pair])
-      .node(:sequence,              [:version, :locals], ALLOWED_RPC_NODES)
-      .node(:home,                  [:speed, :axis], [])
-      .node(:find_home,             [:speed, :axis], [])
-      .node(:zero,                  [:axis], [])
-      .node(:emergency_lock,        [], [])
-      .node(:emergency_unlock,      [], [])
-      .node(:read_status,           [], [])
-      .node(:sync,                  [], [])
-      .node(:check_updates,         [:package], [])
-      .node(:power_off,             [], [])
-      .node(:reboot,                [:package], [])
-      .node(:toggle_pin,            [:pin_number], [])
-      .node(:explanation,           [:message], [])
-      .node(:rpc_request,           [:label], ALLOWED_RPC_NODES)
-      .node(:rpc_ok,                [:label], [])
-      .node(:rpc_error,             [:label], [:explanation])
-      .node(:calibrate,             [:axis], [])
-      .node(:pair,                  [:label, :value], [])
-      .node(:factory_reset,         [:package], [])
-      .node(:execute_script,        [:label], [:pair])
-      .node(:set_user_env,          [], [:pair])
-      .node(:take_photo,            [], [])
-      .node(:point,                 [:pointer_type, :pointer_id], [])
-      .node(:install_farmware,      [:url])
-      .node(:update_farmware,       [:package])
-      .node(:remove_farmware,       [:package])
-      .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
-      .node(:identifier,            [:label])
-      .node(:variable_declaration,  [:label, :data_value], []) # duplicate nodes evolve independendantly
-      .node(:parameter_application, [:label, :data_value], []) # duplicate nodes evolve independendantly
-      .node(:parameter_declaration, [:label, :default_value], [])
-      .node(:set_servo_angle,       [:pin_number, :pin_value], [])
-      .node(:change_ownership,      [], [:pair])
-      .node(:dump_info,             [], [])
-      .node(:install_first_party_farmware, [])
-      .node(:internal_farm_event,   [], [:parameter_application])
-      .node(:internal_regimen,      [], [:parameter_application])
-      .node(:internal_entry_point,  [], [])
-      .node(:every_point,           [:every_point_type], [])
       .node(:resource_update,       RESOURCE_UPDATE_ARGS) do |x|
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value
