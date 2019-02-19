@@ -238,5 +238,15 @@ describe CeleryScript::Corpus do
     expect(enums.first.fetch("allowed_values")).to eq(list)
   end
 
-  # it 'has values'
+  it 'has values' do
+    args   = [name = :whatever, list = [Symbol, Hash]]
+    c      = CeleryScript::Corpus.new.value(*args)
+    json   = c.as_json
+    values = json.fetch(:values)
+    expect(values.length).to eq(1)
+    expect(values.first.fetch("name")).to eq(name)
+    expect(values.first.keys.length).to eq(1)
+  end
+
+  it 'assigns tags to nodes'
 end

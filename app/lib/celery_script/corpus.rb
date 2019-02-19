@@ -28,7 +28,8 @@ module CeleryScript
       self
     end
 
-    def value(*x)
+    def value(name, values)
+      @value_def_list[name] = ValueSpecification.new(name, values)
       self
     end
 
