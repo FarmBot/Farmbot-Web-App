@@ -6,7 +6,8 @@ describe Api::CorpusesController do
   describe '#show' do
     it 'renders one corpus' do
       get :show
-      expect(json.keys).to eq([:tag, :args, :nodes])
+      expect(json.keys)
+        .to eq([:version, :enums, :values, :args, :nodes])
     end
 
     it 'has enums'

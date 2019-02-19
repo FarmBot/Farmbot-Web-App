@@ -8,8 +8,10 @@ module CeleryScript
     NO_NODE_SPEC  = "NO_NODE_SPEC"
 
     def initialize
-      @arg_def_list  = HashWithIndifferentAccess.new
-      @node_def_list = HashWithIndifferentAccess.new
+      @arg_def_list   = HashWithIndifferentAccess.new
+      @node_def_list  = HashWithIndifferentAccess.new
+      @enum_def_list  = HashWithIndifferentAccess.new
+      @value_def_list = HashWithIndifferentAccess.new
     end
 
     def fetchArg(name)
@@ -69,9 +71,13 @@ module CeleryScript
     end
 
     def as_json(*)
-      { "tag":   Sequence::LATEST_VERSION,
-        "args":  @arg_def_list.values.map  { |x| x.as_json({}) },
-        "nodes": @node_def_list.values.map { |x| x.as_json({}) } }
+      ({
+        version: Sequence::LATEST_VERSION,
+        enums:   @enum_def_list.values.map  { |x| x.as_json({}) },
+        values:  @value_def_list.values.map { |x| x.as_json({}) },
+        args:    @arg_def_list.values.map   { |x| x.as_json({}) },
+        nodes:   @node_def_list.values.map  { |x| x.as_json({}) },
+      })
     end
   end
 end

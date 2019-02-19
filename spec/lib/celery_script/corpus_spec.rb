@@ -133,7 +133,7 @@ describe CeleryScript::Corpus do
   it "serializes into JSON" do
       result = JSON.parse(corpus.to_json)
 
-      expect(result["tag"]).to eq(Sequence::LATEST_VERSION)
+      expect(result["version"]).to eq(Sequence::LATEST_VERSION)
       expect(result["args"]).to be_kind_of(Array)
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
