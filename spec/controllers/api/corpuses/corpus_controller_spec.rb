@@ -9,8 +9,5 @@ describe Api::CorpusesController do
       expect(json.keys)
         .to eq([:version, :enums, :values, :args, :nodes])
     end
-
-    it 'has enums'
-    it 'has values'
   end
 end

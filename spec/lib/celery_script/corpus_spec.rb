@@ -227,4 +227,16 @@ describe CeleryScript::Corpus do
     expect(checker.error.message)
       .to include('"CanOpener" is not a valid resource_type.')
   end
+
+  it 'has enums' do
+    args = [name = :foo, list = ["bar", "baz"]]
+    c    = CeleryScript::Corpus.new.enum(*args)
+    json = c.as_json
+    enums = json.fetch(:enums)
+    expect(enums.length).to eq(1)
+    expect(enums.first.fetch("name")).to eq(name)
+    expect(enums.first.fetch("allowed_values")).to eq(list)
+  end
+
+  # it 'has values'
 end

@@ -23,7 +23,8 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def enum(*x)
+    def enum(name, values)
+      @enum_def_list[name] = EnumSpecification.new(name, values)
       self
     end
 
