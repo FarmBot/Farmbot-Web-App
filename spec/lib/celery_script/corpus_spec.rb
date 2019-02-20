@@ -133,7 +133,8 @@ describe CeleryScript::Corpus do
       expect(result["nodes"]).to be_kind_of(Array)
       expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
                                                       "allowed_body_types",
-                                                      "name"])
+                                                      "name",
+                                                      "tags"])
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
                                                      "name"])
   end
@@ -223,7 +224,7 @@ describe CeleryScript::Corpus do
       .to include('"CanOpener" is not a valid resource_type.')
   end
 
-  it 'has enums' do
+  it "has enums" do
     args = [name = :foo, list = ["bar", "baz"]]
     c    = CeleryScript::Corpus.new.enum(*args)
     json = c.as_json
@@ -233,7 +234,7 @@ describe CeleryScript::Corpus do
     expect(enums.first.fetch("allowed_values")).to eq(list)
   end
 
-  it 'has values' do
+  it "has values" do
     args   = [name = :whatever, list = [Symbol, Hash]]
     c      = CeleryScript::Corpus.new.value(*args)
     json   = c.as_json
@@ -243,5 +244,14 @@ describe CeleryScript::Corpus do
     expect(values.first.keys.length).to eq(1)
   end
 
-  it 'assigns tags to nodes'
+  it "assigns tags to nodes" do
+    c = CeleryScript::Corpus
+      .new
+      .node("wonderful", args: [], body: [], tags: ["great"])
+    json   = c.as_json
+    values = json.fetch(:nodes)
+    expect(values.length).to eq(1)
+    value  = values.first
+    expect(value.fetch("tags").first).to eq("great")
+  end
 end

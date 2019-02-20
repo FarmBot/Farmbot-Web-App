@@ -230,92 +230,183 @@ module CeleryScriptSettingsBag
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
-    blk ?
-    Corpus.arg(name, conf.fetch(:defn), &blk) : Corpus.arg(name, conf.fetch(:defn))
+    if blk
+      Corpus.arg(name, conf.fetch(:defn), &blk)
+    else
+      Corpus.arg(name, conf.fetch(:defn))
+    end
   end
 
   CORPUS_NODES  = {
-    _if: { args: [:lhs, :op, :rhs, :_then, :_else], body: [:pair]},
-    calibrate: { args: [:axis]},
-    change_ownership: { body: [:pair] },
-    channel: { args: [:channel_name]},
-    check_updates: { args: [:package]},
-    coordinate: { args: [:x, :y, :z]},
+    _if: {
+      args: [:lhs, :op, :rhs, :_then, :_else],
+      body: [:pair]
+    },
+    calibrate: {
+      args: [:axis]
+    },
+    change_ownership: {
+      body: [:pair]
+    },
+    channel: {
+      args: [:channel_name]
+    },
+    check_updates: {
+      args: [:package]
+    },
+    coordinate: {
+      args: [:x, :y, :z]
+    },
     dump_info: {},
     emergency_lock: {},
     emergency_unlock: {},
-    every_point: { args: [:every_point_type]},
-    execute_script: { args: [:label], body: [:pair]},
-    execute: { args: [:sequence_id], body: [:parameter_application]},
-    explanation: { args: [:message]},
-    factory_reset: { args: [:package]},
-    find_home: { args: [:speed, :axis]},
-    home: { args: [:speed, :axis]},
-    identifier: { args: [:label]},
-    install_farmware: { args: [:url]},
+    every_point: {
+      args: [:every_point_type]
+    },
+    execute_script: {
+      args: [:label],
+      body: [:pair]
+    },
+    execute: {
+      args: [:sequence_id],
+      body: [:parameter_application]
+    },
+    explanation: {
+      args: [:message]
+    },
+    factory_reset: {
+      args: [:package]
+    },
+    find_home: {
+      args: [:speed, :axis]
+    },
+    home: {
+      args: [:speed, :axis]
+    },
+    identifier: {
+      args: [:label]
+    },
+    install_farmware: {
+      args: [:url]
+    },
     install_first_party_farmware: {},
     internal_entry_point: {},
-    internal_farm_event: { body: [:parameter_application] },
-    internal_regimen: { body: [:parameter_application] },
-    move_relative: { args: [:x, :y, :z, :speed]},
+    internal_farm_event: {
+      body: [:parameter_application]
+    },
+    internal_regimen: {
+      body: [:parameter_application]
+    },
+    move_relative: {
+      args: [:x, :y, :z, :speed]
+    },
     nothing: {},
-    pair: { args: [:label, :value]},
-    parameter_application: { args: [:label, :data_value]},
-    parameter_declaration: { args: [:label, :default_value]},
-    point: { args: [:pointer_type, :pointer_id]},
+    pair: {
+      args: [:label, :value]
+    },
+    parameter_application: {
+      args: [:label, :data_value]
+    },
+    parameter_declaration: {
+      args: [:label, :default_value]
+    },
+    point: {
+      args: [:pointer_type, :pointer_id]
+    },
     power_off: {},
     read_status: {},
-    reboot: { args: [:package]},
-    remove_farmware: { args: [:package]},
-    rpc_error: { args: [:label], body: [:explanation]},
-    rpc_ok: { args: [:label]},
-    rpc_request: { args: [:label], body: ALLOWED_RPC_NODES },
-    scope_declaration: { body: SCOPE_DECLARATIONS },
-    send_message: { args: [:message, :message_type], body: [:channel]},
-    sequence: { args: [:version, :locals],       body: ALLOWED_RPC_NODES },
-    set_servo_angle: { args: [:pin_number, :pin_value]},
-    set_user_env: { body: [:pair] },
+    reboot: {
+      args: [:package]
+    },
+    remove_farmware: {
+      args: [:package]
+    },
+    rpc_error: {
+      args: [:label],
+      body: [:explanation]
+    },
+    rpc_ok: {
+      args: [:label]
+    },
+    rpc_request: {
+      args: [:label],
+      body: ALLOWED_RPC_NODES
+    },
+    scope_declaration: {
+      body: SCOPE_DECLARATIONS
+    },
+    send_message: {
+      args: [:message, :message_type],
+      body: [:channel]
+    },
+    sequence: {
+      args: [:version, :locals],
+      body: ALLOWED_RPC_NODES
+    },
+    set_servo_angle: {
+      args: [:pin_number, :pin_value]
+    },
+    set_user_env: {
+      body: [:pair]
+    },
     sync: {},
     take_photo: {},
-    toggle_pin: { args: [:pin_number]},
-    tool: { args: [:tool_id]},
-    update_farmware: { args: [:package]},
-    variable_declaration: { args: [:label, :data_value]},
-    wait: { args: [:milliseconds]},
-    zero: { args: [:axis]},
+    toggle_pin: {
+      args: [:pin_number]
+    },
+    tool: {
+      args: [:tool_id]
+    },
+    update_farmware: {
+      args: [:package]
+    },
+    variable_declaration: {
+      args: [:label, :data_value]
+    },
+    wait: {
+      args: [:milliseconds]
+    },
+    zero: {
+      args: [:axis]
+    },
     named_pin: {
       args: [:pin_type, :pin_id],
       blk: -> (node) do
-      args  = HashWithIndifferentAccess.new(node.args)
-      klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
-      id    = args[:pin_id].value
-      node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
-      bad_node = !klass.exists?(id)
-      no_resource(node, klass, id) if bad_node
-    end},
+        args  = HashWithIndifferentAccess.new(node.args)
+        klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
+        id    = args[:pin_id].value
+        node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
+        bad_node = !klass.exists?(id)
+        no_resource(node, klass, id) if bad_node
+      end
+    },
     move_absolute: {
       args: [:location, :speed, :offset],
       blk: ->(n) do
-      loc = n.args[:location].try(:kind)
-      n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
-    end},
+        loc = n.args[:location].try(:kind)
+        n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
+      end
+    },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode ],
       blk: ->(n) do
-      no_rpi_analog(n)
-    end},
+        no_rpi_analog(n)
+      end
+    },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
       blk: ->(n) do
-      no_rpi_analog(n)
-    end},
+        no_rpi_analog(n)
+      end
+    },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
       blk: ->(x) do
-      resource_type = x.args.fetch(:resource_type).value
-      resource_id   = x.args.fetch(:resource_id).value
-      check_resource_type(x, resource_type, resource_id)
-    end},
+        resource_type = x.args.fetch(:resource_type).value
+        resource_id   = x.args.fetch(:resource_id).value
+        check_resource_type(x, resource_type, resource_id)
+      end
+    },
   }.map { |(name, list)| Corpus.node(name, **list) }
 
 
