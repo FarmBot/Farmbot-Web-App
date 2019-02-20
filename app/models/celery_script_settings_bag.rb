@@ -15,7 +15,7 @@ module CeleryScriptSettingsBag
     end
   end
 
-  # List of all celery script nodes that can be used as a varaible...
+  # List of all celery script nodes that can be used as a variable...
   ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
   PLANT_STAGES          = %w(planned planted harvested sprouted)
   ALLOWED_PIN_MODES     = [DIGITAL = 0, ANALOG = 1]
@@ -85,7 +85,7 @@ module CeleryScriptSettingsBag
       .arg(:_then,        [:execute, :nothing])
       .arg(:locals,       [:scope_declaration])
       .arg(:offset,       [:coordinate])
-      .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENUS ARG TYPE => BAD
+      .arg(:pin_number,   [Integer, :named_pin]) # HETEROGENEOUS ARG TYPE => BAD
       .arg(:data_value,   ANY_VARIABLE)
       .arg(:default_value,ANY_VARIABLE)
       .arg(:location,     ANY_VARIABLE)
@@ -246,8 +246,8 @@ module CeleryScriptSettingsBag
       .node(:remove_farmware,       [:package])
       .node(:scope_declaration,     [], SCOPE_DECLARATIONS)
       .node(:identifier,            [:label])
-      .node(:variable_declaration,  [:label, :data_value], []) # duplicate nodes evolve independendantly
-      .node(:parameter_application, [:label, :data_value], []) # duplicate nodes evolve independendantly
+      .node(:variable_declaration,  [:label, :data_value], []) # duplicate nodes evolve independently
+      .node(:parameter_application, [:label, :data_value], []) # duplicate nodes evolve independently
       .node(:parameter_declaration, [:label, :default_value], [])
       .node(:set_servo_angle,       [:pin_number, :pin_value], [])
       .node(:change_ownership,      [], [:pair])
@@ -275,7 +275,7 @@ module CeleryScriptSettingsBag
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
-      # For convinience, we try to set it here, defaulting to 0
+      # For convenience, we try to set it here, defaulting to 0
       node.args[:resource_id].instance_variable_set("@value", 0)
     when *RESOURCE_NAME.without("Device")
       klass       = Kernel.const_get(resource_type)

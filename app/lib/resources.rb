@@ -1,7 +1,7 @@
 module Resources
   DEVICE_REGEX = /device_\d*/
   ACTIONS      = [ DESTROY = "destroy", SAVE = "save" ]
-  # Resources eligibile for the MQTT-based APIs
+  # Resources eligible for the MQTT-based APIs
   ELIGIBLE_RESOURCES = [ FarmEvent,
                          FarmwareInstallation,
                          Image,
@@ -41,8 +41,8 @@ module Resources
     Tool          => Tools,
     WebcamFeed    => WebcamFeeds,
     #  SPECIAL CASES =============================
-    #    These reasources don't follow usual
-    #    naming coonventions.
+    #    These resources don't follow usual
+    #    naming conventions.
     Plant         => Points,
     Point         => Points,
     ToolSlot      => Points,

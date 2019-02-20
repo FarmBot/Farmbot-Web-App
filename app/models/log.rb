@@ -3,9 +3,9 @@
 class Log < ApplicationRecord
   include LogDeliveryStuff
   # We use log.type to store the log's type.
-  # Rails wants to use that name for single table inheritence, which we don't
+  # Rails wants to use that name for single table inheritance, which we don't
   # need for this table.
-  # Setting the `inheritence_column` to "none" alleviate
+  # Setting the `inheritance_column` to "none" alleviate
   self.inheritance_column = "none"
   # Used by the frontend to pull most recent records. We don't currently support
   # pagination, but could later on.

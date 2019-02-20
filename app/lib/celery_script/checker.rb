@@ -16,7 +16,7 @@ module CeleryScript
     # Certain CeleryScript pairing errors are more than just a syntax error.
     # For instance, A `nothing` node in a `parameter_declaration` is often an
     # indication that the user did not fill out a value for a variable. In these
-    # rare cases, we muct provide information beyond what is found in the
+    # rare cases, we must provide information beyond what is found in the
     # BAD_LEAF template.
     FRIENDLY_ERRORS = {
       nothing: {
@@ -182,7 +182,7 @@ module CeleryScript
       corpus.arg_validator(expectation).call(node, device)
     end
 
-    # Calling this method with only one paramter
+    # Calling this method with only one parameter
     # indicates a starting condition 🏁
     def resolve_variable!(node, origin = node)
       locals = node.args[:locals]

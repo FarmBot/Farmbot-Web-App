@@ -69,7 +69,7 @@ class Device < ApplicationRecord
   end
 
   # Sets Device.current to `self` and returns it to the previous value when
-  #  finished running block. Usually this is unecessary, but may be required in
+  #  finished running block. Usually this is unnecessary, but may be required in
   # background jobs. If you are not receiving auto_sync data on your client,
   # you probably need to use this method.
   def auto_sync_transaction
@@ -164,7 +164,7 @@ class Device < ApplicationRecord
   #  * We converted the `model :device, class: Device` to:
   #     `duck :device, methods [:id, :is_device]`
   #
-  # This methd is not required, but adds a layer of safety.
+  # This method is not required, but adds a layer of safety.
   def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
     true
   end

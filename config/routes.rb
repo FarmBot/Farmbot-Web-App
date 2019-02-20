@@ -43,7 +43,7 @@ FarmBot::Application.routes.draw do
 
     resources :logs, except: [:update, :show] do
       # When farmware fetching fails and the user
-      # wants to try agian.
+      # wants to try again.
       get :search, on: :collection
     end
 

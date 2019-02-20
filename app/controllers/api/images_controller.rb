@@ -2,7 +2,7 @@ module Api
   # The API follows this workflow when creating a new image:
   # 1. Upload image to an S3 "untrusted" bucket (gets deleted quite often)
   # 2. POST the URL from step 1 (or any URL) to ImagesController#Create
-  # 3. Image is transfered to the "trusted bucket".
+  # 3. Image is transferred to the "trusted bucket".
   class ImagesController < Api::AbstractController
     cattr_accessor :store_locally
     self.store_locally = !ENV["GCS_BUCKET"]

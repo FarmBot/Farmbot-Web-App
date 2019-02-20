@@ -36,7 +36,7 @@ module Api
 
     def trim_logs
       # WARNING: Calls to `destroy_all` rather than
-      #   `delete_all` can be disasterous- this is
+      #   `delete_all` can be disastrous- this is
       #   a big table! RC
       current_device.excess_logs.delete_all
     end
