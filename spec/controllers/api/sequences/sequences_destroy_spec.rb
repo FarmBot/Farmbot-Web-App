@@ -29,7 +29,7 @@ describe Api::SequencesController do
       expect(response.status).to eq(404)
     end
 
-    it 'allows deletion of recurive sequences' do
+    it 'allows deletion of recursive sequences' do
       sign_in user
       s = Sequences::Create.run!({device: user.device,
                                   name: "Rick-cursion",

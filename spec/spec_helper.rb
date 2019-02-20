@@ -76,11 +76,11 @@ DatabaseCleaner.clean
 
 RSpec.configure do |config|
   if DO_INTEGRATION
-    # Do I need to run `env RAILS_ENV=productiono npm run build`?
+    # Do I need to run `env RAILS_ENV=production npm run build`?
     require "capybara/rails"
     require "capybara/rspec"
     require "selenium/webdriver"
-    # Be sure to run the server in a seperate window!
+    # Be sure to run the server in a separate window!
     Capybara.run_server  = false
     Capybara.app_host    = "http://localhost:3000"
     Capybara.server_host = "localhost"

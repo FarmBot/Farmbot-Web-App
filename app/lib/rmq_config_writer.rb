@@ -1,6 +1,6 @@
 # SCENARIO: RabbitMQ's HTTP auth backend plugin uses *files* instead of ENV vars
 #           for configuration.
-# PROBLEM: 1. This is the only service that requires such configuartion. All
+# PROBLEM: 1. This is the only service that requires such configuration. All
 #             other services are configured in one place- the `.env` file.
 #          2. When using files, it's easy to forget that the file needs updates.
 #             Refreshing the .env file will NOT refresh rabbit configs.

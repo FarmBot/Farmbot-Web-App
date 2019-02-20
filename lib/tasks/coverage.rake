@@ -1,7 +1,7 @@
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 THRESHOLD      = 0.001
 REPO_URL       = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
-CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging")
+CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR   = ".fraction"
 FRACTION_DELIM = "/"

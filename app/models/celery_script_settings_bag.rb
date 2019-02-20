@@ -109,7 +109,6 @@ module CeleryScriptSettingsBag
     location: {defn: ANY_VARIABLE},
     milliseconds: {defn: [Integer]},
     offset: {defn: [:coordinate]},
-    package: {defn: [String]},
     pin_id: {defn: [Integer]},
     pin_number: {defn: [Integer, :named_pin]},
     pin_value: {defn: [Integer]},
@@ -422,7 +421,7 @@ module CeleryScriptSettingsBag
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
-      # For convinience, we try to set it here, defaulting to 0
+      # For convenience, we try to set it here, defaulting to 0
       node.args[:resource_id].instance_variable_set("@value", 0)
     when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass       = Kernel.const_get(resource_type)

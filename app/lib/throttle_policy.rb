@@ -1,11 +1,11 @@
 # Handles devices that spin out of control and send too many logs to the server.
 # Class Hierarchy:
-# ThrotllePolicy has => Rules creates => Violation
+# ThrottlePolicy has => Rules creates => Violation
 # Violation has => Rule has => TimePeriod
 class ThrottlePolicy
   attr_reader :rules
 
-  # Dictionary<TimePeriod, Intger>
+  # Dictionary<TimePeriod, Integer>
   def initialize(policy_rules)
     @rules = policy_rules.map { |rule_set| Rule.new(*rule_set) }
   end
