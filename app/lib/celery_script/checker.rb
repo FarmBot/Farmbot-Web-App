@@ -162,7 +162,9 @@ module CeleryScript
     end
 
     def run_additional_validations(node, expectation)
-      corpus.arg_validator(expectation).call(node, device)
+      blk = corpus.arg_validator(expectation)
+      return if blk == NOOP
+      blk.call(*[node, device].first(blk.arity))
     end
 
     # Calling this method with only one paramter

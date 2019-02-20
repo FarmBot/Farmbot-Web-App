@@ -122,8 +122,116 @@ module CeleryScriptSettingsBag
     x: {defn: [Integer, Float]},
     y: {defn: [Integer, Float]},
     z: {defn: [Integer, Float]},
+    pin_type: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
+      end
+    },
+    pointer_id: {
+      defn: [Integer],
+      blk: -> (node, device) do
+      bad_node = !Point.where(id: node.value, device_id: device.id).exists?
+        node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
+      end
+    },
+    pointer_type: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_POINTER_TYPE, node, BAD_POINTER_TYPE)
+      end
+    },
+    pin_mode: {
+      defn: [Integer],
+      blk: -> (node) do
+        enum(ALLOWED_PIN_MODES, node, BAD_ALLOWED_PIN_MODES)
+      end
+    },
+    sequence_id: {
+      defn: [Integer],
+      blk: -> (node) do
+        if (node.value == 0)
+          node.invalidate!(NO_SUB_SEQ)
+        else
+          missing = !Sequence.exists?(node.value)
+          node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
+        end
+      end
+    },
+    lhs: {
+      defn: ALLOWED_LHS_TYPES,
+      blk: -> (node) do
+        x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
+        enum(*x) unless node.is_a?(CeleryScript::AstNode)
+      end
+    },
+    op: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_OPS, node, BAD_OP)
+      end
+    },
+    channel_name: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_CHANNEL_NAMES, node, BAD_CHANNEL_NAME)
+      end
+    },
+    message_type: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_MESSAGE_TYPES, node, BAD_MESSAGE_TYPE)
+      end
+    },
+    tool_id: {
+      defn: [Integer],
+      blk: -> (node) do
+        node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
+      end
+    },
+    package: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
+      end
+    },
+    axis: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_AXIS, node, BAD_AXIS)
+      end
+    },
+    message: {
+      defn: [String],
+      blk: -> (node) do
+        notString = !node.value.is_a?(String)
+        tooShort  = notString || node.value.length == 0
+        tooLong   = notString || node.value.length > 300
+        node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
+      end
+    },
+    speed: {
+      defn: [Integer],
+      blk: -> (node) do
+        node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
+      end
+    },
+    resource_type: {
+      defn: [String],
+      blk: -> (n) do
+        enum(ALLOWED_RESOURCE_TYPE, n, BAD_RESOURCE_TYPE)
+      end
+    },
+    every_point_type: {
+      defn: [String],
+      blk: -> (node) do
+        enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
+      end
+    },
   }.map do |(name, conf)|
-    Corpus.arg(name, conf.fetch(:defn))
+    blk = conf[:blk]
+    blk ?
+    Corpus.arg(name, conf.fetch(:defn), &blk) : Corpus.arg(name, conf.fetch(:defn))
   end
 
   CORPUS_NODES  = {
@@ -210,88 +318,6 @@ module CeleryScriptSettingsBag
     end},
   }.map { |(name, list)| Corpus.node(name, **list) }
 
-  Corpus
-      .arg(:pin_type, [String]) do |node|
-        enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
-      end
-      .arg(:pointer_id, [Integer]) do |node, device|
-        bad_node = !Point.where(id: node.value, device_id: device.id).exists?
-        node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
-      end
-      .arg(:pointer_type, [String]) do |node|
-        enum(ALLOWED_POINTER_TYPE, node, BAD_POINTER_TYPE)
-      end
-      .arg(:pin_mode, [Integer]) do |node|
-        enum(ALLOWED_PIN_MODES, node, BAD_ALLOWED_PIN_MODES)
-      end
-      .arg(:sequence_id, [Integer]) do |node|
-        if (node.value == 0)
-          node.invalidate!(NO_SUB_SEQ)
-        else
-          missing = !Sequence.exists?(node.value)
-          node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
-        end
-      end
-      .arg(:lhs, ALLOWED_LHS_TYPES) do |node|
-          x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
-          enum(*x) unless node.is_a?(CeleryScript::AstNode)
-      end
-      .arg(:op, [String]) do |node|
-        enum(ALLOWED_OPS, node, BAD_OP)
-      end
-      .arg(:channel_name, [String]) do |node|
-        enum(ALLOWED_CHANNEL_NAMES, node, BAD_CHANNEL_NAME)
-      end
-      .arg(:message_type, [String]) do |node|
-        enum(ALLOWED_MESSAGE_TYPES, node, BAD_MESSAGE_TYPE)
-      end
-      .arg(:tool_id, [Integer]) do |node|
-        node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
-      end
-      .arg(:package, [String]) do |node|
-        enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
-      end
-      .arg(:axis, [String]) do |node|
-        enum(ALLOWED_AXIS, node, BAD_AXIS)
-      end
-      .arg(:message, [String]) do |node|
-        notString = !node.value.is_a?(String)
-        tooShort  = notString || node.value.length == 0
-        tooLong   = notString || node.value.length > 300
-        node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
-      end
-      .arg(:speed, [Integer]) do |node|
-        node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
-      end
-      .arg(:resource_type, [String]) do |n|
-        enum(ALLOWED_RESOURCE_TYPE, n, BAD_RESOURCE_TYPE)
-      end
-      .arg(:every_point_type, [String]) do |node|
-        enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
-      end
-      # .node(:named_pin, args: [:pin_type, :pin_id], blk: -> (node) do
-      #   args  = HashWithIndifferentAccess.new(node.args)
-      #   klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
-      #   id    = args[:pin_id].value
-      #   node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
-      #   bad_node = !klass.exists?(id)
-      #   no_resource(node, klass, id) if bad_node
-      # end)
-      # .node(:move_absolute, args: [:location, :speed, :offset], blk: ->(n) do
-      #   loc = n.args[:location].try(:kind)
-      #   n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
-      # end)
-      # .node(:write_pin, args: [:pin_number, :pin_value, :pin_mode ], blk: ->(n) do
-      #   no_rpi_analog(n)
-      # end)
-      # .node(:read_pin, args: [:pin_number, :label, :pin_mode], blk: ->(n) do
-      #   no_rpi_analog(n)
-      # end)
-      # .node(:resource_update, args: RESOURCE_UPDATE_ARGS, blk: ->(x) do
-      #   resource_type = x.args.fetch(:resource_type).value
-      #   resource_id   = x.args.fetch(:resource_id).value
-      #   check_resource_type(x, resource_type, resource_id)
-      # end)
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
