@@ -60,6 +60,34 @@ describe Api::RegimensController do
       expect(json[:color]).to eq(color)
     end
 
+    it "creates a regimen that uses unbound variables" do
+      pending("TODO: Help Gabe with this.")
+      sign_in user
+      s       = FakeSequence.with_parameters
+      payload = { device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "parameter_application",
+                      args: {
+                        label: "parent",
+                        data_value: {
+                          kind: "identifier", args: { label: "parent" }
+                        }
+                      }
+                    }
+                  ],
+                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ] }
+      post :create, body: payload.to_json, format: :json
+      expect(response.status).to eq(200)
+      declr = json.fetch(:body).first
+      expect(declr).to be
+      expect(declr.fetch(:kind)).to eq("parameter_application")
+      path = [:args, :data_value, :args, :label]
+      expect(declr.dig(*path)).to eq("parent")
+    end
+
     it "handles CeleryScript::TypeCheckError" do
       sign_in user
       s       = FakeSequence.with_parameters

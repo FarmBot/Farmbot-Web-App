@@ -3,6 +3,19 @@
 # parser generators (but not exactly).
 module CeleryScript
   class Corpus
+    class ArgAtom
+      attr_reader :value
+      def initialize(value)
+        raise "USE SYMBOLS!" unless value.is_a?(Symbol)
+        @value = value
+      end
+    end
+
+    class Enum  < ArgAtom; end
+    class Value < ArgAtom; end
+    class Node  < ArgAtom; end
+
+    ATOMS         = [Enum, Value, Node]
     BAD_NODE_NAME = "Can't find validation rules for node "
     NO_ARG_SPEC   = "CANT FIND ARG SPEC"
     NO_NODE_SPEC  = "NO_NODE_SPEC"
@@ -34,7 +47,11 @@ module CeleryScript
     end
 
     def arg(name, defn, &blk)
-      raise "NO!" unless defn.is_a?(Array)
+      defn.map do |x|
+        binding.pry if x.is_a?(Symbol)
+        binding.pry if x.is_a?(Class)
+        puts x.class.inspect
+      end
       @arg_def_list[name] = ArgumentSpecification.new(name, defn, blk)
       self
     end

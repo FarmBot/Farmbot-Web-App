@@ -38,10 +38,9 @@ module CeleryScriptSettingsBag
                              factory_reset find_home home install_farmware
                              install_first_party_farmware _if move_absolute
                              move_relative power_off read_pin read_status reboot
-                             register_gpio remove_farmware resource_update
-                             send_message set_servo_angle set_user_env sync
-                             take_photo toggle_pin update_farmware wait write_pin
-                             zero )
+                             remove_farmware resource_update send_message
+                             set_servo_angle set_user_env sync take_photo
+                             toggle_pin update_farmware wait write_pin zero )
   ALLOWED_SPEC_ACTION   = %w(dump_info emergency_lock emergency_unlock power_off
                              read_status reboot sync take_photo)
   ANY_VARIABLE          = %i(tool coordinate point identifier every_point)
@@ -99,55 +98,108 @@ module CeleryScriptSettingsBag
     resource_type:    ALLOWED_RESOURCE_TYPE,
   }.map { |(name, list)| Corpus.enum(name, list) }
 
+  def self.e(symbol)
+    CeleryScript::Corpus::Enum.new(symbol)
+  end
+
+  def self.n(symbol)
+    CeleryScript::Corpus::Node.new(symbol)
+  end
+
+  def self.v(symbol)
+    CeleryScript::Corpus::Value.new(symbol)
+  end
+
+  ANY_VAR_TOKENIZED = ANY_VARIABLE.map { |x| n(x) }
+
   CORPUS_ARGS   = {
-    _else: {defn: [:execute, :nothing]},
-    _then: {defn: [:execute, :nothing]},
-    data_value: {defn: ANY_VARIABLE},
-    default_value: {defn: ANY_VARIABLE},
-    label: {defn: [String]},
-    locals: {defn: [:scope_declaration]},
-    location: {defn: ANY_VARIABLE},
-    milliseconds: {defn: [Integer]},
-    offset: {defn: [:coordinate]},
-    pin_id: {defn: [Integer]},
-    pin_number: {defn: [Integer, :named_pin]},
-    pin_value: {defn: [Integer]},
-    radius: {defn: [Integer]},
-    resource_id: {defn: [Integer]},
-    rhs: {defn: [Integer]},
-    url: {defn: [String]},
-    value: {defn: [String, Integer, TrueClass, FalseClass]},
-    version: {defn: [Integer]},
-    x: {defn: [Integer, Float]},
-    y: {defn: [Integer, Float]},
-    z: {defn: [Integer, Float]},
+    _else: {
+      defn: [
+        n(:execute),
+        n(:nothing)
+      ]
+    },
+    _then: {
+      defn: [
+        n(:execute),
+        n(:nothing)
+      ]
+    },
+    data_value: {
+      defn: ANY_VAR_TOKENIZED
+    },
+    default_value: {
+      defn: ANY_VAR_TOKENIZED
+    },
+    label: {
+      defn: [v(:string)]
+    },
+    locals: {
+      defn: [n(:scope_declaration)]
+    },
+    location: {
+      defn: ANY_VAR_TOKENIZED
+    },
+    milliseconds: {
+      defn: [v(:integer)]
+    },
+    offset: {
+      defn: [n(:coordinate)]
+    },
+    pin_id: {
+      defn: [v(:integer)]
+    },
+    pin_number: {
+      defn: [
+        v(:integer),
+        n(:named_pin)
+      ]
+    },
+    pin_value: {
+      defn: [ v(:integer) ]
+    },
+    radius: {
+      defn: [ v(:integer) ]
+    },
+    resource_id: {
+      defn: [ v(:integer) ]
+    },
+    rhs: { defn: [ v(:integer) ] },
+    url: { defn: [ v(:string) ] },
+    value: {
+      defn: [v(:string), v(:integer), v(:boolean)]
+    },
+    version: {defn: [v(:integer)]},
+    x: {defn: [v(:integer), v(:float)]},
+    y: {defn: [v(:integer), v(:float)]},
+    z: {defn: [v(:integer), v(:float)]},
     pin_type: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
       end
     },
     pointer_id: {
-      defn: [Integer],
+      defn: [v(:integer)],
       blk: -> (node, device) do
       bad_node = !Point.where(id: node.value, device_id: device.id).exists?
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end
     },
     pointer_type: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_POINTER_TYPE, node, BAD_POINTER_TYPE)
       end
     },
     pin_mode: {
-      defn: [Integer],
+      defn: [v(:integer)],
       blk: -> (node) do
         enum(ALLOWED_PIN_MODES, node, BAD_ALLOWED_PIN_MODES)
       end
     },
     sequence_id: {
-      defn: [Integer],
+      defn: [v(:integer)],
       blk: -> (node) do
         if (node.value == 0)
           node.invalidate!(NO_SUB_SEQ)
@@ -165,43 +217,43 @@ module CeleryScriptSettingsBag
       end
     },
     op: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_OPS, node, BAD_OP)
       end
     },
     channel_name: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_CHANNEL_NAMES, node, BAD_CHANNEL_NAME)
       end
     },
     message_type: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_MESSAGE_TYPES, node, BAD_MESSAGE_TYPE)
       end
     },
     tool_id: {
-      defn: [Integer],
+      defn: [v(:integer)],
       blk: -> (node) do
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end
     },
     package: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
       end
     },
     axis: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_AXIS, node, BAD_AXIS)
       end
     },
     message: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         notString = !node.value.is_a?(String)
         tooShort  = notString || node.value.length == 0
@@ -210,19 +262,19 @@ module CeleryScriptSettingsBag
       end
     },
     speed: {
-      defn: [Integer],
+      defn: [v(:integer)],
       blk: -> (node) do
         node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
       end
     },
     resource_type: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (n) do
         enum(ALLOWED_RESOURCE_TYPE, n, BAD_RESOURCE_TYPE)
       end
     },
     every_point_type: {
-      defn: [String],
+      defn: [v(:string)],
       blk: -> (node) do
         enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
       end
@@ -294,7 +346,7 @@ module CeleryScriptSettingsBag
       body: [:parameter_application]
     },
     internal_regimen: {
-      body: [:parameter_application]
+      body: %i(parameter_application parameter_declaration variable_declaration)
     },
     move_relative: {
       args: [:x, :y, :z, :speed]
@@ -381,26 +433,26 @@ module CeleryScriptSettingsBag
     },
     move_absolute: {
       args: [:location, :speed, :offset],
-      blk: ->(n) do
+      blk: -> (n) do
         loc = n.args[:location].try(:kind)
         n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
       end
     },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode ],
-      blk: ->(n) do
+      blk: -> (n) do
         no_rpi_analog(n)
       end
     },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
-      blk: ->(n) do
+      blk: -> (n) do
         no_rpi_analog(n)
       end
     },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
-      blk: ->(x) do
+      blk: -> (x) do
         resource_type = x.args.fetch(:resource_type).value
         resource_id   = x.args.fetch(:resource_id).value
         check_resource_type(x, resource_type, resource_id)

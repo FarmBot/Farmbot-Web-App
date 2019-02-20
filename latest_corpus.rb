@@ -36,7 +36,7 @@ class CorpusEmitter
 
     attr_reader :name, :allowed_args, :allowed_body_types
 
-    def initialize(name:, allowed_args:, allowed_body_types: [])
+    def initialize(name:, allowed_args:, allowed_body_types: [], tags:)
         @name,
         @allowed_args,
         @allowed_body_types = name, allowed_args, allowed_body_types
