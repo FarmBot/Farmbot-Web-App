@@ -78,7 +78,7 @@ module CeleryScript
         allowed = corpus.fetchArg(key).allowed_values
         # It would be safe to run type checking here.
         if (actual == "identifier")
-          allowed_types  = allowed.filter { |x| x.value == :identifier }
+          allowed_types  = allowed.filter { |x| x.tag == :identifier }
           var = resolve_variable!
           case var.kind
           when "parameter_declaration" then todo

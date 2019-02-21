@@ -213,6 +213,8 @@ module CeleryScriptSettingsBag
       defn:  [v(:string), n(:named_pin)], # See ALLOWED_LHS_TYPES
       blk: -> (node) do
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
+        # This would never have happened if we hadn't allowed
+        #  heterogenus args :(
         enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end
     },
@@ -246,12 +248,7 @@ module CeleryScriptSettingsBag
         enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
       end
     },
-    axis: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_AXIS, node, BAD_AXIS)
-      end
-    },
+    axis: { defn: [e(:axis)] },
     message: {
       defn: [v(:string)],
       blk: -> (node) do

@@ -4,30 +4,30 @@
 module CeleryScript
   class Corpus
     class ArgAtom
-      attr_reader :value, :name
-      def initialize(value)
-        @value = value
-        @name  = value.to_s
+      attr_reader :tag, :name
+      def initialize(tag)
+        @tag = tag
+        @name  = tag.to_s
       end
     end
 
     class Enum < ArgAtom
       def valid?(node, corpus)
-        binding.pry
+        # binding.pry
         return false
       end
     end
 
     class Value < ArgAtom
-      def initialize(value)
-        super(value)
+      def initialize(tag)
+        super(tag)
         @name = @name.capitalize
       end
 
       def valid?(node, corpus)
         return corpus # TODO: Clean this up to actually use encapsulation.
           .instance_variable_get(:@value_def_list)
-          .fetch(value)
+          .fetch(tag)
           .values
           .include?(node.value.class)
       end
@@ -35,7 +35,7 @@ module CeleryScript
 
     class Node < ArgAtom
       def valid?(node, _corpus)
-        return node.kind == value
+        return node.kind == tag
       end
     end
 
