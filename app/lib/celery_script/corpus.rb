@@ -34,8 +34,8 @@ module CeleryScript
     end
 
     class Node < ArgAtom
-      def valid?(node, corpus)
-        return true
+      def valid?(node, _corpus)
+        return node.kind == value
       end
     end
 
