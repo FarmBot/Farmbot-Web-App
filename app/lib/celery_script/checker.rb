@@ -2,6 +2,7 @@
 # EXTREMELY COMPLICATED CODE. If you are attempting to learn the codebase, read
 # this part last
 module CeleryScript
+  UNBOUND_VAR = "Unbound variable: %s"
   class TypeCheckError < StandardError; end
   class Checker
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
@@ -11,7 +12,6 @@ module CeleryScript
     MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
     BAD_BODY    = "Body of '%s' node contains '%s' node. "\
                   "Expected one of: %s"
-    UNBOUND_VAR = "Unbound variable: %s"
     T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
@@ -138,29 +138,6 @@ module CeleryScript
       blk = corpus.arg_validator(expectation)
       return if blk == NOOP
       blk.call(*[node, device].first(blk.arity))
-    end
-
-    # Calling this method with only one parameter
-    # indicates a starting condition 🏁
-    def resolve_variable!(node, origin = node)
-      locals = node.args[:locals]
-
-      if locals&.kind === "scope_declaration"
-        label  = origin.args[:label]&.value
-        result = (locals.body || []).select do |x|
-          x.args[:label]&.value == label
-        end.first
-        return result if result
-      end
-
-      case node.parent
-      when AstNode
-        # sequence: Check the `scope` arg
-        # Keep recursing if we can't find a scope on this node.
-        resolve_variable!(node.parent, origin)
-      when nil # We've got an unbound variable.
-        origin.invalidate!(UNBOUND_VAR % origin.args[:label].value)
-      end
     end
   end
 end
