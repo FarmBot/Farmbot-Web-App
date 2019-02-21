@@ -54,10 +54,7 @@ module CeleryScript
     end
 
     def check_leaf(node)
-      allowed  = corpus.values(node)
-      actual   = node.value.class
-
-      maybe_bad_leaf(node.kind, node.parent.kind, allowed, actual)
+      needs_new_name(node)
     end
 
     private
@@ -89,7 +86,7 @@ module CeleryScript
           unless has_key
             msgs = node.args.keys.join(", ")
             msgs = "nothing" if msgs.length < 1
-            msg = MISSING_ARG % [node.kind, arg, msgs]
+            msg  = MISSING_ARG % [node.kind, arg, msgs]
             raise TypeCheckError, msg
           end
         end
@@ -129,28 +126,36 @@ module CeleryScript
         end
       end
 
-      maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
+      needs_new_name(value, key)
     end
 
     # This is where leaves get invalidated.
     # IDEA: Add a refinement to string class to allow it to quack like other
     #       special classes.
-    def maybe_bad_leaf(kind, parent_kind, allowed, actual)
-      unless allowed.include?(actual)
-        message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
-          kind:        kind,
-          parent_kind: parent_kind,
-          allowed:     allowed,
-          actual:      actual
-        }
-        raise TypeCheckError, message
+    def needs_new_name(node, arg_key = nil)
+      case node
+      when CeleryScript::AstNode
+        print "🔥"
+      when CeleryScript::AstLeaf
+        allowed = corpus.fetchArg(node.kind).allowed_values
+        unless allowed.any? { |spec| spec.valid?(node, corpus) }
+          actual      = node.value.class
+          kind        = node.kind
+          parent_kind = node.parent.kind
+
+          message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
+            kind:        kind,
+            parent_kind: parent_kind,
+            allowed:     "[#{allowed.map(&:name).join(", ")}]",
+            actual:      actual
+          }
+          raise TypeCheckError, message
+        end
       end
     end
 
     def validate_leaf_pairing(key, value)
-      actual  = value.value.class
-      allowed = corpus.fetchArg(key).allowed_values
-      maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
+      needs_new_name(value, key)
     end
 
     def bad_body_kind(prnt, child, i, ok)

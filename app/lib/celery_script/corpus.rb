@@ -4,16 +4,41 @@
 module CeleryScript
   class Corpus
     class ArgAtom
-      attr_reader :value
+      attr_reader :value, :name
       def initialize(value)
-        raise "USE SYMBOLS!" unless value.is_a?(Symbol)
         @value = value
+        @name  = value.to_s
       end
     end
 
-    class Enum  < ArgAtom; end
-    class Value < ArgAtom; end
-    class Node  < ArgAtom; end
+    class Enum < ArgAtom
+      def valid?(node, corpus)
+        binding.pry
+        return false
+      end
+    end
+
+    class Value < ArgAtom
+      def initialize(value)
+        super(value)
+        @name = @name.capitalize
+      end
+
+      def valid?(node, corpus)
+        return corpus
+          .instance_variable_get(:@value_def_list)
+          .fetch(value)
+          .values
+          .include?(node.value.class)
+      end
+    end
+
+    class Node < ArgAtom
+      def valid?(node, corpus)
+        return true
+      end
+    end
+
 
     ATOMS         = [Enum, Value, Node]
     BAD_NODE_NAME = "Can't find validation rules for node "

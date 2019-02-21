@@ -154,9 +154,7 @@ describe CeleryScript::Corpus do
     expect(checker.error.message).to include("not a valid message_type")
   end
 
-  it "Handles channel_name validations for version 1" do
-    # This test is __ONLY__ relevant for version 1.
-    # Change / delete / update as needed.
+  it "Handles channel_name validations" do
     tree = CeleryScript::AstNode.new({
       "kind": "send_message",
       "args": {
