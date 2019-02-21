@@ -8,13 +8,10 @@ module CeleryScript
                            "no leaves here."
       LEAVES_NEED_KEYS   = "Tried to initialize a leaf without a key."
       NEVER              = :__NEVER__
+      FRIENDLY_ERRORS    = CeleryScript::Checker::FRIENDLY_ERRORS
+      BAD_LEAF           = CeleryScript::Checker::BAD_LEAF
 
-      def initialize(parent = nil,
-                     args:,
-                     body: nil,
-                     comment: "",
-                     kind:,
-                     uuid: nil)
+      def initialize(parent = nil, args:, body: nil, comment: "", kind:, uuid: nil)
           @comment, @kind, @parent = comment, kind, parent
 
           @args = args.map do |key, value|
@@ -45,6 +42,10 @@ module CeleryScript
         (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
         (hash[:args].is_a?(Hash)) &&
         (hash[:kind].is_a?(String))
+      end
+
+      def cross_check(corpus)
+        print "🔥"
       end
   end
 end

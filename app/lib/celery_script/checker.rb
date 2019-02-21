@@ -133,25 +133,7 @@ module CeleryScript
     # IDEA: Add a refinement to string class to allow it to quack like other
     #       special classes.
     def needs_new_name(node, arg_key = nil)
-      case node
-      when CeleryScript::AstNode
-        print "🔥"
-      when CeleryScript::AstLeaf
-        allowed = corpus.fetchArg(node.kind).allowed_values
-        unless allowed.any? { |spec| spec.valid?(node, corpus) }
-          actual      = node.value.class
-          kind        = node.kind
-          parent_kind = node.parent.kind
-
-          message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
-            kind:        kind,
-            parent_kind: parent_kind,
-            allowed:     "[#{allowed.map(&:name).join(", ")}]",
-            actual:      actual
-          }
-          raise TypeCheckError, message
-        end
-      end
+      node.cross_check(corpus)
     end
 
     def validate_leaf_pairing(key, value)

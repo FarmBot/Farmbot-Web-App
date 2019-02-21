@@ -25,7 +25,7 @@ module CeleryScript
       end
 
       def valid?(node, corpus)
-        return corpus
+        return corpus # TODO: Clean this up to actually use encapsulation.
           .instance_variable_get(:@value_def_list)
           .fetch(value)
           .values
