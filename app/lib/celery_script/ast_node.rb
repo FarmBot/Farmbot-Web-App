@@ -44,8 +44,31 @@ module CeleryScript
         (hash[:kind].is_a?(String))
       end
 
-      def cross_check(corpus)
-        print "🔥"
+      def cross_check(corpus, key)
+        actual  = kind
+        allowed = corpus.fetchArg(key).allowed_values
+        # It would be safe to run type checking here.
+        if (actual == "identifier")
+          allowed_types  = allowed.filter { |x| x.value == :identifier }
+          var = resolve_variable!(self)
+          case var.kind
+          when "parameter_declaration"
+            type_check_parameter(var, allowed_types)
+          when "variable_declaration"
+            actual = var.args[:data_value].kind
+          end
+        end
+
+        unless allowed.map(&:name).include?(actual)
+          message = (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF) % {
+            kind:        kind,
+            parent_kind: parent.kind,
+            allowed:     allowed,
+            actual:      actual
+          }
+
+          raise TypeCheckError, message
+        end
       end
   end
 end

@@ -54,7 +54,7 @@ module CeleryScript
     end
 
     def check_leaf(node)
-      needs_new_name(node)
+      maybe_bad_leaf(node)
     end
 
     private
@@ -112,32 +112,18 @@ module CeleryScript
     end
 
     def validate_node_pairing(key, value)
-      actual  = value.kind
-      allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
-      # It would be safe to run type checking here.
-      if (actual == "identifier")
-        allowed_types  = allowed.without("identifier")
-        var = resolve_variable!(value)
-        case var.kind
-        when "parameter_declaration", "variable_declaration"
-          key = \
-            (var.kind == "parameter_declaration") ? :default_value : :data_value
-          actual = var.args.fetch(key).kind
-        end
-      end
-
-      needs_new_name(value, key)
+      maybe_bad_leaf(value, key)
     end
 
     # This is where leaves get invalidated.
     # IDEA: Add a refinement to string class to allow it to quack like other
     #       special classes.
-    def needs_new_name(node, arg_key = nil)
-      node.cross_check(corpus)
+    def maybe_bad_leaf(node, key = nil)
+      node.cross_check(corpus, key)
     end
 
     def validate_leaf_pairing(key, value)
-      needs_new_name(value, key)
+      maybe_bad_leaf(value, key)
     end
 
     def bad_body_kind(prnt, child, i, ok)

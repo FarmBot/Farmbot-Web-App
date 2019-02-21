@@ -13,7 +13,7 @@ module CeleryScript
       @parent, @value, @kind = parent, value, kind
     end
 
-    def cross_check(corpus)
+    def cross_check(corpus, _key = nil)
       allowed = corpus.fetchArg(kind).allowed_values
       unless allowed.any? { |spec| spec.valid?(self, corpus) }
         message = (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF) % {
