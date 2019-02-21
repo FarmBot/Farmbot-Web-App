@@ -47,11 +47,6 @@ module CeleryScript
     end
 
     def arg(name, defn, &blk)
-      defn.map do |x|
-        binding.pry if x.is_a?(Symbol)
-        binding.pry if x.is_a?(Class)
-        puts x.class.inspect
-      end
       @arg_def_list[name] = ArgumentSpecification.new(name, defn, blk)
       self
     end

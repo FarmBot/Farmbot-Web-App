@@ -210,7 +210,7 @@ module CeleryScriptSettingsBag
       end
     },
     lhs: {
-      defn: ALLOWED_LHS_TYPES,
+      defn:  [v(:string), n(:named_pin)], # See ALLOWED_LHS_TYPES
       blk: -> (node) do
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         enum(*x) unless node.is_a?(CeleryScript::AstNode)
@@ -280,11 +280,12 @@ module CeleryScriptSettingsBag
       end
     },
   }.map do |(name, conf)|
-    blk = conf[:blk]
+    blk  = conf[:blk]
+    defn = conf.fetch(:defn)
     if blk
-      Corpus.arg(name, conf.fetch(:defn), &blk)
+      Corpus.arg(name, defn, &blk)
     else
-      Corpus.arg(name, conf.fetch(:defn))
+      Corpus.arg(name, defn)
     end
   end
 
