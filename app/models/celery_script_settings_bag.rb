@@ -173,12 +173,7 @@ module CeleryScriptSettingsBag
     x: {defn: [v(:integer), v(:float)]},
     y: {defn: [v(:integer), v(:float)]},
     z: {defn: [v(:integer), v(:float)]},
-    pin_type: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_PIN_TYPES, node, BAD_PIN_TYPE)
-      end
-    },
+    pin_type: { defn: [e(:pin_type)] },
     pointer_id: {
       defn: [v(:integer)],
       blk: -> (node, device) do
@@ -186,18 +181,8 @@ module CeleryScriptSettingsBag
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end
     },
-    pointer_type: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_POINTER_TYPE, node, BAD_POINTER_TYPE)
-      end
-    },
-    pin_mode: {
-      defn: [v(:integer)],
-      blk: -> (node) do
-        enum(ALLOWED_PIN_MODES, node, BAD_ALLOWED_PIN_MODES)
-      end
-    },
+    pointer_type: { defn: [e(:pointer_type)] },
+    pin_mode: { defn: [e(:pin_mode)] },
     sequence_id: {
       defn: [v(:integer)],
       blk: -> (node) do
@@ -215,39 +200,19 @@ module CeleryScriptSettingsBag
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         # This would never have happened if we hadn't allowed
         #  heterogenus args :(
-        enum(*x) unless node.is_a?(CeleryScript::AstNode)
+        enumb(*x) unless node.is_a?(CeleryScript::AstNode)
       end
     },
-    op: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_OPS, node, BAD_OP)
-      end
-    },
-    channel_name: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_CHANNEL_NAMES, node, BAD_CHANNEL_NAME)
-      end
-    },
-    message_type: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_MESSAGE_TYPES, node, BAD_MESSAGE_TYPE)
-      end
-    },
+    op: { defn: [e(:op)] },
+    channel_name: { defn: [e(:channel_name)] },
+    message_type: { defn: [e(:message_type)] },
     tool_id: {
       defn: [v(:integer)],
       blk: -> (node) do
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end
     },
-    package: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
-      end
-    },
+    package: { defn: [e(:package)] },
     axis: { defn: [e(:axis)] },
     message: {
       defn: [v(:string)],
@@ -258,24 +223,9 @@ module CeleryScriptSettingsBag
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end
     },
-    speed: {
-      defn: [v(:integer)],
-      blk: -> (node) do
-        node.invalidate!(BAD_SPEED) unless node.value.between?(1, 100)
-      end
-    },
-    resource_type: {
-      defn: [v(:string)],
-      blk: -> (n) do
-        enum(ALLOWED_RESOURCE_TYPE, n, BAD_RESOURCE_TYPE)
-      end
-    },
-    every_point_type: {
-      defn: [v(:string)],
-      blk: -> (node) do
-        enum(ALLOWED_EVERY_POINT_TYPE, node, BAD_EVERY_POINT_TYPE)
-      end
-    },
+    speed: { defn: [v(:integer)] },
+    resource_type: { defn: [e(:resource_type)] },
+    every_point_type: { defn: [e(:every_point_type)] },
   }.map do |(name, conf)|
     blk  = conf[:blk]
     defn = conf.fetch(:defn)
@@ -479,9 +429,10 @@ module CeleryScriptSettingsBag
       no_resource(node, klass, resource_id) unless resource_ok
     end
   end
+
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
-  def self.enum(array, node, tpl)
+  def self.enumb(array, node, tpl)
     val = node.try(:value)
     unless array.include?(val)
       node.invalidate!(tpl % [val.to_s, array.inspect])
