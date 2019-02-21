@@ -113,62 +113,23 @@ module CeleryScriptSettingsBag
   ANY_VAR_TOKENIZED = ANY_VARIABLE.map { |x| n(x) }
 
   CORPUS_ARGS   = {
-    _else: {
-      defn: [
-        n(:execute),
-        n(:nothing)
-      ]
-    },
-    _then: {
-      defn: [
-        n(:execute),
-        n(:nothing)
-      ]
-    },
-    data_value: {
-      defn: ANY_VAR_TOKENIZED
-    },
-    default_value: {
-      defn: ANY_VAR_TOKENIZED
-    },
-    label: {
-      defn: [v(:string)]
-    },
-    locals: {
-      defn: [n(:scope_declaration)]
-    },
-    location: {
-      defn: ANY_VAR_TOKENIZED
-    },
-    milliseconds: {
-      defn: [v(:integer)]
-    },
-    offset: {
-      defn: [n(:coordinate)]
-    },
-    pin_id: {
-      defn: [v(:integer)]
-    },
-    pin_number: {
-      defn: [
-        v(:integer),
-        n(:named_pin)
-      ]
-    },
-    pin_value: {
-      defn: [ v(:integer) ]
-    },
-    radius: {
-      defn: [ v(:integer) ]
-    },
-    resource_id: {
-      defn: [ v(:integer) ]
-    },
+    _else: { defn: [ n(:execute), n(:nothing) ] },
+    _then: { defn: [ n(:execute), n(:nothing) ] },
+    data_value: { defn: ANY_VAR_TOKENIZED },
+    default_value: { defn: ANY_VAR_TOKENIZED },
+    label: { defn: [v(:string)] },
+    locals: { defn: [n(:scope_declaration)] },
+    location: { defn: ANY_VAR_TOKENIZED },
+    milliseconds: { defn: [v(:integer)] },
+    offset: { defn: [n(:coordinate)] },
+    pin_id: { defn: [v(:integer)] },
+    pin_number: { defn: [v(:integer), n(:named_pin)] },
+    pin_value: { defn: [ v(:integer) ] },
+    radius: { defn: [ v(:integer) ] },
+    resource_id: { defn: [ v(:integer) ] },
     rhs: { defn: [ v(:integer) ] },
     url: { defn: [ v(:string) ] },
-    value: {
-      defn: [v(:string), v(:integer), v(:boolean)]
-    },
+    value: { defn: [v(:string), v(:integer), v(:boolean)] },
     version: {defn: [v(:integer)]},
     x: {defn: [v(:integer), v(:float)]},
     y: {defn: [v(:integer), v(:float)]},
@@ -241,133 +202,55 @@ module CeleryScriptSettingsBag
       args: [:lhs, :op, :rhs, :_then, :_else],
       body: [:pair]
     },
-    calibrate: {
-      args: [:axis]
-    },
-    change_ownership: {
-      body: [:pair]
-    },
-    channel: {
-      args: [:channel_name]
-    },
-    check_updates: {
-      args: [:package]
-    },
-    coordinate: {
-      args: [:x, :y, :z]
-    },
+    calibrate: { args: [:axis] },
+    change_ownership: { body: [:pair] },
+    channel: { args: [:channel_name] },
+    check_updates: { args: [:package] },
+    coordinate: { args: [:x, :y, :z] },
     dump_info: {},
     emergency_lock: {},
     emergency_unlock: {},
-    every_point: {
-      args: [:every_point_type]
-    },
-    execute_script: {
-      args: [:label],
-      body: [:pair]
-    },
-    execute: {
-      args: [:sequence_id],
-      body: [:parameter_application]
-    },
-    explanation: {
-      args: [:message]
-    },
-    factory_reset: {
-      args: [:package]
-    },
-    find_home: {
-      args: [:speed, :axis]
-    },
-    home: {
-      args: [:speed, :axis]
-    },
-    identifier: {
-      args: [:label]
-    },
-    install_farmware: {
-      args: [:url]
-    },
+    every_point: { args: [:every_point_type] },
+    execute_script: { args: [:label], body: [:pair] },
+    execute: { args: [:sequence_id], body: [:parameter_application] },
+    explanation: { args: [:message] },
+    factory_reset: { args: [:package] },
+    find_home: { args: [:speed, :axis] },
+    home: { args: [:speed, :axis] },
+    identifier: { args: [:label] },
+    install_farmware: { args: [:url] },
     install_first_party_farmware: {},
     internal_entry_point: {},
-    internal_farm_event: {
-      body: [:parameter_application]
-    },
+    internal_farm_event: { body: [:parameter_application] },
     internal_regimen: {
       body: %i(parameter_application parameter_declaration variable_declaration)
     },
-    move_relative: {
-      args: [:x, :y, :z, :speed]
-    },
+    move_relative: { args: [:x, :y, :z, :speed] },
     nothing: {},
-    pair: {
-      args: [:label, :value]
-    },
-    parameter_application: {
-      args: [:label, :data_value]
-    },
-    parameter_declaration: {
-      args: [:label, :default_value]
-    },
-    point: {
-      args: [:pointer_type, :pointer_id]
-    },
+    pair: { args: [:label, :value] },
+    parameter_application: { args: [:label, :data_value] },
+    parameter_declaration: { args: [:label, :default_value] },
+    point: { args: [:pointer_type, :pointer_id] },
     power_off: {},
     read_status: {},
-    reboot: {
-      args: [:package]
-    },
-    remove_farmware: {
-      args: [:package]
-    },
-    rpc_error: {
-      args: [:label],
-      body: [:explanation]
-    },
-    rpc_ok: {
-      args: [:label]
-    },
-    rpc_request: {
-      args: [:label],
-      body: ALLOWED_RPC_NODES
-    },
-    scope_declaration: {
-      body: SCOPE_DECLARATIONS
-    },
-    send_message: {
-      args: [:message, :message_type],
-      body: [:channel]
-    },
-    sequence: {
-      args: [:version, :locals],
-      body: ALLOWED_RPC_NODES
-    },
-    set_servo_angle: {
-      args: [:pin_number, :pin_value]
-    },
-    set_user_env: {
-      body: [:pair]
-    },
+    reboot: { args: [:package] },
+    remove_farmware: { args: [:package] },
+    rpc_error: { args: [:label], body: [:explanation] },
+    rpc_ok: { args: [:label] },
+    rpc_request: { args: [:label], body: ALLOWED_RPC_NODES },
+    scope_declaration: { body: SCOPE_DECLARATIONS },
+    send_message: { args: [:message, :message_type], body: [:channel] },
+    sequence: { args: [:version, :locals], body: ALLOWED_RPC_NODES },
+    set_servo_angle: { args: [:pin_number, :pin_value] },
+    set_user_env: { body: [:pair] },
     sync: {},
     take_photo: {},
-    toggle_pin: {
-      args: [:pin_number]
-    },
-    tool: {
-      args: [:tool_id]
-    },
-    update_farmware: {
-      args: [:package]
-    },
-    variable_declaration: {
-      args: [:label, :data_value]
-    },
-    wait: {
-      args: [:milliseconds]
-    },
-    zero: {
-      args: [:axis]
-    },
+    toggle_pin: { args: [:pin_number] },
+    tool: { args: [:tool_id] },
+    update_farmware: { args: [:package] },
+    variable_declaration: { args: [:label, :data_value] },
+    wait: { args: [:milliseconds] },
+    zero: { args: [:axis] },
     named_pin: {
       args: [:pin_type, :pin_id],
       blk: -> (node) do
