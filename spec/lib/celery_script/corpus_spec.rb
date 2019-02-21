@@ -223,7 +223,7 @@ describe CeleryScript::Corpus do
   end
 
   it "has enums" do
-    args = [name = :foo, list = ["bar", "baz"]]
+    args = [name = :foo, list = ["bar", "baz"], tpl = ["foo: %s bar: %s"]]
     c    = CeleryScript::Corpus.new.enum(*args)
     json = c.as_json
     enums = json.fetch(:enums)

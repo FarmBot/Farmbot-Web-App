@@ -85,18 +85,18 @@ module CeleryScriptSettingsBag
   }.map { |(name, list)| Corpus.value(name, list) }
 
   CORPUS_ENUM = {
-    axis:             ALLOWED_AXIS,
-    channel_name:     ALLOWED_CHANNEL_NAMES,
-    every_point_type: ALLOWED_EVERY_POINT_TYPE,
-    lhs:              ALLOWED_LHS_STRINGS,
-    message_type:     ALLOWED_MESSAGE_TYPES,
-    op:               ALLOWED_OPS,
-    package:          ALLOWED_PACKAGES,
-    pin_mode:         ALLOWED_PIN_MODES,
-    pin_type:         ALLOWED_PIN_TYPES,
-    pointer_type:     ALLOWED_POINTER_TYPE,
-    resource_type:    ALLOWED_RESOURCE_TYPE,
-  }.map { |(name, list)| Corpus.enum(name, list) }
+    axis:             [ALLOWED_AXIS, BAD_AXIS],
+    channel_name:     [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
+    every_point_type: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
+    lhs:              [ALLOWED_LHS_STRINGS, BAD_LHS],
+    message_type:     [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
+    op:               [ALLOWED_OPS, BAD_OP],
+    package:          [ALLOWED_PACKAGES, BAD_PACKAGE],
+    pin_mode:         [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
+    pin_type:         [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
+    pointer_type:     [ALLOWED_POINTER_TYPE, BAD_POINTER_TYPE],
+    resource_type:    [ALLOWED_RESOURCE_TYPE, BAD_RESOURCE_TYPE],
+  }.map { |(name, list)| Corpus.enum(name, *list) }
 
   def self.e(symbol)
     CeleryScript::Corpus::Enum.new(symbol)

@@ -6,15 +6,23 @@ module CeleryScript
     class ArgAtom
       attr_reader :tag, :name
       def initialize(tag)
-        @tag = tag
-        @name  = tag.to_s
+        @tag  = tag
+        @name = tag.to_s
       end
     end
 
     class Enum < ArgAtom
       def valid?(node, corpus)
-        # binding.pry
-        return false
+        # TODO: Clean this up to actually use encapsulation.
+        spec      = corpus.instance_variable_get(:@enum_def_list).fetch(tag)
+        value     = node.value
+        whitelist = spec.allowed_values
+        if whitelist.include?(value)
+          return true
+        else
+          msg = spec.error_template % [value, whitelist]
+          raise CeleryScript::TypeCheckError, msg
+        end
       end
     end
 
@@ -61,8 +69,8 @@ module CeleryScript
       n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
-    def enum(name, defn)
-      @enum_def_list[name] = EnumSpecification.new(name, defn)
+    def enum(name, whitelist, error_template_string)
+      @enum_def_list[name] = EnumSpecification.new(name, whitelist, error_template_string)
       self
     end
 
