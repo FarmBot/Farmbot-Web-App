@@ -17,6 +17,7 @@ def emit_values
     celerized              = VALUE_PREFIX + capitalized
     FUNNY_NAMES[capitalized] = celerized
     type = VALUES_OVERRIDE.fetch(real_name, real_name)
+    # binding.pry
     VALUES_TPL % { name: celerized, type: type }
   end
     .uniq
@@ -28,7 +29,9 @@ ENUM_TPL = "export type ALLOWED_%{name} = %{type};\n"
 
 def emit_enums
   output = ENUMS.map do |enum|
-    name = name_of(enum).upcase
+    name      = name_of(enum).upcase
+    celerized = "ALLOWED_%{name}" % {name: name}
+    FUNNY_NAMES[name_of(enum).camelize] = celerized
     type = enum.fetch("allowed_values").sort.map(&:inspect).uniq.join(" | ")
     ENUM_TPL % { name: name, type: type }
   end
