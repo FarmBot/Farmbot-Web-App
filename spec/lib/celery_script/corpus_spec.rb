@@ -131,10 +131,8 @@ describe CeleryScript::Corpus do
       expect(result["version"]).to eq(Sequence::LATEST_VERSION)
       expect(result["args"]).to be_kind_of(Array)
       expect(result["nodes"]).to be_kind_of(Array)
-      expect(result["nodes"].sample.keys.sort).to eq(["allowed_args",
-                                                      "allowed_body_types",
-                                                      "name",
-                                                      "tags"])
+      keys = result["nodes"].sample.keys.sort.map(&:to_sym)
+      expect(keys).to eq([:allowed_args, :allowed_body_types, :docs, :name, :tags])
       expect(result["args"].sample.keys.sort).to eq(["allowed_values",
                                                      "name"])
   end
@@ -242,19 +240,17 @@ describe CeleryScript::Corpus do
     expect(values.first.keys.length).to eq(1)
   end
 
-  it "assigns tags to nodes" do
-    c = CeleryScript::Corpus
-      .new
-      .node("wonderful", args: [], body: [], tags: ["great"])
+  it "assigns tags and documentation to nodes" do
+    c = CeleryScript::Corpus.new.node("wonderful",
+                                      args: [],
+                                      body: [],
+                                      tags: ["great"],
+                                      docs: "spectacular")
     json   = c.as_json
     values = json.fetch(:nodes)
     expect(values.length).to eq(1)
     value  = values.first
     expect(value.fetch("tags").first).to eq("great")
-  end
-
-  it "deletes this test" do
-    expect(2 + 2).to eq(4)
-    binding.pry
+    expect(value.fetch("docs")).to eq("spectacular")
   end
 end

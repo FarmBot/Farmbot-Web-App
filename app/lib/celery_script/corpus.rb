@@ -84,9 +84,9 @@ module CeleryScript
       self
     end
 
-    def node(kind, args: [], body: [], tags: [], blk: nil)
+    def node(kind, args: [], body: [], tags: [], docs: nil, blk: nil)
       @node_def_list[kind] = \
-        NodeSpecification.new(kind, args, body, tags, blk)
+        NodeSpecification.new(kind, args, body, tags, docs, blk)
       self
     end
 

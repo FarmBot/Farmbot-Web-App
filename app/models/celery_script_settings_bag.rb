@@ -16,9 +16,9 @@ module CeleryScriptSettingsBag
   end
 
   PIN_TYPE_MAP = { "Peripheral" => Peripheral,
-                   "Sensor" => Sensor,
-                   "BoxLed3" => BoxLed,
-                   "BoxLed4" => BoxLed }
+                  "Sensor" => Sensor,
+                  "BoxLed3" => BoxLed,
+                  "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
   ALLOWED_CHAGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
@@ -165,9 +165,15 @@ module CeleryScriptSettingsBag
       defn: [v(:string), v(:integer), v(:boolean)],
     },
     version: { defn: [v(:integer)] },
-    x: { defn: [v(:integer), v(:float)] },
-    y: { defn: [v(:integer), v(:float)] },
-    z: { defn: [v(:integer), v(:float)] },
+    x: {
+      defn: [v(:integer), v(:float)],
+    },
+    y: {
+      defn: [v(:integer), v(:float)],
+    },
+    z: {
+      defn: [v(:integer), v(:float)],
+    },
     pin_type: {
       defn: [e(:pin_type)],
     },
@@ -258,136 +264,201 @@ module CeleryScriptSettingsBag
 
   CORPUS_NODES = {
     _if: {
-      args: [:lhs, :op, :rhs, :_then, :_else], body: [:pair], tags: [:control_flow],
+      args: [:lhs, :op, :rhs, :_then, :_else],
+      body: [:pair],
+      tags: [:*],
     },
     calibrate: {
-      args: [:axis], tags: [:function, :firmware_user],
+      args: [:axis],
+      tags: [:function, :firmware_user],
     },
     change_ownership: {
-      body: [:pair], tags: [:function, :network_user, :disk_user, :cuts_power],
+      body: [:pair],
+      tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
+      docs: "Not a commonly used node. May be removed without notice."
     },
     channel: {
-      args: [:channel_name], tags: [:data],
+      args: [:channel_name],
+      tags: [:data],
+      docs: "Specifies a communication path for log messages."
     },
     check_updates: {
-      args: [:package], tags: [:function, :network_user, :disk_user, :cuts_power],
+      args: [:package],
+      tags: [:function, :network_user, :disk_user, :cuts_power],
     },
     coordinate: {
-      args: [:x, :y, :z], tags: [:data, :location_like],
+      args: [:x, :y, :z],
+      tags: [:data, :location_like]
     },
     dump_info: {
-      tags: [:function, :network_user, :disk_user],
+      tags: [:function, :network_user, :disk_user, :api_writer],
+      docs: "Sends an info dump to server administrators for troubleshooting."
     },
-    emergency_lock: { tags: [:function, :firmware_user, :control_flow] },
+    emergency_lock: {
+      tags: [:function, :firmware_user, :control_flow],
+    },
     emergency_unlock: {
       tags: [:function, :firmware_user],
     },
     every_point: {
-      args: [:every_point_type], tags: [:data],
+      args: [:every_point_type],
+      tags: [:data, :list_like, :control_flow],
+      docs: "Experimental node used for iteration."
     },
     execute_script: {
-      args: [:label], body: [:pair], tags: [:function],
+      args: [:label],
+      body: [:pair],
+      tags: [:*],
     },
     execute: {
-      args: [:sequence_id], body: [:parameter_application], tags: [:function],
+      args: [:sequence_id],
+      body: [:parameter_application],
+      tags: [:*],
     },
     explanation: {
-      args: [:message], tags: [:data],
+      args: [:message],
+      tags: [:data],
     },
     factory_reset: {
-      args: [:package], tags: [:function],
+      args: [:package],
+      tags: [:function, :cuts_power],
     },
     find_home: {
-      args: [:speed, :axis], tags: [:function],
+      args: [:speed, :axis],
+      tags: [:function, :firmware_user],
     },
     home: {
-      args: [:speed, :axis], tags: [:function],
+      args: [:speed, :axis],
+      tags: [:function, :firmware_user],
     },
     identifier: {
-      args: [:label], tags: [:data],
+      args: [:label],
+      tags: [:data],
     },
     install_farmware: {
-      args: [:url], tags: [:function],
+      args: [:url],
+      tags: [:function, :network_user, :disk_user, :api_writer],
     },
-    install_first_party_farmware: { tags: [:function] },
-    internal_entry_point: { tags: ["private"] },
+    install_first_party_farmware: {
+      tags: [:function, :network_user],
+    },
+    internal_entry_point: {
+      tags: [:private],
+    },
     internal_farm_event: {
-      body: [:parameter_application], tags: ["private"],
+      body: [:parameter_application],
+      tags: [:private],
     },
     internal_regimen: {
       body: %i(parameter_application parameter_declaration variable_declaration),
-      tags: ["private"],
+      tags: [:private],
     },
     move_relative: {
       args: [:x, :y, :z, :speed],
+      tags: [:firmware_user, :function],
     },
-    nothing: {},
+    nothing: {
+      tags: [:data, :function],
+    },
     pair: {
       args: [:label, :value],
+      tags: [:data],
     },
     parameter_application: {
       args: [:label, :data_value],
+      tags: [:function, :control_flow, :scope_writer],
     },
     parameter_declaration: {
       args: [:label, :default_value],
+      tags: [:scope_writer],
     },
     point: {
       args: [:pointer_type, :pointer_id],
+      tags: [:location_like, :data],
     },
-    power_off: {},
-    read_status: {},
+    power_off: {
+      tags: [:cuts_power, :function],
+    },
+    read_status: {
+      tags: [:function],
+    },
     reboot: {
       args: [:package],
+      tags: [:cuts_power, :function, :firmware_user],
     },
     remove_farmware: {
       args: [:package],
+      tags: [:function],
     },
     rpc_error: {
-      args: [:label], body: [:explanation],
+      args: [:label],
+      body: [:explanation],
+      tags: [:data],
     },
     rpc_ok: {
       args: [:label],
+      tags: [:data],
     },
     rpc_request: {
-      args: [:label], body: ALLOWED_RPC_NODES,
+      args: [:label],
+      body: ALLOWED_RPC_NODES,
+      tags: [:*],
     },
     scope_declaration: {
       body: SCOPE_DECLARATIONS,
+      tags: [:scope_writer],
     },
     send_message: {
-      args: [:message, :message_type], body: [:channel],
+      args: [:message, :message_type],
+      body: [:channel],
+      tags: [:function],
     },
     sequence: {
-      args: [:version, :locals], body: ALLOWED_RPC_NODES,
+      args: [:version, :locals],
+      body: ALLOWED_RPC_NODES,
+      tags: [:*],
     },
     set_servo_angle: {
       args: [:pin_number, :pin_value],
+      tags: [:function, :firmware_user],
     },
     set_user_env: {
       body: [:pair],
+      tags: [:function, :disk_user],
     },
-    sync: {},
-    take_photo: {},
+    sync: {
+      tags: [:disk_user, :network_user, :function],
+    },
+    take_photo: {
+      tags: [:disk_user, :function],
+    },
     toggle_pin: {
       args: [:pin_number],
+      tags: [:function, :firmware_user],
     },
     tool: {
       args: [:tool_id],
+      tags: [:data, :location_like, :api_validated],
     },
     update_farmware: {
       args: [:package],
+      tags: [:function, :network_user, :api_validated],
     },
     variable_declaration: {
       args: [:label, :data_value],
+      tags: [:scope_writer, :function],
     },
     wait: {
       args: [:milliseconds],
+      tags: [:function],
     },
     zero: {
       args: [:axis],
+      tags: [:function, :firmware_user],
     },
     named_pin: {
       args: [:pin_type, :pin_id],
+      tags: [:api_validated, :firmware_user, :rpi_user, :data, :function],
       blk: -> (node) do
         args = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
@@ -399,6 +470,7 @@ module CeleryScriptSettingsBag
     },
     move_absolute: {
       args: [:location, :speed, :offset],
+      tags: [:function, :firmware_user],
       blk: -> (n) do
         loc = n.args[:location].try(:kind)
         n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
@@ -406,22 +478,24 @@ module CeleryScriptSettingsBag
     },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode],
+      tags: [:function, :firmware_user, :rpi_user],
       blk: -> (n) { no_rpi_analog(n) },
     },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
+      tags: [:function, :firmware_user, :rpi_user],
       blk: -> (n) { no_rpi_analog(n) },
     },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
+      tags: [:function, :api_writer, :network_user],
       blk: -> (x) do
         resource_type = x.args.fetch(:resource_type).value
         resource_id = x.args.fetch(:resource_id).value
         check_resource_type(x, resource_type, resource_id)
       end,
     },
-  }
-    .map { |(name, list)| Corpus.node(name, **list) }
+  }.map { |(name, list)| Corpus.node(name, **list) }
 
   ANY_ARG_NAME = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
