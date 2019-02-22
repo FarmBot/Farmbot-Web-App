@@ -1,26 +1,34 @@
 HASH = Sequence::Corpus.as_json({})
 
-VALUES = HASH.fetch(:values)
-VALUES_TPL = "export type Celery%{name} = %{type};\n"
+def name_of(thing)
+  thing.fetch("name").to_s
+end
+
+VALUES          = HASH.fetch(:values)
+VALUE_PREFIX    = "CS"
+VALUES_TPL      = "export type %{name} = %{type};\n"
 VALUES_OVERRIDE = { float: "number", integer: "number" }
+FUNNY_NAMES     = { "Example" => "CSExample" }
 
 def emit_values
   output = VALUES.map do |val|
-    name = val.fetch("name")
-    type = VALUES_OVERRIDE.fetch(name, name)
-    VALUES_TPL % { name: name.capitalize, type: type }
+    real_name              = name_of(val)
+    capitalized            = real_name.capitalize
+    celerized              = VALUE_PREFIX + capitalized
+    FUNNY_NAMES[capitalized] = celerized
+    type = VALUES_OVERRIDE.fetch(real_name, real_name)
+    VALUES_TPL % { name: celerized, type: type }
   end
     .uniq
     .sort
   puts(output)
 end
-
 ENUMS = HASH.fetch(:enums)
 ENUM_TPL = "export type ALLOWED_%{name} = %{type};\n"
 
 def emit_enums
   output = ENUMS.map do |enum|
-    name = enum.fetch("name").upcase
+    name = name_of(enum).upcase
     type = enum.fetch("allowed_values").sort.map(&:inspect).uniq.join(" | ")
     ENUM_TPL % { name: name, type: type }
   end
@@ -33,13 +41,13 @@ end
 ARGS = HASH
   .fetch(:args)
   .reduce(HashWithIndifferentAccess.new) do |acc, arg|
-    acc[arg.fetch("name")] = arg
+    acc[name_of(arg)] = arg
     acc
   end
 
 NODES = HASH.fetch(:nodes)
 
-NODE_START    = [ "/** %{docs}%{tag_docs} */",
+NODE_START    = [ "/** %{docs} %{tag_docs} */",
                   "export interface %{camel_case} {",
                   '  kind: "%{snake_case}";',
                   "  args: {", ].join("\n")
@@ -51,7 +59,7 @@ BOTTOM_END    = [ "  }",
 def emit_nodes()
   nodes = NODES.map do |node|
       tag_list    = node.fetch("tags").sort.uniq.join(", ")
-      name        = node.fetch("name").to_s
+      name        = name_of(node).to_s
       body_types  = node.fetch("allowed_body_types")
       tpl_binding = {
         body_types: body_types.sort.uniq.map(&:to_s).map(&:camelize).join(" | "),
@@ -69,6 +77,7 @@ def emit_nodes()
                                 .fetch("allowed_values")
                                 .map(&:name)
                                 .map(&:camelize)
+                                .map { |x| FUNNY_NAMES[x] || x }
                                 .join(" | ")
                 }
               end
