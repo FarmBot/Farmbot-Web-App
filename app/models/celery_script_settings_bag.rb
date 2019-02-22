@@ -161,7 +161,7 @@ module CeleryScriptSettingsBag
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         # This would never have happened if we hadn't allowed
         #  heterogenus args :(
-        enumb(*x) unless node.is_a?(CeleryScript::AstNode)
+        manual_enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end
     },
     op: { defn: [e(:op)] },
@@ -190,40 +190,41 @@ module CeleryScriptSettingsBag
   }.map do |(name, conf)|
     blk  = conf[:blk]
     defn = conf.fetch(:defn)
-    if blk
-      Corpus.arg(name, defn, &blk)
-    else
-      Corpus.arg(name, defn)
-    end
+    blk ? Corpus.arg(name, defn, &blk) : Corpus.arg(name, defn)
   end
 
+  IDEA_BIN = [
+    :function,
+    :data,
+    :private,
+
+  ]
+
   CORPUS_NODES  = {
-    _if: {
-      args: [:lhs, :op, :rhs, :_then, :_else],
-      body: [:pair]
-    },
-    calibrate: { args: [:axis] },
-    change_ownership: { body: [:pair] },
-    channel: { args: [:channel_name] },
-    check_updates: { args: [:package] },
-    coordinate: { args: [:x, :y, :z] },
-    dump_info: {},
-    emergency_lock: {},
-    emergency_unlock: {},
-    every_point: { args: [:every_point_type] },
-    execute_script: { args: [:label], body: [:pair] },
-    execute: { args: [:sequence_id], body: [:parameter_application] },
-    explanation: { args: [:message] },
-    factory_reset: { args: [:package] },
-    find_home: { args: [:speed, :axis] },
-    home: { args: [:speed, :axis] },
-    identifier: { args: [:label] },
-    install_farmware: { args: [:url] },
-    install_first_party_farmware: {},
-    internal_entry_point: {},
-    internal_farm_event: { body: [:parameter_application] },
+    _if: { args: [:lhs, :op, :rhs, :_then, :_else], body: [:pair], tags: [:control_flow] },
+    calibrate: { args: [:axis], tags: [:function, :firmware_user] },
+    change_ownership: { body: [:pair], tags: [:function, :network_user, :disk_user, :cuts_power] },
+    channel: { args: [:channel_name], tags: [:data] },
+    check_updates: { args: [:package], tags: [:function, :network_user, :disk_user, :cuts_power] },
+    coordinate: { args: [:x, :y, :z], tags: [:data, :location_like] },
+    dump_info: { tags: [:function, :network_user, :disk_user]},
+    emergency_lock: {tags: [:function, :firmware_user, :control_flow]},
+    emergency_unlock: { tags: [:function, :firmware_user]},
+    every_point: { args: [:every_point_type], tags: [:data] },
+    execute_script: { args: [:label], body: [:pair], tags: [:function] },
+    execute: { args: [:sequence_id], body: [:parameter_application], tags: [:function] },
+    explanation: { args: [:message], tags: [:data] },
+    factory_reset: { args: [:package], tags: [:function] },
+    find_home: { args: [:speed, :axis], tags: [:function] },
+    home: { args: [:speed, :axis], tags: [:function] },
+    identifier: { args: [:label], tags: [:data] },
+    install_farmware: { args: [:url], tags: [:function] },
+    install_first_party_farmware: {tags: [:function]},
+    internal_entry_point: {tags: ["private"]},
+    internal_farm_event: { body: [:parameter_application], tags: ["private"] },
     internal_regimen: {
-      body: %i(parameter_application parameter_declaration variable_declaration)
+      body: %i(parameter_application parameter_declaration variable_declaration),
+      tags: ["private"]
     },
     move_relative: { args: [:x, :y, :z, :speed] },
     nothing: {},
@@ -271,15 +272,11 @@ module CeleryScriptSettingsBag
     },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode ],
-      blk: -> (n) do
-        no_rpi_analog(n)
-      end
+      blk: -> (n) { no_rpi_analog(n) }
     },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
-      blk: -> (n) do
-        no_rpi_analog(n)
-      end
+      blk: -> (n) { no_rpi_analog(n) }
     },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
@@ -289,7 +286,8 @@ module CeleryScriptSettingsBag
         check_resource_type(x, resource_type, resource_id)
       end
     },
-  }.map { |(name, list)| Corpus.node(name, **list) }
+  }
+  .map { |(name, list)| Corpus.node(name, **list) }
 
 
   ANY_ARG_NAME  = Corpus.as_json[:args].pluck("name").map(&:to_s)
@@ -315,7 +313,7 @@ module CeleryScriptSettingsBag
 
   # Given an array of allowed values and a CeleryScript AST node, will DETERMINE
   # if the node contains a legal value. Throws exception and invalidates if not.
-  def self.enumb(array, node, tpl)
+  def self.manual_enum(array, node, tpl)
     val = node.try(:value)
     unless array.include?(val)
       node.invalidate!(tpl % [val.to_s, array.inspect])

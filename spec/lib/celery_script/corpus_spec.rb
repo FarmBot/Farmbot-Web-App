@@ -252,4 +252,9 @@ describe CeleryScript::Corpus do
     value  = values.first
     expect(value.fetch("tags").first).to eq("great")
   end
+
+  it "deletes this test" do
+    expect(2 + 2).to eq(4)
+    binding.pry
+  end
 end
