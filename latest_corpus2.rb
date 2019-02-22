@@ -7,7 +7,8 @@ end
 VALUES          = HASH.fetch(:values)
 VALUE_PREFIX    = "CS"
 VALUES_TPL      = "export type %{name} = %{type};\n"
-VALUES_OVERRIDE = { float: "number", integer: "number" }
+VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
+                                                integer: "number")
 FUNNY_NAMES     = { "Example" => "CSExample" }
 
 def emit_values
@@ -17,7 +18,7 @@ def emit_values
     celerized              = VALUE_PREFIX + capitalized
     FUNNY_NAMES[capitalized] = celerized
     type = VALUES_OVERRIDE.fetch(real_name, real_name)
-    # binding.pry
+    binding.pry
     VALUES_TPL % { name: celerized, type: type }
   end
     .uniq
