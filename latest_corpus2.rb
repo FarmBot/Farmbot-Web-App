@@ -47,26 +47,33 @@ ARGS = HASH
 
 NODES = HASH.fetch(:nodes)
 
-NODE_START    = [ "/** %{docs} %{tag_docs} */",
+NODE_START    = [ "export type %{camel_case}BodyItem = %{body_types};",
+                  "/** %{docs} %{tag_docs} */",
                   "export interface %{camel_case} {",
                   '  kind: "%{snake_case}";',
                   "  args: {", ].join("\n")
 MIDDLE_CENTER =   "    %{arg_name}: %{arg_values};"
 BOTTOM_END    = [ "  }",
-                  "  body: (%{body_types})[] | undefined;",
+                  "  body?: %{camel_case}BodyItem[] | undefined;",
                   "}\n", ].join("\n")
 
 def emit_nodes()
   nodes = NODES.map do |node|
       tag_list    = node.fetch("tags").sort.uniq.join(", ")
       name        = name_of(node).to_s
-      body_types  = node.fetch("allowed_body_types")
+      bodies      = node
+        .fetch("allowed_body_types")
+        .sort
+        .uniq
+        .map(&:to_s)
+        .map(&:camelize)
+      bt = bodies.any? ? "(#{bodies.join(" | ")})" : "never"
       tpl_binding = {
-        body_types: body_types.sort.uniq.map(&:to_s).map(&:camelize).join(" | "),
+        body_types: bt,
         camel_case: name.camelize,
         docs:       node.fetch("docs"),
         snake_case: name,
-        tag_docs:   "Tagged with properties: #{tag_list}."
+        tag_docs:   "Tag properties: #{tag_list}."
       }
 
       one   = NODE_START % tpl_binding
@@ -86,7 +93,7 @@ def emit_nodes()
     end
     .compact
     .uniq
-    .join("\n\n")
+    .join("\n")
   puts nodes
 end
 
