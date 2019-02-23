@@ -52,7 +52,7 @@ const newVar = (label: string): VariableDeclaration => ({
   args: { label, data_value: NOTHING_SELECTED }
 });
 
-export function climb(t: Traversable | unknown, cb: TreeClimberCB) {
+function climb(t: Traversable | unknown, cb: TreeClimberCB) {
   const climbArgs = /** RECURSION ALERT! */
     (a: Args) => Object.keys(a).map(arg => climb(a[arg], cb));
   const climbBody = /** WEE OOO WEE OO */

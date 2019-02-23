@@ -11,7 +11,7 @@ import {
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import {
   sanitizeNodes
-} from "../../sequences/locals_list/variables_support";
+} from "../../sequences/locals_list/sanitize_nodes";
 import {
   formatPoint, NO_VALUE_SELECTED_DDI
 } from "../../sequences/locals_list/location_form_list";
@@ -20,7 +20,11 @@ describe("determineDropdown", () => {
   it("Returns a label for `parameter_declarations`", () => {
     const r = determineDropdown({
       kind: "parameter_declaration",
-      args: { label: "x", data_type: "tool" }
+      args: {
+        label: "x", default_value: {
+          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+        }
+      }
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("X");
     expect(r.value).toBe("?");
@@ -28,7 +32,7 @@ describe("determineDropdown", () => {
 
   it("Returns a label for `coordinate`", () => {
     const r = determineDropdown({
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: "x",
         data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2 } }
@@ -40,7 +44,7 @@ describe("determineDropdown", () => {
 
   it("Returns a label for `identifier`", () => {
     const r = determineDropdown({
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: "x",
         data_value: { kind: "identifier", args: { label: "parent1" } }
@@ -52,7 +56,7 @@ describe("determineDropdown", () => {
 
   it("Returns a label for `every_point`", () => {
     const r = determineDropdown({
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: "x",
         data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
@@ -65,7 +69,7 @@ describe("determineDropdown", () => {
   it("Returns a label for `point`", () => {
     const point = fakePoint();
     const r = determineDropdown({
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: "x",
         data_value: {
@@ -86,7 +90,7 @@ describe("determineVector()", () => {
   it("determines vector for point", () => {
     const point = fakePoint();
     const v = determineVector({
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: "x",
         data_value: {

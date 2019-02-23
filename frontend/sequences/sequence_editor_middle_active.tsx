@@ -14,9 +14,10 @@ import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
 import { LocalsList, localListCallback } from "./locals_list/locals_list";
 import { betterCompact } from "../util";
-import { AllowedDeclaration } from "./locals_list/locals_list_support";
+import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
+import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -98,8 +99,9 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   const { sequence, dispatch } = props;
   const sequenceAndDispatch = { sequence, dispatch };
   const variableData = props.resources.sequenceMetas[sequence.uuid] || {};
-  const declarations = betterCompact(Object.values(variableData))
-    .map(d => d.celeryNode);
+  const declarations = betterCompact(Object.values(variableData)
+    .map(v => v &&
+      isScopeDeclarationBodyItem(v.celeryNode) ? v.celeryNode : undefined));
   return <div className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch}
       syncStatus={props.syncStatus}
@@ -113,7 +115,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       onChange={localListCallback(props)(declarations)}
       locationDropdownKey={JSON.stringify(sequence)}
-      allowedDeclarations={AllowedDeclaration.parameter}
+      allowedVariableNodes={AllowedVariableNodes.parameter}
       shouldDisplay={props.shouldDisplay} />
   </div>;
 };

@@ -8,7 +8,7 @@ import {
 } from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
-  McuParams, Configuration, TaggedFirmwareConfig, VariableDeclaration
+  McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -137,13 +137,13 @@ export function sync(): Thunk {
 
 export function execSequence(
   sequenceId: number | undefined,
-  declarations?: VariableDeclaration[]
+  bodyVariables?: ParameterApplication[]
 ) {
   const noun = "Sequence execution";
   if (sequenceId) {
     commandOK(noun)();
-    return declarations
-      ? getDevice().execSequence(sequenceId, declarations).catch(commandErr(noun))
+    return bodyVariables
+      ? getDevice().execSequence(sequenceId, bodyVariables).catch(commandErr(noun))
       : getDevice().execSequence(sequenceId).catch(commandErr(noun));
   } else {
     throw new Error(t("Can't execute unsaved sequences"));
