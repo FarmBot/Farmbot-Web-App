@@ -84,9 +84,6 @@ module CeleryScriptSettingsBag
     integer: [Integer],
     string: [String],
   }.map { |(name, list)| Corpus.value(name, list) }
-  # :CeleryNode, NODES.map(&:name).map(&:camelize), false)
-  # :LegalArgString, HASH[:args].map{ |x| x[:name] }.sort.uniq)
-  # :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.uniq)
 
   CORPUS_ENUM = {
     ALLOWED_AXIS:          [ALLOWED_AXIS,             BAD_AXIS],
@@ -506,11 +503,12 @@ module CeleryScriptSettingsBag
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
 
-  ANY_ARG_NAME = Corpus.as_json[:args].pluck("name").map(&:to_s)
-  ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
-  # Corpus.enum(:CeleryNode)NODES.map(&:name).map(&:camelize), false
-  # Corpus.enum(:LegalArgString)HASH[:args].map{ |x| x[:name] }.sort.uniq
-  # Corpus.enum(:LegalKindString)HASH[:nodes].map{ |x| x[:name] }.sort.uniq
+  HASH          = Corpus.as_json
+  ANY_ARG_NAME  = HASH[:args].pluck("name").map(&:to_s)
+  ANY_NODE_NAME = HASH[:nodes].pluck("name").map(&:to_s)
+
+  Corpus.enum(:LegalArgString,  ANY_ARG_NAME,                  MISC_ENUM_ERR)
+  Corpus.enum(:LegalKindString, ANY_NODE_NAME.map(&:camelize), MISC_ENUM_ERR)
 
   def self.no_resource(node, klass, resource_id)
     node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
