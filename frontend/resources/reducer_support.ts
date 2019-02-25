@@ -13,7 +13,7 @@ import { TaggedResource, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import {
   sanitizeNodes
-} from "../sequences/locals_list/variables_support";
+} from "../sequences/locals_list/sanitize_nodes";
 import {
   selectAllFarmEvents,
   findByKindAndId,

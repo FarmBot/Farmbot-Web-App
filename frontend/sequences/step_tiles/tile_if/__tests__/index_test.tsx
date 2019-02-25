@@ -15,7 +15,7 @@ import {
 import {
   buildResourceIndex, FAKE_RESOURCES
 } from "../../../../__test_support__/resource_index_builder";
-import { Execute, If, TaggedSequence, VariableDeclaration } from "farmbot";
+import { Execute, If, TaggedSequence, ParameterApplication } from "farmbot";
 import { overwrite } from "../../../../api/crud";
 import {
   fakeSensor, fakePeripheral
@@ -146,9 +146,9 @@ describe("IfBlockDropDownHandler()", () => {
     expect(item).toEqual({ label: "None", value: "" });
   });
 
-  it("edits declarations", () => {
-    const declaration: VariableDeclaration = {
-      kind: "variable_declaration",
+  it("edits variables", () => {
+    const variables: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "label", data_value: {
           kind: "coordinate", args: { x: 0, y: 0, z: 0 }
@@ -158,7 +158,7 @@ describe("IfBlockDropDownHandler()", () => {
     const p = fakeThenElseProps("_then");
     const { assignVariable } =
       IfBlockDropDownHandler(p);
-    assignVariable([])(declaration);
-    expect(p.currentStep.args._then.body).toEqual([declaration]);
+    assignVariable([])(variables);
+    expect(p.currentStep.args._then.body).toEqual([variables]);
   });
 });

@@ -8,7 +8,7 @@ export const fakeVariableNameSet = (label = "parent"): VariableNameSet => {
   return {
     [label]: {
       celeryNode: {
-        kind: "variable_declaration",
+        kind: "parameter_application",
         args: { label, data_value }
       },
       dropdown: { label: "", value: "" },

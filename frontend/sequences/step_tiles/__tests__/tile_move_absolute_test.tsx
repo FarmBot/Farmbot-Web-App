@@ -5,7 +5,7 @@ import {
   fakeSequence, fakePoint, fakeTool
 } from "../../../__test_support__/fake_state/resources";
 import {
-  MoveAbsolute, SequenceBodyItem, Point, Coordinate, Tool, VariableDeclaration
+  MoveAbsolute, SequenceBodyItem, Point, Coordinate, Tool, ParameterApplication
 } from "farmbot/dist";
 import {
   buildResourceIndex
@@ -243,7 +243,7 @@ describe("<TileMoveAbsolute/>", () => {
         kind: "coordinate", args: { x: 0, y: 0, z: 0, }
       };
       tma.updateLocation({
-        kind: "variable_declaration",
+        kind: "parameter_application",
         args: { label: "", data_value: location }
       });
       expect(tma.updateArgs).toHaveBeenCalledWith({ location });
@@ -266,8 +266,8 @@ describe("<TileMoveAbsolute/>", () => {
             };
           }
         };
-        const variable: VariableDeclaration = {
-          kind: "variable_declaration",
+        const variable: ParameterApplication = {
+          kind: "parameter_application",
           args: { label: "", data_value: data_value() }
         };
         tma.updateLocation(variable);
@@ -279,7 +279,7 @@ describe("<TileMoveAbsolute/>", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
       const boom = () => block.updateLocation({
-        kind: "variable_declaration",
+        kind: "parameter_application",
         args: {
           label: "parent",
           data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
@@ -291,7 +291,7 @@ describe("<TileMoveAbsolute/>", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
       block.updateLocation({
-        kind: "variable_declaration",
+        kind: "parameter_application",
         args: {
           label: "parent", data_value: {
             kind: "identifier", args: { label: "parent" }

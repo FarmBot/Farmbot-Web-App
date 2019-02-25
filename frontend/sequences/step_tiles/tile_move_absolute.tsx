@@ -10,8 +10,7 @@ import {
   MoveAbsolute,
   TaggedTool,
   TaggedToolSlotPointer,
-  ScopeDeclarationBodyItem,
-  VariableDeclaration
+  ParameterApplication
 } from "farmbot";
 import { Row, Col, BlurableInput } from "../../ui/index";
 import {
@@ -38,7 +37,7 @@ import {
   determineDropdown, determineVector, findVariableByName
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
-import { AllowedDeclaration } from "../locals_list/locals_list_support";
+import { AllowedVariableNodes, VariableNode } from "../locals_list/locals_list_support";
 import { merge, some } from "lodash";
 
 /** Union of all types found in a move_abs "args" attribute. */
@@ -147,8 +146,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   }
 
   /** Handle changes to step.args.location. */
-  updateLocation = (declaration: VariableDeclaration) => {
-    const location = declaration.args.data_value;
+  updateLocation = (variable: ParameterApplication) => {
+    const location = variable.args.data_value;
     if (location.kind === "every_point") {
       throw new Error("Can't put `every_point` into `move_abs");
     } else {
@@ -157,10 +156,10 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   }
 
   /** Prepare step.args.location data for LocationForm. */
-  get celeryNode(): ScopeDeclarationBodyItem {
+  get celeryNode(): VariableNode {
     const { location } = this.args;
     return {
-      kind: "variable_declaration",
+      kind: "parameter_application",
       args: {
         label: location.kind === "identifier" ? location.args.label : "",
         data_value: location
@@ -182,7 +181,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       shouldDisplay={this.props.shouldDisplay || (() => false)}
       hideVariableLabel={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
-      allowedDeclarations={AllowedDeclaration.identifier}
+      allowedVariableNodes={AllowedVariableNodes.identifier}
       disallowGroups={true}
       width={3} />
 
