@@ -86,13 +86,13 @@ module CeleryScriptSettingsBag
 
   CORPUS_ENUM = {
     axis: [ALLOWED_AXIS, BAD_AXIS],
-    channel_name: [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
+    channel_names: [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
     every_point_type: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
     lhs: [ALLOWED_LHS_STRINGS, BAD_LHS],
-    message_type: [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
-    op: [ALLOWED_OPS, BAD_OP],
+    message_types: [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
+    ops: [ALLOWED_OPS, BAD_OP],
     package: [ALLOWED_PACKAGES, BAD_PACKAGE],
-    pin_mode: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
+    pin_modes: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
     pin_type: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
     pointer_type: [ALLOWED_POINTER_TYPE, BAD_POINTER_TYPE],
     resource_type: [ALLOWED_RESOURCE_TYPE, BAD_RESOURCE_TYPE],
@@ -211,13 +211,13 @@ module CeleryScriptSettingsBag
       end,
     },
     op: {
-      defn: [e(:op)],
+      defn: [e(:ops)],
     },
     channel_name: {
-      defn: [e(:channel_name)],
+      defn: [e(:channel_names)],
     },
     message_type: {
-      defn: [e(:message_type)],
+      defn: [e(:message_types)],
     },
     tool_id: {
       defn: [v(:integer)],
@@ -347,11 +347,11 @@ module CeleryScriptSettingsBag
     },
     internal_farm_event: {
       body: [:parameter_application],
-      tags: [:private],
+      tags: [],
     },
     internal_regimen: {
       body: %i(parameter_application parameter_declaration variable_declaration),
-      tags: [:private],
+      tags: [],
     },
     move_relative: {
       args: [:x, :y, :z, :speed],
