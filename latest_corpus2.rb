@@ -5,10 +5,49 @@ WARNING_HEADER = \
 // IT WILL BE OVERWRITTEN ON EVERY CELERYSCRIPT UPGRADE.
 
 """
-HASH           = Sequence::Corpus.as_json({})
-OUTPUT         = [WARNING_HEADER]
+HASH            = Sequence::Corpus.as_json({})
+OUTPUT          = [WARNING_HEADER]
+FILE_PATH       = "latest_corpus.ts"
+VALUES          = HASH.fetch(:values)
+VALUE_PREFIX    = "CS"
+VALUES_TPL      = "export type %{name} = %{type};\n"
+VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
+                                                integer: "number")
+# There are some rule exceptions when generating the Typescript corpus.
+FUNNY_NAMES     = { "Example" => "CSExample" }
+ENUMS           = HASH.fetch(:enums)
+ENUM_TPL        = "export type ALLOWED_%{name} = %{type};\n"
+ARGS = HASH
+  .fetch(:args)
+  .reduce(HashWithIndifferentAccess.new) do |acc, arg|
+    acc[arg.fetch("name").to_s] = arg
+    acc
+  end
+NODES         = HASH.fetch(:nodes)
+NODE_START    = [ "export type %{camel_case}BodyItem = %{body_types};",
+                  "/** %{docs} %{tag_docs} */",
+                  "export interface %{camel_case} {",
+                  '  kind: "%{snake_case}";',
+                  "  args: {", ].join("\n")
+MIDDLE_CENTER =   "    %{arg_name}: %{arg_values};"
+BOTTOM_END    = [ "  }",
+                  "  body?: %{camel_case}BodyItem[] | undefined;",
+                  "}\n", ].join("\n")
+CONSTANT_DECLR_HACK = {
+  LATEST_VERSION: Sequence::LATEST_VERSION,
+  DIGITAL:        CeleryScriptSettingsBag::DIGITAL,
+  ANALOG:         CeleryScriptSettingsBag::ANALOG,
+}
+CONSTANT_DECLR_HACK_TPL = "export const %{name} = %{value};\n"
 
-FILE_PATH = "latest_corpus.ts"
+def emit_constants()
+  CONSTANT_DECLR_HACK.map do |(name, value)|
+    konst = CONSTANT_DECLR_HACK_TPL % { name: name, value: value }
+    add_to_output(konst)
+    puts konst
+  end
+end
+
 def add_to_output(string)
   OUTPUT.push(string)
 end
@@ -21,15 +60,6 @@ end
 def name_of(thing)
   thing.fetch("name").to_s
 end
-
-VALUES          = HASH.fetch(:values)
-VALUE_PREFIX    = "CS"
-VALUES_TPL      = "export type %{name} = %{type};\n"
-VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
-                                                integer: "number")
-
-# There are some rule exceptions when generating the Typescript corpus.
-FUNNY_NAMES     = { "Example" => "CSExample" }
 
 def emit_values
   output = VALUES.map do |val|
@@ -44,8 +74,6 @@ def emit_values
     .sort
   add_to_output(output)
 end
-ENUMS = HASH.fetch(:enums)
-ENUM_TPL = "export type ALLOWED_%{name} = %{type};\n"
 
 def emit_enums
   output = ENUMS.map do |enum|
@@ -60,25 +88,6 @@ def emit_enums
 
   add_to_output(output)
 end
-
-ARGS = HASH
-  .fetch(:args)
-  .reduce(HashWithIndifferentAccess.new) do |acc, arg|
-    acc[name_of(arg)] = arg
-    acc
-  end
-
-NODES = HASH.fetch(:nodes)
-
-NODE_START    = [ "export type %{camel_case}BodyItem = %{body_types};",
-                  "/** %{docs} %{tag_docs} */",
-                  "export interface %{camel_case} {",
-                  '  kind: "%{snake_case}";',
-                  "  args: {", ].join("\n")
-MIDDLE_CENTER =   "    %{arg_name}: %{arg_values};"
-BOTTOM_END    = [ "  }",
-                  "  body?: %{camel_case}BodyItem[] | undefined;",
-                  "}\n", ].join("\n")
 
 def emit_nodes()
   nodes = NODES.map do |node|
@@ -123,11 +132,6 @@ def emit_nodes()
   add_to_output(nodes)
 end
 
-# def generate
-#   const     LATEST_VERSION:     Sequence::LATEST_VERSION
-#   const     DIGITAL:            CeleryScriptSettingsBag::DIGITAL
-#   const     ANALOG:             CeleryScriptSettingsBag::ANALOG
-
 #   enum_type :CeleryNode,        NODES.map(&:name).map(&:camelize), false
 #   enum_type :Color,             Sequence::COLORS
 #   enum_type :LegalArgString,    HASH[:args].map{ |x| x[:name] }.sort.uniq
@@ -138,8 +142,8 @@ end
 #   enum_type :AllowedPinTypes,   ALLOWED_PIN_TYPES
 #   enum_type :PlantStage,        PLANT_STAGES
 #   enum_type :AllowedGroupTypes, ALLOWED_EVERY_POINT_TYPE
-# end
 
+emit_constants()
 emit_values()
 emit_enums()
 emit_nodes()
