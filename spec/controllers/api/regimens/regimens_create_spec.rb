@@ -108,8 +108,10 @@ describe Api::RegimensController do
                   ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(422)
-      expect(json.fetch(:error))
-        .to include("but got nothing")
+      msg = json.fetch(:error)
+      expect(msg).to include("but got nothing")
+      # Make sure corpus entries are properly formatted.
+      expect(msg).to include('"coordinate",')
     end
   end
 end

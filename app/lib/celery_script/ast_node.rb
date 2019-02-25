@@ -92,7 +92,7 @@ module CeleryScript
           message = (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF) % {
             kind:        kind,
             parent_kind: parent.kind,
-            allowed:     allowed,
+            allowed:     allowed.map(&:name),
             actual:      actual
           }
 

@@ -68,6 +68,9 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expect(Sequence.last).to_not be
+      xpectd = "Expected leaf 'wait' within 'sequence' to be one of: "\
+               "[\"scope_declaration\"] but got wait"
+      expect(json.fetch(:body)).to eq(xpectd)
     end
 
     it 'strips excess `args`' do
@@ -114,6 +117,7 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
+      expect(json.fetch(:body)).to include('"tool"')
       expect(json[:body]).to include("Expected leaf 'wait' within "\
                                      "'parameter_declaration' to be one of: [")
     end
@@ -320,6 +324,7 @@ describe Api::SequencesController do
               }
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
+      expect(json.fetch(:body)).to include('"point"')
       expect(json[:body]).to include("but got sync")
     end
 
