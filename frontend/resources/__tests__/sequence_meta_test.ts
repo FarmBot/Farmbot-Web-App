@@ -76,7 +76,7 @@ describe("determineDropdown", () => {
           kind: "point",
           args: {
             pointer_id: point.body.id || -0,
-            pointer_type: "Point"
+            pointer_type: "GenericPointer"
           }
         }
       }

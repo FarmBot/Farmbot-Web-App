@@ -11,8 +11,7 @@ FILE_PATH       = "latest_corpus.ts"
 VALUES          = HASH.fetch(:values)
 VALUE_PREFIX    = "CS"
 VALUES_TPL      = "export type %{name} = %{type};\n"
-VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
-                                                integer: "number")
+VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number", integer: "number")
 # There are some rule exceptions when generating the Typescript corpus.
 FUNNY_NAMES     = { "Example" => "CSExample" }
 ENUMS           = HASH.fetch(:enums)
@@ -40,7 +39,7 @@ CONSTANT_DECLR_HACK = {
   ANALOG:         CeleryScriptSettingsBag::ANALOG,
 }
 CONSTANT_DECLR_HACK_TPL = "export const %{name} = %{value};\n"
-
+PUBLIC_NODES            = [] # Filled at runtime
 def emit_constants()
   CONSTANT_DECLR_HACK.map do |(name, value)|
     konst = CONSTANT_DECLR_HACK_TPL % { name: name, value: value }
@@ -102,6 +101,7 @@ def emit_nodes()
         .map(&:to_s)
         .map(&:camelize)
       bt = bodies.any? ? "(#{bodies.join(" | ")})" : "never"
+      PUBLIC_NODES.push(name.camelize)
       tpl_binding = {
         body_types: bt,
         camel_case: name.camelize,
@@ -130,8 +130,14 @@ def emit_nodes()
   add_to_output(nodes)
 end
 
+def emit_misc()
+  types = PUBLIC_NODES.sort.uniq.join(" | ")
+  tpl   = "export type CeleryNode = #{types};\n"
+  add_to_output(tpl)
+end
 emit_constants()
 emit_values()
 emit_enums()
 emit_nodes()
+emit_misc()
 save!
