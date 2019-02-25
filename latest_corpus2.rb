@@ -16,7 +16,7 @@ VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
 # There are some rule exceptions when generating the Typescript corpus.
 FUNNY_NAMES     = { "Example" => "CSExample" }
 ENUMS           = HASH.fetch(:enums)
-ENUM_TPL        = "export type ALLOWED_%{name} = %{type};\n"
+ENUM_TPL        = "export type %{name} = %{type};\n"
 ARGS = HASH
   .fetch(:args)
   .reduce(HashWithIndifferentAccess.new) do |acc, arg|
@@ -27,6 +27,7 @@ NODES         = HASH.fetch(:nodes)
 NODE_START    = [ "export type %{camel_case}BodyItem = %{body_types};",
                   "/** %{docs} %{tag_docs} */",
                   "export interface %{camel_case} {",
+                  "  comment?: string | undefined;",
                   '  kind: "%{snake_case}";',
                   "  args: {", ].join("\n")
 MIDDLE_CENTER =   "    %{arg_name}: %{arg_values};"
@@ -44,7 +45,6 @@ def emit_constants()
   CONSTANT_DECLR_HACK.map do |(name, value)|
     konst = CONSTANT_DECLR_HACK_TPL % { name: name, value: value }
     add_to_output(konst)
-    puts konst
   end
 end
 
@@ -77,10 +77,9 @@ end
 
 def emit_enums
   output = ENUMS.map do |enum|
-    name      = name_of(enum).upcase
-    celerized = "ALLOWED_%{name}" % {name: name}
-    FUNNY_NAMES[name_of(enum).camelize] = celerized
+    name = name_of(enum)
     type = enum.fetch("allowed_values").sort.map(&:inspect).uniq.join(" | ")
+    FUNNY_NAMES[name] = name
     ENUM_TPL % { name: name, type: type }
   end
   .uniq
@@ -118,8 +117,7 @@ def emit_nodes()
                   arg_values: ARGS.fetch(arg)
                                 .fetch("allowed_values")
                                 .map(&:name)
-                                .map(&:camelize)
-                                .map { |x| FUNNY_NAMES[x] || x }
+                                .map { |x| FUNNY_NAMES[x] || x.camelize }
                                 .join(" | ")
                 }
               end
@@ -131,17 +129,6 @@ def emit_nodes()
     .join("\n")
   add_to_output(nodes)
 end
-
-#   enum_type :CeleryNode,        NODES.map(&:name).map(&:camelize), false
-#   enum_type :Color,             Sequence::COLORS
-#   enum_type :LegalArgString,    HASH[:args].map{ |x| x[:name] }.sort.uniq
-#   enum_type :LegalKindString,   HASH[:nodes].map{ |x| x[:name] }.sort.uniq
-#   enum_type :LegalSequenceKind, ALLOWED_RPC_NODES.sort
-#   enum_type :DataChangeType,    ALLOWED_CHAGES
-#   enum_type :PointType,         ALLOWED_POINTER_TYPE
-#   enum_type :AllowedPinTypes,   ALLOWED_PIN_TYPES
-#   enum_type :PlantStage,        PLANT_STAGES
-#   enum_type :AllowedGroupTypes, ALLOWED_EVERY_POINT_TYPE
 
 emit_constants()
 emit_values()

@@ -74,6 +74,7 @@ module CeleryScriptSettingsBag
   PLANT_STAGES = %w(planned planted harvested sprouted)
   RESOURCE_UPDATE_ARGS = [:resource_type, :resource_id, :label, :value]
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
+  MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
 
   Corpus = CeleryScript::Corpus.new
 
@@ -83,22 +84,30 @@ module CeleryScriptSettingsBag
     integer: [Integer],
     string: [String],
   }.map { |(name, list)| Corpus.value(name, list) }
+  # :CeleryNode, NODES.map(&:name).map(&:camelize), false)
+  # :LegalArgString, HASH[:args].map{ |x| x[:name] }.sort.uniq)
+  # :LegalKindString, HASH[:nodes].map{ |x| x[:name] }.sort.uniq)
 
   CORPUS_ENUM = {
-    axis: [ALLOWED_AXIS, BAD_AXIS],
-    channel_names: [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
-    every_point_type: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
-    lhs: [ALLOWED_LHS_STRINGS, BAD_LHS],
-    message_types: [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
-    ops: [ALLOWED_OPS, BAD_OP],
-    package: [ALLOWED_PACKAGES, BAD_PACKAGE],
-    pin_modes: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
-    pin_type: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
-    pointer_type: [ALLOWED_POINTER_TYPE, BAD_POINTER_TYPE],
-    resource_type: [ALLOWED_RESOURCE_TYPE, BAD_RESOURCE_TYPE],
-  }.map { |(name, list)| Corpus.enum(name, *list) }
+    ALLOWED_AXIS:          [ALLOWED_AXIS,             BAD_AXIS],
+    ALLOWED_CHANNEL_NAMES: [ALLOWED_CHANNEL_NAMES,    BAD_CHANNEL_NAME],
+    ALLOWED_MESSAGE_TYPES: [ALLOWED_MESSAGE_TYPES,    BAD_MESSAGE_TYPE],
+    ALLOWED_OPS:           [ALLOWED_OPS,              BAD_OP],
+    ALLOWED_PACKAGES:      [ALLOWED_PACKAGES,         BAD_PACKAGE],
+    ALLOWED_PIN_MODES:     [ALLOWED_PIN_MODES,        BAD_ALLOWED_PIN_MODES],
+    AllowedGroupTypes:     [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
+    AllowedPinTypes:       [ALLOWED_PIN_TYPES,        BAD_PIN_TYPE],
+    Color:                 [Sequence::COLORS,         MISC_ENUM_ERR],
+    DataChangeType:        [ALLOWED_CHAGES,           MISC_ENUM_ERR],
+    LegalSequenceKind:     [ALLOWED_RPC_NODES.sort,   MISC_ENUM_ERR],
+    lhs:                   [ALLOWED_LHS_STRINGS,      BAD_LHS],
+    PlantStage:            [PLANT_STAGES,             MISC_ENUM_ERR],
+    PointType:             [ALLOWED_POINTER_TYPE,     BAD_POINTER_TYPE],
+    resource_type:         [ALLOWED_RESOURCE_TYPE,    BAD_RESOURCE_TYPE],
+  }.each { |(name, list)| Corpus.enum(name, *list) }
 
   def self.e(symbol)
+    raise "Missing symbol: #{symbol}" unless CORPUS_ENUM.key?(symbol)
     CeleryScript::Corpus::Enum.new(symbol)
   end
 
@@ -175,7 +184,7 @@ module CeleryScriptSettingsBag
       defn: [v(:integer), v(:float)],
     },
     pin_type: {
-      defn: [e(:pin_type)],
+      defn: [e(:AllowedPinTypes)],
     },
     pointer_id: {
       defn: [v(:integer)],
@@ -185,10 +194,10 @@ module CeleryScriptSettingsBag
       end,
     },
     pointer_type: {
-      defn: [e(:pointer_type)],
+      defn: [e(:PointType)],
     },
     pin_mode: {
-      defn: [e(:pin_mode)],
+      defn: [e(:ALLOWED_PIN_MODES)],
     },
     sequence_id: {
       defn: [v(:integer)],
@@ -211,13 +220,13 @@ module CeleryScriptSettingsBag
       end,
     },
     op: {
-      defn: [e(:ops)],
+      defn: [e(:ALLOWED_OPS)],
     },
     channel_name: {
-      defn: [e(:channel_names)],
+      defn: [e(:ALLOWED_CHANNEL_NAMES)],
     },
     message_type: {
-      defn: [e(:message_types)],
+      defn: [e(:ALLOWED_MESSAGE_TYPES)],
     },
     tool_id: {
       defn: [v(:integer)],
@@ -226,10 +235,10 @@ module CeleryScriptSettingsBag
       end,
     },
     package: {
-      defn: [e(:package)],
+      defn: [e(:ALLOWED_PACKAGES)],
     },
     axis: {
-      defn: [e(:axis)],
+      defn: [e(:ALLOWED_AXIS)],
     },
     message: {
       defn: [v(:string)],
@@ -247,7 +256,7 @@ module CeleryScriptSettingsBag
       defn: [e(:resource_type)],
     },
     every_point_type: {
-      defn: [e(:every_point_type)],
+      defn: [e(:PointType)],
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
@@ -499,6 +508,9 @@ module CeleryScriptSettingsBag
 
   ANY_ARG_NAME = Corpus.as_json[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = Corpus.as_json[:nodes].pluck("name").map(&:to_s)
+  # Corpus.enum(:CeleryNode)NODES.map(&:name).map(&:camelize), false
+  # Corpus.enum(:LegalArgString)HASH[:args].map{ |x| x[:name] }.sort.uniq
+  # Corpus.enum(:LegalKindString)HASH[:nodes].map{ |x| x[:name] }.sort.uniq
 
   def self.no_resource(node, klass, resource_id)
     node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
