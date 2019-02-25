@@ -1,4 +1,14 @@
-HASH = Sequence::Corpus.as_json({})
+HASH      = Sequence::Corpus.as_json({})
+OUTPUT    = []
+FILE_PATH = "latest_corpus.ts"
+def add_to_output(string)
+  OUTPUT.push(string)
+end
+
+def save!
+  File.open(FILE_PATH, "w") {  |f| f.write(OUTPUT.join("")) }
+  puts "Saved to #{FILE_PATH}"
+end
 
 def name_of(thing)
   thing.fetch("name").to_s
@@ -9,6 +19,8 @@ VALUE_PREFIX    = "CS"
 VALUES_TPL      = "export type %{name} = %{type};\n"
 VALUES_OVERRIDE = HashWithIndifferentAccess.new(float: "number",
                                                 integer: "number")
+
+# There are some rule exceptions when generating the Typescript corpus.
 FUNNY_NAMES     = { "Example" => "CSExample" }
 
 def emit_values
@@ -18,12 +30,11 @@ def emit_values
     celerized              = VALUE_PREFIX + capitalized
     FUNNY_NAMES[capitalized] = celerized
     type = VALUES_OVERRIDE.fetch(real_name, real_name)
-    binding.pry
     VALUES_TPL % { name: celerized, type: type }
   end
     .uniq
     .sort
-  puts(output)
+  add_to_output(output)
 end
 ENUMS = HASH.fetch(:enums)
 ENUM_TPL = "export type ALLOWED_%{name} = %{type};\n"
@@ -36,10 +47,10 @@ def emit_enums
     type = enum.fetch("allowed_values").sort.map(&:inspect).uniq.join(" | ")
     ENUM_TPL % { name: name, type: type }
   end
-    .uniq
-    .sort
+  .uniq
+  .sort
 
-  puts output
+  add_to_output(output)
 end
 
 ARGS = HASH
@@ -63,7 +74,10 @@ BOTTOM_END    = [ "  }",
 
 def emit_nodes()
   nodes = NODES.map do |node|
-      tag_list    = node.fetch("tags").sort.uniq.join(", ")
+      tags        = node.fetch("tags").sort.uniq
+      # Don't publish internal CeleryScript nodes:
+      next if tags.include?(:private)
+      tag_list    = tags.join(", ")
       name        = name_of(node).to_s
       bodies      = node
         .fetch("allowed_body_types")
@@ -98,9 +112,10 @@ def emit_nodes()
     .compact
     .uniq
     .join("\n")
-  puts nodes
+  add_to_output(nodes)
 end
 
 emit_values()
 emit_enums()
 emit_nodes()
+save!
