@@ -86,21 +86,21 @@ module CeleryScriptSettingsBag
   }.map { |(name, list)| Corpus.value(name, list) }
 
   CORPUS_ENUM = {
-    ALLOWED_AXIS:          [ALLOWED_AXIS,             BAD_AXIS],
-    ALLOWED_CHANNEL_NAMES: [ALLOWED_CHANNEL_NAMES,    BAD_CHANNEL_NAME],
-    ALLOWED_MESSAGE_TYPES: [ALLOWED_MESSAGE_TYPES,    BAD_MESSAGE_TYPE],
-    ALLOWED_OPS:           [ALLOWED_OPS,              BAD_OP],
-    ALLOWED_PACKAGES:      [ALLOWED_PACKAGES,         BAD_PACKAGE],
-    ALLOWED_PIN_MODES:     [ALLOWED_PIN_MODES,        BAD_ALLOWED_PIN_MODES],
-    AllowedGroupTypes:     [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
-    AllowedPinTypes:       [ALLOWED_PIN_TYPES,        BAD_PIN_TYPE],
-    Color:                 [Sequence::COLORS,         MISC_ENUM_ERR],
-    DataChangeType:        [ALLOWED_CHAGES,           MISC_ENUM_ERR],
-    LegalSequenceKind:     [ALLOWED_RPC_NODES.sort,   MISC_ENUM_ERR],
-    lhs:                   [ALLOWED_LHS_STRINGS,      BAD_LHS],
-    PlantStage:            [PLANT_STAGES,             MISC_ENUM_ERR],
-    PointType:             [ALLOWED_POINTER_TYPE,     BAD_POINTER_TYPE],
-    resource_type:         [ALLOWED_RESOURCE_TYPE,    BAD_RESOURCE_TYPE],
+    ALLOWED_AXIS: [ALLOWED_AXIS, BAD_AXIS],
+    ALLOWED_CHANNEL_NAMES: [ALLOWED_CHANNEL_NAMES, BAD_CHANNEL_NAME],
+    ALLOWED_MESSAGE_TYPES: [ALLOWED_MESSAGE_TYPES, BAD_MESSAGE_TYPE],
+    ALLOWED_OPS: [ALLOWED_OPS, BAD_OP],
+    ALLOWED_PACKAGES: [ALLOWED_PACKAGES, BAD_PACKAGE],
+    ALLOWED_PIN_MODES: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
+    AllowedGroupTypes: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
+    AllowedPinTypes: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
+    Color: [Sequence::COLORS, MISC_ENUM_ERR],
+    DataChangeType: [ALLOWED_CHAGES, MISC_ENUM_ERR],
+    LegalSequenceKind: [ALLOWED_RPC_NODES.sort, MISC_ENUM_ERR],
+    lhs: [ALLOWED_LHS_STRINGS, BAD_LHS],
+    PlantStage: [PLANT_STAGES, MISC_ENUM_ERR],
+    PointType: [ALLOWED_POINTER_TYPE, BAD_POINTER_TYPE],
+    resource_type: [ALLOWED_RESOURCE_TYPE, BAD_RESOURCE_TYPE],
   }.each { |(name, list)| Corpus.enum(name, *list) }
 
   def self.e(symbol)
@@ -232,7 +232,12 @@ module CeleryScriptSettingsBag
       end,
     },
     package: {
-      defn: [e(:ALLOWED_PACKAGES)],
+      defn: [v(:string)],
+      # `package` has an ambiguous intent depending on who is using the arg
+      # (FBOS vs. API). Corpus-native enums cannot be used for validation
+      # outside of the API. If `package` _was_ declared as a native enum (rather
+      # than a string), it would cause false type errors in FE/FBJS.
+      blk: -> (node) { manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE) },
     },
     axis: {
       defn: [e(:ALLOWED_AXIS)],
@@ -281,12 +286,13 @@ module CeleryScriptSettingsBag
     change_ownership: {
       body: [:pair],
       tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
-      docs: "Not a commonly used node. May be removed without notice."
+      blk: -> (node) { raise "Never." },
+      docs: "Not a commonly used node. May be removed without notice.",
     },
     channel: {
       args: [:channel_name],
       tags: [:data],
-      docs: "Specifies a communication path for log messages."
+      docs: "Specifies a communication path for log messages.",
     },
     check_updates: {
       args: [:package],
@@ -294,11 +300,11 @@ module CeleryScriptSettingsBag
     },
     coordinate: {
       args: [:x, :y, :z],
-      tags: [:data, :location_like]
+      tags: [:data, :location_like],
     },
     dump_info: {
       tags: [:function, :network_user, :disk_user, :api_writer],
-      docs: "Sends an info dump to server administrators for troubleshooting."
+      docs: "Sends an info dump to server administrators for troubleshooting.",
     },
     emergency_lock: {
       tags: [:function, :firmware_user, :control_flow],
@@ -309,7 +315,7 @@ module CeleryScriptSettingsBag
     every_point: {
       args: [:every_point_type],
       tags: [:data, :list_like, :control_flow],
-      docs: "Experimental node used for iteration."
+      docs: "Experimental node used for iteration.",
     },
     execute_script: {
       args: [:label],
@@ -503,11 +509,11 @@ module CeleryScriptSettingsBag
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
 
-  HASH          = Corpus.as_json
-  ANY_ARG_NAME  = HASH[:args].pluck("name").map(&:to_s)
+  HASH = Corpus.as_json
+  ANY_ARG_NAME = HASH[:args].pluck("name").map(&:to_s)
   ANY_NODE_NAME = HASH[:nodes].pluck("name").map(&:to_s)
 
-  Corpus.enum(:LegalArgString,  ANY_ARG_NAME,                  MISC_ENUM_ERR)
+  Corpus.enum(:LegalArgString, ANY_ARG_NAME, MISC_ENUM_ERR)
   Corpus.enum(:LegalKindString, ANY_NODE_NAME.map(&:camelize), MISC_ENUM_ERR)
 
   def self.no_resource(node, klass, resource_id)

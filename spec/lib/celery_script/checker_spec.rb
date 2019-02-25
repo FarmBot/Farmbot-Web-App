@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe CeleryScript::Checker do
   let(:device) { FactoryBot.create(:device) }
@@ -7,15 +7,15 @@ describe CeleryScript::Checker do
       kind: "sequence",
       args: {
         locals: Sequence::SCOPE_DECLARATION,
-        version: 0
+        version: 0,
       },
       comment: "Properly formatted, syntactically valid sequence.",
-      body: sequence_body_for(FakeSequence.create())
+      body: sequence_body_for(FakeSequence.create()),
     }.deep_symbolize_keys
   end
 
   let(:tree) do
-      CeleryScript::AstNode.new(hash)
+    CeleryScript::AstNode.new(hash)
   end
 
   let (:corpus) { Sequence::Corpus }
@@ -23,10 +23,10 @@ describe CeleryScript::Checker do
   let (:checker) { CeleryScript::Checker.new(tree, corpus, device) }
 
   it "runs through a syntactically valid program" do
-      outcome = checker.run!
-      expect(outcome).to be_kind_of(CeleryScript::AstNode)
-      expect(outcome.comment).to eq("Properly formatted, syntactically valid"\
-                                    " sequence.")
+    outcome = checker.run!
+    expect(outcome).to be_kind_of(CeleryScript::AstNode)
+    expect(outcome.comment).to eq("Properly formatted, syntactically valid" \
+                                  " sequence.")
   end
 
   it "handles missing args" do
@@ -51,16 +51,16 @@ describe CeleryScript::Checker do
   end
 
   it "returns an error rather than raising one via #run()" do
-      outcome = checker.run
-      expect(outcome).to be_kind_of(CeleryScript::AstNode)
-      checker.tree.body.first.args[:x] = "No longer valid"
-      expect(checker.run).to be_kind_of(CeleryScript::TypeCheckError)
+    outcome = checker.run
+    expect(outcome).to be_kind_of(CeleryScript::AstNode)
+    checker.tree.body.first.args[:x] = "No longer valid"
+    expect(checker.run).to be_kind_of(CeleryScript::TypeCheckError)
   end
 
-  it 'handles wrong leaf types' do
+  it "handles wrong leaf types" do
     hash[:body][0][:args][:location][:args][:x] = "supposed to be an Integer"
     result = checker.run
-    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to be "\
+    expect(result.message).to eq("Expected leaf 'x' within 'coordinate' to be " \
                                  "one of: [Integer, Float] but got String")
   end
 
@@ -76,10 +76,8 @@ describe CeleryScript::Checker do
       { kind: "execute", args: { sequence_id: 0 } },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
-    expect(chk.valid?)
-      .to be false
-    expect(chk.error.message)
-      .to eq("missing a sequence selection for `execute` block.")
+    expect(chk.valid?).to be false
+    expect(chk.error.message).to eq("missing a sequence selection for `execute` block.")
   end
 
   it "validates peripheral presence" do
@@ -91,13 +89,13 @@ describe CeleryScript::Checker do
             kind: "named_pin",
             args: {
               pin_type: "Peripheral",
-              pin_id: 0
-            }
+              pin_id: 0,
+            },
           },
           pin_mode: CeleryScriptSettingsBag::ANALOG,
-          label: "FOO"
-        }
-      }
+          label: "FOO",
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
@@ -109,14 +107,14 @@ describe CeleryScript::Checker do
       {
         kind: "read_pin",
         args: {
-          pin_mode:   0,
-          label:      "pin",
+          pin_mode: 0,
+          label: "pin",
           pin_number: {
             kind: "named_pin",
-            args: { pin_type: "Not correct", pin_id: 1 }
-          }
-        }
-      }
+            args: { pin_type: "Not correct", pin_id: 1 },
+          },
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
@@ -132,10 +130,10 @@ describe CeleryScript::Checker do
           label: "pin",
           pin_number: {
             kind: "named_pin",
-            args: { pin_type: "Peripheral", pin_id: 900 }
-          }
-        }
-      }
+            args: { pin_type: "Peripheral", pin_id: 900 },
+          },
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
@@ -151,10 +149,10 @@ describe CeleryScript::Checker do
           pin_mode: 0,
           pin_number: {
             kind: "named_pin",
-            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 }
-          }
-        }
-      }
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 },
+          },
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
@@ -169,16 +167,15 @@ describe CeleryScript::Checker do
           pin_mode: CeleryScriptSettingsBag::ANALOG,
           pin_number: {
             kind: "named_pin",
-            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 }
-          }
-        }
-      }
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 41 },
+          },
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include(CeleryScriptSettingsBag::CANT_ANALOG)
   end
-
 
   it 'gives human-friendly names to "BoxLed3", "BoxLed4"' do
     hash[:body] = [
@@ -189,31 +186,29 @@ describe CeleryScript::Checker do
           pin_mode: CeleryScriptSettingsBag::DIGITAL,
           pin_number: {
             kind: "named_pin",
-            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 0 }
-          }
-        }
-      }
+            args: { pin_type: ["BoxLed3", "BoxLed4"].sample, pin_id: 0 },
+          },
+        },
+      },
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
-    expected = \
+    expected =
       CeleryScriptSettingsBag::NO_PIN_ID % CeleryScriptSettingsBag::BoxLed.name
     expect(chk.error.message).to eq(expected)
   end
 
-
   it "catches bad `axis` nodes" do
-    t = \
-      CeleryScript::AstNode.new({kind: "home", args: { speed: 100, axis: "?" }})
-    chk         = CeleryScript::Checker.new(t, corpus, device)
+    t =
+      CeleryScript::AstNode.new({ kind: "home", args: { speed: 100, axis: "?" } })
+    chk = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid axis")
   end
 
   it "catches bad `package` nodes" do
-    t = \
-      CeleryScript::AstNode.new({ kind: "factory_reset", args: { package: "?" }})
-    chk         = CeleryScript::Checker.new(t, corpus, device)
+    t = CeleryScript::AstNode.new({ kind: "factory_reset", args: { package: "?" } })
+    chk = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid package")
   end
@@ -225,7 +220,7 @@ describe CeleryScript::Checker do
         version: 20180209,
         locals: {
           kind: "scope_declaration",
-          :args=>{},
+          :args => {},
           body: [
             {
               kind: "parameter_declaration",
@@ -233,11 +228,12 @@ describe CeleryScript::Checker do
                 label: "parent",
                 default_value: {
                   kind: "coordinate",
-                  args: { x: 0, y: 0, z: 0 } }
-              }
-            }
-          ]
-        }
+                  args: { x: 0, y: 0, z: 0 },
+                },
+              },
+            },
+          ],
+        },
       },
       body: [
         {
@@ -245,13 +241,13 @@ describe CeleryScript::Checker do
           args: {
             speed: 100,
             location: { kind: "identifier", args: { label: "parent" } },
-            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
-          }
-        }
-      ]
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+          },
+        },
+      ],
     }
     tree = CeleryScript::AstNode.new(ast)
-    chk  = CeleryScript::Checker.new(tree, corpus, device)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
   end
 
@@ -262,7 +258,7 @@ describe CeleryScript::Checker do
         version: 20180209,
         locals: {
           kind: "scope_declaration",
-          :args=>{},
+          :args => {},
           body: [
             {
               kind: "parameter_declaration",
@@ -270,12 +266,12 @@ describe CeleryScript::Checker do
                 label: "parent",
                 default_value: {
                   kind: "nothing",
-                  args: { }
-                }
-              }
-            }
-          ]
-        }
+                  args: {},
+                },
+              },
+            },
+          ],
+        },
       },
       body: [
         {
@@ -283,13 +279,13 @@ describe CeleryScript::Checker do
           args: {
             speed: 100,
             location: { kind: "identifier", args: { label: "parent" } },
-            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0} }
-          }
-        }
-      ]
+            offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+          },
+        },
+      ],
     }
     tree = CeleryScript::AstNode.new(ast)
-    chk  = CeleryScript::Checker.new(tree, corpus, device)
+    chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     message = "must provide a value for all parameters"
     expect(chk.error.message).to include(message)
