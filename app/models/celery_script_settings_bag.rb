@@ -286,7 +286,7 @@ module CeleryScriptSettingsBag
     change_ownership: {
       body: [:pair],
       tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
-      blk: -> (node) { raise "Never." },
+      blk: -> (node) { raise "Never." }, # Security critical.
       docs: "Not a commonly used node. May be removed without notice.",
     },
     channel: {
