@@ -22,6 +22,11 @@ describe CeleryScript::Checker do
 
   let (:checker) { CeleryScript::Checker.new(tree, corpus, device) }
 
+  it "disallows `change_ownership` on the server-side" do
+    hash[:body] = [ { kind: "change_ownership", args: { } } ]
+    expect { checker.run! }.to raise_error("Never.")
+  end
+
   it "runs through a syntactically valid program" do
     outcome = checker.run!
     expect(outcome).to be_kind_of(CeleryScript::AstNode)
