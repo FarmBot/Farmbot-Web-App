@@ -1,4 +1,4 @@
-import { ResourceUpdate, TaggedSequence } from "farmbot";
+import { ResourceUpdate, TaggedSequence, resource_type } from "farmbot";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
@@ -16,7 +16,7 @@ export function resourceUpdate(i: ResourceUpdateArgs): ResourceUpdate {
   return {
     kind: "resource_update",
     args: {
-      resource_type: "Other",
+      resource_type: "Other" as resource_type,
       resource_id: 1,
       label: "some_attr",
       value: "some_value",

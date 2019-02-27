@@ -5,7 +5,9 @@ import {
   SpecialStatus,
   TaggedSequence,
   TaggedPeripheral,
-  If
+  If,
+  NamedPin,
+  AllowedPinTypes,
 } from "farmbot";
 import {
   selectAllSequences,
@@ -16,6 +18,17 @@ import { PinGroupName } from "../../pin_and_peripheral_support";
 import { Actions } from "../../../../constants";
 import { get } from "lodash";
 import { displayLhs } from "../display_lhs";
+
+const ifStep: If = {
+  kind: "_if",
+  args: {
+    lhs: "pin0",
+    op: "is",
+    rhs: 0,
+    _then: { kind: "nothing", args: {} },
+    _else: { kind: "nothing", args: {} },
+  }
+};
 
 const seedSequence: TaggedSequence = {
   kind: "Sequence",
@@ -30,18 +43,7 @@ const seedSequence: TaggedSequence = {
       locals: { kind: "scope_declaration", args: {} },
       version: 9999
     },
-    body: [
-      {
-        kind: "_if",
-        args: {
-          lhs: "pin0",
-          op: "==",
-          rhs: 0,
-          _then: { kind: "nothing", args: {} },
-          _else: { kind: "nothing", args: {} },
-        }
-      }
-    ]
+    body: [ifStep]
   }
 };
 
@@ -129,15 +131,16 @@ describe("displayLhs", () => {
       throw new Error("Never");
     }
     const pin_id = p.body.id || NaN;
+    const namedPin: NamedPin = {
+      kind: "named_pin",
+      args: { pin_type: p.kind as AllowedPinTypes, pin_id }
+    };
     const result = displayLhs({
       currentStep: {
         kind: "_if",
         args: {
-          lhs: {
-            kind: "named_pin",
-            args: { pin_type: p.kind, pin_id }
-          },
-          op: "==",
+          lhs: namedPin,
+          op: "is",
           rhs: 0,
           _then: { kind: "nothing", args: {} },
           _else: { kind: "nothing", args: {} },

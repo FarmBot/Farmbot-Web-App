@@ -3,5 +3,5 @@ import { StepInputProps } from "../interfaces";
 
 export function InputUnknown({ field }: StepInputProps) {
   return <input type="text"
-    placeholder={`UNEXPECTED INPUT '${(field || "empty").toString}'`} />;
+    placeholder={`UNEXPECTED INPUT '${(field || "empty").toString()}'`} />;
 }

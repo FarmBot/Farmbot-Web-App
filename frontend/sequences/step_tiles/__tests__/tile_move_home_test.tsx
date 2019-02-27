@@ -1,16 +1,17 @@
 import * as React from "react";
-import { TileWait } from "../tile_wait";
+import { TileMoveHome } from "../tile_move_home";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
+import { Home } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
-describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
+describe("<TileMoveHome/>", () => {
+  const currentStep: Home = {
+    kind: "home",
     args: {
-      milliseconds: 100
+      axis: "all",
+      speed: 100,
     }
   };
 
@@ -24,13 +25,13 @@ describe("<TileWait/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileWait {...fakeProps()} />);
+    const block = mount(<TileMoveHome {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Wait");
-    expect(labels.at(0).text()).toEqual("Time in milliseconds");
-    expect(inputs.at(1).props().value).toEqual(100);
+    expect(inputs.length).toEqual(6);
+    expect(labels.length).toEqual(5);
+    expect(inputs.first().props().placeholder).toEqual("Move to Home");
+    expect(labels.at(0).text()).toContain("Home x");
+    expect(inputs.at(1).props().value).toEqual("x");
   });
 });

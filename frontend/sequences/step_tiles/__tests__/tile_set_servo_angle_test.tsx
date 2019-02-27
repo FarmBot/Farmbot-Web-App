@@ -1,16 +1,17 @@
 import * as React from "react";
-import { TileWait } from "../tile_wait";
+import { TileSetServoAngle } from "../tile_set_servo_angle";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
+import { SetServoAngle } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
-describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
+describe("<TileSetServoAngle/>", () => {
+  const currentStep: SetServoAngle = {
+    kind: "set_servo_angle",
     args: {
-      milliseconds: 100
+      pin_number: 4,
+      pin_value: 90,
     }
   };
 
@@ -24,13 +25,13 @@ describe("<TileWait/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileWait {...fakeProps()} />);
+    const block = mount(<TileSetServoAngle {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Wait");
-    expect(labels.at(0).text()).toEqual("Time in milliseconds");
-    expect(inputs.at(1).props().value).toEqual(100);
+    expect(inputs.length).toEqual(3);
+    expect(labels.length).toEqual(2);
+    expect(inputs.first().props().placeholder).toEqual("Set Servo Angle");
+    expect(labels.at(0).text()).toContain("Servo pin");
+    expect(inputs.at(1).props().value).toEqual(4);
   });
 });

@@ -12,6 +12,7 @@ import { resourceReady } from "../sync/actions";
 import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
+import { MessageType } from "../sequences/interfaces";
 export function fakeDevice(): TaggedDevice {
   return {
     "kind": "Device",
@@ -313,7 +314,7 @@ const log: TaggedLog = {
   body: {
     id: 1091396, created_at: 1510010193,
     message: "Farmbot Movement complete.",
-    type: "success",
+    type: MessageType.success,
     channels: []
   },
   uuid: "Log.1091396.70"

@@ -12,6 +12,7 @@ import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { LogsProps } from "../interfaces";
+import { MessageType } from "../../sequences/interfaces";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -19,7 +20,7 @@ describe("<Logs />", () => {
     log1.body.message = "Fake log message 1";
     const log2 = fakeLog();
     log2.body.message = "Fake log message 2";
-    log2.body.type = "success";
+    log2.body.type = MessageType.success;
     return [log1, log2];
   }
 
@@ -65,7 +66,7 @@ describe("<Logs />", () => {
     p.logs[0].body.verbosity = 0;
     const notShownMessage = "This log should not be shown.";
     p.logs[0].body.message = notShownMessage;
-    p.logs[0].body.type = "info";
+    p.logs[0].body.type = MessageType.info;
     const wrapper = mount(<Logs {...p} />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain(notShownMessage);
@@ -111,9 +112,9 @@ describe("<Logs />", () => {
     mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     expect(wrapper.instance().state.warn).toEqual(3);
-    wrapper.instance().toggle("warn")();
+    wrapper.instance().toggle(MessageType.warn)();
     expect(wrapper.instance().state.warn).toEqual(0);
-    wrapper.instance().toggle("warn")();
+    wrapper.instance().toggle(MessageType.warn)();
     expect(wrapper.instance().state.warn).toEqual(1);
   });
 
@@ -121,7 +122,7 @@ describe("<Logs />", () => {
     mockStorj[NumericSetting.warn_log] = 3;
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
     expect(wrapper.instance().state.warn).toEqual(3);
-    wrapper.instance().setFilterLevel("warn")(2);
+    wrapper.instance().setFilterLevel(MessageType.warn)(2);
     expect(wrapper.instance().state.warn).toEqual(2);
   });
 });

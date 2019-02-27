@@ -1,29 +1,30 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); })
-};
-
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
-import { bot } from "../../../../__test_support__/fake_state/bot";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
+import { edit, save } from "../../../../api/crud";
 
 describe("<BoardType/>", () => {
-  const fakeProps = (): BoardTypeProps => {
-    return {
-      firmwareVersion: "",
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      },
-      shouldDisplay: () => false,
-    };
-  };
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
+  const fakeProps = (): BoardTypeProps => ({
+    firmwareVersion: "",
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: true, consistent: true }),
+    shouldDisplay: () => false,
+  });
 
   it("Farmduino", () => {
     const p = fakeProps();
@@ -82,8 +83,8 @@ describe("<BoardType/>", () => {
     const wrapper = shallow(<BoardType {...p} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
-    expect(mockDevice.updateConfig)
-      .toBeCalledWith({ firmware_hardware: "farmduino" });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { firmware_hardware: "farmduino" });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("displays standard boards", () => {

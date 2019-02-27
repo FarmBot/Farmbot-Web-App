@@ -213,7 +213,7 @@ describe("<TileMoveAbsolute/>", () => {
     pointResource.body.x = 987;
     const celeryPoint: Point = {
       kind: "point",
-      args: { pointer_type: "Point", pointer_id: pointResource.body.id || 0 }
+      args: { pointer_type: "GenericPointer", pointer_id: pointResource.body.id || 0 }
     };
     p.currentStep.args.location = celeryPoint;
     p.currentSequence.body.body = [p.currentStep];
@@ -260,7 +260,7 @@ describe("<TileMoveAbsolute/>", () => {
             };
             default: return {
               kind: "point", args: {
-                pointer_type: selection.kind,
+                pointer_type: selection.body.pointer_type,
                 pointer_id: selection.body.id || 0
               }
             };

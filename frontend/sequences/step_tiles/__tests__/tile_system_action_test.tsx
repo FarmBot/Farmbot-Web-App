@@ -1,17 +1,15 @@
 import * as React from "react";
-import { TileWait } from "../tile_wait";
+import { TileSystemAction } from "../tile_system_action";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
+import { Sync } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
-describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
-    args: {
-      milliseconds: 100
-    }
+describe("<TileSystemAction/>", () => {
+  const currentStep: Sync = {
+    kind: "sync",
+    args: {}
   };
 
   const fakeProps = (): StepParams => ({
@@ -24,13 +22,11 @@ describe("<TileWait/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileWait {...fakeProps()} />);
+    const block = mount(<TileSystemAction {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Wait");
-    expect(labels.at(0).text()).toEqual("Time in milliseconds");
-    expect(inputs.at(1).props().value).toEqual(100);
+    expect(inputs.length).toEqual(1);
+    expect(labels.length).toEqual(0);
+    expect(inputs.first().props().placeholder).toEqual("Sync");
   });
 });

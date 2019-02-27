@@ -12,6 +12,7 @@ import {
   EveryPoint,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
+  PointType,
 } from "farmbot";
 import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
 import { betterCompact } from "../../util";
@@ -83,7 +84,7 @@ const everyPointVar = (value: string | number) =>
   ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "every_point",
-      args: { every_point_type: "" + value }
+      args: { every_point_type: "" + value as PointType }
     });
 
 const manualEntry =

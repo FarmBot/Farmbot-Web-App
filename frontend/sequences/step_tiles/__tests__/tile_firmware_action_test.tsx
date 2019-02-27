@@ -1,16 +1,16 @@
 import * as React from "react";
-import { TileWait } from "../tile_wait";
+import { TileFirmwareAction } from "../tile_firmware_action";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
+import { Reboot } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
-describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
+describe("<TileFirmwareAction/>", () => {
+  const currentStep: Reboot = {
+    kind: "reboot",
     args: {
-      milliseconds: 100
+      package: "farmbot_os"
     }
   };
 
@@ -24,13 +24,13 @@ describe("<TileWait/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileWait {...fakeProps()} />);
+    const block = mount(<TileFirmwareAction {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Wait");
-    expect(labels.at(0).text()).toEqual("Time in milliseconds");
-    expect(inputs.at(1).props().value).toEqual(100);
+    expect(inputs.first().props().placeholder).toEqual("Reboot");
+    expect(labels.at(0).text()).toContain("System");
+    expect(inputs.at(1).props().value).toEqual("farmbot_os");
   });
 });

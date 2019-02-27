@@ -170,7 +170,7 @@ export const dropDown2CeleryArg =
       if (Object.values(BoxLed).includes(item.value)) {
         return {
           kind: "named_pin",
-          args: { pin_type: item.value, pin_id: -1 }
+          args: { pin_type: item.value as AllowedPinTypes, pin_id: -1 }
         };
       }
       const uuid: string = item.value;
@@ -178,7 +178,7 @@ export const dropDown2CeleryArg =
       if (r) {
         return {
           kind: "named_pin",
-          args: { pin_type: r.kind, pin_id: r.body.id || -99 }
+          args: { pin_type: r.kind as AllowedPinTypes, pin_id: r.body.id || -99 }
         };
       } else {
         return bail("Bad uuid in celery arg: " + uuid);

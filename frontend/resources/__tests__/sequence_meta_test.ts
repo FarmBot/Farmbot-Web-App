@@ -15,6 +15,7 @@ import {
 import {
   formatPoint, NO_VALUE_SELECTED_DDI
 } from "../../sequences/locals_list/location_form_list";
+import { Point } from "farmbot";
 
 describe("determineDropdown", () => {
   it("Returns a label for `parameter_declarations`", () => {
@@ -68,18 +69,16 @@ describe("determineDropdown", () => {
 
   it("Returns a label for `point`", () => {
     const point = fakePoint();
+    const pointNode: Point = {
+      kind: "point",
+      args: {
+        pointer_id: point.body.id || -0,
+        pointer_type: "GenericPointer"
+      }
+    };
     const r = determineDropdown({
       kind: "parameter_application",
-      args: {
-        label: "x",
-        data_value: {
-          kind: "point",
-          args: {
-            pointer_id: point.body.id || -0,
-            pointer_type: "GenericPointer"
-          }
-        }
-      }
+      args: { label: "x", data_value: pointNode }
     }, buildResourceIndex([point]).index);
     expect(r.label).toBe(formatPoint(point).label);
     expect(r.value).toBe("" + point.body.id);
@@ -89,18 +88,16 @@ describe("determineDropdown", () => {
 describe("determineVector()", () => {
   it("determines vector for point", () => {
     const point = fakePoint();
+    const pointNode: Point = {
+      kind: "point",
+      args: {
+        pointer_id: point.body.id || -0,
+        pointer_type: "GenericPointer"
+      }
+    };
     const v = determineVector({
       kind: "parameter_application",
-      args: {
-        label: "x",
-        data_value: {
-          kind: "point",
-          args: {
-            pointer_id: point.body.id || -0,
-            pointer_type: "Point"
-          }
-        }
-      }
+      args: { label: "x", data_value: pointNode }
     }, buildResourceIndex([point]).index);
     const { x, y, z } = point.body;
     expect(v).toEqual(expect.objectContaining({ x, y, z }));

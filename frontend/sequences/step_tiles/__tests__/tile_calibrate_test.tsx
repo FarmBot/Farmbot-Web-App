@@ -1,16 +1,16 @@
 import * as React from "react";
-import { TileWait } from "../tile_wait";
+import { TileCalibrate } from "../tile_calibrate";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
+import { Calibrate } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { StepParams } from "../../interfaces";
 
-describe("<TileWait/>", () => {
-  const currentStep: Wait = {
-    kind: "wait",
+describe("<TileCalibrate/>", () => {
+  const currentStep: Calibrate = {
+    kind: "calibrate",
     args: {
-      milliseconds: 100
+      axis: "all"
     }
   };
 
@@ -24,13 +24,13 @@ describe("<TileWait/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileWait {...fakeProps()} />);
+    const block = mount(<TileCalibrate {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Wait");
-    expect(labels.at(0).text()).toEqual("Time in milliseconds");
-    expect(inputs.at(1).props().value).toEqual(100);
+    expect(inputs.length).toEqual(5);
+    expect(labels.length).toEqual(4);
+    expect(inputs.first().props().placeholder).toEqual("Calibrate");
+    expect(labels.at(0).text()).toContain("Calibrate x");
+    expect(inputs.at(1).props().value).toEqual("x");
   });
 });
