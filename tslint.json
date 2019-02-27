@@ -81,5 +81,11 @@
       "check-separator",
       "check-type"
     ]
+  },
+  "linterOptions": {
+    "exclude": [
+      "./coverage*/**",
+      "./**/__test_support__/*.js"
+    ]
   }
 }
