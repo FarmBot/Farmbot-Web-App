@@ -1,6 +1,7 @@
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 THRESHOLD      = 0.001
 REPO_URL       = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
+LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR   = ".fraction"
@@ -29,19 +30,40 @@ def get_current_branch(pull_data)
   pull_data.dig("base", "ref") || CURRENT_BRANCH
 end
 
-# Assemble the coverage data URL using the provided branch.
-def coverage_url(branch)
-  commit = open_json("#{REPO_URL}/git/refs/heads/#{branch}").dig("object", "sha")
-  return "https://coveralls.io/builds/#{commit}.json"
+# Fetch a page of build coverage report results.
+def fetch_builds_for_page(page_number)
+  open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"]
 end
 
-# Fetch relevant remote coverage data.
-def fetch_build_data(url)
-  build_data = open_json(url)
-  return {
-    branch: build_data["branch"],
-    commit: build_data["commit_sha"],
-    percent: build_data["covered_percent"]}
+# Fetch coverage data from the last 10 builds.
+def fetch_build_data()
+  build_data = fetch_builds_for_page(1)
+  build_data.push(*fetch_builds_for_page(2))
+  clean_build_data = build_data
+    .reject{ |build| build["covered_percent"].nil? }
+    .reject{ |build| build["branch"].include? "/" }
+  puts "Using data from #{clean_build_data.length} recent coverage builds."
+  clean_build_data.map{ |build| {
+    branch: build["branch"],
+    commit: build["commit_sha"],
+    percent: build["covered_percent"]}}
+end
+
+# Print history and return the most recent match for the provided branch.
+def latest_build_data(build_history, branch)
+  if branch == "*"
+    branch_builds = build_history
+  else
+    branch_builds = build_history.select{ |build| build[:branch] == branch }
+  end
+  if branch_builds.length > 0
+    puts "Coverage history (newest to oldest):"
+    branch_builds.map{ |build|
+      puts "#{build[:branch]}: #{build[:percent].round(3)}%"}
+      branch_builds[0]
+  else
+    {branch: branch, commit: nil, percent: nil}
+  end
 end
 
 # <commit hash> on <username>:<branch>
@@ -89,33 +111,28 @@ namespace :coverage do
     puts "Aggregate:  #{build_percent.round(4)}%"
     puts
 
-    # Attempt to fetch remote build coverage data for the current branch.
+    # Fetch remote build coverage data for the current branch.
     pull_request_data = fetch_pull_data()
-    current_branch = get_current_branch(pull_request_data)
-    remote = fetch_build_data(coverage_url(current_branch))
+    coverage_history_data = fetch_build_data()
 
-    if remote[:percent].nil? && CURRENT_COMMIT == remote[:commit]
-      puts "Coverage already calculated for #{remote[:branch]}."
-      puts "Using this build's data instead."
-      remote[:percent] = build_percent
-    end
+    # Use fetched data.
+    current_branch = get_current_branch(pull_request_data)
+    remote = latest_build_data(coverage_history_data, current_branch)
 
     if remote[:percent].nil? && current_branch != "staging"
       puts "Error getting coveralls data for #{current_branch}."
       puts "Attempting to use staging build coveralls data."
-      remote = fetch_build_data(coverage_url("staging"))
+      remote = latest_build_data(coverage_history_data, "staging")
     end
 
     if remote[:percent].nil?
       puts "Error getting coveralls data for staging."
       puts "Attempting to use latest build coveralls data."
-      latest_cov_url = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
-      remote = fetch_build_data(latest_cov_url)
+      remote = latest_build_data(coverage_history_data, "*")
     end
 
     if remote[:percent].nil?
       puts "Error getting coveralls data."
-      puts "Wait for build to finish and try again or check for build errors."
       puts "Using 100 instead of nil for remote coverage value."
       remote = {branch: "N/A", commit: "", percent: 100}
     end
