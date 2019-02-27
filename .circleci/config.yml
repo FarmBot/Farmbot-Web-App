@@ -37,7 +37,7 @@ jobs:
           name: Run JS tests
           command: |
             sudo docker-compose run parcel npm run test-slow
-            export COVERAGE_AVAILABLE=true
+            echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
       - run:
           name: Check Coveralls coverage on staging
           command: |
