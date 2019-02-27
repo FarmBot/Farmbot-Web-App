@@ -37,8 +37,16 @@ jobs:
           name: Run JS tests
           command: |
             sudo docker-compose run parcel npm run test-slow
-            sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG parcel npm run coverage
+            export COVERAGE_AVAILABLE=true
       - run:
           name: Check Coveralls coverage on staging
           command: |
             sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" web rake coverage:run
+      - run:
+          name: Report coverage to Coveralls
+          command: |
+            if [ "$COVERAGE_AVAILABLE" ]
+            then
+              sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG parcel npm run coverage
+            fi
+          when: always # change to `on_success` for a stricter comparison
