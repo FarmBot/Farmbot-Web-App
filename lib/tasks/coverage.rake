@@ -30,6 +30,24 @@ def get_current_branch(pull_data)
   pull_data.dig("base", "ref") || CURRENT_BRANCH
 end
 
+# Gather relevant coverage data.
+def relevant_data(build)
+  { branch: build["branch"],
+    commit: build["commit_sha"],
+    percent: build["covered_percent"]}
+end
+
+# Fetch relevant remote coverage data for the latest commit on a branch.
+def fetch_latest_branch_build(branch)
+  github_data = open_json("#{REPO_URL}/git/refs/heads/#{branch}")
+  if github_data.is_a? Array
+    github_data = {} # Didn't match a branch
+  end
+  commit = github_data.dig("object", "sha")
+  build_data = open_json("https://coveralls.io/builds/#{commit}.json")
+  return relevant_data(build_data)
+end
+
 # Fetch a page of build coverage report results.
 def fetch_builds_for_page(page_number)
   open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"]
@@ -43,10 +61,7 @@ def fetch_build_data()
     .reject{ |build| build["covered_percent"].nil? }
     .reject{ |build| build["branch"].include? "/" }
   puts "Using data from #{clean_build_data.length} recent coverage builds."
-  clean_build_data.map{ |build| {
-    branch: build["branch"],
-    commit: build["commit_sha"],
-    percent: build["covered_percent"]}}
+  clean_build_data.map{ |build| relevant_data(build)}
 end
 
 # Print history and return the most recent match for the provided branch.
@@ -118,6 +133,12 @@ namespace :coverage do
     # Use fetched data.
     current_branch = get_current_branch(pull_request_data)
     remote = latest_build_data(coverage_history_data, current_branch)
+
+    if remote[:percent].nil?
+      puts "Coveralls data for #{current_branch} not found within history."
+      puts "Attempting to get build coveralls data for latest commit."
+      remote = fetch_latest_branch_build(current_branch)
+    end
 
     if remote[:percent].nil? && current_branch != "staging"
       puts "Error getting coveralls data for #{current_branch}."
