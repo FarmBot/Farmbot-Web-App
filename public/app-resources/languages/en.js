@@ -1,3 +1,0 @@
-module.exports = {
-    // Nothing to do here...
-}
