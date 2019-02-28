@@ -2,76 +2,31 @@ import * as React from "react";
 import { t } from "i18next";
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
-import {
-  Tool,
-  Coordinate,
-  Point,
-  Identifier,
-  MoveAbsolute,
-  TaggedTool,
-  TaggedToolSlotPointer,
-  ParameterApplication
-} from "farmbot";
-import { Row, Col, BlurableInput } from "../../ui/index";
-import {
-  isTaggedSequence,
-} from "../../resources/tagged_resources";
-import {
-  findToolById,
-  findSlotByToolId,
-  findPointerByTypeAndId
-} from "../../resources/selectors";
+import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
+import { Row, Col, BlurableInput } from "../../ui";
+import { isTaggedSequence } from "../../resources/tagged_resources";
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { ToolTips } from "../../constants";
-import {
-  StepWrapper,
-  StepHeader,
-  StepContent,
-  StepWarning,
-  conflictsString
-} from "../step_ui/index";
+import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  determineDropdown, determineVector, findVariableByName
+  determineDropdown, determineVector
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
-import { AllowedVariableNodes, VariableNode } from "../locals_list/locals_list_support";
-import { merge, some } from "lodash";
-
-/** Union of all types found in a move_abs "args" attribute. */
-export type LocationData = MoveAbsolute["args"]["location"];
-
-interface Args {
-  location: Tool | Coordinate | Point | Identifier;
-  speed: number;
-  offset: Coordinate;
-}
-type LocationArg = "location" | "offset";
+import {
+  VariableNode, AllowedVariableNodes
+} from "../locals_list/locals_list_support";
+import { merge } from "lodash";
+import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
-  get resources() { return this.props.resources; }
-  get step() { return this.props.currentStep; }
-  get tool(): TaggedTool | undefined {
-    const l = this.args.location;
-    if (l && l.kind === "tool" && l.args.tool_id) {
-      return findToolById(this.resources, l.args.tool_id);
-    }
-  }
-  get tool_id() { return this.tool && this.tool.body.id; }
-  get slot(): TaggedToolSlotPointer | undefined {
-    return this.tool_id ?
-      findSlotByToolId(this.resources, this.tool_id) : undefined;
-  }
-  get args(): MoveAbsolute["args"] { return (this.step as MoveAbsolute).args; }
-
-  getOffsetValue = (val: Xyz) => {
-    return (this.args.offset.args[val] || 0).toString();
-  }
+  get step() { return this.props.currentStep as MoveAbsolute; }
+  get args() { return this.step.args; }
 
   /** Merge step args update into step args. */
-  updateArgs = (update: Partial<Args>) => {
+  updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
     const copy = defensiveClone(this.props.currentSequence).body;
     const step = (copy.body || [])[this.props.index] as MoveAbsolute;
     delete step.args.location.args;
@@ -79,71 +34,13 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     this.props.dispatch(overwrite(this.props.currentSequence, copy));
   }
 
-  /** Get axis value for settingConflicts. */
-  getAxisValue = (axis: Xyz): string => {
-    let number: number | undefined;
-    const l = this.args.location;
-    switch (l.kind) {
-      case "coordinate":
-        number = l.args[axis];
-        break;
-      case "tool":
-        number = (this.slot) ? this.slot.body[axis] : undefined;
-        break;
-      case "point":
-        const { pointer_id } = l.args;
-        number = findPointerByTypeAndId(this.resources, "Point", pointer_id)
-          .body[axis];
-        break;
-      case "identifier":
-        const { resources, currentSequence } = this.props;
-        const v =
-          findVariableByName(resources, currentSequence.uuid, l.args.label);
-        if (v && v.vector) {
-          number = v.vector[axis];
-          break;
-        }
-    }
-    return (number || 0).toString();
-  }
-
   /** Update offset value. */
-  updateInputValue = (axis: Xyz, place: LocationArg) =>
+  updateInputValue = (axis: Xyz, place: "location" | "offset") =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       const num = parseFloat(e.currentTarget.value);
       const update = { [place]: { args: { [axis]: num } } };
       this.updateArgs(merge({}, this.args, update));
     }
-
-  /** Determine if location conflicts with bot settings. */
-  get settingConflicts(): Record<Xyz, boolean> {
-    const conflicts = { x: false, y: false, z: false };
-    if (this.props.hardwareFlags) {
-      const {
-        stopAtHome, stopAtMax, negativeOnly, axisLength
-      } = this.props.hardwareFlags;
-      const axes: Xyz[] = ["x", "y", "z"];
-      axes.map((axis: Xyz) => {
-        const coord = parseFloat(this.getAxisValue(axis));
-        const offset = parseFloat(this.getOffsetValue(axis));
-        const sum = coord + offset;
-        if (stopAtHome[axis]) {
-          conflicts[axis] = negativeOnly[axis] ? sum > 0 : sum < 0;
-        }
-        if (stopAtMax[axis] && axisLength[axis] !== 0) {
-          conflicts[axis] = conflicts[axis] || (negativeOnly[axis]
-            ? sum < -axisLength[axis]
-            : sum > axisLength[axis]);
-        }
-      });
-    }
-    return conflicts;
-  }
-
-  get settingConflictWarning() {
-    return t("Movement out of bounds for: ")
-      + conflictsString(this.settingConflicts);
-  }
 
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
@@ -167,16 +64,20 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     };
   }
 
+  get vector(): Vector3 | undefined {
+    const sequenceUuid = this.props.currentSequence.uuid;
+    return determineVector(this.celeryNode, this.props.resources, sequenceUuid);
+  }
+
   LocationForm = () =>
     <LocationForm
       variable={{
         celeryNode: this.celeryNode,
-        dropdown: determineDropdown(this.celeryNode, this.resources),
-        vector: determineVector(
-          this.celeryNode, this.resources, this.props.currentSequence.uuid),
+        dropdown: determineDropdown(this.celeryNode, this.props.resources),
+        vector: this.vector,
       }}
       sequenceUuid={this.props.currentSequence.uuid}
-      resources={this.resources}
+      resources={this.props.resources}
       onChange={this.updateLocation}
       shouldDisplay={this.props.shouldDisplay || (() => false)}
       hideVariableLabel={true}
@@ -208,7 +109,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
           <BlurableInput type="number"
             onCommit={this.updateInputValue(axis, "offset")}
             name={`offset-${axis}`}
-            value={this.getOffsetValue(axis)} />
+            value={(this.args.offset.args[axis] || 0).toString()} />
         </Col>)}
       <this.SpeedForm />
     </Row>
@@ -229,10 +130,10 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         dispatch={dispatch}
         index={index}
         confirmStepDeletion={this.props.confirmStepDeletion}>
-        {some(this.settingConflicts) &&
-          <StepWarning
-            warning={this.settingConflictWarning}
-            conflicts={this.settingConflicts} />}
+        <MoveAbsoluteWarning
+          vector={this.vector}
+          offset={this.args.offset.args}
+          hardwareFlags={this.props.hardwareFlags} />
       </StepHeader>
       <StepContent className={className}>
         <this.LocationForm />

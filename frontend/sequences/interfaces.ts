@@ -7,7 +7,8 @@ import {
   ALLOWED_CHANNEL_NAMES,
   Xyz,
   FarmwareConfig,
-  ALLOWED_MESSAGE_TYPES
+  ALLOWED_MESSAGE_TYPES,
+  Vector3,
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "farmbot";
@@ -20,6 +21,18 @@ export interface HardwareFlags {
   stopAtMax: Record<Xyz, boolean>;
   negativeOnly: Record<Xyz, boolean>;
   axisLength: Record<Xyz, number>;
+}
+
+export interface CheckConflictCaseProps {
+  axis: Xyz;
+  target: number;
+  hardwareFlags: HardwareFlags;
+}
+
+export interface MoveAbsoluteWarningProps {
+  vector: Vector3 | undefined;
+  offset: Vector3;
+  hardwareFlags: HardwareFlags | undefined;
 }
 
 export interface Props {

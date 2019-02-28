@@ -25,15 +25,13 @@ export interface Props {
   timeOffset: number;
 }
 
-export type Vector = Vector3;
-
 export interface AxisDisplayGroupProps {
   position: BotPosition;
   label: string;
 }
 
 export interface AxisInputBoxGroupProps {
-  onCommit: (v: Vector) => void;
+  onCommit: (v: Vector3) => void;
   position: BotPosition;
   disabled: boolean | undefined;
 }

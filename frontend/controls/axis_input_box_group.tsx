@@ -2,12 +2,9 @@ import * as React from "react";
 import { AxisInputBox } from "./axis_input_box";
 import { t } from "i18next";
 import { Row, Col } from "../ui/index";
-import {
-  AxisInputBoxGroupProps,
-  AxisInputBoxGroupState,
-  Vector
-} from "./interfaces";
+import { AxisInputBoxGroupProps, AxisInputBoxGroupState } from "./interfaces";
 import { isNumber } from "lodash";
+import { Vector3 } from "farmbot";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends
@@ -17,7 +14,7 @@ export class AxisInputBoxGroup extends
     this.state = {};
   }
 
-  change = (axis: keyof Vector, val: number) => {
+  change = (axis: keyof Vector3, val: number) => {
     this.setState({ [axis]: val });
   }
 
