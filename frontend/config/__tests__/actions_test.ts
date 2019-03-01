@@ -31,21 +31,23 @@ import { ready, storeToken } from "../actions";
 import { setToken, didLogin } from "../../auth/actions";
 import { Session } from "../../session";
 import { auth } from "../../__test_support__/fake_state/token";
+import { fakeState } from "../../__test_support__/fake_state";
 
 describe("Actions", () => {
   it("calls didLogin()", () => {
     jest.resetAllMocks();
     const dispatch = jest.fn();
-    const getState = jest.fn(() => mockState);
     const thunk = ready();
-    thunk(dispatch, getState);
+    thunk(dispatch, fakeState);
     expect(setToken).toHaveBeenCalled();
   });
 
   it("Calls Session.clear() when missing auth", () => {
     jest.resetAllMocks();
     const dispatch = jest.fn();
-    const getState = jest.fn(() => ({}));
+    const state = fakeState();
+    delete state.auth;
+    const getState = () => state;
     const thunk = ready();
     thunk(dispatch, getState);
     expect(Session.clear).toHaveBeenCalled();
