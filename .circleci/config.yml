@@ -29,14 +29,11 @@ jobs:
       - run:
           name: Run linters
           command: |
-            sudo docker-compose run parcel npm run tslint
-            sudo docker-compose run parcel npm run sass-check
-            sudo docker-compose run parcel npm run sass-lint
-            sudo docker-compose run parcel npm run typecheck
+            sudo docker-compose run web npm run linters
       - run:
           name: Run JS tests
           command: |
-            sudo docker-compose run parcel npm run test-slow
+            sudo docker-compose run web npm run test-slow
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
       - run:
           name: Check Coveralls coverage on staging
@@ -47,6 +44,6 @@ jobs:
           command: |
             if [ "$COVERAGE_AVAILABLE" ]
             then
-              sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG parcel npm run coverage
+              sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage
             fi
           when: always # change to `on_success` for a stricter comparison
