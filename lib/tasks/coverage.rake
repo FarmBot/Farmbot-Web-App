@@ -90,7 +90,7 @@ end
 
 # Print a coverage difference summary string.
 def print_summary_text(build_percent, remote, pull_data)
-  diff = (build_percent - remote[:percent]).round(2)
+  diff = (build_percent - remote[:percent]).round(3)
   direction = diff > 0 ? "increased" : "decreased"
   description = diff == 0 ? "remained the same at" : "#{direction} (#{diff}%) to"
   puts "Coverage #{description} #{build_percent.round(3)}%"\
