@@ -8,7 +8,6 @@
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "build": "TARGET=production echo Rick- fix this 30 jan",
     "start": "echo 'DEPRECATED. Remove `start` from npm scripts'",
     "test-slow": "jest --coverage --ci -w 6 --colors",
     "test": "jest --no-coverage --cache -w 5 --colors",
@@ -16,7 +15,8 @@
     "tslint": "./node_modules/tslint/bin/tslint --project .",
     "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",
     "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss sass.log",
-    "linters": "npm run typecheck && npm run tslint && npm run sass-lint && npm run sass-check"
+    "translation-check": " ./node_modules/jshint/bin/jshint --config public/app-resources/languages/.config public/app-resources/languages/*.js*",
+    "linters": "npm run typecheck && npm run tslint && npm run sass-lint && npm run sass-check && npm run translation-check"
   },
   "keywords": [
     "farmbot"
@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "jest-skipped-reporter": "0.0.4",
+    "jshint": "2.10.1",
     "madge": "3.4.4",
     "sass": "1.17.0"
   },
