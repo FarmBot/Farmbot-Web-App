@@ -7,7 +7,6 @@ import {
   TaggedDevice,
   TaggedSensor,
   TaggedDiagnosticDump,
-  TaggedUser,
   TaggedFarmwareInstallation,
   JobProgress,
 } from "farmbot";
@@ -194,7 +193,6 @@ export interface McuInputBoxProps {
 
 export interface EStopButtonProps {
   bot: BotState;
-  user: TaggedUser | undefined;
 }
 
 export interface PeripheralsProps {

@@ -1,7 +1,6 @@
 import { BotState, Xyz, BotPosition, ShouldDisplay } from "../devices/interfaces";
 import { Vector3, McuParams } from "farmbot/dist";
 import {
-  TaggedUser,
   TaggedWebcamFeed,
   TaggedPeripheral,
   TaggedSensor,
@@ -14,7 +13,6 @@ export interface Props {
   dispatch: Function;
   bot: BotState;
   feeds: TaggedWebcamFeed[];
-  user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   sensors: TaggedSensor[];
   botToMqttStatus: NetworkState;

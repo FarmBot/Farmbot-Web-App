@@ -8,7 +8,6 @@ import {
   maybeGetTimeOffset
 } from "../resources/selectors";
 import { Props } from "./interfaces";
-import { maybeFetchUser } from "../resources/selectors";
 import {
   validFwConfig, shouldDisplay, determineInstalledOsVersion
 } from "../util";
@@ -32,7 +31,6 @@ export function mapStateToProps(props: Everything): Props {
     feeds: selectAllWebcamFeeds(resources.index),
     dispatch: props.dispatch,
     bot: props.bot,
-    user: maybeFetchUser(props.resources.index),
     peripherals,
     sensors,
     botToMqttStatus,
