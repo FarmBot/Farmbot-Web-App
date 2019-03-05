@@ -10,7 +10,10 @@ jest.mock("../actions", () => ({
   closeSavedGarden: jest.fn(),
 }));
 
-jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../../history", () => ({
+  history: { push: jest.fn() },
+  getPathArray: () => [],
+}));
 
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
@@ -32,6 +35,7 @@ import {
 import { SavedGardensProps } from "../interfaces";
 import { applyGarden, destroySavedGarden, closeSavedGarden } from "../actions";
 import { Actions } from "../../../constants";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -85,6 +89,12 @@ describe("<SavedGardens />", () => {
     const wrapper = mount(<SavedGardens {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("no saved gardens yet");
   });
+
+  it("shows alt display", () => {
+    DevSettings.enableFutureFeatures();
+    const wrapper = mount(<SavedGardens {...fakeProps()} />);
+    expect(wrapper.html()).toContain("-nav");
+  });
 });
 
 describe("mapStateToProps()", () => {
@@ -103,7 +113,7 @@ describe("mapStateToProps()", () => {
 
 describe("<SavedGardensLink />", () => {
   it("opens saved garden panel", () => {
-    localStorage.setItem("SAVE_MY_GARDEN", "certainly");
+    DevSettings.enableFutureFeatures();
     const wrapper = shallow(<SavedGardensLink />);
     clickButton(wrapper, 0, "saved gardens");
     expect(history.push).toHaveBeenCalledWith(
@@ -111,7 +121,7 @@ describe("<SavedGardensLink />", () => {
   });
 
   it("saved garden button hidden", () => {
-    localStorage.removeItem("SAVE_MY_GARDEN");
+    DevSettings.disableFutureFeatures();
     const wrapper = shallow(<SavedGardensLink />);
     const btn = wrapper.find("button").at(0);
     expect(btn.props().hidden).toEqual(true);

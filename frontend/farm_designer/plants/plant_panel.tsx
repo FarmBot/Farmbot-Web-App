@@ -123,7 +123,7 @@ const MoveToPlant =
     <button className="fb-button gray"
       hidden={props.isEditing}
       onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
-        .then(() => history.push("/app/designer/plants/move_to"))}>
+        .then(() => history.push("/app/designer/move_to"))}>
       {t("Move FarmBot to this plant")}
     </button>;
 

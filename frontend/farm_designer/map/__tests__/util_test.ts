@@ -316,7 +316,7 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.boxSelect);
     mockPath = "/app/designer/plants/crop_search/mint";
     expect(getMode()).toEqual(Mode.addPlant);
-    mockPath = "/app/designer/plants/move_to";
+    mockPath = "/app/designer/move_to";
     expect(getMode()).toEqual(Mode.moveTo);
     mockPath = "/app/designer/plants/create_point";
     expect(getMode()).toEqual(Mode.createPoint);

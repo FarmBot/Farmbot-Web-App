@@ -90,7 +90,7 @@ describe("<FarmDesigner/>", () => {
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
-    expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeTruthy();
+    expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeTruthy();
     expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeFalsy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeTruthy();
   });
@@ -100,7 +100,7 @@ describe("<FarmDesigner/>", () => {
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
-    expect(wrapper.find(".panel-header").first().hasClass("hidden")).toBeFalsy();
+    expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeFalsy();
     expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeTruthy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeFalsy();
   });

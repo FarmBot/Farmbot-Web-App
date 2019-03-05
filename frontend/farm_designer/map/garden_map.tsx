@@ -26,7 +26,7 @@ import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
   dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation
 } from "./layers/plants/plant_actions";
-import { chooseLocation } from "../plants/move_to";
+import { chooseLocation } from "../move_to";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -107,6 +107,8 @@ export class GardenMap extends
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
         });
+        break;
+      case Mode.clickToAdd:
         break;
       case Mode.boxSelect:
       default:
