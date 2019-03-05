@@ -56,6 +56,10 @@ services:
     <<: *rails
     depends_on: ["parcel"]
     command: node_modules/typescript/bin/tsc -w --noEmit
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
   parcel:     # ====================
     <<: *base_config
     <<: *rails

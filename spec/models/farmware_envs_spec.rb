@@ -4,7 +4,7 @@ describe FarmwareEnv do
   it 'has a length limit' do
     p = {
       device: FactoryBot.create(:device),
-      key: Faker::Pokemon.name,
+      key: Faker::Games::Pokemon.name,
       value:  "===" * 300
     }
     expect { FarmwareEnv.create!(p) }

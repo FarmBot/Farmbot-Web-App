@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :regimen, :class => 'Regimen' do
-    name { Faker::Pokemon.name + Faker::Pokemon.name }
+    name { Faker::Games::Pokemon.name + Faker::Games::Pokemon.name }
     device
   end
 end

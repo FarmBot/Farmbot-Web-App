@@ -41,7 +41,7 @@ describe Api::RegimensController do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample
 
-      name = (1..3).map{ Faker::Pokemon.name }.join(" ")
+      name = (1..3).map{ Faker::Games::Pokemon.name }.join(" ")
       payload = {
           name: name,
           color: color ,
