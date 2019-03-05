@@ -5,7 +5,7 @@ describe Sequences::Create do
   let(:device) { user.device }
   let(:body) { sequence_body_for(user) }
 
-  name = Faker::Pokemon.name
+  name = Faker::Games::Pokemon.name
   let(:sequence_params) do
     { device: device,
       name: name,
