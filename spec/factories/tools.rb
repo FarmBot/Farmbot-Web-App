@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :tool do
     device
-    name { Faker::Pokemon.name + Faker::Pokemon.name  }
+    name { Faker::Games::Pokemon.name + Faker::Games::Pokemon.name  }
   end
 end
