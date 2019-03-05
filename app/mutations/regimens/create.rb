@@ -4,10 +4,10 @@ module Regimens
     using Sequences::CanonicalCeleryHelpers
 
     required do
-      model  :device, class: Device
+      model :device, class: Device
       string :name
       string :color, in: Sequence::COLORS
-      array  :regimen_items do
+      array :regimen_items do
         hash do
           integer :time_offset
           integer :sequence_id
@@ -25,4 +25,5 @@ module Regimens
     end
   end
 end
+
 Regimina ||= Regimens # Lol, inflection errors
