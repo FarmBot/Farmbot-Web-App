@@ -1,6 +1,7 @@
 module FarmEvents
   module FragmentHelpers
     BAD_MODULE = "The '%s' module cannot use FragmentHelpers"
+    TRANSACTION_REQUIRED = "A database transaction is required to do this."
     def self.included(base); base.extend(ClassMethods); end
 
     module ClassMethods; end
@@ -23,9 +24,8 @@ module FarmEvents
 
     def wrap_fragment_with(owner)
       return owner unless has_body?
-      trx_num = ActiveRecord::Base.connection.open_transactions
-      if (trx_num == 0)
-        raise "must_be_in_transaction"
+      if ActiveRecord::Base.connection.open_transactions.zero?
+        raise TRANSACTION_REQUIRED
       end
       create_fragment_for(owner)
       owner

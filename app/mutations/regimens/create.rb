@@ -18,10 +18,12 @@ module Regimens
     optional { body }
 
     def execute
-      inputs[:regimen_items].map! do |i|
-        RegimenItem.new(i)
+      ActiveRecord::Base.transaction do
+        inputs[:regimen_items].map! do |i|
+          RegimenItem.new(i)
+        end
+        wrap_fragment_with(Regimen.create!(inputs.except(:body)))
       end
-      wrap_fragment_with(Regimen.create!(inputs.except(:body)))
     end
   end
 end
