@@ -87,16 +87,16 @@ describe NervesHub do
     xpect_args = "/orgs/farmbot/devices/X"
     resp       = StubResp.new("404", { "data" => { } }.to_json)
     expect(NervesHub.conn).to receive(:get).with(xpect_args).and_return(resp)
-
+    tags        = [ "A:B", "C:D" ]
     xpect_args2 = [ "/orgs/farmbot/devices",
                     { "description": "farmbot-X",
                       "identifier": "X",
-                      "tags": [ "Y", "Z" ] }.to_json,
+                      "tags": tags }.to_json,
                     NervesHub::HEADERS ]
     data        = {fake: "Farmbot"}
     resp2       = StubResp.new("201", { "data" => data }.to_json)
     expect(NervesHub.conn).to receive(:post).with(*xpect_args2).and_return(resp2)
-    expect(NervesHub.create_or_update("X", ["Y", "Z"])).to eq(data)
+    expect(NervesHub.create_or_update("X", tags)).to eq(data)
   end
 
   it "sometimes performs the NERVES_HUB_CA_HACK" do
@@ -106,5 +106,21 @@ describe NervesHub do
       expect(result).to eq(NervesHub::NERVES_HUB_CA_HACK)
       expect(File.read(NervesHub::NERVES_HUB_CA_HACK)).to eq(pem)
     end
+  end
+
+  it "detects malformed tags" do
+    tags = ["wrong", "also_wrong", "ok:tag"].shuffle
+    serial_number = "0xCAFEF00D"
+    expected = { error:         NervesHub::BAD_TAG,
+                 serial_number: serial_number,
+                 tags:          tags, }
+    resp = StubResp.new("200", {
+      "data" => { hello: :world, identifier: "?" }
+    }.to_json)
+    do_it = \
+      receive(:get).with("/orgs/farmbot/devices/#{serial_number}").and_return(resp)
+    expect(NervesHub.conn).to do_it
+    expect(NervesHub).to receive(:report_problem).with(expected)
+    NervesHub.create_or_update(serial_number, tags)
   end
 end

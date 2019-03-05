@@ -94,6 +94,7 @@ class NervesHub
     # It's really hard to debug malformed tags; Catch them here:
     if tags.detect{|x| !x.include?(COLON) }
       report_problem(error: BAD_TAG, serial_number: serial_number, tags: tags)
+      return
     end
 
     if current_nerves_hub_device
