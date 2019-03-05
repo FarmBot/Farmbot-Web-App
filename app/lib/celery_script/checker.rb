@@ -2,16 +2,17 @@
 # PROBABLY THE MOST COMPLICATED CODE IN ALL OF FARMBOT.
 module CeleryScript
   class TypeCheckError < StandardError; end
+
   class Checker
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
-    EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
-    BAD_LEAF    = "Expected leaf '%{kind}' within '%{parent_kind}'"\
-                  " to be one of: %{allowed} but got %{actual}"
-    MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
-    BAD_BODY    = "Body of '%s' node contains '%s' node. "\
-                  "Expected one of: %s"
+    EXTRA_ARGS = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
+    BAD_LEAF = "Expected leaf '%{kind}' within '%{parent_kind}'" \
+               " to be one of: %{allowed} but got %{actual}"
+    MALFORMED = "Expected '%s' to be a node or leaf, but it was neither"
+    BAD_BODY = "Body of '%s' node contains '%s' node. " \
+               "Expected one of: %s"
     UNBOUND_VAR = "Unbound variable: %s"
-    T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
+    T_MISMATCH = "Type mismatch. %s must be one of: %s. Got: %s"
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
     # For instance, A `nothing` node in a `variable_declaration` is often an
@@ -20,8 +21,8 @@ module CeleryScript
     # BAD_LEAF template.
     FRIENDLY_ERRORS = {
       nothing: {
-        variable_declaration: "You must provide a value for all parameters"
-      }
+        variable_declaration: "You must provide a value for all parameters",
+      },
     }.with_indifferent_access
     attr_reader :tree, :corpus, :device
 
@@ -52,8 +53,8 @@ module CeleryScript
     end
 
     def check_leaf(node)
-      allowed  = corpus.values(node)
-      actual   = node.value.class
+      allowed = corpus.values(node)
+      actual = node.value.class
 
       maybe_bad_leaf(node.kind, node.parent.kind, allowed, actual)
     end
@@ -81,17 +82,17 @@ module CeleryScript
     end
 
     def check_arity(node)
-        allowed = corpus.args(node)
-        allowed.map do |arg|
-          has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-          unless has_key
-            msgs = node.args.keys.join(", ")
-            msgs = "nothing" if msgs.length < 1
+      allowed = corpus.args(node)
+      allowed.map do |arg|
+        has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
+        unless has_key
+          msgs = node.args.keys.join(", ")
+          msgs = "nothing" if msgs.length < 1
           msg = MISSING_ARG % [node.kind, arg, msgs]
           raise TypeCheckError, msg
-          end
         end
-      has      = node.args.keys.map(&:to_sym) # Either bigger or equal.
+      end
+      has = node.args.keys.map(&:to_sym) # Either bigger or equal.
       required = corpus.args(node) # Always smallest.
       if !(has.length === required.length)
         extras = has - required
@@ -119,7 +120,6 @@ module CeleryScript
     #   value.invalidate!(T_MISMATCH % [label, expected, actual])
     # end SEE_MY_NOTE =============================^ RC 4 Oct 18
 
-
     def type_check_parameter(var, expected)
       data_type = var.args[:data_type].value
 
@@ -131,13 +131,12 @@ module CeleryScript
       # end SEE_MY_NOTE =============================^ RC 4 Oct 18
     end
 
-
     def validate_node_pairing(key, value)
-      actual  = value.kind
+      actual = value.kind
       allowed = corpus.fetchArg(key).allowed_values.map(&:to_s)
       # It would be safe to run type checking here.
       if (actual == "identifier")
-        allowed_types  = allowed.without("identifier")
+        allowed_types = allowed.without("identifier")
         # Resolve the identifier.
         # Someday, we might need to use the return value to perform more
         # in depth type checking. We're not there yet, though.
@@ -149,15 +148,15 @@ module CeleryScript
           type_check_parameter(var, allowed_types)
         when "variable_declaration"
           actual = var.args[:data_value].kind
-        #   Don't delete this- it is currently unreachable code, but as soon as we
-        #   allow identifiers other than `point`, `tool` and `coordinate` we will
-        #   need it again (and can write tests)
-        #   unless allowed_types.include?(actual)
-        #     bad_var!(value, var.args[:label].value, allowed_types, actual)
-        #   end
-        # else
-        #   raise ("Bad kind: " + var.kind)
-        #  SEE_MY_NOTE =============================^ RC 4 Oct 18
+          #   Don't delete this- it is currently unreachable code, but as soon as we
+          #   allow identifiers other than `point`, `tool` and `coordinate` we will
+          #   need it again (and can write tests)
+          #   unless allowed_types.include?(actual)
+          #     bad_var!(value, var.args[:label].value, allowed_types, actual)
+          #   end
+          # else
+          #   raise ("Bad kind: " + var.kind)
+          #  SEE_MY_NOTE =============================^ RC 4 Oct 18
         end
       end
 
@@ -167,18 +166,17 @@ module CeleryScript
     def maybe_bad_leaf(kind, parent_kind, allowed, actual)
       unless allowed.include?(actual)
         message = (FRIENDLY_ERRORS.dig(kind, parent_kind) || BAD_LEAF) % {
-          kind:        kind,
+          kind: kind,
           parent_kind: parent_kind,
-          allowed:     allowed,
-          actual:      actual
+          allowed: allowed,
+          actual: actual,
         }
-
         raise TypeCheckError, message
       end
     end
 
     def validate_leaf_pairing(key, value)
-      actual  = value.value.class
+      actual = value.value.class
       allowed = corpus.fetchArg(key).allowed_values
       maybe_bad_leaf(value.kind, value.parent.kind, allowed, actual)
     end
@@ -201,7 +199,7 @@ module CeleryScript
       locals = node.args[:locals]
 
       if locals&.kind === "scope_declaration"
-        label  = origin.args[:label]&.value
+        label = origin.args[:label]&.value
         result = (locals.body || []).select do |x|
           x.args[:label]&.value == label
         end.first
