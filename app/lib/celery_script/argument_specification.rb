@@ -9,7 +9,7 @@ module CeleryScript
     def initialize(name, allowed_values, additional_validation = NOOP)
       @name                  = name
       @allowed_values        = allowed_values
-      @additional_validation = additional_validation
+      @additional_validation = additional_validation || NOOP
     end
 
     # PROBLEM: Ruby calls them "TrueClass" and "FalseClass", everyone else calls

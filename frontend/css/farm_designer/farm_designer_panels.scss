@@ -1,4 +1,4 @@
-.panel-header,
+.panel-nav,
 .farm-designer-panels {
   position: fixed;
   top: 8.9rem;
@@ -52,6 +52,7 @@
   }
 }
 
+.panel-nav,
 .panel-header {
   color: $light_gray;
   &.green-panel {
@@ -161,7 +162,6 @@
     position: absolute;
     z-index: 9;
     width: 100%;
-    margin-top: 9rem;
     background: $dark_green;
     padding: 0.5rem;
     button {
@@ -169,7 +169,7 @@
     }
   }
   .panel-content {
-    padding: 14rem 1.4rem;
+    padding-top: 5rem;
     padding-right: 0;
     padding-left: 0;
     max-height: calc(100vh - 10rem);
@@ -216,11 +216,17 @@
 }
 
 .panel-top {
-  padding: 5rem 0 0;
+  &.with-button {
+    display: flex;
+    margin-top: 5rem;
+    a {
+      margin: 1rem;
+    }
+  }
 }
 
 .panel-content {
-  padding: 6rem 1rem;
+  padding: 0 1rem;
   a {
     color: $black;
     text-decoration: underline !important;
@@ -241,10 +247,13 @@
   margin-left: 1rem;
 }
 
-.panel-header {
+.panel-nav {
   position: fixed;
   z-index: 2;
   width: 300px;
+}
+
+.panel-header {
   .panel-header-description,
   .crop-info-description {
     font-size: 1.2rem;
@@ -297,7 +306,9 @@
 }
 
 .move-to-panel-content {
-  margin-top: 4rem;
+  &.with-nav {
+    margin-top: 6rem;
+  }
   margin-left: 1rem;
   margin-right: 1rem;
   button {
@@ -312,7 +323,9 @@
 }
 
 .saved-garden-panel-content {
-  margin-top: 5rem;
+  &.with-nav {
+    margin-top: 6rem;
+  }
   margin-left: 1rem;
   margin-right: 1rem;
   .row {

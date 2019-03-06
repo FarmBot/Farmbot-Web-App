@@ -37,27 +37,27 @@ describe Api::RegimensController do
       sign_in user
       s = FakeSequence.with_parameters
       payload = { device: s.device,
-                 name: "specs",
-                 color: "red",
-                 body: [
-        {
-          kind: "variable_declaration",
-          args: {
-            label: "parent",
-            data_value: {
-              kind: "every_point", args: { every_point_type: "Plant" },
-            },
-          },
-        },
-      ],
-                 regimen_items: [
-        { time_offset: 100, sequence_id: s.id },
-      ] }
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "parameter_application",
+                      args: {
+                        label: "parent",
+                        data_value: {
+                          kind: "every_point", args: { every_point_type: "Plant" }
+                        }
+                      }
+                    }
+                  ],
+                  regimen_items: [
+                    { time_offset: 100, sequence_id: s.id }
+                  ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
-      expect(declr.fetch(:kind)).to eq("variable_declaration")
+      expect(declr.fetch(:kind)).to eq("parameter_application")
       path = [:args, :data_value, :args, :every_point_type]
       expect(declr.dig(*path)).to eq("Plant")
     end
@@ -85,27 +85,58 @@ describe Api::RegimensController do
       expect(json[:color]).to eq(color)
     end
 
+    it "creates a regimen that uses unbound variables" do
+      pending("TODO: Help Gabe with this.")
+      sign_in user
+      s       = FakeSequence.with_parameters
+      payload = { device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "parameter_application",
+                      args: {
+                        label: "parent",
+                        data_value: {
+                          kind: "identifier", args: { label: "parent" }
+                        }
+                      }
+                    }
+                  ],
+                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ] }
+      post :create, body: payload.to_json, format: :json
+      expect(response.status).to eq(200)
+      declr = json.fetch(:body).first
+      expect(declr).to be
+      expect(declr.fetch(:kind)).to eq("parameter_application")
+      path = [:args, :data_value, :args, :label]
+      expect(declr.dig(*path)).to eq("parent")
+    end
+
     it "handles CeleryScript::TypeCheckError" do
       sign_in user
       s = FakeSequence.with_parameters
       payload = { device: s.device,
-                 name: "specs",
-                 color: "red",
-                 body: [
-        {
-          kind: "variable_declaration",
-          args: {
-            label: "parent",
-            data_value: { kind: "nothing", args: {} },
-          },
-        },
-      ],
-                 regimen_items: [
-        { time_offset: 100, sequence_id: s.id },
-      ] }
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "parameter_application",
+                      args: {
+                        label: "parent",
+                        data_value: { kind: "nothing", args: { } }
+                      }
+                    }
+                  ],
+                  regimen_items: [
+                    { time_offset: 100, sequence_id: s.id }
+                  ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(422)
-      expect(json.fetch(:error)).to include("must provide a value for all parameters")
+      msg = json.fetch(:error)
+      expect(msg).to include("but got nothing")
+      # Make sure corpus entries are properly formatted.
+      expect(msg).to include('"coordinate",')
     end
   end
 end

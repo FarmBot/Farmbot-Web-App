@@ -16,9 +16,12 @@ import {
   RefactoredExecuteBlock,
 } from "../tile_execute";
 import { mount, shallow } from "enzyme";
-import { Execute, VariableDeclaration } from "farmbot";
+import { Execute, ParameterApplication, Coordinate } from "farmbot";
 import { emptyState } from "../../../resources/reducer";
 import { LocalsList } from "../../locals_list/locals_list";
+
+const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
+  ({ kind: "coordinate", args: { x, y, z } });
 
 function fakeProps(): ExecBlockParams {
   const currentStep: Execute = {
@@ -89,7 +92,7 @@ describe("<RefactoredExecuteBlock />", () => {
       parent1: {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent1", data_type: "point"
+            label: "parent1", default_value: coordinate()
           }
         },
         dropdown: { label: "Parent1", value: "parent1" },
@@ -97,36 +100,34 @@ describe("<RefactoredExecuteBlock />", () => {
       }
     };
     const wrapper = shallow(<RefactoredExecuteBlock {...p} />);
-    const declaration = {
-      kind: "variable_declaration", args: {
+    const variable = {
+      kind: "parameter_application", args: {
         label: "parent1", data_value: {
           kind: "identifier", args: { label: "parent2" }
         }
       }
     };
-    wrapper.find(LocalsList).simulate("change", declaration);
+    wrapper.find(LocalsList).simulate("change", variable);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
-      kind: "execute", args: { sequence_id: 1 }, body: [declaration]
+      kind: "execute", args: { sequence_id: 1 }, body: [variable]
     });
   });
 
-  it("shows a variable declaration", () => {
+  it("shows a parameter application", () => {
     const p = fakeProps();
     mockSequence.body.id = 1;
     p.currentStep.args.sequence_id = mockSequence.body.id;
     p.currentStep.body = [{
-      kind: "variable_declaration", args: {
-        label: "parent", data_value: {
-          kind: "coordinate", args: { x: 10, y: 20, z: 30 }
-        }
+      kind: "parameter_application", args: {
+        label: "parent", data_value: coordinate(10, 20, 30)
       }
     }];
     p.resources.sequenceMetas[mockSequence.uuid] = {
       parent: {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent", data_type: "point"
+            label: "parent", default_value: coordinate()
           }
         },
         dropdown: { label: "Parent", value: "parent" },
@@ -137,23 +138,21 @@ describe("<RefactoredExecuteBlock />", () => {
     expect(wrapper.html()).toContain("Coordinate (10, 20, 30)");
   });
 
-  it("keeps previous variable declarations", () => {
+  it("keeps previous parameter applications", () => {
     const p = fakeProps();
     mockSequence.body.id = 1;
     p.currentStep.args.sequence_id = mockSequence.body.id;
-    const existingDeclaration: VariableDeclaration = {
-      kind: "variable_declaration", args: {
-        label: "parent0", data_value: {
-          kind: "coordinate", args: { x: 10, y: 20, z: 30 }
-        }
+    const existingVariable: ParameterApplication = {
+      kind: "parameter_application", args: {
+        label: "parent0", data_value: coordinate(10, 20, 30)
       }
     };
-    p.currentStep.body = [existingDeclaration];
+    p.currentStep.body = [existingVariable];
     p.resources.sequenceMetas[mockSequence.uuid] = {
       parent: {
         celeryNode: {
           kind: "parameter_declaration", args: {
-            label: "parent", data_type: "point"
+            label: "parent", default_value: coordinate()
           }
         },
         dropdown: { label: "Parent", value: "parent" },
@@ -161,18 +160,18 @@ describe("<RefactoredExecuteBlock />", () => {
       }
     };
     const wrapper = shallow(<RefactoredExecuteBlock {...p} />);
-    const declaration = {
-      kind: "variable_declaration", args: {
+    const variable = {
+      kind: "parameter_application", args: {
         label: "parent1", data_value: {
           kind: "identifier", args: { label: "parent2" }
         }
       }
     };
-    wrapper.find(LocalsList).simulate("change", declaration);
+    wrapper.find(LocalsList).simulate("change", variable);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 },
-      body: [existingDeclaration, declaration]
+      body: [existingVariable, variable]
     });
   });
 });

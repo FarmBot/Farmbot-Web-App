@@ -1,4 +1,4 @@
-# Base calss for every "thing" that is found in a CeleryScript AST.
+# Base class for every "thing" that is found in a CeleryScript AST.
 module CeleryScript
   # Abstract class that AstLeaf and AstNode inherit from.
   # Use this for shared leaf/node behavior.

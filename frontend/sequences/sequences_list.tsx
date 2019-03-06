@@ -11,7 +11,7 @@ import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
 import { Link } from "../link";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { UUID, VariableNameSet } from "../resources/interfaces";
-import { declarationList } from "./locals_list/declaration_support";
+import { variableList } from "./locals_list/variable_support";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
@@ -39,7 +39,7 @@ const sequenceList = (props: {
         step={{
           kind: "execute",
           args: { sequence_id: ts.body.id || 0 },
-          body: declarationList(variableData)
+          body: variableList(variableData)
         }}
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>

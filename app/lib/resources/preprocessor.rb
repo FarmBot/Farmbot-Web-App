@@ -3,7 +3,7 @@ module Resources
   # into fully formed
   class Preprocessor < Mutations::Command
     def self.from_amqp(delivery_info, body)
-      # Parse the AMQP rotuing key into an Array of strings.
+      # Parse the AMQP routing key into an Array of strings.
       # A properly formatted routing_key will look like this after processing:
       #
       # ["bot", "device_3", "resources_v0", "destroy", "Sequence", "2", "xyz"]

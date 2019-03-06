@@ -187,10 +187,10 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/move_to",
+    $: "/designer/move_to",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/move_to"),
+    getChild: () => import("./farm_designer/move_to"),
     childKey: "MoveTo"
   }),
   route({

@@ -9,29 +9,25 @@ const mockDevice = {
   emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
   execSequence: jest.fn(() => { return Promise.resolve(); }),
   resetMCU: jest.fn(() => { return Promise.resolve(); }),
-  updateMcu: jest.fn(() => { return Promise.resolve(); }),
   togglePin: jest.fn(() => { return Promise.resolve(); }),
   home: jest.fn(() => { return Promise.resolve(); }),
   sync: jest.fn(() => { return Promise.resolve(); }),
   readStatus: jest.fn(() => Promise.resolve()),
-  updateConfig: jest.fn(() => Promise.resolve()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../device", () => ({
-  getDevice: () => {
-    return mockDevice;
-  }
+jest.mock("../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 let mockGetRelease: Promise<{}> = Promise.resolve({});
-jest.mock("axios", () => ({
-  get: jest.fn(() => { return mockGetRelease; })
-}));
+jest.mock("axios", () => ({ get: jest.fn(() => mockGetRelease) }));
 
 import * as actions from "../actions";
 import {
-  fakeFbosConfig, fakeFirmwareConfig
+  fakeFirmwareConfig, fakeFbosConfig
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -41,9 +37,8 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { SpecialStatus, McuParamName } from "farmbot";
-import { bot } from "../../__test_support__/fake_state/bot";
 import { success, error, warning, info } from "farmbot-toastr";
+import { edit, save } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {
   it("calls checkUpdates", async () => {
@@ -180,45 +175,18 @@ describe("requestDiagnostic", () => {
 });
 
 describe("settingToggle()", () => {
-  it("toggles mcu param via updateMcu", async () => {
-    bot.hardware.mcu_params.param_mov_nr_retry = 0;
-    const sourceSetting = (x: McuParamName) =>
-      ({ value: bot.hardware.mcu_params[x], consistent: true });
+  it("toggles mcu param via FirmwareConfig", () => {
+    const sourceSetting = () => ({ value: 1, consistent: true });
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = false;
     state.resources = buildResourceIndex([fakeConfig]);
-    await actions.settingToggle(
+    actions.settingToggle(
       "param_mov_nr_retry", sourceSetting)(jest.fn(), () => state);
-    expect(mockDevice.updateMcu)
-      .toHaveBeenCalledWith({ param_mov_nr_retry: 1 });
-  });
-
-  it("toggles mcu param via FirmwareConfig", async () => {
-    bot.hardware.mcu_params.param_mov_nr_retry = 1;
-    const sourceSetting = (x: McuParamName) =>
-      ({ value: bot.hardware.mcu_params[x], consistent: true });
-    const state = fakeState();
-    const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = true;
-    state.resources = buildResourceIndex([fakeConfig]);
-    const dispatch = jest.fn();
-    await actions.settingToggle(
-      "param_mov_nr_retry", sourceSetting)(dispatch, () => state);
-    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        specialStatus: SpecialStatus.DIRTY,
-        update: { param_mov_nr_retry: 0 },
-        uuid: expect.stringContaining("FirmwareConfig")
-      },
-      type: Actions.EDIT_RESOURCE
-    });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: 0 });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("displays an alert message", () => {
-    const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = false;
     window.alert = jest.fn();
     const msg = "this is an alert.";
     actions.settingToggle(
@@ -229,65 +197,25 @@ describe("settingToggle()", () => {
 });
 
 describe("updateMCU()", () => {
-  it("updates mcu param via updateMcu", async () => {
-    bot.hardware.mcu_params.param_mov_nr_retry = 0;
+  it("updates mcu param via FirmwareConfig", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = false;
     state.resources = buildResourceIndex([fakeConfig]);
-    await actions.updateMCU(
-      "param_mov_nr_retry", "1")(jest.fn(), () => state);
-    expect(mockDevice.updateMcu)
-      .toHaveBeenCalledWith({ param_mov_nr_retry: "1" });
+    actions.updateMCU(
+      "param_mov_nr_retry", "0")(jest.fn(), () => state);
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: "0" });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
-  it("updates mcu param via FirmwareConfig", async () => {
-    bot.hardware.mcu_params.param_mov_nr_retry = 1;
+  it("prevents update with incompatible value", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = true;
+    fakeConfig.body.movement_max_spd_x = 0;
     state.resources = buildResourceIndex([fakeConfig]);
-    const dispatch = jest.fn();
-    await actions.updateMCU(
-      "param_mov_nr_retry", "0")(dispatch, () => state);
-    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        specialStatus: SpecialStatus.DIRTY,
-        update: { param_mov_nr_retry: "0" },
-        uuid: expect.stringContaining("FirmwareConfig")
-      },
-      type: Actions.EDIT_RESOURCE
-    });
-  });
-
-  it("prevents update with incompatible value", async () => {
-    bot.hardware.mcu_params.movement_max_spd_x = 0;
-    const state = fakeState();
-    const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = false;
-    state.resources = buildResourceIndex([fakeConfig]);
-    await actions.updateMCU(
+    actions.updateMCU(
       "movement_min_spd_x", "100")(jest.fn(), () => state);
-    expect(mockDevice.updateMcu).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalledWith(
       "Minimum speed should always be lower than maximum");
-  });
-
-  it("catches error", async () => {
-    mockDevice.updateMcu = jest.fn(() => { return Promise.reject(); });
-    const dispatch = jest.fn();
-    const state = fakeState();
-    const fakeConfig = fakeFirmwareConfig();
-    fakeConfig.body.api_migrated = false;
-    state.resources = buildResourceIndex([fakeConfig]);
-    await actions.updateMCU(
-      "param_mov_nr_retry", "1")(dispatch, () => state);
-    await expect(mockDevice.updateMcu).toHaveBeenCalled();
-    expect(dispatch).toHaveBeenLastCalledWith({
-      payload: undefined, type: Actions.SETTING_UPDATE_END
-    });
-    expect(error).toHaveBeenCalledWith("Firmware config update failed");
   });
 });
 
@@ -505,31 +433,13 @@ describe("fetchMinOsFeatureData()", () => {
 });
 
 describe("updateConfig()", () => {
-  it("updates config: configUpdate", () => {
-    const dispatch = jest.fn();
-    const state = fakeState();
-    state.resources.index = buildResourceIndex([fakeFbosConfig()]).index;
-    actions.updateConfig({ auto_sync: true })(dispatch, () => state);
-    expect(mockDevice.updateConfig).toHaveBeenCalledWith({ auto_sync: true });
-    expect(dispatch).not.toHaveBeenCalled();
-  });
-
   it("updates config: FbosConfig", () => {
-    const dispatch = jest.fn(() => Promise.resolve());
     const state = fakeState();
-    const fakeFBOSConfig = fakeFbosConfig();
-    fakeFBOSConfig.body.api_migrated = true;
-    state.resources.index = buildResourceIndex([fakeFBOSConfig]).index;
-    actions.updateConfig({ auto_sync: true })(dispatch, () => state);
-    expect(mockDevice.updateConfig).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: {
-        specialStatus: SpecialStatus.DIRTY,
-        update: { auto_sync: true },
-        uuid: expect.stringContaining("FbosConfig")
-      },
-      type: Actions.EDIT_RESOURCE
-    });
+    const fakeConfig = fakeFbosConfig();
+    state.resources = buildResourceIndex([fakeConfig]);
+    actions.updateConfig({ auto_sync: true })(jest.fn(), () => state);
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { auto_sync: true });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });
 

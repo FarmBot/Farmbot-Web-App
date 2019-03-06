@@ -22,7 +22,7 @@ interface EmptyStateWrapperProps {
 
 export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
   !!props.notEmpty
-    ? <div>{props.children}</div>
+    ? <div className="non-empty-state">{props.children}</div>
     : <div className={`empty-state ${props.colorScheme || ""}`}>
       <img
         className="empty-state-graphic"

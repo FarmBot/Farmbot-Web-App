@@ -1,15 +1,19 @@
 jest.mock("i18next", () => ({ t: (i: string) => i }));
 
+jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
+
 import { commitBulkEditor, setTimeOffset, toggleDay, setSequence } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { TaggedResource, TaggedSequence, TaggedRegimen } from "farmbot";
+import { TaggedResource, TaggedSequence, TaggedRegimen, Coordinate } from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
 import { error, warning } from "farmbot-toastr";
 import { newTaggedResource } from "../../../sync/actions";
 import { arrayUnwrap } from "../../../resources/util";
+import { overwrite } from "../../../api/crud";
+import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 
 const sequence_id = 23;
 const regimen_id = 32;
@@ -105,14 +109,35 @@ describe("commitBulkEditor()", () => {
       { regimen_id, sequence_id, time_offset: 1000 },
       { sequence_id, time_offset: 2000 }
     ];
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          regimen_items: expect.arrayContaining(expected)
-        }),
-      }),
-      type: Actions.OVERWRITE_RESOURCE
+    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({
+        regimen_items: expect.arrayContaining(expected)
+      }));
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("merges variables", () => {
+    const state = newFakeState();
+    const seqUUID = state.resources.consumers.regimens.selectedSequenceUUID;
+    const label = "variable_label";
+    const varData = fakeVariableNameSet(label);
+    const variable = varData[label];
+    const COORDINATE: Coordinate =
+      ({ kind: "coordinate", args: { x: 0, y: 0, z: 0 } });
+    variable && (variable.celeryNode = {
+      kind: "parameter_declaration",
+      args: { label, default_value: COORDINATE }
     });
+    state.resources.index.sequenceMetas[seqUUID || ""] = varData;
+    const dispatch = jest.fn();
+    commitBulkEditor()(dispatch, () => state);
+    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({
+        body: [{
+          kind: "variable_declaration",
+          args: { label, data_value: COORDINATE }
+        }]
+      }));
     expect(error).not.toHaveBeenCalled();
   });
 });

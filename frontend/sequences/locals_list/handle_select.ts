@@ -4,24 +4,50 @@ import { DropDownItem } from "../../ui";
 import {
   Coordinate,
   ScopeDeclaration,
-  ScopeDeclarationBodyItem,
-  VariableDeclaration,
+  ParameterApplication,
   Dictionary,
   Identifier,
   Point,
   Tool,
   EveryPoint,
+  ScopeDeclarationBodyItem,
+  VariableDeclaration,
+  PointType,
 } from "farmbot";
+import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
+import { betterCompact } from "../../util";
 
 /**
  * Empty `data_value` for location form initial state.
- * This is specifically an invalid variable declaration data value to force the
- * user to make a valid selection to successfully save the variable declaration.
+ * This is specifically an invalid parameter application data value to force the
+ * user to make a valid selection to successfully save the parameter application.
  */
 // tslint:disable-next-line:no-any
 export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
+
+type CreateVariableDeclaration =
+  (label: string, data_value: DataValue) => VariableDeclaration;
+
+type CreateParameterApplication =
+  (label: string, data_value: DataValue) => ParameterApplication;
+
+type VariableWithAValue = VariableDeclaration | ParameterApplication;
+
+const createVariableNode = (allowedNodes: AllowedVariableNodes):
+  CreateParameterApplication | CreateVariableDeclaration =>
+  allowedNodes == AllowedVariableNodes.parameter
+    ? createVariableDeclaration
+    : createParameterApplication;
+
+const createParameterApplication =
+  (label: string, data_value: DataValue): ParameterApplication =>
+    ({
+      kind: "parameter_application",
+      args: { label, data_value }
+    });
+
 const createVariableDeclaration =
   (label: string, data_value: DataValue): VariableDeclaration =>
     ({
@@ -31,14 +57,16 @@ const createVariableDeclaration =
 
 interface NewVarProps {
   label: string;
+  allowedVariableNodes: AllowedVariableNodes;
 }
 
-const nothingVar = ({ label }: NewVarProps): VariableDeclaration =>
-  createVariableDeclaration(label, NOTHING_SELECTED);
+const nothingVar =
+  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED);
 
 const toolVar = (value: string | number) =>
-  ({ label }: NewVarProps): VariableDeclaration =>
-    createVariableDeclaration(label, {
+  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, {
       kind: "tool",
       args: { tool_id: parseInt("" + value) }
     });
@@ -46,48 +74,48 @@ const toolVar = (value: string | number) =>
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer",
   value: string | number
-) => ({ label }: NewVarProps): VariableDeclaration =>
-    createVariableDeclaration(label, {
+) => ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, {
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
 
 const everyPointVar = (value: string | number) =>
-  ({ label }: NewVarProps): VariableDeclaration =>
-    createVariableDeclaration(label, {
+  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, {
       kind: "every_point",
-      args: { every_point_type: "" + value }
+      args: { every_point_type: "" + value as PointType }
     });
 
-const manualEntry = ({ label }: NewVarProps): VariableDeclaration =>
-  createVariableDeclaration(label, {
-    kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-  });
+const manualEntry =
+  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+    createVariableNode(allowedVariableNodes)(label, {
+      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+    });
 
-interface NewDeclarationProps extends NewVarProps {
+interface NewVariableProps extends NewVarProps {
   newVarLabel?: string;
-  useIdentifier?: boolean;
 }
 
 /**
- * Create a parameter declaration or a variable declaration containing an
+ * Create a parameter declaration or a parameter application containing an
  *    identifier.
- * `data_type` type will need to be updated to support types other than "point"
  */
 export const newParameter =
-  ({ label, newVarLabel, useIdentifier }: NewDeclarationProps):
-    ScopeDeclarationBodyItem =>
-    (useIdentifier && newVarLabel)
+  ({ label, newVarLabel, allowedVariableNodes }: NewVariableProps):
+    VariableNode =>
+    (allowedVariableNodes === AllowedVariableNodes.identifier && newVarLabel)
       // Create a new variable (reassignment)
-      ? createVariableDeclaration(label,
+      ? createParameterApplication(label,
         { kind: "identifier", args: { label: newVarLabel } })
       : { // Unassign variable (will not create a new variable name)
         kind: "parameter_declaration",
-        args: { label, data_type: "point" }
+        args: { label, default_value: NOTHING_SELECTED }
       };
 
-const newDeclarationCreator = (ddi: DropDownItem):
-  (props: NewDeclarationProps) => ScopeDeclarationBodyItem | undefined => {
+/** Create a variable based on the dropdown heading ID. */
+const newVariableCreator = (ddi: DropDownItem):
+  (props: NewVariableProps) => VariableNode | undefined => {
   if (ddi.isNull) { return nothingVar; } // Empty form. Nothing selected yet.
   switch (ddi.headingId) {
     case "Plant":
@@ -100,31 +128,45 @@ const newDeclarationCreator = (ddi: DropDownItem):
   return () => undefined;
 };
 
-interface ConvertDDIToDeclProps extends NewVarProps {
-  useIdentifier?: boolean;
-}
-
-/** Convert a drop down selection to a declaration. */
-export const convertDDItoDeclaration =
-  ({ label, useIdentifier }: ConvertDDIToDeclProps) =>
-    (ddi: DropDownItem): ScopeDeclarationBodyItem | undefined => {
+/** Convert a drop down selection to a variable. */
+export const convertDDItoVariable =
+  ({ label, allowedVariableNodes }: NewVarProps) =>
+    (ddi: DropDownItem): VariableNode | undefined => {
       const newVarLabel =
         ddi.headingId === "parameter" ? "" + ddi.value : undefined;
-      return newDeclarationCreator(ddi)({ label, newVarLabel, useIdentifier });
+      return newVariableCreator(ddi)({ label, newVarLabel, allowedVariableNodes });
     };
 
-/** Add a new declaration or replace an existing one with the same label. */
-export const addOrEditDeclaration = (declarations: ScopeDeclarationBodyItem[]) =>
-  (updatedItem: ScopeDeclarationBodyItem): ScopeDeclaration => {
-    const items = reduceScopeDeclaration(declarations);
-    items[updatedItem.args.label] = updatedItem;
-    const newLocals: ScopeDeclaration = {
-      kind: "scope_declaration",
-      args: {},
-      body: Object.values(items)
-    };
-    return newLocals;
+export const isScopeDeclarationBodyItem =
+  (x: VariableNode): x is ScopeDeclarationBodyItem =>
+    x.kind === "parameter_declaration" || x.kind === "variable_declaration";
+
+/** Add a new variable or replace an existing one with the same label (regimens). */
+export const addOrEditBodyVariables = (
+  bodyVariables: VariableNode[],
+  updatedItem: ScopeDeclarationBodyItem
+): ScopeDeclarationBodyItem[] => {
+  const filteredVariables: ScopeDeclarationBodyItem[] =
+    betterCompact(bodyVariables.map(v =>
+      isScopeDeclarationBodyItem(v) ? v : undefined));
+  const items = reduceScopeDeclaration(filteredVariables);
+  items[updatedItem.args.label] = updatedItem;
+  return Object.values(items);
+};
+
+/** Add a new declaration or replace an existing one with the same label. (sequences) */
+export const addOrEditDeclarationLocals = (
+  declarations: ScopeDeclarationBodyItem[],
+  updatedItem: ScopeDeclarationBodyItem
+): ScopeDeclaration => {
+  const updatedDeclarations = addOrEditBodyVariables(declarations, updatedItem);
+  const newLocals: ScopeDeclaration = {
+    kind: "scope_declaration",
+    args: {},
+    body: Object.values(updatedDeclarations)
   };
+  return newLocals;
+};
 
 /** Convert scope declaration body items to a dictionary for lookup purposes. */
 const reduceScopeDeclaration = (declarations: ScopeDeclarationBodyItem[]):

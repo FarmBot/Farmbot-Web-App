@@ -29,7 +29,7 @@ class GlobalConfig < ApplicationRecord
   end
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.
-  # Database values prempt values set in ::DEFAULTS
+  # Database values preempt values set in ::DEFAULTS
   def self.dump
     @dump ||= reload_
   end

@@ -45,7 +45,7 @@ class AmqpLogParser < Mutations::Command
       !problems.present?
     end
 
-    # Prevents "runaway" bots from flooding the server with frivoulous database
+    # Prevents "runaway" bots from flooding the server with frivolous database
     # hits by using in memory cache of results for 150 seconds.
     def device
       Device.cached_find(device_id)
@@ -89,7 +89,7 @@ private
     (log["major_version"] || log.dig("meta", "major_version") || 0).to_i
   end
 
-  # Weed out anamolies such as logs that are array types.
+  # Weed out anomalies such as logs that are array types.
   def not_hash?
     !log.is_a?(Hash)
   end

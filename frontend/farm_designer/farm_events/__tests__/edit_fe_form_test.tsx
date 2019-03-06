@@ -8,7 +8,7 @@ jest.mock("../../../api/crud", () => ({
 
 import * as React from "react";
 import {
-  fakeFarmEvent, fakeSequence, fakeRegimen
+  fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant
 } from "../../../__test_support__/fake_state/resources";
 import { mount, shallow } from "enzyme";
 import {
@@ -21,7 +21,7 @@ import {
 } from "../edit_fe_form";
 import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
-import { SpecialStatus, VariableDeclaration } from "farmbot";
+import { SpecialStatus, ParameterApplication } from "farmbot";
 import { success, error, warning } from "farmbot-toastr";
 import moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -403,10 +403,10 @@ describe("<FarmEventForm/>", () => {
     expect(reject).toBeFalsy();
   });
 
-  it("edits a declaration", () => {
+  it("edits a variable", () => {
     const p = props();
-    const oldDeclaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    const oldVariable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "foo",
         data_value: {
@@ -416,26 +416,26 @@ describe("<FarmEventForm/>", () => {
         }
       }
     };
-    const newDeclaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    const newVariable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "foo",
         data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
       }
     };
     const inst = instance(p);
-    inst.setState({ fe: { body: [oldDeclaration] } });
-    expect(inst.state.fe.body).toEqual([oldDeclaration]);
+    inst.setState({ fe: { body: [oldVariable] } });
+    expect(inst.state.fe.body).toEqual([oldVariable]);
     expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.SAVED);
-    inst.editDeclaration([oldDeclaration])(newDeclaration);
-    expect(inst.state.fe.body).toEqual([newDeclaration]);
+    inst.editBodyVariables([oldVariable])(newVariable);
+    expect(inst.state.fe.body).toEqual([newVariable]);
     expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.DIRTY);
   });
 
-  it("saves an updated declaration", () => {
+  it("saves an updated variable", () => {
     const p = props();
-    const oldDeclaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    const oldVariable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "foo",
         data_value: {
@@ -445,26 +445,29 @@ describe("<FarmEventForm/>", () => {
         }
       }
     };
-    p.farmEvent.body.body = [oldDeclaration];
-    const newDeclaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    p.farmEvent.body.body = [oldVariable];
+    const newVariable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "foo",
         data_value: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } }
       }
     };
     const inst = instance(p);
-    inst.setState({ fe: { body: [newDeclaration] } });
-    expect(inst.updatedFarmEvent.body).toEqual([newDeclaration]);
+    inst.setState({ fe: { body: [newVariable] } });
+    expect(inst.updatedFarmEvent.body).toEqual([newVariable]);
   });
 
-  it("saves the current declaration", () => {
+  it("saves the current variable", () => {
     const p = props();
     const sequence = fakeSequence();
     p.findExecutable = () => sequence;
+    const plant = fakePlant();
+    plant.body.id = 1;
+    p.resources = buildResourceIndex([plant]).index;
     p.resources.sequenceMetas[sequence.uuid] = fakeVariableNameSet("foo");
-    const oldDeclaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    const oldVariable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "foo",
         data_value: {
@@ -474,9 +477,9 @@ describe("<FarmEventForm/>", () => {
         }
       }
     };
-    p.farmEvent.body.body = [oldDeclaration];
+    p.farmEvent.body.body = [oldVariable];
     const inst = instance(p);
-    expect(inst.updatedFarmEvent.body).toEqual([oldDeclaration]);
+    expect(inst.updatedFarmEvent.body).toEqual([oldVariable]);
   });
 
   it("deletes a farmEvent", async () => {

@@ -28,6 +28,7 @@ import {
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { MessageType } from "../../sequences/interfaces";
 
 export let resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -72,7 +73,7 @@ export function fakeLog(): TaggedLog {
   return fakeResource("Log", {
     id: idCounter++,
     message: "Farmbot is up and Running!",
-    type: "info",
+    type: MessageType.info,
     x: 1,
     y: 2,
     z: 3,

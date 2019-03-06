@@ -4,14 +4,14 @@ jest.mock("../../../api/crud", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { ActiveEditor, editRegimenDeclarations } from "../active_editor";
+import { ActiveEditor, editRegimenVariables } from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { ActiveEditorProps } from "../interfaces";
-import { VariableDeclaration } from "farmbot";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { overwrite } from "../../../api/crud";
+import { VariableDeclaration } from "farmbot";
 
 describe("<ActiveEditor />", () => {
   const fakeProps = (): ActiveEditorProps => ({
@@ -55,8 +55,8 @@ describe("<ActiveEditor />", () => {
   });
 });
 
-describe("editRegimenDeclarations()", () => {
-  const declaration: VariableDeclaration = {
+describe("editRegimenVariables()", () => {
+  const variables: VariableDeclaration = {
     kind: "variable_declaration",
     args: {
       label: "label", data_value: {
@@ -65,10 +65,10 @@ describe("editRegimenDeclarations()", () => {
     }
   };
 
-  it("updates declarations", () => {
+  it("updates bodyVariables", () => {
     const regimen = fakeRegimen();
-    editRegimenDeclarations({ dispatch: jest.fn(), regimen })([])(declaration);
+    editRegimenVariables({ dispatch: jest.fn(), regimen })([])(variables);
     expect(overwrite).toHaveBeenCalledWith(regimen,
-      expect.objectContaining({ body: [declaration] }));
+      expect.objectContaining({ body: [variables] }));
   });
 });

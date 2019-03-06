@@ -34,31 +34,25 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   state: State = { guideOpen: false };
 
   render() {
-    return <div>
-      <Overlay
-        isOpen={this.state.guideOpen}
-        onClose={this.toggle("guideOpen")}>
-        <div className={hotkeyGuideClasses}>
-          <h3>{t("Hotkeys")}</h3>
-          <i
-            className="fa fa-times"
-            onClick={this.toggle("guideOpen")} />
-          {
-            this.hotkeys(this.props.dispatch, "")
-              .map(hotkey => {
-                return <Row key={hotkey.combo}>
-                  <Col xs={5}>
-                    <label>{hotkey.label}</label>
-                  </Col>
-                  <Col xs={7}>
-                    <code>{hotkey.combo}</code>
-                  </Col>
-                </Row>;
-              })
-          }
-        </div>
-      </Overlay>
-    </div>;
+    return <Overlay
+      isOpen={this.state.guideOpen}
+      onClose={this.toggle("guideOpen")}>
+      <div className={hotkeyGuideClasses}>
+        <h3>{t("Hotkeys")}</h3>
+        <i
+          className="fa fa-times"
+          onClick={this.toggle("guideOpen")} />
+        {this.hotkeys(this.props.dispatch, "")
+          .map(hotkey => <Row key={hotkey.combo}>
+            <Col xs={5}>
+              <label>{hotkey.label}</label>
+            </Col>
+            <Col xs={7}>
+              <code>{hotkey.combo}</code>
+            </Col>
+          </Row>)}
+      </div>
+    </Overlay>;
   }
 
   private toggle = (property: keyof State) => () =>
@@ -106,17 +100,14 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
   public renderHotkeys() {
     const slug = getPathArray()[2];
     return <Hotkeys>
-      {
-        this.hotkeys(this.props.dispatch, slug)
-          .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) => {
-            return <Hotkey
-              key={index}
-              global={true}
-              combo={combo}
-              label={label}
-              onKeyDown={onKeyDown} />;
-          })
-      }
+      {this.hotkeys(this.props.dispatch, slug)
+        .map(({ combo, label, onKeyDown }: IHotkeyProps, index: number) =>
+          <Hotkey
+            key={index}
+            global={true}
+            combo={combo}
+            label={label}
+            onKeyDown={onKeyDown} />)}
     </Hotkeys>;
   }
 }

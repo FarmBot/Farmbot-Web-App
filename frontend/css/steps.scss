@@ -99,6 +99,27 @@
   &.resource-update-step {
     background: $brown;
   }
+  &.set-servo-angle-step {
+    background: $blue;
+  }
+  &.toggle-pin-step {
+    background: $yellow;
+  }
+  &.set-zero-step {
+    background: $blue;
+  }
+  &.calibrate-step {
+    background: $blue;
+  }
+  &.move-home-step {
+    background: $blue;
+  }
+  &.firmware-action-step {
+    background: $brown;
+  }
+  &.system-action-step {
+    background: $brown;
+  }
   &.unknown-step {
     background: $gray;
   }
@@ -184,6 +205,27 @@
     color: $dark_brown;
   }
   &.resource-update-step {
+    background: $light_brown;
+  }
+  &.set-servo-angle-step {
+    background: $light_blue;
+  }
+  &.toggle-pin-step {
+    background: $light_yellow;
+  }
+  &.set-zero-step {
+    background: $light_blue;
+  }
+  &.calibrate-step {
+    background: $light_blue;
+  }
+  &.move-home-step {
+    background: $light_blue;
+  }
+  &.firmware-action-step {
+    background: $light_brown;
+  }
+  &.system-action-step {
     background: $light_brown;
   }
   &.unknown-step {

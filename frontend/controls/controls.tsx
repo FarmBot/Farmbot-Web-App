@@ -20,7 +20,6 @@ export class Controls extends React.Component<Props, {}> {
 
   move = () => <Move
     bot={this.props.bot}
-    user={this.props.user}
     dispatch={this.props.dispatch}
     arduinoBusy={this.arduinoBusy}
     botToMqttStatus={this.props.botToMqttStatus}

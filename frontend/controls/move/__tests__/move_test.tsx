@@ -30,7 +30,6 @@ describe("<Move />", () => {
     return {
       dispatch: jest.fn(),
       bot: bot,
-      user: undefined,
       arduinoBusy: false,
       botToMqttStatus: "up",
       firmwareSettings: bot.hardware.mcu_params,
@@ -73,7 +72,7 @@ describe("<Move />", () => {
   it("changes step size", () => {
     const p = fakeProps();
     const wrapper = mount(<Move {...p} />);
-    clickButton(wrapper, 0, "1");
+    clickButton(wrapper, 1, "1");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,
       payload: 1

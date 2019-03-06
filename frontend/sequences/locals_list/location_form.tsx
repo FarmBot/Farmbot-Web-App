@@ -2,49 +2,50 @@ import * as React from "react";
 import { Row, Col, FBSelect, BlurableInput } from "../../ui";
 import { t } from "i18next";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
-import { convertDDItoDeclaration } from "../locals_list/handle_select";
+import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
-  LocationFormProps, PARENT, AllowedDeclaration,
+  LocationFormProps, PARENT, AllowedVariableNodes, VariableNode,
 } from "../locals_list/locals_list_support";
 import { defensiveClone } from "../../util/util";
-import { Xyz, ScopeDeclarationBodyItem } from "farmbot";
+import { Xyz } from "farmbot";
 import {
   determineVector, determineDropdown, determineEditable, SequenceMeta
 } from "../../resources/sequence_meta";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { Feature } from "../../devices/interfaces";
+import { DefaultValueForm } from "./default_value_form";
 
 /** For LocationForm coordinate input boxes.  */
 export interface AxisEditProps {
   axis: Xyz;
-  onChange: (sd: ScopeDeclarationBodyItem) => void;
-  declaration: ScopeDeclarationBodyItem;
+  onChange: (sd: VariableNode) => void;
+  editableVariable: VariableNode;
 }
 
-/** Update a VariableDeclaration coordinate. */
+/** Update a ParameterApplication coordinate. */
 export const manuallyEditAxis = (props: AxisEditProps) =>
   (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const { axis, onChange, declaration } = props;
+    const { axis, onChange, editableVariable } = props;
     const num = parseFloat(e.currentTarget.value);
-    if (declaration.kind === "variable_declaration" &&
-      declaration.args.data_value.kind === "coordinate") {
-      declaration.args.data_value.args[axis] = num;
-      !isNaN(num) && onChange(declaration);
+    if (editableVariable.kind !== "parameter_declaration" &&
+      editableVariable.args.data_value.kind === "coordinate") {
+      editableVariable.args.data_value.args[axis] = num;
+      !isNaN(num) && onChange(editableVariable);
     }
   };
 
 /**
- * If a declaration with a matching label exists in local `declarations`
+ * If a variable with a matching label exists in local parameter applications
  * (step body, etc.), use it instead of the one in scope declarations.
  */
-const maybeUseStepData = ({ resources, declarations, variable, uuid }: {
+const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   resources: ResourceIndex,
-  declarations: ScopeDeclarationBodyItem[] | undefined,
+  bodyVariables: VariableNode[] | undefined,
   variable: SequenceMeta,
   uuid: UUID,
 }): SequenceMeta => {
-  if (declarations) {
-    const executeStepData = declarations
+  if (bodyVariables) {
+    const executeStepData = bodyVariables
       .filter(v => v.args.label === variable.celeryNode.args.label)[0];
     if (executeStepData) {
       return {
@@ -64,27 +65,25 @@ const maybeUseStepData = ({ resources, declarations, variable, uuid }: {
 export const LocationForm =
   (props: LocationFormProps) => {
     const {
-      sequenceUuid, resources, onChange, declarations, variable,
-      hideVariableLabel, locationDropdownKey, allowedDeclarations,
-      disallowGroups
+      sequenceUuid, resources, onChange, bodyVariables, variable,
+      locationDropdownKey, allowedVariableNodes, disallowGroups
     } = props;
     const { celeryNode, dropdown, vector } =
       maybeUseStepData({
-        resources, declarations, variable, uuid: sequenceUuid
+        resources, bodyVariables, variable, uuid: sequenceUuid
       });
     /** For disabling coordinate input boxes when using external data. */
     const isDisabled = !determineEditable(celeryNode);
-    const useIdentifier = allowedDeclarations === AllowedDeclaration.identifier;
     const variableListItems = (props.shouldDisplay(Feature.variables) &&
-      allowedDeclarations !== AllowedDeclaration.variable) ? [PARENT] : [];
+      allowedVariableNodes !== AllowedVariableNodes.variable) ? [PARENT] : [];
     const list = locationFormList(resources, variableListItems, !disallowGroups);
     /** Variable name. */
     const { label } = celeryNode.args;
-    const declaration = defensiveClone(celeryNode);
-    const axisPartialProps = { onChange, declaration };
-    const formTitle = hideVariableLabel
-      ? t("Location")
-      : `${label} (${t("Location")})`;
+    const editableVariable = defensiveClone(celeryNode);
+    const axisPartialProps = { onChange, editableVariable };
+    const formTitleWithType =
+      props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
+    const formTitle = props.hideTypeLabel ? label : formTitleWithType;
     return <div className="location-form">
       <Row>
         <Col xs={12}>
@@ -94,8 +93,9 @@ export const LocationForm =
             list={list}
             selectedItem={dropdown}
             customNullLabel={NO_VALUE_SELECTED_DDI().label}
-            onChange={ddi =>
-              onChange(convertDDItoDeclaration({ label, useIdentifier })(ddi))} />
+            onChange={ddi => onChange(convertDDItoVariable({
+              label, allowedVariableNodes
+            })(ddi))} />
         </Col>
       </Row>
       {vector &&
@@ -112,5 +112,9 @@ export const LocationForm =
                 value={"" + vector[axis]} />
             </Col>)}
         </Row>}
+      <DefaultValueForm
+        variableNode={celeryNode}
+        resources={resources}
+        onChange={onChange} />
     </div>;
   };

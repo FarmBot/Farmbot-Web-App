@@ -1,20 +1,22 @@
 import * as React from "react";
-import { Row, Col } from "../../ui/index";
-import { Everything } from "../../interfaces";
-import { BotPosition } from "../../devices/interfaces";
+import { Row, Col } from "../ui";
+import { Everything } from "../interfaces";
+import { BotPosition } from "../devices/interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import { moveAbs } from "../../devices/actions";
-import { history } from "../../history";
-import { AxisInputBox } from "../../controls/axis_input_box";
+import { moveAbs } from "../devices/actions";
+import { history } from "../history";
+import { AxisInputBox } from "../controls/axis_input_box";
 import { isNumber } from "lodash";
-import { Actions, Content } from "../../constants";
-import { validBotLocationData } from "../../util/util";
-import { unselectPlant } from "../actions";
-import { AxisNumberProperty } from "../map/interfaces";
+import { Actions, Content } from "../constants";
+import { validBotLocationData } from "../util/util";
+import { unselectPlant } from "./actions";
+import { AxisNumberProperty } from "./map/interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "./designer_panel";
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+} from "./plants/designer_panel";
+import { DevSettings } from "../account/dev/dev_support";
+import { DesignerNavTabs } from "./panel_header";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -107,14 +109,18 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
   }
 
   render() {
+    const alt = DevSettings.futureFeaturesEnabled();
     return <DesignerPanel panelName={"move-to"} panelColor={"green"}>
-      <DesignerPanelHeader
-        panelName={"move-to"}
-        panelColor={"green"}
-        title={t("Move to location")}
-        backTo={"/app/designer/plants"}
-        description={Content.MOVE_MODE_DESCRIPTION} />
-      <DesignerPanelContent panelName={"move-to"}>
+      {alt ? <DesignerNavTabs />
+        : <DesignerPanelHeader
+          panelName={"move-to"}
+          panelColor={"gray"}
+          title={t("Move to location")}
+          backTo={"/app/designer/plants"}
+          description={Content.MOVE_MODE_DESCRIPTION} />}
+      <DesignerPanelContent panelName={"move-to"}
+        className={`${alt ? "with-nav" : ""}`}>
+        {alt && <p>{Content.MOVE_MODE_DESCRIPTION}</p>}
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
           currentBotLocation={this.props.currentBotLocation} />
@@ -127,8 +133,9 @@ export const MoveModeLink = () =>
   <div className="move-to-mode">
     <button
       className="fb-button gray"
+      hidden={DevSettings.futureFeaturesEnabled()}
       title={t("open move mode panel")}
-      onClick={() => history.push("/app/designer/plants/move_to")}>
+      onClick={() => history.push("/app/designer/move_to")}>
       {t("move mode")}
     </button>
   </div>;

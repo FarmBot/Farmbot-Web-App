@@ -82,7 +82,7 @@ describe("<PlantPanel/>", () => {
     p.updatePlant = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
     await clickButton(wrapper, 0, "Move FarmBot to this plant");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/move_to");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/move_to");
     expect(innerDispatch).toHaveBeenLastCalledWith({
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 12, y: 34, z: undefined }

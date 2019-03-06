@@ -1,4 +1,4 @@
-# Track the number of occurences of an event over time.
+# Track the number of occurrences of an event over time.
 #
 # Given:
 #   * A fixed size duration (1 minute, 1 week etc)

@@ -6,7 +6,7 @@ module Api
 
     CREDS        = Auth::CreateTokenFromCredentials
     NO_CREDS     = Auth::CreateToken
-    NO_USER_ATTR = "API requets need a `user` attribute that is a JSON object."
+    NO_USER_ATTR = "API requests need a `user` attribute that is a JSON object."
 
     # Give you the same token, but reloads all claims except `exp`
     def show

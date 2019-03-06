@@ -1,26 +1,28 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
 import { AutoUpdateRow } from "../auto_update_row";
 import { mount } from "enzyme";
-import { bot } from "../../../../__test_support__/fake_state/bot";
 import { AutoUpdateRowProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import { edit, save } from "../../../../api/crud";
+import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
 
 describe("<AutoUpdateRow/>", () => {
-  const fakeProps = (): AutoUpdateRowProps => {
-    return {
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
-    };
-  };
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
+  const fakeProps = (): AutoUpdateRowProps => ({
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: 1, consistent: true })
+  });
 
   it("renders", () => {
     const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
@@ -28,18 +30,20 @@ describe("<AutoUpdateRow/>", () => {
   });
 
   it("toggles auto-update on", () => {
-    bot.hardware.configuration.os_auto_update = 0;
-    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: 0, consistent: true });
+    const wrapper = mount(<AutoUpdateRow {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ os_auto_update: 1 });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 1 });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("toggles auto-update off", () => {
-    bot.hardware.configuration.os_auto_update = 1;
-    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: 1, consistent: true });
+    const wrapper = mount(<AutoUpdateRow {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ os_auto_update: 0 });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 0 });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });

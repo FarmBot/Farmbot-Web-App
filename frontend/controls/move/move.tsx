@@ -36,9 +36,7 @@ export class Move extends React.Component<MoveProps, {}> {
             toggle={this.toggle}
             getValue={this.getValue} />
         </Popover>
-        <EStopButton
-          bot={this.props.bot}
-          user={this.props.user} />
+        <EStopButton bot={this.props.bot} />
       </WidgetHeader>
       <WidgetBody>
         <MustBeOnline

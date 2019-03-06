@@ -1,13 +1,22 @@
 import { t } from "i18next";
 import { editStep } from "../../api/crud";
-import { WritePin, SequenceBodyItem } from "farmbot";
+import { WritePin, SequenceBodyItem, ALLOWED_PIN_MODES } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
 import { isNumber } from "lodash";
 
+enum PinMode {
+  digital = 0,
+  analog = 1,
+}
+
+// tslint:disable-next-line:no-any
+const isPinMode = (x: any): x is ALLOWED_PIN_MODES =>
+  Object.values(PinMode).includes(x);
+
 export const PIN_MODES = [
-  { value: 1, label: t("Analog") },
-  { value: 0, label: t("Digital") }
+  { value: PinMode.analog, label: t("Analog") },
+  { value: PinMode.digital, label: t("Digital") }
 ];
 
 export const PIN_VALUES = [
@@ -19,8 +28,8 @@ export function currentModeSelection(currentStep: SequenceBodyItem) {
   const step = currentStep as WritePin;
   const pinMode = step.args.pin_mode;
   const modes: { [s: string]: string } = {
-    0: t("Digital"),
-    1: t("Analog")
+    [PinMode.digital]: t("Digital"),
+    [PinMode.analog]: t("Analog")
   };
   return { label: modes[pinMode], value: pinMode };
 }
@@ -42,10 +51,10 @@ export function setPinMode(
     step: currentStep,
     index: index,
     executor: (step: WritePin) => {
-      if (isNumber(x.value)) {
+      if (isPinMode(x.value)) {
         step.args.pin_mode = x.value;
       } else {
-        throw new Error("Numbers only in pin_mode.");
+        throw new Error("pin_mode must be one of ALLOWED_PIN_MODES.");
       }
     }
   }));

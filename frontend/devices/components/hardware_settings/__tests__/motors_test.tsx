@@ -1,30 +1,36 @@
-const mockDevice = {
-  updateMcu: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
 import { MotorsProps } from "../../interfaces";
-import { bot } from "../../../../__test_support__/fake_state/bot";
 import { Motors } from "../motors";
 import { render, mount } from "enzyme";
 import { McuParamName } from "farmbot";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import {
+  fakeFirmwareConfig
+} from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
+import { edit, save } from "../../../../api/crud";
 
 describe("<Motors/>", () => {
+  const fakeConfig = fakeFirmwareConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
   const fakeProps = (): MotorsProps => {
     const controlPanelState = panelState();
     controlPanelState.motors = true;
     return {
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
+      dispatch: jest.fn(x => x(jest.fn(), () => state)),
       firmwareVersion: undefined,
       controlPanelState,
-      sourceFwConfig: (x) => {
-        return { value: bot.hardware.mcu_params[x], consistent: true };
-      },
+      sourceFwConfig: () => ({ value: 0, consistent: true }),
       isValidFwConfig: true,
     };
   };
@@ -62,18 +68,18 @@ describe("<Motors/>", () => {
     expect(wrapper.text()).toContain("Homing Speed");
   });
 
-  function testParamToggle(
-    description: string, parameter: McuParamName, position: number) {
+  const testParamToggle = (
+    description: string, parameter: McuParamName, position: number) => {
     it(description, () => {
       const p = fakeProps();
       p.controlPanelState.motors = true;
-      bot.hardware.mcu_params[parameter] = 1;
+      p.sourceFwConfig = () => ({ value: 1, consistent: true });
       const wrapper = mount(<Motors {...p} />);
       wrapper.find("button").at(position).simulate("click");
-      expect(mockDevice.updateMcu)
-        .toHaveBeenCalledWith({ [parameter]: 0 });
+      expect(edit).toHaveBeenCalledWith(fakeConfig, { [parameter]: 0 });
+      expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
     });
-  }
+  };
   testParamToggle("toggles retries e-stop parameter", "param_e_stop_on_mov_err", 0);
   testParamToggle("toggles enable X2", "movement_secondary_motor_x", 7);
   testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 8);
