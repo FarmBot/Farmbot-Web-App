@@ -30,10 +30,11 @@ module Api
     VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES       = ["queue", "exchange"]
     PERMISSIONS     = ["configure", "read", "write"]
-    skip_before_action :check_fbos_version, only: ALL
-    skip_before_action :authenticate_user!, only: ALL
+    skip_before_action :check_fbos_version, except: []
+    skip_before_action :authenticate_user!, except: []
 
     before_action :scrutinize_topic_string
+    before_action :always_allow_admin, except: [:user]
 
     def user # Session entrypoint - Part I
       # Example JSON:
@@ -53,11 +54,7 @@ module Api
       #   "username" => "admin",
       #   "vhost"    => "/",
       #   "ip"       => "::ffff:172.23.0.1",
-      if is_admin
-        allow
-      else
         params["vhost"] == VHOST ? allow : deny
-      end
     end
 
     def resource
@@ -67,13 +64,9 @@ module Api
       #   "resource"   => "queue",
       #   "name"       => "mqtt-subscription-MQTT_FX_Clientqos0",
       #   "permission" => "configure",
-      if is_admin
-        allow
-      else
         res, perm = [params["resource"], params["permission"]]
         ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
         ok        ? allow : deny
-      end
     end
 
     def topic # Called during subscribe
@@ -84,22 +77,22 @@ module Api
       #   "routing_key" => "from_api",
       #   "username"    => "admin",
       #   "vhost"       => "/",
-      if is_admin
-        allow
-      else
-        device_id_in_topic == device_id_in_username ? allow : deny
-      end
+      device_id_in_topic == device_id_in_username ? allow : deny
     end
 
   private
 
-    def is_admin
+    def always_allow_admin
+      allow if admin?
+    end
+
+    def admin?
       username == "admin"
     end
 
     def authenticate_admin
       correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
-      ok         = is_admin && correct_pw
+      ok         = admin? && correct_pw
       ok         ? allow("management", "administrator") : deny
     end
 
@@ -124,7 +117,7 @@ module Api
     end
 
     def scrutinize_topic_string
-      return if is_admin
+      return if admin?
       is_ok = routing_key ? !!TOPIC_REGEX.match(routing_key) : true
       render json: MALFORMED_TOPIC, status: 422 unless is_ok
     end
