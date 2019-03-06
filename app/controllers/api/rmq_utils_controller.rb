@@ -23,13 +23,13 @@ module Api
 
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})" )
+    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})")
 
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
-    ALL             = [:user, :vhost, :resource, :topic]
-    VHOST           = ENV.fetch("MQTT_VHOST") { "/" }
-    RESOURCES       = ["queue", "exchange"]
-    PERMISSIONS     = ["configure", "read", "write"]
+    ALL = [:user, :vhost, :resource, :topic]
+    VHOST = ENV.fetch("MQTT_VHOST") { "/" }
+    RESOURCES = ["queue", "exchange"]
+    PERMISSIONS = ["configure", "read", "write"]
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
 
@@ -45,8 +45,7 @@ module Api
       case username
       when "guest" then deny
       when "admin" then authenticate_admin
-      else; device_id_in_username == current_device.id ? allow : deny
-      end
+      else; device_id_in_username == current_device.id ? allow : deny       end
     end
 
     def vhost # Session entrypoint - Part II
@@ -54,7 +53,7 @@ module Api
       #   "username" => "admin",
       #   "vhost"    => "/",
       #   "ip"       => "::ffff:172.23.0.1",
-        params["vhost"] == VHOST ? allow : deny
+      vhost == VHOST ? allow : deny
     end
 
     def resource
@@ -64,9 +63,8 @@ module Api
       #   "resource"   => "queue",
       #   "name"       => "mqtt-subscription-MQTT_FX_Clientqos0",
       #   "permission" => "configure",
-        res, perm = [params["resource"], params["permission"]]
-        ok        = RESOURCES.include?(res) && PERMISSIONS.include?(perm)
-        ok        ? allow : deny
+      ok = RESOURCES.include?(resource) && PERMISSIONS.include?(permission)
+      ok ? allow : deny
     end
 
     def topic # Called during subscribe
@@ -80,7 +78,7 @@ module Api
       device_id_in_topic == device_id_in_username ? allow : deny
     end
 
-  private
+    private
 
     def always_allow_admin
       allow if admin?
@@ -92,8 +90,8 @@ module Api
 
     def authenticate_admin
       correct_pw = password == ENV.fetch("ADMIN_PASSWORD")
-      ok         = admin? && correct_pw
-      ok         ? allow("management", "administrator") : deny
+      ok = admin? && correct_pw
+      ok ? allow("management", "administrator") : deny
     end
 
     def deny
@@ -116,6 +114,18 @@ module Api
       @routing_key ||= params["routing_key"]
     end
 
+    def vhost
+      @vhost ||= params["vhost"]
+    end
+
+    def resource
+      @resource ||= params["resource"]
+    end
+
+    def permission
+      @permission ||= params["permission"]
+    end
+
     def scrutinize_topic_string
       return if admin?
       is_ok = routing_key ? !!TOPIC_REGEX.match(routing_key) : true
@@ -123,10 +133,10 @@ module Api
     end
 
     def device_id_in_topic
-      (routing_key || "")        # "bot.device_9.logs"
+      (routing_key || "") # "bot.device_9.logs"
         .gsub("bot.device_", "") # "9.logs"
-        .split(".")              # ["9", "logs"]
-        .first                   # "9"
+        .split(".") # ["9", "logs"]
+        .first # "9"
         .to_i || 0               # 9
     end
 
