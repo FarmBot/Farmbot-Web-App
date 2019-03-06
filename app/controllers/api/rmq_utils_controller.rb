@@ -7,7 +7,7 @@ module Api
   class RmqUtilsController < Api::AbstractController
     # List of AMQP/MQTT topics we support in the following format:
     # "bot.device_123.<MAIN TOPIC HERE>"
-    MAIN_TOPICS = %w(
+    BOT_CHANNELS = %w(
       nerves_hub
       from_clients
       from_device
@@ -23,7 +23,7 @@ module Api
 
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{MAIN_TOPICS})" )
+    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})" )
 
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
     ALL             = [:user, :vhost, :resource, :topic]
@@ -35,7 +35,12 @@ module Api
 
     before_action :scrutinize_topic_string
 
-    def user
+    def user # Session entrypoint - Part I
+      # Example JSON:
+      #   "username"  => "foo@bar.com",
+      #   "password"  => "******",
+      #   "vhost"     => "/",
+      #   "client_id" => "MQTT_FX_Client",
       case username
       when "guest" then deny
       when "admin" then authenticate_admin
@@ -43,7 +48,11 @@ module Api
       end
     end
 
-    def vhost
+    def vhost # Session entrypoint - Part II
+      # Example JSON:
+      #   "username" => "admin",
+      #   "vhost"    => "/",
+      #   "ip"       => "::ffff:172.23.0.1",
       if is_admin
         allow
       else
@@ -52,6 +61,12 @@ module Api
     end
 
     def resource
+      # Example JSON:
+      #   "username"   => "admin",
+      #   "vhost"      => "/",
+      #   "resource"   => "queue",
+      #   "name"       => "mqtt-subscription-MQTT_FX_Clientqos0",
+      #   "permission" => "configure",
       if is_admin
         allow
       else
@@ -61,7 +76,14 @@ module Api
       end
     end
 
-    def topic
+    def topic # Called during subscribe
+      # Example JSON:
+      #   "name"        => "amq.topic",
+      #   "permission"  => "read",
+      #   "resource"    => "topic",
+      #   "routing_key" => "from_api",
+      #   "username"    => "admin",
+      #   "vhost"       => "/",
       if is_admin
         allow
       else
