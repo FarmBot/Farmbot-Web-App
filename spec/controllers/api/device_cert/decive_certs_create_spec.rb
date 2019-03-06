@@ -9,7 +9,7 @@ describe Api::DeviceCertsController do
     it 'creates a cert' do
       # So many locals: ========================================================
       ser  = "456"
-      tags = ["FOO", "BAR"]
+      tags = ["FOO:BAR", "BAR:BAZ"]
       conn = double("Create a cert", :ca_file=    => nil,
                                      :cert_store  => nil,
                                      :cert_store= => nil,

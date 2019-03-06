@@ -57,6 +57,8 @@ class NervesHub
   # So it needs to be written to a path.
   NERVES_HUB_CA_HACK          = "/tmp/nerves_hub_ca.#{Rails.env}.pem"
   NERVES_HUB_ERROR            = "NervesHub request failed: %s: %s"
+  COLON                       = ":"
+  BAD_TAG                     = "A device sent a malformed tag"
 
   # HEADERS for HTTP requests to NervesHub
   HEADERS      = {"Content-Type" => "application/json"}
@@ -75,10 +77,10 @@ class NervesHub
     return unless dev
     # ["application:prod", "channel:stable"]
     # Becomes: {"application"=>"prod", "channel"=>"stable"}
-    # NEVER DUPLICATE TAG PREFIXES (thing before ":"). Must be unique!
-    tag_map = dev.fetch(:tags).map { |x| x.split(":") }.to_h
+    # NEVER DUPLICATE TAG PREFIXES (thing before COLON). Must be unique!
+    tag_map = dev.fetch(:tags).map { |x| x.split(COLON) }.to_h
     tag_map[CHANNEL] = channel
-    next_tags        = tag_map.to_a.map { |x| x.join(":") }
+    next_tags        = tag_map.to_a.map { |x| x.join(COLON) }
     update(serial_number, next_tags)
   end
 
@@ -88,6 +90,13 @@ class NervesHub
   def self.create_or_update(serial_number, tags)
     # Hash | nil
     current_nerves_hub_device = device(serial_number)
+
+    # It's really hard to debug malformed tags; Catch them here:
+    if tags.detect{|x| !x.include?(COLON) }
+      report_problem(error: BAD_TAG, serial_number: serial_number, tags: tags)
+      return
+    end
+
     if current_nerves_hub_device
       update(serial_number, tags)
     else
@@ -126,13 +135,6 @@ class NervesHub
     bad_http(resp.code, resp.body) if resp.code != "201"
     JSON(resp.body)["data"].deep_symbolize_keys
   end
-
-  # # Delete a device from NervesHub
-  # def self.delete_device(serial_number)
-  #   resp = conn.delete("#{devices_path}/#{serial_number}")
-  #   bad_http(resp.code, resp.body) if resp.code != "204"
-  #   resp.body
-  # end
 
   # Creates a device certificate that is able to access NervesHub.
   # This creates a CSR on behalf of the device.
