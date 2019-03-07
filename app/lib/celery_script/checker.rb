@@ -22,8 +22,15 @@ module CeleryScript
     # BAD_LEAF template.
     FRIENDLY_ERRORS = {
       nothing: {
+        variable_declaration: "You must provide a value for all parameters",
+        parameter_declaration: "You must provide a value for all parameters",
+      },
+    }.with_indifferent_access
 
-    # Device is required for security / permission checks.
+    attr_reader :tree, :corpus, :device
+
+    def initialize(tree, corpus, device)
+      # Device is required for security / permission checks.
       @tree, @corpus, @device = tree, corpus, device
       self.freeze
     end
@@ -76,15 +83,14 @@ module CeleryScript
     end
 
     def check_arity(node)
-        allowed = corpus.args(node)
-        allowed.map do |arg|
-          has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-          unless has_key
-            msgs = node.args.keys.join(", ")
-            msgs = "nothing" if msgs.length < 1
-            msg  = MISSING_ARG % [node.kind, arg, msgs]
-            raise TypeCheckError, msg
-          end
+      allowed = corpus.args(node)
+      allowed.map do |arg|
+        has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
+        unless has_key
+          msgs = node.args.keys.join(", ")
+          msgs = "nothing" if msgs.length < 1
+          msg  = MISSING_ARG % [node.kind, arg, msgs]
+          raise TypeCheckError, msg
         end
       end
       has = node.args.keys.map(&:to_sym) # Either bigger or equal.
