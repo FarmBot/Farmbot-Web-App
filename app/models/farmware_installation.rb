@@ -18,7 +18,7 @@ class FarmwareInstallation < ApplicationRecord
     SocketError        =>
       "The server at the provided appears to be offline.",
     Net::OpenTimeout   =>
-      "A timeout error occured.",
+      "A timeout error occurred.",
     JSON::ParserError  =>
       "Expected Farmware manifest to be valid JSON, "\
       "but it is not. Consider using a JSON validator.",

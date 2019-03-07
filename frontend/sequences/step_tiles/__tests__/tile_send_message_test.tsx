@@ -5,6 +5,7 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
 import { channel } from "../tile_send_message_support";
 import { emptyState } from "../../../resources/reducer";
+import { MessageType } from "../../interfaces";
 
 describe("<TileSendMessage/>", () => {
   function props() {
@@ -12,7 +13,7 @@ describe("<TileSendMessage/>", () => {
       kind: "send_message",
       args: {
         message: "send this message",
-        message_type: "info"
+        message_type: MessageType.info
       },
       body: [{
         kind: "channel",

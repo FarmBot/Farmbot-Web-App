@@ -4,6 +4,6 @@ namespace :corpus do
        "CeleryScript"
   task generate: :environment do
     sh "rails r latest_corpus.rb"
-    sh "xclip -sel clip < ./latest_corpus.ts"
+    puts "Now run 'xclip -sel clip < ./latest_corpus.ts'"
   end
 end

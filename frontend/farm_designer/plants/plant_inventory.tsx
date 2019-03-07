@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { t } from "i18next";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../../interfaces";
-import { DesignerNavTabs } from "../panel_header";
-import { Link } from "../../link";
+import { Panel, DesignerNavTabs } from "../panel_header";
 import { getPlants } from "../state_to_props";
 import { TaggedPlant } from "../map/interfaces";
 import {
@@ -15,7 +14,7 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
 } from "./designer_panel";
 
-interface Props {
+export interface PlantInventoryProps {
   plants: TaggedPlant[];
   dispatch: Function;
   hoveredPlantListItem?: string | undefined;
@@ -25,7 +24,7 @@ interface State {
   searchTerm: string;
 }
 
-function mapStateToProps(props: Everything): Props {
+function mapStateToProps(props: Everything): PlantInventoryProps {
   const { hoveredPlantListItem } = props.resources.consumers.farm_designer;
   return {
     plants: getPlants(props.resources),
@@ -35,18 +34,20 @@ function mapStateToProps(props: Everything): Props {
 }
 
 @connect(mapStateToProps)
-export class Plants extends React.Component<Props, State> {
+export class Plants extends React.Component<PlantInventoryProps, State> {
 
   state: State = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  }
+  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) =>
+    this.setState({ searchTerm: currentTarget.value })
 
   render() {
     return <DesignerPanel panelName={"plant-inventory"} panelColor={"green"}>
       <DesignerNavTabs />
-      <DesignerPanelTop>
+      <DesignerPanelTop
+        panel={Panel.Plants}
+        linkTo={"/app/designer/plants/crop_search"}
+        title={t("Add plant")}>
         <input type="text" onChange={this.update}
           placeholder={t("Search your plants...")} />
       </DesignerPanelTop>
@@ -60,21 +61,13 @@ export class Plants extends React.Component<Props, State> {
           {this.props.plants
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => {
-              const hovered = this.props.hoveredPlantListItem === p.uuid;
-              return <PlantInventoryItem
-                key={p.uuid}
-                tpp={p}
-                hovered={hovered}
-                dispatch={this.props.dispatch} />;
-            })}
+            .map(p => <PlantInventoryItem
+              key={p.uuid}
+              tpp={p}
+              hovered={this.props.hoveredPlantListItem === p.uuid}
+              dispatch={this.props.dispatch} />)}
         </EmptyStateWrapper>
       </DesignerPanelContent>
-      <Link to="/app/designer/plants/crop_search">
-        <div className="plus-button fb-button green">
-          <i className="fa fa-2x fa-plus" title={t("Add plant")} />
-        </div>
-      </Link>
     </DesignerPanel>;
   }
 }

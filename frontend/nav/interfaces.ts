@@ -2,8 +2,7 @@ import { BotState } from "../devices/interfaces";
 import { TaggedUser, TaggedLog } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
-export interface NavButtonProps {
-  user: TaggedUser | undefined;
+export interface SyncButtonProps {
   dispatch: Function;
   bot: BotState;
   consistent: boolean;

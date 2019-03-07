@@ -261,6 +261,21 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
 
+  export const SET_SERVO_ANGLE =
+    trim(`Move a servo to the provided angle.`);
+
+  export const TOGGLE_PIN =
+    trim(`Toggle a digital pin on or off.`);
+
+  export const MOVE_TO_HOME =
+    trim(`Move FarmBot to home for the provided axis.`);
+
+  export const FIRMWARE_ACTION =
+    trim(`FarmBot OS or micro-controller firmware action.`);
+
+  export const SYSTEM_ACTION =
+    trim(`FarmBot OS action.`);
+
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
 

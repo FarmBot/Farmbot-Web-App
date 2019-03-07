@@ -135,7 +135,7 @@ export const safeEveryPointType = (x: string): EveryPointType => {
 export const everyPointDDI = (value: EveryPointType): DropDownItem =>
   ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
 
-const COORDINATE_DDI = (): DropDownItem =>
+export const COORDINATE_DDI = (): DropDownItem =>
   ({ value: "", label: t("Coordinate"), headingId: "Coordinate" });
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>

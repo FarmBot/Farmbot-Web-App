@@ -6,6 +6,7 @@ import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
+import { MessageType } from "./interfaces";
 
 export interface StepButtonProps {
   dispatch: Function;
@@ -85,7 +86,7 @@ export function StepButtonCluster(props: StepButtonProps) {
         kind: "send_message",
         args: {
           message: t("FarmBot is at position ") + "{{ x }}, {{ y }}, {{ z }}.",
-          message_type: "success"
+          message_type: MessageType.success
         }
       }}
       color="red">

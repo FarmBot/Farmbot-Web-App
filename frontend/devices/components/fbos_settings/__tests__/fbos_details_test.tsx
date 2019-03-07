@@ -1,8 +1,6 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
@@ -10,18 +8,24 @@ import { FbosDetails, colorFromTemp, betaReleaseOptIn } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { FbosDetailsProps } from "../interfaces";
+import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
+import { edit, save } from "../../../../api/crud";
 
 describe("<FbosDetails/>", () => {
-  const fakeProps = (): FbosDetailsProps => {
-    return {
-      botInfoSettings: bot.hardware.informational_settings,
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      shouldDisplay: () => false,
-      sourceFbosConfig: x =>
-        ({ value: bot.hardware.configuration[x], consistent: true }),
-    };
-  };
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
+  const fakeProps = (): FbosDetailsProps => ({
+    botInfoSettings: bot.hardware.informational_settings,
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: true, consistent: true }),
+    shouldDisplay: () => false,
+  });
 
   it("renders", () => {
     const p = fakeProps();
@@ -79,17 +83,19 @@ describe("<FbosDetails/>", () => {
   });
 
   it("toggles os beta opt in setting on", () => {
-    bot.hardware.configuration.beta_opt_in = false;
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: false, consistent: true });
+    const wrapper = mount(<FbosDetails {...p} />);
     window.confirm = jest.fn();
     wrapper.find("button").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith(
       expect.stringContaining("you sure?"));
-    expect(mockDevice.updateConfig).not.toHaveBeenCalled();
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
     window.confirm = () => true;
     wrapper.find("button").simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ beta_opt_in: true });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { beta_opt_in: true });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("toggles os beta opt in setting off", () => {
@@ -97,8 +103,8 @@ describe("<FbosDetails/>", () => {
     const wrapper = mount(<FbosDetails {...fakeProps()} />);
     window.confirm = () => false;
     wrapper.find("button").simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ beta_opt_in: false });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { beta_opt_in: false });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("displays N/A when wifi strength value is undefined", () => {

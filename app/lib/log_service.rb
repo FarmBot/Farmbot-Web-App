@@ -1,4 +1,4 @@
-# A singleton that runs on a seperate process than the web server.
+# A singleton that runs on a separate process than the web server.
 # Listens to *ALL* incoming logs and stores them to the DB.
 # Also handles throttling.
 class LogService

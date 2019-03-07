@@ -1,9 +1,9 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
-  rebootFirmware: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+const mockDevice = { rebootFirmware: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
+
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
@@ -14,15 +14,22 @@ import { bot } from "../../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import { clickButton } from "../../../../__test_support__/helpers";
+import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
+import { edit, save } from "../../../../api/crud";
 
 describe("<PowerAndReset/>", () => {
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
   const fakeProps = (): PowerAndResetProps => {
     return {
       controlPanelState: panelState(),
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      },
+      dispatch: jest.fn(x => x(jest.fn(), () => state)),
+      sourceFbosConfig: () => ({ value: true, consistent: true }),
       shouldDisplay: jest.fn(),
       botOnline: true,
     };
@@ -62,13 +69,13 @@ describe("<PowerAndReset/>", () => {
   });
 
   it("toggles auto reset", () => {
-    bot.hardware.configuration.disable_factory_reset = false;
     const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: false, consistent: true });
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
     clickButton(wrapper, 3, "yes");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ disable_factory_reset: true });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { disable_factory_reset: true });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("restarts firmware", () => {

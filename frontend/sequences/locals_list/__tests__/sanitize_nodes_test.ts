@@ -1,6 +1,6 @@
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { MoveAbsolute } from "farmbot";
-import { sanitizeNodes } from "../variables_support";
+import { sanitizeNodes } from "../sanitize_nodes";
 import { get } from "lodash";
 
 describe("performAllIndexesOnSequence", () => {
@@ -23,7 +23,11 @@ describe("performAllIndexesOnSequence", () => {
       body: [
         {
           kind: "parameter_declaration",
-          args: { data_type: "whatever", label: "parent" }
+          args: {
+            default_value: {
+              kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+            }, label: "parent"
+          }
         }
       ]
     };

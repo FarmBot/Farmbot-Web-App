@@ -51,7 +51,7 @@ class Image < ApplicationRecord
   #   User clicks "take photo" and "delete" on Image#123 very quickly.
   # Problem:
   #   Now there's a Delayed::Job pointing to (nonexistent) Image#123,
-  #   causing runtime errrors in the work queue.
+  #   causing runtime errors in the work queue.
   # Solution:
   #   Don't retry failed deletions. Users can always click the "delete"
   #   button again if need be.

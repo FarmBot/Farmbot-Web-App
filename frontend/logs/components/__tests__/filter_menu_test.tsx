@@ -3,8 +3,9 @@ import { mount } from "enzyme";
 import { LogsFilterMenu } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
 import { clickButton } from "../../../__test_support__/helpers";
+import { MESSAGE_TYPES, MessageType } from "../../../sequences/interfaces";
 
-const logTypes = ["success", "busy", "warn", "error", "info", "fun", "debug"];
+const logTypes = MESSAGE_TYPES;
 
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
@@ -36,7 +37,7 @@ describe("<LogsFilterMenu />", () => {
     p.setFilterLevel = (x) => () => setFilterLevel(x);
     const wrapper = mount(<LogsFilterMenu {...p} />);
     wrapper.find("button").at(2).simulate("click");
-    expect(toggle).toHaveBeenCalledWith("success");
+    expect(toggle).toHaveBeenCalledWith(MessageType.success);
   });
 
   it("shows filter status", () => {

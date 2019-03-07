@@ -6,7 +6,9 @@ import {
   SyncStatus,
   ALLOWED_CHANNEL_NAMES,
   Xyz,
-  FarmwareConfig
+  FarmwareConfig,
+  ALLOWED_MESSAGE_TYPES,
+  Vector3,
 } from "farmbot";
 import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "farmbot";
@@ -19,6 +21,18 @@ export interface HardwareFlags {
   stopAtMax: Record<Xyz, boolean>;
   negativeOnly: Record<Xyz, boolean>;
   axisLength: Record<Xyz, number>;
+}
+
+export interface CheckConflictCaseProps {
+  axis: Xyz;
+  target: number;
+  hardwareFlags: HardwareFlags;
+}
+
+export interface MoveAbsoluteWarningProps {
+  vector: Vector3 | undefined;
+  offset: Vector3;
+  hardwareFlags: HardwareFlags | undefined;
 }
 
 export interface Props {
@@ -68,6 +82,22 @@ export const FLOAT_NUMERIC_FIELDS = ["x", "y", "z"];
 
 export const NUMERIC_FIELDS = INT_NUMERIC_FIELDS.concat(FLOAT_NUMERIC_FIELDS);
 
+export enum MessageType {
+  success = "success",
+  busy = "busy",
+  warn = "warn",
+  error = "error",
+  info = "info",
+  fun = "fun",
+  debug = "debug"
+}
+
+export const MESSAGE_TYPES = Object.keys(MessageType);
+
+// tslint:disable-next-line:no-any
+export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
+  MESSAGE_TYPES.includes(x);
+
 export interface Sequence extends CeleryScriptSequence {
   id?: number;
   color: ResourceColor;
@@ -89,12 +119,6 @@ export interface SequencesListProps {
 
 export interface SequencesListState {
   searchTerm: string;
-}
-
-/** Used when dispatching an updated message type. */
-export interface MessageParams {
-  value: string | number;
-  index: number;
 }
 
 export interface MoveAbsState {
@@ -134,6 +158,7 @@ export interface StepInputProps {
   dispatch: Function;
   type_?: "text" | "hidden" | undefined;
   index: number;
+  fieldOverride?: boolean;
 }
 
 export interface StepTitleBarProps {

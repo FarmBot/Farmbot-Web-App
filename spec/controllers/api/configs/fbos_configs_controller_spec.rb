@@ -41,7 +41,7 @@ describe Api::FbosConfigsController do
   end
 
   describe '#update' do
-    it 'raise integer overflow erorrs' do
+    it 'raise integer overflow errors' do
       way_too_big = 123456789013333333332345
       sign_in user
       body = { network_not_found_timer: way_too_big }

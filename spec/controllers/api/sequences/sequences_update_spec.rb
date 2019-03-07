@@ -22,7 +22,10 @@ describe Api::SequencesController do
                   kind: "parameter_declaration",
                   args: {
                     label: "parent",
-                    data_type: "point"
+                    default_value: {
+                      kind: "coordinate",
+                      args: { x: 9, y: 9, z: 9, }
+                    }
                   }
                 }
               ]

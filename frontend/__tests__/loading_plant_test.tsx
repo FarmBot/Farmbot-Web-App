@@ -24,4 +24,15 @@ describe("<LoadingPlant/>", () => {
     expect(wrapper.find(".animate").length).toEqual(1);
     wrapper.unmount();
   });
+
+  it("clears initial loading text", () => {
+    const el = { outerHTML: "hidden" };
+    // tslint:disable-next-line:no-any
+    document.getElementsByClassName = jest.fn(() => ([el] as any));
+    const wrapper = shallow(<LoadingPlant animate={false} />);
+    expect(wrapper.find(".loading-plant").length).toEqual(0);
+    expect(wrapper.text()).toEqual("Loading...");
+    expect(el.outerHTML).toEqual("");
+    wrapper.unmount();
+  });
 });

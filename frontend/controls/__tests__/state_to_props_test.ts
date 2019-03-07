@@ -8,7 +8,6 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakeUser()]);
     const result = mapStateToProps(state);
-    expect(result.user).toBeTruthy();
-    expect(result.user && result.user.kind).toBe("User");
+    expect(result.timeOffset).toEqual(0);
   });
 });

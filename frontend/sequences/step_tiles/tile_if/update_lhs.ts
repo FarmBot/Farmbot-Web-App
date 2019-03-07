@@ -1,4 +1,4 @@
-import { TaggedSequence, If } from "farmbot";
+import { TaggedSequence, If, AllowedPinTypes } from "farmbot";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { defensiveClone, bail } from "../../../util";
 import { DropDownItem } from "../../../ui";
@@ -30,7 +30,10 @@ export const updateLhs =
             if (!resource) { return bail("NO"); }
             stepCopy.args.lhs = {
               kind: "named_pin",
-              args: { pin_type: resource.kind, pin_id: resource.body.id || 0 }
+              args: {
+                pin_type: resource.kind as AllowedPinTypes,
+                pin_id: resource.body.id || 0
+              }
             };
             break;
           case PinGroupName.Position: // "x", "y", "z"

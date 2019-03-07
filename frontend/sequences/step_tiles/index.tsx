@@ -23,6 +23,13 @@ import { MarkAs } from "./mark_as";
 import { TileUnknown } from "./tile_unknown";
 import { forceSetStepTag } from "../../resources/sequence_tagging";
 import { compact, assign } from "lodash";
+import { TileSetServoAngle } from "./tile_set_servo_angle";
+import { TileSystemAction } from "./tile_system_action";
+import { TileTogglePin } from "./tile_toggle_pin";
+import { TileFirmwareAction } from "./tile_firmware_action";
+import { TileSetZero } from "./tile_set_zero";
+import { TileCalibrate } from "./tile_calibrate";
+import { TileMoveHome } from "./tile_move_home";
 
 interface MoveParams {
   step: Step;
@@ -125,6 +132,7 @@ function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
   return assign(copy.args, { [field]: parsedNumber });
 }
 
+// tslint:disable-next-line:cyclomatic-complexity
 export function renderCeleryNode(props: StepParams) {
   switch (props.currentStep.kind) {
     case "_if": return <TileIf {...props} />;
@@ -139,6 +147,17 @@ export function renderCeleryNode(props: StepParams) {
     case "wait": return <TileWait {...props} />;
     case "write_pin": return <TileWritePin {...props} />;
     case "resource_update": return <MarkAs {...props} />;
+    case "set_servo_angle": return <TileSetServoAngle {...props} />;
+    case "toggle_pin": return <TileTogglePin {...props} />;
+    case "zero": return <TileSetZero {...props} />;
+    case "calibrate": return <TileCalibrate {...props} />;
+    case "home": return <TileMoveHome {...props} />;
+    case "reboot": case "check_updates": case "factory_reset":
+      return <TileFirmwareAction {...props} />;
+    case "sync": case "dump_info": case "power_off": case "read_status":
+    case "emergency_unlock": case "emergency_lock":
+    case "install_first_party_farmware":
+      return <TileSystemAction {...props} />;
     default: return <TileUnknown {...props} />;
   }
 }

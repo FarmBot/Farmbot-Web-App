@@ -6,6 +6,7 @@ import { TickerList } from "../ticker_list";
 import { Dictionary } from "farmbot";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { TickerListProps } from "../interfaces";
+import { MESSAGE_TYPES } from "../../sequences/interfaces";
 
 describe("<TickerList />", () => {
   const fakeTaggedLog = () => {
@@ -72,8 +73,7 @@ describe("<TickerList />", () => {
   });
 
   it("all logs filtered out", () => {
-    ["success", "busy", "warn", "error", "info", "fun", "debug"]
-      .map(logType => mockStorj[logType + "_log"] = 0);
+    MESSAGE_TYPES.map(logType => mockStorj[logType + "_log"] = 0);
     const p = fakeProps();
     p.logs[0].body.verbosity = 1;
     const wrapper = mount(<TickerList {...p} />);
