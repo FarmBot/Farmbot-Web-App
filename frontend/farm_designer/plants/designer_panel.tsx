@@ -2,6 +2,8 @@ import * as React from "react";
 import { t } from "i18next";
 import { history as routeHistory } from "../../history";
 import { last, trim } from "lodash";
+import { Link } from "../../link";
+import { Panel, TAB_COLOR } from "../panel_header";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -58,22 +60,41 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) =>
       </div>}
   </div>;
 
-export const DesignerPanelTop = (props: { children?: React.ReactNode }) =>
-  <div className="panel-top">
+interface DesignerPanelTopProps {
+  panel?: Panel;
+  linkTo?: string;
+  title?: string;
+  children?: React.ReactNode;
+  noIcon?: boolean;
+}
+
+export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
+  return <div className={`panel-top ${props.linkTo ? "with-button" : ""}`}>
     <div className="thin-search-wrapper">
       <div className="text-input-wrapper">
-        <i className="fa fa-search"></i>
+        {!props.noIcon &&
+          <i className="fa fa-search"></i>}
         {props.children}
       </div>
     </div>
+    {props.linkTo &&
+      <Link to={props.linkTo}>
+        <div className={`fb-button ${TAB_COLOR[props.panel || Panel.Plants]}`}>
+          <i className="fa fa-2x fa-plus" title={props.title} />
+        </div>
+      </Link>}
   </div>;
+};
 
 interface DesignerPanelContentProps {
   panelName: string;
   children?: React.ReactNode;
+  className?: string;
 }
 
 export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
-  <div className={`panel-content ${props.panelName}-panel-content`}>
+  <div className={
+    `panel-content ${props.panelName}-panel-content ${props.className || ""}`
+  }>
     {props.children}
   </div>;

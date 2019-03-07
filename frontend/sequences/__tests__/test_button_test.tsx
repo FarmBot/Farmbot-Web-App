@@ -17,7 +17,7 @@ jest.mock("@blueprintjs/core", () => ({
 import * as React from "react";
 import { TestButton, TestBtnProps, setMenuOpen } from "../test_button";
 import {
-  TaggedSequence, SpecialStatus, VariableDeclaration, ParameterDeclaration
+  TaggedSequence, SpecialStatus, ParameterApplication, ParameterDeclaration, Coordinate
 } from "farmbot";
 import { mount } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -25,7 +25,6 @@ import { warning } from "farmbot-toastr";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { clickButton } from "../../__test_support__/helpers";
-import { NOTHING_SELECTED } from "../locals_list/handle_select";
 
 describe("<TestButton/>", () => {
   function fakeSequence(): TaggedSequence {
@@ -121,8 +120,8 @@ describe("<TestButton/>", () => {
   });
 
   it("has open parameter assignment menu", () => {
-    const declaration: VariableDeclaration = {
-      kind: "variable_declaration",
+    const variable: ParameterApplication = {
+      kind: "parameter_application",
       args: {
         label: "label", data_value: {
           kind: "coordinate", args: { x: 0, y: 0, z: 0 }
@@ -131,14 +130,18 @@ describe("<TestButton/>", () => {
     };
     const props = fakeProps();
     const wrapper = mount<TestButton>(<TestButton {...props} />);
-    wrapper.instance().editDeclaration(declaration);
-    expect(wrapper.state().declarations).toEqual([declaration]);
+    wrapper.instance().editBodyVariables(variable);
+    expect(wrapper.state().bodyVariables).toEqual([variable]);
   });
 
-  it("calls sequence with declarations when synced", () => {
+  const COORDINATE: Coordinate = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+
+  it("calls sequence with bodyVariables when synced", () => {
     const declaration: ParameterDeclaration = {
       kind: "parameter_declaration",
-      args: { label: "label", data_type: "point" }
+      args: {
+        label: "label", default_value: COORDINATE
+      }
     };
     const props = fakeProps();
     props.syncStatus = "synced";
@@ -150,16 +153,18 @@ describe("<TestButton/>", () => {
     const wrapper = mount<TestButton>(<TestButton {...props} />);
     clickButton(wrapper, 1, "test");
     expect(mockDevice.execSequence).toHaveBeenCalledWith(props.sequence.body.id, [{
-      kind: "variable_declaration",
-      args: { label: "label", data_value: NOTHING_SELECTED }
+      kind: "parameter_application",
+      args: { label: "label", data_value: COORDINATE }
     }
     ]);
   });
 
-  it("doesn't call sequence with declarations when not synced", () => {
+  it("doesn't call sequence with bodyVariables when not synced", () => {
     const declaration: ParameterDeclaration = {
       kind: "parameter_declaration",
-      args: { label: "label", data_type: "point" }
+      args: {
+        label: "label", default_value: COORDINATE
+      }
     };
     const props = fakeProps();
     props.syncStatus = "sync_now";

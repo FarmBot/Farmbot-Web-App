@@ -17,7 +17,13 @@ class FakeSequence < Mutations::Command
           args: {},
           body: [{
               kind: "parameter_declaration",
-              args: { label: "parent", data_type: "point" }
+              args: {
+                label: "parent",
+                default_value: {
+                  kind: "coordinate",
+                  args: { x: 4, y: 4, z: 4, }
+                }
+              }
             }]
         }
       }

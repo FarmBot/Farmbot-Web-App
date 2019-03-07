@@ -1,8 +1,6 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 const mockStorj: Dictionary<number | boolean> = {};
@@ -10,23 +8,27 @@ const mockStorj: Dictionary<number | boolean> = {};
 import * as React from "react";
 import { mount } from "enzyme";
 import { LogsSettingsMenu } from "../settings_menu";
-import { bot } from "../../../__test_support__/fake_state/bot";
 import { ConfigurationName, Dictionary } from "farmbot";
 import { NumericSetting } from "../../../session_keys";
 import { LogsSettingsMenuProps } from "../../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
+import { edit, save } from "../../../api/crud";
 
 describe("<LogsSettingsMenu />", () => {
-  const fakeProps = (): LogsSettingsMenuProps => {
-    return {
-      setFilterLevel: () => jest.fn(),
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      },
-      getConfigValue: x => mockStorj[x],
-    };
-  };
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
+  const fakeProps = (): LogsSettingsMenuProps => ({
+    setFilterLevel: () => jest.fn(),
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: false, consistent: true }),
+    getConfigValue: x => mockStorj[x],
+  });
 
   it("renders", () => {
     const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
@@ -36,11 +38,12 @@ describe("<LogsSettingsMenu />", () => {
 
   function testSettingToggle(setting: ConfigurationName, position: number) {
     it("toggles setting", () => {
-      bot.hardware.configuration[setting] = false;
-      const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
+      const p = fakeProps();
+      p.sourceFbosConfig = () => ({ value: false, consistent: true });
+      const wrapper = mount(<LogsSettingsMenu {...p} />);
       wrapper.find("button").at(position).simulate("click");
-      expect(mockDevice.updateConfig)
-        .toHaveBeenCalledWith({ [setting]: true });
+      expect(edit).toHaveBeenCalledWith(fakeConfig, { [setting]: true });
+      expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
     });
   }
   testSettingToggle("sequence_init_log", 0);

@@ -9,14 +9,13 @@ describe CeleryScript::Checker do
   it "disallows the use of `identifier` nodes" do
     params = { kind: "internal_farm_event",
                args: {},
-               body: [ {kind: "variable_declaration",
+               body: [ {kind: "parameter_application",
                         args: {
                           label: "foo",
                           data_value: {
                             kind: "identifier",
                             args: {
                               label: "makes no sense",
-                              data_type: "coordinate"
                             }
                           }
                         } } ]
@@ -29,7 +28,7 @@ describe CeleryScript::Checker do
   it "runs through a syntactically valid program" do
   body = [
            {
-             kind: "variable_declaration",
+             kind: "parameter_application",
              args: {
                label: "tool",
                data_value: {
@@ -41,7 +40,7 @@ describe CeleryScript::Checker do
              }
            },
            {
-             kind: "variable_declaration",
+             kind: "parameter_application",
              args: {
                label: "coordinate",
                data_value: {
@@ -55,7 +54,7 @@ describe CeleryScript::Checker do
             }
            },
            {
-             kind: "variable_declaration",
+             kind: "parameter_application",
              args: {
                label: "point",
                data_value: {

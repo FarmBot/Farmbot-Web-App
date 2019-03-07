@@ -1,12 +1,12 @@
 # The most complicated part of the application. The text below describes the
-# implemntation details for CeleryScript, a visual programming langue and RPC
+# implementation details for CeleryScript, a visual programming language and RPC
 # format. READ FIRST: https://developer.farm.bot/docs/celery-script
 #
 # PROBLEM: You need to store a CeleryScript AST in a way that is:
 #
 #   * REUSABLE - Can be used on any resource that is scriptable (Sequence,
 #                FarmEvent, Regimen, etc...)
-#   * Normalized - Has a flat strucutre that is advantageous to SQL storage, can
+#   * Normalized - Has a flat structure that is advantageous to SQL storage, can
 #                  easily perform operations such as global renaming .
 #   * Searchable - Able to answer questions like "Are any Celery nodes
 #                  referencing sequence 123?" or "How many FarmEvents have 3
@@ -35,12 +35,12 @@
 #   [ArgSet]
 #     ^
 #     |\
-#     | `----[PrimtivePair]-> (Primitive, ArgName pairing)
+#     | `----[PrimitivePair]-> (Primitive, ArgName pairing)
 #     |
 #   [StandardPair]--> (Node, ArgName pairing)
 #
 # HOW STORAGE WORKS (Fragments::Create):
-#   1. Canonical CelryScript is sliced into a flat IR
+#   1. Canonical CeleryScript is sliced into a flat IR
 #   2. Flat IR is further decomposed into Node, ArgSet, ArgName,
 #      StandardPair, PrimitivePair.
 #

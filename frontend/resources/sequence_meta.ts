@@ -1,8 +1,8 @@
 import { VariableNameSet, ResourceIndex, UUID } from "./interfaces";
 import {
-  ScopeDeclarationBodyItem,
   TaggedSequence,
   Vector3,
+  ScopeDeclarationBodyItem,
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId } from "./selectors";
@@ -11,9 +11,10 @@ import { capitalize } from "lodash";
 import {
   formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI
 } from "../sequences/locals_list/location_form_list";
+import { VariableNode } from "../sequences/locals_list/locals_list_support";
 
 export interface SequenceMeta {
-  celeryNode: ScopeDeclarationBodyItem;
+  celeryNode: VariableNode;
   dropdown: DropDownItem;
   vector: Vector3 | undefined;
 }
@@ -23,7 +24,7 @@ export interface SequenceMeta {
  * (0, 0, 0) is returned. Provide a UUID when calling from a sequence step to
  * make an attempt to show the resolved vector from the sequence scope. */
 export const determineVector =
-  (node: ScopeDeclarationBodyItem, resources: ResourceIndex, uuid?: UUID):
+  (node: VariableNode, resources: ResourceIndex, uuid?: UUID):
     Vector3 | undefined => {
     if (node.kind == "parameter_declaration") {
       // parameter_declaration coordinates can't be known until runtime
@@ -49,10 +50,10 @@ export const determineVector =
     return undefined;
   };
 
-/** Given a CeleryScript variable declaration and a resource index
+/** Given a CeleryScript parameter application and a resource index
  * Returns a DropDownItem representation of said variable. */
 export const determineDropdown =
-  (node: ScopeDeclarationBodyItem, resources: ResourceIndex): DropDownItem => {
+  (node: VariableNode, resources: ResourceIndex): DropDownItem => {
     if (node.kind === "parameter_declaration") {
       return { label: capitalize(node.args.label), value: "?" };
     }
@@ -84,8 +85,8 @@ export const determineDropdown =
   };
 
 /** Can this CeleryScript variable be edited? Should we gray out the form? */
-export const determineEditable = (node: ScopeDeclarationBodyItem): boolean => {
-  return node.kind == "variable_declaration" &&
+export const determineEditable = (node: VariableNode): boolean => {
+  return node.kind !== "parameter_declaration" &&
     node.args.data_value.kind == "coordinate";
 };
 

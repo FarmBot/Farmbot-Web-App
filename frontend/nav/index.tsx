@@ -34,7 +34,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   syncButton = () => {
     return <SyncButton
       bot={this.props.bot}
-      user={this.props.user}
       dispatch={this.props.dispatch}
       consistent={this.props.consistent} />;
   }
@@ -91,9 +90,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       </div>
                       {AdditionalMenu({ logout: this.logout, close })}
                     </Popover>
-                    <EStopButton
-                      bot={this.props.bot}
-                      user={this.props.user} />
+                    <EStopButton bot={this.props.bot} />
                     {this.syncButton()}
                     <RunTour currentTour={this.props.tour} />
                   </div>

@@ -5,6 +5,8 @@ import { Color } from "./ui";
 /* tslint:disable:max-line-length */
 
 export function LoadingPlant({ animate }: { animate: boolean }) {
+  const initialLoadingEl = document.getElementsByClassName("initial-loading-text");
+  if (initialLoadingEl.length > 0) { initialLoadingEl[0].outerHTML = ""; }
   return <div className="loading-plant-div-container">
     <svg width="300px" height="500px">
       {animate &&

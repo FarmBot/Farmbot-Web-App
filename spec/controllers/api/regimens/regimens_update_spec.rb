@@ -45,7 +45,7 @@ describe Api::RegimensController do
 
       var_declr = [
         {
-          kind: "variable_declaration",
+          kind: "parameter_application",
           args: {
             label: "parent",
             data_value: {
@@ -66,7 +66,7 @@ describe Api::RegimensController do
         color: "blue",
         body:  [
           {
-            kind: "variable_declaration",
+            kind: "parameter_application",
             args: {
               label: "parent",
               data_value: {

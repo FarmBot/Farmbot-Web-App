@@ -8,7 +8,8 @@ import {
 } from "./interfaces";
 import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
-  McuParams, Configuration, TaggedFirmwareConfig, VariableDeclaration
+  McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
+  ALLOWED_PIN_MODES
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -137,13 +138,13 @@ export function sync(): Thunk {
 
 export function execSequence(
   sequenceId: number | undefined,
-  declarations?: VariableDeclaration[]
+  bodyVariables?: ParameterApplication[]
 ) {
   const noun = "Sequence execution";
   if (sequenceId) {
     commandOK(noun)();
-    return declarations
-      ? getDevice().execSequence(sequenceId, declarations).catch(commandErr(noun))
+    return bodyVariables
+      ? getDevice().execSequence(sequenceId, bodyVariables).catch(commandErr(noun))
       : getDevice().execSequence(sequenceId).catch(commandErr(noun));
   } else {
     throw new Error(t("Can't execute unsaved sequences"));
@@ -281,7 +282,6 @@ export function settingToggle(
   sourceFwConfig: SourceFwConfig,
   displayAlert?: string | undefined
 ) {
-  const noun = "Setting toggle";
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }
     const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
@@ -291,12 +291,8 @@ export function settingToggle(
       dispatch(apiSave(fwConfig.uuid));
     };
 
-    if (firmwareConfig && firmwareConfig.body.api_migrated) {
+    if (firmwareConfig) {
       return toggleFirmwareConfig(firmwareConfig);
-    } else {
-      return getDevice()
-        .updateMcu(update)
-        .then(noop, commandErr(noun));
     }
   };
 }
@@ -321,7 +317,7 @@ export function pinToggle(pin_number: number) {
     .then(noop, commandErr(noun));
 }
 
-export function readPin(pin_number: number, label: string, pin_mode: number) {
+export function readPin(pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES) {
   const noun = "Read pin";
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
@@ -342,32 +338,12 @@ export function findHome(axis: Axis, speed = CONFIG_DEFAULTS.speed) {
     .catch(commandErr(noun));
 }
 
-/** Start hardware settings update spinner. */
-const startUpdate = () => {
-  return {
-    type: Actions.SETTING_UPDATE_START,
-    payload: undefined
-  };
-};
-
-/** Stop hardware settings update spinner. */
-const updateOK = (dispatch: Function) => {
-  dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
-};
-
-/** Stop hardware settings update spinner and display an error toast. */
-const updateNO = (dispatch: Function, noun: string) => {
-  dispatch({ type: Actions.SETTING_UPDATE_END, payload: undefined });
-  commandErr(noun)();
-};
-
 /** Update firmware setting. */
 export function updateMCU(key: ConfigKey, val: string) {
-  const noun = "Firmware config update";
   return function (dispatch: Function, getState: () => Everything) {
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const getParams = () => {
-      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+      if (firmwareConfig) {
         return firmwareConfig.body;
       } else {
         return getState().bot.hardware.mcu_params;
@@ -375,15 +351,9 @@ export function updateMCU(key: ConfigKey, val: string) {
     };
 
     function proceed() {
-      if (firmwareConfig && firmwareConfig.body.api_migrated) {
+      if (firmwareConfig) {
         dispatch(edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
         dispatch(apiSave(firmwareConfig.uuid));
-      } else {
-        dispatch(startUpdate());
-        getDevice()
-          .updateMcu({ [key]: val })
-          .then(() => updateOK(dispatch))
-          .catch(() => updateNO(dispatch, noun));
       }
     }
 
@@ -396,16 +366,11 @@ export function updateMCU(key: ConfigKey, val: string) {
 
 /** Update FBOS setting. */
 export function updateConfig(config: Configuration) {
-  const noun = "FarmBot OS config update";
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
-    if (fbosConfig && fbosConfig.body.api_migrated) {
+    if (fbosConfig) {
       dispatch(edit(fbosConfig, config as Partial<FbosConfig>));
       dispatch(apiSave(fbosConfig.uuid));
-    } else {
-      getDevice()
-        .updateConfig(config)
-        .then(noop, commandErr(noun));
     }
   };
 }

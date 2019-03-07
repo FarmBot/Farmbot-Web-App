@@ -8,10 +8,19 @@ jest.mock("../history", () => ({
 }));
 
 import * as React from "react";
-import { App, AppProps } from "../app";
+import { App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
-import { fakeUser } from "../__test_support__/fake_state/resources";
+import {
+  fakeUser, fakeWebAppConfig
+} from "../__test_support__/fake_state/resources";
+import { fakeState } from "../__test_support__/fake_state";
+import { buildResourceIndex } from "../__test_support__/resource_index_builder";
+import { error } from "farmbot-toastr";
+import { ResourceName } from "farmbot";
+
+const FULLY_LOADED: ResourceName[] = [
+  "Sequence", "Regimen", "FarmEvent", "Point", "Tool"];
 
 const fakeProps = (): AppProps => {
   return {
@@ -74,9 +83,28 @@ describe("<App />: Loading", () => {
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
-    p.loaded = ["Sequence", "Regimen", "FarmEvent", "Point", "Tool"];
+    p.loaded = FULLY_LOADED;
     const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).not.toContain("Loading...");
+    wrapper.unmount();
+  });
+
+  it("times out while loading", () => {
+    jest.useFakeTimers();
+    const wrapper = mount(<App {...fakeProps()} />);
+    jest.runAllTimers();
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining("App could not be fully loaded"), "Warning");
+    wrapper.unmount();
+  });
+
+  it("loads before timeout", () => {
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    jest.useFakeTimers();
+    const wrapper = mount(<App {...p} />);
+    jest.runAllTimers();
+    expect(error).not.toHaveBeenCalled();
     wrapper.unmount();
   });
 });
@@ -93,5 +121,16 @@ describe("<App />: NavBar", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("No logs yet.");
     wrapper.unmount();
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    const state = fakeState();
+    const config = fakeWebAppConfig();
+    config.body.x_axis_inverted = true;
+    state.resources = buildResourceIndex([config]);
+    const result = mapStateToProps(state);
+    expect(result.axisInversion.x).toEqual(true);
   });
 });

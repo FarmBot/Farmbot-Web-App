@@ -1,7 +1,7 @@
 require_relative "./csheap.rb"
 # ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
 # Take a nested ("canonical") representation of a CeleryScript sequence and
-# transofrms it to a flat/homogenous intermediate representation which is better
+# transforms it to a flat/homogenous intermediate representation which is better
 # suited for storage in a relational database.
 module CeleryScript
   class Slicer

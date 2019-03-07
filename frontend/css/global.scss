@@ -4,6 +4,16 @@ body {
   background: $gray;
 }
 
+.initial-loading-text {
+  position: absolute;
+  top: 385px;
+  z-index: -1;
+  text-align: center;
+  width: 100%;
+  padding-top: 10%;
+  color: $dark_gray;
+}
+
 .widget-body .row:not(:last-child) {
   margin-bottom: 1rem;
 }

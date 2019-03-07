@@ -34,7 +34,7 @@ describe Api::PasswordResetsController do
       expect(json.keys).to include(:user)
     end
 
-    it 'dissallows short passwords' do
+    it 'disallows short passwords' do
       params = {password:              "xpass",
                 password_confirmation: "xpass",
                 fbos_version:          Gem::Version.new("999.9.9"),

@@ -24,7 +24,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
-import { ChannelName } from "../sequences/interfaces";
+import { ChannelName, MessageType } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
 
@@ -57,15 +57,15 @@ export function actOnChannelName(
  * to execute. */
 export function showLogOnScreen(log: Log) {
   switch (log.type) {
-    case "success":
+    case MessageType.success:
       return success(log.message, t(TITLE));
-    case "warn":
+    case MessageType.warn:
       return warning(log.message, t(TITLE));
-    case "busy":
-    case "error":
+    case MessageType.busy:
+    case MessageType.error:
       return error(log.message, t(TITLE));
-    case "fun":
-    case "info":
+    case MessageType.fun:
+    case MessageType.info:
     default:
       return info(log.message, t(TITLE));
   }

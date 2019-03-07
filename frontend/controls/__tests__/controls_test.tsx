@@ -20,7 +20,6 @@ describe("<Controls />", () => {
       dispatch: jest.fn(),
       bot: bot,
       feeds: [fakeWebcamFeed()],
-      user: undefined,
       peripherals: [fakePeripheral()],
       sensors: [fakeSensor()],
       botToMqttStatus: "up",

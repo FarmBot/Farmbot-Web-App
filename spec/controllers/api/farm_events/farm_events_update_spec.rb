@@ -55,7 +55,7 @@ describe Api::FarmEventsController do
         args:   {},
         body:   [
           {
-            kind: "variable_declaration",
+            kind: "parameter_application",
             args: {
               label: "foo",
               data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
@@ -105,7 +105,7 @@ describe Api::FarmEventsController do
       expect(fe.fragment).to be(nil)
       body = [
         {
-          kind: "variable_declaration",
+          kind: "parameter_application",
           args: {
             label: "bar",
             data_value: {

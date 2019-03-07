@@ -293,26 +293,6 @@
   }
 }
 
-.plus-button {
-  position: fixed;
-  left: 0;
-  bottom: 5rem;
-  right: 0;
-  z-index: 3;
-  border-radius: 50%;
-  width: 5rem;
-  height: 5rem;
-  color: $off_white;
-  margin-left: 12rem;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 3px 0px 0px $dark_green;
-  i {
-    line-height: 5rem;
-    font-size: 2.8rem;
-  }
-}
-
 .front-page-button {
   margin-top: "1rem";
   padding: ".5rem 1.6rem";

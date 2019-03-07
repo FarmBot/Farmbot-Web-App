@@ -1,4 +1,4 @@
-import { ResourceUpdate } from "farmbot";
+import { ResourceUpdate, resource_type as RESOURCE_TYPE } from "farmbot";
 import { DropDownItem } from "../../../ui";
 
 /**
@@ -19,8 +19,8 @@ export const packStep =
   (csNode: ResourceUpdate,
     resourceDDI: DropDownItem | undefined,
     actionDDI: DropDownItem): ResourceUpdate => {
-    const resource_type = "" + (resourceDDI ?
-      resourceDDI.headingId : csNode.args.resource_type);
+    const resource_type = (resourceDDI ?
+      resourceDDI.headingId : csNode.args.resource_type) as RESOURCE_TYPE;
     const resource_id = (resourceDDI ?
       resourceDDI.value : csNode.args.resource_id) as number;
     switch (resource_type) {

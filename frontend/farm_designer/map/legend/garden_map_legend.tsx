@@ -7,7 +7,7 @@ import { atMaxZoom, atMinZoom } from "../zoom";
 import { ImageFilterMenu } from "../layers/images/image_filter_menu";
 import { BugsControls } from "../easter_eggs/bugs";
 import { BotOriginQuadrant, State } from "../../interfaces";
-import { MoveModeLink } from "../../plants/move_to";
+import { MoveModeLink } from "../../move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";

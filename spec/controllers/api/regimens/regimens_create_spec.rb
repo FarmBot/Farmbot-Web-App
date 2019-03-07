@@ -1,22 +1,47 @@
 require "spec_helper"
 
 describe Api::RegimensController do
-
   include Devise::Test::ControllerHelpers
 
   describe "#create" do
-    let(:user)     { FactoryBot.create(:user) }
+    let(:user) { FactoryBot.create(:user) }
     let(:sequence) { FakeSequence.create(device: user.device) }
+
+    it "kicks back missing parameters" do
+      sign_in user
+      celery = File.read("spec/lib/celery_script/ast_fixture5.json")
+      json = JSON.parse(celery).deep_symbolize_keys
+      s = Sequences::Create.run!(json, device: user.device)
+      # No paramaters here.
+
+      payload = {
+        name: "New regimen 1",
+        color: "gray",
+        regimen_items: [{ time_offset: 300000, sequence_id: s.fetch(:id) }],
+        body: [
+          {
+            kind: "variable_declaration",
+            args: { label: "parent", data_value: { kind: "nothing", args: {} } },
+          },
+        ],
+      }
+      before_count = Regimen.count
+      post :create, body: payload.to_json, format: :json
+      after_count = Regimen.count
+
+      expect(response.status).to eq(422)
+      expect(before_count).to eq(after_count)
+    end
 
     it "creates a regimen that uses variables" do
       sign_in user
-      s       = FakeSequence.with_parameters
+      s = FakeSequence.with_parameters
       payload = { device: s.device,
                   name:   "specs",
                   color:  "red",
                   body: [
                     {
-                      kind: "variable_declaration",
+                      kind: "parameter_application",
                       args: {
                         label: "parent",
                         data_value: {
@@ -32,7 +57,7 @@ describe Api::RegimensController do
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
-      expect(declr.fetch(:kind)).to eq("variable_declaration")
+      expect(declr.fetch(:kind)).to eq("parameter_application")
       path = [:args, :data_value, :args, :every_point_type]
       expect(declr.dig(*path)).to eq("Plant")
     end
@@ -41,11 +66,11 @@ describe Api::RegimensController do
       sign_in user
       color = %w(blue green yellow orange purple pink gray red).sample
 
-      name = (1..3).map{ Faker::Games::Pokemon.name }.join(" ")
+      name = (1..3).map { Faker::Games::Pokemon.name }.join(" ")
       payload = {
-          name: name,
-          color: color ,
-          regimen_items: [ {time_offset: 123, sequence_id: sequence.id} ]
+        name: name,
+        color: color,
+        regimen_items: [{ time_offset: 123, sequence_id: sequence.id }],
       }
 
       old_regimen_count = Regimen.count
@@ -60,7 +85,8 @@ describe Api::RegimensController do
       expect(json[:color]).to eq(color)
     end
 
-    it "handles CeleryScript::TypeCheckError" do
+    it "creates a regimen that uses unbound variables" do
+      pending("TODO: Help Gabe with this.")
       sign_in user
       s       = FakeSequence.with_parameters
       payload = { device: s.device,
@@ -68,7 +94,34 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "variable_declaration",
+                      kind: "parameter_application",
+                      args: {
+                        label: "parent",
+                        data_value: {
+                          kind: "identifier", args: { label: "parent" }
+                        }
+                      }
+                    }
+                  ],
+                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ] }
+      post :create, body: payload.to_json, format: :json
+      expect(response.status).to eq(200)
+      declr = json.fetch(:body).first
+      expect(declr).to be
+      expect(declr.fetch(:kind)).to eq("parameter_application")
+      path = [:args, :data_value, :args, :label]
+      expect(declr.dig(*path)).to eq("parent")
+    end
+
+    it "handles CeleryScript::TypeCheckError" do
+      sign_in user
+      s = FakeSequence.with_parameters
+      payload = { device: s.device,
+                  name:   "specs",
+                  color:  "red",
+                  body: [
+                    {
+                      kind: "parameter_application",
                       args: {
                         label: "parent",
                         data_value: { kind: "nothing", args: { } }
@@ -80,8 +133,10 @@ describe Api::RegimensController do
                   ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(422)
-      expect(json.fetch(:error))
-        .to include("must provide a value for all parameters")
+      msg = json.fetch(:error)
+      expect(msg).to include("but got nothing")
+      # Make sure corpus entries are properly formatted.
+      expect(msg).to include('"coordinate",')
     end
   end
 end
