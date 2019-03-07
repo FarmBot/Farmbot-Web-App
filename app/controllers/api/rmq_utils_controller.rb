@@ -27,7 +27,6 @@ module Api
     PUBLIC_CHANNELS = ["", ".\\*", ".\\#"].map { |x| "public_broadcast" + x }
 
     MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
-    ALL = [:user, :vhost, :resource, :topic]
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
