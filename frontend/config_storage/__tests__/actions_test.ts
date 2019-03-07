@@ -1,7 +1,10 @@
-import { toggleWebAppBool, getWebAppConfigValue, setWebAppConfigValue } from "../actions";
+import {
+  toggleWebAppBool, getWebAppConfigValue, setWebAppConfigValue
+} from "../actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { edit, save } from "../../api/crud";
 import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import { fakeState } from "../../__test_support__/fake_state";
 
 jest.mock("../../api/crud", () => {
   return { save: jest.fn(), edit: jest.fn() };
@@ -18,8 +21,7 @@ describe("toggleWebAppBool", () => {
   it("toggles things", () => {
     const action = toggleWebAppBool(BooleanSetting.show_first_party_farmware);
     const dispatch = jest.fn();
-    const getState = jest.fn(() => ({ resources: { index: {} } }));
-    action(dispatch, getState);
+    action(dispatch, fakeState);
     expect(edit).toHaveBeenCalledWith(mockConfig, {
       show_first_party_farmware: true
     });
@@ -28,8 +30,7 @@ describe("toggleWebAppBool", () => {
 });
 
 describe("getWebAppConfigValue", () => {
-  const getState = jest.fn(() => ({ resources: { index: {} } }));
-  const getValue = getWebAppConfigValue(getState);
+  const getValue = getWebAppConfigValue(fakeState);
 
   it("gets a boolean setting value", () => {
     expect(getValue(BooleanSetting.show_first_party_farmware)).toEqual(false);
@@ -41,10 +42,8 @@ describe("getWebAppConfigValue", () => {
 });
 
 describe("setWebAppConfigValue", () => {
-  const getState = jest.fn(() => ({ resources: { index: {} } }));
-
   it("sets a numeric setting value", () => {
-    setWebAppConfigValue(NumericSetting.fun_log, 2)(jest.fn(), getState);
+    setWebAppConfigValue(NumericSetting.fun_log, 2)(jest.fn(), fakeState);
     expect(edit).toHaveBeenCalledWith(mockConfig, { fun_log: 2 });
     expect(save).toHaveBeenCalledWith(mockConfig.uuid);
   });
@@ -53,7 +52,7 @@ describe("setWebAppConfigValue", () => {
     // tslint:disable-next-line:no-any
     mockConfig = undefined as any;
     const action = () => setWebAppConfigValue(NumericSetting.fun_log, 1)(
-      jest.fn(), getState);
+      jest.fn(), fakeState);
     expect(action).toThrowError("Changed settings before app was loaded.");
   });
 });
