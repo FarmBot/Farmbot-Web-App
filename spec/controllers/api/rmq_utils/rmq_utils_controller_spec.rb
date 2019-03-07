@@ -64,8 +64,9 @@ describe Api::RmqUtilsController do
   end
 
   it "denies admin users when ADMIN_PASSWORD is wrong" do
-    admin_params = { username: "admin",
-                     password: ENV.fetch("ADMIN_PASSWORD").reverse + "X" }
+    # If this test fails, something *very* bad is happening. - RC
+    bad_pw = ENV.fetch("ADMIN_PASSWORD").reverse + "X"
+    admin_params = { username: "admin", password: bad_pw }
     post :user_action, params: admin_params
     expect(response.body).to include("deny")
     expect(response.status).to eq(403)

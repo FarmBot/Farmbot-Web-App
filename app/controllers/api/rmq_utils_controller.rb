@@ -34,7 +34,7 @@ module Api
     skip_before_action :authenticate_user!, except: []
 
     before_action :scrutinize_topic_string
-    before_action :always_allow_admin, except: [:user]
+    before_action :always_allow_admin, except: [:user_action]
 
     def user_action # Session entrypoint - Part I
       # Example JSON:
