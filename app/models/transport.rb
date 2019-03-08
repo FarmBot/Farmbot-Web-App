@@ -58,6 +58,10 @@ class Transport
   def amqp_send(message, id, channel)
     raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
     routing_key = "bot.device_#{id}.#{channel}"
+    raw_amqp_send(message, routing_key)
+  end
+
+  def raw_amqp_send(message, routing_key)
     puts message if Rails.env.production?
     amqp_topic.publish(message, routing_key: routing_key)
   end

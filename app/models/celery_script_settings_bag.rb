@@ -237,7 +237,9 @@ module CeleryScriptSettingsBag
       # (FBOS vs. API). Corpus-native enums cannot be used for validation
       # outside of the API. If `package` _was_ declared as a native enum (rather
       # than a string), it would cause false type errors in FE/FBJS.
-      blk: -> (node) { manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE) },
+      blk: -> (node) do
+        manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
+      end,
     },
     axis: {
       defn: [e(:ALLOWED_AXIS)],
@@ -265,13 +267,6 @@ module CeleryScriptSettingsBag
     defn = conf.fetch(:defn)
     blk ? Corpus.arg(name, defn, &blk) : Corpus.arg(name, defn)
   end
-
-  IDEA_BIN = [
-    :function,
-    :data,
-    :private,
-
-  ]
 
   CORPUS_NODES = {
     _if: {

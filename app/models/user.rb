@@ -42,4 +42,12 @@ class User < ApplicationRecord
   def update_tracked_fields!(request)
     super(request) unless FbosDetector.is_fbos_ua?(request)
   end
+
+  def self.refresh_everyones_ui
+    Rollbar.error("Global UI refresh triggered")
+
+    Transport
+      .current
+      .raw_amqp_send("X", Api::RmqUtilsController::PUBLIC_BROADCAST)
+  end
 end

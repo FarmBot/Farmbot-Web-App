@@ -164,6 +164,18 @@ export const onOnline =
   () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
+
+function onPublicBroadcast(chan: string, _payl: unknown) {
+  if (chan === "public_broadcast") {
+    if (confirm("A new FarmBot version has been released. Refresh page?")) {
+      window.location.reload(true);
+    } else {
+      alert("You may experience data loss if you do" +
+        " not refresh the page (ctrl + shift + r on most machines)");
+    }
+  }
+}
+
 const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
@@ -178,6 +190,8 @@ const attachEventListeners =
       bot.on("status_v8", onStatus(dispatch, getState));
       bot.on("malformed", onMalformed);
       bot.client.on("message", autoSync(dispatch, getState));
+      bot.client.subscribe("public_broadcast");
+      bot.client.on("message", onPublicBroadcast);
       bot.client.on("reconnect", onReconnect);
     }
   };

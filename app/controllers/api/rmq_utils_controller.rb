@@ -23,10 +23,12 @@ module Api
 
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    TOPIC_REGEX = Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})")
-    PUBLIC_CHANNELS = ["", ".*", ".#"].map { |x| "public_broadcast" + x }
+    DEVICE_SPECIFIC_CHANNELS = \
+      Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})")
+    PUBLIC_BROADCAST = "public_broadcast"
+    PUBLIC_CHANNELS = ["", ".*", ".#"].map { |x| PUBLIC_BROADCAST + x }
 
-    MALFORMED_TOPIC = "malformed topic. Must match #{TOPIC_REGEX.inspect}"
+    MALFORMED_TOPIC = "malformed topic. Must match #{DEVICE_SPECIFIC_CHANNELS.inspect}"
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
@@ -78,11 +80,7 @@ module Api
       #   "vhost"       => "/",
       case routing_key_param
       when *PUBLIC_CHANNELS
-        if permission_param == "read"
-          allow
-        else
-          deny
-        end
+        permission_param == "read" ? allow : deny
       else
         if_topic_is_safe do
           device_id_in_topic == device_id_in_username ? allow : deny
@@ -140,7 +138,7 @@ module Api
     end
 
     def if_topic_is_safe
-      if !!TOPIC_REGEX.match(routing_key_param)
+      if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
       else
         render json: MALFORMED_TOPIC, status: 422
