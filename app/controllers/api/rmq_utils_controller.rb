@@ -33,7 +33,6 @@ module Api
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
 
-    before_action :scrutinize_topic_string
     before_action :always_allow_admin, except: [:user_action]
 
     def user_action # Session entrypoint - Part I
@@ -81,6 +80,7 @@ module Api
       when *PUBLIC_CHANNELS
         permission_param == "read" ? allow : deny
       else
+        scrutinize_topic_string
         device_id_in_topic == device_id_in_username ? allow : deny
       end
     end
@@ -135,8 +135,7 @@ module Api
     end
 
     def scrutinize_topic_string
-      return if admin?
-      is_ok = routing_key_param ? !!TOPIC_REGEX.match(routing_key_param) : true
+      is_ok = !!TOPIC_REGEX.match(routing_key_param)
       render json: MALFORMED_TOPIC, status: 422 unless is_ok
     end
 
