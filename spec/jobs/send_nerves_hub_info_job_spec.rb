@@ -19,4 +19,17 @@ describe SendNervesHubInfoJob do
     end.to raise_error(params.fetch(:error))
     ActiveJob::Base.logger = old_logger
   end
+
+  it "returns early if create/update is nil" do
+    params = { device_id: device.id,
+              serial_number: "xyz",
+              tags: [],
+              error: StandardError.new("Hello!") }
+    return_nil = receive(:maybe_create_or_update)
+      .with(any_args)
+      .and_return(nil)
+    expect(NervesHub).to return_nil
+    expect(NervesHub).not_to receive(:sign_device)
+    SendNervesHubInfoJob.perform_now(**params.except(:error))
+  end
 end
