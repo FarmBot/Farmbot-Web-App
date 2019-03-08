@@ -68,6 +68,7 @@ module CeleryScript
       end
 
       def todo
+
       # Don't delete this- it is currently unreachable code, but as soon as we
       # allow identifiers other than `point`, `tool` and `coordinate` we will
       # need it again (and can write tests)
