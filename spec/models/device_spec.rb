@@ -4,6 +4,13 @@ describe Device do
   let(:device) { FactoryBot.create(:device, users: [FactoryBot.create(:user)]) }
   let(:user)   { device.users.first }
 
+  it "creates a token" do
+    jwt = device.create_token
+    expect(jwt).to be_kind_of(String)
+    d2 = Auth::FromJWT.run!(jwt: jwt).device
+    expect(d2.id).to eq(device.id)
+  end
+
   it "is associated with a user" do
     expect(device.users.first).to be_kind_of(User)
     expect(user.device).to be_kind_of(Device)

@@ -177,4 +177,16 @@ class Device < ApplicationRecord
       .not(Log::IS_FATAL_EMAIL) # Filter out `fatal_email`s
       .order(created_at: :desc)
   end
+
+  # Helper method to create an auth token.
+  # Used by sys admins to debug problems without performing a password reset.
+  def create_token
+    # If something manages to call this method, I'd like to be alerted of it.
+    Rollbar.error("Someone is creating a debug user token", {device: self.id})
+    fbos_version = Api::AbstractController::EXPECTED_VER
+    SessionToken
+      .as_json(users.first, "SUPER", fbos_version)
+      .fetch(:token)
+      .encoded
+  end
 end
