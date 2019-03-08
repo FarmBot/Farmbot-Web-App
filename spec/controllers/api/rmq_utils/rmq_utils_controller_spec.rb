@@ -26,6 +26,24 @@ describe Api::RmqUtilsController do
     end
   end
 
+  it "denies public_broadcast write access to non-admin users" do
+    routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
+    permission  = ["write", "configure"].sample
+    p = credentials.merge(routing_key: routing_key, permission: permission)
+    post :topic_action, params: p
+    expect(response.body).to eq("deny")
+    expect(response.status).to eq(403)
+  end
+
+  it "allows public_broadcast read access to non-admin users" do
+    routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
+    permission  = "read"
+    p = credentials.merge(routing_key: routing_key, permission: permission)
+    post :topic_action, params: p
+    expect(response.body).to eq("allow")
+    expect(response.status).to eq(200)
+  end
+
   it "allows access to ones own topic" do
     p = credentials.merge(routing_key: "bot.#{credentials[:username]}.logs")
     post :topic_action, params: p
