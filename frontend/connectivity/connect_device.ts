@@ -165,13 +165,21 @@ export const onOnline =
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 
-function onPublicBroadcast(chan: string, _payl: unknown) {
-  if (chan === "public_broadcast") {
-    if (confirm("A new FarmBot version has been released. Refresh page?")) {
+/** Bag of strings useful for post-deploy app refresh.
+ * Move these constants as needed. - RC */
+export enum BROADCAST {
+  WARN = "You may experience data loss if you do not refresh the page " +
+  "(ctrl + shift + r on most machines)",
+  SOLICIT = "A new FarmBot version has been released. Refresh page?",
+  CHAN = "public_broadcast"
+}
+
+export function onPublicBroadcast(chan: string, _payl: unknown) {
+  if (chan === BROADCAST.CHAN) {
+    if (confirm(t(BROADCAST.SOLICIT))) {
       window.location.reload(true);
     } else {
-      alert("You may experience data loss if you do" +
-        " not refresh the page (ctrl + shift + r on most machines)");
+      alert(t(BROADCAST.WARN));
     }
   }
 }
