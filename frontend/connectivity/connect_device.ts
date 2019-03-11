@@ -184,7 +184,7 @@ export function onPublicBroadcast(chan: string, _payl: unknown) {
   }
 }
 
-const attachEventListeners =
+export const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
       startPinging(bot);
