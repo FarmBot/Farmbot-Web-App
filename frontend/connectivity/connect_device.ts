@@ -164,7 +164,7 @@ export const onOnline =
   () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
-const attachEventListeners =
+export const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
       startPinging(bot);
