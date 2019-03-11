@@ -223,11 +223,11 @@ describe("onLogs", () => {
 
 describe("onPublicBroadcast", () => {
   it("triggers when appropriate", () => {
-    window.location.reload = jest.fn();
+    location.assign = jest.fn();
     window.confirm = jest.fn(() => true);
     onPublicBroadcast(BROADCAST.CHAN, {});
     expect(window.confirm).toHaveBeenCalledWith(BROADCAST.SOLICIT);
-    expect(window.location.reload).toHaveBeenCalled();
+    expect(location.assign).toHaveBeenCalled();
   });
 
   it("allows cancellation of refresh", () => {
@@ -235,7 +235,7 @@ describe("onPublicBroadcast", () => {
     window.alert = jest.fn();
     onPublicBroadcast(BROADCAST.CHAN, {});
     expect(window.alert).toHaveBeenCalledWith(BROADCAST.WARN);
-    expect(window.location.reload).not.toHaveBeenCalled();
+    expect(location.assign).not.toHaveBeenCalled();
   });
 
   it("does not trigger under usual circumstances", () => {

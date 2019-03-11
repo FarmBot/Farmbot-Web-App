@@ -177,7 +177,7 @@ export enum BROADCAST {
 export function onPublicBroadcast(chan: string, _payl: unknown) {
   if (chan === BROADCAST.CHAN) {
     if (confirm(t(BROADCAST.SOLICIT))) {
-      window.location.reload(true);
+      location.assign(window.location.origin || "/");
     } else {
       alert(t(BROADCAST.WARN));
     }
