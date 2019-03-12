@@ -69,7 +69,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   componentDidMount() {
-    if (Session.fetchStoredToken()) { window.location.href = "/app/controls"; }
+    if (Session.fetchStoredToken()) { window.location.assign("/app/controls"); }
     logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
@@ -83,7 +83,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post<AuthState>(API.current.tokensPath, payload)
       .then(resp => {
         Session.replaceToken(resp.data);
-        window.location.href = "/app/controls";
+        window.location.assign("/app/controls");
       }).catch((error: Error) => {
         switch (get(error, "response.status")) {
           case 451: // TOS was updated; User must agree to terms.

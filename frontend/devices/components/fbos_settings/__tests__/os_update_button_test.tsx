@@ -12,10 +12,11 @@ import { bot } from "../../../../__test_support__/fake_state/bot";
 import { OsUpdateButton } from "../os_update_button";
 import { OsUpdateButtonProps } from "../interfaces";
 import { ShouldDisplay } from "../../../interfaces";
+import { Content } from "../../../../constants";
 
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
-    bot.currentOSVersion = "3.1.6";
+    bot.currentOSVersion = "6.1.6";
     bot.hardware.configuration.beta_opt_in = false;
   });
 
@@ -41,9 +42,9 @@ describe("<OsUpdateButton/>", () => {
   }
 
   const defaultTestProps = (): TestProps => ({
-    installedVersion: "3.1.6",
+    installedVersion: "6.1.6",
     installedCommit: "",
-    availableVersion: "3.1.6",
+    availableVersion: "6.1.6",
     availableBetaVersion: undefined,
     availableBetaCommit: undefined,
     betaOptIn: false,
@@ -79,6 +80,14 @@ describe("<OsUpdateButton/>", () => {
     ({
       text: `Can't connect to ${entity}`,
       title: undefined,
+      color: "yellow",
+      disabled: false,
+    });
+
+  const tooOld = (): Results =>
+    ({
+      text: Content.TOO_OLD_TO_UPDATE,
+      title: "6.1.6",
       color: "yellow",
       disabled: false,
     });
@@ -121,6 +130,13 @@ describe("<OsUpdateButton/>", () => {
     expect((osUpdateButton.props().disabled)).toBe(expected.disabled);
   };
 
+  it("renders buttons: too old", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "5.0.0";
+    const expectedResults = tooOld();
+    testButtonState(testProps, expectedResults);
+  });
+
   it("renders buttons: not connected", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = undefined;
@@ -133,13 +149,13 @@ describe("<OsUpdateButton/>", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = undefined;
     const expectedResults = cantConnect("bot");
-    expectedResults.title = "3.1.6";
+    expectedResults.title = "6.1.6";
     testButtonState(testProps, expectedResults);
   });
 
   it("renders buttons: no releases available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.availableVersion = undefined;
     testProps.betaOptIn = true;
     const expectedResults = cantConnect("release server");
@@ -148,149 +164,149 @@ describe("<OsUpdateButton/>", () => {
 
   it("renders buttons: only beta release available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.availableVersion = undefined;
-    testProps.availableBetaVersion = "3.1.7-beta";
+    testProps.availableBetaVersion = "6.1.7-beta";
     testProps.betaOptIn = true;
-    const expectedResults = updateNeeded("3.1.7-beta");
+    const expectedResults = updateNeeded("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("renders buttons: no beta release available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.availableBetaVersion = undefined;
     testProps.betaOptIn = true;
-    const expectedResults = upToDate("3.1.6");
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("up to date", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
-    const expectedResults = upToDate("3.1.6");
+    testProps.installedVersion = "6.1.6";
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("up to date: newer", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "5.0.0";
-    const expectedResults = upToDate("3.1.6");
+    testProps.installedVersion = "7.0.0";
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("update available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.5";
-    const expectedResults = updateNeeded("3.1.6");
+    testProps.installedVersion = "6.1.5";
+    const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("beta update available", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.5";
-    testProps.availableBetaVersion = "5.0.0-beta";
+    testProps.installedVersion = "6.1.5";
+    testProps.availableBetaVersion = "7.0.0-beta";
     testProps.betaOptIn = true;
-    const expectedResults = updateNeeded("5.0.0-beta");
+    const expectedResults = updateNeeded("7.0.0-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("latest newer than beta update: latest installed", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
-    testProps.availableBetaVersion = "3.1.6-beta";
+    testProps.installedVersion = "6.1.6";
+    testProps.availableBetaVersion = "6.1.6-beta";
     testProps.betaOptIn = true;
-    const expectedResults = upToDate("3.1.6");
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("latest newer than beta update: beta installed", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
-    testProps.availableBetaVersion = "3.1.6-beta";
+    testProps.installedVersion = "6.1.6";
+    testProps.availableBetaVersion = "6.1.6-beta";
     testProps.betaOptIn = true;
     testProps.onBeta = true;
-    const expectedResults = updateNeeded("3.1.6");
+    const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("latest newer than beta update: beta installed (beta disabled)", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
-    testProps.availableBetaVersion = "3.1.6-beta";
+    testProps.installedVersion = "6.1.6";
+    testProps.availableBetaVersion = "6.1.6-beta";
     testProps.betaOptIn = false;
     testProps.onBeta = true;
-    const expectedResults = updateNeeded("3.1.6");
+    const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("on latest beta update", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.7";
-    testProps.availableBetaVersion = "3.1.7-beta";
+    testProps.installedVersion = "6.1.7";
+    testProps.availableBetaVersion = "6.1.7-beta";
     testProps.betaOptIn = true;
     testProps.onBeta = true;
-    const expectedResults = upToDate("3.1.7-beta");
+    const expectedResults = upToDate("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("beta update has same numeric version: newer commit", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "5.0.0";
+    testProps.installedVersion = "7.0.0";
     testProps.installedCommit = "old commit";
-    testProps.availableBetaVersion = "5.0.0-beta";
+    testProps.availableBetaVersion = "7.0.0-beta";
     testProps.availableBetaCommit = "new commit";
     testProps.betaOptIn = true;
     testProps.onBeta = true;
-    const expectedResults = updateNeeded("5.0.0-beta");
+    const expectedResults = updateNeeded("7.0.0-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("handles installed version newer than available (beta enabled)", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.7";
+    testProps.installedVersion = "6.1.7";
     testProps.betaOptIn = true;
     testProps.onBeta = false;
-    testProps.availableBetaVersion = "3.1.7-beta";
-    const expectedResults = upToDate("3.1.7-beta");
+    testProps.availableBetaVersion = "6.1.7-beta";
+    const expectedResults = upToDate("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("handles FBOS update available override", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.update_available = true;
-    const expectedResults = updateNeeded("3.1.6");
+    const expectedResults = updateNeeded("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("uses update_channel value", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.shouldDisplay = () => true;
     testProps.update_channel = "stable";
-    testProps.availableBetaVersion = "3.1.7-beta";
-    const expectedResults = upToDate("3.1.6");
+    testProps.availableBetaVersion = "6.1.7-beta";
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
   it("uses update_channel value: beta", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.shouldDisplay = () => true;
     testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "3.1.7-beta";
-    const expectedResults = updateNeeded("3.1.7-beta");
+    testProps.availableBetaVersion = "6.1.7-beta";
+    const expectedResults = updateNeeded("6.1.7-beta");
     testButtonState(testProps, expectedResults);
   });
 
   it("doesn't use update_channel value", () => {
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.6";
+    testProps.installedVersion = "6.1.6";
     testProps.shouldDisplay = () => false;
     testProps.update_channel = "beta";
-    testProps.availableBetaVersion = "3.1.7-beta";
-    const expectedResults = upToDate("3.1.6");
+    testProps.availableBetaVersion = "6.1.7-beta";
+    const expectedResults = upToDate("6.1.6");
     testButtonState(testProps, expectedResults);
   });
 
@@ -328,7 +344,7 @@ describe("<OsUpdateButton/>", () => {
       "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
     };
     const expectedResults = updating("10%");
-    expectedResults.title = "3.1.6";
+    expectedResults.title = "6.1.6";
     testButtonState(defaultTestProps(), expectedResults);
   });
 
@@ -336,7 +352,7 @@ describe("<OsUpdateButton/>", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "complete", percent: 100, unit: "percent" }
     };
-    testButtonState(defaultTestProps(), upToDate("3.1.6"));
+    testButtonState(defaultTestProps(), upToDate("6.1.6"));
   });
 
   it("update failed", () => {
@@ -344,8 +360,8 @@ describe("<OsUpdateButton/>", () => {
       "FBOS_OTA": { status: "error", percent: 10, unit: "percent" }
     };
     const testProps = defaultTestProps();
-    testProps.installedVersion = "3.1.5";
-    testButtonState(testProps, updateNeeded("3.1.6"));
+    testProps.installedVersion = "6.1.5";
+    testButtonState(testProps, updateNeeded("6.1.6"));
   });
 
   it("is disabled", () => {

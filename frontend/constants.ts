@@ -495,6 +495,9 @@ export namespace Content {
     trim(`The device has never been seen. Most likely,
     there is a network connectivity issue on the device's end.`);
 
+  export const TOO_OLD_TO_UPDATE =
+    trim(`Please re-flash your FarmBot's SD card.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -531,6 +534,12 @@ export namespace Content {
   export const NEW_TOS =
     trim(`Before logging in, you must agree to our latest Terms of Service and
     Privacy Policy`);
+
+  export const FORCE_REFRESH_CONFIRM =
+    trim(`A new FarmBot version has been released. Refresh page?`);
+
+  export const FORCE_REFRESH_CANCEL_WARNING =
+    trim(`You may experience data loss if you do not refresh the page.`);
 
   // Front Page
   export const TOS_UPDATE =

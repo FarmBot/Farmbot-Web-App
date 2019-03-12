@@ -7,7 +7,7 @@ import { Mode } from "../interfaces";
 let mockMode = Mode.none;
 jest.mock("../util", () => ({
   getMode: () => mockMode,
-  getMapSize: () => ({ h: undefined, w: undefined }),
+  getMapSize: () => ({ h: 100, w: 100 }),
   getGardenCoordinates: jest.fn(),
   transformXY: jest.fn(() => ({ qx: 0, qy: 0 })),
   transformForQuadrant: jest.fn(),
