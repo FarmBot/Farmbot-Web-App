@@ -27,7 +27,7 @@ import {
   onMalformed,
   speakLogAloud,
   onPublicBroadcast,
-  BROADCAST
+  BROADCAST_CHANNEL,
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
@@ -225,22 +225,22 @@ describe("onPublicBroadcast", () => {
   it("triggers when appropriate", () => {
     location.assign = jest.fn();
     window.confirm = jest.fn(() => true);
-    onPublicBroadcast(BROADCAST.CHAN, {});
-    expect(window.confirm).toHaveBeenCalledWith(BROADCAST.SOLICIT);
+    onPublicBroadcast(BROADCAST_CHANNEL, {});
+    expect(window.confirm).toHaveBeenCalledWith(Content.FORCE_REFRESH_CONFIRM);
     expect(location.assign).toHaveBeenCalled();
   });
 
   it("allows cancellation of refresh", () => {
     window.confirm = jest.fn(() => false);
     window.alert = jest.fn();
-    onPublicBroadcast(BROADCAST.CHAN, {});
-    expect(window.alert).toHaveBeenCalledWith(BROADCAST.WARN);
+    onPublicBroadcast(BROADCAST_CHANNEL, {});
+    expect(window.alert).toHaveBeenCalledWith(Content.FORCE_REFRESH_CANCEL_WARNING);
     expect(location.assign).not.toHaveBeenCalled();
   });
 
   it("does not trigger under usual circumstances", () => {
     window.confirm = jest.fn(() => false);
-    onPublicBroadcast("NOT" + BROADCAST.CHAN, {});
+    onPublicBroadcast("NOT" + BROADCAST_CHANNEL, {});
     expect(window.confirm).not.toHaveBeenCalled();
   });
 });
