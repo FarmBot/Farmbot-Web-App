@@ -47,23 +47,6 @@ describe Api::SequencesController do
       expect(response.status).to eq(200)
     end
 
-
-    it 'disallows adding `parent` to sequences used in a regimen' do
-      sign_in user
-      sequence = FakeSequence.create(device: user.device)
-      regimen  = Regimens::Create.run!(device: user.device,
-                                       name:   "X",
-                                       color:  "red",
-                                       regimen_items: [
-                                         { time_offset: 10, sequence_id: sequence.id}
-                                       ])
-      try_to_add_parent(sequence)
-      expect(response.status).to eq(422)
-      err = \
-        Sequences::CeleryScriptValidators::NO_REGIMENS
-      expect(json[:parent]).to include(err)
-    end
-
     it 'does not let you use other peoples point resources' do
       sign_in user
       sequence  = FakeSequence.create( device: user.device)
