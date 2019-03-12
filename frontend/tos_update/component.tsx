@@ -38,7 +38,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
       .post<AuthState>(API.current.tokensPath, payload)
       .then(resp => {
         Session.replaceToken(resp.data);
-        window.location.href = "/app/controls";
+        window.location.assign("/app/controls");
       })
       .catch(error => {
         logError(prettyPrintApiErrors(error));

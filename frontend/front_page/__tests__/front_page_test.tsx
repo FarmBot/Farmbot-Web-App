@@ -4,10 +4,11 @@ jest.mock("axios", () => ({
   post: jest.fn(() => mockAxiosResponse)
 }));
 
+let mockAuth: AuthState | undefined = undefined;
 jest.mock("../../session", () => ({
   Session: {
     replaceToken: jest.fn(),
-    fetchStoredToken: jest.fn(),
+    fetchStoredToken: () => mockAuth,
   }
 }));
 
@@ -33,8 +34,12 @@ import { API } from "../../api";
 import { Session } from "../../session";
 import { success, error } from "farmbot-toastr";
 import { Content } from "../../constants";
+import { AuthState } from "../../auth/interfaces";
+import { auth } from "../../__test_support__/fake_state/token";
 
 describe("<FrontPage />", () => {
+  beforeEach(() => { mockAuth = undefined; });
+
   type FormEvent = React.FormEvent<{}>;
   const fakeEvent: Partial<FormEvent> = {
     preventDefault: jest.fn()
@@ -55,8 +60,17 @@ describe("<FrontPage />", () => {
       .map(string => expect(el.html()).toContain(string));
   });
 
+  it("redirects when already logged in", () => {
+    mockAuth = auth;
+    location.assign = jest.fn();
+    const el = mount(<FrontPage />);
+    el.mount();
+    expect(location.assign).toHaveBeenCalledWith("/app/controls");
+  });
+
   it("submits login: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
+    location.assign = jest.fn();
     const el = mount<FrontPage>(<FrontPage />);
     el.setState({ email: "foo@bar.io", loginPassword: "password" });
     await el.instance().submitLogin(fakeEvent as FormEvent);
@@ -65,6 +79,7 @@ describe("<FrontPage />", () => {
       "://localhost:3000/api/tokens/",
       { user: { email: "foo@bar.io", password: "password" } });
     expect(Session.replaceToken).toHaveBeenCalledWith("new data");
+    expect(location.assign).toHaveBeenCalledWith("/app/controls");
   });
 
   it("submits login: not verified", async () => {
