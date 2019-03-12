@@ -2,11 +2,12 @@ const on = jest.fn((_e: string, _cb: unknown) => undefined);
 const stub = () => Promise.resolve();
 const mockBot = {
   client: {
+    subscribe: jest.fn(),
     on
   },
   on,
   readStatus: jest.fn(stub),
-  setUserEnv: stub
+  setUserEnv: stub,
 };
 
 jest.mock("../../../device", () => { return { getDevice: () => mockBot }; });
@@ -41,6 +42,7 @@ describe("attachEventListeners", () => {
       }
     });
     expect(dev.readStatus).toHaveBeenCalled();
+    expect(dev.client && dev.client.subscribe).toHaveBeenCalled();
     expect(startPinging).toHaveBeenCalledWith(dev);
   });
 });
