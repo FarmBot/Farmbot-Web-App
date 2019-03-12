@@ -169,19 +169,19 @@ module Api
       # Attempt 1:
       #   The device is using an HTTP client that does not provide a user-agent.
       #   We will assume this is an old FBOS version and set it to 0.0.0
-      return NULL if ua == FbosDetector::NO_UA_FOUND
+      return NOT_FBOS if ua == FbosDetector::NO_UA_FOUND
 
       # Attempt 2:
       #   If the user agent was missing, we would have returned by now.
       #   If the UA includes FbosDetector::FARMBOT_UA_STRING at this point, we can be certain
-      #   we have a have a non-legacy FBOS client.
+      #   we have a have an FBOS client.
       if ua.include?(FbosDetector::FARMBOT_UA_STRING)
         return Gem::Version::new(ua[10, 12].split(" ").first)
+      else
+        # Attempt 3:
+        #   Pass NOT_FBOS if all other attempts fail.
+        return NOT_FBOS
       end
-
-      # Attempt 3:
-      #   Pass NOT_FBOS if all other attempts fail.
-      return NOT_FBOS
     end
 
     # This is how we lock old versions of FBOS out of the API:
