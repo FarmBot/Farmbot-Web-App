@@ -36,10 +36,12 @@ function initLocalStorage() {
   return {};
 }
 
-function getAllIconsFromCache(): Dictionary<OFIcon | undefined> {
+type IconDictionary = Dictionary<OFIcon | undefined>;
+
+function getAllIconsFromCache(): IconDictionary {
   try {
     const dictionary = JSON.parse(localStorage.getItem(STORAGE_KEY) || "");
-    return isObject(dictionary) ? dictionary : initLocalStorage();
+    return isObject(dictionary) ? dictionary as IconDictionary : initLocalStorage();
   } catch (error) {
     return initLocalStorage();
   }
