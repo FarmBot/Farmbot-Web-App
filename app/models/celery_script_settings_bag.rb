@@ -22,7 +22,6 @@ module CeleryScriptSettingsBag
   ALLOWED_AXIS = %w(x y z all)
   ALLOWED_CHAGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
-  ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
   ALLOWED_LHS_TYPES = [String, :named_pin]
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
@@ -43,11 +42,10 @@ module CeleryScriptSettingsBag
                          toggle_pin update_farmware wait write_pin zero)
   ALLOWED_SPEC_ACTION = %w(dump_info emergency_lock emergency_unlock power_off
                            read_status reboot sync take_photo)
-  ANY_VARIABLE = %i(tool coordinate point identifier every_point)
+  ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_AXIS = '"%s" is not a valid axis. Allowed values: %s'
   BAD_CHANNEL_NAME = '"%s" is not a valid channel_name. Allowed values: %s'
-  BAD_EVERY_POINT_TYPE = '"%s" is not a type of group. Allowed values: %s'
   BAD_LHS = 'Can not put "%s" into a left hand side (LHS)' \
   " argument. Allowed values: %s"
   BAD_MESSAGE = "Messages must be between 1 and 300 characters"
@@ -92,7 +90,6 @@ module CeleryScriptSettingsBag
     ALLOWED_OPS: [ALLOWED_OPS, BAD_OP],
     ALLOWED_PACKAGES: [ALLOWED_PACKAGES, BAD_PACKAGE],
     ALLOWED_PIN_MODES: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
-    AllowedGroupTypes: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
     AllowedPinTypes: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
     Color: [Sequence::COLORS, MISC_ENUM_ERR],
     DataChangeType: [ALLOWED_CHAGES, MISC_ENUM_ERR],
@@ -259,9 +256,6 @@ module CeleryScriptSettingsBag
     resource_type: {
       defn: [e(:resource_type)],
     },
-    every_point_type: {
-      defn: [e(:PointType)],
-    },
   }.map do |(name, conf)|
     blk = conf[:blk]
     defn = conf.fetch(:defn)
@@ -306,11 +300,6 @@ module CeleryScriptSettingsBag
     },
     emergency_unlock: {
       tags: [:function, :firmware_user],
-    },
-    every_point: {
-      args: [:every_point_type],
-      tags: [:data, :list_like, :control_flow],
-      docs: "Experimental node used for iteration.",
     },
     execute_script: {
       args: [:label],
@@ -478,10 +467,6 @@ module CeleryScriptSettingsBag
     move_absolute: {
       args: [:location, :speed, :offset],
       tags: [:function, :firmware_user],
-      blk: -> (n) do
-        loc = n.args[:location].try(:kind)
-        n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
-      end,
     },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode],

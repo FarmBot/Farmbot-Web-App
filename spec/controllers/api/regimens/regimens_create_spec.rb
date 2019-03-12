@@ -44,9 +44,7 @@ describe Api::RegimensController do
                       kind: "parameter_application",
                       args: {
                         label: "parent",
-                        data_value: {
-                          kind: "every_point", args: { every_point_type: "Plant" }
-                        }
+                        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } }
                       }
                     }
                   ],
@@ -58,8 +56,8 @@ describe Api::RegimensController do
       declr = json.fetch(:body).first
       expect(declr).to be
       expect(declr.fetch(:kind)).to eq("parameter_application")
-      path = [:args, :data_value, :args, :every_point_type]
-      expect(declr.dig(*path)).to eq("Plant")
+      path = [:args, :data_value, :args]
+      expect(declr.dig(*path)).to eq({x: 0, y: 0, z: 0})
     end
 
     it "creates a new regimen" do
