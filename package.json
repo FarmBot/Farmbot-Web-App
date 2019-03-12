@@ -8,7 +8,6 @@
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "start": "echo 'DEPRECATED. Remove `start` from npm scripts'",
     "test-slow": "jest --coverage --ci -w 6 --colors",
     "test": "jest --no-coverage --cache -w 5 --colors",
     "typecheck": "./node_modules/typescript/bin/tsc --noEmit",

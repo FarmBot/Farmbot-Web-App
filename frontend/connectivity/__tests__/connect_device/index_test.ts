@@ -25,7 +25,9 @@ import {
   onSent,
   onOnline,
   onMalformed,
-  speakLogAloud
+  speakLogAloud,
+  onPublicBroadcast,
+  BROADCAST
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
@@ -216,5 +218,29 @@ describe("onLogs", () => {
     fn(log);
     globalQueue.maybeWork();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
+  });
+});
+
+describe("onPublicBroadcast", () => {
+  it("triggers when appropriate", () => {
+    location.assign = jest.fn();
+    window.confirm = jest.fn(() => true);
+    onPublicBroadcast(BROADCAST.CHAN, {});
+    expect(window.confirm).toHaveBeenCalledWith(BROADCAST.SOLICIT);
+    expect(location.assign).toHaveBeenCalled();
+  });
+
+  it("allows cancellation of refresh", () => {
+    window.confirm = jest.fn(() => false);
+    window.alert = jest.fn();
+    onPublicBroadcast(BROADCAST.CHAN, {});
+    expect(window.alert).toHaveBeenCalledWith(BROADCAST.WARN);
+    expect(location.assign).not.toHaveBeenCalled();
+  });
+
+  it("does not trigger under usual circumstances", () => {
+    window.confirm = jest.fn(() => false);
+    onPublicBroadcast("NOT" + BROADCAST.CHAN, {});
+    expect(window.confirm).not.toHaveBeenCalled();
   });
 });

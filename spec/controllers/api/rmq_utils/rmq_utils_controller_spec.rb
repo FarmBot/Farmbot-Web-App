@@ -145,7 +145,7 @@ describe Api::RmqUtilsController do
   end
 
   it "validates topic names" do
-    r = Api::RmqUtilsController::TOPIC_REGEX
+    r = Api::RmqUtilsController::DEVICE_SPECIFIC_CHANNELS
     [ "*",
       "#",
       "foo",
