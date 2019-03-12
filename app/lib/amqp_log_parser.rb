@@ -4,23 +4,23 @@
 # This allows `LogService` to concern itself with transport related logic
 # instead of data manipulation and serialization.
 class AmqpLogParser < Mutations::Command
-  TOO_OLD  = "fbos version is out of date"
-  DISCARD  = "message type field is not the kind that gets saved in the DB"
+  TOO_OLD = "fbos version is out of date"
+  DISCARD = "message type field is not the kind that gets saved in the DB"
   NOT_HASH = "logs must be a hash"
 
   # I keep a Ruby copy of the JSON here for reference.
   # This is what a log will look like after JSON.parse()
   EXAMPLE_JSON = {
     "meta" => {
-      "x"             => 0,
-      "y"             => 0,
-      "z"             => 0,
-      "type"          => "info"
+      "x" => 0,
+      "y" => 0,
+      "z" => 0,
+      "type" => "info",
     },
     "major_version" => 6,        # <=  up-to-date bots do this
-    "message"       => "HQ FarmBot TEST 123 Pin 13 is 0",
-    "created_at"    => 1512585641,
-    "channels"      => []
+    "message" => "HQ FarmBot TEST 123 Pin 13 is 0",
+    "created_at" => 1512585641,
+    "channels" => [],
   }
 
   required do
@@ -63,13 +63,13 @@ class AmqpLogParser < Mutations::Command
     @output
   end
 
-private
+  private
 
   def set_device_id!
     @output.device_id = routing_key
-                          .split(".")[1]
-                          .gsub("device_", "")
-                          .to_i
+      .split(".")[1]
+      .gsub("device_", "")
+      .to_i
   end
 
   def set_payload!
@@ -81,12 +81,10 @@ private
     @output.payload
   end
 
-  # Guess the major_version of log message. Handles legacy vs. mainline FBOS
-  # versions. If neither approach works, returns 0.
+  # Guess the major_version of log message.
+  # If neither approach works, returns 0.
   def major_version
-    # `log.major_version` is the preferred place to store version data.
-    # Legacy bots put the version info within `log.meta.major_version`.
-    (log["major_version"] || log.dig("meta", "major_version") || 0).to_i
+    log.fetch("major_version", 0).to_i
   end
 
   # Weed out anomalies such as logs that are array types.
@@ -97,15 +95,13 @@ private
   # Determines if the log should be discarded
   # Example: "fun"/"debug" logs do not go in the DB
   def discard?
-    # Handles new logs as well as legacy logs where type is stored in
-    # log.meta.type.
-    type = log.dig("type") || log.dig("meta", "type")
+    type = log.dig("type")
     type.nil? || Log::DISCARD.include?(type)
   end
 
   def find_problems!
     @output.problems.push(NOT_HASH) and return if not_hash?
-    @output.problems.push(TOO_OLD)  and return if major_version < 6
-    @output.problems.push(DISCARD)  and return if discard?
+    @output.problems.push(TOO_OLD) and return if major_version < 6
+    @output.problems.push(DISCARD) and return if discard?
   end
 end
