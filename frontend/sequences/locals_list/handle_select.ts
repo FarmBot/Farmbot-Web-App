@@ -9,7 +9,6 @@ import {
   Identifier,
   Point,
   Tool,
-  EveryPoint,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
   PointType,
@@ -25,6 +24,12 @@ import { betterCompact } from "../../util";
 // tslint:disable-next-line:no-any
 export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
+export interface EveryPointShape {
+  kind: "every_point";
+  args: { every_point_type: PointType; }
+}
+// tslint:disable-next-line:no-any
+type EveryPoint = any;
 type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
 
 type CreateVariableDeclaration =

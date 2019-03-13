@@ -12,7 +12,7 @@ import {
   LocationFormProps, PARENT, AllowedVariableNodes
 } from "../locals_list_support";
 import { difference } from "lodash";
-import { locationFormList } from "../location_form_list";
+import { locationFormList, everyPointDDI } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -84,5 +84,14 @@ describe("<LocationForm/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).not.toContain(PARENT);
+  });
+
+  it("shows groups in dropdown", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.disallowGroups = false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toContainEqual(everyPointDDI("Tool"));
   });
 });

@@ -4,9 +4,8 @@ import {
   selectAllActivePoints
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
-import { TaggedTool, TaggedPoint } from "farmbot";
+import { TaggedTool, TaggedPoint, Vector3 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { Vector3 } from "farmbot/dist";
 import { t } from "i18next";
 import { capitalize } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";
