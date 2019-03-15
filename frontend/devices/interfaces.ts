@@ -64,6 +64,7 @@ export enum Feature {
   sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
+  loops = "loops",
   api_pin_bindings = "api_pin_bindings",
   farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests

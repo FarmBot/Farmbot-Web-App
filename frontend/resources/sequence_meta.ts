@@ -12,6 +12,7 @@ import {
   formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI
 } from "../sequences/locals_list/location_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
+import { EveryPointShape } from "../sequences/locals_list/handle_select";
 
 export interface SequenceMeta {
   celeryNode: VariableNode;
@@ -65,8 +66,9 @@ export const determineDropdown =
         return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
       case "identifier":
         return { label: capitalize(data_value.args.label), value: "?" };
-      case "every_point":
-        const { every_point_type } = data_value.args;
+      // tslint:disable-next-line:no-any
+      case "every_point" as any:
+        const { every_point_type } = (data_value as unknown as EveryPointShape).args;
         return everyPointDDI(safeEveryPointType(every_point_type));
       case "point":
         const { pointer_id, pointer_type } = data_value.args;

@@ -135,12 +135,14 @@ describe("<TileMoveAbsolute/>", () => {
     it("does not handle every_point nodes", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
+      const data_value = {
+        kind: "every_point",
+        args: { every_point_type: "Plant" }
+        // tslint:disable-next-line:no-any
+      } as any;
       const boom = () => block.updateLocation({
         kind: "parameter_application",
-        args: {
-          label: "parent",
-          data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
-        }
+        args: { label: "parent", data_value }
       });
       expect(boom).toThrowError("Can't put `every_point` into `move_abs");
     });

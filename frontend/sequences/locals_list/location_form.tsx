@@ -76,7 +76,8 @@ export const LocationForm =
     const isDisabled = !determineEditable(celeryNode);
     const variableListItems = (props.shouldDisplay(Feature.variables) &&
       allowedVariableNodes !== AllowedVariableNodes.variable) ? [PARENT] : [];
-    const list = locationFormList(resources, variableListItems, !disallowGroups);
+    const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
+    const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
     const { label } = celeryNode.args;
     const editableVariable = defensiveClone(celeryNode);

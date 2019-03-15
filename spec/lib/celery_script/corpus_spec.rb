@@ -3,39 +3,6 @@ require 'spec_helper'
 describe CeleryScript::Corpus do
   let(:device) { FactoryBot.create(:device) }
   let(:corpus) { Sequence::Corpus }
-  it "Enforces correct `every_point_type`s`" do
-    not_ok = CeleryScript::AstNode.new({
-      kind: "every_point",
-      args: {
-        every_point_type: "Veggies"
-      }
-    })
-    check1 = CeleryScript::Checker.new(not_ok, corpus, device)
-    expect(check1.valid?).to eq(false)
-    expect(check1.error.message)
-      .to include('"Veggies" is not a type of point. '\
-                  'Allowed values: ["GenericPointer", "ToolSlot", "Plant"]')
-  end
-
-  it "does not all `every_location` in `move_absolute`" do
-    not_ok = CeleryScript::AstNode.new({
-      kind: "move_absolute",
-      args: {
-        location: {
-          kind: "every_point",
-          args: { every_point_type: "Plant" }
-        },
-        offset: {
-          kind: "coordinate",
-          args: { x: 0, y: 0, z: 0 }
-        },
-        speed: 100
-      }
-    })
-    check1 = CeleryScript::Checker.new(not_ok, corpus, device)
-    expect(check1.valid?).to eq(false)
-    expect(check1.error.message).to eq(CeleryScriptSettingsBag::ONLY_ONE_COORD)
-  end
 
   it "handles valid move_absolute blocks" do
     ok1 = CeleryScript::AstNode.new({
