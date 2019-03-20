@@ -368,7 +368,6 @@ a {
     }
   }
   .sensor-history-table-contents {
-    display: block;
     max-height: 20rem;
     overflow-y: auto;
   }
@@ -832,6 +831,9 @@ ul {
   }
   .settings-menu-button {
     float: right;
+    .fa-gear {
+      color: $dark_gray;
+    }
     margin-left: 1rem;
     margin-top: 0.25rem;
   }

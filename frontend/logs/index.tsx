@@ -80,13 +80,13 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs-page">
       <Row>
-        <Col xs={10}>
+        <Col xs={7}>
           <h3>
             <i>{t("Logs")}</i>
           </h3>
           <ToolTip helpText={ToolTips.LOGS} />
         </Col>
-        <Col xs={2}>
+        <Col xs={5}>
           <div className={"settings-menu-button"}>
             <Popover position={Position.TOP_RIGHT}>
               <i className="fa fa-gear" />
