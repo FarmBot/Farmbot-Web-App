@@ -114,12 +114,9 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
 const setBothUp = () => bothUp("Got a status message");
 
 const legacyChecks = (getState: GetState) => {
-  if (HACKY_FLAGS.needVersionCheck) {
-    const IS_OK = versionOK(getState()
-      .bot
-      .hardware
-      .informational_settings
-      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+  const { controller_version } = getState().bot.hardware.informational_settings;
+  if (HACKY_FLAGS.needVersionCheck && controller_version) {
+    const IS_OK = versionOK(controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (!IS_OK) { badVersion(); }
     HACKY_FLAGS.needVersionCheck = false;
   }

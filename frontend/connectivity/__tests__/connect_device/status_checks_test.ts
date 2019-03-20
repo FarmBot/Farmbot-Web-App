@@ -4,32 +4,53 @@ jest.mock("../../slow_down", () => {
   };
 });
 
+jest.mock("../../../devices/actions", () => ({
+  badVersion: jest.fn(),
+  EXPECTED_MAJOR: 1,
+  EXPECTED_MINOR: 0,
+}));
+
 import {
   onStatus,
   incomingStatus,
   incomingLegacyStatus,
-  onLegacyStatus
+  onLegacyStatus,
+  HACKY_FLAGS
 } from "../../connect_device";
 import { slowDown } from "../../slow_down";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { badVersion } from "../../../devices/actions";
 
 describe("onStatus()", () => {
   it("handles incoming statuses", () => {
-    const state = fakeState(() => state);
-    const getState = jest.fn(() => state);
     const dispatch = jest.fn();
-    const fake = {
-      location_data: {
-        position: {
-          x: 1,
-          y: 2,
-          z: 3
-        }
-      }
-    };
+    const fake = { location_data: { position: { x: 1, y: 2, z: 3 } } };
     expect(slowDown).not.toHaveBeenCalled();
-    onStatus(dispatch, getState)(fake);
+    onStatus(dispatch, fakeState)(fake);
     expect(dispatch).toHaveBeenCalledWith(incomingStatus(fake));
+  });
+
+  const callOnStatus = (version: string | undefined) => {
+    HACKY_FLAGS.needVersionCheck = true;
+    const dispatch = jest.fn();
+    const state = fakeState();
+    state.bot.hardware.informational_settings.controller_version = version;
+    onStatus(dispatch, () => state)({});
+  };
+
+  it("warns about old version", () => {
+    callOnStatus("0.0.0");
+    expect(badVersion).toHaveBeenCalled();
+  });
+
+  it("doesn't warn about old version", () => {
+    callOnStatus(undefined);
+    expect(badVersion).not.toHaveBeenCalled();
+  });
+
+  it("version ok", () => {
+    callOnStatus("1.0.0");
+    expect(badVersion).not.toHaveBeenCalled();
   });
 });
 

@@ -17,8 +17,9 @@ export function decodeBinary(payload: Buffer): SyncPayload {
 const SKIP_THESE = ["DeviceSerialNumber"]; // Only FBOS Cares about this one.
 
 export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<TaggedResource> {
-  /** Skip irrelevant messages */
-  if (!chan.includes("sync")) { return { status: "SKIP" }; }
+  /** Skip irrelevant messages: only resource auto-sync messages are desired.
+   *  eg, `bot/device_#/sync/Resource/#` */
+  if (!(chan.split("/")[2] == "sync")) { return { status: "SKIP" }; }
 
   /** Extract, Validate and scrub the data as it enters the frontend. */
   const parts = chan.split("/");
