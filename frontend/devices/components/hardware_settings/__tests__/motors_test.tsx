@@ -40,7 +40,7 @@ describe("<Motors/>", () => {
     ["Enable 2nd X Motor",
       "Max Retries",
       "E-Stop on Movement Error",
-      "Max Speed (steps/s)"
+      "Max Speed (mm/s)"
     ].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
