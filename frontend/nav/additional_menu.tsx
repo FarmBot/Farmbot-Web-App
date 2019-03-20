@@ -19,12 +19,13 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         <i className="fa fa-question-circle"></i>
         {t("Help")}
       </Link>}
-    <div>
-      <a href={docLink("the-farmbot-web-app")}
-        target="_blank">
-        <i className="fa fa-file-text-o"></i>{t("Documentation")}
-      </a>
-    </div>
+    {!DevSettings.futureFeaturesEnabled() &&
+      <div>
+        <a href={docLink("the-farmbot-web-app")}
+          target="_blank">
+          <i className="fa fa-file-text-o"></i>{t("Documentation")}
+        </a>
+      </div>}
     <div>
       <a onClick={props.logout}>
         <i className="fa fa-sign-out"></i>

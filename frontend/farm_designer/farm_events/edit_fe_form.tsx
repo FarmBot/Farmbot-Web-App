@@ -192,8 +192,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return this.props.resources.sequenceMetas[this.executable.uuid];
   }
 
-  get bodyVariables(): ParameterApplication[] | undefined {
-    return this.state.fe.body || this.props.farmEvent.body.body;
+  get bodyVariables(): ParameterApplication[] {
+    return this.state.fe.body || this.props.farmEvent.body.body || [];
   }
 
   overwriteStateFEBody = (newBody: ParameterApplication[]) => {
@@ -214,7 +214,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     variableData={this.variableData}
     sequenceUuid={this.executable.uuid}
     resources={this.props.resources}
-    onChange={this.editBodyVariables(this.bodyVariables || [])}
+    onChange={this.editBodyVariables(this.bodyVariables)}
     allowedVariableNodes={AllowedVariableNodes.variable}
     shouldDisplay={this.props.shouldDisplay} />
 

@@ -91,18 +91,18 @@ export namespace ToolTips {
     retries.`);
 
   export const MAX_SPEED =
-    trim(`Maximum travel speed after acceleration in motor steps per second.`);
+    trim(`Maximum travel speed after acceleration in millimeters per second.`);
 
   export const HOME_SPEED =
     trim(`Home position adjustment travel speed (homing and calibration)
-    in motor steps per second.`);
+    in millimeters per second.`);
 
   export const MIN_SPEED =
-    trim(`Minimum movement speed in motor steps per second. Also used for homing
+    trim(`Minimum movement speed in millimeters per second. Also used for homing
      and calibration.`);
 
   export const ACCELERATE_FOR =
-    trim(`Number of steps used for acceleration and deceleration.`);
+    trim(`Number of millimeters used for acceleration and deceleration.`);
 
   export const STEPS_PER_MM =
     trim(`The number of motor steps required to move the axis one millimeter.`);

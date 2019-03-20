@@ -20,7 +20,7 @@ describe("<SensorReadingsTable />", () => {
   it("renders", () => {
     const wrapper = mount(<SensorReadingsTable {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
-    ["sensor", "value", "mode", "position", "time",
+    ["sensor", "value", "mode", "(x, y, z)", "time",
       "(pin 1)", "10, 20, 30", "digital"]
       .map(string => expect(txt).toContain(string));
   });

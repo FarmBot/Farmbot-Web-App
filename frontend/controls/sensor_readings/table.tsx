@@ -35,7 +35,7 @@ const TableHeader = () =>
         </th>
         <th style={{ width: `${TableColWidth.location}px` }}>
           <label>
-            {t("Position (x, y, z)")}
+            {t("(x, y, z)")}
           </label>
         </th>
         <th style={{ width: `${TableColWidth.date}px` }}>

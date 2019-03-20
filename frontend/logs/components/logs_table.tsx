@@ -56,7 +56,7 @@ export const LogsTable = (props: LogsTableProps) => {
       <tr>
         <th><label>{t("Type")}</label></th>
         <th><label>{t("Message")}</label></th>
-        <th><label>{t("Position (x, y, z)")}</label></th>
+        <th><label>{t("(x, y, z)")}</label></th>
         <th><label>{t("Time")}</label></th>
       </tr>
     </thead>

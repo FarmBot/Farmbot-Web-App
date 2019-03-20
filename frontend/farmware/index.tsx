@@ -19,10 +19,9 @@ import { urlFriendly } from "../util";
 import { history } from "../history";
 import { ToolTips } from "../constants";
 import { FarmwareInfo } from "./farmware_info";
-import { Farmwares } from "./interfaces";
+import { Farmwares, FarmwareManifestInfo } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
-import { FarmwareManifest } from "farmbot";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -82,7 +81,7 @@ const run = (farmwareName: string) => () => {
 
 export const BasicFarmwarePage = ({ farmwareName, farmware }: {
   farmwareName: string,
-  farmware: FarmwareManifest | undefined
+  farmware: FarmwareManifestInfo | undefined
 }) =>
   <div>
     <button
@@ -104,8 +103,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
 
   componentWillMount() {
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
-      const farmwareNames = Object.values(this.props.farmwares)
-        .map(x => x && x.name);
+      const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
       setActiveFarmwareByName(farmwareNames);
     } else {
       // Farmware information not available. Load default Farmware page.

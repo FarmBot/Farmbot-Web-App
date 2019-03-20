@@ -55,14 +55,6 @@ class DashboardController < ApplicationController
     "--no-cache"
   ].join(" ")
 
-  PARCEL_CLI_OUTRO  = [
-    # WHY ARE SOURCE MAPS DISABLED?
-    # https://github.com/parcel-bundler/parcel/issues/2599#issuecomment-459131481
-    # https://github.com/parcel-bundler/parcel/issues/2607
-    # TODO: Upgrade parcel when issue ^ is fixed.
-    "--no-source-maps",
-  ].join(" ")
-
   EVERY_STATIC_PAGE.map do |actn|
     define_method(actn) do
       begin

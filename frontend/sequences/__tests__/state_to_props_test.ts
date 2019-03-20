@@ -1,12 +1,12 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Feature } from "../../devices/interfaces";
-import { fakeFarmware } from "../../__test_support__/fake_farmwares";
-import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
+import {
+  fakeSequence, fakeWebAppConfig
+} from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "farmbot";
 
@@ -59,12 +59,16 @@ describe("mapStateToProps()", () => {
 
   it("returns farmwareConfigs", () => {
     const state = fakeState();
+    const conf = fakeWebAppConfig();
+    conf.body.show_first_party_farmware = true;
+    state.resources = buildResourceIndex([conf]);
     state.resources.consumers.sequences.current = undefined;
     state.bot.hardware.process_info.farmwares = {
-      "My Fake Farmware": fakeFarmware()
+      "My Fake Farmware": fakeFarmwareManifestV1()
     };
     const props = mapStateToProps(state);
     expect(props.farmwareInfo.farmwareNames).toEqual(["My Fake Farmware"]);
+    expect(props.farmwareInfo.showFirstPartyFarmware).toEqual(true);
     expect(props.farmwareInfo.farmwareConfigs).toEqual({
       "My Fake Farmware": [{
         name: "config_1", label: "Config 1", value: "4"

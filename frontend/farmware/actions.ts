@@ -11,9 +11,7 @@ export const getFirstPartyFarmwareList = () => {
   return (dispatch: Function) => {
     axios.get<FarmwareManifestEntry[]>(farmwareManifestUrl)
       .then(r => {
-        const names = r.data.map((fw: FarmwareManifestEntry) => {
-          return fw.name;
-        });
+        const names = r.data.map((fw: FarmwareManifestEntry) => fw.name);
         dispatch({
           type: Actions.FETCH_FIRST_PARTY_FARMWARE_NAMES_OK,
           payload: names
