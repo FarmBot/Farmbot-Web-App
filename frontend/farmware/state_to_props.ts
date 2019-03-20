@@ -15,11 +15,13 @@ import {
   betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv, FarmwareManifest, JobProgress } from "farmbot";
+import { TaggedFarmwareEnv, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
 import { t } from "i18next";
 import { getWebAppConfig } from "../resources/getters";
-import { chain, cloneDeep } from "lodash";
+import { chain } from "lodash";
+import { FarmwareManifestInfo, Farmwares } from "./interfaces";
+import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -36,8 +38,8 @@ export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
     }
   };
 
-export const isPendingInstallation = (farmware: FarmwareManifest | undefined) =>
-  !farmware || farmware.uuid == "pending installation";
+export const isPendingInstallation = (farmware: FarmwareManifestInfo | undefined) =>
+  !farmware || farmware.installation_pending;
 
 export const reduceFarmwareEnv =
   (ri: ResourceIndex): UserEnv => {
@@ -56,7 +58,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const currentImage = images
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
-  const { farmwares } = cloneDeep(props.bot.hardware.process_info);
+  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
   const conf = getWebAppConfig(props.resources.index);
   const { currentFarmware, firstPartyFarmwareNames } =
     props.resources.consumers.farmware;
@@ -79,28 +81,19 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       return nameBase + pendingInstall;
     };
 
+  const farmwares: Farmwares = {};
+  Object.values(botStateFarmwares).map((fm: unknown) => {
+    const info = manifestInfo(fm);
+    farmwares[info.name] = manifestInfo(fm);
+  });
   shouldDisplay(Feature.api_farmware_installations) &&
     taggedFarmwareInstallations.map(x => {
       const name = namePendingInstall(x.body.package, x.body.id);
-      if (x.body.id && !Object.keys(farmwares).includes(name) &&
-        !Object.values(farmwares).map(fw => fw.url).includes(x.body.url)) {
-        farmwares[name] = {
-          name,
-          uuid: "pending installation",
-          executable: "",
-          args: [],
-          url: x.body.url,
-          path: "",
-          config: [],
-          meta: {
-            min_os_version_major: "",
-            description: t("installation pending"),
-            language: "",
-            version: "",
-            author: "",
-            zip: ""
-          }
-        };
+      const alreadyAdded = Object.keys(farmwares).includes(name);
+      const alreadyInstalled = Object.values(farmwares)
+        .map(fw => fw.url).includes(x.body.url);
+      if (x.body.id && !alreadyAdded && !alreadyInstalled) {
+        farmwares[name] = manifestInfoPending(name, x.body.url);
       }
     });
 

@@ -13,7 +13,7 @@ import {
   fakeFarmwareEnv, fakeFarmwareInstallation
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
-import { fakeFarmware } from "../../__test_support__/fake_farmwares";
+import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import { JobProgress } from "farmbot";
 import { DevSettings } from "../../account/dev/dev_support";
 
@@ -67,10 +67,10 @@ describe("mapStateToProps()", () => {
     const farmware2 = fakeFarmwareInstallation();
     farmware2.body.url = "farmware 2 url";
     state.resources = buildResourceIndex([farmware1, farmware2]);
-    const botFarmware = fakeFarmware();
+    const botFarmware = fakeFarmwareManifestV1();
     botFarmware.url = farmware2.body.url;
     const botFarmwareName = "farmware_0";
-    state.bot.hardware.process_info.farmwares = { "farmware_0": botFarmware };
+    state.bot.hardware.process_info.farmwares = { [botFarmwareName]: botFarmware };
     const props = mapStateToProps(state);
     expect(props.farmwares).toEqual({
       "Unknown Farmware 2 (pending install...)":
@@ -78,9 +78,12 @@ describe("mapStateToProps()", () => {
           meta: expect.objectContaining({ description: "installation pending" }),
           name: "Unknown Farmware 2 (pending install...)",
           url: "https://",
-          uuid: "pending installation"
+          installation_pending: true,
         }),
-      [botFarmwareName]: botFarmware
+      [botFarmware.name]: expect.objectContaining({
+        name: botFarmware.name,
+        installation_pending: false,
+      }),
     });
   });
 
