@@ -32,14 +32,16 @@ module CeleryScriptSettingsBag
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
   ALLOWED_RESOURCE_TYPE = %w(Device FarmEvent Image Log Peripheral Plant Point
                              Regimen Sequence Tool ToolSlot User GenericPointer)
-  ALLOWED_RPC_NODES = %w(calibrate change_ownership check_updates dump_info
-                         emergency_lock emergency_unlock execute execute_script
-                         factory_reset find_home home install_farmware
-                         install_first_party_farmware _if move_absolute
-                         move_relative power_off read_pin read_status reboot
-                         remove_farmware resource_update send_message
-                         set_servo_angle set_user_env sync take_photo
-                         toggle_pin update_farmware wait write_pin zero)
+  ALLOWED_RPC_NODES = %w(calibrate change_ownership
+                         check_updates dump_info emergency_lock
+                         emergency_unlock execute execute_script
+                         factory_reset find_home flash_firmware home
+                         install_farmware install_first_party_farmware _if
+                         move_absolute move_relative power_off read_pin
+                         read_status reboot remove_farmware resource_update
+                         send_message set_servo_angle set_user_env sync
+                         take_photo toggle_pin update_farmware wait
+                         write_pin zero)
   ALLOWED_SPEC_ACTION = %w(dump_info emergency_lock emergency_unlock power_off
                            read_status reboot sync take_photo)
   ANY_VARIABLE = %i(tool coordinate point identifier)
@@ -182,7 +184,7 @@ module CeleryScriptSettingsBag
     },
     pointer_id: {
       defn: [v(:integer)],
-      blk: -> (node, device) do
+      blk: ->(node, device) do
         bad_node = !Point.where(id: node.value, device_id: device.id).exists?
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end,
@@ -195,7 +197,7 @@ module CeleryScriptSettingsBag
     },
     sequence_id: {
       defn: [v(:integer)],
-      blk: -> (node) do
+      blk: ->(node) do
         if (node.value == 0)
           node.invalidate!(NO_SUB_SEQ)
         else
@@ -206,7 +208,7 @@ module CeleryScriptSettingsBag
     },
     lhs: {
       defn: [v(:string), n(:named_pin)], # See ALLOWED_LHS_TYPES
-      blk: -> (node) do
+      blk: ->(node) do
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         # This would never have happened if we hadn't allowed
         #  heterogenus args :(
@@ -224,7 +226,7 @@ module CeleryScriptSettingsBag
     },
     tool_id: {
       defn: [v(:integer)],
-      blk: -> (node) do
+      blk: ->(node) do
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end,
     },
@@ -234,7 +236,7 @@ module CeleryScriptSettingsBag
       # (FBOS vs. API). Corpus-native enums cannot be used for validation
       # outside of the API. If `package` _was_ declared as a native enum (rather
       # than a string), it would cause false type errors in FE/FBJS.
-      blk: -> (node) do
+      blk: ->(node) do
         manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
       end,
     },
@@ -243,7 +245,7 @@ module CeleryScriptSettingsBag
     },
     message: {
       defn: [v(:string)],
-      blk: -> (node) do
+      blk: ->(node) do
         notString = !node.value.is_a?(String)
         tooShort = notString || node.value.length == 0
         tooLong = notString || node.value.length > 300
@@ -275,7 +277,7 @@ module CeleryScriptSettingsBag
     change_ownership: {
       body: [:pair],
       tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
-      blk: -> (node) { raise "Never." }, # Security critical.
+      blk: ->(node) { raise "Never." }, # Security critical.
       docs: "Not a commonly used node. May be removed without notice.",
     },
     channel: {
@@ -322,6 +324,10 @@ module CeleryScriptSettingsBag
     find_home: {
       args: [:speed, :axis],
       tags: [:function, :firmware_user],
+    },
+    flash_firmware: {
+      args: [:package],
+      tags: [:api_writer, :disk_user, :firmware_user, :function, :network_user],
     },
     home: {
       args: [:speed, :axis],
@@ -455,7 +461,7 @@ module CeleryScriptSettingsBag
     named_pin: {
       args: [:pin_type, :pin_id],
       tags: [:api_validated, :firmware_user, :rpi_user, :data, :function],
-      blk: -> (node) do
+      blk: ->(node) do
         args = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id = args[:pin_id].value
@@ -471,17 +477,17 @@ module CeleryScriptSettingsBag
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode],
       tags: [:function, :firmware_user, :rpi_user],
-      blk: -> (n) { no_rpi_analog(n) },
+      blk: ->(n) { no_rpi_analog(n) },
     },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
       tags: [:function, :firmware_user, :rpi_user],
-      blk: -> (n) { no_rpi_analog(n) },
+      blk: ->(n) { no_rpi_analog(n) },
     },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
       tags: [:function, :api_writer, :network_user],
-      blk: -> (x) do
+      blk: ->(x) do
         resource_type = x.args.fetch(:resource_type).value
         resource_id = x.args.fetch(:resource_id).value
         check_resource_type(x, resource_type, resource_id)
