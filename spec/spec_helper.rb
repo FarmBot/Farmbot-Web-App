@@ -103,6 +103,10 @@ RSpec.configure do |config|
   end
 end
 
+FAKE_ATTACHMENT_URL = "https://cdn.shopify.com/s/files/1/2040/0"\
+                      "289/files/FarmBot.io_Trimmed_Logo_Gray_o"\
+                      "n_Transparent_1_434x200.png?v=1525220371"
+
 def run_jobs_now
   delay_jobs = Delayed::Worker.delay_jobs
   Delayed::Worker.delay_jobs = false
