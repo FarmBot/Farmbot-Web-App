@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
@@ -20,6 +20,7 @@ import {
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
 import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
+import { t } from "../../i18next_wrapper";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   get step() { return this.props.currentStep as MoveAbsolute; }

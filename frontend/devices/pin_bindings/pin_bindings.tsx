@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui";
 import { ToolTips } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
@@ -16,6 +15,7 @@ import {
   PinBindingType,
   PinBinding
 } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {

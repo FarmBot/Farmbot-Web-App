@@ -3,7 +3,8 @@ import {
   LegacyFarmwareManifest as FarmwareManifestV1,
   FarmwareManifest as FarmwareManifestV2,
 } from "farmbot";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
+
 
 const addMinorAndPatchZeros = (version: string | undefined): string =>
   version ? ">=" + version + ".0.0" : "";

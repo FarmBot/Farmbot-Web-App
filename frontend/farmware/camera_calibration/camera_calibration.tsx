@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col } from "../../ui/index";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace } from "../weed_detector/image_workspace";
@@ -12,6 +12,7 @@ import { MustBeOnline } from "../../devices/must_be_online";
 import { WeedDetectorConfig } from "../weed_detector/config";
 import { Feature } from "../../devices/interfaces";
 import { namespace } from "../weed_detector";
+import { t } from "../../i18next_wrapper";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {

@@ -11,7 +11,7 @@ import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareList } from "./farmware_list";
-import { t } from "i18next";
+
 import {
   FarmwareForm, needsFarmwareForm, farmwareHelpText
 } from "./farmware_forms";
@@ -22,6 +22,7 @@ import { FarmwareInfo } from "./farmware_info";
 import { Farmwares, FarmwareManifestInfo } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
+import { t } from "../i18next_wrapper";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =

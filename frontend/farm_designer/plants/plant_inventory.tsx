@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../../interfaces";
 import { Panel, DesignerNavTabs } from "../panel_header";
@@ -13,6 +13,7 @@ import { Content } from "../../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
 } from "./designer_panel";
+import { t } from "../../i18next_wrapper";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col, FBSelect, BlurableInput } from "../../ui";
-import { t } from "i18next";
+
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -14,6 +14,7 @@ import {
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { Feature } from "../../devices/interfaces";
 import { DefaultValueForm } from "./default_value_form";
+import { t } from "../../i18next_wrapper";
 
 /** For LocationForm coordinate input boxes.  */
 export interface AxisEditProps {

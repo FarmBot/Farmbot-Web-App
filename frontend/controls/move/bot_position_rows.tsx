@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col } from "../../ui";
 import { BotLocationData } from "../../devices/interfaces";
 import { moveAbs } from "../../devices/actions";
@@ -8,6 +8,7 @@ import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { GetWebAppBool } from "./interfaces";
 import { BooleanSetting } from "../../session_keys";
+import { t } from "../../i18next_wrapper";
 
 export interface BotPositionRowsProps {
   locationData: BotLocationData;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { t } from "i18next";
+
 import { success, error, warning } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
@@ -44,6 +44,7 @@ import {
 import {
   AllowedVariableNodes
 } from "../../sequences/locals_list/locals_list_support";
+import { t } from "../../i18next_wrapper";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";

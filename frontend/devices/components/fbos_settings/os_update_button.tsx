@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { JobProgress, ConfigurationName } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";
@@ -7,6 +7,7 @@ import { checkControllerUpdates } from "../../actions";
 import { isString } from "lodash";
 import { BotState, Feature } from "../../interfaces";
 import { Content } from "../../../constants";
+import { t } from "../../../i18next_wrapper";
 
 /** FBOS update button states. */
 enum UpdateButton { upToDate, needsUpdate, unknown, none }

@@ -3,7 +3,7 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page, ToolTip } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
-import { t } from "i18next";
+
 import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
@@ -15,6 +15,7 @@ import { isUndefined } from "lodash";
 import { NumericSetting } from "../session_keys";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { t } from "../i18next_wrapper";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime = (created_at: number, timeoffset: number) =>

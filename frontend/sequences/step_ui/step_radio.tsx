@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col } from "../../ui/index";
 import {
   TaggedSequence, SequenceBodyItem, ALLOWED_AXIS
 } from "farmbot";
 import { overwrite } from "../../api/crud";
 import { defensiveClone } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 export interface StepRadioProps {
   currentSequence: TaggedSequence;

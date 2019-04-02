@@ -1,7 +1,7 @@
 import { AddEditFarmEventProps } from "../interfaces";
 import { Everything } from "../../interfaces";
 import moment from "moment";
-import { t } from "i18next";
+
 import { history, getPathArray } from "../../history";
 import {
   selectAllFarmEvents,
@@ -33,6 +33,7 @@ import {
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { getFbosConfig } from "../../resources/getters";
+import { t } from "../../i18next_wrapper";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();

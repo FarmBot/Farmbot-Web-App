@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Col, BlurableInput } from "../ui/index";
-import { t } from "i18next";
+
 import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../devices/interfaces";
 import { kebabCase, toString, snakeCase } from "lodash";
 import { FarmwareManifestInfo } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export interface FarmwareFormProps {
   farmware: FarmwareManifestInfo;

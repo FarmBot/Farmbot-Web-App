@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import {
   Widget,
@@ -25,6 +25,7 @@ import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
 
 import axios from "axios";
+import { t } from "../../i18next_wrapper";
 
 export enum ColWidth {
   label = 3,

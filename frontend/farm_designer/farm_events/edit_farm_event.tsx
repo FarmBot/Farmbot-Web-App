@@ -5,7 +5,8 @@ import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
 import { history } from "../../history";
 import { TaggedFarmEvent } from "farmbot";
 import { EditFEForm } from "./edit_fe_form";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
+
 
 @connect(mapStateToPropsAddEdit)
 export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {

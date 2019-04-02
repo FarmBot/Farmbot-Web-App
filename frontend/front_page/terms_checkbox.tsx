@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { PartialFormEvent } from "./front_page";
+import { t } from "../i18next_wrapper";
 
 export const TermsCheckbox = (props: {
   privUrl: string,

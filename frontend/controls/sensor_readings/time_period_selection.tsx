@@ -1,10 +1,11 @@
 import * as React from "react";
 import { FBSelect, Row, Col, BlurableInput } from "../../ui";
-import { t } from "i18next";
+
 import moment from "moment";
 import { TaggedSensorReading } from "farmbot";
 import { TimePeriodSelectionProps, DateDisplayProps } from "./interfaces";
 import { cloneDeep } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 /** Look up time period label by seconds. */
 const timePeriodLookup = {

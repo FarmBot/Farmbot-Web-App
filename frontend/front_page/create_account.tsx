@@ -8,13 +8,14 @@ import {
   BlurableInput,
   BIProps
 } from "../ui/index";
-import { t } from "i18next";
+
 import { resendEmail } from "./resend_verification";
 import { success, error } from "farmbot-toastr";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
 import { BlurablePassword } from "../ui/blurable_password";
 import { Content } from "../constants";
+import { t } from "../i18next_wrapper";
 
 type RegKeyName =
   | "regConfirmation"

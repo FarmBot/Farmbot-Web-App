@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { history } from "../../history";
 import { unselectPlant } from "../actions";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../plants/designer_panel";
 import { DevSettings } from "../../account/dev/dev_support";
 import { DesignerNavTabs } from "../panel_header";
+import { t } from "../../i18next_wrapper";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),

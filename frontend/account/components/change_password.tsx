@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   Widget,
   WidgetHeader,
@@ -14,6 +14,7 @@ import { success, error } from "farmbot-toastr/dist";
 import { Content } from "../../constants";
 import { uniq } from "lodash";
 import { BlurablePassword } from "../../ui/blurable_password";
+import { t } from "../../i18next_wrapper";
 
 interface PasswordForm {
   new_password: string;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { history } from "../../history";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -12,6 +12,7 @@ import { getPlants } from "../state_to_props";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
+import { t } from "../../i18next_wrapper";
 
 export function mapStateToProps(props: Everything) {
   const { selectedPlants } = props.resources.consumers.farm_designer;

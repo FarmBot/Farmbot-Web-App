@@ -4,8 +4,9 @@ import {
   Attributes
 } from "react";
 import { render } from "react-dom";
-import { t } from "i18next";
+
 import { capitalize } from "lodash";
+import { t } from "../i18next_wrapper";
 
 /** Dynamically change the meta title of the page. */
 export function updatePageInfo(pageName: string) {

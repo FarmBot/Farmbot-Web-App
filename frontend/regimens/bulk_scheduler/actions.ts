@@ -1,5 +1,5 @@
 import { isNaN, isNumber } from "lodash";
-import { t } from "i18next";
+
 import { error, warning } from "farmbot-toastr";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
@@ -10,6 +10,7 @@ import { overwrite } from "../../api/crud";
 import { Actions } from "../../constants";
 import { assertUuid } from "../../resources/util";
 import { mergeDeclarations } from "../../sequences/locals_list/variable_support";
+import { t } from "../../i18next_wrapper";
 
 export function pushWeek() {
   return {

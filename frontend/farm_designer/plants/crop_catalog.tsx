@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";
@@ -14,6 +14,7 @@ import { Spinner } from "../../extras/spinner";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent, DesignerPanelTop
 } from "./designer_panel";
+import { t } from "../../i18next_wrapper";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const { cropSearchQuery, cropSearchInProgress, cropSearchResults

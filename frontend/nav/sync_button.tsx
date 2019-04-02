@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { SyncStatus } from "farmbot/dist";
 import { SyncButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
+import { t } from "../i18next_wrapper";
 
 const COLOR_MAPPING: Record<SyncStatus, string> = {
   "synced": "green",

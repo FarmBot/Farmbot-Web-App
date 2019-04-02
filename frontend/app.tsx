@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
@@ -24,6 +24,7 @@ import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig } from "./resources/getters";
 import { intersection } from "lodash";
+import { t } from "./i18next_wrapper";
 
 /** For the logger module */
 init();

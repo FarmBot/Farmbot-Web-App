@@ -1,7 +1,8 @@
 import { CropLiveSearchResult } from "./interfaces";
-import { t } from "i18next";
+
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { startCase, find } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export function findBySlug(
   crops: CropLiveSearchResult[], slug?: string): CropLiveSearchResult {

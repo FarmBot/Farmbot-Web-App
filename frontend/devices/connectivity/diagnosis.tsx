@@ -3,7 +3,8 @@ import { DiagnosticMessages } from "./diagnostic_messages";
 import { Col, Row } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
+
 
 export type DiagnosisName =
   | "userAPI"

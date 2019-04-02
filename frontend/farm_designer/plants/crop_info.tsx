@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { svgToUrl } from "../../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch
@@ -23,6 +23,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
 import { startCase, isArray, chain, isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 interface InfoFieldProps {
   title: string;

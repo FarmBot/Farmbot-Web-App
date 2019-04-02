@@ -4,8 +4,7 @@ import { homeAll, findHome } from "../../devices/actions";
 import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
-import { t } from "i18next";
-
+import { t } from "../../i18next_wrapper";
 const DEFAULT_STEP_SIZE = 100;
 
 /*

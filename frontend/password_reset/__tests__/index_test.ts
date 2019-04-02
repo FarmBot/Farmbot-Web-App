@@ -9,12 +9,12 @@ jest.mock("i18next", () => {
 });
 
 import { detectLanguage } from "../../i18n";
-import * as I18n from "i18next";
+import I from "i18next";
 
 describe("password reset index", () => {
   it("loads the app", async () => {
     await import("../index");
     expect(detectLanguage).toHaveBeenCalled();
-    expect(I18n.init).toHaveBeenCalled();
+    expect(I.init).toHaveBeenCalled();
   });
 });

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { TaggedFarmwareInstallation } from "farmbot";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
@@ -13,6 +13,7 @@ import { retryFetchPackageName } from "./actions";
 import { history } from "../history";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareManifestInfo } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export interface FarmwareInfoProps {
   dispatch: Function;

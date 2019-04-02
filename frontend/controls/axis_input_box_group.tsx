@@ -1,10 +1,11 @@
 import * as React from "react";
 import { AxisInputBox } from "./axis_input_box";
-import { t } from "i18next";
+
 import { Row, Col } from "../ui/index";
 import { AxisInputBoxGroupProps, AxisInputBoxGroupState } from "./interfaces";
 import { isNumber } from "lodash";
 import { Vector3 } from "farmbot";
+import { t } from "../i18next_wrapper";
 
 /** Coordinate input and GO button for Move widget. */
 export class AxisInputBoxGroup extends

@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
+
 import { fun as log, error as logError, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
@@ -8,6 +8,7 @@ import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
+import { t } from "../i18next_wrapper";
 
 interface Props { }
 interface State {

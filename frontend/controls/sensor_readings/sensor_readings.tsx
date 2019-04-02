@@ -9,10 +9,11 @@ import {
 import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";
 import { ToolTips } from "../../constants";
-import { t } from "i18next";
+
 import { TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../interfaces";
 import { SensorReadingsPlot } from "./graph";
+import { t } from "../../i18next_wrapper";
 
 export class SensorReadings
   extends React.Component<SensorReadingsProps, SensorReadingsState> {

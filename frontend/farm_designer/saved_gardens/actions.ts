@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API } from "../../api";
-import { t } from "i18next";
+
 import { success, info } from "farmbot-toastr";
 import { history } from "../../history";
 import { Actions } from "../../constants";
@@ -8,6 +8,7 @@ import { destroy, initSave, initSaveGetId } from "../../api/crud";
 import { unpackUUID } from "../../util";
 import { isString } from "lodash";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (name?: string | undefined) =>

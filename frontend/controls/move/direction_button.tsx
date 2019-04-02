@@ -2,7 +2,7 @@ import * as React from "react";
 import { moveRelative } from "../../devices/actions";
 import { DirectionButtonProps, Payl } from "./interfaces";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
   const {

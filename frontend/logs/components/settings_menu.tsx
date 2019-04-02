@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Help } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
@@ -8,6 +8,7 @@ import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
 import { ConfigurationName } from "farmbot";
 import { MessageType } from "../../sequences/interfaces";
+import { t } from "../../i18next_wrapper";
 
 interface LogSettingRecord {
   label: string;

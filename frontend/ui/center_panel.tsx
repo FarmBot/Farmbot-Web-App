@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Col, ToolTip, DocSlug } from ".";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
+
 
 interface CenterProps {
   children?: React.ReactNode;

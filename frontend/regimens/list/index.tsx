@@ -1,10 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { RegimenListItem } from "./regimen_list_item";
 import { AddRegimen } from "./add_button";
 import { Row, Col } from "../../ui/index";
 import { RegimensListProps, RegimensListState } from "../interfaces";
 import { sortResourcesById } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 export class RegimensList extends
   React.Component<RegimensListProps, RegimensListState> {

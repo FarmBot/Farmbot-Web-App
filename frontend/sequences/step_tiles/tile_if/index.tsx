@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
 import { TaggedSequence, ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
@@ -18,6 +18,7 @@ import {
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
 import { addOrEditParamApps, variableList } from "../../locals_list/variable_support";
+import { t } from "../../../i18next_wrapper";
 
 export interface IfParams {
   currentSequence: TaggedSequence;

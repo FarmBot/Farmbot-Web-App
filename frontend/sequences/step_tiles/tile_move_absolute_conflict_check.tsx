@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { CheckConflictCaseProps, MoveAbsoluteWarningProps } from "../interfaces";
 import { Xyz } from "../../devices/interfaces";
 import { StepWarning, conflictsString } from "../step_ui/index";
 import { some } from "lodash";
 import { Vector3 } from "farmbot";
 import { betterMerge } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 /** Check if a planned movement will extend beyond a defined axis home. */
 const checkHomeConflict =

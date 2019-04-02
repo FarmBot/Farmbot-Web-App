@@ -1,11 +1,12 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
+
 import { error as log, init as logInit } from "farmbot-toastr";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 import { Session } from "../session";
+import { t } from "../i18next_wrapper";
 
 export interface State {
   password?: string;

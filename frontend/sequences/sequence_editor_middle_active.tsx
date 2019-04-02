@@ -2,7 +2,7 @@ import * as React from "react";
 import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles";
-import { t } from "i18next";
+
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui";
 import { DropArea } from "../draggable/drop_area";
@@ -18,6 +18,7 @@ import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
+import { t } from "../i18next_wrapper";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>

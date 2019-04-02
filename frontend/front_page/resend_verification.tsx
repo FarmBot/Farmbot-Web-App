@@ -1,10 +1,11 @@
 import { Col, Widget, WidgetHeader } from "../ui/index";
-import { t } from "i18next";
+
 import axios, { AxiosResponse } from "axios";
 import * as React from "react";
 import { API } from "../api/index";
 import { UnsafeError } from "../interfaces";
 import { ResendPanelBody } from "./resend_panel_body";
+import { t } from "../i18next_wrapper";
 
 interface Props {
   email: string;

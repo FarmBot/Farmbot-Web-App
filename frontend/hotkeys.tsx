@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { links } from "./nav/nav_links";
 import { sync } from "./devices/actions";
 import { push, getPathArray } from "./history";
@@ -13,6 +13,7 @@ import {
   Classes
 } from "@blueprintjs/core";
 import { findIndex } from "lodash";
+import { t } from "./i18next_wrapper";
 
 interface Props {
   dispatch: Function;

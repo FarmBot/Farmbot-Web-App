@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { SyncStatus, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
@@ -14,6 +14,7 @@ import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { warning } from "farmbot-toastr";
 import { Actions } from "../constants";
+import { t } from "../i18next_wrapper";
 
 /** Can't test without saving and syncing sequence. */
 const saveAndSyncWarning = () =>

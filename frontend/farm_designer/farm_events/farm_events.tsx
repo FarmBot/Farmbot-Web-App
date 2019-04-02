@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import {
@@ -17,6 +17,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
 import { some, uniq, map, sortBy } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)

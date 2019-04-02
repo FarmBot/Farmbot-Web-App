@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
 import { PinGuardProps } from "../interfaces";
 import { Header } from "./header";
@@ -7,6 +7,7 @@ import { Collapse } from "@blueprintjs/core";
 import { Row, Col } from "../../../ui/index";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { ToolTips } from "../../../constants";
+import { t } from "../../../i18next_wrapper";
 
 export function PinGuard(props: PinGuardProps) {
 

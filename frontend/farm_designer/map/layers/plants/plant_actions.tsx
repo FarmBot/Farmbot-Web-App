@@ -1,4 +1,4 @@
-import { t } from "i18next";
+
 import { error } from "farmbot-toastr";
 import { Content } from "../../../../constants";
 import { initSave, edit, save } from "../../../../api/crud";
@@ -15,6 +15,7 @@ import { findBySlug } from "../../../search_selectors";
 import { transformXY, round } from "../../util";
 import { movePlant } from "../../../actions";
 import { cachedCrop } from "../../../../open_farm/icons";
+import { t } from "../../../../i18next_wrapper";
 
 /** Return a new plant or plantTemplate object. */
 export const newPlantKindAndBody = (props: {

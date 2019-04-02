@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ThenElseParams, seqDropDown, IfBlockDropDownHandler } from "./index";
-import { t } from "i18next";
+
 import { Row, Col, FBSelect } from "../../../ui";
 import { LocalsList } from "../../locals_list/locals_list";
 import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
+import { t } from "../../../i18next_wrapper";
 
 export function ThenElse(props: ThenElseParams) {
   const {

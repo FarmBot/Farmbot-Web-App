@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SpecialStatus } from "farmbot";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 interface RetryBtnProps {
   flags: boolean[];

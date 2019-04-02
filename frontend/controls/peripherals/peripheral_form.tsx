@@ -1,9 +1,10 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { destroy, edit } from "../../api/crud";
 import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { KeyValEditRow } from "../key_val_edit_row";
+import { t } from "../../i18next_wrapper";
 
 export function PeripheralForm(props: PeripheralFormProps) {
   const { dispatch, peripherals } = props;

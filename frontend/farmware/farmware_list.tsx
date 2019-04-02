@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
 import { Farmwares } from "./interfaces";
@@ -12,6 +12,7 @@ import { Link } from "../link";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { initSave } from "../api/crud";
 import { TaggedFarmwareInstallation } from "farmbot";
+import { t } from "../i18next_wrapper";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),

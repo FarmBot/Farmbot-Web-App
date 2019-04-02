@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Col, ToolTip } from ".";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
+
 
 interface LeftPanelProps {
   children?: React.ReactNode;
