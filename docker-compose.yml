@@ -1,7 +1,7 @@
 version: '3.4'
 
 x-db_user: &db_user
-  depends_on: ["db", "redis"]
+  depends_on: ["db", "redis", "mqtt"]
 
 x-rails: &rails
   image:    farmbot_web
@@ -11,7 +11,7 @@ x-rails: &rails
 
 x-base_config: &base_config
   env_file: .env
-  # restart: unless-stopped
+
 services:
   redis:
     <<: *base_config
@@ -46,7 +46,6 @@ services:
      - "8883:8883"   # MQTT over TLS/SSL
      - "3002:15675"  # MQTT over WebSockets
      - "15672:15672" # Management API
-    depends_on: ["web"]
     environment:
      - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
     volumes:
