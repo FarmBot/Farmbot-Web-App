@@ -6,7 +6,6 @@ import {
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
-
 /** A stripped down version of OFSearchResult */
 interface Result {
   crop: {

@@ -1,7 +1,6 @@
 import { DropDownItem } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 
-
 export const MOUNTED_TO = t("Mounted to:");
 
 export const DISMOUNT: DropDownItem = { label: t("Not Mounted"), value: 0 };

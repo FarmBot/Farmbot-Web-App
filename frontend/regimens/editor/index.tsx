@@ -8,7 +8,6 @@ import {
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
-
 export function RegimenEditor(props: RegimenEditorProps) {
   const { current, dispatch, calendar } = props;
   const regimen = current;

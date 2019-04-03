@@ -5,7 +5,6 @@ import {
 } from "farmbot";
 import { t } from "../i18next_wrapper";
 
-
 const addMinorAndPatchZeros = (version: string | undefined): string =>
   version ? ">=" + version + ".0.0" : "";
 

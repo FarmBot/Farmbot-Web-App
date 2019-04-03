@@ -5,7 +5,6 @@ import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { StepRadio } from "../step_ui/step_radio";
 import { t } from "../../i18next_wrapper";
 
-
 export function TileCalibrate(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "calibrate-step";

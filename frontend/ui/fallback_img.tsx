@@ -2,7 +2,6 @@ import * as React from "react";
 import { defensiveClone } from "../util";
 import { t } from "../i18next_wrapper";
 
-
 type ImgTag = React.HTMLProps<HTMLImageElement>;
 
 interface Props extends ImgTag {

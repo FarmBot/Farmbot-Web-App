@@ -7,7 +7,6 @@ import { TaggedFarmEvent } from "farmbot";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "../../i18next_wrapper";
 
-
 @connect(mapStateToPropsAddEdit)
 export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   redirect() {

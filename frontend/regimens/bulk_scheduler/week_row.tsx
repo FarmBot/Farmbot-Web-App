@@ -3,7 +3,6 @@ import { WeekRowProps, DayProps, DAYS } from "./interfaces";
 import { toggleDay } from "./actions";
 import { t } from "../../i18next_wrapper";
 
-
 export function WeekRow({ index, dispatch, week }: WeekRowProps) {
   return <div className="week-row">
     <label className="week-label">{t("Week")} {index + 1}</label>

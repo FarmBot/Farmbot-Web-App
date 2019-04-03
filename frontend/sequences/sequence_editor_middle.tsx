@@ -8,7 +8,6 @@ import {
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";
 
-
 export class SequenceEditorMiddle
   extends React.Component<SequenceEditorMiddleProps, {}> {
   render() {

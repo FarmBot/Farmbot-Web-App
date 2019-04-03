@@ -3,7 +3,6 @@ import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
-
 export function ExportAccountPanel(props: { onClick: () => void }) {
   return <Widget>
     <WidgetHeader title={t("Export Account Data")} />

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 
-
 export interface LayerToggleProps {
   label: string;
   value: boolean | undefined;
