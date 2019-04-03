@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../../ui/index";
-import { t } from "i18next";
+
 import { success, error } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
@@ -8,6 +8,7 @@ import { API } from "../../../api";
 import { NonsecureContentWarning } from "./nonsecure_content_warning";
 import { Content } from "../../../constants";
 import { BlurablePassword } from "../../../ui/blurable_password";
+import { t } from "../../../i18next_wrapper";
 
 interface ChangeOwnershipFormState {
   email: string;

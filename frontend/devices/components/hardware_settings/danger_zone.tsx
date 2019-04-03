@@ -1,10 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { DangerZoneProps } from "../interfaces";
 import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Content } from "../../../constants";
+import { t } from "../../../i18next_wrapper";
 
 export function DangerZone(props: DangerZoneProps) {
 

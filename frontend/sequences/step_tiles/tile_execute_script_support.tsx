@@ -1,11 +1,12 @@
 import * as React from "react";
 import { FarmwareInfo } from "../interfaces";
-import { t } from "i18next";
+
 import { DropDownItem, BlurableInput, Help } from "../../ui/index";
 import { without, isNumber } from "lodash";
 import { ExecuteScript, Pair, FarmwareConfig } from "farmbot";
 import { getConfigEnvName } from "../../farmware/farmware_forms";
 import { ToolTips } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 /** Create a Farmware input pair to include in the step body. */
 const createPair = (name: string, label: string, value: string): Pair => ({

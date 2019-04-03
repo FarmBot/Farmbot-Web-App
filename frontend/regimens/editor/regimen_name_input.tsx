@@ -1,8 +1,9 @@
 import * as React from "react";
 import { RegimenProps } from "../interfaces";
-import { t } from "i18next";
+
 import { Row, Col, ColorPicker } from "../../ui/index";
 import { editRegimen } from "../actions";
+import { t } from "../../i18next_wrapper";
 
 export const write = ({ dispatch, regimen }: RegimenProps):
   React.EventHandler<React.FormEvent<{}>> =>

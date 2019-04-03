@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   Row, Col, BlurableInput, FBSelect, DropDownItem
 } from "../../ui/index";
@@ -8,6 +8,7 @@ import { keyBy } from "lodash";
 import { FarmEventViewModel } from "./edit_fe_form";
 import { EventTimePicker } from "./event_time_picker";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 type Ev = React.SyntheticEvent<HTMLInputElement>;
 type Key = keyof FarmEventViewModel;

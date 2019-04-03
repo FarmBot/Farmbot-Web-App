@@ -1,5 +1,3 @@
-
-import { t } from "i18next";
 import {
   selectAllSavedPeripherals,
   selectAllSavedSensors
@@ -16,6 +14,7 @@ import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { joinKindAndId } from "../../resources/reducer_support";
+import { t } from "../../i18next_wrapper";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {

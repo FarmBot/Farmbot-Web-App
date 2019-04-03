@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { HomingRowProps } from "../interfaces";
 import { LockableButton } from "../lockable_button";
 import { axisTrackingStatus } from "../axis_tracking_status";
@@ -10,6 +9,7 @@ import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { commandErr } from "../../actions";
 import { Axis } from "../../interfaces";
 import { getDevice } from "../../../device";
+import { t } from "../../../i18next_wrapper";
 
 const speed = CONFIG_DEFAULTS.speed;
 const findHome = (axis: Axis) => getDevice()

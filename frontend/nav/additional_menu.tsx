@@ -1,10 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
 import { shortRevision } from "../util";
 import { DevSettings } from "../account/dev/dev_support";
+import { t } from "../i18next_wrapper";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">

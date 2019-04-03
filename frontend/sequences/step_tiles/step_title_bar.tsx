@@ -1,9 +1,10 @@
 import * as React from "react";
 import { SequenceBodyItem as Step, SequenceBodyItem } from "farmbot";
-import { t } from "i18next";
+
 import { StepTitleBarProps } from "../interfaces";
 import { BlurableInput } from "../../ui/index";
 import { updateStepTitle } from "./index";
+import { t } from "../../i18next_wrapper";
 
 function translate(input: Step): string {
   // We load translations async. If I put this const outside of the function,

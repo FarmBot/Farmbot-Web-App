@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Button, Classes, MenuItem, Alignment } from "@blueprintjs/core";
 import { Select, ItemRenderer } from "@blueprintjs/select";
 import { DropDownItem } from "./fb_select";
+import { t } from "../i18next_wrapper";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 

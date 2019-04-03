@@ -1,4 +1,4 @@
-import { t } from "i18next";
+
 import axios from "axios";
 import { success, warning, info, error } from "farmbot-toastr";
 import { getDevice } from "../device";
@@ -23,6 +23,7 @@ import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
+import { t } from "../i18next_wrapper";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;

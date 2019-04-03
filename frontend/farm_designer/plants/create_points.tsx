@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../../interfaces";
 import { initSave } from "../../api/crud";
@@ -15,6 +15,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
 import { parseIntInput } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 export function mapStateToProps(props: Everything) {
   return {

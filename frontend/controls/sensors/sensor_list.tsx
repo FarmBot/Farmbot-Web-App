@@ -3,9 +3,10 @@ import { readPin } from "../../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
-import { t } from "i18next";
+
 import { isNumber } from "lodash";
 import { ALLOWED_PIN_MODES } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 const SensorReadingDisplay =
   ({ label, value, mode }:

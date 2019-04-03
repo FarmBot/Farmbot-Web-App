@@ -79,3 +79,8 @@ services:
     <<: *rails_service
     depends_on: ["web"]
     command: bundle exec rails r lib/rabbit_workers.rb
+
+  typescript:
+    <<: *rails_service
+    depends_on: ["web"]
+    command: node_modules/typescript/bin/tsc -w --noEmit

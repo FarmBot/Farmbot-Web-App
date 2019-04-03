@@ -1,8 +1,8 @@
 import * as React from "react";
 import { NetworkState } from "../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
-import { t } from "i18next";
 import { Content } from "../constants";
+import { t } from "../i18next_wrapper";
 
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {

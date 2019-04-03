@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
-import { t } from "i18next";
+
 import {
   CameraSelectionProps, CameraSelectionState
 } from "./interfaces";
@@ -8,6 +8,7 @@ import { info, success, error } from "farmbot-toastr";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 import { Feature } from "../../interfaces";
+import { t } from "../../../i18next_wrapper";
 
 const CAMERA_CHOICES = [
   { label: t("USB Camera"), value: "USB" },

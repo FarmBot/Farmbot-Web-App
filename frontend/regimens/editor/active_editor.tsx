@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
-import { t } from "i18next";
+
 import { push } from "../../history";
 import {
   RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps
@@ -16,6 +16,7 @@ import {
   AllowedVariableNodes, VariableNode
 } from "../../sequences/locals_list/locals_list_support";
 import { addOrEditBodyVariables } from "../../sequences/locals_list/handle_select";
+import { t } from "../../i18next_wrapper";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to

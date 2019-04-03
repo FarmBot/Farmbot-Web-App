@@ -1,12 +1,13 @@
 import * as React from "react";
 import { StepButton } from "./step_buttons/index";
-import { t } from "i18next";
+
 import { scrollToBottom } from "../util";
 import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { MessageType } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export interface StepButtonProps {
   dispatch: Function;

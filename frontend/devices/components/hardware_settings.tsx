@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
@@ -16,6 +16,7 @@ import {
 import { SpecialStatus } from "farmbot";
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";
+import { t } from "../../i18next_wrapper";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {

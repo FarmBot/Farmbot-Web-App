@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 interface SPTTProps {
   tooltip?: string | undefined;

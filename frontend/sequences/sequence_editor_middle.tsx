@@ -6,7 +6,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../ui/empty_state_wrapper";
 import { Content } from "../constants";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
 
 export class SequenceEditorMiddle
   extends React.Component<SequenceEditorMiddleProps, {}> {

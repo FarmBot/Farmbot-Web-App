@@ -8,8 +8,9 @@ import { Page, Row, LeftPanel, CenterPanel, RightPanel } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { isTaggedRegimen } from "../resources/tagged_resources";
 import { setActiveRegimenByName } from "./set_active_regimen_by_name";
-import { t } from "i18next";
+
 import { ToolTips } from "../constants";
+import { t } from "../i18next_wrapper";
 
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {

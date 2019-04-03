@@ -6,10 +6,11 @@ import {
 import { betterCompact } from "../../util";
 import { TaggedTool, TaggedPoint, Vector3 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { t } from "i18next";
+
 import { capitalize } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";
 import { Point } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 const TOOL: "Tool" = "Tool";
 type ToolAndLocation = { tool: TaggedTool, location: Vector3 };

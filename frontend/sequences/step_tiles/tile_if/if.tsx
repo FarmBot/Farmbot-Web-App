@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
-import { t } from "i18next";
+
 import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
@@ -14,6 +14,7 @@ import { ALLOWED_OPS } from "farmbot/dist";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
 import { isString } from "lodash";
+import { t } from "../../../i18next_wrapper";
 
 const IS_UNDEFINED: ALLOWED_OPS = "is_undefined";
 const label_ops: Record<ALLOWED_OPS, string> = {

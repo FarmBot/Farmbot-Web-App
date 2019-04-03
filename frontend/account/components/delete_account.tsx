@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   Widget,
   WidgetHeader,
@@ -10,6 +10,7 @@ import {
 import { DeleteAccountProps, DeleteAccountState } from "../interfaces";
 import { Content } from "../../constants";
 import { BlurablePassword } from "../../ui/blurable_password";
+import { t } from "../../i18next_wrapper";
 
 export class DeleteAccount extends
   React.Component<DeleteAccountProps, DeleteAccountState> {

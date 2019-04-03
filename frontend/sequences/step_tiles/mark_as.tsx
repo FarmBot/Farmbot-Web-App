@@ -1,7 +1,7 @@
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { t } from "i18next";
+
 import { ToolTips } from "../../constants";
 import * as React from "react";
 import { unpackStep } from "./mark_as/unpack_step";
@@ -9,6 +9,7 @@ import { ResourceUpdate } from "farmbot";
 import { resourceList } from "./mark_as/resource_list";
 import { actionList } from "./mark_as/action_list";
 import { commitStepChanges } from "./mark_as/commit_step_changes";
+import { t } from "../../i18next_wrapper";
 
 interface MarkAsState { nextResource: DropDownItem | undefined }
 const NONE: DropDownItem = { value: 0, label: "" };

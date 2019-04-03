@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { error } from "farmbot-toastr";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
@@ -10,6 +10,7 @@ import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { uniq } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {

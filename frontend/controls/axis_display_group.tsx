@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col } from "../ui/index";
 import { AxisDisplayGroupProps } from "./interfaces";
 import { isNumber } from "lodash";
+import { t } from "../i18next_wrapper";
 
 const Axis = ({ val }: { val: number | undefined }) => <Col xs={3}>
   <input disabled value={isNumber(val) ? val : "---"} />

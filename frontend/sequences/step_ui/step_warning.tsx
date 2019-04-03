@@ -1,7 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 import { Xyz } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 interface StepWarningProps {
   warning: string;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { getDevice } from "../device";
 import { FarmwareConfigMenuProps } from "./interfaces";
 import { commandErr } from "../devices/actions";
@@ -7,6 +7,7 @@ import { toggleWebAppBool } from "../config_storage/actions";
 import { destroyAll } from "../api/crud";
 import { success, error } from "farmbot-toastr";
 import { Feature } from "../devices/interfaces";
+import { t } from "../i18next_wrapper";
 
 /** First-party Farmware settings. */
 export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {

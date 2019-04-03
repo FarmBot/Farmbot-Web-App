@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
@@ -14,6 +14,7 @@ import { MobileMenu } from "./mobile_menu";
 import { Popover, Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
 import { RunTour } from "../help/tour";
+import { t } from "../i18next_wrapper";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 

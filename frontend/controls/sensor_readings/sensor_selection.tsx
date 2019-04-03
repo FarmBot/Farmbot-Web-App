@@ -1,8 +1,9 @@
 import * as React from "react";
 import { FBSelect, DropDownItem } from "../../ui";
-import { t } from "i18next";
+
 import { TaggedSensor } from "farmbot";
 import { SensorSelectionProps } from "./interfaces";
+import { t } from "../../i18next_wrapper";
 
 const ALL_CHOICE: DropDownItem = { label: t("All"), value: "" };
 

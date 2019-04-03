@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Saucer } from "../../../ui/index";
-import { t } from "i18next";
+
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
 import { last, isNumber } from "lodash";
@@ -8,6 +8,7 @@ import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
 import { ConfigurationName } from "farmbot";
+import { t } from "../../../i18next_wrapper";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {

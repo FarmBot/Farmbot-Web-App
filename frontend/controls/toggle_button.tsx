@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { ToggleButtonProps } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {

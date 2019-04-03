@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-import { t } from "i18next";
+
 import { ToggleButton } from "../../../controls/toggle_button";
 import { Content } from "../../../constants";
 import { updateConfig } from "../../actions";
 import { ColWidth } from "../farmbot_os_settings";
 import { AutoSyncRowProps } from "./interfaces";
+import { t } from "../../../i18next_wrapper";
 
 export function AutoSyncRow(props: AutoSyncRowProps) {
   const autoSync = props.sourceFbosConfig("auto_sync");

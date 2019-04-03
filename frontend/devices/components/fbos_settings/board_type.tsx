@@ -1,12 +1,13 @@
 import * as React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../../ui/index";
-import { t } from "i18next";
+
 import { info } from "farmbot-toastr";
 import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
 import { Feature } from "../../interfaces";
+import { t } from "../../../i18next_wrapper";
 
 const ARDUINO = { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" };
 const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
