@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { FindHome, Xyz, TaggedSequence } from "farmbot";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -9,6 +9,7 @@ import {
 } from "../step_ui/index";
 import { some } from "lodash";
 import { StepRadio } from "../step_ui/step_radio";
+import { t } from "../../i18next_wrapper";
 
 export function TileFindHome(props: StepParams) {
   if (props.currentStep.kind === "find_home") {

@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Row, Col, Markdown } from "../../../ui/index";
-import { t } from "i18next";
+
 import { OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
 import { ColWidth } from "../farmbot_os_settings";
 import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
+import { t } from "../../../i18next_wrapper";
 
 const getVersionString =
   (fbosVersion: string | undefined, onBeta: boolean | undefined): string => {

@@ -18,7 +18,7 @@ import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
-import { t } from "i18next";
+
 import { MarkAs } from "./mark_as";
 import { TileUnknown } from "./tile_unknown";
 import { forceSetStepTag } from "../../resources/sequence_tagging";
@@ -30,6 +30,7 @@ import { TileFirmwareAction } from "./tile_firmware_action";
 import { TileSetZero } from "./tile_set_zero";
 import { TileCalibrate } from "./tile_calibrate";
 import { TileMoveHome } from "./tile_move_home";
+import { t } from "../../i18next_wrapper";
 
 interface MoveParams {
   step: Step;

@@ -4,7 +4,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 /** A stripped down version of OFSearchResult */
 interface Result {

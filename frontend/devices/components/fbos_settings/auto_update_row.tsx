@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-import { t } from "i18next";
+
 import { ColWidth } from "../farmbot_os_settings";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
 import { Content } from "../../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
+import { t } from "../../../i18next_wrapper";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");

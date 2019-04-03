@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { docLink, DocSlug } from "./doc_link";
+import { t } from "../i18next_wrapper";
 
 interface WidgetHeaderProps {
   children?: React.ReactNode;

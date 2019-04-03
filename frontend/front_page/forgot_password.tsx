@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row } from "../ui/index";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
 
 export interface ForgotPasswordProps {
   onGoBack(e: React.MouseEvent<HTMLButtonElement>): void;

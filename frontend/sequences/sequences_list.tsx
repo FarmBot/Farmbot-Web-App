@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { push } from "../history";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
@@ -12,6 +12,7 @@ import { Link } from "../link";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { UUID, VariableNameSet } from "../resources/interfaces";
 import { variableList } from "./locals_list/variable_support";
+import { t } from "../i18next_wrapper";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body

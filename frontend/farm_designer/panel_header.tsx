@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { getPathArray } from "../history";
 import { Link } from "../link";
 import { DevSettings } from "../account/dev/dev_support";
+import { t } from "../i18next_wrapper";
 
 export enum Panel {
   Map = "Map",

@@ -1,4 +1,4 @@
-import { t } from "i18next";
+
 import { error } from "farmbot-toastr";
 import {
   SafeError,
@@ -13,6 +13,7 @@ import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
 import { Session } from "./session";
 import { get } from "lodash";
+import { t } from "./i18next_wrapper";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   dispatchNetworkUp("user.api", undefined, "responseFulfilled()");

@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { emergencyLock, emergencyUnlock } from "../actions";
 import { EStopButtonProps } from "../interfaces";
 import { isBotUp } from "../must_be_online";
+import { t } from "../../i18next_wrapper";
 
 export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {

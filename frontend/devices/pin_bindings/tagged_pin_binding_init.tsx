@@ -7,7 +7,7 @@ import {
 import { PinBindingListItems } from "./interfaces";
 import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 /** Return the correct Pin Binding resource according to binding type. */
 export const pinBindingBody =

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui/index";
 import { TickerListProps } from "./interfaces";
-import { t } from "i18next";
+
 import { formatLogTime } from "../logs/index";
 import { safeNumericSetting } from "../session";
 import { ErrorBoundary } from "../error_boundary";
@@ -12,6 +12,7 @@ import { isNumber } from "lodash";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Link } from "../link";
 import { MessageType } from "../sequences/interfaces";
+import { t } from "../i18next_wrapper";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>

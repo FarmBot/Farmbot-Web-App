@@ -1,10 +1,11 @@
 import * as React from "react";
 import { LogsFilterMenuProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-import { t } from "i18next";
+
 import { Filters } from "../interfaces";
 import { startCase } from "lodash";
 import { MESSAGE_TYPES } from "../../sequences/interfaces";
+import { t } from "../../i18next_wrapper";
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */

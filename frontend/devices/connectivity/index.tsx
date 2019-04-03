@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
-import { t } from "i18next";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { RetryBtn } from "./retry_btn";
 import { SpecialStatus, InformationalSettings } from "farmbot";
@@ -9,6 +8,7 @@ import { ToolTips } from "../../constants";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay
 } from "../components/fbos_settings/fbos_details";
+import { t } from "../../i18next_wrapper";
 
 interface Props {
   onRefresh(): void;

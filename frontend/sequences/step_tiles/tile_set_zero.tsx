@@ -3,7 +3,7 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { StepRadio } from "../step_ui/step_radio";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export function TileSetZero(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;

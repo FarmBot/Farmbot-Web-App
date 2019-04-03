@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { t } from "i18next";
+
 import { Row, Col, DropDownItem } from "../../ui/index";
 import { Execute, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
@@ -17,6 +17,7 @@ import {
 } from "../locals_list/variable_support";
 import { AllowedVariableNodes } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 /** Replaces the execute step body with a new array of variables. */
 const assignVariable = (props: ExecBlockParams) =>

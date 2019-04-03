@@ -1,11 +1,12 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
 import { TaggedPlant } from "../map/interfaces";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
+import { t } from "../../i18next_wrapper";
 
 @connect(mapStateToProps)
 export class EditPlantInfo extends PlantInfoBase {

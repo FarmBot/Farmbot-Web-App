@@ -17,11 +17,12 @@ import {
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
-import { t } from "i18next";
+
 import { getWebAppConfig } from "../resources/getters";
 import { chain } from "lodash";
 import { FarmwareManifestInfo, Farmwares } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
+import { t } from "../i18next_wrapper";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>

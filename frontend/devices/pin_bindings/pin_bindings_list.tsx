@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import {
   bindingTypeLabelLookup, specialActionLabelLookup,
   generatePinLabel, sortByNameAndPin
@@ -11,6 +10,7 @@ import { findSequenceById } from "../../resources/selectors";
 import { PinBindingColWidth } from "./pin_bindings";
 import { PinBindingsListProps } from "./interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
+import { t } from "../../i18next_wrapper";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
   const { pinBindings, resources, dispatch } = props;

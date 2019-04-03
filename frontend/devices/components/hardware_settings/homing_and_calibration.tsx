@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
@@ -11,6 +10,7 @@ import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { minFwVersionCheck } from "../../../util";
+import { t } from "../../../i18next_wrapper";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { WidgetBody, Row } from "../ui/index";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
 
 export function ResendPanelBody(props: { onClick(): void; }) {
   return <WidgetBody>

@@ -7,10 +7,11 @@ import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../ui/index";
 import moment from "moment";
-import { t } from "i18next";
+
 import { isString } from "lodash";
 import { betterCompact, bail } from "../../util";
 import { msToTime, timeToMs } from "./utils";
+import { t } from "../../i18next_wrapper";
 
 const BAD_UUID = "WARNING: Not a sequence UUID.";
 

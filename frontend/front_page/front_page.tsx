@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
+
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, attachToRoot } from "../util";
@@ -16,6 +16,7 @@ import { Content } from "../constants";
 import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export const attachFrontPage =
   () => attachToRoot(FrontPage, {});

@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   Widget, WidgetBody, WidgetHeader, docLink, DOC_SLUGS, DocSlug
 } from "../ui";
+import { t } from "../i18next_wrapper";
 
 const documentationLink = (slug: DocSlug, label: string) =>
   <a href={docLink(slug)}

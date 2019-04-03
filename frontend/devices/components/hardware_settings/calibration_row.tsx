@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { getDevice } from "../../../device";
 import { Axis } from "../../interfaces";
 import { LockableButton } from "../lockable_button";
@@ -8,6 +8,7 @@ import { ToolTips } from "../../../constants";
 import { Row, Col } from "../../../ui/index";
 import { CalibrationRowProps } from "../interfaces";
 import { commandErr } from "../../actions";
+import { t } from "../../../i18next_wrapper";
 
 const calibrate = (axis: Axis) => getDevice()
   .calibrate({ axis })

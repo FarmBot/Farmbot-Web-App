@@ -3,7 +3,7 @@ import { pinToggle } from "../../devices/actions";
 import { PeripheralListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { KeyValShowRow } from "../key_val_show_row";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export function PeripheralList(props: PeripheralListProps) {
   const { pins, disabled } = props;

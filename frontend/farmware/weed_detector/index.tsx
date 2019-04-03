@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { DetectorState } from "./interfaces";
 import { Row, Col } from "../../ui/index";
-import { t } from "i18next";
+
 import { deletePoints, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
@@ -13,6 +13,7 @@ import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { envSave } from "./remote_env/actions";
+import { t } from "../../i18next_wrapper";
 
 export const namespace = (prefix: string) => (key: string): WDENVKey => {
   const namespacedKey = prefix + key;

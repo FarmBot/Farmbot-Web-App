@@ -5,8 +5,9 @@ import { defensiveClone } from "../util";
 import { push } from "../history";
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
-import { t } from "i18next";
+
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
+import { t } from "../i18next_wrapper";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,

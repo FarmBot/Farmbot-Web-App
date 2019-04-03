@@ -1,7 +1,8 @@
 import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
-import { t } from "i18next";
+
 import { TourContent } from "../constants";
+import { t } from "../i18next_wrapper";
 
 export enum Tours {
   gettingStarted = "gettingStarted",

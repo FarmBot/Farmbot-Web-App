@@ -7,8 +7,9 @@ import {
   WidgetHeader,
   Row,
 } from "../ui/index";
-import { t } from "i18next";
+
 import { BlurablePassword } from "../ui/blurable_password";
+import { t } from "../i18next_wrapper";
 
 export interface LoginProps {
   /** Attributes */

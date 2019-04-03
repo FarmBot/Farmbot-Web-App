@@ -1,9 +1,10 @@
-import { t } from "i18next";
+
 import { editStep } from "../../api/crud";
 import { WritePin, SequenceBodyItem, ALLOWED_PIN_MODES } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { StepParams } from "../interfaces";
 import { isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 enum PinMode {
   digital = 0,

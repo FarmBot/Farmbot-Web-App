@@ -1,9 +1,10 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { isString } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export abstract class PlantInfoBase extends
   React.Component<EditPlantInfoProps, {}> {

@@ -1,6 +1,7 @@
-import { t } from "i18next";
+
 import { DropDownItem } from "../../ui/index";
 import { SPECIAL_VALUES } from "./remote_env/constants";
+import { t } from "../../i18next_wrapper";
 
 /** Mapping of SPECIAL_VALUE numeric codes into corresponding drop down items. */
 export const SPECIAL_VALUE_DDI: { [index: number]: DropDownItem } = {

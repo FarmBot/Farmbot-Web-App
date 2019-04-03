@@ -3,7 +3,7 @@ import { Row, Col } from "../../ui";
 import { TaggedDiagnosticDump } from "farmbot";
 import { destroy } from "../../api/crud";
 import { ago } from "../connectivity/status_checks";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export interface Props {
   diag: TaggedDiagnosticDump;
@@ -20,8 +20,7 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
   render() {
     return <Row>
       <Col xsOffset={3} xs={8}>
-        {t("Report {{ticket}} (Saved {{age}})",
-          { ticket: this.ticket, age: this.age })}
+        {t("Report {{ticket}} (Saved {{age}})", { ticket: this.ticket, age: this.age })}
       </Col>
       <Col xs={1}>
         <button

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
@@ -12,6 +12,7 @@ import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { LeftPanel, CenterPanel, RightPanel } from "../ui";
 import { resourceUsageList } from "../resources/in_use";
+import { t } from "../i18next_wrapper";
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {

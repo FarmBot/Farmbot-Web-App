@@ -3,7 +3,7 @@ import { Row, Col } from "../ui";
 import { Everything } from "../interfaces";
 import { BotPosition } from "../devices/interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { moveAbs } from "../devices/actions";
 import { history } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
@@ -17,6 +17,7 @@ import {
 } from "./plants/designer_panel";
 import { DevSettings } from "../account/dev/dev_support";
 import { DesignerNavTabs } from "./panel_header";
+import { t } from "../i18next_wrapper";
 
 export function mapStateToProps(props: Everything) {
   return {

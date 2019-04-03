@@ -2,7 +2,7 @@ import * as React from "react";
 import { StatusRowProps } from "./connectivity_row";
 import { CowardlyDictionary } from "../../util";
 import { Color } from "../../ui/index";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export interface ConnectivityDiagramProps {
   rowData: StatusRowProps[];

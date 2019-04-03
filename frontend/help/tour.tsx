@@ -1,9 +1,10 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import Joyride, { Step as TourStep, CallBackProps } from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
 import { TOUR_STEPS, tourPageNavigation } from "./tours";
+import { t } from "../i18next_wrapper";
 
 const strings = () => ({
   back: t("Back"),

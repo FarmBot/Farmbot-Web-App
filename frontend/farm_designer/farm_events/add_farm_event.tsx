@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
@@ -17,6 +17,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../plants/designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
+import { t } from "../../i18next_wrapper";
 
 interface State {
   uuid: string;

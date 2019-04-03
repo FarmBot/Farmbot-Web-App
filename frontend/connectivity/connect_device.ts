@@ -7,7 +7,7 @@ import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-import { t } from "i18next";
+
 import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
@@ -27,6 +27,7 @@ import { onLogs } from "./log_handlers";
 import { ChannelName, MessageType } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
+import { t } from "../i18next_wrapper";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical

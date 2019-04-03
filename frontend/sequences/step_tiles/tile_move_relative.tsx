@@ -1,10 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col } from "../../ui/index";
+import { t } from "../../i18next_wrapper";
 
 export function TileMoveRelative(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;

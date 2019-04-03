@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
@@ -14,6 +14,7 @@ import {
   setArgsDotPinNumber,
   pinsAsDropDownsWritePin
 } from "./pin_and_peripheral_support";
+import { t } from "../../i18next_wrapper";
 
 export function TileWritePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence, shouldDisplay

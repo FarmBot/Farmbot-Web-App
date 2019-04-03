@@ -1,9 +1,10 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn
 } from "../../ui/index";
 import { SettingsPropTypes } from "../interfaces";
+import { t } from "../../i18next_wrapper";
 
 export class Settings extends React.Component<SettingsPropTypes, {}> {
   render() {

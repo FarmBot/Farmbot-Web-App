@@ -1,5 +1,5 @@
 import axios from "axios";
-import { t } from "i18next";
+
 import { success, error } from "farmbot-toastr";
 import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
@@ -8,6 +8,7 @@ import { getDevice } from "../../device";
 import { noop, chunk } from "lodash";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 export function deletePoints(
   pointName: string, createdBy: string, cb?: ProgressCallback): Thunk {
