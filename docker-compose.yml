@@ -51,7 +51,7 @@ services:
     env_file: .env
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
     expose:      ["15672"] # Management API (optional)
-    ports:       ["5672", "1883", "8883", "3002"]
+    ports:       ["3002:15675", "5672", "1883", "8883"]
     volumes:     ["./docker_volumes/rabbit:/farmbot"]
 
   web:
