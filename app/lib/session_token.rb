@@ -13,10 +13,12 @@ class SessionToken < AbstractJwtToken
   MQTT_WS = ENV["MQTT_WS"] || DEFAULT_MQTT_WS
   EXPIRY = 40.days
   VHOST = ENV.fetch("MQTT_VHOST") { "/" }
-  BETA_OS_URL = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
+  BETA_OS_URL   = ENV["BETA_OTA_URL"] || DEFAULT_BETA_URL
+  DEFAULT_OS    = "https://api.github.com/repos/farmbot/farmbot_os/releases" +
+  "/latest"
   # Originally imported from `CalculateVersion` mutation (check source control
   # for context) - RC
-  OS_RELEASE_SERVER = ENV.fetch("OS_UPDATE_SERVER") { DEFAULT_OS }
+  OS_RELEASE_SERVER = ENV.fetch("OS_UPDATE_SERVER", DEFAULT_OS)
 
   def self.issue_to(user,
                     iat: Time.now.to_i,
