@@ -1,3 +1,30 @@
+# SERVICE LAYOUT:
+#
+# ================================================
+#                +-----+ +-------+
+#                | db  | | redis |
+#                +-----+ +-------+
+#                      ^ ^
+#                      | |
+#                   +-------+
+#                   |  web  |
+#                   +-------+
+#                       ^
+#                       |
+#       +----------------------------------+
+#       |              mqtt                |
+#       +----------------------------------+
+#        ^               ^             ^
+#        |               |             |
+# +-------------+ +-------------+ +-------------+
+# | log_digests | | rabbit_jobs | | delayed_job |
+# +-------------+ +-------------+ +-------------+
+#
+#             +--------+ +------------+
+#             | parcel | | typescript |
+#             +--------+ +------------+
+# ================================================
+
 version: '3.4'
 services:
   redis:
@@ -37,38 +64,36 @@ services:
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
     volumes: ["./docker_volumes/rabbit:/farmbot"]
 
-  typescript:
-    env_file: ".env"
-    image: farmbot_web
-    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    depends_on: ["parcel"]
-    command: node_modules/typescript/bin/tsc -w --noEmit
-
   parcel:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    depends_on: ["db", "mqtt", "web"]
     command: bundle exec rake api:serve_assets
     ports: ["3808:3808"]
+
+  typescript:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    command: node_modules/typescript/bin/tsc -w --noEmit
 
   delayed_job:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    depends_on: ["db", "mqtt", "web"]
+    depends_on: ["mqtt"]
     command: bundle exec rake jobs:work
 
   log_digests:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    depends_on: ["db", "redis"]
+    depends_on: ["mqtt"]
     command: bundle exec rake api:log_digest
 
   rabbit_jobs:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    depends_on: ["db", "mqtt"]
+    depends_on: ["mqtt"]
     command: bundle exec rails r lib/rabbit_workers.rb
