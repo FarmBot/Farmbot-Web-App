@@ -1,7 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
-import { TaggedSequence, VariableDeclaration } from "farmbot";
+import { TaggedSequence, ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
@@ -17,7 +17,8 @@ import {
 } from "../pin_and_peripheral_support";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
-import { addOrEditVarDeclaration } from "../../locals_list/declaration_support";
+import { addOrEditParamApps, variableList } from "../../locals_list/variable_support";
+import { t } from "../../../i18next_wrapper";
 
 export interface IfParams {
   currentSequence: TaggedSequence;
@@ -139,7 +140,9 @@ export let IfBlockDropDownHandler = (props: ThenElseParams) => {
   function onChange(e: DropDownItem) {
     if (e.value && isNumber(e.value)) {
       const v = e.value;
-      overwriteStep({ kind: "execute", args: { sequence_id: v } });
+      const uuid = findSequenceById(props.resources, v).uuid;
+      const body = variableList(props.resources.sequenceMetas[uuid]);
+      overwriteStep({ kind: "execute", args: { sequence_id: v }, body });
     } else {
       overwriteStep({ kind: "nothing", args: {} });
     }
@@ -151,10 +154,10 @@ export let IfBlockDropDownHandler = (props: ThenElseParams) => {
   const calledSequenceVariableData = calleeUuid ?
     props.resources.sequenceMetas[calleeUuid] : undefined;
 
-  /** Replaces the execute step body with a new array of declarations. */
-  const assignVariable = (declarations: VariableDeclaration[]) =>
-    (variable: VariableDeclaration) => {
-      block.body = addOrEditVarDeclaration(declarations, variable);
+  /** Replaces the execute step body with a new array of bodyVariables. */
+  const assignVariable = (bodyVariables: ParameterApplication[]) =>
+    (variable: ParameterApplication) => {
+      block.body = addOrEditParamApps(bodyVariables, variable);
       overwriteStep(block);
     };
 

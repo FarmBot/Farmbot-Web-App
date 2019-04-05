@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui";
-import { t } from "i18next";
+
 import { ColWidth } from "../farmbot_os_settings";
+import { t } from "../../../i18next_wrapper";
 
 export interface FbosButtonRowProps {
   botOnline: boolean;

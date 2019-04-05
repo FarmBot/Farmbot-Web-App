@@ -10,6 +10,7 @@ import { dispatchNetworkDown } from ".";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { globalQueue } from "./batch_queue";
 import { isUndefined, get } from "lodash";
+import { MessageType } from "../sequences/interfaces";
 
 const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
   "type",
@@ -43,7 +44,7 @@ export const onLogs =
       //                   inband signalling (for now).
       // TODO:             Make a `bot/device_123/offline` channel.
       const died =
-        msg.message.includes("is offline") && msg.type === "error";
+        msg.message.includes("is offline") && msg.type === MessageType.error;
       died && dispatchNetworkDown("bot.mqtt", undefined, "Got offline message");
     }
   };

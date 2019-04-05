@@ -1,4 +1,7 @@
-jest.mock("../../../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../../../history", () => ({
+  history: { push: jest.fn() },
+  getPathArray: () => [],
+}));
 
 let mockAtMax = false;
 let mockAtMin = false;

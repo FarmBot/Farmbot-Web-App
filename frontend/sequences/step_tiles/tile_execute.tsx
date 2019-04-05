@@ -1,8 +1,8 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { t } from "i18next";
+
 import { Row, Col, DropDownItem } from "../../ui/index";
-import { Execute, VariableDeclaration } from "farmbot/dist";
+import { Execute, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
 import { editStep } from "../../api/crud";
@@ -13,15 +13,16 @@ import { ShouldDisplay } from "../../devices/interfaces";
 import { findSequenceById } from "../../resources/selectors_by_id";
 import { LocalsList } from "../locals_list/locals_list";
 import {
-  addOrEditVarDeclaration, declarationList
-} from "../locals_list/declaration_support";
-import { AllowedDeclaration } from "../locals_list/locals_list_support";
+  addOrEditParamApps, variableList
+} from "../locals_list/variable_support";
+import { AllowedVariableNodes } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
-/** Replaces the execute step body with a new array of declarations. */
+/** Replaces the execute step body with a new array of variables. */
 const assignVariable = (props: ExecBlockParams) =>
-  (declarations: VariableDeclaration[]) =>
-    (variable: VariableDeclaration) => {
+  (variables: ParameterApplication[]) =>
+    (variable: ParameterApplication) => {
       const { dispatch, currentSequence, currentStep, index } = props;
 
       dispatch(editStep({
@@ -29,7 +30,7 @@ const assignVariable = (props: ExecBlockParams) =>
         sequence: currentSequence,
         index: index,
         executor(step) {
-          step.body = addOrEditVarDeclaration(declarations, variable);
+          step.body = addOrEditParamApps(variables, variable);
         }
       }));
     };
@@ -62,7 +63,7 @@ export class RefactoredExecuteBlock
 
   /**
    * Replace `sequence_id` with the new selection and fill the execute step
-   * body with variable declarations for unassigned variables.
+   * body with parameter applications for unassigned variables.
    */
   changeSelection = (input: DropDownItem) => {
     const { dispatch, currentSequence, currentStep, index, resources
@@ -75,7 +76,7 @@ export class RefactoredExecuteBlock
         if (isNumber(input.value)) {
           step.args.sequence_id = input.value;
           const sequenceUuid = findSequenceById(resources, input.value).uuid;
-          step.body = declarationList(resources.sequenceMetas[sequenceUuid]);
+          step.body = variableList(resources.sequenceMetas[sequenceUuid]);
         }
       }
     }));
@@ -113,13 +114,13 @@ export class RefactoredExecuteBlock
           {!!calledSequenceVariableData &&
             <Col xs={12}>
               <LocalsList
-                declarations={currentStep.body}
+                bodyVariables={currentStep.body}
                 variableData={calledSequenceVariableData}
                 sequenceUuid={currentSequence.uuid}
                 resources={resources}
                 onChange={assignVariable(this.props)(currentStep.body || [])}
                 locationDropdownKey={JSON.stringify(currentSequence)}
-                allowedDeclarations={AllowedDeclaration.identifier}
+                allowedVariableNodes={AllowedVariableNodes.identifier}
                 shouldDisplay={this.props.shouldDisplay} />
             </Col>}
         </Row>

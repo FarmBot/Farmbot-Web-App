@@ -63,7 +63,7 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
             const child = (await info.getChild())[info.childKey];
             callback(comp, child, info);
           } else {
-            callback((await info.getModule())[info.key], undefined, info);
+            callback(comp, undefined, info);
           }
         } catch (e) {
           console.error(e);
@@ -89,8 +89,9 @@ const key = "FarmDesigner";
 /** Bind the route to a callback by calling in a function that passes the
   callback in as the first argument.
  *
- * DO NOT RE-ORDER ITEMS FOR READABILITY- they are order dependant.
+ * DO NOT RE-ORDER ITEMS FOR READABILITY--they are order-dependent.
  * Stuff will break if the route order is changed.
+ * (e.g., must be "a" then "a/:b/c" then "a/:b", 404 must be last, etc.)
  */
 export const UNBOUND_ROUTES = [
   route({
@@ -187,10 +188,10 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/move_to",
+    $: "/designer/move_to",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/move_to"),
+    getChild: () => import("./farm_designer/move_to"),
     childKey: "MoveTo"
   }),
   route({

@@ -1,4 +1,4 @@
-# Creates asymetric key pairs for cryptographically secure operations.
+# Creates asymmetric key pairs for cryptographically secure operations.
 # Mostly used for creation of jwt.pem- which is used to verify authenticity of
 # JSON Web Tokens
 class KeyGen

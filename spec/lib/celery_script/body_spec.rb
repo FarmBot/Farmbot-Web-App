@@ -3,9 +3,9 @@ describe "Body nodes" do
   test_corpus = CeleryScript::Corpus
                   .new
                   .arg(:foo, [Integer])
-                  .node(:wrong, [], [])
-                  .node(:bar, [:foo], [])
-                  .node(:baz, [], [:bar])
+                  .node(:wrong, args: [],     body: [])
+                  .node(:bar,   args: [:foo], body: [])
+                  .node(:baz,   args: [],     body: [:bar])
   let(:device) { FactoryBot.create(:device) }
 
   it "always always empty bodies" do

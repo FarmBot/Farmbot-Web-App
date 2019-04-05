@@ -1,83 +1,99 @@
+# SERVICE LAYOUT:
+#
+# ================================================
+#                +-----+ +-------+
+#                | db  | | redis |
+#                +-----+ +-------+
+#                      ^ ^
+#                      | |
+#                   +-------+
+#                   |  web  |
+#                   +-------+
+#                       ^
+#                       |
+#       +----------------------------------+
+#       |              mqtt                |
+#       +----------------------------------+
+#        ^               ^             ^
+#        |               |             |
+# +-------------+ +-------------+ +-------------+
+# | log_digests | | rabbit_jobs | | delayed_job |
+# +-------------+ +-------------+ +-------------+
+#
+#             +--------+ +------------+
+#             | parcel | | typescript |
+#             +--------+ +------------+
+# ================================================
+
 version: '3.4'
-
-x-db_user: &db_user
-  depends_on: ["db", "redis"]
-
-x-rails: &rails
-  image:    farmbot_web
-  volumes:
-    - .:/farmbot
-    - ./docker_volumes/bundle_cache:/bundle
-
-x-base_config: &base_config
-  env_file: .env
-  # restart: unless-stopped
 services:
   redis:
-    <<: *base_config
+    env_file: ".env"
     image: redis
     volumes:
-     - ./docker_volumes/redis/data:/data
-     - ./docker_volumes/redis/conf:/usr/local/etc/redis
-    ports: ["6379:6379"]
-  db:          # ====================
-    <<: *base_config
+      - "./docker_volumes/redis/data:/data"
+      - "./docker_volumes/redis/conf:/usr/local/etc/redis"
+    expose: ["6379"]
+
+  db:
+    env_file: ".env"
     image: postgres
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
-  web:         # ====================
-    <<: *base_config
-    <<: *db_user
-    <<: *rails
-    stdin_open: true # Needed for binding.pry
-    tty: true        # Needed for binding.pry
+
+  web:
+    env_file: ".env"
+    depends_on: ["db", "redis"]
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    stdin_open: true
+    tty: true
     build:
-      context: .
+      context: "."
       dockerfile: docker_configs/api.Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development -p 3000 -b 0.0.0.0"
-    ports: ["3000:3000"] # Web / API
-  mqtt:        # ====================
-    <<: *base_config
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development
+      -p 3000 -b 0.0.0.0"
+    ports: ["3000:3000"]
+
+  mqtt:
+    env_file: ".env"
     build:
-      context: ./docker_configs
+      context: "./docker_configs"
       dockerfile: rabbitmq.Dockerfile
-    ports:
-     - "5672:5672"   # AMQP (RabbitMQ)
-     - "1883:1883"   # MQTT
-     - "8883:8883"   # MQTT over TLS/SSL
-     - "3002:15675"  # MQTT over WebSockets
-     - "15672:15672" # Management API
+    ports: ["5672:5672", "1883:1883", "8883:8883", "3002:15675", "15672:15672"]
     depends_on: ["web"]
-    environment:
-     - RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config
-    volumes:
-     - ./docker_volumes/rabbit:/farmbot
-  typescript:
-    <<: *base_config
-    <<: *rails
-    depends_on: ["parcel"]
-    command: node_modules/typescript/bin/tsc -w --noEmit
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-  parcel:     # ====================
-    <<: *base_config
-    <<: *rails
-    depends_on: ["db","mqtt", "web"]
+    environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
+    volumes: ["./docker_volumes/rabbit:/farmbot"]
+
+  parcel:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     command: bundle exec rake api:serve_assets
-    ports: ["3808:3808"] # Parcel HMR Server
-  delayed_job: # ====================
-    <<: *base_config
-    <<: *rails
-    depends_on: ["db","mqtt", "web"]
+    ports: ["3808:3808"]
+
+  typescript:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    command: node_modules/typescript/bin/tsc -w --noEmit
+
+  delayed_job:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    depends_on: ["mqtt"]
     command: bundle exec rake jobs:work
-  log_digests: # ====================
-    <<: *base_config
-    <<: *rails
-    <<: *db_user
+
+  log_digests:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    depends_on: ["mqtt"]
     command: bundle exec rake api:log_digest
-  rabbit_jobs: # ====================
-    <<: *base_config
-    <<: *rails
-    depends_on: ["db","mqtt"]
+
+  rabbit_jobs:
+    env_file: ".env"
+    image: farmbot_web
+    volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    depends_on: ["mqtt"]
     command: bundle exec rails r lib/rabbit_workers.rb

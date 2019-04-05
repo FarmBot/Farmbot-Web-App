@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Widget, WidgetBody, WidgetHeader } from "../../ui";
 import { EStopButton } from "../../devices/components/e_stop_btn";
 import { MustBeOnline } from "../../devices/must_be_online";
@@ -14,6 +14,7 @@ import { BotPositionRows } from "./bot_position_rows";
 import { MotorPositionPlot } from "./motor_position_plot";
 import { Popover, Position } from "@blueprintjs/core";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { t } from "../../i18next_wrapper";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -36,9 +37,7 @@ export class Move extends React.Component<MoveProps, {}> {
             toggle={this.toggle}
             getValue={this.getValue} />
         </Popover>
-        <EStopButton
-          bot={this.props.bot}
-          user={this.props.user} />
+        <EStopButton bot={this.props.bot} />
       </WidgetHeader>
       <WidgetBody>
         <MustBeOnline

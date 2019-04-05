@@ -11,7 +11,7 @@ import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareList } from "./farmware_list";
-import { t } from "i18next";
+
 import {
   FarmwareForm, needsFarmwareForm, farmwareHelpText
 } from "./farmware_forms";
@@ -19,10 +19,10 @@ import { urlFriendly } from "../util";
 import { history } from "../history";
 import { ToolTips } from "../constants";
 import { FarmwareInfo } from "./farmware_info";
-import { Farmwares } from "./interfaces";
+import { Farmwares, FarmwareManifestInfo } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
-import { FarmwareManifest } from "farmbot";
+import { t } from "../i18next_wrapper";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -82,7 +82,7 @@ const run = (farmwareName: string) => () => {
 
 export const BasicFarmwarePage = ({ farmwareName, farmware }: {
   farmwareName: string,
-  farmware: FarmwareManifest | undefined
+  farmware: FarmwareManifestInfo | undefined
 }) =>
   <div>
     <button
@@ -104,8 +104,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
 
   componentWillMount() {
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
-      const farmwareNames = Object.values(this.props.farmwares)
-        .map(x => x && x.name);
+      const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
       setActiveFarmwareByName(farmwareNames);
     } else {
       // Farmware information not available. Load default Farmware page.

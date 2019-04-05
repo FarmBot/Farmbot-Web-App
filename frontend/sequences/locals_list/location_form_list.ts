@@ -4,13 +4,13 @@ import {
   selectAllActivePoints
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
-import { TaggedTool, TaggedPoint } from "farmbot";
+import { TaggedTool, TaggedPoint, Vector3 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { Vector3 } from "farmbot/dist";
-import { t } from "i18next";
+
 import { capitalize } from "lodash";
 import { joinKindAndId } from "../../resources/reducer_support";
 import { Point } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 const TOOL: "Tool" = "Tool";
 type ToolAndLocation = { tool: TaggedTool, location: Vector3 };
@@ -135,7 +135,7 @@ export const safeEveryPointType = (x: string): EveryPointType => {
 export const everyPointDDI = (value: EveryPointType): DropDownItem =>
   ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
 
-const COORDINATE_DDI = (): DropDownItem =>
+export const COORDINATE_DDI = (): DropDownItem =>
   ({ value: "", label: t("Coordinate"), headingId: "Coordinate" });
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>

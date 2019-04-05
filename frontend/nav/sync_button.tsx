@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { SyncStatus } from "farmbot/dist";
-import { NavButtonProps } from "./interfaces";
+import { SyncButtonProps } from "./interfaces";
 import { sync } from "../devices/actions";
+import { t } from "../i18next_wrapper";
 
 const COLOR_MAPPING: Record<SyncStatus, string> = {
   "synced": "green",
@@ -27,11 +28,7 @@ const TEXT_MAPPING: () => Record<SyncStatus, string> = () => ({
 /** Animation during syncing action */
 const spinner = <span className="btn-spinner sync" />;
 
-export function SyncButton({ user, bot, dispatch, consistent }: NavButtonProps) {
-
-  if (!user) {
-    return <span />;
-  }
+export function SyncButton({ bot, dispatch, consistent }: SyncButtonProps) {
   const { sync_status } = bot.hardware.informational_settings;
   const syncStatus = sync_status || "unknown";
   const normalColor = COLOR_MAPPING[syncStatus] || "red";

@@ -1,11 +1,13 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { JobProgress, ConfigurationName } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";
 import { checkControllerUpdates } from "../../actions";
 import { isString } from "lodash";
 import { BotState, Feature } from "../../interfaces";
+import { Content } from "../../../constants";
+import { t } from "../../../i18next_wrapper";
 
 /** FBOS update button states. */
 enum UpdateButton { upToDate, needsUpdate, unknown, none }
@@ -149,6 +151,7 @@ const buttonVersionStatus =
 /** Shows update availability or download progress. Updates FBOS on click. */
 export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   const { bot, sourceFbosConfig, botOnline } = props;
+  const { controller_version } = bot.hardware.informational_settings;
 
   /** FBOS beta release opt-in setting. */
   const betaOptIn = props.shouldDisplay(Feature.use_update_channel)
@@ -160,11 +163,15 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   /** FBOS update download progress data. */
   const osUpdateJob = (bot.hardware.jobs || {})["FBOS_OTA"];
 
+  const tooOld = controller_version
+    && (semverCompare("6.0.0", controller_version)
+      === SemverResult.LEFT_IS_GREATER ? Content.TOO_OLD_TO_UPDATE : undefined);
+
   return <button
-    className={"fb-button " + buttonStatusProps.color}
+    className={`fb-button ${tooOld ? "yellow" : buttonStatusProps.color}`}
     title={buttonStatusProps.hoverText}
     disabled={isWorking(osUpdateJob) || !botOnline}
     onClick={checkControllerUpdates}>
-    {downloadProgress(osUpdateJob) || buttonStatusProps.text}
+    {tooOld || downloadProgress(osUpdateJob) || buttonStatusProps.text}
   </button>;
 };

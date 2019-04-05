@@ -1,9 +1,11 @@
 import * as React from "react";
 import { LogsFilterMenuProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-import { t } from "i18next";
+
 import { Filters } from "../interfaces";
 import { startCase } from "lodash";
+import { MESSAGE_TYPES } from "../../sequences/interfaces";
+import { t } from "../../i18next_wrapper";
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */
@@ -11,8 +13,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
     ? "green" : "red";
   /** Set the filter level to the same value for all log message types. */
   const setAll = (level: number) => () => {
-    ["success", "busy", "warn", "error", "info", "fun", "debug"]
-      .map((x: keyof Filters) => props.setFilterLevel(x)(level));
+    MESSAGE_TYPES.map((x: keyof Filters) => props.setFilterLevel(x)(level));
   };
   return <div className={"logs-settings-menu"}>
     <fieldset>

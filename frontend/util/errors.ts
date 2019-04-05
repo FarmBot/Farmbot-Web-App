@@ -1,7 +1,8 @@
 import { Dictionary } from "farmbot";
-import { t } from "i18next";
+
 import { Content } from "../constants";
 import { capitalize, map } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export interface AxiosErrorResponse {
   response?: {

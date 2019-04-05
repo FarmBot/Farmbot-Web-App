@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ToolListAndFormProps } from "../interfaces";
-import { t } from "i18next";
+
 import {
   Row,
   Col,
@@ -14,6 +14,7 @@ import { getArrayStatus } from "../../resources/tagged_resources";
 import { edit, destroy, init, saveAll } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { TaggedTool } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
   get newToolName() { return t("Tool ") + (this.props.tools.length + 1); }

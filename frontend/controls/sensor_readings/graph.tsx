@@ -1,9 +1,10 @@
 import * as React from "react";
 import moment from "moment";
 import { range, clamp } from "lodash";
-import { t } from "i18next";
+
 import { SensorReadingPlotProps } from "./interfaces";
 import { calcEndOfPeriod } from "./filter_readings";
+import { t } from "../../i18next_wrapper";
 
 /** For SensorReadings plot. */
 export const calcTimeParams = (timePeriod: number): {

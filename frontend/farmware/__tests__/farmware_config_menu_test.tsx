@@ -11,7 +11,8 @@ jest.mock("../../config_storage/actions", () => ({
   toggleWebAppBool: jest.fn()
 }));
 
-let mockDestroyAllPromise: Promise<void | never> = Promise.reject("error");
+let mockDestroyAllPromise: Promise<void | never> =
+  Promise.reject("error").catch(() => { });
 jest.mock("../../api/crud", () => ({
   destroyAll: jest.fn(() => mockDestroyAllPromise)
 }));
@@ -33,14 +34,14 @@ describe("<FarmwareConfigMenu />", () => {
     shouldDisplay: () => false,
   });
 
-  it("calls install 1st party farmwares", () => {
+  it("calls install 1st party farmware", () => {
     const wrapper = mount(<FarmwareConfigMenu {...fakeProps()} />);
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");
   });
 
-  it("1st party farmwares all installed", () => {
+  it("1st party farmware all installed", () => {
     const p = fakeProps();
     p.firstPartyFwsInstalled = true;
     const wrapper = mount(<FarmwareConfigMenu {...p} />);

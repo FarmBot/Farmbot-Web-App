@@ -4,11 +4,12 @@ import { Collapse, Popover, Position } from "@blueprintjs/core";
 import { FactoryResetRow } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
-import { t } from "i18next";
+
 import { Feature } from "../../interfaces";
 import { FbosButtonRow } from "./fbos_button_row";
 import { Content } from "../../../constants";
 import { reboot, powerOff, restartFirmware } from "../../actions";
+import { t } from "../../../i18next_wrapper";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, sourceFbosConfig, shouldDisplay, botOnline } = props;

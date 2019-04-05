@@ -1,7 +1,6 @@
 import { BotState, Xyz, BotPosition, ShouldDisplay } from "../devices/interfaces";
 import { Vector3, McuParams } from "farmbot/dist";
 import {
-  TaggedUser,
   TaggedWebcamFeed,
   TaggedPeripheral,
   TaggedSensor,
@@ -14,7 +13,6 @@ export interface Props {
   dispatch: Function;
   bot: BotState;
   feeds: TaggedWebcamFeed[];
-  user: TaggedUser | undefined;
   peripherals: TaggedPeripheral[];
   sensors: TaggedSensor[];
   botToMqttStatus: NetworkState;
@@ -25,15 +23,13 @@ export interface Props {
   timeOffset: number;
 }
 
-export type Vector = Vector3;
-
 export interface AxisDisplayGroupProps {
   position: BotPosition;
   label: string;
 }
 
 export interface AxisInputBoxGroupProps {
-  onCommit: (v: Vector) => void;
+  onCommit: (v: Vector3) => void;
   position: BotPosition;
   disabled: boolean | undefined;
 }

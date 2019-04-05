@@ -1,16 +1,15 @@
 import * as React from "react";
-import { t } from "i18next";
-import { FindHome, ALLOWED_AXIS, Xyz, TaggedSequence } from "farmbot";
+
+import { FindHome, Xyz, TaggedSequence } from "farmbot";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
-import { overwrite } from "../../api/crud";
-import { defensiveClone } from "../../util";
 import { ToolTips, Content } from "../../constants";
 import {
   StepWrapper, StepHeader, StepContent, StepWarning, conflictsString
 } from "../step_ui/index";
-import { Row, Col } from "../../ui/index";
 import { some } from "lodash";
+import { StepRadio } from "../step_ui/step_radio";
+import { t } from "../../i18next_wrapper";
 
 export function TileFindHome(props: StepParams) {
   if (props.currentStep.kind === "find_home") {
@@ -36,22 +35,7 @@ export interface FindHomeParams {
   confirmStepDeletion: boolean;
 }
 
-const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
-
 class InnerFindHome extends React.Component<FindHomeParams, {}> {
-
-  isSelected = (axis: ALLOWED_AXIS) => {
-    return this.props.currentStep.args.axis === axis;
-  };
-
-  handleUpdate = (axis: ALLOWED_AXIS) => {
-    const update = defensiveClone(this.props.currentStep);
-    const nextSequence = defensiveClone(this.props.currentSequence).body;
-    update.args.axis = axis;
-    (nextSequence.body || [])[this.props.index] = update;
-    this.props.dispatch(overwrite(this.props.currentSequence, nextSequence));
-  }
-
   get settingConflicts(): Record<Xyz, boolean> {
     const conflicts = { x: false, y: false, z: false };
     if (this.props.hardwareFlags) {
@@ -97,31 +81,12 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
             conflicts={this.settingConflicts} />}
       </StepHeader>
       <StepContent className={className}>
-        <Row>
-          <Col xs={12}>
-            <div className="bottom-content">
-              <div className="channel-fields">
-                <form>
-                  {AXIS_CHOICES.map((axis, i) => {
-                    return <div key={i} style={{ display: "inline" }}>
-                      <label>
-                        <input type="radio"
-                          value={axis}
-                          onChange={(e) => {
-                            const nextVal =
-                              e.currentTarget.value as typeof axis;
-                            this.handleUpdate(nextVal);
-                          }}
-                          checked={this.isSelected(axis)} />
-                        {" "} {t("Find ") + axis}
-                      </label>
-                    </div>;
-                  })}
-                </form>
-              </div>
-            </div>
-          </Col>
-        </Row>
+        <StepRadio
+          currentSequence={currentSequence}
+          currentStep={currentStep}
+          dispatch={dispatch}
+          index={index}
+          label={t("Find")} />
       </StepContent>
     </StepWrapper>;
   }

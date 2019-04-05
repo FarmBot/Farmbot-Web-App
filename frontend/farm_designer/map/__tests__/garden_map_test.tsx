@@ -7,7 +7,7 @@ import { Mode } from "../interfaces";
 let mockMode = Mode.none;
 jest.mock("../util", () => ({
   getMode: () => mockMode,
-  getMapSize: () => ({ h: undefined, w: undefined }),
+  getMapSize: () => ({ h: 100, w: 100 }),
   getGardenCoordinates: jest.fn(),
   transformXY: jest.fn(() => ({ qx: 0, qy: 0 })),
   transformForQuadrant: jest.fn(),
@@ -32,7 +32,7 @@ jest.mock("../background/selection_box_actions", () => ({
   resizeBox: jest.fn(),
 }));
 
-jest.mock("../../plants/move_to", () => ({ chooseLocation: jest.fn() }));
+jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
 
 import * as React from "react";
 import { GardenMap } from "../garden_map";
@@ -47,7 +47,7 @@ import {
   startNewSelectionBox, resizeBox
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
-import { chooseLocation } from "../../plants/move_to";
+import { chooseLocation } from "../../move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
   fakeDesignerState

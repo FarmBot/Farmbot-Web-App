@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
@@ -11,6 +11,7 @@ import {
   celery2DropDown,
   setArgsDotPinNumber
 } from "./pin_and_peripheral_support";
+import { t } from "../../i18next_wrapper";
 
 export function PinMode(props: StepParams) {
   return <Col xs={6} md={3}>

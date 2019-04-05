@@ -68,6 +68,9 @@ describe Api::SequencesController do
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
       expect(Sequence.last).to_not be
+      xpectd = "Expected leaf 'wait' within 'sequence' to be one of: "\
+               "[\"scope_declaration\"] but got wait"
+      expect(json.fetch(:body)).to eq(xpectd)
     end
 
     it 'strips excess `args`' do
@@ -86,7 +89,7 @@ describe Api::SequencesController do
       expect(generated_result.dig(:args, :foo)).to eq(nil)
     end
 
-    it 'disallows typo `data_types` in `locals` declaration' do
+    it 'disallows bad default_values' do
       input = {
         name: "Scare Birds",
         body: [],
@@ -100,7 +103,10 @@ describe Api::SequencesController do
                 kind: "parameter_declaration",
                 args: {
                   label: "parent",
-                  data_type: "PlantSpelledBackwards"
+                  default_value: {
+                    kind: "wait",
+                    args: { milliseconds: 12 }
+                  }
                 }
               }
             ]
@@ -111,10 +117,12 @@ describe Api::SequencesController do
       sign_in user
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid data_type")
+      expect(json.fetch(:body)).to include('"tool"')
+      expect(json[:body]).to include("Expected leaf 'wait' within "\
+                                     "'parameter_declaration' to be one of: [")
     end
 
-    it 'disallows erroneous `data_types` in `locals` declaration' do
+    it 'disallows erroneous `locals` declaration' do
       input = {
         name: "Scare Birds",
         body: [],
@@ -150,7 +158,24 @@ describe Api::SequencesController do
                 kind: "parameter_declaration",
                 args: {
                   label: "parent",
-                  data_type: "point"
+                  default_value: {
+                    kind: "coordinate",
+                    args: {
+                      x: 0,
+                      y: 0,
+                      z: 0
+                    }
+                  }
+                }
+              },
+              {
+                kind: "variable_declaration",
+                args: {
+                  label: "parent2",
+                  data_value: {
+                    kind: "coordinate",
+                    args: { x: 9, y: 9, z: 9, }
+                  }
                 }
               }
             ]
@@ -160,8 +185,24 @@ describe Api::SequencesController do
           {
             kind: "move_absolute",
             args: {
-              location: { kind: "identifier", args: { label: "parent" } },
-              offset:   { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+              location: {
+                kind: "identifier",
+                args: { label: "parent" } },
+              offset:   {
+                kind: "coordinate",
+                args: { x: 0, y: 0, z: 0 } },
+              speed:    100,
+            }
+          },
+          {
+            kind: "move_absolute",
+            args: {
+              location: {
+                kind: "identifier",
+                args: { label: "parent2" } },
+              offset:   {
+                kind: "coordinate",
+                args: { x: 0, y: 0, z: 0 } },
               speed:    100,
             }
           }
@@ -260,7 +301,10 @@ describe Api::SequencesController do
                     body: [
                       {
                         kind: "parameter_declaration",
-                        args: { label: "parent", data_type: "wait" }
+                        args: {
+                          label: "parent",
+                          default_value: { kind: "sync", args: {} }
+                        }
                       }
                     ]
                   }
@@ -280,9 +324,9 @@ describe Api::SequencesController do
               }
       post :create, body: input.to_json, params: {format: :json}
       expect(response.status).to eq(422)
-      expect(json[:body]).to include("not a valid data_type")
+      expect(json.fetch(:body)).to include('"point"')
+      expect(json[:body]).to include("but got sync")
     end
-
 
     it 'provides human readable errors for "nothing" mismatches' do
       sign_in user
@@ -293,10 +337,10 @@ describe Api::SequencesController do
                     args: { },
                     body: [
                       {
-                        kind: "variable_declaration",
+                        kind: "parameter_declaration",
                         args: {
                           label: "x",
-                          data_value: {
+                          default_value: {
                             kind: "nothing",
                             args: {}
                           }

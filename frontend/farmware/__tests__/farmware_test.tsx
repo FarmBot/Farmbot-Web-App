@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../../history", () => ({
   history: {
@@ -9,13 +7,8 @@ jest.mock("../../history", () => ({
   },
 }));
 
-const mockDevice = {
-  execScript: jest.fn(() => Promise.resolve({})),
-};
-
-jest.mock("../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -118,7 +111,7 @@ describe("<BasicFarmwarePage />", () => {
   it("renders Farmware pending install", () => {
     const farmware = fakeFarmware();
     farmware.name = "My Farmware 1";
-    farmware.uuid = "pending installation";
+    farmware.installation_pending = true;
     const wrapper = mount(<BasicFarmwarePage
       farmware={farmware}
       farmwareName={farmware.name} />);

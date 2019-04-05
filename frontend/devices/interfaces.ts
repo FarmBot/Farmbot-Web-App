@@ -7,7 +7,6 @@ import {
   TaggedDevice,
   TaggedSensor,
   TaggedDiagnosticDump,
-  TaggedUser,
   TaggedFarmwareInstallation,
   JobProgress,
 } from "farmbot";
@@ -65,6 +64,7 @@ export enum Feature {
   sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
+  loops = "loops",
   api_pin_bindings = "api_pin_bindings",
   farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests
@@ -194,7 +194,6 @@ export interface McuInputBoxProps {
 
 export interface EStopButtonProps {
   bot: BotState;
-  user: TaggedUser | undefined;
 }
 
 export interface PeripheralsProps {

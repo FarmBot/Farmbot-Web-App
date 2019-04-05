@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
@@ -24,6 +24,7 @@ import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig } from "./resources/getters";
 import { intersection } from "lodash";
+import { t } from "./i18next_wrapper";
 
 /** For the logger module */
 init();
@@ -44,7 +45,7 @@ export interface AppProps {
   tour: string | undefined;
 }
 
-function mapStateToProps(props: Everything): AppProps {
+export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   return {
     timeOffset: maybeGetTimeOffset(props.resources.index),
@@ -105,6 +106,7 @@ export class App extends React.Component<AppProps, {}> {
     const currentPage = getPathArray()[2];
     const { location_data, mcu_params } = this.props.bot.hardware;
     return <div className="app">
+      {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
       <NavBar
         timeOffset={this.props.timeOffset}
@@ -115,7 +117,6 @@ export class App extends React.Component<AppProps, {}> {
         logs={this.props.logs}
         getConfigValue={this.props.getConfigValue}
         tour={this.props.tour} />
-      {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup

@@ -1,4 +1,4 @@
-import { t } from "i18next";
+
 import {
   PinBindingType,
   PinBindingSpecialAction
@@ -7,6 +7,7 @@ import { DropDownItem } from "../../ui";
 import { gpio } from "./rpi_gpio_diagram";
 import { flattenDeep, isNumber } from "lodash";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
+import { t } from "../../i18next_wrapper";
 
 export const bindingTypeLabelLookup: { [x: string]: string } = {
   [PinBindingType.standard]: t("Sequence"),

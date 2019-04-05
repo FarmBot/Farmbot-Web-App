@@ -1,6 +1,7 @@
-import { t } from "i18next";
+
 import { Channel } from "farmbot/dist";
-import { ChannelName } from "../interfaces";
+import { ChannelName, MessageType } from "../interfaces";
+import { t } from "../../i18next_wrapper";
 
 /** All the attributes/config you need to render a Channel */
 interface ChanInfo {
@@ -20,11 +21,11 @@ export const EACH_CHANNEL: ChanInfo[] = [
 ];
 
 export const MESSAGE_STATUSES = [
-  { value: "success", label: t("Success") },
-  { value: "busy", label: t("Busy") },
-  { value: "warn", label: t("Warning") },
-  { value: "error", label: t("Error") },
-  { value: "info", label: t("Info") }
+  { value: MessageType.success, label: t("Success") },
+  { value: MessageType.busy, label: t("Busy") },
+  { value: MessageType.warn, label: t("Warning") },
+  { value: MessageType.error, label: t("Error") },
+  { value: MessageType.info, label: t("Info") }
 ];
 
 export const MESSAGE_STATUSES_DDI = {

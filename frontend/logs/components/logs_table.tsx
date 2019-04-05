@@ -1,10 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { TaggedLog } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";
 import { isNumber, startCase } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 interface LogsRowProps {
   tlog: TaggedLog;
@@ -56,7 +57,7 @@ export const LogsTable = (props: LogsTableProps) => {
       <tr>
         <th><label>{t("Type")}</label></th>
         <th><label>{t("Message")}</label></th>
-        <th><label>{t("Position (x, y, z)")}</label></th>
+        <th><label>{t("(x, y, z)")}</label></th>
         <th><label>{t("Time")}</label></th>
       </tr>
     </thead>

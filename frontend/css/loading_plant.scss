@@ -108,9 +108,6 @@ $duration: 2;
 
 .loading-plant-text {
   opacity: 1;
-  &.animate {
-    animation: loading-plant-text-fade-in $duration*0.4s linear 1;
-  }
 }
 
 @keyframes loading-plant-text-fade-in {

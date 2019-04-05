@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import {
   BlurableInput,
   Row, Col,
@@ -13,6 +13,7 @@ import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
 import { SPECIAL_VALUES } from "./remote_env/constants";
 import { isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
   NumberBox = ({ conf, label }: {

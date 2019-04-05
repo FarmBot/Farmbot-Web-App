@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { t } from "i18next";
+
 import { ToolTips } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
@@ -8,6 +8,7 @@ import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
+import { t } from "../../i18next_wrapper";
 
 export function TileExecuteScript(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence, farmwareInfo } = props;

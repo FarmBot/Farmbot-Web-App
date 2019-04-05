@@ -1,4 +1,3 @@
-import { t } from "i18next";
 import { ResourceColor } from "../interfaces";
 import { box } from "boxed_value";
 import {
@@ -17,6 +16,7 @@ import {
   isNumber,
   isUndefined as lodashIsUndefined
 } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export let colors: Array<ResourceColor> = [
   "blue",

@@ -1,7 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { timezoneMismatch } from "../../devices/timezones/guess_timezone";
 import { Content } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 interface TzWarningProps {
   deviceTimezone: string | undefined;

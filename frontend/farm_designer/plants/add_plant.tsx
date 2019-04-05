@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { history } from "../../history";
 import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult, OpenfarmSearch } from "../interfaces";
@@ -9,6 +9,7 @@ import { setDragIcon } from "../actions";
 import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";
+import { t } from "../../i18next_wrapper";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({

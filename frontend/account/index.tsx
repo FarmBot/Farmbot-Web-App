@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { connect } from "react-redux";
 import { Settings, DeleteAccount, ChangePassword } from "./components";
 import { Props } from "./interfaces";
@@ -16,6 +15,7 @@ import { requestAccountExport } from "./request_account_export";
 import { DevWidget } from "./dev/dev_widget";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevMode } from "./dev/dev_mode";
+import { t } from "../i18next_wrapper";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 

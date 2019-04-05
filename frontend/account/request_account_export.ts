@@ -1,9 +1,10 @@
 import { API } from "../api";
 import { Content } from "../constants";
 import { success } from "farmbot-toastr";
-import { t } from "i18next";
+
 import axios, { AxiosResponse } from "axios";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { t } from "../i18next_wrapper";
 
 interface DataDumpExport { device?: DeviceAccountSettings; }
 type Response = AxiosResponse<DataDumpExport | undefined>;

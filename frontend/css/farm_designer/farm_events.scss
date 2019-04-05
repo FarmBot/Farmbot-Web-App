@@ -1,16 +1,11 @@
 .farm-event-panel {
   .fa-calendar {
-    margin: 0.35rem 1rem 0 3rem;
-    font-size: 2rem;
-    float: left;
-  }
-  input {
-    width: 75% !important;
-    float: right;
-    margin-right: 1.75rem;
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
   }
   .panel-content {
-    padding: 6rem 1rem 6rem 0;
+    padding: 0 1rem 6rem 0;
   }
 }
 

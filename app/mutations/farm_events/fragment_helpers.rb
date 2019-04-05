@@ -1,8 +1,9 @@
 module FarmEvents
   module FragmentHelpers
-    BAD_MODULE = \
-      "The '%s' module cannot use FragmentHelpers"
+    BAD_MODULE = "The '%s' module cannot use FragmentHelpers"
+    TRANSACTION_REQUIRED = "A database transaction is required to do this."
     def self.included(base); base.extend(ClassMethods); end
+
     module ClassMethods; end
 
     def has_body?
@@ -11,18 +12,21 @@ module FarmEvents
 
     def create_fragment_for(owner)
       kind = owner.class.name.tableize.singularize
-      params    = { device: device,
-                    kind:   "internal_#{kind}",
-                    args:   {},
-                    body:   body }
-      flat_ast  = Fragments::Preprocessor.run!(params)
-      Fragments::Create.run!(device:   device,
+      params = { device: device,
+                 kind: "internal_#{kind}",
+                 args: {},
+                 body: body }
+      flat_ast = Fragments::Preprocessor.run!(params)
+      Fragments::Create.run!(device: device,
                              flat_ast: flat_ast,
-                             owner:    owner)
+                             owner: owner)
     end
 
     def wrap_fragment_with(owner)
       return owner unless has_body?
+      if ActiveRecord::Base.connection.open_transactions.zero?
+        raise TRANSACTION_REQUIRED
+      end
       create_fragment_for(owner)
       owner
     end
@@ -30,7 +34,7 @@ module FarmEvents
     def handle_body_field
       case body
       when nil then return
-      when []  then destroy_fragment
+      when [] then destroy_fragment
       else
         replace_fragment
       end
@@ -49,8 +53,8 @@ module FarmEvents
 
     def owner
       options = {
-        FarmEvents => ->() { farm_event },
-        Regimens   => ->() { regimen    },
+        FarmEvents => -> () { farm_event },
+        Regimens => -> () { regimen },
       }
       options.fetch(self.class.parent).call()
     end

@@ -1,23 +1,22 @@
 import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
-import { t } from "i18next";
+
 import { push } from "../../history";
 import {
   RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps
 } from "../interfaces";
-import { TaggedRegimen, VariableDeclaration } from "farmbot";
+import { TaggedRegimen, ScopeDeclarationBodyItem } from "farmbot";
 import { defensiveClone } from "../../util";
 import { overwrite, save, destroy } from "../../api/crud";
 import { SaveBtn } from "../../ui";
 import { CopyButton } from "./copy_button";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import {
-  addOrEditVarDeclaration
-} from "../../sequences/locals_list/declaration_support";
-import {
-  AllowedDeclaration
+  AllowedVariableNodes, VariableNode
 } from "../../sequences/locals_list/locals_list_support";
+import { addOrEditBodyVariables } from "../../sequences/locals_list/handle_select";
+import { t } from "../../i18next_wrapper";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -31,12 +30,12 @@ export function ActiveEditor(props: ActiveEditorProps) {
       <RegimenNameInput {...regimenProps} />
       <LocalsList
         locationDropdownKey={JSON.stringify(props.regimen)}
-        declarations={props.regimen.body.body}
+        bodyVariables={props.regimen.body.body}
         variableData={props.variableData}
         sequenceUuid={props.regimen.uuid}
         resources={props.resources}
-        onChange={editRegimenDeclarations(regimenProps)(props.regimen.body.body)}
-        allowedDeclarations={AllowedDeclaration.parameter}
+        onChange={editRegimenVariables(regimenProps)(props.regimen.body.body)}
+        allowedVariableNodes={AllowedVariableNodes.parameter}
         shouldDisplay={props.shouldDisplay} />
       <hr />
     </div>
@@ -44,11 +43,11 @@ export function ActiveEditor(props: ActiveEditorProps) {
   </div>;
 }
 
-export const editRegimenDeclarations = (props: RegimenProps) =>
-  (declarations: VariableDeclaration[]) =>
-    (declaration: VariableDeclaration) => {
+export const editRegimenVariables = (props: RegimenProps) =>
+  (bodyVariables: VariableNode[]) =>
+    (variable: ScopeDeclarationBodyItem) => {
       const copy = defensiveClone(props.regimen);
-      copy.body.body = addOrEditVarDeclaration(declarations, declaration);
+      copy.body.body = addOrEditBodyVariables(bodyVariables, variable);
       props.dispatch(overwrite(props.regimen, copy.body));
     };
 

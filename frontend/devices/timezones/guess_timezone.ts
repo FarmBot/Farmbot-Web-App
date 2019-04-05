@@ -1,6 +1,7 @@
-import { t } from "i18next";
+
 import { Content } from "../../constants";
 import { isString } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 /** Used for every new account the first time the Device page is loaded. */
 const ONLY_ONCE = {

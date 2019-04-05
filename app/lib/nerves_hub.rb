@@ -37,7 +37,7 @@ class NervesHub
   #   * FarmBot makes an authenticated call to the FarmBot API asking for a
   #     NervesHub SSL Private Key/Cert combo.
   #   * FarmBot API makes a call to NervesHub generating a `device` resource.
-  #   * FarmBot API makes a call to NervesHub generating a `device_cert` resouce.
+  #   * FarmBot API makes a call to NervesHub generating a `device_cert` resource.
   #     * This require creating a CSR (certificate signing request).
   #   * FarmBot API sends this cert (without saving it) directly to the FarmBot
   #     via AMQP.
@@ -86,7 +86,7 @@ class NervesHub
     update(serial_number, next_tags)
   end
 
-  # Checks if a deivce exists in NervesHub
+  # Checks if a device exists in NervesHub
   # if it does     -> does a PUT request updating the tags.
   # if it does not -> does a POST request creating the device with given tags.
   def self.maybe_create_or_update(serial_number, tags)
@@ -275,7 +275,7 @@ class NervesHub
 
   # This is a hack because Ruby "net/http" client doesn't
   # Allow loading this as a normal cert, it only allows
-  # loading a flie from the filesystem.
+  # loading a file from the filesystem.
   # https://stackoverflow.com/questions/36993208/how-to-enumerate-through-multiple-certificates-in-a-bundle
   def self.try_env_ca_file
     if ENV["NERVES_HUB_CA"]

@@ -17,11 +17,12 @@ import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
-import { t } from "i18next";
+
 import { newTaggedResource } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
 import { assign, noop } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {

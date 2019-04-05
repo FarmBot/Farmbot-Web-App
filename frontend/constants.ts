@@ -91,18 +91,18 @@ export namespace ToolTips {
     retries.`);
 
   export const MAX_SPEED =
-    trim(`Maximum travel speed after acceleration in motor steps per second.`);
+    trim(`Maximum travel speed after acceleration in millimeters per second.`);
 
   export const HOME_SPEED =
     trim(`Home position adjustment travel speed (homing and calibration)
-    in motor steps per second.`);
+    in millimeters per second.`);
 
   export const MIN_SPEED =
-    trim(`Minimum movement speed in motor steps per second. Also used for homing
+    trim(`Minimum movement speed in millimeters per second. Also used for homing
      and calibration.`);
 
   export const ACCELERATE_FOR =
-    trim(`Number of steps used for acceleration and deceleration.`);
+    trim(`Number of millimeters used for acceleration and deceleration.`);
 
   export const STEPS_PER_MM =
     trim(`The number of motor steps required to move the axis one millimeter.`);
@@ -260,6 +260,21 @@ export namespace ToolTips {
     properties of the UTM, plants, and weeds from within a sequence.
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
+
+  export const SET_SERVO_ANGLE =
+    trim(`Move a servo to the provided angle.`);
+
+  export const TOGGLE_PIN =
+    trim(`Toggle a digital pin on or off.`);
+
+  export const MOVE_TO_HOME =
+    trim(`Move FarmBot to home for the provided axis.`);
+
+  export const FIRMWARE_ACTION =
+    trim(`FarmBot OS or micro-controller firmware action.`);
+
+  export const SYSTEM_ACTION =
+    trim(`FarmBot OS action.`);
 
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
@@ -480,6 +495,9 @@ export namespace Content {
     trim(`The device has never been seen. Most likely,
     there is a network connectivity issue on the device's end.`);
 
+  export const TOO_OLD_TO_UPDATE =
+    trim(`Please re-flash your FarmBot's SD card.`);
+
   // Hardware Settings
   export const RESTORE_DEFAULT_HARDWARE_SETTINGS =
     trim(`Restoring hardware parameter defaults will destroy the
@@ -516,6 +534,12 @@ export namespace Content {
   export const NEW_TOS =
     trim(`Before logging in, you must agree to our latest Terms of Service and
     Privacy Policy`);
+
+  export const FORCE_REFRESH_CONFIRM =
+    trim(`A new version of the FarmBot web app has been released. Refresh page?`);
+
+  export const FORCE_REFRESH_CANCEL_WARNING =
+    trim(`You may experience data loss if you do not refresh the page.`);
 
   // Front Page
   export const TOS_UPDATE =

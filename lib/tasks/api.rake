@@ -59,7 +59,7 @@ namespace :api do
               "--public-url",
               DashboardController::OUTPUT_URL,
             ].join(" ")
-    sh [intro, opts, DashboardController::PARCEL_CLI_OUTRO].join(" ")
+    sh [intro, opts].join(" ")
   end
 
   desc "Serve javascript assets (via Parcel bundler)."

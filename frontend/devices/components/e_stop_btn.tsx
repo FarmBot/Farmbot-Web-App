@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { emergencyLock, emergencyUnlock } from "../actions";
 import { EStopButtonProps } from "../interfaces";
 import { isBotUp } from "../must_be_online";
+import { t } from "../../i18next_wrapper";
 
 export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {
@@ -13,15 +14,11 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
     const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : "gray";
     const emergencyLockStatusText = isLocked ? t("UNLOCK") : "E-STOP";
 
-    if (this.props.user) {
-      return <button
-        title={isLocked ? t("unlock device") : t("emergency stop")}
-        className={`fb-button red e-stop ${emergencyLockStatusColor}`}
-        onClick={toggleEmergencyLock}>
-        {t(emergencyLockStatusText)}
-      </button>;
-    } else {
-      return <span></span>;
-    }
+    return <button
+      title={isLocked ? t("unlock device") : t("emergency stop")}
+      className={`fb-button red e-stop ${emergencyLockStatusColor}`}
+      onClick={toggleEmergencyLock}>
+      {t(emergencyLockStatusText)}
+    </button>;
   }
 }

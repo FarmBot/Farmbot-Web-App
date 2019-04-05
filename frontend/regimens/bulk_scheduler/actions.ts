@@ -1,5 +1,5 @@
 import { isNaN, isNumber } from "lodash";
-import { t } from "i18next";
+
 import { error, warning } from "farmbot-toastr";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
@@ -9,7 +9,8 @@ import { defensiveClone } from "../../util";
 import { overwrite } from "../../api/crud";
 import { Actions } from "../../constants";
 import { assertUuid } from "../../resources/util";
-import { mergeVariableDeclarations } from "../../sequences/locals_list/declaration_support";
+import { mergeDeclarations } from "../../sequences/locals_list/variable_support";
+import { t } from "../../i18next_wrapper";
 
 export function pushWeek() {
   return {
@@ -89,7 +90,8 @@ export function commitBulkEditor(): Thunk {
           const clonedRegimen = defensiveClone(regimen).body;
           clonedRegimen.regimen_items = clonedRegimen.regimen_items.concat(groupedItems);
           const varData = resources.index.sequenceMetas[selectedSequenceUUID];
-          clonedRegimen.body = mergeVariableDeclarations(varData, regimen.body.body);
+          clonedRegimen.body = mergeDeclarations(varData, regimen.body.body);
+          console.log(JSON.stringify(clonedRegimen.body, undefined, 2));
           dispatch(overwrite(regimen, clonedRegimen));
         } else {
           return error(t("No day(s) selected."));

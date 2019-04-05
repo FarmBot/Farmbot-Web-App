@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
@@ -13,6 +13,7 @@ import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
 import { parseIntInput } from "../../util";
 import { startCase, isNumber } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -123,7 +124,7 @@ const MoveToPlant =
     <button className="fb-button gray"
       hidden={props.isEditing}
       onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
-        .then(() => history.push("/app/designer/plants/move_to"))}>
+        .then(() => history.push("/app/designer/move_to"))}>
       {t("Move FarmBot to this plant")}
     </button>;
 

@@ -1,5 +1,3 @@
-
-import { t } from "i18next";
 import {
   selectAllSavedPeripherals,
   selectAllSavedSensors
@@ -16,6 +14,7 @@ import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { joinKindAndId } from "../../resources/reducer_support";
+import { t } from "../../i18next_wrapper";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
@@ -170,7 +169,7 @@ export const dropDown2CeleryArg =
       if (Object.values(BoxLed).includes(item.value)) {
         return {
           kind: "named_pin",
-          args: { pin_type: item.value, pin_id: -1 }
+          args: { pin_type: item.value as AllowedPinTypes, pin_id: -1 }
         };
       }
       const uuid: string = item.value;
@@ -178,7 +177,7 @@ export const dropDown2CeleryArg =
       if (r) {
         return {
           kind: "named_pin",
-          args: { pin_type: r.kind, pin_id: r.body.id || -99 }
+          args: { pin_type: r.kind as AllowedPinTypes, pin_id: r.body.id || -99 }
         };
       } else {
         return bail("Bad uuid in celery arg: " + uuid);

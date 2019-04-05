@@ -1,12 +1,13 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-import { t } from "i18next";
+
 import { Content } from "../../../constants";
 import { factoryReset, updateConfig } from "../../actions";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { BotConfigInputBox } from "../bot_config_input_box";
 import { FactoryResetRowProps } from "./interfaces";
 import { ColWidth } from "../farmbot_os_settings";
+import { t } from "../../../i18next_wrapper";
 
 export function FactoryResetRow(props: FactoryResetRowProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;

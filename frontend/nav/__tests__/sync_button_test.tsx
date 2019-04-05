@@ -1,27 +1,17 @@
 import * as React from "react";
 import { SyncButton } from "../sync_button";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { shallow } from "enzyme";
-import { NavButtonProps } from "../interfaces";
+import { SyncButtonProps } from "../interfaces";
 
 describe("<SyncButton/>", function () {
-  const fakeProps = (): NavButtonProps => {
+  const fakeProps = (): SyncButtonProps => {
     return {
-      user: fakeUser(),
       dispatch: jest.fn(),
       bot: bot,
       consistent: true,
     };
   };
-
-  it("renders nothing when not given a bot", function () {
-    const p = fakeProps();
-    p.user = undefined;
-    const result = shallow(<SyncButton {...p} />);
-    expect(result.hasClass("nav-sync")).toBeFalsy();
-    expect(result.html()).toEqual("<span></span>");
-  });
 
   it("is gray when inconsistent", () => {
     const p = fakeProps();

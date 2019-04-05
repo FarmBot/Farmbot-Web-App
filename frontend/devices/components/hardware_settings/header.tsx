@@ -1,7 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { ControlPanelState } from "../../interfaces";
 import { toggleControlPanel } from "../../actions";
+import { t } from "../../../i18next_wrapper";
 
 interface Props {
   dispatch: Function;

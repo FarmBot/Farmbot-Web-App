@@ -5,9 +5,10 @@ import { ImageFlipper } from "../images/image_flipper";
 import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
-import { t } from "i18next";
+
 import { PhotoFooter } from "../images/photos";
 import { parseIntInput } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },

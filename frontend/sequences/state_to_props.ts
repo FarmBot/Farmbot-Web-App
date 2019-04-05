@@ -6,11 +6,13 @@ import {
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import {
-  betterCompact, shouldDisplay, determineInstalledOsVersion, validFwConfig
+  shouldDisplay, determineInstalledOsVersion, validFwConfig
 } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig, getWebAppConfig } from "../resources/getters";
+import { Farmwares } from "../farmware/interfaces";
+import { manifestInfo } from "../farmware/generate_manifest_info";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -49,18 +51,18 @@ export function mapStateToProps(props: Everything): Props {
     };
   };
 
-  const { farmwares } = props.bot.hardware.process_info;
-  const farmwareNames = betterCompact(Object
-    .keys(farmwares)
-    .map(x => farmwares[x]))
-    .map(fw => fw.name);
+  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
+  const farmwares: Farmwares = {};
+  Object.values(botStateFarmwares).map((fm: unknown) => {
+    const info = manifestInfo(fm);
+    farmwares[info.name] = manifestInfo(fm);
+  });
+  const farmwareNames = Object.values(farmwares).map(fw => fw.name);
   const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
   const conf = getWebAppConfig(props.resources.index);
   const showFirstPartyFarmware = !!(conf && conf.body.show_first_party_farmware);
   const farmwareConfigs: FarmwareConfigs = {};
-  Object.keys(farmwares)
-    .map(x => farmwares[x])
-    .map(fw => farmwareConfigs[fw.name] = fw.config);
+  Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));

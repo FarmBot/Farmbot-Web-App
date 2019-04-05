@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
 import { TaggedRegimen } from "farmbot";
 import { init } from "../../api/crud";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { urlFriendly } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 const emptyRegimenBody = (length: number): TaggedRegimen["body"] => ({
   name: (t("New regimen ") + (length++)),

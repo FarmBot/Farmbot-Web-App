@@ -1,10 +1,10 @@
 import * as React from "react";
 import moment from "moment";
-import { t } from "i18next";
+
 import { success, error, warning } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
-  VariableDeclaration
+  ParameterApplication
 } from "farmbot";
 import { ExecutableQuery } from "../interfaces";
 import { formatTime, formatDate } from "./map_state_to_props_add_edit";
@@ -39,11 +39,12 @@ import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import {
-  addOrEditVarDeclaration, declarationList, getRegimenVariableData
-} from "../../sequences/locals_list/declaration_support";
+  addOrEditParamApps, variableList, getRegimenVariableData
+} from "../../sequences/locals_list/variable_support";
 import {
-  AllowedDeclaration
+  AllowedVariableNodes
 } from "../../sequences/locals_list/locals_list_support";
+import { t } from "../../i18next_wrapper";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -61,7 +62,7 @@ export interface FarmEventViewModel {
   executable_type: string;
   executable_id: string;
   timeOffset: number;
-  body?: VariableDeclaration[];
+  body?: ParameterApplication[];
 }
 
 /** Breaks up a TaggedFarmEvent into a structure that can easily be used
@@ -178,7 +179,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return this.fieldGet("executable_type") === "Regimen";
   }
 
-  /** Executable requires variables or a user has manually added declarations. */
+  /** Executable requires variables or a user has manually added bodyVariables. */
   get needsVariables() {
     const varData = this.props.resources.sequenceMetas[this.executable.uuid];
     return Object.keys(varData || {}).length > 0;
@@ -192,30 +193,30 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return this.props.resources.sequenceMetas[this.executable.uuid];
   }
 
-  get declarations(): VariableDeclaration[] | undefined {
-    return this.state.fe.body || this.props.farmEvent.body.body;
+  get bodyVariables(): ParameterApplication[] {
+    return this.state.fe.body || this.props.farmEvent.body.body || [];
   }
 
-  overwriteStateFEBody = (newBody: VariableDeclaration[]) => {
+  overwriteStateFEBody = (newBody: ParameterApplication[]) => {
     const state = this.state;
     state.fe.body = newBody;
     this.setState(state);
   }
 
-  editDeclaration = (declarations: VariableDeclaration[]) =>
-    (declaration: VariableDeclaration) => {
-      const body = addOrEditVarDeclaration(declarations, declaration);
+  editBodyVariables = (bodyVariables: ParameterApplication[]) =>
+    (variable: ParameterApplication) => {
+      const body = addOrEditParamApps(bodyVariables, variable);
       this.overwriteStateFEBody(body);
       this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
     }
 
   LocalsList = () => <LocalsList
-    declarations={this.declarations}
+    bodyVariables={this.bodyVariables}
     variableData={this.variableData}
     sequenceUuid={this.executable.uuid}
     resources={this.props.resources}
-    onChange={this.editDeclaration(this.declarations || [])}
-    allowedDeclarations={AllowedDeclaration.variable}
+    onChange={this.editBodyVariables(this.bodyVariables)}
+    allowedVariableNodes={AllowedVariableNodes.variable}
     shouldDisplay={this.props.shouldDisplay} />
 
   executableSet = (ddi: DropDownItem) => {
@@ -237,7 +238,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           },
           specialStatusLocal: SpecialStatus.DIRTY
         };
-        this.overwriteStateFEBody(declarationList(varData) || []);
+        this.overwriteStateFEBody(variableList(varData) || []);
         this.setState(betterMerge(this.state, update));
       }
     }

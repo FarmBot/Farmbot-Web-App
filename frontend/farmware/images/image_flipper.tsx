@@ -1,7 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { ImageFlipperProps, ImageFlipperState } from "./interfaces";
 import { Content } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 

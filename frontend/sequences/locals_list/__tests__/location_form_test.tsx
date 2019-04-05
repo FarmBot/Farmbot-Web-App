@@ -9,18 +9,22 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { FBSelect, BlurableInput } from "../../../ui/index";
 import {
-  LocationFormProps, PARENT, AllowedDeclaration
+  LocationFormProps, PARENT, AllowedVariableNodes
 } from "../locals_list_support";
 import { difference } from "lodash";
-import { locationFormList } from "../location_form_list";
-import { convertDDItoDeclaration } from "../handle_select";
+import { locationFormList, everyPointDDI } from "../location_form_list";
+import { convertDDItoVariable } from "../handle_select";
 
 describe("<LocationForm/>", () => {
   const fakeProps = (): LocationFormProps => ({
     variable: {
       celeryNode: {
         kind: "parameter_declaration",
-        args: { label: "label", data_type: "coordinate" }
+        args: {
+          label: "label", default_value: {
+            kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+          }
+        }
       },
       dropdown: { label: "label", value: 0 },
       vector: { x: 0, y: 0, z: 0 }
@@ -29,7 +33,7 @@ describe("<LocationForm/>", () => {
     resources: buildResourceIndex().index,
     onChange: jest.fn(),
     shouldDisplay: jest.fn(),
-    allowedDeclarations: AllowedDeclaration.parameter,
+    allowedVariableNodes: AllowedVariableNodes.parameter,
   });
 
   it("renders correct UI components", () => {
@@ -48,14 +52,17 @@ describe("<LocationForm/>", () => {
     const choice = choices[1];
     select.onChange(choice);
     expect(p.onChange)
-      .toHaveBeenCalledWith(convertDDItoDeclaration({ label: "label" })(choice));
+      .toHaveBeenCalledWith(convertDDItoVariable({
+        label: "label",
+        allowedVariableNodes: p.allowedVariableNodes
+      })(choice));
     expect(inputs.length).toBe(3);
   });
 
-  it("uses local declaration data", () => {
+  it("uses body variable data", () => {
     const p = fakeProps();
-    p.declarations = [{
-      kind: "variable_declaration",
+    p.bodyVariables = [{
+      kind: "parameter_application",
       args: {
         label: "label", data_value: {
           kind: "identifier", args: { label: "new_var" }
@@ -77,5 +84,14 @@ describe("<LocationForm/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).not.toContain(PARENT);
+  });
+
+  it("shows groups in dropdown", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.disallowGroups = false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toContainEqual(everyPointDDI("Tool"));
   });
 });

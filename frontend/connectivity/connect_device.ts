@@ -7,7 +7,7 @@ import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-import { t } from "i18next";
+
 import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
@@ -24,9 +24,10 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { versionOK } from "../util";
 import { onLogs } from "./log_handlers";
-import { ChannelName } from "../sequences/interfaces";
+import { ChannelName, MessageType } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
+import { t } from "../i18next_wrapper";
 
 export const TITLE = "New message from bot";
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -57,15 +58,15 @@ export function actOnChannelName(
  * to execute. */
 export function showLogOnScreen(log: Log) {
   switch (log.type) {
-    case "success":
+    case MessageType.success:
       return success(log.message, t(TITLE));
-    case "warn":
+    case MessageType.warn:
       return warning(log.message, t(TITLE));
-    case "busy":
-    case "error":
+    case MessageType.busy:
+    case MessageType.error:
       return error(log.message, t(TITLE));
-    case "fun":
-    case "info":
+    case MessageType.fun:
+    case MessageType.info:
     default:
       return info(log.message, t(TITLE));
   }
@@ -114,12 +115,9 @@ export const changeLastClientConnected = (bot: Farmbot) => () => {
 const setBothUp = () => bothUp("Got a status message");
 
 const legacyChecks = (getState: GetState) => {
-  if (HACKY_FLAGS.needVersionCheck) {
-    const IS_OK = versionOK(getState()
-      .bot
-      .hardware
-      .informational_settings
-      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+  const { controller_version } = getState().bot.hardware.informational_settings;
+  if (HACKY_FLAGS.needVersionCheck && controller_version) {
+    const IS_OK = versionOK(controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (!IS_OK) { badVersion(); }
     HACKY_FLAGS.needVersionCheck = false;
   }
@@ -164,7 +162,20 @@ export const onOnline =
   () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
-const attachEventListeners =
+
+export const BROADCAST_CHANNEL = "public_broadcast";
+
+export function onPublicBroadcast(chan: string, _payl: unknown) {
+  if (chan === BROADCAST_CHANNEL) {
+    if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
+      location.assign(window.location.origin || "/");
+    } else {
+      alert(t(Content.FORCE_REFRESH_CANCEL_WARNING));
+    }
+  }
+}
+
+export const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
       startPinging(bot);
@@ -178,6 +189,8 @@ const attachEventListeners =
       bot.on("status_v8", onStatus(dispatch, getState));
       bot.on("malformed", onMalformed);
       bot.client.on("message", autoSync(dispatch, getState));
+      bot.client.subscribe(BROADCAST_CHANNEL);
+      bot.client.on("message", onPublicBroadcast);
       bot.client.on("reconnect", onReconnect);
     }
   };

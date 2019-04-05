@@ -1,5 +1,5 @@
 import { trim } from "../../util";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export namespace DiagnosticMessages {
   // "SCV good to go, sir." is also appropriate.

@@ -1,16 +1,18 @@
-import { convertDDItoDeclaration, NOTHING_SELECTED } from "../handle_select";
-import { ScopeDeclarationBodyItem, Point, Tool, Coordinate } from "farmbot";
-import { NO_VALUE_SELECTED_DDI } from "../location_form_list";
+import { convertDDItoVariable, NOTHING_SELECTED } from "../handle_select";
+import { Point, Tool, Coordinate } from "farmbot";
+import { NO_VALUE_SELECTED_DDI, COORDINATE_DDI } from "../location_form_list";
+import { VariableNode, AllowedVariableNodes } from "../locals_list_support";
 
 const label = "parent";
+const allowedVariableNodes = AllowedVariableNodes.variable;
 const expectedVariable = (data_value: Point | Tool | Coordinate) =>
-  ({ kind: "variable_declaration", args: { label, data_value } });
+  ({ kind: "parameter_application", args: { label, data_value } });
 
 describe("convertDDItoDeclaration()", () => {
   it("returns location data: point", () => {
     const ddi =
       ({ headingId: "GenericPointer", label: "Point 1 (10, 20, 30)", value: 2 });
-    const variable = convertDDItoDeclaration({ label })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "point",
       args: {
@@ -22,7 +24,7 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: tool", () => {
     const ddi = { headingId: "Tool", label: "Generic Tool", value: 1 };
-    const variable = convertDDItoDeclaration({ label })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "tool", args: { tool_id: 1 }
     }));
@@ -30,34 +32,49 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: Plant", () => {
     const ddi = { headingId: "Plant", label: "Mint", value: 1 };
-    const variable = convertDDItoDeclaration({ label })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "point", args: { pointer_id: 1, pointer_type: "Plant" }
     }));
   });
 
   it("returns location data: default", () => {
-    const variable = convertDDItoDeclaration({ label })(NO_VALUE_SELECTED_DDI());
+    const variable = convertDDItoVariable({
+      label, allowedVariableNodes
+    })(NO_VALUE_SELECTED_DDI());
     expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
+  });
+
+  it("returns location data: coordinate", () => {
+    const variable = convertDDItoVariable({
+      label, allowedVariableNodes
+    })(COORDINATE_DDI());
+    expect(variable).toEqual(expectedVariable({
+      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+    }));
   });
 
   it("returns location data: parameter_declaration", () => {
     const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
-    const variable = convertDDItoDeclaration({ label: "parent" })(ddi);
-    const expected: ScopeDeclarationBodyItem = {
+    const variable = convertDDItoVariable({
+      label: "parent", allowedVariableNodes
+    })(ddi);
+    const expected: VariableNode = {
       kind: "parameter_declaration",
-      args: { label: "parent", data_type: "point" }
+      args: {
+        label: "parent", default_value: NOTHING_SELECTED
+      }
     };
     expect(variable).toEqual(expected);
   });
 
   it("returns location data: identifier", () => {
     const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
-    const variable = convertDDItoDeclaration({
-      label: "parent", useIdentifier: true
+    const variable = convertDDItoVariable({
+      label: "parent", allowedVariableNodes: AllowedVariableNodes.identifier
     })(ddi);
-    const expected: ScopeDeclarationBodyItem = {
-      kind: "variable_declaration",
+    const expected: VariableNode = {
+      kind: "parameter_application",
       args: {
         label: "parent",
         data_value: {
@@ -70,14 +87,17 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: every_point", () => {
     const ddi = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
-    const variable = convertDDItoDeclaration({ label: "label" })(ddi);
-    const expected: ScopeDeclarationBodyItem = {
-      kind: "variable_declaration",
+    const variable = convertDDItoVariable({
+      label: "label", allowedVariableNodes
+    })(ddi);
+    const expected: VariableNode = {
+      kind: "parameter_application",
       args: {
         label: "label",
         data_value: {
           kind: "every_point", args: { every_point_type: "Plant" }
-        }
+          // tslint:disable-next-line:no-any
+        } as any
       }
     };
     expect(variable).toEqual(expected);

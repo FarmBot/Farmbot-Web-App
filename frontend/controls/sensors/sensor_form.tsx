@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { destroy, edit } from "../../api/crud";
 import { SensorFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
@@ -8,6 +8,7 @@ import {
   pinDropdowns
 } from "../../sequences/step_tiles/pin_and_peripheral_support";
 import { PIN_MODES } from "../../sequences/step_tiles/tile_pin_support";
+import { t } from "../../i18next_wrapper";
 
 export function SensorForm(props: SensorFormProps) {
   const { dispatch, sensors } = props;

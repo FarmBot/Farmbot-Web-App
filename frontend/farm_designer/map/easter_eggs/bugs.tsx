@@ -1,9 +1,10 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
 import { random, range, some, clamp, sample } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
+import { t } from "../../../i18next_wrapper";
 
 export interface BugsProps {
   mapTransformProps: MapTransformProps;

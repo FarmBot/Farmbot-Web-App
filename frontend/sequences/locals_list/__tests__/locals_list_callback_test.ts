@@ -1,27 +1,31 @@
 import { localListCallback } from "../locals_list";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { inputEvent } from "../../../__test_support__/fake_input_event";
-import { VariableDeclaration, ScopeDeclarationBodyItem } from "farmbot";
+import { ParameterApplication, ParameterDeclaration, VariableDeclaration } from "farmbot";
 import { AxisEditProps, manuallyEditAxis } from "../location_form";
+import { VariableNode } from "../locals_list_support";
 
 describe("localListCallback", () => {
   it("handles a new local declaration", () => {
     const sequence = fakeSequence();
     const dispatch = jest.fn();
     const cb = localListCallback({ sequence, dispatch });
-    cb([
-      {
-        kind: "parameter_declaration",
-        args: { label: "parent", data_type: "coordinate" }
-      },
-      {
-        kind: "variable_declaration",
-        args: {
-          label: "foo",
-          data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+    const parameterDeclaration: ParameterDeclaration = {
+      kind: "parameter_declaration",
+      args: {
+        label: "parent", default_value: {
+          kind: "coordinate", args: { x: 1, y: 2, z: 3 }
         }
       }
-    ])({
+    };
+    const variableDeclaration: VariableDeclaration = {
+      kind: "variable_declaration",
+      args: {
+        label: "foo",
+        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+      }
+    };
+    cb([parameterDeclaration, variableDeclaration])({
       kind: "variable_declaration",
       args: {
         label: "foo",
@@ -38,16 +42,16 @@ describe("localListCallback", () => {
   });
 });
 
-const isVariableDeclaration =
-  (x: ScopeDeclarationBodyItem): x is VariableDeclaration =>
-    x.kind === "variable_declaration";
+const isParameterApplication =
+  (x: VariableNode): x is ParameterApplication =>
+    x.kind === "parameter_application";
 
 describe("manuallyEditAxis()", () => {
   const fakeProps = (): AxisEditProps => ({
     axis: "x",
     onChange: jest.fn(),
-    declaration: {
-      kind: "variable_declaration",
+    editableVariable: {
+      kind: "parameter_application",
       args: {
         label: "parent",
         data_value: { kind: "coordinate", args: { x: 10, y: 20, z: 30 } }
@@ -57,18 +61,18 @@ describe("manuallyEditAxis()", () => {
 
   it("edits an axis", () => {
     const expected = fakeProps();
-    if (isVariableDeclaration(expected.declaration) &&
-      expected.declaration.args.data_value.kind === "coordinate") {
-      expected.declaration.args.data_value.args.x = 1.23;
+    if (isParameterApplication(expected.editableVariable) &&
+      expected.editableVariable.args.data_value.kind === "coordinate") {
+      expected.editableVariable.args.data_value.args.x = 1.23;
     }
     const p = fakeProps();
     manuallyEditAxis(p)(inputEvent("1.23"));
-    expect(p.onChange).toHaveBeenCalledWith(expected.declaration);
+    expect(p.onChange).toHaveBeenCalledWith(expected.editableVariable);
   });
 
   it("can't edit when not a coordinate (inputs also disabled)", () => {
     const p = fakeProps();
-    p.declaration.args = {
+    p.editableVariable.args = {
       label: "", data_value: {
         kind: "identifier", args: { label: "" }
       }

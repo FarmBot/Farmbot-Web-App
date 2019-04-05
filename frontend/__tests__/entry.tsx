@@ -33,7 +33,7 @@ jest.mock("../routes", () => {
 import { stopIE } from "../util/stop_ie";
 import { shortRevision } from "../util/util";
 import { detectLanguage } from "../i18n";
-import { init } from "i18next";
+import I from "i18next";
 
 describe("entry file", () => {
   it("Calls the expected callbacks", async () => {
@@ -42,6 +42,6 @@ describe("entry file", () => {
     expect(stopIE).toHaveBeenCalled();
     expect(shortRevision).toHaveBeenCalled();
     expect(detectLanguage).toHaveBeenCalled();
-    expect(init).toHaveBeenCalled();
+    expect(I.init).toHaveBeenCalled();
   });
 });

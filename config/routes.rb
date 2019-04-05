@@ -1,9 +1,9 @@
 FarmBot::Application.routes.draw do
   namespace :api, defaults: {format: :json}, constraints: { format: "json" } do
-    post "/rmq/user"     => "rmq_utils#user",     as: "rmq_user"
-    post "/rmq/vhost"    => "rmq_utils#vhost",    as: "rmq_vhost"
-    post "/rmq/resource" => "rmq_utils#resource", as: "rmq_resource"
-    post "/rmq/topic"    => "rmq_utils#topic",    as: "rmq_topic"
+    post "/rmq/user"     => "rmq_utils#user_action",     as: "rmq_user"
+    post "/rmq/vhost"    => "rmq_utils#vhost_action",    as: "rmq_vhost"
+    post "/rmq/resource" => "rmq_utils#resource_action", as: "rmq_resource"
+    post "/rmq/topic"    => "rmq_utils#topic_action",    as: "rmq_topic"
 
     # Standard API Resources:
     {
@@ -43,7 +43,7 @@ FarmBot::Application.routes.draw do
 
     resources :logs, except: [:update, :show] do
       # When farmware fetching fails and the user
-      # wants to try agian.
+      # wants to try again.
       get :search, on: :collection
     end
 

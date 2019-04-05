@@ -1,8 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Widget, WidgetBody, WidgetHeader } from "../ui";
 import { ToolTips, Actions } from "../constants";
 import { tourNames } from "./tours";
+import { t } from "../i18next_wrapper";
 
 const TourList = ({ dispatch }: { dispatch: Function }) =>
   <div className="tour-list">

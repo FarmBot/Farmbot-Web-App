@@ -1,10 +1,13 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Color } from "./ui";
+import { t } from "./i18next_wrapper";
 
 /* tslint:disable:max-line-length */
 
 export function LoadingPlant({ animate }: { animate: boolean }) {
+  const initialLoadingEl = document.getElementsByClassName("initial-loading-text");
+  if (initialLoadingEl.length > 0) { initialLoadingEl[0].outerHTML = ""; }
   return <div className="loading-plant-div-container">
     <svg width="300px" height="500px">
       {animate &&

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import {
@@ -8,11 +8,16 @@ import {
 } from "../interfaces";
 import moment from "moment";
 import { Content } from "../../constants";
-import { DesignerNavTabs } from "../panel_header";
+import { Panel, DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
-import { DesignerPanel, DesignerPanelContent } from "../plants/designer_panel";
-import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
+import {
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+} from "../plants/designer_panel";
+import {
+  EmptyStateWrapper, EmptyStateGraphic
+} from "../../ui/empty_state_wrapper";
 import { some, uniq, map, sortBy } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -86,7 +91,8 @@ export class PureFarmEvents
   renderCalendarRows() {
     const years = uniq(map(this.props.calendarRows, "year"));
     return years.map(year => {
-      return <div key={moment(year, "YY").unix()}>
+      return <div key={moment(year, "YY").unix()}
+        className="farm-event-calendar-rows">
         <div className="farm-event-year">
           20{year}
         </div>
@@ -116,32 +122,32 @@ export class PureFarmEvents
   };
 
   normalContent = () => {
-    return <DesignerPanelContent panelName={"farm-event"}>
-      <Row>
+    return <div className="farm-event-panel-normal-content">
+      <DesignerPanelTop
+        panel={Panel.FarmEvents}
+        linkTo={"/app/designer/farm_events/add"}
+        title={t("Add event")}
+        noIcon={true}>
         <i className="fa fa-calendar" onClick={this.resetCalendar} />
         <input
           value={this.state.searchTerm}
           onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
           placeholder={t("Search events...")} />
-      </Row>
+      </DesignerPanelTop>
+      <DesignerPanelContent panelName={"farm-event"}>
 
-      <div className="farm-events">
-        <EmptyStateWrapper
-          notEmpty={this.props.calendarRows.length > 0}
-          title={t("No events scheduled.")}
-          text={t(Content.NOTHING_SCHEDULED)}
-          colorScheme="events"
-          graphic={EmptyStateGraphic.no_farm_events}>
-          {this.renderCalendarRows()}
-        </EmptyStateWrapper>
-      </div>
-
-      <Link to="/app/designer/farm_events/add">
-        <button className="plus-button fb-button magenta">
-          <i className="fa fa-2x fa-plus" title={t("Add event")} />
-        </button>
-      </Link>
-    </DesignerPanelContent>;
+        <div className="farm-events">
+          <EmptyStateWrapper
+            notEmpty={this.props.calendarRows.length > 0}
+            title={t("No events scheduled.")}
+            text={t(Content.NOTHING_SCHEDULED)}
+            colorScheme="events"
+            graphic={EmptyStateGraphic.no_farm_events}>
+            {this.renderCalendarRows()}
+          </EmptyStateWrapper>
+        </div>
+      </DesignerPanelContent>
+    </div>;
   };
 
   render() {
@@ -153,7 +159,7 @@ export class PureFarmEvents
 }
 
 /** This is intentional. It is not a hack or a work around.
- * It greatly simplifies unit testing.
+ * It avoids mocking `connect` in unit tests.
  * See testing pattern noted here: https://github.com/airbnb/enzyme/issues/98
  */
 export let FarmEvents = connect(mapStateToProps)(PureFarmEvents);

@@ -66,8 +66,7 @@ describe Api::ImagesController do
       sign_in user
       before_count = Image.count
       post :create,
-           body: { attachment_url: "https://placeholdit.imgix.net/~text?txt"\
-                                   "size=5&txt=1%C3%971&w=1&h=1&txtpad=1",
+           body: { attachment_url: FAKE_ATTACHMENT_URL,
                    meta: { x: 1, z: 3 } }.to_json,
            params: {format: :json}
       expect(response.status).to eq(200)

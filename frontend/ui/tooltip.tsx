@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { DocSlug, docLink } from ".";
+import { t } from "../i18next_wrapper";
 
 interface ToolTipProps {
   children?: React.ReactNode;

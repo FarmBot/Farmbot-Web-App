@@ -3,8 +3,10 @@ import { readPin } from "../../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
-import { t } from "i18next";
+
 import { isNumber } from "lodash";
+import { ALLOWED_PIN_MODES } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 const SensorReadingDisplay =
   ({ label, value, mode }:
@@ -55,7 +57,7 @@ export function SensorList(props: SensorListProps) {
             className={"fb-button gray"}
             disabled={disabled}
             title={t(`read ${label} sensor`)}
-            onClick={() => readPin(pin || 0, `pin${pin}`, mode)}>
+            onClick={() => readPin(pin || 0, `pin${pin}`, mode as ALLOWED_PIN_MODES)}>
             {t("read sensor")}
           </button>
         </Col>

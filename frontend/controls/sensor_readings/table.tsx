@@ -1,9 +1,10 @@
 import * as React from "react";
 import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
-import { t } from "i18next";
+
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
 import moment from "moment";
+import { t } from "../../i18next_wrapper";
 
 enum TableColWidth {
   sensor = 125,
@@ -35,7 +36,7 @@ const TableHeader = () =>
         </th>
         <th style={{ width: `${TableColWidth.location}px` }}>
           <label>
-            {t("Position (x, y, z)")}
+            {t("(x, y, z)")}
           </label>
         </th>
         <th style={{ width: `${TableColWidth.date}px` }}>

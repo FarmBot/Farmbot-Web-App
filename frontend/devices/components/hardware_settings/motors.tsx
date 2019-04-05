@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
@@ -12,6 +11,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
+import { t } from "../../../i18next_wrapper";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -64,36 +64,48 @@ export function Motors(props: MotorsProps) {
             settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
       </SingleSettingRow>
       <NumericMCUInputGroup
-        name={t("Max Speed (steps/s)")}
+        name={t("Max Speed (mm/s)")}
         tooltip={ToolTips.MAX_SPEED}
         x={"movement_max_spd_x"}
         y={"movement_max_spd_y"}
         z={"movement_max_spd_z"}
+        xScale={sourceFwConfig("movement_step_per_mm_x").value}
+        yScale={sourceFwConfig("movement_step_per_mm_y").value}
+        zScale={sourceFwConfig("movement_step_per_mm_z").value}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       {(minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) &&
         <NumericMCUInputGroup
-          name={t("Homing Speed (steps/s)")}
+          name={t("Homing Speed (mm/s)")}
           tooltip={ToolTips.HOME_SPEED}
           x={"movement_home_spd_x"}
           y={"movement_home_spd_y"}
           z={"movement_home_spd_z"}
+          xScale={sourceFwConfig("movement_step_per_mm_x").value}
+          yScale={sourceFwConfig("movement_step_per_mm_y").value}
+          zScale={sourceFwConfig("movement_step_per_mm_z").value}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
       <NumericMCUInputGroup
-        name={t("Minimum Speed (steps/s)")}
+        name={t("Minimum Speed (mm/s)")}
         tooltip={ToolTips.MIN_SPEED}
         x={"movement_min_spd_x"}
         y={"movement_min_spd_y"}
         z={"movement_min_spd_z"}
+        xScale={sourceFwConfig("movement_step_per_mm_x").value}
+        yScale={sourceFwConfig("movement_step_per_mm_y").value}
+        zScale={sourceFwConfig("movement_step_per_mm_z").value}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Accelerate for (steps)")}
+        name={t("Accelerate for (mm)")}
         tooltip={ToolTips.ACCELERATE_FOR}
         x={"movement_steps_acc_dec_x"}
         y={"movement_steps_acc_dec_y"}
         z={"movement_steps_acc_dec_z"}
+        xScale={sourceFwConfig("movement_step_per_mm_x").value}
+        yScale={sourceFwConfig("movement_step_per_mm_y").value}
+        zScale={sourceFwConfig("movement_step_per_mm_z").value}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup

@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
+
 import { error as log, success, init as logInit } from "farmbot-toastr";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, attachToRoot } from "../util";
@@ -16,6 +16,7 @@ import { Content } from "../constants";
 import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export const attachFrontPage =
   () => attachToRoot(FrontPage, {});
@@ -69,7 +70,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   componentDidMount() {
-    if (Session.fetchStoredToken()) { window.location.href = "/app/controls"; }
+    if (Session.fetchStoredToken()) { window.location.assign("/app/controls"); }
     logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
@@ -83,7 +84,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post<AuthState>(API.current.tokensPath, payload)
       .then(resp => {
         Session.replaceToken(resp.data);
-        window.location.href = "/app/controls";
+        window.location.assign("/app/controls");
       }).catch((error: Error) => {
         switch (get(error, "response.status")) {
           case 451: // TOS was updated; User must agree to terms.

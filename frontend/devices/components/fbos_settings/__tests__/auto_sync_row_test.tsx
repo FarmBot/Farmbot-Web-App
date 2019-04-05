@@ -1,9 +1,9 @@
-const mockDevice = {
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
-  sync: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
+const mockDevice = { sync: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
+
+jest.mock("../../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
@@ -11,30 +11,33 @@ import { AutoSyncRow } from "../auto_sync_row";
 import { mount } from "enzyme";
 import { Content } from "../../../../constants";
 import { AutoSyncRowProps } from "../interfaces";
-import { bot } from "../../../../__test_support__/fake_state/bot";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import { edit, save } from "../../../../api/crud";
+import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex
+} from "../../../../__test_support__/resource_index_builder";
 
 describe("<AutoSyncRow/>", () => {
-  const fakeProps = (): AutoSyncRowProps => {
-    return {
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      }
-    };
-  };
+  const fakeConfig = fakeFbosConfig();
+  const state = fakeState();
+  state.resources = buildResourceIndex([fakeConfig]);
+
+  const fakeProps = (): AutoSyncRowProps => ({
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: true, consistent: true })
+  });
 
   it("renders", () => {
-    const wrapper = mount(<AutoSyncRow {...fakeProps() } />);
+    const wrapper = mount(<AutoSyncRow {...fakeProps()} />);
     ["AUTO SYNC", Content.AUTO_SYNC]
       .map(string => expect(wrapper.text()).toContain(string));
   });
 
   it("toggles", () => {
-    bot.hardware.configuration.auto_sync = true;
-    const wrapper = mount(<AutoSyncRow {...fakeProps() } />);
+    const wrapper = mount(<AutoSyncRow {...fakeProps()} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.updateConfig)
-      .toHaveBeenCalledWith({ auto_sync: false });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { auto_sync: false });
+    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });

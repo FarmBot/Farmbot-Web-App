@@ -1,9 +1,10 @@
-import { t } from "i18next";
+
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
 import { VirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
 import { GetWebAppConfigValue, setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { t } from "../../i18next_wrapper";
 
 export interface LabsFeature {
   /** Toggle label. */

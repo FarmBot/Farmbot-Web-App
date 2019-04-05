@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col } from "../../../ui/index";
+import { t } from "../../../i18next_wrapper";
 
 export function SpacePanelHeader(_: {}) {
   return <Row>

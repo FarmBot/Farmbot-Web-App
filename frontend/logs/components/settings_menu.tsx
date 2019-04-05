@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Help } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
@@ -7,6 +7,8 @@ import { updateConfig } from "../../devices/actions";
 import { LogSettingProps, LogsSettingsMenuProps, Filters } from "../interfaces";
 import { safeNumericSetting } from "../../session";
 import { ConfigurationName } from "farmbot";
+import { MessageType } from "../../sequences/interfaces";
+import { t } from "../../i18next_wrapper";
 
 interface LogSettingRecord {
   label: string;
@@ -74,16 +76,16 @@ const LogSetting = (props: LogSettingProps) => {
             case "firmware_output_log":
             case "firmware_input_log":
             case "arduino_debug_messages":
-              updateMinFilterLevel("debug", 3);
+              updateMinFilterLevel(MessageType.debug, 3);
               break;
             case "sequence_init_log":
-              updateMinFilterLevel("busy", 2);
+              updateMinFilterLevel(MessageType.busy, 2);
               break;
             case "sequence_body_log":
-              updateMinFilterLevel("info", 2);
+              updateMinFilterLevel(MessageType.info, 2);
               break;
             case "sequence_complete_log":
-              updateMinFilterLevel("success", 2);
+              updateMinFilterLevel(MessageType.success, 2);
               break;
           }
         }

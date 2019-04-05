@@ -1,5 +1,5 @@
 # SCHEDULED DEPRECATION:
-#   Node/PrimaryPair/PrimitivePair/Fragment will superceeded this model
+#   Node/PrimaryPair/PrimitivePair/Fragment will supersede this model
 #   eventually
 # If a node in the sequence node tree has a `kind` and `args` property, it is
 # said to be a properly formed "PrimaryNode". Everything else is an `EdgeNode`.

@@ -1,19 +1,20 @@
 import * as React from "react";
-import { t } from "i18next";
-import { SyncStatus, VariableDeclaration } from "farmbot/dist";
+
+import { SyncStatus, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
 import { execSequence } from "../devices/actions";
 import { Popover } from "@blueprintjs/core";
 import { LocalsList } from "./locals_list/locals_list";
-import { AllowedDeclaration } from "./locals_list/locals_list_support";
+import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import {
-  addOrEditVarDeclaration, declarationList, mergeVariableDeclarations
-} from "./locals_list/declaration_support";
+  addOrEditParamApps, variableList, mergeParameterApplications
+} from "./locals_list/variable_support";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { warning } from "farmbot-toastr";
 import { Actions } from "../constants";
+import { t } from "../i18next_wrapper";
 
 /** Can't test without saving and syncing sequence. */
 const saveAndSyncWarning = () =>
@@ -31,10 +32,10 @@ interface ParameterAssignmentMenuProps {
   sequence: TaggedSequence;
   resources: ResourceIndex;
   varData: VariableNameSet | undefined;
-  /** Edit a variable declaration prepared for a sequence test. */
-  editDeclaration(declaration: VariableDeclaration): void;
-  /** Variable declarations prepared for a sequence test. */
-  declarations: VariableDeclaration[];
+  /** Edit a parameter application prepared for a sequence test. */
+  editBodyVariables(variable: ParameterApplication): void;
+  /** Parameter applications prepared for a sequence test. */
+  bodyVariables: ParameterApplication[];
   shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
@@ -52,7 +53,7 @@ class ParameterAssignmentMenu
   onClick = () => {
     this.props.dispatch(setMenuOpen(false));
     this.props.canTest
-      ? execSequence(this.props.sequence.body.id, this.props.declarations)
+      ? execSequence(this.props.sequence.body.id, this.props.bodyVariables)
       : saveAndSyncWarning();
   };
 
@@ -62,12 +63,12 @@ class ParameterAssignmentMenu
         <Test canTest={this.props.canTest} onClick={this.onClick} />
       </div>
       <LocalsList
-        declarations={this.props.declarations}
+        bodyVariables={this.props.bodyVariables}
         variableData={this.props.varData}
         sequenceUuid={this.props.sequence.uuid}
         resources={this.props.resources}
-        onChange={this.props.editDeclaration}
-        allowedDeclarations={AllowedDeclaration.variable}
+        onChange={this.props.editBodyVariables}
+        allowedVariableNodes={AllowedVariableNodes.variable}
         shouldDisplay={this.props.shouldDisplay} />
     </div>;
   }
@@ -103,14 +104,14 @@ export interface TestBtnProps {
 }
 
 interface TestBtnState {
-  declarations: VariableDeclaration[];
+  bodyVariables: ParameterApplication[];
   /** Current sequence UUID. */
   uuid: UUID;
 }
 
 export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
   state: TestBtnState = {
-    declarations: declarationList(this.varData) || [],
+    bodyVariables: variableList(this.varData) || [],
     uuid: this.props.sequence.uuid,
   };
 
@@ -124,20 +125,19 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
     return this.props.resources.sequenceMetas[this.props.sequence.uuid];
   }
 
-  editDeclaration = (declaration: VariableDeclaration) =>
+  editBodyVariables = (variable: ParameterApplication) =>
     this.setState({
-      declarations:
-        addOrEditVarDeclaration(this.state.declarations, declaration)
+      bodyVariables: addOrEditParamApps(this.state.bodyVariables, variable)
     })
 
   /** Click actions for test button. */
   onClick = () => {
     const { menuOpen } = this.props;
     const sequenceBody = this.props.sequence.body;
-    const declarations =
-      mergeVariableDeclarations(this.varData, this.state.declarations);
-    this.setState({ declarations });
-    /** Open the declaration menu if the sequence has parameter declarations. */
+    const bodyVariables =
+      mergeParameterApplications(this.varData, this.state.bodyVariables);
+    this.setState({ bodyVariables });
+    /** Open the variable menu if the sequence has parameter declarations. */
     isParameterized(sequenceBody) && this.props.dispatch(setMenuOpen(!menuOpen));
     this.canTest
       /** Execute if sequence is synced, saved, and doesn't use parameters. */
@@ -156,8 +156,8 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
           canTest={this.canTest}
           resources={this.props.resources}
           varData={this.varData}
-          editDeclaration={this.editDeclaration}
-          declarations={this.state.declarations}
+          editBodyVariables={this.editBodyVariables}
+          bodyVariables={this.state.bodyVariables}
           shouldDisplay={this.props.shouldDisplay}
           sequence={this.props.sequence} />}
     </Popover>;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { t } from "i18next";
+
 import { success, error } from "farmbot-toastr";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps, PhotoButtonsProps } from "./interfaces";
@@ -15,6 +15,7 @@ import {
 import { TaggedImage } from "farmbot";
 import { startCase } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
+import { t } from "../../i18next_wrapper";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
@@ -16,7 +16,8 @@ import { Link } from "../../link";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../plants/designer_panel";
-import { declarationList } from "../../sequences/locals_list/declaration_support";
+import { variableList } from "../../sequences/locals_list/variable_support";
+import { t } from "../../i18next_wrapper";
 
 interface State {
   uuid: string;
@@ -57,7 +58,7 @@ export class AddFarmEvent
         time_unit: "never",
         executable_id,
         executable_type,
-        body: declarationList(varData),
+        body: variableList(varData),
       });
       this.props.dispatch(action);
       this.setState({ uuid: action.payload.uuid });

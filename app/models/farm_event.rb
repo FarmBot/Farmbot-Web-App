@@ -1,4 +1,4 @@
-# Not the same thing as a Regimen. A farm_event is a "dumb" list of sequecnes that
+# Not the same thing as a Regimen. A farm_event is a "dumb" list of sequences that
 # are executed at fixed intervals. FarmEvents are less flexible than Regimens
 # because they can only perform one sequence. Also unlike Regimens, they can run
 # forever.

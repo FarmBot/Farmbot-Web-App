@@ -1,9 +1,10 @@
 import * as React from "react";
 import { ThenElseParams, seqDropDown, IfBlockDropDownHandler } from "./index";
-import { t } from "i18next";
+
 import { Row, Col, FBSelect } from "../../../ui";
 import { LocalsList } from "../../locals_list/locals_list";
-import { AllowedDeclaration } from "../../locals_list/locals_list_support";
+import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
+import { t } from "../../../i18next_wrapper";
 
 export function ThenElse(props: ThenElseParams) {
   const {
@@ -26,13 +27,13 @@ export function ThenElse(props: ThenElseParams) {
       {!!calledSequenceVariableData &&
         <Col xs={12}>
           <LocalsList
-            declarations={body}
+            bodyVariables={body}
             variableData={calledSequenceVariableData}
             sequenceUuid={props.currentSequence.uuid}
             resources={props.resources}
             onChange={assignVariable(body || [])}
             locationDropdownKey={JSON.stringify(props.currentSequence)}
-            allowedDeclarations={AllowedDeclaration.identifier}
+            allowedVariableNodes={AllowedVariableNodes.identifier}
             shouldDisplay={props.shouldDisplay || (() => false)} />
         </Col>}
     </Col>

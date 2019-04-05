@@ -353,7 +353,8 @@ CREATE TABLE public.farmware_installations (
     url character varying,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    package character varying(80)
+    package character varying(80),
+    package_error character varying
 );
 
 
@@ -1470,7 +1471,8 @@ CREATE TABLE public.web_app_configs (
     show_motor_plot boolean DEFAULT false,
     show_historic_points boolean DEFAULT false,
     show_sensor_readings boolean DEFAULT false,
-    show_dev_menu boolean DEFAULT false
+    show_dev_menu boolean DEFAULT false,
+    internal_use text
 );
 
 
@@ -2816,6 +2818,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190103213956'),
 ('20190108211419'),
 ('20190209133811'),
-('20190212215842');
+('20190212215842'),
+('20190307205648');
 
 

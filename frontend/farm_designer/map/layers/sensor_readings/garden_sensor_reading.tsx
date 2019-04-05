@@ -5,8 +5,9 @@ import { TaggedSensorReading } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { isNumber } from "lodash";
 import { formatLogTime } from "../../../../logs";
-import { t } from "i18next";
+
 import { Color } from "../../../../ui";
+import { t } from "../../../../i18next_wrapper";
 
 const VISIBLE_PERIOD_SECONDS = 24 * 60 * 60.;
 

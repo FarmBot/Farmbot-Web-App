@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { history } from "../../history";
 import { unselectPlant } from "../actions";
 import {
@@ -14,9 +14,11 @@ import { closeSavedGarden } from "./actions";
 import { TaggedSavedGarden } from "farmbot";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
 } from "../plants/designer_panel";
 import { DevSettings } from "../../account/dev/dev_support";
+import { DesignerNavTabs } from "../panel_header";
+import { t } from "../../i18next_wrapper";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -39,15 +41,18 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
   }
 
   render() {
+    const alt = DevSettings.futureFeaturesEnabled();
     return <DesignerPanel panelName={"saved-garden"} panelColor={"green"}>
-      <DesignerPanelHeader
-        panelName={"saved-garden"}
-        panelColor={"green"}
-        title={t("Saved Gardens")}
-        description={Content.SAVED_GARDENS}
-        backTo={"/app/designer/plants"} />
-
-      <DesignerPanelContent panelName={"saved-garden"}>
+      {alt ? <DesignerNavTabs /> :
+        <DesignerPanelHeader
+          panelName={"saved-garden"}
+          panelColor={"green"}
+          title={t("Saved Gardens")}
+          description={Content.SAVED_GARDENS}
+          backTo={"/app/designer/plants"} />}
+      <DesignerPanelContent panelName={"saved-garden"}
+        className={`${alt ? "with-nav" : ""}`}>
+        {alt && <p>{Content.SAVED_GARDENS}</p>}
         <GardenSnapshot
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}
@@ -64,7 +69,7 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
 /** Link to SavedGardens panel for garden map legend. */
 export const SavedGardensLink = () =>
   <button className="fb-button green"
-    hidden={!DevSettings.futureFeaturesEnabled()}
+    hidden={true}
     onClick={() => history.push("/app/designer/saved_gardens")}>
     {t("Saved Gardens")}
   </button>;

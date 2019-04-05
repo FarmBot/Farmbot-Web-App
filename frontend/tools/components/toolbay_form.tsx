@@ -6,7 +6,7 @@ import {
   WidgetHeader,
   SaveBtn,
 } from "../../ui";
-import { t } from "i18next";
+
 import {
   getArrayStatus
 } from "../../resources/tagged_resources";
@@ -16,6 +16,7 @@ import { ToolTips } from "../../constants";
 import { ToolSlotRow } from "./tool_slot_row";
 import { emptyToolSlotBody } from "./empty_tool_slot";
 import { TaggedToolSlotPointer } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
 
