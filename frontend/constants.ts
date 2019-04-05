@@ -536,7 +536,7 @@ export namespace Content {
     Privacy Policy`);
 
   export const FORCE_REFRESH_CONFIRM =
-    trim(`A new FarmBot version has been released. Refresh page?`);
+    trim(`A new version of the FarmBot web app has been released. Refresh page?`);
 
   export const FORCE_REFRESH_CANCEL_WARNING =
     trim(`You may experience data loss if you do not refresh the page.`);
