@@ -1,32 +1,17 @@
-
-import { Content } from "../../constants";
 import { isString } from "lodash";
-import { t } from "../../i18next_wrapper";
 
-/** Used for every new account the first time the Device page is loaded. */
-const ONLY_ONCE = {
-  need_to_talk: true
-};
-
-export function inferTimezone(current: string | undefined): string {
-  if (current) {
-    return current;
-  }
-  const browserTime = maybeResolveTZ();
-  if (browserTime) {
-    if (ONLY_ONCE.need_to_talk) {
-      alert(t(Content.TIMEZONE_GUESS_BROWSER));
-      ONLY_ONCE.need_to_talk = false;
-    }
+/** Use browser's i18n functionality to guess timezone. */
+function maybeResolveTZ(): string | undefined {
+  if (Intl && Intl.DateTimeFormat) {
     // WARNING SIDE EFFECTS!!!
-    return browserTime;
+    console.warn("Ding!");
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
-  if (ONLY_ONCE.need_to_talk) {
-    alert(t(Content.TIMEZONE_GUESS_UTC));
-    ONLY_ONCE.need_to_talk = false;
-  }
-  return "UTC";
+  return undefined;
 }
+
+export const inferTimezone = (current: string | undefined): string =>
+  current || maybeResolveTZ() || "UTC";
 
 /** Sometimes, a mismatch between the device time zone and the user time zone
  * can occur. When this happens,
@@ -40,16 +25,4 @@ export function timezoneMismatch(botTime: string | undefined,
     // Don't show warnings if TZ data is unavailable.
     return false;
   }
-}
-
-/** Use browser's i18n functionality to guess timezone. */
-function maybeResolveTZ(): string | undefined {
-  if (Intl && Intl.DateTimeFormat) {
-    // WARNING SIDE EFFECTS!!!
-    return Intl
-      .DateTimeFormat()
-      .resolvedOptions()
-      .timeZone;
-  }
-  return undefined;
 }

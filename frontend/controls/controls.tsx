@@ -14,6 +14,7 @@ import { SensorReadings } from "./sensor_readings/sensor_readings";
 /** Controls page. */
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
+
   get arduinoBusy() {
     return !!this.props.bot.hardware.informational_settings.busy;
   }

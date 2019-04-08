@@ -444,17 +444,6 @@ export namespace Content {
     trim(`Time in minutes to attempt connecting to WiFi before a factory
     reset.`);
 
-  export const TIMEZONE_GUESS_BROWSER =
-    trim(`This account did not have a timezone set. FarmBot requires a
-    timezone to operate. We have updated your timezone settings based on
-    your browser. Please verify these settings in the device settings panel.
-    Device sync is recommended.`);
-
-  export const TIMEZONE_GUESS_UTC =
-    trim(`Warning: FarmBot could not guess your timezone. We have defaulted
-    your timezone to UTC, which is less than ideal for most users. Please
-    select your timezone from the dropdown. Device sync is recommended.`);
-
   export const DIFFERENT_TZ_WARNING =
     trim(`Note: The selected timezone for your FarmBot is different than
     your local browser time.`);
