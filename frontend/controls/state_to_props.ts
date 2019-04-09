@@ -16,16 +16,16 @@ import { getFirmwareConfig } from "../resources/getters";
 import { uniq } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
-  const peripherals = uniq(selectAllPeripherals(props.resources.index));
-  const sensors = uniq(selectAllSensors(props.resources.index));
-  const resources = props.resources;
+  const { mcu_params } = props.bot.hardware;
   const bot2mqtt = props.bot.connectivity["bot.mqtt"];
   const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
+  const device = maybeGetDevice(props.resources.index);
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
-  const { mcu_params } = props.bot.hardware;
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
   const getWebAppConfigVal = getWebAppConfigValue(() => props);
+  const installedOsVersion = determineInstalledOsVersion(props.bot, device);
+  const peripherals = uniq(selectAllPeripherals(props.resources.index));
+  const resources = props.resources;
+  const sensors = uniq(selectAllSensors(props.resources.index));
 
   return {
     feeds: selectAllWebcamFeeds(resources.index),
@@ -39,5 +39,6 @@ export function mapStateToProps(props: Everything): Props {
     getWebAppConfigVal,
     sensorReadings: selectAllSensorReadings(props.resources.index),
     timeOffset: maybeGetTimeOffset(props.resources.index),
+    device
   };
 }

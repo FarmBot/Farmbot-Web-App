@@ -24,11 +24,8 @@
     "strictNullChecks": true,
     "target": "es5",
   },
-  "exclude": [
-    "node_modules",
-    "typings",
-    "public",
-    "docker_volumes"
+  "include": [
+    "frontend"
   ],
   "compileOnSave": false,
   "buildOnSave": false

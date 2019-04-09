@@ -11,6 +11,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { Props } from "../interfaces";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<Controls />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -28,6 +29,7 @@ describe("<Controls />", () => {
       getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
       sensorReadings: [],
       timeOffset: 0,
+      device: fakeDevice()
     };
   }
 

@@ -1,14 +1,11 @@
 import { isString } from "lodash";
+import { TaggedDevice } from "farmbot";
+import { edit, save } from "../../api/crud";
 
 /** Use browser's i18n functionality to guess timezone. */
-function maybeResolveTZ(): string | undefined {
-  if (Intl && Intl.DateTimeFormat) {
-    // WARNING SIDE EFFECTS!!!
-    console.warn("Ding!");
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  }
-  return undefined;
-}
+const maybeResolveTZ = (): string | undefined => Intl &&
+  Intl.DateTimeFormat &&
+  Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export const inferTimezone = (current: string | undefined): string =>
   current || maybeResolveTZ() || "UTC";
@@ -24,5 +21,12 @@ export function timezoneMismatch(botTime: string | undefined,
   } else {
     // Don't show warnings if TZ data is unavailable.
     return false;
+  }
+}
+
+export function maybeSetTimezone(dispatch: Function, device: TaggedDevice) {
+  if (!device.body.timezone) {
+    dispatch(edit(device, { timezone: inferTimezone(undefined) }));
+    dispatch(save(device.uuid));
   }
 }
