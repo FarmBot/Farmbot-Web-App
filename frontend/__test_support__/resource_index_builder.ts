@@ -13,15 +13,20 @@ import { threeWayComparison as c3 } from "../util/move";
 import { defensiveClone } from "../util/util";
 import { chain, groupBy } from "lodash";
 import { MessageType } from "../sequences/interfaces";
-export function fakeDevice(): TaggedDevice {
+
+const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
+  "id": 415,
+  "name": "wispy-firefly-846",
+  "tz_offset_hrs": 0
+};
+
+export function fakeDevice(body: Partial<TaggedDevice["body"]> = {}):
+  TaggedDevice {
+
   return {
     "kind": "Device",
     "specialStatus": SpecialStatus.SAVED,
-    "body": {
-      "id": 415,
-      "name": "wispy-firefly-846",
-      "tz_offset_hrs": 0
-    },
+    "body": { ...DEFAULT_DEVICE_BODY, ...body },
     "uuid": "Device.415.0"
   };
 }

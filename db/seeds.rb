@@ -11,6 +11,7 @@ if Rails.env == "development"
                eggplant endive garlic jicama kale kohlrabi leek lettuce okra onion
                parsnip pepper potato pumpkin radicchio radish raspberry rhubarb spinach
                squash tomato turnip zucchini)
+
   [
     Sensor,
     Peripheral,

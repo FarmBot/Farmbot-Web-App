@@ -12,10 +12,6 @@ interface TZSelectorProps {
 }
 
 export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
-  dropdownList = (): DropDownItem[] => {
-    return [];
-  }
-
   componentDidMount() {
     const tz = inferTimezone(this.props.currentTimezone);
     if (!this.props.currentTimezone) {
