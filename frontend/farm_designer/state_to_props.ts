@@ -26,6 +26,7 @@ import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { reduceFarmwareEnv } from "../farmware/state_to_props";
 import { getFirmwareConfig } from "../resources/getters";
+import { DevSettings } from "../account/dev/dev_support";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -82,8 +83,9 @@ export function mapStateToProps(props: Everything): Props {
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const shouldDisplay =
-    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;

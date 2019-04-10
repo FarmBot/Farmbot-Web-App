@@ -1,17 +1,54 @@
+import { store } from "../../redux/store";
+import {
+  getWebAppConfigValue, setWebAppConfigValue
+} from "../../config_storage/actions";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+
+namespace devStorage {
+  const webAppConfigKey = "internal_use" as BooleanConfigKey;
+  const { dispatch, getState } = store;
+  export enum Key {
+    FUTURE_FE_FEATURES = "FUTURE_FE_FEATURES",
+    FBOS_VERSION_OVERRIDE = "FBOS_VERSION_OVERRIDE",
+  }
+  type Storage = { [K in Key]: string };
+
+  const loadStorage = (): Storage =>
+    JSON.parse("" + (getWebAppConfigValue(getState)(webAppConfigKey) || "{}"));
+
+  const saveStorage = (storage: Storage): void => {
+    const storageString = JSON.stringify(storage);
+    setWebAppConfigValue(webAppConfigKey, storageString)(dispatch, getState);
+  };
+
+  export const getItem = (key: Key): string | undefined => loadStorage()[key];
+
+  export const setItem = (key: Key, value: string): void => {
+    const storage = loadStorage();
+    storage[key] = value;
+    saveStorage(storage);
+  };
+
+  export const removeItem = (key: Key): void => {
+    const storage = loadStorage();
+    delete storage[key];
+    saveStorage(storage);
+  };
+}
 
 export namespace DevSettings {
 
-  export const FUTURE_FE_FEATURES = "FUTURE_FEATURES";
+  export const FUTURE_FE_FEATURES = devStorage.Key.FUTURE_FE_FEATURES;
   /** Unstable FE features enabled? */
   export const futureFeaturesEnabled = () =>
-    !!localStorage.getItem(FUTURE_FE_FEATURES);
+    !!devStorage.getItem(FUTURE_FE_FEATURES);
   /** Show unstable FE features for development purposes. */
   export const enableFutureFeatures = () =>
-    localStorage.setItem(FUTURE_FE_FEATURES, "true");
+    devStorage.setItem(FUTURE_FE_FEATURES, "true");
   export const disableFutureFeatures = () =>
-    localStorage.removeItem(FUTURE_FE_FEATURES);
+    devStorage.removeItem(FUTURE_FE_FEATURES);
 
-  export const FBOS_VERSION_OVERRIDE = "IM_A_DEVELOPER";
+  export const FBOS_VERSION_OVERRIDE = devStorage.Key.FBOS_VERSION_OVERRIDE;
   export const MAX_FBOS_VERSION_OVERRIDE = "1000.0.0";
   /**
    * Escape hatch for platform developers doing offline development.
@@ -19,12 +56,12 @@ export namespace DevSettings {
    * to adjust override level.
    */
   export const overriddenFbosVersion = () =>
-    localStorage.getItem(FBOS_VERSION_OVERRIDE);
+    devStorage.getItem(FBOS_VERSION_OVERRIDE);
   export const resetFbosVersionOverride = () =>
-    localStorage.removeItem(FBOS_VERSION_OVERRIDE);
+    devStorage.removeItem(FBOS_VERSION_OVERRIDE);
   export const setFbosVersionOverride = (override: string) =>
-    localStorage.setItem(FBOS_VERSION_OVERRIDE, override);
+    devStorage.setItem(FBOS_VERSION_OVERRIDE, override);
   export const setMaxFbosVersionOverride = () =>
-    localStorage.setItem(FBOS_VERSION_OVERRIDE, MAX_FBOS_VERSION_OVERRIDE);
+    devStorage.setItem(FBOS_VERSION_OVERRIDE, MAX_FBOS_VERSION_OVERRIDE);
 
 }

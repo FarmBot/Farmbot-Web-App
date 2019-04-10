@@ -6,13 +6,15 @@ import {
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import {
-  shouldDisplay, determineInstalledOsVersion, validFwConfig
+  shouldDisplay as shouldDisplayFunc,
+  determineInstalledOsVersion, validFwConfig
 } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig, getWebAppConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
+import { DevSettings } from "../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -70,6 +72,10 @@ export function mapStateToProps(props: Everything): Props {
   const confirmStepDeletion =
     !!getWebAppConfigValue(() => props)(BooleanSetting.confirm_step_deletion);
 
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
+
   return {
     dispatch: props.dispatch,
     sequences: selectAllSequences(props.resources.index),
@@ -87,7 +93,7 @@ export function mapStateToProps(props: Everything): Props {
       showFirstPartyFarmware,
       farmwareConfigs,
     },
-    shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
+    shouldDisplay,
     confirmStepDeletion,
     menuOpen: props.resources.consumers.sequences.menuOpen,
   };

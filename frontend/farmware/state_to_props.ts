@@ -24,6 +24,7 @@ import { FarmwareManifestInfo, Farmwares } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
 import { getStatus } from "../connectivity/reducer_support";
+import { DevSettings } from "../account/dev/dev_support";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -67,8 +68,9 @@ export function mapStateToProps(props: Everything): FarmwareProps {
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const shouldDisplay =
-    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;

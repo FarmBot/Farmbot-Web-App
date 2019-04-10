@@ -9,12 +9,14 @@ import {
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import {
-  validFwConfig, shouldDisplay, determineInstalledOsVersion
+  validFwConfig, shouldDisplay as shouldDisplayFunc,
+  determineInstalledOsVersion
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
 import { uniq } from "lodash";
 import { getStatus } from "../connectivity/reducer_support";
+import { DevSettings } from "../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything): Props {
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
@@ -22,6 +24,9 @@ export function mapStateToProps(props: Everything): Props {
 
   const device = maybeGetDevice(props.resources.index);
   const installedOsVersion = determineInstalledOsVersion(props.bot, device);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   return {
     feeds: selectAllWebcamFeeds(props.resources.index),
@@ -31,8 +36,8 @@ export function mapStateToProps(props: Everything): Props {
     sensors: uniq(selectAllSensors(props.resources.index)),
     botToMqttStatus: getStatus(props.bot.connectivity["bot.mqtt"]),
     firmwareSettings: fwConfig || mcu_params,
-    shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
     getWebAppConfigVal: getWebAppConfigValue(() => props),
+    shouldDisplay,
     sensorReadings: selectAllSensorReadings(props.resources.index),
     timeOffset: maybeGetTimeOffset(props.resources.index),
   };

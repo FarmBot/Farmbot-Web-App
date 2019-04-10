@@ -100,25 +100,35 @@ describe("shouldDisplay()", () => {
   const fakeMinOsData = { jest_feature: "1.0.0" };
 
   it("should display", () => {
-    expect(shouldDisplay("1.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
-    expect(shouldDisplay("10.0.0", fakeMinOsData)(Feature.jest_feature)).toBeTruthy();
+    expect(shouldDisplay("1.0.0", fakeMinOsData, undefined)(
+      Feature.jest_feature)).toBeTruthy();
+    expect(shouldDisplay("10.0.0", fakeMinOsData, undefined)(
+      Feature.jest_feature)).toBeTruthy();
     expect(shouldDisplay("10.0.0",
-      { jest_feature: "1.0.0" })(Feature.jest_feature)).toBeTruthy();
+      { jest_feature: "1.0.0" }, undefined)(
+        Feature.jest_feature)).toBeTruthy();
   });
 
   it("shouldn't display", () => {
-    expect(shouldDisplay("0.9.0", fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
-    expect(shouldDisplay(undefined, fakeMinOsData)(Feature.jest_feature)).toBeFalsy();
+    expect(shouldDisplay("0.9.0", fakeMinOsData, undefined)(
+      Feature.jest_feature)).toBeFalsy();
+    expect(shouldDisplay(undefined, fakeMinOsData, undefined)(
+      Feature.jest_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
     const unknown_feature = "unknown_feature" as any;
-    expect(shouldDisplay("1.0.0", fakeMinOsData)(unknown_feature)).toBeFalsy();
-    expect(shouldDisplay("1.0.0", undefined)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", fakeMinOsData, undefined)(
+      unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", undefined, undefined)(
+      unknown_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "" as any)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", "" as any, undefined)(
+      unknown_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "{}" as any)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", "{}" as any, undefined)(
+      unknown_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "bad" as any)(unknown_feature)).toBeFalsy();
+    expect(shouldDisplay("1.0.0", "bad" as any, undefined)(
+      unknown_feature)).toBeFalsy();
   });
 });
 

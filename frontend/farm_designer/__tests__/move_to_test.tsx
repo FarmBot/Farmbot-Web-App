@@ -9,6 +9,13 @@ jest.mock("../../history", () => ({
   history: { push: jest.fn() }
 }));
 
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -18,7 +25,6 @@ import {
 import { history } from "../../history";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { DevSettings } from "../../account/dev/dev_support";
 import { fakeState } from "../../__test_support__/fake_state";
 
 describe("<MoveTo />", () => {
@@ -57,9 +63,10 @@ describe("<MoveTo />", () => {
   });
 
   it("shows alt display", () => {
-    DevSettings.enableFutureFeatures();
+    mockDev = true;
     const wrapper = mount(<MoveTo {...fakeProps()} />);
     expect(wrapper.html()).toContain("-nav");
+    mockDev = false;
   });
 });
 

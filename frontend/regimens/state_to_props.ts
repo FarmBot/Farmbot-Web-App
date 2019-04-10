@@ -21,6 +21,7 @@ import {
 } from "../util";
 import { resourceUsageList } from "../resources/in_use";
 import { groupBy, chain, sortBy } from "lodash";
+import { DevSettings } from "../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
@@ -33,8 +34,9 @@ export function mapStateToProps(props: Everything): Props {
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
   const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData);
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   const calledSequences = (): UUID[] => {
     if (current) {

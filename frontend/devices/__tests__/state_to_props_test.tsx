@@ -16,6 +16,7 @@ jest.mock("../../resources/selectors_by_kind", () => ({
 jest.mock("../../resources/getters", () => ({
   getFbosConfig: () => mockFbosConfig,
   getFirmwareConfig: () => undefined,
+  getWebAppConfig: () => undefined,
 }));
 
 import { mapStateToProps } from "../state_to_props";

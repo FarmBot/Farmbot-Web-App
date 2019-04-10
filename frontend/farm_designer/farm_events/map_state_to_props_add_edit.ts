@@ -34,6 +34,7 @@ import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { getFbosConfig } from "../../resources/getters";
 import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../account/dev/dev_support";
 
 export let formatTime = (input: string, timeOffset: number) => {
   const iso = new Date(input).toISOString();
@@ -142,8 +143,9 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
   const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData);
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   return {
     deviceTimezone: dev
