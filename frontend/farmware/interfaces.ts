@@ -21,6 +21,7 @@ export interface FarmwareState {
   currentFarmware: string | undefined;
   currentImage: string | undefined;
   firstPartyFarmwareNames: string[];
+  infoOpen: boolean;
 }
 
 export type FarmwareManifestEntry = Record<"name" | "manifest", string>;

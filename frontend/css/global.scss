@@ -267,18 +267,20 @@ a {
 }
 
 .drag-drop-area {
-  margin: 0.75rem 0;
-  margin-right: 15px;
-  border-style: dashed;
-  border-width: 2px;
-  border-color: $light_gray;
-  color: $gray;
-  font-weight: bold;
-  padding: 1.25rem;
-  background: $off_white;
-  text-align: center;
-  color: $gray;
-  font-weight: bold;
+  &.visible {
+    margin: 0.75rem 0;
+    margin-right: 15px;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: $light_gray;
+    color: $gray;
+    font-weight: bold;
+    padding: 1.25rem;
+    background: $off_white;
+    text-align: center;
+    color: $gray;
+    font-weight: bold;
+  }
 }
 
 .hardware-widget,

@@ -1,4 +1,4 @@
-import { editRegimen, selectRegimen } from "../actions";
+import { editRegimen, selectRegimen, unselectRegimen } from "../actions";
 import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { SpecialStatus } from "farmbot";
@@ -38,5 +38,13 @@ describe("selectRegimen()", () => {
   it("crashes if malformed", () => {
     console.warn = jest.fn();
     expect(() => selectRegimen("wrong")).toThrowError();
+  });
+});
+
+describe("unselectRegimen()", () => {
+  it("deselects regimen", () => {
+    expect(unselectRegimen()).toEqual({
+      type: Actions.SELECT_REGIMEN, payload: undefined
+    });
   });
 });

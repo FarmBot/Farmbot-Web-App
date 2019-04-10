@@ -2,7 +2,6 @@ import * as React from "react";
 import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles";
-
 import { push } from "../history";
 import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui";
 import { DropArea } from "../draggable/drop_area";
@@ -19,6 +18,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
+import { Actions } from "../constants";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -168,9 +168,22 @@ export class SequenceEditorMiddleActive extends
               callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
               {t("DRAG COMMAND HERE")}
             </DropArea>
+            <AddCommandButton dispatch={dispatch} index={99999999} />
           </Col>
         </Row>
       </div>
     </div>;
   }
 }
+
+export const AddCommandButton = (props: { dispatch: Function, index: number }) =>
+  <div className="add-command-button-container">
+    <button
+      className="add-command fb-button gray"
+      onClick={() => props.dispatch({
+        type: Actions.SET_SEQUENCE_STEP_POSITION,
+        payload: props.index,
+      })}>
+      {t("Add command")}
+    </button>
+  </div>;

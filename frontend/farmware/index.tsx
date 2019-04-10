@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import {
-  Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug
+  Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug, Col
 } from "../ui/index";
 import { mapStateToProps, isPendingInstallation } from "./state_to_props";
 import { Photos } from "./images/photos";
@@ -17,7 +17,7 @@ import {
 } from "./farmware_forms";
 import { urlFriendly } from "../util";
 import { history } from "../history";
-import { ToolTips } from "../constants";
+import { ToolTips, Actions } from "../constants";
 import { FarmwareInfo } from "./farmware_info";
 import { Farmwares, FarmwareManifestInfo } from "./interfaces";
 import { commandErr } from "../devices/actions";
@@ -112,6 +112,10 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   }
 
   componentWillMount() {
+    this.props.dispatch({
+      type: Actions.SELECT_FARMWARE,
+      payload: "Photos"
+    });
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
       const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
       setActiveFarmwareByName(farmwareNames);
@@ -173,13 +177,54 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
     }
   }
 
+  FarmwareBackButton = (props: { className: string }) => {
+    const infoOpen = props.className.includes("farmware-info-open");
+    return <Row>
+      <button
+        className={`back-to-farmware fb-button gray ${props.className}`}
+        onClick={() => infoOpen
+          ? this.props.dispatch({
+            type: Actions.SET_FARMWARE_INFO_STATE, payload: false
+          })
+          : this.props.dispatch({
+            type: Actions.SELECT_FARMWARE, payload: undefined
+          })}>
+        {infoOpen ? t("back") : t("farmware list")}
+      </button>
+    </Row>;
+  };
+
+  FarmwareInfoButton = (props: { className: string, online: boolean }) =>
+    <Row>
+      <button
+        className={`farmware-info-button fb-button gray ${props.className}`}
+        disabled={!props.online}
+        onClick={() => this.props.dispatch({
+          type: Actions.SET_FARMWARE_INFO_STATE, payload: true
+        })}>
+        {t("farmware info")}
+      </button>
+    </Row>;
+
   render() {
     const farmware = getFarmwareByName(
       this.props.farmwares, this.current || "take-photo");
+    const farmwareOpen = this.current ? "open" : "";
+    const online = this.props.botToMqttStatus === "up";
+    const infoOpen = (this.props.infoOpen && online) ? "farmware-info-open" : "";
+    const activeClasses = [farmwareOpen, infoOpen].join(" ");
     return <Page className="farmware-page">
       <Row>
+        <Col xs={6}>
+          <this.FarmwareBackButton className={activeClasses} />
+        </Col>
+        <Col xs={6}>
+          <this.FarmwareInfoButton className={activeClasses} online={online} />
+        </Col>
+      </Row>
+      <Row>
         <LeftPanel
-          className="farmware-list-panel"
+          className={`farmware-list-panel ${activeClasses}`}
           title={t("Farmware")}
           helpText={ToolTips.FARMWARE_LIST}>
           <FarmwareList
@@ -192,7 +237,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
         </LeftPanel>
         <CenterPanel
-          className="farmware-input-panel"
+          className={`farmware-input-panel ${activeClasses}`}
           title={this.current || t("Photos")}
           helpText={getToolTipByFarmware(this.props.farmwares, this.current)
             || ToolTips.PHOTOS}
@@ -202,7 +247,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           </div>}
         </CenterPanel>
         <RightPanel
-          className="farmware-info-panel"
+          className={`farmware-info-panel ${activeClasses}`}
           title={t("Information")}
           helpText={ToolTips.FARMWARE_INFO}
           show={!!farmware}>

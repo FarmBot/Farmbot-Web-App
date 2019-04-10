@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { SequenceBodyItem as Step, TaggedSequence } from "farmbot";
 import { error } from "farmbot-toastr";
 import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
@@ -7,15 +6,24 @@ import { pushStep } from "../actions";
 import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
+import { Actions } from "../../constants";
 
 export const stepClick =
-  (dispatch: Function, step: Step, seq: TaggedSequence | undefined) =>
+  (dispatch: Function,
+    step: Step,
+    seq: TaggedSequence | undefined,
+    index?: number | undefined) =>
     () => {
-      (seq) ?
-        pushStep(step, dispatch, seq) : error(t("Select a sequence first"));
+      seq
+        ? pushStep(step, dispatch, seq, index)
+        : error(t("Select a sequence first"));
+      dispatch({
+        type: Actions.SET_SEQUENCE_STEP_POSITION,
+        payload: undefined,
+      });
     };
 
-export function StepButton({ children, step, color, dispatch, current }:
+export function StepButton({ children, step, color, dispatch, current, index }:
   StepButtonParams) {
   return <Col xs={6} sm={12}>
     <div className="block">
@@ -26,7 +34,7 @@ export function StepButton({ children, step, color, dispatch, current }:
         draggerId={NULL_DRAGGER_ID} >
         <button draggable={true}
           className={`fb-button full-width block ${color}`}
-          onClick={stepClick(dispatch, step, current)} >
+          onClick={stepClick(dispatch, step, current, index)} >
           {children}
           <i className="fa fa-arrows block-control" />
         </button>

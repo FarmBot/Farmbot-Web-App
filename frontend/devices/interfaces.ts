@@ -227,6 +227,7 @@ export interface FarmwareProps {
   saveFarmwareEnv: SaveFarmwareEnv;
   taggedFarmwareInstallations: TaggedFarmwareInstallation[];
   imageJobs: JobProgress[];
+  infoOpen: boolean;
 }
 
 export interface HardwareSettingsProps {

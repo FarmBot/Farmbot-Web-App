@@ -16,6 +16,7 @@ import { FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
 import { fakeFarmware, fakeFarmwares } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
+import { Actions } from "../../constants";
 
 describe("<FarmwarePage />", () => {
   const fakeProps = (): FarmwareProps => {
@@ -36,6 +37,7 @@ describe("<FarmwarePage />", () => {
       saveFarmwareEnv: jest.fn(),
       taggedFarmwareInstallations: [],
       imageJobs: [],
+      infoOpen: false,
     };
   };
 
@@ -102,8 +104,49 @@ describe("<FarmwarePage />", () => {
     p.farmwares["My Fake Test Farmware"] = farmware;
     p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
-    clickButton(wrapper, 1, "Run");
+    clickButton(wrapper, 3, "Run");
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Test Farmware");
+  });
+
+  it("shows Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = true;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    expect(wrapper.html()).toContain("farmware-info-open");
+  });
+
+  it("opens Farmware list", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = false;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    clickButton(wrapper, 0, "farmware list");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE, payload: undefined
+    });
+  });
+
+  it("closes Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = true;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    clickButton(wrapper, 0, "back");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FARMWARE_INFO_STATE, payload: false
+    });
+  });
+
+  it("opens Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = false;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    clickButton(wrapper, 1, "farmware info");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FARMWARE_INFO_STATE, payload: true
+    });
   });
 });
 

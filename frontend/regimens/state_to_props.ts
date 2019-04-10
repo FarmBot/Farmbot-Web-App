@@ -25,8 +25,9 @@ import { DevSettings } from "../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
-  const { weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen } =
-    resources.consumers.regimens;
+  const {
+    weeks, dailyOffsetMs, selectedSequenceUUID, currentRegimen, schedulerOpen
+  } = resources.consumers.regimens;
   const { index } = resources;
   const current = maybeGetRegimen(index, currentRegimen);
   const calendar = current ?
@@ -67,6 +68,7 @@ export function mapStateToProps(props: Everything): Props {
     calendar,
     regimenUsageStats: resourceUsageList(props.resources.index.inUse),
     shouldDisplay,
+    schedulerOpen,
   };
 }
 

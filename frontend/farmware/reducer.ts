@@ -6,7 +6,8 @@ import { Actions } from "../constants";
 export let farmwareState: FarmwareState = {
   currentFarmware: undefined,
   currentImage: undefined,
-  firstPartyFarmwareNames: []
+  firstPartyFarmwareNames: [],
+  infoOpen: false,
 };
 
 export let farmwareReducer = generateReducer<FarmwareState>(farmwareState)
@@ -32,5 +33,9 @@ export let farmwareReducer = generateReducer<FarmwareState>(farmwareState)
     const thatUUID = payload.uuid;
     const thisUUID = s.currentImage;
     if (thisUUID === thatUUID) { s.currentImage = undefined; }
+    return s;
+  })
+  .add<boolean>(Actions.SET_FARMWARE_INFO_STATE, (s, { payload }) => {
+    s.infoOpen = payload;
     return s;
   });

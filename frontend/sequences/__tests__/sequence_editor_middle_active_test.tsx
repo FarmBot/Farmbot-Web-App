@@ -26,7 +26,7 @@ jest.mock("../locals_list/locals_list", () => ({
 
 import * as React from "react";
 import {
-  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor
+  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
@@ -45,6 +45,7 @@ import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { DropAreaProps } from "../../draggable/interfaces";
+import { Actions } from "../../constants";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -226,5 +227,17 @@ describe("<SequenceNameAndColor />", () => {
       expect.any(Function),
       expect.objectContaining({ uuid: p.sequence.uuid }),
       { color: "red" });
+  });
+});
+
+describe("<AddCommandButton />", () => {
+  it("dispatches new step position", () => {
+    const dispatch = jest.fn();
+    const wrapper = shallow(<AddCommandButton dispatch={dispatch} index={1} />);
+    wrapper.find("button").simulate("click");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SEQUENCE_STEP_POSITION,
+      payload: 1,
+    });
   });
 });

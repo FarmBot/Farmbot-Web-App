@@ -46,6 +46,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -109,6 +110,7 @@ export interface Sequence extends CeleryScriptSequence {
 export interface SequenceReducerState {
   current: string | undefined;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequencesListProps {
@@ -141,6 +143,7 @@ export interface StepButtonParams {
   | "purple"
   | "pink"
   | "gray";
+  index?: number | undefined;
 }
 
 export interface CopyParams {

@@ -96,5 +96,6 @@ export function mapStateToProps(props: Everything): Props {
     shouldDisplay,
     confirmStepDeletion,
     menuOpen: props.resources.consumers.sequences.menuOpen,
+    stepIndex: props.resources.consumers.sequences.stepIndex,
   };
 }

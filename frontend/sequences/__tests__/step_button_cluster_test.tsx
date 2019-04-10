@@ -12,6 +12,7 @@ describe("<StepButtonCluster />", () => {
     dispatch: jest.fn(),
     current: undefined,
     shouldDisplay: () => false,
+    stepIndex: undefined,
   });
 
   it("renders sequence commands", () => {

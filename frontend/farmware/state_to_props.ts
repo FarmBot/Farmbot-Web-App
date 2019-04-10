@@ -63,7 +63,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     || firstImage;
   const botStateFarmwares = props.bot.hardware.process_info.farmwares;
   const conf = getWebAppConfig(props.resources.index);
-  const { currentFarmware, firstPartyFarmwareNames } =
+  const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
     props.resources.consumers.farmware;
 
   const installedOsVersion = determineInstalledOsVersion(
@@ -129,5 +129,6 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
     imageJobs,
+    infoOpen,
   };
 }

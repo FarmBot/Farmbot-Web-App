@@ -19,3 +19,7 @@ export function selectRegimen(payload: string): SelectRegimen {
     throw new Error("Not a regimen.");
   }
 }
+
+export const unselectRegimen = () => ({
+  type: Actions.SELECT_REGIMEN, payload: undefined
+});
