@@ -132,6 +132,29 @@ fieldset {
   pointer-events: all;
 }
 
+.connectivity-popover-portal {
+  .bp3-transition-container {
+    z-index: 999;
+  }
+  .connectivity-popover {
+    .connectivity {
+      padding: 1rem;
+      max-width: 600px;
+      .row {
+        margin-bottom: 1rem;
+      }
+      .connectivity-diagram svg {
+        max-height: 200px !important;
+      }
+      .fbos-info {
+        @media (max-width:767px) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 .connectivity-diagnosis {
   h4 {
     margin-left: 3rem;

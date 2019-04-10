@@ -1,17 +1,13 @@
 import * as React from "react";
-
 import { connect } from "react-redux";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
 import { Everything } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, Xyz } from "./devices/interfaces";
+import { ResourceName, TaggedUser, TaggedLog } from "farmbot";
 import {
-  ResourceName, TaggedUser, TaggedLog
-} from "farmbot";
-import {
-  maybeFetchUser,
-  maybeGetTimeOffset,
+  maybeFetchUser, maybeGetTimeOffset, getDeviceAccountSettings
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
@@ -19,12 +15,15 @@ import { Content } from "./constants";
 import { validBotLocationData, validFwConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
-import { getWebAppConfigValue, GetWebAppConfigValue } from "./config_storage/actions";
+import {
+  getWebAppConfigValue, GetWebAppConfigValue
+} from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig } from "./resources/getters";
 import { intersection } from "lodash";
 import { t } from "./i18next_wrapper";
+import { ResourceIndex } from "./resources/interfaces";
 
 /** For the logger module */
 init();
@@ -43,6 +42,7 @@ export interface AppProps {
   animate: boolean;
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
+  resources: ResourceIndex;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -65,6 +65,7 @@ export function mapStateToProps(props: Everything): AppProps {
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
     getConfigValue: webAppConfigValue,
     tour: props.resources.consumers.help.currentTour,
+    resources: props.resources.index,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -79,6 +80,7 @@ const MUST_LOAD: ResourceName[] = [
   "Regimen",
   "FarmEvent",
   "Point",
+  "Device",
   "Tool" // Sequence editor needs this for rendering.
 ];
 
@@ -108,7 +110,7 @@ export class App extends React.Component<AppProps, {}> {
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
-      <NavBar
+      {syncLoaded && <NavBar
         timeOffset={this.props.timeOffset}
         consistent={this.props.consistent}
         user={this.props.user}
@@ -116,7 +118,8 @@ export class App extends React.Component<AppProps, {}> {
         dispatch={this.props.dispatch}
         logs={this.props.logs}
         getConfigValue={this.props.getConfigValue}
-        tour={this.props.tour} />
+        tour={this.props.tour}
+        device={getDeviceAccountSettings(this.props.resources)} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup

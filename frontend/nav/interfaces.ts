@@ -1,5 +1,5 @@
 import { BotState } from "../devices/interfaces";
-import { TaggedUser, TaggedLog } from "farmbot";
+import { TaggedUser, TaggedLog, TaggedDevice } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface SyncButtonProps {
@@ -18,6 +18,7 @@ export interface NavBarProps {
   timeOffset: number;
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
+  device: TaggedDevice;
 }
 
 export interface NavBarState {

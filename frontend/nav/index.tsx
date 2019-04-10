@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
@@ -15,6 +14,10 @@ import { Popover, Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
 import { RunTour } from "../help/tour";
 import { t } from "../i18next_wrapper";
+import { Connectivity } from "../devices/connectivity/connectivity";
+import { connectivityData } from "../devices/connectivity/generate_data";
+import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
+import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -23,6 +26,11 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     tickerListOpen: false,
     accountMenuOpen: false
   };
+
+  componentDidMount = () => {
+    const { device } = this.props;
+    device && maybeSetTimezone(this.props.dispatch, device);
+  }
 
   logout = () => Session.clear();
 
@@ -38,6 +46,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       dispatch={this.props.dispatch}
       consistent={this.props.consistent} />;
   }
+
+  get connectivityData() {
+    return connectivityData({
+      bot: this.props.bot,
+      device: this.props.device
+    });
+  }
+
   render() {
     const hasName = this.props.user && this.props.user.body.name;
 
@@ -80,19 +96,32 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     </span>
                   </div>
                   <div className="nav-right">
-                    <Popover
-                      position={Position.BOTTOM_RIGHT}
-                      isOpen={accountMenuOpen}
-                      onClose={this.close("accountMenuOpen")}
-                      usePortal={false}>
-                      <div className="nav-name"
-                        onClick={this.toggle("accountMenuOpen")}>
-                        {firstName}
-                      </div>
-                      {AdditionalMenu({ logout: this.logout, close })}
-                    </Popover>
+                    <div className="menu-popover">
+                      <Popover
+                        position={Position.BOTTOM_RIGHT}
+                        isOpen={accountMenuOpen}
+                        onClose={this.close("accountMenuOpen")}
+                        usePortal={false}>
+                        <div className="nav-name"
+                          onClick={this.toggle("accountMenuOpen")}>
+                          {firstName}
+                        </div>
+                        {AdditionalMenu({ logout: this.logout, close })}
+                      </Popover>
+                    </div>
                     <EStopButton bot={this.props.bot} />
                     {this.syncButton()}
+                    <div className="connection-status-popover">
+                      <Popover position={Position.BOTTOM_RIGHT}
+                        portalClassName={"connectivity-popover-portal"}
+                        popoverClassName="connectivity-popover">
+                        <DiagnosisSaucer {...this.connectivityData.flags} />
+                        <Connectivity
+                          bot={this.props.bot}
+                          rowData={this.connectivityData.rowData}
+                          flags={this.connectivityData.flags} />
+                      </Popover>
+                    </div>
                     <RunTour currentTour={this.props.tour} />
                   </div>
                 </div>

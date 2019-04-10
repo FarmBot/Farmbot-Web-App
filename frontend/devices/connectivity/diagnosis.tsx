@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DiagnosticMessages } from "./diagnostic_messages";
+import { DiagnosticMessages } from "../../constants";
 import { Col, Row } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
@@ -14,11 +14,20 @@ export type DiagnosisName =
 
 export type DiagnosisProps = Record<DiagnosisName, boolean>;
 
+export const diagnosisStatus = (props: DiagnosisProps): boolean =>
+  props.userMQTT && props.botAPI && props.botMQTT && props.botFirmware;
+
+export const DiagnosisSaucer = (props: DiagnosisProps) => {
+  const diagnosisBoolean = diagnosisStatus(props);
+  const diagnosisColor = diagnosisBoolean ? "green" : "red";
+  const title = diagnosisBoolean ? t("Ok") : t("Error");
+  return <div className={"saucer active " + diagnosisColor} title={title} />;
+};
+
 export function Diagnosis(props: DiagnosisProps) {
-  const diagnosisStatus =
-    props.userMQTT && props.botAPI && props.botMQTT && props.botFirmware;
-  const diagnosisColor = diagnosisStatus ? "green" : "red";
-  const title = diagnosisStatus ? t("Ok") : t("Error");
+  const diagnosisBoolean = diagnosisStatus(props);
+  const diagnosisColor = diagnosisBoolean ? "green" : "red";
+  const title = diagnosisBoolean ? t("Ok") : t("Error");
   return <div>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>

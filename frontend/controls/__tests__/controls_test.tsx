@@ -1,10 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
-
-jest.mock("../../devices/timezones/guess_timezone", () => ({
-  maybeSetTimezone: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -15,9 +9,6 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { Props } from "../interfaces";
-import { fakeDevice } from "../../__test_support__/resource_index_builder";
-
-import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 
 describe("<Controls />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -35,7 +26,6 @@ describe("<Controls />", () => {
       getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
       sensorReadings: [],
       timeOffset: 0,
-      device: undefined
     };
   }
 
@@ -78,13 +68,5 @@ describe("<Controls />", () => {
     const wrapper = mount(<Controls {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("sensor history");
-  });
-
-  it("silently sets user timezone as needed", () => {
-    const p = fakeProps();
-    p.device = fakeDevice({ timezone: undefined });
-    mount(<Controls {...p} />);
-    const { dispatch, device } = p;
-    expect(maybeSetTimezone).toHaveBeenCalledWith(dispatch, device);
   });
 });

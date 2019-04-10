@@ -10,17 +10,10 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
-import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 
 /** Controls page. */
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
-
-  componentDidMount = () => {
-    this.props.device &&
-      maybeSetTimezone(this.props.dispatch, this.props.device);
-  }
-
   get arduinoBusy() {
     return !!this.props.bot.hardware.informational_settings.busy;
   }
