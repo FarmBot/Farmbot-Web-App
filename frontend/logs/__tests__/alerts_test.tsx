@@ -64,7 +64,8 @@ describe("<FirmwareAlerts />", () => {
 
   it("renders no alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.enigmas = undefined;
+    // tslint:disable-next-line:no-any
+    p.bot.hardware.enigmas = undefined as any;
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.html()).toEqual(`<div class="firmware-alerts"></div>`);
   });
