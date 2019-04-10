@@ -1,6 +1,6 @@
 import { Everything } from "../interfaces";
 import {
-  selectAllImages, maybeGetTimeOffset, maybeGetDevice
+  selectAllImages, maybeGetDevice, maybeGetTimeSettings
 } from "../resources/selectors";
 import {
   FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
@@ -17,12 +17,13 @@ import {
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
-
-import { getWebAppConfig } from "../resources/getters";
 import { chain } from "lodash";
 import { FarmwareManifestInfo, Farmwares } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
+import { getStatus } from "../connectivity/reducer_support";
+import { DevSettings } from "../account/dev/dev_support";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -60,14 +61,14 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
   const botStateFarmwares = props.bot.hardware.process_info.farmwares;
-  const conf = getWebAppConfig(props.resources.index);
-  const { currentFarmware, firstPartyFarmwareNames } =
+  const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
     props.resources.consumers.farmware;
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const shouldDisplay =
-    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
@@ -106,12 +107,11 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       .reverse()
       .value();
 
-  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
-  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
+  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
   const syncStatus = props.bot.hardware.informational_settings.sync_status;
 
   return {
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     currentFarmware,
     farmwares,
     botToMqttStatus,
@@ -121,11 +121,12 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentImage,
     images,
     syncStatus,
-    webAppConfig: conf ? conf.body : {},
+    getConfigValue: getWebAppConfigValue(() => props),
     firstPartyFarmwareNames,
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
     imageJobs,
+    infoOpen,
   };
 }

@@ -2,39 +2,44 @@ jest.mock("react-redux", () => ({
   connect: jest.fn()
 }));
 
+jest.mock("../../history", () => ({
+  push: jest.fn(),
+  history: { getCurrentLocation: () => "" },
+}));
+
 import * as React from "react";
 import { Sequences } from "../sequences";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import { Props } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { ToolTips } from "../../constants";
+import { ToolTips, Actions } from "../../constants";
 import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
+import { push } from "../../history";
 
 describe("<Sequences/>", () => {
-  function fakeProps(): Props {
-    return {
-      dispatch: jest.fn(),
-      sequence: fakeSequence(),
-      sequences: [],
-      resources: buildResourceIndex(FAKE_RESOURCES).index,
-      syncStatus: "synced",
-      hardwareFlags: fakeHardwareFlags(),
-      farmwareInfo: {
-        farmwareNames: [],
-        firstPartyFarmwareNames: [],
-        showFirstPartyFarmware: false,
-        farmwareConfigs: {},
-      },
-      shouldDisplay: jest.fn(),
-      confirmStepDeletion: false,
-      menuOpen: false,
-    };
-  }
+  const fakeProps = (): Props => ({
+    dispatch: jest.fn(),
+    sequence: fakeSequence(),
+    sequences: [],
+    resources: buildResourceIndex(FAKE_RESOURCES).index,
+    syncStatus: "synced",
+    hardwareFlags: fakeHardwareFlags(),
+    farmwareInfo: {
+      farmwareNames: [],
+      firstPartyFarmwareNames: [],
+      showFirstPartyFarmware: false,
+      farmwareConfigs: {},
+    },
+    shouldDisplay: jest.fn(),
+    confirmStepDeletion: false,
+    menuOpen: false,
+    stepIndex: undefined,
+  });
 
   it("renders", () => {
     const wrapper = shallow(<Sequences {...fakeProps()} />);
@@ -49,5 +54,22 @@ describe("<Sequences/>", () => {
     p.sequence = undefined;
     const wrapper = shallow(<Sequences {...p} />);
     expect(wrapper.text()).not.toContain("Commands");
+  });
+
+  it("makes inserting step mode active", () => {
+    const p = fakeProps();
+    p.stepIndex = 2;
+    const wrapper = shallow(<Sequences {...p} />);
+    expect(wrapper.html()).toContain("inserting-step");
+  });
+
+  it("goes back", () => {
+    const p = fakeProps();
+    const wrapper = mount(<Sequences {...p} />);
+    wrapper.find("button").first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_SEQUENCE, payload: undefined
+    });
+    expect(push).toHaveBeenCalledWith("/app/sequences");
   });
 });

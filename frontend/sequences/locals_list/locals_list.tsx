@@ -57,6 +57,9 @@ export const LocalsList = (props: LocalsListProps) => {
           shouldDisplay={props.shouldDisplay}
           hideVariableLabel={Object.values(props.variableData || {}).length < 2}
           allowedVariableNodes={props.allowedVariableNodes}
+          collapsible={props.collapsible}
+          collapsed={props.collapsed}
+          toggleVarShow={props.toggleVarShow}
           onChange={props.onChange} />)}
   </div>;
 };

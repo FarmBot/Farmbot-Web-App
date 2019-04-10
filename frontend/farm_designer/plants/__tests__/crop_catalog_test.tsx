@@ -6,6 +6,9 @@ jest.mock("lodash", () => ({
   debounce: jest.fn(x => x),
   trim: jest.fn(x => x),
   last: () => "fake",
+  times: jest.fn(),
+  set: jest.fn(),
+  throttle: jest.fn(),
 }));
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));

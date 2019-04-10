@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../actions", () => ({
   snapshotGarden: jest.fn(),
@@ -16,6 +14,13 @@ jest.mock("../../../history", () => ({
 }));
 
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
+
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -35,7 +40,6 @@ import {
 import { SavedGardensProps } from "../interfaces";
 import { applyGarden, destroySavedGarden, closeSavedGarden } from "../actions";
 import { Actions } from "../../../constants";
-import { DevSettings } from "../../../account/dev/dev_support";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -91,9 +95,10 @@ describe("<SavedGardens />", () => {
   });
 
   it("shows alt display", () => {
-    DevSettings.enableFutureFeatures();
+    mockDev = true;
     const wrapper = mount(<SavedGardens {...fakeProps()} />);
     expect(wrapper.html()).toContain("-nav");
+    mockDev = false;
   });
 });
 
@@ -113,18 +118,20 @@ describe("mapStateToProps()", () => {
 
 describe("<SavedGardensLink />", () => {
   it("opens saved garden panel", () => {
-    DevSettings.enableFutureFeatures();
+    mockDev = true;
     const wrapper = shallow(<SavedGardensLink />);
     clickButton(wrapper, 0, "saved gardens");
     expect(history.push).toHaveBeenCalledWith(
       "/app/designer/saved_gardens");
+    mockDev = false;
   });
 
   it("saved garden button hidden", () => {
-    DevSettings.disableFutureFeatures();
+    mockDev = false;
     const wrapper = shallow(<SavedGardensLink />);
     const btn = wrapper.find("button").at(0);
     expect(btn.props().hidden).toEqual(true);
+    mockDev = false;
   });
 });
 

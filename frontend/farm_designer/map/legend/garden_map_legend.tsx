@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { LayerToggle } from "../legend/layer_toggle";
 import { GardenMapLegendProps } from "../interfaces";
 import { history } from "../../../history";
@@ -97,7 +96,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       onClick={toggle("show_images")}
       submenuTitle={t("filter")}
       popover={<ImageFilterMenu
-        tzOffset={props.tzOffset}
+        timeSettings={props.timeSettings}
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />

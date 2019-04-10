@@ -1,6 +1,5 @@
 import * as React from "react";
 import { StepButton } from "./step_buttons/index";
-
 import { scrollToBottom } from "../util";
 import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";
@@ -8,41 +7,32 @@ import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
+import { NOTHING_SELECTED } from "./locals_list/handle_select";
 
 export interface StepButtonProps {
   dispatch: Function;
   current: TaggedSequence | undefined;
   shouldDisplay: ShouldDisplay;
+  stepIndex: number | undefined;
 }
 
 export function StepButtonCluster(props: StepButtonProps) {
-  const { dispatch, current, shouldDisplay } = props;
+  const { dispatch, current, shouldDisplay, stepIndex } = props;
+  const commonStepProps = { dispatch, current, index: stepIndex };
   const ALL_THE_BUTTONS = [
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "move_absolute",
         args: {
-          location: {
-            kind: "coordinate",
-            args: { x: 0, y: 0, z: 0 }
-          },
-          offset: {
-            kind: "coordinate",
-            args: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-          },
+          location: NOTHING_SELECTED,
+          offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
           speed: CONFIG_DEFAULTS.speed
         }
       }}
       color="blue">
-      {t("MOVE ABSOLUTE")}
+      {t("MOVE TO")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "move_relative",
         args: { x: 0, y: 0, z: 0, speed: CONFIG_DEFAULTS.speed }
@@ -50,30 +40,27 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="green">
       {t("MOVE RELATIVE")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "write_pin",
-        args: { pin_number: 0, pin_value: 0, pin_mode: 0 }
+        args: { pin_number: NOTHING_SELECTED, pin_value: 0, pin_mode: 0 }
       }}
       color="orange">
-      {t("WRITE PIN")}
+      {t("CONTROL PERIPHERAL")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "read_pin",
         args: {
-          pin_number: 0,
+          pin_number: NOTHING_SELECTED,
           pin_mode: 0,
           label: "---"
         }
       }}
       color="yellow">
-      {t("READ PIN")}
+      {t("READ SENSOR")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "wait",
         args: { milliseconds: 0 }
@@ -81,8 +68,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="brown">
       {t("WAIT")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "send_message",
         args: {
@@ -93,8 +79,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="red">
       {t("SEND MESSAGE")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton{...commonStepProps}
       step={{
         kind: "find_home",
         args: {
@@ -105,8 +90,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="blue">
       {t("Find Home")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "_if",
         args: {
@@ -120,8 +104,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="purple">
       {t("IF STATEMENT")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "execute",
         args: { sequence_id: 0 }
@@ -129,8 +112,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="gray">
       {t("EXECUTE SEQUENCE")}
     </StepButton>,
-    <StepButton dispatch={dispatch}
-      current={current}
+    <StepButton {...commonStepProps}
       step={{
         kind: "execute_script",
         args: { label: "plant-detection" }
@@ -139,8 +121,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       {t("Run Farmware")}
     </StepButton>,
     <StepButton
-      dispatch={dispatch}
-      current={current}
+      {...commonStepProps}
       color="brown"
       step={{ kind: "take_photo", args: {} }} >
       {t("TAKE PHOTO")}
@@ -148,8 +129,7 @@ export function StepButtonCluster(props: StepButtonProps) {
   ];
 
   shouldDisplay(Feature.mark_as_step) && ALL_THE_BUTTONS.push(<StepButton
-    dispatch={dispatch}
-    current={current}
+    {...commonStepProps}
     step={{
       kind: "resource_update",
       args: {

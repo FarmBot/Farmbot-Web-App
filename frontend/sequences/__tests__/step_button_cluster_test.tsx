@@ -4,7 +4,8 @@ import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
 
 describe("<StepButtonCluster />", () => {
-  const commands = ["move absolute", "move relative", "write pin", "read pin",
+  const commands = ["move to", "move relative",
+    "control peripheral", "read sensor",
     "wait", "send message", "find home", "if statement", "execute sequence",
     "run farmware", "take photo"];
 
@@ -12,6 +13,7 @@ describe("<StepButtonCluster />", () => {
     dispatch: jest.fn(),
     current: undefined,
     shouldDisplay: () => false,
+    stepIndex: undefined,
   });
 
   it("renders sequence commands", () => {

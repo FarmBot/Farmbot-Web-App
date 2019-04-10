@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
@@ -11,9 +10,10 @@ import moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
-import { parseIntInput } from "../../util";
-import { startCase, isNumber } from "lodash";
+import { parseIntInput, timeFormatString } from "../../util";
+import { startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -21,7 +21,7 @@ export interface PlantPanelProps {
   updatePlant?(uuid: string, update: PlantOptions): void;
   inSavedGarden: boolean;
   dispatch: Function;
-  timeOffset?: number;
+  timeSettings?: TimeSettings;
 }
 
 export const PLANT_STAGES: DropDownItem[] = [
@@ -75,17 +75,17 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
 
 export interface EditDatePlantedProps extends EditPlantProperty {
   datePlanted: Moment;
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export const EditDatePlanted = (props: EditDatePlantedProps) => {
-  const { datePlanted, updatePlant, uuid, timeOffset } = props;
+  const { datePlanted, updatePlant, uuid, timeSettings } = props;
   return <BlurableInput
     type="date"
-    value={datePlanted.utcOffset(timeOffset).format("YYYY-MM-DD")}
+    value={datePlanted.utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD")}
     onCommit={e => updatePlant(uuid, {
       planted_at: moment(e.currentTarget.value)
-        .utcOffset(timeOffset).toISOString()
+        .utcOffset(timeSettings.utcOffset).toISOString()
     })} />;
 };
 
@@ -139,7 +139,9 @@ const ListItem = (props: { name: string, children: React.ReactChild }) =>
   </li>;
 
 export function PlantPanel(props: PlantPanelProps) {
-  const { info, onDestroy, updatePlant, dispatch, inSavedGarden } = props;
+  const {
+    info, onDestroy, updatePlant, dispatch, inSavedGarden, timeSettings
+  } = props;
   const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
   const isEditing = !!onDestroy;
@@ -161,13 +163,13 @@ export function PlantPanel(props: PlantPanelProps) {
         </Link>
       </ListItem>
       <ListItem name={t("Started")}>
-        {(updatePlant && isNumber(props.timeOffset) && !inSavedGarden)
+        {(updatePlant && timeSettings && !inSavedGarden)
           ? <EditDatePlanted
             uuid={uuid}
             datePlanted={plantedAt}
-            timeOffset={props.timeOffset}
+            timeSettings={timeSettings}
             updatePlant={updatePlant} />
-          : plantedAt.format("MMMM Do YYYY, h:mma")}
+          : plantedAt.format(`MMMM Do YYYY, ${timeFormatString(timeSettings)}`)}
       </ListItem>
       <ListItem name={t("Age")}>
         {`${daysOld} ${t("days old")}`}

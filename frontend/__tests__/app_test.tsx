@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
 jest.mock("../history", () => ({
@@ -15,16 +13,19 @@ import {
   fakeUser, fakeWebAppConfig
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
-import { buildResourceIndex } from "../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../__test_support__/resource_index_builder";
 import { error } from "farmbot-toastr";
 import { ResourceName } from "farmbot";
+import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 
 const FULLY_LOADED: ResourceName[] = [
-  "Sequence", "Regimen", "FarmEvent", "Point", "Tool"];
+  "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
 
 const fakeProps = (): AppProps => {
   return {
-    timeOffset: 0, // Default to UTC
+    timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
     loaded: [],
     logs: [],
@@ -37,6 +38,7 @@ const fakeProps = (): AppProps => {
     animate: false,
     getConfigValue: jest.fn(),
     tour: undefined,
+    resources: buildResourceIndex().index,
   };
 };
 
@@ -111,14 +113,18 @@ describe("<App />: Loading", () => {
 
 describe("<App />: NavBar", () => {
   it("displays links", () => {
-    const wrapper = mount(<App {...fakeProps()} />);
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    const wrapper = mount(<App {...p} />);
     expect(wrapper.text())
       .toContain("Farm DesignerControlsDeviceSequencesRegimensToolsFarmware");
     wrapper.unmount();
   });
 
   it("displays ticker", () => {
-    const wrapper = mount(<App {...fakeProps()} />);
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    const wrapper = mount(<App {...p} />);
     expect(wrapper.text()).toContain("No logs yet.");
     wrapper.unmount();
   });

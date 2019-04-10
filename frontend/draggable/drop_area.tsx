@@ -26,9 +26,9 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
   render() {
     const isVisible = this.props.isLocked || this.state.isHovered;
-    const klass = isVisible ? "drag-drop-area" : "";
+    const visible = isVisible ? "visible" : "";
     return <div
-      className={klass}
+      className={`drag-drop-area ${visible}`}
       onDragLeave={this.toggle}
       onDragEnter={(e) => {
         e.preventDefault();

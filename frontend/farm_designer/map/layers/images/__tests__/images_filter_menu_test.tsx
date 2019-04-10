@@ -6,6 +6,9 @@ import {
 } from "../../../../../__test_support__/fake_state/resources";
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { setWebAppConfigValue } from "../../../../../config_storage/actions";
+import {
+  fakeTimeSettings
+} from "../../../../../__test_support__/fake_time_settings";
 
 const mockConfig = fakeWebAppConfig();
 jest.mock("../../../../../resources/selectors", () => {
@@ -27,7 +30,7 @@ describe("<ImageFilterMenu />", () => {
 
   const fakeProps = (): ImageFilterMenuProps => {
     return {
-      tzOffset: 0,
+      timeSettings: fakeTimeSettings(),
       dispatch: jest.fn(),
       getConfigValue: jest.fn(x => mockConfig.body[x as StringConfigKey]),
       imageAgeInfo: { newestDate: "", toOldest: 1 }

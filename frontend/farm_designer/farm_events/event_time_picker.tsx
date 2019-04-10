@@ -1,11 +1,12 @@
 import * as React from "react";
 import { BlurableInput } from "../../ui/index";
+import { TimeSettings } from "../../interfaces";
 
 interface Props {
   /** String, formatted as hh:mm (UTC 24hr time).
    * Ex: 23:45, 06:12 */
   value: string;
-  tzOffset: number;
+  timeSettings: TimeSettings;
   onCommit(ev: React.SyntheticEvent<HTMLInputElement>): void;
   disabled?: boolean;
   hidden?: boolean;

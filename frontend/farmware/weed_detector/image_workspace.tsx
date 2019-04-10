@@ -5,10 +5,10 @@ import { ImageFlipper } from "../images/image_flipper";
 import { HSV } from "./interfaces";
 import { WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
-
 import { PhotoFooter } from "../images/photos";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 const RANGES = {
   H: { LOWEST: 0, HIGHEST: 179 },
@@ -41,7 +41,8 @@ export interface ImageWorkspaceProps extends NumericValues {
   images: TaggedImage[];
   onChange(key: NumericKeyName, value: number): void;
   invertHue?: boolean;
-  timeOffset: number;
+  botOnline: boolean;
+  timeSettings: TimeSettings;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -155,6 +156,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             className="green fb-button"
             title="Scan this image"
             onClick={this.maybeProcessPhoto}
+            disabled={this.props.botOnline}
             hidden={!this.props.images.length} >
             {t("Scan image")}
           </button>
@@ -166,7 +168,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         currentImage={this.props.currentImage} />
       <PhotoFooter
         image={this.props.currentImage}
-        timeOffset={this.props.timeOffset} />
+        timeSettings={this.props.timeSettings} />
     </div>;
   }
 }

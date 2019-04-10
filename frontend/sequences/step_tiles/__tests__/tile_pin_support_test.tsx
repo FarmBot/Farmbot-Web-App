@@ -12,7 +12,7 @@ import {
   setPinValue
 } from "../tile_pin_support";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { WritePin } from "farmbot/dist";
+import { WritePin, ALLOWED_PIN_MODES } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 
 describe("Pin tile support functions", () => {
@@ -74,6 +74,14 @@ describe("Pin tile support functions", () => {
     expect(step.args.pin_value).toEqual(0);
   });
 
+  it("setPinMode(): rejects typos", () => {
+    const p = fakeProps();
+    setPinMode({ label: "", value: "bad" as unknown as ALLOWED_PIN_MODES }, p);
+    const step = p.currentStep;
+    const action = () => mockEditStep.mock.calls[0][0].executor(step);
+    expect(action).toThrow("pin_mode must be one of ALLOWED_PIN_MODES.");
+  });
+
   it("setPinValue()", () => {
     const p = fakeProps();
     p.currentStep.args.pin_value = 5;
@@ -81,5 +89,13 @@ describe("Pin tile support functions", () => {
     const step = p.currentStep;
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_value).toEqual(1);
+  });
+
+  it("setPinValue(): rejects typos", () => {
+    const p = fakeProps();
+    setPinValue({ label: "", value: "bad" as unknown as number }, p);
+    const step = p.currentStep;
+    const action = () => mockEditStep.mock.calls[0][0].executor(step);
+    expect(action).toThrow("Numbers only in pin_value.");
   });
 });

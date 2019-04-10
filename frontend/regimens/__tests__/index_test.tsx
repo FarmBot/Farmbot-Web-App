@@ -17,6 +17,8 @@ import { bot } from "../../__test_support__/fake_state/bot";
 import { auth } from "../../__test_support__/fake_state/token";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeRegimen } from "../../__test_support__/fake_state/resources";
+import { clickButton } from "../../__test_support__/helpers";
+import { Actions } from "../../constants";
 
 describe("<Regimens />", () => {
   function fakeProps(): Props {
@@ -35,6 +37,7 @@ describe("<Regimens />", () => {
       regimenUsageStats: {},
       shouldDisplay: () => false,
       variableData: {},
+      schedulerOpen: false,
     };
   }
 
@@ -49,5 +52,32 @@ describe("<Regimens />", () => {
     p.current = undefined;
     const wrapper = mount(<Regimens {...p} />);
     expect(wrapper.text()).not.toContain("Scheduler");
+  });
+
+  it("shows scheduler", () => {
+    const p = fakeProps();
+    p.schedulerOpen = true;
+    const wrapper = mount(<Regimens {...p} />);
+    expect(wrapper.html()).toContain("inserting-item");
+  });
+
+  it("returns to regimen", () => {
+    const p = fakeProps();
+    p.schedulerOpen = true;
+    const wrapper = mount(<Regimens {...p} />);
+    clickButton(wrapper, 0, "back to regimen");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SCHEDULER_STATE, payload: false
+    });
+  });
+
+  it("returns to regimen list", () => {
+    const p = fakeProps();
+    p.schedulerOpen = false;
+    const wrapper = mount(<Regimens {...p} />);
+    clickButton(wrapper, 0, "back to regimens");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_REGIMEN, payload: undefined
+    });
   });
 });

@@ -5,9 +5,9 @@ import { TaggedSensorReading } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { isNumber } from "lodash";
 import { formatLogTime } from "../../../../logs";
-
 import { Color } from "../../../../ui";
 import { t } from "../../../../i18next_wrapper";
+import { TimeSettings } from "../../../../interfaces";
 
 const VISIBLE_PERIOD_SECONDS = 24 * 60 * 60.;
 
@@ -15,7 +15,7 @@ export interface GardenSensorReadingProps {
   sensorReading: TaggedSensorReading;
   mapTransformProps: MapTransformProps;
   endTime: string | undefined;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   sensorLookup: Record<string, string>;
 }
 
@@ -32,7 +32,7 @@ export class GardenSensorReading
 
   render() {
     const {
-      sensorReading, mapTransformProps, endTime, timeOffset, sensorLookup
+      sensorReading, mapTransformProps, endTime, timeSettings, sensorLookup
     } = this.props;
     const { id, x, y, value, mode, created_at, pin } = sensorReading.body;
     if (isNumber(x) && isNumber(y)) {
@@ -64,7 +64,7 @@ export class GardenSensorReading
             {`${t("value")} ${value} (${modeText})`}
           </tspan>
           <tspan x={textX} dy={"1.2em"}>
-            {formatLogTime(moment(created_at).unix(), timeOffset)}
+            {formatLogTime(moment(created_at).unix(), timeSettings)}
           </tspan>
         </text>
       </g>;

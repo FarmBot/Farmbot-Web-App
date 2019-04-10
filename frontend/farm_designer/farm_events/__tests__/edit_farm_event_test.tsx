@@ -18,24 +18,27 @@ import {
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<EditFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     return {
       deviceTimezone: "",
       dispatch: jest.fn(),
       regimensById: {},
       sequencesById: { "1": sequence },
-      farmEventsById: { "1": fakeFarmEvent("Sequence", sequence.body.id) },
+      farmEventsById: { "1": farmEvent },
       executableOptions: [],
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [],
-      getFarmEvent: () => fakeFarmEvent("Sequence", sequence.body.id || 0),
+      getFarmEvent: () => farmEvent,
+      findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       autoSyncEnabled: false,
       shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,
@@ -44,7 +47,7 @@ describe("<EditFarmEvent />", () => {
 
   it("renders", () => {
     const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
-    ["Edit Farm Event", "Sequence or Regimen", "fake", "Save"]
+    ["Edit Event", "Sequence or Regimen", "fake", "Save"]
       .map(string => expect(wrapper.text()).toContain(string));
     const deleteBtn = wrapper.find("button").last();
     expect(deleteBtn.text()).toEqual("Delete");

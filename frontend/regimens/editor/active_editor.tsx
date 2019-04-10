@@ -1,7 +1,6 @@
 import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps } from "./interfaces";
-
 import { push } from "../../history";
 import {
   RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps
@@ -17,6 +16,7 @@ import {
 } from "../../sequences/locals_list/locals_list_support";
 import { addOrEditBodyVariables } from "../../sequences/locals_list/handle_select";
 import { t } from "../../i18next_wrapper";
+import { Actions } from "../../constants";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -39,9 +39,18 @@ export function ActiveEditor(props: ActiveEditorProps) {
         shouldDisplay={props.shouldDisplay} />
       <hr />
     </div>
+    <OpenSchedulerButton dispatch={props.dispatch} />
     <RegimenRows calendar={props.calendar} dispatch={props.dispatch} />
   </div>;
 }
+
+export const OpenSchedulerButton = (props: { dispatch: Function }) =>
+  <button className="open-bulk-scheduler-btn fb-button gray"
+    onClick={() => props.dispatch({
+      type: Actions.SET_SCHEDULER_STATE, payload: true
+    })}>
+    {t("Schedule item")}
+  </button>;
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>

@@ -1,5 +1,5 @@
 import { BotState, Xyz, BotPosition, ShouldDisplay } from "../devices/interfaces";
-import { Vector3, McuParams, TaggedDevice } from "farmbot/dist";
+import { Vector3, McuParams } from "farmbot/dist";
 import {
   TaggedWebcamFeed,
   TaggedPeripheral,
@@ -8,6 +8,7 @@ import {
 } from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface Props {
   dispatch: Function;
@@ -20,8 +21,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   getWebAppConfigVal: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
-  timeOffset: number;
-  device: TaggedDevice | undefined;
+  timeSettings: TimeSettings;
 }
 
 export interface AxisDisplayGroupProps {

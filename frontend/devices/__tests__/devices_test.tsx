@@ -1,10 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
-
-jest.mock("../actions", () => ({
-  resetConnectionInfo: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 import * as React from "react";
 import { shallow, render } from "enzyme";
@@ -16,10 +10,10 @@ import {
   fakeDevice, buildResourceIndex, FAKE_RESOURCES
 } from "../../__test_support__/resource_index_builder";
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
-import { resetConnectionInfo } from "../actions";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<Devices/>", () => {
-  const p = (): Props => ({
+  const fakeProps = (): Props => ({
     userToApi: undefined,
     userToMqtt: undefined,
     botToMqtt: undefined,
@@ -36,25 +30,25 @@ describe("<Devices/>", () => {
     isValidFbosConfig: false,
     env: {},
     saveFarmwareEnv: jest.fn(),
+    timeSettings: fakeTimeSettings(),
   });
 
-  it("resets connection info", () => {
-    const el = shallow<Devices>(<Devices {...p()} />);
-    const devices: Devices = el.instance();
-    jest.resetAllMocks();
-    expect(devices.props.dispatch).not.toHaveBeenCalled();
-    devices.refresh();
-    expect(devices.props.dispatch).toHaveBeenCalled();
-    expect(resetConnectionInfo).toHaveBeenCalled();
-  });
   it("renders relevant panels", () => {
-    const el = shallow(<Devices {...p()} />);
+    const el = shallow(<Devices {...fakeProps()} />);
     expect(el.find(FarmbotOsSettings).length).toBe(1);
   });
 
-  it("Crashes when logged out", () => {
-    const props = p();
-    props.auth = undefined;
-    expect(() => render(<Devices {...props} />)).toThrow();
+  it("crashes when logged out", () => {
+    const p = fakeProps();
+    p.auth = undefined;
+    expect(() => render(<Devices {...p} />)).toThrow();
+  });
+
+  it("has correct connection status", () => {
+    const p = fakeProps();
+    p.botToMqtt = { at: "123", state: "up" };
+    const wrapper = shallow(<Devices {...p} />);
+    expect(wrapper.find(FarmbotOsSettings).props().botToMqttLastSeen)
+      .toEqual("123");
   });
 });
