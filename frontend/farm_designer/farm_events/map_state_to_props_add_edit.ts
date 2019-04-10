@@ -122,7 +122,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     if (id && hasId(props.resources.index, "FarmEvent", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
-      history.push("/app/designer/farm_events");
+      history.push("/app/designer/events");
     }
   };
 

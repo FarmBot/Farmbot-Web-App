@@ -30,7 +30,7 @@ describe("<DesignerNavTabs />", () => {
   });
 
   it("renders for farm events", () => {
-    mockPath = "/app/designer/farm_events";
+    mockPath = "/app/designer/events";
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.hasClass("magenta-panel")).toBeTruthy();
     expect(wrapper.find("Link").at(2).hasClass("active")).toBeTruthy();

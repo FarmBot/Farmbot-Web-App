@@ -89,8 +89,8 @@ export function destructureFarmEvent(
 
 const startTimeWarning = () => {
   const message =
-    t("FarmEvent start time needs to be in the future, not the past.");
-  const title = t("Unable to save farm event.");
+    t("Event start time needs to be in the future, not the past.");
+  const title = t("Unable to save event.");
   error(message, title);
 };
 
@@ -226,7 +226,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       if (prev_executable_type === "Regimen" &&
         next_executable_type === "Sequence") {
         error(t("Cannot change from a Regimen to a Sequence."));
-        history.push("/app/designer/farm_events");
+        history.push("/app/designer/events");
       } else {
         const { uuid } = this.props.findExecutable(
           next_executable_type, parseInt("" + ddi.value));
@@ -338,9 +338,9 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const nextRun = this.nextItemTime(this.props.farmEvent.body, now);
     if (nextRun) {
       const nextRunText = this.props.autoSyncEnabled
-        ? t(`The next item in this Farm Event will run {{timeFromNow}}.`,
+        ? t(`The next item in this event will run {{timeFromNow}}.`,
           { timeFromNow: nextRun.from(now) })
-        : t(`The next item in this Farm Event will run {{timeFromNow}}, but
+        : t(`The next item in this event will run {{timeFromNow}}, but
       you must first SYNC YOUR DEVICE. If you do not sync, the event will
       not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.from(now) });
       success(nextRunText);
@@ -373,10 +373,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         this.dispatch(maybeWarnAboutMissedTasks(this.props.farmEvent,
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
         const itemsScheduled = this.nextRunTimeActions(now);
-        if (itemsScheduled) { history.push("/app/designer/farm_events"); }
+        if (itemsScheduled) { history.push("/app/designer/events"); }
       })
       .catch(() => {
-        error(t("Unable to save farm event."));
+        error(t("Unable to save event."));
         this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
       });
   }
@@ -463,8 +463,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       onClick={() => {
         this.dispatch(destroy(this.props.farmEvent.uuid))
           .then(() => {
-            history.push("/app/designer/farm_events");
-            success(t("Deleted farm event."), t("Deleted"));
+            history.push("/app/designer/events");
+            success(t("Deleted event."), t("Deleted"));
           });
       }}>
       {t("Delete")}

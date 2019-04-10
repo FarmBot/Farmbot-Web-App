@@ -47,7 +47,7 @@ describe("<AddFarmEvent />", () => {
   it("renders", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     wrapper.setState({ uuid: "FarmEvent" });
-    ["Add Farm Event", "Sequence or Regimen", "fake", "Save"].map(string =>
+    ["Add Event", "Sequence or Regimen", "fake", "Save"].map(string =>
       expect(wrapper.text()).toContain(string));
     const deleteBtn = wrapper.find("button").last();
     expect(deleteBtn.text()).toEqual("Delete");

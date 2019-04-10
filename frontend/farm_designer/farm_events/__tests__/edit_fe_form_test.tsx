@@ -124,7 +124,7 @@ describe("<FarmEventForm/>", () => {
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
       "Cannot change from a Regimen to a Sequence.");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
   });
 
   it("gets executable info", () => {
@@ -256,7 +256,7 @@ describe("<FarmEventForm/>", () => {
     const i = instance(p);
     await i.commitViewModel(moment("2016-05-22T05:00:00.000Z"));
     expect(success).toHaveBeenCalledWith(
-      expect.stringContaining("The next item in this Farm Event will run"));
+      expect.stringContaining("The next item in this event will run"));
     expect(success).not.toHaveBeenCalledWith(
       expect.stringContaining("must first SYNC YOUR DEVICE"));
   });
@@ -305,8 +305,8 @@ describe("<FarmEventForm/>", () => {
 
   const expectStartTimeToBeRejected = () => {
     expect(error).toHaveBeenCalledWith(
-      "FarmEvent start time needs to be in the future, not the past.",
-      "Unable to save farm event.");
+      "Event start time needs to be in the future, not the past.",
+      "Unable to save event.");
   };
 
   it("displays error message on save (add): start time has passed", () => {
@@ -489,8 +489,8 @@ describe("<FarmEventForm/>", () => {
     const wrapper = shallow(<inst.FarmEventDeleteButton />);
     clickButton(wrapper, 0, "delete");
     await expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
-    expect(success).toHaveBeenCalledWith("Deleted farm event.", "Deleted");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
+    expect(success).toHaveBeenCalledWith("Deleted event.", "Deleted");
   });
 
   it("sets repeat", () => {

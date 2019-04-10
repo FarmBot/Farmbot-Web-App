@@ -27,7 +27,7 @@ const getCurrentTab = (): Tabs => {
   const pathArray = getPathArray();
   if (pathArray.join("/") === "/app/designer") {
     return Panel.Map;
-  } else if (pathArray.includes("farm_events")) {
+  } else if (pathArray.includes("events")) {
     return Panel.FarmEvents;
   } else if (pathArray.includes("saved_gardens")) {
     return Panel.SavedGardens;
@@ -51,7 +51,7 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         className={tab === Panel.Plants ? "active" : ""}>
         {t("Plants")}
       </Link>
-      <Link to="/app/designer/farm_events"
+      <Link to="/app/designer/events"
         className={tab === Panel.FarmEvents ? "active" : ""}>
         {t("Events")}
       </Link>

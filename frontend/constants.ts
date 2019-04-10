@@ -604,7 +604,7 @@ export namespace Content {
     this is a concern.`);
 
   export const INVALID_RUN_TIME =
-    trim(`This Farm Event does not appear to have a valid run time.
+    trim(`This event does not appear to have a valid run time.
     Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
@@ -618,7 +618,7 @@ export namespace Content {
     may cause unexpected behavior.`);
 
   export const SET_TIMEZONE_HEADER =
-    trim(`You must set a timezone before using the FarmEvent feature.`);
+    trim(`You must set a timezone before using the event feature.`);
 
   export const SET_TIMEZONE_BODY =
     trim(`Set device timezone here.`);
@@ -662,7 +662,7 @@ export namespace TourContent {
     needed to take care of a plant over its life.`);
 
   export const ADD_FARM_EVENTS =
-    trim(`Add a farm event via the + button to schedule a sequence or
+    trim(`Add an event via the + button to schedule a sequence or
     regimen in the calendar.`);
 
   // Monitoring

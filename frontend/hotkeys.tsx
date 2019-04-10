@@ -86,8 +86,8 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
       },
       {
         combo: "ctrl + shift + e",
-        label: "Add Farm Event",
-        onKeyDown: () => push("/app/designer/farm_events/add")
+        label: "Add Event",
+        onKeyDown: () => push("/app/designer/events/add")
       },
       {
         combo: "ctrl + shift + /",

@@ -62,7 +62,7 @@ describe("mapStateToPropsAddEdit()", () => {
       const state = fakeState();
       const fe = fakeFarmEvent("Sequence", -1);
       state.resources = buildResourceIndex([fe, fakeDevice()]);
-      mockPath = "/app/designer/farm_events/" + fe.body.id;
+      mockPath = "/app/designer/events/" + fe.body.id;
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       expect(getFarmEvent()).toEqual(expect.objectContaining({
         kind: "FarmEvent",
@@ -73,10 +73,10 @@ describe("mapStateToPropsAddEdit()", () => {
     it("doesn't find event", () => {
       const state = fakeState();
       state.resources = buildResourceIndex([fakeDevice()]);
-      mockPath = "/app/designer/farm_events/999";
+      mockPath = "/app/designer/events/999";
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       getFarmEvent();
-      expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
+      expect(history.push).toHaveBeenCalledWith("/app/designer/events");
     });
   });
 

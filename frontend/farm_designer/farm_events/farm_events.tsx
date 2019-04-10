@@ -39,7 +39,7 @@ export class PureFarmEvents
     return sortBy(items, x => x.sortKey)
       .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
-        const url = `/app/designer/farm_events/`
+        const url = `/app/designer/events/`
           + (occur.id || "UNSAVED_EVENT").toString();
         const heading = occur.subheading
           ? occur.subheading
@@ -125,7 +125,7 @@ export class PureFarmEvents
     return <div className="farm-event-panel-normal-content">
       <DesignerPanelTop
         panel={Panel.FarmEvents}
-        linkTo={"/app/designer/farm_events/add"}
+        linkTo={"/app/designer/events/add"}
         title={t("Add event")}
         noIcon={true}>
         <i className="fa fa-calendar" onClick={this.resetCalendar} />
