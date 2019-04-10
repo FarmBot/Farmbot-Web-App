@@ -642,6 +642,9 @@ ul {
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
+  .settings-menu-button {
+    margin-right: 1rem;
+  }
 }
 
 .fb-button-popover-wrapper {
@@ -847,6 +850,21 @@ ul {
   word-wrap: break-word;
 }
 
+.settings-menu-button {
+  float: right;
+  .fa-gear {
+    color: $dark_gray;
+  }
+}
+
+.sequence-settings-menu {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+}
+
 .logs-page {
   .row {
     @media screen and (max-width: 974px) {
@@ -855,10 +873,6 @@ ul {
     }
   }
   .settings-menu-button {
-    float: right;
-    .fa-gear {
-      color: $dark_gray;
-    }
     margin-left: 1rem;
     margin-top: 0.25rem;
   }

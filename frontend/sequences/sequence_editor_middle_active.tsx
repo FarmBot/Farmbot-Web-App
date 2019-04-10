@@ -3,7 +3,7 @@ import { ActiveMiddleProps, SequenceHeaderProps } from "./interfaces";
 import { editCurrentSequence } from "./actions";
 import { splice, move } from "./step_tiles";
 import { push } from "../history";
-import { BlurableInput, Row, Col, SaveBtn, ColorPicker } from "../ui";
+import { BlurableInput, Row, Col, SaveBtn, ColorPicker, Help } from "../ui";
 import { DropArea } from "../draggable/drop_area";
 import { stepGet } from "../draggable/actions";
 import { copySequence } from "./actions";
@@ -19,6 +19,11 @@ import { ShouldDisplay } from "../devices/interfaces";
 import { isScopeDeclarationBodyItem } from "./locals_list/handle_select";
 import { t } from "../i18next_wrapper";
 import { Actions } from "../constants";
+import { Popover, Position } from "@blueprintjs/core";
+import { ToggleButton } from "../controls/toggle_button";
+import { Content } from "../constants";
+import { setWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -41,6 +46,24 @@ export const onDrop =
       }
     };
 
+export interface SequenceSettingsMenuProps {
+  dispatch: Function;
+  confirmStepDeletion: boolean;
+}
+
+export const SequenceSettingsMenu =
+  ({ dispatch, confirmStepDeletion }: SequenceSettingsMenuProps) =>
+    <div className="sequence-settings-menu">
+      <label>
+        {t("Confirm step deletion")}
+      </label>
+      <Help text={t(Content.CONFIRM_STEP_DELETION)} />
+      <ToggleButton
+        toggleValue={confirmStepDeletion}
+        toggleAction={() => dispatch(setWebAppConfigValue(
+          BooleanSetting.confirm_step_deletion, !confirmStepDeletion))} />
+    </div>;
+
 interface SequenceBtnGroupProps {
   dispatch: Function;
   sequence: TaggedSequence;
@@ -48,10 +71,12 @@ interface SequenceBtnGroupProps {
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
+  confirmStepDeletion: boolean;
 }
 
 const SequenceBtnGroup = ({
-  dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen
+  dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen,
+  confirmStepDeletion
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
@@ -65,10 +90,8 @@ const SequenceBtnGroup = ({
       dispatch={dispatch} />
     <button
       className="fb-button red"
-      onClick={() => {
-        dispatch(destroy(sequence.uuid)).then(
-          () => push("/app/sequences/"));
-      }}>
+      onClick={() => dispatch(destroy(sequence.uuid))
+        .then(() => push("/app/sequences/"))}>
       {t("Delete")}
     </button>
     <button
@@ -76,6 +99,14 @@ const SequenceBtnGroup = ({
       onClick={() => dispatch(copySequence(sequence))}>
       {t("Copy")}
     </button>
+    <div className={"settings-menu-button"}>
+      <Popover position={Position.BOTTOM_RIGHT}>
+        <i className="fa fa-gear" />
+        <SequenceSettingsMenu
+          dispatch={dispatch}
+          confirmStepDeletion={confirmStepDeletion} />
+      </Popover>
+    </div>
   </div>;
 
 export const SequenceNameAndColor = ({ dispatch, sequence }: {
@@ -108,6 +139,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       syncStatus={props.syncStatus}
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
+      confirmStepDeletion={props.confirmStepDeletion}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <LocalsList
@@ -157,6 +189,7 @@ export class SequenceEditorMiddleActive extends
         variablesCollapsed={this.state.variablesCollapsed}
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
+        confirmStepDeletion={this.props.confirmStepDeletion}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"

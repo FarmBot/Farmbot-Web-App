@@ -74,6 +74,7 @@ export interface SequenceHeaderProps {
   menuOpen: boolean;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
+  confirmStepDeletion: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;

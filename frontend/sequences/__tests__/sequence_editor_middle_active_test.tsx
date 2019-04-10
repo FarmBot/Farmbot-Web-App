@@ -24,9 +24,14 @@ jest.mock("../locals_list/locals_list", () => ({
   isParameterDeclaration: jest.fn(),
 }));
 
+jest.mock("../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(),
+}));
+
 import * as React from "react";
 import {
-  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton
+  SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
+  SequenceSettingsMenu
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
@@ -46,6 +51,8 @@ import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { DropAreaProps } from "../../draggable/interfaces";
 import { Actions } from "../../constants";
+import { setWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -239,5 +246,16 @@ describe("<AddCommandButton />", () => {
       type: Actions.SET_SEQUENCE_STEP_POSITION,
       payload: 1,
     });
+  });
+});
+
+describe("<SequenceSettingsMenu />", () => {
+  it("renders settings", () => {
+    const wrapper = mount(<SequenceSettingsMenu
+      dispatch={jest.fn()}
+      confirmStepDeletion={false} />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.confirm_step_deletion, true);
   });
 });
