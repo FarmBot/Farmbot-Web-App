@@ -3,7 +3,6 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { Col, Row, Page, ToolTip } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
-
 import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
@@ -16,6 +15,7 @@ import { NumericSetting } from "../session_keys";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
+import { Alerts } from "./alerts";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime = (created_at: number, timeoffset: number) =>
@@ -80,6 +80,8 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   render() {
     const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs-page">
+      <Alerts alerts={this.props.alerts}
+        apiFirmwareValue={this.props.apiFirmwareValue} />
       <Row>
         <Col xs={7}>
           <h3>

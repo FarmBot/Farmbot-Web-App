@@ -1,46 +1,45 @@
+jest.mock("../../../actions", () => ({
+  flashFirmware: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import {
   FirmwareHardwareStatusDetailsProps, FirmwareHardwareStatusDetails,
-  FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon
+  FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon,
+  FirmwareHardwareStatusProps, FirmwareHardwareStatus,
+  FirmwareActions, FirmwareActionsProps
 } from "../firmware_hardware_status";
+import { bot } from "../../../../__test_support__/fake_state/bot";
+import { clickButton } from "../../../../__test_support__/helpers";
+import { flashFirmware } from "../../../actions";
 
 describe("<FirmwareHardwareStatusDetails />", () => {
   const fakeProps = (): FirmwareHardwareStatusDetailsProps => ({
-    status: false,
-    apiFirmwareValue: undefined,
+    bot,
+    botOnline: true,
+    apiFirmwareValue: "arduino",
     botFirmwareValue: undefined,
-    mcuFirmwareVersion: undefined,
     mcuFirmwareValue: undefined,
+    shouldDisplay: () => true,
   });
 
-  it("renders details: inconsistent", () => {
+  it("renders details", () => {
     const wrapper = mount(<FirmwareHardwareStatusDetails {...fakeProps()} />);
-    expect(wrapper.text()).toContain("inconsistent");
-  });
-
-  it("renders details: consistent", () => {
-    const p = fakeProps();
-    p.status = true;
-    p.apiFirmwareValue = "arduino";
-    p.botFirmwareValue = "arduino";
-    p.mcuFirmwareValue = "arduino";
-    const wrapper = mount(<FirmwareHardwareStatusDetails {...p} />);
-    expect(wrapper.text()).toContain("consistent");
-    expect(wrapper.text()).toContain("RAMPS");
+    expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
   });
 });
 
 describe("<FirmwareHardwareStatusIcon />", () => {
   const fakeProps = (): FirmwareHardwareStatusIconProps => ({
     firmwareHardware: undefined,
-    ok: false,
+    status: false,
   });
 
   it("renders details: ok", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    p.ok = true;
+    p.status = true;
     const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
     expect(wrapper.find("i").hasClass("ok")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-check-circle")).toEqual(true);
@@ -49,9 +48,9 @@ describe("<FirmwareHardwareStatusIcon />", () => {
   it("renders details: inconsistent", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    p.ok = false;
+    p.status = false;
     const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
-    expect(wrapper.find("i").hasClass("no")).toEqual(true);
+    expect(wrapper.find("i").hasClass("error")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-times-circle")).toEqual(true);
   });
 
@@ -61,5 +60,41 @@ describe("<FirmwareHardwareStatusIcon />", () => {
     const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
     expect(wrapper.find("i").hasClass("unknown")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-question-circle")).toEqual(true);
+  });
+});
+
+describe("<FirmwareHardwareStatus />", () => {
+  const fakeProps = (): FirmwareHardwareStatusProps => ({
+    bot,
+    botOnline: true,
+    apiFirmwareValue: undefined,
+    shouldDisplay: () => true,
+  });
+
+  it("renders: inconsistent", () => {
+    const wrapper = mount(<FirmwareHardwareStatus {...fakeProps()} />);
+    expect(wrapper.find(FirmwareHardwareStatusIcon).props().status).toBeFalsy();
+  });
+
+  it("renders: consistent", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "1.0.0.R";
+    p.bot.hardware.configuration.firmware_hardware = "arduino";
+    p.apiFirmwareValue = "arduino";
+    const wrapper = mount(<FirmwareHardwareStatus {...p} />);
+    expect(wrapper.find(FirmwareHardwareStatusIcon).props().status).toBeTruthy();
+  });
+});
+
+describe("<FirmwareActions />", () => {
+  const fakeProps = (): FirmwareActionsProps => ({
+    botOnline: true,
+    apiFirmwareValue: "arduino",
+  });
+
+  it("flashes firmware", () => {
+    const wrapper = mount(<FirmwareActions {...fakeProps()} />);
+    clickButton(wrapper, 0, "flash firmware");
+    expect(flashFirmware).toHaveBeenCalledWith("arduino");
   });
 });

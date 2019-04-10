@@ -86,9 +86,8 @@ export class FarmbotOsSettings
 
   render() {
     const { bot, account, sourceFbosConfig, botToMqttStatus } = this.props;
-    const { firmware_version, sync_status } = bot.hardware.informational_settings;
+    const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
-    const { firmware_hardware } = bot.hardware.configuration;
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -155,8 +154,8 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               dispatch={this.props.dispatch} />
             <BoardType
-              firmwareHardware={firmware_hardware}
-              firmwareVersion={firmware_version}
+              botOnline={botOnline}
+              bot={bot}
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}
               sourceFbosConfig={sourceFbosConfig} />

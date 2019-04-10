@@ -1105,10 +1105,77 @@ ul {
   &.ok {
     color: $green;
   }
-  &.no {
+  &.error {
     color: $red;
   }
   &.unknown {
     color: $orange;
+  }
+}
+
+.firmware-hardware-status-details {
+  button {
+    float: none !important;
+  }
+}
+
+.problem-alerts {
+  position: fixed;
+  top: 85px;
+  left: 50%;
+  z-index: 3;
+  padding: 1rem;
+  background: $off_white;
+  border-radius: 5px;
+  box-shadow: 0px 1px 4px #555;
+  transform: translate(-50%);
+  .problem-alerts-header {
+    text-align: center;
+    i {
+      font-size: 2rem;
+      color: $dark_gray;
+      margin-left: 1rem;
+    }
+    .saucer {
+      display: inline-flex;
+      top: -0.25rem;
+      margin-left: 0.5rem;
+    }
+    h3 {
+      margin: 0;
+    }
+  }
+  button {
+    float: none !important;
+  }
+}
+
+.problem-alert {
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 3px;
+  box-shadow: 0px 2px 5px $gray;
+  background: $off_white;
+  .problem-alert-title {
+    .fa-exclamation-triangle {
+      color: $orange;
+      padding-right: 0.5rem;
+    }
+    h3 {
+      color: $dark_gray;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    p {
+      display: inline;
+      padding: 1rem;
+      color: $medium_gray;
+      font-size: 1.2rem;
+    }
+  }
+  .problem-alert-content {
+    p {
+      margin-bottom: 0.75rem !important;
+    }
   }
 }

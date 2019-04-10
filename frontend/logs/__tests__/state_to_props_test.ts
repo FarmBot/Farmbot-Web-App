@@ -42,4 +42,11 @@ describe("mapStateToProps()", () => {
       value: false, consistent: true
     });
   });
+
+  it("handles undefined", () => {
+    const state = fakeState();
+    state.bot.hardware.enigmas = undefined;
+    const props = mapStateToProps(state);
+    expect(props.alerts).toEqual([]);
+  });
 });

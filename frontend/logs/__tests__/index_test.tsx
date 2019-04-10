@@ -31,6 +31,8 @@ describe("<Logs />", () => {
       dispatch: jest.fn(),
       sourceFbosConfig: jest.fn(),
       getConfigValue: x => mockStorj[x],
+      alerts: [],
+      apiFirmwareValue: undefined,
     };
   };
 

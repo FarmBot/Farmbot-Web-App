@@ -9,7 +9,8 @@ import {
 import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
-  ALLOWED_PIN_MODES
+  ALLOWED_PIN_MODES,
+  FirmwareHardware
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -98,6 +99,13 @@ export function restartFirmware() {
   const noun = "Restart Firmware";
   getDevice()
     .rebootFirmware()
+    .then(commandOK(noun), commandErr(noun));
+}
+
+export function flashFirmware(firmwareName: FirmwareHardware) {
+  const noun = "Flash Firmware";
+  getDevice()
+    .flashFirmware(firmwareName)
     .then(commandOK(noun), commandErr(noun));
 }
 
