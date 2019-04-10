@@ -71,6 +71,8 @@ export interface SequenceHeaderProps {
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
+  variablesCollapsed: boolean;
+  toggleVarShow: () => void;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;

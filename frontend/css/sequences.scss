@@ -68,9 +68,35 @@
   }
   .locals-list {
     margin-top: 1rem;
-    max-height: 14rem;
+    max-height: 25rem;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+}
+
+.locals-list {
+  >.location-form {
+    margin: auto;
+    margin-top: 1rem;
+    width: 80%;
+    max-width: 40rem;
+    background: $off_white;
+    label {
+      margin-top: 0;
+    }
+    >.location-form-header {
+      width: 100%;
+      background: darken($off_white, 5%);
+      padding: 1rem;
+      i {
+        float: right;
+        font-size: 2rem;
+        color: $dark_gray;
+      }
+    }
+    >.location-form-content {
+      padding: 1rem;
+    }
   }
 }
 

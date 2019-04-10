@@ -49,6 +49,10 @@ interface CommonProps {
   allowedVariableNodes: AllowedVariableNodes;
   /** Don't display group dropdown items. */
   disallowGroups?: boolean;
+  /** Add ability to collapse the form content. */
+  collapsible?: boolean;
+  collapsed?: boolean;
+  toggleVarShow?: () => void;
 }
 
 export interface LocalsListProps extends CommonProps {

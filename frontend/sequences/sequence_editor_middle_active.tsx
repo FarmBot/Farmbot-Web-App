@@ -103,7 +103,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
   const declarations = betterCompact(Object.values(variableData)
     .map(v => v &&
       isScopeDeclarationBodyItem(v.celeryNode) ? v.celeryNode : undefined));
-  return <div className="sequence-editor-tools">
+  return <div id="sequence-editor-tools" className="sequence-editor-tools">
     <SequenceBtnGroup {...sequenceAndDispatch}
       syncStatus={props.syncStatus}
       resources={props.resources}
@@ -117,19 +117,32 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       onChange={localListCallback(props)(declarations)}
       locationDropdownKey={JSON.stringify(sequence)}
       allowedVariableNodes={AllowedVariableNodes.parameter}
+      collapsible={true}
+      collapsed={props.variablesCollapsed}
+      toggleVarShow={props.toggleVarShow}
       shouldDisplay={props.shouldDisplay} />
   </div>;
 };
 
+interface ActiveMiddleState {
+  variablesCollapsed: boolean;
+}
+
 export class SequenceEditorMiddleActive extends
-  React.Component<ActiveMiddleProps, {}> {
+  React.Component<ActiveMiddleProps, ActiveMiddleState> {
+  state: ActiveMiddleState = { variablesCollapsed: false };
 
   /** Make room for the sequence header variable form when necessary. */
   get stepSectionHeight() {
     const { resources, sequence } = this.props;
+    let subHeight = 200;
     const variables =
       Object.keys(resources.sequenceMetas[sequence.uuid] || {}).length > 0;
-    return `calc(100vh - ${variables ? "38" : "25"}rem)`;
+    if (variables) { subHeight = 500; }
+    if (this.state.variablesCollapsed) { subHeight = 300; }
+    const variablesDiv = document.getElementById("sequence-editor-tools");
+    if (variablesDiv) { subHeight = 200 + variablesDiv.offsetHeight; }
+    return `calc(100vh - ${subHeight}px)`;
   }
 
   render() {
@@ -141,6 +154,9 @@ export class SequenceEditorMiddleActive extends
         resources={this.props.resources}
         syncStatus={this.props.syncStatus}
         shouldDisplay={this.props.shouldDisplay}
+        variablesCollapsed={this.state.variablesCollapsed}
+        toggleVarShow={() =>
+          this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"

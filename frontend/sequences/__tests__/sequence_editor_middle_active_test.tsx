@@ -29,7 +29,7 @@ import {
   SequenceEditorMiddleActive, onDrop, SequenceNameAndColor
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
-import { ActiveMiddleProps } from "../interfaces";
+import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
 import {
   FAKE_RESOURCES, buildResourceIndex
 } from "../../__test_support__/resource_index_builder";
@@ -44,6 +44,7 @@ import { copySequence, editCurrentSequence } from "../actions";
 import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
+import { DropAreaProps } from "../../draggable/interfaces";
 
 describe("<SequenceEditorMiddleActive/>", () => {
   const fakeProps = (): ActiveMiddleProps => {
@@ -103,10 +104,25 @@ describe("<SequenceEditorMiddleActive/>", () => {
     expect(wrapper.find(".drag-drop-area").text()).toEqual("DRAG COMMAND HERE");
   });
 
+  it("calls DropArea callback", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = dispatch;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    const props = wrapper.find("DropArea").props() as DropAreaProps;
+    props.callback && props.callback("key");
+    dispatch.mock.calls[0][0](() =>
+      ({ value: 1, intent: "step_splice", draggerId: 2 }));
+    expect(splice).toHaveBeenCalledWith(expect.objectContaining({
+      step: 1,
+      index: Infinity
+    }));
+  });
+
   it("has correct height", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     expect(wrapper.find(".sequence").props().style).toEqual({
-      height: "calc(100vh - 25rem)"
+      height: "calc(100vh - 200px)"
     });
   });
 
@@ -116,7 +132,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style).toEqual({
-      height: "calc(100vh - 25rem)"
+      height: "calc(100vh - 200px)"
     });
   });
 
@@ -126,7 +142,31 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.shouldDisplay = () => true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find(".sequence").props().style)
-      .toEqual({ height: "calc(100vh - 38rem)" });
+      .toEqual({ height: "calc(100vh - 500px)" });
+  });
+
+  it("has correct height with variable form collapsed", () => {
+    const p = fakeProps();
+    p.resources.sequenceMetas = { [p.sequence.uuid]: fakeVariableNameSet() };
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    wrapper.setState({ variablesCollapsed: true });
+    expect(wrapper.find(".sequence").props().style)
+      .toEqual({ height: "calc(100vh - 300px)" });
+  });
+
+  it("automatically calculates height", () => {
+    document.getElementById = () => ({ offsetHeight: 101 } as HTMLElement);
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    expect(wrapper.find(".sequence").props().style)
+      .toEqual({ height: "calc(100vh - 301px)" });
+  });
+
+  it("toggles variable form state", () => {
+    const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
+    const props = wrapper.find("SequenceHeader").props() as SequenceHeaderProps;
+    props.toggleVarShow();
+    expect(wrapper.state()).toEqual({ variablesCollapsed: true });
   });
 });
 
@@ -134,9 +174,8 @@ describe("onDrop()", () => {
   it("step_splice", () => {
     const dispatch = jest.fn();
     onDrop(dispatch, fakeSequence())(0, "fakeUuid");
-    dispatch.mock.calls[0][0](() => {
-      return { value: 1, intent: "step_splice", draggerId: 2 };
-    });
+    dispatch.mock.calls[0][0](() =>
+      ({ value: 1, intent: "step_splice", draggerId: 2 }));
     expect(splice).toHaveBeenCalledWith(expect.objectContaining({
       step: 1,
       index: 0
@@ -146,9 +185,8 @@ describe("onDrop()", () => {
   it("step_move", () => {
     const dispatch = jest.fn();
     onDrop(dispatch, fakeSequence())(3, "fakeUuid");
-    dispatch.mock.calls[0][0](() => {
-      return { value: 4, intent: "step_move", draggerId: 5 };
-    });
+    dispatch.mock.calls[0][0](() =>
+      ({ value: 4, intent: "step_move", draggerId: 5 }));
     expect(move).toHaveBeenCalledWith(expect.objectContaining({
       step: 4,
       to: 3,
