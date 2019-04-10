@@ -1,6 +1,5 @@
 import * as React from "react";
 import moment from "moment";
-
 import { success, error, warning } from "farmbot-toastr";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
@@ -472,10 +471,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   render() {
     const { farmEvent } = this.props;
-    return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
+    return <DesignerPanel panelName={"add-farm-event"} panelColor={"yellow"}>
       <DesignerPanelHeader
         panelName={"add-farm-event"}
-        panelColor={"magenta"}
+        panelColor={"yellow"}
         title={this.props.title}
         onBack={!farmEvent.body.id ? () =>
           // Throw out unsaved farmevents.
@@ -494,7 +493,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         <this.RepeatForm />
         <SaveBtn
           status={farmEvent.specialStatus || this.state.specialStatusLocal}
-          color="magenta"
+          color="yellow"
           onClick={() => this.commitViewModel()} />
         <this.FarmEventDeleteButton />
         <TzWarning deviceTimezone={this.props.deviceTimezone} />

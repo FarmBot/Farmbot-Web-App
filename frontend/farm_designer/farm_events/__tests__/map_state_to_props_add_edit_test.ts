@@ -107,4 +107,31 @@ describe("mapStateToPropsAddEdit()", () => {
         }));
     });
   });
+
+  describe("findFarmEventByUuid()", () => {
+    it("finds farm event", () => {
+      const state = fakeState();
+      const farmEvent = fakeFarmEvent("Sequence", 1);
+      state.resources = buildResourceIndex([farmEvent, fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid(farmEvent.uuid);
+      expect(result).toEqual(farmEvent);
+    });
+
+    it("doesn't find farm event: no farm events", () => {
+      const state = fakeState();
+      state.resources = buildResourceIndex([fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid("uuid");
+      expect(result).toEqual(undefined);
+    });
+
+    it("doesn't find farm event: undefined uuid", () => {
+      const state = fakeState();
+      state.resources = buildResourceIndex([fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid(undefined);
+      expect(result).toEqual(undefined);
+    });
+  });
 });

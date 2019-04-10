@@ -23,17 +23,19 @@ describe("<EditFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     return {
       deviceTimezone: "",
       dispatch: jest.fn(),
       regimensById: {},
       sequencesById: { "1": sequence },
-      farmEventsById: { "1": fakeFarmEvent("Sequence", sequence.body.id) },
+      farmEventsById: { "1": farmEvent },
       executableOptions: [],
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [],
-      getFarmEvent: () => fakeFarmEvent("Sequence", sequence.body.id || 0),
+      getFarmEvent: () => farmEvent,
+      findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeOffset: 0,
       autoSyncEnabled: false,

@@ -118,6 +118,7 @@ export interface AddEditFarmEventProps {
   sequencesById: CowardlyDictionary<TaggedSequence>;
   farmEventsById: CowardlyDictionary<TaggedFarmEvent>;
   getFarmEvent(): TaggedFarmEvent | undefined;
+  findFarmEventByUuid(uuid: string | undefined): TaggedFarmEvent | undefined;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;
   findExecutable: ExecutableQuery;

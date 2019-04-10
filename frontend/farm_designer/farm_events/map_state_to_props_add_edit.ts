@@ -116,6 +116,9 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const sequencesById = indexSequenceById(props.resources.index);
   const farmEventsById = indexFarmEventById(props.resources.index);
   const farmEvents = selectAllFarmEvents(props.resources.index);
+  const findFarmEventByUuid =
+    (uuid: string | undefined): TaggedFarmEvent | undefined =>
+      uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
   const getFarmEvent = (): TaggedFarmEvent | undefined => {
     const id = parseInt(getPathArray()[4]);
@@ -160,6 +163,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     handleTime,
     farmEvents,
     getFarmEvent,
+    findFarmEventByUuid,
     findExecutable,
     timeOffset: dev.body.tz_offset_hrs,
     autoSyncEnabled,

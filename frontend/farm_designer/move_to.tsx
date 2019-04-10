@@ -3,7 +3,6 @@ import { Row, Col } from "../ui";
 import { Everything } from "../interfaces";
 import { BotPosition } from "../devices/interfaces";
 import { connect } from "react-redux";
-
 import { moveAbs } from "../devices/actions";
 import { history } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
@@ -15,8 +14,6 @@ import { AxisNumberProperty } from "./map/interfaces";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader
 } from "./plants/designer_panel";
-import { DevSettings } from "../account/dev/dev_support";
-import { DesignerNavTabs } from "./panel_header";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
 import { getStatus } from "../connectivity/reducer_support";
@@ -117,18 +114,14 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
   }
 
   render() {
-    const alt = DevSettings.futureFeaturesEnabled();
-    return <DesignerPanel panelName={"move-to"} panelColor={"green"}>
-      {alt ? <DesignerNavTabs />
-        : <DesignerPanelHeader
-          panelName={"move-to"}
-          panelColor={"gray"}
-          title={t("Move to location")}
-          backTo={"/app/designer/plants"}
-          description={Content.MOVE_MODE_DESCRIPTION} />}
-      <DesignerPanelContent panelName={"move-to"}
-        className={`${alt ? "with-nav" : ""}`}>
-        {alt && <p>{Content.MOVE_MODE_DESCRIPTION}</p>}
+    return <DesignerPanel panelName={"move-to"} panelColor={"gray"}>
+      <DesignerPanelHeader
+        panelName={"move-to"}
+        panelColor={"gray"}
+        title={t("Move to location")}
+        backTo={"/app/designer/plants"}
+        description={Content.MOVE_MODE_DESCRIPTION} />
+      <DesignerPanelContent panelName={"move-to"}>
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
           currentBotLocation={this.props.currentBotLocation}
@@ -142,7 +135,6 @@ export const MoveModeLink = () =>
   <div className="move-to-mode">
     <button
       className="fb-button gray"
-      hidden={DevSettings.futureFeaturesEnabled()}
       title={t("open move mode panel")}
       onClick={() => history.push("/app/designer/move_to")}>
       {t("move mode")}

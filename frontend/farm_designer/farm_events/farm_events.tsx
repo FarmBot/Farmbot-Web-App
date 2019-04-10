@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import {
@@ -151,7 +150,7 @@ export class PureFarmEvents
   };
 
   render() {
-    return <DesignerPanel panelName={"farm-event"} panelColor={"magenta"}>
+    return <DesignerPanel panelName={"farm-event"} panelColor={"yellow"}>
       <DesignerNavTabs />
       {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
     </DesignerPanel>;

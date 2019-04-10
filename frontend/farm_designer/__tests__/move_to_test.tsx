@@ -9,13 +9,6 @@ jest.mock("../../history", () => ({
   history: { push: jest.fn() }
 }));
 
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -60,13 +53,6 @@ describe("<MoveTo />", () => {
       type: Actions.CHOOSE_LOCATION,
       payload: { x: undefined, y: undefined, z: undefined }
     });
-  });
-
-  it("shows alt display", () => {
-    mockDev = true;
-    const wrapper = mount(<MoveTo {...fakeProps()} />);
-    expect(wrapper.html()).toContain("-nav");
-    mockDev = false;
   });
 });
 
