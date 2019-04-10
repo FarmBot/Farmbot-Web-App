@@ -20,6 +20,7 @@
   }
   &.is-saved,
   &.is-saving {
+    color: $off_white !important;
     background: $medium_gray !important;
     box-shadow: 0 2px 0px 0px $dark_gray !important;
     pointer-events: none;

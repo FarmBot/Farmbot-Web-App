@@ -221,7 +221,7 @@
       margin-left: 0;
       margin-right: 0;
     }
-    padding: 10rem 3rem;
+    padding: 0 3rem;
     padding-right: 0;
     padding-left: 0;
     .fb-button {
@@ -267,6 +267,9 @@
 .add-farm-event-panel {
   input {
     background: $white;
+  }
+  .is-saved {
+    margin: 1rem;
   }
 }
 
