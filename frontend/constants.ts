@@ -63,90 +63,100 @@ export namespace ToolTips {
     trim(`If encoders or end-stops are enabled, find the home position when the
     device powers on. Warning! This will perform homing on all axes when the
     device powers on. Encoders or endstops must be enabled. It is recommended
-    to make sure homing works properly before enabling this feature.`);
+    to make sure homing works properly before enabling this feature.
+    (default: disabled)`);
 
   export const STOP_AT_HOME =
-    trim(`Stop at the home location of the axis.`);
+    trim(`Stop at the home location of the axis. (default: disabled)`);
 
   export const STOP_AT_MAX =
-    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.`);
+    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.
+    (default: disabled)`);
 
   export const NEGATIVE_COORDINATES_ONLY =
     trim(`Restrict travel to negative coordinate locations. Overridden by
-    disabling STOP AT HOME.`);
+    disabling STOP AT HOME. (default: x: disabled, y: disabled, z: enabled)`);
 
   export const LENGTH =
     trim(`Set the length of each axis to provide software limits. Used only if
-    STOP AT MAX is enabled.`);
+    STOP AT MAX is enabled. (default: 0 (disabled))`);
 
   export const TIMEOUT_AFTER =
-    trim(`Amount of time to wait for a command to execute before stopping.`);
+    trim(`Amount of time to wait for a command to execute before stopping.
+    (default: 120s)`);
 
   // Hardware Settings: Motors
   export const MAX_MOVEMENT_RETRIES =
-    trim(`Number of times to retry a movement before stopping.`);
+    trim(`Number of times to retry a movement before stopping. (default: 3)`);
 
   export const E_STOP_ON_MOV_ERR =
     trim(`Emergency stop if movement is not complete after the maximum number of
-    retries.`);
+    retries. (default: disabled)`);
 
   export const MAX_SPEED =
-    trim(`Maximum travel speed after acceleration in millimeters per second.`);
+    trim(`Maximum travel speed after acceleration in millimeters per second.
+    (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
 
   export const HOME_SPEED =
     trim(`Home position adjustment travel speed (homing and calibration)
-    in millimeters per second.`);
+    in millimeters per second. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const MIN_SPEED =
     trim(`Minimum movement speed in millimeters per second. Also used for homing
-     and calibration.`);
+     and calibration. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const ACCELERATE_FOR =
-    trim(`Number of millimeters used for acceleration and deceleration.`);
+    trim(`Number of millimeters used for acceleration and deceleration.
+    (default: x: 60mm, y: 60mm, z: 12mm)`);
 
   export const STEPS_PER_MM =
-    trim(`The number of motor steps required to move the axis one millimeter.`);
+    trim(`The number of motor steps required to move the axis one millimeter.
+    (default: x: 5, y: 5, z: 25)`);
 
   export const ALWAYS_POWER_MOTORS =
     trim(`Keep power applied to motors. Prevents slipping from gravity in
-    certain situations.`);
+    certain situations. (default: enabled)`);
 
   export const INVERT_MOTORS =
-    trim(`Invert direction of motor during calibration.`);
+    trim(`Invert direction of motor during calibration. (default: disabled)`);
 
   export const ENABLE_X2_MOTOR =
-    trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.`);
+    trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
+    (default: enabled)`);
 
   // Hardware Settings: Encoders and Endstops
   export const ENABLE_ENCODERS =
-    trim(`Enable use of rotary encoders during calibration and homing.`);
+    trim(`Enable use of rotary encoders during calibration and homing.
+    (default: enabled)`);
 
   export const ENCODER_POSITIONING =
-    trim(`Use encoders for positioning.`);
+    trim(`Use encoders for positioning. (default: disabled)`);
 
   export const INVERT_ENCODERS =
-    trim(`Reverse the direction of encoder position reading.`);
+    trim(`Reverse the direction of encoder position reading.
+    (default: disabled)`);
 
   export const MAX_MISSED_STEPS =
     trim(`Number of steps missed (determined by encoder) before motor is
-    considered to have stalled.`);
+    considered to have stalled. (default: 5)`);
 
   export const ENCODER_MISSED_STEP_DECAY =
-    trim(`Reduction to missed step total for every good step.`);
+    trim(`Reduction to missed step total for every good step. (default: 5)`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
-    / (encoder resolution).`);
+    / (encoder resolution). (default: 5556 (10000*200/360))`);
 
   export const ENABLE_ENDSTOPS =
-    trim(`Enable use of electronic end-stops during calibration and homing.`);
+    trim(`Enable use of electronic end-stops during calibration and homing.
+    (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
-    trim(`Swap axis minimum and maximum end-stops.`);
+    trim(`Swap axis minimum and maximum end-stops. (default: disabled)`);
 
   export const INVERT_ENDPOINTS =
     trim(`Invert axis end-stops. Enable for normally closed (NC),
-    disable for normally open (NO).`);
+    disable for normally open (NO). (default: disabled)`);
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
