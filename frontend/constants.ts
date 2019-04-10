@@ -409,6 +409,10 @@ export namespace Content {
     movement and watering history while the map is open. Toggling this setting
     will clear data for the current trail.`);
 
+  export const TIME_FORMAT_24_HOUR =
+    trim(`Display time using the 24-hour notation,
+    i.e., 23:00 instead of 11:00pm`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);

@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { selectAllLogs, maybeGetTimeOffset } from "../resources/selectors";
+import { selectAllLogs, maybeGetTimeSettings } from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue
@@ -28,11 +28,12 @@ export function mapStateToProps(props: Everything): LogsProps {
   const sourceFbosConfig =
     sourceFbosConfigValue(fbosConfig, hardware.configuration);
   const apiFirmwareValue = sourceFbosConfig("firmware_hardware").value;
+
   return {
     dispatch: props.dispatch,
     sourceFbosConfig,
     logs: takeSortedLogs(250, props.resources.index),
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
     alerts: betterCompact(Object.values(props.bot.hardware.enigmas || {})),
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)

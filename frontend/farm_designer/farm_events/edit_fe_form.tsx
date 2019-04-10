@@ -44,6 +44,7 @@ import {
   AllowedVariableNodes
 } from "../../sequences/locals_list/locals_list_support";
 import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -60,7 +61,7 @@ export interface FarmEventViewModel {
   timeUnit: string;
   executable_type: string;
   executable_id: string;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   body?: ParameterApplication[];
 }
 
@@ -69,19 +70,19 @@ export interface FarmEventViewModel {
  * USE CASE EXAMPLE: We have a "date" and "time" field that are created from
  *                   a single "start_time" FarmEvent field. */
 export function destructureFarmEvent(
-  fe: TaggedFarmEvent, timeOffset: number): FarmEventViewModel {
+  fe: TaggedFarmEvent, timeSettings: TimeSettings): FarmEventViewModel {
 
   return {
     id: fe.body.id,
-    startDate: formatDate((fe.body.start_time).toString(), timeOffset),
-    startTime: formatTime((fe.body.start_time).toString(), timeOffset),
-    endDate: formatDate((fe.body.end_time || new Date()).toString(), timeOffset),
-    endTime: formatTime((fe.body.end_time || new Date()).toString(), timeOffset),
+    startDate: formatDate((fe.body.start_time).toString(), timeSettings),
+    startTime: formatTime((fe.body.start_time).toString(), timeSettings),
+    endDate: formatDate((fe.body.end_time || new Date()).toString(), timeSettings),
+    endTime: formatTime((fe.body.end_time || new Date()).toString(), timeSettings),
     repeat: (fe.body.repeat || 1).toString(),
     timeUnit: fe.body.time_unit,
     executable_type: fe.body.executable_type,
     executable_id: (fe.body.executable_id || "").toString(),
-    timeOffset,
+    timeSettings,
     body: fe.body.body,
   };
 }
@@ -105,8 +106,8 @@ export function recombine(vm: FarmEventViewModel,
     ? "00:00" : vm.startTime;
   return {
     id: vm.id,
-    start_time: offsetTime(vm.startDate, startTime, vm.timeOffset),
-    end_time: offsetTime(vm.endDate, vm.endTime, vm.timeOffset),
+    start_time: offsetTime(vm.startDate, startTime, vm.timeSettings),
+    end_time: offsetTime(vm.endDate, vm.endTime, vm.timeSettings),
     repeat: parseInt(vm.repeat, 10) || 1,
     time_unit: (isReg ? "never" : vm.timeUnit) as TimeUnit,
     executable_id: parseIntInput(vm.executable_id),
@@ -115,8 +116,9 @@ export function recombine(vm: FarmEventViewModel,
   };
 }
 
-export function offsetTime(date: string, time: string, offset: number): string {
-  const out = moment(date).utcOffset(offset);
+export function offsetTime(
+  date: string, time: string, timeSettings: TimeSettings): string {
+  const out = moment(date).utcOffset(timeSettings.utcOffset);
   const [hrs, min] = time.split(":").map(x => parseInt(x));
   out.hours(hrs);
   out.minutes(min);
@@ -132,7 +134,7 @@ export interface EditFEProps {
   findExecutable: ExecutableQuery;
   title: string;
   deleteBtn?: boolean;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   autoSyncEnabled: boolean;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
@@ -161,7 +163,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   /** API data for the FarmEvent to which form updates can be applied. */
   get viewModel() {
-    return destructureFarmEvent(this.props.farmEvent, this.props.timeOffset);
+    return destructureFarmEvent(this.props.farmEvent, this.props.timeSettings);
   }
 
   get executable() {
@@ -278,7 +280,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   nextItemTime = (fe: FarmEvent, now: moment.Moment
   ): moment.Moment | undefined => {
-    const tz_offset = this.props.timeOffset;
+    const { timeSettings } = this.props;
     const kind = fe.executable_type;
     const start = fe.start_time;
     const isRegimen = (x: TaggedSequence | TaggedRegimen): x is TaggedRegimen =>
@@ -289,7 +291,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       case "Regimen":
         const r = this.props.findExecutable(kind, fe.executable_id);
         const nextItem = isRegimen(r)
-          ? first(nextRegItemTimes(r.body.regimen_items, start, now, tz_offset))
+          ? first(nextRegItemTimes(r.body.regimen_items, start, now, timeSettings))
           : undefined;
         const futureStartTimeFallback = moment(start) > now
           ? moment(start)
@@ -399,7 +401,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
           <EventTimePicker
             className="add-event-start-time"
             name="start_time"
-            tzOffset={this.props.timeOffset}
+            timeSettings={this.props.timeSettings}
             value={this.fieldGet("startTime")}
             onCommit={this.fieldSet("startTime")}
             disabled={forceMidnight}
@@ -432,8 +434,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const startTime = this.fieldGet("startTime");
     const endDate = this.fieldGet("endDate");
     const endTime = this.fieldGet("endTime");
-    const start = offsetTime(startDate, startTime, this.props.timeOffset);
-    const end = offsetTime(endDate, endTime, this.props.timeOffset);
+    const start = offsetTime(startDate, startTime, this.props.timeSettings);
+    const end = offsetTime(endDate, endTime, this.props.timeSettings);
     if (moment(start).isSameOrAfter(moment(end))) {
       return t("End time must be after start time.");
     }
@@ -444,7 +446,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return <div>
       <this.RepeatCheckbox allowRepeat={allowRepeat} />
       <FarmEventRepeatForm
-        tzOffset={this.props.timeOffset}
+        timeSettings={this.props.timeSettings}
         disabled={!allowRepeat}
         hidden={!allowRepeat}
         onChange={this.mergeState}

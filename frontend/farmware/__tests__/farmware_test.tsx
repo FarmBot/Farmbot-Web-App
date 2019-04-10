@@ -17,6 +17,7 @@ import { FarmwareProps } from "../../devices/interfaces";
 import { fakeFarmware, fakeFarmwares } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<FarmwarePage />", () => {
   const fakeProps = (): FarmwareProps => {
@@ -28,9 +29,9 @@ describe("<FarmwarePage />", () => {
       dispatch: jest.fn(),
       currentImage: undefined,
       images: [],
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       syncStatus: "synced",
-      webAppConfig: {},
+      getConfigValue: jest.fn(),
       firstPartyFarmwareNames: [],
       currentFarmware: undefined,
       shouldDisplay: () => false,

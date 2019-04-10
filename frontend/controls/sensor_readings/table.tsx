@@ -1,6 +1,5 @@
 import * as React from "react";
 import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
-
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
 import moment from "moment";
@@ -51,7 +50,7 @@ const TableHeader = () =>
 /** Sensor reading. */
 const TableRow = (props: TableRowProps) => {
   const {
-    sensorReading, timeOffset, period, sensorName, hover, hovered
+    sensorReading, timeSettings, period, sensorName, hover, hovered
   } = props;
   const { uuid, body } = sensorReading;
   const { value, x, y, z, created_at, mode } = body;
@@ -72,8 +71,7 @@ const TableRow = (props: TableRowProps) => {
       {xyzTableEntry(x, y, z)}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
-      {formatLogTime(moment(created_at).unix(),
-        timeOffset)}
+      {formatLogTime(moment(created_at).unix(), timeSettings)}
     </td>
   </tr>;
 };
@@ -99,7 +97,7 @@ export class SensorReadingsTable
                   key={sensorReading.uuid}
                   sensorName={sensorName}
                   sensorReading={sensorReading}
-                  timeOffset={this.props.timeOffset}
+                  timeSettings={this.props.timeSettings}
                   period={period}
                   hover={this.props.hover}
                   hovered={this.props.hovered} />;

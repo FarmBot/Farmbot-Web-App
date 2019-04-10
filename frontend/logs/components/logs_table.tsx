@@ -1,15 +1,15 @@
 import * as React from "react";
-
 import { TaggedLog } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";
 import { isNumber, startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 interface LogsRowProps {
   tlog: TaggedLog;
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export const xyzTableEntry =
@@ -19,10 +19,10 @@ export const xyzTableEntry =
       : t("Unknown");
 
 /** A log is displayed in a single row of the logs table. */
-const LogsRow = ({ tlog, timeOffset }: LogsRowProps) => {
+const LogsRow = ({ tlog, timeSettings }: LogsRowProps) => {
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message } = tlog.body;
-  const time = formatLogTime(created_at || NaN, timeOffset);
+  const time = formatLogTime(created_at || NaN, timeSettings);
   return <tr key={uuid}>
     <td>
       <div className={`saucer ${type}`}>
@@ -67,7 +67,7 @@ export const LogsTable = (props: LogsTableProps) => {
           return <LogsRow
             key={log.uuid}
             tlog={log}
-            timeOffset={props.timeOffset} />;
+            timeSettings={props.timeSettings} />;
         })}
     </tbody>
   </table>;

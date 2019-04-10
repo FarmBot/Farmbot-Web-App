@@ -111,7 +111,7 @@ export class AddFarmEvent
         dispatch={this.props.dispatch}
         findExecutable={this.props.findExecutable}
         title={t("Add Event")}
-        timeOffset={this.props.timeOffset}
+        timeSettings={this.props.timeSettings}
         autoSyncEnabled={this.props.autoSyncEnabled}
         resources={this.props.resources}
         shouldDisplay={this.props.shouldDisplay}

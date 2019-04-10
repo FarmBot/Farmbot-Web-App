@@ -18,13 +18,14 @@ import {
 } from "../__test_support__/resource_index_builder";
 import { error } from "farmbot-toastr";
 import { ResourceName } from "farmbot";
+import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
 
 const fakeProps = (): AppProps => {
   return {
-    timeOffset: 0, // Default to UTC
+    timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
     loaded: [],
     logs: [],

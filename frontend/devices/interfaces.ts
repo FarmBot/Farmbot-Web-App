@@ -18,7 +18,8 @@ import {
 import { IntegerSize } from "../util";
 import { Farmwares } from "../farmware/interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -37,6 +38,7 @@ export interface Props {
   isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
+  timeSettings: TimeSettings;
 }
 
 /** Function to save a Farmware env variable to the API. */
@@ -175,6 +177,7 @@ export interface FarmbotOsProps {
   isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
+  timeSettings: TimeSettings;
 }
 
 export interface FarmbotOsState {
@@ -219,9 +222,9 @@ export interface FarmwareProps {
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;
   farmwares: Farmwares;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   syncStatus: SyncStatus | undefined;
-  webAppConfig: Partial<WebAppConfig>;
+  getConfigValue: GetWebAppConfigValue;
   firstPartyFarmwareNames: string[];
   currentFarmware: string | undefined;
   shouldDisplay: ShouldDisplay;

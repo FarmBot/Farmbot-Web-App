@@ -22,12 +22,13 @@ import { FarmwareProps } from "../../../devices/interfaces";
 import { API } from "../../../api";
 import { selectImage } from "../../images/actions";
 import { clickButton } from "../../../__test_support__/helpers";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<WeedDetector />", () => {
   API.setBaseUrl("http://localhost:3000");
 
   const fakeProps = (): FarmwareProps => ({
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     farmwares: {},
     botToMqttStatus: "up",
     env: {},
@@ -36,7 +37,7 @@ describe("<WeedDetector />", () => {
     currentImage: undefined,
     images: [],
     syncStatus: "synced",
-    webAppConfig: {},
+    getConfigValue: jest.fn(),
     firstPartyFarmwareNames: [],
     currentFarmware: undefined,
     shouldDisplay: () => false,

@@ -5,7 +5,7 @@ import {
   selectAllSensors,
   maybeGetDevice,
   selectAllSensorReadings,
-  maybeGetTimeOffset
+  maybeGetTimeSettings
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import {
@@ -39,6 +39,6 @@ export function mapStateToProps(props: Everything): Props {
     getWebAppConfigVal: getWebAppConfigValue(() => props),
     shouldDisplay,
     sensorReadings: selectAllSensorReadings(props.resources.index),
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
   };
 }

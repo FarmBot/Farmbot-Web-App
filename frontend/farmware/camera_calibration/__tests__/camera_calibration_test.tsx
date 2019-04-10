@@ -15,6 +15,7 @@ import { CameraCalibration } from "../camera_calibration";
 import { CameraCalibrationProps } from "../interfaces";
 import { scanImage } from "../actions";
 import { selectImage } from "../../images/actions";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
@@ -35,7 +36,7 @@ describe("<CameraCalibration/>", () => {
     syncStatus: "synced",
     shouldDisplay: () => false,
     saveFarmwareEnv: jest.fn(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("renders", () => {

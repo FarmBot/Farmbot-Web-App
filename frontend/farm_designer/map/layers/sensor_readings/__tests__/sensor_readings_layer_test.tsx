@@ -9,13 +9,16 @@ import {
 import {
   fakeSensorReading, fakeSensor
 } from "../../../../../__test_support__/fake_state/resources";
+import {
+  fakeTimeSettings
+} from "../../../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadingsLayer />", () => {
   const fakeProps = (): SensorReadingsLayerProps => ({
     visible: true,
     sensorReadings: [fakeSensorReading()],
     mapTransformProps: fakeMapTransformProps(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     sensors: [fakeSensor()],
   });
 

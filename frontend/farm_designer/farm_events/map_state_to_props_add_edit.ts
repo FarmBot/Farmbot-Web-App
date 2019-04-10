@@ -1,7 +1,6 @@
 import { AddEditFarmEventProps } from "../interfaces";
-import { Everything } from "../../interfaces";
+import { Everything, TimeSettings } from "../../interfaces";
 import moment from "moment";
-
 import { history, getPathArray } from "../../history";
 import {
   selectAllFarmEvents,
@@ -14,7 +13,8 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  maybeGetDevice
+  maybeGetDevice,
+  maybeGetTimeSettings
 } from "../../resources/selectors";
 import {
   TaggedFarmEvent,
@@ -36,14 +36,14 @@ import { getFbosConfig } from "../../resources/getters";
 import { t } from "../../i18next_wrapper";
 import { DevSettings } from "../../account/dev/dev_support";
 
-export let formatTime = (input: string, timeOffset: number) => {
+export let formatTime = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).utcOffset(timeOffset).format("HH:mm");
+  return moment(iso).utcOffset(timeSettings.utcOffset).format("HH:mm");
 };
 
-export let formatDate = (input: string, timeOffset: number) => {
+export let formatDate = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).utcOffset(timeOffset).format("YYYY-MM-DD");
+  return moment(iso).utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD");
 };
 
 export let repeatOptions = [
@@ -165,7 +165,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     getFarmEvent,
     findFarmEventByUuid,
     findExecutable,
-    timeOffset: dev.body.tz_offset_hrs,
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     autoSyncEnabled,
     resources: props.resources.index,
     shouldDisplay,

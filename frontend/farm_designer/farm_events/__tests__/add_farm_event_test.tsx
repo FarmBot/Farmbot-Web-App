@@ -13,6 +13,7 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -33,7 +34,7 @@ describe("<AddFarmEvent />", () => {
       getFarmEvent: () => farmEvent,
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       autoSyncEnabled: false,
       shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,

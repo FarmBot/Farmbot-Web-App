@@ -9,6 +9,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { Props } from "../interfaces";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<Controls />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -25,7 +26,7 @@ describe("<Controls />", () => {
       shouldDisplay: () => true,
       getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
       sensorReadings: [],
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     };
   }
 

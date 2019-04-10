@@ -2,12 +2,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { init, error } from "farmbot-toastr";
 import { NavBar } from "./nav";
-import { Everything } from "./interfaces";
+import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
 import { BotState, Xyz } from "./devices/interfaces";
 import { ResourceName, TaggedUser, TaggedLog } from "farmbot";
 import {
-  maybeFetchUser, maybeGetTimeOffset, getDeviceAccountSettings
+  maybeFetchUser,
+  maybeGetTimeSettings,
+  getDeviceAccountSettings,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
@@ -37,7 +39,7 @@ export interface AppProps {
   user: TaggedUser | undefined;
   bot: BotState;
   consistent: boolean;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   axisInversion: Record<Xyz, boolean>;
   xySwap: boolean;
   firmwareConfig: FirmwareConfig | undefined;
@@ -50,7 +52,7 @@ export interface AppProps {
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   return {
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
     user: maybeFetchUser(props.resources.index),
     bot: props.bot,
@@ -115,7 +117,7 @@ export class App extends React.Component<AppProps, {}> {
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
       {syncLoaded && <NavBar
-        timeOffset={this.props.timeOffset}
+        timeSettings={this.props.timeSettings}
         consistent={this.props.consistent}
         user={this.props.user}
         bot={this.props.bot}

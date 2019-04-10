@@ -1,5 +1,6 @@
 import * as Util from "../util";
 import { times } from "lodash";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("util", () => {
   describe("safeStringFetch", () => {
@@ -168,5 +169,19 @@ describe("parseIntInput()", () => {
     expect(Util.parseIntInput("1.5")).toEqual(1);
     expect(Util.parseIntInput("e")).toEqual(NaN);
     expect(Util.parseIntInput("")).toEqual(NaN);
+  });
+});
+
+describe("timeFormatString()", () => {
+  it("returns 12hr time format", () => {
+    const timeSettings = fakeTimeSettings();
+    timeSettings.hour24 = false;
+    expect(Util.timeFormatString(timeSettings)).toEqual("h:mma");
+  });
+
+  it("returns 24hr time format", () => {
+    const timeSettings = fakeTimeSettings();
+    timeSettings.hour24 = true;
+    expect(Util.timeFormatString(timeSettings)).toEqual("H:mm");
   });
 });

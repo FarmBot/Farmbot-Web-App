@@ -10,10 +10,11 @@ import { taggedUser } from "../../__test_support__/user";
 import { NavBarProps } from "../interfaces";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("NavBar", () => {
   const fakeProps = (): NavBarProps => ({
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     consistent: true,
     logs: [],
     bot,

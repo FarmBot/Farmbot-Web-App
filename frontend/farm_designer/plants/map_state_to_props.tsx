@@ -2,7 +2,7 @@ import moment from "moment";
 import { Everything } from "../../interfaces";
 import { EditPlantInfoProps } from "../interfaces";
 import {
-  maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeOffset
+  maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeSettings
 } from "../../resources/selectors";
 import { history } from "../../history";
 import { PlantStage } from "farmbot";
@@ -27,7 +27,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     findPlant,
     push: history.push,
     dispatch: props.dispatch,
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
   };
 }
 

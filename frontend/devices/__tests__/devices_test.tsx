@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 import * as React from "react";
 import { shallow, render } from "enzyme";
@@ -12,6 +10,7 @@ import {
   fakeDevice, buildResourceIndex, FAKE_RESOURCES
 } from "../../__test_support__/resource_index_builder";
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<Devices/>", () => {
   const fakeProps = (): Props => ({
@@ -31,6 +30,7 @@ describe("<Devices/>", () => {
     isValidFbosConfig: false,
     env: {},
     saveFarmwareEnv: jest.fn(),
+    timeSettings: fakeTimeSettings(),
   });
 
   it("renders relevant panels", () => {

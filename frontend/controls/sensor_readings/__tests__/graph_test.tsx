@@ -5,13 +5,14 @@ import { SensorReadingPlotProps } from "../interfaces";
 import {
   fakeSensorReading
 } from "../../../__test_support__/fake_state/resources";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadingPlot />", () => {
   function fakeProps(sr = fakeSensorReading()): SensorReadingPlotProps {
     return {
       readingsForPeriod: () => [sr],
       endDate: 1515715140,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       hover: jest.fn(),
       hovered: undefined,
       showPreviousPeriod: false,

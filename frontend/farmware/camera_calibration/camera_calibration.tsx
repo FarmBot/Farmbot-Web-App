@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col } from "../../ui/index";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace } from "../weed_detector/image_workspace";
@@ -56,7 +55,7 @@ export class CameraCalibration extends
               images={this.props.images}
               currentImage={this.props.currentImage}
               onChange={this.change}
-              timeOffset={this.props.timeOffset}
+              timeSettings={this.props.timeSettings}
               iteration={this.props.iteration}
               morph={this.props.morph}
               blur={this.props.blur}

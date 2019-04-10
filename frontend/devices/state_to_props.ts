@@ -4,6 +4,7 @@ import {
   selectAllImages,
   getDeviceAccountSettings,
   maybeGetDevice,
+  maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
   sourceFbosConfigValue, sourceFwConfigValue
@@ -47,5 +48,6 @@ export function mapStateToProps(props: Everything): Props {
     isValidFbosConfig: !!fbosConfig,
     env,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
   };
 }

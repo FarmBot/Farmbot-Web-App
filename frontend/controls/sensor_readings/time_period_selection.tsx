@@ -1,11 +1,11 @@
 import * as React from "react";
 import { FBSelect, Row, Col, BlurableInput } from "../../ui";
-
 import moment from "moment";
 import { TaggedSensorReading } from "farmbot";
 import { TimePeriodSelectionProps, DateDisplayProps } from "./interfaces";
 import { cloneDeep } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 /** Look up time period label by seconds. */
 const timePeriodLookup = {
@@ -67,17 +67,17 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
 };
 
 /** Format date for widget footer display. */
-const formatDate = (unix: number, offset: number) =>
-  moment.unix(unix).utcOffset(offset).format("MMMM D");
+const formatDate = (unix: number, timeSettings: TimeSettings) =>
+  moment.unix(unix).utcOffset(timeSettings.utcOffset).format("MMMM D");
 
 /** Display sensor reading date filter settings. */
 export const DateDisplay = (props: DateDisplayProps) => {
-  const { endDate, timeOffset, timePeriod, showPreviousPeriod } = props;
+  const { endDate, timeSettings, timePeriod, showPreviousPeriod } = props;
   const dateRange = (end: number) => {
-    const begin = formatDate(end - timePeriod, timeOffset);
+    const begin = formatDate(end - timePeriod, timeSettings);
     return timePeriod > 60 * 60 * 24
-      ? `${begin}–${formatDate(end, timeOffset)}`
-      : formatDate(end, timeOffset);
+      ? `${begin}–${formatDate(end, timeSettings)}`
+      : formatDate(end, timeSettings);
   };
   return <div className="date">
     <label>{t("Date")}:</label>

@@ -16,10 +16,15 @@ import { setWebAppConfigValue } from "../config_storage/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
 import { Alerts } from "./alerts";
+import { TimeSettings } from "../interfaces";
+import { timeFormatString } from "../util";
 
 /** Format log date and time for display in the app. */
-export const formatLogTime = (created_at: number, timeoffset: number) =>
-  moment.unix(created_at).utcOffset(timeoffset).format("MMM D, h:mma");
+export const formatLogTime =
+  (created_at: number, timeSettings: TimeSettings) =>
+    moment.unix(created_at)
+      .utcOffset(timeSettings.utcOffset)
+      .format(`MMM D, ${timeFormatString(timeSettings)}`);
 
 @connect(mapStateToProps)
 export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
@@ -115,7 +120,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
       <Row>
         <LogsTable logs={this.props.logs}
           state={this.state}
-          timeOffset={this.props.timeOffset} />
+          timeSettings={this.props.timeSettings} />
       </Row>
     </Page>;
   }

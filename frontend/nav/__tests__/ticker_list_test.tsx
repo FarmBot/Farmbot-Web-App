@@ -7,6 +7,7 @@ import { Dictionary } from "farmbot";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { TickerListProps } from "../interfaces";
 import { MESSAGE_TYPES } from "../../sequences/interfaces";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<TickerList />", () => {
   const fakeTaggedLog = () => {
@@ -18,7 +19,7 @@ describe("<TickerList />", () => {
 
   const fakeProps = (): TickerListProps => {
     return {
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       logs: [fakeTaggedLog(), fakeTaggedLog()],
       tickerListOpen: false,
       toggle: jest.fn(),

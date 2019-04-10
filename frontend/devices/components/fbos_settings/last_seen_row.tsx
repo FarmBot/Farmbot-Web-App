@@ -1,16 +1,18 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-
 import moment from "moment";
 import { TaggedDevice } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { Content } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
+import { TimeSettings } from "../../../interfaces";
+import { timeFormatString } from "../../../util";
 
 export interface LastSeenProps {
   onClick?(): void;
   botToMqttLastSeen: string;
   device: TaggedDevice;
+  timeSettings: TimeSettings;
 }
 
 export class LastSeen extends React.Component<LastSeenProps, {}> {
@@ -42,8 +44,8 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     if (this.lastSeen) {
       const data = {
         lastSeen: moment(this.lastSeen)
-          .utcOffset(this.props.device.body.tz_offset_hrs)
-          .format("MMMM D, h:mma")
+          .utcOffset(this.props.timeSettings.utcOffset)
+          .format(`MMMM D, ${timeFormatString(this.props.timeSettings)}`)
       };
       return t("FarmBot was last seen {{ lastSeen }}", data);
     } else {

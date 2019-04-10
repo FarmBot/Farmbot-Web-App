@@ -55,7 +55,7 @@ export class Controls extends React.Component<Props, {}> {
     ? <SensorReadings
       sensorReadings={this.props.sensorReadings}
       sensors={this.props.sensors}
-      timeOffset={this.props.timeOffset} />
+      timeSettings={this.props.timeSettings} />
     : <div id="hidden-sensor-history-widget" />
 
   render() {

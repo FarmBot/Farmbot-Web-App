@@ -28,6 +28,7 @@ import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -43,7 +44,7 @@ describe("<GardenMapLegend />", () => {
     showImages: false,
     showSensorReadings: false,
     dispatch: jest.fn(),
-    tzOffset: 0,
+    timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
   });

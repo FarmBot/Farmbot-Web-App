@@ -53,6 +53,7 @@ import {
   fakeDesignerState
 } from "../../../__test_support__/fake_designer_state";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -97,7 +98,7 @@ const fakeProps = (): GardenMapProps => ({
   getConfigValue: jest.fn(),
   sensorReadings: [],
   sensors: [],
-  timeOffset: 0,
+  timeSettings: fakeTimeSettings(),
 });
 
 describe("<GardenMap/>", () => {

@@ -32,6 +32,7 @@ import {
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 const mockSequence = fakeSequence();
 
@@ -44,7 +45,7 @@ describe("<FarmEventForm/>", () => {
     dispatch: jest.fn(() => Promise.resolve()),
     findExecutable: jest.fn(() => mockSequence),
     title: "title",
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     autoSyncEnabled: false,
     shouldDisplay: () => false,
     resources: buildResourceIndex([]).index,
@@ -158,7 +159,7 @@ describe("<FarmEventForm/>", () => {
       timeUnit: "daily",
       executable_type: "Regimen",
       executable_id: "1",
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       body: undefined,
     }, { forceRegimensToMidnight: false });
     expect(result.time_unit).toEqual("never");
@@ -176,7 +177,7 @@ describe("<FarmEventForm/>", () => {
       timeUnit: "daily",
       executable_type: "Regimen",
       executable_id: "1",
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       body: undefined,
     }, { forceRegimensToMidnight: true });
     expect(result.start_time).toEqual("2017-08-01T00:00:00.000Z");
@@ -193,7 +194,7 @@ describe("<FarmEventForm/>", () => {
       timeUnit: "never",
       executable_type: "Regimen",
       executable_id: "1",
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     }, { forceRegimensToMidnight: false });
     expect(result).toEqual({
       id: 1,
@@ -224,7 +225,7 @@ describe("<FarmEventForm/>", () => {
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}
       repeatOptions={repeatOptions}
-      timeOffset={0}
+      timeSettings={fakeTimeSettings()}
       autoSyncEnabled={false}
       resources={buildResourceIndex([]).index}
       shouldDisplay={() => false} />);
@@ -271,7 +272,8 @@ describe("<FarmEventForm/>", () => {
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
     window.alert = jest.fn();
-    await i.commitViewModel(moment(offsetTime("2017-05-22", "06:00", 0)));
+    await i.commitViewModel(moment(offsetTime(
+      "2017-05-22", "06:00", fakeTimeSettings())));
     expect(window.alert).toHaveBeenCalledWith(
       expect.stringContaining("skipped regimen tasks"));
   });
@@ -285,7 +287,8 @@ describe("<FarmEventForm/>", () => {
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
-    await i.commitViewModel(moment(offsetTime("2017-05-25", "06:00", 0)));
+    await i.commitViewModel(moment(offsetTime(
+      "2017-05-25", "06:00", fakeTimeSettings())));
     expect(success).toHaveBeenCalledWith(
       expect.stringContaining("run in 8 days"));
   });
@@ -298,7 +301,8 @@ describe("<FarmEventForm/>", () => {
     p.farmEvent.body.repeat = 7;
     p.farmEvent.body.time_unit = "daily";
     const i = instance(p);
-    await i.commitViewModel(moment(offsetTime("2017-05-25", "06:00", 0)));
+    await i.commitViewModel(moment(offsetTime(
+      "2017-05-25", "06:00", fakeTimeSettings())));
     expect(success).toHaveBeenCalledWith(
       expect.stringContaining("will run in 4 days"));
   });
@@ -528,8 +532,9 @@ describe("destructureFarmEvent", () => {
     const fe = fakeFarmEvent("Sequence", 12);
     fe.body.start_time = "2017-12-28T21:32:00.000Z";
     fe.body.end_time = "2018-12-28T22:32:00.000Z";
-
-    const { startTime, endTime } = destructureFarmEvent(fe, 1);
+    const timeSettings = fakeTimeSettings();
+    timeSettings.utcOffset = 1;
+    const { startTime, endTime } = destructureFarmEvent(fe, timeSettings);
     expect(startTime).toBe("22:32");
     expect(endTime).toBe("23:32");
   });

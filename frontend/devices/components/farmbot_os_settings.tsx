@@ -81,6 +81,7 @@ export class FarmbotOsSettings
     return <LastSeen
       onClick={() => this.props.dispatch(refresh(this.props.account))}
       botToMqttLastSeen={this.props.botToMqttLastSeen}
+      timeSettings={this.props.timeSettings}
       device={this.props.account} />;
   }
 

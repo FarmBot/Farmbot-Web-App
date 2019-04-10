@@ -1,4 +1,4 @@
-import { Everything } from "../interfaces";
+import { Everything, TimeSettings } from "../interfaces";
 import {
   Props, RegimenItem, RegimenItemCalendarRow, CalendarRow
 } from "./interfaces";
@@ -10,14 +10,16 @@ import {
   findId,
   findSequence,
   maybeGetDevice,
-  findSequenceById
+  findSequenceById,
+  maybeGetTimeSettings
 } from "../resources/selectors";
 import { TaggedRegimen } from "farmbot";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
   randomColor, determineInstalledOsVersion,
-  shouldDisplay as shouldDisplayFunc
+  shouldDisplay as shouldDisplayFunc,
+  timeFormatString
 } from "../util";
 import { resourceUsageList } from "../resources/in_use";
 import { groupBy, chain, sortBy } from "lodash";
@@ -30,8 +32,9 @@ export function mapStateToProps(props: Everything): Props {
   } = resources.consumers.regimens;
   const { index } = resources;
   const current = maybeGetRegimen(index, currentRegimen);
+  const timeSettings = maybeGetTimeSettings(props.resources.index);
   const calendar = current ?
-    generateCalendar(current, index, dispatch) : [];
+    generateCalendar(current, index, dispatch, timeSettings) : [];
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
@@ -72,8 +75,6 @@ export function mapStateToProps(props: Everything): Props {
   };
 }
 
-/** Formatting of calendar row dates. */
-const FMT = "h:mm a";
 const SORT_KEY: keyof RegimenItemCalendarRow = "sortKey";
 
 /** Does all the heavy lifting related to joining regimen items with their
@@ -81,8 +82,9 @@ const SORT_KEY: keyof RegimenItemCalendarRow = "sortKey";
  */
 function generateCalendar(regimen: TaggedRegimen,
   index: ResourceIndex,
-  dispatch: Function): CalendarRow[] {
-  const mapper = createRows(index, dispatch, regimen);
+  dispatch: Function,
+  timeSettings: TimeSettings): CalendarRow[] {
+  const mapper = createRows(index, dispatch, regimen, timeSettings);
   const rows = regimen.body.regimen_items.map(mapper);
   const dict = groupBy(rows, "day");
   const makeRows = (day: string): CalendarRow => ({ day: day, items: dict[day] });
@@ -100,7 +102,10 @@ function generateCalendar(regimen: TaggedRegimen,
     });
 }
 
-const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen) =>
+const createRows = (
+  index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen,
+  timeSettings: TimeSettings
+) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
     const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
@@ -108,7 +113,8 @@ const createRows = (index: ResourceIndex, dispatch: Function, regimen: TaggedReg
     const d = moment.duration(time_offset);
     const { name } = sequence.body;
     const color = sequence.body.color || randomColor();
-    const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FMT);
+    const FORMAT = timeFormatString(timeSettings);
+    const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;
     return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
   };

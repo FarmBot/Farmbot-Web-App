@@ -5,13 +5,14 @@ import { SensorReadingsTableProps } from "../interfaces";
 import {
   fakeSensorReading, fakeSensor
 } from "../../../__test_support__/fake_state/resources";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadingsTable />", () => {
   function fakeProps(sr = fakeSensorReading()): SensorReadingsTableProps {
     return {
       readingsForPeriod: () => [sr],
       sensors: [fakeSensor()],
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       hover: jest.fn(),
       hovered: undefined,
     };

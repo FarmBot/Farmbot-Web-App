@@ -11,7 +11,6 @@ import { WeedDetector } from "./weed_detector/index";
 import { envGet } from "./weed_detector/remote_env/selectors";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareList } from "./farmware_list";
-
 import {
   FarmwareForm, needsFarmwareForm, farmwareHelpText
 } from "./farmware_forms";
@@ -24,6 +23,7 @@ import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
+import { BooleanSetting } from "../session_keys";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -133,7 +133,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         return <Photos
           syncStatus={this.props.syncStatus}
           botToMqttStatus={this.props.botToMqttStatus}
-          timeOffset={this.props.timeOffset}
+          timeSettings={this.props.timeSettings}
           dispatch={this.props.dispatch}
           images={this.props.images}
           currentImage={this.props.currentImage}
@@ -155,7 +155,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
           S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
           V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
-          timeOffset={this.props.timeOffset}
+          timeSettings={this.props.timeSettings}
           shouldDisplay={this.props.shouldDisplay}
           botToMqttStatus={this.props.botToMqttStatus} />;
       case "plant_detection":
@@ -213,6 +213,8 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
     const online = this.props.botToMqttStatus === "up";
     const infoOpen = (this.props.infoOpen && online) ? "farmware-info-open" : "";
     const activeClasses = [farmwareOpen, infoOpen].join(" ");
+    const showFirstParty =
+      !!this.props.getConfigValue(BooleanSetting.show_first_party_farmware);
     return <Page className="farmware-page">
       <Row>
         <Col xs={6}>
@@ -234,7 +236,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             farmwares={this.props.farmwares}
             installations={this.props.taggedFarmwareInstallations}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
-            showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
+            showFirstParty={showFirstParty} />
         </LeftPanel>
         <CenterPanel
           className={`farmware-input-panel ${activeClasses}`}
@@ -257,7 +259,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             installations={this.props.taggedFarmwareInstallations}
             shouldDisplay={this.props.shouldDisplay}
             firstPartyFarmwareNames={this.props.firstPartyFarmwareNames}
-            showFirstParty={!!this.props.webAppConfig.show_first_party_farmware} />
+            showFirstParty={showFirstParty} />
         </RightPanel>
       </Row>
     </Page>;

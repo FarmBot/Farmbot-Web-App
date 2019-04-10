@@ -84,6 +84,13 @@ export const fetchLabFeatures =
       value: false,
       callback: () => sessionStorage.setItem(VirtualTrail.records, "[]")
     },
+    {
+      name: t("Use 24-hour time format"),
+      description: t(Content.TIME_FORMAT_24_HOUR),
+      // TODO: Add config to FBJS and use `BooleanSetting.time_format_24_hour`.
+      storageKey: "time_format_24_hour" as BooleanConfigKey,
+      value: false,
+    },
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).

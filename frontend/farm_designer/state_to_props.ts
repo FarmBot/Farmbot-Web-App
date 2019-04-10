@@ -5,12 +5,12 @@ import {
   selectAllCrops,
   joinToolsAndSlot,
   selectAllImages,
-  maybeGetTimeOffset,
   selectAllPeripherals,
   selectAllPlantTemplates,
   selectAllSensorReadings,
   selectAllSensors,
-  maybeGetDevice
+  maybeGetDevice,
+  maybeGetTimeSettings
 } from "../resources/selectors";
 import {
   validBotLocationData, validFwConfig, unpackUUID,
@@ -124,7 +124,7 @@ export function mapStateToProps(props: Everything): Props {
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,
     cameraCalibrationData,
-    tzOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue,
     sensorReadings,
     sensors: selectAllSensors(props.resources.index),
