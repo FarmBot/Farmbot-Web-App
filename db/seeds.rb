@@ -6,11 +6,10 @@ if Rails.env == "development"
   ENV["MQTT_HOST"] = "blooper.io"
   ENV["OS_UPDATE_SERVER"] = "http://example-server.com"
   # CREDIT: Faker Ruby Gem
-  VEGGIES = %w(artichoke arugula asparagus broccoli
-               cabbage carrot cauliflower celery chive cucumber
-               eggplant endive garlic jicama kale kohlrabi leek lettuce okra onion
-               parsnip pepper potato pumpkin radicchio radish raspberry rhubarb spinach
-               squash tomato turnip zucchini)
+  VEGGIES = %w(artichoke arugula asparagus broccoli cabbage carrot cauliflower
+               celery cucumber eggplant garlic kale kohlrabi leek lettuce okra
+               parsnip potato pumpkin radicchio radish raspberry spinach squash
+               tomato turnip zucchini)
 
   [
     Sensor,
@@ -60,12 +59,11 @@ if Rails.env == "development"
                                z: rand(1...300) })
   end
 
-  PLANT_COUNT.times do
-    veggie = VEGGIES.sample
+  VEGGIES.each do |veggie|
     Plant.create(device: u.device,
-                 x: rand(40...970),
-                 y: rand(40...470),
-                 radius: rand(10...50),
+                 x: rand(40...1500),
+                 y: rand(40...800),
+                 radius: rand(30...60),
                  name: veggie,
                  openfarm_slug: veggie.downcase.gsub(" ", "-"))
   end

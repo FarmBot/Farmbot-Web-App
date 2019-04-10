@@ -34,7 +34,12 @@ module Api
       mutate Devices::Sync.run(device: current_device)
     end
 
-  private
+    def seed
+      Devices::SeedData.delay.run!(params.as_json, device: current_device)
+      render json: { done: "Loading resources now." }
+    end
+
+    private
 
     # Store the JSON on the local filesystem for self hosted users that don't
     # have email set up.
