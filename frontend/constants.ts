@@ -212,14 +212,15 @@ export namespace ToolTips {
     location.`);
 
   export const WRITE_PIN =
-    trim(`The Write Pin step instructs FarmBot to set the specified pin on the
-    Arduino to the specified mode and value. Use the digital pin mode for
-    on (1) and off (0) control, and analog pin mode for PWM (pulse width
+    trim(`The Control Peripheral step instructs FarmBot to set the specified
+    pin on the Arduino to the specified mode and value. Use the digital pin mode
+    for on (1) and off (0) control, and analog pin mode for PWM (pulse width
     modulation) (0-255).`);
 
   export const READ_PIN =
-    trim(`The Read Pin step instructs FarmBot to read the current value of the
-    specified pin. Pin Mode: Use digital for a 0 (LOW) or 1 (HIGH) response,
+    trim(`The Read Sensor step instructs FarmBot to read the
+    current value of the specified sensor or peripheral.
+    Pin Mode: Use digital for a 0 (LOW) or 1 (HIGH) response,
     and analog for a voltage reading (0-1023 for 0-5V).`);
 
   export const WAIT =

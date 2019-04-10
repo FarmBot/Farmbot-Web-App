@@ -7,6 +7,7 @@ import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { MessageType } from "./interfaces";
 import { t } from "../i18next_wrapper";
+import { NOTHING_SELECTED } from "./locals_list/handle_select";
 
 export interface StepButtonProps {
   dispatch: Function;
@@ -23,7 +24,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       step={{
         kind: "move_absolute",
         args: {
-          location: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+          location: NOTHING_SELECTED,
           offset: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
           speed: CONFIG_DEFAULTS.speed
         }
@@ -42,22 +43,22 @@ export function StepButtonCluster(props: StepButtonProps) {
     <StepButton {...commonStepProps}
       step={{
         kind: "write_pin",
-        args: { pin_number: 0, pin_value: 0, pin_mode: 0 }
+        args: { pin_number: NOTHING_SELECTED, pin_value: 0, pin_mode: 0 }
       }}
       color="orange">
-      {t("WRITE PIN")}
+      {t("CONTROL PERIPHERAL")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
         kind: "read_pin",
         args: {
-          pin_number: 0,
+          pin_number: NOTHING_SELECTED,
           pin_mode: 0,
           label: "---"
         }
       }}
       color="yellow">
-      {t("READ PIN")}
+      {t("READ SENSOR")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
