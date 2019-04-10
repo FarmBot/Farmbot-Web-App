@@ -127,7 +127,7 @@ export interface SequencesListState {
 }
 
 export interface MoveAbsState {
-  isToolSelected: boolean;
+  more: boolean;
 }
 
 export interface StepButtonParams {

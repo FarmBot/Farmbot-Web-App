@@ -190,12 +190,12 @@ export namespace ToolTips {
     trim(`Here is the list of all of your sequences. Click one to edit.`);
 
   export const MOVE_ABSOLUTE =
-    trim(`The Move Absolute step instructs FarmBot to move to the specified
+    trim(`The Move To step instructs FarmBot to move to the specified
     coordinate regardless of the current position. For example, if FarmBot is
-    currently at X=1000, Y=1000 and it receives a Move Absolute where X=0 and
+    currently at X=1000, Y=1000 and it receives a Move To where X=0 and
     Y=3000, then FarmBot will move to X=0, Y=3000. If FarmBot must move in
     multiple directions, it will move diagonally. If you require straight
-    movements along one axis at a time, use multiple Move Absolute steps.
+    movements along one axis at a time, use multiple Move To steps.
     Offsets allow you to more easily instruct FarmBot to move to a location,
     but offset from it by the specified amount. For example moving to just
     above where a peripheral is located. Using offsets lets FarmBot do the
@@ -208,7 +208,7 @@ export namespace ToolTips {
     will move to X=1000, Y=4000. If FarmBot must move in multiple directions,
     it will move diagonally. If you require straight movements along one axis
     at a time, use  multiple Move Relative steps. Move Relative steps should be
-    preceded by a Move Absolute step to ensure you are starting from a known
+    preceded by a Move To step to ensure you are starting from a known
     location.`);
 
   export const WRITE_PIN =

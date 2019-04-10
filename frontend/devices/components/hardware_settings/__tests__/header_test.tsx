@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Header } from "../header";
-import { shallow } from "enzyme";
+import { mount } from "enzyme";
 
 describe("<Header/>", () => {
   it("renders", () => {
     const fn = jest.fn();
-    const el = shallow(<Header
+    const el = mount(<Header
       title="FOO"
       expanded={true}
       name={"motors"}

@@ -29,7 +29,7 @@ export function StepButtonCluster(props: StepButtonProps) {
         }
       }}
       color="blue">
-      {t("MOVE ABSOLUTE")}
+      {t("MOVE TO")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{

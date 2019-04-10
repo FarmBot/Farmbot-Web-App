@@ -283,11 +283,8 @@ a {
   }
 }
 
-.hardware-widget,
-.device-widget {
-  h4 {
-    cursor: pointer;
-  }
+.expandable-header {
+  cursor: pointer;
   .icon-toggle {
     font-size: 1.2rem;
     font-weight: bold;
@@ -296,6 +293,10 @@ a {
       font-size: 1rem;
     }
   }
+}
+
+.hardware-widget,
+.device-widget {
   .row {
     margin-bottom: 0.6rem;
   }

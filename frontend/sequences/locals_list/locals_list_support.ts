@@ -73,4 +73,4 @@ export interface LocationFormProps extends CommonProps {
 }
 
 export const PARENT =
-  ({ value: "parent", label: "Parent", headingId: "parameter" });
+  ({ value: "parent", label: "Variable", headingId: "parameter" });
