@@ -15,7 +15,7 @@ import { t } from "../../i18next_wrapper";
 
 export function PinMode(props: StepParams) {
   return <Col xs={6} md={3}>
-    <label>{t("Pin Mode")}</label>
+    <label>{t("Mode")}</label>
     <FBSelect
       key={JSON.stringify(props.currentSequence)}
       onChange={(x) => setPinMode(x, props)}
@@ -42,7 +42,7 @@ export function TileReadPin(props: StepParams) {
     <StepContent className={className}>
       <Row>
         <Col xs={6} md={6}>
-          <label>{t("Pin")}</label>
+          <label>{t("sensor or peripheral")}</label>
           <FBSelect
             key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
@@ -50,6 +50,7 @@ export function TileReadPin(props: StepParams) {
             list={pinsAsDropDownsReadPin(props.resources,
               shouldDisplay || (() => false))} />
         </Col>
+        <PinMode {...props} />
         <Col xs={6} md={3}>
           <label>{t("Data Label")}</label>
           <StepInputBox dispatch={dispatch}
@@ -58,7 +59,6 @@ export function TileReadPin(props: StepParams) {
             sequence={currentSequence}
             field="label" />
         </Col>
-        <PinMode {...props} />
       </Row>
     </StepContent>
   </StepWrapper>;

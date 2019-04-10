@@ -70,7 +70,9 @@ export function locationFormList(resources: ResourceIndex,
     .map(({ tool, location }) => formatTools(tool, location))
     .filter(x => parseInt("" + x.value) > 0);
   const group = maybeGroup(!!displayGroups);
-  return heading("Tool")
+  return [COORDINATE_DDI()]
+    .concat(additionalItems)
+    .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(group(everyPointDDI("Tool")))
     .concat(group(everyPointDDI("ToolSlot")))
@@ -79,10 +81,7 @@ export function locationFormList(resources: ResourceIndex,
     .concat(group(everyPointDDI("Plant")))
     .concat(heading("GenericPointer"))
     .concat(genericPointerDDI)
-    .concat(group(everyPointDDI("GenericPointer")))
-    .concat(heading("Other"))
-    .concat(additionalItems)
-    .concat(COORDINATE_DDI());
+    .concat(group(everyPointDDI("GenericPointer")));
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */
@@ -136,7 +135,7 @@ export const everyPointDDI = (value: EveryPointType): DropDownItem =>
   ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
 
 export const COORDINATE_DDI = (): DropDownItem =>
-  ({ value: "", label: t("Coordinate"), headingId: "Coordinate" });
+  ({ value: "", label: t("Custom Coordinates"), headingId: "Coordinate" });
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });

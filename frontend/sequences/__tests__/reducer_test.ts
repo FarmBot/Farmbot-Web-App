@@ -10,7 +10,9 @@ describe("sequence reducer", () => {
     after: string | undefined) {
     const sequence = fakeSequence();
     sequence.uuid = "sequence";
-    const state: SequenceReducerState = { current: before, menuOpen: false };
+    const state: SequenceReducerState = {
+      current: before, menuOpen: false, stepIndex: undefined
+    };
     const action = { type: actionType, payload: sequence };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe(after);
@@ -21,9 +23,20 @@ describe("sequence reducer", () => {
   });
 
   it("sets current sequence with string", () => {
-    const state: SequenceReducerState = { current: undefined, menuOpen: false };
+    const state: SequenceReducerState = {
+      current: undefined, menuOpen: false, stepIndex: undefined
+    };
     const action = { type: Actions.SELECT_SEQUENCE, payload: "sequence" };
     const stateAfter = sequenceReducer(state, action);
     expect(stateAfter.current).toBe("sequence");
+  });
+
+  it("sets step position", () => {
+    const state: SequenceReducerState = {
+      current: undefined, menuOpen: false, stepIndex: undefined
+    };
+    const action = { type: Actions.SET_SEQUENCE_STEP_POSITION, payload: 1 };
+    const stateAfter = sequenceReducer(state, action);
+    expect(stateAfter.stepIndex).toBe(1);
   });
 });

@@ -49,6 +49,10 @@ interface CommonProps {
   allowedVariableNodes: AllowedVariableNodes;
   /** Don't display group dropdown items. */
   disallowGroups?: boolean;
+  /** Add ability to collapse the form content. */
+  collapsible?: boolean;
+  collapsed?: boolean;
+  toggleVarShow?: () => void;
 }
 
 export interface LocalsListProps extends CommonProps {
@@ -69,4 +73,4 @@ export interface LocationFormProps extends CommonProps {
 }
 
 export const PARENT =
-  ({ value: "parent", label: "Parent", headingId: "parameter" });
+  ({ value: "parent", label: "Variable", headingId: "parameter" });

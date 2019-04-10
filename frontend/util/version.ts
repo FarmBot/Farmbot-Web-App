@@ -1,7 +1,6 @@
 import { isString, isUndefined } from "lodash";
 import { BotState, Feature, MinOsFeatureLookup } from "../devices/interfaces";
 import { TaggedDevice } from "farmbot";
-import { DevSettings } from "../account/dev/dev_support";
 
 /**
  * for semverCompare()
@@ -101,9 +100,10 @@ export enum MinVersionOverride {
  * @param lookupData min req versions data, for example {"feature": "1.0.0"}
  */
 export function shouldDisplay(
-  current: string | undefined, lookupData: MinOsFeatureLookup | undefined) {
+  current: string | undefined,
+  lookupData: MinOsFeatureLookup | undefined,
+  override: string | undefined) {
   return function (feature: Feature): boolean {
-    const override = DevSettings.overriddenFbosVersion();
     const target = override || current;
     if (isString(target)) {
       const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;

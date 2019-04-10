@@ -1,8 +1,11 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { TimePeriodSelection, getEndDate, DateDisplay } from "../time_period_selection";
+import {
+  TimePeriodSelection, getEndDate, DateDisplay
+} from "../time_period_selection";
 import { fakeSensorReading } from "../../../__test_support__/fake_state/resources";
 import { TimePeriodSelectionProps, DateDisplayProps } from "../interfaces";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<TimePeriodSelection />", () => {
   function fakeProps(): TimePeriodSelectionProps {
@@ -62,7 +65,7 @@ describe("<DateDisplay />", () => {
       timePeriod: 3600 * 24 * 7,
       endDate: 1515715140,
       showPreviousPeriod: true,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     };
   }
 

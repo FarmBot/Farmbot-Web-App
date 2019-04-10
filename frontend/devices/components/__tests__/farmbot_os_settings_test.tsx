@@ -12,6 +12,7 @@ import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { Actions } from "../../../constants";
 import { SpecialStatus } from "farmbot";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {
@@ -33,6 +34,7 @@ describe("<FarmbotOsSettings/>", () => {
       isValidFbosConfig: false,
       env: {},
       saveFarmwareEnv: jest.fn(),
+      timeSettings: fakeTimeSettings(),
     };
   };
 

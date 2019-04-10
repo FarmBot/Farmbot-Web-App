@@ -16,6 +16,7 @@ export interface FarmwareFormProps {
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
+  botOnline: boolean;
 }
 
 /** Namespace a Farmware config with the Farmware name. */
@@ -91,6 +92,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
     <div className={kebabCase(farmware.name)}>
       <button
         className="fb-button green farmware-button"
+        disabled={!props.botOnline}
         onClick={() => run(farmware.name, farmware.config)}>
         {t("Run")}
       </button>

@@ -1,8 +1,7 @@
 import * as React from "react";
-
 import { ControlPanelState } from "../../interfaces";
 import { toggleControlPanel } from "../../actions";
-import { t } from "../../../i18next_wrapper";
+import { ExpandableHeader } from "../../../ui/expandable_header";
 
 interface Props {
   dispatch: Function;
@@ -13,11 +12,8 @@ interface Props {
 
 export let Header = (props: Props) => {
   const { dispatch, name, title, expanded } = props;
-  const icon_string = expanded ? "minus" : "plus";
-  return <h4 onClick={() => dispatch(toggleControlPanel(name))}>
-    {t(title)}
-    <span className="icon-toggle">
-      &nbsp;&nbsp;[<i className={`fa fa-${icon_string}`} />]
-    </span>
-  </h4>;
+  return <ExpandableHeader
+    expanded={expanded}
+    title={title}
+    onClick={() => dispatch(toggleControlPanel(name))} />;
 };

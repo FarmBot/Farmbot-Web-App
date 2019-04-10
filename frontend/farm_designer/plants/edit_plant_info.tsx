@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantInfoBase } from "./plant_info_base";
 import { PlantPanel } from "./plant_panel";
@@ -23,7 +22,7 @@ export class EditPlantInfo extends PlantInfoBase {
         onDestroy={this.destroy}
         updatePlant={this.updatePlant}
         dispatch={this.props.dispatch}
-        timeOffset={this.props.timeOffset}
+        timeSettings={this.props.timeSettings}
         inSavedGarden={!!this.props.openedSavedGarden} />
     </DesignerPanel>;
   }

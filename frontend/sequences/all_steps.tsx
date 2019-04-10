@@ -8,6 +8,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
 import { HardwareFlags, FarmwareInfo } from "./interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
+import { AddCommandButton } from "./sequence_editor_middle_active";
 
 interface AllStepsProps {
   sequence: TaggedSequence;
@@ -35,6 +36,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         const readThatCommentAbove = getStepTag(currentStep);
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
+          <AddCommandButton dispatch={dispatch} index={index} />
           <DropArea callback={(key) => onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}

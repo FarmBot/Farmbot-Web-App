@@ -5,10 +5,10 @@ import { popWeek, pushWeek, selectDays, deselectDays } from "../bulk_scheduler/a
 import { defensiveClone } from "../../util";
 
 const STATE: RegimenState = {
-  "dailyOffsetMs": 300000,
-  "selectedSequenceUUID": "Sequence.71.167",
-  "currentRegimen": "Regimen.4.56",
-  "weeks": [
+  dailyOffsetMs: 300000,
+  selectedSequenceUUID: "Sequence.71.167",
+  currentRegimen: "Regimen.4.56",
+  weeks: [
     {
       "days": {
         "day1": true,
@@ -20,7 +20,8 @@ const STATE: RegimenState = {
         "day7": false
       }
     }
-  ]
+  ],
+  schedulerOpen: false,
 };
 
 describe("Regimens reducer", () => {
@@ -121,5 +122,18 @@ describe("SET_TIME_OFFSET", () => {
     };
     const nextState = regimensReducer(STATE, action);
     expect(nextState.dailyOffsetMs).toBe(action.payload);
+  });
+});
+
+describe("SET_SCHEDULER_STATE", () => {
+  it("sets schedulerOpen", () => {
+    const state = defensiveClone(STATE);
+    state.schedulerOpen = false;
+    const action = {
+      type: Actions.SET_SCHEDULER_STATE,
+      payload: true
+    };
+    const nextState = regimensReducer(STATE, action);
+    expect(nextState.schedulerOpen).toBe(action.payload);
   });
 });

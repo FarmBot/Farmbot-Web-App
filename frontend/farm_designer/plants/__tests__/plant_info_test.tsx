@@ -13,6 +13,7 @@ import { mount } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../interfaces";
 import { history } from "../../../history";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<PlantInfo />", () => {
   function fakeProps(): EditPlantInfoProps {
@@ -21,7 +22,7 @@ describe("<PlantInfo />", () => {
       findPlant: fakePlant,
       dispatch: jest.fn(),
       openedSavedGarden: undefined,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     };
   }
 

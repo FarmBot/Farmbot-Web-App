@@ -4,21 +4,23 @@ import { TimezoneSelector } from "../timezone_selector";
 import { inferTimezone } from "../guess_timezone";
 
 describe("<TimezoneSelector/>", () => {
+  const fakeProps = (): TimezoneSelector["props"] => ({
+    currentTimezone: undefined,
+    onUpdate: jest.fn(),
+  });
+
   it("handles a dropdown selection", () => {
-    const props: TimezoneSelector["props"] =
-      ({ currentTimezone: undefined, onUpdate: jest.fn() });
-    const instance = new TimezoneSelector(props);
+    const p = fakeProps();
+    const instance = new TimezoneSelector(p);
     const ddi = { value: "UTC", label: "_" };
     instance.itemSelected(ddi);
-    expect(props.onUpdate).toHaveBeenCalledWith(ddi.value);
+    expect(p.onUpdate).toHaveBeenCalledWith(ddi.value);
   });
 
   it("triggers life cycle callbacks", () => {
-    const props: TimezoneSelector["props"] =
-      ({ currentTimezone: undefined, onUpdate: jest.fn() });
-    const el = mount<TimezoneSelector>(<TimezoneSelector {...props} />);
-    el.simulate("change");
-    // componentWillMount() triggers timezone inference:
-    expect(props.onUpdate).toHaveBeenCalledWith(inferTimezone(undefined));
+    const p = fakeProps();
+    const el = mount(<TimezoneSelector {...p} />);
+    el.mount();
+    expect(p.onUpdate).toHaveBeenCalledWith(inferTimezone(undefined));
   });
 });

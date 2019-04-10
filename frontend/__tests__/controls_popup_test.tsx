@@ -1,10 +1,8 @@
 const mockDevice = {
-  moveRelative: jest.fn(() => { return Promise.resolve(); }),
+  moveRelative: jest.fn(() => Promise.resolve()),
+  takePhoto: jest.fn(() => Promise.resolve()),
 };
-
-jest.mock("../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { ControlsPopup } from "../controls_popup";
@@ -22,6 +20,7 @@ describe("<ControlsPopup />", () => {
       xySwap: false,
       arduinoBusy: false,
       stepSize: 100,
+      botOnline: true,
     };
   };
 
@@ -74,5 +73,10 @@ describe("<ControlsPopup />", () => {
     button.simulate("click");
     expect(mockDevice.moveRelative)
       .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
+  });
+
+  it("takes photo", () => {
+    wrapper.find("button").at(4).simulate("click");
+    expect(mockDevice.takePhoto).toHaveBeenCalled();
   });
 });

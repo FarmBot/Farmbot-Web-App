@@ -46,6 +46,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -71,6 +72,9 @@ export interface SequenceHeaderProps {
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
+  variablesCollapsed: boolean;
+  toggleVarShow: () => void;
+  confirmStepDeletion: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -107,6 +111,7 @@ export interface Sequence extends CeleryScriptSequence {
 export interface SequenceReducerState {
   current: string | undefined;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequencesListProps {
@@ -122,7 +127,7 @@ export interface SequencesListState {
 }
 
 export interface MoveAbsState {
-  isToolSelected: boolean;
+  more: boolean;
 }
 
 export interface StepButtonParams {
@@ -139,6 +144,7 @@ export interface StepButtonParams {
   | "purple"
   | "pink"
   | "gray";
+  index?: number | undefined;
 }
 
 export interface CopyParams {

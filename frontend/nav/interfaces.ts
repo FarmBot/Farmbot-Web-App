@@ -1,6 +1,7 @@
 import { BotState } from "../devices/interfaces";
-import { TaggedUser, TaggedLog } from "farmbot";
+import { TaggedUser, TaggedLog, TaggedDevice } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface SyncButtonProps {
   dispatch: Function;
@@ -15,9 +16,10 @@ export interface NavBarProps {
   bot: BotState;
   user: TaggedUser | undefined;
   dispatch: Function;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
+  device: TaggedDevice;
 }
 
 export interface NavBarState {
@@ -37,7 +39,7 @@ export interface TickerListProps {
   toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: TaggedLog[]
   tickerListOpen: boolean;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
 }
 

@@ -18,6 +18,7 @@ import { GardenMapLegendProps } from "../map/interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeImage } from "../../__test_support__/fake_state/resources";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<FarmDesigner/>", () => {
   function fakeProps(): Props {
@@ -47,7 +48,7 @@ describe("<FarmDesigner/>", () => {
         origin: undefined,
         calibrationZ: undefined
       },
-      tzOffset: 0,
+      timeSettings: fakeTimeSettings(),
       getConfigValue: jest.fn(),
       sensorReadings: [],
       sensors: [],
@@ -55,9 +56,9 @@ describe("<FarmDesigner/>", () => {
   }
 
   it("loads default map settings", () => {
-    localStorage.setItem("showPoints", "false");
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps =
+      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.legendMenuOpen).toBeFalsy();
     expect(legendProps.showPlants).toBeTruthy();
     expect(legendProps.showPoints).toBeTruthy();
@@ -80,7 +81,8 @@ describe("<FarmDesigner/>", () => {
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
     const wrapper = mount(<FarmDesigner {...p} />);
-    const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps =
+      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.imageAgeInfo)
       .toEqual({ newestDate: "2001-01-03T00:00:00.000Z", toOldest: 2 });
   });

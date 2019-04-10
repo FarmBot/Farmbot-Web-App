@@ -1,15 +1,17 @@
-
 import { farmwareReducer } from "../reducer";
 import { FarmwareState } from "../interfaces";
 import { Actions } from "../../constants";
-import { fakeImage, fakeFarmwareInstallation } from "../../__test_support__/fake_state/resources";
+import {
+  fakeImage, fakeFarmwareInstallation
+} from "../../__test_support__/fake_state/resources";
 
 describe("farmwareReducer", () => {
   const fakeState = (): FarmwareState => {
     return {
       currentFarmware: undefined,
       currentImage: undefined,
-      firstPartyFarmwareNames: []
+      firstPartyFarmwareNames: [],
+      infoOpen: false,
     };
   };
 
@@ -81,5 +83,15 @@ describe("farmwareReducer", () => {
     expect(oldState.firstPartyFarmwareNames)
       .not.toEqual(newState.firstPartyFarmwareNames);
     expect(newState.firstPartyFarmwareNames).toEqual(FARMWARE_NAMES);
+  });
+
+  it("sets the farmware info panel state", () => {
+    const oldState = fakeState();
+    const newState = farmwareReducer(oldState, {
+      type: Actions.SET_FARMWARE_INFO_STATE,
+      payload: true
+    });
+    expect(oldState.infoOpen).toBeFalsy();
+    expect(newState.infoOpen).toBeTruthy();
   });
 });

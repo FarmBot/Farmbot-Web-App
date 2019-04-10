@@ -1472,7 +1472,8 @@ CREATE TABLE public.web_app_configs (
     show_historic_points boolean DEFAULT false,
     show_sensor_readings boolean DEFAULT false,
     show_dev_menu boolean DEFAULT false,
-    internal_use text
+    internal_use text,
+    time_format_24_hour boolean DEFAULT false
 );
 
 
@@ -2819,6 +2820,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190108211419'),
 ('20190209133811'),
 ('20190212215842'),
-('20190307205648');
+('20190307205648'),
+('20190401212119');
 
 

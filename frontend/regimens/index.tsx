@@ -8,9 +8,23 @@ import { Page, Row, LeftPanel, CenterPanel, RightPanel } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { isTaggedRegimen } from "../resources/tagged_resources";
 import { setActiveRegimenByName } from "./set_active_regimen_by_name";
-
-import { ToolTips } from "../constants";
 import { t } from "../i18next_wrapper";
+import { ToolTips, Actions } from "../constants";
+import { unselectRegimen } from "./actions";
+
+const RegimenBackButton = (props: { dispatch: Function, className: string }) => {
+  const schedulerOpen = props.className.includes("inserting-item");
+  return <Row>
+    <button
+      className={`back-to-regimens fb-button gray ${props.className}`}
+      onClick={() => schedulerOpen
+        ? props.dispatch({ type: Actions.SET_SCHEDULER_STATE, payload: false })
+        : props.dispatch(unselectRegimen())}>
+      <i className="fa fa-arrow-left" />
+      {schedulerOpen ? t("back to regimen") : t("back to regimens")}
+    </button>
+  </Row>;
+};
 
 @connect(mapStateToProps)
 export class Regimens extends React.Component<Props, {}> {
@@ -21,10 +35,14 @@ export class Regimens extends React.Component<Props, {}> {
   render() {
     const { current, calendar } = this.props;
     const regimenSelected = current && isTaggedRegimen(current) && calendar;
+    const regimenOpen = regimenSelected ? "open" : "";
+    const insertingItem = this.props.schedulerOpen ? "inserting-item" : "";
+    const activeClasses = [regimenOpen, insertingItem].join(" ");
     return <Page className="regimen-page">
+      <RegimenBackButton className={activeClasses} dispatch={this.props.dispatch} />
       <Row>
         <LeftPanel
-          className="regimen-list-panel"
+          className={`regimen-list-panel ${activeClasses}`}
           title={t("Regimens")}
           helpText={t(ToolTips.REGIMEN_LIST)}>
           <RegimensList
@@ -34,7 +52,7 @@ export class Regimens extends React.Component<Props, {}> {
             regimen={this.props.current} />
         </LeftPanel>
         <CenterPanel
-          className="regimen-editor-panel"
+          className={`regimen-editor-panel ${activeClasses}`}
           title={t("Regimen Editor")}
           helpText={t(ToolTips.REGIMEN_EDITOR)}
           width={5}>
@@ -47,7 +65,7 @@ export class Regimens extends React.Component<Props, {}> {
             shouldDisplay={this.props.shouldDisplay} />
         </CenterPanel>
         <RightPanel
-          className="bulk-scheduler"
+          className={`bulk-scheduler ${activeClasses}`}
           title={t("Scheduler")}
           helpText={t(ToolTips.BULK_SCHEDULER)}
           show={!!regimenSelected} width={4}>

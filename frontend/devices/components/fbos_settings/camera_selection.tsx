@@ -10,20 +10,23 @@ import { ColWidth } from "../farmbot_os_settings";
 import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
 
-const CAMERA_CHOICES = [
+const CAMERA_CHOICES = () => ([
   { label: t("USB Camera"), value: "USB" },
   { label: t("Raspberry Pi Camera"), value: "RPI" }
-];
+]);
 
-const CAMERA_CHOICES_DDI = {
-  [CAMERA_CHOICES[0].value]: {
-    label: CAMERA_CHOICES[0].label,
-    value: CAMERA_CHOICES[0].value
-  },
-  [CAMERA_CHOICES[1].value]: {
-    label: CAMERA_CHOICES[1].label,
-    value: CAMERA_CHOICES[1].value
-  }
+const CAMERA_CHOICES_DDI = () => {
+  const CHOICES = CAMERA_CHOICES();
+  return {
+    [CHOICES[0].value]: {
+      label: CHOICES[0].label,
+      value: CHOICES[0].value
+    },
+    [CHOICES[1].value]: {
+      label: CHOICES[1].label,
+      value: CHOICES[1].value
+    }
+  };
 };
 
 export class CameraSelection
@@ -36,8 +39,8 @@ export class CameraSelection
   selectedCamera(): DropDownItem {
     const camera = this.props.env["camera"];
     return camera
-      ? CAMERA_CHOICES_DDI[JSON.parse(camera)]
-      : CAMERA_CHOICES_DDI["USB"];
+      ? CAMERA_CHOICES_DDI()[JSON.parse(camera)]
+      : CAMERA_CHOICES_DDI()["USB"];
   }
 
   sendOffConfig = (selectedCamera: DropDownItem) => {
@@ -64,7 +67,7 @@ export class CameraSelection
         <div>
           <FBSelect
             allowEmpty={false}
-            list={CAMERA_CHOICES}
+            list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
             placeholder="Select a camera..."
             onChange={this.sendOffConfig}

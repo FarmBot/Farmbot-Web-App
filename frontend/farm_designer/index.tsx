@@ -13,7 +13,9 @@ import { getBotSize, round } from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
-import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
+import {
+  setWebAppConfigValue, GetWebAppConfigValue
+} from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 
 export const getDefaultAxisLength =
@@ -63,7 +65,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
     show_images: this.initializeSetting(BooleanSetting.show_images, false),
-    show_sensor_readings: this.initializeSetting(BooleanSetting.show_sensor_readings, false),
+    show_sensor_readings: this.initializeSetting(
+      BooleanSetting.show_sensor_readings, false),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
     zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue))
   };
@@ -148,7 +151,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showImages={show_images}
         showSensorReadings={show_sensor_readings}
         dispatch={this.props.dispatch}
-        tzOffset={this.props.tzOffset}
+        timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
@@ -188,7 +191,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           cameraCalibrationData={this.props.cameraCalibrationData}
           getConfigValue={this.props.getConfigValue}
           sensorReadings={this.props.sensorReadings}
-          timeOffset={this.props.tzOffset}
+          timeSettings={this.props.timeSettings}
           sensors={this.props.sensors} />
       </div>
 

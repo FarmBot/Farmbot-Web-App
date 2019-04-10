@@ -132,6 +132,29 @@ fieldset {
   pointer-events: all;
 }
 
+.connectivity-popover-portal {
+  .bp3-transition-container {
+    z-index: 999;
+  }
+  .connectivity-popover {
+    .connectivity {
+      padding: 1rem;
+      max-width: 600px;
+      .row {
+        margin-bottom: 1rem;
+      }
+      .connectivity-diagram svg {
+        max-height: 200px !important;
+      }
+      .fbos-info {
+        @media (max-width:767px) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 .connectivity-diagnosis {
   h4 {
     margin-left: 3rem;
@@ -244,25 +267,24 @@ a {
 }
 
 .drag-drop-area {
-  margin: 0.75rem 0;
-  margin-right: 15px;
-  border-style: dashed;
-  border-width: 2px;
-  border-color: $light_gray;
-  color: $gray;
-  font-weight: bold;
-  padding: 1.25rem;
-  background: $off_white;
-  text-align: center;
-  color: $gray;
-  font-weight: bold;
+  &.visible {
+    margin: 0.75rem 0;
+    margin-right: 15px;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: $light_gray;
+    color: $gray;
+    font-weight: bold;
+    padding: 1.25rem;
+    background: $off_white;
+    text-align: center;
+    color: $gray;
+    font-weight: bold;
+  }
 }
 
-.hardware-widget,
-.device-widget {
-  h4 {
-    cursor: pointer;
-  }
+.expandable-header {
+  cursor: pointer;
   .icon-toggle {
     font-size: 1.2rem;
     font-weight: bold;
@@ -271,6 +293,10 @@ a {
       font-size: 1rem;
     }
   }
+}
+
+.hardware-widget,
+.device-widget {
   .row {
     margin-bottom: 0.6rem;
   }
@@ -617,6 +643,9 @@ ul {
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
+  .settings-menu-button {
+    margin-right: 1rem;
+  }
 }
 
 .fb-button-popover-wrapper {
@@ -822,6 +851,21 @@ ul {
   word-wrap: break-word;
 }
 
+.settings-menu-button {
+  float: right;
+  .fa-gear {
+    color: $dark_gray;
+  }
+}
+
+.sequence-settings-menu {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+}
+
 .logs-page {
   .row {
     @media screen and (max-width: 974px) {
@@ -830,10 +874,6 @@ ul {
     }
   }
   .settings-menu-button {
-    float: right;
-    .fa-gear {
-      color: $dark_gray;
-    }
     margin-left: 1rem;
     margin-top: 0.25rem;
   }
@@ -1070,5 +1110,87 @@ ul {
   }
   button {
     margin: 0.5rem !important;
+  }
+}
+
+.status-icon {
+  padding: 0.5rem;
+  float: right !important;
+  font-size: 1.75rem;
+  &.ok {
+    color: $green;
+  }
+  &.error {
+    color: $red;
+  }
+  &.unknown {
+    color: $orange;
+  }
+}
+
+.firmware-hardware-status-details {
+  button {
+    float: none !important;
+  }
+}
+
+.problem-alerts {
+  position: fixed;
+  top: 85px;
+  left: 50%;
+  z-index: 3;
+  padding: 1rem;
+  background: $off_white;
+  border-radius: 5px;
+  box-shadow: 0px 1px 4px #555;
+  transform: translate(-50%);
+  .problem-alerts-header {
+    text-align: center;
+    i {
+      font-size: 2rem;
+      color: $dark_gray;
+      margin-left: 1rem;
+    }
+    .saucer {
+      display: inline-flex;
+      top: -0.25rem;
+      margin-left: 0.5rem;
+    }
+    h3 {
+      margin: 0;
+    }
+  }
+  button {
+    float: none !important;
+  }
+}
+
+.problem-alert {
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 3px;
+  box-shadow: 0px 2px 5px $gray;
+  background: $off_white;
+  .problem-alert-title {
+    .fa-exclamation-triangle {
+      color: $orange;
+      padding-right: 0.5rem;
+    }
+    h3 {
+      color: $dark_gray;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    p {
+      display: inline;
+      padding: 1rem;
+      color: $medium_gray;
+      font-size: 1.2rem;
+    }
+  }
+  .problem-alert-content {
+    p {
+      margin-bottom: 0.75rem !important;
+    }
   }
 }

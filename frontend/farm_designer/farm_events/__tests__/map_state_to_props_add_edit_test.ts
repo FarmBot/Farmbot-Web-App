@@ -62,7 +62,7 @@ describe("mapStateToPropsAddEdit()", () => {
       const state = fakeState();
       const fe = fakeFarmEvent("Sequence", -1);
       state.resources = buildResourceIndex([fe, fakeDevice()]);
-      mockPath = "/app/designer/farm_events/" + fe.body.id;
+      mockPath = "/app/designer/events/" + fe.body.id;
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       expect(getFarmEvent()).toEqual(expect.objectContaining({
         kind: "FarmEvent",
@@ -73,10 +73,10 @@ describe("mapStateToPropsAddEdit()", () => {
     it("doesn't find event", () => {
       const state = fakeState();
       state.resources = buildResourceIndex([fakeDevice()]);
-      mockPath = "/app/designer/farm_events/999";
+      mockPath = "/app/designer/events/999";
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
       getFarmEvent();
-      expect(history.push).toHaveBeenCalledWith("/app/designer/farm_events");
+      expect(history.push).toHaveBeenCalledWith("/app/designer/events");
     });
   });
 
@@ -105,6 +105,33 @@ describe("mapStateToPropsAddEdit()", () => {
           kind: "Regimen",
           body: expect.objectContaining({ id: r.body.id })
         }));
+    });
+  });
+
+  describe("findFarmEventByUuid()", () => {
+    it("finds farm event", () => {
+      const state = fakeState();
+      const farmEvent = fakeFarmEvent("Sequence", 1);
+      state.resources = buildResourceIndex([farmEvent, fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid(farmEvent.uuid);
+      expect(result).toEqual(farmEvent);
+    });
+
+    it("doesn't find farm event: no farm events", () => {
+      const state = fakeState();
+      state.resources = buildResourceIndex([fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid("uuid");
+      expect(result).toEqual(undefined);
+    });
+
+    it("doesn't find farm event: undefined uuid", () => {
+      const state = fakeState();
+      state.resources = buildResourceIndex([fakeDevice()]);
+      const { findFarmEventByUuid } = mapStateToPropsAddEdit(state);
+      const result = findFarmEventByUuid(undefined);
+      expect(result).toEqual(undefined);
     });
   });
 });

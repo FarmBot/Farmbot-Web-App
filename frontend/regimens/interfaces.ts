@@ -25,6 +25,7 @@ export interface Props {
   calendar: CalendarRow[];
   regimenUsageStats: Record<UUID, boolean | undefined>;
   shouldDisplay: ShouldDisplay;
+  schedulerOpen: boolean;
 }
 
 export interface RegimenItemCalendarRow {

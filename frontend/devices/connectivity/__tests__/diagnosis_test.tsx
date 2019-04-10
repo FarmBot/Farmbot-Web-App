@@ -1,6 +1,6 @@
 import * as React from "react";
-import { diagnose, Diagnosis } from "../diagnosis";
-import { DiagnosticMessages } from "../diagnostic_messages";
+import { diagnose, Diagnosis, DiagnosisSaucer } from "../diagnosis";
+import { DiagnosticMessages } from "../../../constants";
 import { mount } from "enzyme";
 
 describe("<Diagnosis/>", () => {
@@ -23,6 +23,20 @@ describe("<Diagnosis/>", () => {
       botAPI={true}
       botFirmware={false} />);
     expect(el.find(".saucer").hasClass("red")).toBeTruthy();
+  });
+});
+
+describe("<DiagnosisSaucer />", () => {
+  it("renders green", () => {
+    const flags = {
+      userMQTT: true,
+      userAPI: true,
+      botMQTT: true,
+      botAPI: true,
+      botFirmware: true,
+    };
+    const wrapper = mount(<DiagnosisSaucer {...flags} />);
+    expect(wrapper.find(".saucer").hasClass("green")).toBeTruthy();
   });
 });
 

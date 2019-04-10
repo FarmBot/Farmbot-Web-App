@@ -62,4 +62,5 @@ export interface JogMovementControlsProps extends JogMovementControlsBaseProps {
 
 export interface ControlsPopupProps extends JogMovementControlsBaseProps {
   dispatch: Function;
+  botOnline: boolean;
 }

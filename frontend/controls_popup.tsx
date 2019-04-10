@@ -19,7 +19,7 @@ export class ControlsPopup
 
   public render() {
     const isOpen = this.state.isOpen ? "open" : "";
-    const { stepSize, xySwap, arduinoBusy } = this.props;
+    const { stepSize, xySwap, arduinoBusy, botOnline } = this.props;
     const directionAxesProps = buildDirectionProps(this.props);
     const rightLeft = xySwap ? "y" : "x";
     const upDown = xySwap ? "x" : "y";
@@ -34,27 +34,28 @@ export class ControlsPopup
             direction="right"
             directionAxisProps={directionAxesProps[rightLeft]}
             steps={stepSize}
-            disabled={!isOpen || arduinoBusy} />
+            disabled={!isOpen || arduinoBusy || !botOnline} />
           <DirectionButton
             axis={upDown}
             direction="up"
             directionAxisProps={directionAxesProps[upDown]}
             steps={stepSize}
-            disabled={!isOpen || arduinoBusy} />
+            disabled={!isOpen || arduinoBusy || !botOnline} />
           <DirectionButton
             axis={upDown}
             direction="down"
             directionAxisProps={directionAxesProps[upDown]}
             steps={stepSize}
-            disabled={!isOpen || arduinoBusy} />
+            disabled={!isOpen || arduinoBusy || !botOnline} />
           <DirectionButton
             axis={rightLeft}
             direction="left"
             directionAxisProps={directionAxesProps[rightLeft]}
             steps={stepSize}
-            disabled={!isOpen || arduinoBusy} />
+            disabled={!isOpen || arduinoBusy || !botOnline} />
           <button
             className="i fa fa-camera arrow-button fb-button brown"
+            disabled={!botOnline}
             onClick={() => getDevice().takePhoto().catch(commandErr("Photo"))} />
         </div>
       </div>

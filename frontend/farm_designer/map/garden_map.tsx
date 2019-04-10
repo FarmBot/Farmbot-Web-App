@@ -267,7 +267,7 @@ export class GardenMap extends
     visible={!!this.props.showSensorReadings}
     sensorReadings={this.props.sensorReadings}
     mapTransformProps={this.mapTransformProps}
-    timeOffset={this.props.timeOffset}
+    timeSettings={this.props.timeSettings}
     sensors={this.props.sensors} />
   SpreadLayer = () => <SpreadLayer
     mapTransformProps={this.mapTransformProps}
