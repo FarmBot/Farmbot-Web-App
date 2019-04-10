@@ -1,14 +1,6 @@
 import * as React from "react";
-
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
-import {
-  Widget,
-  WidgetHeader,
-  WidgetBody,
-  Row,
-  Col,
-  SaveBtn
-} from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody, Row, Col, SaveBtn } from "../../ui";
 import { save, edit, refresh } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
@@ -23,7 +15,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
-
 import axios from "axios";
 import { t } from "../../i18next_wrapper";
 
@@ -97,6 +88,7 @@ export class FarmbotOsSettings
     const { bot, account, sourceFbosConfig, botToMqttStatus } = this.props;
     const { firmware_version, sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
+    const { firmware_hardware } = bot.hardware.configuration;
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -163,6 +155,7 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               dispatch={this.props.dispatch} />
             <BoardType
+              firmwareHardware={firmware_hardware}
               firmwareVersion={firmware_version}
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}

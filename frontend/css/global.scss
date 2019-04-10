@@ -1097,3 +1097,18 @@ ul {
     margin: 0.5rem !important;
   }
 }
+
+.status-icon {
+  padding: 0.5rem;
+  float: right !important;
+  font-size: 1.75rem;
+  &.ok {
+    color: $green;
+  }
+  &.no {
+    color: $red;
+  }
+  &.unknown {
+    color: $orange;
+  }
+}

@@ -24,6 +24,7 @@ describe("<BoardType/>", () => {
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
+    firmwareHardware: undefined,
   });
 
   it("Farmduino", () => {
