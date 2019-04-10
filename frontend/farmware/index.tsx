@@ -23,6 +23,7 @@ import { Farmwares, FarmwareManifestInfo } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { getDevice } from "../device";
 import { t } from "../i18next_wrapper";
+import { isBotOnline } from "../devices/must_be_online";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -80,14 +81,18 @@ const run = (farmwareName: string) => () => {
     .then(() => { }, commandErr("Farmware execution"));
 };
 
-export const BasicFarmwarePage = ({ farmwareName, farmware }: {
-  farmwareName: string,
-  farmware: FarmwareManifestInfo | undefined
-}) =>
+interface BasicFarmwarePageProps {
+  farmwareName: string;
+  farmware: FarmwareManifestInfo | undefined;
+  botOnline: boolean;
+}
+
+export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
+  BasicFarmwarePageProps) =>
   <div>
     <button
       className="fb-button green farmware-button"
-      disabled={isPendingInstallation(farmware)}
+      disabled={isPendingInstallation(farmware) || !botOnline}
       onClick={run(farmwareName)}>
       {t("Run")}
     </button>
@@ -101,6 +106,10 @@ export const BasicFarmwarePage = ({ farmwareName, farmware }: {
 @connect(mapStateToProps)
 export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   get current() { return this.props.currentFarmware; }
+
+  get botOnline() {
+    return isBotOnline(this.props.syncStatus, this.props.botToMqttStatus);
+  }
 
   componentWillMount() {
     if (!this.current && Object.values(this.props.farmwares).length > 0) {
@@ -155,10 +164,12 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
             user_env={this.props.user_env}
             shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
+            botOnline={this.botOnline}
             dispatch={this.props.dispatch} />
           : <BasicFarmwarePage
             farmwareName={farmwareName}
-            farmware={farmware} />;
+            farmware={farmware}
+            botOnline={this.botOnline} />;
     }
   }
 

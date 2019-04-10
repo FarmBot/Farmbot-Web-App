@@ -42,6 +42,7 @@ export interface ImageWorkspaceProps extends NumericValues {
   onChange(key: NumericKeyName, value: number): void;
   invertHue?: boolean;
   timeOffset: number;
+  botOnline: boolean;
 }
 
 /** Mapping of HSV values to FBOS Env variables. */
@@ -155,6 +156,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             className="green fb-button"
             title="Scan this image"
             onClick={this.maybeProcessPhoto}
+            disabled={this.props.botOnline}
             hidden={!this.props.images.length} >
             {t("Scan image")}
           </button>

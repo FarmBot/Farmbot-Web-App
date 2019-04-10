@@ -11,7 +11,7 @@ import { mapStateToProps } from "../../farmware/state_to_props";
 import { ImageWorkspace } from "./image_workspace";
 import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
-import { MustBeOnline } from "../../devices/must_be_online";
+import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { envSave } from "./remote_env/actions";
 import { t } from "../../i18next_wrapper";
 
@@ -81,6 +81,8 @@ export class WeedDetector
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <ImageWorkspace
+              botOnline={
+                isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={id => this.props.dispatch(scanImage(id))}
               onFlip={uuid => this.props.dispatch(selectImage(uuid))}
               currentImage={this.props.currentImage}

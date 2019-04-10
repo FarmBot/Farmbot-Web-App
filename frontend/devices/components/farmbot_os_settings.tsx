@@ -10,7 +10,7 @@ import {
   SaveBtn
 } from "../../ui/index";
 import { save, edit, refresh } from "../../api/crud";
-import { MustBeOnline, isBotUp } from "../must_be_online";
+import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
@@ -94,10 +94,9 @@ export class FarmbotOsSettings
   }
 
   render() {
-    const { bot, account, sourceFbosConfig } = this.props;
+    const { bot, account, sourceFbosConfig, botToMqttStatus } = this.props;
     const { firmware_version, sync_status } = bot.hardware.informational_settings;
-    const botOnline =
-      !!(isBotUp(sync_status) && this.props.botToMqttStatus === "up");
+    const botOnline = isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -178,6 +177,7 @@ export class FarmbotOsSettings
               diagnostics={this.props.diagnostics}
               expanded={this.props.bot.controlPanelState.diagnostic_dumps}
               shouldDisplay={this.props.shouldDisplay}
+              botOnline={isBotOnline(sync_status, botToMqttStatus)}
               dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>

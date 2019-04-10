@@ -8,13 +8,14 @@ import { Props } from "./interfaces";
 import { PinBindings } from "./pin_bindings/pin_bindings";
 import { selectAllDiagnosticDumps } from "../resources/selectors";
 import { ConnectivityPanel } from "./connectivity";
+import { getStatus } from "../connectivity/reducer_support";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
       const { botToMqtt } = this.props;
-      const botToMqttStatus = botToMqtt ? botToMqtt.state : "down";
+      const botToMqttStatus = getStatus(botToMqtt);
       const botToMqttLastSeen = (botToMqtt && botToMqttStatus === "up")
         ? botToMqtt.at
         : "";

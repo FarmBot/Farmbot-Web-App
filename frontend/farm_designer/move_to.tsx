@@ -18,19 +18,25 @@ import {
 import { DevSettings } from "../account/dev/dev_support";
 import { DesignerNavTabs } from "./panel_header";
 import { t } from "../i18next_wrapper";
+import { isBotOnline } from "../devices/must_be_online";
+import { getStatus } from "../connectivity/reducer_support";
 
-export function mapStateToProps(props: Everything) {
+export function mapStateToProps(props: Everything): MoveToProps {
+  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
+  const { sync_status } = props.bot.hardware.informational_settings;
   return {
     chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
     currentBotLocation:
       validBotLocationData(props.bot.hardware.location_data).position,
     dispatch: props.dispatch,
+    botOnline: isBotOnline(sync_status, botToMqttStatus),
   };
 }
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
   currentBotLocation: BotPosition;
+  botOnline: boolean;
 }
 
 export interface MoveToProps extends MoveToFormProps {
@@ -59,6 +65,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
 
   render() {
     const { x, y } = this.props.chosenLocation;
+    const { botOnline } = this.props;
     return <div>
       <Row>
         <Col xs={4}>
@@ -85,8 +92,8 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <Row>
           <button
             onClick={() => moveAbs(this.vector)}
-            disabled={false}
-            className="fb-button gray" >
+            className={`fb-button gray ${botOnline ? "" : "pseudo-disabled"}`}
+            title={botOnline ? "" : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
             {t("Move to this coordinate")}
           </button>
         </Row>
@@ -124,7 +131,8 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
         {alt && <p>{Content.MOVE_MODE_DESCRIPTION}</p>}
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
-          currentBotLocation={this.props.currentBotLocation} />
+          currentBotLocation={this.props.currentBotLocation}
+          botOnline={this.props.botOnline} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

@@ -23,6 +23,7 @@ import { chain } from "lodash";
 import { FarmwareManifestInfo, Farmwares } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
+import { getStatus } from "../connectivity/reducer_support";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -106,8 +107,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       .reverse()
       .value();
 
-  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
-  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
+  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
   const syncStatus = props.bot.hardware.informational_settings.sync_status;
 
   return {

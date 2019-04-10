@@ -97,6 +97,7 @@ describe("<FarmwareForm />", () => {
       dispatch: jest.fn(),
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),
+      botOnline: true,
     };
   };
 

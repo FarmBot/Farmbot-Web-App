@@ -14,11 +14,9 @@ import {
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
 import { uniq } from "lodash";
+import { getStatus } from "../connectivity/reducer_support";
 
 export function mapStateToProps(props: Everything): Props {
-  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
-  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
-
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
 
@@ -31,7 +29,7 @@ export function mapStateToProps(props: Everything): Props {
     bot: props.bot,
     peripherals: uniq(selectAllPeripherals(props.resources.index)),
     sensors: uniq(selectAllSensors(props.resources.index)),
-    botToMqttStatus,
+    botToMqttStatus: getStatus(props.bot.connectivity["bot.mqtt"]),
     firmwareSettings: fwConfig || mcu_params,
     shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
     getWebAppConfigVal: getWebAppConfigValue(() => props),

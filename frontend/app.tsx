@@ -24,6 +24,8 @@ import { getFirmwareConfig } from "./resources/getters";
 import { intersection } from "lodash";
 import { t } from "./i18next_wrapper";
 import { ResourceIndex } from "./resources/interfaces";
+import { isBotOnline } from "./devices/must_be_online";
+import { getStatus } from "./connectivity/reducer_support";
 
 /** For the logger module */
 init();
@@ -107,6 +109,8 @@ export class App extends React.Component<AppProps, {}> {
     const syncLoaded = this.isLoaded;
     const currentPage = getPathArray()[2];
     const { location_data, mcu_params } = this.props.bot.hardware;
+    const { sync_status } = this.props.bot.hardware.informational_settings;
+    const bot2mqtt = this.props.bot.connectivity["bot.mqtt"];
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
@@ -129,6 +133,7 @@ export class App extends React.Component<AppProps, {}> {
           firmwareSettings={this.props.firmwareConfig || mcu_params}
           xySwap={this.props.xySwap}
           arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
+          botOnline={isBotOnline(sync_status, getStatus(bot2mqtt))}
           stepSize={this.props.bot.stepSize} />}
     </div>;
   }

@@ -16,6 +16,7 @@ export interface DiagReportProps {
   expanded: boolean;
   shouldDisplay: ShouldDisplay;
   diagnostics: TaggedDiagnosticDump[];
+  botOnline: boolean;
 }
 
 export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
@@ -41,6 +42,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
           <Col xs={3}>
             <button
               className="fb-button yellow"
+              disabled={!this.props.botOnline}
               onClick={requestDiagnostic}>
               {t("Record Diagnostic")}
             </button>

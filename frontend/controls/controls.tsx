@@ -10,12 +10,19 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { Feature } from "../devices/interfaces";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
+import { isBotOnline } from "../devices/must_be_online";
 
 /** Controls page. */
 @connect(mapStateToProps)
 export class Controls extends React.Component<Props, {}> {
   get arduinoBusy() {
     return !!this.props.bot.hardware.informational_settings.busy;
+  }
+
+  get botOnline() {
+    return isBotOnline(
+      this.props.bot.hardware.informational_settings.sync_status,
+      this.props.botToMqttStatus);
   }
 
   move = () => <Move
@@ -41,7 +48,7 @@ export class Controls extends React.Component<Props, {}> {
       bot={this.props.bot}
       sensors={this.props.sensors}
       dispatch={this.props.dispatch}
-      disabled={this.arduinoBusy} />
+      disabled={this.arduinoBusy || !this.botOnline} />
     : <div id="hidden-sensors-widget" />
 
   sensorReadings = () => this.props.sensorReadings.length > 0

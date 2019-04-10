@@ -29,7 +29,8 @@ describe("<MoveTo />", () => {
   const fakeProps = (): MoveToProps => ({
     chosenLocation: { x: 1, y: 2, z: 3 },
     currentBotLocation: { x: 10, y: 20, z: 30 },
-    dispatch: jest.fn()
+    dispatch: jest.fn(),
+    botOnline: true,
   });
 
   it("moves to location: bot's current z value", () => {
@@ -66,6 +67,7 @@ describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
     chosenLocation: { x: 1, y: 2, z: 3 },
     currentBotLocation: { x: 10, y: 20, z: 30 },
+    botOnline: true,
   });
 
   it("moves to location: custom z value", () => {
@@ -98,6 +100,13 @@ describe("<MoveToForm />", () => {
     expect(wrapper.find("input").at(1).props().value).toEqual("---");
     wrapper.find("button").simulate("click");
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+  });
+
+  it("is disabled when bot is offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const wrapper = mount(<MoveToForm {...p} />);
+    expect(wrapper.find("button").hasClass("pseudo-disabled")).toBeTruthy();
   });
 });
 

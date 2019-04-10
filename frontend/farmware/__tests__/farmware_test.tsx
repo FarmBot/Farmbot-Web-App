@@ -113,6 +113,7 @@ describe("<BasicFarmwarePage />", () => {
     farmware.name = "My Farmware 1";
     farmware.installation_pending = true;
     const wrapper = mount(<BasicFarmwarePage
+      botOnline={true}
       farmware={farmware}
       farmwareName={farmware.name} />);
     expect(wrapper.text().toLowerCase()).toContain("pending installation");

@@ -19,6 +19,7 @@ describe("<Body/>", () => {
     S_HI: 10,
     V_HI: 12,
     timeOffset: 0,
+    botOnline: true,
   });
 
   it("triggers onChange() event", () => {
