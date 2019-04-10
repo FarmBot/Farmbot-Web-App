@@ -778,14 +778,17 @@ ul {
     p,
     h5,
     a {
-      color: $dark_green;
+      color: $panel_green;
     }
   }
   &.events {
     p,
     h5,
     a {
-      color: $magenta;
+      color: $panel_yellow;
+    }
+    .empty-state-graphic {
+      filter: sepia() contrast(1.2) saturate(1.2);
     }
   }
 }
