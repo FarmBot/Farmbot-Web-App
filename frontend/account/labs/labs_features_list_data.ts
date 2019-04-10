@@ -87,10 +87,9 @@ export const fetchLabFeatures =
     {
       name: t("Use 24-hour time format"),
       description: t(Content.TIME_FORMAT_24_HOUR),
-      // TODO: Add config to FBJS and use `BooleanSetting.time_format_24_hour`.
-      storageKey: "time_format_24_hour" as BooleanConfigKey,
+      storageKey: BooleanSetting.time_format_24_hour,
       value: false,
-    },
+    }
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).
