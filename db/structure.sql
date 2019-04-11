@@ -273,6 +273,40 @@ ALTER SEQUENCE public.edge_nodes_id_seq OWNED BY public.edge_nodes.id;
 
 
 --
+-- Name: enigmas; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.enigmas (
+    id bigint NOT NULL,
+    problem_tag character varying NOT NULL,
+    priority integer DEFAULT 100 NOT NULL,
+    uuid character varying NOT NULL,
+    device_id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: enigmas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.enigmas_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: enigmas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.enigmas_id_seq OWNED BY public.enigmas.id;
+
+
+--
 -- Name: farm_events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1572,6 +1606,13 @@ ALTER TABLE ONLY public.edge_nodes ALTER COLUMN id SET DEFAULT nextval('public.e
 
 
 --
+-- Name: enigmas id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.enigmas ALTER COLUMN id SET DEFAULT nextval('public.enigmas_id_seq'::regclass);
+
+
+--
 -- Name: farm_events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1835,6 +1876,14 @@ ALTER TABLE ONLY public.diagnostic_dumps
 
 ALTER TABLE ONLY public.edge_nodes
     ADD CONSTRAINT edge_nodes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: enigmas enigmas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.enigmas
+    ADD CONSTRAINT enigmas_pkey PRIMARY KEY (id);
 
 
 --
@@ -2146,6 +2195,13 @@ CREATE INDEX index_edge_nodes_on_primary_node_id ON public.edge_nodes USING btre
 --
 
 CREATE INDEX index_edge_nodes_on_sequence_id ON public.edge_nodes USING btree (sequence_id);
+
+
+--
+-- Name: index_enigmas_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_enigmas_on_device_id ON public.enigmas USING btree (device_id);
 
 
 --
@@ -2605,6 +2661,14 @@ ALTER TABLE ONLY public.sensor_readings
 
 
 --
+-- Name: enigmas fk_rails_10ebd17bff; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.enigmas
+    ADD CONSTRAINT fk_rails_10ebd17bff FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: pin_bindings fk_rails_1f1c3b6979; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2821,6 +2885,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190209133811'),
 ('20190212215842'),
 ('20190307205648'),
-('20190401212119');
+('20190401212119'),
+('20190411152319');
 
 
