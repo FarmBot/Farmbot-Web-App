@@ -30,7 +30,6 @@ import { joinKindAndId } from "./reducer_support";
 import { chain } from "lodash";
 import { getWebAppConfig } from "./getters";
 import { TimeSettings } from "../interfaces";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export * from "./selectors_by_id";
 export * from "./selectors_by_kind";
@@ -196,8 +195,7 @@ export function maybeGetTimeOffset(index: ResourceIndex): number {
 /** Return 12/24hr time format preference if possible. If not, use 12hr. */
 export function maybeGet24HourTimeSetting(index: ResourceIndex): boolean {
   const conf = getWebAppConfig(index);
-  // TODO: Add config to FBJS and use `BooleanSetting.time_format_24_hour`.
-  return conf ? conf.body["time_format_24_hour" as BooleanConfigKey] : false;
+  return conf ? conf.body["time_format_24_hour"] : false;
 }
 
 export function maybeGetTimeSettings(index: ResourceIndex): TimeSettings {

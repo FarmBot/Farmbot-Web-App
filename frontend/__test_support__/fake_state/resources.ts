@@ -307,6 +307,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     home_button_homing: false,
     show_motor_plot: false,
     show_historic_points: false,
+    time_format_24_hour: false
   });
 }
 
