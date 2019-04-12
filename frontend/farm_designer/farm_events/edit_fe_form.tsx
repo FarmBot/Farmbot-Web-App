@@ -495,7 +495,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         <this.RepeatForm />
         <SaveBtn
           status={farmEvent.specialStatus || this.state.specialStatusLocal}
-          color="yellow"
           onClick={() => this.commitViewModel()} />
         <this.FarmEventDeleteButton />
         <TzWarning deviceTimezone={this.props.deviceTimezone} />

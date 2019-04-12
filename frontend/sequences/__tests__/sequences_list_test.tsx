@@ -24,6 +24,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { resourceReducer } from "../../resources/reducer";
 import { resourceReady } from "../../sync/actions";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
+import { inputEvent } from "../../__test_support__/fake_input_event";
 
 describe("<SequencesList />", () => {
   const fakeSequences = () => {
@@ -105,13 +106,8 @@ describe("<SequencesList />", () => {
 
   it("sets search term", () => {
     const wrapper = shallow<SequencesList>(<SequencesList {...fakeProps()} />);
-    expect(wrapper.instance().state.searchTerm).toEqual("");
-    const searchField = wrapper.find("input").first();
-    expect(searchField.props().placeholder)
-      .toEqual("Search Sequences...");
-    searchField.simulate("change", {
-      currentTarget: { value: "search this" }
-    });
+    expect(wrapper.state().searchTerm).toEqual("");
+    wrapper.instance().onChange(inputEvent("search this"));
     expect(wrapper.instance().state.searchTerm).toEqual("search this");
   });
 

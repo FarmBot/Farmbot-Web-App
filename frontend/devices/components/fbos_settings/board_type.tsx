@@ -5,7 +5,6 @@ import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
-import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 
@@ -69,12 +68,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return isFwHardwareValue(value) ? value : undefined;
   }
 
-  get firmwareChoices() {
-    const { shouldDisplay } = this.props;
-    return [ARDUINO, FARMDUINO,
-      ...(shouldDisplay(Feature.farmduino_k14) ? [FARMDUINO_K14] : [])
-    ];
-  }
+  get firmwareChoices() { return [ARDUINO, FARMDUINO, FARMDUINO_K14]; }
 
   get firmwareVersion() {
     return this.props.bot.hardware.informational_settings.firmware_version;

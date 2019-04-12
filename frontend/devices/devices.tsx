@@ -7,7 +7,6 @@ import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
 import { PinBindings } from "./pin_bindings/pin_bindings";
 import { selectAllDiagnosticDumps } from "../resources/selectors";
-import { ConnectivityPanel } from "./connectivity";
 import { getStatus } from "../connectivity/reducer_support";
 
 @connect(mapStateToProps)
@@ -35,11 +34,6 @@ export class Devices extends React.Component<Props, {}> {
               isValidFbosConfig={this.props.isValidFbosConfig}
               env={this.props.env}
               saveFarmwareEnv={this.props.saveFarmwareEnv} />
-            <ConnectivityPanel
-              status={this.props.deviceAccount.specialStatus}
-              bot={this.props.bot}
-              dispatch={this.props.dispatch}
-              deviceAccount={this.props.deviceAccount} />
           </Col>
           <Col xs={12} sm={6}>
             <HardwareSettings

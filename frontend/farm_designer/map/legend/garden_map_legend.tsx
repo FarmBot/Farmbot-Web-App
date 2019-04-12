@@ -111,7 +111,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
 export function GardenMapLegend(props: GardenMapLegendProps) {
   const menuClass = props.legendMenuOpen ? "active" : "";
   return <div
-    className={"garden-map-legend " + menuClass}
+    className={`garden-map-legend ${menuClass} ${props.className}`}
     style={{ zoom: 1 }}>
     <div
       className={"menu-pullout " + menuClass}

@@ -26,6 +26,7 @@ export class SequenceEditorMiddle
         farmwareInfo={this.props.farmwareInfo}
         shouldDisplay={this.props.shouldDisplay}
         confirmStepDeletion={this.props.confirmStepDeletion}
+        showPins={this.props.showPins}
         menuOpen={this.props.menuOpen} />}
     </EmptyStateWrapper>;
   }

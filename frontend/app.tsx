@@ -14,7 +14,7 @@ import {
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { validBotLocationData, validFwConfig } from "./util";
+import { validBotLocationData, validFwConfig, validFbosConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import {
@@ -22,7 +22,7 @@ import {
 } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
-import { getFirmwareConfig } from "./resources/getters";
+import { getFirmwareConfig, getFbosConfig } from "./resources/getters";
 import { intersection } from "lodash";
 import { t } from "./i18next_wrapper";
 import { ResourceIndex } from "./resources/interfaces";
@@ -47,10 +47,12 @@ export interface AppProps {
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
   resources: ResourceIndex;
+  autoSync: boolean;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
+  const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
@@ -70,6 +72,7 @@ export function mapStateToProps(props: Everything): AppProps {
     getConfigValue: webAppConfigValue,
     tour: props.resources.consumers.help.currentTour,
     resources: props.resources.index,
+    autoSync: !!(fbosConfig && fbosConfig.auto_sync),
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -125,6 +128,7 @@ export class App extends React.Component<AppProps, {}> {
         logs={this.props.logs}
         getConfigValue={this.props.getConfigValue}
         tour={this.props.tour}
+        autoSync={this.props.autoSync}
         device={getDeviceAccountSettings(this.props.resources)} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

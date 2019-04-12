@@ -95,15 +95,6 @@ describe("<BoardType/>", () => {
     const wrapper = shallow(<BoardType {...fakeProps()} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" }]);
-  });
-
-  it("displays new board", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
-    const wrapper = shallow(<BoardType {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
       { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" }]);
   });

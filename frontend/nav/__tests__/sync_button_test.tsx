@@ -3,22 +3,22 @@ import { SyncButton } from "../sync_button";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { shallow } from "enzyme";
 import { SyncButtonProps } from "../interfaces";
+import { SyncStatus } from "farmbot";
 
 describe("<SyncButton/>", function () {
-  const fakeProps = (): SyncButtonProps => {
-    return {
-      dispatch: jest.fn(),
-      bot: bot,
-      consistent: true,
-    };
-  };
+  const fakeProps = (): SyncButtonProps => ({
+    dispatch: jest.fn(),
+    bot: bot,
+    consistent: true,
+    autoSync: false,
+  });
 
   it("is gray when inconsistent", () => {
     const p = fakeProps();
     p.consistent = false;
     p.bot.hardware.informational_settings.sync_status = "sync_now";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.hasClass("gray")).toBeTruthy();
+    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
   });
 
   it("is gray when disconnected", () => {
@@ -26,16 +26,16 @@ describe("<SyncButton/>", function () {
     p.consistent = false;
     p.bot.hardware.informational_settings.sync_status = "unknown";
     const result = shallow(<SyncButton {...p} />);
-    expect(result.hasClass("gray")).toBeTruthy();
+    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
   });
 
-  it("defaults to `unknown` and `gray` when uncertain", () => {
+  it("defaults to `unknown` and gray when uncertain", () => {
     const p = fakeProps();
     // tslint:disable-next-line:no-any
     p.bot.hardware.informational_settings.sync_status = "new" as any;
     const result = shallow(<SyncButton {...p} />);
     expect(result.text()).toContain("new");
-    expect(result.hasClass("gray")).toBeTruthy();
+    expect(result.hasClass("pseudo-disabled")).toBeTruthy();
   });
 
   it("syncs when clicked", () => {
@@ -57,5 +57,24 @@ describe("<SyncButton/>", function () {
     p.bot.hardware.informational_settings.sync_status = "syncing";
     const result = shallow(<SyncButton {...p} />);
     expect(result.find(".btn-spinner").length).toEqual(1);
+  });
+
+  const testCase = (input: SyncStatus, expected: string) => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.sync_status = input;
+    p.autoSync = true;
+    const result = shallow(<SyncButton {...p} />);
+    expect(result.find(".auto-sync").length).toEqual(1);
+    expect(result.text()).toContain(expected);
+  };
+
+  it("renders differently with auto-sync enabled", () => {
+    testCase("syncing", "Syncing...");
+    testCase("sync_now", "Syncing...");
+    testCase("synced", "Synced");
+    testCase("booting", "Sync unknown");
+    testCase("unknown", "Sync unknown");
+    testCase("maintenance", "Sync unknown");
+    testCase("sync_error", "Sync error");
   });
 });

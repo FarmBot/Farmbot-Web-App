@@ -1,9 +1,10 @@
 import * as React from "react";
-
 import { emergencyLock, emergencyUnlock } from "../actions";
 import { EStopButtonProps } from "../interfaces";
 import { isBotUp } from "../must_be_online";
 import { t } from "../../i18next_wrapper";
+
+const GRAY = "pseudo-disabled";
 
 export class EStopButton extends React.Component<EStopButtonProps, {}> {
   render() {
@@ -11,7 +12,7 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
     const isLocked = !!i.locked;
     const toggleEmergencyLock = isLocked ? emergencyUnlock : emergencyLock;
     const color = isLocked ? "yellow" : "red";
-    const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : "gray";
+    const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : GRAY;
     const emergencyLockStatusText = isLocked ? t("UNLOCK") : "E-STOP";
 
     return <button

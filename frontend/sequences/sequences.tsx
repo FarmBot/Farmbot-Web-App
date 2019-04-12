@@ -12,18 +12,22 @@ import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { LeftPanel, CenterPanel, RightPanel } from "../ui";
 import { resourceUsageList } from "../resources/in_use";
 import { t } from "../i18next_wrapper";
-import { unselectSequence } from "./actions";
+import { unselectSequence, closeCommandMenu } from "./actions";
 import { isNumber } from "lodash";
 
-const SequenceBackButton = (props: { dispatch: Function, className: string }) =>
-  <Row>
-    <button
-      className={`back-to-sequences fb-button gray ${props.className}`}
-      onClick={() => props.dispatch(unselectSequence())}>
-      <i className="fa fa-arrow-left" />
-      {t("back to sequences")}
-    </button>
-  </Row>;
+export interface SequenceBackButtonProps {
+  dispatch: Function;
+  className: string;
+}
+
+export const SequenceBackButton = (props: SequenceBackButtonProps) => {
+  const insertingStep = props.className.includes("inserting-step");
+  return <i
+    className={`back-to-sequences fa fa-arrow-left ${props.className}`}
+    onClick={() => props.dispatch(
+      insertingStep ? closeCommandMenu() : unselectSequence())}
+    title={insertingStep ? t("back to sequence") : t("back to sequences")} />;
+};
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
@@ -38,7 +42,6 @@ export class Sequences extends React.Component<Props, {}> {
     const insertingStep = isNumber(this.props.stepIndex) ? "inserting-step" : "";
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
     return <Page className="sequence-page">
-      <SequenceBackButton className={activeClasses} dispatch={this.props.dispatch} />
       <Row>
         <LeftPanel
           className={`sequence-list-panel ${activeClasses}`}
@@ -53,7 +56,10 @@ export class Sequences extends React.Component<Props, {}> {
         </LeftPanel>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}
-          title={t("Sequence Editor")}
+          backButton={<SequenceBackButton
+            className={activeClasses}
+            dispatch={this.props.dispatch} />}
+          title={sequenceOpen ? t("Edit Sequence") : t("Sequence Editor")}
           helpText={t(ToolTips.SEQUENCE_EDITOR)}>
           <SequenceEditorMiddle
             syncStatus={this.props.syncStatus}
@@ -64,11 +70,15 @@ export class Sequences extends React.Component<Props, {}> {
             farmwareInfo={this.props.farmwareInfo}
             shouldDisplay={this.props.shouldDisplay}
             confirmStepDeletion={this.props.confirmStepDeletion}
+            showPins={this.props.showPins}
             menuOpen={this.props.menuOpen} />
         </CenterPanel>
         <RightPanel
           className={`step-button-cluster-panel ${activeClasses}`}
-          title={t("Commands")}
+          backButton={<SequenceBackButton
+            className={activeClasses}
+            dispatch={this.props.dispatch} />}
+          title={insertingStep ? t("Add Command") : t("Commands")}
           helpText={t(ToolTips.SEQUENCE_COMMANDS)}
           show={sequenceSelected}>
           <StepButtonCluster

@@ -73,15 +73,15 @@ export function locationFormList(resources: ResourceIndex,
   return [COORDINATE_DDI()]
     .concat(additionalItems)
     .concat(heading("Tool"))
-    .concat(toolDDI)
     .concat(group(everyPointDDI("Tool")))
     .concat(group(everyPointDDI("ToolSlot")))
+    .concat(toolDDI)
     .concat(heading("Plant"))
-    .concat(plantDDI)
     .concat(group(everyPointDDI("Plant")))
+    .concat(plantDDI)
     .concat(heading("GenericPointer"))
-    .concat(genericPointerDDI)
-    .concat(group(everyPointDDI("GenericPointer")));
+    .concat(group(everyPointDDI("GenericPointer")))
+    .concat(genericPointerDDI);
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */
