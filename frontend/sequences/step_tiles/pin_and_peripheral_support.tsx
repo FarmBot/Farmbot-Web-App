@@ -101,18 +101,20 @@ export function pinDropdowns(
   return [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
 }
 
-export const pinsAsDropDownsWritePin =
-  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
+export const pinsAsDropDownsWritePin = (
+  input: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
+): DropDownItem[] => [
     ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
     ...(shouldDisplay(Feature.rpi_led_control) ? boxLedsAsDropDowns() : []),
-    ...pinDropdowns(n => n),
+    ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
-export const pinsAsDropDownsReadPin =
-  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
+export const pinsAsDropDownsReadPin = (
+  input: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
+): DropDownItem[] => [
     ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(input) : []),
     ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
-    ...pinDropdowns(n => n),
+    ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName | BoxLed> = {

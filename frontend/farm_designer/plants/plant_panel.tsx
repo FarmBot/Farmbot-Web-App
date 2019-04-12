@@ -27,6 +27,7 @@ export interface PlantPanelProps {
 export const PLANT_STAGES: DropDownItem[] = [
   { value: "planned", label: t("Planned") },
   { value: "planted", label: t("Planted") },
+  { value: "sprouted", label: t("Sprouted") },
   { value: "harvested", label: t("Harvested") },
 ];
 
@@ -42,6 +43,10 @@ export const PLANT_STAGES_DDI = {
   [PLANT_STAGES[2].value]: {
     label: PLANT_STAGES[2].label,
     value: PLANT_STAGES[2].value
+  },
+  [PLANT_STAGES[3].value]: {
+    label: PLANT_STAGES[3].label,
+    value: PLANT_STAGES[3].value
   },
 };
 

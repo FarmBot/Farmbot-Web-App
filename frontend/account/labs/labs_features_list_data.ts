@@ -1,4 +1,3 @@
-
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
 import { VirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
@@ -32,12 +31,6 @@ export const fetchLabFeatures =
       value: false,
       displayInvert: true,
       callback: () => window.location.reload()
-    },
-    {
-      name: t("Confirm Sequence step deletion"),
-      description: t(Content.CONFIRM_STEP_DELETION),
-      storageKey: BooleanSetting.confirm_step_deletion,
-      value: false
     },
     {
       name: t("Hide Webcam widget"),

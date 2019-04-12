@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../../history", () => ({
   push: jest.fn(),
@@ -8,7 +6,7 @@ jest.mock("../../history", () => ({
 }));
 
 import * as React from "react";
-import { Sequences } from "../sequences";
+import { Sequences, SequenceBackButtonProps, SequenceBackButton } from "../sequences";
 import { shallow, mount } from "enzyme";
 import { Props } from "../interfaces";
 import {
@@ -39,12 +37,13 @@ describe("<Sequences/>", () => {
     confirmStepDeletion: false,
     menuOpen: false,
     stepIndex: undefined,
+    showPins: true,
   });
 
   it("renders", () => {
     const wrapper = shallow(<Sequences {...fakeProps()} />);
     expect(wrapper.html()).toContain("Sequences");
-    expect(wrapper.html()).toContain("Sequence Editor");
+    expect(wrapper.html()).toContain("Edit Sequence");
     expect(wrapper.html()).toContain(ToolTips.SEQUENCE_EDITOR);
     expect(wrapper.html()).toContain("Commands");
   });
@@ -62,11 +61,18 @@ describe("<Sequences/>", () => {
     const wrapper = shallow(<Sequences {...p} />);
     expect(wrapper.html()).toContain("inserting-step");
   });
+});
+
+describe("<SequenceBackButton />", () => {
+  const fakeProps = (): SequenceBackButtonProps => ({
+    dispatch: jest.fn(),
+    className: "",
+  });
 
   it("goes back", () => {
     const p = fakeProps();
-    const wrapper = mount(<Sequences {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const wrapper = mount(<SequenceBackButton {...p} />);
+    wrapper.find("i").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_SEQUENCE, payload: undefined
     });

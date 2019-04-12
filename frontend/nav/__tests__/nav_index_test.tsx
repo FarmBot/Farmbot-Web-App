@@ -23,6 +23,7 @@ describe("NavBar", () => {
     getConfigValue: jest.fn(),
     tour: undefined,
     device: fakeDevice(),
+    autoSync: false,
   });
 
   it("has correct parent classname", () => {

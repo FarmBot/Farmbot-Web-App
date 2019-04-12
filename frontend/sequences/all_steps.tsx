@@ -19,6 +19,7 @@ interface AllStepsProps {
   farmwareInfo?: FarmwareInfo;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
+  showPins?: boolean;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
@@ -54,6 +55,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 farmwareInfo,
                 shouldDisplay,
                 confirmStepDeletion: this.props.confirmStepDeletion,
+                showPins: this.props.showPins,
               })}
             </div>
           </StepDragger>

@@ -2,11 +2,10 @@ import * as React from "react";
 import { SequenceBodyItem as Step, TaggedSequence } from "farmbot";
 import { error } from "farmbot-toastr";
 import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
-import { pushStep } from "../actions";
+import { pushStep, closeCommandMenu } from "../actions";
 import { StepButtonParams } from "../interfaces";
 import { Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
-import { Actions } from "../../constants";
 
 export const stepClick =
   (dispatch: Function,
@@ -17,10 +16,7 @@ export const stepClick =
       seq
         ? pushStep(step, dispatch, seq, index)
         : error(t("Select a sequence first"));
-      dispatch({
-        type: Actions.SET_SEQUENCE_STEP_POSITION,
-        payload: undefined,
-      });
+      dispatch(closeCommandMenu());
     };
 
 export function StepButton({ children, step, color, dispatch, current, index }:

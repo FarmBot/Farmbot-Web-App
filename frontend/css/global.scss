@@ -706,6 +706,11 @@ ul {
 
 .controls-popup {
   color: $off_white;
+  @media screen and (max-width: 450px) {
+    &.panel-open {
+      display: none;
+    }
+  }
   i {
     position: fixed;
     bottom: 3rem;
@@ -765,7 +770,7 @@ ul {
 .empty-state-graphic {
   display: flex;
   margin: auto;
-  margin-top: 10%;
+  margin-top: 25%;
   width: 50%;
 }
 
@@ -866,6 +871,9 @@ ul {
     display: inline;
     margin-right: 1rem;
     margin-left: 1rem;
+  }
+  .fb-button {
+    margin-top: 0;
   }
 }
 
@@ -1123,7 +1131,7 @@ ul {
   &.ok {
     color: $green;
   }
-  &.error {
+  &.no {
     color: $red;
   }
   &.unknown {

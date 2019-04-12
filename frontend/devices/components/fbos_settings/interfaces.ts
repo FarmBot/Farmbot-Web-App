@@ -3,6 +3,7 @@ import {
   SaveFarmwareEnv, UserEnv
 } from "../../interfaces";
 import { InformationalSettings } from "farmbot";
+import { TimeSettings } from "../../../interfaces";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -31,6 +32,7 @@ export interface BoardTypeProps {
   bot: BotState;
   dispatch: Function;
   shouldDisplay: ShouldDisplay;
+  timeSettings: TimeSettings;
   sourceFbosConfig: SourceFbosConfig;
 }
 

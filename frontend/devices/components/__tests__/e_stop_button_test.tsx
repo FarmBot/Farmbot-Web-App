@@ -17,7 +17,7 @@ describe("<EStopButton />", () => {
     bot.hardware.informational_settings.sync_status = undefined;
     const wrapper = mount(<EStopButton {...fakeProps()} />);
     expect(wrapper.text()).toEqual("E-STOP");
-    expect(wrapper.find("button").hasClass("gray")).toBeTruthy();
+    expect(wrapper.find("button").hasClass("pseudo-disabled")).toBeTruthy();
   });
 
   it("locked", () => {

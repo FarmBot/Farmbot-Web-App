@@ -9,12 +9,14 @@ interface RightPanelProps {
   helpText: string;
   show: Boolean | undefined;
   width?: number;
+  backButton?: React.ReactNode;
 }
 
 export function RightPanel(props: RightPanelProps) {
   return <Col sm={props.width || 3} lg={3}>
     {props.show &&
       <div className={props.className}>
+        {props.backButton}
         <h3>
           <i>{t(props.title)}</i>
         </h3>

@@ -12,18 +12,19 @@ import { t } from "../i18next_wrapper";
 import { ToolTips, Actions } from "../constants";
 import { unselectRegimen } from "./actions";
 
-const RegimenBackButton = (props: { dispatch: Function, className: string }) => {
+export interface RegimenBackButtonProps {
+  dispatch: Function;
+  className: string;
+}
+
+export const RegimenBackButton = (props: RegimenBackButtonProps) => {
   const schedulerOpen = props.className.includes("inserting-item");
-  return <Row>
-    <button
-      className={`back-to-regimens fb-button gray ${props.className}`}
-      onClick={() => schedulerOpen
-        ? props.dispatch({ type: Actions.SET_SCHEDULER_STATE, payload: false })
-        : props.dispatch(unselectRegimen())}>
-      <i className="fa fa-arrow-left" />
-      {schedulerOpen ? t("back to regimen") : t("back to regimens")}
-    </button>
-  </Row>;
+  return <i
+    className={`back-to-regimens fa fa-arrow-left ${props.className}`}
+    onClick={() => schedulerOpen
+      ? props.dispatch({ type: Actions.SET_SCHEDULER_STATE, payload: false })
+      : props.dispatch(unselectRegimen())}
+    title={schedulerOpen ? t("back to regimen") : t("back to regimens")} />;
 };
 
 @connect(mapStateToProps)
@@ -39,7 +40,6 @@ export class Regimens extends React.Component<Props, {}> {
     const insertingItem = this.props.schedulerOpen ? "inserting-item" : "";
     const activeClasses = [regimenOpen, insertingItem].join(" ");
     return <Page className="regimen-page">
-      <RegimenBackButton className={activeClasses} dispatch={this.props.dispatch} />
       <Row>
         <LeftPanel
           className={`regimen-list-panel ${activeClasses}`}
@@ -53,7 +53,10 @@ export class Regimens extends React.Component<Props, {}> {
         </LeftPanel>
         <CenterPanel
           className={`regimen-editor-panel ${activeClasses}`}
-          title={t("Regimen Editor")}
+          backButton={<RegimenBackButton
+            className={activeClasses}
+            dispatch={this.props.dispatch} />}
+          title={regimenOpen ? t("Edit Regimen") : t("Regimen Editor")}
           helpText={t(ToolTips.REGIMEN_EDITOR)}
           width={5}>
           <RegimenEditor
@@ -66,7 +69,10 @@ export class Regimens extends React.Component<Props, {}> {
         </CenterPanel>
         <RightPanel
           className={`bulk-scheduler ${activeClasses}`}
-          title={t("Scheduler")}
+          backButton={<RegimenBackButton
+            className={activeClasses}
+            dispatch={this.props.dispatch} />}
+          title={insertingItem ? t("Add Regimen Item") : t("Scheduler")}
           helpText={t(ToolTips.BULK_SCHEDULER)}
           show={!!regimenSelected} width={4}>
           <BulkScheduler

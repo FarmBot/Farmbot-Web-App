@@ -86,7 +86,8 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs-page">
       <Alerts alerts={this.props.alerts}
-        apiFirmwareValue={this.props.apiFirmwareValue} />
+        apiFirmwareValue={this.props.apiFirmwareValue}
+        timeSettings={this.props.timeSettings} />
       <Row>
         <Col xs={7}>
           <h3>

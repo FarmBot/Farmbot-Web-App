@@ -14,6 +14,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
 import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<BoardType/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -26,6 +27,7 @@ describe("<BoardType/>", () => {
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
     botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("Farmduino", () => {
@@ -91,15 +93,6 @@ describe("<BoardType/>", () => {
 
   it("displays standard boards", () => {
     const wrapper = shallow(<BoardType {...fakeProps()} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" }]);
-  });
-
-  it("displays new board", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
-    const wrapper = shallow(<BoardType {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },

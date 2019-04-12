@@ -1,10 +1,10 @@
 import * as React from "react";
-
 import { DirectionButton } from "./controls/move/direction_button";
 import { getDevice } from "./device";
 import { buildDirectionProps } from "./controls/move/direction_axes_props";
 import { ControlsPopupProps } from "./controls/move/interfaces";
 import { commandErr } from "./devices/actions";
+import { mapPanelClassName } from "./farm_designer/map/util";
 
 interface State {
   isOpen: boolean;
@@ -24,7 +24,7 @@ export class ControlsPopup
     const rightLeft = xySwap ? "y" : "x";
     const upDown = xySwap ? "x" : "y";
     return <div
-      className={"controls-popup " + isOpen}>
+      className={`controls-popup ${isOpen} ${mapPanelClassName()}`}>
       <i className="fa fa-crosshairs"
         onClick={this.toggle("isOpen")} />
       <div className="controls-popup-menu-outer">

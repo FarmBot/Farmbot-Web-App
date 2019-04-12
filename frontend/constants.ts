@@ -423,6 +423,9 @@ export namespace Content {
     trim(`Display time using the 24-hour notation,
     i.e., 23:00 instead of 11:00pm`);
 
+  export const SHOW_PINS =
+    trim(`Show raw pin lists in Read Sensor and Control Peripheral steps.`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
@@ -561,6 +564,9 @@ export namespace Content {
     trim(`Click one in the Sequences panel to edit, or click "+" to create
     a new one.`);
 
+  export const NO_SEQUENCES =
+    trim(`Click "+" to create a new sequence.`);
+
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
     encoders or endstops enabled for the chosen axis. Enable endstops or
@@ -573,6 +579,9 @@ export namespace Content {
   export const NO_REGIMEN_SELECTED =
     trim(`Click one in the Regimens panel to edit, or click "+" to create
     a new one.`);
+
+  export const NO_REGIMENS =
+    trim(`Click "+" to create a new regimen.`);
 
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
