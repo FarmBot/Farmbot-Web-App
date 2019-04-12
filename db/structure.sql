@@ -420,7 +420,7 @@ CREATE TABLE public.fbos_configs (
     device_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    auto_sync boolean DEFAULT false,
+    auto_sync boolean DEFAULT true,
     beta_opt_in boolean DEFAULT false,
     disable_factory_reset boolean DEFAULT false,
     firmware_input_log boolean DEFAULT false,
@@ -1501,13 +1501,14 @@ CREATE TABLE public.web_app_configs (
     photo_filter_end character varying,
     discard_unsaved boolean DEFAULT false,
     xy_swap boolean DEFAULT false,
-    home_button_homing boolean DEFAULT false,
+    home_button_homing boolean DEFAULT true,
     show_motor_plot boolean DEFAULT false,
     show_historic_points boolean DEFAULT false,
     show_sensor_readings boolean DEFAULT false,
     show_dev_menu boolean DEFAULT false,
     internal_use text,
-    time_format_24_hour boolean DEFAULT false
+    time_format_24_hour boolean DEFAULT false,
+    show_pins boolean DEFAULT false
 );
 
 
@@ -2886,6 +2887,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190212215842'),
 ('20190307205648'),
 ('20190401212119'),
-('20190411152319');
+('20190411152319'),
+('20190411171401'),
+('20190411222900');
 
 

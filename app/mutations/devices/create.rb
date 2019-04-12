@@ -13,14 +13,14 @@ module Devices
     def execute
       merge_default_values
       device = Device.create!({name: "Farmbot"}.merge(inputs.except(:user)))
-      # TODO: This is a really, really, really old
-      # no-longer-relevant legacy features back
-      # when we were using MongoDB. This can be
-      # safely removed now. - RC 11-APR-19
       Enigmas::Create.run!(device:      device,
                            problem_tag: Enigma::SEED_DATA)
 
       ActiveRecord::Base.transaction do
+        # TODO: This is a really, really, really old
+        # no-longer-relevant legacy features back
+        # when we were using MongoDB. This can be
+        # safely removed now. - RC 11-APR-19
         old_device = user.device
         user.update_attributes!(device_id: device.id) # Detach from old one.
         # Remove userless devices.
