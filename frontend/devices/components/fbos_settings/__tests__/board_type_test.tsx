@@ -14,6 +14,7 @@ import {
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
 import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<BoardType/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -26,6 +27,7 @@ describe("<BoardType/>", () => {
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
     botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("Farmduino", () => {

@@ -159,6 +159,7 @@ export class FarmbotOsSettings
               bot={bot}
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}
+              timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
