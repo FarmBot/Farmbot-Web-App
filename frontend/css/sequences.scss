@@ -1,10 +1,10 @@
 .farmware-input-panel,
 .sequence-editor-panel,
 .regimen-editor-panel {
-  margin: -3rem -1.5rem -6rem;
+  margin: -3rem -1.5rem -3rem;
   height: calc(100vh - 5rem);
   background: $light_gray;
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
     display: none;
     &.open {
       display: block;
@@ -22,7 +22,7 @@
     float: left;
     margin-top: 0.4rem;
   }
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     h3,
     p {
       margin-left: 15px;
@@ -33,6 +33,7 @@
     }
     .button-group {
       margin-right: 15px;
+      margin-top: -1rem;
     }
     .title-help-text {
       padding-left: 15px;
@@ -51,7 +52,7 @@
     padding-left: 15px;
     padding-right: 15px;
   }
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     .title-help-text {
       padding-left: 3rem;
       padding-right: 3rem;
@@ -63,7 +64,7 @@
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -15px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 0;
   }
@@ -72,7 +73,7 @@
 .sequence-editor-tools,
 .regimen-editor-tools {
   margin-right: 15px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-right: 10px;
   }
   .locals-list {
@@ -146,7 +147,7 @@
 
 .farmware-info-panel,
 .step-button-cluster-panel {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     display: none;
     &.farmware-info-open,
     &.inserting-step {
@@ -157,12 +158,18 @@
   }
 }
 
+.step-button-cluster {
+  @media screen and (max-width: 767px) {
+    width: 40rem;
+  }
+}
+
 .farmware-info-panel button {
   margin-bottom: 3rem;
 }
 
 .step-button-cluster {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 0;
     margin-right: 0;
   }
@@ -198,12 +205,31 @@
   padding-top: 0.4rem;
   margin-bottom: 3rem;
   margin-right: 5px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 1075px) {
+    margin-left: 15px;
+  }
+  .empty-state {
+    display: none;
+    .empty-state-graphic {
+      margin-top: 25%;
+    }
+  }
+  @media screen and (max-width: 767px) {
     &.open {
       display: none;
     }
     margin-left: 15px;
     margin-right: 15px;
+    .empty-state {
+      display: block;
+    }
+  }
+  .panel-top {
+    margin: 0;
+    .text-input-wrapper {
+      margin: 0.1rem;
+      margin-right: 1rem;
+    }
   }
 }
 
@@ -223,24 +249,39 @@
 }
 
 .farmware-input-panel-contents {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 15px;
     padding-right: 5rem;
   }
 }
 
-.sequence-list-panel input,
-.regimen-list-panel input {
-  margin-bottom: 1rem;
-}
-
-.back-to-farmware,
 .back-to-regimens,
 .back-to-sequences {
   display: none;
   &.open {
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 767px) {
+      display: block;
+      margin-top: -2rem;
+      float: left !important;
+      height: 6rem;
+      width: 4rem;
+      font-size: 2rem;
+      text-align: center;
+      line-height: 6rem;
+      margin-left: 15px;
+      &.inserting-step,
+      &.inserting-item {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+.back-to-farmware {
+  display: none;
+  &.open {
+    @media screen and (max-width: 767px) {
       display: block;
       margin: 4rem;
       margin-top: 0;
@@ -249,22 +290,19 @@
       i {
         margin-right: 1rem;
       }
-      &.inserting-step {
-        display: none;
-      }
     }
   }
 }
 
 .drag-drop-area {
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
     display: none;
   }
 }
 
 .add-command-button-container {
   display: none;
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
     display: block;
     min-height: 3rem;
     .add-command {
@@ -278,7 +316,7 @@
 
 .farmware-info-button {
   display: none;
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
     &.open {
       display: block;
       margin: 4rem;

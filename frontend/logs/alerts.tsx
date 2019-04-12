@@ -5,15 +5,34 @@ import { BotState } from "../devices/interfaces";
 import {
   FirmwareActions
 } from "../devices/components/fbos_settings/firmware_hardware_status";
+import { formatLogTime } from "./index";
+import { TimeSettings } from "../interfaces";
+import { Enigma } from "farmbot";
+import { sortBy } from "lodash";
 
 export interface AlertsProps {
   alerts: Alert[];
   apiFirmwareValue: string | undefined;
+  timeSettings: TimeSettings;
 }
 
 interface AlertsState {
   open: boolean;
 }
+
+interface ProblemTag {
+  author: string;
+  noun: string;
+  verb: string;
+}
+
+const splitTag = (problemTag: string): ProblemTag => {
+  const parts = problemTag.split(".");
+  return { author: parts[0], noun: parts[1], verb: parts[2] };
+};
+
+export const sortAlerts = (alerts: Alert[]): Alert[] =>
+  sortBy(alerts, "priority", "created_at");
 
 export class Alerts extends React.Component<AlertsProps, AlertsState> {
   state: AlertsState = { open: true };
@@ -31,11 +50,11 @@ export class Alerts extends React.Component<AlertsProps, AlertsState> {
         </div>
         {this.state.open &&
           <div className="problem-alerts-content">
-            {this.props.alerts.sort((a, b) => a.priority - b.priority)
-              .map((x, i) =>
-                <AlertCard key={i}
-                  alert={x}
-                  apiFirmwareValue={this.props.apiFirmwareValue} />)}
+            {sortAlerts(this.props.alerts).map((x, i) =>
+              <AlertCard key={i}
+                alert={x}
+                apiFirmwareValue={this.props.apiFirmwareValue}
+                timeSettings={this.props.timeSettings} />)}
           </div>}
       </div> : <div />;
   }
@@ -44,62 +63,65 @@ export class Alerts extends React.Component<AlertsProps, AlertsState> {
 export interface FirmwareAlertsProps {
   bot: BotState;
   apiFirmwareValue: string | undefined;
+  timeSettings: TimeSettings;
 }
 
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
-  const alerts = betterCompact(Object.values(props.bot.hardware.enigmas || {})
-    .filter(x => x && x.problem_tag.startsWith("firmware")))
-    .sort((a, b) => a.priority - b.priority);
+  const alerts = betterCompact(Object.values(props.bot.hardware.enigmas || {}));
+  const firmwareAlerts = sortAlerts(alerts)
+    .filter(x => splitTag(x.problem_tag).noun === "firmware");
   return <div className="firmware-alerts">
-    {alerts.map((x, i) =>
-      <AlertCard key={i} alert={x} apiFirmwareValue={props.apiFirmwareValue} />)}
+    {firmwareAlerts.map((x, i) =>
+      <AlertCard key={i}
+        alert={x}
+        apiFirmwareValue={props.apiFirmwareValue}
+        timeSettings={props.timeSettings} />)}
   </div>;
 };
 
-export interface Alert {
-  created_at: string;
-  updated_at: string;
-  problem_tag: string;
-  priority: number;
-}
+export interface Alert extends Enigma { }
 
 interface AlertCardProps {
   alert: Alert;
   apiFirmwareValue: string | undefined;
+  timeSettings: TimeSettings;
 }
 
 const AlertCard = (props: AlertCardProps) => {
   switch (props.alert.problem_tag) {
-    case "firmware.missing":
+    case "farmbot_os.firmware.missing":
       return <FirmwareMissing
-        updatedAt={props.alert.updated_at}
-        apiFirmwareValue={props.apiFirmwareValue} />;
+        createdAt={props.alert.created_at}
+        apiFirmwareValue={props.apiFirmwareValue}
+        timeSettings={props.timeSettings} />;
     default:
-      return <UnknownAlert {...props.alert} />;
+      return UnknownAlert(props.alert, props.timeSettings);
   }
 };
 
-const UnknownAlert = (alert: Alert) => {
-  const { problem_tag, priority, created_at, updated_at } = alert;
-  const tagParts = problem_tag.split(".");
+const UnknownAlert = (alert: Alert, timeSettings: TimeSettings) => {
+  const { problem_tag, priority, created_at } = alert;
+  const { author, noun, verb } = splitTag(problem_tag);
+  const createdAt = formatLogTime(created_at, timeSettings);
   return <div className="problem-alert unknown-alert">
     <div className="problem-alert-title">
       <i className="fa fa-exclamation-triangle" />
-      <h3>{`${t(tagParts[0])}: ${t(tagParts[1])}`}</h3>
-      <p>{updated_at}</p>
+      <h3>{`${t(noun)}: ${t(verb)} (${t(author)})`}</h3>
+      <p>{createdAt}</p>
     </div>
     <div className="problem-alert-content">
       <p>
-        {t("Unknown problem of priority {{priority}} created at {{created_at}}",
-          { priority, created_at })}
+        {t("Unknown problem of priority {{priority}} created at {{createdAt}}",
+          { priority, createdAt })}
       </p>
     </div>
   </div>;
 };
 
 interface FirmwareMissingProps {
-  updatedAt: string;
+  createdAt: number;
   apiFirmwareValue: string | undefined;
+  timeSettings: TimeSettings;
 }
 
 const FirmwareMissing = (props: FirmwareMissingProps) =>
@@ -107,7 +129,7 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     <div className="problem-alert-title">
       <i className="fa fa-exclamation-triangle" />
       <h3>{t("Firmware missing")}</h3>
-      <p>{props.updatedAt}</p>
+      <p>{formatLogTime(props.createdAt, props.timeSettings)}</p>
     </div>
     <div className="problem-alert-content">
       <p>{t("Your device has no firmware installed.")}</p>

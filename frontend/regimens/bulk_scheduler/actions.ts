@@ -1,6 +1,5 @@
 import { isNaN, isNumber } from "lodash";
-
-import { error, warning } from "farmbot-toastr";
+import { error, warning, success } from "farmbot-toastr";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
 import { findSequence, findRegimen } from "../../resources/selectors";
@@ -93,6 +92,7 @@ export function commitBulkEditor(): Thunk {
           clonedRegimen.body = mergeDeclarations(varData, regimen.body.body);
           console.log(JSON.stringify(clonedRegimen.body, undefined, 2));
           dispatch(overwrite(regimen, clonedRegimen));
+          success(t("Item(s) added."));
         } else {
           return error(t("No day(s) selected."));
         }

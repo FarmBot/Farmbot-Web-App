@@ -37,7 +37,7 @@ export class Controls extends React.Component<Props, {}> {
     bot={this.props.bot}
     peripherals={this.props.peripherals}
     dispatch={this.props.dispatch}
-    disabled={this.arduinoBusy} />
+    disabled={this.arduinoBusy || !this.botOnline} />
 
   webcams = () => <WebcamPanel
     feeds={this.props.feeds}

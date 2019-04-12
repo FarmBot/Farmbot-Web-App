@@ -73,6 +73,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
       shouldDisplay: jest.fn(),
       confirmStepDeletion: false,
       menuOpen: false,
+      showPins: true,
     };
   };
 
@@ -253,9 +254,13 @@ describe("<SequenceSettingsMenu />", () => {
   it("renders settings", () => {
     const wrapper = mount(<SequenceSettingsMenu
       dispatch={jest.fn()}
-      confirmStepDeletion={false} />);
-    wrapper.find("button").simulate("click");
+      confirmStepDeletion={false}
+      showPins={false} />);
+    wrapper.find("button").first().simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
+    wrapper.find("button").last().simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      "show_pins", true);
   });
 });

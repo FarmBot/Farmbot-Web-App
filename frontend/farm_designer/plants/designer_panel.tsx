@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { history as routeHistory } from "../../history";
 import { last, trim } from "lodash";
 import { Link } from "../../link";
@@ -81,7 +80,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     {props.linkTo &&
       <Link to={props.linkTo}>
         <div className={`fb-button ${TAB_COLOR[props.panel || Panel.Plants]}`}>
-          <i className="fa fa-2x fa-plus" title={props.title} />
+          <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}
   </div>;

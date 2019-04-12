@@ -28,7 +28,6 @@ export function mapStateToProps(props: Everything): LogsProps {
   const sourceFbosConfig =
     sourceFbosConfigValue(fbosConfig, hardware.configuration);
   const apiFirmwareValue = sourceFbosConfig("firmware_hardware").value;
-
   return {
     dispatch: props.dispatch,
     sourceFbosConfig,

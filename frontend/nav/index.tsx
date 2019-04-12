@@ -44,6 +44,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     return <SyncButton
       bot={this.props.bot}
       dispatch={this.props.dispatch}
+      autoSync={this.props.autoSync}
       consistent={this.props.consistent} />;
   }
 
@@ -98,10 +99,11 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                   <div className="nav-right">
                     <div className="menu-popover">
                       <Popover
+                        portalClassName={"nav-right"}
+                        popoverClassName={"menu-popover"}
                         position={Position.BOTTOM_RIGHT}
                         isOpen={accountMenuOpen}
-                        onClose={this.close("accountMenuOpen")}
-                        usePortal={false}>
+                        onClose={this.close("accountMenuOpen")}>
                         <div className="nav-name"
                           onClick={this.toggle("accountMenuOpen")}>
                           {firstName}

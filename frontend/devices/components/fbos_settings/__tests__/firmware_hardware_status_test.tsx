@@ -13,19 +13,28 @@ import {
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { flashFirmware } from "../../../actions";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<FirmwareHardwareStatusDetails />", () => {
   const fakeProps = (): FirmwareHardwareStatusDetailsProps => ({
     bot,
     botOnline: true,
-    apiFirmwareValue: "arduino",
+    apiFirmwareValue: undefined,
     botFirmwareValue: undefined,
     mcuFirmwareValue: undefined,
     shouldDisplay: () => true,
+    timeSettings: fakeTimeSettings(),
   });
 
-  it("renders details", () => {
+  it("renders details: unknown", () => {
     const wrapper = mount(<FirmwareHardwareStatusDetails {...fakeProps()} />);
+    expect(wrapper.text()).toContain("unknown");
+  });
+
+  it("renders details: arduino", () => {
+    const p = fakeProps();
+    p.apiFirmwareValue = "arduino";
+    const wrapper = mount(<FirmwareHardwareStatusDetails {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
   });
 });
@@ -50,7 +59,7 @@ describe("<FirmwareHardwareStatusIcon />", () => {
     p.firmwareHardware = "arduino";
     p.status = false;
     const wrapper = mount(<FirmwareHardwareStatusIcon {...p} />);
-    expect(wrapper.find("i").hasClass("error")).toEqual(true);
+    expect(wrapper.find("i").hasClass("no")).toEqual(true);
     expect(wrapper.find("i").hasClass("fa-times-circle")).toEqual(true);
   });
 
@@ -69,6 +78,7 @@ describe("<FirmwareHardwareStatus />", () => {
     botOnline: true,
     apiFirmwareValue: undefined,
     shouldDisplay: () => true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("renders: inconsistent", () => {

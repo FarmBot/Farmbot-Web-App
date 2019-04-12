@@ -47,6 +47,7 @@ export interface Props {
   confirmStepDeletion: boolean;
   menuOpen: boolean;
   stepIndex: number | undefined;
+  showPins: boolean;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -59,6 +60,7 @@ export interface SequenceEditorMiddleProps {
   shouldDisplay: ShouldDisplay;
   confirmStepDeletion: boolean;
   menuOpen: boolean;
+  showPins: boolean;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -75,6 +77,7 @@ export interface SequenceHeaderProps {
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
   confirmStepDeletion: boolean;
+  showPins: boolean;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -202,4 +205,5 @@ export interface StepParams {
   farmwareInfo?: FarmwareInfo;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
+  showPins?: boolean;
 }

@@ -3,13 +3,14 @@ import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
-import { getBotSize, round } from "./map/util";
+import {
+  getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName
+} from "./map/util";
 import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
@@ -98,9 +99,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     return this.props.children || React.createElement(Plants, props);
   }
 
-  get mapOnly() {
-    return history.getCurrentLocation().pathname === "/app/designer";
-  }
+  get mapPanelClassName() { return mapPanelClassName(); }
 
   render() {
     const {
@@ -134,11 +133,10 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
 
-    const displayPanel = this.mapOnly ? "hidden" : "";
-
     return <div className="farm-designer">
 
       <GardenMapLegend
+        className={this.mapPanelClassName}
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
         updateBotOriginQuadrant={this.updateBotOriginQuadrant}
@@ -155,13 +153,13 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <DesignerNavTabs hidden={!this.mapOnly} />
-      <div className={`farm-designer-panels ${displayPanel}`}>
+      <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
+      <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
         {this.childComponent(this.props)}
       </div>
 
       <div
-        className={`farm-designer-map ${this.mapOnly ? "" : "panel-open"}`}
+        className={`farm-designer-map ${this.mapPanelClassName}`}
         style={{ zoom: zoom_level }}>
         <GardenMap
           showPoints={show_points}

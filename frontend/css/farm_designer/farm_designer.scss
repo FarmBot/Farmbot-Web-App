@@ -2,6 +2,19 @@
   position: relative;
   height: 100vh;
   overflow-y: hidden;
+  .garden-map-legend {
+    @media screen and (max-width: 450px) {
+      &.panel-open {
+        display: none;
+      }
+      &.short-panel {
+        top: 35rem;
+      }
+      &.panel-closed {
+        top: 15rem;
+      }
+    }
+  }
 }
 
 .farm-designer-map {
@@ -12,6 +25,9 @@
   overflow: auto;
   &.panel-open {
     padding: 11rem 2rem 2rem 31.8rem; // at zoom = 1.0: 110px 20px 20px 318px
+  }
+  &.short-panel {
+    padding: 35rem 2rem 2rem 2rem; // at zoom = 1.0: 350px 20px 20px 20px
   }
 }
 
@@ -42,7 +58,6 @@
 .crop-drag-info-image {
   width: 100% !important;
   background-color: $translucent;
-  max-width: 28rem;
 }
 
 .plant-catalog-image {
@@ -104,21 +119,24 @@
   .text-input-wrapper {
     position: relative;
     margin: 1rem;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid $dark_gray;
     &:before,
     &:after {
       content: "";
       position: absolute;
       bottom: 0;
-      background: #000;
+      background: $dark_gray;
       width: 1px;
-      height: 10px;
+      height: 3px;
     }
     &:before {
       left: 0;
     }
     &:after {
       right: 0;
+    }
+    i {
+      font-size: 1.5rem;
     }
     .fa-search {
       position: absolute;

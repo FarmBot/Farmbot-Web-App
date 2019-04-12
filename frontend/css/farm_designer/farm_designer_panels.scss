@@ -3,6 +3,9 @@
   position: fixed;
   top: 8.9rem;
   width: 30rem;
+  @media screen and (max-width: 450px) {
+    width: 100%;
+  }
 }
 
 @keyframes panel-pullout {
@@ -17,6 +20,12 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  &.panel-closed {
+    display: none !important;
+  }
+  &.short-panel {
+    height: 24rem;
+  }
   .panel-container {
     width: 100%;
     height: 100%;
@@ -134,33 +143,30 @@
 
 .panel-title {
   height: 50px;
-  padding-top: 1.8rem;
-  padding-left: 1.4rem;
-  padding-right: 2rem;
   .back-arrow {
-    display: inline-block;
+    float: left;
     color: $off_white;
-    margin-right: 1rem;
+    text-align: center;
     font-size: 1.8rem;
-    margin-top: -1.8rem;
-    vertical-align: middle;
+    width: 50px;
+    line-height: 50px;
     &:hover {
       color: $white;
     }
   }
   .title {
-    display: inline-block;
-    color: $white;
+    float: left;
+    color: $off_white;
     font-size: 1.8rem;
-    margin-top: 0.4rem;
     white-space: nowrap;
-    width: 10em;
+    width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 2rem;
-    padding: 0.2rem;
+    line-height: 50px;
   }
   .right-button {
+    position: absolute;
+    right: 0;
     float: right;
     text-transform: uppercase;
     font-size: 1rem;
@@ -170,6 +176,8 @@
     letter-spacing: 1px;
     border-radius: 4px;
     color: $off_white;
+    margin-top: 1.25rem;
+    margin-right: 1.5rem;
     &:hover {
       color: $white;
     }
@@ -250,8 +258,15 @@
   &.with-button {
     display: flex;
     margin-top: 5rem;
-    a {
+    .fb-button {
       margin: 1rem;
+      margin-left: 0;
+    }
+    a {
+      margin-top: 0.5rem;
+    }
+    i {
+      font-size: 1.5rem;
     }
   }
 }
@@ -268,7 +283,7 @@
   input {
     background: $white;
   }
-  .is-saved {
+  .save-btn {
     margin: 1rem;
   }
 }
@@ -284,7 +299,6 @@
 .panel-nav {
   position: fixed;
   z-index: 2;
-  width: 300px;
 }
 
 .panel-header {
@@ -301,9 +315,6 @@
 }
 
 .crop-info-panel {
-  .title {
-    width: 50%;
-  }
   .panel-header {
     position: inherit;
     background-size: 144% !important;
@@ -336,6 +347,17 @@
   }
   input {
     background: $white;
+  }
+}
+
+.add-plant-panel,
+.move-to-panel {
+  padding-bottom: 0 !important;
+}
+
+.add-plant-panel {
+  .panel-header {
+    height: 100%;
   }
 }
 

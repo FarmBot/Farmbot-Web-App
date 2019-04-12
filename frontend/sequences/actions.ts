@@ -47,3 +47,8 @@ export const unselectSequence = () => {
   push("/app/sequences");
   return { type: Actions.SELECT_SEQUENCE, payload: undefined };
 };
+
+export const closeCommandMenu = () => ({
+  type: Actions.SET_SEQUENCE_STEP_POSITION,
+  payload: undefined,
+});

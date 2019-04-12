@@ -11,10 +11,11 @@ import {
 } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { getFirmwareConfig, getWebAppConfig } from "../resources/getters";
+import { getFirmwareConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
 import { DevSettings } from "../account/dev/dev_support";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -61,16 +62,17 @@ export function mapStateToProps(props: Everything): Props {
   });
   const farmwareNames = Object.values(farmwares).map(fw => fw.name);
   const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
-  const conf = getWebAppConfig(props.resources.index);
-  const showFirstPartyFarmware = !!(conf && conf.body.show_first_party_farmware);
+  const getConfig = getWebAppConfigValue(() => props);
+  const showFirstPartyFarmware =
+    !!getConfig(BooleanSetting.show_first_party_farmware);
   const farmwareConfigs: FarmwareConfigs = {};
   Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
 
-  const confirmStepDeletion =
-    !!getWebAppConfigValue(() => props)(BooleanSetting.confirm_step_deletion);
+  const confirmStepDeletion = !!getConfig(BooleanSetting.confirm_step_deletion);
+  const showPins = !!getConfig("show_pins" as BooleanConfigKey);
 
   const fbosVersionOverride = DevSettings.overriddenFbosVersion();
   const shouldDisplay = shouldDisplayFunc(
@@ -97,5 +99,6 @@ export function mapStateToProps(props: Everything): Props {
     confirmStepDeletion,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
+    showPins,
   };
 }

@@ -7,7 +7,6 @@ import {
   BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
 } from "../../ui/index";
 import moment from "moment";
-
 import { isString } from "lodash";
 import { betterCompact, bail } from "../../util";
 import { msToTime, timeToMs } from "./utils";
@@ -69,7 +68,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   render() {
     const { dispatch, weeks, sequences } = this.props;
     const active = !!(sequences && sequences.length);
-    return <div>
+    return <div className="bulk-scheduler-content">
       <AddButton
         active={active}
         click={() => dispatch(commitBulkEditor())} />

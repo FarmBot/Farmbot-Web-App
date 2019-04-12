@@ -24,6 +24,7 @@ import { ToggleButton } from "../controls/toggle_button";
 import { Content } from "../constants";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -49,19 +50,32 @@ export const onDrop =
 export interface SequenceSettingsMenuProps {
   dispatch: Function;
   confirmStepDeletion: boolean;
+  showPins: boolean;
 }
 
 export const SequenceSettingsMenu =
-  ({ dispatch, confirmStepDeletion }: SequenceSettingsMenuProps) =>
+  ({ dispatch, confirmStepDeletion, showPins }: SequenceSettingsMenuProps) =>
     <div className="sequence-settings-menu">
-      <label>
-        {t("Confirm step deletion")}
-      </label>
-      <Help text={t(Content.CONFIRM_STEP_DELETION)} />
-      <ToggleButton
-        toggleValue={confirmStepDeletion}
-        toggleAction={() => dispatch(setWebAppConfigValue(
-          BooleanSetting.confirm_step_deletion, !confirmStepDeletion))} />
+      <fieldset>
+        <label>
+          {t("Confirm step deletion")}
+        </label>
+        <Help text={t(Content.CONFIRM_STEP_DELETION)} requireClick={true} />
+        <ToggleButton
+          toggleValue={confirmStepDeletion}
+          toggleAction={() => dispatch(setWebAppConfigValue(
+            BooleanSetting.confirm_step_deletion, !confirmStepDeletion))} />
+      </fieldset>
+      <fieldset>
+        <label>
+          {t("Show pins")}
+        </label>
+        <Help text={t(Content.SHOW_PINS)} requireClick={true} />
+        <ToggleButton
+          toggleValue={showPins}
+          toggleAction={() => dispatch(setWebAppConfigValue(
+            "show_pins" as BooleanConfigKey, !showPins))} />
+      </fieldset>
     </div>;
 
 interface SequenceBtnGroupProps {
@@ -72,11 +86,12 @@ interface SequenceBtnGroupProps {
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
   confirmStepDeletion: boolean;
+  showPins: boolean;
 }
 
 const SequenceBtnGroup = ({
   dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen,
-  confirmStepDeletion
+  confirmStepDeletion, showPins
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
@@ -104,6 +119,7 @@ const SequenceBtnGroup = ({
         <i className="fa fa-gear" />
         <SequenceSettingsMenu
           dispatch={dispatch}
+          showPins={showPins}
           confirmStepDeletion={confirmStepDeletion} />
       </Popover>
     </div>
@@ -140,6 +156,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
       confirmStepDeletion={props.confirmStepDeletion}
+      showPins={props.showPins}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <LocalsList
@@ -190,6 +207,7 @@ export class SequenceEditorMiddleActive extends
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
         confirmStepDeletion={this.props.confirmStepDeletion}
+        showPins={this.props.showPins}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"

@@ -15,7 +15,7 @@ describe Api::FbosConfigsController do
       expect(response.status).to eq(200)
       {
         device_id:               device.id,
-        auto_sync:               false,
+        auto_sync:               true,
         beta_opt_in:             false,
         disable_factory_reset:   false,
         firmware_input_log:      false,

@@ -1,8 +1,9 @@
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import { RegimensList } from "../index";
 import { RegimensListProps } from "../../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
+import { inputEvent } from "../../../__test_support__/fake_input_event";
 
 describe("<RegimensList />", () => {
   function fakeProps(): RegimensListProps {
@@ -24,9 +25,8 @@ describe("<RegimensList />", () => {
   });
 
   it("sets search term", () => {
-    const wrapper = shallow<RegimensList>(<RegimensList {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "term" } });
-    expect(wrapper.instance().state.searchTerm).toEqual("term");
+    const wrapper = mount<RegimensList>(<RegimensList {...fakeProps()} />);
+    wrapper.instance().onChange(inputEvent("term"));
+    expect(wrapper.state().searchTerm).toEqual("term");
   });
 });

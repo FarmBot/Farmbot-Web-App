@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
@@ -48,7 +47,7 @@ export function TileReadPin(props: StepParams) {
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsReadPin(props.resources,
-              shouldDisplay || (() => false))} />
+              shouldDisplay || (() => false), !!props.showPins)} />
         </Col>
         <PinMode {...props} />
         <Col xs={6} md={3}>

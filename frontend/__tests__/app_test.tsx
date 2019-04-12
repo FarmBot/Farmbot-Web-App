@@ -2,7 +2,8 @@ jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
 jest.mock("../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
 import * as React from "react";
@@ -39,6 +40,7 @@ const fakeProps = (): AppProps => {
     getConfigValue: jest.fn(),
     tour: undefined,
     resources: buildResourceIndex().index,
+    autoSync: false,
   };
 };
 

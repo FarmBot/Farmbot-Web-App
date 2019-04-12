@@ -56,7 +56,7 @@ export function TileWritePin(props: StepParams) {
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsWritePin(props.resources,
-              shouldDisplay || (() => false))} />
+              shouldDisplay || (() => false), !!props.showPins)} />
         </Col>
         <PinMode {...props} />
         <Col xs={6} md={3}>
