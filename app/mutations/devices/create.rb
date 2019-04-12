@@ -17,6 +17,9 @@ module Devices
       # no-longer-relevant legacy features back
       # when we were using MongoDB. This can be
       # safely removed now. - RC 11-APR-19
+      Enigmas::Create.run!(device:      device,
+                           problem_tag: Enigma::SEED_DATA)
+
       ActiveRecord::Base.transaction do
         old_device = user.device
         user.update_attributes!(device_id: device.id) # Detach from old one.
