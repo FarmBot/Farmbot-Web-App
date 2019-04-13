@@ -381,6 +381,13 @@ export namespace Content {
     trim(`Export request received. Please allow up to 10 minutes for
     delivery.`);
 
+  export const SEED_DATA_SELECTION =
+    trim(`To finish setting up your account and FarmBot, please select which
+    FarmBot you have. Once you make a selection, we'll automatically add some
+    tools, sensors, peripherals, sequences, and more to get you up and running
+    faster. If you want to start completely from scratch, feel free to select
+    "Custom bot" and we won't change a thing.`);
+
   // App Settings
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when the sequence delete step

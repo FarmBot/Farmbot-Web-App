@@ -14,6 +14,7 @@ import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -44,10 +45,9 @@ export interface Props {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
-  confirmStepDeletion: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
   stepIndex: number | undefined;
-  showPins: boolean;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -58,9 +58,8 @@ export interface SequenceEditorMiddleProps {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
-  confirmStepDeletion: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
-  showPins: boolean;
 }
 
 export interface ActiveMiddleProps extends SequenceEditorMiddleProps {
@@ -76,8 +75,7 @@ export interface SequenceHeaderProps {
   menuOpen: boolean;
   variablesCollapsed: boolean;
   toggleVarShow: () => void;
-  confirmStepDeletion: boolean;
-  showPins: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
