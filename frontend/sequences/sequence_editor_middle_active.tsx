@@ -22,9 +22,8 @@ import { Actions } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
 import { ToggleButton } from "../controls/toggle_button";
 import { Content } from "../constants";
-import { setWebAppConfigValue } from "../config_storage/actions";
+import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -49,13 +48,15 @@ export const onDrop =
 
 export interface SequenceSettingsMenuProps {
   dispatch: Function;
-  confirmStepDeletion: boolean;
-  showPins: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 export const SequenceSettingsMenu =
-  ({ dispatch, confirmStepDeletion, showPins }: SequenceSettingsMenuProps) =>
-    <div className="sequence-settings-menu">
+  ({ dispatch, getWebAppConfigValue }: SequenceSettingsMenuProps) => {
+    const confirmStepDeletion =
+      !!getWebAppConfigValue(BooleanSetting.confirm_step_deletion);
+    const showPins = !!getWebAppConfigValue(BooleanSetting.show_pins);
+    return <div className="sequence-settings-menu">
       <fieldset>
         <label>
           {t("Confirm step deletion")}
@@ -74,9 +75,10 @@ export const SequenceSettingsMenu =
         <ToggleButton
           toggleValue={showPins}
           toggleAction={() => dispatch(setWebAppConfigValue(
-            "show_pins" as BooleanConfigKey, !showPins))} />
+            BooleanSetting.show_pins, !showPins))} />
       </fieldset>
     </div>;
+  };
 
 interface SequenceBtnGroupProps {
   dispatch: Function;
@@ -85,13 +87,12 @@ interface SequenceBtnGroupProps {
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
-  confirmStepDeletion: boolean;
-  showPins: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 const SequenceBtnGroup = ({
   dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen,
-  confirmStepDeletion, showPins
+  getWebAppConfigValue
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
@@ -119,8 +120,7 @@ const SequenceBtnGroup = ({
         <i className="fa fa-gear" />
         <SequenceSettingsMenu
           dispatch={dispatch}
-          showPins={showPins}
-          confirmStepDeletion={confirmStepDeletion} />
+          getWebAppConfigValue={getWebAppConfigValue} />
       </Popover>
     </div>
   </div>;
@@ -155,8 +155,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       syncStatus={props.syncStatus}
       resources={props.resources}
       shouldDisplay={props.shouldDisplay}
-      confirmStepDeletion={props.confirmStepDeletion}
-      showPins={props.showPins}
+      getWebAppConfigValue={props.getWebAppConfigValue}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
     <LocalsList
@@ -194,6 +193,21 @@ export class SequenceEditorMiddleActive extends
     return `calc(100vh - ${subHeight}px)`;
   }
 
+  get stepProps() {
+    const getConfig = this.props.getWebAppConfigValue;
+    return {
+      sequence: this.props.sequence,
+      onDrop: onDrop(this.props.dispatch, this.props.sequence),
+      dispatch: this.props.dispatch,
+      resources: this.props.resources,
+      hardwareFlags: this.props.hardwareFlags,
+      farmwareInfo: this.props.farmwareInfo,
+      shouldDisplay: this.props.shouldDisplay,
+      confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
+      showPins: !!getConfig(BooleanSetting.confirm_step_deletion),
+    };
+  }
+
   render() {
     const { dispatch, sequence } = this.props;
     return <div className="sequence-editor-content">
@@ -206,13 +220,12 @@ export class SequenceEditorMiddleActive extends
         variablesCollapsed={this.state.variablesCollapsed}
         toggleVarShow={() =>
           this.setState({ variablesCollapsed: !this.state.variablesCollapsed })}
-        confirmStepDeletion={this.props.confirmStepDeletion}
-        showPins={this.props.showPins}
+        getWebAppConfigValue={this.props.getWebAppConfigValue}
         menuOpen={this.props.menuOpen} />
       <hr />
       <div className="sequence" id="sequenceDiv"
         style={{ height: this.stepSectionHeight }}>
-        <AllSteps onDrop={onDrop(dispatch, sequence)} {...this.props} />
+        <AllSteps {...this.stepProps} />
         <Row>
           <Col xs={12}>
             <DropArea isLocked={true}
