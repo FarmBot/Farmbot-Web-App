@@ -13,6 +13,13 @@ const FIRMWARE_MISSING_ALERT: Alert = {
   uuid: "uuid",
 };
 
+const SEED_DATA_MISSING_ALERT: Alert = {
+  created_at: 123,
+  problem_tag: "api.seed_data.missing",
+  priority: 300,
+  uuid: "uuid",
+};
+
 const UNKNOWN_ALERT: Alert = {
   created_at: 123,
   problem_tag: "farmbot_os.firmware.alert",
@@ -41,10 +48,11 @@ describe("<Alerts />", () => {
 
   it("renders alerts", () => {
     const p = fakeProps();
-    p.alerts = [FIRMWARE_MISSING_ALERT];
+    p.alerts = [FIRMWARE_MISSING_ALERT, SEED_DATA_MISSING_ALERT];
     const wrapper = mount(<Alerts {...p} />);
-    expect(wrapper.text()).toContain("1");
+    expect(wrapper.text()).toContain("2");
     expect(wrapper.text()).toContain("Your device has no firmware installed");
+    expect(wrapper.text()).toContain("Choose your FarmBot");
   });
 
   it("renders unknown alert", () => {

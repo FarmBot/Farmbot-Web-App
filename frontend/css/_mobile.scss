@@ -33,3 +33,11 @@
     transform: translateX(0)
   }
 }
+
+.controls-page {
+  @media (min-width:992px) {
+    .col-md-offset-1 {
+      margin-left: 5%;
+    }
+  }
+}

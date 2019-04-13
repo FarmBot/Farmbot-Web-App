@@ -24,6 +24,7 @@ import {
   TaggedToolSlotPointer,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
+  TaggedEnigma,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -422,5 +423,14 @@ export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
     url: "https://",
     package: undefined,
     package_error: undefined,
+  });
+}
+
+export function fakeEnigma(): TaggedEnigma {
+  return fakeResource("Enigma", {
+    uuid: "uuid",
+    created_at: 123,
+    problem_tag: "api.noun.verb",
+    priority: 100,
   });
 }

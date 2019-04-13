@@ -1,5 +1,7 @@
 import { Everything } from "../interfaces";
-import { selectAllLogs, maybeGetTimeSettings } from "../resources/selectors";
+import {
+  selectAllLogs, maybeGetTimeSettings, selectAllEnigmas
+} from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue
@@ -11,6 +13,7 @@ import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFbosConfig } from "../resources/getters";
 import { chain } from "lodash";
 import { isFwHardwareValue } from "../devices/components/fbos_settings/board_type";
+import { DevSettings } from "../account/dev/dev_support";
 
 /** Take the specified number of logs after sorting by time created. */
 export function takeSortedLogs(
@@ -28,13 +31,17 @@ export function mapStateToProps(props: Everything): LogsProps {
   const sourceFbosConfig =
     sourceFbosConfigValue(fbosConfig, hardware.configuration);
   const apiFirmwareValue = sourceFbosConfig("firmware_hardware").value;
+  const botAlerts = betterCompact(Object.values(props.bot.hardware.enigmas || {}));
+  const apiAlerts = selectAllEnigmas(props.resources.index).map(x => x.body);
+  const alerts =
+    botAlerts.concat(DevSettings.futureFeaturesEnabled() ? apiAlerts : []);
   return {
     dispatch: props.dispatch,
     sourceFbosConfig,
     logs: takeSortedLogs(250, props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
-    alerts: betterCompact(Object.values(props.bot.hardware.enigmas || {})),
+    alerts,
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
       ? apiFirmwareValue : undefined,
   };

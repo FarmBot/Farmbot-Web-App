@@ -891,6 +891,12 @@ ul {
   .bp3-popover-target {
     float: right;
   }
+  @media screen and (max-width: 1075px) {
+    padding-left: 15px !important;
+  }
+  @media screen and (max-width: 974px) {
+    padding-left: 0 !important;
+  }
 }
 
 .logs-settings-menu {
