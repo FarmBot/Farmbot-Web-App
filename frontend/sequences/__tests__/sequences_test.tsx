@@ -34,10 +34,9 @@ describe("<Sequences/>", () => {
       farmwareConfigs: {},
     },
     shouldDisplay: jest.fn(),
-    confirmStepDeletion: false,
+    getWebAppConfigValue: jest.fn(),
     menuOpen: false,
     stepIndex: undefined,
-    showPins: true,
   });
 
   it("renders", () => {

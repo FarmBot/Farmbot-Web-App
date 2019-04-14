@@ -9,6 +9,7 @@ import { formatLogTime } from "./index";
 import { TimeSettings } from "../interfaces";
 import { Enigma } from "farmbot";
 import { sortBy } from "lodash";
+import { Content } from "../constants";
 
 export interface AlertsProps {
   alerts: Alert[];
@@ -71,11 +72,12 @@ export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
   const firmwareAlerts = sortAlerts(alerts)
     .filter(x => splitTag(x.problem_tag).noun === "firmware");
   return <div className="firmware-alerts">
-    {firmwareAlerts.map((x, i) =>
-      <AlertCard key={i}
-        alert={x}
-        apiFirmwareValue={props.apiFirmwareValue}
-        timeSettings={props.timeSettings} />)}
+    {firmwareAlerts.filter(x => x.problem_tag && x.priority && x.created_at)
+      .map((x, i) =>
+        <AlertCard key={i}
+          alert={x}
+          apiFirmwareValue={props.apiFirmwareValue}
+          timeSettings={props.timeSettings} />)}
   </div>;
 };
 
@@ -93,6 +95,10 @@ const AlertCard = (props: AlertCardProps) => {
       return <FirmwareMissing
         createdAt={props.alert.created_at}
         apiFirmwareValue={props.apiFirmwareValue}
+        timeSettings={props.timeSettings} />;
+    case "api.seed_data.missing":
+      return <SeedDataMissing
+        createdAt={props.alert.created_at}
         timeSettings={props.timeSettings} />;
     default:
       return UnknownAlert(props.alert, props.timeSettings);
@@ -118,10 +124,13 @@ const UnknownAlert = (alert: Alert, timeSettings: TimeSettings) => {
   </div>;
 };
 
-interface FirmwareMissingProps {
+interface CommonAlertCardProps {
   createdAt: number;
-  apiFirmwareValue: string | undefined;
   timeSettings: TimeSettings;
+}
+
+interface FirmwareMissingProps extends CommonAlertCardProps {
+  apiFirmwareValue: string | undefined;
 }
 
 const FirmwareMissing = (props: FirmwareMissingProps) =>
@@ -136,5 +145,17 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
       <FirmwareActions
         apiFirmwareValue={props.apiFirmwareValue}
         botOnline={true} />
+    </div>
+  </div>;
+
+const SeedDataMissing = (props: CommonAlertCardProps) =>
+  <div className="problem-alert seed-data-missing-alert">
+    <div className="problem-alert-title">
+      <i className="fa fa-exclamation-triangle" />
+      <h3>{t("Choose your FarmBot")}</h3>
+      <p>{formatLogTime(props.createdAt, props.timeSettings)}</p>
+    </div>
+    <div className="problem-alert-content">
+      <p>{Content.SEED_DATA_SELECTION}</p>
     </div>
   </div>;

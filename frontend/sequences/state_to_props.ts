@@ -15,7 +15,6 @@ import { getFirmwareConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
 import { DevSettings } from "../account/dev/dev_support";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -70,10 +69,6 @@ export function mapStateToProps(props: Everything): Props {
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-
-  const confirmStepDeletion = !!getConfig(BooleanSetting.confirm_step_deletion);
-  const showPins = !!getConfig("show_pins" as BooleanConfigKey);
-
   const fbosVersionOverride = DevSettings.overriddenFbosVersion();
   const shouldDisplay = shouldDisplayFunc(
     installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
@@ -96,9 +91,8 @@ export function mapStateToProps(props: Everything): Props {
       farmwareConfigs,
     },
     shouldDisplay,
-    confirmStepDeletion,
+    getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
-    showPins,
   };
 }
