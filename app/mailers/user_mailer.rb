@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  RESET_PATH         = "http:%s/verify/%s"
+  RESET_PATH         = "/verify/%s"
   NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
   URI_KLASS          = ENV["FORCE_SSL"] ? URI::HTTP : URI::HTTPS
 
@@ -13,10 +13,9 @@ class UserMailer < ApplicationMailer
 
   def password_reset(user, raw_token)
     @user               = user
-    @token              = raw_token
     url                 = UserMailer.url_object
-    binding.pry
-    @password_reset_url = "?"
+    url.path            = "/password_reset/#{raw_token}"
+    @password_reset_url = url.to_s
     mail(to: @user.email, subject: 'FarmBot Password Reset Instructions')
   end
 
@@ -32,15 +31,14 @@ class UserMailer < ApplicationMailer
   end
 
   def self.reset_url(user)
-    puts "CLEAN THIS UP!!"
     x = UserMailer.url_object
-    binding.pry # Put the path in here, as in RESET_PATH
+    x.path = RESET_PATH % [user.confirmation_token]
     x.to_s
   end
 
   def self.url_object(host = ENV.fetch("API_HOST"), port = ENV.fetch("API_PORT"))
     output        = {}
-    output[:host] = port
+    output[:host] = host
     unless [nil, "443", "80"].include?(port)
       output[:port] = port
     end
