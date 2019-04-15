@@ -69,8 +69,7 @@ export class Sequences extends React.Component<Props, {}> {
             hardwareFlags={this.props.hardwareFlags}
             farmwareInfo={this.props.farmwareInfo}
             shouldDisplay={this.props.shouldDisplay}
-            confirmStepDeletion={this.props.confirmStepDeletion}
-            showPins={this.props.showPins}
+            getWebAppConfigValue={this.props.getWebAppConfigValue}
             menuOpen={this.props.menuOpen} />
         </CenterPanel>
         <RightPanel

@@ -364,6 +364,7 @@ const KIND_PRIORITY: ResourceLookupTable = {
   Point: 1,
   Sensor: 1,
   Tool: 1,
+  Enigma: 1,
   SensorReading: 2,
   Sequence: 2,
   Regimen: 3,

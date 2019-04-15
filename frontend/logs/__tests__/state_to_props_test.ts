@@ -1,9 +1,18 @@
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
-import { fakeFbosConfig, fakeLog } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFbosConfig, fakeLog, fakeEnigma
+} from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
   function fakeLogs(count: number): TaggedLog[] {
@@ -45,9 +54,25 @@ describe("mapStateToProps()", () => {
 
   it("handles undefined", () => {
     const state = fakeState();
-    // tslint:disable-next-line:no-any
-    state.bot.hardware.enigmas = undefined as any;
+    state.bot.hardware.enigmas = undefined;
     const props = mapStateToProps(state);
     expect(props.alerts).toEqual([]);
+  });
+
+  it("doesn't show API alerts", () => {
+    const state = fakeState();
+    state.resources = buildResourceIndex([fakeEnigma()]);
+    mockDev = false;
+    const props = mapStateToProps(state);
+    expect(props.alerts).toEqual([]);
+  });
+
+  it("shows API alerts", () => {
+    const state = fakeState();
+    const enigma = fakeEnigma();
+    state.resources = buildResourceIndex([enigma]);
+    mockDev = true;
+    const props = mapStateToProps(state);
+    expect(props.alerts).toEqual([enigma.body]);
   });
 });

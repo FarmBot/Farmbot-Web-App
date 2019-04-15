@@ -71,9 +71,8 @@ describe("<SequenceEditorMiddleActive/>", () => {
         farmwareConfigs: {},
       },
       shouldDisplay: jest.fn(),
-      confirmStepDeletion: false,
+      getWebAppConfigValue: jest.fn(),
       menuOpen: false,
-      showPins: true,
     };
   };
 
@@ -254,13 +253,12 @@ describe("<SequenceSettingsMenu />", () => {
   it("renders settings", () => {
     const wrapper = mount(<SequenceSettingsMenu
       dispatch={jest.fn()}
-      confirmStepDeletion={false}
-      showPins={false} />);
+      getWebAppConfigValue={jest.fn()} />);
     wrapper.find("button").first().simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
     wrapper.find("button").last().simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
-      "show_pins", true);
+      BooleanSetting.show_pins, true);
   });
 });
