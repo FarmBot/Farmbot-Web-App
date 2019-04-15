@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :enigma do
-    problem_tag { "api.seed_data.missing" }
+    problem_tag { Enigma::PROBLEM_TAGS.sample }
     priority { 100 }
     uuid { SecureRandom.uuid }
     device
