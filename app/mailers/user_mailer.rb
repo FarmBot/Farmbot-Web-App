@@ -1,5 +1,4 @@
 class UserMailer < ApplicationMailer
-  RESET_PATH         = "/verify/%s"
   NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
   URI_KLASS          = ENV["FORCE_SSL"] ? URI::HTTPS : URI::HTTP
 
@@ -32,17 +31,14 @@ class UserMailer < ApplicationMailer
 
   def self.reset_url(user)
     x = UserMailer.url_object
-    x.path = RESET_PATH % [user.confirmation_token]
+    x.path = "/verify/#{user.confirmation_token}"
     x.to_s
   end
 
   def self.url_object(host = ENV.fetch("API_HOST"), port = ENV.fetch("API_PORT"))
     output        = {}
     output[:host] = host
-    unless [nil, "443", "80"].include?(port)
-      output[:port] = port
-    end
-    output
+    output[:port] = port unless [nil, "443", "80"].include?(port)
     URI_KLASS.build(output)
   end
 end
