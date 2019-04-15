@@ -1,7 +1,7 @@
 class UserMailer < ApplicationMailer
   RESET_PATH         = "/verify/%s"
   NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
-  URI_KLASS          = ENV["FORCE_SSL"] ? URI::HTTP : URI::HTTPS
+  URI_KLASS          = ENV["FORCE_SSL"] ? URI::HTTPS : URI::HTTP
 
   # Make sure the user gave us a valid email.
   def welcome_email(user)
