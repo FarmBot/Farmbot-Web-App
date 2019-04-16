@@ -57,7 +57,7 @@ const getfirstTickerLog = (getConfigValue: GetWebAppConfigValue) =>
 /** Format a single log for display in the ticker. */
 const Ticker = (log: TaggedLog, timeSettings: TimeSettings) => {
   const { message, type, created_at } = log.body;
-  const time = formatLogTime(created_at || NaN, timeSettings);
+  const time = created_at ? formatLogTime(created_at, timeSettings) : "";
   return <div key={log.uuid} className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">

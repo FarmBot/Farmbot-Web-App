@@ -382,8 +382,25 @@ describe("getGardenCoordinates()", () => {
 });
 
 describe("mapPanelClassName()", () => {
-  it("returns correct panel status", () => {
+  it("returns correct panel status: short panel", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
     mockPath = "/app/designer/move_to";
     expect(mapPanelClassName()).toEqual("short-panel");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("short-panel");
+  });
+
+  it("returns correct panel status: panel open", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    mockPath = "/app/designer/move_to";
+    expect(mapPanelClassName()).toEqual("panel-open");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("panel-open");
   });
 });

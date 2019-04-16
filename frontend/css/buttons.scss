@@ -293,6 +293,10 @@
   &.grayscale {
     filter: grayscale(100%);
   }
+  &.disabled,
+  &:disabled {
+    background: $medium_light_gray !important;
+  }
 }
 
 .front-page-button {
