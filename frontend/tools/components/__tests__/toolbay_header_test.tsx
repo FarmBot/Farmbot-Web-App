@@ -5,6 +5,6 @@ import { mount } from "enzyme";
 describe("<ToolBayHeader />", () => {
   it("renders", () => {
     const header = mount(<ToolBayHeader />);
-    expect(header.text()).toEqual("SlotXYZTool");
+    expect(header.text()).toEqual("SlotXYZTool or Seed Container");
   });
 });

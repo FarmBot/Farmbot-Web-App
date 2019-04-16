@@ -28,11 +28,11 @@ describe("<Tools />", () => {
     const wrapper = mount(<Tools {...fakeProps()} />);
     const txt = wrapper.text();
     const strings = [
-      "ToolBay 1",
+      "Tool Slots",
       "SlotXYZ",
-      "Tool1000Foo",
+      "Tool or Seed Container",
       "Tools",
-      "Tool NameStatus",
+      "NameStatus",
       "Fooactive"];
     strings.map(string => expect(txt).toContain(string));
   });
