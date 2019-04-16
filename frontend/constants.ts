@@ -113,6 +113,10 @@ export namespace ToolTips {
     trim(`The number of motor steps required to move the axis one millimeter.
     (default: x: 5, y: 5, z: 25)`);
 
+  export const MICROSTEPS_PER_STEP =
+    trim(`The number of microsteps required to move the motor one step.
+    (default: x: 1, y: 1, z: 1)`);
+
   export const ALWAYS_POWER_MOTORS =
     trim(`Keep power applied to motors. Prevents slipping from gravity in
     certain situations. (default: enabled)`);
