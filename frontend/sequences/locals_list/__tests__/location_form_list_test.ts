@@ -13,7 +13,7 @@ describe("locationFormList()", () => {
     const toolHeading = items[1];
     expect(toolHeading).toEqual({
       headingId: "Tool",
-      label: "Tools",
+      label: "Tools and Seed Containers",
       value: 0,
       heading: true,
     });

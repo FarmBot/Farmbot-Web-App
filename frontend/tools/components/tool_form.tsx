@@ -83,13 +83,13 @@ export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
 
   render() {
     return <Widget className="tools-widget">
-      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
+      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools and Seed Containers">
         <this.HeaderButtons />
       </WidgetHeader>
       <WidgetBody>
         <Row>
           <Col xs={12}>
-            <label>{t("Tool Name")}</label>
+            <label>{t("Name")}</label>
           </Col>
         </Row>
         {this.props.tools.map(this.ToolForm)}

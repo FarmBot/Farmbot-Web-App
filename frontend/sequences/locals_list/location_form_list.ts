@@ -39,7 +39,7 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "GenericPointer": "Map Points",
   "Plant": "Plants",
   "ToolSlot": "Tool Slots",
-  "Tool": "Tools",
+  "Tool": "Tools and Seed Containers",
   "Other": "Other",
 };
 
