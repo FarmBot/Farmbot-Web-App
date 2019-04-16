@@ -559,7 +559,10 @@ CREATE TABLE public.firmware_configs (
     api_migrated boolean DEFAULT true,
     movement_invert_2_endpoints_x integer DEFAULT 0,
     movement_invert_2_endpoints_y integer DEFAULT 0,
-    movement_invert_2_endpoints_z integer DEFAULT 0
+    movement_invert_2_endpoints_z integer DEFAULT 0,
+    movement_microsteps_x integer DEFAULT 1,
+    movement_microsteps_y integer DEFAULT 1,
+    movement_microsteps_z integer DEFAULT 1
 );
 
 
@@ -2889,6 +2892,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190401212119'),
 ('20190411152319'),
 ('20190411171401'),
-('20190411222900');
+('20190411222900'),
+('20190416035406');
 
 
