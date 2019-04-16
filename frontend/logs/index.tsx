@@ -15,7 +15,6 @@ import { NumericSetting } from "../session_keys";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
-import { Alerts } from "./alerts";
 import { TimeSettings } from "../interfaces";
 import { timeFormatString } from "../util";
 
@@ -85,9 +84,6 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   render() {
     const filterBtnColor = this.filterActive ? "green" : "gray";
     return <Page className="logs-page">
-      <Alerts alerts={this.props.alerts}
-        apiFirmwareValue={this.props.apiFirmwareValue}
-        timeSettings={this.props.timeSettings} />
       <Row>
         <Col xs={7}>
           <h3>

@@ -346,6 +346,9 @@ export namespace ToolTips {
   export const FIRMWARE_DEBUG_MESSAGES =
     trim(`Log all debug received from firmware (clears after refresh).`);
 
+  export const MESSAGES =
+    trim(`View messages.`);
+
   // App
   export const LABS =
     trim(`Customize your web app experience.`);
@@ -384,12 +387,38 @@ export namespace Content {
     trim(`Export request received. Please allow up to 10 minutes for
     delivery.`);
 
+  // Messages
   export const SEED_DATA_SELECTION =
     trim(`To finish setting up your account and FarmBot, please select which
     FarmBot you have. Once you make a selection, we'll automatically add some
     tools, sensors, peripherals, sequences, and more to get you up and running
     faster. If you want to start completely from scratch, feel free to select
     "Custom bot" and we won't change a thing.`);
+
+  export const TAKE_A_TOUR =
+    trim(`Since you're new around here, we recommend taking our guided tours
+    of the app. This is the fastest way to learn about the most important pages
+    and features at your fingertips.`);
+
+  export const READ_THE_DOCS =
+    trim(`The FarmBot web app is a powerful tool that allows you to control
+    and configure your FarmBot in any way you want. To give you so much power,
+    we've packed the app with a ton of settings, features, and pages, which
+    can be a lot to understand. That's why we've created comprehensive written
+    documentation and videos to teach you how to use everything.`);
+
+  export const WELCOME =
+    trim(`Let's get you familiar with the app and finish setting everything
+    up.`);
+
+  export const MESSAGE_CENTER_WELCOME =
+    trim(`Here you'll find important information about your account, your
+    FarmBot, and news such as new feature announcements. Look for the blue
+    badge in the main menu to see when new messages are available.`);
+
+  export const MESSAGE_DISMISS =
+    trim(`When you're finished with a message, press the x button in the
+    top right of the card to dismiss it.`);
 
   // App Settings
   export const CONFIRM_STEP_DELETION =

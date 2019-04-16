@@ -1,10 +1,9 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import {
-  Alerts, AlertsProps, Alert, FirmwareAlerts, FirmwareAlertsProps, sortAlerts
-} from "../alerts";
+import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { Alert, AlertsProps, FirmwareAlertsProps } from "../interfaces";
 
 const FIRMWARE_MISSING_ALERT: Alert = {
   created_at: 123,
@@ -39,11 +38,13 @@ describe("<Alerts />", () => {
     alerts: [],
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
   });
 
   it("renders no alerts", () => {
     const wrapper = mount(<Alerts {...fakeProps()} />);
-    expect(wrapper.html()).toEqual("<div></div>");
+    expect(wrapper.html())
+      .toContain(`<div class="problem-alerts-content"></div>`);
   });
 
   it("renders alerts", () => {
@@ -62,15 +63,6 @@ describe("<Alerts />", () => {
     expect(wrapper.text()).toContain("1");
     expect(wrapper.text()).toContain("firmware: alert");
   });
-
-  it("collapses alerts", () => {
-    const p = fakeProps();
-    p.alerts = [FIRMWARE_MISSING_ALERT];
-    const wrapper = mount<Alerts>(<Alerts {...p} />);
-    expect(wrapper.state().open).toEqual(true);
-    wrapper.find(".problem-alerts-header").simulate("click");
-    expect(wrapper.state().open).toEqual(false);
-  });
 });
 
 describe("<FirmwareAlerts />", () => {
@@ -78,6 +70,7 @@ describe("<FirmwareAlerts />", () => {
     bot,
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
   });
 
   it("renders no alerts", () => {

@@ -73,7 +73,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
     const { toggle, close } = this;
     const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
-    const { logs, timeSettings, getConfigValue } = this.props;
+    const { logs, timeSettings, getConfigValue, alertCount } = this.props;
     const tickerListProps = {
       logs, tickerListOpen, toggle, timeSettings, getConfigValue
     };
@@ -90,10 +90,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       className={menuIconClassNames.join(" ")}
                       onClick={this.toggle("mobileMenuOpen")} />
                     <span className="mobile-menu-container">
-                      {MobileMenu({ close, mobileMenuOpen })}
+                      {MobileMenu({ close, mobileMenuOpen, alertCount })}
                     </span>
                     <span className="top-menu-container">
-                      {NavLinks({ close })}
+                      {NavLinks({ close, alertCount })}
                     </span>
                   </div>
                   <div className="nav-right">

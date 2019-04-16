@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { AdditionalMenu } from "../additional_menu";
@@ -30,5 +35,13 @@ describe("AdditionalMenu", () => {
       close={jest.fn()} />);
     wrapper.find("a").at(1).simulate("click");
     expect(logout).toHaveBeenCalled();
+  });
+
+  it("navigates to help page", () => {
+    mockDev = true;
+    const wrapper = shallow(<AdditionalMenu
+      logout={jest.fn()}
+      close={jest.fn()} />);
+    wrapper.find("Link").at(2).simulate("click");
   });
 });

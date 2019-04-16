@@ -4,7 +4,7 @@ import { FIRMWARE_CHOICES_DDI, isFwHardwareValue, boardType } from "./board_type
 import { flashFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 import { BotState, Feature, ShouldDisplay } from "../../interfaces";
-import { FirmwareAlerts } from "../../../logs/alerts";
+import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
 import { trim } from "../../../util";
 
@@ -36,6 +36,7 @@ export interface FirmwareHardwareStatusDetailsProps {
   mcuFirmwareValue: string | undefined;
   shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;
+  dispatch: Function;
 }
 
 export interface FirmwareActionsProps {
@@ -77,6 +78,7 @@ export const FirmwareHardwareStatusDetails =
         </div>}
       <FirmwareAlerts
         bot={props.bot}
+        dispatch={props.dispatch}
         apiFirmwareValue={props.apiFirmwareValue}
         timeSettings={props.timeSettings} />
     </div>;
@@ -88,6 +90,7 @@ export interface FirmwareHardwareStatusProps {
   botOnline: boolean;
   timeSettings: TimeSettings;
   shouldDisplay: ShouldDisplay;
+  dispatch: Function;
 }
 
 export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
@@ -106,6 +109,7 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
       botFirmwareValue={firmware_hardware}
       mcuFirmwareValue={boardType(firmware_version)}
       timeSettings={props.timeSettings}
+      dispatch={props.dispatch}
       shouldDisplay={props.shouldDisplay} />
   </Popover>;
 };

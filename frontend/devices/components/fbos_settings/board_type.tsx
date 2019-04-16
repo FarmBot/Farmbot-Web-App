@@ -126,6 +126,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           botOnline={this.props.botOnline}
           apiFirmwareValue={this.apiValue}
           bot={this.props.bot}
+          dispatch={this.props.dispatch}
           timeSettings={this.props.timeSettings}
           shouldDisplay={this.props.shouldDisplay} />
       </Col>

@@ -24,6 +24,7 @@ describe("<FirmwareHardwareStatusDetails />", () => {
     mcuFirmwareValue: undefined,
     shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
   });
 
   it("renders details: unknown", () => {
@@ -79,6 +80,7 @@ describe("<FirmwareHardwareStatus />", () => {
     apiFirmwareValue: undefined,
     shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
   });
 
   it("renders: inconsistent", () => {

@@ -15,6 +15,12 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Account Settings")}
       </Link>
     </div>
+    <div>
+      <Link to="/app/logs" onClick={props.close("accountMenuOpen")}>
+        <i className="fa fa-list"></i>
+        {t("Logs")}
+      </Link>
+    </div>
     {DevSettings.futureFeaturesEnabled() &&
       <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
         <i className="fa fa-question-circle"></i>
