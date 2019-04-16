@@ -24,6 +24,7 @@ describe("NavBar", () => {
     tour: undefined,
     device: fakeDevice(),
     autoSync: false,
+    alertCount: 0,
   });
 
   it("has correct parent classname", () => {

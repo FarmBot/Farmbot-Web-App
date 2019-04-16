@@ -22,6 +22,7 @@ export interface NavBarProps {
   tour: string | undefined;
   device: TaggedDevice;
   autoSync: boolean;
+  alertCount: number;
 }
 
 export interface NavBarState {
@@ -35,6 +36,7 @@ type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
 export interface MobileMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   mobileMenuOpen: boolean;
+  alertCount: number;
 }
 
 export interface TickerListProps {
@@ -47,6 +49,7 @@ export interface TickerListProps {
 
 export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
+  alertCount: number;
 }
 
 export interface AccountMenuProps {

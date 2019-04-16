@@ -12,6 +12,9 @@ import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
 import { t } from "../../../i18next_wrapper";
+import { Xyz, McuParamName } from "farmbot";
+import { SourceFwConfig } from "../../interfaces";
+import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -30,6 +33,19 @@ const SingleSettingRow =
         : <Col xs={6}>{children}</Col>}
     </Row>;
 
+export const calculateScale =
+  (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
+    const getV = (name: McuParamName) => sourceFwConfig(name).value;
+    return {
+      x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
+        getV("movement_microsteps_x")),
+      y: calcMicrostepsPerMm(getV("movement_step_per_mm_y"),
+        getV("movement_microsteps_y")),
+      z: calcMicrostepsPerMm(getV("movement_step_per_mm_z"),
+        getV("movement_microsteps_z")),
+    };
+  };
+
 export function Motors(props: MotorsProps) {
   const {
     dispatch, firmwareVersion, controlPanelState,
@@ -38,6 +54,7 @@ export function Motors(props: MotorsProps) {
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
+  const scale = calculateScale(sourceFwConfig);
 
   return <section>
     <Header
@@ -69,9 +86,9 @@ export function Motors(props: MotorsProps) {
         x={"movement_max_spd_x"}
         y={"movement_max_spd_y"}
         z={"movement_max_spd_z"}
-        xScale={sourceFwConfig("movement_step_per_mm_x").value}
-        yScale={sourceFwConfig("movement_step_per_mm_y").value}
-        zScale={sourceFwConfig("movement_step_per_mm_z").value}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       {(minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) &&
@@ -81,9 +98,9 @@ export function Motors(props: MotorsProps) {
           x={"movement_home_spd_x"}
           y={"movement_home_spd_y"}
           z={"movement_home_spd_z"}
-          xScale={sourceFwConfig("movement_step_per_mm_x").value}
-          yScale={sourceFwConfig("movement_step_per_mm_y").value}
-          zScale={sourceFwConfig("movement_step_per_mm_z").value}
+          xScale={scale.x}
+          yScale={scale.y}
+          zScale={scale.z}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
       <NumericMCUInputGroup
@@ -92,9 +109,9 @@ export function Motors(props: MotorsProps) {
         x={"movement_min_spd_x"}
         y={"movement_min_spd_y"}
         z={"movement_min_spd_z"}
-        xScale={sourceFwConfig("movement_step_per_mm_x").value}
-        yScale={sourceFwConfig("movement_step_per_mm_y").value}
-        zScale={sourceFwConfig("movement_step_per_mm_z").value}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -103,9 +120,9 @@ export function Motors(props: MotorsProps) {
         x={"movement_steps_acc_dec_x"}
         y={"movement_steps_acc_dec_y"}
         z={"movement_steps_acc_dec_z"}
-        xScale={sourceFwConfig("movement_step_per_mm_x").value}
-        yScale={sourceFwConfig("movement_step_per_mm_y").value}
-        zScale={sourceFwConfig("movement_step_per_mm_z").value}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -114,7 +131,18 @@ export function Motors(props: MotorsProps) {
         x={"movement_step_per_mm_x"}
         y={"movement_step_per_mm_y"}
         z={"movement_step_per_mm_z"}
+        xScale={sourceFwConfig("movement_microsteps_x").value}
+        yScale={sourceFwConfig("movement_microsteps_y").value}
+        zScale={sourceFwConfig("movement_microsteps_z").value}
         float={false}
+        sourceFwConfig={props.sourceFwConfig}
+        dispatch={props.dispatch} />
+      <NumericMCUInputGroup
+        name={t("Microsteps per step")}
+        tooltip={ToolTips.MICROSTEPS_PER_STEP}
+        x={"movement_microsteps_x"}
+        y={"movement_microsteps_y"}
+        z={"movement_microsteps_z"}
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
       <BooleanMCUInputGroup

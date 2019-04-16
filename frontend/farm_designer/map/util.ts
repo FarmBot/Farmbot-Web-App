@@ -63,7 +63,8 @@ export const getPanelStatus = (): MapPanelStatus => {
     return MapPanelStatus.closed;
   }
   const mode = getMode();
-  if (mode === Mode.moveTo || mode === Mode.clickToAdd) {
+  if (window.innerWidth <= 450 &&
+    (mode === Mode.moveTo || mode === Mode.clickToAdd)) {
     return MapPanelStatus.short;
   }
   return MapPanelStatus.open;

@@ -22,7 +22,7 @@ jest.mock("../../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  GardenMapLegend, ZoomControls, PointsSubMenu
+  GardenMapLegend, ZoomControls, PointsSubMenu, RotationSelector
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
@@ -112,5 +112,21 @@ describe("<PointsSubMenu />", () => {
     expect(toggleBtn.props().value).toEqual(true);
     toggleBtn.simulate("click");
     expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_historic_points);
+  });
+});
+
+describe("<RotationSelector />", () => {
+  it("swaps map x&y", () => {
+    const dispatch = jest.fn();
+    const wrapper = mount(<RotationSelector
+      dispatch={dispatch} value={false} />);
+    wrapper.find("button").simulate("click");
+    expect(dispatch).toHaveBeenCalled();
+  });
+
+  it("shows correct status", () => {
+    const wrapper = mount(<RotationSelector
+      dispatch={jest.fn()} value={true} />);
+    expect(wrapper.find("button").hasClass("green")).toBeTruthy();
   });
 });

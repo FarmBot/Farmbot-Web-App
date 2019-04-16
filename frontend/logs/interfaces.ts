@@ -1,7 +1,6 @@
 import { TaggedLog, ConfigurationName, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { SourceFbosConfig } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { Alert } from "./alerts";
 import { TimeSettings } from "../interfaces";
 
 export interface LogsProps {
@@ -10,8 +9,6 @@ export interface LogsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
-  alerts: Alert[];
-  apiFirmwareValue: string | undefined;
 }
 
 export type Filters = Record<ALLOWED_MESSAGE_TYPES, number>;

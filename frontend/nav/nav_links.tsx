@@ -41,7 +41,7 @@ export const links: NavLinkParams[] = [
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState
   },
-  { name: "Logs", icon: "list", slug: "logs" },
+  { name: "Messages", icon: "list", slug: "messages" },
 ];
 
 export const NavLinks = (props: NavLinksProps) => {
@@ -59,7 +59,13 @@ export const NavLinks = (props: NavLinksProps) => {
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
-          {t(link.name)}
+          <div>
+            {t(link.name)}
+            {link.slug === "messages" && props.alertCount > 0 &&
+              <div className={"saucer fun"}>
+                <p>{props.alertCount}</p>
+              </div>}
+          </div>
         </Link>;
       })}
     </div>

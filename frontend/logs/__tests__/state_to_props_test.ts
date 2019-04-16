@@ -1,17 +1,10 @@
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
 import {
-  fakeFbosConfig, fakeLog, fakeEnigma
+  fakeFbosConfig, fakeLog
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
@@ -50,29 +43,5 @@ describe("mapStateToProps()", () => {
     expect(props.sourceFbosConfig("sequence_init_log")).toEqual({
       value: false, consistent: true
     });
-  });
-
-  it("handles undefined", () => {
-    const state = fakeState();
-    state.bot.hardware.enigmas = undefined;
-    const props = mapStateToProps(state);
-    expect(props.alerts).toEqual([]);
-  });
-
-  it("doesn't show API alerts", () => {
-    const state = fakeState();
-    state.resources = buildResourceIndex([fakeEnigma()]);
-    mockDev = false;
-    const props = mapStateToProps(state);
-    expect(props.alerts).toEqual([]);
-  });
-
-  it("shows API alerts", () => {
-    const state = fakeState();
-    const enigma = fakeEnigma();
-    state.resources = buildResourceIndex([enigma]);
-    mockDev = true;
-    const props = mapStateToProps(state);
-    expect(props.alerts).toEqual([enigma.body]);
   });
 });

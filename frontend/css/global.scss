@@ -938,6 +938,18 @@ ul {
   }
 }
 
+.messages-page {
+  max-width: 600px;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  .link-to-logs {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    text-align: center;
+    font-style: italic;
+  }
+}
+
 .account-page {
   label {
     margin-top: 5px;
@@ -1151,42 +1163,12 @@ ul {
   }
 }
 
-.problem-alerts {
-  position: fixed;
-  top: 85px;
-  left: 50%;
-  z-index: 3;
-  padding: 1rem;
-  background: $off_white;
-  border-radius: 5px;
-  box-shadow: 0px 1px 4px #555;
-  transform: translate(-50%);
-  .problem-alerts-header {
-    text-align: center;
-    i {
-      font-size: 2rem;
-      color: $dark_gray;
-      margin-left: 1rem;
-    }
-    .saucer {
-      display: inline-flex;
-      top: -0.25rem;
-      margin-left: 0.5rem;
-    }
-    h3 {
-      margin: 0;
-    }
-  }
-  button {
-    float: none !important;
-  }
-}
-
 .problem-alert {
   margin: 1rem;
-  padding: 1rem;
-  border-radius: 3px;
-  box-shadow: 0px 2px 5px $gray;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  border-radius: 4px;
+  box-shadow: 0px 2px 5px $medium_gray;
   background: $off_white;
   .problem-alert-title {
     .fa-exclamation-triangle {
@@ -1204,10 +1186,34 @@ ul {
       color: $medium_gray;
       font-size: 1.2rem;
     }
+    .fa-times {
+      color: $medium_light_gray;
+      float: right;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
   }
   .problem-alert-content {
     p {
       margin-bottom: 0.75rem !important;
+      font-size: 1.4rem;
+      line-height: 2rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+    .row {
+      margin-top: 2rem;
+    }
+    .tour-list {
+      margin: 0;
+    }
+    .link-button {
+      color: $off_white;
+      font-weight: bold;
+      float: none;
+      margin-bottom: 2rem;
     }
   }
 }

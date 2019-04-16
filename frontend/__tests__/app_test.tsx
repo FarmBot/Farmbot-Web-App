@@ -1,3 +1,8 @@
+let mockDev = false;
+jest.mock("../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
@@ -11,7 +16,7 @@ import { App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
-  fakeUser, fakeWebAppConfig
+  fakeUser, fakeWebAppConfig, fakeEnigma
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
 import {
@@ -41,6 +46,7 @@ const fakeProps = (): AppProps => {
     tour: undefined,
     resources: buildResourceIndex().index,
     autoSync: false,
+    alertCount: 0,
   };
 };
 
@@ -140,5 +146,22 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([config]);
     const result = mapStateToProps(state);
     expect(result.axisInversion.x).toEqual(true);
+  });
+
+  it("doesn't show API alerts", () => {
+    const state = fakeState();
+    state.resources = buildResourceIndex([fakeEnigma()]);
+    mockDev = false;
+    const props = mapStateToProps(state);
+    expect(props.alertCount).toEqual(0);
+  });
+
+  it("shows API alerts", () => {
+    const state = fakeState();
+    const enigma = fakeEnigma();
+    state.resources = buildResourceIndex([enigma]);
+    mockDev = true;
+    const props = mapStateToProps(state);
+    expect(props.alertCount).toEqual(1);
   });
 });

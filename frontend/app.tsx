@@ -10,11 +10,12 @@ import {
   maybeFetchUser,
   maybeGetTimeSettings,
   getDeviceAccountSettings,
+  selectAllEnigmas,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
 import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { validBotLocationData, validFwConfig, validFbosConfig } from "./util";
+import { validBotLocationData, validFwConfig, validFbosConfig, betterCompact } from "./util";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import {
@@ -28,6 +29,7 @@ import { t } from "./i18next_wrapper";
 import { ResourceIndex } from "./resources/interfaces";
 import { isBotOnline } from "./devices/must_be_online";
 import { getStatus } from "./connectivity/reducer_support";
+import { DevSettings } from "./account/dev/dev_support";
 
 /** For the logger module */
 init();
@@ -48,11 +50,16 @@ export interface AppProps {
   tour: string | undefined;
   resources: ResourceIndex;
   autoSync: boolean;
+  alertCount: number;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const botAlerts = betterCompact(Object.values(props.bot.hardware.enigmas || {}));
+  const apiAlerts = selectAllEnigmas(props.resources.index).map(x => x.body);
+  const alerts =
+    botAlerts.concat(DevSettings.futureFeaturesEnabled() ? apiAlerts : []);
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
@@ -73,6 +80,7 @@ export function mapStateToProps(props: Everything): AppProps {
     tour: props.resources.consumers.help.currentTour,
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
+    alertCount: alerts.length,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -129,6 +137,7 @@ export class App extends React.Component<AppProps, {}> {
         getConfigValue={this.props.getConfigValue}
         tour={this.props.tour}
         autoSync={this.props.autoSync}
+        alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&

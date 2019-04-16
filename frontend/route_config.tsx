@@ -132,6 +132,12 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
+    $: "/messages",
+    getModule: () => import("./messages"),
+    key: "Messages",
+  }),
+  route({
+    children: false,
     $: "/regimens(/:regimen)",
     getModule: () => import("./regimens"),
     key: "Regimens",

@@ -15,6 +15,7 @@ import { getFirmwareConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
 import { DevSettings } from "../account/dev/dev_support";
+import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -42,14 +43,7 @@ export function mapStateToProps(props: Everything): Props {
         y: !!firmwareSettings.movement_home_up_y,
         z: !!firmwareSettings.movement_home_up_z
       },
-      axisLength: {
-        x: (firmwareSettings.movement_axis_nr_steps_x || 0)
-          / (firmwareSettings.movement_step_per_mm_x || 1),
-        y: (firmwareSettings.movement_axis_nr_steps_y || 0)
-          / (firmwareSettings.movement_step_per_mm_y || 1),
-        z: (firmwareSettings.movement_axis_nr_steps_z || 0)
-          / (firmwareSettings.movement_step_per_mm_z || 1)
-      },
+      axisLength: calculateAxialLengths({ firmwareSettings }),
     };
   };
 

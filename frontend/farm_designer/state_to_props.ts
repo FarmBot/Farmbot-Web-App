@@ -27,6 +27,7 @@ import { Feature } from "../devices/interfaces";
 import { reduceFarmwareEnv } from "../farmware/state_to_props";
 import { getFirmwareConfig } from "../resources/getters";
 import { DevSettings } from "../account/dev/dev_support";
+import { calcMicrostepsPerMm } from "../controls/move/direction_axes_props";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -64,7 +65,11 @@ export function mapStateToProps(props: Everything): Props {
   const { mcu_params } = props.bot.hardware;
   const firmwareSettings = fwConfig || mcu_params;
 
-  const { movement_step_per_mm_x, movement_step_per_mm_y } = firmwareSettings;
+  const fw = firmwareSettings;
+  const stepsPerMmXY = {
+    x: calcMicrostepsPerMm(fw.movement_step_per_mm_x, fw.movement_microsteps_x),
+    y: calcMicrostepsPerMm(fw.movement_step_per_mm_y, fw.movement_microsteps_y),
+  };
 
   const peripherals = uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
@@ -119,7 +124,7 @@ export function mapStateToProps(props: Everything): Props {
     plants,
     botLocationData: validBotLocationData(props.bot.hardware.location_data),
     botMcuParams: firmwareSettings,
-    stepsPerMmXY: { x: movement_step_per_mm_x, y: movement_step_per_mm_y },
+    stepsPerMmXY,
     peripherals,
     eStopStatus: props.bot.hardware.informational_settings.locked,
     latestImages,

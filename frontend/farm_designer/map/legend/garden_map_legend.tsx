@@ -8,7 +8,9 @@ import { BugsControls } from "../easter_eggs/bugs";
 import { BotOriginQuadrant, State } from "../../interfaces";
 import { MoveModeLink } from "../../move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
-import { GetWebAppConfigValue } from "../../../config_storage/actions";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue
+} from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
 import { t } from "../../../i18next_wrapper";
@@ -29,6 +31,16 @@ const OriginSelector = ({ quadrant, update }: {
       )}
     </div>
   </div>;
+
+export const RotationSelector = ({ dispatch, value }:
+  { dispatch: Function, value: boolean }) => {
+  const classNames = `fb-button fb-toggle-button ${value ? "green" : "red"}`;
+  return <div className={"map-rotate-button"}>
+    <label>{t("rotate")}</label>
+    <button className={classNames} onClick={() =>
+      dispatch(setWebAppConfigValue(BooleanSetting.xy_swap, !value))} />
+  </div>;
+};
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -127,6 +139,8 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <OriginSelector
         quadrant={props.botOriginQuadrant}
         update={props.updateBotOriginQuadrant} />
+      <RotationSelector dispatch={props.dispatch}
+        value={!!props.getConfigValue(BooleanSetting.xy_swap)} />
       <MoveModeLink />
       <SavedGardensLink />
       <BugsControls />

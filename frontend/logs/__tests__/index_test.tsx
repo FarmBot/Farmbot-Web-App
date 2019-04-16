@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 const mockStorj: Dictionary<number | boolean> = {};
 
@@ -25,17 +23,13 @@ describe("<Logs />", () => {
     return [log1, log2];
   }
 
-  const fakeProps = (): LogsProps => {
-    return {
-      logs: fakeLogs(),
-      timeSettings: fakeTimeSettings(),
-      dispatch: jest.fn(),
-      sourceFbosConfig: jest.fn(),
-      getConfigValue: x => mockStorj[x],
-      alerts: [],
-      apiFirmwareValue: undefined,
-    };
-  };
+  const fakeProps = (): LogsProps => ({
+    logs: fakeLogs(),
+    timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
+    sourceFbosConfig: jest.fn(),
+    getConfigValue: x => mockStorj[x],
+  });
 
   it("renders", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);

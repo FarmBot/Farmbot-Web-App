@@ -572,6 +572,12 @@
       opacity: 0;
     }
   }
+  .map-rotate-button {
+    text-align: center;
+    .fb-button {
+      float: none;
+    }
+  }
 }
 
 .map-points-submenu {
