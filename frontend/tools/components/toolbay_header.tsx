@@ -17,7 +17,7 @@ export function ToolBayHeader() {
       <label>{t("Z")}</label>
     </Col>
     <Col xs={4}>
-      <label>{t("Tool")}</label>
+      <label>{t("Tool or Seed Container")}</label>
     </Col>
   </Row>;
 }

@@ -312,13 +312,12 @@ export namespace ToolTips {
 
   // Tools
   export const TOOL_LIST =
-    trim(`This is a list of all your FarmBot Tools. Click the Edit button
-    to add, edit, or delete tools.`);
+    trim(`This is a list of all your FarmBot tools and seed containers. Click the Edit button
+    to add, edit, or delete tools or seed containers.`);
 
   export const TOOLBAY_LIST =
-    trim(`Toolbays are where you store your FarmBot Tools. Each Toolbay
-    has Slots that you can put your Tools in, which should be reflective
-    of your real FarmBot hardware configuration.`);
+    trim(`Tool slots are where you store your FarmBot tools and seed containers, which should be
+    reflective of your real FarmBot hardware configuration.`);
 
   // Logs
   export const LOGS =
