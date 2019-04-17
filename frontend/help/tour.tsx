@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import Joyride, { Step as TourStep, CallBackProps } from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
@@ -44,7 +43,7 @@ export class Tour extends React.Component<TourProps, TourState> {
     }
     if (type === "tour:end") {
       this.setState({ run: false });
-      history.push("/app/help");
+      history.push("/app/messages");
     }
   };
 

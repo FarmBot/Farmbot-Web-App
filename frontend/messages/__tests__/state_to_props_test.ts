@@ -6,7 +6,9 @@ jest.mock("../../account/dev/dev_support", () => ({
 import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { fakeEnigma, fakeFbosConfig } from "../../__test_support__/fake_state/resources";
+import {
+  fakeEnigma, fakeFbosConfig
+} from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
   it("handles undefined", () => {
@@ -18,7 +20,9 @@ describe("mapStateToProps()", () => {
 
   it("doesn't show API alerts", () => {
     const state = fakeState();
-    state.resources = buildResourceIndex([fakeEnigma()]);
+    const enigma = fakeEnigma();
+    enigma.body.problem_tag = "api.seed_data.missing";
+    state.resources = buildResourceIndex([enigma]);
     mockDev = false;
     const props = mapStateToProps(state);
     expect(props.alerts).toEqual([]);
@@ -27,6 +31,7 @@ describe("mapStateToProps()", () => {
   it("shows API alerts", () => {
     const state = fakeState();
     const enigma = fakeEnigma();
+    enigma.body.problem_tag = "api.seed_data.missing";
     state.resources = buildResourceIndex([enigma]);
     mockDev = true;
     const props = mapStateToProps(state);
@@ -41,5 +46,14 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([fbosConfig]);
     const props = mapStateToProps(state);
     expect(props.apiFirmwareValue).toEqual("arduino");
+  });
+
+  it("finds alert", () => {
+    const state = fakeState();
+    const alert = fakeEnigma();
+    alert.body.id = 1;
+    state.resources = buildResourceIndex([alert]);
+    const props = mapStateToProps(state);
+    expect(props.findApiAlertById(1)).toEqual(alert.uuid);
   });
 });

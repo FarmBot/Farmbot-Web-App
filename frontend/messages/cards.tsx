@@ -3,7 +3,8 @@ import { t } from "../i18next_wrapper";
 import {
   AlertCardProps, AlertCardTemplateProps, FirmwareMissingProps,
   SeedDataMissingProps, SeedDataMissingState, TourNotTakenProps,
-  CommonAlertCardProps
+  CommonAlertCardProps,
+  DismissAlertProps
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
@@ -13,20 +14,21 @@ import { DropDownItem, Row, Col, FBSelect, docLink } from "../ui";
 import { Content } from "../constants";
 import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
+import { destroy } from "../api/crud";
 
 export const AlertCard = (props: AlertCardProps) => {
-  const { alert, timeSettings } = props;
-  const commonProps = { alert, timeSettings };
+  const { alert, timeSettings, findApiAlertById, dispatch } = props;
+  const commonProps = { alert, timeSettings, findApiAlertById, dispatch };
   switch (alert.problem_tag) {
     case "farmbot_os.firmware.missing":
       return <FirmwareMissing {...commonProps}
         apiFirmwareValue={props.apiFirmwareValue} />;
     case "api.seed_data.missing":
       return <SeedDataMissing {...commonProps}
-        dispatch={props.dispatch} />;
+        dispatch={dispatch} />;
     case "api.tour.not_taken":
       return <TourNotTaken {...commonProps}
-        dispatch={props.dispatch} />;
+        dispatch={dispatch} />;
     case "api.user.not_welcomed":
       return <UserNotWelcomed {...commonProps} />;
     case "api.documentation.unread":
@@ -35,20 +37,27 @@ export const AlertCard = (props: AlertCardProps) => {
       return UnknownAlert(commonProps);
   }
 };
+const dismissAlert = (props: DismissAlertProps) => () =>
+  (props.id && props.findApiAlertById && props.dispatch)
+    ? props.dispatch(destroy(props.findApiAlertById(props.id)))
+    : () => { };
 
-const AlertCardTemplate = (props: AlertCardTemplateProps) =>
-  <div className={`problem-alert ${props.className}`}>
+const AlertCardTemplate = (props: AlertCardTemplateProps) => {
+  const { alert, findApiAlertById, dispatch } = props;
+  return <div className={`problem-alert ${props.className}`}>
     <div className="problem-alert-title">
       <i className="fa fa-exclamation-triangle" />
       <h3>{t(props.title)}</h3>
-      <p>{formatLogTime(props.alert.created_at, props.timeSettings)}</p>
-      <i className="fa fa-times" />
+      <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>
+      <i className="fa fa-times"
+        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />
     </div>
     <div className="problem-alert-content">
       <p>{t(props.message)}</p>
       {props.children}
     </div>
   </div>;
+};
 
 const UnknownAlert = (props: CommonAlertCardProps) => {
   const { problem_tag, created_at, priority } = props.alert;
@@ -60,7 +69,9 @@ const UnknownAlert = (props: CommonAlertCardProps) => {
     title={`${t(noun)}: ${t(verb)} (${t(author)})`}
     message={t("Unknown problem of priority {{priority}} created at {{createdAt}}",
       { priority, createdAt })}
-    timeSettings={props.timeSettings} />;
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById} />;
 };
 
 const FirmwareMissing = (props: FirmwareMissingProps) =>
@@ -69,7 +80,9 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     className={"firmware-missing-alert"}
     title={t("Firmware missing")}
     message={t("Your device has no firmware installed.")}
-    timeSettings={props.timeSettings}>
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById}>
     <FirmwareActions
       apiFirmwareValue={props.apiFirmwareValue}
       botOnline={true} />
@@ -92,7 +105,9 @@ class SeedDataMissing
       className={"seed-data-missing-alert"}
       title={t("Choose your FarmBot")}
       message={t(Content.SEED_DATA_SELECTION)}
-      timeSettings={this.props.timeSettings}>
+      timeSettings={this.props.timeSettings}
+      dispatch={this.props.dispatch}
+      findApiAlertById={this.props.findApiAlertById}>
       <Row>
         <Col xs={4}>
           <label>{t("Choose your FarmBot")}</label>
@@ -115,7 +130,9 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     className={"tour-not-taken-alert"}
     title={t("Take a guided tour")}
     message={t(Content.TAKE_A_TOUR)}
-    timeSettings={props.timeSettings}>
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById}>
     <p>{t("Choose a tour to begin")}:</p>
     <TourList dispatch={props.dispatch} />
   </AlertCardTemplate>;
@@ -126,7 +143,9 @@ const UserNotWelcomed = (props: CommonAlertCardProps) =>
     className={"user-not-welcomed-alert"}
     title={t("Welcome to the FarmBot Web App")}
     message={t(Content.WELCOME)}
-    timeSettings={props.timeSettings}>
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById}>
     <p>
       {t("You're currently viewing the")} <b>{t("Message Center")}</b>.
       &nbsp;{t(Content.MESSAGE_CENTER_WELCOME)}
@@ -142,7 +161,9 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
     className={"documentation-unread-alert"}
     title={t("Learn more about the app")}
     message={t(Content.READ_THE_DOCS)}
-    timeSettings={props.timeSettings}>
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById}>
     <p>
       {t("Head over to")}
       &nbsp;<a href={docLink()} target="_blank"

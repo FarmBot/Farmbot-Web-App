@@ -76,6 +76,9 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_scaling_x"}
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
+        xScale={sourceFwConfig("movement_microsteps_x").value}
+        yScale={sourceFwConfig("movement_microsteps_y").value}
+        zScale={sourceFwConfig("movement_microsteps_z").value}
         intSize={shouldDisplay(Feature.long_scaling_factor) ? "long" : "short"}
         gray={encodersDisabled}
         sourceFwConfig={sourceFwConfig}

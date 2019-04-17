@@ -37,7 +37,10 @@ export class Move extends React.Component<MoveProps, {}> {
             toggle={this.toggle}
             getValue={this.getValue} />
         </Popover>
-        <EStopButton bot={this.props.bot} />
+        <EStopButton
+          bot={this.props.bot}
+          forceUnlock={this.getValue(
+            BooleanSetting.disable_emergency_unlock_confirmation)} />
       </WidgetHeader>
       <WidgetBody>
         <MustBeOnline

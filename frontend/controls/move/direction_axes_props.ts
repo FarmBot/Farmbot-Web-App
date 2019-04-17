@@ -4,7 +4,8 @@ import { McuParams } from "farmbot";
 export const calcMicrostepsPerMm = (
   steps_per_mm: number | undefined,
   microsteps_per_step: number | undefined) =>
-  (steps_per_mm || 1) * (microsteps_per_step || 1);
+  // The firmware currently interprets steps_per_mm as microsteps_per_mm.
+  (steps_per_mm || 1) * (1 || microsteps_per_step || 1);
 
 const calcAxisLength = (
   nr_steps: number | undefined,

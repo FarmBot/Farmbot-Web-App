@@ -422,8 +422,7 @@ export namespace Content {
 
   // App Settings
   export const CONFIRM_STEP_DELETION =
-    trim(`Show a confirmation dialog when the sequence delete step
-    icon is pressed.`);
+    trim(`Show a confirmation dialog when deleting a sequence step.`);
 
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
@@ -464,6 +463,15 @@ export namespace Content {
 
   export const SHOW_PINS =
     trim(`Show raw pin lists in Read Sensor and Control Peripheral steps.`);
+
+  export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
+    trim(`Confirm when unlocking FarmBot after an emergency stop.`);
+
+  export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
+    trim(`Warning! When disabled, clicking the UNLOCK button will immediately
+    unlock FarmBot instead of confirming that it is safe to do so.
+    As a result, double-clicking the E-STOP button may not stop FarmBot.
+    Are you sure you want to disable this feature?`);
 
   // Device
   export const NOT_HTTPS =

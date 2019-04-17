@@ -24,7 +24,8 @@ export class Messages extends React.Component<MessagesProps, {}> {
         <Alerts alerts={this.props.alerts}
           dispatch={this.props.dispatch}
           apiFirmwareValue={this.props.apiFirmwareValue}
-          timeSettings={this.props.timeSettings} />
+          timeSettings={this.props.timeSettings}
+          findApiAlertById={this.props.findApiAlertById} />
       </Row>
       <Row>
         <div className="link-to-logs">

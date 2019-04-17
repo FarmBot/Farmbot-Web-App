@@ -82,7 +82,15 @@ export const fetchLabFeatures =
       description: t(Content.TIME_FORMAT_24_HOUR),
       storageKey: BooleanSetting.time_format_24_hour,
       value: false,
-    }
+    },
+    {
+      name: t("Confirm emergency unlock"),
+      description: t(Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG),
+      confirmationMessage: t(Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE),
+      storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
+      value: false,
+      displayInvert: true,
+    },
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).
