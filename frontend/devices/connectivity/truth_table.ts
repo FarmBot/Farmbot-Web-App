@@ -1,5 +1,5 @@
 import { Dictionary } from "farmbot";
-import { DiagnosticMessages } from "./diagnostic_messages";
+import { DiagnosticMessages } from "../../constants";
 
 // I don't like this at all.
 // If anyone has a cleaner solution, I'd love to hear it.

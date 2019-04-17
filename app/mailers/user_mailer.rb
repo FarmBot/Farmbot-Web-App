@@ -1,6 +1,7 @@
 class UserMailer < ApplicationMailer
-  RESET_PATH         = "http:%s/verify/%s"
   NOTHING_TO_CONFIRM = "FAILED EMAIL CHANGE"
+  URI_KLASS          = ENV["FORCE_SSL"] ? URI::HTTPS : URI::HTTP
+
   # Make sure the user gave us a valid email.
   def welcome_email(user)
     @user      = user
@@ -10,9 +11,10 @@ class UserMailer < ApplicationMailer
   end
 
   def password_reset(user, raw_token)
-    @user  = user
-    @token = raw_token
-    @host  = $API_URL
+    @user               = user
+    url                 = UserMailer.url_object
+    url.path            = "/password_reset/#{raw_token}"
+    @password_reset_url = url.to_s
     mail(to: @user.email, subject: 'FarmBot Password Reset Instructions')
   end
 
@@ -28,8 +30,15 @@ class UserMailer < ApplicationMailer
   end
 
   def self.reset_url(user)
-    x = URI(RESET_PATH % [$API_URL, user.confirmation_token])
-    (x.port = nil) if (x.port === 443) # Sendgrid does not like :443 in URLs.
+    x = UserMailer.url_object
+    x.path = "/verify/#{user.confirmation_token}"
     x.to_s
+  end
+
+  def self.url_object(host = ENV.fetch("API_HOST"), port = ENV.fetch("API_PORT"))
+    output        = {}
+    output[:host] = host
+    output[:port] = port unless [nil, "443", "80"].include?(port)
+    URI_KLASS.build(output)
   end
 end

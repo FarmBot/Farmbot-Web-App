@@ -12,16 +12,23 @@ jest.mock("../../zoom", () => {
   };
 });
 
+let mockDev = false;
+jest.mock("../../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  GardenMapLegend, ZoomControls, PointsSubMenu
+  GardenMapLegend, ZoomControls, PointsSubMenu, RotationSelector
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
-import { DevSettings } from "../../../../account/dev/dev_support";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -37,7 +44,7 @@ describe("<GardenMapLegend />", () => {
     showImages: false,
     showSensorReadings: false,
     dispatch: jest.fn(),
-    tzOffset: 0,
+    timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
   });
@@ -51,10 +58,11 @@ describe("<GardenMapLegend />", () => {
   });
 
   it("shows submenu", () => {
-    DevSettings.enableFutureFeatures();
+    mockDev = true;
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
+    mockDev = false;
   });
 });
 
@@ -104,5 +112,21 @@ describe("<PointsSubMenu />", () => {
     expect(toggleBtn.props().value).toEqual(true);
     toggleBtn.simulate("click");
     expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_historic_points);
+  });
+});
+
+describe("<RotationSelector />", () => {
+  it("swaps map x&y", () => {
+    const dispatch = jest.fn();
+    const wrapper = mount(<RotationSelector
+      dispatch={dispatch} value={false} />);
+    wrapper.find("button").simulate("click");
+    expect(dispatch).toHaveBeenCalled();
+  });
+
+  it("shows correct status", () => {
+    const wrapper = mount(<RotationSelector
+      dispatch={jest.fn()} value={true} />);
+    expect(wrapper.find("button").hasClass("green")).toBeTruthy();
   });
 });

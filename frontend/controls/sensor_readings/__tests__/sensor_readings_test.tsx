@@ -6,13 +6,14 @@ import {
   fakeSensorReading, fakeSensor
 } from "../../../__test_support__/fake_state/resources";
 import moment from "moment";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<SensorReadings />", () => {
   function fakeProps(): SensorReadingsProps {
     return {
       sensorReadings: [fakeSensorReading()],
       sensors: [],
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     };
   }
 

@@ -5,7 +5,7 @@ import { ToolTips, Actions } from "../constants";
 import { tourNames } from "./tours";
 import { t } from "../i18next_wrapper";
 
-const TourList = ({ dispatch }: { dispatch: Function }) =>
+export const TourList = ({ dispatch }: { dispatch: Function }) =>
   <div className="tour-list">
     {tourNames().map(tour => <div key={tour.name}>
       <label>{tour.description}</label>

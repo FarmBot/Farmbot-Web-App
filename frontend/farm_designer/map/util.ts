@@ -5,9 +5,8 @@ import {
   CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode
 } from "./interfaces";
 import { trim } from "../../util";
-import { getPathArray } from "../../history";
+import { history, getPathArray } from "../../history";
 import { savedGardenOpen } from "../saved_gardens/saved_gardens";
-import { last } from "lodash";
 
 /*
  * Farm Designer Map Utilities
@@ -51,11 +50,48 @@ export function round(num: number) {
  *
  */
 
-/** Controlled by .farm-designer-map padding x10 */
-const paddingWhen = {
-  panelClosed: { left: 20, top: 160 },
-  panelOpen: { left: 318, top: 110 }
+/** Status of farm designer side panel. */
+export enum MapPanelStatus {
+  open = "open",
+  closed = "closed",
+  short = "short",
+}
+
+/** Get farm designer side panel status. */
+export const getPanelStatus = (): MapPanelStatus => {
+  if (history.getCurrentLocation().pathname === "/app/designer") {
+    return MapPanelStatus.closed;
+  }
+  const mode = getMode();
+  if (window.innerWidth <= 450 &&
+    (mode === Mode.moveTo || mode === Mode.clickToAdd)) {
+    return MapPanelStatus.short;
+  }
+  return MapPanelStatus.open;
 };
+
+/** Get panel status class name for farm designer. */
+export const mapPanelClassName = () => {
+  switch (getPanelStatus()) {
+    case MapPanelStatus.short: return "short-panel";
+    case MapPanelStatus.closed: return "panel-closed";
+    case MapPanelStatus.open:
+    default:
+      return "panel-open";
+  }
+};
+
+/** Controlled by .farm-designer-map padding x10 */
+const getMapPadding =
+  (panelStatus: MapPanelStatus): { left: number, top: number } => {
+    switch (panelStatus) {
+      case MapPanelStatus.short: return { left: 20, top: 350 };
+      case MapPanelStatus.closed: return { left: 20, top: 160 };
+      case MapPanelStatus.open:
+      default:
+        return { left: 318, top: 110 };
+    }
+  };
 
 /** "x" => "left" and "y" => "top" */
 const leftOrTop: Record<"x" | "y", "top" | "left"> = { x: "left", y: "top" };
@@ -68,7 +104,7 @@ export interface ScreenToGardenParams {
   zoomLvl: number;
   mapTransformProps: MapTransformProps;
   gridOffset: AxisNumberProperty;
-  mapOnly: boolean;
+  panelStatus: MapPanelStatus;
 }
 
 /** Transform screen coordinates into garden coordinates  */
@@ -76,10 +112,10 @@ export function translateScreenToGarden(
   params: ScreenToGardenParams
 ): XYCoordinate {
   const {
-    page, scroll, zoomLvl, mapTransformProps, gridOffset, mapOnly
+    page, scroll, zoomLvl, mapTransformProps, gridOffset, panelStatus
   } = params;
   const { xySwap } = mapTransformProps;
-  const mapPadding = mapOnly ? paddingWhen.panelClosed : paddingWhen.panelOpen;
+  const mapPadding = getMapPadding(panelStatus);
   const screenXY = page;
   const mapXY = ["x", "y"].reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
@@ -283,7 +319,7 @@ export const getGardenCoordinates = (props: {
       mapTransformProps: props.mapTransformProps,
       gridOffset: props.gridOffset,
       zoomLvl,
-      mapOnly: last(getPathArray()) === "designer",
+      panelStatus: getPanelStatus(),
     };
     return translateScreenToGarden(params);
   } else {

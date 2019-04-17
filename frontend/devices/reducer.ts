@@ -12,6 +12,7 @@ import { versionOK } from "../util";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
 import { incomingLegacyStatus } from "../connectivity/connect_device";
+import { merge } from "lodash";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -66,7 +67,7 @@ export let initialState = (): BotState => ({
     process_info: {
       farmwares: {},
     },
-    enigmas: {}
+    enigmas: {},
   },
   dirty: false,
   currentOSVersion: undefined,
@@ -130,10 +131,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
       return s;
     })
   .add<DeepPartial<HardwareState>>(Actions.STATUS_UPDATE, (s, { payload }) => {
-    s.hardware = {
-      ...s.hardware,
-      ...(payload as typeof s.hardware)
-    };
+    s.hardware = merge(s.hardware, payload);
     legacyStatusHandler(s, incomingLegacyStatus(s.hardware));
     return s;
   })

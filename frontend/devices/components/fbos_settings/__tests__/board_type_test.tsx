@@ -13,6 +13,8 @@ import {
   buildResourceIndex
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
+import { bot } from "../../../../__test_support__/fake_state/bot";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<BoardType/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -20,58 +22,60 @@ describe("<BoardType/>", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): BoardTypeProps => ({
-    firmwareVersion: "",
+    bot,
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
+    botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("Farmduino", () => {
     const p = fakeProps();
-    p.firmwareVersion = "5.0.3.F";
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.F";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
   });
 
   it("Farmduino k1.4", () => {
     const p = fakeProps();
-    p.firmwareVersion = "5.0.3.G";
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.G";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("1.4");
   });
 
   it("Arduino/RAMPS", () => {
     const p = fakeProps();
-    p.firmwareVersion = "5.0.3.R";
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.R";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
   });
 
   it("Undefined", () => {
     const p = fakeProps();
-    p.firmwareVersion = undefined;
+    p.bot.hardware.informational_settings.firmware_version = undefined;
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
   it("Disconnected", () => {
     const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
+    p.bot.hardware.informational_settings.firmware_version = "Arduino Disconnected!";
     expect(mount(<BoardType {...p} />).text()).toContain("None");
-    p.firmwareVersion = "disconnected";
+    p.bot.hardware.informational_settings.firmware_version = "disconnected";
     expect(mount(<BoardType {...p} />).text()).toContain("None");
   });
 
   it("Stubbed", () => {
     const p = fakeProps();
-    p.firmwareVersion = "STUBFW";
+    p.bot.hardware.informational_settings.firmware_version = "STUBFW";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("None");
   });
 
   it("Disconnected with valid FirmwareConfig", () => {
     const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
+    p.bot.hardware.informational_settings.firmware_version = "Arduino Disconnected!";
     p.sourceFbosConfig = () => ({ value: "farmduino", consistent: false });
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
@@ -79,7 +83,7 @@ describe("<BoardType/>", () => {
 
   it("calls updateConfig", () => {
     const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
+    p.bot.hardware.informational_settings.firmware_version = "Arduino Disconnected!";
     const wrapper = shallow(<BoardType {...p} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
@@ -89,15 +93,6 @@ describe("<BoardType/>", () => {
 
   it("displays standard boards", () => {
     const wrapper = shallow(<BoardType {...fakeProps()} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" }]);
-  });
-
-  it("displays new board", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => true;
-    const wrapper = shallow(<BoardType {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },

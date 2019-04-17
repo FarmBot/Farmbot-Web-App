@@ -50,9 +50,8 @@ describe Api::WebAppConfigsController do
   describe "#update" do
     it "handles update requests" do
       sign_in user
-      body = { info_log: 23, bot_origin_quadrant: -1, internal_use: {}.to_json }
+      body = { info_log: 23, bot_origin_quadrant: -1 }
       calls = { self_id: user.device.web_app_config.id, device_id: user.device_id }
-      expect(Rollbar).to receive(:error).with("Internal data update use", calls)
       body.to_a.map { |key, val| expect(device.web_app_config.send(key)).not_to eq(val) }
       put :update, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)

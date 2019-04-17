@@ -3,7 +3,7 @@ import * as React from "react";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
-import { MustBeOnline, isBotUp } from "../must_be_online";
+import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
@@ -23,13 +23,13 @@ export class HardwareSettings extends
 
   render() {
     const {
-      bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig
+      bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
+      botToMqttStatus
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
     const firmwareVersion = informational_settings.firmware_version;
     const { sync_status } = informational_settings;
-    const botDisconnected = !(isBotUp(sync_status) &&
-      this.props.botToMqttStatus === "up");
+    const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
         <MustBeOnline

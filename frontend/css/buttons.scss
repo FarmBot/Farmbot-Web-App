@@ -20,6 +20,7 @@
   }
   &.is-saved,
   &.is-saving {
+    color: $off_white !important;
     background: $medium_gray !important;
     box-shadow: 0 2px 0px 0px $dark_gray !important;
     pointer-events: none;
@@ -183,6 +184,7 @@
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
   color: $dark_gray;
+  text-align: left;
   &.active {
     box-shadow: none !important;
     border: 1px solid $white;
@@ -290,6 +292,10 @@
   }
   &.grayscale {
     filter: grayscale(100%);
+  }
+  &.disabled,
+  &:disabled {
+    background: $medium_light_gray !important;
   }
 }
 

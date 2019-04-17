@@ -12,6 +12,8 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { overwrite } from "../../../api/crud";
 import { VariableDeclaration } from "farmbot";
+import { clickButton } from "../../../__test_support__/helpers";
+import { Actions } from "../../../constants";
 
 describe("<ActiveEditor />", () => {
   const fakeProps = (): ActiveEditorProps => ({
@@ -52,6 +54,15 @@ describe("<ActiveEditor />", () => {
     wrapper.find("i").simulate("click");
     expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({ regimen_items: [keptItem] }));
+  });
+
+  it("opens scheduler", () => {
+    const p = fakeProps();
+    const wrapper = mount(<ActiveEditor {...p} />);
+    clickButton(wrapper, 3, "Schedule item");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SCHEDULER_STATE, payload: true
+    });
   });
 });
 

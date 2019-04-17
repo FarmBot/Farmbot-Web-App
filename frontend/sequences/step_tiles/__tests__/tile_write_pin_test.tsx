@@ -33,12 +33,12 @@ describe("<TileWritePin/>", () => {
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(3);
     expect(buttons.length).toEqual(2);
-    expect(inputs.first().props().placeholder).toEqual("Write Pin");
-    expect(labels.at(0).text()).toEqual("Pin");
+    expect(inputs.first().props().placeholder).toEqual("Control Peripheral");
+    expect(labels.at(0).text()).toEqual("Peripheral");
     expect(inputs.at(1).props().value).toEqual(2);
-    expect(labels.at(1).text()).toEqual("Value");
-    expect(labels.at(2).text()).toEqual("Pin Mode");
+    expect(labels.at(1).text()).toEqual("Mode");
     expect(buttons.at(0).text()).toEqual("Pin 3");
+    expect(labels.at(2).text()).toEqual("set to");
   });
 
   it("renders inputs: Digital", () => {
@@ -52,11 +52,12 @@ describe("<TileWritePin/>", () => {
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(3);
     expect(buttons.length).toEqual(3);
-    expect(inputs.first().props().placeholder).toEqual("Write Pin");
-    expect(labels.at(0).text()).toEqual("Pin");
-    expect(labels.at(1).text()).toEqual("Value");
+    expect(inputs.first().props().placeholder).toEqual("Control Peripheral");
+    expect(labels.at(0).text()).toEqual("Peripheral");
     expect(buttons.at(0).text()).toEqual("Pin 3");
-    expect(labels.at(2).text()).toEqual("Pin Mode");
-    expect(buttons.at(1).text()).toEqual("ON");
+    expect(labels.at(1).text()).toEqual("Mode");
+    expect(buttons.at(1).text()).toEqual("Digital");
+    expect(labels.at(2).text()).toEqual("set to");
+    expect(buttons.at(2).text()).toEqual("ON");
   });
 });

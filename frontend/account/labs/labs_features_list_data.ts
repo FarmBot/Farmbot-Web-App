@@ -1,4 +1,3 @@
-
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
 import { VirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
@@ -32,12 +31,6 @@ export const fetchLabFeatures =
       value: false,
       displayInvert: true,
       callback: () => window.location.reload()
-    },
-    {
-      name: t("Confirm Sequence step deletion"),
-      description: t(Content.CONFIRM_STEP_DELETION),
-      storageKey: BooleanSetting.confirm_step_deletion,
-      value: false
     },
     {
       name: t("Hide Webcam widget"),
@@ -83,6 +76,20 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.display_trail,
       value: false,
       callback: () => sessionStorage.setItem(VirtualTrail.records, "[]")
+    },
+    {
+      name: t("Use 24-hour time format"),
+      description: t(Content.TIME_FORMAT_24_HOUR),
+      storageKey: BooleanSetting.time_format_24_hour,
+      value: false,
+    },
+    {
+      name: t("Confirm emergency unlock"),
+      description: t(Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG),
+      confirmationMessage: t(Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE),
+      storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
+      value: false,
+      displayInvert: true,
     },
   ].map(fetchSettingValue(getConfigValue)));
 

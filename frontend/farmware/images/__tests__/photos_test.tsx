@@ -15,13 +15,14 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { PhotosProps } from "../interfaces";
 import { success, error } from "farmbot-toastr";
 import { selectImage } from "../actions";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({
     images: [],
     currentImage: undefined,
     dispatch: jest.fn(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     imageJobs: [],
     botToMqttStatus: "up",
     syncStatus: "synced",

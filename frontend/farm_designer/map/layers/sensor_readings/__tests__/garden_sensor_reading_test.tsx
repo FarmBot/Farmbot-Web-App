@@ -9,13 +9,16 @@ import {
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import {
+  fakeTimeSettings
+} from "../../../../../__test_support__/fake_time_settings";
 
 describe("<GardenSensorReading />", () => {
   const fakeProps = (): GardenSensorReadingProps => ({
     sensorReading: fakeSensorReading(),
     mapTransformProps: fakeMapTransformProps(),
     endTime: undefined,
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     sensorLookup: {},
   });
 

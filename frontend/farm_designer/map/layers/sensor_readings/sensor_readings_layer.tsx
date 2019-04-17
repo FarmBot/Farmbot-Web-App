@@ -3,18 +3,19 @@ import { TaggedSensorReading, TaggedSensor } from "farmbot";
 import { MapTransformProps } from "../../interfaces";
 import { GardenSensorReading } from "./garden_sensor_reading";
 import { last } from "lodash";
+import { TimeSettings } from "../../../../interfaces";
 
 export interface SensorReadingsLayerProps {
   visible: boolean;
   sensorReadings: TaggedSensorReading[];
   mapTransformProps: MapTransformProps;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   sensors: TaggedSensor[];
 }
 
 export function SensorReadingsLayer(props: SensorReadingsLayerProps) {
   const {
-    visible, sensorReadings, mapTransformProps, timeOffset, sensors
+    visible, sensorReadings, mapTransformProps, timeSettings, sensors
   } = props;
   const mostRecentSensorReading = last(sensorReadings);
   const sensorNameByPinLookup: { [x: number]: string } = {};
@@ -27,7 +28,7 @@ export function SensorReadingsLayer(props: SensorReadingsLayerProps) {
           sensorReading={sr}
           mapTransformProps={mapTransformProps}
           endTime={mostRecentSensorReading.body.created_at}
-          timeOffset={timeOffset}
+          timeSettings={timeSettings}
           sensorLookup={sensorNameByPinLookup} />)}
   </g>;
 }

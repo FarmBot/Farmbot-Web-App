@@ -1,6 +1,7 @@
-jest.mock("../../../config_storage/actions", () => {
-  return { setWebAppConfigValue: jest.fn() };
-});
+jest.mock("../../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(() => () => { }),
+  getWebAppConfigValue: jest.fn(() => () => { }),
+}));
 
 import { mount } from "enzyme";
 import { DevMode } from "../dev_mode";

@@ -8,6 +8,6 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakeUser()]);
     const result = mapStateToProps(state);
-    expect(result.timeOffset).toEqual(0);
+    expect(result.timeSettings).toEqual({ utcOffset: 0, hour24: false });
   });
 });

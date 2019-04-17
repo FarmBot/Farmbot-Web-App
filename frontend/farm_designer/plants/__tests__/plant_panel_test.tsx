@@ -12,6 +12,7 @@ import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
 import moment from "moment";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -33,7 +34,7 @@ describe("<PlantPanel/>", () => {
       updatePlant: jest.fn(),
       dispatch: jest.fn(),
       inSavedGarden: false,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
     };
   };
 
@@ -125,7 +126,7 @@ describe("<EditDatePlanted />", () => {
     uuid: "Plant.0.0",
     datePlanted: moment("2017-06-19T08:02:22.466-05:00"),
     updatePlant: jest.fn(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("changes date planted", () => {

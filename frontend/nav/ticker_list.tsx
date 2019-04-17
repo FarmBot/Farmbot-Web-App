@@ -2,7 +2,6 @@ import * as React from "react";
 import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui/index";
 import { TickerListProps } from "./interfaces";
-
 import { formatLogTime } from "../logs/index";
 import { safeNumericSetting } from "../session";
 import { ErrorBoundary } from "../error_boundary";
@@ -13,6 +12,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { Link } from "../link";
 import { MessageType } from "../sequences/interfaces";
 import { t } from "../i18next_wrapper";
+import { TimeSettings } from "../interfaces";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -55,9 +55,9 @@ const getfirstTickerLog = (getConfigValue: GetWebAppConfigValue) =>
   };
 
 /** Format a single log for display in the ticker. */
-const Ticker = (log: TaggedLog, timeOffset: number) => {
+const Ticker = (log: TaggedLog, timeSettings: TimeSettings) => {
   const { message, type, created_at } = log.body;
-  const time = formatLogTime(created_at || NaN, timeOffset);
+  const time = created_at ? formatLogTime(created_at, timeSettings) : "";
   return <div key={log.uuid} className="status-ticker-wrapper">
     <div className={`saucer ${type}`} />
     <label className="status-ticker-message">
@@ -77,13 +77,13 @@ export let TickerList = (props: TickerListProps) => {
     <div className="ticker-list" onClick={props.toggle("tickerListOpen")} >
       <div className="first-ticker">
         {Ticker(getfirstTickerLog(props.getConfigValue)(props.logs),
-          props.timeOffset)}
+          props.timeSettings)}
       </div>
       <Collapse isOpen={props.tickerListOpen}>
         {filterByVerbosity(getFilterLevel(props.getConfigValue), props.logs)
           // Don't use first log again since it's already displayed in first row
           .filter((_, index) => index !== 0)
-          .map((log: TaggedLog) => Ticker(log, props.timeOffset))}
+          .map((log: TaggedLog) => Ticker(log, props.timeSettings))}
       </Collapse>
       <Collapse isOpen={props.tickerListOpen}>
         <Link to={"/app/logs"}>

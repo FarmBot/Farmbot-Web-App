@@ -6,6 +6,7 @@ import {
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { TimeSettings } from "../../interfaces";
 
 export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 
@@ -40,10 +41,11 @@ export interface GardenMapLegendProps {
   showImages: boolean;
   showSensorReadings: boolean;
   dispatch: Function;
-  tzOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   imageAgeInfo: { newestDate: string, toOldest: number };
   gardenId?: number;
+  className?: string;
 }
 
 export type MapTransformProps = {

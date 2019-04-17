@@ -2,8 +2,9 @@ import { UNBOUND_ROUTES, UnboundRouteConfig } from "../route_config";
 import { RouteEnterEvent } from "takeme";
 
 interface ConnectedComponent {
-  name: string;
+  displayName: string;
   WrappedComponent: React.ComponentType;
+  name?: string;
 }
 
 type Info = UnboundRouteConfig<{}, {}>;
@@ -16,10 +17,12 @@ const fakeCallback = (
   if (info.$ == "*") {
     expect(component.name).toEqual("FourOhFour");
   } else {
-    expect(component.name).toBe("Connect");
+    expect(component.displayName).toContain("Connect");
+    expect(component.displayName).toContain(info.key);
     expect(component.WrappedComponent.name).toContain(info.key);
     if (child && info.children) {
-      expect(child.name).toBe("Connect");
+      expect(child.displayName).toContain("Connect");
+      expect(child.displayName).toContain(info.childKey);
       expect(child.WrappedComponent.name).toContain(info.childKey);
     }
   }

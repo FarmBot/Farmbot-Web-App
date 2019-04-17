@@ -1,16 +1,8 @@
 import * as React from "react";
-
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
-import {
-  Widget,
-  WidgetHeader,
-  WidgetBody,
-  Row,
-  Col,
-  SaveBtn
-} from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody, Row, Col, SaveBtn } from "../../ui";
 import { save, edit, refresh } from "../../api/crud";
-import { MustBeOnline, isBotUp } from "../must_be_online";
+import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
@@ -23,7 +15,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
-
 import axios from "axios";
 import { t } from "../../i18next_wrapper";
 
@@ -90,14 +81,14 @@ export class FarmbotOsSettings
     return <LastSeen
       onClick={() => this.props.dispatch(refresh(this.props.account))}
       botToMqttLastSeen={this.props.botToMqttLastSeen}
+      timeSettings={this.props.timeSettings}
       device={this.props.account} />;
   }
 
   render() {
-    const { bot, account, sourceFbosConfig } = this.props;
-    const { firmware_version, sync_status } = bot.hardware.informational_settings;
-    const botOnline =
-      !!(isBotUp(sync_status) && this.props.botToMqttStatus === "up");
+    const { bot, account, sourceFbosConfig, botToMqttStatus } = this.props;
+    const { sync_status } = bot.hardware.informational_settings;
+    const botOnline = isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
@@ -164,9 +155,11 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               dispatch={this.props.dispatch} />
             <BoardType
-              firmwareVersion={firmware_version}
+              botOnline={botOnline}
+              bot={bot}
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}
+              timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
@@ -178,6 +171,7 @@ export class FarmbotOsSettings
               diagnostics={this.props.diagnostics}
               expanded={this.props.bot.controlPanelState.diagnostic_dumps}
               shouldDisplay={this.props.shouldDisplay}
+              botOnline={isBotOnline(sync_status, botToMqttStatus)}
               dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>

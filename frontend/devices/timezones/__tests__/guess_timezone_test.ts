@@ -8,11 +8,9 @@ describe("inferTimezone", () => {
   });
 
   it("returns UTC when browser support is not there", () => {
-    const x = get(window, "Intl", undefined);
+    const oldIntl = get(window, "Intl", undefined);
     set(window, "Intl", undefined);
-    window.alert = jest.fn();
     expect(inferTimezone(undefined)).toBe("UTC");
-    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining("UTC"));
-    set(window, "Intl", x);
+    set(window, "Intl", oldIntl);
   });
 });

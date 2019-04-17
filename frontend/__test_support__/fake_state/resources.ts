@@ -24,6 +24,7 @@ import {
   TaggedToolSlotPointer,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
+  TaggedEnigma,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -307,6 +308,9 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     home_button_homing: false,
     show_motor_plot: false,
     show_historic_points: false,
+    time_format_24_hour: false,
+    show_pins: false,
+    disable_emergency_unlock_confirmation: false,
   });
 }
 
@@ -371,6 +375,9 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     movement_step_per_mm_x: 5,
     movement_step_per_mm_y: 5,
     movement_step_per_mm_z: 25,
+    movement_microsteps_x: 1,
+    movement_microsteps_y: 1,
+    movement_microsteps_z: 1,
     movement_steps_acc_dec_x: 300,
     movement_steps_acc_dec_y: 300,
     movement_steps_acc_dec_z: 300,
@@ -420,5 +427,14 @@ export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
     url: "https://",
     package: undefined,
     package_error: undefined,
+  });
+}
+
+export function fakeEnigma(): TaggedEnigma {
+  return fakeResource("Enigma", {
+    uuid: "uuid",
+    created_at: 123,
+    problem_tag: "api.noun.verb",
+    priority: 100,
   });
 }

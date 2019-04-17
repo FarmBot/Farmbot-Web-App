@@ -3,6 +3,7 @@ import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { LastSeen, LastSeenProps } from "../last_seen_row";
 import { mount } from "enzyme";
 import { SpecialStatus, TaggedDevice } from "farmbot";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<LastSeen/>", () => {
   const resource = (): TaggedDevice => fakeResource("Device", {
@@ -12,13 +13,12 @@ describe("<LastSeen/>", () => {
     tz_offset_hrs: 0
   });
 
-  const props = (): LastSeenProps => {
-    return {
-      device: resource(),
-      botToMqttLastSeen: "",
-      onClick: jest.fn()
-    };
-  };
+  const props = (): LastSeenProps => ({
+    device: resource(),
+    botToMqttLastSeen: "",
+    onClick: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("blinks when loading", () => {
     const p = props();

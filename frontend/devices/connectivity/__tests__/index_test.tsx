@@ -1,46 +1,33 @@
+jest.mock("../../actions", () => ({ resetConnectionInfo: jest.fn() }));
+
 import * as React from "react";
-import { render, mount } from "enzyme";
+import { render, shallow } from "enzyme";
 import { ConnectivityPanel } from "../index";
-import { StatusRowProps } from "../connectivity_row";
 import { SpecialStatus } from "farmbot";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { fill } from "lodash";
+import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+import { resetConnectionInfo } from "../../actions";
 
 describe("<ConnectivityPanel/>", () => {
-  function test() {
-    const onRefresh = jest.fn();
-    const statusRow = {
-      connectionName: "AB",
-      from: "A",
-      to: "B",
-      connectionStatus: false,
-      children: "Can't do things with stuff."
-    };
-    const rowData: StatusRowProps[] = fill(Array(5), statusRow);
-
-    return {
-      component: <ConnectivityPanel
-        onRefresh={onRefresh}
-        rowData={rowData}
-        status={SpecialStatus.SAVED}
-        fbosInfo={bot.hardware.informational_settings}>
-        <p>I am a child component.</p>
-      </ConnectivityPanel>,
-      rowData: rowData
-    };
-  }
-
-  it("renders the default use case", () => {
-    const testcase = test();
-    const el = render(testcase.component);
-    expect(el.text()).toContain("I am a child");
-    expect(el.text()).toContain(testcase.rowData[0].children);
+  const fakeProps = (): ConnectivityPanel["props"] => ({
+    bot: bot,
+    dispatch: jest.fn(),
+    deviceAccount: fakeDevice(),
+    status: SpecialStatus.SAVED,
   });
 
-  it("sets hovered connection", () => {
-    const testcase = test();
-    const el = mount<ConnectivityPanel>(testcase.component);
-    el.find(".saucer").last().simulate("mouseEnter");
-    expect(el.instance().state.hoveredConnection).toEqual("AB");
+  it("renders the default use case", () => {
+    const p = fakeProps();
+    const wrapper = render(<ConnectivityPanel {...p} />);
+    ["Check Again", "Connectivity"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
+  it("resets connection info", () => {
+    const p = fakeProps();
+    const wrapper = shallow<ConnectivityPanel>(<ConnectivityPanel {...p} />);
+    wrapper.instance().refresh();
+    expect(p.dispatch).toHaveBeenCalled();
+    expect(resetConnectionInfo).toHaveBeenCalled();
   });
 });

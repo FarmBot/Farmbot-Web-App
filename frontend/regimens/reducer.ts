@@ -9,6 +9,7 @@ export interface RegimenState {
   weeks: Week[];
   selectedSequenceUUID?: string | undefined;
   currentRegimen?: string | undefined;
+  schedulerOpen: boolean;
 }
 
 function newWeek() {
@@ -30,7 +31,8 @@ function newState(): RegimenState {
     dailyOffsetMs: 300000,
     weeks: times(10, newWeek),
     selectedSequenceUUID: undefined,
-    currentRegimen: undefined
+    currentRegimen: undefined,
+    schedulerOpen: false,
   };
 }
 
@@ -79,5 +81,9 @@ export let regimensReducer = generateReducer<RegimenState>(initialState)
   })
   .add<number>(Actions.SET_TIME_OFFSET, (s, { payload }) => {
     s.dailyOffsetMs = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_SCHEDULER_STATE, (s, { payload }) => {
+    s.schedulerOpen = payload;
     return s;
   });

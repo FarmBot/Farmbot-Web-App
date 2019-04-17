@@ -6,6 +6,7 @@ import { Actions } from "../constants";
 export const initialState: SequenceReducerState = {
   current: undefined,
   menuOpen: false,
+  stepIndex: undefined,
 };
 
 export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
@@ -23,5 +24,9 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
   })
   .add<boolean>(Actions.SET_SEQUENCE_POPUP_STATE, function (s, { payload }) {
     s.menuOpen = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_SEQUENCE_STEP_POSITION, function (s, { payload }) {
+    s.stepIndex = payload;
     return s;
   });

@@ -1,7 +1,13 @@
 // Bulk Scheduler
 .bulk-scheduler {
   @media screen and (max-width: 768px) {
+    display: none;
     margin-bottom: 3rem;
+    &.open {
+      &.inserting-item {
+        display: block;
+      }
+    }
   }
   .week-grid-meta-buttons {
     margin-top: 1rem;
@@ -23,6 +29,10 @@
   input {
     background-color: $white !important;
   }
+}
+
+.bulk-scheduler-content {
+  margin-top: 1rem;
 }
 
 // Regimen Editor
@@ -59,6 +69,15 @@
 .regimen-days-label {
   margin-left: 50%;
   margin-top: 2rem;
+}
+
+.open-bulk-scheduler-btn {
+  display: none;
+  @media screen and (max-width: 768px) {
+    display: block;
+    margin: auto;
+    float: none !important;
+  }
 }
 
 // Regimen List styles in sequences.scss

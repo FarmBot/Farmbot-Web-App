@@ -63,90 +63,104 @@ export namespace ToolTips {
     trim(`If encoders or end-stops are enabled, find the home position when the
     device powers on. Warning! This will perform homing on all axes when the
     device powers on. Encoders or endstops must be enabled. It is recommended
-    to make sure homing works properly before enabling this feature.`);
+    to make sure homing works properly before enabling this feature.
+    (default: disabled)`);
 
   export const STOP_AT_HOME =
-    trim(`Stop at the home location of the axis.`);
+    trim(`Stop at the home location of the axis. (default: disabled)`);
 
   export const STOP_AT_MAX =
-    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.`);
+    trim(`Don't allow movement past the maximum value provided in AXIS LENGTH.
+    (default: disabled)`);
 
   export const NEGATIVE_COORDINATES_ONLY =
     trim(`Restrict travel to negative coordinate locations. Overridden by
-    disabling STOP AT HOME.`);
+    disabling STOP AT HOME. (default: x: disabled, y: disabled, z: enabled)`);
 
   export const LENGTH =
     trim(`Set the length of each axis to provide software limits. Used only if
-    STOP AT MAX is enabled.`);
+    STOP AT MAX is enabled. (default: 0 (disabled))`);
 
   export const TIMEOUT_AFTER =
-    trim(`Amount of time to wait for a command to execute before stopping.`);
+    trim(`Amount of time to wait for a command to execute before stopping.
+    (default: 120s)`);
 
   // Hardware Settings: Motors
   export const MAX_MOVEMENT_RETRIES =
-    trim(`Number of times to retry a movement before stopping.`);
+    trim(`Number of times to retry a movement before stopping. (default: 3)`);
 
   export const E_STOP_ON_MOV_ERR =
     trim(`Emergency stop if movement is not complete after the maximum number of
-    retries.`);
+    retries. (default: disabled)`);
 
   export const MAX_SPEED =
-    trim(`Maximum travel speed after acceleration in millimeters per second.`);
+    trim(`Maximum travel speed after acceleration in millimeters per second.
+    (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
 
   export const HOME_SPEED =
     trim(`Home position adjustment travel speed (homing and calibration)
-    in millimeters per second.`);
+    in millimeters per second. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const MIN_SPEED =
     trim(`Minimum movement speed in millimeters per second. Also used for homing
-     and calibration.`);
+     and calibration. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const ACCELERATE_FOR =
-    trim(`Number of millimeters used for acceleration and deceleration.`);
+    trim(`Number of millimeters used for acceleration and deceleration.
+    (default: x: 60mm, y: 60mm, z: 12mm)`);
 
   export const STEPS_PER_MM =
-    trim(`The number of motor steps required to move the axis one millimeter.`);
+    trim(`The number of motor steps required to move the axis one millimeter.
+    (default: x: 5, y: 5, z: 25)`);
+
+  export const MICROSTEPS_PER_STEP =
+    trim(`The number of microsteps required to move the motor one step.
+    (default: x: 1, y: 1, z: 1)`);
 
   export const ALWAYS_POWER_MOTORS =
     trim(`Keep power applied to motors. Prevents slipping from gravity in
-    certain situations.`);
+    certain situations. (default: enabled)`);
 
   export const INVERT_MOTORS =
-    trim(`Invert direction of motor during calibration.`);
+    trim(`Invert direction of motor during calibration. (default: disabled)`);
 
   export const ENABLE_X2_MOTOR =
-    trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.`);
+    trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
+    (default: enabled)`);
 
   // Hardware Settings: Encoders and Endstops
   export const ENABLE_ENCODERS =
-    trim(`Enable use of rotary encoders during calibration and homing.`);
+    trim(`Enable use of rotary encoders during calibration and homing.
+    (default: enabled)`);
 
   export const ENCODER_POSITIONING =
-    trim(`Use encoders for positioning.`);
+    trim(`Use encoders for positioning. (default: disabled)`);
 
   export const INVERT_ENCODERS =
-    trim(`Reverse the direction of encoder position reading.`);
+    trim(`Reverse the direction of encoder position reading.
+    (default: disabled)`);
 
   export const MAX_MISSED_STEPS =
     trim(`Number of steps missed (determined by encoder) before motor is
-    considered to have stalled.`);
+    considered to have stalled. (default: 5)`);
 
   export const ENCODER_MISSED_STEP_DECAY =
-    trim(`Reduction to missed step total for every good step.`);
+    trim(`Reduction to missed step total for every good step. (default: 5)`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
-    / (encoder resolution).`);
+    / (encoder resolution). (default: 5556 (10000*200/360))`);
 
   export const ENABLE_ENDSTOPS =
-    trim(`Enable use of electronic end-stops during calibration and homing.`);
+    trim(`Enable use of electronic end-stops during calibration and homing.
+    (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
-    trim(`Swap axis minimum and maximum end-stops.`);
+    trim(`Swap axis minimum and maximum end-stops. (default: disabled)`);
 
   export const INVERT_ENDPOINTS =
     trim(`Invert axis end-stops. Enable for normally closed (NC),
-    disable for normally open (NO).`);
+    disable for normally open (NO). (default: disabled)`);
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
@@ -190,12 +204,12 @@ export namespace ToolTips {
     trim(`Here is the list of all of your sequences. Click one to edit.`);
 
   export const MOVE_ABSOLUTE =
-    trim(`The Move Absolute step instructs FarmBot to move to the specified
+    trim(`The Move To step instructs FarmBot to move to the specified
     coordinate regardless of the current position. For example, if FarmBot is
-    currently at X=1000, Y=1000 and it receives a Move Absolute where X=0 and
+    currently at X=1000, Y=1000 and it receives a Move To where X=0 and
     Y=3000, then FarmBot will move to X=0, Y=3000. If FarmBot must move in
     multiple directions, it will move diagonally. If you require straight
-    movements along one axis at a time, use multiple Move Absolute steps.
+    movements along one axis at a time, use multiple Move To steps.
     Offsets allow you to more easily instruct FarmBot to move to a location,
     but offset from it by the specified amount. For example moving to just
     above where a peripheral is located. Using offsets lets FarmBot do the
@@ -208,18 +222,19 @@ export namespace ToolTips {
     will move to X=1000, Y=4000. If FarmBot must move in multiple directions,
     it will move diagonally. If you require straight movements along one axis
     at a time, use  multiple Move Relative steps. Move Relative steps should be
-    preceded by a Move Absolute step to ensure you are starting from a known
+    preceded by a Move To step to ensure you are starting from a known
     location.`);
 
   export const WRITE_PIN =
-    trim(`The Write Pin step instructs FarmBot to set the specified pin on the
-    Arduino to the specified mode and value. Use the digital pin mode for
-    on (1) and off (0) control, and analog pin mode for PWM (pulse width
+    trim(`The Control Peripheral step instructs FarmBot to set the specified
+    pin on the Arduino to the specified mode and value. Use the digital pin mode
+    for on (1) and off (0) control, and analog pin mode for PWM (pulse width
     modulation) (0-255).`);
 
   export const READ_PIN =
-    trim(`The Read Pin step instructs FarmBot to read the current value of the
-    specified pin. Pin Mode: Use digital for a 0 (LOW) or 1 (HIGH) response,
+    trim(`The Read Sensor step instructs FarmBot to read the
+    current value of the specified sensor or peripheral.
+    Pin Mode: Use digital for a 0 (LOW) or 1 (HIGH) response,
     and analog for a voltage reading (0-1023 for 0-5V).`);
 
   export const WAIT =
@@ -301,13 +316,12 @@ export namespace ToolTips {
 
   // Tools
   export const TOOL_LIST =
-    trim(`This is a list of all your FarmBot Tools. Click the Edit button
-    to add, edit, or delete tools.`);
+    trim(`This is a list of all your FarmBot tools and seed containers. Click the Edit button
+    to add, edit, or delete tools or seed containers.`);
 
   export const TOOLBAY_LIST =
-    trim(`Toolbays are where you store your FarmBot Tools. Each Toolbay
-    has Slots that you can put your Tools in, which should be reflective
-    of your real FarmBot hardware configuration.`);
+    trim(`Tool slots are where you store your FarmBot tools and seed containers, which should be
+    reflective of your real FarmBot hardware configuration.`);
 
   // Logs
   export const LOGS =
@@ -331,6 +345,9 @@ export namespace ToolTips {
 
   export const FIRMWARE_DEBUG_MESSAGES =
     trim(`Log all debug received from firmware (clears after refresh).`);
+
+  export const MESSAGES =
+    trim(`View messages.`);
 
   // App
   export const LABS =
@@ -370,10 +387,42 @@ export namespace Content {
     trim(`Export request received. Please allow up to 10 minutes for
     delivery.`);
 
+  // Messages
+  export const SEED_DATA_SELECTION =
+    trim(`To finish setting up your account and FarmBot, please select which
+    FarmBot you have. Once you make a selection, we'll automatically add some
+    tools, sensors, peripherals, sequences, and more to get you up and running
+    faster. If you want to start completely from scratch, feel free to select
+    "Custom bot" and we won't change a thing.`);
+
+  export const TAKE_A_TOUR =
+    trim(`Since you're new around here, we recommend taking our guided tours
+    of the app. This is the fastest way to learn about the most important pages
+    and features at your fingertips.`);
+
+  export const READ_THE_DOCS =
+    trim(`The FarmBot web app is a powerful tool that allows you to control
+    and configure your FarmBot in any way you want. To give you so much power,
+    we've packed the app with a ton of settings, features, and pages, which
+    can be a lot to understand. That's why we've created comprehensive written
+    documentation and videos to teach you how to use everything.`);
+
+  export const WELCOME =
+    trim(`Let's get you familiar with the app and finish setting everything
+    up.`);
+
+  export const MESSAGE_CENTER_WELCOME =
+    trim(`Here you'll find important information about your account, your
+    FarmBot, and news such as new feature announcements. Look for the blue
+    badge in the main menu to see when new messages are available.`);
+
+  export const MESSAGE_DISMISS =
+    trim(`When you're finished with a message, press the x button in the
+    top right of the card to dismiss it.`);
+
   // App Settings
   export const CONFIRM_STEP_DELETION =
-    trim(`Show a confirmation dialog when the sequence delete step
-    icon is pressed.`);
+    trim(`Show a confirmation dialog when deleting a sequence step.`);
 
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
@@ -407,6 +456,22 @@ export namespace Content {
     trim(`Display a virtual trail for FarmBot in the Farm Designer map to show
     movement and watering history while the map is open. Toggling this setting
     will clear data for the current trail.`);
+
+  export const TIME_FORMAT_24_HOUR =
+    trim(`Display time using the 24-hour notation,
+    i.e., 23:00 instead of 11:00pm`);
+
+  export const SHOW_PINS =
+    trim(`Show raw pin lists in Read Sensor and Control Peripheral steps.`);
+
+  export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
+    trim(`Confirm when unlocking FarmBot after an emergency stop.`);
+
+  export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
+    trim(`Warning! When disabled, clicking the UNLOCK button will immediately
+    unlock FarmBot instead of confirming that it is safe to do so.
+    As a result, double-clicking the E-STOP button may not stop FarmBot.
+    Are you sure you want to disable this feature?`);
 
   // Device
   export const NOT_HTTPS =
@@ -443,17 +508,6 @@ export namespace Content {
   export const AUTO_FACTORY_RESET_PERIOD =
     trim(`Time in minutes to attempt connecting to WiFi before a factory
     reset.`);
-
-  export const TIMEZONE_GUESS_BROWSER =
-    trim(`This account did not have a timezone set. FarmBot requires a
-    timezone to operate. We have updated your timezone settings based on
-    your browser. Please verify these settings in the device settings panel.
-    Device sync is recommended.`);
-
-  export const TIMEZONE_GUESS_UTC =
-    trim(`Warning: FarmBot could not guess your timezone. We have defaulted
-    your timezone to UTC, which is less than ideal for most users. Please
-    select your timezone from the dropdown. Device sync is recommended.`);
 
   export const DIFFERENT_TZ_WARNING =
     trim(`Note: The selected timezone for your FarmBot is different than
@@ -557,6 +611,9 @@ export namespace Content {
     trim(`Click one in the Sequences panel to edit, or click "+" to create
     a new one.`);
 
+  export const NO_SEQUENCES =
+    trim(`Click "+" to create a new sequence.`);
+
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
     encoders or endstops enabled for the chosen axis. Enable endstops or
@@ -569,6 +626,9 @@ export namespace Content {
   export const NO_REGIMEN_SELECTED =
     trim(`Click one in the Regimens panel to edit, or click "+" to create
     a new one.`);
+
+  export const NO_REGIMENS =
+    trim(`Click "+" to create a new regimen.`);
 
   // Farm Designer
   export const OUTSIDE_PLANTING_AREA =
@@ -615,7 +675,7 @@ export namespace Content {
     this is a concern.`);
 
   export const INVALID_RUN_TIME =
-    trim(`This Farm Event does not appear to have a valid run time.
+    trim(`This event does not appear to have a valid run time.
     Perhaps you entered bad dates?`);
 
   export const FARM_EVENT_TZ_WARNING =
@@ -629,7 +689,7 @@ export namespace Content {
     may cause unexpected behavior.`);
 
   export const SET_TIMEZONE_HEADER =
-    trim(`You must set a timezone before using the FarmEvent feature.`);
+    trim(`You must set a timezone before using the event feature.`);
 
   export const SET_TIMEZONE_BODY =
     trim(`Set device timezone here.`);
@@ -673,7 +733,7 @@ export namespace TourContent {
     needed to take care of a plant over its life.`);
 
   export const ADD_FARM_EVENTS =
-    trim(`Add a farm event via the + button to schedule a sequence or
+    trim(`Add an event via the + button to schedule a sequence or
     regimen in the calendar.`);
 
   // Monitoring
@@ -693,6 +753,48 @@ export namespace TourContent {
   // Fun stuff
   export const APP_SETTINGS =
     trim(`Toggle various settings to customize your web app experience.`);
+}
+
+export namespace DiagnosticMessages {
+  export const OK = trim(`All systems nominal.`);
+
+  export const MISC = trim(`Some other issue is preventing FarmBot from
+    working. Please see the table above for more information.`);
+
+  export const TOTAL_BREAKAGE = trim(`There is no access to FarmBot or the
+    message broker. This is usually caused by outdated browsers
+    (Internet Explorer) or firewalls that block WebSockets on port 3002.`);
+
+  export const REMOTE_FIREWALL = trim(`FarmBot and the browser are both
+    connected to the internet (or have been recently). Try rebooting FarmBot
+    and refreshing the browser. If the issue persists, something may be
+    preventing FarmBot from accessing the message broker (used to communicate
+    with your web browser in real-time). If you are on a company or school
+    network, a firewall may be blocking port 5672. Ensure that the blue LED
+    communications light on the FarmBot electronics box is illuminated.`);
+
+  export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
+    but we have no recent record of FarmBot connecting to the internet.
+    This usually happens because of a bad WiFi signal in the garden, a bad
+    password during configuration, or a very long power outage.`);
+
+  export const NO_WS_AVAILABLE = trim(`You are either offline, using a web
+   browser that does not support WebSockets, or are behind a firewall that
+   blocks port 3002. Do not attempt to debug FarmBot hardware until you solve
+   this issue first. You will not be able to troubleshoot hardware issues
+   without a reliable browser and internet connection.`);
+
+  export const INACTIVE = trim(`FarmBot and the browser both have internet
+    connectivity, but we haven't seen any activity from FarmBot on the Web
+    App in a while. This could mean that FarmBot has not synced in a while,
+    which might not be a problem. If you are experiencing usability issues,
+    however, it could be a sign of HTTP blockage on FarmBot's local internet
+    connection.`);
+
+  export const ARDUINO_DISCONNECTED = trim(`Arduino is possibly unplugged.
+    Check the USB cable between the Raspberry Pi and the Arduino. Reboot
+    FarmBot after a reconnection. If the issue persists, reconfiguration
+    of FarmBot OS may be necessary.`);
 }
 
 export enum Actions {
@@ -766,15 +868,18 @@ export enum Actions {
   SELECT_REGIMEN = "SELECT_REGIMEN",
   SET_SEQUENCE = "SET_SEQUENCE",
   SET_TIME_OFFSET = "SET_TIME_OFFSET",
+  SET_SCHEDULER_STATE = "SET_SCHEDULER_STATE",
 
   // Sequences
   SELECT_SEQUENCE = "SELECT_SEQUENCE",
   SET_SEQUENCE_POPUP_STATE = "SET_SEQUENCE_POPUP_STATE",
+  SET_SEQUENCE_STEP_POSITION = "SET_SEQUENCE_STEP_POSITION",
 
   // Farmware
   SELECT_FARMWARE = "SELECT_FARMWARE",
   SELECT_IMAGE = "SELECT_IMAGE",
   FETCH_FIRST_PARTY_FARMWARE_NAMES_OK = "FETCH_FIRST_PARTY_FARMWARE_NAMES_OK",
+  SET_FARMWARE_INFO_STATE = "SET_FARMWARE_INFO_STATE",
 
   // App
   START_TOUR = "START_TOUR",

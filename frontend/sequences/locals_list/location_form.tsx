@@ -87,36 +87,44 @@ export const LocationForm =
       props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;
     return <div className="location-form">
-      <Row>
-        <Col xs={12}>
-          <label>{formTitle}</label>
-          <FBSelect
-            key={locationDropdownKey}
-            list={list}
-            selectedItem={dropdown}
-            customNullLabel={NO_VALUE_SELECTED_DDI().label}
-            onChange={ddi => onChange(convertDDItoVariable({
-              label, allowedVariableNodes
-            })(ddi))} />
-        </Col>
-      </Row>
-      {vector &&
-        <Row>
-          {["x", "y", "z"].map((axis: Xyz) =>
-            <Col xs={props.width || 4} key={axis}>
-              <label>
-                {t("{{axis}} (mm)", { axis })}
-              </label>
-              <BlurableInput type="number"
-                disabled={isDisabled}
-                onCommit={manuallyEditAxis({ ...axisPartialProps, axis })}
-                name={`location-${axis}`}
-                value={"" + vector[axis]} />
-            </Col>)}
-        </Row>}
-      <DefaultValueForm
-        variableNode={celeryNode}
-        resources={resources}
-        onChange={onChange} />
+      <div className="location-form-header">
+        <label>{formTitle}</label>
+        {props.collapsible &&
+          <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
+            onClick={props.toggleVarShow} />}
+      </div>
+      {!props.collapsed &&
+        <div className="location-form-content">
+          <Row>
+            <Col xs={12}>
+              <FBSelect
+                key={locationDropdownKey}
+                list={list}
+                selectedItem={dropdown}
+                customNullLabel={NO_VALUE_SELECTED_DDI().label}
+                onChange={ddi => onChange(convertDDItoVariable({
+                  label, allowedVariableNodes
+                })(ddi))} />
+            </Col>
+          </Row>
+          {vector &&
+            <Row>
+              {["x", "y", "z"].map((axis: Xyz) =>
+                <Col xs={props.width || 4} key={axis}>
+                  <label>
+                    {t("{{axis}} (mm)", { axis })}
+                  </label>
+                  <BlurableInput type="number"
+                    disabled={isDisabled}
+                    onCommit={manuallyEditAxis({ ...axisPartialProps, axis })}
+                    name={`location-${axis}`}
+                    value={"" + vector[axis]} />
+                </Col>)}
+            </Row>}
+          <DefaultValueForm
+            variableNode={celeryNode}
+            resources={resources}
+            onChange={onChange} />
+        </div>}
     </div>;
   };

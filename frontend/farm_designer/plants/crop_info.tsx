@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { svgToUrl } from "../../open_farm/icons";
 import {
   CropInfoProps, CropLiveSearchResult, OpenfarmSearch
@@ -147,7 +146,8 @@ const AddPlantHereButton = (props: {
       cropName, slug, gardenCoords: botXY, gridSize: undefined,
       dispatch, openedSavedGarden
     }) : () => { };
-  return <button className="fb-button gray" disabled={!botXY} onClick={click}>
+  return <button className="fb-button gray no-float"
+    disabled={!botXY} onClick={click}>
     {t("Add plant at current FarmBot location {{coordinate}}",
       { coordinate: botXYLabel })}
   </button>;

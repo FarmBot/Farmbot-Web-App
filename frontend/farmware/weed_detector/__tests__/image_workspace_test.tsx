@@ -1,6 +1,7 @@
 import { ImageWorkspace, ImageWorkspaceProps } from "../image_workspace";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<Body/>", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
@@ -18,7 +19,8 @@ describe("<Body/>", () => {
     H_HI: 8,
     S_HI: 10,
     V_HI: 12,
-    timeOffset: 0,
+    botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("triggers onChange() event", () => {

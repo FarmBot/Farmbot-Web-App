@@ -94,4 +94,20 @@ describe("<LocationForm/>", () => {
     expect(wrapper.find(FBSelect).first().props().list)
       .toContainEqual(everyPointDDI("Tool"));
   });
+
+  it("renders collapse icon: open", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.collapsed = false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("fa-caret-up");
+  });
+
+  it("renders collapse icon: closed", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.collapsed = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("fa-caret-down");
+  });
 });

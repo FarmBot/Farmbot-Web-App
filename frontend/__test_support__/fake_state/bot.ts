@@ -52,7 +52,7 @@ export let bot: Everything["bot"] = {
     "process_info": {
       "farmwares": {}
     },
-    "enigmas": {}
+    "enigmas": {},
   },
   "dirty": false,
   "currentOSVersion": "3.1.6",

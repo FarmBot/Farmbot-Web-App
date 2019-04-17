@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import moment from "moment";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
@@ -67,7 +66,7 @@ export class AddFarmEvent
 
   componentWillUnmount() {
     const { uuid } = this.state;
-    const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
+    const fe = this.props.findFarmEventByUuid(uuid);
     const unsaved = fe && !fe.body.id;
     if (fe && unsaved) { this.props.dispatch(destroy(fe.uuid, true)); }
   }
@@ -75,9 +74,9 @@ export class AddFarmEvent
   /** No executables. Can't load form. */
   none() {
     return <p>
-      {t("You haven't made any regimens or sequences yet. Please create a")}
-      <Link to="/app/sequences">{t(" sequence")}</Link> {t(" or")}
-      <Link to="/app/regimens">{t(" regimen")}</Link> {t("first.")}
+      {t("You haven't made any regimens or sequences yet. Please create a ")}
+      <Link to="/app/sequences">{t("sequence")}</Link> {t(" or ")}
+      <Link to="/app/regimens">{t("regimen")}</Link> {t(" first.")}
     </p>;
   }
 
@@ -87,10 +86,10 @@ export class AddFarmEvent
   }
 
   placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
-    return <DesignerPanel panelName={"add-farm-event"} panelColor={"magenta"}>
+    return <DesignerPanel panelName={"add-farm-event"} panelColor={"yellow"}>
       <DesignerPanelHeader
         panelName={"add-farm-event"}
-        panelColor={"magenta"}
+        panelColor={"yellow"}
         title={t("No Executables")} />
       <DesignerPanelContent panelName={"add-farm-event"}>
         <label>
@@ -102,10 +101,7 @@ export class AddFarmEvent
 
   render() {
     const { uuid } = this.state;
-    // Legacy leftover from pre-TaggedResource era.
-    // TODO: Proper fix where we add a `findFarmEvent` selector
-    //       to mapStateToProps instead of juggling arrays.
-    const fe = uuid && this.props.farmEvents.filter(x => x.uuid === uuid)[0];
+    const fe = this.props.findFarmEventByUuid(uuid);
     if (fe) {
       return <EditFEForm
         farmEvent={fe}
@@ -114,15 +110,15 @@ export class AddFarmEvent
         executableOptions={this.props.executableOptions}
         dispatch={this.props.dispatch}
         findExecutable={this.props.findExecutable}
-        title={t("Add Farm Event")}
-        timeOffset={this.props.timeOffset}
+        title={t("Add Event")}
+        timeSettings={this.props.timeSettings}
         autoSyncEnabled={this.props.autoSyncEnabled}
         resources={this.props.resources}
         shouldDisplay={this.props.shouldDisplay}
       />;
     } else {
       return this
-        .placeholderTemplate(((this.executable) ? this.loading : this.none)());
+        .placeholderTemplate(this.executable ? this.loading() : this.none());
     }
   }
 }

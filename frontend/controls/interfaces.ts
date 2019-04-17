@@ -8,6 +8,7 @@ import {
 } from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface Props {
   dispatch: Function;
@@ -20,7 +21,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   getWebAppConfigVal: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export interface AxisDisplayGroupProps {

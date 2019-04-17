@@ -6,13 +6,16 @@ import {
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import {
-  shouldDisplay, determineInstalledOsVersion, validFwConfig
+  shouldDisplay as shouldDisplayFunc,
+  determineInstalledOsVersion, validFwConfig
 } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import { getFirmwareConfig, getWebAppConfig } from "../resources/getters";
+import { getFirmwareConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
+import { DevSettings } from "../account/dev/dev_support";
+import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -40,14 +43,7 @@ export function mapStateToProps(props: Everything): Props {
         y: !!firmwareSettings.movement_home_up_y,
         z: !!firmwareSettings.movement_home_up_z
       },
-      axisLength: {
-        x: (firmwareSettings.movement_axis_nr_steps_x || 0)
-          / (firmwareSettings.movement_step_per_mm_x || 1),
-        y: (firmwareSettings.movement_axis_nr_steps_y || 0)
-          / (firmwareSettings.movement_step_per_mm_y || 1),
-        z: (firmwareSettings.movement_axis_nr_steps_z || 0)
-          / (firmwareSettings.movement_step_per_mm_z || 1)
-      },
+      axisLength: calculateAxialLengths({ firmwareSettings }),
     };
   };
 
@@ -59,16 +55,17 @@ export function mapStateToProps(props: Everything): Props {
   });
   const farmwareNames = Object.values(farmwares).map(fw => fw.name);
   const { firstPartyFarmwareNames } = props.resources.consumers.farmware;
-  const conf = getWebAppConfig(props.resources.index);
-  const showFirstPartyFarmware = !!(conf && conf.body.show_first_party_farmware);
+  const getConfig = getWebAppConfigValue(() => props);
+  const showFirstPartyFarmware =
+    !!getConfig(BooleanSetting.show_first_party_farmware);
   const farmwareConfigs: FarmwareConfigs = {};
   Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-
-  const confirmStepDeletion =
-    !!getWebAppConfigValue(() => props)(BooleanSetting.confirm_step_deletion);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   return {
     dispatch: props.dispatch,
@@ -87,8 +84,9 @@ export function mapStateToProps(props: Everything): Props {
       showFirstPartyFarmware,
       farmwareConfigs,
     },
-    shouldDisplay: shouldDisplay(installedOsVersion, props.bot.minOsFeatureData),
-    confirmStepDeletion,
+    shouldDisplay,
+    getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
+    stepIndex: props.resources.consumers.sequences.stepIndex,
   };
 }

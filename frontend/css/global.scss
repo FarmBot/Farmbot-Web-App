@@ -132,6 +132,29 @@ fieldset {
   pointer-events: all;
 }
 
+.connectivity-popover-portal {
+  .bp3-transition-container {
+    z-index: 999;
+  }
+  .connectivity-popover {
+    .connectivity {
+      padding: 1rem;
+      max-width: 600px;
+      .row {
+        margin-bottom: 1rem;
+      }
+      .connectivity-diagram svg {
+        max-height: 200px !important;
+      }
+      .fbos-info {
+        @media (max-width:767px) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 .connectivity-diagnosis {
   h4 {
     margin-left: 3rem;
@@ -244,25 +267,24 @@ a {
 }
 
 .drag-drop-area {
-  margin: 0.75rem 0;
-  margin-right: 15px;
-  border-style: dashed;
-  border-width: 2px;
-  border-color: $light_gray;
-  color: $gray;
-  font-weight: bold;
-  padding: 1.25rem;
-  background: $off_white;
-  text-align: center;
-  color: $gray;
-  font-weight: bold;
+  &.visible {
+    margin: 0.75rem 0;
+    margin-right: 15px;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: $light_gray;
+    color: $gray;
+    font-weight: bold;
+    padding: 1.25rem;
+    background: $off_white;
+    text-align: center;
+    color: $gray;
+    font-weight: bold;
+  }
 }
 
-.hardware-widget,
-.device-widget {
-  h4 {
-    cursor: pointer;
-  }
+.expandable-header {
+  cursor: pointer;
   .icon-toggle {
     font-size: 1.2rem;
     font-weight: bold;
@@ -271,6 +293,10 @@ a {
       font-size: 1rem;
     }
   }
+}
+
+.hardware-widget,
+.device-widget {
   .row {
     margin-bottom: 0.6rem;
   }
@@ -617,6 +643,9 @@ ul {
   button:not(:first-of-type) {
     margin-right: 1rem;
   }
+  .settings-menu-button {
+    margin-right: 1rem;
+  }
 }
 
 .fb-button-popover-wrapper {
@@ -677,6 +706,11 @@ ul {
 
 .controls-popup {
   color: $off_white;
+  @media screen and (max-width: 450px) {
+    &.panel-open {
+      display: none;
+    }
+  }
   i {
     position: fixed;
     bottom: 3rem;
@@ -736,7 +770,7 @@ ul {
 .empty-state-graphic {
   display: flex;
   margin: auto;
-  margin-top: 10%;
+  margin-top: 25%;
   width: 50%;
 }
 
@@ -749,14 +783,17 @@ ul {
     p,
     h5,
     a {
-      color: $dark_green;
+      color: $panel_green;
     }
   }
   &.events {
     p,
     h5,
     a {
-      color: $magenta;
+      color: $panel_yellow;
+    }
+    .empty-state-graphic {
+      filter: sepia() contrast(1.2) saturate(1.2);
     }
   }
 }
@@ -822,6 +859,24 @@ ul {
   word-wrap: break-word;
 }
 
+.settings-menu-button {
+  float: right;
+  .fa-gear {
+    color: $dark_gray;
+  }
+}
+
+.sequence-settings-menu {
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+  .fb-button {
+    margin-top: 0;
+  }
+}
+
 .logs-page {
   .row {
     @media screen and (max-width: 974px) {
@@ -830,15 +885,17 @@ ul {
     }
   }
   .settings-menu-button {
-    float: right;
-    .fa-gear {
-      color: $dark_gray;
-    }
     margin-left: 1rem;
     margin-top: 0.25rem;
   }
   .bp3-popover-target {
     float: right;
+  }
+  @media screen and (max-width: 1075px) {
+    padding-left: 15px !important;
+  }
+  @media screen and (max-width: 974px) {
+    padding-left: 0 !important;
   }
 }
 
@@ -878,6 +935,18 @@ ul {
   td:nth-child(2),
   td:nth-child(3) {
     min-width: 120px;
+  }
+}
+
+.messages-page {
+  max-width: 600px;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  .link-to-logs {
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+    text-align: center;
+    font-style: italic;
   }
 }
 
@@ -1070,5 +1139,81 @@ ul {
   }
   button {
     margin: 0.5rem !important;
+  }
+}
+
+.status-icon {
+  padding: 0.5rem;
+  float: right !important;
+  font-size: 1.75rem;
+  &.ok {
+    color: $green;
+  }
+  &.no {
+    color: $red;
+  }
+  &.unknown {
+    color: $orange;
+  }
+}
+
+.firmware-hardware-status-details {
+  button {
+    float: none !important;
+  }
+}
+
+.problem-alert {
+  margin: 1rem;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  border-radius: 4px;
+  box-shadow: 0px 2px 5px $medium_gray;
+  background: $off_white;
+  .problem-alert-title {
+    .fa-exclamation-triangle {
+      color: $orange;
+      padding-right: 0.5rem;
+    }
+    h3 {
+      color: $dark_gray;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    p {
+      display: inline;
+      padding: 1rem;
+      color: $medium_gray;
+      font-size: 1.2rem;
+    }
+    .fa-times {
+      color: $medium_light_gray;
+      float: right;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
+  }
+  .problem-alert-content {
+    p {
+      margin-bottom: 0.75rem !important;
+      font-size: 1.4rem;
+      line-height: 2rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+    .row {
+      margin-top: 2rem;
+    }
+    .tour-list {
+      margin: 0;
+    }
+    .link-button {
+      color: $off_white;
+      font-weight: bold;
+      float: none;
+      margin-bottom: 2rem;
+    }
   }
 }

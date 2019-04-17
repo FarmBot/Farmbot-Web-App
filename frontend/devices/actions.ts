@@ -9,7 +9,8 @@ import {
 import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
-  ALLOWED_PIN_MODES
+  ALLOWED_PIN_MODES,
+  FirmwareHardware
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -101,6 +102,13 @@ export function restartFirmware() {
     .then(commandOK(noun), commandErr(noun));
 }
 
+export function flashFirmware(firmwareName: FirmwareHardware) {
+  const noun = "Flash Firmware";
+  getDevice()
+    .flashFirmware(firmwareName)
+    .then(commandOK(noun), commandErr(noun));
+}
+
 export function emergencyLock() {
   const noun = "Emergency stop";
   getDevice()
@@ -108,9 +116,9 @@ export function emergencyLock() {
     .then(commandOK(noun), commandErr(noun));
 }
 
-export function emergencyUnlock() {
+export function emergencyUnlock(force = false) {
   const noun = "Emergency unlock";
-  if (confirm(t(`Are you sure you want to unlock the device?`))) {
+  if (force || confirm(t(`Are you sure you want to unlock the device?`))) {
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));

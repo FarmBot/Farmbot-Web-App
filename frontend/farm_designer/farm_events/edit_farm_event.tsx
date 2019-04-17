@@ -10,7 +10,7 @@ import { t } from "../../i18next_wrapper";
 @connect(mapStateToPropsAddEdit)
 export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   redirect() {
-    history.push("/app/designer/farm_events");
+    history.push("/app/designer/events");
     return <div>{t("Loading")}...</div>;
   }
 
@@ -21,9 +21,9 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
       executableOptions={this.props.executableOptions}
       dispatch={this.props.dispatch}
       findExecutable={this.props.findExecutable}
-      title={t("Edit Farm Event")}
+      title={t("Edit Event")}
       deleteBtn={true}
-      timeOffset={this.props.timeOffset}
+      timeSettings={this.props.timeSettings}
       autoSyncEnabled={this.props.autoSyncEnabled}
       resources={this.props.resources}
       shouldDisplay={this.props.shouldDisplay} />;

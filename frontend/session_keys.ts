@@ -20,6 +20,9 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   home_button_homing: "home_button_homing",
   show_motor_plot: "show_motor_plot",
   show_historic_points: "show_historic_points",
+  time_format_24_hour: "time_format_24_hour",
+  show_pins: "show_pins",
+  disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
 
   /** "Labs" feature names. (App preferences) */
   stub_config: "stub_config",

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { Session } from "../session";
@@ -15,6 +14,11 @@ import { Popover, Position } from "@blueprintjs/core";
 import { ErrorBoundary } from "../error_boundary";
 import { RunTour } from "../help/tour";
 import { t } from "../i18next_wrapper";
+import { Connectivity } from "../devices/connectivity/connectivity";
+import { connectivityData } from "../devices/connectivity/generate_data";
+import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
+import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
+import { BooleanSetting } from "../session_keys";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -23,6 +27,11 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     tickerListOpen: false,
     accountMenuOpen: false
   };
+
+  componentDidMount = () => {
+    const { device } = this.props;
+    device && maybeSetTimezone(this.props.dispatch, device);
+  }
 
   logout = () => Session.clear();
 
@@ -36,8 +45,17 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     return <SyncButton
       bot={this.props.bot}
       dispatch={this.props.dispatch}
+      autoSync={this.props.autoSync}
       consistent={this.props.consistent} />;
   }
+
+  get connectivityData() {
+    return connectivityData({
+      bot: this.props.bot,
+      device: this.props.device
+    });
+  }
+
   render() {
     const hasName = this.props.user && this.props.user.body.name;
 
@@ -56,9 +74,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
     const { toggle, close } = this;
     const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
-    const { logs, timeOffset, getConfigValue } = this.props;
+    const { logs, timeSettings, getConfigValue, alertCount } = this.props;
     const tickerListProps = {
-      logs, tickerListOpen, toggle, timeOffset, getConfigValue
+      logs, tickerListOpen, toggle, timeSettings, getConfigValue
     };
     return <ErrorBoundary>
       <div className="nav-wrapper">
@@ -73,26 +91,43 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                       className={menuIconClassNames.join(" ")}
                       onClick={this.toggle("mobileMenuOpen")} />
                     <span className="mobile-menu-container">
-                      {MobileMenu({ close, mobileMenuOpen })}
+                      {MobileMenu({ close, mobileMenuOpen, alertCount })}
                     </span>
                     <span className="top-menu-container">
-                      {NavLinks({ close })}
+                      {NavLinks({ close, alertCount })}
                     </span>
                   </div>
                   <div className="nav-right">
-                    <Popover
-                      position={Position.BOTTOM_RIGHT}
-                      isOpen={accountMenuOpen}
-                      onClose={this.close("accountMenuOpen")}
-                      usePortal={false}>
-                      <div className="nav-name"
-                        onClick={this.toggle("accountMenuOpen")}>
-                        {firstName}
-                      </div>
-                      {AdditionalMenu({ logout: this.logout, close })}
-                    </Popover>
-                    <EStopButton bot={this.props.bot} />
+                    <div className="menu-popover">
+                      <Popover
+                        portalClassName={"nav-right"}
+                        popoverClassName={"menu-popover"}
+                        position={Position.BOTTOM_RIGHT}
+                        isOpen={accountMenuOpen}
+                        onClose={this.close("accountMenuOpen")}>
+                        <div className="nav-name"
+                          onClick={this.toggle("accountMenuOpen")}>
+                          {firstName}
+                        </div>
+                        {AdditionalMenu({ logout: this.logout, close })}
+                      </Popover>
+                    </div>
+                    <EStopButton
+                      bot={this.props.bot}
+                      forceUnlock={!!this.props.getConfigValue(
+                        BooleanSetting.disable_emergency_unlock_confirmation)} />
                     {this.syncButton()}
+                    <div className="connection-status-popover">
+                      <Popover position={Position.BOTTOM_RIGHT}
+                        portalClassName={"connectivity-popover-portal"}
+                        popoverClassName="connectivity-popover">
+                        <DiagnosisSaucer {...this.connectivityData.flags} />
+                        <Connectivity
+                          bot={this.props.bot}
+                          rowData={this.connectivityData.rowData}
+                          flags={this.connectivityData.flags} />
+                      </Popover>
+                    </div>
                     <RunTour currentTour={this.props.tour} />
                   </div>
                 </div>

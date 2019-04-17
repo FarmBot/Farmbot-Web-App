@@ -132,6 +132,12 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
+    $: "/messages",
+    getModule: () => import("./messages"),
+    key: "Messages",
+  }),
+  route({
+    children: false,
     $: "/regimens(/:regimen)",
     getModule: () => import("./regimens"),
     key: "Regimens",
@@ -156,7 +162,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events",
+    $: "/designer/events",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/farm_events"),
@@ -164,7 +170,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events/add",
+    $: "/designer/events/add",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/add_farm_event"),
@@ -172,7 +178,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events/:farm_event_id",
+    $: "/designer/events/:farm_event_id",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/edit_farm_event"),

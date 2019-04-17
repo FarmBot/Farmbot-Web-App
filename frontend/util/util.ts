@@ -1,4 +1,4 @@
-import { ResourceColor } from "../interfaces";
+import { ResourceColor, TimeSettings } from "../interfaces";
 import { box } from "boxed_value";
 import {
   TaggedResource,
@@ -189,8 +189,8 @@ export function validBotLocationData(
 /**
  * Return FirmwareConfig if the data is valid.
  */
-export function validFwConfig(
-  config: TaggedFirmwareConfig | undefined): TaggedFirmwareConfig["body"] | undefined {
+export function validFwConfig(config: TaggedFirmwareConfig | undefined):
+  TaggedFirmwareConfig["body"] | undefined {
   return (config && config.body.api_migrated)
     ? config.body
     : undefined;
@@ -230,3 +230,7 @@ export const parseIntInput = (input: string): number => {
   const int = parseInt("" + parseFloat(input).toFixed(1), 10);
   return int === 0 ? 0 : int;
 };
+
+export const timeFormatString =
+  (timeSettings: TimeSettings | undefined): string =>
+    (timeSettings && timeSettings.hour24) ? "H:mm" : "h:mma";

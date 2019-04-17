@@ -1,13 +1,12 @@
 import * as React from "react";
-import { Row, Col, DropDownItem, FBSelect } from "../../../ui/index";
-
+import { Row, Col, DropDownItem, FBSelect } from "../../../ui";
 import { info } from "farmbot-toastr";
 import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
-import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
+import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 
 const ARDUINO = { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" };
 const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
@@ -15,11 +14,36 @@ const FARMDUINO_K14 = {
   label: "Farmduino (Genesis v1.4)", value: "farmduino_k14"
 };
 
-const FIRMWARE_CHOICES_DDI = {
+export const FIRMWARE_CHOICES_DDI = {
   [ARDUINO.value]: ARDUINO,
   [FARMDUINO.value]: FARMDUINO,
   [FARMDUINO_K14.value]: FARMDUINO_K14
 };
+
+export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
+  const values: FirmwareHardware[] = [
+    "arduino", "farmduino", "farmduino_k14"];
+  return !!values.includes(x as FirmwareHardware);
+};
+
+export const boardType =
+  (firmwareVersion: string | undefined): FirmwareHardware | "unknown" => {
+    if (firmwareVersion) {
+      const boardIdentifier = firmwareVersion.slice(-1);
+      switch (boardIdentifier) {
+        case "R":
+          return "arduino";
+        case "F":
+          return "farmduino";
+        case "G":
+          return "farmduino_k14";
+        default:
+          return "unknown";
+      }
+    } else {
+      return "unknown";
+    }
+  };
 
 interface BoardTypeState { boardType: string, sending: boolean }
 
@@ -39,46 +63,30 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return !this.props.sourceFbosConfig("firmware_hardware").consistent;
   }
 
-  get apiValue() {
-    return this.props.sourceFbosConfig("firmware_hardware").value;
+  get apiValue(): FirmwareHardware | undefined {
+    const { value } = this.props.sourceFbosConfig("firmware_hardware");
+    return isFwHardwareValue(value) ? value : undefined;
   }
 
-  get firmwareChoices() {
-    const { shouldDisplay } = this.props;
-    return [ARDUINO, FARMDUINO,
-      ...(shouldDisplay(Feature.farmduino_k14) ? [FARMDUINO_K14] : [])
-    ];
+  get firmwareChoices() { return [ARDUINO, FARMDUINO, FARMDUINO_K14]; }
+
+  get firmwareVersion() {
+    return this.props.bot.hardware.informational_settings.firmware_version;
   }
 
-  get boardType() {
-    if (this.props.firmwareVersion) {
-      const boardIdentifier = this.props.firmwareVersion.slice(-1);
-      switch (boardIdentifier) {
-        case "R":
-          return "Arduino/RAMPS";
-        case "F":
-          return "Farmduino";
-        case "G":
-          return "Farmduino k1.4";
-        default:
-          return "unknown";
-      }
-    } else {
-      return "unknown";
-    }
-  }
+  get boardType() { return boardType(this.firmwareVersion); }
 
   get selectedBoard(): DropDownItem | undefined {
     switch (this.state.boardType) {
-      case "Arduino/RAMPS":
+      case "arduino":
         return FIRMWARE_CHOICES_DDI["arduino"];
-      case "Farmduino":
+      case "farmduino":
         return FIRMWARE_CHOICES_DDI["farmduino"];
-      case "Farmduino k1.4":
+      case "farmduino_k14":
         return FIRMWARE_CHOICES_DDI["farmduino_k14"];
       case "unknown":
         // If unknown/disconnected, display API FirmwareHardware value if valid
-        return (this.sending && typeof this.apiValue === "string")
+        return (this.sending && this.apiValue)
           ? FIRMWARE_CHOICES_DDI[this.apiValue]
           : undefined;
       default:
@@ -87,12 +95,6 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
   }
 
   sendOffConfig = (selectedItem: DropDownItem) => {
-    const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
-      const values: FirmwareHardware[] = [
-        "arduino", "farmduino", "farmduino_k14"];
-      return !!values.includes(x as FirmwareHardware);
-    };
-
     const firmware_hardware = selectedItem.value;
     if (selectedItem && isFwHardwareValue(firmware_hardware)) {
       info(t("Sending firmware configuration..."), t("Sending"));
@@ -118,6 +120,15 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
             selectedItem={this.selectedBoard}
             onChange={this.sendOffConfig} />
         </div>
+      </Col>
+      <Col xs={ColWidth.button}>
+        <FirmwareHardwareStatus
+          botOnline={this.props.botOnline}
+          apiFirmwareValue={this.apiValue}
+          bot={this.props.bot}
+          dispatch={this.props.dispatch}
+          timeSettings={this.props.timeSettings}
+          shouldDisplay={this.props.shouldDisplay} />
       </Col>
     </Row>;
   }

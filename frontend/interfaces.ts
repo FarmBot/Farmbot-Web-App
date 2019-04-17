@@ -26,3 +26,8 @@ export interface Everything {
  */
 // tslint:disable-next-line:no-any
 export type UnsafeError = any;
+
+export interface TimeSettings {
+  utcOffset: number;
+  hour24: boolean;
+}
