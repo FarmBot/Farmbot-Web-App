@@ -18,6 +18,7 @@ import { Connectivity } from "../devices/connectivity/connectivity";
 import { connectivityData } from "../devices/connectivity/generate_data";
 import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
+import { BooleanSetting } from "../session_keys";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -111,7 +112,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                         {AdditionalMenu({ logout: this.logout, close })}
                       </Popover>
                     </div>
-                    <EStopButton bot={this.props.bot} />
+                    <EStopButton
+                      bot={this.props.bot}
+                      forceUnlock={!!this.props.getConfigValue(
+                        BooleanSetting.disable_emergency_unlock_confirmation)} />
                     {this.syncButton()}
                     <div className="connection-status-popover">
                       <Popover position={Position.BOTTOM_RIGHT}

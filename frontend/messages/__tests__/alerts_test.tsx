@@ -39,6 +39,7 @@ describe("<Alerts />", () => {
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
+    findApiAlertById: jest.fn(),
   });
 
   it("renders no alerts", () => {

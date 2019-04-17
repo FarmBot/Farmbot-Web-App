@@ -198,6 +198,7 @@ export interface McuInputBoxProps {
 
 export interface EStopButtonProps {
   bot: BotState;
+  forceUnlock: boolean;
 }
 
 export interface PeripheralsProps {

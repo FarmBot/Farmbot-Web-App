@@ -116,9 +116,9 @@ export function emergencyLock() {
     .then(commandOK(noun), commandErr(noun));
 }
 
-export function emergencyUnlock() {
+export function emergencyUnlock(force = false) {
   const noun = "Emergency unlock";
-  if (confirm(t(`Are you sure you want to unlock the device?`))) {
+  if (force || confirm(t(`Are you sure you want to unlock the device?`))) {
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));
