@@ -22,6 +22,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   show_historic_points: "show_historic_points",
   time_format_24_hour: "time_format_24_hour",
   show_pins: "show_pins",
+  disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
 
   /** "Labs" feature names. (App preferences) */
   stub_config: "stub_config",

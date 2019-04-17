@@ -310,6 +310,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_historic_points: false,
     time_format_24_hour: false,
     show_pins: false,
+    disable_emergency_unlock_confirmation: false,
   });
 }
 
