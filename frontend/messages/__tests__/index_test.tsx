@@ -12,6 +12,7 @@ describe("<Messages />", () => {
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
     dispatch: Function,
+    findApiAlertById: jest.fn(),
   });
 
   it("renders page", () => {

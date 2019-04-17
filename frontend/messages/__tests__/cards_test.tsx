@@ -1,9 +1,12 @@
+jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { AlertCard } from "../cards";
 import { AlertCardProps } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
+import { destroy } from "../../api/crud";
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
@@ -19,8 +22,13 @@ describe("<AlertCard />", () => {
   });
 
   it("renders unknown card", () => {
-    const wrapper = mount(<AlertCard {...fakeProps()} />);
+    const p = fakeProps();
+    p.alert.id = 1;
+    p.findApiAlertById = () => "uuid";
+    const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("noun: verb (author)");
+    wrapper.find(".fa-times").simulate("click");
+    expect(destroy).toHaveBeenCalledWith("uuid");
   });
 
   it("renders firmware card", () => {
@@ -28,6 +36,8 @@ describe("<AlertCard />", () => {
     p.alert.problem_tag = "farmbot_os.firmware.missing";
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Firmware missing");
+    wrapper.find(".fa-times").simulate("click");
+    expect(destroy).not.toHaveBeenCalled();
   });
 
   it("renders seed data card", () => {

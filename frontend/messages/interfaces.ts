@@ -1,12 +1,14 @@
 import { FirmwareHardware, Enigma } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { BotState } from "../devices/interfaces";
+import { UUID } from "../resources/interfaces";
 
 export interface MessagesProps {
   alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;
+  findApiAlertById(id: number): UUID;
 }
 
 export interface AlertsProps {
@@ -14,6 +16,7 @@ export interface AlertsProps {
   apiFirmwareValue: string | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;
+  findApiAlertById(id: number): UUID;
 }
 
 export interface ProblemTag {
@@ -36,11 +39,14 @@ export interface AlertCardProps {
   apiFirmwareValue: string | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;
+  findApiAlertById?(id: number): UUID;
 }
 
 export interface CommonAlertCardProps {
   alert: Alert;
   timeSettings: TimeSettings;
+  findApiAlertById?(id: number): UUID;
+  dispatch?: Function;
 }
 
 export interface AlertCardTemplateProps {
@@ -50,6 +56,14 @@ export interface AlertCardTemplateProps {
   message: string;
   timeSettings: TimeSettings;
   children?: React.ReactNode;
+  findApiAlertById?(id: number): UUID;
+  dispatch?: Function;
+}
+
+export interface DismissAlertProps {
+  id?: number;
+  findApiAlertById?(id: number): UUID;
+  dispatch?: Function;
 }
 
 export interface FirmwareMissingProps extends CommonAlertCardProps {

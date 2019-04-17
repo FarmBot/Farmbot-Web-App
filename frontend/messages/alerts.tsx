@@ -37,6 +37,7 @@ export const Alerts = (props: AlertsProps) =>
           alert={x}
           dispatch={props.dispatch}
           apiFirmwareValue={props.apiFirmwareValue}
-          timeSettings={props.timeSettings} />)}
+          timeSettings={props.timeSettings}
+          findApiAlertById={props.findApiAlertById} />)}
     </div>
   </div>;

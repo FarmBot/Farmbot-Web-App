@@ -37,7 +37,7 @@ describe("<Tour />", () => {
     const wrapper = shallow<Tour>(<Tour steps={steps} />);
     wrapper.instance().callback(fakeCallbackData({ type: "tour:end" }));
     expect(wrapper.state()).toEqual({ run: false, index: 0 });
-    expect(history.push).toHaveBeenCalledWith("/app/help");
+    expect(history.push).toHaveBeenCalledWith("/app/messages");
   });
 
   it("navigates through tour: next", () => {

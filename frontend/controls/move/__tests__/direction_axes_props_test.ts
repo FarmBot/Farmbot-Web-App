@@ -13,7 +13,7 @@ describe("calcMicrostepsPerMm()", () => {
   });
 
   it("calculates value with microstepping", () => {
-    expect(calcMicrostepsPerMm(5, 4)).toEqual(20);
+    expect(calcMicrostepsPerMm(5, 4)).toEqual(5);
   });
 });
 
@@ -30,7 +30,7 @@ describe("calculateAxialLengths()", () => {
     firmwareSettings.movement_step_per_mm_z = 25;
     firmwareSettings.movement_microsteps_z = 4;
     expect(calculateAxialLengths({ firmwareSettings })).toEqual({
-      x: 0, y: 20, z: 1
+      x: 0, y: 20, z: 4
     });
   });
 });
