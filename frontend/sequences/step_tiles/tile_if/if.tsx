@@ -1,6 +1,5 @@
 import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
-
 import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
@@ -36,7 +35,7 @@ export function If_(props: IfParams) {
   const sequence = props.currentSequence;
   const { op } = currentStep.args;
   const cb = props.shouldDisplay || (() => false);
-  const lhsOptions = LHSOptions(props.resources, cb);
+  const lhsOptions = LHSOptions(props.resources, cb, !!props.showPins);
   function updateField(field: "lhs" | "op") {
     return (e: DropDownItem) => {
       const stepCopy = defensiveClone(step);

@@ -1,10 +1,11 @@
 import * as React from "react";
-
 import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
 import { TaggedSequence, ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
+import {
+  selectAllSequences, findSequenceById
+} from "../../../resources/selectors";
 import { isRecursive } from "../index";
 import { If_ } from "./if";
 import { ThenElse } from "./then_else";
@@ -13,11 +14,13 @@ import { overwrite } from "../../../api/crud";
 import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
-  sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns
+  sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName
 } from "../pin_and_peripheral_support";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
-import { addOrEditParamApps, variableList } from "../../locals_list/variable_support";
+import {
+  addOrEditParamApps, variableList
+} from "../../locals_list/variable_support";
 import { t } from "../../../i18next_wrapper";
 
 export interface IfParams {
@@ -28,6 +31,7 @@ export interface IfParams {
   resources: ResourceIndex;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
+  showPins?: boolean;
 }
 
 export interface ThenElseParams extends IfParams {
@@ -41,15 +45,15 @@ export type Operator = "lhs"
   | "_else";
 
 export const LHSOptions =
-  (resources: ResourceIndex, shouldDisplay: ShouldDisplay
+  (resources: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
   ): DropDownItem[] => [
-      { heading: true, label: t("Positions"), value: 0 },
+      { heading: true, label: t("Positions"), value: 0, headingId: PinGroupName.Position },
       { value: "x", label: t("X position"), headingId: "Position" },
       { value: "y", label: t("Y position"), headingId: "Position" },
       { value: "z", label: t("Z position"), headingId: "Position" },
       ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(resources) : []),
       ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(resources) : []),
-      ...pinDropdowns(n => `pin${n}`),
+      ...(showPins ? pinDropdowns(n => `pin${n}`) : []),
     ];
 
 export const operatorOptions: DropDownItem[] = [

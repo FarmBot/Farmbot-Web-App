@@ -26,6 +26,7 @@ describe("<If_/>", () => {
       resources: emptyState().index,
       shouldDisplay: jest.fn(),
       confirmStepDeletion: false,
+      showPins: true,
     };
   }
 
