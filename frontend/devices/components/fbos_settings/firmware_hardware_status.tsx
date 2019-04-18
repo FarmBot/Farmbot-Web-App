@@ -39,6 +39,21 @@ export interface FirmwareHardwareStatusDetailsProps {
   dispatch: Function;
 }
 
+export interface FlashFirmwareBtnProps {
+  apiFirmwareValue: string | undefined;
+  botOnline: boolean;
+}
+
+export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
+  const { apiFirmwareValue } = props;
+  return <button className="fb-button yellow"
+    disabled={!apiFirmwareValue || !props.botOnline}
+    onClick={() => isFwHardwareValue(apiFirmwareValue) &&
+      flashFirmware(apiFirmwareValue)}>
+    {t("flash firmware")}
+  </button>;
+};
+
 export interface FirmwareActionsProps {
   apiFirmwareValue: string | undefined;
   botOnline: boolean;
@@ -51,12 +66,7 @@ export const FirmwareActions = (props: FirmwareActionsProps) => {
       {trim(`${t("Flash the")} ${lookup(apiFirmwareValue) || ""}
       ${t("firmware to your device")}:`)}
     </p>
-    <button className="fb-button yellow"
-      disabled={!apiFirmwareValue || !props.botOnline}
-      onClick={() => isFwHardwareValue(apiFirmwareValue) &&
-        flashFirmware(apiFirmwareValue)}>
-      {t("flash firmware")}
-    </button>
+    <FlashFirmwareBtn {...props} />
   </div>;
 };
 
@@ -98,7 +108,7 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
   const { firmware_hardware } = props.bot.hardware.configuration;
   const status = props.apiFirmwareValue == firmware_hardware &&
     props.apiFirmwareValue == boardType(firmware_version);
-  return <Popover position={Position.BOTTOM}>
+  return <Popover position={Position.TOP}>
     <FirmwareHardwareStatusIcon
       firmwareHardware={firmware_hardware}
       status={status} />

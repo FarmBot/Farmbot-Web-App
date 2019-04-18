@@ -316,12 +316,13 @@ export namespace ToolTips {
 
   // Tools
   export const TOOL_LIST =
-    trim(`This is a list of all your FarmBot tools and seed containers. Click the Edit button
-    to add, edit, or delete tools or seed containers.`);
+    trim(`This is a list of all your FarmBot tools and seed containers.
+    Click the Edit button to add, edit, or delete tools or seed containers.`);
 
   export const TOOLBAY_LIST =
-    trim(`Tool slots are where you store your FarmBot tools and seed containers, which should be
-    reflective of your real FarmBot hardware configuration.`);
+    trim(`Tool slots are where you store your FarmBot tools and seed
+    containers, which should be reflective of your real FarmBot hardware
+    configuration.`);
 
   // Logs
   export const LOGS =
@@ -419,6 +420,11 @@ export namespace Content {
   export const MESSAGE_DISMISS =
     trim(`When you're finished with a message, press the x button in the
     top right of the card to dismiss it.`);
+
+  export const FIRMWARE_MISSING =
+    trim(`Please choose a firmware version to install. Your choice should be
+    based on the type of electronics in your FarmBot according to the reference
+    table below.`);
 
   // App Settings
   export const CONFIRM_STEP_DELETION =

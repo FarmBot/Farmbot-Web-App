@@ -1,12 +1,15 @@
+jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
+
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { AlertCard } from "../cards";
+import { AlertCard, changeFirmwareHardware } from "../cards";
 import { AlertCardProps } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
 import { destroy } from "../../api/crud";
+import { updateConfig } from "../../devices/actions";
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
@@ -35,9 +38,8 @@ describe("<AlertCard />", () => {
     const p = fakeProps();
     p.alert.problem_tag = "farmbot_os.firmware.missing";
     const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Firmware missing");
-    wrapper.find(".fa-times").simulate("click");
-    expect(destroy).not.toHaveBeenCalled();
+    expect(wrapper.text()).toContain("Your device has no firmware");
+    expect(wrapper.find(".fa-times").length).toEqual(0);
   });
 
   it("renders seed data card", () => {
@@ -67,5 +69,12 @@ describe("<AlertCard />", () => {
     p.alert.problem_tag = "api.documentation.unread";
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Learn");
+  });
+});
+
+describe("changeFirmwareHardware()", () => {
+  it("changes firmware hardware value", () => {
+    changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "arduino" });
+    expect(updateConfig).toHaveBeenCalledWith({ firmware_hardware: "arduino" });
   });
 });
