@@ -16,7 +16,7 @@ gem "mutations"
 gem "paperclip"
 gem "pg"
 gem "polymorphic_constraints"
-# gem "rack-attack" # RC 17 APR 19
+gem "rack-attack"
 gem "rack-cors"
 gem "rails_12factor"
 gem "rails"

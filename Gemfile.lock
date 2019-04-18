@@ -212,6 +212,8 @@ GEM
       hashie (~> 3.6)
       multi_json (~> 1.13.1)
     rack (2.0.7)
+    rack-attack (5.4.2)
+      rack (>= 1.0, < 3)
     rack-cors (1.0.3)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -368,6 +370,7 @@ DEPENDENCIES
   pry
   pry-rails
   rabbitmq_http_api_client
+  rack-attack
   rack-cors
   rails
   rails-erd
