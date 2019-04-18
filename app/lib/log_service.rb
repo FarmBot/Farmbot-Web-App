@@ -10,7 +10,11 @@ class LogService
   def self.process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
     data   = AmqpLogParser.run!(params)
-    puts data.payload["message"] if Rails.env.production?
+    if Rails.env.production?
+      msg = data.payload["message"]
+      l = "#{delivery_info.routing_key} => #{msg}"
+      puts l if !msg.starts_with?("R") # Filter GCode
+    end
     THROTTLE_POLICY.track(data.device_id)
     maybe_deliver(data)
   end
