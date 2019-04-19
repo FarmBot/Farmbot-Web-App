@@ -625,6 +625,7 @@ ALTER SEQUENCE public.fragments_id_seq OWNED BY public.fragments.id;
 CREATE TABLE public.global_bulletins (
     id bigint NOT NULL,
     href character varying,
+    href_label character varying,
     slug character varying,
     title character varying,
     type character varying,
