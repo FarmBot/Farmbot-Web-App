@@ -13,14 +13,14 @@ module Devices
     def execute
       merge_default_values
       device = Device.create!({name: "Farmbot"}.merge(inputs.except(:user)))
-      Enigmas::Create.run!(device:      device,
-                           problem_tag: Enigma::SEED_DATA)
-      Enigmas::Create.run!(device:      device,
-                           problem_tag: Enigma::TOUR)
-      Enigmas::Create.run!(device:      device,
-                           problem_tag: Enigma::USER)
-      Enigmas::Create.run!(device:      device,
-                           problem_tag: Enigma::DOCUMENTATION)
+      Alerts::Create.run!(device:      device,
+                           problem_tag: Alert::SEED_DATA)
+      Alerts::Create.run!(device:      device,
+                           problem_tag: Alert::TOUR)
+      Alerts::Create.run!(device:      device,
+                           problem_tag: Alert::USER)
+      Alerts::Create.run!(device:      device,
+                           problem_tag: Alert::DOCUMENTATION)
 
       ActiveRecord::Base.transaction do
         # TODO: This is a really, really, really old

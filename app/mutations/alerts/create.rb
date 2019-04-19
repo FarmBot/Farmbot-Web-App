@@ -1,14 +1,14 @@
-module Enigmas
+module Alerts
   class Create < Mutations::Command
     required do
       model :device
-      string :problem_tag, in: Enigma::PROBLEM_TAGS
+      string :problem_tag, in: Alert::PROBLEM_TAGS
     end
 
     def execute
-      Enigma.create!(device: device,
+      Alert.create!(device: device,
                      problem_tag: problem_tag,
-                     uuid: SecureRandom.uuid)
+                     slug: SecureRandom.uuid)
     end
   end
 end
