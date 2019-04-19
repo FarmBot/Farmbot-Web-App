@@ -8,13 +8,17 @@ import {
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
-  FirmwareActions
+  FlashFirmwareBtn
 } from "../devices/components/fbos_settings/firmware_hardware_status";
 import { DropDownItem, Row, Col, FBSelect, docLink } from "../ui";
 import { Content } from "../constants";
 import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
+import {
+  isFwHardwareValue
+} from "../devices/components/fbos_settings/board_type";
+import { updateConfig } from "../devices/actions";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -34,23 +38,22 @@ export const AlertCard = (props: AlertCardProps) => {
     case "api.documentation.unread":
       return <DocumentationUnread {...commonProps} />;
     default:
-      return UnknownAlert(commonProps);
+      return <UnknownAlert {...commonProps} />;
   }
 };
 const dismissAlert = (props: DismissAlertProps) => () =>
-  (props.id && props.findApiAlertById && props.dispatch)
-    ? props.dispatch(destroy(props.findApiAlertById(props.id)))
-    : () => { };
+  (props.id && props.findApiAlertById && props.dispatch) &&
+  props.dispatch(destroy(props.findApiAlertById(props.id)));
 
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const { alert, findApiAlertById, dispatch } = props;
   return <div className={`problem-alert ${props.className}`}>
     <div className="problem-alert-title">
-      <i className="fa fa-exclamation-triangle" />
+      <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
       <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>
-      <i className="fa fa-times"
-        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />
+      {alert.id && <i className="fa fa-times"
+        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
     <div className="problem-alert-content">
       <p>{t(props.message)}</p>
@@ -74,18 +77,77 @@ const UnknownAlert = (props: CommonAlertCardProps) => {
     findApiAlertById={props.findApiAlertById} />;
 };
 
+const FIRMWARE_CHOICES: DropDownItem[] = [
+  { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
+  { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
+  { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+];
+
+const FIRMWARE_CHOICES_DDI: { [x: string]: DropDownItem } = {};
+FIRMWARE_CHOICES.map(x => FIRMWARE_CHOICES_DDI[x.value] = x);
+
+const FirmwareChoiceTable = () =>
+  <table className="firmware-hardware-choice-table">
+    <thead>
+      <tr>
+        <th>{t("FarmBot Version")}</th>
+        <th>{t("Electronics Board")}</th>
+        <th>{t("Firmware Name")}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{"Genesis v1.2"}</td>
+        <td>{"RAMPS"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["arduino"].label}</code></td>
+      </tr>
+      <tr>
+        <td>{"Genesis v1.3"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino"].label}</code></td>
+      </tr>
+      <tr>
+        <td>{"Genesis v1.4"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k14"].label}</code></td>
+      </tr>
+    </tbody>
+  </table>;
+
+export const changeFirmwareHardware = (dispatch: Function | undefined) =>
+  (ddi: DropDownItem) => {
+    if (isFwHardwareValue(ddi.value)) {
+      dispatch && dispatch(updateConfig({ firmware_hardware: ddi.value }));
+    }
+  };
+
 const FirmwareMissing = (props: FirmwareMissingProps) =>
   <AlertCardTemplate
     alert={props.alert}
     className={"firmware-missing-alert"}
-    title={t("Firmware missing")}
-    message={t("Your device has no firmware installed.")}
+    title={t("Your device has no firmware")}
+    message={t(Content.FIRMWARE_MISSING)}
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}>
-    <FirmwareActions
-      apiFirmwareValue={props.apiFirmwareValue}
-      botOnline={true} />
+    <Row>
+      <FirmwareChoiceTable />
+      <Col xs={4}>
+        <label>{t("Choose Firmware")}</label>
+      </Col>
+      <Col xs={5}>
+        <FBSelect
+          key={props.apiFirmwareValue}
+          list={FIRMWARE_CHOICES}
+          selectedItem={FIRMWARE_CHOICES_DDI[props.apiFirmwareValue || "arduino"]}
+          onChange={changeFirmwareHardware(props.dispatch)} />
+      </Col>
+      <Col xs={3}>
+        <FlashFirmwareBtn
+          apiFirmwareValue={props.apiFirmwareValue}
+          botOnline={true} />
+      </Col>
+    </Row>
   </AlertCardTemplate>;
 
 const SEED_DATA_OPTIONS: DropDownItem[] = [
@@ -107,7 +169,8 @@ class SeedDataMissing
       message={t(Content.SEED_DATA_SELECTION)}
       timeSettings={this.props.timeSettings}
       dispatch={this.props.dispatch}
-      findApiAlertById={this.props.findApiAlertById}>
+      findApiAlertById={this.props.findApiAlertById}
+      iconName={"check-square"}>
       <Row>
         <Col xs={4}>
           <label>{t("Choose your FarmBot")}</label>
@@ -132,7 +195,8 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     message={t(Content.TAKE_A_TOUR)}
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
-    findApiAlertById={props.findApiAlertById}>
+    findApiAlertById={props.findApiAlertById}
+    iconName={"info-circle"}>
     <p>{t("Choose a tour to begin")}:</p>
     <TourList dispatch={props.dispatch} />
   </AlertCardTemplate>;
@@ -145,7 +209,8 @@ const UserNotWelcomed = (props: CommonAlertCardProps) =>
     message={t(Content.WELCOME)}
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
-    findApiAlertById={props.findApiAlertById}>
+    findApiAlertById={props.findApiAlertById}
+    iconName={"info-circle"}>
     <p>
       {t("You're currently viewing the")} <b>{t("Message Center")}</b>.
       &nbsp;{t(Content.MESSAGE_CENTER_WELCOME)}
@@ -163,7 +228,8 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
     message={t(Content.READ_THE_DOCS)}
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
-    findApiAlertById={props.findApiAlertById}>
+    findApiAlertById={props.findApiAlertById}
+    iconName={"info-circle"}>
     <p>
       {t("Head over to")}
       &nbsp;<a href={docLink()} target="_blank"

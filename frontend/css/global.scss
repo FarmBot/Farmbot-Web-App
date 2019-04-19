@@ -939,7 +939,7 @@ ul {
 }
 
 .messages-page {
-  max-width: 600px;
+  max-width: 785px;
   padding-left: 2rem !important;
   padding-right: 2rem !important;
   .link-to-logs {
@@ -1104,7 +1104,7 @@ ul {
 
 .tour-list {
   margin: auto;
-  width: 75%;
+  max-width: 300px;
   margin-top: 1rem;
 }
 
@@ -1171,9 +1171,23 @@ ul {
   box-shadow: 0px 2px 5px $medium_gray;
   background: $off_white;
   .problem-alert-title {
+    position: relative;
+    margin-bottom: 1rem;
+    line-height: 1rem;
+    .fa-exclamation-triangle,
+    .fa-check-square,
+    .fa-info-circle {
+      font-size: 1.6rem;
+      padding-right: 0.5rem;
+    }
     .fa-exclamation-triangle {
       color: $orange;
-      padding-right: 0.5rem;
+    }
+    .fa-check-square {
+      color: $green;
+    }
+    .fa-info-circle {
+      color: $blue;
     }
     h3 {
       color: $dark_gray;
@@ -1182,13 +1196,16 @@ ul {
     }
     p {
       display: inline;
-      padding: 1rem;
       color: $medium_gray;
       font-size: 1.2rem;
+      margin-left: 2rem;
+      white-space: pre;
     }
     .fa-times {
+      position: absolute;
+      top: 0;
+      right: 0;
       color: $medium_light_gray;
-      float: right;
       &:hover {
         color: $dark_gray;
       }
@@ -1215,5 +1232,32 @@ ul {
       float: none;
       margin-bottom: 2rem;
     }
+    .fb-button {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+.firmware-alerts {
+  max-width: 600px;
+}
+
+.firmware-hardware-choice-table {
+  margin: 2rem;
+  margin-top: 1rem;
+  width: 93%;
+  border: 1px solid $gray;
+  font-size: 1.2rem;
+  th {
+    background: $light_gray;
+    font-weight: normal;
+  }
+  td {
+    background: $off_white;
+    color: $medium_gray;
+  }
+  code {
+    background: $light_gray;
+    color: $dark_gray;
   }
 }

@@ -204,7 +204,7 @@ export class SequenceEditorMiddleActive extends
       farmwareInfo: this.props.farmwareInfo,
       shouldDisplay: this.props.shouldDisplay,
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
-      showPins: !!getConfig(BooleanSetting.confirm_step_deletion),
+      showPins: !!getConfig(BooleanSetting.show_pins),
     };
   }
 

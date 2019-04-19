@@ -17,27 +17,29 @@ export const sortAlerts = (alerts: Alert[]): Alert[] =>
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
   const alerts = betterCompact(Object.values(props.bot.hardware.enigmas || {}));
   const firmwareAlerts = sortAlerts(alerts)
+    .filter(x => x.problem_tag && x.priority && x.created_at)
     .filter(x => splitProblemTag(x.problem_tag).noun === "firmware");
   return <div className="firmware-alerts">
-    {firmwareAlerts.filter(x => x.problem_tag && x.priority && x.created_at)
-      .map((x, i) =>
-        <AlertCard key={i}
-          alert={x}
-          dispatch={props.dispatch}
-          apiFirmwareValue={props.apiFirmwareValue}
-          timeSettings={props.timeSettings} />)}
+    {firmwareAlerts.map((x, i) =>
+      <AlertCard key={i}
+        alert={x}
+        dispatch={props.dispatch}
+        apiFirmwareValue={props.apiFirmwareValue}
+        timeSettings={props.timeSettings} />)}
   </div>;
 };
 
 export const Alerts = (props: AlertsProps) =>
   <div className="problem-alerts">
     <div className="problem-alerts-content">
-      {sortAlerts(props.alerts).map((x, i) =>
-        <AlertCard key={i}
-          alert={x}
-          dispatch={props.dispatch}
-          apiFirmwareValue={props.apiFirmwareValue}
-          timeSettings={props.timeSettings}
-          findApiAlertById={props.findApiAlertById} />)}
+      {sortAlerts(props.alerts)
+        .filter(x => x.problem_tag && x.priority && x.created_at)
+        .map((x, i) =>
+          <AlertCard key={i}
+            alert={x}
+            dispatch={props.dispatch}
+            apiFirmwareValue={props.apiFirmwareValue}
+            timeSettings={props.timeSettings}
+            findApiAlertById={props.findApiAlertById} />)}
     </div>
   </div>;

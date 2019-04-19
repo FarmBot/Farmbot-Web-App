@@ -131,6 +131,18 @@ describe("Pin and Peripheral support files", () => {
       expect(JSON.stringify(result)).toContain("displayed peripheral");
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
+
+    it("doesn't display pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => false, false);
+      expect(JSON.stringify(result)).not.toContain("Pin 13");
+    });
+
+    it("displays pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsWritePin(ri.index, () => true, true);
+      expect(JSON.stringify(result)).toContain("Pin 13");
+    });
   });
 
   describe("pinsAsDropDownsReadPin()", () => {
@@ -153,6 +165,18 @@ describe("Pin and Peripheral support files", () => {
       const result = pinsAsDropDownsReadPin(ri.index, () => true, true);
       expect(JSON.stringify(result)).toContain("displayed sensor");
       expect(JSON.stringify(result)).toContain("displayed peripheral");
+    });
+
+    it("doesn't display pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsReadPin(ri.index, () => false, false);
+      expect(JSON.stringify(result)).not.toContain("Pin 13");
+    });
+
+    it("displays pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsReadPin(ri.index, () => true, true);
+      expect(JSON.stringify(result)).toContain("Pin 13");
     });
   });
 
