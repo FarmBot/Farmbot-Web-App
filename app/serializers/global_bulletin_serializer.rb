@@ -1,3 +1,3 @@
 class GlobalBulletinSerializer < ApplicationSerializer
-  attributes :href, :slug, :title, :type, :content
+  attributes :href, :href_label, :slug, :title, :type, :content
 end

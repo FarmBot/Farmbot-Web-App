@@ -7,7 +7,7 @@ FactoryBot.define do
     href do
       "https://farm.bot/blogs/news/pre-order-farmbot-genesis-xl-v1-5"
     end
-
+    href_label { "Click here!" }
     slug { Faker::Food.vegetables }
     type { "info" }
   end
