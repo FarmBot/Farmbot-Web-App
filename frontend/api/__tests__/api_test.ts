@@ -9,11 +9,13 @@ describe("API", () => {
     API.setBaseUrl(BASE);
     [
       [API.current.pointSearchPath, BASE + "/api/points/search"],
+      [API.current.allPointsPath, BASE + "/api/points/?filter=all"],
       [API.current.sensorReadingPath, BASE + "/api/sensor_readings"],
       [API.current.farmwareEnvPath, BASE + "/api/farmware_envs/"],
       [API.current.plantTemplatePath, BASE + "/api/plant_templates/"],
       [API.current.diagnosticDumpsPath, BASE + "/api/diagnostic_dumps/"],
       [API.current.farmwareInstallationPath, BASE + "/api/farmware_installations/"],
+      [API.current.globalBulletinPath, BASE + "/api/global_bulletins/"],
     ].map(x => expect(x[0]).toEqual(x[1]));
   });
 

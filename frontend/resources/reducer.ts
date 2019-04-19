@@ -58,7 +58,7 @@ export const emptyState = (): RestResources => {
         PlantTemplate: {},
         SavedGarden: {},
         DiagnosticDump: {},
-        Enigma: {},
+        Alert: {},
       },
       byKindAndId: {},
       references: {},

@@ -15,7 +15,7 @@ export const sortAlerts = (alerts: Alert[]): Alert[] =>
   sortBy(alerts, "priority", "created_at");
 
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
-  const alerts = betterCompact(Object.values(props.bot.hardware.enigmas || {}));
+  const alerts = betterCompact(Object.values(props.bot.hardware.alerts || {}));
   const firmwareAlerts = sortAlerts(alerts)
     .filter(x => x.problem_tag && x.priority && x.created_at)
     .filter(x => splitProblemTag(x.problem_tag).noun === "firmware");
