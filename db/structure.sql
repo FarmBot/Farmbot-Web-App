@@ -619,6 +619,41 @@ ALTER SEQUENCE public.fragments_id_seq OWNED BY public.fragments.id;
 
 
 --
+-- Name: global_bulletins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.global_bulletins (
+    id bigint NOT NULL,
+    content text,
+    href character varying,
+    slug character varying,
+    type character varying,
+    name character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: global_bulletins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.global_bulletins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: global_bulletins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.global_bulletins_id_seq OWNED BY public.global_bulletins.id;
+
+
+--
 -- Name: global_configs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1660,6 +1695,13 @@ ALTER TABLE ONLY public.fragments ALTER COLUMN id SET DEFAULT nextval('public.fr
 
 
 --
+-- Name: global_bulletins id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.global_bulletins ALTER COLUMN id SET DEFAULT nextval('public.global_bulletins_id_seq'::regclass);
+
+
+--
 -- Name: global_configs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1937,6 +1979,14 @@ ALTER TABLE ONLY public.firmware_configs
 
 ALTER TABLE ONLY public.fragments
     ADD CONSTRAINT fragments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: global_bulletins global_bulletins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.global_bulletins
+    ADD CONSTRAINT global_bulletins_pkey PRIMARY KEY (id);
 
 
 --
@@ -2903,6 +2953,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190411222900'),
 ('20190416035406'),
 ('20190417165636'),
-('20190419001321');
+('20190419001321'),
+('20190419052844');
 
 

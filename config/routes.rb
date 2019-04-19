@@ -11,6 +11,7 @@ FarmBot::Application.routes.draw do
       enigmas: [:create, :destroy, :index],
       farm_events: [:create, :destroy, :index, :show, :update],
       farmware_envs: [:create, :destroy, :index, :show, :update],
+      global_bulletins: [:show],
       images: [:create, :destroy, :index, :show],
       password_resets: [:create, :update],
       peripherals: [:create, :destroy, :index, :show, :update],
