@@ -2,11 +2,14 @@ module Devices
   class CreateSeedData < Mutations::Command
     PRODUCT_LINES = {
       "express_1.0" => Devices::Seeders::ExpressOneZero,
+      "express_xl_1.0" => Devices::Seeders::ExpressXlOneZero,
+
       "genesis_1.2" => Devices::Seeders::GenesisOneTwo,
       "genesis_1.3" => Devices::Seeders::GenesisOneThree,
       "genesis_1.4" => Devices::Seeders::GenesisOneFour,
-      "xl_1.0" => Devices::Seeders::XlOneZero,
+
       "xl_1.4" => Devices::Seeders::XlOneFour,
+
       "none" => Devices::Seeders::None,
     }
 
