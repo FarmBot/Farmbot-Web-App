@@ -20,7 +20,7 @@ import {
   TaggedPlantTemplate,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
-  TaggedEnigma,
+  TaggedAlert,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -100,8 +100,8 @@ export const selectAllWebcamFeeds =
   (i: ResourceIndex) => findAll<TaggedWebcamFeed>(i, "WebcamFeed");
 export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
-export const selectAllEnigmas =
-  (i: ResourceIndex) => findAll<TaggedEnigma>(i, "Enigma");
+export const selectAllAlerts =
+  (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
 
 export const findByKindAndId = <T extends TaggedResource>(
   i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {

@@ -5,7 +5,7 @@ import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
 import { DevSettings } from "../account/dev/dev_support";
 import {
-  selectAllEnigmas, maybeGetTimeSettings, findResourceById
+  selectAllAlerts, maybeGetTimeSettings, findResourceById
 } from "../resources/selectors";
 import { isFwHardwareValue } from "../devices/components/fbos_settings/board_type";
 import { ResourceIndex, UUID } from "../resources/interfaces";
@@ -18,7 +18,7 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
     sourceFbosConfigValue(fbosConfig, hardware.configuration);
   const apiFirmwareValue = sourceFbosConfig("firmware_hardware").value;
   const findApiAlertById = (id: number): UUID =>
-    findResourceById(props.resources.index, "Enigma", id);
+    findResourceById(props.resources.index, "Alert", id);
   return {
     alerts: getAlerts(props.resources.index, props.bot),
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
@@ -31,8 +31,8 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
 
 export const getAlerts =
   (resourceIndex: ResourceIndex, bot: BotState): Alert[] => {
-    const botAlerts = betterCompact(Object.values(bot.hardware.enigmas || {}));
-    const apiAlerts = selectAllEnigmas(resourceIndex).map(x => x.body)
+    const botAlerts = betterCompact(Object.values(bot.hardware.alerts || {}));
+    const apiAlerts = selectAllAlerts(resourceIndex).map(x => x.body)
       .filter(x => DevSettings.futureFeaturesEnabled() ||
         x.problem_tag !== "api.seed_data.missing");
     return botAlerts.concat(apiAlerts);
