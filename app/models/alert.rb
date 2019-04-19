@@ -4,7 +4,9 @@ class Alert < ApplicationRecord
     SEED_DATA = "api.seed_data.missing",
     TOUR = "api.tour.not_taken",
     USER = "api.user.not_welcomed",
-    DOCUMENTATION = "api.documentation.unread"
+    DOCUMENTATION = "api.documentation.unread",
+    BULLETIN = "api.bulletin.unread"
   ]
+
   validates_inclusion_of :problem_tag, in: PROBLEM_TAGS
 end
