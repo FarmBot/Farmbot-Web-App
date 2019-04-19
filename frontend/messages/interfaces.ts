@@ -1,4 +1,4 @@
-import { FirmwareHardware, Enigma } from "farmbot";
+import { FirmwareHardware, Alert as Enigma } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { BotState } from "../devices/interfaces";
 import { UUID } from "../resources/interfaces";

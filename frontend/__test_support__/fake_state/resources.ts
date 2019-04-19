@@ -24,7 +24,7 @@ import {
   TaggedToolSlotPointer,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
-  TaggedEnigma,
+  TaggedAlert,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -430,8 +430,8 @@ export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
   });
 }
 
-export function fakeEnigma(): TaggedEnigma {
-  return fakeResource("Enigma", {
+export function fakeAlert(): TaggedAlert {
+  return fakeResource("Alert", {
     uuid: "uuid",
     created_at: 123,
     problem_tag: "api.noun.verb",

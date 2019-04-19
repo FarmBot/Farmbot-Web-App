@@ -152,7 +152,7 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations/`;
   }
-  /** /api/enigmas/:id */
-  get enigmaPath() { return `${this.baseUrl}/api/enigmas/`; }
+  /** /api/alerts/:id */
+  get alertPath() { return `${this.baseUrl}/api/alerts/`; }
   get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
 }

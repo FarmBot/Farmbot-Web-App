@@ -76,14 +76,14 @@ describe("<FirmwareAlerts />", () => {
 
   it("renders no alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.enigmas = undefined;
+    p.bot.hardware.alerts = undefined;
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.html()).toEqual(`<div class="firmware-alerts"></div>`);
   });
 
   it("renders alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.enigmas = {
+    p.bot.hardware.alerts = {
       "uuid1": FIRMWARE_MISSING_ALERT,
       "uuid2": UNKNOWN_ALERT
     };
