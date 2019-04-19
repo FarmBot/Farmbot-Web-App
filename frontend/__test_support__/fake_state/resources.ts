@@ -432,7 +432,7 @@ export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
 
 export function fakeAlert(): TaggedAlert {
   return fakeResource("Alert", {
-    uuid: "uuid",
+    slug: "slug",
     created_at: 123,
     problem_tag: "api.noun.verb",
     priority: 100,

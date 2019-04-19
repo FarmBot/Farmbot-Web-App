@@ -82,3 +82,16 @@ export interface SeedDataMissingState {
 export interface TourNotTakenProps extends CommonAlertCardProps {
   dispatch: Function;
 }
+
+export interface Bulletin {
+  content: string;
+  href: string | undefined;
+  href_label: string | undefined;
+  type: string;
+  slug: string;
+  title: string | undefined;
+}
+
+export interface BulletinAlertState {
+  bulletin: Bulletin | undefined;
+}
