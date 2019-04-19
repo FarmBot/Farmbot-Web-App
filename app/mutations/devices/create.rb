@@ -15,6 +15,12 @@ module Devices
       device = Device.create!({name: "Farmbot"}.merge(inputs.except(:user)))
       Enigmas::Create.run!(device:      device,
                            problem_tag: Enigma::SEED_DATA)
+      Enigmas::Create.run!(device:      device,
+                           problem_tag: Enigma::TOUR)
+      Enigmas::Create.run!(device:      device,
+                           problem_tag: Enigma::USER)
+      Enigmas::Create.run!(device:      device,
+                           problem_tag: Enigma::DOCUMENTATION)
 
       ActiveRecord::Base.transaction do
         # TODO: This is a really, really, really old

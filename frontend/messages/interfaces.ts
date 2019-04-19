@@ -58,6 +58,7 @@ export interface AlertCardTemplateProps {
   children?: React.ReactNode;
   findApiAlertById?(id: number): UUID;
   dispatch?: Function;
+  iconName?: string;
 }
 
 export interface DismissAlertProps {

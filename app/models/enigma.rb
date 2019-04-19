@@ -6,4 +6,5 @@ class Enigma < ApplicationRecord
     USER = "api.user.not_welcomed",
     DOCUMENTATION = "api.documentation.unread"
   ]
+  validates_inclusion_of :problem_tag, in: PROBLEM_TAGS
 end

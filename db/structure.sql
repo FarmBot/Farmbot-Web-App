@@ -1511,7 +1511,8 @@ CREATE TABLE public.web_app_configs (
     show_dev_menu boolean DEFAULT false,
     internal_use text,
     time_format_24_hour boolean DEFAULT false,
-    show_pins boolean DEFAULT false
+    show_pins boolean DEFAULT false,
+    disable_emergency_unlock_confirmation boolean DEFAULT false
 );
 
 
@@ -2405,6 +2406,13 @@ CREATE INDEX index_points_on_device_id ON public.points USING btree (device_id);
 
 
 --
+-- Name: index_points_on_device_id_and_tool_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_points_on_device_id_and_tool_id ON public.points USING btree (device_id, tool_id);
+
+
+--
 -- Name: index_points_on_discarded_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2893,6 +2901,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190411152319'),
 ('20190411171401'),
 ('20190411222900'),
-('20190416035406');
+('20190416035406'),
+('20190417165636'),
+('20190419001321');
 
 
