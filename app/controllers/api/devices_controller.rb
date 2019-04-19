@@ -35,7 +35,7 @@ module Api
     end
 
     def seed
-      Devices::SeedData.delay.run!(params.as_json, device: current_device)
+      Devices::CreateSeedData.delay.run!(raw_json, device: current_device)
       render json: { done: "Loading resources now." }
     end
 
