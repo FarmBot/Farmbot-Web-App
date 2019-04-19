@@ -33,7 +33,9 @@ describe Api::UsersController do
 
   it "deletes a user account" do
     sign_in user
-    delete :destroy, params: { password: user.password }, format: :json
+    run_jobs_now do
+      delete :destroy, params: { password: user.password }, format: :json
+    end
     expect(response.status).to eq(200)
     expect(User.where(id: user.id).count).to eq(0)
   end

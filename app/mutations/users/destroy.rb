@@ -12,10 +12,10 @@ module Users
     end
 
     def execute
-      user.destroy!
+      user.delay.destroy!
     end
 
-private
+    private
 
     def confirm_password
       invalid = !user.valid_password?(password)
