@@ -4,7 +4,9 @@ import {
   AlertCardProps, AlertCardTemplateProps, FirmwareMissingProps,
   SeedDataMissingProps, SeedDataMissingState, TourNotTakenProps,
   CommonAlertCardProps,
-  DismissAlertProps
+  DismissAlertProps,
+  Bulletin,
+  BulletinAlertState
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
@@ -19,6 +21,8 @@ import {
   isFwHardwareValue
 } from "../devices/components/fbos_settings/board_type";
 import { updateConfig } from "../devices/actions";
+import { fetchBulletinContent } from "./actions";
+import { startCase } from "lodash";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -37,6 +41,8 @@ export const AlertCard = (props: AlertCardProps) => {
       return <UserNotWelcomed {...commonProps} />;
     case "api.documentation.unread":
       return <DocumentationUnread {...commonProps} />;
+    case "api.bulletin.unread":
+      return <BulletinAlert {...commonProps} />;
     default:
       return <UnknownAlert {...commonProps} />;
   }
@@ -61,6 +67,52 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
     </div>
   </div>;
 };
+
+const ICON_LOOKUP: { [x: string]: string } = {
+  "info": "info-circle",
+  "success": "check-square",
+  "warn": "exclamation-triangle",
+};
+
+class BulletinAlert
+  extends React.Component<CommonAlertCardProps, BulletinAlertState> {
+  state: BulletinAlertState = { bulletin: undefined };
+
+  componentDidMount() {
+    fetchBulletinContent(this.props.alert.slug)
+      .then(bulletin => this.setState({ bulletin }));
+  }
+
+  get bulletinData(): Bulletin {
+    return this.state.bulletin || {
+      content: t("Loading..."),
+      href: undefined,
+      href_label: undefined,
+      type: "info",
+      slug: this.props.alert.slug,
+      title: undefined,
+    };
+  }
+
+  render() {
+    const { content, href, href_label, type, title } = this.bulletinData;
+    return <AlertCardTemplate
+      alert={this.props.alert}
+      className={"bulletin-alert"}
+      title={title || startCase(this.props.alert.slug)}
+      iconName={ICON_LOOKUP[type] || "info"}
+      message={t(content)}
+      timeSettings={this.props.timeSettings}
+      dispatch={this.props.dispatch}
+      findApiAlertById={this.props.findApiAlertById}>
+      {href && <a className="link-button fb-button green"
+        href={href} target="_blank"
+        title={t("Open link in a new tab")}>
+        {href_label || t("Find out more")}
+      </a>}
+    </AlertCardTemplate>;
+  }
+}
 
 const UnknownAlert = (props: CommonAlertCardProps) => {
   const { problem_tag, created_at, priority } = props.alert;

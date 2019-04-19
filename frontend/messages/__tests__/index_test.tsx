@@ -27,7 +27,7 @@ describe("<Messages />", () => {
       created_at: 123,
       problem_tag: "author.noun.verb",
       priority: 100,
-      uuid: "uuid",
+      slug: "slug",
     }];
     const wrapper = mount(<Messages {...p} />);
     expect(wrapper.text()).toContain("Message Center");

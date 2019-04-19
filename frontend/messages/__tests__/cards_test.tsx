@@ -2,10 +2,22 @@ jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
+const mockData: Bulletin = {
+  content: "Alert content.",
+  href: "https://farm.bot",
+  href_label: "See more",
+  type: "info",
+  slug: "slug",
+  title: "Announcement",
+};
+jest.mock("../actions", () => ({
+  fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
+}));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { AlertCard, changeFirmwareHardware } from "../cards";
-import { AlertCardProps } from "../interfaces";
+import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
 import { destroy } from "../../api/crud";
@@ -17,7 +29,7 @@ describe("<AlertCard />", () => {
       created_at: 123,
       problem_tag: "author.noun.verb",
       priority: 100,
-      uuid: "uuid",
+      slug: "slug",
     },
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
@@ -69,6 +81,35 @@ describe("<AlertCard />", () => {
     p.alert.problem_tag = "api.documentation.unread";
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Learn");
+  });
+
+  it("renders loading bulletin card", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "api.bulletin.unread";
+    const wrapper = mount(<AlertCard {...p} />);
+    ["Loading...", "Slug"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
+  it("renders loaded bulletin card", async () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "api.bulletin.unread";
+    mockData.href_label = "See more";
+    mockData.type = "info";
+    const wrapper = await mount(<AlertCard {...p} />);
+    ["Loading...", "Slug"].map(string =>
+      expect(wrapper.text()).not.toContain(string));
+    ["Announcement", "Alert content.", "See more"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
+  it("renders loaded bulletin card with missing fields", async () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "api.bulletin.unread";
+    mockData.href_label = undefined;
+    mockData.type = "unknown";
+    const wrapper = await mount(<AlertCard {...p} />);
+    expect(wrapper.text()).toContain("Find out more");
   });
 });
 
