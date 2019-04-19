@@ -130,7 +130,7 @@ describe Api::UsersController do
         expect(user.name).to eq("Frank")
         expect(user.email).to eq(email)
         expect(user.valid_password?("Password123")).to be_truthy
-        expect(user.device.enigmas.count).to eq(1)
+        expect(user.device.enigmas.count).to eq(4)
         expect(user.device.enigmas.first.problem_tag).to eq(Enigma::SEED_DATA)
       end
     end
