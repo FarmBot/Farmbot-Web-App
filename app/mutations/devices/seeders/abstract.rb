@@ -1,8 +1,25 @@
 module Devices
   module Seeders
     class Abstract
+      SEED_EMAIL = "seed@farmbot.io"
+      attr_reader :device
+
       def initialize(device)
         @device = device
+      end
+
+      def plants
+        seed_device
+          .plants
+          .as_json
+          .map do |x|
+          Points::Create.run!(x
+            .slice(*Plant::ATTRS)
+            .merge({
+              device: device,
+              pointer_type: "Plant",
+            }))
+        end
       end
 
       def peripherals_lighting; end
@@ -12,7 +29,6 @@ module Devices
       def peripherals_water; end
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
-      def plants; end
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
       def sequences_mount_tool; end
@@ -42,6 +58,12 @@ module Devices
       def tools_soil_sensor; end
       def tools_watering_nozzle; end
       def tools_weeder; end
+
+      private
+
+      def seed_device
+        @seed_device ||= User.find_by(email: SEED_EMAIL).device
+      end
     end
   end
 end
