@@ -8,7 +8,7 @@ FarmBot::Application.routes.draw do
     # Standard API Resources:
     {
       diagnostic_dumps: [:create, :destroy, :index],
-      enigmas: [:create, :destroy, :index],
+      alerts: [:create, :destroy, :index],
       farm_events: [:create, :destroy, :index, :show, :update],
       farmware_envs: [:create, :destroy, :index, :show, :update],
       global_bulletins: [:show],

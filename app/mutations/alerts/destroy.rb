@@ -1,11 +1,11 @@
-module Enigmas
+module Alerts
   class Destroy < Mutations::Command
     required do
-      model :enigma
+      model :alert
     end
 
     def execute
-      enigma.destroy!
+      alert.destroy!
     end
   end
 end

@@ -1,11 +1,11 @@
 class CreateGlobalBulletin < ActiveRecord::Migration[5.2]
   def change
     create_table :global_bulletins do |t|
-      t.text :content
       t.string :href
       t.string :slug
+      t.string :title
       t.string :type
-      t.string :name
+      t.text   :content
       t.timestamps
     end
   end

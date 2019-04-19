@@ -1,3 +1,3 @@
-class GlobalBulletinSerializer < BasePointSerializer
-  attributes :content, :href, :slug, :type
+class GlobalBulletinSerializer < ApplicationSerializer
+  attributes :href, :slug, :title, :type, :content
 end

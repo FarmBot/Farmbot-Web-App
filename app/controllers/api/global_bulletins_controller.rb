@@ -4,7 +4,7 @@ module Api
     skip_before_action :check_fbos_version
 
     def show
-      render json: GlobalBulletinSerializer.new(search_results).as_json
+      render json: search_results
     end
 
     private

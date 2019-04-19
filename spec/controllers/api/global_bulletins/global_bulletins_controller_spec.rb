@@ -6,8 +6,10 @@ describe Api::GlobalBulletinsController do
   describe "#show" do
     it "shows bulletins" do
       gb = FactoryBot.create(:global_bulletin)
-      get :show, params: { id: gb.slug }, format: :json
+      get :show, params: { id: gb.slug }
       expect(response.status).to eq(200)
+      keys = [:content, :href, :slug, :type, :title]
+      keys.map { |k| expect(json[k]).to eq(gb[k]) }
     end
   end
 end
