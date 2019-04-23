@@ -100,7 +100,7 @@ class BulletinAlert
       alert={this.props.alert}
       className={"bulletin-alert"}
       title={title || startCase(this.props.alert.slug)}
-      iconName={ICON_LOOKUP[type] || "info"}
+      iconName={ICON_LOOKUP[type] || "info-circle"}
       message={t(content)}
       timeSettings={this.props.timeSettings}
       dispatch={this.props.dispatch}

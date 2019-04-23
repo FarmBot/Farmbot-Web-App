@@ -793,7 +793,7 @@ ul {
       color: $panel_yellow;
     }
     .empty-state-graphic {
-      filter: sepia() contrast(1.2) saturate(1.2);
+      filter: sepia(1) contrast(1.2) saturate(1.2);
     }
   }
 }
