@@ -87,7 +87,7 @@ describe("<AlertCard />", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
     const wrapper = mount(<AlertCard {...p} />);
-    ["Loading...", "Slug"].map(string =>
+    ["Loading", "Slug"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 

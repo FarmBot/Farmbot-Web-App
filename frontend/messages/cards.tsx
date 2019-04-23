@@ -12,7 +12,7 @@ import { formatLogTime } from "../logs";
 import {
   FlashFirmwareBtn
 } from "../devices/components/fbos_settings/firmware_hardware_status";
-import { DropDownItem, Row, Col, FBSelect, docLink } from "../ui";
+import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
 import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
@@ -62,7 +62,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
         onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
     <div className="problem-alert-content">
-      <p>{t(props.message)}</p>
+      <Markdown>{t(props.message)}</Markdown>
       {props.children}
     </div>
   </div>;
@@ -265,7 +265,7 @@ const UserNotWelcomed = (props: CommonAlertCardProps) =>
     iconName={"info-circle"}>
     <p>
       {t("You're currently viewing the")} <b>{t("Message Center")}</b>.
-      &nbsp;{t(Content.MESSAGE_CENTER_WELCOME)}
+      {" "}{t(Content.MESSAGE_CENTER_WELCOME)}
     </p>
     <p>
       {t(Content.MESSAGE_DISMISS)}

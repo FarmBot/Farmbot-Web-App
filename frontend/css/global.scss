@@ -1212,6 +1212,20 @@ ul {
     }
   }
   .problem-alert-content {
+    .markdown {
+      p {
+        display: block;
+        color: $dark_gray;
+        text-overflow: inherit;
+        overflow: inherit;
+        width: inherit;
+        white-space: inherit;
+      }
+      ul {
+        list-style-type: disc !important;
+        padding-inline-start: 40px;
+      }
+    }
     p {
       margin-bottom: 0.75rem !important;
       font-size: 1.4rem;
