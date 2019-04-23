@@ -94,4 +94,5 @@ export interface Bulletin {
 
 export interface BulletinAlertState {
   bulletin: Bulletin | undefined;
+  no_content: boolean;
 }

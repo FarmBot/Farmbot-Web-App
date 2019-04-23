@@ -2,7 +2,7 @@ jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
-const mockData: Bulletin = {
+const fakeBulletin: Bulletin = {
   content: "Alert content.",
   href: "https://farm.bot",
   href_label: "See more",
@@ -10,6 +10,8 @@ const mockData: Bulletin = {
   slug: "slug",
   title: "Announcement",
 };
+
+let mockData: Bulletin | undefined = fakeBulletin;
 jest.mock("../actions", () => ({
   fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
 }));
@@ -95,9 +97,19 @@ describe("<AlertCard />", () => {
       expect(wrapper.text()).toContain(string));
   });
 
+  it("has no content to load for bulletin card", async () => {
+    mockData = undefined;
+    const p = fakeProps();
+    p.alert.problem_tag = "api.bulletin.unread";
+    const wrapper = await mount(<AlertCard {...p} />);
+    ["Unable to load content.", "Slug"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
   it("renders loaded bulletin card", async () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
+    mockData = fakeBulletin;
     mockData.href_label = "See more";
     mockData.type = "info";
     const wrapper = await mount(<AlertCard {...p} />);
@@ -110,6 +122,7 @@ describe("<AlertCard />", () => {
   it("renders loaded bulletin card with missing fields", async () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
+    mockData = fakeBulletin;
     mockData.href_label = undefined;
     mockData.type = "unknown";
     const wrapper = await mount(<AlertCard {...p} />);

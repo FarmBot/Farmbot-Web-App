@@ -154,7 +154,7 @@ export class API {
   }
   /** /api/alerts/:id */
   get alertPath() { return `${this.baseUrl}/api/alerts/`; }
-  /** /api/global_bulletins/ */
+  /** /api/global_bulletins/:id */
   get globalBulletinPath() { return `${this.baseUrl}/api/global_bulletins/`; }
   get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
 }

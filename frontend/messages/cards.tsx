@@ -79,16 +79,19 @@ const ICON_LOOKUP: { [x: string]: string } = {
 
 class BulletinAlert
   extends React.Component<CommonAlertCardProps, BulletinAlertState> {
-  state: BulletinAlertState = { bulletin: undefined };
+  state: BulletinAlertState = { bulletin: undefined, no_content: false };
 
   componentDidMount() {
     fetchBulletinContent(this.props.alert.slug)
-      .then(bulletin => this.setState({ bulletin }));
+      .then(bulletin => bulletin
+        ? this.setState({ bulletin })
+        : this.setState({ no_content: true }));
   }
 
   get bulletinData(): Bulletin {
     return this.state.bulletin || {
-      content: t("Loading..."),
+      content: this.state.no_content ? t("Unable to load content.")
+        : t("Loading..."),
       href: undefined,
       href_label: undefined,
       type: "info",
