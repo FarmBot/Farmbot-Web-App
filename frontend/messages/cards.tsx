@@ -51,13 +51,16 @@ const dismissAlert = (props: DismissAlertProps) => () =>
   (props.id && props.findApiAlertById && props.dispatch) &&
   props.dispatch(destroy(props.findApiAlertById(props.id)));
 
+const timeOk = (timestamp: number) => timestamp > 1550000000;
+
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const { alert, findApiAlertById, dispatch } = props;
   return <div className={`problem-alert ${props.className}`}>
     <div className="problem-alert-title">
       <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
-      <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>
+      {timeOk(alert.created_at) &&
+        <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>}
       {alert.id && <i className="fa fa-times"
         onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
