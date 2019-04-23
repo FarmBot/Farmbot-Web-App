@@ -31,7 +31,7 @@ def fetch_available_upgrades()
   return latest_versions
 end
 
-# Install depdendency updates.
+# Install dependency updates.
 def install_updates
   sh "sudo docker-compose run web npm install"
 end
