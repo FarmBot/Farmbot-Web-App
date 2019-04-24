@@ -176,6 +176,17 @@ fieldset {
   }
 }
 
+.voltage-display {
+  display: flex;
+  .saucer {
+    height: 1rem;
+    width: 1rem;
+    cursor: default;
+    margin-left: 0.5rem;
+    margin-top: 0.2rem;
+  }
+}
+
 .wifi-strength-display {
   position: relative;
   .percent-bar {
