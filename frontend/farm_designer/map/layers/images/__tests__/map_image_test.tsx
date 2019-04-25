@@ -41,6 +41,13 @@ describe("<MapImage />", () => {
     expect(wrapper.html()).toEqual("<image></image>");
   });
 
+  it("renders pre-calibration preview", () => {
+    const p = fakeProps();
+    p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
+    const wrapper = mount(<MapImage {...p} />);
+    expect(wrapper.html()).toContain("image_url");
+  });
+
   interface ExpectedData {
     size: { width: number, height: number };
     sx: number;

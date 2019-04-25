@@ -6,6 +6,8 @@ import { transformXY } from "../../util";
 import { isNumber, round } from "lodash";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
+/** Show all images roughly on map when no calibration values are present. */
+const PRE_CALIBRATION_PREVIEW = true;
 
 /* Parse floats in camera calibration environment variables. */
 const parse = (str: string | undefined) => {
@@ -14,7 +16,8 @@ const parse = (str: string | undefined) => {
 };
 
 /* Check if the image has been rotated according to the calibration value. */
-const isRotated = (name: string | undefined) => {
+const isRotated = (name: string | undefined, noCalib: boolean) => {
+  if (PRE_CALIBRATION_PREVIEW && noCalib) { return true; }
   return name &&
     (name.includes("rotated")
       || name.includes("marked")
@@ -24,6 +27,7 @@ const isRotated = (name: string | undefined) => {
 /* Check if the calibration data is valid for the image provided using z. */
 const cameraZCheck =
   (imageZ: number | undefined, calibZ: string | undefined) => {
+    if (PRE_CALIBRATION_PREVIEW && !calibZ) { return true; }
     const calibrationZ = parse(calibZ);
     return isNumber(imageZ) && isNumber(calibrationZ) &&
       Math.abs(imageZ - calibrationZ) < 5;
@@ -41,8 +45,8 @@ const getImageSize = (url: string, size?: ImageSize): ImageSize => {
   const imageData = new Image();
   imageData.src = url;
   return {
-    height: imageData.height,
-    width: imageData.width
+    height: imageData.height || 480,
+    width: imageData.width || 640
   };
 };
 
@@ -121,13 +125,16 @@ export interface MapImageProps {
  * Assume the image that is provided from the Farmware is rotated correctly.
  * Require camera calibration data to display the image.
  */
+// tslint:disable-next-line:cyclomatic-complexity
 export function MapImage(props: MapImageProps) {
   const { image, cameraCalibrationData, sizeOverride } = props;
   const { scale, offset, origin, calibrationZ } = cameraCalibrationData;
-  const imageScale = parse(scale);
-  const imageOffsetX = parse(offset.x);
-  const imageOffsetY = parse(offset.y);
-  const imageOrigin = origin ? origin.split("\"").join("") : undefined;
+  const noCalib = PRE_CALIBRATION_PREVIEW && !parse(scale);
+  const imageScale = noCalib ? 1.5 : parse(scale);
+  const imageOffsetX = noCalib ? 0 : parse(offset.x);
+  const imageOffsetY = noCalib ? 0 : parse(offset.y);
+  const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
+  const imageOrigin = noCalib ? "BOTTOM_LEFT" : cleanOrigin;
   const { quadrant, xySwap } = props.mapTransformProps;
 
   /* Check if the image exists. */
@@ -140,7 +147,7 @@ export function MapImage(props: MapImageProps) {
     /* Check for all necessary camera calibration and image data. */
     if (isNumber(x) && isNumber(y) && height > 0 && width > 0 &&
       isNumber(imageScale) && imageScale > 0 &&
-      cameraZCheck(z, calibrationZ) && isRotated(imageAnnotation) &&
+      cameraZCheck(z, calibrationZ) && isRotated(imageAnnotation, noCalib) &&
       isNumber(imageOffsetX) && isNumber(imageOffsetY) && imageOrigin) {
       /* Use pixel to coordinate scale to scale image. */
       const size = { x: width * imageScale, y: height * imageScale };
