@@ -53,6 +53,13 @@ describe("<FarmwarePage />", () => {
     expect(wrapper.text()).toContain("Take Photo");
   });
 
+  it("renders photos page by default without farmware data", () => {
+    const p = fakeProps();
+    p.farmwares = {};
+    const wrapper = mount(<FarmwarePage {...p} />);
+    expect(wrapper.text()).toContain("Take Photo");
+  });
+
   const TEST_DATA = {
     "Photos": ["Take Photo"],
     "take-photo": ["Take Photo"],
