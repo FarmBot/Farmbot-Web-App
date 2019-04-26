@@ -1,9 +1,9 @@
 import * as React from "react";
-import { ChangePassword } from "../components/index";
+import { ChangePassword } from "../change_password";
 import { mount } from "enzyme";
 import { SpecialStatus } from "farmbot";
 import * as moxios from "moxios";
-import { API } from "../../api/api";
+import { API } from "../../../api/api";
 import { error } from "farmbot-toastr";
 
 describe("<ChangePassword/>", function () {

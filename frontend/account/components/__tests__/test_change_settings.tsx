@@ -1,8 +1,8 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { Settings } from "../components";
-import { SettingsPropTypes } from "../interfaces";
-import { fakeUser } from "../../__test_support__/fake_state/resources";
+import { Settings } from "../settings";
+import { SettingsPropTypes } from "../../interfaces";
+import { fakeUser } from "../../../__test_support__/fake_state/resources";
 
 describe("<Settings/>", function () {
   it("saves user settings", function () {
