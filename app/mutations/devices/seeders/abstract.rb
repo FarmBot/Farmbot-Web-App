@@ -15,6 +15,62 @@ module Devices
       SEQUENCES_UNMOUNT_TOOL = false
       SEQUENCES_WATER_PLANT = false
 
+      # DO NOT ALPHABETIZE. ORDER MATTERS! - RC
+      COMMAND_ORDER = [
+        # PLANTS =================================
+        :plants,
+
+        # PERIPHERALS ============================
+        :peripherals_lighting,
+        :peripherals_peripheral_4,
+        :peripherals_peripheral_5,
+        :peripherals_vacuum,
+        :peripherals_water,
+
+        # PIN BINDINGS ===========================
+        :pin_bindings_button_1,
+        :pin_bindings_button_2,
+
+        # SENSORS ================================
+        :sensors_soil_sensor,
+        :sensors_tool_verification,
+
+        # SETTINGS ===============================
+        :settings_default_map_size_x,
+        :settings_default_map_size_y,
+        :settings_device_name,
+        :settings_enable_encoders,
+        :settings_firmware,
+
+        # TOOL SLOTS =============================
+        :tool_slots_slot_1,
+        :tool_slots_slot_2,
+        :tool_slots_slot_3,
+        :tool_slots_slot_4,
+        :tool_slots_slot_5,
+        :tool_slots_slot_6,
+
+        # TOOLS ==================================
+        :tools_seed_bin,
+        :tools_seed_tray,
+        :tools_seed_trough_1,
+        :tools_seed_trough_2,
+        :tools_seed_trough_3,
+        :tools_seeder,
+        :tools_soil_sensor,
+        :tools_watering_nozzle,
+        :tools_weeder,
+
+        # SEQUENCES ==============================
+        :sequences_mount_tool,
+        :sequences_pick_up_seed,
+        :sequences_plant_seed,
+        :sequences_take_photo_of_plant,
+        :sequences_tool_error,
+        :sequences_unmount_tool,
+        :sequences_water_plant,
+      ]
+
       def initialize(device)
         @device = device
       end
