@@ -21,14 +21,17 @@ module Devices
       WATER = "Water"
 
       # Stub sequences ===========================
+      FIXTURE_PATH = "app/mutations/devices/seeders/fixtures.yml"
+      SEQUENCES = YAML.load(File.read(FIXTURE_PATH))
 
-      MOUNT_TOOL = {}
-
-      PICK_UP_SEED = {
-        kind: "sequences",
-        args: {},
-        body: [],
-      }
+      MOUNT_TOOL = SEQUENCES.fetch(:MOUNT_TOOL)
+      PICK_UP_SEED_EXPRESS = SEQUENCES.fetch(:PICK_UP_SEED_EXPRESS)
+      PICK_UP_SEED_GENESIS = SEQUENCES.fetch(:PICK_UP_SEED_GENESIS)
+      PLANT_SEED = SEQUENCES.fetch(:PLANT_SEED)
+      TAKE_PHOTO_OF_PLANT = SEQUENCES.fetch(:TAKE_PHOTO_OF_PLANT)
+      TOOL_ERROR = SEQUENCES.fetch(:TOOL_ERROR)
+      UNMOUNT_TOOL = SEQUENCES.fetch(:UNMOUNT_TOOL)
+      WATER_PLANT = SEQUENCES.fetch(:WATER_PLANT)
     end
   end
 end
