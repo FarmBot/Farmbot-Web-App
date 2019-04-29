@@ -1,15 +1,9 @@
 import * as React from "react";
 import { IfParams, LHSOptions, operatorOptions } from "./index";
-
 import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import {
-  Col,
-  Row,
-  FBSelect,
-  DropDownItem
-} from "../../../ui/index";
+import { Col, Row, FBSelect, DropDownItem } from "../../../ui";
 import { ALLOWED_OPS } from "farmbot/dist";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
@@ -25,31 +19,25 @@ const label_ops: Record<ALLOWED_OPS, string> = {
   "not": t("is not")
 };
 
+// tslint:disable-next-line:no-any
+const isOp = (x: any): x is ALLOWED_OPS => Object.keys(label_ops).includes(x);
+
+const updateOp = (props: IfParams) => (ddi: DropDownItem) => {
+  const stepCopy = defensiveClone(props.currentStep);
+  const seqCopy = defensiveClone(props.currentSequence).body;
+  const val = ddi.value;
+  seqCopy.body = seqCopy.body || [];
+  if (isString(val) && isOp(val)) { stepCopy.args.op = val; }
+  seqCopy.body[props.index] = stepCopy;
+  props.dispatch(overwrite(props.currentSequence, seqCopy));
+};
+
 export function If_(props: IfParams) {
-  const {
-    dispatch,
-    currentStep,
-    index,
-    resources
-  } = props;
-  const step = props.currentStep;
+  const { currentStep, resources } = props;
   const sequence = props.currentSequence;
   const { op } = currentStep.args;
   const cb = props.shouldDisplay || (() => false);
-  const lhsOptions = LHSOptions(props.resources, cb);
-  function updateField(field: "lhs" | "op") {
-    return (e: DropDownItem) => {
-      const stepCopy = defensiveClone(step);
-      const seqCopy = defensiveClone(sequence).body;
-      const val = e.value;
-      seqCopy.body = seqCopy.body || [];
-      if (isString(val)) {
-        stepCopy.args[field] = val;
-      }
-      seqCopy.body[index] = stepCopy;
-      dispatch(overwrite(sequence, seqCopy));
-    };
-  }
+  const lhsOptions = LHSOptions(resources, cb, !!props.showPins);
 
   return <Row>
     <Col xs={12}>
@@ -58,27 +46,25 @@ export function If_(props: IfParams) {
     <Col xs={4}>
       <label>{t("Variable")}</label>
       <FBSelect
-        key={JSON.stringify(props.currentSequence)}
+        key={JSON.stringify(sequence)}
         list={lhsOptions}
-        placeholder="Left hand side"
         onChange={updateLhs(props)}
         selectedItem={displayLhs({ currentStep, resources, lhsOptions })} />
     </Col>
     <Col xs={4}>
       <label>{t("Operator")}</label>
       <FBSelect
-        key={JSON.stringify(props.currentSequence)}
+        key={JSON.stringify(sequence)}
         list={operatorOptions}
-        placeholder="Operation"
-        onChange={updateField("op")}
-        selectedItem={{ label: label_ops[op as ALLOWED_OPS] || op, value: op }} />
+        onChange={updateOp(props)}
+        selectedItem={{ label: label_ops[op] || op, value: op }} />
     </Col>
     <Col xs={4} hidden={op === IS_UNDEFINED}>
       <label>{t("Value")}</label>
-      <StepInputBox dispatch={dispatch}
+      <StepInputBox dispatch={props.dispatch}
         step={currentStep}
         sequence={sequence}
-        index={index}
+        index={props.index}
         field="rhs" />
     </Col>
   </Row>;

@@ -261,7 +261,7 @@ export function urlFor(tag: ResourceName) {
     PlantTemplate: API.current.plantTemplatePath,
     FarmwareEnv: API.current.farmwareEnvPath,
     FarmwareInstallation: API.current.farmwareInstallationPath,
-    Enigma: API.current.enigmaPath,
+    Alert: API.current.alertPath,
   };
   const url = OPTIONS[tag];
   if (url) {

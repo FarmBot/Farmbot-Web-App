@@ -33,7 +33,9 @@ describe Api::UsersController do
 
   it "deletes a user account" do
     sign_in user
-    delete :destroy, params: { password: user.password }, format: :json
+    run_jobs_now do
+      delete :destroy, params: { password: user.password }, format: :json
+    end
     expect(response.status).to eq(200)
     expect(User.where(id: user.id).count).to eq(0)
   end
@@ -130,8 +132,12 @@ describe Api::UsersController do
         expect(user.name).to eq("Frank")
         expect(user.email).to eq(email)
         expect(user.valid_password?("Password123")).to be_truthy
-        expect(user.device.enigmas.count).to eq(1)
-        expect(user.device.enigmas.first.problem_tag).to eq(Enigma::SEED_DATA)
+        expect(user.device.alerts.count).to eq(4)
+        tags = user.device.alerts.pluck(:problem_tag)
+        expect(tags).to include(Alert::SEED_DATA)
+        expect(tags).to include(Alert::TOUR)
+        expect(tags).to include(Alert::USER)
+        expect(tags).to include(Alert::DOCUMENTATION)
       end
     end
   end

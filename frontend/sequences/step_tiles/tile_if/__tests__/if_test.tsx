@@ -1,10 +1,14 @@
+jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
+
 import * as React from "react";
 import { If_ } from "../if";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../../__test_support__/fake_state/resources";
 import { If } from "farmbot/dist";
 import { IfParams } from "../index";
 import { emptyState } from "../../../../resources/reducer";
+import { FBSelect } from "../../../../ui";
+import { overwrite } from "../../../../api/crud";
 
 describe("<If_/>", () => {
   function fakeProps(): IfParams {
@@ -26,6 +30,7 @@ describe("<If_/>", () => {
       resources: emptyState().index,
       shouldDisplay: jest.fn(),
       confirmStepDeletion: false,
+      showPins: true,
     };
   }
 
@@ -35,5 +40,16 @@ describe("<If_/>", () => {
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find("button").length).toEqual(2);
     expect(wrapper.find("input").length).toEqual(1);
+  });
+
+  it("updates op", () => {
+    const wrapper = shallow(<If_ {...fakeProps()} />);
+    wrapper.find(FBSelect).last().simulate("change", {
+      label: "is not", value: "not"
+    });
+    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+      expect.objectContaining({
+        body: [{ kind: "_if", args: expect.objectContaining({ op: "not" }) }]
+      }));
   });
 });

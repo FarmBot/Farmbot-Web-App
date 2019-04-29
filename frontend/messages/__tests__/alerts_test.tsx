@@ -9,28 +9,28 @@ const FIRMWARE_MISSING_ALERT: Alert = {
   created_at: 123,
   problem_tag: "farmbot_os.firmware.missing",
   priority: 100,
-  uuid: "uuid",
+  slug: "slug",
 };
 
 const SEED_DATA_MISSING_ALERT: Alert = {
   created_at: 123,
   problem_tag: "api.seed_data.missing",
   priority: 300,
-  uuid: "uuid",
+  slug: "slug",
 };
 
 const UNKNOWN_ALERT: Alert = {
   created_at: 123,
   problem_tag: "farmbot_os.firmware.alert",
   priority: 200,
-  uuid: "uuid",
+  slug: "slug",
 };
 
 const UNKNOWN_ALERT_2: Alert = {
   created_at: 456,
   problem_tag: "farmbot_os.firmware.alert",
   priority: 100,
-  uuid: "uuid",
+  slug: "slug",
 };
 
 describe("<Alerts />", () => {
@@ -53,7 +53,7 @@ describe("<Alerts />", () => {
     p.alerts = [FIRMWARE_MISSING_ALERT, SEED_DATA_MISSING_ALERT];
     const wrapper = mount(<Alerts {...p} />);
     expect(wrapper.text()).toContain("2");
-    expect(wrapper.text()).toContain("Your device has no firmware installed");
+    expect(wrapper.text()).toContain("Your device has no firmware");
     expect(wrapper.text()).toContain("Choose your FarmBot");
   });
 
@@ -76,20 +76,20 @@ describe("<FirmwareAlerts />", () => {
 
   it("renders no alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.enigmas = undefined;
+    p.bot.hardware.alerts = undefined;
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.html()).toEqual(`<div class="firmware-alerts"></div>`);
   });
 
   it("renders alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.enigmas = {
-      "uuid1": FIRMWARE_MISSING_ALERT,
-      "uuid2": UNKNOWN_ALERT
+    p.bot.hardware.alerts = {
+      "slug1": FIRMWARE_MISSING_ALERT,
+      "slug2": UNKNOWN_ALERT
     };
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.text()).toContain("1");
-    expect(wrapper.text()).toContain("Your device has no firmware installed");
+    expect(wrapper.text()).toContain("Your device has no firmware");
   });
 });
 

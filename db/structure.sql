@@ -43,6 +43,40 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: alerts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.alerts (
+    id bigint NOT NULL,
+    problem_tag character varying NOT NULL,
+    priority integer DEFAULT 100 NOT NULL,
+    slug character varying NOT NULL,
+    device_id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: alerts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.alerts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: alerts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.alerts_id_seq OWNED BY public.alerts.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -270,40 +304,6 @@ CREATE SEQUENCE public.edge_nodes_id_seq
 --
 
 ALTER SEQUENCE public.edge_nodes_id_seq OWNED BY public.edge_nodes.id;
-
-
---
--- Name: enigmas; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.enigmas (
-    id bigint NOT NULL,
-    problem_tag character varying NOT NULL,
-    priority integer DEFAULT 100 NOT NULL,
-    uuid character varying NOT NULL,
-    device_id bigint NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: enigmas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.enigmas_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: enigmas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.enigmas_id_seq OWNED BY public.enigmas.id;
 
 
 --
@@ -616,6 +616,42 @@ CREATE SEQUENCE public.fragments_id_seq
 --
 
 ALTER SEQUENCE public.fragments_id_seq OWNED BY public.fragments.id;
+
+
+--
+-- Name: global_bulletins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.global_bulletins (
+    id bigint NOT NULL,
+    href character varying,
+    href_label character varying,
+    slug character varying,
+    title character varying,
+    type character varying,
+    content text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: global_bulletins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.global_bulletins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: global_bulletins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.global_bulletins_id_seq OWNED BY public.global_bulletins.id;
 
 
 --
@@ -1511,7 +1547,8 @@ CREATE TABLE public.web_app_configs (
     show_dev_menu boolean DEFAULT false,
     internal_use text,
     time_format_24_hour boolean DEFAULT false,
-    show_pins boolean DEFAULT false
+    show_pins boolean DEFAULT false,
+    disable_emergency_unlock_confirmation boolean DEFAULT false
 );
 
 
@@ -1568,6 +1605,13 @@ ALTER SEQUENCE public.webcam_feeds_id_seq OWNED BY public.webcam_feeds.id;
 
 
 --
+-- Name: alerts id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alerts ALTER COLUMN id SET DEFAULT nextval('public.alerts_id_seq'::regclass);
+
+
+--
 -- Name: arg_names id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1610,13 +1654,6 @@ ALTER TABLE ONLY public.edge_nodes ALTER COLUMN id SET DEFAULT nextval('public.e
 
 
 --
--- Name: enigmas id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.enigmas ALTER COLUMN id SET DEFAULT nextval('public.enigmas_id_seq'::regclass);
-
-
---
 -- Name: farm_events id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1656,6 +1693,13 @@ ALTER TABLE ONLY public.firmware_configs ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.fragments ALTER COLUMN id SET DEFAULT nextval('public.fragments_id_seq'::regclass);
+
+
+--
+-- Name: global_bulletins id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.global_bulletins ALTER COLUMN id SET DEFAULT nextval('public.global_bulletins_id_seq'::regclass);
 
 
 --
@@ -1827,6 +1871,14 @@ ALTER TABLE ONLY public.webcam_feeds ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: alerts alerts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT alerts_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1883,14 +1935,6 @@ ALTER TABLE ONLY public.edge_nodes
 
 
 --
--- Name: enigmas enigmas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.enigmas
-    ADD CONSTRAINT enigmas_pkey PRIMARY KEY (id);
-
-
---
 -- Name: farm_events farm_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1936,6 +1980,14 @@ ALTER TABLE ONLY public.firmware_configs
 
 ALTER TABLE ONLY public.fragments
     ADD CONSTRAINT fragments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: global_bulletins global_bulletins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.global_bulletins
+    ADD CONSTRAINT global_bulletins_pkey PRIMARY KEY (id);
 
 
 --
@@ -2146,6 +2198,13 @@ CREATE INDEX delayed_jobs_priority ON public.delayed_jobs USING btree (priority,
 
 
 --
+-- Name: index_alerts_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_alerts_on_device_id ON public.alerts USING btree (device_id);
+
+
+--
 -- Name: index_arg_sets_on_fragment_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2199,13 +2258,6 @@ CREATE INDEX index_edge_nodes_on_primary_node_id ON public.edge_nodes USING btre
 --
 
 CREATE INDEX index_edge_nodes_on_sequence_id ON public.edge_nodes USING btree (sequence_id);
-
-
---
--- Name: index_enigmas_on_device_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_enigmas_on_device_id ON public.enigmas USING btree (device_id);
 
 
 --
@@ -2402,6 +2454,13 @@ CREATE INDEX index_plant_templates_on_saved_garden_id ON public.plant_templates 
 --
 
 CREATE INDEX index_points_on_device_id ON public.points USING btree (device_id);
+
+
+--
+-- Name: index_points_on_device_id_and_tool_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_points_on_device_id_and_tool_id ON public.points USING btree (device_id, tool_id);
 
 
 --
@@ -2665,14 +2724,6 @@ ALTER TABLE ONLY public.sensor_readings
 
 
 --
--- Name: enigmas fk_rails_10ebd17bff; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.enigmas
-    ADD CONSTRAINT fk_rails_10ebd17bff FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: pin_bindings fk_rails_1f1c3b6979; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2710,6 +2761,14 @@ ALTER TABLE ONLY public.primary_nodes
 
 ALTER TABLE ONLY public.farmware_envs
     ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: alerts fk_rails_c0132c78be; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT fk_rails_c0132c78be FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2893,6 +2952,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190411152319'),
 ('20190411171401'),
 ('20190411222900'),
-('20190416035406');
+('20190416035406'),
+('20190417165636'),
+('20190419001321'),
+('20190419052844'),
+('20190419174728'),
+('20190419174811');
 
 

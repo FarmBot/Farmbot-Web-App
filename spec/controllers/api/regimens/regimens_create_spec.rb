@@ -84,7 +84,6 @@ describe Api::RegimensController do
     end
 
     it "creates a regimen that uses unbound variables" do
-      pending("TODO: Help Gabe with this.")
       sign_in user
       s       = FakeSequence.with_parameters
       payload = { device: s.device,
@@ -92,11 +91,11 @@ describe Api::RegimensController do
                   color:  "red",
                   body: [
                     {
-                      kind: "parameter_application",
+                      kind: "parameter_declaration",
                       args: {
                         label: "parent",
-                        data_value: {
-                          kind: "identifier", args: { label: "parent" }
+                        default_value: {
+                          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
                         }
                       }
                     }
@@ -106,9 +105,9 @@ describe Api::RegimensController do
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
-      expect(declr.fetch(:kind)).to eq("parameter_application")
-      path = [:args, :data_value, :args, :label]
-      expect(declr.dig(*path)).to eq("parent")
+      expect(declr.fetch(:kind)).to eq("parameter_declaration")
+      path = [:args, :default_value, :args, :x]
+      expect(declr.dig(*path)).to eq(0)
     end
 
     it "handles CeleryScript::TypeCheckError" do

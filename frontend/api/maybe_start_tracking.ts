@@ -14,6 +14,7 @@ const BLACKLIST: ResourceName[] = [
   "User",
   "WebAppConfig",
   "WebcamFeed",
+  "Alert",
 ];
 
 export function maybeStartTracking(uuid: string) {

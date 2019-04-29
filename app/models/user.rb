@@ -49,6 +49,6 @@ class User < ApplicationRecord
 
     Transport
       .current
-      .raw_amqp_send("X", Api::RmqUtilsController::PUBLIC_BROADCAST)
+      .raw_amqp_send({}.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
   end
 end

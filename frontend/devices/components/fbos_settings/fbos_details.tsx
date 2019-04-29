@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Saucer } from "../../../ui/index";
-
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
 import { last, isNumber } from "lodash";
@@ -37,7 +36,7 @@ export function ChipTemperatureDisplay({ chip, temperature }: {
       <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
       {temperature ? <span>{temperature}&deg;C</span> : t("unknown")}
     </p>
-    {<Saucer color={colorFromTemp(temperature)} className={"small-inline"} />}
+    <Saucer color={colorFromTemp(temperature)} className={"small-inline"} />
   </div>;
 }
 
@@ -64,6 +63,57 @@ export function WiFiStrengthDisplay({ wifiStrength }: {
       </div>}
   </div>;
 }
+
+/** Available throttle info. */
+export enum ThrottleType {
+  UnderVoltage = "UnderVoltage",
+  ArmFrequencyCapped = "ArmFrequencyCapped",
+  Throttled = "Throttled",
+  SoftTempLimit = "SoftTempLimit",
+}
+
+/** Bit positions for throttle flags. */
+const THROTTLE_BIT_LOOKUP:
+  Record<ThrottleType, Record<"active" | "occurred", number>> = {
+  [ThrottleType.UnderVoltage]: { active: 0, occurred: 16 },
+  [ThrottleType.ArmFrequencyCapped]: { active: 1, occurred: 17 },
+  [ThrottleType.Throttled]: { active: 2, occurred: 18 },
+  [ThrottleType.SoftTempLimit]: { active: 3, occurred: 19 },
+};
+
+/** Return a color based on throttle flag states. */
+export const colorFromThrottle =
+  (throttled: string, throttleType: ThrottleType) => {
+    const throttleCode = parseInt(throttled, 16);
+    const bit = THROTTLE_BIT_LOOKUP[throttleType];
+    // tslint:disable-next-line:no-bitwise
+    const active = throttleCode & (1 << bit.active);
+    // tslint:disable-next-line:no-bitwise
+    const occurred = throttleCode & (1 << bit.occurred);
+    if (active) {
+      return "red";
+    } else if (occurred) {
+      return "yellow";
+    } else {
+      return "green";
+    }
+  };
+
+interface VoltageDisplayProps {
+  chip?: string;
+  throttled: string | undefined;
+}
+
+/** RPI throttle state display row: label, indicator. */
+export const VoltageDisplay = ({ chip, throttled }: VoltageDisplayProps) =>
+  throttled
+    ? <div className="voltage-display">
+      <p>
+        <b>{chip && chip.toUpperCase()} {t("Voltage")}: </b>
+      </p>
+      <Saucer className={"small-inline"}
+        color={colorFromThrottle(throttled, ThrottleType.UnderVoltage)} />
+    </div> : <div className="voltage-display" />;
 
 /** Get the first 8 characters of a commit. */
 const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
@@ -147,7 +197,7 @@ const BetaReleaseOptInButton =
 export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
-    soc_temp, wifi_level, uptime, memory_usage, disk_usage
+    soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled
   } = props.botInfoSettings;
 
   return <div>
@@ -164,6 +214,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay wifiStrength={wifi_level} />
+    <VoltageDisplay chip={target} throttled={throttled} />
     <BetaReleaseOptInButton
       dispatch={props.dispatch}
       shouldDisplay={props.shouldDisplay}

@@ -7,9 +7,9 @@ import {
   WidgetHeader,
   Row,
 } from "../ui/index";
-
 import { BlurablePassword } from "../ui/blurable_password";
 import { t } from "../i18next_wrapper";
+import { updatePageInfo } from "../util";
 
 export interface LoginProps {
   /** Attributes */
@@ -41,6 +41,7 @@ export class Login extends React.Component<LoginProps, {}> {
       onLoginPasswordChange,
       onToggleForgotPassword,
     } = this.props;
+    updatePageInfo("login");
     return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
       <Widget>
         <WidgetHeader title={"Login"} />
@@ -65,6 +66,7 @@ export class Login extends React.Component<LoginProps, {}> {
               type="email"
               value={email || ""}
               name="login_email"
+              autoFocus={true}
               onCommit={onEmailChange} />
             <label>
               {t("Password")}

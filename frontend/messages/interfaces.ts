@@ -1,4 +1,4 @@
-import { FirmwareHardware, Enigma } from "farmbot";
+import { FirmwareHardware, Alert as Enigma } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { BotState } from "../devices/interfaces";
 import { UUID } from "../resources/interfaces";
@@ -58,6 +58,7 @@ export interface AlertCardTemplateProps {
   children?: React.ReactNode;
   findApiAlertById?(id: number): UUID;
   dispatch?: Function;
+  iconName?: string;
 }
 
 export interface DismissAlertProps {
@@ -80,4 +81,18 @@ export interface SeedDataMissingState {
 
 export interface TourNotTakenProps extends CommonAlertCardProps {
   dispatch: Function;
+}
+
+export interface Bulletin {
+  content: string;
+  href: string | undefined;
+  href_label: string | undefined;
+  type: string;
+  slug: string;
+  title: string | undefined;
+}
+
+export interface BulletinAlertState {
+  bulletin: Bulletin | undefined;
+  no_content: boolean;
 }

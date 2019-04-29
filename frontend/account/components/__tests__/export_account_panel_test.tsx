@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ExportAccountPanel } from "../components/export_account_panel";
+import { ExportAccountPanel } from "../export_account_panel";
 import { mount } from "enzyme";
 
 describe("<ExportAccountPanel/>", () => {

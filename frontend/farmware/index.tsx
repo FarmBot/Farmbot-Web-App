@@ -24,6 +24,7 @@ import { getDevice } from "../device";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
 import { BooleanSetting } from "../session_keys";
+import { Dictionary } from "farmbot";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -75,6 +76,18 @@ const getFarmwareByName =
     }
   };
 
+const FARMWARE_NAMES_1ST_PARTY: Dictionary<string> = {
+  "take-photo": "Photos",
+  "camera-calibration": "Camera Calibration",
+  "plant-detection": "Weed Detector",
+};
+
+export const getFormattedFarmwareName = (farmwareName: string) =>
+  FARMWARE_NAMES_1ST_PARTY[farmwareName] || farmwareName;
+
+export const farmwareUrlFriendly = (farmwareName: string) =>
+  urlFriendly(farmwareName).replace(/-/g, "_");
+
 /** Execute a Farmware. */
 const run = (farmwareName: string) => () => {
   getDevice().execScript(farmwareName)
@@ -116,7 +129,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       type: Actions.SELECT_FARMWARE,
       payload: "Photos"
     });
-    if (!this.current && Object.values(this.props.farmwares).length > 0) {
+    if (Object.values(this.props.farmwares).length > 0) {
       const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
       setActiveFarmwareByName(farmwareNames);
     } else {
@@ -127,7 +140,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
 
   /** Load Farmware input panel contents for 1st & 3rd party Farmware. */
   getPanelByFarmware(farmwareName: string) {
-    switch (urlFriendly(farmwareName).replace("-", "_")) {
+    switch (farmwareUrlFriendly(farmwareName)) {
       case "take_photo":
       case "photos":
         return <Photos
@@ -240,7 +253,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         </LeftPanel>
         <CenterPanel
           className={`farmware-input-panel ${activeClasses}`}
-          title={this.current || t("Photos")}
+          title={getFormattedFarmwareName(this.current || "Photos")}
           helpText={getToolTipByFarmware(this.props.farmwares, this.current)
             || ToolTips.PHOTOS}
           docPage={getDocLinkByFarmware(this.current)}>
