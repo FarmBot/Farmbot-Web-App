@@ -176,6 +176,17 @@ fieldset {
   }
 }
 
+.voltage-display {
+  display: flex;
+  .saucer {
+    height: 1rem;
+    width: 1rem;
+    cursor: default;
+    margin-left: 0.5rem;
+    margin-top: 0.2rem;
+  }
+}
+
 .wifi-strength-display {
   position: relative;
   .percent-bar {
@@ -793,7 +804,7 @@ ul {
       color: $panel_yellow;
     }
     .empty-state-graphic {
-      filter: sepia() contrast(1.2) saturate(1.2);
+      filter: sepia(1) contrast(1.2) saturate(1.2);
     }
   }
 }
@@ -1212,6 +1223,20 @@ ul {
     }
   }
   .problem-alert-content {
+    .markdown {
+      p {
+        display: block;
+        color: $dark_gray;
+        text-overflow: inherit;
+        overflow: inherit;
+        width: inherit;
+        white-space: inherit;
+      }
+      ul {
+        list-style-type: disc !important;
+        padding-inline-start: 40px;
+      }
+    }
     p {
       margin-bottom: 0.75rem !important;
       font-size: 1.4rem;

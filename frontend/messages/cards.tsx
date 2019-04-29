@@ -12,7 +12,7 @@ import { formatLogTime } from "../logs";
 import {
   FlashFirmwareBtn
 } from "../devices/components/fbos_settings/firmware_hardware_status";
-import { DropDownItem, Row, Col, FBSelect, docLink } from "../ui";
+import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
 import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
@@ -51,18 +51,21 @@ const dismissAlert = (props: DismissAlertProps) => () =>
   (props.id && props.findApiAlertById && props.dispatch) &&
   props.dispatch(destroy(props.findApiAlertById(props.id)));
 
+const timeOk = (timestamp: number) => timestamp > 1550000000;
+
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const { alert, findApiAlertById, dispatch } = props;
   return <div className={`problem-alert ${props.className}`}>
     <div className="problem-alert-title">
       <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
-      <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>
+      {timeOk(alert.created_at) &&
+        <p>{formatLogTime(alert.created_at, props.timeSettings)}</p>}
       {alert.id && <i className="fa fa-times"
         onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
     <div className="problem-alert-content">
-      <p>{t(props.message)}</p>
+      <Markdown>{t(props.message)}</Markdown>
       {props.children}
     </div>
   </div>;
@@ -76,16 +79,19 @@ const ICON_LOOKUP: { [x: string]: string } = {
 
 class BulletinAlert
   extends React.Component<CommonAlertCardProps, BulletinAlertState> {
-  state: BulletinAlertState = { bulletin: undefined };
+  state: BulletinAlertState = { bulletin: undefined, no_content: false };
 
   componentDidMount() {
     fetchBulletinContent(this.props.alert.slug)
-      .then(bulletin => this.setState({ bulletin }));
+      .then(bulletin => bulletin
+        ? this.setState({ bulletin })
+        : this.setState({ no_content: true }));
   }
 
   get bulletinData(): Bulletin {
     return this.state.bulletin || {
-      content: t("Loading..."),
+      content: this.state.no_content ? t("Unable to load content.")
+        : t("Loading..."),
       href: undefined,
       href_label: undefined,
       type: "info",
@@ -100,7 +106,7 @@ class BulletinAlert
       alert={this.props.alert}
       className={"bulletin-alert"}
       title={title || startCase(this.props.alert.slug)}
-      iconName={ICON_LOOKUP[type] || "info"}
+      iconName={ICON_LOOKUP[type] || "info-circle"}
       message={t(content)}
       timeSettings={this.props.timeSettings}
       dispatch={this.props.dispatch}
@@ -265,7 +271,7 @@ const UserNotWelcomed = (props: CommonAlertCardProps) =>
     iconName={"info-circle"}>
     <p>
       {t("You're currently viewing the")} <b>{t("Message Center")}</b>.
-      &nbsp;{t(Content.MESSAGE_CENTER_WELCOME)}
+      {" "}{t(Content.MESSAGE_CENTER_WELCOME)}
     </p>
     <p>
       {t(Content.MESSAGE_DISMISS)}

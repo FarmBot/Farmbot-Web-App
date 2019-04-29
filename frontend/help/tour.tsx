@@ -4,6 +4,8 @@ import { Color } from "../ui";
 import { history } from "../history";
 import { TOUR_STEPS, tourPageNavigation } from "./tours";
 import { t } from "../i18next_wrapper";
+import { Actions } from "../constants";
+import { store } from "../redux/store";
 
 const strings = () => ({
   back: t("Back"),
@@ -44,6 +46,7 @@ export class Tour extends React.Component<TourProps, TourState> {
     if (type === "tour:end") {
       this.setState({ run: false });
       history.push("/app/messages");
+      store.dispatch({ type: Actions.START_TOUR, payload: undefined });
     }
   };
 

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ThenElseParams, seqDropDown, IfBlockDropDownHandler } from "./index";
-
 import { Row, Col, FBSelect } from "../../../ui";
 import { LocalsList } from "../../locals_list/locals_list";
 import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
@@ -21,7 +20,6 @@ export function ThenElse(props: ThenElseParams) {
         key={JSON.stringify(props.currentSequence)}
         allowEmpty={true}
         list={seqDropDown(props.resources)}
-        placeholder="Sequence..."
         onChange={onChange}
         selectedItem={selectedItem()} />
       {!!calledSequenceVariableData &&

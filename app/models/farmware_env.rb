@@ -7,10 +7,10 @@ class FarmwareEnv < ApplicationRecord
   PRIMITIVES_ONLY = "`value` must be a string, number or boolean"
 
   def primitives_only
-    errors.add(:value, PRIMITIVES_ONLY) unless is_primitve
+    errors.add(:value, PRIMITIVES_ONLY) unless is_primitive
   end
 
-  def is_primitve
+  def is_primitive
     [String, Integer, Float, TrueClass, FalseClass].include?(value.class)
   end
 end

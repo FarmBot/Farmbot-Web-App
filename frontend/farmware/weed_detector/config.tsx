@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import {
   BlurableInput,
   Row, Col,
@@ -69,8 +68,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
       <FBSelect
         onChange={this.setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
         selectedItem={this.find("CAMERA_CALIBRATION_calibration_along_axis")}
-        list={CALIBRATION_DROPDOWNS}
-        placeholder="Select..." />
+        list={CALIBRATION_DROPDOWNS} />
       <Row>
         <Col xs={6}>
           <this.NumberBox
@@ -89,8 +87,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
       <FBSelect
         list={ORIGIN_DROPDOWNS}
         onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
-        selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")}
-        placeholder="Select..." />
+        selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")} />
       <Row>
         <Col xs={6}>
           <this.NumberBox

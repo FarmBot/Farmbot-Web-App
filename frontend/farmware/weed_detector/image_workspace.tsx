@@ -156,7 +156,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             className="green fb-button"
             title="Scan this image"
             onClick={this.maybeProcessPhoto}
-            disabled={this.props.botOnline}
+            disabled={!this.props.botOnline}
             hidden={!this.props.images.length} >
             {t("Scan image")}
           </button>

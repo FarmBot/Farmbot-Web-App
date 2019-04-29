@@ -45,8 +45,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
         <label>{t("Sequence")}</label>
         <FBSelect onChange={this.onChange}
           selectedItem={this.selected()}
-          list={this.all()}
-          placeholder="Pick a sequence (or save a new one)" />
+          list={this.all()} />
       </div>
     </Col>
 
