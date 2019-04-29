@@ -1,8 +1,19 @@
 module Devices
   module Seeders
     class Abstract
-      SEED_EMAIL = "seed@farmbot.io"
+      include Constants
       attr_reader :device
+
+      # Class level configuration.
+      # Change these values on child class to tune
+      # default sequences.
+      SEQUENCES_MOUNT_TOOL = false
+      SEQUENCES_PICKUP_SEED = Models::NONE # ODDBALL NON BOOLEAN CONFIG
+      SEQUENCES_PLANT_SEED = false
+      SEQUENCES_TAKE_PHOTO_OF_PLANT = false
+      SEQUENCES_TOOL_ERROR = false
+      SEQUENCES_UNMOUNT_TOOL = false
+      SEQUENCES_WATER_PLANT = false
 
       def initialize(device)
         @device = device
@@ -31,13 +42,43 @@ module Devices
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
-      def sequences_mount_tool; end
-      def sequences_pick_up_seed; end
-      def sequences_plant_seed; end
-      def sequences_take_photo_of_plant; end
-      def sequences_tool_error; end
-      def sequences_unmount_tool; end
-      def sequences_water_plant; end
+
+      def sequences_mount_tool
+        return unless SEQUENCES_MOUNT_TOOL
+        raise "TODO"
+      end
+
+      def sequences_pick_up_seed
+        model = SEQUENCES_PICKUP_SEED
+        return if model == Models::NONE
+        raise "TODO"
+      end
+
+      def sequences_plant_seed
+        return unless SEQUENCES_PLANT_SEED
+        raise "TODO"
+      end
+
+      def sequences_take_photo_of_plant
+        return unless SEQUENCES_TAKE_PHOTO_OF_PLANT
+        raise "TODO"
+      end
+
+      def sequences_tool_error
+        return unless SEQUENCES_TOOL_ERROR
+        raise "TODO"
+      end
+
+      def sequences_unmount_tool
+        return unless SEQUENCES_UNMOUNT_TOOL
+        raise "TODO"
+      end
+
+      def sequences_water_plant
+        return unless SEQUENCES_WATER_PLANT
+        raise "TODO"
+      end
+
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
       def settings_device_name; end
@@ -60,6 +101,19 @@ module Devices
       def tools_weeder; end
 
       private
+
+      def attach_peripheral(pin, label)
+        Peripherals::Create.run!(device: deivce,
+                                 pin: pin,
+                                 label: label)
+      end
+
+      def attach_sensor(pin, label, mode)
+        Peripherals::Create.run!(device: deivce,
+                                 pin: pin,
+                                 label: label,
+                                 mode: mode)
+      end
 
       def seed_device
         @seed_device ||= User.find_by(email: SEED_EMAIL).device
