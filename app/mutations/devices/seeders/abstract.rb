@@ -139,8 +139,7 @@ module Devices
         s = SequenceSeeds::PLANT_SEED.deep_dup
 
         s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-
-        binding.pry
+        Sequences::Create.run!(s, device: device)
       end
 
       def sequences_take_photo_of_plant
@@ -169,6 +168,7 @@ module Devices
         s.dig(:body, 5, :args, :pin_number, :args)[:pin_id] = tool_verification_id
         s.dig(:body, 6, :args, :lhs, :args)[:pin_id] = tool_verification_id
         s.dig(:body, 6, :args, :_else, :args)[:sequence_id] = tool_error_id
+        Sequences::Create.run!(s, device: device)
       end
 
       def sequences_water_plant
@@ -177,6 +177,8 @@ module Devices
 
         s.dig(:body, 1, :args, :pin_number, :args)[:pin_id] = water_id
         s.dig(:body, 3, :args, :pin_number, :args)[:pin_id] = water_id
+
+        Sequences::Create.run!(s, device: device)
       end
 
       def settings_default_map_size_x; end
@@ -301,7 +303,7 @@ module Devices
       end
 
       def water_id
-        @water_id ||= device.peripherals.find_by!(label: "Water")
+        @water_id ||= device.peripherals.find_by!(label: "Water").id
       end
 
       def vacuum_id
