@@ -4,11 +4,13 @@ module Devices
       include Constants
       attr_reader :device
 
+      PRODUCT_LINE = ProductLines::NONE
+
       # Class level configuration.
       # Change these values on child class to tune
       # default sequences.
       SEQUENCES_MOUNT_TOOL = false
-      SEQUENCES_PICKUP_SEED = Models::NONE # ODDBALL NON BOOLEAN CONFIG
+      SEQUENCES_PICKUP_SEED = false
       SEQUENCES_PLANT_SEED = false
       SEQUENCES_TAKE_PHOTO_OF_PLANT = false
       SEQUENCES_TOOL_ERROR = false
@@ -90,52 +92,75 @@ module Devices
       def sensors_tool_verification; end
 
       def sequences_mount_tool
-        return unless SEQUENCES_MOUNT_TOOL
-        raise "TODO"
+        return unless self.class::SEQUENCES_MOUNT_TOOL
+        build_tools_first
       end
 
       def sequences_pick_up_seed
-        model = SEQUENCES_PICKUP_SEED
-        return if model == Models::NONE
-        raise "TODO"
+        return unless self.class::SEQUENCES_PICKUP_SEED
+
+        case self.class::PRODUCT_LINE
+        when ProductLines::GENESIS
+          build_tools_first
+        when ProductLines::EXPRESS
+          raise "TODO"
+        when ProductLines::NONE
+          return
+        end
       end
 
       def sequences_plant_seed
-        return unless SEQUENCES_PLANT_SEED
-        raise "TODO"
+        return unless self.class::SEQUENCES_PLANT_SEED
+        puts "TODO"
       end
 
       def sequences_take_photo_of_plant
-        return unless SEQUENCES_TAKE_PHOTO_OF_PLANT
-        raise "TODO"
+        return unless self.class::SEQUENCES_TAKE_PHOTO_OF_PLANT
+        build_tools_first
       end
 
       def sequences_tool_error
-        return unless SEQUENCES_TOOL_ERROR
-        raise "TODO"
+        return unless self.class::SEQUENCES_TOOL_ERROR
+        build_tools_first
       end
 
       def sequences_unmount_tool
-        return unless SEQUENCES_UNMOUNT_TOOL
-        raise "TODO"
+        return unless self.class::SEQUENCES_UNMOUNT_TOOL
+        build_tools_first
       end
 
       def sequences_water_plant
-        return unless SEQUENCES_WATER_PLANT
-        raise "TODO"
+        return unless self.class::SEQUENCES_WATER_PLANT
+        build_tools_first
       end
 
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
-      def settings_device_name; end
-      def settings_enable_encoders; end
+
+      def settings_device_name
+        device.update_attributes!(name: "FarmBot Genesis")
+      end
+
+      def settings_enable_encoders
+        case self.class::SEQUENCES_PICKUP_SEED
+        when ProductLines::GENESIS
+          build_tools_first
+        when ProductLines::EXPRESS
+          raise "TODO"
+        when ProductLines::NONE
+          return
+        end
+      end
+
       def settings_firmware; end
+
       def tool_slots_slot_1; end
       def tool_slots_slot_2; end
       def tool_slots_slot_3; end
       def tool_slots_slot_4; end
       def tool_slots_slot_5; end
       def tool_slots_slot_6; end
+
       def tools_seed_bin; end
       def tools_seed_tray; end
       def tools_seed_trough_1; end
@@ -147,6 +172,10 @@ module Devices
       def tools_weeder; end
 
       private
+
+      def build_tools_first
+        puts "TODO - need to implement tools first!"
+      end
 
       def attach_peripheral(pin, label)
         Peripherals::Create.run!(device: device,

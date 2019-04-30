@@ -1,7 +1,8 @@
 module Devices
   module Seeders
     class GenesisOneTwo < Abstract
-      SEQUENCES_PICKUP_SEED = Models::GENESIS
+      PRODUCT_LINE = ProductLines::GENESIS
+      SEQUENCES_PICKUP_SEED = true
       SEQUENCES_MOUNT_TOOL = true
       SEQUENCES_PLANT_SEED = true
       SEQUENCES_TAKE_PHOTO_OF_PLANT = true

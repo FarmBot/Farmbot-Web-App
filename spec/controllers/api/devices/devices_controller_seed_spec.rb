@@ -7,6 +7,16 @@ describe Api::DevicesController do
   let(:device) { user.device }
 
   describe "#seed" do
+    periph_names = [
+      Devices::Seeders::Constants::VACUUM,
+      Devices::Seeders::Constants::WATER,
+    ].sort
+
+    sensor_names = [
+      Devices::Seeders::Constants::SOIL_SENSOR,
+      Devices::Seeders::Constants::TOOL_VERIFICATION,
+    ].sort
+
     it "seeds accounts with default data" do
       plant = FactoryBot.create(:plant)
       device = plant.device
@@ -32,12 +42,17 @@ describe Api::DevicesController do
         post :seed, params: { product_line: "genesis_1.2" }
       end
       expect(response.status).to eq(200)
-      # Peripheral assertions, vacuum, water
+
+      # PERIPHERAL assertions, vacuum, water
       peripherals = device.peripherals
       expect(peripherals.count).to eq(2)
-      [Devices::Seeders::Constants::VACUUM, Devices::Seeders::Constants::WATER]
-        .map { |p| expect(peripherals.pluck(:label)).to include(p) }
-
+      periph_names.map { |p| expect(peripherals.pluck(:label)).to include(p) }
+      expect(device.plants.count).to eq(Devices::Seeders::Constants::PLANTS.count)
+      expect(device.sensors.pluck(:pin).sort).to eq([59, 63])
+      expect(device.sensors.pluck(:label).sort).to eq(sensor_names)
+      name = device.reload.name
+      expect(name).to eq(Devices::Seeders::Constants::Names::GENESIS)
+      expect(device.sequences.count).to eq(7)
       binding.pry # Now what?
     end
   end

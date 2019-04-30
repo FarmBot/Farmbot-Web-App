@@ -5,8 +5,15 @@ module Devices
       ANALOG = CeleryScriptSettingsBag::ANALOG
       DIGITAL = CeleryScriptSettingsBag::DIGITAL
 
+      module Names
+        EXPRESS = "FarmBot Express"
+        EXPRESS_XL = "FarmBot Express XL"
+        GENESIS = "FarmBot Genesis"
+        GENESIS_XL = "FarmBot Genesis XL"
+      end
+
       # Fake Enum for product family names
-      module Models
+      module ProductLines
         GENESIS = :genesis
         EXPRESS = :express
         NONE = :none
