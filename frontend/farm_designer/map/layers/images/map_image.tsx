@@ -4,6 +4,7 @@ import { CameraCalibrationData, BotOriginQuadrant } from "../../../interfaces";
 import { MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isNumber, round } from "lodash";
+import { equals } from "../../../../util";
 
 const PRECISION = 3; // Number of decimals for image placement coordinates
 /** Show all images roughly on map when no calibration values are present. */
@@ -33,21 +34,14 @@ const cameraZCheck =
       Math.abs(imageZ - calibrationZ) < 5;
   };
 
-interface ImageSize {
-  width: number;
-  height: number;
-}
-
-/* Get the size of the image at the URL. Allow overriding for tests. */
-const getImageSize = (url: string, size?: ImageSize): ImageSize => {
-  if (url.includes("placehold")) { return { width: 0, height: 0 }; }
-  if (size) { return size; }
+/* Get the size of the image at the URL. */
+const getImageSize = (
+  url: string,
+  onLoad: (img: HTMLImageElement) => () => void
+): void => {
   const imageData = new Image();
   imageData.src = url;
-  return {
-    height: imageData.height || 480,
-    width: imageData.width || 640
-  };
+  imageData.onload = onLoad(imageData);
 };
 
 /* Flip (mirror) image based on orientation of camera. */
@@ -113,11 +107,37 @@ const transform = (props: TransformProps): string => {
     + xySwapTransform;
 };
 
+interface ParsedCalibrationData {
+  noCalib: boolean;
+  imageScale: number | undefined;
+  imageOffsetX: number | undefined;
+  imageOffsetY: number | undefined;
+  imageOrigin: string | undefined;
+}
+
+/** If calibration data exists, parse it, usually to a number.
+ * Otherwise, return values for pre-calibration preview. */
+const parseCalibrationData =
+  (props: CameraCalibrationData): ParsedCalibrationData => {
+    const { scale, offset, origin } = props;
+    const noCalib = PRE_CALIBRATION_PREVIEW && !parse(scale);
+    const imageScale = noCalib ? 0.6 : parse(scale);
+    const imageOffsetX = noCalib ? 0 : parse(offset.x);
+    const imageOffsetY = noCalib ? 0 : parse(offset.y);
+    const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
+    const imageOrigin = noCalib ? "BOTTOM_LEFT" : cleanOrigin;
+    return { noCalib, imageScale, imageOffsetX, imageOffsetY, imageOrigin };
+  };
+
 export interface MapImageProps {
   image: TaggedImage | undefined;
   cameraCalibrationData: CameraCalibrationData;
   mapTransformProps: MapTransformProps;
-  sizeOverride?: ImageSize;
+}
+
+interface MapImageState {
+  width: number;
+  height: number;
 }
 
 /*
@@ -125,43 +145,55 @@ export interface MapImageProps {
  * Assume the image that is provided from the Farmware is rotated correctly.
  * Require camera calibration data to display the image.
  */
-// tslint:disable-next-line:cyclomatic-complexity
-export function MapImage(props: MapImageProps) {
-  const { image, cameraCalibrationData, sizeOverride } = props;
-  const { scale, offset, origin, calibrationZ } = cameraCalibrationData;
-  const noCalib = PRE_CALIBRATION_PREVIEW && !parse(scale);
-  const imageScale = noCalib ? 1.5 : parse(scale);
-  const imageOffsetX = noCalib ? 0 : parse(offset.x);
-  const imageOffsetY = noCalib ? 0 : parse(offset.y);
-  const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
-  const imageOrigin = noCalib ? "BOTTOM_LEFT" : cleanOrigin;
-  const { quadrant, xySwap } = props.mapTransformProps;
+export class MapImage extends React.Component<MapImageProps, MapImageState> {
+  state: MapImageState = { width: 0, height: 0 };
 
-  /* Check if the image exists. */
-  if (image) {
-    const imageUrl = image.body.attachment_url;
-    const { x, y, z } = image.body.meta;
-    const imageAnnotation = image.body.meta.name;
-    const { width, height } = getImageSize(imageUrl, sizeOverride);
-
-    /* Check for all necessary camera calibration and image data. */
-    if (isNumber(x) && isNumber(y) && height > 0 && width > 0 &&
-      isNumber(imageScale) && imageScale > 0 &&
-      cameraZCheck(z, calibrationZ) && isRotated(imageAnnotation, noCalib) &&
-      isNumber(imageOffsetX) && isNumber(imageOffsetY) && imageOrigin) {
-      /* Use pixel to coordinate scale to scale image. */
-      const size = { x: width * imageScale, y: height * imageScale };
-      const o = { // Coordinates of top left corner of image for placement
-        x: x + imageOffsetX - size.x / 2,
-        y: y + imageOffsetY - size.y / 2
-      };
-      const qCoords = transformXY(o.x, o.y, props.mapTransformProps);
-      const transformProps = { quadrant, qCoords, size, imageOrigin, xySwap };
-      return <image
-        xlinkHref={imageUrl}
-        height={size.y} width={size.x} x={0} y={0}
-        transform={transform(transformProps)} />;
-    }
+  shouldComponentUpdate(nextProps: MapImageProps, nextState: MapImageState) {
+    const propsChanged = !equals(this.props, nextProps);
+    const stateChanged = !equals(this.state, nextState);
+    return propsChanged || stateChanged;
   }
-  return <image />;
+
+  imageCallback = (img: HTMLImageElement) => () => {
+    const { width, height } = img;
+    this.setState({ width, height });
+  };
+
+  render() {
+    const { image, cameraCalibrationData } = this.props;
+    const {
+      noCalib, imageScale, imageOffsetX, imageOffsetY, imageOrigin
+    } = parseCalibrationData(cameraCalibrationData);
+    const { calibrationZ } = cameraCalibrationData;
+    const { quadrant, xySwap } = this.props.mapTransformProps;
+
+    /* Check if the image exists. */
+    if (image && !image.body.attachment_url.includes("placehold")) {
+      const imageUrl = image.body.attachment_url;
+      const { x, y, z } = image.body.meta;
+      const imageAnnotation = image.body.meta.name;
+      getImageSize(imageUrl, this.imageCallback);
+      const { width, height } = this.state;
+
+      /* Check for all necessary camera calibration and image data. */
+      if (isNumber(x) && isNumber(y) && height > 0 && width > 0 &&
+        isNumber(imageScale) && imageScale > 0 &&
+        cameraZCheck(z, calibrationZ) && isRotated(imageAnnotation, noCalib) &&
+        isNumber(imageOffsetX) && isNumber(imageOffsetY) && imageOrigin) {
+        /* Use pixel to coordinate scale to scale image. */
+        const size = { x: width * imageScale, y: height * imageScale };
+        const o = { // Coordinates of top left corner of image for placement
+          x: x + imageOffsetX - size.x / 2,
+          y: y + imageOffsetY - size.y / 2
+        };
+        const qCoords = transformXY(o.x, o.y, this.props.mapTransformProps);
+        const transformProps = { quadrant, qCoords, size, imageOrigin, xySwap };
+        return <image
+          xlinkHref={imageUrl}
+          height={size.y} width={size.x} x={0} y={0}
+          transform={transform(transformProps)} />;
+      }
+    }
+    return <image />;
+  }
 }
