@@ -8,13 +8,13 @@ describe Api::DevicesController do
 
   describe "#seed" do
     periph_names = [
-      Devices::Seeders::Constants::VACUUM,
-      Devices::Seeders::Constants::WATER,
+      Devices::Seeders::Constants::ToolNames::VACUUM,
+      Devices::Seeders::Constants::ToolNames::WATER,
     ].sort
 
     sensor_names = [
-      Devices::Seeders::Constants::SOIL_SENSOR,
-      Devices::Seeders::Constants::TOOL_VERIFICATION,
+      Devices::Seeders::Constants::ToolNames::SOIL_SENSOR,
+      Devices::Seeders::Constants::ToolNames::TOOL_VERIFICATION,
     ].sort
 
     it "seeds accounts with default data" do
@@ -59,6 +59,14 @@ describe Api::DevicesController do
         .sort
       expect(configs).to eq([1, 1, 1])
       expect(device.fbos_config.firmware_hardware).to eq(FbosConfig::ARDUINO)
+      slot_names = device.tool_slots.pluck(:name)
+
+      expect(slot_names).to include("Seeder")
+      expect(slot_names).to include("Seed Bin")
+      expect(slot_names).to include("Seed Tray")
+      expect(slot_names).to include("Watering Nozzle")
+      expect(slot_names).to include("Soil Sensor")
+      expect(slot_names).to include("Weeder")
 
       expect(device.sequences.count).to eq(7)
       binding.pry # Now what?

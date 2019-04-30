@@ -12,18 +12,23 @@ module Devices
         GENESIS_XL = "FarmBot Genesis XL"
       end
 
-      # Fake Enum for product family names
       module ProductLines
         GENESIS = :genesis
         EXPRESS = :express
         NONE = :none
       end
 
-      # Some frequently used constants:
-      SOIL_SENSOR = "Soil Sensor"
-      TOOL_VERIFICATION = "Tool Verification"
-      VACUUM = "Vacuum"
-      WATER = "Water"
+      module ToolNames
+        SEED_BIN = "Seed Bin"
+        SEED_TRAY = "Seed Tray"
+        SEEDER = "Seeder"
+        SOIL_SENSOR = "Soil Sensor"
+        TOOL_VERIFICATION = "Tool Verification"
+        VACUUM = "Vacuum"
+        WATER = "Water"
+        WATERING_NOZZLE = "Watering Nozzle"
+        WEEDER = "Weeder"
+      end
 
       # Stub plants ==============================
       PLANT_FIXTURE_PATH =
