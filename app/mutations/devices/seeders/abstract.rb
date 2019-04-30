@@ -95,8 +95,6 @@ module Devices
         return unless self.class::SEQUENCES_MOUNT_TOOL
         s = SequenceSeeds::MOUNT_TOOL.deep_dup
         tool_id = device.tools.find_by!(name: ToolNames::SEEDER).id
-        tool_error_id = device.sequences.find_by!(name: "Tool error").id
-        sensor_id = device.sensors.find_by!(label: "Tool Verification").id
 
         default_value = s.dig(:args, :locals, :body, 0, :args, :default_value)
         if_args = s.dig(:body, 4, :args)
@@ -105,8 +103,8 @@ module Devices
 
         default_value[:args][:tool_id] = tool_id
         else_branch[:sequence_id] = tool_error_id
-        read_pin[:pin_id] = sensor_id
-        if_args[:lhs][:args][:pin_id] = sensor_id
+        read_pin[:pin_id] = tool_verification_id
+        if_args[:lhs][:args][:pin_id] = tool_verification_id
 
         Sequences::Create.run!(s, device: device)
       end
@@ -118,7 +116,6 @@ module Devices
         when ProductLines::GENESIS
           s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
 
-          seeder_id = device.tools.find_by!(name: ToolNames::SEEDER).id
           seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
           vacuum_id = device.peripherals.find_by!(label: ToolNames::VACUUM).id
           mount_tool_id = device.sequences.find_by!(name: "Mount tool").id
@@ -145,7 +142,8 @@ module Devices
 
       def sequences_take_photo_of_plant
         return unless self.class::SEQUENCES_TAKE_PHOTO_OF_PLANT
-        binding.pry
+        s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup
+        Sequences::Create.run!(s, device: device)
       end
 
       def sequences_tool_error
@@ -155,12 +153,24 @@ module Devices
 
       def sequences_unmount_tool
         return unless self.class::SEQUENCES_UNMOUNT_TOOL
-        build_tools_first
+        s = SequenceSeeds::UNMOUNT_TOOL.deep_dup
+
+        s.dig(:args,
+              :locals,
+              :body,
+              0,
+              :args,
+              :default_value,
+              :args)[:tool_id] = seeder_id
+
+        s.dig(:body, 5, :args, :pin_number, :args)[:pin_id] = tool_verification_id
+        s.dig(:body, 6, :args, :lhs, :args)[:pin_id] = tool_verification_id
+        s.dig(:body, 6, :args, :_else, :args)[:sequence_id] = tool_error_id
       end
 
       def sequences_water_plant
         return unless self.class::SEQUENCES_WATER_PLANT
-        build_tools_first
+        binding.pry
       end
 
       def settings_default_map_size_x; end
@@ -270,6 +280,18 @@ module Devices
                             z: z,
                             pullout_direction: pullout_direction,
                             device: device)
+      end
+
+      def seeder_id
+        @seeder_id ||= device.tools.find_by!(name: ToolNames::SEEDER).id
+      end
+
+      def tool_verification_id
+        @tool_verification_id ||= device.sensors.find_by!(label: "Tool Verification").id
+      end
+
+      def tool_error_id
+        @tool_error_id ||= device.sequences.find_by!(name: "Tool error").id
       end
     end
   end
