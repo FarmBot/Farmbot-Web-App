@@ -116,7 +116,21 @@ module Devices
 
         case self.class::PRODUCT_LINE
         when ProductLines::GENESIS
-          build_tools_first
+          s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
+
+          seeder_id = device.tools.find_by!(name: ToolNames::SEEDER).id
+          seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
+          vacuum_id = device.peripherals.find_by!(label: ToolNames::VACUUM).id
+          mount_tool_id = device.sequences.find_by!(name: "Mount tool").id
+
+          s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
+          s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:tool_id] = seeder_id
+          s.dig(:body, 1, :args, :location, :args)[:tool_id] = seed_bin_id
+          s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
+          s.dig(:body, 3, :args, :location, :args)[:tool_id] = seed_bin_id
+          s.dig(:body, 4, :args, :location, :args)[:tool_id] = seed_bin_id
+
+          Sequences::Create.run!(s, device: device)
         when ProductLines::EXPRESS
           raise "TODO"
         when ProductLines::NONE
@@ -131,7 +145,7 @@ module Devices
 
       def sequences_take_photo_of_plant
         return unless self.class::SEQUENCES_TAKE_PHOTO_OF_PLANT
-        build_tools_first
+        binding.pry
       end
 
       def sequences_tool_error
