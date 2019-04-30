@@ -170,7 +170,10 @@ module Devices
 
       def sequences_water_plant
         return unless self.class::SEQUENCES_WATER_PLANT
-        binding.pry
+        s = SequenceSeeds::WATER_PLANT.deep_dup
+
+        s.dig(:body, 1, :args, :pin_number, :args)[:pin_id] = water_id
+        s.dig(:body, 3, :args, :pin_number, :args)[:pin_id] = water_id
       end
 
       def settings_default_map_size_x; end
@@ -292,6 +295,10 @@ module Devices
 
       def tool_error_id
         @tool_error_id ||= device.sequences.find_by!(name: "Tool error").id
+      end
+
+      def water_id
+        @water_id ||= device.peripherals.find_by!(label: "Water")
       end
     end
   end
