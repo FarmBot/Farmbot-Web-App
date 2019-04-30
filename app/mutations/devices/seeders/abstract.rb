@@ -182,17 +182,39 @@ module Devices
         add_tool_slot(ToolNames::WEEDER, 50, 700, -200)
       end
 
-      def tools_seed_bin; end
-      def tools_seed_tray; end
+      def tools_seed_bin
+        add_tool(ToolNames::SEED_BIN)
+      end
+
+      def tools_seed_tray
+        add_tool(ToolNames::SEED_TRAY)
+      end
+
       def tools_seed_trough_1; end
       def tools_seed_trough_2; end
       def tools_seed_trough_3; end
-      def tools_seeder; end
-      def tools_soil_sensor; end
-      def tools_watering_nozzle; end
-      def tools_weeder; end
+
+      def tools_seeder
+        add_tool(ToolNames::SEEDER)
+      end
+
+      def tools_soil_sensor
+        add_tool(ToolNames::SOIL_SENSOR)
+      end
+
+      def tools_watering_nozzle
+        add_tool(ToolNames::WATERING_NOZZLE)
+      end
+
+      def tools_weeder
+        add_tool(ToolNames::WEEDER)
+      end
 
       private
+
+      def add_tool(name)
+        Tools::Create.run!(name: name, device: device)
+      end
 
       def build_tools_first
         puts "TODO - need to implement tools first!"

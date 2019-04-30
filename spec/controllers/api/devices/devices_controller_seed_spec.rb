@@ -65,6 +65,11 @@ describe Api::DevicesController do
         .map { |sym| Devices::Seeders::Constants::ToolNames.const_get sym }
         .map { |x| expect(slot_names).to include(x) }
 
+      tool_names = device.tool_slots.pluck(:name)
+      %i(SEED_BIN SEED_TRAY SEEDER SOIL_SENSOR WATERING_NOZZLE WEEDER)
+        .map { |sym| Devices::Seeders::Constants::ToolNames.const_get sym }
+        .map { |x| expect(tool_names).to include(x) }
+
       expect(device.sequences.count).to eq(7)
       binding.pry # Now what?
     end
