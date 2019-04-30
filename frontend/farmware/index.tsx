@@ -15,7 +15,6 @@ import {
   FarmwareForm, needsFarmwareForm, farmwareHelpText
 } from "./farmware_forms";
 import { urlFriendly } from "../util";
-import { history } from "../history";
 import { ToolTips, Actions } from "../constants";
 import { FarmwareInfo } from "./farmware_info";
 import { Farmwares, FarmwareManifestInfo } from "./interfaces";
@@ -129,13 +128,9 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       type: Actions.SELECT_FARMWARE,
       payload: "Photos"
     });
-    if (Object.values(this.props.farmwares).length > 0) {
-      const farmwareNames = Object.values(this.props.farmwares).map(x => x.name);
-      setActiveFarmwareByName(farmwareNames);
-    } else {
-      // Farmware information not available. Load default Farmware page.
-      history.push("/app/farmware");
-    }
+    const farmwareNames = Object.values(this.props.farmwares).map(x => x.name)
+      .concat(Object.keys(FARMWARE_NAMES_1ST_PARTY));
+    setActiveFarmwareByName(farmwareNames);
   }
 
   /** Load Farmware input panel contents for 1st & 3rd party Farmware. */

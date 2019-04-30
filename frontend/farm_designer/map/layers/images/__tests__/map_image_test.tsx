@@ -45,7 +45,20 @@ describe("<MapImage />", () => {
     const p = fakeProps();
     p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
     const wrapper = mount(<MapImage {...p} />);
+    wrapper.setState({ width: 100, height: 100 });
     expect(wrapper.html()).toContain("image_url");
+  });
+
+  it("gets image size", () => {
+    const p = fakeProps();
+    p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
+    const wrapper = mount<MapImage>(<MapImage {...p} />);
+    expect(wrapper.state()).toEqual({ width: 0, height: 0 });
+    const img = new Image();
+    img.width = 100;
+    img.height = 200;
+    wrapper.instance().imageCallback(img)();
+    expect(wrapper.state()).toEqual({ width: 100, height: 200 });
   });
 
   interface ExpectedData {
@@ -71,6 +84,7 @@ describe("<MapImage />", () => {
       extra?: ExtraTranslationData) => {
       it(`renders image: INPUT_SET_${num}`, () => {
         const wrapper = mount(<MapImage {...inputData[num]} />);
+        wrapper.setState({ width: 480, height: 640 });
         expect(wrapper.find("image").props()).toEqual({
           xlinkHref: "image_url",
           x: 0,
@@ -100,7 +114,6 @@ describe("<MapImage />", () => {
   INPUT_SET_1.mapTransformProps = fakeMapTransformProps();
   INPUT_SET_1.mapTransformProps.gridSize = { x: 5900, y: 2900 },
     INPUT_SET_1.mapTransformProps.quadrant = 3;
-  INPUT_SET_1.sizeOverride = { width: 480, height: 640 };
 
   const INPUT_SET_2 = cloneDeep(INPUT_SET_1);
   INPUT_SET_2.image && (INPUT_SET_2.image.body.meta = {
@@ -125,13 +138,16 @@ describe("<MapImage />", () => {
   const INPUT_SET_7 = cloneDeep(INPUT_SET_6);
   INPUT_SET_7.cameraCalibrationData.origin = "BOTTOM_RIGHT";
 
+  const INPUT_SET_9 = cloneDeep(INPUT_SET_6);
+  INPUT_SET_9.cameraCalibrationData.origin = "TOP_LEFT";
+
   const INPUT_SET_8 = cloneDeep(INPUT_SET_7);
   INPUT_SET_8.mapTransformProps.xySwap = true;
 
   const DATA = [
     INPUT_SET_1,
     INPUT_SET_1, INPUT_SET_2, INPUT_SET_3, INPUT_SET_4, INPUT_SET_5,
-    INPUT_SET_6, INPUT_SET_7, INPUT_SET_8
+    INPUT_SET_6, INPUT_SET_7, INPUT_SET_8, INPUT_SET_9,
   ];
 
   const expectedSize = { width: 385.968, height: 514.624 };
@@ -156,6 +172,9 @@ describe("<MapImage />", () => {
   });
   renderedTest(7, DATA, {
     size: expectedSize, sx: 1, sy: 1, tx: 5436.016, ty: 2259.688
+  });
+  renderedTest(9, DATA, {
+    size: expectedSize, sx: -1, sy: -1, tx: -5821.984, ty: -2774.312
   });
   renderedTest(8, DATA, {
     size: expectedSize, sx: 1, sy: 1, tx: 2388.344, ty: 5307.36
