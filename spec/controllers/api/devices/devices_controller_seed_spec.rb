@@ -8,10 +8,8 @@ describe Api::DevicesController do
 
   describe "#seed" do
     it "seeds accounts with default data" do
-      seed_email = Devices::Seeders::Abstract::SEED_EMAIL
       plant = FactoryBot.create(:plant)
       device = plant.device
-      seed_user = FactoryBot.create(:user, device: device, email: seed_email)
       sign_in user
       device = user.device
       expect(device.plants.count).to eq(0)
@@ -19,7 +17,21 @@ describe Api::DevicesController do
         post :seed, params: { product_line: "none" }
       end
       expect(response.status).to eq(200)
-      expect(device.reload.plants.count).to eq(seed_user.device.plants.count)
+      count = Devices::Seeders::Constants::PLANTS.count
+      expect(device.reload.plants.count).to eq(count)
+    end
+
+    it "seeds accounts with Genesis 1.2 data" do
+      plant = FactoryBot.create(:plant)
+      device = plant.device
+      sign_in user
+      device = user.device
+      expect(device.plants.count).to eq(0)
+      run_jobs_now do
+        post :seed, params: { product_line: "genesis_1.2" }
+      end
+      expect(response.status).to eq(200)
+      binding.pry # Now what?
     end
   end
 end

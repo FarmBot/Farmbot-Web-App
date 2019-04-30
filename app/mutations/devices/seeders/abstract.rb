@@ -76,17 +76,7 @@ module Devices
       end
 
       def plants
-        seed_device
-          .plants
-          .as_json
-          .map do |x|
-          Points::Create.run!(x
-            .slice(*Plant::ATTRS)
-            .merge({
-              device: device,
-              pointer_type: "Plant",
-            }))
-        end
+        PLANTS.map { |x| Points::Create.run!(x, device: device) }
       end
 
       def peripherals_lighting; end
@@ -159,20 +149,16 @@ module Devices
       private
 
       def attach_peripheral(pin, label)
-        Peripherals::Create.run!(device: deivce,
+        Peripherals::Create.run!(device: device,
                                  pin: pin,
                                  label: label)
       end
 
       def attach_sensor(pin, label, mode)
-        Peripherals::Create.run!(device: deivce,
+        Peripherals::Create.run!(device: device,
                                  pin: pin,
                                  label: label,
                                  mode: mode)
-      end
-
-      def seed_device
-        @seed_device ||= User.find_by(email: SEED_EMAIL).device
       end
     end
   end
