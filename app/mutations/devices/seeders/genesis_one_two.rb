@@ -11,19 +11,19 @@ module Devices
       SEQUENCES_WATER_PLANT = true
 
       def peripherals_water
-        attach_peripheral(10, ToolNames::VACUUM)
+        add_peripheral(10, ToolNames::VACUUM)
       end
 
       def peripherals_vacuum
-        attach_peripheral(9, ToolNames::WATER)
+        add_peripheral(9, ToolNames::WATER)
       end
 
       def sensors_soil_sensor
-        attach_sensor(59, ToolNames::SOIL_SENSOR, ANALOG)
+        add_sensor(59, ToolNames::SOIL_SENSOR, ANALOG)
       end
 
       def sensors_tool_verification
-        attach_sensor(63, ToolNames::TOOL_VERIFICATION, DIGITAL)
+        add_sensor(63, ToolNames::TOOL_VERIFICATION, DIGITAL)
       end
 
       def settings_firmware

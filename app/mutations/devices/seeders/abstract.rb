@@ -158,12 +158,29 @@ module Devices
 
       def settings_firmware; end
 
-      def tool_slots_slot_1; end
-      def tool_slots_slot_2; end
-      def tool_slots_slot_3; end
-      def tool_slots_slot_4; end
-      def tool_slots_slot_5; end
-      def tool_slots_slot_6; end
+      def tool_slots_slot_1
+        add_tool_slot(ToolNames::SEEDER, 50, 100, -200)
+      end
+
+      def tool_slots_slot_2
+        add_tool_slot(ToolNames::SEED_BIN, 50, 200, -200)
+      end
+
+      def tool_slots_slot_3
+        add_tool_slot(ToolNames::SEED_TRAY, 50, 300, -200)
+      end
+
+      def tool_slots_slot_4
+        add_tool_slot(ToolNames::WATERING_NOZZLE, 50, 500, -200)
+      end
+
+      def tool_slots_slot_5
+        add_tool_slot(ToolNames::SOIL_SENSOR, 50, 600, -200)
+      end
+
+      def tool_slots_slot_6
+        add_tool_slot(ToolNames::WEEDER, 50, 700, -200)
+      end
 
       def tools_seed_bin; end
       def tools_seed_tray; end
@@ -181,17 +198,27 @@ module Devices
         puts "TODO - need to implement tools first!"
       end
 
-      def attach_peripheral(pin, label)
+      def add_peripheral(pin, label)
         Peripherals::Create.run!(device: device,
                                  pin: pin,
                                  label: label)
       end
 
-      def attach_sensor(pin, label, mode)
+      def add_sensor(pin, label, mode)
         Sensors::Create.run!(device: device,
                              pin: pin,
                              label: label,
                              mode: mode)
+      end
+
+      def add_tool_slot(name, x, y, z, pullout_direction = ToolSlot::POSITIVE_X)
+        Points::Create.run!(pointer_type: "ToolSlot",
+                            name: name,
+                            x: x,
+                            y: y,
+                            z: z,
+                            pullout_direction: pullout_direction,
+                            device: device)
       end
     end
   end

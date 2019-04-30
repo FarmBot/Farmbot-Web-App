@@ -61,12 +61,9 @@ describe Api::DevicesController do
       expect(device.fbos_config.firmware_hardware).to eq(FbosConfig::ARDUINO)
       slot_names = device.tool_slots.pluck(:name)
 
-      expect(slot_names).to include("Seeder")
-      expect(slot_names).to include("Seed Bin")
-      expect(slot_names).to include("Seed Tray")
-      expect(slot_names).to include("Watering Nozzle")
-      expect(slot_names).to include("Soil Sensor")
-      expect(slot_names).to include("Weeder")
+      %i(SEED_BIN SEED_TRAY SEEDER SOIL_SENSOR WATERING_NOZZLE WEEDER)
+        .map { |sym| Devices::Seeders::Constants::ToolNames.const_get sym }
+        .map { |x| expect(slot_names).to include(x) }
 
       expect(device.sequences.count).to eq(7)
       binding.pry # Now what?
