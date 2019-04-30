@@ -117,7 +117,6 @@ module Devices
           s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
 
           seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
-          vacuum_id = device.peripherals.find_by!(label: ToolNames::VACUUM).id
           mount_tool_id = device.sequences.find_by!(name: "Mount tool").id
 
           s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
@@ -137,7 +136,11 @@ module Devices
 
       def sequences_plant_seed
         return unless self.class::SEQUENCES_PLANT_SEED
-        puts "TODO"
+        s = SequenceSeeds::PLANT_SEED.deep_dup
+
+        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
+
+        binding.pry
       end
 
       def sequences_take_photo_of_plant
@@ -299,6 +302,10 @@ module Devices
 
       def water_id
         @water_id ||= device.peripherals.find_by!(label: "Water")
+      end
+
+      def vacuum_id
+        @vacuum_id ||= device.peripherals.find_by!(label: ToolNames::VACUUM).id
       end
     end
   end
