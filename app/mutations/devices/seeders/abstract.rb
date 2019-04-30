@@ -142,11 +142,15 @@ module Devices
       end
 
       def settings_enable_encoders
-        case self.class::SEQUENCES_PICKUP_SEED
+        case self.class::PRODUCT_LINE
         when ProductLines::GENESIS
-          build_tools_first
+          device.firmware_config.update_attributes!(encoder_enabled_x: 1,
+                                                    encoder_enabled_y: 1,
+                                                    encoder_enabled_z: 1)
         when ProductLines::EXPRESS
-          raise "TODO"
+          device.firmware_config.update_attributes!(encoder_enabled_x: 0,
+                                                    encoder_enabled_y: 0,
+                                                    encoder_enabled_z: 0)
         when ProductLines::NONE
           return
         end

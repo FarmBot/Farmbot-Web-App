@@ -52,6 +52,14 @@ describe Api::DevicesController do
       expect(device.sensors.pluck(:label).sort).to eq(sensor_names)
       name = device.reload.name
       expect(name).to eq(Devices::Seeders::Constants::Names::GENESIS)
+      configs = device
+        .firmware_config
+        .slice(:encoder_enabled_x, :encoder_enabled_y, :encoder_enabled_z)
+        .values
+        .sort
+      expect(configs).to eq([1, 1, 1])
+      expect(device.fbos_config.firmware_hardware).to eq(FbosConfig::ARDUINO)
+
       expect(device.sequences.count).to eq(7)
       binding.pry # Now what?
     end

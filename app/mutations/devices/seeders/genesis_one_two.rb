@@ -25,6 +25,12 @@ module Devices
       def sensors_tool_verification
         attach_sensor(63, TOOL_VERIFICATION, DIGITAL)
       end
+
+      def settings_firmware
+        device
+          .fbos_config
+          .update_attributes!(firmware_hardware: FbosConfig::ARDUINO)
+      end
     end
   end
 end
