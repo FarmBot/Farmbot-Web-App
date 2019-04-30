@@ -27,10 +27,17 @@ describe Api::DevicesController do
       sign_in user
       device = user.device
       expect(device.plants.count).to eq(0)
+      expect(device.peripherals.count).to eq(0)
       run_jobs_now do
         post :seed, params: { product_line: "genesis_1.2" }
       end
       expect(response.status).to eq(200)
+      # Peripheral assertions, vacuum, water
+      peripherals = device.peripherals
+      expect(peripherals.count).to eq(2)
+      [Devices::Seeders::Constants::VACUUM, Devices::Seeders::Constants::WATER]
+        .map { |p| expect(peripherals.pluck(:label)).to include(p) }
+
       binding.pry # Now what?
     end
   end

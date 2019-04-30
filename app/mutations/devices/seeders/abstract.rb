@@ -155,10 +155,10 @@ module Devices
       end
 
       def attach_sensor(pin, label, mode)
-        Peripherals::Create.run!(device: device,
-                                 pin: pin,
-                                 label: label,
-                                 mode: mode)
+        Sensors::Create.run!(device: device,
+                             pin: pin,
+                             label: label,
+                             mode: mode)
       end
     end
   end
