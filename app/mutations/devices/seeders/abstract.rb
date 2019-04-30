@@ -127,10 +127,8 @@ module Devices
           s.dig(:body, 4, :args, :location, :args)[:tool_id] = seed_bin_id
 
           Sequences::Create.run!(s, device: device)
-        when ProductLines::EXPRESS
-          raise "TODO"
-        when ProductLines::NONE
-          return
+          # when ProductLines::EXPRESS then raise "TODO"
+        when ProductLines::NONE then return
         end
       end
 
@@ -194,10 +192,10 @@ module Devices
           device.firmware_config.update_attributes!(encoder_enabled_x: 1,
                                                     encoder_enabled_y: 1,
                                                     encoder_enabled_z: 1)
-        when ProductLines::EXPRESS
-          device.firmware_config.update_attributes!(encoder_enabled_x: 0,
-                                                    encoder_enabled_y: 0,
-                                                    encoder_enabled_z: 0)
+          # when ProductLines::EXPRESS
+          #   device.firmware_config.update_attributes!(encoder_enabled_x: 0,
+          #                                             encoder_enabled_y: 0,
+          #                                             encoder_enabled_z: 0)
         when ProductLines::NONE
           return
         end
@@ -261,10 +259,6 @@ module Devices
 
       def add_tool(name)
         Tools::Create.run!(name: name, device: device)
-      end
-
-      def build_tools_first
-        raise "TODO - need to implement tools first!"
       end
 
       def add_peripheral(pin, label)

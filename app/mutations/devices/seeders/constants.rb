@@ -38,17 +38,17 @@ module Devices
       # Stub sequences ===========================
       SEQUENCE_FIXTURE_PATH =
         "app/mutations/devices/seeders/sequence_fixtures.yml"
-      SEQUENCES = YAML.load(File.read(SEQUENCE_FIXTURE_PATH))
 
       module SequenceSeeds
-        MOUNT_TOOL = SEQUENCES.fetch(:MOUNT_TOOL)
-        PICK_UP_SEED_EXPRESS = SEQUENCES.fetch(:PICK_UP_SEED_EXPRESS)
-        PICK_UP_SEED_GENESIS = SEQUENCES.fetch(:PICK_UP_SEED_GENESIS)
-        PLANT_SEED = SEQUENCES.fetch(:PLANT_SEED)
-        TAKE_PHOTO_OF_PLANT = SEQUENCES.fetch(:TAKE_PHOTO_OF_PLANT)
-        TOOL_ERROR = SEQUENCES.fetch(:TOOL_ERROR)
-        UNMOUNT_TOOL = SEQUENCES.fetch(:UNMOUNT_TOOL)
-        WATER_PLANT = SEQUENCES.fetch(:WATER_PLANT)
+        ALL = YAML.load(File.read(SEQUENCE_FIXTURE_PATH))
+        MOUNT_TOOL = ALL.fetch(:MOUNT_TOOL)
+        PICK_UP_SEED_EXPRESS = ALL.fetch(:PICK_UP_SEED_EXPRESS)
+        PICK_UP_SEED_GENESIS = ALL.fetch(:PICK_UP_SEED_GENESIS)
+        PLANT_SEED = ALL.fetch(:PLANT_SEED)
+        TAKE_PHOTO_OF_PLANT = ALL.fetch(:TAKE_PHOTO_OF_PLANT)
+        TOOL_ERROR = ALL.fetch(:TOOL_ERROR)
+        UNMOUNT_TOOL = ALL.fetch(:UNMOUNT_TOOL)
+        WATER_PLANT = ALL.fetch(:WATER_PLANT)
       end
     end
   end

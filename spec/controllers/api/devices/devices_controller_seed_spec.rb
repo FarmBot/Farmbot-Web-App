@@ -71,7 +71,18 @@ describe Api::DevicesController do
         .map { |x| expect(tool_names).to include(x) }
 
       expect(device.sequences.count).to eq(7)
-      binding.pry # Now what?
+      sequence_names = device.sequences.pluck(:name)
+      expect(sequence_names).not_to include("Pick up seed (Express)")
+
+      [
+        "Mount tool",
+        "Pick up seed (Genesis)",
+        "Plant seed",
+        "Take photo of plant",
+        "Tool error",
+        "Unmount tool",
+        "Water plant",
+      ].map { |x| expect(sequence_names).to include(x) }
     end
   end
 end
