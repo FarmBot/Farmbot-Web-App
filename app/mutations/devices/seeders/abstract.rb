@@ -64,11 +64,11 @@ module Devices
         :tools_weeder,
 
         # SEQUENCES ==============================
+        :sequences_tool_error,
         :sequences_mount_tool,
         :sequences_pick_up_seed,
         :sequences_plant_seed,
         :sequences_take_photo_of_plant,
-        :sequences_tool_error,
         :sequences_unmount_tool,
         :sequences_water_plant,
       ]
@@ -93,7 +93,22 @@ module Devices
 
       def sequences_mount_tool
         return unless self.class::SEQUENCES_MOUNT_TOOL
-        build_tools_first
+        s = SequenceSeeds::MOUNT_TOOL.deep_dup
+        tool_id = device.tools.find_by!(name: ToolNames::SEEDER).id
+        tool_error_id = device.sequences.find_by!(name: "Tool error").id
+        sensor_id = device.sensors.find_by!(label: "Tool Verification").id
+
+        default_value = s.dig(:args, :locals, :body, 0, :args, :default_value)
+        if_args = s.dig(:body, 4, :args)
+        else_branch = if_args.dig(:_else, :args)
+        read_pin = s.dig(:body, 3, :args, :pin_number, :args)
+
+        default_value[:args][:tool_id] = tool_id
+        else_branch[:sequence_id] = tool_error_id
+        read_pin[:pin_id] = sensor_id
+        if_args[:lhs][:args][:pin_id] = sensor_id
+
+        Sequences::Create.run!(s, device: device)
       end
 
       def sequences_pick_up_seed
@@ -121,7 +136,7 @@ module Devices
 
       def sequences_tool_error
         return unless self.class::SEQUENCES_TOOL_ERROR
-        build_tools_first
+        Sequences::Create.run!(SequenceSeeds::TOOL_ERROR, device: device)
       end
 
       def sequences_unmount_tool
@@ -217,7 +232,7 @@ module Devices
       end
 
       def build_tools_first
-        puts "TODO - need to implement tools first!"
+        raise "TODO - need to implement tools first!"
       end
 
       def add_peripheral(pin, label)
