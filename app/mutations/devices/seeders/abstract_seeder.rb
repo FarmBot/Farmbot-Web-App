@@ -23,11 +23,11 @@ module Devices
         :plants,
 
         # PERIPHERALS ============================
+        :peripherals_vacuum,
+        :peripherals_water,
         :peripherals_lighting,
         :peripherals_peripheral_4,
         :peripherals_peripheral_5,
-        :peripherals_vacuum,
-        :peripherals_water,
 
         # PIN BINDINGS ===========================
         :pin_bindings_button_1,
@@ -81,11 +81,26 @@ module Devices
         PLANTS.map { |x| Points::Create.run!(x, device: device) }
       end
 
-      def peripherals_lighting; end
-      def peripherals_peripheral_4; end
-      def peripherals_peripheral_5; end
-      def peripherals_vacuum; end
-      def peripherals_water; end
+      def peripherals_lighting
+        add_peripheral(7, ToolNames::LIGHTING)
+      end
+
+      def peripherals_peripheral_4
+        add_peripheral(10, "Peripheral 4")
+      end
+
+      def peripherals_peripheral_5
+        add_peripheral(12, "Peripheral 5")
+      end
+
+      def peripherals_vacuum
+        add_peripheral(9, ToolNames::VACUUM)
+      end
+
+      def peripherals_water
+        add_peripheral(8, ToolNames::WATER)
+      end
+
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
