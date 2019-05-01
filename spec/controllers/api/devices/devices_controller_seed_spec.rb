@@ -83,6 +83,9 @@ describe Api::DevicesController do
         "Unmount tool",
         "Water plant",
       ].map { |x| expect(sequence_names).to include(x) }
+      { map_size_x: 3000, map_size_y: 1500 }.map do |(k, v)|
+        expect(device.web_app_config[k]).to eq(v)
+      end
     end
   end
 end
