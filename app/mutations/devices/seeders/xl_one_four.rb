@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class XlOneFour < AbstractSeeder
+    class XlOneFour < AbstractGenesis
     end
   end
 end

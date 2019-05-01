@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class GenesisOneFour < AbstractSeeder
+    class GenesisOneFour < AbstractGenesis
     end
   end
 end

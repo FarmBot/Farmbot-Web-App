@@ -234,6 +234,13 @@ module Devices
         Tools::Create.run!(name: name, device: device)
       end
 
+      def add_pin_binding(pin, label, action)
+        PinBindings::Create.run!(pin_num: pin,
+                                 label: label,
+                                 special_action: action,
+                                 device: device)
+      end
+
       def add_peripheral(pin, label)
         Peripherals::Create.run!(device: device,
                                  pin: pin,

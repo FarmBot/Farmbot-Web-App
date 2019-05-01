@@ -1,13 +1,8 @@
 module Devices
   module Seeders
     class GenesisOneThree < AbstractGenesis
-      def peripherals_vacuum
-        add_peripheral(9, ToolNames::VACUUM)
-      end
-
-      def peripherals_water
-        add_peripheral(8, ToolNames::WATER)
-      end
+      def pin_bindings_button_1; end
+      def pin_bindings_button_2; end
     end
   end
 end

@@ -10,6 +10,14 @@ module Devices
       SEQUENCES_UNMOUNT_TOOL = true
       SEQUENCES_WATER_PLANT = true
 
+      def peripherals_vacuum
+        add_peripheral(9, ToolNames::VACUUM)
+      end
+
+      def peripherals_water
+        add_peripheral(8, ToolNames::WATER)
+      end
+
       def sensors_soil_sensor
         add_sensor(59, ToolNames::SOIL_SENSOR, ANALOG)
       end
@@ -127,6 +135,14 @@ module Devices
 
       def settings_default_map_size_y
         device.web_app_config.update_attributes!(map_size_y: 1500)
+      end
+
+      def pin_bindings_button_1
+        add_pin_binding 1, "Emergency Lock", :emergency_lock
+      end
+
+      def pin_bindings_button_2
+        add_pin_binding 2, "Unlock", :emergency_unlock
       end
     end
   end

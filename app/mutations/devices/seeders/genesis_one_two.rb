@@ -18,6 +18,8 @@ module Devices
       def peripherals_lighting; end
       def peripherals_peripheral_4; end
       def peripherals_peripheral_5; end
+      def pin_bindings_button_1; end
+      def pin_bindings_button_2; end
     end
   end
 end
