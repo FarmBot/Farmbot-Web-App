@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class GenesisOneTwo < Abstract
+    class GenesisOneTwo < AbstractSeeder
       PRODUCT_LINE = ProductLines::GENESIS
       SEQUENCES_PICKUP_SEED = true
       SEQUENCES_MOUNT_TOOL = true

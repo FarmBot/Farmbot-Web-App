@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class Abstract
+    class AbstractSeeder
       include Constants
       attr_reader :device
 
