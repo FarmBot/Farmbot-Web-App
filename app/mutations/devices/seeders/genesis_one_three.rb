@@ -8,12 +8,6 @@ module Devices
       def peripherals_water
         add_peripheral(8, ToolNames::WATER)
       end
-
-      def settings_firmware
-        device
-          .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::FARMDUINO)
-      end
     end
   end
 end

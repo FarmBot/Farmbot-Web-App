@@ -120,6 +120,12 @@ module Devices
         end
       end
 
+      def settings_firmware
+        device
+          .fbos_config
+          .update_attributes!(firmware_hardware: FbosConfig::FARMDUINO)
+      end
+
       def settings_default_map_size_x
         device.web_app_config.update_attributes!(map_size_x: 3000)
       end
