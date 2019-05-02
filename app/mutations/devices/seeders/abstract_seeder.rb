@@ -4,18 +4,6 @@ module Devices
       include Constants
       attr_reader :device
 
-      PRODUCT_LINE = ProductLines::NONE
-
-      # Class level configuration.
-      # Change these values on child class to tune
-      # default sequences.
-      SEQUENCES_MOUNT_TOOL = false
-      SEQUENCES_PICKUP_SEED = false
-      SEQUENCES_TAKE_PHOTO_OF_PLANT = false
-      SEQUENCES_TOOL_ERROR = false
-      SEQUENCES_UNMOUNT_TOOL = false
-      SEQUENCES_WATER_PLANT = false
-
       # DO NOT ALPHABETIZE. ORDER MATTERS! - RC
       COMMAND_ORDER = [
         # PLANTS =================================
@@ -104,16 +92,8 @@ module Devices
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
-
-      def sequences_mount_tool
-        return unless self.class::SEQUENCES_MOUNT_TOOL
-        # TODO: Implement me...
-      end
-
-      def sequences_pick_up_seed
-        return unless self.class::SEQUENCES_PICKUP_SEED
-        # TODO: Implement me...
-      end
+      def sequences_mount_tool; end
+      def sequences_pick_up_seed; end
 
       def sequences_plant_seed
         s = SequenceSeeds::PLANT_SEED.deep_dup
@@ -123,18 +103,15 @@ module Devices
       end
 
       def sequences_take_photo_of_plant
-        return unless self.class::SEQUENCES_TAKE_PHOTO_OF_PLANT
         s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup
         Sequences::Create.run!(s, device: device)
       end
 
       def sequences_tool_error
-        return unless self.class::SEQUENCES_TOOL_ERROR
         Sequences::Create.run!(SequenceSeeds::TOOL_ERROR, device: device)
       end
 
       def sequences_unmount_tool
-        return unless self.class::SEQUENCES_UNMOUNT_TOOL
         s = SequenceSeeds::UNMOUNT_TOOL.deep_dup
 
         s.dig(:args,
@@ -144,7 +121,6 @@ module Devices
               :args,
               :default_value,
               :args)[:tool_id] = seeder_id
-
         s.dig(:body, 5, :args, :pin_number, :args)[:pin_id] = tool_verification_id
         s.dig(:body, 6, :args, :lhs, :args)[:pin_id] = tool_verification_id
         s.dig(:body, 6, :args, :_else, :args)[:sequence_id] = tool_error_id
@@ -152,7 +128,6 @@ module Devices
       end
 
       def sequences_water_plant
-        return unless self.class::SEQUENCES_WATER_PLANT
         s = SequenceSeeds::WATER_PLANT.deep_dup
 
         s.dig(:body, 1, :args, :pin_number, :args)[:pin_id] = water_id
@@ -168,9 +143,7 @@ module Devices
         device.update_attributes!(name: "FarmBot Genesis")
       end
 
-      def settings_enable_encoders
-        # TODO
-      end
+      def settings_enable_encoders; end
 
       def settings_firmware; end
 

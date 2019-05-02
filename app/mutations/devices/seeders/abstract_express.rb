@@ -1,15 +1,6 @@
 module Devices
   module Seeders
     class AbstractExpress < AbstractGenesis
-      PRODUCT_LINE = Devices::Seeders::Constants::ProductLines::EXPRESS
-      SEQUENCES_MOUNT_TOOL = false
-      SEQUENCES_PICKUP_SEED = false
-      SEQUENCES_PLANT_SEED = false
-      SEQUENCES_TAKE_PHOTO_OF_PLANT = true
-      SEQUENCES_TOOL_ERROR = false
-      SEQUENCES_UNMOUNT_TOOL = false
-      SEQUENCES_WATER_PLANT = true
-
       def settings_device_name
         device.update_attributes!(name: "FarmBot Express")
       end
