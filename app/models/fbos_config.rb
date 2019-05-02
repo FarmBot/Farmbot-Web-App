@@ -9,7 +9,7 @@ class FbosConfig < ApplicationRecord
     ARDUINO = "arduino",
     FARMDUINO = "farmduino",
     FARMDUINO_K14 = "farmduino_k14",
-    EXPRESS_V10 = "express_v10"
+    EXPRESS_K10 = "express_k10",
   ]
 
   NERVES_FIELD = "update_channel"

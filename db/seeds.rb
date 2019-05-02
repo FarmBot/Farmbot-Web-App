@@ -12,6 +12,7 @@ if Rails.env == "development"
                tomato turnip zucchini)
 
   [
+    Alert,
     Sensor,
     Peripheral,
     Log,
