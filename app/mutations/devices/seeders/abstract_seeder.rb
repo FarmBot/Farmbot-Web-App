@@ -254,13 +254,19 @@ module Devices
                              mode: mode)
       end
 
-      def add_tool_slot(name, x, y, z, pullout_direction = ToolSlot::POSITIVE_X, gantry_mount = false)
+      def add_tool_slot(name,
+                        x,
+                        y,
+                        z,
+                        pullout_direction = ToolSlot::POSITIVE_X,
+                        gantry_mounted = false)
         Points::Create.run!(pointer_type: "ToolSlot",
                             name: name,
                             x: x,
                             y: y,
                             z: z,
                             pullout_direction: pullout_direction,
+                            gantry_mounted: gantry_mounted,
                             device: device)
       end
 
