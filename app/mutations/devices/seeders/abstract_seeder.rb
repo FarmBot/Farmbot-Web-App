@@ -11,7 +11,6 @@ module Devices
       # default sequences.
       SEQUENCES_MOUNT_TOOL = false
       SEQUENCES_PICKUP_SEED = false
-      SEQUENCES_PLANT_SEED = false
       SEQUENCES_TAKE_PHOTO_OF_PLANT = false
       SEQUENCES_TOOL_ERROR = false
       SEQUENCES_UNMOUNT_TOOL = false
@@ -117,7 +116,6 @@ module Devices
       end
 
       def sequences_plant_seed
-        return unless self.class::SEQUENCES_PLANT_SEED
         s = SequenceSeeds::PLANT_SEED.deep_dup
 
         s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id

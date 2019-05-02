@@ -1,6 +1,8 @@
 module Devices
   module Seeders
     class AbstractGenesis < AbstractSeeder
+      puts "TODO Delete these constants"
+
       PRODUCT_LINE = Devices::Seeders::Constants::ProductLines::GENESIS
       SEQUENCES_MOUNT_TOOL = true
       SEQUENCES_PICKUP_SEED = true
