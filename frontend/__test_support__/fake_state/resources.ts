@@ -311,6 +311,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     time_format_24_hour: false,
     show_pins: false,
     disable_emergency_unlock_confirmation: false,
+    map_size_x: 2900,
+    map_size_y: 1400,
   });
 }
 

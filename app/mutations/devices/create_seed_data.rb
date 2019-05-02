@@ -13,8 +13,6 @@ module Devices
       "none" => Devices::Seeders::None,
     }
 
-    COMMANDS = Devices::Seeders::Abstract.instance_methods(false).sort
-
     required do
       model :device
       string :product_line, in: PRODUCT_LINES.keys
@@ -29,7 +27,9 @@ module Devices
     end
 
     def run_seeds!
-      COMMANDS.map { |cmd| seeder.send(cmd) }
+      seeder.class::COMMAND_ORDER.map do |cmd|
+        seeder.send(cmd)
+      end
     end
   end
 end

@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class ExpressXlOneZero < Abstract
+    class ExpressXlOneZero < AbstractSeeder
     end
   end
 end

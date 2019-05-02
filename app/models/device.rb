@@ -88,6 +88,10 @@ class Device < ApplicationRecord
     points.where(pointer_type: "Plant")
   end
 
+  def tool_slots
+    points.where(pointer_type: "ToolSlot")
+  end
+
   TIMEOUT = 150.seconds
 
   # Like Device.find, but with 150 seconds of caching to avoid DB calls.
