@@ -746,7 +746,8 @@ CREATE TABLE public.points (
     tool_id integer,
     pullout_direction integer DEFAULT 0,
     migrated_at timestamp without time zone,
-    discarded_at timestamp without time zone
+    discarded_at timestamp without time zone,
+    gantry_mounted boolean DEFAULT false
 );
 
 
@@ -2960,6 +2961,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190419052844'),
 ('20190419174728'),
 ('20190419174811'),
-('20190501143201');
+('20190501143201'),
+('20190502163453');
 
 

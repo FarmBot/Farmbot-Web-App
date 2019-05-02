@@ -1,15 +1,6 @@
 module Devices
   module Seeders
     class AbstractGenesis < AbstractSeeder
-      PRODUCT_LINE = Devices::Seeders::Constants::ProductLines::GENESIS
-      SEQUENCES_MOUNT_TOOL = true
-      SEQUENCES_PICKUP_SEED = true
-      SEQUENCES_PLANT_SEED = true
-      SEQUENCES_TAKE_PHOTO_OF_PLANT = true
-      SEQUENCES_TOOL_ERROR = true
-      SEQUENCES_UNMOUNT_TOOL = true
-      SEQUENCES_WATER_PLANT = true
-
       def peripherals_vacuum
         add_peripheral(9, ToolNames::VACUUM)
       end
@@ -106,7 +97,6 @@ module Devices
       end
 
       def sequences_pick_up_seed
-        return unless self.class::SEQUENCES_PICKUP_SEED
         s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
 
         seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
