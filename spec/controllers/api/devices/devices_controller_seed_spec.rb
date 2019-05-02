@@ -322,5 +322,48 @@ describe Api::DevicesController do
       expect(settings_default_map_size_x?(device)).to eq(3000)
       expect(settings_default_map_size_y?(device)).to eq(1500)
     end
+
+    it "seeds accounts with Genesis 1.4 data" do
+      start_tests "xl_1.4"
+
+      expect(peripherals_lighting?(device).pin).to eq(7)
+      expect(peripherals_peripheral_4?(device).pin).to eq(10)
+      expect(peripherals_peripheral_5?(device).pin).to eq(12)
+      expect(peripherals_vacuum?(device).pin).to be(9)
+      expect(peripherals_water?(device).pin).to be(8)
+      expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
+      expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
+      expect(plants?(device)).to be true
+      expect(sensors_soil_sensor?(device).pin).to eq(59)
+      expect(sensors_tool_verification?(device).pin).to eq(63)
+      expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
+      expect(settings_enable_encoders?(device)).to be(true)
+      expect(settings_firmware?(device)).to eq("farmduino")
+      expect(tool_slots_slot_1?(device).name).to eq("Seeder")
+      expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
+      expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
+      expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
+      expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
+      expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      expect(tools_seed_bin?(device)).to be
+      expect(tools_seed_tray?(device)).to be
+      expect(tools_seed_trough_1?(device)).to_not be
+      expect(tools_seed_trough_2?(device)).to_not be
+      expect(tools_seed_trough_3?(device)).to_not be
+      expect(tools_seeder?(device)).to be_kind_of(Tool)
+      expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_weeder?(device)).to be_kind_of(Tool)
+      expect(sequences_mount_tool?(device)).to be
+      expect(sequences_pickup_seed_genesis?(device)).to be
+      expect(sequences_pickup_seed_express?(device)).to_not be
+      expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
+      expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
+      expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
+      expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(settings_default_map_size_x?(device)).to eq(6000)
+      expect(settings_default_map_size_y?(device)).to eq(3000)
+    end
   end
 end
