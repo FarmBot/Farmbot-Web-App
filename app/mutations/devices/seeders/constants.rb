@@ -28,6 +28,7 @@ module Devices
         WATER = "Water"
         WATERING_NOZZLE = "Watering Nozzle"
         WEEDER = "Weeder"
+        LIGHTING = "Lighting"
       end
 
       # Stub plants ==============================

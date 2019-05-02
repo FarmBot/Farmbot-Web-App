@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class None < Abstract
+    class None < AbstractSeeder
       SEQUENCES_PICKUP_SEED = ProductLines::NONE
       SEQUENCES_MOUNT_TOOL = false
       SEQUENCES_PLANT_SEED = false

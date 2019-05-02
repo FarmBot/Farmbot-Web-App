@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class Abstract
+    class AbstractSeeder
       include Constants
       attr_reader :device
 
@@ -23,11 +23,11 @@ module Devices
         :plants,
 
         # PERIPHERALS ============================
+        :peripherals_vacuum,
+        :peripherals_water,
         :peripherals_lighting,
         :peripherals_peripheral_4,
         :peripherals_peripheral_5,
-        :peripherals_vacuum,
-        :peripherals_water,
 
         # PIN BINDINGS ===========================
         :pin_bindings_button_1,
@@ -81,11 +81,26 @@ module Devices
         PLANTS.map { |x| Points::Create.run!(x, device: device) }
       end
 
-      def peripherals_lighting; end
-      def peripherals_peripheral_4; end
-      def peripherals_peripheral_5; end
-      def peripherals_vacuum; end
-      def peripherals_water; end
+      def peripherals_lighting
+        add_peripheral(7, ToolNames::LIGHTING)
+      end
+
+      def peripherals_peripheral_4
+        add_peripheral(10, "Peripheral 4")
+      end
+
+      def peripherals_peripheral_5
+        add_peripheral(12, "Peripheral 5")
+      end
+
+      def peripherals_vacuum
+        add_peripheral(9, ToolNames::VACUUM)
+      end
+
+      def peripherals_water
+        add_peripheral(8, ToolNames::WATER)
+      end
+
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
@@ -93,43 +108,12 @@ module Devices
 
       def sequences_mount_tool
         return unless self.class::SEQUENCES_MOUNT_TOOL
-        s = SequenceSeeds::MOUNT_TOOL.deep_dup
-        tool_id = device.tools.find_by!(name: ToolNames::SEEDER).id
-
-        default_value = s.dig(:args, :locals, :body, 0, :args, :default_value)
-        if_args = s.dig(:body, 4, :args)
-        else_branch = if_args.dig(:_else, :args)
-        read_pin = s.dig(:body, 3, :args, :pin_number, :args)
-
-        default_value[:args][:tool_id] = tool_id
-        else_branch[:sequence_id] = tool_error_id
-        read_pin[:pin_id] = tool_verification_id
-        if_args[:lhs][:args][:pin_id] = tool_verification_id
-
-        Sequences::Create.run!(s, device: device)
+        # TODO: Implement me...
       end
 
       def sequences_pick_up_seed
         return unless self.class::SEQUENCES_PICKUP_SEED
-
-        case self.class::PRODUCT_LINE
-        when ProductLines::GENESIS
-          s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
-
-          seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
-          mount_tool_id = device.sequences.find_by!(name: "Mount tool").id
-
-          s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
-          s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:tool_id] = seeder_id
-          s.dig(:body, 1, :args, :location, :args)[:tool_id] = seed_bin_id
-          s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-          s.dig(:body, 3, :args, :location, :args)[:tool_id] = seed_bin_id
-          s.dig(:body, 4, :args, :location, :args)[:tool_id] = seed_bin_id
-
-          Sequences::Create.run!(s, device: device)
-          # when ProductLines::EXPRESS then raise "TODO"
-        when ProductLines::NONE then return
-        end
+        # TODO: Implement me...
       end
 
       def sequences_plant_seed
@@ -187,18 +171,7 @@ module Devices
       end
 
       def settings_enable_encoders
-        case self.class::PRODUCT_LINE
-        when ProductLines::GENESIS
-          device.firmware_config.update_attributes!(encoder_enabled_x: 1,
-                                                    encoder_enabled_y: 1,
-                                                    encoder_enabled_z: 1)
-          # when ProductLines::EXPRESS
-          #   device.firmware_config.update_attributes!(encoder_enabled_x: 0,
-          #                                             encoder_enabled_y: 0,
-          #                                             encoder_enabled_z: 0)
-        when ProductLines::NONE
-          return
-        end
+        # TODO
       end
 
       def settings_firmware; end
@@ -259,6 +232,13 @@ module Devices
 
       def add_tool(name)
         Tools::Create.run!(name: name, device: device)
+      end
+
+      def add_pin_binding(pin, label, action)
+        PinBindings::Create.run!(pin_num: pin,
+                                 label: label,
+                                 special_action: action,
+                                 device: device)
       end
 
       def add_peripheral(pin, label)
