@@ -139,6 +139,7 @@ const FIRMWARE_CHOICES: DropDownItem[] = [
   { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
   { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
   { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+  { label: "Farmduino (Express v1.0)", value: "express_k10" },
 ];
 
 const FIRMWARE_CHOICES_DDI: { [x: string]: DropDownItem } = {};
@@ -168,6 +169,11 @@ const FirmwareChoiceTable = () =>
         <td>{"Genesis v1.4"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k14"].label}</code></td>
+      </tr>
+      <tr>
+        <td>{"Express v1.0"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
       </tr>
     </tbody>
   </table>;
