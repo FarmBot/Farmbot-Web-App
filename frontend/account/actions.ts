@@ -5,6 +5,7 @@ import { DeletionRequest } from "./interfaces";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
 import { toastErrors } from "../toast_errors";
+import { t } from "../i18next_wrapper";
 
 export function deleteUser(payload: DeletionRequest): Thunk {
   return (_, getState) => {
@@ -24,3 +25,13 @@ export function deleteUser(payload: DeletionRequest): Thunk {
       });
   };
 }
+
+export const resetAccount = (payload: DeletionRequest): Thunk =>
+  (_, getState) =>
+    getState().auth && axios({
+      method: "post",
+      url: API.current.accountResetPath,
+      data: payload,
+    })
+      .then(() => alert(t("Account has been reset.")))
+      .catch((err: UnsafeError) => toastErrors({ err }));
