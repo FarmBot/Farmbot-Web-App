@@ -29,7 +29,7 @@ version: '3.4'
 services:
   redis:
     env_file: ".env"
-    image: redis
+    image: redis:5
     volumes:
       - "./docker_volumes/redis/data:/data"
       - "./docker_volumes/redis/conf:/usr/local/etc/redis"
@@ -37,7 +37,7 @@ services:
 
   db:
     env_file: ".env"
-    image: postgres
+    image: postgres:10
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
 
   web:
