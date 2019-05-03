@@ -63,6 +63,7 @@ FarmBot::Application.routes.draw do
     get "/global_config" => "global_config#show", as: :global_config
     get "/device/sync" => "devices#sync", as: :device_sync
     post "/device/seed" => "devices#seed", as: :device_seed
+    post "/device/reset" => "devices#reset", as: :device_reset
 
     # Make life easier on API users by not adding special rules for singular
     # resources.

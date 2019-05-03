@@ -17,7 +17,7 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::EXPRESS_V10)
+          .update_attributes!(firmware_hardware: FbosConfig::EXPRESS_K10)
       end
 
       def tool_slots_slot_1
