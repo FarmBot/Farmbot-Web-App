@@ -324,7 +324,7 @@ describe Api::DevicesController do
     end
 
     it "seeds accounts with Genesis XL 1.4 data" do
-      start_tests "xl_1.4"
+      start_tests "genesis_xl_1.4"
 
       expect(peripherals_lighting?(device).pin).to eq(7)
       expect(peripherals_peripheral_4?(device).pin).to eq(10)
@@ -381,7 +381,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express")
       expect(settings_enable_encoders?(device)).to be(false)
-      expect(settings_firmware?(device)).to eq("express_v10")
+      expect(settings_firmware?(device)).to eq("express_k10")
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Trough 3")
@@ -424,7 +424,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq("FarmBot Express XL")
       expect(settings_enable_encoders?(device)).to be(false)
-      expect(settings_firmware?(device)).to eq("express_v10")
+      expect(settings_firmware?(device)).to eq("express_k10")
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Trough 3")
