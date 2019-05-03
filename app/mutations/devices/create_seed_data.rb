@@ -18,7 +18,8 @@ module Devices
     end
 
     def execute
-      run_seeds!
+      self.delay.run_seeds!
+      { done: "Loading resources now." }
     end
 
     def seeder
