@@ -1,6 +1,15 @@
 module Devices
   class Reset < Mutations::Command
-    required { model :device }
+    include Users::PasswordHelpers
+
+    required do
+      model :device
+      string :password
+    end
+
+    def validate
+      confirm_password(user, password)
+    end
 
     def execute
       Device::SINGULAR_RESOURCES.keys.map do |resource|
@@ -12,6 +21,12 @@ module Devices
       end
 
       { ok: "OK" }
+    end
+
+    private
+
+    def user
+      @user ||= User.find_by!(device: device)
     end
   end
 end

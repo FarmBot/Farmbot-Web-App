@@ -4,7 +4,8 @@ describe Api::DevicesController do
   include Devise::Test::ControllerHelpers
 
   describe "#destroy" do
-    let(:user) { FactoryBot.create(:user) }
+    let(:password) { "password456" }
+    let(:user) { FactoryBot.create(:user, password: password, password_confirmation: password) }
 
     resources = %w(alert sensor peripheral log pin_binding generic_pointer
                    tool_slot plant_template saved_garden sensor_reading
@@ -21,7 +22,7 @@ describe Api::DevicesController do
         expect(device.send(resource.pluralize).reload.count).to be > 0
       end
 
-      run_jobs_now { post :reset, params: {} }
+      run_jobs_now { post :reset, params: { password: password } }
 
       resources.map do |resource|
         expect(device.send(resource.pluralize).reload.count).to eq 0
