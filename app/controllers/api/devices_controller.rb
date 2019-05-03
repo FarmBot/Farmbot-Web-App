@@ -39,6 +39,11 @@ module Api
       render json: { done: "Loading resources now." }
     end
 
+    def reset
+      Devices::Reset.delay.run!(params.as_json, device: current_device)
+      render json: { done: "Reseting account now." }
+    end
+
     private
 
     # Store the JSON on the local filesystem for self hosted users that don't
