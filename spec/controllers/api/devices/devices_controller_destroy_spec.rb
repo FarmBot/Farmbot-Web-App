@@ -24,12 +24,7 @@ describe Api::DevicesController do
       run_jobs_now { post :reset, params: {} }
 
       resources.map do |resource|
-        count = device.send(resource.pluralize).reload.count
-        if count == 0
-          expect(count).to eq 0
-        else
-          binding.pry
-        end
+        expect(device.send(resource.pluralize).reload.count).to eq 0
       end
     end
 
