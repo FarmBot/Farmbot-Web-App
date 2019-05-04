@@ -34,8 +34,8 @@ export const Alerts = (props: AlertsProps) =>
     <div className="problem-alerts-content">
       {sortAlerts(props.alerts)
         .filter(x => x.problem_tag && x.priority && x.created_at)
-        .map((x, i) =>
-          <AlertCard key={i}
+        .map(x =>
+          <AlertCard key={x.slug + x.created_at}
             alert={x}
             dispatch={props.dispatch}
             apiFirmwareValue={props.apiFirmwareValue}

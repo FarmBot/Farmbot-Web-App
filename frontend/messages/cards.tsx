@@ -21,8 +21,9 @@ import {
   isFwHardwareValue
 } from "../devices/components/fbos_settings/board_type";
 import { updateConfig } from "../devices/actions";
-import { fetchBulletinContent } from "./actions";
+import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
+import { DevSettings } from "../account/dev/dev_support";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -139,6 +140,7 @@ const FIRMWARE_CHOICES: DropDownItem[] = [
   { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
   { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
   { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+  { label: "Farmduino (Express v1.0)", value: "express_k10" },
 ];
 
 const FIRMWARE_CHOICES_DDI: { [x: string]: DropDownItem } = {};
@@ -168,6 +170,11 @@ const FirmwareChoiceTable = () =>
         <td>{"Genesis v1.4"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k14"].label}</code></td>
+      </tr>
+      <tr>
+        <td>{"Express v1.0"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
       </tr>
     </tbody>
   </table>;
@@ -208,17 +215,30 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     </Row>
   </AlertCardTemplate>;
 
-const SEED_DATA_OPTIONS: DropDownItem[] = [
-  { label: "Genesis v1.2", value: "12" },
-  { label: "Genesis v1.3", value: "13" },
-  { label: "Genesis v1.4", value: "14" },
-  { label: "Genesis v1.4 XL", value: "14XL" },
-  { label: "Custom Bot", value: "custom" },
+const SEED_DATA_OPTIONS = (): DropDownItem[] => [
+  { label: "Genesis v1.2", value: "genesis_1.2" },
+  { label: "Genesis v1.3", value: "genesis_1.3" },
+  { label: "Genesis v1.4", value: "genesis_1.4" },
+  { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
+  ...(DevSettings.futureFeaturesEnabled() ? [
+    { label: "Express v1.0", value: "express_1.0" },
+    { label: "Express v1.0 XL", value: "express_xl_1.0" },
+  ] : []),
+  { label: "Custom Bot", value: "none" },
 ];
+
+const SEED_DATA_OPTIONS_DDI: Record<string, DropDownItem> = {};
+SEED_DATA_OPTIONS().map(ddi => SEED_DATA_OPTIONS_DDI[ddi.value] = ddi);
 
 class SeedDataMissing
   extends React.Component<SeedDataMissingProps, SeedDataMissingState> {
   state: SeedDataMissingState = { selection: "" };
+
+  get dismiss() {
+    const { alert, findApiAlertById, dispatch } = this.props;
+    return dismissAlert({ id: alert.id, findApiAlertById, dispatch });
+  }
+
   render() {
     return <AlertCardTemplate
       alert={this.props.alert}
@@ -236,9 +256,9 @@ class SeedDataMissing
         <Col xs={5}>
           <FBSelect
             key={this.state.selection}
-            list={SEED_DATA_OPTIONS}
-            selectedItem={SEED_DATA_OPTIONS[0]}
-            onChange={() => { }} />
+            list={SEED_DATA_OPTIONS()}
+            selectedItem={SEED_DATA_OPTIONS_DDI[this.state.selection]}
+            onChange={seedAccount(this.dismiss)} />
         </Col>
       </Row>
     </AlertCardTemplate>;

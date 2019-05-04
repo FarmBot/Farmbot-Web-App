@@ -14,6 +14,7 @@ const fakeBulletin: Bulletin = {
 let mockData: Bulletin | undefined = fakeBulletin;
 jest.mock("../actions", () => ({
   fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
+  seedAccount: jest.fn(),
 }));
 
 import * as React from "react";
