@@ -29,6 +29,15 @@ describe Api::DevicesController do
       end
     end
 
+    it "can't reset a device if credentials are missing" do
+      sign_in user
+      device = user.device
+
+      run_jobs_now { post :reset, params: {} }
+      expect(response.status).to eq(422)
+      expect(json.fetch(:password)).to eq("Password is required")
+    end
+
     it "destroys a Device" do
       sign_in user
       old_bot = user.device

@@ -12,6 +12,13 @@ module Devices
     end
 
     def execute
+      self.delay.run_it
+      { ok: "OK" }
+    end
+
+    private
+
+    def run_it
       Device::SINGULAR_RESOURCES.keys.map do |resource|
         device.send(resource).destroy!
       end
@@ -19,11 +26,7 @@ module Devices
       Device::PLURAL_RESOURCES.map do |resources|
         device.send(resources).destroy_all
       end
-
-      { ok: "OK" }
     end
-
-    private
 
     def user
       @user ||= User.find_by!(device: device)
