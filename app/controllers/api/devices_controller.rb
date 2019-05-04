@@ -39,8 +39,7 @@ module Api
     end
 
     def reset
-      Devices::Reset.delay.run!(params.as_json, device: current_device)
-      render json: { done: "Reseting account now." }
+      mutate Devices::Reset.run(params.as_json, device: current_device)
     end
 
     private
