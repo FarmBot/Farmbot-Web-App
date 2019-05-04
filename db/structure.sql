@@ -194,7 +194,7 @@ ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 CREATE TABLE public.devices (
     id integer NOT NULL,
     name character varying DEFAULT 'Farmbot'::character varying,
-    max_log_count integer DEFAULT 100,
+    max_log_count integer DEFAULT 1000,
     max_images_count integer DEFAULT 100,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
@@ -2962,6 +2962,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190419174728'),
 ('20190419174811'),
 ('20190501143201'),
-('20190502163453');
+('20190502163453'),
+('20190504170018');
 
 
