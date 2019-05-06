@@ -68,16 +68,13 @@ var HelperNamespace = (function () {
       return searchInFile(x, T_REGEX);
     });
     var constantsTags = searchInFile(srcPath + '/constants.ts', C_REGEX);
-    var DIAG_MESSAGE_FILE = '/devices/connectivity/diagnostic_messages.ts';
-    var diagnosticTags = searchInFile(srcPath + DIAG_MESSAGE_FILE, C_REGEX);
 
     // flatten list of list in a simple list
     var flatAllTags = [].concat.apply([], allTags);
     var flatConstantsTags = [].concat.apply([], constantsTags);
-    var flatDiagnosticTags = [].concat.apply([], diagnosticTags);
     var flatExtraTags = [].concat.apply([], EXTRA_TAGS);
     var flattenedTags = [].concat.apply([],
-      [flatAllTags, flatConstantsTags, flatDiagnosticTags, flatExtraTags]);
+      [flatAllTags, flatConstantsTags, flatExtraTags]);
 
     // distinct
     var uniq = Array.from(new Set(flattenedTags));
@@ -240,7 +237,7 @@ var HelperNamespace = (function () {
             console.log('Loaded file ' + lang + '.json with ' + count + ' items.');
           }
 
-          Object.keys(combinedContent).sort().forEach(function (key) {
+          Object.keys(combinedContent).sort(localeSort).forEach(function (key) {
             ordered[key] = combinedContent[key];
           });
         }
