@@ -38,7 +38,7 @@ class BroadcastToAll < Mutations::Command
     puts "This will take a while..."
     devices.map do |d|
       puts "attaching Alert to Device #{d.id}"
-      Alerts::Create.run!(problem_tag: Alert::BULLETIN,
+      Alerts::Create.run!(problem_tag: Alert::BULLETIN.fetch(:problem_tag),
                           device: d,
                           slug: slug)
     end
