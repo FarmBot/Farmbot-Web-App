@@ -3,6 +3,7 @@
 # Also helps group "fast" messages into a digest.
 module LogDeliveryStuff
   class RateLimitError < StandardError; end
+
   module ClassMethods
     # If this method grows, create a mutation.
     def deliver(device, log)

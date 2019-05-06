@@ -37,6 +37,15 @@ describe("setActiveFarmwareByName", () => {
     });
   });
 
+  it("finds a farmware by name: other match", () => {
+    mockLastUrlChunk = "weed_detector";
+    setActiveFarmwareByName(["plant_detection"]);
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE,
+      payload: "plant_detection"
+    });
+  });
+
   it("handles undefined farmware names", () => {
     mockLastUrlChunk = "some_farmware";
     setActiveFarmwareByName([undefined]);

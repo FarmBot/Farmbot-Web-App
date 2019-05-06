@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
 import { Farmwares } from "./interfaces";
@@ -13,6 +12,7 @@ import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { initSave } from "../api/crud";
 import { TaggedFarmwareInstallation } from "farmbot";
 import { t } from "../i18next_wrapper";
+import { getFormattedFarmwareName } from "./index";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),
@@ -27,7 +27,7 @@ const farmwareListItem = (dispatch: Function, current: string | undefined) =>
       type: Actions.SELECT_FARMWARE,
       payload: farmwareName
     });
-    const selected = (farmwareName == current)
+    const selected = (farmwareName == getFormattedFarmwareName(current || ""))
       || (!current && farmwareName == "Photos")
       ? "selected" : "";
     const displayName = Object.keys(DISPLAY_NAMES).includes(farmwareName)
@@ -107,8 +107,7 @@ export class FarmwareList
                 this.props.firstPartyFarmwareNames)} />
         </Popover>
       </div>
-      {["Photos", "Camera Calibration", "Weed Detector"]
-        .map(farmwareListItem(dispatch, current))}
+      {Object.keys(DISPLAY_NAMES).map(farmwareListItem(dispatch, current))}
       <hr />
       <label>
         {t("My Farmware")}

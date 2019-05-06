@@ -7,22 +7,27 @@ import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
+import { Feature } from "../../interfaces";
 
 const ARDUINO = { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" };
 const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
 const FARMDUINO_K14 = {
   label: "Farmduino (Genesis v1.4)", value: "farmduino_k14"
 };
+const EXPRESS_K10 = {
+  label: "Farmduino (Express v1.0)", value: "express_k10"
+};
 
 export const FIRMWARE_CHOICES_DDI = {
   [ARDUINO.value]: ARDUINO,
   [FARMDUINO.value]: FARMDUINO,
-  [FARMDUINO_K14.value]: FARMDUINO_K14
+  [FARMDUINO_K14.value]: FARMDUINO_K14,
+  [EXPRESS_K10.value]: EXPRESS_K10,
 };
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
-    "arduino", "farmduino", "farmduino_k14"];
+    "arduino", "farmduino", "farmduino_k14", "express_k10"];
   return !!values.includes(x as FirmwareHardware);
 };
 
@@ -37,6 +42,8 @@ export const boardType =
           return "farmduino";
         case "G":
           return "farmduino_k14";
+        case "E":
+          return "express_k10";
         default:
           return "unknown";
       }
@@ -68,7 +75,11 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return isFwHardwareValue(value) ? value : undefined;
   }
 
-  get firmwareChoices() { return [ARDUINO, FARMDUINO, FARMDUINO_K14]; }
+  get firmwareChoices() {
+    const { shouldDisplay } = this.props;
+    return [ARDUINO, FARMDUINO, FARMDUINO_K14,
+      ...(shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : [])];
+  }
 
   get firmwareVersion() {
     return this.props.bot.hardware.informational_settings.firmware_version;
@@ -84,6 +95,8 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         return FIRMWARE_CHOICES_DDI["farmduino"];
       case "farmduino_k14":
         return FIRMWARE_CHOICES_DDI["farmduino_k14"];
+      case "express_k10":
+        return FIRMWARE_CHOICES_DDI["express_k10"];
       case "unknown":
         // If unknown/disconnected, display API FirmwareHardware value if valid
         return (this.sending && this.apiValue)

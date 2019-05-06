@@ -194,7 +194,7 @@ ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 CREATE TABLE public.devices (
     id integer NOT NULL,
     name character varying DEFAULT 'Farmbot'::character varying,
-    max_log_count integer DEFAULT 100,
+    max_log_count integer DEFAULT 1000,
     max_images_count integer DEFAULT 100,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
@@ -746,7 +746,8 @@ CREATE TABLE public.points (
     tool_id integer,
     pullout_direction integer DEFAULT 0,
     migrated_at timestamp without time zone,
-    discarded_at timestamp without time zone
+    discarded_at timestamp without time zone,
+    gantry_mounted boolean DEFAULT false
 );
 
 
@@ -1548,7 +1549,9 @@ CREATE TABLE public.web_app_configs (
     internal_use text,
     time_format_24_hour boolean DEFAULT false,
     show_pins boolean DEFAULT false,
-    disable_emergency_unlock_confirmation boolean DEFAULT false
+    disable_emergency_unlock_confirmation boolean DEFAULT false,
+    map_size_x integer DEFAULT 2900,
+    map_size_y integer DEFAULT 1400
 );
 
 
@@ -2957,6 +2960,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190419001321'),
 ('20190419052844'),
 ('20190419174728'),
-('20190419174811');
+('20190419174811'),
+('20190501143201'),
+('20190502163453'),
+('20190504170018');
 
 

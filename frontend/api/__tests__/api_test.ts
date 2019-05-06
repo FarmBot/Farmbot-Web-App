@@ -16,6 +16,7 @@ describe("API", () => {
       [API.current.diagnosticDumpsPath, BASE + "/api/diagnostic_dumps/"],
       [API.current.farmwareInstallationPath, BASE + "/api/farmware_installations/"],
       [API.current.globalBulletinPath, BASE + "/api/global_bulletins/"],
+      [API.current.accountSeedPath, BASE + "/api/device/seed"],
     ].map(x => expect(x[0]).toEqual(x[1]));
   });
 

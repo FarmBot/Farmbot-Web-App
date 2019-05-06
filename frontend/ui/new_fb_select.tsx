@@ -12,8 +12,6 @@ export interface FBSelectProps {
   list: DropDownItem[];
   /** Allow user to select no value. */
   allowEmpty?: boolean;
-  /** Text shown before user selection. */
-  placeholder?: string | undefined;
   /** Extra class names to add. */
   extraClass?: string;
   /** Custom label for NULL_CHOICE instead of "None". */

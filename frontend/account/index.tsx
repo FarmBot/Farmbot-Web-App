@@ -1,21 +1,23 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Settings, DeleteAccount, ChangePassword } from "./components";
+import {
+  Settings, ChangePassword, ExportAccountPanel, DangerousDeleteWidget
+} from "./components";
 import { Props } from "./interfaces";
-import { Page, Row, Col } from "../ui/index";
+import { Page, Row, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
 import { User } from "../auth/interfaces";
 import { edit, save } from "../api/crud";
 import { updateNO } from "../resources/actions";
-import { deleteUser } from "./actions";
+import { deleteUser, resetAccount } from "./actions";
 import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
-import { ExportAccountPanel } from "./components/export_account_panel";
 import { requestAccountExport } from "./request_account_export";
 import { DevWidget } from "./dev/dev_widget";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevMode } from "./dev/dev_mode";
 import { t } from "../i18next_wrapper";
+import { Content } from "../constants";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 
@@ -67,9 +69,6 @@ export class Account extends React.Component<Props, State> {
     .then(this.doSave, updateNO);
 
   render() {
-    const deleteAcct =
-      (password: string) => this.props.dispatch(deleteUser({ password }));
-
     return <Page className="account-page">
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
@@ -87,7 +86,20 @@ export class Account extends React.Component<Props, State> {
             getConfigValue={this.props.getConfigValue} />
         </Row>
         <Row>
-          <DeleteAccount onClick={deleteAcct} />
+          <DangerousDeleteWidget
+            title={t("Reset Account")}
+            warning={t(Content.ACCOUNT_RESET_WARNING)}
+            confirmation={t(Content.TYPE_PASSWORD_TO_RESET)}
+            dispatch={this.props.dispatch}
+            onClick={resetAccount} />
+        </Row>
+        <Row>
+          <DangerousDeleteWidget
+            title={t("Delete Account")}
+            warning={t(Content.ACCOUNT_DELETE_WARNING)}
+            confirmation={t(Content.TYPE_PASSWORD_TO_DELETE)}
+            dispatch={this.props.dispatch}
+            onClick={deleteUser} />
         </Row>
         <Row>
           <ExportAccountPanel onClick={requestAccountExport} />

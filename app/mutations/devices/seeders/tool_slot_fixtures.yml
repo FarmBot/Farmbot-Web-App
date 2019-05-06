@@ -1,0 +1,100 @@
+---
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 100.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 500.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 200.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 300.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 600.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 0.0
+  y: 25.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 0.0
+  y: 50.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 1
+  radius: 25.0
+  x: 50.0
+  y: 700.0
+  z: -200.0
+- meta: {}
+  pointer_type: ToolSlot
+  name: Tool Slot
+  openfarm_slug: not-set
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 0.0
+  y: 75.0
+  z: -200.0

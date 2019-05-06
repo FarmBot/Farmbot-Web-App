@@ -2,7 +2,7 @@ jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
-const mockData: Bulletin = {
+const fakeBulletin: Bulletin = {
   content: "Alert content.",
   href: "https://farm.bot",
   href_label: "See more",
@@ -10,8 +10,11 @@ const mockData: Bulletin = {
   slug: "slug",
   title: "Announcement",
 };
+
+let mockData: Bulletin | undefined = fakeBulletin;
 jest.mock("../actions", () => ({
   fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
+  seedAccount: jest.fn(),
 }));
 
 import * as React from "react";
@@ -49,9 +52,13 @@ describe("<AlertCard />", () => {
   it("renders firmware card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alert.created_at = 1555555555;
+    p.timeSettings.hour24 = false;
+    p.timeSettings.utcOffset = 0;
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Your device has no firmware");
     expect(wrapper.find(".fa-times").length).toEqual(0);
+    expect(wrapper.text()).toContain("Apr");
   });
 
   it("renders seed data card", () => {
@@ -87,13 +94,23 @@ describe("<AlertCard />", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
     const wrapper = mount(<AlertCard {...p} />);
-    ["Loading...", "Slug"].map(string =>
+    ["Loading", "Slug"].map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
+
+  it("has no content to load for bulletin card", async () => {
+    mockData = undefined;
+    const p = fakeProps();
+    p.alert.problem_tag = "api.bulletin.unread";
+    const wrapper = await mount(<AlertCard {...p} />);
+    ["Unable to load content.", "Slug"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 
   it("renders loaded bulletin card", async () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
+    mockData = fakeBulletin;
     mockData.href_label = "See more";
     mockData.type = "info";
     const wrapper = await mount(<AlertCard {...p} />);
@@ -106,10 +123,21 @@ describe("<AlertCard />", () => {
   it("renders loaded bulletin card with missing fields", async () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
+    mockData = fakeBulletin;
     mockData.href_label = undefined;
     mockData.type = "unknown";
     const wrapper = await mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("Find out more");
+  });
+
+  it("hides incorrect time", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alert.created_at = 0;
+    p.timeSettings.hour24 = false;
+    p.timeSettings.utcOffset = 0;
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text()).not.toContain("Jan 1, 12:00am");
   });
 });
 

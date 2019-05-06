@@ -1,6 +1,5 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
-
 import {
   CameraSelectionProps, CameraSelectionState
 } from "./interfaces";
@@ -69,7 +68,6 @@ export class CameraSelection
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
-            placeholder="Select a camera..."
             onChange={this.sendOffConfig}
             extraClass={this.props.botOnline ? "" : "disabled"} />
         </div>

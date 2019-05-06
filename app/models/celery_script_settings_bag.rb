@@ -20,7 +20,7 @@ module CeleryScriptSettingsBag
                   "BoxLed3" => BoxLed,
                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
-  ALLOWED_CHAGES = %w(add remove update)
+  ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
   ALLOWED_LHS_TYPES = [String, :named_pin]
@@ -94,7 +94,7 @@ module CeleryScriptSettingsBag
     ALLOWED_PIN_MODES: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
     AllowedPinTypes: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
     Color: [Sequence::COLORS, MISC_ENUM_ERR],
-    DataChangeType: [ALLOWED_CHAGES, MISC_ENUM_ERR],
+    DataChangeType: [ALLOWED_CHANGES, MISC_ENUM_ERR],
     LegalSequenceKind: [ALLOWED_RPC_NODES.sort, MISC_ENUM_ERR],
     lhs: [ALLOWED_LHS_STRINGS, BAD_LHS],
     PlantStage: [PLANT_STAGES, MISC_ENUM_ERR],
@@ -211,7 +211,7 @@ module CeleryScriptSettingsBag
       blk: ->(node) do
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         # This would never have happened if we hadn't allowed
-        #  heterogenus args :(
+        #  heterogenous args :(
         manual_enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end,
     },

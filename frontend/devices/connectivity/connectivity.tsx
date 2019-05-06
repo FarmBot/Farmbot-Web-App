@@ -5,7 +5,7 @@ import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { Row, Col } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
-  ChipTemperatureDisplay, WiFiStrengthDisplay
+  ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay
 } from "../components/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 
@@ -27,7 +27,8 @@ export class Connectivity
     () => this.setState({ hoveredConnection: name });
 
   render() {
-    const { soc_temp, wifi_level } = this.props.bot.hardware.informational_settings;
+    const { informational_settings } = this.props.bot.hardware;
+    const { soc_temp, wifi_level, throttled } = informational_settings;
     return <div className="connectivity">
       <Row>
         <Col md={12} lg={4}>
@@ -39,6 +40,7 @@ export class Connectivity
             <label>{t("Raspberry Pi Info")}</label>
             <ChipTemperatureDisplay temperature={soc_temp} />
             <WiFiStrengthDisplay wifiStrength={wifi_level} />
+            <VoltageDisplay throttled={throttled} />
           </div>
         </Col>
         <Col md={12} lg={8}>

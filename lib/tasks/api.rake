@@ -115,7 +115,7 @@ namespace :api do
       (pair.head > current_version) && (pair.tail < cutoff)
     end
       .sort_by { |p| p.tail } # Sort by release date
-      .last(2) # Grab 2 latest versions (closest to cuttof)
+      .last(2) # Grab 2 latest versions (closest to cutoff)
       .first # Give 'em some leeway, grabbing the 2nd most outdated version.
       .try(:head) # We might already be up-to-date?
     if data # ...or not
