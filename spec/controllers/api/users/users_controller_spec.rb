@@ -134,9 +134,9 @@ describe Api::UsersController do
         expect(user.valid_password?("Password123")).to be_truthy
         expect(user.device.alerts.count).to eq(4)
         tags = user.device.alerts.pluck(:problem_tag)
-        Alert::DEFAULTS
-          .index_by { |x| x.fetch(:problem_tag) }
-          .map do |(problem_tag, data)|
+        defaults = Alert::DEFAULTS.index_by { |x| x.fetch(:problem_tag) }
+        defaults.delete(Alert::BULLETIN.fetch(:problem_tag))
+        defaults.map do |(problem_tag, data)|
           expect(tags).to include(problem_tag)
           alert = user.device.alerts.find_by(problem_tag: problem_tag)
           expect(alert.priority).to eq(data.fetch(:priority))
