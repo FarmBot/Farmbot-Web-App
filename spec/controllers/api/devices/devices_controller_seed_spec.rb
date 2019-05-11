@@ -174,8 +174,6 @@ describe Api::DevicesController do
     end
 
     it "seeds accounts with default data" do
-      plant = FactoryBot.create(:plant)
-      device = plant.device
       sign_in user
       device = user.device
       expect(device.plants.count).to eq(0)
@@ -183,8 +181,8 @@ describe Api::DevicesController do
         post :seed, params: { product_line: "none" }
       end
       expect(response.status).to eq(200)
-      count = Devices::Seeders::Constants::PLANTS.count
-      expect(device.reload.plants.count).to eq(count)
+      expect(device.plants.count).to eq(0)
+      expect(device.reload.name).to eq("FarmBot")
     end
 
     def start_tests(product_line)
