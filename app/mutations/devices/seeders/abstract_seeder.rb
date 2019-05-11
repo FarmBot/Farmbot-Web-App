@@ -49,16 +49,26 @@ module Devices
         :tool_slots_slot_4,
         :tool_slots_slot_5,
         :tool_slots_slot_6,
-
-        # SEQUENCES ==============================
-        :sequences_tool_error,
-        :sequences_mount_tool,
-        :sequences_pick_up_seed,
-        :sequences_plant_seed,
-        :sequences_take_photo_of_plant,
-        :sequences_unmount_tool,
-        :sequences_water_plant,
       ]
+
+      unless Rails.env.production?
+        # PROBLEM:
+        #  * FBOS v8 is not out yet.
+        #  * The seed sequences use variables (FBOS >= v8)
+        #  * You already wrote all the tests and stuff.
+        # SOLUTION:
+        #  * Leave the tests in place
+        #  * Disable the behavior in production ENVs
+        #  * Put this code back in the main array when v8 is released.
+        # SEQUENCES ==============================
+        COMMAND_ORDER += [:sequences_tool_error,
+                          :sequences_mount_tool,
+                          :sequences_pick_up_seed,
+                          :sequences_plant_seed,
+                          :sequences_take_photo_of_plant,
+                          :sequences_unmount_tool,
+                          :sequences_water_plant]
+      end
 
       def initialize(device)
         @device = device
@@ -210,23 +220,19 @@ module Devices
       def tools_seed_trough_3; end
 
       def tools_seeder
-        @tools_seeder ||=
-          add_tool(ToolNames::SEEDER)
+        @tools_seeder ||= add_tool(ToolNames::SEEDER)
       end
 
       def tools_soil_sensor
-        @tools_soil_sensor ||=
-          add_tool(ToolNames::SOIL_SENSOR)
+        @tools_soil_sensor ||= add_tool(ToolNames::SOIL_SENSOR)
       end
 
       def tools_watering_nozzle
-        @tools_watering_nozzle ||=
-          add_tool(ToolNames::WATERING_NOZZLE)
+        @tools_watering_nozzle ||= add_tool(ToolNames::WATERING_NOZZLE)
       end
 
       def tools_weeder
-        @tools_weeder ||=
-          add_tool(ToolNames::WEEDER)
+        @tools_weeder ||= add_tool(ToolNames::WEEDER)
       end
 
       private
