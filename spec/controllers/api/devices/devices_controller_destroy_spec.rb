@@ -22,6 +22,8 @@ describe Api::DevicesController do
         expect(device.send(resource.pluralize).reload.count).to be > 0
       end
 
+      device.update_attributes(name: "#{SecureRandom.hex(10)}")
+
       run_jobs_now { post :reset, params: { password: password } }
 
       resources
@@ -33,7 +35,7 @@ describe Api::DevicesController do
           fail(did_not_delete)
         end
       end
-
+      expect(device.reload.name).to eq("FarmBot")
       expect(device.alerts.count).to eq(1)
       expect(device.token_issuances.count).to_not be > 1
     end
