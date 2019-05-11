@@ -158,11 +158,11 @@ module Devices
       end
 
       def pin_bindings_button_1
-        add_pin_binding 1, "Emergency Lock", :emergency_lock
+        add_pin_binding 16, "Emergency Lock", :emergency_lock
       end
 
       def pin_bindings_button_2
-        add_pin_binding 2, "Unlock", :emergency_unlock
+        add_pin_binding 22, "Unlock", :emergency_unlock
       end
     end
   end

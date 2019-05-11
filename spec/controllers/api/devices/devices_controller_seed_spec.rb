@@ -38,11 +38,11 @@ describe Api::DevicesController do
     end
 
     def pin_bindings_button_1?(device)
-      device.pin_bindings.find_by(pin_num: 1)
+      device.pin_bindings.find_by(pin_num: 16)
     end
 
     def pin_bindings_button_2?(device)
-      device.pin_bindings.find_by(pin_num: 2)
+      device.pin_bindings.find_by(pin_num: 22)
     end
 
     def plants?(device)
