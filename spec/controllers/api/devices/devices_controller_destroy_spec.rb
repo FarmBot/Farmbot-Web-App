@@ -7,7 +7,7 @@ describe Api::DevicesController do
     let(:password) { "password456" }
     let(:user) { FactoryBot.create(:user, password: password, password_confirmation: password) }
 
-    resources = %w(alert sensor peripheral log pin_binding generic_pointer
+    resources = %w(sensor peripheral log pin_binding generic_pointer
                    tool_slot plant_template saved_garden sensor_reading
                    farmware_installation tool)
 
@@ -27,6 +27,7 @@ describe Api::DevicesController do
       resources.map do |resource|
         expect(device.send(resource.pluralize).reload.count).to eq 0
       end
+      expect(device.alerts.count).to eq(1)
     end
 
     it "can't reset a device if credentials are missing" do

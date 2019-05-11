@@ -26,6 +26,8 @@ module Devices
       Device::PLURAL_RESOURCES.map do |resources|
         device.send(resources).destroy_all
       end
+
+      Alerts::Create.run!(Alert::SEED_DATA.merge(device: device))
     end
 
     def user
