@@ -314,7 +314,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
       expect(settings_enable_encoders?(device)).to be(true)
-      expect(settings_firmware?(device)).to eq("farmduino")
+      expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
