@@ -9,7 +9,7 @@ describe Api::DevicesController do
 
     resources = %w(sensor peripheral log pin_binding generic_pointer
                    tool_slot plant_template saved_garden sensor_reading
-                   farmware_installation tool)
+                   farmware_installation tool token_issuance)
 
     it "resets a bot" do
       sign_in user
@@ -24,10 +24,18 @@ describe Api::DevicesController do
 
       run_jobs_now { post :reset, params: { password: password } }
 
-      resources.map do |resource|
-        expect(device.send(resource.pluralize).reload.count).to eq 0
+      resources
+        .without("token_issuance")
+        .map do |resource|
+        count = device.send(resource.pluralize).reload.count
+        if count > 0
+          did_not_delete = "Epected #{resource} count to be 0 but got #{count}"
+          fail(did_not_delete)
+        end
       end
+
       expect(device.alerts.count).to eq(1)
+      expect(device.token_issuances.count).to_not be > 1
     end
 
     it "can't reset a device if credentials are missing" do

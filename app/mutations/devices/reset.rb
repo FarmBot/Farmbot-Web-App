@@ -23,7 +23,7 @@ module Devices
         device.send(resource).destroy!
       end
 
-      Device::PLURAL_RESOURCES.map do |resources|
+      Device::PLURAL_RESOURCES.without(:token_issuances).map do |resources|
         device.send(resources).destroy_all
       end
 
