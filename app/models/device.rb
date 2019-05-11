@@ -195,4 +195,11 @@ class Device < ApplicationRecord
       .fetch(:token)
       .encoded
   end
+
+  # Auto-sync messages were not propogating on the device model when the changes
+  # happened in a background worker/dyno. The fix is to set the current_device
+  # value to `self`.
+  def device
+    self
+  end
 end
