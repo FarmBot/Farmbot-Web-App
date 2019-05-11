@@ -28,35 +28,61 @@ module Devices
       end
 
       def tool_slots_slot_1
-        add_tool_slot(ToolNames::SEEDER, 50, 100, -200)
+        add_tool_slot(name: ToolNames::SEEDER,
+                      x: 50,
+                      y: 100,
+                      z: 200,
+                      tool: tools_seeder)
       end
 
       def tool_slots_slot_2
-        add_tool_slot(ToolNames::SEED_BIN, 50, 200, -200)
+        add_tool_slot(name: ToolNames::SEED_BIN,
+                      x: 50,
+                      y: 200,
+                      z: -200,
+                      tool: tools_seed_bin)
       end
 
       def tool_slots_slot_3
-        add_tool_slot(ToolNames::SEED_TRAY, 50, 300, -200)
+        add_tool_slot(name: ToolNames::SEED_TRAY,
+                      x: 50,
+                      y: 300,
+                      z: -200,
+                      tool: tools_seed_tray)
       end
 
       def tool_slots_slot_4
-        add_tool_slot(ToolNames::WATERING_NOZZLE, 50, 500, -200)
+        add_tool_slot(name: ToolNames::WATERING_NOZZLE,
+                      x: 50,
+                      y: 500,
+                      z: -200,
+                      tool: tools_watering_nozzle)
       end
 
       def tool_slots_slot_5
-        add_tool_slot(ToolNames::SOIL_SENSOR, 50, 600, -200)
+        add_tool_slot(name: ToolNames::SOIL_SENSOR,
+                      x: 50,
+                      y: 600,
+                      z: -200,
+                      tool: tools_soil_sensor)
       end
 
       def tool_slots_slot_6
-        add_tool_slot(ToolNames::WEEDER, 50, 700, -200)
+        add_tool_slot(name: ToolNames::WEEDER,
+                      x: 50,
+                      y: 700,
+                      z: -200,
+                      tool: tools_weeder)
       end
 
       def tools_seed_bin
-        add_tool(ToolNames::SEED_BIN)
+        @tools_seed_bin ||=
+          add_tool(ToolNames::SEED_BIN)
       end
 
       def tools_seed_tray
-        add_tool(ToolNames::SEED_TRAY)
+        @tools_seed_tray ||=
+          add_tool(ToolNames::SEED_TRAY)
       end
 
       def tools_seed_trough_1; end
@@ -64,19 +90,23 @@ module Devices
       def tools_seed_trough_3; end
 
       def tools_seeder
-        add_tool(ToolNames::SEEDER)
+        @tools_seeder ||=
+          add_tool(ToolNames::SEEDER)
       end
 
       def tools_soil_sensor
-        add_tool(ToolNames::SOIL_SENSOR)
+        @tools_soil_sensor ||=
+          add_tool(ToolNames::SOIL_SENSOR)
       end
 
       def tools_watering_nozzle
-        add_tool(ToolNames::WATERING_NOZZLE)
+        @tools_watering_nozzle ||=
+          add_tool(ToolNames::WATERING_NOZZLE)
       end
 
       def tools_weeder
-        add_tool(ToolNames::WEEDER)
+        @tools_weeder ||=
+          add_tool(ToolNames::WEEDER)
       end
 
       def sequences_mount_tool
