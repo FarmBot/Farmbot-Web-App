@@ -194,6 +194,14 @@ describe Api::DevicesController do
       device.reload
     end
 
+    def check_slot_pairing(slot, expected_name)
+      if expected_name
+        expect(slot.tool.name).to eq(expected_name)
+      else
+        expect(slot.tool).to be(nil)
+      end
+    end
+
     it "seeds accounts with Genesis 1.2 data" do
       start_tests "genesis_1.2"
 
@@ -216,6 +224,12 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -259,6 +273,13 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -345,6 +366,14 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
+
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -388,6 +417,9 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
       expect(tool_slots_slot_6?(device)).to_not be
+      check_slot_pairing(tool_slots_slot_1?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Trough 2")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Trough 3")
       expect(tools_seed_bin?(device)).to_not be
       expect(tools_seed_tray?(device)).to_not be
       expect(tools_seed_trough_1?(device)).to be
@@ -431,6 +463,9 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
       expect(tool_slots_slot_6?(device)).to_not be
+      check_slot_pairing(tool_slots_slot_1?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Trough 2")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Trough 3")
       expect(tools_seed_bin?(device)).to_not be
       expect(tools_seed_tray?(device)).to_not be
       expect(tools_seed_trough_1?(device)).to be
