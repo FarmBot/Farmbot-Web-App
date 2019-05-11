@@ -150,11 +150,11 @@ module Devices
       end
 
       def settings_default_map_size_x
-        device.web_app_config.update_attributes!(map_size_x: 3000)
+        device.web_app_config.update_attributes!(map_size_x: 2_900)
       end
 
       def settings_default_map_size_y
-        device.web_app_config.update_attributes!(map_size_y: 1500)
+        device.web_app_config.update_attributes!(map_size_y: 1_400)
       end
 
       def pin_bindings_button_1

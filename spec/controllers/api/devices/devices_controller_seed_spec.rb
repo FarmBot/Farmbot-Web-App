@@ -245,8 +245,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis 1.3 data" do
@@ -295,8 +295,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis 1.4 data" do
@@ -338,8 +338,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis XL 1.4 data" do
@@ -357,7 +357,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
       expect(settings_enable_encoders?(device)).to be(true)
-      expect(settings_firmware?(device)).to eq("farmduino")
+      expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -389,8 +389,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(6000)
-      expect(settings_default_map_size_y?(device)).to eq(3000)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2900)
     end
 
     it "seeds accounts with Express 1.0 data" do
@@ -435,7 +435,7 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
 
