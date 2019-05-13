@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class XlOneFour < AbstractGenesis
+    class GenesisXlOneFour < AbstractGenesis
       def settings_firmware
         device
           .fbos_config
@@ -17,6 +17,10 @@ module Devices
 
       def settings_default_map_size_y
         device.web_app_config.update_attributes!(map_size_y: 2_900)
+      end
+
+      def settings_map_xl
+        device.web_app_config.update_attributes!(map_xl: true)
       end
     end
   end

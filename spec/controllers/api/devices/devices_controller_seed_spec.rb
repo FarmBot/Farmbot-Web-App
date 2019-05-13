@@ -61,6 +61,10 @@ describe Api::DevicesController do
       device.name
     end
 
+    def settings_map_xl?(device)
+      device.web_app_config.map_xl
+    end
+
     def settings_enable_encoders?(device)
       c = device.firmware_config
 
@@ -216,6 +220,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
       expect(settings_enable_encoders?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("arduino")
+      expect(settings_map_xl?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -265,6 +270,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
       expect(settings_enable_encoders?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino")
+      expect(settings_map_xl?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -315,6 +321,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
       expect(settings_enable_encoders?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
+      expect(settings_map_xl?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -358,6 +365,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
       expect(settings_enable_encoders?(device)).to be(true)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
+      expect(settings_map_xl?(device)).to be(true)
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -409,6 +417,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Express")
       expect(settings_enable_encoders?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
+      expect(settings_map_xl?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Trough 3")
@@ -455,6 +464,7 @@ describe Api::DevicesController do
       expect(settings_device_name?(device)).to eq("FarmBot Express XL")
       expect(settings_enable_encoders?(device)).to be(false)
       expect(settings_firmware?(device)).to eq("express_k10")
+      expect(settings_map_xl?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Seed Trough 1")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Trough 2")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Trough 3")

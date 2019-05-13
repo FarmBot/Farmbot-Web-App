@@ -6,7 +6,7 @@ class FbosConfig < ApplicationRecord
   after_save :maybe_sync_nerves, on: [:create, :update]
 
   FIRMWARE_HARDWARE = [
-    NONE = "none",
+    NONE = nil,
     ARDUINO = "arduino",
     FARMDUINO = "farmduino",
     FARMDUINO_K14 = "farmduino_k14",

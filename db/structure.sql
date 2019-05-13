@@ -430,7 +430,7 @@ CREATE TABLE public.fbos_configs (
     sequence_complete_log boolean DEFAULT false,
     sequence_init_log boolean DEFAULT false,
     network_not_found_timer integer,
-    firmware_hardware character varying DEFAULT 'arduino'::character varying,
+    firmware_hardware character varying,
     api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false,
@@ -2965,6 +2965,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190501143201'),
 ('20190502163453'),
 ('20190504170018'),
-('20190512015442');
+('20190512015442'),
+('20190513221836');
 
 

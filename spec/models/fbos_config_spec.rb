@@ -42,6 +42,6 @@ describe FbosConfig do
     end
 
     it "has default firmware_hardware" do
-      expect(FbosConfig.create!.firmware_hardware).to eq("none")
+      expect(FbosConfig.create!.firmware_hardware).to eq(nil)
     end
 end

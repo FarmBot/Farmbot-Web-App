@@ -30,6 +30,7 @@ module Devices
         :settings_device_name,
         :settings_enable_encoders,
         :settings_firmware,
+        :settings_map_xl,
 
         # TOOLS ==================================
         :tools_seed_bin,
@@ -74,6 +75,10 @@ module Devices
 
       def initialize(device)
         @device = device
+      end
+
+      def settings_map_xl
+        device.web_app_config.update_attributes!(map_xl: false)
       end
 
       def plants
