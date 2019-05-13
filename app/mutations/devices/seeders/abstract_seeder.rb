@@ -92,14 +92,8 @@ module Devices
         add_peripheral(12, "Peripheral 5")
       end
 
-      def peripherals_vacuum
-        add_peripheral(9, ToolNames::VACUUM)
-      end
-
-      def peripherals_water
-        add_peripheral(8, ToolNames::WATER)
-      end
-
+      def peripherals_vacuum; end
+      def peripherals_water; end
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
@@ -150,92 +144,24 @@ module Devices
 
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
-
-      def settings_device_name
-        device.update_attributes!(name: "FarmBot Genesis")
-      end
-
+      def settings_device_name; end
       def settings_enable_encoders; end
-
       def settings_firmware; end
-
-      def tool_slots_slot_1
-        add_tool_slot(name: ToolNames::SEEDER,
-                      x: 50,
-                      y: 100,
-                      z: -200,
-                      tool: tools_seeder)
-      end
-
-      def tool_slots_slot_2
-        add_tool_slot(name: ToolNames::SEED_BIN,
-                      x: 50,
-                      y: 200,
-                      z: -200,
-                      tool: tools_seed_bin)
-      end
-
-      def tool_slots_slot_3
-        add_tool_slot(name: ToolNames::SEED_TRAY,
-                      x: 50,
-                      y: 300,
-                      z: -200,
-                      tool: tools_seed_tray)
-      end
-
-      def tool_slots_slot_4
-        add_tool_slot(name: ToolNames::WATERING_NOZZLE,
-                      x: 50,
-                      y: 500,
-                      z: -200,
-                      tool: tools_watering_nozzle)
-      end
-
-      def tool_slots_slot_5
-        add_tool_slot(name: ToolNames::SOIL_SENSOR,
-                      x: 50,
-                      y: 600,
-                      z: -200,
-                      tool: tools_soil_sensor)
-      end
-
-      def tool_slots_slot_6
-        add_tool_slot(name: ToolNames::WEEDER,
-                      x: 50,
-                      y: 700,
-                      z: -200,
-                      tool: tools_weeder)
-      end
-
-      def tools_seed_bin
-        @tools_seed_bin ||=
-          add_tool(ToolNames::SEED_BIN)
-      end
-
-      def tools_seed_tray
-        @tools_seed_tray ||=
-          add_tool(ToolNames::SEED_TRAY)
-      end
-
+      def tool_slots_slot_1; end
+      def tool_slots_slot_2; end
+      def tool_slots_slot_3; end
+      def tool_slots_slot_4; end
+      def tool_slots_slot_5; end
+      def tool_slots_slot_6; end
+      def tools_seed_bin; end
+      def tools_seed_tray; end
       def tools_seed_trough_1; end
       def tools_seed_trough_2; end
       def tools_seed_trough_3; end
-
-      def tools_seeder
-        @tools_seeder ||= add_tool(ToolNames::SEEDER)
-      end
-
-      def tools_soil_sensor
-        @tools_soil_sensor ||= add_tool(ToolNames::SOIL_SENSOR)
-      end
-
-      def tools_watering_nozzle
-        @tools_watering_nozzle ||= add_tool(ToolNames::WATERING_NOZZLE)
-      end
-
-      def tools_weeder
-        @tools_weeder ||= add_tool(ToolNames::WEEDER)
-      end
+      def tools_seeder; end
+      def tools_soil_sensor; end
+      def tools_watering_nozzle; end
+      def tools_weeder; end
 
       private
 
