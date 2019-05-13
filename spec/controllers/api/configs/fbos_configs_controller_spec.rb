@@ -26,7 +26,7 @@ describe Api::FbosConfigsController do
         arduino_debug_messages:  false,
         network_not_found_timer: nil,
         os_auto_update:          true,
-        firmware_hardware:       "arduino",
+        firmware_hardware:       "none",
         api_migrated:            true
       }.to_a.map do |key, value|
         actual   = json[key]
