@@ -24,7 +24,12 @@ module Devices
                                                   encoder_enabled_z: 0)
       end
 
-      def settings_firmware; end
+      def settings_firmware
+        device
+          .fbos_config
+          .update_attributes!(firmware_hardware: FbosConfig::NONE)
+      end
+
       def tools_seed_bin; end
       def tools_seed_tray; end
       def tools_seed_trough_1; end
