@@ -19,12 +19,17 @@ module Devices
     private
 
     def run_it
-      Device::SINGULAR_RESOURCES.keys.map do |resource|
-        device.send(resource).destroy!
-      end
+      ActiveRecord::Base.transaction do
+        device.update_attributes!(name: "FarmBot")
+        Device::SINGULAR_RESOURCES.keys.map do |resource|
+          device.send(resource).destroy!
+        end
 
-      Device::PLURAL_RESOURCES.map do |resources|
-        device.send(resources).destroy_all
+        Device::PLURAL_RESOURCES.without(:token_issuances).map do |resources|
+          device.send(resources).destroy_all
+        end
+
+        Alerts::Create.run!(Alert::SEED_DATA.merge(device: device))
       end
     end
 

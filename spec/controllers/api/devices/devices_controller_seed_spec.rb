@@ -38,11 +38,11 @@ describe Api::DevicesController do
     end
 
     def pin_bindings_button_1?(device)
-      device.pin_bindings.find_by(pin_num: 1)
+      device.pin_bindings.find_by(pin_num: 16)
     end
 
     def pin_bindings_button_2?(device)
-      device.pin_bindings.find_by(pin_num: 2)
+      device.pin_bindings.find_by(pin_num: 22)
     end
 
     def plants?(device)
@@ -174,8 +174,6 @@ describe Api::DevicesController do
     end
 
     it "seeds accounts with default data" do
-      plant = FactoryBot.create(:plant)
-      device = plant.device
       sign_in user
       device = user.device
       expect(device.plants.count).to eq(0)
@@ -183,8 +181,8 @@ describe Api::DevicesController do
         post :seed, params: { product_line: "none" }
       end
       expect(response.status).to eq(200)
-      count = Devices::Seeders::Constants::PLANTS.count
-      expect(device.reload.plants.count).to eq(count)
+      expect(device.plants.count).to eq(0)
+      expect(device.reload.name).to eq("FarmBot")
     end
 
     def start_tests(product_line)
@@ -192,6 +190,14 @@ describe Api::DevicesController do
       run_jobs_now { post :seed, params: { product_line: product_line } }
       expect(response.status).to eq(200)
       device.reload
+    end
+
+    def check_slot_pairing(slot, expected_name)
+      if expected_name
+        expect(slot.tool.name).to eq(expected_name)
+      else
+        expect(slot.tool).to be(nil)
+      end
     end
 
     it "seeds accounts with Genesis 1.2 data" do
@@ -216,6 +222,12 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -233,8 +245,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis 1.3 data" do
@@ -259,6 +271,13 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -276,8 +295,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis 1.4 data" do
@@ -295,7 +314,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis")
       expect(settings_enable_encoders?(device)).to be(true)
-      expect(settings_firmware?(device)).to eq("farmduino")
+      expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
@@ -319,8 +338,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
-      expect(settings_default_map_size_y?(device)).to eq(1500)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1400)
     end
 
     it "seeds accounts with Genesis XL 1.4 data" do
@@ -338,13 +357,21 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq("FarmBot Genesis XL")
       expect(settings_enable_encoders?(device)).to be(true)
-      expect(settings_firmware?(device)).to eq("farmduino")
+      expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(tool_slots_slot_1?(device).name).to eq("Seeder")
       expect(tool_slots_slot_2?(device).name).to eq("Seed Bin")
       expect(tool_slots_slot_3?(device).name).to eq("Seed Tray")
       expect(tool_slots_slot_4?(device).name).to eq("Watering Nozzle")
       expect(tool_slots_slot_5?(device).name).to eq("Soil Sensor")
       expect(tool_slots_slot_6?(device).name).to eq("Weeder")
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Weeder")
+
       expect(tools_seed_bin?(device)).to be
       expect(tools_seed_tray?(device)).to be
       expect(tools_seed_trough_1?(device)).to_not be
@@ -362,8 +389,8 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to be_kind_of(Sequence)
       expect(sequences_unmount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(6000)
-      expect(settings_default_map_size_y?(device)).to eq(3000)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2900)
     end
 
     it "seeds accounts with Express 1.0 data" do
@@ -388,6 +415,9 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
       expect(tool_slots_slot_6?(device)).to_not be
+      check_slot_pairing(tool_slots_slot_1?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Trough 2")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Trough 3")
       expect(tools_seed_bin?(device)).to_not be
       expect(tools_seed_tray?(device)).to_not be
       expect(tools_seed_trough_1?(device)).to be
@@ -405,7 +435,7 @@ describe Api::DevicesController do
       expect(sequences_tool_error?(device)).to_not be
       expect(sequences_unmount_tool?(device)).to_not be
       expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
-      expect(settings_default_map_size_x?(device)).to eq(3000)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
 
@@ -431,6 +461,9 @@ describe Api::DevicesController do
       expect(tool_slots_slot_4?(device)).to_not be
       expect(tool_slots_slot_5?(device)).to_not be
       expect(tool_slots_slot_6?(device)).to_not be
+      check_slot_pairing(tool_slots_slot_1?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Trough 2")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Trough 3")
       expect(tools_seed_bin?(device)).to_not be
       expect(tools_seed_tray?(device)).to_not be
       expect(tools_seed_trough_1?(device)).to be

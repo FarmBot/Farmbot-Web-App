@@ -31,14 +31,6 @@ module Devices
         :settings_enable_encoders,
         :settings_firmware,
 
-        # TOOL SLOTS =============================
-        :tool_slots_slot_1,
-        :tool_slots_slot_2,
-        :tool_slots_slot_3,
-        :tool_slots_slot_4,
-        :tool_slots_slot_5,
-        :tool_slots_slot_6,
-
         # TOOLS ==================================
         :tools_seed_bin,
         :tools_seed_tray,
@@ -50,15 +42,35 @@ module Devices
         :tools_watering_nozzle,
         :tools_weeder,
 
-        # SEQUENCES ==============================
-        :sequences_tool_error,
-        :sequences_mount_tool,
-        :sequences_pick_up_seed,
-        :sequences_plant_seed,
-        :sequences_take_photo_of_plant,
-        :sequences_unmount_tool,
-        :sequences_water_plant,
+        # TOOL SLOTS =============================
+        :tool_slots_slot_1,
+        :tool_slots_slot_2,
+        :tool_slots_slot_3,
+        :tool_slots_slot_4,
+        :tool_slots_slot_5,
+        :tool_slots_slot_6,
       ]
+
+      unless Rails.env.production?
+        # PROBLEM:
+        #  * FBOS v8 is not out yet.
+        #  * The seed sequences use variables (FBOS >= v8)
+        #  * You already wrote all the tests and stuff.
+        # SOLUTION:
+        #  * Leave the tests in place
+        #  * Disable the behavior in production ENVs
+        #  * Put this code back in the main array when v8 is released.
+        # SEQUENCES ==============================
+        [:sequences_tool_error,
+         :sequences_mount_tool,
+         :sequences_pick_up_seed,
+         :sequences_plant_seed,
+         :sequences_take_photo_of_plant,
+         :sequences_unmount_tool,
+         :sequences_water_plant].map do |x|
+          COMMAND_ORDER.push(x)
+         end
+      end
 
       def initialize(device)
         @device = device
@@ -80,14 +92,8 @@ module Devices
         add_peripheral(12, "Peripheral 5")
       end
 
-      def peripherals_vacuum
-        add_peripheral(9, ToolNames::VACUUM)
-      end
-
-      def peripherals_water
-        add_peripheral(8, ToolNames::WATER)
-      end
-
+      def peripherals_vacuum; end
+      def peripherals_water; end
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
       def sensors_soil_sensor; end
@@ -138,66 +144,24 @@ module Devices
 
       def settings_default_map_size_x; end
       def settings_default_map_size_y; end
-
-      def settings_device_name
-        device.update_attributes!(name: "FarmBot Genesis")
-      end
-
+      def settings_device_name; end
       def settings_enable_encoders; end
-
       def settings_firmware; end
-
-      def tool_slots_slot_1
-        add_tool_slot(ToolNames::SEEDER, 50, 100, -200)
-      end
-
-      def tool_slots_slot_2
-        add_tool_slot(ToolNames::SEED_BIN, 50, 200, -200)
-      end
-
-      def tool_slots_slot_3
-        add_tool_slot(ToolNames::SEED_TRAY, 50, 300, -200)
-      end
-
-      def tool_slots_slot_4
-        add_tool_slot(ToolNames::WATERING_NOZZLE, 50, 500, -200)
-      end
-
-      def tool_slots_slot_5
-        add_tool_slot(ToolNames::SOIL_SENSOR, 50, 600, -200)
-      end
-
-      def tool_slots_slot_6
-        add_tool_slot(ToolNames::WEEDER, 50, 700, -200)
-      end
-
-      def tools_seed_bin
-        add_tool(ToolNames::SEED_BIN)
-      end
-
-      def tools_seed_tray
-        add_tool(ToolNames::SEED_TRAY)
-      end
-
+      def tool_slots_slot_1; end
+      def tool_slots_slot_2; end
+      def tool_slots_slot_3; end
+      def tool_slots_slot_4; end
+      def tool_slots_slot_5; end
+      def tool_slots_slot_6; end
+      def tools_seed_bin; end
+      def tools_seed_tray; end
       def tools_seed_trough_1; end
       def tools_seed_trough_2; end
       def tools_seed_trough_3; end
-
-      def tools_seeder
-        add_tool(ToolNames::SEEDER)
-      end
-
-      def tools_soil_sensor
-        add_tool(ToolNames::SOIL_SENSOR)
-      end
-
-      def tools_watering_nozzle
-        add_tool(ToolNames::WATERING_NOZZLE)
-      end
-
-      def tools_weeder
-        add_tool(ToolNames::WEEDER)
-      end
+      def tools_seeder; end
+      def tools_soil_sensor; end
+      def tools_watering_nozzle; end
+      def tools_weeder; end
 
       private
 
@@ -225,17 +189,19 @@ module Devices
                              mode: mode)
       end
 
-      def add_tool_slot(name,
-                        x,
-                        y,
-                        z,
-                        pullout_direction = ToolSlot::POSITIVE_X,
-                        gantry_mounted = false)
+      def add_tool_slot(name:,
+                        x:,
+                        y:,
+                        z:,
+                        tool:,
+                        pullout_direction: ToolSlot::POSITIVE_X,
+                        gantry_mounted: false)
         Points::Create.run!(pointer_type: "ToolSlot",
                             name: name,
                             x: x,
                             y: y,
                             z: z,
+                            tool_id: tool && tool.id,
                             pullout_direction: pullout_direction,
                             gantry_mounted: gantry_mounted,
                             device: device)
