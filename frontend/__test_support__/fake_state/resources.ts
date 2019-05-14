@@ -122,7 +122,8 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     meta: {},
     tool_id: undefined,
     name: "Tool Slot",
-    pullout_direction: 0
+    pullout_direction: 0,
+    gantry_mounted: false,
   });
 }
 
