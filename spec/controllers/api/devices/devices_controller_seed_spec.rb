@@ -180,13 +180,14 @@ describe Api::DevicesController do
     it "seeds accounts with default data" do
       sign_in user
       device = user.device
+      old_name = device.name
       expect(device.plants.count).to eq(0)
       run_jobs_now do
         post :seed, params: { product_line: "none" }
       end
       expect(response.status).to eq(200)
       expect(device.plants.count).to eq(0)
-      expect(device.reload.name).to eq("FarmBot")
+      expect(device.reload.name).to eq(old_name)
     end
 
     def start_tests(product_line)
