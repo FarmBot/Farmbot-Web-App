@@ -37,16 +37,8 @@ module Devices
       def tools_soil_sensor; end
       def tools_watering_nozzle; end
       def tools_weeder; end
-
-      def settings_device_name
-        device.update_attributes!(name: "FarmBot")
-      end
-
-      def settings_enable_encoders
-        device.firmware_config.update_attributes!(encoder_enabled_x: 0,
-                                                  encoder_enabled_y: 0,
-                                                  encoder_enabled_z: 0)
-      end
+      def settings_device_name; end
+      def settings_enable_encoders; end
     end
   end
 end
