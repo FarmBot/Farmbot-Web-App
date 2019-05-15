@@ -1,6 +1,6 @@
 jest.mock("../../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
-  closePlantInfo: jest.fn(),
+  closePlantInfo: jest.fn(() => jest.fn()),
 }));
 
 import { Mode } from "../interfaces";
@@ -141,6 +141,15 @@ describe("<GardenMap/>", () => {
       expect.objectContaining(e));
   });
 
+  it("starts drag: click-to-add mode", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.clickToAdd;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-svg").simulate("mouseDown", e);
+    expect(beginPlantDrag).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).not.toHaveBeenCalled();
+  });
+
   it("drags: selecting", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     mockMode = Mode.boxSelect;
@@ -234,7 +243,14 @@ describe("<GardenMap/>", () => {
     const p = fakeProps();
     p.designer.selectedPlants = undefined;
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
-    wrapper.instance().closePanel();
+    wrapper.instance().closePanel()();
+    expect(closePlantInfo).toHaveBeenCalled();
+  });
+
+  it("closes panel when not in select mode", () => {
+    mockMode = Mode.none;
+    const wrapper = mount<GardenMap>(<GardenMap {...fakeProps()} />);
+    wrapper.instance().closePanel()();
     expect(closePlantInfo).toHaveBeenCalled();
   });
 
@@ -243,7 +259,7 @@ describe("<GardenMap/>", () => {
     const p = fakeProps();
     p.designer.selectedPlants = [fakePlant().uuid];
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
-    wrapper.instance().closePanel();
+    wrapper.instance().closePanel()();
     expect(closePlantInfo).not.toHaveBeenCalled();
   });
 
