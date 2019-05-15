@@ -96,6 +96,13 @@ nav {
       div .saucer {
         display: inline-flex;
         margin-left: 1rem;
+        text-align: center;
+        vertical-align: top;
+        margin-top: -0.2rem;
+        p {
+          width: 100%;
+          margin-left: 0.2rem;
+        }
       }
     }
     div {

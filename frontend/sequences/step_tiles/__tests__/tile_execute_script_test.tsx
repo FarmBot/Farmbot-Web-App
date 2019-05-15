@@ -54,7 +54,9 @@ describe("<TileExecuteScript/>", () => {
     const wrapper = shallow(<TileExecuteScript {...fakeProps()} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "two", value: "two" },
-      { label: "three", value: "three" }]);
+      { label: "three", value: "three" },
+      { label: "Weed Detector", value: "plant-detection" },
+    ]);
   });
 
   it("shows 1st party in list", () => {
@@ -64,7 +66,9 @@ describe("<TileExecuteScript/>", () => {
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "one", value: "one" },
       { label: "two", value: "two" },
-      { label: "three", value: "three" }]);
+      { label: "three", value: "three" },
+      { label: "Weed Detector", value: "plant-detection" },
+    ]);
   });
 
   it("doesn't show manual input if installed farmware is selected", () => {
@@ -72,6 +76,15 @@ describe("<TileExecuteScript/>", () => {
     (p.currentStep as ExecuteScript).args.label = "two";
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(1);
+  });
+
+  it("shows special 1st-party Farmware name", () => {
+    const p = fakeProps();
+    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.farmwareInfo && p.farmwareInfo.farmwareNames.push("plant-detection");
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.find("label").length).toEqual(1);
+    expect(wrapper.text()).toContain("Weed Detector");
   });
 
   it("renders manual input", () => {
