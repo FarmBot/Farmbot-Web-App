@@ -468,9 +468,9 @@ CREATE TABLE public.firmware_configs (
     device_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    encoder_enabled_x integer DEFAULT 1,
-    encoder_enabled_y integer DEFAULT 1,
-    encoder_enabled_z integer DEFAULT 1,
+    encoder_enabled_x integer DEFAULT 0,
+    encoder_enabled_y integer DEFAULT 0,
+    encoder_enabled_z integer DEFAULT 0,
     encoder_invert_x integer DEFAULT 0,
     encoder_invert_y integer DEFAULT 0,
     encoder_invert_z integer DEFAULT 0,
@@ -1518,7 +1518,7 @@ CREATE TABLE public.web_app_configs (
     map_xl boolean DEFAULT false,
     raw_encoders boolean DEFAULT false,
     scaled_encoders boolean DEFAULT false,
-    show_spread boolean DEFAULT false,
+    show_spread boolean DEFAULT true,
     show_farmbot boolean DEFAULT true,
     show_plants boolean DEFAULT true,
     show_points boolean DEFAULT true,
@@ -2966,6 +2966,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190502163453'),
 ('20190504170018'),
 ('20190512015442'),
-('20190513221836');
+('20190513221836'),
+('20190515185612');
 
 
