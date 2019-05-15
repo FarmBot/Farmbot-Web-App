@@ -165,13 +165,12 @@ export const onReconnect =
 
 export const BROADCAST_CHANNEL = "public_broadcast";
 
-export function onPublicBroadcast(chan: string, _payl: unknown) {
-  if (chan === BROADCAST_CHANNEL) {
-    if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
-      location.assign(window.location.origin || "/");
-    } else {
-      alert(t(Content.FORCE_REFRESH_CANCEL_WARNING));
-    }
+export function onPublicBroadcast(payl: unknown) {
+  console.log(BROADCAST_CHANNEL, payl);
+  if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
+    location.assign(window.location.origin || "/");
+  } else {
+    alert(t(Content.FORCE_REFRESH_CANCEL_WARNING));
   }
 }
 
@@ -188,9 +187,9 @@ export const attachEventListeners =
       bot.on("legacy_status", onLegacyStatus(dispatch, getState));
       bot.on("status_v8", onStatus(dispatch, getState));
       bot.on("malformed", onMalformed);
-      bot.client.on("message", autoSync(dispatch, getState));
       bot.client.subscribe(BROADCAST_CHANNEL);
-      bot.client.on("message", onPublicBroadcast);
+      bot.on(BROADCAST_CHANNEL, onPublicBroadcast);
+      bot.client.on("message", autoSync(dispatch, getState));
       bot.client.on("reconnect", onReconnect);
     }
   };

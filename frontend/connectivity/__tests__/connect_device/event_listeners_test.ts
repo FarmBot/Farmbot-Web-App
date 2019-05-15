@@ -14,7 +14,7 @@ jest.mock("../../../device", () => { return { getDevice: () => mockBot }; });
 jest.mock("../../ping_mqtt", () => { return { startPinging: jest.fn() }; });
 
 import { getDevice } from "../../../device";
-import { attachEventListeners } from "../../connect_device";
+import { attachEventListeners, BROADCAST_CHANNEL } from "../../connect_device";
 import { startPinging } from "../../ping_mqtt";
 
 describe("attachEventListeners", () => {
@@ -30,6 +30,7 @@ describe("attachEventListeners", () => {
       "online",
       "sent",
       "status_v8",
+      BROADCAST_CHANNEL,
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
     [
       "message",
