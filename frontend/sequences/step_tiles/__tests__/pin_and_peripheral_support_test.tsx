@@ -111,71 +111,39 @@ describe("Pin and Peripheral support files", () => {
   });
 
   describe("pinsAsDropDownsWritePin()", () => {
-    it("doesn't display peripherals", () => {
-      const s = fakeSensor();
-      const p = fakePeripheral();
-      s.body.label = "not displayed";
-      p.body.label = "not displayed";
-      const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => false, true);
-      expect(JSON.stringify(result)).not.toContain("not displayed");
-    });
-
     it("displays peripherals", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "not displayed";
       p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => true, true);
+      const result = pinsAsDropDownsWritePin(ri.index, true);
       expect(JSON.stringify(result)).toContain("displayed peripheral");
       expect(JSON.stringify(result)).not.toContain("not displayed");
     });
 
-    it("doesn't display pins", () => {
-      const ri = buildResourceIndex([]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => false, false);
-      expect(JSON.stringify(result)).not.toContain("Pin 13");
-    });
-
     it("displays pins", () => {
       const ri = buildResourceIndex([]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => true, true);
+      const result = pinsAsDropDownsWritePin(ri.index, true);
       expect(JSON.stringify(result)).toContain("Pin 13");
     });
   });
 
   describe("pinsAsDropDownsReadPin()", () => {
-    it("doesn't display peripherals and sensors", () => {
-      const s = fakeSensor();
-      const p = fakePeripheral();
-      s.body.label = "not displayed";
-      p.body.label = "not displayed";
-      const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => false, true);
-      expect(JSON.stringify(result)).not.toContain("not displayed");
-    });
-
     it("displays peripherals and sensors", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "displayed sensor";
       p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => true, true);
+      const result = pinsAsDropDownsReadPin(ri.index, true);
       expect(JSON.stringify(result)).toContain("displayed sensor");
       expect(JSON.stringify(result)).toContain("displayed peripheral");
     });
 
-    it("doesn't display pins", () => {
-      const ri = buildResourceIndex([]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => false, false);
-      expect(JSON.stringify(result)).not.toContain("Pin 13");
-    });
-
     it("displays pins", () => {
       const ri = buildResourceIndex([]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => true, true);
+      const result = pinsAsDropDownsReadPin(ri.index, true);
       expect(JSON.stringify(result)).toContain("Pin 13");
     });
   });
