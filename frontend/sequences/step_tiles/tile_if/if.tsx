@@ -36,8 +36,7 @@ export function If_(props: IfParams) {
   const { currentStep, resources } = props;
   const sequence = props.currentSequence;
   const { op } = currentStep.args;
-  const cb = props.shouldDisplay || (() => false);
-  const lhsOptions = LHSOptions(resources, cb, !!props.showPins);
+  const lhsOptions = LHSOptions(resources, !!props.showPins);
 
   return <Row>
     <Col xs={12}>

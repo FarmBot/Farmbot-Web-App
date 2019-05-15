@@ -47,14 +47,6 @@ describe("<Controls />", () => {
     expect(txt).not.toContain("webcam");
   });
 
-  it("doesn't show sensors", () => {
-    const p = fakeProps();
-    p.shouldDisplay = () => false;
-    const wrapper = mount(<Controls {...p} />);
-    const txt = wrapper.text().toLowerCase();
-    expect(txt).not.toContain("sensors");
-  });
-
   it("doesn't show sensor readings widget", () => {
     const p = fakeProps();
     p.sensorReadings = [];

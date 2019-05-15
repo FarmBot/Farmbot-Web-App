@@ -125,7 +125,7 @@ const parseCalibrationData =
     const imageOffsetX = noCalib ? 0 : parse(offset.x);
     const imageOffsetY = noCalib ? 0 : parse(offset.y);
     const cleanOrigin = origin ? origin.split("\"").join("") : undefined;
-    const imageOrigin = noCalib ? "BOTTOM_LEFT" : cleanOrigin;
+    const imageOrigin = noCalib ? "TOP_LEFT" : cleanOrigin;
     return { noCalib, imageScale, imageOffsetX, imageOffsetY, imageOrigin };
   };
 

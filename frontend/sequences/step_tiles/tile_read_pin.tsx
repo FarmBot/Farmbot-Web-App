@@ -24,7 +24,7 @@ export function PinMode(props: StepParams) {
 
 }
 export function TileReadPin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence, shouldDisplay
+  const { dispatch, currentStep, index, currentSequence
   } = props;
   const className = "read-pin-step";
   if (currentStep.kind !== "read_pin") { throw new Error("never"); }
@@ -46,8 +46,7 @@ export function TileReadPin(props: StepParams) {
             key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
             onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDownsReadPin(props.resources,
-              shouldDisplay || (() => false), !!props.showPins)} />
+            list={pinsAsDropDownsReadPin(props.resources, !!props.showPins)} />
         </Col>
         <PinMode {...props} />
         <Col xs={6} md={3}>

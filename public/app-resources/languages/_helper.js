@@ -54,7 +54,9 @@ var HelperNamespace = (function () {
   var EXTRA_TAGS = [
     "Fun", "Warn", "Controls", "Device", "Farm Designer", "on",
     "Map Points", "Spread", "Row Spacing", "Height", "Taxon",
-    "Growing Degree Days", "Svg Icon", "Invalid date", "yes"
+    "Growing Degree Days", "Svg Icon", "Invalid date", "yes", "Tools",
+    "Messages", "Sequence Editor", "Commands", "Regimen Editor", "Scheduler",
+    "Farmware List", "SYNC NOW",
   ];
 
   /**
@@ -142,6 +144,16 @@ var HelperNamespace = (function () {
       markdown += '|' + langMetrics.orphans;
       markdown += '|\n';
     });
+    markdown += '\n**Percent translated** refers to the percent of phrases';
+    markdown += ' identified by the\nlanguage helper that have been';
+    markdown += ' translated. Additional phrases not identified\n';
+    markdown += 'by the language helper may exist in the Web App.\n\n';
+    markdown += '**Other Translations** include translated phrases';
+    markdown += ' that do not match any of\nthe phrases identified by the';
+    markdown += ' language helper. These are usually phrases\nnot identified';
+    markdown += ' by the language helper or phrases that have been changed';
+    markdown += '\nor removed from the Web App.';
+    markdown += '\n';
     fs.writeFileSync(__dirname + '/translation_metrics.md', markdown);
   }
 

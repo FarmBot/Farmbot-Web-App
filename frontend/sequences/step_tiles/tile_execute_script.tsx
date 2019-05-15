@@ -23,7 +23,9 @@ export function TileExecuteScript(props: StepParams) {
 
     const selectedFarmwareDDI = (name: string): DropDownItem => {
       if (isInstalled(name)) {
-        return { value: name, label: name };
+        return name === "plant-detection"
+          ? { value: name, label: t("Weed Detector") }
+          : { value: name, label: name };
       }
       return { label: "Manual Input", value: "" };
     };
