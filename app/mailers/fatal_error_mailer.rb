@@ -13,7 +13,7 @@ class FatalErrorMailer < ApplicationMailer
                       .map{|(t,m)| [t.in_time_zone(device.timezone || "UTC"), m] }
                       .map{|(x,y)| "[#{x}]: #{y}"}
                       .join("\n\n")
-      @device_name = device.name || "Farmbot"
+      @device_name = device.name || "FarmBot"
       mail(to: @emails, subject: "🚨 New error reported by #{@device_name}!")
       @logs.update_all(sent_at: Time.now)
     end
