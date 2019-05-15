@@ -12,18 +12,11 @@ describe("<EncodersAndEndStops />", () => {
     return {
       dispatch: jest.fn(),
       controlPanelState: panelState(),
-      sourceFwConfig: (x) => {
-        return { value: bot.hardware.mcu_params[x], consistent: true };
-      },
+      sourceFwConfig: x =>
+        ({ value: bot.hardware.mcu_params[x], consistent: true }),
       shouldDisplay: jest.fn(key => mockFeatures[key]),
     };
   };
-
-  it("doesn't show new inversion param", () => {
-    mockFeatures.endstop_invert = false;
-    const wrapper = mount(<EncodersAndEndStops {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invert endstops");
-  });
 
   it("shows new inversion param", () => {
     mockFeatures.endstop_invert = true;

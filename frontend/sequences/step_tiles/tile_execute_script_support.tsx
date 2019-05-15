@@ -122,7 +122,8 @@ export const farmwareList =
       return farmwareNames
         .filter(x => (firstPartyFarmwareNames && !showFirstPartyFarmware)
           ? !firstPartyFarmwareNames.includes(x) : x)
-        .map(name => ({ value: name, label: name }));
+        .map(name => ({ value: name, label: name }))
+        .concat({ label: t("Weed Detector"), value: "plant-detection" });
     }
     return [];
   };

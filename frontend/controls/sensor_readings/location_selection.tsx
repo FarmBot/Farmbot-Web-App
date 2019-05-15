@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../ui";
-
 import { AxisInputBoxGroupState } from "../interfaces";
 import { Xyz } from "../../devices/interfaces";
 import { AxisInputBox } from "../axis_input_box";
@@ -12,7 +11,7 @@ import { t } from "../../i18next_wrapper";
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
   ({ location, deviation, setDeviation, setLocation }: LocationSelectionProps) =>
-    <div>
+    <div className="sensor-history-location-selection">
       <Row>
         {["x", "y", "z"].map(axis =>
           <Col key={axis + "_heading"} xs={3}>

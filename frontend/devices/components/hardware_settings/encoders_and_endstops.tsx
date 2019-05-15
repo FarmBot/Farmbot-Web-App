@@ -104,20 +104,19 @@ export function EncodersAndEndStops(props: EncodersProps) {
         }}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      {shouldDisplay(Feature.endstop_invert) &&
-        <BooleanMCUInputGroup
-          name={t("Invert Endstops")}
-          tooltip={ToolTips.INVERT_ENDPOINTS}
-          x={"movement_invert_2_endpoints_x"}
-          y={"movement_invert_2_endpoints_y"}
-          z={"movement_invert_2_endpoints_z"}
-          grayscale={{
-            x: !sourceFwConfig("movement_enable_endpoints_x").value,
-            y: !sourceFwConfig("movement_enable_endpoints_y").value,
-            z: !sourceFwConfig("movement_enable_endpoints_z").value
-          }}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
+      <BooleanMCUInputGroup
+        name={t("Invert Endstops")}
+        tooltip={ToolTips.INVERT_ENDPOINTS}
+        x={"movement_invert_2_endpoints_x"}
+        y={"movement_invert_2_endpoints_y"}
+        z={"movement_invert_2_endpoints_z"}
+        grayscale={{
+          x: !sourceFwConfig("movement_enable_endpoints_x").value,
+          y: !sourceFwConfig("movement_enable_endpoints_y").value,
+          z: !sourceFwConfig("movement_enable_endpoints_z").value
+        }}
+        dispatch={dispatch}
+        sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </section>;
 }
