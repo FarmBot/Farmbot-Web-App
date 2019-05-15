@@ -12,7 +12,7 @@ module Devices
 
     def execute
       merge_default_values
-      device = Device.create!({ name: "Farmbot" }.merge(inputs.except(:user)))
+      device = Device.create!({ name: "FarmBot" }.merge(inputs.except(:user)))
       Alerts::Create.run!(Alert::SEED_DATA.merge(device: device))
       Alerts::Create.run!(Alert::TOUR.merge(device: device))
       Alerts::Create.run!(Alert::USER.merge(device: device))
@@ -34,7 +34,7 @@ module Devices
     private
 
     def merge_default_values
-      inputs[:name] ||= "Farmbot"
+      inputs[:name] ||= "FarmBot"
     end
   end
 end
