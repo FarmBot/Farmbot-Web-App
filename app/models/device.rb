@@ -12,39 +12,35 @@ class Device < ApplicationRecord
                  "Resuming log storage."
   CACHE_KEY = "devices.%s"
 
-  has_many :alerts, dependent: :destroy
-  has_many :farmware_envs, dependent: :destroy
-  has_many :farm_events, dependent: :destroy
-  has_many :farmware_installations, dependent: :destroy
-  has_many :images, dependent: :destroy
-  has_many :logs, dependent: :destroy
-  has_many :peripherals, dependent: :destroy
-  has_many :pin_bindings, dependent: :destroy
-  has_many :plant_templates, dependent: :destroy
-  has_many :points, dependent: :destroy
-  has_many :regimens, dependent: :destroy
-  has_many :saved_gardens, dependent: :destroy
-  has_many :sensor_readings, dependent: :destroy
-  has_many :sensors, dependent: :destroy
-  has_many :sequences, dependent: :destroy
-  has_many :token_issuances, dependent: :destroy
-  has_many :tools, dependent: :destroy
-  has_many :webcam_feeds, dependent: :destroy
-  has_many :diagnostic_dumps, dependent: :destroy
-  has_many :fragments, dependent: :destroy
-  has_one :fbos_config, dependent: :destroy
+  PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
+                        images logs peripherals pin_bindings plant_templates
+                        points regimens saved_gardens sensor_readings sensors
+                        sequences token_issuances tools webcam_feeds
+                        diagnostic_dumps fragments)
+
+  PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
+
+  SINGULAR_RESOURCES = {
+    fbos_config: FbosConfig,
+    firmware_config: FirmwareConfig,
+    web_app_config: WebAppConfig,
+  }
+
+  SINGULAR_RESOURCES.map do |(name, klass)|
+    has_one name, dependent: :destroy
+    define_method(name) { super() || klass.create!(device: self) }
+  end
+
   has_many :in_use_tools
   has_many :in_use_points
   has_many :users
 
   validates_presence_of :name
-  validates :timezone,
-    inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }
-  [FbosConfig, FirmwareConfig, WebAppConfig].map do |klass|
-    name = klass.table_name.singularize.to_sym
-    has_one name, dependent: :destroy
-    define_method(name) { super() || klass.create!(device: self) }
-  end
+  validates :timezone, inclusion: {
+                         in: TIMEZONES,
+                         message: BAD_TZ,
+                         allow_nil: true,
+                       }
 
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
@@ -86,6 +82,14 @@ class Device < ApplicationRecord
 
   def plants
     points.where(pointer_type: "Plant")
+  end
+
+  def tool_slots
+    points.where(pointer_type: "ToolSlot")
+  end
+
+  def generic_pointers
+    points.where(pointer_type: "GenericPointer")
   end
 
   TIMEOUT = 150.seconds

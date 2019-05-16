@@ -26,7 +26,8 @@ describe("<ToolSlotLayer/>", () => {
       y: 2,
       z: 3,
       meta: {},
-      pullout_direction: 0
+      pullout_direction: 0,
+      gantry_mounted: false,
     };
     const toolSlot: TaggedToolSlotPointer = fakeResource("Point", ts);
     return {

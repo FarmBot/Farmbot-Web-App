@@ -12,15 +12,11 @@ module Devices
 
     def execute
       merge_default_values
-      device = Device.create!({name: "Farmbot"}.merge(inputs.except(:user)))
-      Alerts::Create.run!(device:      device,
-                           problem_tag: Alert::SEED_DATA)
-      Alerts::Create.run!(device:      device,
-                           problem_tag: Alert::TOUR)
-      Alerts::Create.run!(device:      device,
-                           problem_tag: Alert::USER)
-      Alerts::Create.run!(device:      device,
-                           problem_tag: Alert::DOCUMENTATION)
+      device = Device.create!({ name: "FarmBot" }.merge(inputs.except(:user)))
+      Alerts::Create.run!(Alert::SEED_DATA.merge(device: device))
+      Alerts::Create.run!(Alert::TOUR.merge(device: device))
+      Alerts::Create.run!(Alert::USER.merge(device: device))
+      Alerts::Create.run!(Alert::DOCUMENTATION.merge(device: device))
 
       ActiveRecord::Base.transaction do
         # TODO: This is a really, really, really old
@@ -35,10 +31,10 @@ module Devices
       device
     end
 
-  private
+    private
 
     def merge_default_values
-      inputs[:name]  ||= "Farmbot"
+      inputs[:name] ||= "FarmBot"
     end
   end
 end

@@ -5,6 +5,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -193,8 +194,8 @@ ALTER SEQUENCE public.delayed_jobs_id_seq OWNED BY public.delayed_jobs.id;
 
 CREATE TABLE public.devices (
     id integer NOT NULL,
-    name character varying DEFAULT 'Farmbot'::character varying,
-    max_log_count integer DEFAULT 100,
+    name character varying DEFAULT 'FarmBot'::character varying,
+    max_log_count integer DEFAULT 1000,
     max_images_count integer DEFAULT 100,
     timezone character varying(280),
     last_saw_api timestamp without time zone,
@@ -429,7 +430,7 @@ CREATE TABLE public.fbos_configs (
     sequence_complete_log boolean DEFAULT false,
     sequence_init_log boolean DEFAULT false,
     network_not_found_timer integer,
-    firmware_hardware character varying DEFAULT 'arduino'::character varying,
+    firmware_hardware character varying,
     api_migrated boolean DEFAULT true,
     os_auto_update boolean DEFAULT true,
     arduino_debug_messages boolean DEFAULT false,
@@ -467,9 +468,9 @@ CREATE TABLE public.firmware_configs (
     device_id bigint,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    encoder_enabled_x integer DEFAULT 1,
-    encoder_enabled_y integer DEFAULT 1,
-    encoder_enabled_z integer DEFAULT 1,
+    encoder_enabled_x integer DEFAULT 0,
+    encoder_enabled_y integer DEFAULT 0,
+    encoder_enabled_z integer DEFAULT 0,
     encoder_invert_x integer DEFAULT 0,
     encoder_invert_y integer DEFAULT 0,
     encoder_invert_z integer DEFAULT 0,
@@ -746,7 +747,8 @@ CREATE TABLE public.points (
     tool_id integer,
     pullout_direction integer DEFAULT 0,
     migrated_at timestamp without time zone,
-    discarded_at timestamp without time zone
+    discarded_at timestamp without time zone,
+    gantry_mounted boolean DEFAULT false
 );
 
 
@@ -1516,7 +1518,7 @@ CREATE TABLE public.web_app_configs (
     map_xl boolean DEFAULT false,
     raw_encoders boolean DEFAULT false,
     scaled_encoders boolean DEFAULT false,
-    show_spread boolean DEFAULT false,
+    show_spread boolean DEFAULT true,
     show_farmbot boolean DEFAULT true,
     show_plants boolean DEFAULT true,
     show_points boolean DEFAULT true,
@@ -1548,7 +1550,9 @@ CREATE TABLE public.web_app_configs (
     internal_use text,
     time_format_24_hour boolean DEFAULT false,
     show_pins boolean DEFAULT false,
-    disable_emergency_unlock_confirmation boolean DEFAULT false
+    disable_emergency_unlock_confirmation boolean DEFAULT false,
+    map_size_x integer DEFAULT 2900,
+    map_size_y integer DEFAULT 1400
 );
 
 
@@ -2957,6 +2961,13 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190419001321'),
 ('20190419052844'),
 ('20190419174728'),
-('20190419174811');
+('20190419174811'),
+('20190501143201'),
+('20190502163453'),
+('20190504170018'),
+('20190512015442'),
+('20190513221836'),
+('20190515185612'),
+('20190515205442');
 
 

@@ -89,6 +89,10 @@ export class API {
   get passwordResetPath() { return `${this.baseUrl}/api/password_resets/`; }
   /** /api/device/ */
   get devicePath() { return `${this.baseUrl}/api/device/`; }
+  /** /api/device/seed */
+  get accountSeedPath() { return `${this.devicePath}seed`; }
+  /** /api/device/reset */
+  get accountResetPath() { return `${this.devicePath}reset`; }
   /** /api/users/ */
   get usersPath() { return `${this.baseUrl}/api/users/`; }
   /** /api/users/control_certificate */

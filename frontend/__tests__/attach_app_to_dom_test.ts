@@ -10,6 +10,10 @@ jest.mock("../redux/store", () => {
   return { store: { dispatch: jest.fn() } };
 });
 
+jest.mock("../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => false, }
+}));
+
 jest.mock("../config/actions", () => {
   // Stubbing this to make testing easier.
   return { ready: () => ({ type: "YES_IT_WAS_CALLED" }) };

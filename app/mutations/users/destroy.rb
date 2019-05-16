@@ -1,6 +1,6 @@
 module Users
   class Destroy < Mutations::Command
-    BAD_PASSWORD = "Password does not match"
+    include Users::PasswordHelpers
 
     required do
       model :user, class: User
@@ -8,18 +8,11 @@ module Users
     end
 
     def validate
-      confirm_password
+      confirm_password(user, password)
     end
 
     def execute
       user.delay.destroy!
-    end
-
-    private
-
-    def confirm_password
-      invalid = !user.valid_password?(password)
-      add_error :password, :*, BAD_PASSWORD if invalid
     end
   end
 end

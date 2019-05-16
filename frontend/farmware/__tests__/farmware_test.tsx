@@ -1,12 +1,5 @@
 jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
-jest.mock("../../history", () => ({
-  history: {
-    push: jest.fn(),
-    getCurrentLocation: () => ({ pathname: "" })
-  },
-}));
-
 const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 

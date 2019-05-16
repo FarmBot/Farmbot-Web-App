@@ -32,7 +32,8 @@ describe("<ImageLayer/>", () => {
         scale: undefined,
         calibrationZ: undefined,
       },
-      getConfigValue: jest.fn(),
+      imageFilterBegin: "",
+      imageFilterEnd: "",
     };
   }
 
@@ -54,7 +55,7 @@ describe("<ImageLayer/>", () => {
   it("filters old images", () => {
     const p = fakeProps();
     p.images[0].body.created_at = "2018-01-22T05:00:00.000Z";
-    p.getConfigValue = () => "2018-01-23T05:00:00.000Z";
+    p.imageFilterBegin = "2018-01-23T05:00:00.000Z";
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(0);

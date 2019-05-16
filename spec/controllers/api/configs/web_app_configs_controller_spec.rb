@@ -24,7 +24,7 @@ describe Api::WebAppConfigsController do
         map_xl: false,
         raw_encoders: false,
         scaled_encoders: false,
-        show_spread: false,
+        show_spread: true,
         show_farmbot: true,
         show_plants: true,
         show_points: true,

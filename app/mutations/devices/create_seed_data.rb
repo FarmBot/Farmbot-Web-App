@@ -7,13 +7,10 @@ module Devices
       "genesis_1.2" => Devices::Seeders::GenesisOneTwo,
       "genesis_1.3" => Devices::Seeders::GenesisOneThree,
       "genesis_1.4" => Devices::Seeders::GenesisOneFour,
-
-      "xl_1.4" => Devices::Seeders::XlOneFour,
+      "genesis_xl_1.4" => Devices::Seeders::GenesisXlOneFour,
 
       "none" => Devices::Seeders::None,
     }
-
-    COMMANDS = Devices::Seeders::Abstract.instance_methods(false).sort
 
     required do
       model :device
@@ -21,7 +18,8 @@ module Devices
     end
 
     def execute
-      run_seeds!
+      self.delay.run_seeds!
+      { done: "Loading resources now." }
     end
 
     def seeder
@@ -29,7 +27,9 @@ module Devices
     end
 
     def run_seeds!
-      COMMANDS.map { |cmd| seeder.send(cmd) }
+      seeder.class::COMMAND_ORDER.map do |cmd|
+        seeder.send(cmd)
+      end
     end
   end
 end

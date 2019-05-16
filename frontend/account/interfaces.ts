@@ -1,6 +1,7 @@
 import { User } from "../auth/interfaces";
 import { TaggedUser } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { Thunk } from "../redux/interfaces";
 
 export interface Props {
   user: TaggedUser;
@@ -20,13 +21,15 @@ export interface DeletionRequest {
   password: string;
 }
 
-export interface DeleteAccountProps {
-  onClick(pw: string): void;
+export interface DangerousDeleteProps {
+  title: string;
+  warning: string;
+  confirmation: string;
+  dispatch: Function;
+  onClick(payload: DeletionRequest): Thunk;
 }
 
-export interface DeleteAccountState {
-  password: string;
-}
+export interface DangerousDeleteState extends DeletionRequest { }
 
 export interface SettingsPropTypes {
   user: TaggedUser;

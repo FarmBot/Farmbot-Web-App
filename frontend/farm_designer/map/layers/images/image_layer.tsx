@@ -4,7 +4,6 @@ import { CameraCalibrationData } from "../../../interfaces";
 import { TaggedImage } from "farmbot";
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep } from "lodash";
-import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import moment from "moment";
 import { equals } from "../../../../util";
 
@@ -13,7 +12,8 @@ export interface ImageLayerProps {
   images: TaggedImage[];
   mapTransformProps: MapTransformProps;
   cameraCalibrationData: CameraCalibrationData;
-  getConfigValue: GetWebAppConfigValue;
+  imageFilterBegin: string;
+  imageFilterEnd: string;
 }
 
 export class ImageLayer extends React.Component<ImageLayerProps> {
@@ -24,17 +24,16 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
 
   render() {
     const {
-      visible, images, mapTransformProps, cameraCalibrationData, getConfigValue
+      visible, images, mapTransformProps, cameraCalibrationData,
+      imageFilterBegin, imageFilterEnd,
     } = this.props;
-    const imageFilterBegin = getConfigValue("photo_filter_begin");
-    const imageFilterEnd = getConfigValue("photo_filter_end");
     return <g id="image-layer">
       {visible &&
         reverse(cloneDeep(images))
           .filter(x => !imageFilterEnd ||
-            moment(x.body.created_at).isBefore(imageFilterEnd.toString()))
+            moment(x.body.created_at).isBefore(imageFilterEnd))
           .filter(x => !imageFilterBegin ||
-            moment(x.body.created_at).isAfter(imageFilterBegin.toString()))
+            moment(x.body.created_at).isAfter(imageFilterBegin))
           .map(img =>
             <MapImage
               image={img}

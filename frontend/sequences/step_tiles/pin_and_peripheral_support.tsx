@@ -12,7 +12,6 @@ import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
-import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { joinKindAndId } from "../../resources/reducer_support";
 import { t } from "../../i18next_wrapper";
 
@@ -102,18 +101,18 @@ export function pinDropdowns(
 }
 
 export const pinsAsDropDownsWritePin = (
-  input: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
+  input: ResourceIndex, showPins: boolean
 ): DropDownItem[] => [
-    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
-    ...(shouldDisplay(Feature.rpi_led_control) ? boxLedsAsDropDowns() : []),
+    ...peripheralsAsDropDowns(input),
+    ...boxLedsAsDropDowns(),
     ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
 export const pinsAsDropDownsReadPin = (
-  input: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
+  input: ResourceIndex, showPins: boolean
 ): DropDownItem[] => [
-    ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(input) : []),
-    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
+    ...sensorsAsDropDowns(input),
+    ...peripheralsAsDropDowns(input),
     ...(showPins ? pinDropdowns(n => n) : []),
   ];
 

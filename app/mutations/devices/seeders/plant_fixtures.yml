@@ -1,0 +1,122 @@
+---
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 400.0
+  y: 200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 400.0
+  y: 400.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 600.0
+  y: 200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 600.0
+  y: 400.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 800.0
+  y: 400.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Spinach
+  openfarm_slug: spinach
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 800.0
+  y: 200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Broccoli
+  openfarm_slug: broccoli
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 600.0
+  y: 800.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Beets
+  openfarm_slug: beets
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 800.0
+  y: 1200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Beets
+  openfarm_slug: beets
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 600.0
+  y: 1200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Beets
+  openfarm_slug: beets
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 400.0
+  y: 1200.0
+  z: 0.0
+- meta: {}
+  pointer_type: Plant
+  name: Beets
+  openfarm_slug: beets
+  plant_stage: planned
+  planted_at:
+  pullout_direction: 0
+  radius: 25.0
+  x: 200.0
+  y: 1200.0
+  z: 0.0

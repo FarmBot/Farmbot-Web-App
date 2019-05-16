@@ -382,6 +382,20 @@ a {
   }
 }
 
+.sensor-history-widget {
+  .sensor-selection,
+  .sensor-history-time-selection,
+  .sensor-history-location-selection {
+    margin-bottom: 1rem;
+  }
+  .row {
+    margin-bottom: 0 !important;
+  }
+  label {
+    margin-bottom: 5px;
+  }
+}
+
 .sensor-readings-plot {
   max-height: 300px;
   stroke: $black;
@@ -1250,6 +1264,9 @@ ul {
     }
     .tour-list {
       margin: 0;
+      label {
+        max-width: 57%;
+      }
     }
     .link-button {
       color: $off_white;

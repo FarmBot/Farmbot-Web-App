@@ -5,12 +5,13 @@ module Alerts
       string :problem_tag, in: Alert::PROBLEM_TAGS
     end
 
-    optional { string :slug }
+    optional do
+      string :slug
+      integer :priority, default: 99
+    end
 
     def execute
-      Alert.create!(device: device,
-                    problem_tag: problem_tag,
-                    slug: slug || SecureRandom.uuid)
+      Alert.create!({ slug: slug || SecureRandom.uuid }.merge(inputs))
     end
   end
 end

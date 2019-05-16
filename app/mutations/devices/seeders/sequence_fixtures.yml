@@ -1,0 +1,546 @@
+---
+:MOUNT_TOOL: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: tool
+            :args:
+              :tool_id: 0
+  :color: gray
+  :name: Mount tool
+  :body:
+  - :kind: find_home
+    :args:
+      :axis: all
+      :speed: 100
+    :comment: Ensure bot accuracy
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 50
+          :y: 0
+          :x: 0
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+    :comment: Move to above tool
+  - :kind: move_absolute
+    :args:
+      :speed: 50
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 0
+          :y: 0
+          :x: 0
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+    :comment: Mount tool
+  - :kind: read_pin
+    :args:
+      :label: Tool Verification
+      :pin_mode: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Sensor
+    :comment: Verify tool is mounted
+  - :kind: _if
+    :args:
+      :rhs: 1
+      :op: is
+      :_else:
+        :kind: execute
+        :args:
+          :sequence_id: 0
+      :_then:
+        :kind: nothing
+        :args: {}
+      :lhs:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Sensor
+    :comment: Proceed or error
+  - :kind: move_absolute
+    :args:
+      :speed: 50
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 0
+          :y: 0
+          :x: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+    :comment: Pull tool out of slot
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 150
+          :y: 0
+          :x: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+    :comment: Move to safe launch location
+
+:TAKE_PHOTO_OF_PLANT: # ==========================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: coordinate
+            :args:
+              :x: 0
+              :y: 0
+              :z: 0
+  :color: gray
+  :name: Take photo of plant
+  :body:
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 300
+    :comment: Move above plant
+  - :kind: take_photo
+    :args: {}
+
+:WATER_PLANT: # ==================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: coordinate
+            :args:
+              :z: 0
+              :y: 0
+              :x: 0
+  :color: blue
+  :name: Water plant
+  :body:
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 300
+          :y: 0
+          :x: 0
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+    :comment: Move above plant
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 1
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn on water
+  - :kind: wait
+    :args:
+      :milliseconds: 2000
+    :comment: Wait 2 seconds
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn off water
+
+:PLANT_SEED: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: coordinate
+            :args:
+              :z: 0
+              :y: 0
+              :x: 0
+  :color: yellow
+  :name: Plant seed
+  :body:
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 150
+    :comment: Move to above plant
+  - :kind: move_absolute
+    :args:
+      :speed: 25
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 75
+    :comment: Plant seed
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn off vacuum pump
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 150
+    :comment: Retract needle
+  - :kind: find_home
+    :args:
+      :speed: 100
+      :axis: z
+    :comment: Move to safe Z position
+
+:PICK_UP_SEED_EXPRESS: # =========================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: yellow
+  :name: Pick up seed (Express)
+  :body:
+  - :kind: find_home
+    :args:
+      :speed: 100
+      :axis: z
+    :comment: Move to safe Z
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 50
+          :y: 0
+          :x: 0
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+    :comment: Move above seed trough
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 1
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn on vacuum pump
+  - :kind: move_absolute
+    :args:
+      :speed: 25
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 0
+          :y: 0
+          :x: 0
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+    :comment: Pick up seed
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :offset:
+        :kind: coordinate
+        :args:
+          :z: 50
+          :y: 0
+          :x: 0
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+    :comment: Move above seed trough
+
+:PICK_UP_SEED_GENESIS: # =========================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: yellow
+  :name: Pick up seed (Genesis)
+  :body:
+  - :kind: execute
+    :args:
+      :sequence_id: 0
+    :body:
+    - :kind: parameter_application
+      :args:
+        :label: parent
+        :data_value:
+          :kind: tool
+          :args:
+            :tool_id: 0
+    :comment: Mount seeder tool
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 150
+    :comment: Move above seed bin
+  - :kind: write_pin
+    :args:
+      :pin_value: 1
+      :pin_mode: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_type: Peripheral
+          :pin_id: 0
+    :comment: Turn on vacuum pump
+  - :kind: move_absolute
+    :args:
+      :speed: 25
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 100
+    :comment: Pick up seed
+  - :kind: move_absolute
+    :args:
+      :speed: 50
+      :location:
+        :kind: tool
+        :args:
+          :tool_id: 0
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 150
+    :comment: Move above seed bin
+
+:UNMOUNT_TOOL: # =================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: tool
+            :args:
+              :tool_id: 0
+  :color: gray
+  :name: Unmount tool
+  :body:
+  - :kind: find_home
+    :args:
+      :axis: all
+      :speed: 100
+    :comment: Ensure bot accuracy
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 100
+          :y: 0
+          :z: 150
+    :comment: Move near slot
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 100
+          :y: 0
+          :z: 0
+    :comment: Move in front of slot
+  - :kind: move_absolute
+    :args:
+      :speed: 25
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 0
+    :comment: Put tool in slot
+  - :kind: move_absolute
+    :args:
+      :speed: 100
+      :location:
+        :kind: identifier
+        :args:
+          :label: parent
+      :offset:
+        :kind: coordinate
+        :args:
+          :x: 0
+          :y: 0
+          :z: 50
+    :comment: Unmount tool
+  - :kind: read_pin
+    :args:
+      :pin_mode: 0
+      :label: Tool Verification
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_type: Sensor
+          :pin_id: 0
+    :comment: Verify tool is unmounted
+  - :kind: _if
+    :args:
+      :op: is
+      :rhs: 0
+      :lhs:
+        :kind: named_pin
+        :args:
+          :pin_type: Sensor
+          :pin_id: 0
+      :_then:
+        :kind: nothing
+        :args: {}
+      :_else:
+        :kind: execute
+        :args:
+          :sequence_id: 0
+    :comment: Proceed or error
+  - :kind: find_home
+    :args:
+      :axis: all
+      :speed: 100
+    :comment: Find home
+
+:TOOL_ERROR: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: red
+  :name: Tool error
+  :body:
+  - :kind: send_message
+    :args:
+      :message_type: error
+      :message: FarmBot tried to mount or dismount a tool and failed.
+    :body:
+    - :kind: channel
+      :args:
+        :channel_name: toast
+    - :kind: channel
+      :args:
+        :channel_name: email
+  - :kind: find_home
+    :args:
+      :axis: all
+      :speed: 100

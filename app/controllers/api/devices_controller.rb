@@ -35,8 +35,11 @@ module Api
     end
 
     def seed
-      Devices::CreateSeedData.delay.run!(params.as_json, device: current_device)
-      render json: { done: "Loading resources now." }
+      mutate Devices::CreateSeedData.run params.as_json, device: current_device
+    end
+
+    def reset
+      mutate Devices::Reset.run(params.as_json, device: current_device)
     end
 
     private

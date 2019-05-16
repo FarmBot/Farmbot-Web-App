@@ -3,7 +3,6 @@ import { MessagesProps, Alert } from "./interfaces";
 import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
-import { DevSettings } from "../account/dev/dev_support";
 import {
   selectAllAlerts, maybeGetTimeSettings, findResourceById
 } from "../resources/selectors";
@@ -32,8 +31,6 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
 export const getAlerts =
   (resourceIndex: ResourceIndex, bot: BotState): Alert[] => {
     const botAlerts = betterCompact(Object.values(bot.hardware.alerts || {}));
-    const apiAlerts = selectAllAlerts(resourceIndex).map(x => x.body)
-      .filter(x => DevSettings.futureFeaturesEnabled() ||
-        x.problem_tag !== "api.seed_data.missing");
+    const apiAlerts = selectAllAlerts(resourceIndex).map(x => x.body);
     return botAlerts.concat(apiAlerts);
   };

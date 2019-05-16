@@ -259,7 +259,10 @@ export class GardenMap extends
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
-    getConfigValue={this.props.getConfigValue} />
+    imageFilterBegin={
+      (this.props.getConfigValue("photo_filter_begin") || "").toString()}
+    imageFilterEnd={
+      (this.props.getConfigValue("photo_filter_end") || "").toString()} />
   Grid = () => <Grid
     onClick={this.closePanel()}
     mapTransformProps={this.mapTransformProps} />
