@@ -122,15 +122,14 @@ class BulletinAlert
 }
 
 const UnknownAlert = (props: CommonAlertCardProps) => {
-  const { problem_tag, created_at, priority } = props.alert;
+  const { problem_tag, slug, priority } = props.alert;
   const { author, noun, verb } = splitProblemTag(problem_tag);
-  const createdAt = formatLogTime(created_at, props.timeSettings);
   return <AlertCardTemplate
     alert={props.alert}
     className={"unknown-alert"}
     title={`${t(noun)}: ${t(verb)} (${t(author)})`}
-    message={t("Unknown problem of priority {{priority}} created at {{createdAt}}",
-      { priority, createdAt })}
+    message={t("Unknown problem of priority {{priority}} ({{slug}}).",
+      { priority, slug })}
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById} />;
