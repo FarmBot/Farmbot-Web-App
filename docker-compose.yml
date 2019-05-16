@@ -34,11 +34,13 @@ services:
       - "./docker_volumes/redis/data:/data"
       - "./docker_volumes/redis/conf:/usr/local/etc/redis"
     expose: ["6379"]
+    restart: unless-stopped
 
   db:
     env_file: ".env"
     image: postgres:10
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
+    restart: unless-stopped
 
   web:
     env_file: ".env"
@@ -53,6 +55,7 @@ services:
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development
       -p 3000 -b 0.0.0.0"
     ports: ["3000:3000"]
+    restart: unless-stopped
 
   mqtt:
     env_file: ".env"
@@ -63,6 +66,7 @@ services:
     depends_on: ["web"]
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
     volumes: ["./docker_volumes/rabbit:/farmbot"]
+    restart: unless-stopped
 
   parcel:
     env_file: ".env"
@@ -70,12 +74,14 @@ services:
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     command: bundle exec rake api:serve_assets
     ports: ["3808:3808"]
+    restart: unless-stopped
 
   typescript:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     command: node_modules/typescript/bin/tsc -w --noEmit
+    restart: unless-stopped
 
   delayed_job:
     env_file: ".env"
@@ -83,6 +89,7 @@ services:
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
     command: bundle exec rake jobs:work
+    restart: unless-stopped
 
   log_digests:
     env_file: ".env"
@@ -90,6 +97,7 @@ services:
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
     command: bundle exec rake api:log_digest
+    restart: unless-stopped
 
   rabbit_jobs:
     env_file: ".env"
@@ -97,3 +105,4 @@ services:
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
     depends_on: ["mqtt"]
     command: bundle exec rails r lib/rabbit_workers.rb
+    restart: unless-stopped
