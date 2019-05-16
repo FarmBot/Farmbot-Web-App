@@ -88,6 +88,7 @@ namespace :api do
 
   VERSION = "tag_name"
   TIMESTAMP = "created_at"
+  PRERELEASE = "prerelease"
 
   desc "Update GlobalConfig to deprecate old FBOS versions"
   task deprecate: :environment do
@@ -102,8 +103,9 @@ namespace :api do
     string = stringio.read
     data = JSON
       .parse(string)
-      .map { |x| x.slice(VERSION, TIMESTAMP) } # Only grab keys that matter
+      .map { |x| x.slice(VERSION, TIMESTAMP, PRERELEASE) } # Only grab keys that matter
       .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
+      .reject { |x| x.fetch(PRERELEASE) } # Remove pre-releases
       .map do |x|
       # Convert string-y version/timestamps to Real ObjectsTM
       version = Gem::Version::new(x.fetch(VERSION).gsub("v", ""))
