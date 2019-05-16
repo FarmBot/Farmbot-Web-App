@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { MessagesProps, Alert } from "./interfaces";
+import { MessagesProps } from "./interfaces";
 import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
@@ -9,6 +9,7 @@ import {
 import { isFwHardwareValue } from "../devices/components/fbos_settings/board_type";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { BotState } from "../devices/interfaces";
+import { Alert } from "farmbot";
 
 export const mapStateToProps = (props: Everything): MessagesProps => {
   const { hardware } = props.bot;

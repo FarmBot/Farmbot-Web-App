@@ -1,4 +1,4 @@
-import { FirmwareHardware, Alert as Enigma } from "farmbot";
+import { FirmwareHardware, Alert } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { BotState } from "../devices/interfaces";
 import { UUID } from "../resources/interfaces";
@@ -31,8 +31,6 @@ export interface FirmwareAlertsProps {
   timeSettings: TimeSettings;
   dispatch: Function;
 }
-
-export interface Alert extends Enigma { }
 
 export interface AlertCardProps {
   alert: Alert;

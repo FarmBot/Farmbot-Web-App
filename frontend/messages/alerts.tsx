@@ -1,10 +1,9 @@
 import * as React from "react";
 import { betterCompact } from "../util";
-import { sortBy } from "lodash";
-import {
-  ProblemTag, Alert, FirmwareAlertsProps, AlertsProps,
-} from "./interfaces";
+import { sortBy, isNumber } from "lodash";
+import { ProblemTag, FirmwareAlertsProps, AlertsProps } from "./interfaces";
 import { AlertCard } from "./cards";
+import { Alert } from "farmbot";
 
 export const splitProblemTag = (problemTag: string): ProblemTag => {
   const parts = problemTag.split(".");
@@ -14,10 +13,13 @@ export const splitProblemTag = (problemTag: string): ProblemTag => {
 export const sortAlerts = (alerts: Alert[]): Alert[] =>
   sortBy(alerts, "priority", "created_at");
 
+const filterIncompleteAlerts = (x: Alert) =>
+  x.problem_tag && isNumber(x.priority) && x.created_at;
+
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
   const alerts = betterCompact(Object.values(props.bot.hardware.alerts || {}));
   const firmwareAlerts = sortAlerts(alerts)
-    .filter(x => x.problem_tag && x.priority && x.created_at)
+    .filter(filterIncompleteAlerts)
     .filter(x => splitProblemTag(x.problem_tag).noun === "firmware");
   return <div className="firmware-alerts">
     {firmwareAlerts.map((x, i) =>
@@ -33,7 +35,7 @@ export const Alerts = (props: AlertsProps) =>
   <div className="problem-alerts">
     <div className="problem-alerts-content">
       {sortAlerts(props.alerts)
-        .filter(x => x.problem_tag && x.priority && x.created_at)
+        .filter(filterIncompleteAlerts)
         .map(x =>
           <AlertCard key={x.slug + x.created_at}
             alert={x}

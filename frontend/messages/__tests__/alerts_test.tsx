@@ -3,7 +3,8 @@ import { mount } from "enzyme";
 import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { Alert, AlertsProps, FirmwareAlertsProps } from "../interfaces";
+import { AlertsProps, FirmwareAlertsProps } from "../interfaces";
+import { Alert } from "farmbot";
 
 const FIRMWARE_MISSING_ALERT: Alert = {
   created_at: 123,
