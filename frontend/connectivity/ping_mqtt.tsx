@@ -12,7 +12,9 @@ export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 const label = "ping";
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
 export const LAST_OUT: keyof FarmBotInternalConfig = "LAST_PING_OUT";
-export const PING: Readonly<RpcRequest> = { kind: "rpc_request", args: { label } };
+export const PING: Readonly<RpcRequest> = {
+  kind: "rpc_request", args: { label, priority: 0 }
+};
 
 type Direction = "in" | "out";
 
