@@ -61,7 +61,7 @@ export function browserToMQTT(status:
 export function botToFirmware(version: string | undefined): StatusRowProps {
   const boardIdentifier = version ? version.slice(-1) : "undefined";
   const connection = (): { status: boolean | undefined, msg: string } => {
-    const status = ["R", "F", "G"].includes(boardIdentifier);
+    const status = ["R", "F", "G", "E"].includes(boardIdentifier);
     if (isUndefined(version)) {
       return { status: undefined, msg: t("Unknown.") };
     }
@@ -74,7 +74,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   return {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
-    to: ["F", "G"].includes(boardIdentifier) ? "Farmduino" : "Arduino",
+    to: ["F", "G", "E"].includes(boardIdentifier) ? "Farmduino" : "Arduino",
     children: connection().msg,
     connectionStatus: connection().status
   };
