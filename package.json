@@ -94,8 +94,8 @@
       },
       "globalConfig": {
         "NODE_ENV": "development",
-        "TOS_URL": "https://farmbot.io/tos/",
-        "PRIV_URL": "https://farmbot.io/privacy/",
+        "TOS_URL": "https://farm.bot/tos/",
+        "PRIV_URL": "https://farm.bot/privacy/",
         "LONG_REVISION": "------------",
         "SHORT_REVISION": "--------"
       }

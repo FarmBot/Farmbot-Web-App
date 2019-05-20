@@ -18,7 +18,7 @@ There are only a handful of use cases where running a third party server is advi
 
 FarmBot, Inc. provides a publicly accessible server at [https://my.farm.bot/](https://my.farm.bot/) for end users that are not familiar with Ruby on Rails application development. Hosting your own server will require an understanding of how Ruby on Rails applications (and databases) operate. It is designed for use by software engineers. Self-hosting the Web App will not provide you with a more stable user experience and may result in accidental security issues or data loss.
 
-**If you are not a Ruby on Rails developer**, or you have never written a Ruby on Rails application, you are encouraged to use [the publicly available web app](http://my.farmbot.io/). Running a server is *a non-trivial task with security implications*. Data loss and security issues are possible in some circumstances. Self hosting requires an intermediate background in Ruby, SQL and Linux system administration.
+**If you are not a Ruby on Rails developer**, or you have never written a Ruby on Rails application, you are encouraged to use [the publicly available web app](http://my.farm.bot/). Running a server is *a non-trivial task with security implications*. Data loss and security issues are possible in some circumstances. Self hosting requires an intermediate background in Ruby, SQL and Linux system administration.
 
 We do not have the resources available to help novice developers learn to setup servers, environments, configurations, or perform basic Linux command line instructions.
 
