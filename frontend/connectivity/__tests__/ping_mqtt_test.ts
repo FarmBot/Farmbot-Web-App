@@ -22,10 +22,10 @@ import {
   isInactive,
   sendOutboundPing,
   startPinging,
-  PING,
+  buildPing,
   ACTIVE_THRESHOLD
 } from "../ping_mqtt";
-import { Farmbot } from "farmbot";
+import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
@@ -38,6 +38,15 @@ let state: Partial<FarmBotInternalConfig> = {
 
 function fakeBot(): Farmbot {
   const fb: Partial<Farmbot> = {
+    rpcShim: jest.fn((_: RpcRequestBodyItem[]): RpcRequest => {
+      return {
+        kind: "rpc_request",
+        args: {
+          label: "ping",
+          priority: 0
+        }
+      };
+    }),
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
@@ -96,7 +105,7 @@ describe("ping util", () => {
     const bot = fakeBot();
     const oldOutbound = readPing(bot, "out");
     sendOutboundPing(bot);
-    expect(bot.publish).toHaveBeenCalledWith(PING);
+    expect(bot.publish).toHaveBeenCalledWith(buildPing(bot));
     expect(oldOutbound).toBeLessThanOrEqual(readPing(bot, "out") || NaN);
   });
 

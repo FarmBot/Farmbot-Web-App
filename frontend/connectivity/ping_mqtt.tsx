@@ -1,4 +1,4 @@
-import { Farmbot, RpcRequest } from "farmbot";
+import { Farmbot } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "./index";
 import { isNumber } from "lodash";
 import axios from "axios";
@@ -9,10 +9,14 @@ import { FarmBotInternalConfig } from "farmbot/dist/config";
 export const PING_INTERVAL = 3000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 
-const label = "ping";
+const PING_LABEL = "ping";
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
 export const LAST_OUT: keyof FarmBotInternalConfig = "LAST_PING_OUT";
-export const PING: Readonly<RpcRequest> = { kind: "rpc_request", args: { label } };
+export function buildPing(bot: Farmbot) {
+  const rpc = bot.rpcShim([]);
+  rpc.args.label = PING_LABEL;
+  return rpc;
+}
 
 type Direction = "in" | "out";
 
@@ -40,7 +44,7 @@ export function isInactive(last: number, now: number): boolean {
 }
 
 export function sendOutboundPing(bot: Farmbot) {
-  bot.publish(PING);
+  bot.publish(buildPing(bot));
   const now = timestamp();
   const lastPing = readPing(bot, "in");
   lastPing && (isInactive(lastPing, now) ? markStale() : markActive());
@@ -49,7 +53,7 @@ export function sendOutboundPing(bot: Farmbot) {
 
 export function startPinging(bot: Farmbot) {
   setInterval(() => sendOutboundPing(bot), PING_INTERVAL);
-  bot.on(label, () => writePing(bot, "in"));
+  bot.on(PING_LABEL, () => writePing(bot, "in"));
 }
 
 export function pingAPI() {
