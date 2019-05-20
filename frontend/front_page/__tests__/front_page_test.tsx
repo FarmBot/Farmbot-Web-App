@@ -56,7 +56,7 @@ describe("<FrontPage />", () => {
     const el = mount(<FrontPage />);
     ["Privacy Policy", "Terms of Use"].map(string =>
       expect(el.text()).toContain(string));
-    ["https://farmbot.io/privacy/", "https://farmbot.io/tos/"]
+    ["https://farm.bot/privacy/", "https://farm.bot/tos/"]
       .map(string => expect(el.html()).toContain(string));
   });
 
