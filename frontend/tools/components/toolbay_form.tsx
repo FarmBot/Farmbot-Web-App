@@ -49,6 +49,7 @@ export class ToolBayForm extends React.Component<ToolBayFormProps, {}> {
       slot={slot}
       botPosition={botPosition}
       toolOptions={this.props.getToolOptions()}
+      gantryMounted={slot.body.gantry_mounted}
       onToolSlotChange={this.props.changeToolSlot(slot, this.props.dispatch)}
       chosenToolOption={this.props.getChosenToolOption(slot.uuid)} />;
   }

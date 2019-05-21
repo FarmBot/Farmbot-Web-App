@@ -33,6 +33,7 @@ describe("<ToolSlotLayer/>", () => {
     return {
       visible: false,
       slots: [{ toolSlot, tool: undefined }],
+      botPositionX: undefined,
       mapTransformProps: fakeMapTransformProps(),
     };
   }

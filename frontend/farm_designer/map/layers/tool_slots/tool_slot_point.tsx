@@ -2,12 +2,13 @@ import * as React from "react";
 import { SlotWithTool } from "../../../../resources/interfaces";
 import { transformXY } from "../../util";
 import { MapTransformProps } from "../../interfaces";
-import { ToolbaySlot, ToolNames, Tool } from "./tool_graphics";
+import { ToolbaySlot, ToolNames, Tool, GantryToolSlot } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
 import { includes } from "lodash";
 
 export interface TSPProps {
   slot: SlotWithTool;
+  botPositionX: number | undefined;
   mapTransformProps: MapTransformProps;
 }
 
@@ -17,12 +18,9 @@ interface TSPState {
 
 export class ToolSlotPoint extends
   React.Component<TSPProps, Partial<TSPState>> {
+  state: TSPState = { hovered: false };
 
-  state: TSPState = {
-    hovered: false
-  };
-
-  setHover = (state: boolean) => { this.setState({ hovered: state }); };
+  setHover = (state: boolean) => this.setState({ hovered: state });
 
   get slot() { return this.props.slot; }
 
@@ -30,20 +28,25 @@ export class ToolSlotPoint extends
     const lower = (raw || "").toLowerCase();
     if (includes(lower, "seed bin")) { return ToolNames.seedBin; }
     if (includes(lower, "seed tray")) { return ToolNames.seedTray; }
+    if (includes(lower, "seed trough")) { return ToolNames.seedTrough; }
     return ToolNames.tool;
   }
 
   render() {
-    const { id, x, y, pullout_direction } = this.slot.toolSlot.body;
-    const { mapTransformProps } = this.props;
+    const {
+      id, x, y, pullout_direction, gantry_mounted
+    } = this.slot.toolSlot.body;
+    const { mapTransformProps, botPositionX } = this.props;
     const { quadrant, xySwap } = mapTransformProps;
-    const { qx, qy } = transformXY(x, y, this.props.mapTransformProps);
+    const xPosition = gantry_mounted ? (botPositionX || 0) : x;
+    const { qx, qy } = transformXY(xPosition, y, this.props.mapTransformProps);
     const toolName = this.slot.tool ? this.slot.tool.body.name : "no tool";
     const toolProps = {
       x: qx,
       y: qy,
       hovered: this.state.hovered,
-      setHoverState: this.setHover
+      setHoverState: this.setHover,
+      xySwap,
     };
     return <g id={"toolslot-" + id}>
       {pullout_direction &&
@@ -55,7 +58,9 @@ export class ToolSlotPoint extends
           quadrant={quadrant}
           xySwap={xySwap} />}
 
-      {(this.slot.tool || !pullout_direction) &&
+      {gantry_mounted && <GantryToolSlot x={qx} y={qy} xySwap={xySwap} />}
+
+      {(this.slot.tool || (!pullout_direction && !gantry_mounted)) &&
         <Tool
           tool={this.reduceToolName(toolName)}
           toolProps={toolProps} />}

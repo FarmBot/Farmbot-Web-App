@@ -14,6 +14,7 @@ describe("<ToolSlotRow />", () => {
     toolOptions: [],
     chosenToolOption: { label: "", value: "" },
     onToolSlotChange: jest.fn(),
+    gantryMounted: false,
   });
 
   it("deletes slot", () => {
