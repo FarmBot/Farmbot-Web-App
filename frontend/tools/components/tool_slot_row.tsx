@@ -26,15 +26,8 @@ type Axis = Xyz & keyof (TaggedToolSlotPointer["body"]);
 const axes: Axis[] = ["x", "y", "z"];
 
 export function ToolSlotRow(props: ToolSlotRowProps) {
-  const {
-    dispatch,
-    slot,
-    botPosition,
-    toolOptions,
-    onToolSlotChange,
-    chosenToolOption,
-    gantryMounted,
-  } = props;
+  const { dispatch, slot, botPosition, toolOptions, onToolSlotChange,
+    chosenToolOption, gantryMounted } = props;
 
   return <Row>
     <Col xs={1}>
