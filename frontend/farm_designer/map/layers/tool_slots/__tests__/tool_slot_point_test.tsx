@@ -12,6 +12,7 @@ describe("<ToolSlotPoint/>", () => {
   function fakeProps(): TSPProps {
     return {
       mapTransformProps: fakeMapTransformProps(),
+      botPositionX: undefined,
       slot: { toolSlot: fakeToolSlot(), tool: fakeTool() }
     };
   }
@@ -68,6 +69,14 @@ describe("<ToolSlotPoint/>", () => {
     if (p.slot.tool) { p.slot.tool.body.name = "seed tray"; }
     const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedTrayPattern").length).toEqual(1);
+  });
+
+  it("renders trough", () => {
+    const p = fakeProps();
+    p.slot.toolSlot.body.gantry_mounted = true;
+    if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
+    const wrapper = mount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#seed-trough").length).toEqual(1);
   });
 
   it("sets hover", () => {

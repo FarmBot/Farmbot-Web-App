@@ -9,6 +9,7 @@ export interface ToolGraphicProps {
   y: number;
   hovered: boolean;
   setHoverState(hoverState: boolean): void;
+  xySwap: boolean;
 }
 
 export interface ToolProps {
@@ -55,6 +56,7 @@ const toolbaySlotAngle = (
 export enum ToolNames {
   seedBin = "seedBin",
   seedTray = "seedTray",
+  seedTrough = "seedTrough",
   tool = "tool",
 }
 
@@ -88,6 +90,7 @@ export const Tool = (props: ToolProps) => {
   switch (props.tool) {
     case ToolNames.seedBin: return <SeedBin {...props.toolProps} />;
     case ToolNames.seedTray: return <SeedTray {...props.toolProps} />;
+    case ToolNames.seedTrough: return <SeedTrough {...props.toolProps} />;
     default: return <StandardTool {...props.toolProps} />;
   }
 };
@@ -162,5 +165,39 @@ const SeedTray = (props: ToolGraphicProps) => {
         cx={x} cy={y} r={35}
         fill="rgba(0, 0, 0, 0.1)" />}
 
+  </g>;
+};
+
+export interface GantryToolSlotGraphicProps {
+  x: number;
+  y: number;
+  xySwap: boolean;
+}
+
+export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
+  const { x, y, xySwap } = props;
+  const slotLengthX = xySwap ? 24 : 49;
+  const slotLengthY = xySwap ? 49 : 24;
+  return <g id={"gantry-toolbay-slot"}>
+    <rect
+      x={x - slotLengthX / 2} y={y - slotLengthY / 2}
+      width={slotLengthX} height={slotLengthY}
+      stroke={Color.mediumGray} strokeWidth={4} strokeOpacity={0.25}
+      fill="transparent" />
+  </g>;
+};
+
+const SeedTrough = (props: ToolGraphicProps) => {
+  const { x, y, hovered, setHoverState, xySwap } = props;
+  const slotLengthX = xySwap ? 20 : 45;
+  const slotLengthY = xySwap ? 45 : 20;
+  return <g id={"seed-trough"}
+    onMouseOver={() => setHoverState(true)}
+    onMouseLeave={() => setHoverState(false)}>
+    <rect
+      x={x - slotLengthX / 2} y={y - slotLengthY / 2}
+      width={slotLengthX} height={slotLengthY}
+      fillOpacity={0.5}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
   </g>;
 };

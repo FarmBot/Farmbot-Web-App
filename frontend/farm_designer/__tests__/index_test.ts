@@ -32,6 +32,17 @@ describe("getGridSize()", () => {
     expect(grid).toEqual({ x: 5900, y: 2900 });
   });
 
+  it("returns custom grid size", () => {
+    const grid = getGridSize(
+      k => ({
+        dynamic_map: false, map_xl: true, map_size_x: 300, map_size_y: 400
+      } as WebAppConfig)[k], {
+        x: { value: 100, isDefault: false },
+        y: { value: 200, isDefault: false }
+      });
+    expect(grid).toEqual({ x: 300, y: 400 });
+  });
+
   it("returns grid size using bot size", () => {
     const grid = getGridSize(
       k => ({ dynamic_map: true, map_xl: false } as WebAppConfig)[k], {
