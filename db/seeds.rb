@@ -44,7 +44,7 @@ if Rails.env == "development"
   u = User.last
   u.update_attributes(device: Devices::Create.run!(user: u))
   # === Parameterized Sequence stuff
-  json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json")).deep_symbolize_keys
+  json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json"), symbolize_names: true)
   Sequences::Create.run!(json, device: u.device)
   # === Parameterized Sequence stuff
   Log.transaction do

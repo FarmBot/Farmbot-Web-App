@@ -86,7 +86,7 @@ RSpec.configure do |config|
   end
 
   config.color = true
-  config.fail_fast = 10
+  # config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]
   config.filter_run_excluding type: :feature unless DO_INTEGRATION
   config.include Helpers

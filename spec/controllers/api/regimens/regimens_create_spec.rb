@@ -10,7 +10,7 @@ describe Api::RegimensController do
     it "kicks back missing parameters" do
       sign_in user
       celery = File.read("spec/lib/celery_script/ast_fixture5.json")
-      json = JSON.parse(celery).deep_symbolize_keys
+      json = JSON.parse(celery, symbolize_names: true)
       s = Sequences::Create.run!(json, device: user.device)
       # No paramaters here.
 

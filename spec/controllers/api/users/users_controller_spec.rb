@@ -26,7 +26,7 @@ describe Api::UsersController do
 
   it "errors if you try to delete with the wrong password" do
     sign_in user
-    delete :destroy, params: { password: "NOPE!" }, format: :json
+    delete :destroy, body: { password: "NOPE!" }.to_json, format: :json
     expect(response.status).to eq(422)
     expect(json[:password]).to eq(Users::Destroy::BAD_PASSWORD)
   end
@@ -34,7 +34,7 @@ describe Api::UsersController do
   it "deletes a user account" do
     sign_in user
     run_jobs_now do
-      delete :destroy, params: { password: user.password }, format: :json
+      delete :destroy, body: { password: user.password }.to_json, format: :json
     end
     expect(response.status).to eq(200)
     expect(User.where(id: user.id).count).to eq(0)
@@ -48,7 +48,7 @@ describe Api::UsersController do
       name: "Ricky McRickerson",
       format: :json,
     }
-    patch :update, params: input
+    patch :update, body: input.to_json
     expect(response.status).to eq(200)
     expect(json[:name]).to eq("Ricky McRickerson")
     unless User::SKIP_EMAIL_VALIDATION
@@ -73,7 +73,7 @@ describe Api::UsersController do
       format: :json,
     }
     expect(TokenIssuance.where(device: user.device).count).to be >= 1
-    patch :update, params: input
+    patch :update, body: input.to_json
     expect(response.status).to eq(200)
     expect(TokenIssuance.where(device: user.device).count).to be <= 1
     user.reload
@@ -90,7 +90,7 @@ describe Api::UsersController do
       password_confirmation: "123456789",
       format: :json,
     }
-    patch :update, params: input
+    patch :update, body: input.to_json
     expect(response.status).to eq(422)
     expect(json[:password]).to eq(Users::Update::PASSWORD_PROBLEMS)
   end
@@ -104,7 +104,7 @@ describe Api::UsersController do
       password_confirmation: "123456789",
       format: :json,
     }
-    patch :update, params: input
+    patch :update, body: input.to_json
     expect(response.status).to eq(422)
     expect(json[:password]).to eq(Users::Update::PASSWORD_PROBLEMS)
   end
@@ -119,7 +119,7 @@ describe Api::UsersController do
                name: "Frank" }
     old_email_count = ActionMailer::Base.deliveries.length
     run_jobs_now do
-      post :create, params: params
+      post :create, body: params.to_json
       user = User.last
       if User::SKIP_EMAIL_VALIDATION
         puts BIG_WARNING
@@ -151,7 +151,7 @@ describe Api::UsersController do
                password: "Password321",
                email: email,
                name: "Frank" }
-    post :create, params: params
+    post :create, body: params.to_json
     expect(User.count > original_count).to be_falsy
     expect(json[:password]).to include("do not match")
     expect(response.status).to eq(422)
@@ -160,9 +160,9 @@ describe Api::UsersController do
   it "generates a certificate to transfer device control" do
     user1 = FactoryBot.create(:user, password: "password123")
     user2 = FactoryBot.create(:user, password: "password456")
-    body = { email: user2.email, password: "password456" }.to_json
+    body = { email: user2.email, password: "password456" }
     sign_in user1
-    post :control_certificate, body: body, format: :json
+    post :control_certificate, body: body.to_json, format: :json
     expect(response.status).to eq(200)
     credentials = response.body
     expect(credentials).to be_kind_of(String)
@@ -173,9 +173,9 @@ describe Api::UsersController do
 
   it "prevents creating control certs for bad credentials" do
     user1 = FactoryBot.create(:user, password: "password123")
-    body = { email: "wrong@wrong.com", password: "password456" }.to_json
+    body = { email: "wrong@wrong.com", password: "password456" }
     sign_in user1
-    post :control_certificate, body: body, format: :json
+    post :control_certificate, body: body.to_json, format: :json
     expect(response.status).to eq(422)
     expect(json[:credentials]).to include("can't proceed")
   end
@@ -187,7 +187,7 @@ describe Api::UsersController do
                             confirmed_at: Time.now)
 
     post :resend_verification,
-         params: { email: verified.email },
+         body: { email: verified.email }.to_json,
          format: :json
 
     expect(response.status).to eq(422)
@@ -200,9 +200,8 @@ describe Api::UsersController do
                                 password_confirmation: "password123")
 
       post :resend_verification,
-           params: { email: unverified.email },
+           body: { email: unverified.email }.to_json,
            format: :json
-
       expect(response.status).to eq(200)
       expect(json[:user]).to include(Users::ResendVerification::SENT)
     end

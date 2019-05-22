@@ -183,7 +183,7 @@ describe Api::DevicesController do
       old_name = device.name
       expect(device.plants.count).to eq(0)
       run_jobs_now do
-        post :seed, params: { product_line: "none" }
+        post :seed, body: { product_line: "none" }.to_json
       end
       expect(response.status).to eq(200)
       expect(device.plants.count).to eq(0)
@@ -192,7 +192,9 @@ describe Api::DevicesController do
 
     def start_tests(product_line)
       sign_in user
-      run_jobs_now { post :seed, params: { product_line: product_line } }
+      run_jobs_now do
+        post :seed, body: { product_line: product_line }.to_json
+      end
       expect(response.status).to eq(200)
       device.reload
     end
