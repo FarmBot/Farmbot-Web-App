@@ -1,4 +1,6 @@
+
 if Rails.env == "development"
+  ENV["NO_EMAILS"] = "true"
   POINT_COUNT = 8
   PLANT_COUNT = 8
   DATE_RANGE_LO = 1..3
