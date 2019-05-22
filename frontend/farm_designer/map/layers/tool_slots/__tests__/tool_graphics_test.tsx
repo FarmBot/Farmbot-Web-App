@@ -64,7 +64,8 @@ describe("<Tool/>", () => {
       x: 10,
       y: 20,
       hovered: false,
-      setHoverState: jest.fn()
+      setHoverState: jest.fn(),
+      xySwap: false,
     };
   };
 
@@ -73,6 +74,16 @@ describe("<Tool/>", () => {
       tool: "fake tool",
       toolProps: fakeToolProps()
     };
+  };
+
+  const testHoverActions = (toolName: string) => {
+    const p = fakeProps();
+    p.tool = toolName;
+    const wrapper = mount(<Tool {...p} />);
+    wrapper.find("g").simulate("mouseOver");
+    expect(p.toolProps.setHoverState).toHaveBeenCalledWith(true);
+    wrapper.find("g").simulate("mouseLeave");
+    expect(p.toolProps.setHoverState).toHaveBeenCalledWith(false);
   };
 
   it("renders standard tool styling", () => {
@@ -84,12 +95,16 @@ describe("<Tool/>", () => {
     expect(props.fill).toEqual(Color.mediumGray);
   });
 
-  it("tool hover", () => {
+  it("renders tool hover styling", () => {
     const p = fakeProps();
     p.toolProps.hovered = true;
     const wrapper = mount(<Tool {...p} />);
     const props = wrapper.find("circle").last().props();
     expect(props.fill).toEqual(Color.darkGray);
+  });
+
+  it("sets hover state for tool", () => {
+    testHoverActions("tool");
   });
 
   it("renders special tool styling: bin", () => {
@@ -101,13 +116,17 @@ describe("<Tool/>", () => {
     expect(elements.last().props().fill).toEqual("url(#SeedBinGradient)");
   });
 
-  it("bin hover", () => {
+  it("renders bin hover styling", () => {
     const p = fakeProps();
     p.tool = "seedBin";
     p.toolProps.hovered = true;
     const wrapper = mount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-bin").find("circle").length).toEqual(3);
+  });
+
+  it("sets hover state for bin", () => {
+    testHoverActions("seedBin");
   });
 
   it("renders special tool styling: tray", () => {
@@ -120,12 +139,39 @@ describe("<Tool/>", () => {
     expect(elements.find("rect").props().fill).toEqual("url(#SeedTrayPattern)");
   });
 
-  it("tray hover", () => {
+  it("renders tray hover styling", () => {
     const p = fakeProps();
     p.tool = "seedTray";
     p.toolProps.hovered = true;
     const wrapper = mount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-tray").find("circle").length).toEqual(3);
+  });
+
+  it("sets hover state for tray", () => {
+    testHoverActions("seedTray");
+  });
+
+  it("renders special tool styling: trough", () => {
+    const p = fakeProps();
+    p.tool = "seedTrough";
+    const wrapper = mount(<Tool {...p} />);
+    const elements = wrapper.find("#seed-trough");
+    expect(elements.find("circle").length).toEqual(0);
+    expect(elements.find("rect").length).toEqual(1);
+  });
+
+  it("renders trough hover styling", () => {
+    const p = fakeProps();
+    p.tool = "seedTrough";
+    p.toolProps.hovered = true;
+    const wrapper = mount(<Tool {...p} />);
+    p.toolProps.hovered = true;
+    expect(wrapper.find("#seed-trough").find("circle").length).toEqual(0);
+    expect(wrapper.find("#seed-trough").find("rect").length).toEqual(1);
+  });
+
+  it("sets hover state for trough", () => {
+    testHoverActions("seedTrough");
   });
 });

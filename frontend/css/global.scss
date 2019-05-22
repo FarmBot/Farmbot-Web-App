@@ -1037,6 +1037,11 @@ ul {
       top: 38% !important;
     }
   }
+  input[type="checkbox"] {
+    vertical-align: middle;
+    margin-top: 0;
+    margin-left: 0.5rem;
+  }
 }
 
 .sensors-widget {

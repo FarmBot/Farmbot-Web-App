@@ -77,4 +77,19 @@ describe("<SlotMenu />", () => {
     buttons.last().simulate("click");
     expect(p.dispatch).not.toHaveBeenCalled();
   });
+
+  it("sets gantry_mounted", () => {
+    const p = fakeProps();
+    p.slot.body.gantry_mounted = false;
+    const wrapper = mount(<SlotMenu {...p} />);
+    wrapper.find("input").last().simulate("change");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: {
+        specialStatus: SpecialStatus.DIRTY,
+        update: { gantry_mounted: true },
+        uuid: expect.any(String)
+      },
+      type: Actions.EDIT_RESOURCE
+    });
+  });
 });

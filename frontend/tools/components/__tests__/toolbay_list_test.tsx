@@ -19,4 +19,13 @@ describe("<ToolBayList />", () => {
     const wrapper = mount(<ToolBayList {...fakeProps()} />);
     expect(wrapper.text()).toContain("1101010Trench Digging Tool");
   });
+
+  it("renders gantry mounted slot", () => {
+    const p = fakeProps();
+    const slots = p.getToolSlots();
+    slots[0].body.gantry_mounted = true;
+    p.getToolSlots = () => slots;
+    const wrapper = mount(<ToolBayList {...fakeProps()} />);
+    expect(wrapper.text()).toContain("1gantry1010Trench Digging Tool");
+  });
 });
