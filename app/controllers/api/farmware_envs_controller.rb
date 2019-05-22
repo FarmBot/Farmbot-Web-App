@@ -6,7 +6,7 @@ module Api
   class FarmwareEnvsController < Api::AbstractController
 
     def create
-      mutate FarmwareEnvs::Create.run(params.as_json, device: current_device)
+      mutate FarmwareEnvs::Create.run(raw_json, device: current_device)
     end
 
     def index

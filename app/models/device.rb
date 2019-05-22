@@ -1,6 +1,6 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
 class Device < ApplicationRecord
-  DEFAULT_MAX_CONFIGS = 100
+  DEFAULT_MAX_CONFIGS = 300
   DEFAULT_MAX_IMAGES = 100
   DEFAULT_MAX_LOGS = 1000
 
