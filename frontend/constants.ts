@@ -454,11 +454,11 @@ export namespace Content {
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the Farm Designer map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
-    the HARDWARE widget.`);
+    the HARDWARE widget. Overrides MAP SIZE values.`);
 
   export const DOUBLE_MAP_DIMENSIONS =
     trim(`Double the default dimensions of the Farm Designer map
-    for a map with four times the area.`);
+    for a map with four times the area. Overriden by MAP SIZE values.`);
 
   export const PLANT_ANIMATIONS =
     trim(`Enable plant animations in the Farm Designer.`);
@@ -485,7 +485,8 @@ export namespace Content {
     i.e., 23:00 instead of 11:00pm`);
 
   export const SHOW_PINS =
-    trim(`Show raw pin lists in Read Sensor and Control Peripheral steps.`);
+    trim(`Show raw pin lists in Read Sensor, Control Peripheral, and
+    If Statement steps.`);
 
   export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
     trim(`Confirm when unlocking FarmBot after an emergency stop.`);
@@ -495,6 +496,12 @@ export namespace Content {
     unlock FarmBot instead of confirming that it is safe to do so.
     As a result, double-clicking the E-STOP button may not stop FarmBot.
     Are you sure you want to disable this feature?`);
+
+  export const MAP_SIZE =
+    trim(`Specify custom Farm Designer Garden Map dimensions (in millimeters).
+    These values set the size of the garden map displayed in the designer
+    unless DYNAMIC MAP SIZE is enabled. These values will override the
+    DOUBLE DEFAULT MAP DIMENSIONS setting.`);
 
   // Device
   export const NOT_HTTPS =
