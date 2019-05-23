@@ -97,7 +97,8 @@ describe Api::PointsController do
       SmarfDoc.note("This is what happens when you post bad JSON")
       post :create, body: "{'x': 0, 'this isnt': 'JSON'}", params: { format: :json }
       expect(response.status).to eq(422)
-      expect(json[:error]).to include("Please use _valid_ JSON.")
+      expect(json[:error])
+        .to include("Please use a _valid_ JSON object or array")
     end
 
     it "creates a toolslot with an valid pullout direction" do

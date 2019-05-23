@@ -42,7 +42,8 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
-    ONLY_JSON = "This is a JSON API. Please use _valid_ JSON. " \
+    ONLY_JSON = "This is a JSON API. "\
+    "Please use a _valid_ JSON object or array. " \
     "Validate JSON objects at https://jsonlint.com/"
     rescue_from OnlyJson do |e|
       sorry ONLY_JSON, 422
@@ -90,7 +91,9 @@ module Api
 
     def parse_json
       body = request.body.read
-      body.present? ? JSON.parse(body, symbolize_names: true) : nil
+      json = body.present? ? JSON.parse(body, symbolize_names: true) : nil
+      raise OnlyJson unless json.is_a?(Hash) || json.is_a?(Array)
+      json
     end
 
     REQ_ID = "X-Farmbot-Rpc-Id"
