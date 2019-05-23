@@ -192,6 +192,13 @@ export const attachEventListeners =
       //   console.dir(x, y);
       //   debugger;
       // });
+      // bot.on("*", (p: {}, e: string) => {
+      //   if (e === "sent") {
+      //     return;
+      //   } else {
+      //     console.dir(e, p);
+      //   }
+      // });
       bot.on(FbjsEventName.malformed, onMalformed);
       bot.client.subscribe(FbjsEventName.publicBroadcast);
       bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);
