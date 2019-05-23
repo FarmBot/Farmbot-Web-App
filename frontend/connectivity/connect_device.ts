@@ -187,11 +187,11 @@ export const attachEventListeners =
       bot.on(FbjsEventName.logs, onLogs(dispatch, getState));
       bot.on(FbjsEventName.legacy_status, onLegacyStatus(dispatch, getState));
       bot.on(FbjsEventName.upsert, onStatus(dispatch, getState));
-      bot.on(FbjsEventName.remove, (x: {}, y: {}) => {
-        console.log("REMOVAL!");
-        console.dir(x, y);
-        debugger;
-      });
+      // bot.on(FbjsEventName.remove, (x: {}, y: {}) => {
+      //   console.log("REMOVAL!");
+      //   console.dir(x, y);
+      //   debugger;
+      // });
       bot.on(FbjsEventName.malformed, onMalformed);
       bot.client.subscribe(FbjsEventName.publicBroadcast);
       bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);
