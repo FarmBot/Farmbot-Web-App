@@ -7,7 +7,7 @@ default: &default
   # See: ENV["DATABASE_URL"]
   # https://edgeguides.rubyonrails.org/configuring.html#configuring-a-database
   username: postgres
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
+  password: <%= ENV["POSTGRES_PASSWORD"] || (puts "Warning - POSTGRES_PASSWORD not found.") %>
 development:
   <<: *default
   database: farmbot_development
