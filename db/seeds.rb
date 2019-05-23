@@ -1,6 +1,5 @@
 
 if Rails.env == "development"
-  ENV["NO_EMAILS"] = "true"
   POINT_COUNT = 8
   PLANT_COUNT = 8
   DATE_RANGE_LO = 1..3
@@ -39,7 +38,7 @@ if Rails.env == "development"
                      password_confirmation: "password123",
                      confirmed_at: Time.now,
                      agreed_to_terms_at: Time.now)
-  User.all.update_all(confirmed_at: Time.now,
+  User.update_all(confirmed_at: Time.now,
                       agreed_to_terms_at: Time.now)
   u = User.last
   u.update_attributes(device: Devices::Create.run!(user: u))
