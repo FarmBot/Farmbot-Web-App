@@ -22,27 +22,27 @@ module Api
 
     def resend_verification
       mutate Users::ResendVerification
-        .run(user: User.find_by!(email: params[:email]))
+               .run(user: User.find_by!(email: raw_json[:email]))
     end
 
     def control_certificate
+      binding.pry unless raw_json.is_a?(Hash)
       mutate Users::GenerateControlCert.run(raw_json, device: current_device)
     end
 
     private
 
     def user_params
-      user = params
-        .as_json
-        .merge!(params.as_json["user"] || {})
+      user = raw_json
+        .merge!(raw_json[:user] || {})
         .deep_symbolize_keys
-      {email:                     user[:email],
-       name:                      user[:name],
-       password:                  user[:password],
-       password_confirmation:     user[:password_confirmation],
-       new_password:              user[:new_password],
+      { email: user[:email],
+       name: user[:name],
+       password: user[:password],
+       password_confirmation: user[:password_confirmation],
+       new_password: user[:new_password],
        new_password_confirmation: user[:new_password_confirmation],
-       agree_to_terms:            user[:agree_to_terms]}
+       agree_to_terms: user[:agree_to_terms] }
     end
   end
 end

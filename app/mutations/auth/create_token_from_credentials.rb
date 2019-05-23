@@ -15,7 +15,7 @@ module Auth
     def validate
       cipher_text = Base64.decode64(credentials)
       plain_text  = PRIVATE_KEY.private_decrypt(cipher_text)
-      cred_info   = JSON.parse(plain_text).symbolize_keys!
+      cred_info   = JSON.parse(plain_text, symbolize_names: true)
       User.try_auth(cred_info[:email], cred_info[:password]) do |maybe_user|
         whoops! unless maybe_user
         @user = maybe_user

@@ -1,12 +1,12 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::PeripheralsController do
   include Devise::Test::ControllerHelpers
 
-  describe '#create' do
+  describe "#create" do
     let(:user) { FactoryBot.create(:user) }
 
-    it 'makes a Peripheral' do
+    it "makes a Peripheral" do
       sign_in user
       before = Peripheral.count
       post :create,
@@ -18,12 +18,12 @@ describe Api::PeripheralsController do
       expect(before < Peripheral.count).to be_truthy
     end
 
-    it 'requires logged in user' do
-      post :create, params: { pin: 13, label: "LED" }
+    it "requires logged in user" do
+      post :create, body: { pin: 13, label: "LED" }.to_json
       expect(response.status).to eq(401)
     end
 
-    it 'limits label length' do
+    it "limits label length" do
       sign_in user
       before = Peripheral.count
       post :create,

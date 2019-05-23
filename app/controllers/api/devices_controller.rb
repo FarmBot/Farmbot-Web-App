@@ -12,12 +12,12 @@ module Api
 
     # POST /api/device
     def create
-      mutate Devices::Create.run(params.as_json, user: current_user)
+      mutate Devices::Create.run(raw_json, user: current_user)
     end
 
     # PATCH/PUT /api/device
     def update
-      mutate Devices::Update.run(params.as_json, device: current_device)
+      mutate Devices::Update.run(raw_json, device: current_device)
     end
 
     # DELETE /api/devices/1
@@ -35,11 +35,11 @@ module Api
     end
 
     def seed
-      mutate Devices::CreateSeedData.run params.as_json, device: current_device
+      mutate Devices::CreateSeedData.run raw_json, device: current_device
     end
 
     def reset
-      mutate Devices::Reset.run(params.as_json, device: current_device)
+      mutate Devices::Reset.run(raw_json, device: current_device)
     end
 
     private

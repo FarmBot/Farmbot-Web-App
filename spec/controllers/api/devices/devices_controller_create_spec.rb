@@ -10,7 +10,7 @@ describe Api::DevicesController do
     it "creates a new device for a user" do
       sign_in user
       params = { user_id: user.id, name: Faker::Food.vegetables }
-      post :create, params: params
+      post :create, body: params.to_json
       expect(response.status).to eq(200)
       resp = JSON.parse(response.body)
       new_device = Device.find(resp["id"])
@@ -22,7 +22,7 @@ describe Api::DevicesController do
     it "defaults name to `FarmBot`" do
       sign_in user
       params = { user_id: user.id }
-      post :create, params: params
+      post :create, body: params.to_json
       expect(response.status).to eq(200)
       expect(json.fetch(:name)).to eq("FarmBot")
     end

@@ -16,6 +16,7 @@ module Api
     NOT_FBOS = Gem::Version.new("999.999.999")
 
     respond_to :json
+    before_action :raw_json, only: [:update, :create]
     before_action :check_fbos_version
     before_action :set_default_stuff
     before_action :authenticate_user!
@@ -41,8 +42,10 @@ module Api
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
+    ONLY_JSON = "This is a JSON API. Please use _valid_ JSON. " \
+    "Validate JSON objects at https://jsonlint.com/"
     rescue_from OnlyJson do |e|
-      sorry "This is a JSON API. Please use _valid_ JSON.", 422
+      sorry ONLY_JSON, 422
     end
 
     rescue_from Errors::NoBot do |exc|
@@ -80,17 +83,14 @@ module Api
     # Our API does not do things the "Rails way" (we use Mutations for input
     # sanitation) so we can ignore this and grab the raw input.
     def raw_json
-      @raw_json ||= JSON.parse(request.body.read).tap { |x| symbolize(x) }
+      @raw_json ||= parse_json
     rescue JSON::ParserError
       raise OnlyJson
     end
 
-    # PROBLEM: We want to deep_symbolize_keys! on all JSON inputs, but what if
-    # the user POSTs an Array? It will crash because [] does not respond_to
-    # deep_symbolize_keys! This is the workaround. I could probably use a
-    # refinement.
-    def symbolize(x)
-      x.is_a?(Array) ? x.map(&:deep_symbolize_keys!) : x.deep_symbolize_keys!
+    def parse_json
+      body = request.body.read
+      body.present? ? JSON.parse(body, symbolize_names: true) : nil
     end
 
     REQ_ID = "X-Farmbot-Rpc-Id"

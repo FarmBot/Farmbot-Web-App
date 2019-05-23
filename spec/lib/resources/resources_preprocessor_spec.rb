@@ -49,7 +49,7 @@ describe Resources::Preprocessor do
       expect(err.last[:routing_key]).to be_kind_of(String)
       dev_id = err.last[:routing_key].split(".").second
       expect(dev_id).to eq("device_#{props[:device_id]}")
-      body = JSON.parse(err.first).deep_symbolize_keys
+      body = JSON.parse(err.first, symbolize_names: true)
       expect(body[:kind]).to eq("rpc_error")
       expect(body[:args]).to be_kind_of(Hash)
       expect(body[:body]).to be_kind_of(Array)

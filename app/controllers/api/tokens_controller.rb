@@ -48,7 +48,7 @@ module Api
     end
 
     def if_properly_formatted
-      user = params.as_json.deep_symbolize_keys.fetch(:user, {})
+      user = raw_json.fetch(:user, {})
       # If data handling for this method gets any more complicated,
       # extract into a mutation.
       if(user.is_a?(Hash))

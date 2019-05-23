@@ -3,14 +3,15 @@ module Api
     skip_before_action :authenticate_user!, only: [:create, :update]
 
     def create
-      mutate PasswordResets::Create.run(email: params[:email])
+      mutate PasswordResets::Create.run(email: raw_json[:email])
     end
 
     def update
       mutate PasswordResets::Update.run(
-        password:              params[:password],
-        password_confirmation: params[:password_confirmation],
-        token:                 params[:id])
+        password: raw_json[:password],
+        password_confirmation: raw_json[:password_confirmation],
+        token: raw_json[:id],
+      )
     end
   end
 end
