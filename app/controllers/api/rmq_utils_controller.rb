@@ -8,15 +8,17 @@ module Api
     # List of AMQP/MQTT topics we support in the following format:
     # "bot.device_123.<MAIN TOPIC HERE>"
     BOT_CHANNELS = %w(
-      nerves_hub
+      from_api
       from_clients
       from_device
       logs
+      nerves_hub
+      ping
+      pong
+      resources_v0
       status
       status_v8
       sync
-      resources_v0
-      from_api
       \\#
       \\*
     ).map { |x| x + "(\\.|\\z)" }.join("|")
