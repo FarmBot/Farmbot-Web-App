@@ -10,10 +10,20 @@ require_relative "../app/lib/service_runner_base.rb"
 require_relative "../app/lib/service_runner_base.rb"
 
 class RabbitWorker
+  class FakePing
+    def self.process(info, payl)
+      puts "====================================="
+      puts info
+      puts payl
+      puts "====================================="
+    end
+  end
+
   WAIT     = 3
   SERVICES = {
     log_channel:      LogService,
-    resource_channel: Resources::Service
+    resource_channel: Resources::Service,
+    ping_channel:     FakePing
   }
 
   def run_it!(chan, service)

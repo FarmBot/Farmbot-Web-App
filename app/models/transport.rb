@@ -48,6 +48,13 @@ class Transport
                          .bind("amq.topic", routing_key: "bot.*.resources_v0.#")
   end
 
+  def ping_channel
+    @resource_channel ||= self.connection
+                         .create_channel
+                         .queue("resource_workers")
+                         .bind("amq.topic", routing_key: "bot.*.ping.#")
+  end
+
   def amqp_topic
     @amqp_topic ||= self
                   .connection
