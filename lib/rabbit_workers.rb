@@ -13,8 +13,11 @@ class RabbitWorker
   class FakePing
     def self.process(info, payl)
       puts "====================================="
-      puts info
-      puts payl
+      arry = info.routing_key.split(".")
+      arry[2] = "pong"
+      chan = arry.join(".")
+      puts chan
+      Transport.current.raw_amqp_send("0", chan)
       puts "====================================="
     end
   end
