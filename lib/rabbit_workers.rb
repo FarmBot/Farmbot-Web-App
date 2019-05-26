@@ -17,7 +17,7 @@ class RabbitWorker
       arry[2] = "pong"
       chan = arry.join(".")
       puts chan
-      Transport.current.raw_amqp_send("0", chan)
+      Transport.current.raw_amqp_send(arry[3], chan)
       puts "====================================="
     end
   end
