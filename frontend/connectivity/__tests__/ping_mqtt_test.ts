@@ -5,7 +5,7 @@ jest.mock("../index", () => {
   };
 });
 
-let mockTimestamp = 0;
+const mockTimestamp = 0;
 jest.mock("../../util", () => {
   return {
     timestamp: () => mockTimestamp
@@ -13,27 +13,24 @@ jest.mock("../../util", () => {
 });
 
 import {
-  writePing,
-  LAST_IN,
-  LAST_OUT,
   readPing,
   markStale,
   markActive,
   isInactive,
-  sendOutboundPing,
   startPinging,
-  buildPing,
-  ACTIVE_THRESHOLD
+  ACTIVE_THRESHOLD,
+  PING_INTERVAL
 } from "../ping_mqtt";
 import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
 const TOO_LATE_TIME_DIFF = ACTIVE_THRESHOLD + 1;
-const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
+// const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
 
-let state: Partial<FarmBotInternalConfig> = {
-  [LAST_IN]: 123, [LAST_OUT]: 456
+const state: Partial<FarmBotInternalConfig> = {
+  LAST_PING_IN: 123,
+  LAST_PING_OUT: 456
 };
 
 function fakeBot(): Farmbot {
@@ -50,9 +47,12 @@ function fakeBot(): Farmbot {
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
+    ping: jest.fn((_timeout: number, _now: number) => {
+      return Promise.resolve(1);
+    }),
     getConfig: jest.fn((key: keyof FarmBotInternalConfig) => {
       return (state as FarmBotInternalConfig)[key];
-    })
+    }),
   };
 
   return fb as Farmbot;
@@ -71,15 +71,6 @@ function expectActive() {
 }
 
 describe("ping util", () => {
-  it("sets the LAST_PING_(IN|OUT) in bot state", () => {
-    const bot = fakeBot();
-    writePing(bot, "in");
-    expect(bot.setConfig).toHaveBeenCalledWith(LAST_IN, expect.any(Number));
-    jest.clearAllMocks();
-    writePing(bot, "out");
-    expect(bot.setConfig).toHaveBeenCalledWith(LAST_OUT, expect.any(Number));
-  });
-
   it("reads LAST_PING_(IN|OUT)", () => {
     const bot = fakeBot();
     expect(readPing(bot, "in")).toEqual(123);
@@ -101,31 +92,12 @@ describe("ping util", () => {
     expect(isInactive(1, 1)).toBeFalsy();
   });
 
-  it("sends an outbound ping", () => {
-    const bot = fakeBot();
-    const oldOutbound = readPing(bot, "out");
-    sendOutboundPing(bot);
-    expect(bot.publish).toHaveBeenCalledWith(buildPing(bot));
-    expect(oldOutbound).toBeLessThanOrEqual(readPing(bot, "out") || NaN);
-  });
-
-  it("sends an outbound ping: mark active", () => {
-    mockTimestamp = 1 + ACCEPTABLE_TIME_DIFF;
-    state = { [LAST_IN]: 1 };
-    sendOutboundPing(fakeBot());
-    expectActive();
-  });
-
-  it("sends an outbound ping: mark stale", () => {
-    mockTimestamp = 1 + TOO_LATE_TIME_DIFF;
-    state = { [LAST_IN]: 1 };
-    sendOutboundPing(fakeBot());
-    expectStale();
-  });
-
-  it("binds event handlers with startPinging()", () => {
+  it("binds event handlers with startPinging()", (done) => {
     const bot = fakeBot();
     startPinging(bot);
-    expect(bot.on).toHaveBeenCalledWith("ping", expect.any(Function));
+    setTimeout(() => {
+      expect(bot.ping).toHaveBeenCalled();
+      done();
+    }, PING_INTERVAL + 10);
   });
 });
