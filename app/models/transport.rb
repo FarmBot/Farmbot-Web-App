@@ -49,7 +49,7 @@ class Transport
   end
 
   # def ping_channel
-  #   @resource_channel ||= self.connection
+  #   @ping_channel ||= self.connection
   #                        .create_channel
   #                        .queue("resource_workers")
   #                        .bind("amq.topic", routing_key: "bot.*.ping.#")
