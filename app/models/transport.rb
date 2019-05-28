@@ -4,6 +4,7 @@ require "bunny"
 # change protocols
 class Transport
   OPTS = { read_timeout: 10, heartbeat: 10, log_level: "info" }
+  RESOURCE_ROUTING_KEY = "bot.*.resources_v0.*.*.*.*"
 
   def self.amqp_url
     @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
@@ -42,10 +43,11 @@ class Transport
   end
 
   def resource_channel
-    @resource_channel ||= self.connection
+    @resource_channel ||= self
+                         .connection
                          .create_channel
                          .queue("resource_workers")
-                         .bind("amq.topic", routing_key: "bot.*.resources_v0.#")
+                         .bind("amq.topic", routing_key: RESOURCE_ROUTING_KEY)
   end
 
   # def ping_channel
