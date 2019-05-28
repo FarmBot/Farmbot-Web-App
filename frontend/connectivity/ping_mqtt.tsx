@@ -41,5 +41,5 @@ export function startPinging(bot: Farmbot) {
 export function pingAPI() {
   const ok = () => dispatchNetworkUp("user.api", undefined, "pingApi OK");
   const no = () => dispatchNetworkDown("user.api", undefined, "pingApi NO");
-  axios.get(API.current.devicePath).then(ok, no);
+  return axios.get(API.current.devicePath).then(ok, no);
 }

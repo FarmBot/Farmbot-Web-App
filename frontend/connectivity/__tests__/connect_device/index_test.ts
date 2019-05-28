@@ -27,6 +27,7 @@ import {
   onMalformed,
   speakLogAloud,
   onPublicBroadcast,
+  onReconnect,
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
@@ -168,6 +169,12 @@ describe("onOnline", () => {
     onOnline();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
   });
+});
+
+describe("onReconnect", () => {
+  onReconnect();
+  expect(warning)
+    .toHaveBeenCalledWith("Attempting to reconnect to the message broker", "Offline");
 });
 
 describe("changeLastClientConnected", () => {
