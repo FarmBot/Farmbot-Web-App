@@ -26,6 +26,9 @@ module Resources
     end
 
     def self.step1(delivery_info, body) # Returns params or nil
+      pp "====== Resource usage?"
+      pp delivery_info
+      pp body
       Preprocessor.from_amqp(delivery_info, body)
     rescue Mutations::ValidationException => q
       Rollbar.error(q, {delivery_info: delivery_info, body: body})
