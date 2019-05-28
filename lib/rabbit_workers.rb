@@ -26,7 +26,7 @@ class RabbitWorker
   WAIT     = 3
   SERVICES = {
     log_channel:      LogService,
-    resource_channel: Resources::Service,
+    # resource_channel: Resources::Service,
     # ping_channel:     FakePing
   }
 
