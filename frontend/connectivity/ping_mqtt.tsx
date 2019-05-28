@@ -3,27 +3,14 @@ import { dispatchNetworkDown, dispatchNetworkUp } from "./index";
 import { isNumber } from "lodash";
 import axios from "axios";
 import { API } from "../api/index";
-import { timestamp } from "../util";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
 export const PING_INTERVAL = 3000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 
-const PING_LABEL = "ping";
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
 export const LAST_OUT: keyof FarmBotInternalConfig = "LAST_PING_OUT";
-export function buildPing(bot: Farmbot) {
-  const rpc = bot.rpcShim([]);
-  rpc.args.label = PING_LABEL;
-  return rpc;
-}
-
 type Direction = "in" | "out";
-
-export function writePing(bot: Farmbot, direction: Direction) {
-  const dir = direction === "out" ? LAST_OUT : LAST_IN;
-  bot.setConfig(dir, timestamp());
-}
 
 export function readPing(bot: Farmbot, direction: Direction): number | undefined {
   const val = bot.getConfig(direction === "out" ? LAST_OUT : LAST_IN);
@@ -44,20 +31,15 @@ export function isInactive(last: number, now: number): boolean {
 }
 
 export function sendOutboundPing(bot: Farmbot) {
-  bot.publish(buildPing(bot));
-  const now = timestamp();
-  const lastPing = readPing(bot, "in");
-  lastPing && (isInactive(lastPing, now) ? markStale() : markActive());
-  writePing(bot, "out");
+  bot.ping().then(markActive, markStale);
 }
 
 export function startPinging(bot: Farmbot) {
   setInterval(() => sendOutboundPing(bot), PING_INTERVAL);
-  bot.on(PING_LABEL, () => writePing(bot, "in"));
 }
 
 export function pingAPI() {
   const ok = () => dispatchNetworkUp("user.api", undefined, "pingApi OK");
   const no = () => dispatchNetworkDown("user.api", undefined, "pingApi NO");
-  axios.get(API.current.devicePath).then(ok, no);
+  return axios.get(API.current.devicePath).then(ok, no);
 }

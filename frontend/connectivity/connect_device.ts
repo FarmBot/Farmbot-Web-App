@@ -3,7 +3,7 @@ import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { FbjsEventName } from "farmbot/dist/constants";
-import { noop } from "lodash";
+import noop from "lodash/noop";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
@@ -111,7 +111,7 @@ export const onOffline = () => {
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  }).catch(() => { }); // This is internal stuff, don't alert user.
+  }).catch(noop); // This is internal stuff, don't alert user.
 };
 const setBothUp = () => bothUp("Got a status message");
 
