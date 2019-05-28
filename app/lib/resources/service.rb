@@ -29,9 +29,10 @@ module Resources
       pp "====== Resource usage?"
       pp delivery_info
       pp body
+      pp "======"
       Preprocessor.from_amqp(delivery_info, body)
     rescue Mutations::ValidationException => q
-      Rollbar.error(q, {delivery_info: delivery_info, body: body})
+      Rollbar.error(q)
       raw_chan = delivery_info&.routing_key&.split(".") || []
       id       = raw_chan[INDEX_OF_USERNAME]&.gsub("device_", "")&.to_i
       uuid     = raw_chan[INDEX_OF_UUID] || "NONE"
