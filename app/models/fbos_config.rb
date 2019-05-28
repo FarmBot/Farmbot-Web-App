@@ -5,6 +5,14 @@ class FbosConfig < ApplicationRecord
   belongs_to :device
   after_save :maybe_sync_nerves, on: [:create, :update]
 
+  FIRMWARE_HARDWARE = [
+    NONE = nil,
+    ARDUINO = "arduino",
+    FARMDUINO = "farmduino",
+    FARMDUINO_K14 = "farmduino_k14",
+    EXPRESS_K10 = "express_k10",
+  ]
+
   NERVES_FIELD = "update_channel"
 
   def push_changes_to_nerves_hub(serial_number, channel)

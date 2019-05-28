@@ -36,7 +36,8 @@ const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
     name: "wow",
     pointer_id: SLOT_ID,
     meta: {},
-    pullout_direction: 0
+    pullout_direction: 0,
+    gantry_mounted: false,
   }));
 
 const fakeIndex = buildResourceIndex().index;

@@ -16,7 +16,7 @@ import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
   sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName
 } from "../pin_and_peripheral_support";
-import { ShouldDisplay, Feature } from "../../../devices/interfaces";
+import { ShouldDisplay } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
 import {
   addOrEditParamApps, variableList
@@ -45,14 +45,14 @@ export type Operator = "lhs"
   | "_else";
 
 export const LHSOptions =
-  (resources: ResourceIndex, shouldDisplay: ShouldDisplay, showPins: boolean
+  (resources: ResourceIndex, showPins: boolean
   ): DropDownItem[] => [
       { heading: true, label: t("Positions"), value: 0, headingId: PinGroupName.Position },
       { value: "x", label: t("X position"), headingId: "Position" },
       { value: "y", label: t("Y position"), headingId: "Position" },
       { value: "z", label: t("Z position"), headingId: "Position" },
-      ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(resources) : []),
-      ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(resources) : []),
+      ...peripheralsAsDropDowns(resources),
+      ...sensorsAsDropDowns(resources),
       ...(showPins ? pinDropdowns(n => `pin${n}`) : []),
     ];
 

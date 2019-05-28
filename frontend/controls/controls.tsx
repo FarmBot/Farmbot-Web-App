@@ -8,7 +8,6 @@ import { WebcamPanel } from "./webcam";
 import { Props } from "./interfaces";
 import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
-import { Feature } from "../devices/interfaces";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
 
@@ -43,13 +42,11 @@ export class Controls extends React.Component<Props, {}> {
     feeds={this.props.feeds}
     dispatch={this.props.dispatch} />
 
-  sensors = () => this.props.shouldDisplay(Feature.sensors)
-    ? <Sensors
-      bot={this.props.bot}
-      sensors={this.props.sensors}
-      dispatch={this.props.dispatch}
-      disabled={this.arduinoBusy || !this.botOnline} />
-    : <div id="hidden-sensors-widget" />
+  sensors = () => <Sensors
+    bot={this.props.bot}
+    sensors={this.props.sensors}
+    dispatch={this.props.dispatch}
+    disabled={this.arduinoBusy || !this.botOnline} />
 
   sensorReadings = () => this.props.sensorReadings.length > 0
     ? <SensorReadings

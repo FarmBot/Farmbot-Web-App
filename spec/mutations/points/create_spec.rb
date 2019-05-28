@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Points::Create do
   let(:device) { FactoryBot.create(:device) }
@@ -21,21 +21,32 @@ describe Points::Create do
 
   it "warns users when they hit the soft resource limit" do
     with_fake_limits do
-      allow(device)
-        .to receive(:tell).with(Points::Create::GETTING_CLOSE, ["fatal_email"])
+      allow(device).to receive(:tell).with(Points::Create::GETTING_CLOSE, ["fatal_email"])
       Points::Create::POINT_SOFT_LIMIT.times do
         expect(Points::Create.run(params).errors).to be nil
       end
     end
   end
 
+  it "creates a gantry_mounted tool slot" do
+    p = { x: 0,
+          y: 10,
+          z: -100,
+          device: FactoryBot.create(:device),
+          gantry_mounted: true,
+          pointer_type: "ToolSlot" }
+    slot = Points::Create.run!(p)
+
+    p.map { |(k, v)| expect(slot.send(k)).to eq(v) }
+  end
+
   it "stops users when they hit the hard limit" do
     with_fake_limits do
-      params = { x:            0,
-                 y:            0,
-                 z:            0,
-                 device:       device,
-                 pointer_type: "GenericPointer", }
+      params = { x: 0,
+                 y: 0,
+                 z: 0,
+                 device: device,
+                 pointer_type: "GenericPointer" }
 
       Points::Create::POINT_HARD_LIMIT.times do
         expect(Points::Create.run(params).errors).to be nil

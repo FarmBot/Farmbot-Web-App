@@ -36,7 +36,7 @@ import {
 } from "../plants/designer_panel";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
-import { ShouldDisplay, Feature } from "../../devices/interfaces";
+import { ShouldDisplay } from "../../devices/interfaces";
 import {
   addOrEditParamApps, variableList, getRegimenVariableData
 } from "../../sequences/locals_list/variable_support";
@@ -302,23 +302,15 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     }
   }
 
-  get allowRegimenBackscheduling() {
-    return this.props.shouldDisplay(Feature.backscheduled_regimens);
-  }
-
   /** Rejects save of Farm Event if: */
   maybeRejectStartTime = (f: FarmEvent, now = moment()) => {
     /** adding a new event (editing repeats for ongoing events is allowed) */
     const newEvent = this.props.title.toLowerCase().includes("add");
     /** start time is in the past */
     const inThePast = moment(f.start_time) < now;
-    /** is a sequence event or: */
+    /** is a sequence event */
     const sequenceEvent = !this.isReg;
-    /** installed FBOS does not support backscheduling of regimen farm events.
-     *  (this is the main reason this is a frontend validation)
-     */
-    const unsupportedOS = !this.allowRegimenBackscheduling;
-    return newEvent && (inThePast && (sequenceEvent || unsupportedOS));
+    return newEvent && (inThePast && sequenceEvent);
   }
 
   /** Merge and recombine FarmEvent form updates into and updated FarmEvent. */
@@ -327,9 +319,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     const vm = betterMerge(this.viewModel, this.state.fe);
     const oldBodyData = this.needsVariables ? this.viewModel.body : [];
     vm.body = this.state.fe.body || oldBodyData;
-    const opts: RecombineOptions = {
-      forceRegimensToMidnight: this.allowRegimenBackscheduling
-    };
+    const opts: RecombineOptions = { forceRegimensToMidnight: true };
     return recombine(vm, opts);
   }
 
@@ -383,7 +373,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   }
 
   StartTimeForm = () => {
-    const forceMidnight = this.isReg && this.allowRegimenBackscheduling;
+    const forceMidnight = this.isReg;
     return <div>
       <label>
         {t("Starts")}

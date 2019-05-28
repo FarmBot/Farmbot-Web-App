@@ -122,7 +122,8 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     meta: {},
     tool_id: undefined,
     name: "Tool Slot",
-    pullout_direction: 0
+    pullout_direction: 0,
+    gantry_mounted: false,
   });
 }
 
@@ -311,6 +312,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     time_format_24_hour: false,
     show_pins: false,
     disable_emergency_unlock_confirmation: false,
+    map_size_x: 2900,
+    map_size_y: 1400,
   });
 }
 

@@ -53,4 +53,6 @@ export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
   success_log: "success_log",
   warn_log: "warn_log",
   zoom_level: "zoom_level",
+  map_size_x: "map_size_x",
+  map_size_y: "map_size_y",
 };

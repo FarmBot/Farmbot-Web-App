@@ -69,4 +69,11 @@ describe("<ToolSlotPoint/>", () => {
     const wrapper = mount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedTrayPattern").length).toEqual(1);
   });
+
+  it("sets hover", () => {
+    const wrapper = mount<ToolSlotPoint>(<ToolSlotPoint {...fakeProps()} />);
+    expect(wrapper.state().hovered).toBeFalsy();
+    wrapper.instance().setHover(true);
+    expect(wrapper.state().hovered).toBeTruthy();
+  });
 });

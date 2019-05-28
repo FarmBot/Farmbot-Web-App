@@ -26,13 +26,14 @@ describe Api::FbosConfigsController do
         arduino_debug_messages:  false,
         network_not_found_timer: nil,
         os_auto_update:          true,
-        firmware_hardware:       "arduino",
+        firmware_hardware:       nil,
         api_migrated:            true
       }.to_a.map do |key, value|
-        actual   = json[key]
+        actual   = json.fetch(key)
         expected = value
         correct  = actual == expected
-        fail "#{key} should be #{expected} but got #{actual}" unless correct
+        friendly_actual_var = actual|| "nil or false"
+        fail "#{key} should be #{expected} but got #{friendly_actual_var}" unless correct
       end
 
       { created_at: String, updated_at: String }

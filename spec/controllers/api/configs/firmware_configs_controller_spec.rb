@@ -13,9 +13,9 @@ describe Api::FirmwareConfigsController do
       device.firmware_config.destroy! # Let's test defaults.
       get :show, format: :json
       expect(response.status).to eq(200)
-      { encoder_enabled_x:                 1,
-        encoder_enabled_y:                 1,
-        encoder_enabled_z:                 1,
+      { encoder_enabled_x:                 0,
+        encoder_enabled_y:                 0,
+        encoder_enabled_z:                 0,
         encoder_invert_x:                  0,
         encoder_invert_y:                  0,
         encoder_invert_z:                  0,

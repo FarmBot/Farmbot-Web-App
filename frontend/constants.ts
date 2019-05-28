@@ -366,6 +366,23 @@ export namespace Content {
     allowing you to configure it with the updated credentials. You will also be
     logged out of other browser sessions. Continue?`);
 
+  export const ACCOUNT_RESET_WARNING =
+    trim(`WARNING! Resetting your account will permanently delete all of your
+    Sequences, Regimens, Events, Tools, Logs, and Farm Designer data.
+    All app settings and device settings will be reset to default values.
+    This is useful if you want to delete all data to start from scratch
+    while avoiding having to fully delete your account, re-signup, and
+    re-configure your FarmBot. Note that when you sync (or auto-sync)
+    after resetting your account, your FarmBot will delete all of its
+    stored Sequences, etc, because your account will no longer have any
+    of these resources until you create new ones. Furthermore, upon reset
+    any customized device settings will be immediately overwritten with
+    the default values downloaded from the reset web app account.`);
+
+  export const TYPE_PASSWORD_TO_RESET =
+    trim(`If you are sure you want to reset your account, type in
+    your password below to continue.`);
+
   export const ACCOUNT_DELETE_WARNING =
     trim(`WARNING! Deleting your account will permanently delete all of your
     Sequences, Regimens, Events, and Farm Designer data. Upon deleting your

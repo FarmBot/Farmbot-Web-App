@@ -1,8 +1,3 @@
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -18,22 +13,11 @@ describe("mapStateToProps()", () => {
     expect(props.alerts).toEqual([]);
   });
 
-  it("doesn't show API alerts", () => {
-    const state = fakeState();
-    const alert = fakeAlert();
-    alert.body.problem_tag = "api.seed_data.missing";
-    state.resources = buildResourceIndex([alert]);
-    mockDev = false;
-    const props = mapStateToProps(state);
-    expect(props.alerts).toEqual([]);
-  });
-
   it("shows API alerts", () => {
     const state = fakeState();
     const alert = fakeAlert();
     alert.body.problem_tag = "api.seed_data.missing";
     state.resources = buildResourceIndex([alert]);
-    mockDev = true;
     const props = mapStateToProps(state);
     expect(props.alerts).toEqual([alert.body]);
   });

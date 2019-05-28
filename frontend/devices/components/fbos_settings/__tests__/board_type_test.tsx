@@ -44,11 +44,29 @@ describe("<BoardType/>", () => {
     expect(wrapper.text()).toContain("1.4");
   });
 
+  it("Farmduino Express k1.0", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.E";
+    const wrapper = mount(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("Express");
+  });
+
   it("Arduino/RAMPS", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.firmware_version = "5.0.3.R";
-    const wrapper = mount(<BoardType {...p} />);
+    const wrapper = mount<BoardType>(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Arduino/RAMPS");
+  });
+
+  it("changes boardType", () => {
+    const p = fakeProps();
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.R";
+    const wrapper = mount<BoardType>(<BoardType {...p} />);
+    expect(wrapper.text()).toContain("Arduino/RAMPS");
+    expect(wrapper.state().boardType).toEqual("arduino");
+    p.bot.hardware.informational_settings.firmware_version = "5.0.3.F";
+    wrapper.setProps(p);
+    expect(wrapper.state().boardType).toEqual("farmduino");
   });
 
   it("Undefined", () => {
@@ -97,5 +115,17 @@ describe("<BoardType/>", () => {
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
       { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" }]);
+  });
+
+  it("displays new boards", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = shallow(<BoardType {...p} />);
+    expect(wrapper.find("FBSelect").props().list).toEqual([
+      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
+      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
+      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+      { label: "Farmduino (Express v1.0)", value: "express_k10" },
+    ]);
   });
 });

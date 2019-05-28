@@ -40,4 +40,8 @@ describe FbosConfig do
         config.update_attributes!(update_channel: "beta")
       end
     end
+
+    it "has default firmware_hardware" do
+      expect(FbosConfig.create!.firmware_hardware).to eq(nil)
+    end
 end

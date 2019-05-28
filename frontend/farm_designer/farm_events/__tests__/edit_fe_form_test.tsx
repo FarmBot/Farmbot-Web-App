@@ -344,17 +344,6 @@ describe("<FarmEventForm/>", () => {
       "Nothing to run."), "Warning");
   });
 
-  it("rejects start time: add with unsupported OS", () => {
-    const p = props();
-    p.title = "add";
-    p.shouldDisplay = () => false;
-    p.farmEvent.body.executable_type = "Regimen";
-    p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
-    const fakeNow = moment("2017-06-01T02:00:00.000Z");
-    const reject = instance(p).maybeRejectStartTime(p.farmEvent.body, fakeNow);
-    expect(reject).toBeTruthy();
-  });
-
   it("allows start time: edit with unsupported OS", () => {
     const p = props();
     p.shouldDisplay = () => false;
