@@ -1,5 +1,15 @@
 {
   "translated": {
+    " copy ": " copia ",
+    " regimen": " dieta",
+    " request sent to device.": " petición enviada al dispositivo.",
+    " sequence": " secuencia",
+    " unknown (offline)": " desconocido (offline)",
+    "(No selection)": "(Nada seleccionado)",
+    "(unknown)": "(desconocido)",
+    "{{axis}} (mm)": "{{axis}} (mm)",
+    "{{axis}}-Offset": "{{axis}}-Offset",
+    "{{seconds}} seconds!": "{{seconds}} segundos!",
     "Account Settings": "Ajustes de cuenta",
     "Add Farm Event": "Añadir Farm Event",
     "Age": "Edad",
@@ -85,16 +95,6 @@
     "Z AXIS": "EJE Z"
   },
   "untranslated": {
-    " copy ": " copy ",
-    " regimen": " regimen",
-    " request sent to device.": " request sent to device.",
-    " sequence": " sequence",
-    " unknown (offline)": " unknown (offline)",
-    "(No selection)": "(No selection)",
-    "(unknown)": "(unknown)",
-    "{{axis}} (mm)": "{{axis}} (mm)",
-    "{{axis}}-Offset": "{{axis}}-Offset",
-    "{{seconds}} seconds!": "{{seconds}} seconds!",
     "Accelerate for (steps)": "Accelerate for (steps)",
     "Account Not Verified": "Account Not Verified",
     "Action": "Action",
