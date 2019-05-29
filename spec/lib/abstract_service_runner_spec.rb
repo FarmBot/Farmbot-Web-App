@@ -24,7 +24,7 @@ describe AbstractServiceRunner do
   it "reports errors to rollbar and retries" do
     stub = ServiceRunnerStub.new
     expect(Rollbar).to receive(:error).with(ServiceRunnerStub::MSG)
-    ServiceRunner.go!(stub, stub)
+    stub.go!(stub)
     expect(stub.subscribe_call_count).to eq(2)
     expect(stub.process_calls.count).to eq(1)
     expect(stub.process_calls.first[0]).to eq({})

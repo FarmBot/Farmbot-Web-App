@@ -20,10 +20,12 @@ class RabbitWorker
   end
 
   def self.go!
+    t = Transport.current
+
     loop do
       ThreadsWait.all_waits([
-        thread { LogService.new.go!(Transport.current.log_channel) },
-        thread { Resources::Service.new.go!(Transport.current.resource_channel) },
+        thread { LogService.new.go!(t.log_channel) },
+        thread { Resources::Service.new.go!(t.resource_channel) },
       ])
     end
   rescue
