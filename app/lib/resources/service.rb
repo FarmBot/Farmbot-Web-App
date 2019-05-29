@@ -33,7 +33,7 @@ module Resources
       #               to crash. the safe_attrs var reduces the risk of
       #               stack overflow during serialization.
       safe_attrs = [:consumer_tag, :redelivered, :exchange, :routing_key]
-      x = delivery_info.to_hash.slice(*safe_attrs).merge(body: body)
+      x = delivery_info.to_h.slice(*safe_attrs).merge(body: body)
       Rollbar.error(q, x)
       raw_chan = delivery_info&.routing_key&.split(".") || []
       id       = raw_chan[INDEX_OF_USERNAME]&.gsub("device_", "")&.to_i
