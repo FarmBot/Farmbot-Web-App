@@ -28,7 +28,11 @@ module Resources
     def self.step1(delivery_info, body) # Returns params or nil
       Preprocessor.from_amqp(delivery_info, body)
     rescue Mutations::ValidationException => q
-      Rollbar.error(q)
+      x = delivery_info.to_hash.slice(:consumer_tag,
+                                      :redelivered,
+                                      :exchange,
+                                      :routing_key).merge(body: body)
+      Rollbar.error(q, x)
       raw_chan = delivery_info&.routing_key&.split(".") || []
       id       = raw_chan[INDEX_OF_USERNAME]&.gsub("device_", "")&.to_i
       uuid     = raw_chan[INDEX_OF_UUID] || "NONE"
