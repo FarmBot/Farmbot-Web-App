@@ -29,14 +29,14 @@ describe LogService do
     calls = Transport.current.resource_channel.calls[:bind]
     expect(calls).to include([
       "amq.topic",
-      { routing_key: Transport::RESOURCE_ROUTING_KEY }
+      { routing_key: Transport::RESOURCE_ROUTING_KEY },
     ])
   end
 
   it "creates new messages in the DB when called" do
     Log.destroy_all
     b4 = Log.count
-    LogService.process(fake_delivery_info, normal_payl)
+    LogService.new.process(fake_delivery_info, normal_payl)
     expect(Log.count).to be > b4
   end
 
@@ -45,6 +45,6 @@ describe LogService do
     data.device_id = FactoryBot.create(:device).id
     time = Time.now
     expect_any_instance_of(Device).to receive(:maybe_throttle).with(time)
-    LogService.warn_user(data, time)
+    LogService.new.warn_user(data, time)
   end
 end

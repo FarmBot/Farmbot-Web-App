@@ -3,12 +3,12 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  OPTS = { read_timeout: 10, heartbeat: 10, log_level: "info" }
+  OPTS = { read_timeout: 10, heartbeat: 10, log_level: "warn" }
   RESOURCE_ROUTING_KEY = "bot.*.resources_v0.*.*.*.*"
 
   def self.amqp_url
-    @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
-                  ENV['RABBITMQ_URL']  ||
+    @amqp_url ||= ENV["CLOUDAMQP_URL"] ||
+                  ENV["RABBITMQ_URL"] ||
                   "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@mqtt:5672"
   end
 
@@ -32,7 +32,7 @@ class Transport
 
   def connection
     @connection ||= Transport
-                    .default_amqp_adapter.new(Transport.amqp_url, OPTS).start
+      .default_amqp_adapter.new(Transport.amqp_url, OPTS).start
   end
 
   def log_channel
@@ -44,24 +44,24 @@ class Transport
 
   def resource_channel
     @resource_channel ||= self
-                         .connection
-                         .create_channel
-                         .queue("resource_workers")
-                         .bind("amq.topic", routing_key: RESOURCE_ROUTING_KEY)
+      .connection
+      .create_channel
+      .queue("resource_workers")
+      .bind("amq.topic", routing_key: RESOURCE_ROUTING_KEY)
   end
 
   # def ping_channel
   #   @ping_channel ||= self.connection
   #                        .create_channel
-  #                        .queue("resource_workers")
+  #                        .queue("ping_workers")
   #                        .bind("amq.topic", routing_key: "bot.*.ping.#")
   # end
 
   def amqp_topic
     @amqp_topic ||= self
-                  .connection
-                  .create_channel
-                  .topic("amq.topic", auto_delete: true)
+      .connection
+      .create_channel
+      .topic("amq.topic", auto_delete: true)
   end
 
   def amqp_send(message, id, channel)
@@ -97,10 +97,10 @@ class Transport
     end
 
     def self.api_url
-      uri        = URI(Transport.amqp_url)
+      uri = URI(Transport.amqp_url)
       uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
-      uri.user   = nil
-      uri.port   = 15672
+      uri.user = nil
+      uri.port = 15672
       uri.to_s
     end
 
