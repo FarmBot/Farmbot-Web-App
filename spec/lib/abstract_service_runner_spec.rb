@@ -1,15 +1,14 @@
 require "spec_helper"
-require "service_runner_base"
 
-describe ServiceRunner do
-  class ServiceRunnerStub
+describe AbstractServiceRunner do
+  class ServiceRunnerStub < AbstractServiceRunner
     attr_accessor :subscribe_call_count, :process_calls
 
     MSG = RuntimeError.new("First attempt will fail, expect a retry")
 
     def initialize
       @subscribe_call_count = 0
-      @process_calls        = []
+      @process_calls = []
     end
 
     def subscribe(*)
