@@ -43,7 +43,7 @@
     "coveralls": "3.0.3",
     "enzyme": "3.9.0",
     "enzyme-adapter-react-16": "1.13.0",
-    "farmbot": "8.0.1-rc1",
+    "farmbot": "8.0.1-rc2",
     "farmbot-toastr": "1.0.3",
     "i18next": "15.1.1",
     "jest": "24.8.0",
