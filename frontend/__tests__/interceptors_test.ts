@@ -21,7 +21,7 @@ jest.mock("../session", () => ({
 import {
   responseFulfilled, isLocalRequest, requestFulfilled, responseRejected
 } from "../interceptors";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, Method } from "axios";
 import { uuid } from "farmbot";
 import { startTracking } from "../connectivity/data_consistency";
 import { SafeError } from "../interceptor_support";
@@ -35,7 +35,7 @@ const A_STRING = expect.any(String);
 
 interface FakeProps {
   uuid: string;
-  method: string;
+  method: Method;
   requestId: string;
   url: string;
 }
