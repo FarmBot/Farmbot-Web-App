@@ -148,6 +148,11 @@ var HelperNamespace = (function () {
     markdown += ' identified by the\nlanguage helper that have been';
     markdown += ' translated. Additional phrases not identified\n';
     markdown += 'by the language helper may exist in the Web App.\n\n';
+    markdown += '\n**Untranslated** includes phrases not yet translated';
+    markdown += ' or phrases that do not\nneed translation. Phrases that are';
+    markdown += ' identical before and after translation\ncan be moved to';
+    markdown += ' `translated` to indicate translation status to the language';
+    markdown += '\nhelper.\n\n';
     markdown += '**Other Translations** include translated phrases';
     markdown += ' that do not match any of\nthe phrases identified by the';
     markdown += ' language helper. These are usually phrases\nnot identified';
@@ -207,6 +212,7 @@ var HelperNamespace = (function () {
       });
 
       var ordered = {};
+      var translatedKeys = [];
       var fileContent;
       try {
         // check the file can be opened
@@ -233,6 +239,8 @@ var HelperNamespace = (function () {
       try {
         if (fileContent != undefined) {
           var jsonParsed = JSON.parse(fileContent);
+          translatedKeys.push.apply(
+            translatedKeys, Object.keys(JSON.parse(fileContent).translated));
           var combinedContent = jsonParsed.translated;
           if ('untranslated' in jsonParsed) {
             for (var untranslated_key in jsonParsed.untranslated) {
@@ -281,7 +289,7 @@ var HelperNamespace = (function () {
         // replace current tag with an existing translation
         if (untranslated.hasOwnProperty(key)) {
           existing++;
-          if (key !== ordered[key]) {
+          if ((key !== ordered[key]) || translatedKeys.includes(key)) {
             delete untranslated[key];
             translated[key] = ordered[key];
             if (debug) {
