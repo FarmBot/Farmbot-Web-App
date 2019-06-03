@@ -7,18 +7,25 @@ import { FBSelect } from "../../../../ui/index";
 import { Encoder } from "farmbot";
 
 describe("<EncoderType/>", () => {
+  const fakeProps = (): EncoderTypeProps => ({
+    hardware: {
+      encoder_type_x: 1,
+      encoder_type_y: 1,
+      encoder_type_z: 1
+    },
+    onChange: jest.fn(),
+  });
+
   it("renders default content", () => {
-    const props: EncoderTypeProps = {
-      hardware: {
-        encoder_type_x: 1,
-        encoder_type_y: 1,
-        encoder_type_z: 1
-      },
-      onChange: jest.fn()
-    };
-    const el = shallow(<EncoderType {...props} />);
-    expect(el.find(FBSelect).length).toEqual(3);
-    // EncoderType
+    const wrapper = shallow(<EncoderType {...fakeProps()} />);
+    expect(wrapper.find(FBSelect).length).toEqual(3);
+  });
+
+  it("changes encoder type", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EncoderType {...p} />);
+    wrapper.find(FBSelect).first().simulate("change", { label: "", value: 1 });
+    expect(p.onChange).toHaveBeenCalledWith("encoder_type_x", 1);
   });
 });
 

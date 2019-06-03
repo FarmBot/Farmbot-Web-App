@@ -15,6 +15,7 @@ import { t } from "../../../i18next_wrapper";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../interfaces";
 import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
+import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -49,13 +50,14 @@ export const calculateScale =
 export function Motors(props: MotorsProps) {
   const {
     dispatch, firmwareVersion, controlPanelState,
-    sourceFwConfig, isValidFwConfig
+    sourceFwConfig, isValidFwConfig, firmwareHardware
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
-
+  const isFarmduinoExpress = firmwareHardware &&
+    firmwareHardware.includes("express");
   return <section>
     <Header
       expanded={controlPanelState.motors}
@@ -161,6 +163,24 @@ export function Motors(props: MotorsProps) {
         z={"movement_invert_motor_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
+      {isFarmduinoExpress &&
+        <NumericMCUInputGroup
+          name={t("Motor Current")}
+          tooltip={ToolTips.MOTOR_CURRENT}
+          x={"movement_motor_current_x" as NumberConfigKey}
+          y={"movement_motor_current_y" as NumberConfigKey}
+          z={"movement_motor_current_z" as NumberConfigKey}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
+      {isFarmduinoExpress &&
+        <NumericMCUInputGroup
+          name={t("Stall Sensitivity")}
+          tooltip={ToolTips.STALL_SENSITIVITY}
+          x={"movement_stall_sensitivity_x" as NumberConfigKey}
+          y={"movement_stall_sensitivity_y" as NumberConfigKey}
+          z={"movement_stall_sensitivity_z" as NumberConfigKey}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"
         label={t("Enable 2nd X Motor")}
         tooltip={ToolTips.ENABLE_X2_MOTOR}>

@@ -20,6 +20,7 @@ describe("<HardwareSettings />", () => {
       },
       firmwareConfig: undefined,
       shouldDisplay: jest.fn(),
+      firmwareHardware: undefined,
     };
   };
 
