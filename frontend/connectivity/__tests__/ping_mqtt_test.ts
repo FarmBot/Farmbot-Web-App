@@ -1,16 +1,10 @@
-jest.mock("../index", () => {
-  return {
-    dispatchNetworkDown: jest.fn(),
-    dispatchNetworkUp: jest.fn()
-  };
-});
+jest.mock("../index", () => ({
+  dispatchNetworkDown: jest.fn(),
+  dispatchNetworkUp: jest.fn()
+}));
 
 const mockTimestamp = 0;
-jest.mock("../../util", () => {
-  return {
-    timestamp: () => mockTimestamp
-  };
-});
+jest.mock("../../util", () => ({ timestamp: () => mockTimestamp }));
 
 import {
   readPing,
@@ -26,7 +20,7 @@ import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
 const TOO_LATE_TIME_DIFF = ACTIVE_THRESHOLD + 1;
-// const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
+const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
 
 const state: Partial<FarmBotInternalConfig> = {
   LAST_PING_IN: 123,
@@ -35,24 +29,19 @@ const state: Partial<FarmBotInternalConfig> = {
 
 function fakeBot(): Farmbot {
   const fb: Partial<Farmbot> = {
-    rpcShim: jest.fn((_: RpcRequestBodyItem[]): RpcRequest => {
-      return {
-        kind: "rpc_request",
-        args: {
-          label: "ping",
-          priority: 0
-        }
-      };
-    }),
+    rpcShim: jest.fn((_: RpcRequestBodyItem[]): RpcRequest => ({
+      kind: "rpc_request",
+      args: {
+        label: "ping",
+        priority: 0
+      }
+    })),
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
-    ping: jest.fn((_timeout: number, _now: number) => {
-      return Promise.resolve(1);
-    }),
-    getConfig: jest.fn((key: keyof FarmBotInternalConfig) => {
-      return (state as FarmBotInternalConfig)[key];
-    }),
+    ping: jest.fn((_timeout: number, _now: number) => Promise.resolve(1)),
+    // TODO: Fix this typing (should be `FarmBotInternalConfig[typeof key]`).
+    getConfig: jest.fn((key: keyof FarmBotInternalConfig) => state[key] as never),
   };
 
   return fb as Farmbot;
@@ -90,6 +79,7 @@ describe("ping util", () => {
   it("checks if the bot isInactive()", () => {
     expect(isInactive(1, 1 + TOO_LATE_TIME_DIFF)).toBeTruthy();
     expect(isInactive(1, 1)).toBeFalsy();
+    expect(isInactive(1, 1 + ACCEPTABLE_TIME_DIFF)).toBeFalsy();
   });
 
   it("binds event handlers with startPinging()", (done) => {

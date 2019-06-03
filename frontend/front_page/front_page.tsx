@@ -37,21 +37,24 @@ export interface PartialFormEvent {
   }
 }
 
+/** Set value for front page state field (except for "activePanel"). */
 export const setField =
-  (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFormEvent) => {
-    const state: Partial<FrontPageState> = {};
+  (name: keyof Omit<FrontPageState, "activePanel">, cb: SetterCB) =>
+    (event: PartialFormEvent) => {
+      const state: Partial<FrontPageState> = {};
 
-    switch (name) {
-      // Booleans
-      case "agreeToTerms":
-        state[name] = event.currentTarget.checked;
-        break;
-      // all others (string)
-      default:
-        state[name] = event.currentTarget.value;
-    }
-    cb(state);
-  };
+      switch (name) {
+        // Booleans
+        case "agreeToTerms":
+        case "registrationSent":
+          state[name] = event.currentTarget.checked;
+          break;
+        // all others (string)
+        default:
+          state[name] = event.currentTarget.value;
+      }
+      cb(state);
+    };
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor(props: {}) {

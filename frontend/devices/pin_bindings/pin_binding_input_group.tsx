@@ -27,7 +27,7 @@ import { t } from "../../i18next_wrapper";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
-  state = {
+  state: PinBindingInputGroupState = {
     isEditing: false,
     pinNumberInput: undefined,
     sequenceIdInput: undefined,
