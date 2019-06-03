@@ -3,12 +3,11 @@ import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { FbjsEventName } from "farmbot/dist/constants";
-import noop from "lodash/noop";
+import { noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-
 import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,

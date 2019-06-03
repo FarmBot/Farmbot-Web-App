@@ -22,11 +22,15 @@ const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
   "minor_version"
 ];
 
-function legacyKeyTransformation(log: Log,
-  key: keyof Log) {
-  const before = log[key];
-  // You don't want to use || here, trust me. -RC
-  log[key] = !isUndefined(before) ? before : get(log, ["meta", key], undefined);
+/** Copy fields from `log.meta` into `log`. */
+function legacyKeyTransformation(log: Log, key: keyof Log) {
+  /** Attempt to find field in `log`. */
+  if (isUndefined(log[key])) {
+    /** Attempt to find field in `log.meta`. */
+    const metaValue: Log[typeof key] = get(log, ["meta", key], undefined);
+    // TODO: Fix this typing (expects `never` instead of `Log[typeof key]`).
+    log[key] = metaValue as never;
+  }
 }
 
 export const onLogs =

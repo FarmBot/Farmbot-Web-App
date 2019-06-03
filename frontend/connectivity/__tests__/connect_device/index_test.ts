@@ -225,6 +225,16 @@ describe("onLogs", () => {
     globalQueue.maybeWork();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
   });
+
+  it("handles log fields correctly", () => {
+    const fn = onLogs(jest.fn(), fakeState);
+    const log = fakeLog(MessageType.info, []);
+    log.message = "online";
+    // tslint:disable-next-line:no-any
+    (log as any).meta = { y: 200 };
+    fn(log);
+    expect(log).toEqual(expect.objectContaining({ message: "online", y: 200 }));
+  });
 });
 
 describe("onPublicBroadcast", () => {
