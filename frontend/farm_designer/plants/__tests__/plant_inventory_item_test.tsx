@@ -1,6 +1,5 @@
-jest.mock("../../../open_farm/icons", () => ({
+jest.mock("../../../open_farm/cached_crop", () => ({
   cachedCrop: jest.fn(() => Promise.resolve({ svg_icon: "icon" })),
-  svgToUrl: jest.fn(x => x),
 }));
 
 jest.mock("../../../history", () => ({ push: jest.fn() }));
@@ -15,6 +14,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
+import { svgToUrl } from "../../../open_farm/icons";
 
 describe("<PlantInventoryItem />", () => {
   const fakeProps = (): PlantInventoryItemProps => {
@@ -93,6 +93,6 @@ describe("<PlantInventoryItem />", () => {
       shallow<PlantInventoryItem>(<PlantInventoryItem {...fakeProps()} />);
     const img = new Image;
     await wrapper.find("img").simulate("load", { currentTarget: img });
-    expect(wrapper.state().icon).toEqual("icon");
+    expect(wrapper.state().icon).toEqual(svgToUrl("icon"));
   });
 });
