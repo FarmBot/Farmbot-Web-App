@@ -75,7 +75,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     }
 
   private handleValueChange = (item: DropDownItem | undefined) => {
-    if (item) {
+    if (item && !item.heading) {
       this.props.onChange(item);
       this.setState({ item });
     }

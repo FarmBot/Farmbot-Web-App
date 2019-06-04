@@ -1,6 +1,6 @@
 import * as React from "react";
 import { RegimenNameInput } from "./regimen_name_input";
-import { ActiveEditorProps } from "./interfaces";
+import { ActiveEditorProps, ActiveEditorState } from "./interfaces";
 import { push } from "../../history";
 import {
   RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps
@@ -22,26 +22,47 @@ import { Actions } from "../../constants";
  * The bottom half of the regimen editor panel (when there's something to
  * actually edit).
  */
-export function ActiveEditor(props: ActiveEditorProps) {
-  const regimenProps = { regimen: props.regimen, dispatch: props.dispatch };
-  return <div className="regimen-editor-content">
-    <div className="regimen-editor-tools">
-      <RegimenButtonGroup {...regimenProps} />
-      <RegimenNameInput {...regimenProps} />
-      <LocalsList
-        locationDropdownKey={JSON.stringify(props.regimen)}
-        bodyVariables={props.regimen.body.body}
-        variableData={props.variableData}
-        sequenceUuid={props.regimen.uuid}
-        resources={props.resources}
-        onChange={editRegimenVariables(regimenProps)(props.regimen.body.body)}
-        allowedVariableNodes={AllowedVariableNodes.parameter}
-        shouldDisplay={props.shouldDisplay} />
-      <hr />
-    </div>
-    <OpenSchedulerButton dispatch={props.dispatch} />
-    <RegimenRows calendar={props.calendar} dispatch={props.dispatch} />
-  </div>;
+export class ActiveEditor
+  extends React.Component<ActiveEditorProps, ActiveEditorState> {
+  state: ActiveEditorState = { variablesCollapsed: false };
+
+  get regimenProps() {
+    return { regimen: this.props.regimen, dispatch: this.props.dispatch };
+  }
+
+  toggleVarShow = () =>
+    this.setState({ variablesCollapsed: !this.state.variablesCollapsed });
+
+  LocalsList = () => {
+    const { regimen } = this.props;
+    return <LocalsList
+      locationDropdownKey={JSON.stringify(regimen)}
+      bodyVariables={regimen.body.body}
+      variableData={this.props.variableData}
+      sequenceUuid={regimen.uuid}
+      resources={this.props.resources}
+      onChange={editRegimenVariables(this.regimenProps)(regimen.body.body)}
+      collapsible={true}
+      collapsed={this.state.variablesCollapsed}
+      toggleVarShow={this.toggleVarShow}
+      allowedVariableNodes={AllowedVariableNodes.parameter}
+      shouldDisplay={this.props.shouldDisplay} />;
+  }
+
+  render() {
+    return <div className="regimen-editor-content">
+      <div className="regimen-editor-tools">
+        <RegimenButtonGroup {...this.regimenProps} />
+        <RegimenNameInput {...this.regimenProps} />
+        <this.LocalsList />
+        <hr />
+      </div>
+      <OpenSchedulerButton dispatch={this.props.dispatch} />
+      <RegimenRows {...this.regimenProps}
+        calendar={this.props.calendar}
+        varsCollapsed={this.state.variablesCollapsed} />
+    </div>;
+  }
 }
 
 export const OpenSchedulerButton = (props: { dispatch: Function }) =>
@@ -73,13 +94,29 @@ const RegimenButtonGroup = (props: RegimenProps) =>
     </button>
   </div>;
 
+/** Make room for the regimen header variable form when necessary. */
+const regimenSectionHeight =
+  (regimen: TaggedRegimen, varsCollapsed: boolean) => {
+    let subHeight = 200;
+    const variables = regimen.body.body.length > 0;
+    if (variables) { subHeight = 500; }
+    if (varsCollapsed) { subHeight = 300; }
+    const variablesDiv = document.getElementById("regimen-editor-tools");
+    if (variablesDiv) { subHeight = 200 + variablesDiv.offsetHeight; }
+    return `calc(100vh - ${subHeight}px)`;
+  };
+
 interface RegimenRowsProps {
+  regimen: TaggedRegimen;
   calendar: CalendarRow[];
   dispatch: Function;
+  varsCollapsed: boolean;
 }
 
 const RegimenRows = (props: RegimenRowsProps) =>
-  <div className="regimen">
+  <div className="regimen" style={{
+    height: regimenSectionHeight(props.regimen, props.varsCollapsed)
+  }}>
     {props.calendar.map(regimenDay(props.dispatch))}
   </div>;
 

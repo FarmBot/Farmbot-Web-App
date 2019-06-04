@@ -39,18 +39,6 @@ export const fetchLabFeatures =
       value: false
     },
     {
-      name: t("Dynamic map size"),
-      description: t(Content.DYNAMIC_MAP_SIZE),
-      storageKey: BooleanSetting.dynamic_map,
-      value: false
-    },
-    {
-      name: t("Double default map dimensions"),
-      description: t(Content.DOUBLE_MAP_DIMENSIONS),
-      storageKey: BooleanSetting.map_xl,
-      value: false
-    },
-    {
       name: t("Display plant animations"),
       description: t(Content.PLANT_ANIMATIONS),
       storageKey: BooleanSetting.disable_animations,
@@ -90,6 +78,12 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
       value: false,
       displayInvert: true,
+    },
+    {
+      name: t("Dynamic map size"),
+      description: t(Content.DYNAMIC_MAP_SIZE),
+      storageKey: BooleanSetting.dynamic_map,
+      value: false
     },
   ].map(fetchSettingValue(getConfigValue)));
 

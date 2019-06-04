@@ -147,7 +147,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const {
     info, onDestroy, updatePlant, dispatch, inSavedGarden, timeSettings
   } = props;
-  const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
+  const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
   let { x, y } = info;
   const isEditing = !!onDestroy;
   if (isEditing) { x = round(x); y = round(y); }
@@ -157,9 +157,6 @@ export function PlantPanel(props: PlantPanelProps) {
       {t("Plant Info")}
     </label>
     <ul>
-      <ListItem name={t("Full Name")}>
-        {startCase(name)}
-      </ListItem>
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}

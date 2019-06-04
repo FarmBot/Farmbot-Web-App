@@ -15,6 +15,15 @@ import { VariableDeclaration } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
 
+const testVariable: VariableDeclaration = {
+  kind: "variable_declaration",
+  args: {
+    label: "label", data_value: {
+      kind: "identifier", args: { label: "new_var" }
+    }
+  }
+};
+
 describe("<ActiveEditor />", () => {
   const fakeProps = (): ActiveEditorProps => ({
     dispatch: jest.fn(),
@@ -64,22 +73,55 @@ describe("<ActiveEditor />", () => {
       type: Actions.SET_SCHEDULER_STATE, payload: true
     });
   });
+
+  it("has correct height without variable form", () => {
+    const p = fakeProps();
+    p.regimen.body.body = [];
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<ActiveEditor {...p} />);
+    expect(wrapper.find(".regimen").props().style).toEqual({
+      height: "calc(100vh - 200px)"
+    });
+  });
+
+  it("has correct height with variable form", () => {
+    const p = fakeProps();
+    p.regimen.body.body = [testVariable];
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<ActiveEditor {...p} />);
+    expect(wrapper.find(".regimen").props().style)
+      .toEqual({ height: "calc(100vh - 500px)" });
+  });
+
+  it("has correct height with variable form collapsed", () => {
+    const p = fakeProps();
+    p.regimen.body.body = [testVariable];
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<ActiveEditor {...p} />);
+    wrapper.setState({ variablesCollapsed: true });
+    expect(wrapper.find(".regimen").props().style)
+      .toEqual({ height: "calc(100vh - 300px)" });
+  });
+
+  it("automatically calculates height", () => {
+    document.getElementById = () => ({ offsetHeight: 101 } as HTMLElement);
+    const wrapper = mount(<ActiveEditor {...fakeProps()} />);
+    expect(wrapper.find(".regimen").props().style)
+      .toEqual({ height: "calc(100vh - 301px)" });
+  });
+
+  it("toggles variable form state", () => {
+    const wrapper = mount<ActiveEditor>(<ActiveEditor {...fakeProps()} />);
+    wrapper.instance().toggleVarShow();
+    expect(wrapper.state()).toEqual({ variablesCollapsed: true });
+  });
 });
 
 describe("editRegimenVariables()", () => {
-  const variables: VariableDeclaration = {
-    kind: "variable_declaration",
-    args: {
-      label: "label", data_value: {
-        kind: "identifier", args: { label: "new_var" }
-      }
-    }
-  };
-
   it("updates bodyVariables", () => {
     const regimen = fakeRegimen();
-    editRegimenVariables({ dispatch: jest.fn(), regimen })([])(variables);
+    editRegimenVariables({ dispatch: jest.fn(), regimen })([])(testVariable);
     expect(overwrite).toHaveBeenCalledWith(regimen,
-      expect.objectContaining({ body: [variables] }));
+      expect.objectContaining({ body: [testVariable] }));
   });
 });
