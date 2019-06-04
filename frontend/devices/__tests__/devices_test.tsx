@@ -11,6 +11,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { HardwareSettings } from "../components/hardware_settings";
 
 describe("<Devices/>", () => {
   const fakeProps = (): Props => ({
@@ -23,7 +24,7 @@ describe("<Devices/>", () => {
     images: [],
     dispatch: jest.fn(),
     resources: buildResourceIndex(FAKE_RESOURCES).index,
-    sourceFbosConfig: jest.fn(),
+    sourceFbosConfig: () => ({ value: undefined, consistent: true }),
     sourceFwConfig: jest.fn(),
     shouldDisplay: jest.fn(),
     firmwareConfig: undefined,
@@ -50,5 +51,13 @@ describe("<Devices/>", () => {
     const wrapper = shallow(<Devices {...p} />);
     expect(wrapper.find(FarmbotOsSettings).props().botToMqttLastSeen)
       .toEqual("123");
+  });
+
+  it("provides correct firmwareHardware value", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
+    const wrapper = shallow(<Devices {...p} />);
+    expect(wrapper.find(HardwareSettings).props().firmwareHardware)
+      .toEqual("arduino");
   });
 });

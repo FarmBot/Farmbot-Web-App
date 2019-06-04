@@ -9,6 +9,7 @@ import {
   TaggedDiagnosticDump,
   TaggedFarmwareInstallation,
   JobProgress,
+  FirmwareHardware,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -244,6 +245,7 @@ export interface HardwareSettingsProps {
   shouldDisplay: ShouldDisplay;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface ControlPanelState {

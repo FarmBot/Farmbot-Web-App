@@ -563,7 +563,13 @@ CREATE TABLE public.firmware_configs (
     movement_invert_2_endpoints_z integer DEFAULT 0,
     movement_microsteps_x integer DEFAULT 1,
     movement_microsteps_y integer DEFAULT 1,
-    movement_microsteps_z integer DEFAULT 1
+    movement_microsteps_z integer DEFAULT 1,
+    movement_motor_current_x integer DEFAULT 600,
+    movement_motor_current_y integer DEFAULT 600,
+    movement_motor_current_z integer DEFAULT 600,
+    movement_stall_sensitivity_x integer DEFAULT 30,
+    movement_stall_sensitivity_y integer DEFAULT 30,
+    movement_stall_sensitivity_z integer DEFAULT 30
 );
 
 
@@ -2752,19 +2758,19 @@ ALTER TABLE ONLY public.points
 
 
 --
--- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
+
+
+--
+-- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2968,6 +2974,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190512015442'),
 ('20190513221836'),
 ('20190515185612'),
-('20190515205442');
+('20190515205442'),
+('20190603233157');
 
 

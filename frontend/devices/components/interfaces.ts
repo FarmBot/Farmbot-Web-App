@@ -2,7 +2,7 @@ import {
   BotState, Xyz, SourceFwConfig,
   ControlPanelState, ShouldDisplay
 } from "../interfaces";
-import { McuParamName, McuParams } from "farmbot/dist";
+import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
 import { IntegerSize } from "../../util";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 
@@ -79,6 +79,7 @@ export interface MotorsProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   isValidFwConfig: boolean;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface EncodersProps {

@@ -124,6 +124,12 @@ export namespace ToolTips {
   export const INVERT_MOTORS =
     trim(`Invert direction of motor during calibration. (default: disabled)`);
 
+  export const MOTOR_CURRENT =
+    trim(`Motor current in milliamps. (default: 600)`);
+
+  export const STALL_SENSITIVITY =
+    trim(`Motor stall sensitivity. (default: 30)`);
+
   export const ENABLE_X2_MOTOR =
     trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
     (default: enabled)`);
