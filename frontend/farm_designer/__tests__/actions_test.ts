@@ -13,7 +13,7 @@ import { MovePlantProps } from "../interfaces";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { edit } from "../../api/crud";
 import { Actions } from "../../constants";
-import { DEFAULT_ICON } from "../../open_farm/icons";
+import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { history } from "../../history";
 
 describe("movePlant", () => {
@@ -82,7 +82,7 @@ describe("setDragIcon()", () => {
     const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
     setDragIcon("icon")(e);
     const img = new Image();
-    img.src = "data:image/svg+xml;utf8,icon";
+    img.src = svgToUrl("icon");
     expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
   });
 
