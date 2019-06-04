@@ -17,6 +17,10 @@ export interface ActiveEditorProps {
   variableData: VariableNameSet;
 }
 
+export interface ActiveEditorState {
+  variablesCollapsed: boolean;
+}
+
 export interface RegimenItemListProps {
   calendar: RegimenItemCalendarRow[];
   dispatch: Function;

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { AccountMenuProps } from "./interfaces";
 import { docLink } from "../ui/doc_link";
 import { Link } from "../link";
@@ -21,11 +20,10 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Logs")}
       </Link>
     </div>
-    {DevSettings.futureFeaturesEnabled() &&
-      <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
-        <i className="fa fa-question-circle"></i>
-        {t("Help")}
-      </Link>}
+    <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
+      <i className="fa fa-question-circle"></i>
+      {t("Help")}
+    </Link>
     {!DevSettings.futureFeaturesEnabled() &&
       <div>
         <a href={docLink("the-farmbot-web-app")}

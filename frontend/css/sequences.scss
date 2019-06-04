@@ -70,6 +70,12 @@
   }
 }
 
+.sequence-editor-content {
+  hr {
+    margin-right: 15px;
+  }
+}
+
 .sequence-editor-tools,
 .regimen-editor-tools {
   margin-right: 15px;
@@ -129,7 +135,8 @@
 }
 
 .sequence-steps {
-  margin-right: 15px;
+  margin-right: 25px;
+  margin-left: 10px;
 }
 
 .step-button-cluster,

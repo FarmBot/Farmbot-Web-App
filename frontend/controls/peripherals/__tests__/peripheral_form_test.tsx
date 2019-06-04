@@ -1,9 +1,11 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { PeripheralForm } from "../peripheral_form";
 import { TaggedPeripheral, SpecialStatus } from "farmbot";
+import { PeripheralFormProps } from "../interfaces";
+import { Actions } from "../../../constants";
 
-describe("<PeripheralForm/>", function () {
+describe("<PeripheralForm/>", () => {
   const dispatch = jest.fn();
   const peripherals: TaggedPeripheral[] = [
     {
@@ -27,22 +29,45 @@ describe("<PeripheralForm/>", function () {
       }
     },
   ];
+  const fakeProps = (): PeripheralFormProps => ({ dispatch, peripherals });
 
-  it("renders a list of editable peripherals, in sorted order", function () {
+  const expectedPayload = (update: Object) =>
+    expect.objectContaining({
+      payload: expect.objectContaining({
+        update
+      }),
+      type: Actions.EDIT_RESOURCE
+    });
+
+  it("renders a list of editable peripherals, in sorted order", () => {
     const form = mount(<PeripheralForm dispatch={dispatch}
       peripherals={peripherals} />);
     const inputs = form.find("input");
-    const buttons = form.find("button");
     expect(inputs.at(0).props().value).toEqual("GPIO 2");
-    inputs.at(0).simulate("change");
-    expect(inputs.at(1).props().value).toEqual("2");
-    inputs.at(1).simulate("change");
+    expect(inputs.at(1).props().value).toEqual("GPIO 13 - LED");
+  });
+
+  it("updates label", () => {
+    const p = fakeProps();
+    const form = shallow(<PeripheralForm {...p} />);
+    const inputs = form.find("input");
+    inputs.at(0).simulate("change", { currentTarget: { value: "GPIO 3" } });
+    expect(p.dispatch).toHaveBeenCalledWith(
+      expectedPayload({ label: "GPIO 3" }));
+  });
+
+  it("updates pin", () => {
+    const p = fakeProps();
+    const form = shallow(<PeripheralForm {...p} />);
+    form.find("FBSelect").at(0).simulate("change", { value: 3 });
+    expect(p.dispatch).toHaveBeenCalledWith(expectedPayload({ pin: 3 }));
+  });
+
+  it("deletes peripheral", () => {
+    const p = fakeProps();
+    const form = shallow(<PeripheralForm {...p} />);
+    const buttons = form.find("button");
     buttons.at(0).simulate("click");
-    expect(inputs.at(2).props().value).toEqual("GPIO 13 - LED");
-    inputs.at(2).simulate("change");
-    expect(inputs.at(3).props().value).toEqual("13");
-    inputs.at(3).simulate("change");
-    buttons.at(1).simulate("click");
-    expect(dispatch).toHaveBeenCalledTimes(6);
+    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

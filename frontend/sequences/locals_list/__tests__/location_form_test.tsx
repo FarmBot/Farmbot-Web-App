@@ -44,7 +44,7 @@ describe("<LocationForm/>", () => {
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT], true);
+    const choices = locationFormList(p.resources, [PARENT()], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -70,20 +70,46 @@ describe("<LocationForm/>", () => {
       }
     }];
     const wrapper = mount(<LocationForm {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("new_var");
+    expect(wrapper.text().toLowerCase())
+      .toContain("location variable - select a location");
   });
 
   it("shows parent in dropdown", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list).toContain(PARENT);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT("label")]));
   });
 
   it("doesn't show parent in dropdown", () => {
     const p = fakeProps();
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list).not.toContain(PARENT);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .not.toEqual(expect.arrayContaining([PARENT("label")]));
+  });
+
+  it("shows correct variable label", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.variable.dropdown.label = "not shown";
+    p.variable.dropdown.value = "parameter_declaration";
+    p.listVarLabel = "Variable Label";
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
+      label: "Variable Label", value: "parameter_declaration"
+    });
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT(p.listVarLabel)]));
+  });
+
+  it("shows add new variable option", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.variable.dropdown.isNull = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
   });
 
   it("shows groups in dropdown", () => {

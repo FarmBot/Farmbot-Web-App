@@ -26,11 +26,7 @@ export const getDefaultAxisLength =
     if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
       return { x: mapSizeX, y: mapSizeY };
     }
-    if (getConfigValue(BooleanSetting.map_xl)) {
-      return { x: 5900, y: 2900 };
-    } else {
-      return { x: 2900, y: 1400 };
-    }
+    return { x: 2900, y: 1400 };
   };
 
 export const getGridSize =

@@ -1,7 +1,5 @@
 import * as React from "react";
-
 import { Widget, WidgetBody, WidgetHeader } from "../../ui";
-import { EStopButton } from "../../devices/components/e_stop_btn";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { validBotLocationData } from "../../util";
 import { toggleWebAppBool } from "../../config_storage/actions";
@@ -37,10 +35,6 @@ export class Move extends React.Component<MoveProps, {}> {
             toggle={this.toggle}
             getValue={this.getValue} />
         </Popover>
-        <EStopButton
-          bot={this.props.bot}
-          forceUnlock={this.getValue(
-            BooleanSetting.disable_emergency_unlock_confirmation)} />
       </WidgetHeader>
       <WidgetBody>
         <MustBeOnline

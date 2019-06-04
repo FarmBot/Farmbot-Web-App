@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { error } from "farmbot-toastr";
 import { SensorList } from "./sensor_list";
 import { SensorForm } from "./sensor_form";
@@ -85,7 +84,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           className="fb-button green"
           type="button"
           onClick={this.stockSensors}>
-          <i className="fa fa-plus" />
+          <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
           {t("Stock sensors")}
         </button>
       </WidgetHeader>
