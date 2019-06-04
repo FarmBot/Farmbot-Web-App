@@ -60,6 +60,7 @@ export const LocalsList = (props: LocalsListProps) => {
           collapsible={props.collapsible}
           collapsed={props.collapsed}
           toggleVarShow={props.toggleVarShow}
+          listVarLabel={props.listVarLabel}
           onChange={props.onChange} />)}
   </div>;
 };

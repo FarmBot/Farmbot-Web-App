@@ -45,6 +45,7 @@ export class ActiveEditor
       collapsible={true}
       collapsed={this.state.variablesCollapsed}
       toggleVarShow={this.toggleVarShow}
+      listVarLabel={t("Defined outside of regimen")}
       allowedVariableNodes={AllowedVariableNodes.parameter}
       shouldDisplay={this.props.shouldDisplay} />;
   }

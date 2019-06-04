@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
@@ -77,7 +76,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     <LocationForm
       variable={{
         celeryNode: this.celeryNode,
-        dropdown: determineDropdown(this.celeryNode, this.props.resources),
+        dropdown: determineDropdown(this.celeryNode, this.props.resources,
+          this.props.currentSequence.uuid),
         vector: this.vector,
       }}
       sequenceUuid={this.props.currentSequence.uuid}

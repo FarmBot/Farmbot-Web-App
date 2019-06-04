@@ -168,6 +168,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       collapsible={true}
       collapsed={props.variablesCollapsed}
       toggleVarShow={props.toggleVarShow}
+      listVarLabel={t("Defined outside of sequence")}
       shouldDisplay={props.shouldDisplay} />
   </div>;
 };

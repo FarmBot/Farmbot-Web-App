@@ -5,14 +5,12 @@ import {
   selectAllTools,
   currentToolInSlot,
 } from "../resources/selectors";
-import {
-  isTaggedTool,
-} from "../resources/tagged_resources";
+import { isTaggedTool } from "../resources/tagged_resources";
 import { edit } from "../api/crud";
 import { DropDownItem, NULL_CHOICE } from "../ui";
 import { validBotLocationData } from "../util";
 import { TaggedTool, TaggedToolSlotPointer } from "farmbot";
-import { chain, isNumber, noop } from "lodash";
+import { isNumber, noop, compact } from "lodash";
 
 export function mapStateToProps(props: Everything): Props {
   const toolSlots = selectAllToolSlotPointers(props.resources.index);
@@ -23,17 +21,15 @@ export function mapStateToProps(props: Everything): Props {
 
   /** Returns all tools in an <FBSelect /> compatible format. */
   const getToolOptions = () => {
-    return chain(tools)
+    return compact(tools
       .map(tool => ({
         label: tool.body.name || "untitled",
-        value: (tool.body.id as number)
+        value: tool.body.id || 0,
       }))
-      .filter(ddi => isNumber(ddi.value) && ddi.value > 0)
-      .compact()
-      .value();
+      .filter(ddi => isNumber(ddi.value) && ddi.value > 0));
   };
 
-  const activeTools = chain(toolSlots).map(x => x.body.tool_id).compact().value();
+  const activeTools = compact(toolSlots.map(x => x.body.tool_id));
 
   const isActive =
     (t: TaggedTool) => !!(t.body.id && activeTools.includes(t.body.id));
