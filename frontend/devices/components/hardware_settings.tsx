@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
@@ -24,7 +23,7 @@ export class HardwareSettings extends
   render() {
     const {
       bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
-      botToMqttStatus
+      botToMqttStatus, firmwareHardware
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
     const firmwareVersion = informational_settings.firmware_version;
@@ -79,7 +78,8 @@ export class HardwareSettings extends
             firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
             sourceFwConfig={sourceFwConfig}
-            isValidFwConfig={!!firmwareConfig} />
+            isValidFwConfig={!!firmwareConfig}
+            firmwareHardware={firmwareHardware} />
           <EncodersAndEndStops
             dispatch={dispatch}
             shouldDisplay={this.props.shouldDisplay}
