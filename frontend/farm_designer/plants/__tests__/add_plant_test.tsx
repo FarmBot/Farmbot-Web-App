@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
@@ -15,6 +13,7 @@ import { history } from "../../../history";
 import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
+import { svgToUrl } from "../../../open_farm/icons";
 
 describe("<AddPlant />", () => {
   const fakeProps = (): AddPlantProps => {
@@ -33,7 +32,7 @@ describe("<AddPlant />", () => {
     expect(wrapper.text()).toContain("Mint");
     expect(wrapper.text()).toContain("Done");
     expect(wrapper.find("img").props().src)
-      .toEqual("data:image/svg+xml;utf8,fake_mint_svg");
+      .toEqual(svgToUrl("fake_mint_svg"));
   });
 
   it("goes back", () => {
