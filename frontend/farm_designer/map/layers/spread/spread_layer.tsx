@@ -1,6 +1,6 @@
 import * as React from "react";
 import { round, transformXY } from "../../util";
-import { cachedCrop } from "../../../../open_farm/icons";
+import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
 import { SpreadOverlapHelper } from "./spread_overlap_helper";
 import { BotPosition } from "../../../../devices/interfaces";

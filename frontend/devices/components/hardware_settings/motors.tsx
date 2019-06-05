@@ -15,7 +15,6 @@ import { t } from "../../../i18next_wrapper";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../interfaces";
 import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
-import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -167,18 +166,18 @@ export function Motors(props: MotorsProps) {
         <NumericMCUInputGroup
           name={t("Motor Current")}
           tooltip={ToolTips.MOTOR_CURRENT}
-          x={"movement_motor_current_x" as NumberConfigKey}
-          y={"movement_motor_current_y" as NumberConfigKey}
-          z={"movement_motor_current_z" as NumberConfigKey}
+          x={"movement_motor_current_x"}
+          y={"movement_motor_current_y"}
+          z={"movement_motor_current_z"}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       {isFarmduinoExpress &&
         <NumericMCUInputGroup
           name={t("Stall Sensitivity")}
           tooltip={ToolTips.STALL_SENSITIVITY}
-          x={"movement_stall_sensitivity_x" as NumberConfigKey}
-          y={"movement_stall_sensitivity_y" as NumberConfigKey}
-          z={"movement_stall_sensitivity_z" as NumberConfigKey}
+          x={"movement_stall_sensitivity_x"}
+          y={"movement_stall_sensitivity_y"}
+          z={"movement_stall_sensitivity_z"}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"

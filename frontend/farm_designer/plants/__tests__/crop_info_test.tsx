@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
@@ -27,6 +25,7 @@ import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
 import { unselectPlant } from "../../actions";
+import { svgToUrl } from "../../../open_farm/icons";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
@@ -51,7 +50,7 @@ describe("<CropInfo />", () => {
     expect(wrapper.text()).toContain("Drag and drop into map");
     expect(wrapper.text()).toContain("Row Spacing1000mm");
     expect(wrapper.find("img").last().props().src)
-      .toEqual("data:image/svg+xml;utf8,fake_mint_svg");
+      .toEqual(svgToUrl("fake_mint_svg"));
   });
 
   it("navigates to /add", () => {

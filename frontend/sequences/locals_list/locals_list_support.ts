@@ -3,9 +3,12 @@ import {
   VariableDeclaration,
   ParameterApplication
 } from "farmbot";
-import { ResourceIndex, VariableNameSet, UUID } from "../../resources/interfaces";
+import {
+  ResourceIndex, VariableNameSet, UUID
+} from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { ShouldDisplay } from "../../devices/interfaces";
+import { t } from "../../i18next_wrapper";
 
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
@@ -24,7 +27,7 @@ export enum AllowedVariableNodes {
   identifier,
   /** Allow ParameterDeclarations,
    * and use VariableDeclarations instead of ParameterApplications.
-   * Used only in sequence header form (ScopeDeclaration). */
+   * Used only in sequence (ScopeDeclaration) and regimen header forms. */
   parameter,
   /** Allow only ParameterApplications without identifiers.
    * Reassignment and creation of new variables not allowed.
@@ -53,6 +56,8 @@ interface CommonProps {
   collapsible?: boolean;
   collapsed?: boolean;
   toggleVarShow?: () => void;
+  /** Label to display for variable option in dropdown. */
+  listVarLabel?: string;
 }
 
 export interface LocalsListProps extends CommonProps {
@@ -72,5 +77,8 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
 }
 
-export const PARENT =
-  ({ value: "parent", label: "Variable", headingId: "parameter" });
+export const PARENT = (label?: string) => ({
+  value: "parent",
+  label: label ? label : t("Location Variable - Add new"),
+  headingId: "parameter"
+});

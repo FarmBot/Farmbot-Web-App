@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Row, Col, FBSelect, BlurableInput } from "../../ui";
-
+import { Row, Col, FBSelect, BlurableInput, DropDownItem } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -52,11 +51,24 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
       return {
         celeryNode: executeStepData,
         vector: determineVector(executeStepData, resources, uuid),
-        dropdown: determineDropdown(executeStepData, resources),
+        dropdown: determineDropdown(executeStepData, resources, uuid),
       };
     }
   }
   return variable;
+};
+
+const listLabelDDI = (ddi: DropDownItem) => {
+  const newDDI = Object.assign({}, ddi);
+  newDDI.label = ddi.isNull ? t("Location Variable - Add new") : newDDI.label;
+  return newDDI;
+};
+
+const selectedLabelDDI = (ddi: DropDownItem, override?: string) => {
+  const newDDI = Object.assign({}, ddi);
+  newDDI.label = (ddi.value === "parameter_declaration" && override)
+    ? override : newDDI.label;
+  return newDDI;
 };
 
 /**
@@ -67,7 +79,7 @@ export const LocationForm =
   (props: LocationFormProps) => {
     const {
       sequenceUuid, resources, onChange, bodyVariables, variable,
-      locationDropdownKey, allowedVariableNodes, disallowGroups
+      locationDropdownKey, allowedVariableNodes, disallowGroups, listVarLabel
     } = props;
     const { celeryNode, dropdown, vector } =
       maybeUseStepData({
@@ -76,7 +88,9 @@ export const LocationForm =
     /** For disabling coordinate input boxes when using external data. */
     const isDisabled = !determineEditable(celeryNode);
     const variableListItems = (props.shouldDisplay(Feature.variables) &&
-      allowedVariableNodes !== AllowedVariableNodes.variable) ? [PARENT] : [];
+      allowedVariableNodes !== AllowedVariableNodes.variable)
+      ? [PARENT(listVarLabel || listLabelDDI(dropdown).label)]
+      : [];
     const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
     const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
@@ -100,7 +114,7 @@ export const LocationForm =
               <FBSelect
                 key={locationDropdownKey}
                 list={list}
-                selectedItem={dropdown}
+                selectedItem={selectedLabelDDI(dropdown, listVarLabel)}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
                 onChange={ddi => onChange(convertDDItoVariable({
                   label, allowedVariableNodes

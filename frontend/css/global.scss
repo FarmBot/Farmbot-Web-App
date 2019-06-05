@@ -280,7 +280,8 @@ a {
 .drag-drop-area {
   &.visible {
     margin: 0.75rem 0;
-    margin-right: 15px;
+    margin-right: 25px;
+    margin-left: 10px;
     border-style: dashed;
     border-width: 2px;
     border-color: $light_gray;
@@ -984,6 +985,10 @@ ul {
   }
 }
 
+.map-size-inputs {
+  margin-top: 1rem;
+}
+
 .release-notes-button {
   font-weight: bold;
   cursor: pointer;
@@ -1047,9 +1052,6 @@ ul {
 .sensors-widget {
   p {
     margin-top: 0.75rem;
-  }
-  .fa-plus {
-    margin-right: 0.5rem;
   }
   .sensor-reading-display {
     &.moisture-sensor {
