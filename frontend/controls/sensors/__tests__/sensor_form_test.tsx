@@ -1,9 +1,9 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { SensorForm } from "../sensor_form";
-import { Actions } from "../../../constants";
 import { SensorFormProps } from "../interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
+import { NameInputBox, PinDropdown, ModeDropdown } from "../../pin_form_fields";
 
 describe("<SensorForm/>", function () {
   const fakeProps = (): SensorFormProps => {
@@ -21,49 +21,16 @@ describe("<SensorForm/>", function () {
     };
   };
 
-  const expectedPayload = (update: Object) =>
-    expect.objectContaining({
-      payload: expect.objectContaining({
-        update
-      }),
-      type: Actions.EDIT_RESOURCE
-    });
-
   it("renders a list of editable sensors, in sorted order", () => {
     const form = shallow(<SensorForm {...fakeProps()} />);
-    const inputs = form.find("input");
-    expect(inputs.at(0).props().value).toEqual("GPIO 51");
-    expect(inputs.at(1).props().value).toEqual("GPIO 50 - Moisture");
-  });
-
-  it("updates label", () => {
-    const p = fakeProps();
-    const form = shallow(<SensorForm {...p} />);
-    const inputs = form.find("input");
-    inputs.at(0).simulate("change", { currentTarget: { value: "GPIO 52" } });
-    expect(p.dispatch).toHaveBeenCalledWith(
-      expectedPayload({ label: "GPIO 52" }));
-  });
-
-  it("updates pin", () => {
-    const p = fakeProps();
-    const form = shallow(<SensorForm {...p} />);
-    form.find("FBSelect").at(0).simulate("change", { value: 52 });
-    expect(p.dispatch).toHaveBeenCalledWith(expectedPayload({ pin: 52 }));
-  });
-
-  it("updates mode", () => {
-    const p = fakeProps();
-    const form = shallow(<SensorForm {...p} />);
-    form.find("FBSelect").at(1).simulate("change", { value: 0 });
-    expect(p.dispatch).toHaveBeenCalledWith(expectedPayload({ mode: 0 }));
-  });
-
-  it("deletes sensor", () => {
-    const p = fakeProps();
-    const form = shallow(<SensorForm {...p} />);
-    const buttons = form.find("button");
-    buttons.at(0).simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
+    const sensorNames = form.find(NameInputBox);
+    expect(sensorNames.at(0).props().value).toEqual("GPIO 51");
+    expect(sensorNames.at(1).props().value).toEqual("GPIO 50 - Moisture");
+    const sensorPins = form.find(PinDropdown);
+    expect(sensorPins.at(0).props().value).toEqual(51);
+    expect(sensorPins.at(1).props().value).toEqual(50);
+    const sensorModes = form.find(ModeDropdown);
+    expect(sensorModes.at(0).props().value).toEqual(0);
+    expect(sensorModes.at(1).props().value).toEqual(0);
   });
 });
