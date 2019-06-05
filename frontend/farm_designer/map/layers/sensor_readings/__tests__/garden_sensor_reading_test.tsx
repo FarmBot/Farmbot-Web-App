@@ -1,5 +1,5 @@
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import {
   GardenSensorReading, GardenSensorReadingProps
 } from "../garden_sensor_reading";
@@ -12,6 +12,7 @@ import {
 import {
   fakeTimeSettings
 } from "../../../../../__test_support__/fake_time_settings";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<GardenSensorReading />", () => {
   const fakeProps = (): GardenSensorReadingProps => ({
@@ -23,7 +24,7 @@ describe("<GardenSensorReading />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<GardenSensorReading {...fakeProps()} />);
+    const wrapper = svgMount(<GardenSensorReading {...fakeProps()} />);
     expect(wrapper.html()).toContain("sensor-reading-");
     expect(wrapper.find("circle").length).toEqual(2);
   });
@@ -31,21 +32,21 @@ describe("<GardenSensorReading />", () => {
   it("doesn't render", () => {
     const p = fakeProps();
     p.sensorReading.body.x = undefined;
-    const wrapper = mount(<GardenSensorReading {...p} />);
+    const wrapper = svgMount(<GardenSensorReading {...p} />);
     expect(wrapper.find("circle").length).toEqual(0);
   });
 
   it("renders sensor name", () => {
     const p = fakeProps();
     p.sensorLookup = { 1: "Sensor Name" };
-    const wrapper = mount(<GardenSensorReading {...p} />);
+    const wrapper = svgMount(<GardenSensorReading {...p} />);
     expect(wrapper.text()).toContain("Sensor Name (pin 1)");
   });
 
   it("renders analog reading", () => {
     const p = fakeProps();
     p.sensorReading.body.mode = 1;
-    const wrapper = mount(<GardenSensorReading {...p} />);
+    const wrapper = svgMount(<GardenSensorReading {...p} />);
     expect(wrapper.text()).toContain("value 0 (analog)");
   });
 

@@ -22,6 +22,7 @@ describe("<RunTour />", () => {
 });
 
 describe("<Tour />", () => {
+  console.log = jest.fn();
   const fakeCallbackData = (data: Partial<CallBackProps>): CallBackProps => ({
     action: data.action || "start",
     index: data.index || 0,

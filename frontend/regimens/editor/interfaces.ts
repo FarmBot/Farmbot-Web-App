@@ -1,8 +1,4 @@
-import {
-  RegimenProps,
-  CalendarRow,
-  RegimenItemCalendarRow
-} from "../interfaces";
+import { CalendarRow, RegimenItemCalendarRow } from "../interfaces";
 import { TaggedRegimen } from "farmbot";
 import { Actions } from "../../constants";
 import { ResourceIndex, VariableNameSet } from "../../resources/interfaces";
@@ -48,10 +44,6 @@ export interface RegimenEditorProps {
 export interface CopyButtonProps {
   dispatch: Function;
   regimen: TaggedRegimen;
-}
-
-export interface DeleteButtonProps extends RegimenProps {
-  baseUrl: string;
 }
 
 export interface SelectRegimen {

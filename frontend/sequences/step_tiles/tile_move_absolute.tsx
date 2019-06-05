@@ -24,7 +24,7 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
-  state: MoveAbsState = { more: false };
+  state: MoveAbsState = { more: !!this.props.expandStepOptions };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
 
