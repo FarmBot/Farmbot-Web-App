@@ -1,22 +1,20 @@
 import * as React from "react";
-import { mount } from "enzyme";
 import {
   ToolbaySlot, Tool, ToolProps, ToolGraphicProps, ToolSlotGraphicProps
 } from "../tool_graphics";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { Color } from "../../../../../ui";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<ToolbaySlot />", () => {
-  const fakeProps = (): ToolSlotGraphicProps => {
-    return {
-      id: undefined,
-      x: 10,
-      y: 20,
-      pulloutDirection: 0,
-      quadrant: 2,
-      xySwap: false,
-    };
-  };
+  const fakeProps = (): ToolSlotGraphicProps => ({
+    id: undefined,
+    x: 10,
+    y: 20,
+    pulloutDirection: 0,
+    quadrant: 2,
+    xySwap: false,
+  });
 
   const checkSlotDirection =
     (direction: number,
@@ -29,7 +27,7 @@ describe("<ToolbaySlot />", () => {
           p.pulloutDirection = direction;
           p.quadrant = quadrant;
           p.xySwap = xySwap;
-          const wrapper = mount(<ToolbaySlot {...p} />);
+          const wrapper = svgMount(<ToolbaySlot {...p} />);
           expect(wrapper.find("use").props().transform).toEqual(expected);
         });
     };
@@ -59,27 +57,23 @@ describe("<ToolbaySlot />", () => {
 });
 
 describe("<Tool/>", () => {
-  const fakeToolProps = (): ToolGraphicProps => {
-    return {
-      x: 10,
-      y: 20,
-      hovered: false,
-      setHoverState: jest.fn(),
-      xySwap: false,
-    };
-  };
+  const fakeToolProps = (): ToolGraphicProps => ({
+    x: 10,
+    y: 20,
+    hovered: false,
+    setHoverState: jest.fn(),
+    xySwap: false,
+  });
 
-  const fakeProps = (): ToolProps => {
-    return {
-      tool: "fake tool",
-      toolProps: fakeToolProps()
-    };
-  };
+  const fakeProps = (): ToolProps => ({
+    tool: "fake tool",
+    toolProps: fakeToolProps()
+  });
 
   const testHoverActions = (toolName: string) => {
     const p = fakeProps();
     p.tool = toolName;
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     wrapper.find("g").simulate("mouseOver");
     expect(p.toolProps.setHoverState).toHaveBeenCalledWith(true);
     wrapper.find("g").simulate("mouseLeave");
@@ -87,7 +81,7 @@ describe("<Tool/>", () => {
   };
 
   it("renders standard tool styling", () => {
-    const wrapper = mount(<Tool {...fakeProps()} />);
+    const wrapper = svgMount(<Tool {...fakeProps()} />);
     const props = wrapper.find("circle").last().props();
     expect(props.r).toEqual(35);
     expect(props.cx).toEqual(10);
@@ -98,7 +92,7 @@ describe("<Tool/>", () => {
   it("renders tool hover styling", () => {
     const p = fakeProps();
     p.toolProps.hovered = true;
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     const props = wrapper.find("circle").last().props();
     expect(props.fill).toEqual(Color.darkGray);
   });
@@ -110,7 +104,7 @@ describe("<Tool/>", () => {
   it("renders special tool styling: bin", () => {
     const p = fakeProps();
     p.tool = "seedBin";
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     const elements = wrapper.find("#seed-bin").find("circle");
     expect(elements.length).toEqual(2);
     expect(elements.last().props().fill).toEqual("url(#SeedBinGradient)");
@@ -120,7 +114,7 @@ describe("<Tool/>", () => {
     const p = fakeProps();
     p.tool = "seedBin";
     p.toolProps.hovered = true;
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-bin").find("circle").length).toEqual(3);
   });
@@ -132,7 +126,7 @@ describe("<Tool/>", () => {
   it("renders special tool styling: tray", () => {
     const p = fakeProps();
     p.tool = "seedTray";
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     const elements = wrapper.find("#seed-tray");
     expect(elements.find("circle").length).toEqual(2);
     expect(elements.find("rect").length).toEqual(1);
@@ -143,7 +137,7 @@ describe("<Tool/>", () => {
     const p = fakeProps();
     p.tool = "seedTray";
     p.toolProps.hovered = true;
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-tray").find("circle").length).toEqual(3);
   });
@@ -155,7 +149,7 @@ describe("<Tool/>", () => {
   it("renders special tool styling: trough", () => {
     const p = fakeProps();
     p.tool = "seedTrough";
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     const elements = wrapper.find("#seed-trough");
     expect(elements.find("circle").length).toEqual(0);
     expect(elements.find("rect").length).toEqual(1);
@@ -165,7 +159,7 @@ describe("<Tool/>", () => {
     const p = fakeProps();
     p.tool = "seedTrough";
     p.toolProps.hovered = true;
-    const wrapper = mount(<Tool {...p} />);
+    const wrapper = svgMount(<Tool {...p} />);
     p.toolProps.hovered = true;
     expect(wrapper.find("#seed-trough").find("circle").length).toEqual(0);
     expect(wrapper.find("#seed-trough").find("rect").length).toEqual(1);

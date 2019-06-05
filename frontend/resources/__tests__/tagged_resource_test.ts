@@ -31,6 +31,8 @@ describe("getArrayStatus()", () => {
 
 describe("sanityCheck", () => {
   it("crashes on malformed TaggedResources", () => {
+    console.error = jest.fn();
     expect(() => sanityCheck({})).toThrow("Bad kind, uuid, or body: {}");
+    expect(console.error).toHaveBeenCalledWith("{}");
   });
 });

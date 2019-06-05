@@ -40,6 +40,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
+import { FbjsEventName } from "farmbot/dist/constants";
 
 const A_STRING = expect.any(String);
 describe("readStatus()", () => {
@@ -238,10 +239,16 @@ describe("onLogs", () => {
 });
 
 describe("onPublicBroadcast", () => {
+  const expectBroadcastLog = () =>
+    expect(console.log).toHaveBeenCalledWith(
+      FbjsEventName.publicBroadcast, expect.any(Object));
+
   it("triggers when appropriate", () => {
     location.assign = jest.fn();
     window.confirm = jest.fn(() => true);
+    console.log = jest.fn();
     onPublicBroadcast({});
+    expectBroadcastLog();
     expect(window.confirm).toHaveBeenCalledWith(Content.FORCE_REFRESH_CONFIRM);
     expect(location.assign).toHaveBeenCalled();
   });
@@ -249,7 +256,9 @@ describe("onPublicBroadcast", () => {
   it("allows cancellation of refresh", () => {
     window.confirm = jest.fn(() => false);
     window.alert = jest.fn();
+    console.log = jest.fn();
     onPublicBroadcast({});
+    expectBroadcastLog();
     expect(window.alert).toHaveBeenCalledWith(Content.FORCE_REFRESH_CANCEL_WARNING);
     expect(location.assign).not.toHaveBeenCalled();
   });
