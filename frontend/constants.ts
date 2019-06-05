@@ -501,6 +501,9 @@ export namespace Content {
     trim(`Show raw pin lists in Read Sensor, Control Peripheral, and
     If Statement steps.`);
 
+  export const EXPAND_STEP_OPTIONS =
+    trim(`Choose whether advanced step options are open or closed by default.`);
+
   export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
     trim(`Confirm when unlocking FarmBot after an emergency stop.`);
 
