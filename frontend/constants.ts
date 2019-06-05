@@ -4,19 +4,20 @@ export namespace ToolTips {
 
   // Controls
   export const MOVE =
-    trim(`Use these manual control buttons to move FarmBot in realtime. Press the
-    arrows for relative movements or type in new coordinates and press GO for an
-    absolute movement. Tip: Press the Home button when you are done so FarmBot
-    is ready to get back to work.`);
+    trim(`Use these manual control buttons to move FarmBot in realtime.
+    Press the arrows for relative movements or type in new coordinates
+    and press GO for an absolute movement.
+    Tip: Press the Home button when you are done so FarmBot is ready to
+    get back to work.`);
 
   export const WEBCAM =
     trim(`If you have a webcam, you can view the video stream in this widget.
     Press the edit button to update and save your webcam URL.`);
 
   export const PERIPHERALS =
-    trim(`Use these toggle switches to control FarmBot's peripherals in realtime.
-    To edit and create new peripherals, press the EDIT button. Make sure to turn
-    things off when you're done!`);
+    trim(`Use these toggle switches to control FarmBot's peripherals in
+    realtime. To edit and create new peripherals, press the EDIT button.
+    Make sure to turn things off when you're done!`);
 
   export const SENSORS =
     trim(`Add sensors here to monitor FarmBot's sensors.
@@ -30,10 +31,11 @@ export namespace ToolTips {
     trim(`View and change device settings.`);
 
   export const HW_SETTINGS =
-    trim(`Change settings of your FarmBot hardware with the fields below. Caution:
-    Changing these settings to extreme values can cause hardware malfunction.
-    Make sure to test any new settings before letting your FarmBot use them
-    unsupervised. Tip: Recalibrate FarmBot after changing settings and test a
+    trim(`Change settings of your FarmBot hardware with the fields below.
+    Caution: Changing these settings to extreme values can cause hardware
+    malfunction. Make sure to test any new settings before letting your
+    FarmBot use them unsupervised.
+    Tip: Recalibrate FarmBot after changing settings and test a
     few sequences to verify that everything works as expected.`);
 
   export const PIN_BINDINGS =
@@ -60,11 +62,12 @@ export namespace ToolTips {
     trim(`Set the current location as zero.`);
 
   export const FIND_HOME_ON_BOOT =
-    trim(`If encoders or end-stops are enabled, find the home position when the
-    device powers on. Warning! This will perform homing on all axes when the
-    device powers on. Encoders or endstops must be enabled. It is recommended
-    to make sure homing works properly before enabling this feature.
-    (default: disabled)`);
+    trim(`If encoders or end-stops are enabled, find the home position
+    when the device powers on.
+    Warning! This will perform homing on all axes when the
+    device powers on. Encoders or endstops must be enabled.
+    It is recommended to make sure homing works properly before enabling
+    this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
     trim(`Stop at the home location of the axis. (default: disabled)`);
@@ -74,12 +77,13 @@ export namespace ToolTips {
     (default: disabled)`);
 
   export const NEGATIVE_COORDINATES_ONLY =
-    trim(`Restrict travel to negative coordinate locations. Overridden by
-    disabling STOP AT HOME. (default: x: disabled, y: disabled, z: enabled)`);
+    trim(`Restrict travel to negative coordinate locations.
+    Overridden by disabling STOP AT HOME.
+    (default: x: disabled, y: disabled, z: enabled)`);
 
   export const LENGTH =
-    trim(`Set the length of each axis to provide software limits. Used only if
-    STOP AT MAX is enabled. (default: 0 (disabled))`);
+    trim(`Set the length of each axis to provide software limits.
+    Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
 
   export const TIMEOUT_AFTER =
     trim(`Amount of time to wait for a command to execute before stopping.
@@ -90,8 +94,8 @@ export namespace ToolTips {
     trim(`Number of times to retry a movement before stopping. (default: 3)`);
 
   export const E_STOP_ON_MOV_ERR =
-    trim(`Emergency stop if movement is not complete after the maximum number of
-    retries. (default: disabled)`);
+    trim(`Emergency stop if movement is not complete after the maximum
+    number of retries. (default: disabled)`);
 
   export const MAX_SPEED =
     trim(`Maximum travel speed after acceleration in millimeters per second.
@@ -102,8 +106,9 @@ export namespace ToolTips {
     in millimeters per second. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const MIN_SPEED =
-    trim(`Minimum movement speed in millimeters per second. Also used for homing
-     and calibration. (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
+    trim(`Minimum movement speed in millimeters per second.
+    Also used for homing and calibration.
+    (default: x: 10mm/s, y: 10mm/s, z: 2mm/s)`);
 
   export const ACCELERATE_FOR =
     trim(`Number of millimeters used for acceleration and deceleration.
@@ -136,8 +141,8 @@ export namespace ToolTips {
 
   // Hardware Settings: Encoders and Endstops
   export const ENABLE_ENCODERS =
-    trim(`Enable use of rotary encoders during calibration and homing.
-    (default: enabled)`);
+    trim(`Enable use of rotary encoders for stall detection,
+    calibration and homing. (default: enabled)`);
 
   export const ENCODER_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
@@ -158,8 +163,8 @@ export namespace ToolTips {
     / (encoder resolution). (default: 5556 (10000*200/360))`);
 
   export const ENABLE_ENDSTOPS =
-    trim(`Enable use of electronic end-stops during calibration and homing.
-    (default: disabled)`);
+    trim(`Enable use of electronic end-stops for end detection,
+    calibration and homing. (default: disabled)`);
 
   export const SWAP_ENDPOINTS =
     trim(`Swap axis minimum and maximum end-stops. (default: disabled)`);
@@ -200,11 +205,11 @@ export namespace ToolTips {
     properties, and more.`);
 
   export const SEQUENCE_EDITOR =
-    trim(`Drag and drop commands here to create sequences for watering, planting
-    seeds, measuring soil properties, and more. Press the Test button to
-    immediately try your sequence with FarmBot. You can also edit, copy, and
-    delete existing sequences; assign a color; and give your commands custom
-    names.`);
+    trim(`Drag and drop commands here to create sequences for watering,
+    planting seeds, measuring soil properties, and more.
+    Press the Test button to immediately try your sequence with FarmBot.
+    You can also edit, copy, and delete existing sequences;
+    assign a color; and give your commands custom names.`);
 
   export const SEQUENCE_LIST =
     trim(`Here is the list of all of your sequences. Click one to edit.`);
@@ -222,20 +227,21 @@ export namespace ToolTips {
     math for you.`);
 
   export const MOVE_RELATIVE =
-    trim(`The Move Relative step instructs FarmBot to move the specified distance
-    from its current location. For example, if FarmBot is currently at X=1000,
-    Y=1000 and it receives a Move Relative where X=0 and Y=3000, then FarmBot
-    will move to X=1000, Y=4000. If FarmBot must move in multiple directions,
-    it will move diagonally. If you require straight movements along one axis
-    at a time, use  multiple Move Relative steps. Move Relative steps should be
+    trim(`The Move Relative step instructs FarmBot to move the specified
+    distance from its current location. For example, if FarmBot is
+    currently at X=1000, Y=1000 and it receives a Move Relative
+    where X=0 and Y=3000, then FarmBot will move to X=1000, Y=4000.
+    If FarmBot must move in multiple directions, it will move diagonally.
+    If you require straight movements along one axis at a time,
+    use multiple Move Relative steps. Move Relative steps should be
     preceded by a Move To step to ensure you are starting from a known
     location.`);
 
   export const WRITE_PIN =
-    trim(`The Control Peripheral step instructs FarmBot to set the specified
-    pin on the Arduino to the specified mode and value. Use the digital pin mode
-    for on (1) and off (0) control, and analog pin mode for PWM (pulse width
-    modulation) (0-255).`);
+    trim(`The Control Peripheral step instructs FarmBot to set the
+    specified pin on the Arduino to the specified mode and value.
+    Use the digital pin mode for on (1) and off (0) control,
+    and analog pin mode for PWM (pulse width modulation) (0-255).`);
 
   export const READ_PIN =
     trim(`The Read Sensor step instructs FarmBot to read the
@@ -245,8 +251,8 @@ export namespace ToolTips {
 
   export const WAIT =
     trim(`The Wait step instructs FarmBot to wait for the specified amount
-    of time. Use it in combination with the Pin Write step to water for a
-    length of time.`);
+    of time. Use it in combination with the Control Peripheral step to
+    water for a length of time.`);
 
   export const SEND_MESSAGE =
     trim(`The Send Message step instructs FarmBot to send a custom message
@@ -255,7 +261,8 @@ export namespace ToolTips {
 
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
-    command to find and set zero for the chosen axis or axes.`);
+    command (using encoders or endstops) to find and set zero for
+    the chosen axis or axes.`);
 
   export const IF =
     trim(`Execute a sequence if a condition is satisfied. If the condition
@@ -269,12 +276,12 @@ export namespace ToolTips {
    Visit the Farmware page to install and manage Farmware.`);
 
   export const FARMWARE_CONFIGS =
-    trim(`The Farmware will use the parameter values set via the Farmware page
-    for any parameters that are not set in this sequence step.`);
+    trim(`The Farmware will use the parameter values set via the Farmware
+    page for any parameters that are not set in this sequence step.`);
 
   export const TAKE_PHOTO =
-    trim(`Snaps a photo using the device camera. Select the camera type on the
-    Device page.`);
+    trim(`Snaps a photo using the device camera. Select the camera type
+    on the Device page.`);
 
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
@@ -369,8 +376,8 @@ export namespace Content {
   // Account
   export const ACCOUNT_PASSWORD_CHANGE =
     trim(`Upon successful password change, your FarmBot will factory reset
-    allowing you to configure it with the updated credentials. You will also be
-    logged out of other browser sessions. Continue?`);
+    allowing you to configure it with the updated credentials.
+    You will also be logged out of other browser sessions. Continue?`);
 
   export const ACCOUNT_RESET_WARNING =
     trim(`WARNING! Resetting your account will permanently delete all of your
@@ -506,8 +513,7 @@ export namespace Content {
   export const MAP_SIZE =
     trim(`Specify custom Farm Designer Garden Map dimensions (in millimeters).
     These values set the size of the garden map displayed in the designer
-    unless DYNAMIC MAP SIZE is enabled. These values will override the
-    DOUBLE DEFAULT MAP DIMENSIONS setting.`);
+    unless DYNAMIC MAP SIZE is enabled.`);
 
   // Device
   export const NOT_HTTPS =
@@ -601,8 +607,7 @@ export namespace Content {
   export const MQTT_DISCONNECTED =
     trim(`Your web browser is unable to connect to the message broker.
     You might be behind a firewall or disconnected from the Internet. Check
-    your network settings.
-    View Device > Connectivity for more details.`);
+    your network settings. View the connection status for more details.`);
 
   export const WEB_APP_DISCONNECTED =
     trim(`Your web browser is unable to communicate with the
@@ -626,7 +631,8 @@ export namespace Content {
     Privacy Policy`);
 
   export const FORCE_REFRESH_CONFIRM =
-    trim(`A new version of the FarmBot web app has been released. Refresh page?`);
+    trim(`A new version of the FarmBot web app has been released.
+    Refresh page?`);
 
   export const FORCE_REFRESH_CANCEL_WARNING =
     trim(`You may experience data loss if you do not refresh the page.`);
@@ -749,11 +755,12 @@ export namespace TourContent {
     selecting one, and dragging it into the garden.`);
 
   export const ADD_TOOLS =
-    trim(`Press edit and then the + button to add tools.`);
+    trim(`Press edit and then the + button to add tools and seed containers.`);
 
   export const ADD_TOOLS_SLOTS =
-    trim(`Add the newly created tools to the corresponding toolbay slots on
-    FarmBot: press edit and then + to create a toolbay slot.`);
+    trim(`Add the newly created tools and seed containers to the
+    corresponding tool slots on FarmBot:
+    press edit and then + to create a tool slot.`);
 
   export const ADD_PERIPHERALS =
     trim(`Press edit and then the + button to add peripherals.`);
