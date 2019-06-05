@@ -1558,7 +1558,8 @@ CREATE TABLE public.web_app_configs (
     show_pins boolean DEFAULT false,
     disable_emergency_unlock_confirmation boolean DEFAULT false,
     map_size_x integer DEFAULT 2900,
-    map_size_y integer DEFAULT 1400
+    map_size_y integer DEFAULT 1400,
+    expand_step_options boolean DEFAULT false
 );
 
 
@@ -2975,6 +2976,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190513221836'),
 ('20190515185612'),
 ('20190515205442'),
-('20190603233157');
+('20190603233157'),
+('20190605185311');
 
 

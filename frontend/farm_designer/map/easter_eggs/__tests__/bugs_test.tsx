@@ -1,5 +1,5 @@
 import * as React from "react";
-import { shallow, mount } from "enzyme";
+import { shallow } from "enzyme";
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls
 } from "../bugs";
@@ -8,6 +8,7 @@ import { range } from "lodash";
 import {
   fakeMapTransformProps
 } from "../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../__test_support__/svg_mount";
 
 const expectAlive = (value: string) =>
   expect(getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE)).toEqual(value);
@@ -22,7 +23,7 @@ describe("<Bugs />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<Bugs {...fakeProps()} />);
+    const wrapper = svgMount(<Bugs {...fakeProps()} />);
     expect(wrapper.find("image").length).toEqual(10);
     const firstBug = wrapper.find("image").first();
     expect(firstBug.props()).toEqual(expect.objectContaining({
@@ -36,8 +37,8 @@ describe("<Bugs />", () => {
   it("kills bugs", () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     expectAlive("");
-    const wrapper = mount<Bugs>(<Bugs {...fakeProps()} />);
-    wrapper.instance().state.bugs[0].r = 101;
+    const wrapper = svgMount(<Bugs {...fakeProps()} />);
+    wrapper.find(Bugs).state().bugs[0].r = 101;
     range(10).map(b =>
       wrapper.find("image").at(b).simulate("click"));
     expectAlive("");
@@ -50,7 +51,7 @@ describe("<Bugs />", () => {
         className: expect.stringContaining("dead"),
         filter: expect.stringContaining("grayscale")
       }));
-    expect(wrapper.instance().state.bugs[0]).toEqual(expect.objectContaining({
+    expect(wrapper.find(Bugs).state().bugs[0]).toEqual(expect.objectContaining({
       alive: false, hp: 50
     }));
   });

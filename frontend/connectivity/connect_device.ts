@@ -163,10 +163,8 @@ export const onOnline =
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 
-export const BROADCAST_CHANNEL = "public_broadcast";
-
 export function onPublicBroadcast(payl: unknown) {
-  console.log(BROADCAST_CHANNEL, payl);
+  console.log(FbjsEventName.publicBroadcast, payl);
   if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
     location.assign(window.location.origin || "/");
   } else {

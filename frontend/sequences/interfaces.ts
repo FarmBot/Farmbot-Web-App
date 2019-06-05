@@ -204,4 +204,5 @@ export interface StepParams {
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
   showPins?: boolean;
+  expandStepOptions?: boolean;
 }

@@ -254,10 +254,10 @@ describe("<SequenceSettingsMenu />", () => {
     const wrapper = mount(<SequenceSettingsMenu
       dispatch={jest.fn()}
       getWebAppConfigValue={jest.fn()} />);
-    wrapper.find("button").first().simulate("click");
+    wrapper.find("button").at(0).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
-    wrapper.find("button").last().simulate("click");
+    wrapper.find("button").at(1).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
   });

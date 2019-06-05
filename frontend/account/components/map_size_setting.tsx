@@ -30,7 +30,7 @@ const LengthInput = (props: LengthInputProps) =>
     <Col xs={7}>
       <input
         type="number"
-        value={props.value}
+        value={"" + props.value}
         onChange={e => props.dispatch(setWebAppConfigValue(
           props.setting, e.currentTarget.value))} />
     </Col>
