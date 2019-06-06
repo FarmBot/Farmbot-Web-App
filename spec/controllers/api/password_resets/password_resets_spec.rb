@@ -51,7 +51,7 @@ describe Api::PasswordResetsController do
 
     it "handles token expiration" do
       token = PasswordResetToken
-        .issue_to(user, { exp: Time.now.yesterday })
+        .issue_to(user, { exp: Time.now.yesterday.to_i })
         .encoded
 
       params = { password: "xpassword123",
