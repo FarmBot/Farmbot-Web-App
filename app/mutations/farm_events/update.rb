@@ -1,30 +1,30 @@
 module FarmEvents
   class Update < Mutations::Command
-    NOT_YOURS = 'Not your farm_event.'
+    NOT_YOURS = "Not your farm_event."
 
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
-    using   Sequences::CanonicalCeleryHelpers
+    using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields
 
     required do
       model :farm_event, class: FarmEvent
-      model :device,     class: Device
+      model :device, class: Device
     end
 
     optional do
-      integer :repeat,     min:    1
-      string  :time_unit,  in:     FarmEvent::UNITS_OF_TIME
-      time    :start_time, after:  Time.now - 20.years
-      time    :end_time,   before: Time.now + 20.years
+      integer :repeat, min: 1
+      string :time_unit, in: FarmEvent::UNITS_OF_TIME
+      time :start_time, after: Time.now - 20.years
+      time :end_time, before: Time.now + 20.years
       body
     end
 
     def validate
       validate_executable if (executable_id || executable_type)
       validate_ownership
-  end
+    end
 
     def execute
       p = inputs.except(:farm_event, :body, :device)
@@ -33,6 +33,7 @@ module FarmEvents
       FarmEvent.transaction do
         handle_body_field
         farm_event.update_attributes!(p) && farm_event
+        farm_event.manually_sync!
       end
     end
 
