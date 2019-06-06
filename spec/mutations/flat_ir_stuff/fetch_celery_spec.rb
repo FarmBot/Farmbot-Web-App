@@ -13,24 +13,24 @@ describe CeleryScript::FetchCelery do
     expect(Sequence.count).to eq(0)
     expect(PrimaryNode.count).to eq(0)
     expect(EdgeNode.count).to eq(0)
-    params          = CeleryScript::FlatIrHelpers.typical_sequence
+    params = CeleryScript::FlatIrHelpers.typical_sequence
     params[:device] = device
-    hash            = Sequences::Create.run!(params)
-    actual          = CeleryScript::FetchCelery
+    hash = Sequences::Create.run!(params)
+    actual = CeleryScript::FetchCelery
       .run!(sequence: Sequence.find(hash[:id]))
-    expected        = hash.without(:device_id, :migrated_nodes)
+    expected = hash.without(:device_id, :migrated_nodes)
     expect(actual[:body]).to be_kind_of(Array)
     nodes = Sequence.find(actual[:id]).primary_nodes
     # This table came from the JS implementation, which is "known good".
     [
       #KIND                 PARENT           NEXT             BODY
-      ["nothing",           __NOTHING______, __NOTHING______, __NOTHING______],
-      ["sequence",          __NOTHING______, __NOTHING______, "move_absolute"],
-      ["move_absolute",     "sequence",      "move_relative", __NOTHING______],
-      ["coordinate",        "move_absolute", __NOTHING______, __NOTHING______],
-      ["move_relative",     "move_absolute", "write_pin",     __NOTHING______],
-      ["write_pin",         "move_relative", __NOTHING______, __NOTHING______],
-      ["scope_declaration", "sequence",      __NOTHING______, __NOTHING______],
+      ["nothing", __NOTHING______, __NOTHING______, __NOTHING______],
+      ["sequence", __NOTHING______, __NOTHING______, "move_absolute"],
+      ["move_absolute", "sequence", "move_relative", __NOTHING______],
+      ["coordinate", "move_absolute", __NOTHING______, __NOTHING______],
+      ["move_relative", "move_absolute", "write_pin", __NOTHING______],
+      ["write_pin", "move_relative", __NOTHING______, __NOTHING______],
+      ["scope_declaration", "sequence", __NOTHING______, __NOTHING______],
     ].map do |(me, expect_parent, expect_next, expect_body)|
       inspected = nodes.find_by(kind: me)
       expect(inspected.parent.kind)
@@ -44,11 +44,11 @@ describe CeleryScript::FetchCelery do
     expected[:body].each_with_index do |item, index|
       x = actual[:body][index]
       y = expected[:body][index]
-      expect(HashDiff.diff(x, y)).to eq([])
+      expect(Hashdiff.diff(x, y)).to eq([])
     end
     expected[:args][:locals][:body] ||= []
-    actual[:args][:locals][:body]   ||= []
-    comparison = [actual, expected].map{|x| x.except("updated_at", "created_at") }
-    expect(HashDiff.diff(*comparison)).to eq([])
+    actual[:args][:locals][:body] ||= []
+    comparison = [actual, expected].map { |x| x.except("updated_at", "created_at") }
+    expect(Hashdiff.diff(*comparison)).to eq([])
   end
 end

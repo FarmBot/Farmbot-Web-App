@@ -53,8 +53,8 @@ module FarmEvents
 
     def owner
       options = {
-        FarmEvents => -> () { farm_event },
-        Regimens => -> () { regimen },
+        FarmEvents => ->() { farm_event },
+        Regimens => ->() { regimen },
       }
       options.fetch(self.class.parent).call()
     end
