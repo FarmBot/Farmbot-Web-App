@@ -2,7 +2,8 @@ import {
   createSequenceMeta,
   determineDropdown,
   findVariableByName,
-  determineVector
+  determineVector,
+  determineVarDDILabel
 } from "../sequence_meta";
 import {
   fakeSequence,
@@ -19,6 +20,7 @@ import {
 } from "../../sequences/locals_list/location_form_list";
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
+import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
   it("Returns a label for `parameter_declarations`", () => {
@@ -57,7 +59,7 @@ describe("determineDropdown", () => {
         data_value: { kind: "identifier", args: { label: "variable" } }
       }
     }, ri, "sequence uuid");
-    expect(r.label).toBe("Location Variable - variable");
+    expect(r.label).toBe("Location Variable - Select a location");
     expect(r.value).toBe("?");
   });
 
@@ -201,5 +203,50 @@ describe("createSequenceMeta", () => {
       expect(extracted.dropdown.label).toEqual(NO_VALUE_SELECTED_DDI().label);
       expect(extracted.vector).toEqual(undefined);
     }
+  });
+});
+
+describe("determineVarDDILabel()", () => {
+  it("returns 'add new' variable label", () => {
+    const ri = buildResourceIndex().index;
+    const label = determineVarDDILabel("variable", ri, undefined);
+    expect(label).toEqual("Location Variable - Add new");
+  });
+
+  it("returns 'select location' variable label", () => {
+    const varData = fakeVariableNameSet("variable");
+    const data = Object.values(varData)[0];
+    data && (data.celeryNode = NOTHING_SELECTED);
+    const ri = buildResourceIndex().index;
+    ri.sequenceMetas = { "sequence uuid": varData };
+    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    expect(label).toEqual("Location Variable - Select a location");
+  });
+
+  it("returns 'externally defined' variable label", () => {
+    const varData = fakeVariableNameSet("variable");
+    const data = Object.values(varData)[0];
+    data && (data.celeryNode = {
+      kind: "parameter_declaration",
+      args: {
+        label: "variable", default_value: {
+          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+        }
+      }
+    });
+    const ri = buildResourceIndex().index;
+    ri.sequenceMetas = { "sequence uuid": varData };
+    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    expect(label).toEqual("Location Variable - Externally defined");
+  });
+
+  it("returns variable label", () => {
+    const varData = fakeVariableNameSet("variable");
+    const data = Object.values(varData)[0];
+    data && (data.celeryNode.kind = "variable_declaration");
+    const ri = buildResourceIndex().index;
+    ri.sequenceMetas = { "sequence uuid": varData };
+    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    expect(label).toEqual("Location Variable - variable");
   });
 });

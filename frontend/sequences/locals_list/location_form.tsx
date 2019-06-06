@@ -1,38 +1,18 @@
 import * as React from "react";
-import { Row, Col, FBSelect, BlurableInput, DropDownItem } from "../../ui";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
   LocationFormProps, PARENT, AllowedVariableNodes, VariableNode,
 } from "../locals_list/locals_list_support";
-import { defensiveClone } from "../../util/util";
-import { Xyz } from "farmbot";
 import {
-  determineVector, determineDropdown, determineEditable, SequenceMeta
+  determineVector, determineDropdown, SequenceMeta, determineVarDDILabel,
 } from "../../resources/sequence_meta";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { Feature } from "../../devices/interfaces";
 import { DefaultValueForm } from "./default_value_form";
 import { t } from "../../i18next_wrapper";
-
-/** For LocationForm coordinate input boxes.  */
-export interface AxisEditProps {
-  axis: Xyz;
-  onChange: (sd: VariableNode) => void;
-  editableVariable: VariableNode;
-}
-
-/** Update a ParameterApplication coordinate. */
-export const manuallyEditAxis = (props: AxisEditProps) =>
-  (e: React.SyntheticEvent<HTMLInputElement>) => {
-    const { axis, onChange, editableVariable } = props;
-    const num = parseFloat(e.currentTarget.value);
-    if (editableVariable.kind !== "parameter_declaration" &&
-      editableVariable.args.data_value.kind === "coordinate") {
-      editableVariable.args.data_value.args[axis] = num;
-      !isNaN(num) && onChange(editableVariable);
-    }
-  };
+import { CoordinateInputBoxes } from "./location_form_coordinate_input_boxes";
 
 /**
  * If a variable with a matching label exists in local parameter applications
@@ -58,12 +38,7 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   return variable;
 };
 
-const listLabelDDI = (ddi: DropDownItem) => {
-  const newDDI = Object.assign({}, ddi);
-  newDDI.label = ddi.isNull ? t("Location Variable - Add new") : newDDI.label;
-  return newDDI;
-};
-
+/** Determine DropdownItem for the current LocationForm selection. */
 const selectedLabelDDI = (ddi: DropDownItem, override?: string) => {
   const newDDI = Object.assign({}, ddi);
   newDDI.label = (ddi.value === "parameter_declaration" && override)
@@ -72,31 +47,24 @@ const selectedLabelDDI = (ddi: DropDownItem, override?: string) => {
 };
 
 /**
- * Form with an "import from" dropdown and coordinate display/input boxes.
+ * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
  */
 export const LocationForm =
   (props: LocationFormProps) => {
-    const {
-      sequenceUuid, resources, onChange, bodyVariables, variable,
-      locationDropdownKey, allowedVariableNodes, disallowGroups, listVarLabel
-    } = props;
-    const { celeryNode, dropdown, vector } =
-      maybeUseStepData({
-        resources, bodyVariables, variable, uuid: sequenceUuid
-      });
-    /** For disabling coordinate input boxes when using external data. */
-    const isDisabled = !determineEditable(celeryNode);
-    const variableListItems = (props.shouldDisplay(Feature.variables) &&
-      allowedVariableNodes !== AllowedVariableNodes.variable)
-      ? [PARENT(listVarLabel || listLabelDDI(dropdown).label)]
-      : [];
+    const { sequenceUuid, resources, bodyVariables, variable,
+      allowedVariableNodes, disallowGroups } = props;
+    const { celeryNode, dropdown, vector } = maybeUseStepData({
+      resources, bodyVariables, variable, uuid: sequenceUuid
+    });
+    const displayVariables = props.shouldDisplay(Feature.variables) &&
+      allowedVariableNodes !== AllowedVariableNodes.variable;
+    const variableListItems = displayVariables ? [PARENT(props.listVarLabel ||
+      determineVarDDILabel("parent", resources, sequenceUuid))] : [];
     const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
     const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
     const { label } = celeryNode.args;
-    const editableVariable = defensiveClone(celeryNode);
-    const axisPartialProps = { onChange, editableVariable };
     const formTitleWithType =
       props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;
@@ -112,33 +80,24 @@ export const LocationForm =
           <Row>
             <Col xs={12}>
               <FBSelect
-                key={locationDropdownKey}
+                key={props.locationDropdownKey}
                 list={list}
-                selectedItem={selectedLabelDDI(dropdown, listVarLabel)}
+                selectedItem={selectedLabelDDI(dropdown, props.listVarLabel)}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => onChange(convertDDItoVariable({
+                onChange={ddi => props.onChange(convertDDItoVariable({
                   label, allowedVariableNodes
                 })(ddi))} />
             </Col>
           </Row>
-          {vector &&
-            <Row>
-              {["x", "y", "z"].map((axis: Xyz) =>
-                <Col xs={props.width || 4} key={axis}>
-                  <label>
-                    {t("{{axis}} (mm)", { axis })}
-                  </label>
-                  <BlurableInput type="number"
-                    disabled={isDisabled}
-                    onCommit={manuallyEditAxis({ ...axisPartialProps, axis })}
-                    name={`location-${axis}`}
-                    value={"" + vector[axis]} />
-                </Col>)}
-            </Row>}
+          <CoordinateInputBoxes
+            variableNode={celeryNode}
+            vector={vector}
+            width={props.width}
+            onChange={props.onChange} />
           <DefaultValueForm
             variableNode={celeryNode}
             resources={resources}
-            onChange={onChange} />
+            onChange={props.onChange} />
         </div>}
     </div>;
   };

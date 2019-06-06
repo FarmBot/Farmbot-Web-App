@@ -24,9 +24,13 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
-  state: MoveAbsState = { more: !!this.props.expandStepOptions };
+  state: MoveAbsState = {
+    more: !!this.props.expandStepOptions || this.hasOffset };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
+  get hasOffset(): boolean {
+    const {x, y, z} = this.args.offset.args;
+    return !!(x || y || z); }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {

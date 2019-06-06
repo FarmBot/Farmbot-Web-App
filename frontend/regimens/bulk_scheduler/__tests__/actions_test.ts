@@ -1,11 +1,16 @@
 jest.mock("i18next", () => ({ t: (i: string) => i }));
-
 jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
-import { commitBulkEditor, setTimeOffset, toggleDay, setSequence } from "../actions";
+import {
+  commitBulkEditor, setTimeOffset, toggleDay, setSequence
+} from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { TaggedResource, TaggedSequence, TaggedRegimen, Coordinate } from "farmbot";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
+import {
+  TaggedResource, TaggedSequence, TaggedRegimen, Coordinate
+} from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
@@ -21,22 +26,22 @@ describe("commitBulkEditor()", () => {
   function newFakeState() {
     const state = fakeState();
     const regBody: TaggedRegimen["body"] = {
-      "id": regimen_id,
-      "name": "Test Regimen",
-      "color": "gray",
-      "regimen_items": [
+      id: regimen_id,
+      name: "Test Regimen",
+      color: "gray",
+      regimen_items: [
         { regimen_id, sequence_id, time_offset: 1000 }
       ],
       body: [],
     };
     const reg = newTaggedResource("Regimen", regBody)[0];
     const seqBody: TaggedSequence["body"] = {
-      "id": sequence_id,
-      "name": "Test Sequence",
-      "color": "gray",
-      "body": [{ kind: "wait", args: { milliseconds: 100 } }],
-      "args": { "locals": { kind: "scope_declaration", args: {} }, "version": 4 },
-      "kind": "sequence"
+      id: sequence_id,
+      name: "Test Sequence",
+      color: "gray",
+      body: [{ kind: "wait", args: { milliseconds: 100 } }],
+      args: { "locals": { kind: "scope_declaration", args: {} }, "version": 4 },
+      kind: "sequence"
     };
     const seq = arrayUnwrap(newTaggedResource("Sequence", seqBody));
     const regimenUuid = reg.uuid;
@@ -101,6 +106,7 @@ describe("commitBulkEditor()", () => {
   });
 
   it("adds items", () => {
+    console.log = jest.fn();
     const state = newFakeState();
     const getState = () => state;
     const dispatch = jest.fn();
@@ -117,6 +123,7 @@ describe("commitBulkEditor()", () => {
   });
 
   it("merges variables", () => {
+    console.log = jest.fn();
     const state = newFakeState();
     const seqUUID = state.resources.consumers.regimens.selectedSequenceUUID;
     const label = "variable_label";
