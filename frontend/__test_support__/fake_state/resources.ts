@@ -301,6 +301,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     debug_log: 3,
     stub_config: false,
     show_first_party_farmware: false,
+    expand_step_options: false,
     enable_browser_speak: false,
     photo_filter_begin: "2018-01-11T20:20:38.362Z",
     photo_filter_end: "2018-01-22T15:32:41.970Z",
