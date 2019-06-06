@@ -90,7 +90,7 @@ export const SequenceSettingsMenu =
         label={t("Show pins")}
         description={Content.SHOW_PINS} />
       <Setting {...commonProps}
-        setting={"expand_step_options" as BooleanConfigKey}
+        setting={"expand_step_options"}
         label={t("Open options by default")}
         description={Content.EXPAND_STEP_OPTIONS} />
     </div>;
@@ -222,7 +222,7 @@ export class SequenceEditorMiddleActive extends
       shouldDisplay: this.props.shouldDisplay,
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),
-      expandStepOptions: !!getConfig("expand_step_options" as BooleanConfigKey),
+      expandStepOptions: !!getConfig("expand_step_options"),
     };
   }
 
