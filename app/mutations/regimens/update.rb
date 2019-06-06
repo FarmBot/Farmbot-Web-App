@@ -30,11 +30,12 @@ module Regimens
           regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
         end
       end
-      regimen
+      regimen.manually_sync!
     rescue ActiveRecord::RecordInvalid => e
       offender = e.record.as_json.slice("time_offset", "sequence_id").to_s
       add_error :regimen_items, :probably_bad, BAD_RECORD + offender
     end
   end
 end
+
 Regimina ||= Regimens # Lol, inflection errors
