@@ -28,7 +28,7 @@ module FarmEvents
         raise TRANSACTION_REQUIRED
       end
       create_fragment_for(owner)
-      owner
+      owner.manually_sync!
     end
 
     def handle_body_field

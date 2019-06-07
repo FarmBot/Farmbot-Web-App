@@ -22,7 +22,7 @@ module Regimens
         inputs[:regimen_items].map! do |i|
           RegimenItem.new(i)
         end
-        wrap_fragment_with(Regimen.create!(inputs.except(:body))).manually_sync!
+        wrap_fragment_with(Regimen.create!(inputs.except(:body)))
       end
     end
   end
