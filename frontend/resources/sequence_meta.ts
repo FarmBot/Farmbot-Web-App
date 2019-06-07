@@ -50,13 +50,26 @@ export const determineVector =
   };
 
 /** Try to find a vector in scope declarations for the variable. */
-const maybeFindVariable =
-  (label: string, resources: ResourceIndex, uuid?: UUID):
-    SequenceMeta | undefined => {
-    if (uuid) {
-      return findVariableByName(resources, uuid, label);
+const maybeFindVariable = (
+  label: string, resources: ResourceIndex, uuid?: UUID
+): SequenceMeta | undefined =>
+  uuid ? findVariableByName(resources, uuid, label) : undefined;
+
+const withPrefix = (label: string) => `${t("Location Variable")} - ${label}`;
+
+export const determineVarDDILabel =
+  (label: string, resources: ResourceIndex, uuid?: UUID): string => {
+    const variable = maybeFindVariable(label, resources, uuid);
+    if (variable) {
+      if (variable.celeryNode.kind === "parameter_declaration") {
+        return withPrefix(t("Externally defined"));
+      }
+      if (variable.celeryNode.kind !== "variable_declaration") {
+        return withPrefix(t("Select a location"));
+      }
+      return withPrefix(variable.dropdown.label);
     }
-    return undefined;
+    return withPrefix(t("Add new"));
   };
 
 /** Given a CeleryScript parameter application and a resource index
@@ -77,9 +90,7 @@ export const determineDropdown =
         return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
       case "identifier":
         const { label } = data_value.args;
-        const variable = maybeFindVariable(label, resources, uuid);
-        const varName = `${t("Location Variable")} - ${variable
-          ? variable.dropdown.label : t("Select a location")}`;
+        const varName = determineVarDDILabel(label, resources, uuid);
         return { label: varName, value: "?" };
       // tslint:disable-next-line:no-any
       case "every_point" as any:

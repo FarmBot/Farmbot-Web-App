@@ -214,6 +214,11 @@ export namespace ToolTips {
   export const SEQUENCE_LIST =
     trim(`Here is the list of all of your sequences. Click one to edit.`);
 
+  export const DEFAULT_VALUE =
+    trim(`Select a location to be used as the default value for this variable.
+    If the sequence is ever run without the variable explicitly set to
+    another value, the default value will be used.`);
+
   export const MOVE_ABSOLUTE =
     trim(`The Move To step instructs FarmBot to move to the specified
     coordinate regardless of the current position. For example, if FarmBot is

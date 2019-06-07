@@ -45,6 +45,7 @@ export function TileReadPin(props: StepParams) {
           <FBSelect
             key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
+            customNullLabel={t("Select a sensor")}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsReadPin(props.resources, !!props.showPins)} />
         </Col>

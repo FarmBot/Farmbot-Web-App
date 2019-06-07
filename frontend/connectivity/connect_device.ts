@@ -159,7 +159,10 @@ export function onMalformed() {
 }
 
 export const onOnline =
-  () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  () => {
+    success(t("Reconnected to the message broker."), t("Online"));
+    dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  };
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 

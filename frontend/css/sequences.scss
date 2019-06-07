@@ -70,6 +70,14 @@
   }
 }
 
+.farmware-input-panel-contents {
+  .farmware-info-button {
+    position: absolute;
+    top: 7rem;
+    left: 35%;
+  }
+}
+
 .sequence-editor-content {
   hr {
     margin-right: 15px;
@@ -171,8 +179,13 @@
   }
 }
 
-.farmware-info-panel button {
-  margin-bottom: 3rem;
+.farmware-info-panel {
+  .back-to-farmware {
+    text-align: left !important;
+  }
+  button {
+    margin-bottom: 3rem;
+  }
 }
 
 .step-button-cluster {
@@ -263,6 +276,7 @@
   }
 }
 
+.back-to-farmware,
 .back-to-regimens,
 .back-to-sequences {
   display: none;
@@ -277,25 +291,10 @@
       text-align: center;
       line-height: 6rem;
       margin-left: 15px;
+      &.farmware-info-open,
       &.inserting-step,
       &.inserting-item {
         margin-left: 0;
-      }
-    }
-  }
-}
-
-.back-to-farmware {
-  display: none;
-  &.open {
-    @media screen and (max-width: 767px) {
-      display: block;
-      margin: 4rem;
-      margin-top: 0;
-      margin-left: 2rem;
-      float: left !important;
-      i {
-        margin-right: 1rem;
       }
     }
   }

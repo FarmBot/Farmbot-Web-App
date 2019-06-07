@@ -8,7 +8,6 @@ import {
 } from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { ShouldDisplay } from "../../devices/interfaces";
-import { t } from "../../i18next_wrapper";
 
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
@@ -77,8 +76,5 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
 }
 
-export const PARENT = (label?: string) => ({
-  value: "parent",
-  label: label ? label : t("Location Variable - Add new"),
-  headingId: "parameter"
-});
+export const PARENT = (label: string) =>
+  ({ value: "parent", label, headingId: "parameter" });
