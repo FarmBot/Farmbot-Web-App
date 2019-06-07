@@ -44,7 +44,7 @@ describe("<LocationForm/>", () => {
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT()], true);
+    const choices = locationFormList(p.resources, [PARENT("")], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -56,7 +56,7 @@ describe("<LocationForm/>", () => {
         label: "label",
         allowedVariableNodes: p.allowedVariableNodes
       })(choice));
-    expect(inputs.length).toBe(3);
+    expect(inputs.length).toBe(0);
   });
 
   it("uses body variable data", () => {
@@ -71,7 +71,7 @@ describe("<LocationForm/>", () => {
     }];
     const wrapper = mount(<LocationForm {...p} />);
     expect(wrapper.text().toLowerCase())
-      .toContain("location variable - select a location");
+      .toContain("location variable - add new");
   });
 
   it("shows parent in dropdown", () => {
@@ -79,7 +79,7 @@ describe("<LocationForm/>", () => {
     p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT("label")]));
+      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
   });
 
   it("doesn't show parent in dropdown", () => {

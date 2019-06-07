@@ -105,7 +105,7 @@ describe("<FarmwarePage />", () => {
     p.farmwares["My Fake Test Farmware"] = farmware;
     p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
-    clickButton(wrapper, 3, "Run");
+    clickButton(wrapper, 2, "Run");
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Test Farmware");
   });
 
@@ -122,7 +122,9 @@ describe("<FarmwarePage />", () => {
     p.botToMqttStatus = "up";
     p.infoOpen = false;
     const wrapper = mount(<FarmwarePage {...p} />);
-    clickButton(wrapper, 0, "farmware list");
+    const back = wrapper.find(".fa-arrow-left").first();
+    expect(back.props().title).toEqual("back to farmware list");
+    back.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_FARMWARE, payload: undefined
     });
@@ -133,7 +135,9 @@ describe("<FarmwarePage />", () => {
     p.botToMqttStatus = "up";
     p.infoOpen = true;
     const wrapper = mount(<FarmwarePage {...p} />);
-    clickButton(wrapper, 0, "back");
+    const back = wrapper.find(".fa-arrow-left").first();
+    expect(back.props().title).toEqual("back to farmware");
+    back.simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_FARMWARE_INFO_STATE, payload: false
     });

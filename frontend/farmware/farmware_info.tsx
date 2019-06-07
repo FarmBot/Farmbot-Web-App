@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { TaggedFarmwareInstallation } from "farmbot";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
@@ -138,7 +137,7 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
 
 export function FarmwareInfo(props: FarmwareInfoProps) {
   const { farmware } = props;
-  return farmware ? <div>
+  return farmware ? <div className="farmware-info">
     <label>{t("Description")}</label>
     <p>{farmware.meta.description}</p>
     <label>{t("Version")}</label>

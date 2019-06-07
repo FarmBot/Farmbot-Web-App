@@ -1,6 +1,5 @@
 import axios from "axios";
 import { API } from "../../api";
-
 import { success, info } from "farmbot-toastr";
 import { history } from "../../history";
 import { Actions } from "../../constants";
@@ -9,6 +8,7 @@ import { unpackUUID } from "../../util";
 import { isString } from "lodash";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../../i18next_wrapper";
+import { stopTracking } from "../../connectivity/data_consistency";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (name?: string | undefined) =>
@@ -23,7 +23,8 @@ export const unselectSavedGarden = {
 /** Save a SavedGarden's PlantTemplates as Plants. */
 export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
   .patch<void>(API.current.applyGardenPath(gardenId))
-  .then(() => {
+  .then(data => {
+    stopTracking(data.headers["x-farmbot-rpc-id"]);
     history.push("/app/designer/plants");
     dispatch(unselectSavedGarden);
     const busyToastTitle = t("Please wait");

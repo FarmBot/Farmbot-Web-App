@@ -26,7 +26,6 @@ module Api
     end
 
     def control_certificate
-      binding.pry unless raw_json.is_a?(Hash)
       mutate Users::GenerateControlCert.run(raw_json, device: current_device)
     end
 

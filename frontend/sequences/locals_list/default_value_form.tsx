@@ -6,6 +6,8 @@ import { LocationForm } from "./location_form";
 import {
   SequenceMeta, determineVector, determineDropdown
 } from "../../resources/sequence_meta";
+import { Help } from "../../ui";
+import { ToolTips } from "../../constants";
 
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
@@ -15,16 +17,21 @@ export interface DefaultValueFormProps {
 
 export const DefaultValueForm = (props: DefaultValueFormProps) =>
   props.variableNode.kind === "parameter_declaration"
-    ? <LocationForm
-      key={props.variableNode.args.label + "default_value"}
-      locationDropdownKey={JSON.stringify(props.variableNode) + "default_value"}
-      variable={defaultValueVariableData(props.resources, props.variableNode)}
-      sequenceUuid={""}
-      resources={props.resources}
-      shouldDisplay={() => true}
-      allowedVariableNodes={AllowedVariableNodes.variable}
-      hideTypeLabel={true}
-      onChange={change(props.onChange, props.variableNode)} />
+    ? <div className="default-value-form">
+      <div className="default-value-tooltip">
+        <Help text={ToolTips.DEFAULT_VALUE} />
+      </div>
+      <LocationForm
+        key={props.variableNode.args.label + "default_value"}
+        locationDropdownKey={JSON.stringify(props.variableNode) + "default_value"}
+        variable={defaultValueVariableData(props.resources, props.variableNode)}
+        sequenceUuid={""}
+        resources={props.resources}
+        shouldDisplay={() => true}
+        allowedVariableNodes={AllowedVariableNodes.variable}
+        hideTypeLabel={true}
+        onChange={change(props.onChange, props.variableNode)} />
+    </div>
     : <div />;
 
 const change =
