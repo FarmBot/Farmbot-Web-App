@@ -149,6 +149,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showFarmbot={show_farmbot}
         showImages={show_images}
         showSensorReadings={show_sensor_readings}
+        hasSensorReadings={this.props.sensorReadings.length > 0}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}

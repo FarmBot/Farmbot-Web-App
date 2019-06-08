@@ -1,7 +1,7 @@
 import { MovePlantProps, DraggableEvent } from "./interfaces";
 import { defensiveClone } from "../util";
 import { edit } from "../api/crud";
-import { history, getPathArray } from "../history";
+import { history } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
 import { getMode } from "./map/util";
@@ -28,11 +28,10 @@ export const unselectPlant = (dispatch: Function) => () => {
   dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
 };
 
+/** Unselect plant and close plant info or select panel if selected and open. */
 export const closePlantInfo = (dispatch: Function) => () => {
-  if (!isNaN(parseInt(getPathArray().slice(-1)[0]))
-    || getMode() == Mode.boxSelect) {
-    // A plant is selected and plant info or select panel is open.
-    // Unselect and close.
+  const mode = getMode();
+  if (mode == Mode.editPlant || mode == Mode.boxSelect) {
     unselectPlant(dispatch)();
     history.push("/app/designer/plants");
   }

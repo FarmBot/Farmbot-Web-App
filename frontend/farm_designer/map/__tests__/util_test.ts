@@ -327,6 +327,10 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/saved_gardens/templates/1/edit";
     expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/plants/1";
+    expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/saved_gardens/templates/1";
+    expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/plants/select";
     expect(getMode()).toEqual(Mode.boxSelect);
     mockPath = "/app/designer/plants/crop_search/mint";

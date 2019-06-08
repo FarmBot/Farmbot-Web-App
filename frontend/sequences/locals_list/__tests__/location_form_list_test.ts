@@ -57,4 +57,9 @@ describe("dropDownName()", () => {
     const label = dropDownName("Plant 1", { x: 10, y: 20, z: 30 });
     expect(label).toEqual("Plant 1 (10, 20, 30)");
   });
+
+  it("returns untitled label", () => {
+    const label = dropDownName("", { x: 10, y: 20, z: 30 });
+    expect(label).toEqual("Untitled (10, 20, 30)");
+  });
 });

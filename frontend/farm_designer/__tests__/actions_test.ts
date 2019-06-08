@@ -58,11 +58,13 @@ describe("closePlantInfo()", () => {
   });
 
   it("plant edit open", () => {
-    mockPath = "/app/designer/plants/1/edit";
+    mockPath = "/app/designer/plants/1";
     const dispatch = jest.fn();
     closePlantInfo(dispatch)();
-    expect(history.push).not.toHaveBeenCalled();
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: undefined, type: Actions.SELECT_PLANT
+    });
   });
 
   it("plant info open", () => {

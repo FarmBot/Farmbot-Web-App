@@ -170,7 +170,7 @@ export type UserEnv = Record<string, string | undefined>;
 export interface FarmbotOsProps {
   bot: BotState;
   diagnostics: TaggedDiagnosticDump[];
-  account: TaggedDevice;
+  deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
   dispatch: Function;

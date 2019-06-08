@@ -27,16 +27,14 @@ describe("<PlantPanel/>", () => {
     plantStatus: "planned",
   };
 
-  const fakeProps = (): PlantPanelProps => {
-    return {
-      info,
-      onDestroy: jest.fn(),
-      updatePlant: jest.fn(),
-      dispatch: jest.fn(),
-      inSavedGarden: false,
-      timeSettings: fakeTimeSettings(),
-    };
-  };
+  const fakeProps = (): PlantPanelProps => ({
+    info,
+    onDestroy: jest.fn(),
+    updatePlant: jest.fn(),
+    dispatch: jest.fn(),
+    inSavedGarden: false,
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders: editing", () => {
     const p = fakeProps();
@@ -51,8 +49,8 @@ describe("<PlantPanel/>", () => {
 
   it("calls destroy", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantPanel {...p} />);
-    clickButton(wrapper, 0, "Delete");
+    const wrapper = mount(<PlantPanel {...p} />);
+    clickButton(wrapper, 2, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 

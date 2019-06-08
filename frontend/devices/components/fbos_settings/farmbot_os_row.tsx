@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Row, Col, Markdown } from "../../../ui/index";
-
 import { OsUpdateButton } from "./os_update_button";
 import { Popover, Position } from "@blueprintjs/core";
 import { ColWidth } from "../farmbot_os_settings";
@@ -35,7 +34,10 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
           botInfoSettings={bot.hardware.informational_settings}
           dispatch={dispatch}
           shouldDisplay={props.shouldDisplay}
-          sourceFbosConfig={sourceFbosConfig} />
+          sourceFbosConfig={sourceFbosConfig}
+          botToMqttLastSeen={props.botToMqttLastSeen}
+          timeSettings={props.timeSettings}
+          deviceAccount={props.deviceAccount} />
       </Popover>
     </Col>
     <Col xs={3}>
