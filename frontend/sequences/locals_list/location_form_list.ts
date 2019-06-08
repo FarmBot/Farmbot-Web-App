@@ -6,10 +6,10 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, Vector3, TaggedToolSlotPointer
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz
 } from "farmbot";
 import { DropDownItem } from "../../ui";
-import { capitalize } from "lodash";
+import { capitalize, isNumber } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
@@ -92,7 +92,11 @@ export const formatTool =
   (tool: TaggedTool, slot: TaggedToolSlotPointer | undefined): DropDownItem => {
     const { id, name } = tool.body;
     const coordinate = slot
-      ? { x: slot.body.x, y: slot.body.y, z: slot.body.z }
+      ? {
+        x: slot.body.gantry_mounted ? undefined : slot.body.x,
+        y: slot.body.y,
+        z: slot.body.z
+      }
       : undefined;
     return {
       label: dropDownName((name || "Untitled tool"), coordinate),
@@ -102,9 +106,12 @@ export const formatTool =
   };
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
-export function dropDownName(name: string, v?: Vector3) {
+export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) {
   let label = name || "untitled";
-  if (v) { label += ` (${v.x}, ${v.y}, ${v.z})`; }
+  if (v) {
+    const labelFor = (axis: number | undefined) => isNumber(axis) ? axis : "---";
+    label += ` (${labelFor(v.x)}, ${labelFor(v.y)}, ${labelFor(v.z)})`;
+  }
   return capitalize(label);
 }
 
