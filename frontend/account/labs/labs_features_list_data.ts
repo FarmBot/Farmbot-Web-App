@@ -39,6 +39,12 @@ export const fetchLabFeatures =
       value: false
     },
     {
+      name: t("Hide Sensors widget"),
+      description: t(Content.HIDE_SENSORS_WIDGET),
+      storageKey: "hide_sensors" as BooleanConfigKey,
+      value: false
+    },
+    {
       name: t("Display plant animations"),
       description: t(Content.PLANT_ANIMATIONS),
       storageKey: BooleanSetting.disable_animations,

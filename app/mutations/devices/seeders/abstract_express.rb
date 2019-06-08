@@ -94,6 +94,10 @@ module Devices
         device.web_app_config.update_attributes!(map_size_y: 1_200)
       end
 
+      def settings_hide_sensors
+        device.web_app_config.update_attributes!(hide_sensors: true)
+      end
+
       private
 
       def seed_trough_1_id
