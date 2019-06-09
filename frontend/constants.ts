@@ -469,6 +469,10 @@ export namespace Content {
     trim(`If not using a webcam, use this setting to remove the
     widget from the Controls page.`);
 
+  export const HIDE_SENSORS_WIDGET =
+    trim(`If not using sensors, use this setting to remove the
+    widget from the Controls page.`);
+
   export const DYNAMIC_MAP_SIZE =
     trim(`Change the Farm Designer map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in

@@ -290,6 +290,7 @@ export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
+    if (!isNaN(parseInt(pathArray.slice(-1)[0]))) { return Mode.editPlant; }
     if (pathArray[5] === "edit") { return Mode.editPlant; }
     if (pathArray[6] === "edit") { return Mode.editPlant; }
     if (pathArray[4] === "select") { return Mode.boxSelect; }

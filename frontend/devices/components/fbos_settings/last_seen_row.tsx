@@ -1,15 +1,14 @@
 import * as React from "react";
-import { Row, Col } from "../../../ui/index";
 import moment from "moment";
 import { TaggedDevice } from "farmbot";
-import { ColWidth } from "../farmbot_os_settings";
 import { Content } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
 import { TimeSettings } from "../../../interfaces";
 import { timeFormatString } from "../../../util";
+import { refresh } from "../../../api/crud";
 
 export interface LastSeenProps {
-  onClick?(): void;
+  dispatch: Function;
   botToMqttLastSeen: string;
   device: TaggedDevice;
   timeSettings: TimeSettings;
@@ -53,21 +52,14 @@ export class LastSeen extends React.Component<LastSeenProps, {}> {
     }
   }
 
+  click = () => this.props.dispatch(refresh(this.props.device));
+
   render() {
     return <div className="last-seen-row">
-      <Row>
-        <Col xs={ColWidth.label}>
-          <label>
-            {t("LAST SEEN")}
-          </label>
-        </Col>
-        <Col xs={ColWidth.description}>
-          <p>
-            <i className="fa fa-refresh" onClick={this.props.onClick}></i>
-            {this.show()}
-          </p>
-        </Col>
-      </Row>
+      <p>
+        <i className="fa fa-refresh" onClick={this.click}></i>
+        {this.show()}
+      </p>
     </div>;
   }
 }

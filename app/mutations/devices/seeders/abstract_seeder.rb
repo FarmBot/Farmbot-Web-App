@@ -31,6 +31,7 @@ module Devices
         :settings_enable_encoders,
         :settings_firmware,
         :settings_map_xl,
+        :settings_hide_sensors,
 
         # TOOLS ==================================
         :tools_seed_bin,
@@ -79,6 +80,10 @@ module Devices
 
       def settings_map_xl
         device.web_app_config.update_attributes!(map_xl: false)
+      end
+
+      def settings_hide_sensors
+        device.web_app_config.update_attributes!(hide_sensors: false)
       end
 
       def plants

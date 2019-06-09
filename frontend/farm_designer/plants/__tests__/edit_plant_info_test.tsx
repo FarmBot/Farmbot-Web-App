@@ -1,11 +1,7 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../../../history", () => ({
-  history: {
-    push: jest.fn(),
-  },
+  history: { push: jest.fn() },
   getPathArray: () => []
 }));
 
@@ -17,15 +13,13 @@ import { EditPlantInfoProps } from "../../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<EditPlantInfo />", () => {
-  const fakeProps = (): EditPlantInfoProps => {
-    return {
-      push: jest.fn(),
-      dispatch: jest.fn(),
-      findPlant: fakePlant,
-      openedSavedGarden: undefined,
-      timeSettings: fakeTimeSettings(),
-    };
-  };
+  const fakeProps = (): EditPlantInfoProps => ({
+    push: jest.fn(),
+    dispatch: jest.fn(),
+    findPlant: fakePlant,
+    openedSavedGarden: undefined,
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders", async () => {
     const wrapper = mount(<EditPlantInfo {...fakeProps()} />);
@@ -33,7 +27,7 @@ describe("<EditPlantInfo />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const buttons = wrapper.find("button");
     expect(buttons.at(1).text()).toEqual("Move FarmBot to this plant");
-    expect(buttons.at(1).props().hidden).toBeTruthy();
+    expect(buttons.at(1).props().hidden).toBeFalsy();
   });
 
   it("deletes plant", async () => {

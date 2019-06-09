@@ -43,6 +43,7 @@ describe("<GardenMapLegend />", () => {
     showFarmbot: false,
     showImages: false,
     showSensorReadings: false,
+    hasSensorReadings: false,
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
@@ -59,7 +60,9 @@ describe("<GardenMapLegend />", () => {
 
   it("shows submenu", () => {
     mockDev = true;
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    const p = fakeProps();
+    p.hasSensorReadings = true;
+    const wrapper = mount(<GardenMapLegend {...p} />);
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
     mockDev = false;

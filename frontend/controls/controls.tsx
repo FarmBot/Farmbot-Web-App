@@ -10,6 +10,7 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /** Controls page. */
 @connect(mapStateToProps)
@@ -22,6 +23,10 @@ export class Controls extends React.Component<Props, {}> {
     return isBotOnline(
       this.props.bot.hardware.informational_settings.sync_status,
       this.props.botToMqttStatus);
+  }
+
+  get hideSensors() {
+    return this.props.getWebAppConfigVal("hide_sensors" as BooleanConfigKey);
   }
 
   move = () => <Move
@@ -42,11 +47,13 @@ export class Controls extends React.Component<Props, {}> {
     feeds={this.props.feeds}
     dispatch={this.props.dispatch} />
 
-  sensors = () => <Sensors
-    bot={this.props.bot}
-    sensors={this.props.sensors}
-    dispatch={this.props.dispatch}
-    disabled={this.arduinoBusy || !this.botOnline} />
+  sensors = () => this.hideSensors
+    ? <div />
+    : <Sensors
+      bot={this.props.bot}
+      sensors={this.props.sensors}
+      dispatch={this.props.dispatch}
+      disabled={this.arduinoBusy || !this.botOnline} />
 
   sensorReadings = () => this.props.sensorReadings.length > 0
     ? <SensorReadings

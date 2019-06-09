@@ -1,5 +1,10 @@
-import { locationFormList, dropDownName } from "../location_form_list";
+import {
+  locationFormList, dropDownName, formatTool
+} from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
+import {
+  fakeToolSlot, fakeTool
+} from "../../../__test_support__/fake_state/resources";
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
@@ -52,9 +57,34 @@ describe("locationFormList()", () => {
   });
 });
 
+describe("formatTool()", () => {
+  it("returns ddi for tool", () => {
+    const ddi = formatTool(fakeTool(), fakeToolSlot());
+    expect(ddi.label).toEqual("Foo (0, 0, 0)");
+  });
+
+  it("returns ddi for tool when gantry mounted", () => {
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.gantry_mounted = true;
+    const ddi = formatTool(fakeTool(), toolSlot);
+    expect(ddi.label).toEqual("Foo (---, 0, 0)");
+  });
+});
+
 describe("dropDownName()", () => {
   it("returns label", () => {
     const label = dropDownName("Plant 1", { x: 10, y: 20, z: 30 });
     expect(label).toEqual("Plant 1 (10, 20, 30)");
+  });
+
+  it("returns untitled label", () => {
+    const label = dropDownName("", { x: 10, y: 20, z: 30 });
+    expect(label).toEqual("Untitled (10, 20, 30)");
+  });
+
+  it("returns label with undefined coordinates", () => {
+    const label = dropDownName("Plant 1",
+      { x: undefined, y: undefined, z: undefined });
+    expect(label).toEqual("Plant 1 (---, ---, ---)");
   });
 });

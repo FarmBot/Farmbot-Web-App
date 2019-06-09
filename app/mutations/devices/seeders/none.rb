@@ -22,6 +22,7 @@ module Devices
       def settings_default_map_size_y; end
       def settings_firmware; end
       def settings_map_xl; end
+      def settings_hide_sensors; end
       def tool_slots_slot_1; end
       def tool_slots_slot_2; end
       def tool_slots_slot_3; end

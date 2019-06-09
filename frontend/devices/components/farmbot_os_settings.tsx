@@ -1,12 +1,11 @@
 import * as React from "react";
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col, SaveBtn } from "../../ui";
-import { save, edit, refresh } from "../../api/crud";
+import { save, edit } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips, Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
-import { LastSeen } from "./fbos_settings/last_seen_row";
 import { CameraSelection } from "./fbos_settings/camera_selection";
 import { BoardType } from "./fbos_settings/board_type";
 import { FarmbotOsRow } from "./fbos_settings/farmbot_os_row";
@@ -53,23 +52,23 @@ export class FarmbotOsSettings
   }
 
   changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { account, dispatch } = this.props;
-    dispatch(edit(account, { name: e.currentTarget.value }));
+    const { deviceAccount, dispatch } = this.props;
+    dispatch(edit(deviceAccount, { name: e.currentTarget.value }));
   }
 
   updateBot = () => {
-    const { account, dispatch } = this.props;
-    dispatch(save(account.uuid));
+    const { deviceAccount, dispatch } = this.props;
+    dispatch(save(deviceAccount.uuid));
   }
 
   handleTimezone = (timezone: string) => {
-    const { account, dispatch } = this.props;
-    dispatch(edit(account, { timezone }));
-    dispatch(save(account.uuid));
+    const { deviceAccount, dispatch } = this.props;
+    dispatch(edit(deviceAccount, { timezone }));
+    dispatch(save(deviceAccount.uuid));
   }
 
   maybeWarnTz = () => {
-    const wrongTZ = timezoneMismatch(this.props.account.body.timezone);
+    const wrongTZ = timezoneMismatch(this.props.deviceAccount.body.timezone);
     if (wrongTZ) {
       return t(Content.DIFFERENT_TZ_WARNING);
     } else {
@@ -77,23 +76,15 @@ export class FarmbotOsSettings
     }
   }
 
-  lastSeen = () => {
-    return <LastSeen
-      onClick={() => this.props.dispatch(refresh(this.props.account))}
-      botToMqttLastSeen={this.props.botToMqttLastSeen}
-      timeSettings={this.props.timeSettings}
-      device={this.props.account} />;
-  }
-
   render() {
-    const { bot, account, sourceFbosConfig, botToMqttStatus } = this.props;
+    const { bot, deviceAccount, sourceFbosConfig, botToMqttStatus } = this.props;
     const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
           <SaveBtn
-            status={account.specialStatus}
+            status={deviceAccount.specialStatus}
             onClick={this.updateBot} />
         </WidgetHeader>
         <WidgetBody>
@@ -106,7 +97,7 @@ export class FarmbotOsSettings
             <Col xs={9}>
               <input name="name"
                 onChange={this.changeBot}
-                value={this.props.account.body.name} />
+                value={this.props.deviceAccount.body.name} />
             </Col>
           </Row>
           <Row>
@@ -121,12 +112,11 @@ export class FarmbotOsSettings
               </div>
               <div>
                 <TimezoneSelector
-                  currentTimezone={this.props.account.body.timezone}
+                  currentTimezone={this.props.deviceAccount.body.timezone}
                   onUpdate={this.handleTimezone} />
               </div>
             </Col>
           </Row>
-          <this.lastSeen />
           <MustBeOnline
             syncStatus={sync_status}
             networkState={this.props.botToMqttStatus}
@@ -139,7 +129,10 @@ export class FarmbotOsSettings
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
-              botOnline={botOnline} />
+              botOnline={botOnline}
+              botToMqttLastSeen={this.props.botToMqttLastSeen}
+              timeSettings={this.props.timeSettings}
+              deviceAccount={this.props.deviceAccount} />
             <AutoUpdateRow
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig} />

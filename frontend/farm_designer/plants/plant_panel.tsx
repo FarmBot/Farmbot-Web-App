@@ -124,16 +124,54 @@ const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
     return Promise.resolve();
   };
 
-const MoveToPlant =
-  (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
-    <button className="fb-button gray"
-      hidden={props.isEditing}
-      onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
-        .then(() => history.push("/app/designer/move_to"))}>
-      {t("Move FarmBot to this plant")}
-    </button>;
+interface MoveToPlantProps {
+  x: number;
+  y: number;
+  dispatch: Function;
+  hidden: boolean;
+}
 
-const ListItem = (props: { name: string, children: React.ReactChild }) =>
+const MoveToPlant = (props: MoveToPlantProps) =>
+  <button className="fb-button gray"
+    hidden={props.hidden}
+    onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
+      .then(() => history.push("/app/designer/move_to"))}>
+    {t("Move FarmBot to this plant")}
+  </button>;
+
+interface DeleteButtonsProps {
+  hidden: boolean;
+  destroy(): void;
+}
+
+const DeleteButtons = (props: DeleteButtonsProps) =>
+  <div>
+    <div>
+      <label hidden={props.hidden}>
+        {t("Delete this plant")}
+      </label>
+    </div>
+    <button
+      className="fb-button red"
+      hidden={props.hidden}
+      onClick={props.destroy}>
+      {t("Delete")}
+    </button>
+    <button
+      className="fb-button gray"
+      style={{ marginRight: "10px" }}
+      hidden={props.hidden}
+      onClick={() => history.push("/app/designer/plants/select")} >
+      {t("Delete multiple")}
+    </button>
+  </div>;
+
+interface ListItemProps {
+  name: string;
+  children: React.ReactChild;
+}
+
+const ListItem = (props: ListItemProps) =>
   <li>
     <p>
       {props.name}
@@ -192,24 +230,7 @@ export function PlantPanel(props: PlantPanelProps) {
           : t(startCase(plantStatus))}
       </ListItem>
     </ul>
-    <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
-    <div>
-      <label hidden={!isEditing}>
-        {t("Delete this plant")}
-      </label>
-    </div>
-    <button
-      className="fb-button red"
-      hidden={!isEditing}
-      onClick={destroy}>
-      {t("Delete")}
-    </button>
-    <button
-      className="fb-button gray"
-      style={{ marginRight: "10px" }}
-      hidden={!isEditing}
-      onClick={() => history.push("/app/designer/plants/select")} >
-      {t("Delete multiple")}
-    </button>
+    <MoveToPlant x={x} y={y} dispatch={dispatch} hidden={false} />
+    <DeleteButtons destroy={destroy} hidden={!isEditing} />
   </DesignerPanelContent>;
 }

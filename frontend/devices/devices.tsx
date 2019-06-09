@@ -26,7 +26,7 @@ export class Devices extends React.Component<Props, {}> {
           <Col xs={12} sm={6}>
             <FarmbotOsSettings
               diagnostics={selectAllDiagnosticDumps(this.props.resources)}
-              account={this.props.deviceAccount}
+              deviceAccount={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
               timeSettings={this.props.timeSettings}
