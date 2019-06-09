@@ -30,7 +30,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   disable_i18n: "disable_i18n",
   confirm_step_deletion: "confirm_step_deletion",
   hide_webcam_widget: "hide_webcam_widget",
-  // hide_sensors: "hide_sensors",
+  hide_sensors: "hide_sensors",
   dynamic_map: "dynamic_map",
   map_xl: "map_xl",
   disable_animations: "disable_animations",

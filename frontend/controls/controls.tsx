@@ -10,7 +10,6 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 /** Controls page. */
 @connect(mapStateToProps)
@@ -26,7 +25,7 @@ export class Controls extends React.Component<Props, {}> {
   }
 
   get hideSensors() {
-    return this.props.getWebAppConfigVal("hide_sensors" as BooleanConfigKey);
+    return this.props.getWebAppConfigVal("hide_sensors");
   }
 
   move = () => <Move
