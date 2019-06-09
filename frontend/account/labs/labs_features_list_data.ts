@@ -41,7 +41,7 @@ export const fetchLabFeatures =
     {
       name: t("Hide Sensors widget"),
       description: t(Content.HIDE_SENSORS_WIDGET),
-      storageKey: "hide_sensors" as BooleanConfigKey,
+      storageKey: BooleanSetting.hide_sensors,
       value: false
     },
     {
