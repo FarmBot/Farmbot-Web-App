@@ -20,7 +20,7 @@ module Api
         .where("discarded_at < ?", Time.now - HARD_DELETE_AFTER)
         .destroy_all
 
-      render json: points(params.fetch(:filter) { "all" })
+      render json: points(params.fetch(:filter) { "kept" })
     end
 
     def show
