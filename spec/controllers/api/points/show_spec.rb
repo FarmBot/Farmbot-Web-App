@@ -7,13 +7,22 @@ describe Api::PointsController do
     let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
 
-    it 'renders a tool slot' do
-      tool_slot =  ToolSlot.create!(x:            0,
-                                    y:            0,
-                                    z:            0,
-                                    radius:       0,
-                                    device:       user.device,
-                                    pointer_type: "ToolSlot")
+    it "renders archived points" do
+      point = FactoryBot.create(:generic_pointer, device: device)
+      point.discard
+      sign_in user
+      get :show, params: { id: point.id }
+      expect(response.status).to eq(200)
+      expect(json.fetch(:id)).to eq(point.id)
+    end
+
+    it "renders a tool slot" do
+      tool_slot = ToolSlot.create!(x: 0,
+                                   y: 0,
+                                   z: 0,
+                                   radius: 0,
+                                   device: user.device,
+                                   pointer_type: "ToolSlot")
       sign_in user
       payload = { id: tool_slot.id }
       get :show, params: payload

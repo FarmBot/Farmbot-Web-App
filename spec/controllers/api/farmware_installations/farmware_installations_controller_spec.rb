@@ -10,11 +10,10 @@ describe Api::FarmwareInstallationsController do
       url = Faker::Internet.url + "/manifest.json"
       payload = { url: url }
       old_installation_count = FarmwareInstallation.count
-      post :create, body: payload.to_json, params: {format: :json}
+      post :create, body: payload.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(FarmwareInstallation.count).to be > old_installation_count
-      expect(json.keys.sort)
-        .to eq([:created_at, :id, :package, :package_error, :updated_at, :url])
+      expect(json.keys.sort).to eq([:created_at, :id, :package, :package_error, :updated_at, :url])
       expect(json[:url]).to eq(url)
       expect(FarmwareInstallation.find(json[:id]).device).to eq(user.device)
     end
@@ -24,7 +23,7 @@ describe Api::FarmwareInstallationsController do
       url = "This is not a valid URL."
       payload = { url: url }
       old_installation_count = FarmwareInstallation.count
-      post :create, body: payload.to_json, params: {format: :json}
+      post :create, body: payload.to_json, params: { format: :json }
       expect(response.status).to eq(422)
       expect(FarmwareInstallation.count).to eq(old_installation_count)
       expect(json[:error]).to eq("Validation failed: Url is an invalid URL")
@@ -66,7 +65,7 @@ describe Api::FarmwareInstallationsController do
       sign_in user
       installation = FactoryBot.create(:farmware_installation, device: user.device)
       old_installation_count = FarmwareInstallation.count
-      delete :destroy, params: {id: installation.id}
+      delete :destroy, params: { id: installation.id }
       expect(response.status).to eq(200)
       expect(FarmwareInstallation.count).to be < old_installation_count
     end
