@@ -1,6 +1,8 @@
 import * as React from "react";
 import { shallow } from "enzyme";
-import { BotTrail, BotTrailProps, VirtualTrail } from "../bot_trail";
+import {
+  BotTrail, BotTrailProps, VirtualTrail, resetVirtualTrail
+} from "../bot_trail";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
@@ -74,4 +76,12 @@ describe("<BotTrail/>", () => {
     expect(water.props().r).toEqual(21);
   });
 
+});
+
+describe("resetVirtualTrail()", () => {
+  it("clears data", () => {
+    sessionStorage.setItem(VirtualTrail.records, "[1]");
+    resetVirtualTrail();
+    expect(sessionStorage.getItem(VirtualTrail.records)).toEqual("[]");
+  });
 });

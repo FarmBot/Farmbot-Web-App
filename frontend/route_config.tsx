@@ -304,4 +304,12 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
     childKey: "SavedGardens"
   }),
+  route({
+    children: true,
+    $: "/designer/settings",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/settings"),
+    childKey: "DesignerSettings"
+  }),
 ].concat([NOT_FOUND_ROUTE]);

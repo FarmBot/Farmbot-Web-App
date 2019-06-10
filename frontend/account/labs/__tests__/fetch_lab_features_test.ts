@@ -4,7 +4,7 @@ describe("fetchLabFeatures", () => {
   Object.defineProperty(window.location, "reload", { value: jest.fn() });
   it("basically just initializes stuff", () => {
     const val = fetchLabFeatures(jest.fn());
-    expect(val.length).toBe(10);
+    expect(val.length).toBe(7);
     expect(val[0].value).toBeFalsy();
     const { callback } = val[0];
     if (callback) {
