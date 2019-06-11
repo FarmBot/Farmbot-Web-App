@@ -114,7 +114,7 @@ namespace :api do
     end
       .select do |pair|
       # Grab versions that are > current version and outside of cutoff window
-      (pair.head > current_version) && (pair.tail < cutoff)
+      (pair.head >= current_version) && (pair.tail < cutoff)
     end
       .sort_by { |p| p.tail } # Sort by release date
       .last(2) # Grab 2 latest versions (closest to cutoff)
