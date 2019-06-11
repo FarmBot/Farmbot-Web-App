@@ -25,7 +25,7 @@ module Api
 
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    DEVICE_SPECIFIC_CHANNELS = \
+    DEVICE_SPECIFIC_CHANNELS =
       Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})")
     PUBLIC_BROADCAST = "public_broadcast"
     PUBLIC_CHANNELS = ["", ".*", ".#"].map { |x| PUBLIC_BROADCAST + x }
@@ -34,6 +34,11 @@ module Api
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
+
+    class PasswordFailure < Exception; end
+
+    rescue_from PasswordFailure, with: :report_suspicious_behavior
+
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
 
@@ -102,9 +107,24 @@ module Api
     end
 
     def authenticate_admin
-      correct_pw = password_param == ENV.fetch("ADMIN_PASSWORD")
+      correct_pw = password_param == admin_password
       ok = admin? && correct_pw
-      ok ? allow("management", "administrator") : deny
+      if ok
+        allow("management", "administrator")
+      else
+        raise PasswordFailure
+      end
+    end
+
+    def admin_password
+      @admin_password ||= ENV.fetch("ADMIN_PASSWORD")
+    rescue KeyError
+      raise PasswordFailure
+    end
+
+    def report_suspicious_behavior
+      Rollbar.error("Failed password attempt on  RMQ: " + password_param)
+      deny
     end
 
     def deny
