@@ -43,4 +43,12 @@ describe("<DesignerNavTabs />", () => {
     expect(wrapper.hasClass("green-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
+
+  it("renders for settings", () => {
+    mockPath = "/app/designer/settings";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
 });

@@ -381,6 +381,25 @@
   }
 }
 
+.settings-panel-content {
+  margin-top: 5rem;
+  button {
+    margin-top: 1.75rem;
+  }
+  p {
+    padding: 1rem;
+    margin-left: 1rem;
+  }
+  .map-size-inputs {
+    .row {
+      margin-bottom: 1rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
 .saved-garden-panel-content {
   &.with-nav {
     margin-top: 6rem;

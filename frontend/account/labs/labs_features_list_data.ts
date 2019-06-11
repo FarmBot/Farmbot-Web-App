@@ -1,7 +1,8 @@
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
-import { VirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
-import { GetWebAppConfigValue, setWebAppConfigValue } from "../../config_storage/actions";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue
+} from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
 
@@ -45,13 +46,6 @@ export const fetchLabFeatures =
       value: false
     },
     {
-      name: t("Display plant animations"),
-      description: t(Content.PLANT_ANIMATIONS),
-      storageKey: BooleanSetting.disable_animations,
-      value: false,
-      displayInvert: true
-    },
-    {
       name: t("Read speak logs in browser"),
       description: t(Content.BROWSER_SPEAK_LOGS),
       storageKey: BooleanSetting.enable_browser_speak,
@@ -63,13 +57,6 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.discard_unsaved,
       value: false,
       confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
-    },
-    {
-      name: t("Display virtual FarmBot trail"),
-      description: t(Content.VIRTUAL_TRAIL),
-      storageKey: BooleanSetting.display_trail,
-      value: false,
-      callback: () => sessionStorage.setItem(VirtualTrail.records, "[]")
     },
     {
       name: t("Use 24-hour time format"),
@@ -84,12 +71,6 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
       value: false,
       displayInvert: true,
-    },
-    {
-      name: t("Dynamic map size"),
-      description: t(Content.DYNAMIC_MAP_SIZE),
-      storageKey: BooleanSetting.dynamic_map,
-      value: false
     },
   ].map(fetchSettingValue(getConfigValue)));
 

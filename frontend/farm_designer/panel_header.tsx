@@ -9,6 +9,7 @@ export enum Panel {
   Plants = "Plants",
   FarmEvents = "FarmEvents",
   SavedGardens = "SavedGardens",
+  Settings = "Settings",
 }
 
 type Tabs = keyof typeof Panel;
@@ -18,6 +19,7 @@ export const TAB_COLOR: { [key in Panel]: string } = {
   [Panel.Plants]: "green",
   [Panel.FarmEvents]: "yellow",
   [Panel.SavedGardens]: "green",
+  [Panel.Settings]: "gray",
 };
 
 const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;
@@ -27,6 +29,7 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Plants]: iconFile("plant"),
   [Panel.FarmEvents]: iconFile("calendar"),
   [Panel.SavedGardens]: iconFile("gardens"),
+  [Panel.Settings]: iconFile("gardens"),
 };
 
 const getCurrentTab = (): Tabs => {
@@ -37,6 +40,8 @@ const getCurrentTab = (): Tabs => {
     return Panel.FarmEvents;
   } else if (pathArray.includes("saved_gardens")) {
     return Panel.SavedGardens;
+  } else if (pathArray.includes("settings")) {
+    return Panel.Settings;
   } else {
     return Panel.Plants;
   }
@@ -48,15 +53,16 @@ interface NavTabProps {
   panel: Panel;
   linkTo: string;
   title: string;
+  icon?: string;
 }
 
 const NavTab = (props: NavTabProps) =>
-  <Link to={props.linkTo}
+  <Link to={props.linkTo} style={props.icon ? { flex: 0.3 } : {}}
     className={getCurrentTab() === props.panel ? "active" : ""}>
     {DevSettings.futureFeaturesEnabled()
       ? <img {...common}
         src={TAB_ICON[props.panel]} title={props.title} />
-      : props.title}
+      : props.icon ? <i className={props.icon} /> : props.title}
   </Link>;
 
 export function DesignerNavTabs(props: { hidden?: boolean }) {
@@ -73,6 +79,8 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab panel={Panel.SavedGardens}
           linkTo={"/app/designer/saved_gardens"} title={t("Gardens")} />}
+      <NavTab panel={Panel.Settings} icon={"fa fa-gear"}
+        linkTo={"/app/designer/settings"} title={t("Settings")} />
     </div>
   </div>;
 }

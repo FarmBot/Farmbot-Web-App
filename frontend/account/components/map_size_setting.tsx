@@ -37,10 +37,8 @@ const LengthInput = (props: LengthInputProps) =>
   </Row>;
 
 export const MapSizeSetting =
-  ({ dispatch, getConfigValue }: MapSizeSettingProps) => {
-    const mapSizeX = parseInt("" + getConfigValue(NumericSetting.map_size_x));
-    const mapSizeY = parseInt("" + getConfigValue(NumericSetting.map_size_y));
-    return <div className={"map-size-inputs"}>
+  ({ dispatch, getConfigValue }: MapSizeSettingProps) =>
+    <div className={"map-size-setting"}>
       <Row>
         <Col xs={4}>
           <label>{t("garden map size")}</label>
@@ -49,17 +47,28 @@ export const MapSizeSetting =
           <p>{t(Content.MAP_SIZE)}</p>
         </Col>
         <Col xs={4}>
-          <LengthInput
-            value={mapSizeX}
-            label={t("x (mm)")}
-            setting={NumericSetting.map_size_x}
-            dispatch={dispatch} />
-          <LengthInput
-            value={mapSizeY}
-            label={t("y (mm)")}
-            setting={NumericSetting.map_size_y}
+          <MapSizeInputs
+            getConfigValue={getConfigValue}
             dispatch={dispatch} />
         </Col>
       </Row>
     </div>;
-  };
+
+interface MapSizeInputsProps {
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+}
+
+export const MapSizeInputs = (props: MapSizeInputsProps) =>
+  <div className="map-size-inputs">
+    <LengthInput
+      value={parseInt("" + props.getConfigValue(NumericSetting.map_size_x))}
+      label={t("x (mm)")}
+      setting={NumericSetting.map_size_x}
+      dispatch={props.dispatch} />
+    <LengthInput
+      value={parseInt("" + props.getConfigValue(NumericSetting.map_size_y))}
+      label={t("y (mm)")}
+      setting={NumericSetting.map_size_y}
+      dispatch={props.dispatch} />
+  </div>;
