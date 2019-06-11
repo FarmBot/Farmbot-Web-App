@@ -112,7 +112,10 @@ describe("getRegimenVariableData()", () => {
     expect(result).toEqual({
       parent1: {
         celeryNode: paramDeclaration,
-        dropdown: { label: "Parent1", value: "?" },
+        dropdown: {
+          label: "Defined outside of sequence",
+          value: "parameter_declaration"
+        },
         vector: undefined
       },
       parent2: {

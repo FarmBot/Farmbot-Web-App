@@ -20,6 +20,7 @@ interface AllStepsProps {
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
   showPins?: boolean;
+  expandStepOptions?: boolean;
 }
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
@@ -56,6 +57,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
                 shouldDisplay,
                 confirmStepDeletion: this.props.confirmStepDeletion,
                 showPins: this.props.showPins,
+                expandStepOptions: this.props.expandStepOptions,
               })}
             </div>
           </StepDragger>

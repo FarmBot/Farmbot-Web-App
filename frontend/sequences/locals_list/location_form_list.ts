@@ -1,34 +1,29 @@
 import { ResourceIndex } from "../../resources/interfaces";
 import {
   selectAllToolSlotPointers,
-  selectAllActivePoints
+  selectAllActivePoints,
+  maybeFindToolById,
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
-import { TaggedTool, TaggedPoint, Vector3 } from "farmbot";
+import {
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz
+} from "farmbot";
 import { DropDownItem } from "../../ui";
-
-import { capitalize } from "lodash";
-import { joinKindAndId } from "../../resources/reducer_support";
+import { capitalize, isNumber } from "lodash";
 import { Point } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
 const TOOL: "Tool" = "Tool";
-type ToolAndLocation = { tool: TaggedTool, location: Vector3 };
 
 /** Return tool and location for all tools currently in tool slots. */
-export function activeTools(resources: ResourceIndex): ToolAndLocation[] {
-  const Tool: TaggedTool["kind"] = "Tool";
+export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
   const slots = selectAllToolSlotPointers(resources);
-
-  const { byKindAndId, references } = resources;
   return betterCompact(slots
-    .map(x => ({
-      tool: references[byKindAndId[joinKindAndId(Tool, x.body.tool_id)] || ""],
-      location: { x: x.body.x, y: x.body.y, z: x.body.z }
+    .map(slot => {
+      const tool = maybeFindToolById(resources, slot.body.tool_id);
+      if (tool) { return formatTool(tool, slot); }
     }))
-    .map(({ tool, location }) => (tool && tool.kind === "Tool")
-      ? { tool, location }
-      : undefined));
+    .filter(x => parseInt("" + x.value) > 0);
 }
 
 type PointerTypeName = Point["pointer_type"];
@@ -66,9 +61,7 @@ export function locationFormList(resources: ResourceIndex,
     .filter(x => x.body.pointer_type !== "ToolSlot");
   const plantDDI = ddiFrom(points, "Plant");
   const genericPointerDDI = ddiFrom(points, "GenericPointer");
-  const toolDDI: DropDownItem[] = activeTools(resources)
-    .map(({ tool, location }) => formatTools(tool, location))
-    .filter(x => parseInt("" + x.value) > 0);
+  const toolDDI = activeToolDDIs(resources);
   const group = maybeGroup(!!displayGroups);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
@@ -95,19 +88,30 @@ export const formatPoint = (p: TaggedPoint): DropDownItem => {
 };
 
 /** Create drop down item with label; i.e., "Tool (1, 2, 3)" */
-const formatTools = (tool: TaggedTool, v: Vector3): DropDownItem => {
-  const { id, name } = tool.body;
-  return {
-    label: dropDownName((name || "untitled"), v),
-    value: "" + id,
-    headingId: TOOL
+export const formatTool =
+  (tool: TaggedTool, slot: TaggedToolSlotPointer | undefined): DropDownItem => {
+    const { id, name } = tool.body;
+    const coordinate = slot
+      ? {
+        x: slot.body.gantry_mounted ? undefined : slot.body.x,
+        y: slot.body.y,
+        z: slot.body.z
+      }
+      : undefined;
+    return {
+      label: dropDownName((name || "Untitled tool"), coordinate),
+      value: "" + id,
+      headingId: TOOL
+    };
   };
-};
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
-export function dropDownName(name: string, v?: Vector3) {
+export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) {
   let label = name || "untitled";
-  if (v) { label += ` (${v.x}, ${v.y}, ${v.z})`; }
+  if (v) {
+    const labelFor = (axis: number | undefined) => isNumber(axis) ? axis : "---";
+    label += ` (${labelFor(v.x)}, ${labelFor(v.y)}, ${labelFor(v.z)})`;
+  }
   return capitalize(label);
 }
 

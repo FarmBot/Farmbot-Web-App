@@ -1,15 +1,14 @@
 require "spec_helper"
-require "service_runner_base"
 
-describe ServiceRunner do
-  class ServiceRunnerStub
+describe AbstractServiceRunner do
+  class ServiceRunnerStub < AbstractServiceRunner
     attr_accessor :subscribe_call_count, :process_calls
 
     MSG = RuntimeError.new("First attempt will fail, expect a retry")
 
     def initialize
       @subscribe_call_count = 0
-      @process_calls        = []
+      @process_calls = []
     end
 
     def subscribe(*)
@@ -25,7 +24,7 @@ describe ServiceRunner do
   it "reports errors to rollbar and retries" do
     stub = ServiceRunnerStub.new
     expect(Rollbar).to receive(:error).with(ServiceRunnerStub::MSG)
-    ServiceRunner.go!(stub, stub)
+    stub.go!(stub)
     expect(stub.subscribe_call_count).to eq(2)
     expect(stub.process_calls.count).to eq(1)
     expect(stub.process_calls.first[0]).to eq({})

@@ -1,3 +1,4 @@
+
 if Rails.env == "development"
   POINT_COUNT = 8
   PLANT_COUNT = 8
@@ -37,12 +38,12 @@ if Rails.env == "development"
                      password_confirmation: "password123",
                      confirmed_at: Time.now,
                      agreed_to_terms_at: Time.now)
-  User.all.update_all(confirmed_at: Time.now,
+  User.update_all(confirmed_at: Time.now,
                       agreed_to_terms_at: Time.now)
   u = User.last
   u.update_attributes(device: Devices::Create.run!(user: u))
   # === Parameterized Sequence stuff
-  json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json")).deep_symbolize_keys
+  json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json"), symbolize_names: true)
   Sequences::Create.run!(json, device: u.device)
   # === Parameterized Sequence stuff
   Log.transaction do

@@ -40,6 +40,7 @@ export interface GardenMapLegendProps {
   showFarmbot: boolean;
   showImages: boolean;
   showSensorReadings: boolean;
+  hasSensorReadings: boolean;
   dispatch: Function;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;

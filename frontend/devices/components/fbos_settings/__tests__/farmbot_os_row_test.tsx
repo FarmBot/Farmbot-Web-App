@@ -4,21 +4,24 @@ import { mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { FarmbotOsRowProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
+import { fakeDevice } from "../../../../__test_support__/resource_index_builder";
 
 describe("<FarmbotOsRow/>", () => {
-  const fakeProps = (): FarmbotOsRowProps => {
-    return {
-      bot,
-      osReleaseNotesHeading: "",
-      osReleaseNotes: "",
-      dispatch: jest.fn(x => x(jest.fn(), fakeState)),
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      },
-      shouldDisplay: () => false,
-      botOnline: false
-    };
-  };
+  const fakeProps = (): FarmbotOsRowProps => ({
+    bot,
+    osReleaseNotesHeading: "",
+    osReleaseNotes: "",
+    dispatch: jest.fn(x => x(jest.fn(), fakeState)),
+    sourceFbosConfig: (x) => {
+      return { value: bot.hardware.configuration[x], consistent: true };
+    },
+    shouldDisplay: () => false,
+    botOnline: false,
+    botToMqttLastSeen: "",
+    deviceAccount: fakeDevice(),
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders", () => {
     const wrapper = mount(<FarmbotOsRow {...fakeProps()} />);

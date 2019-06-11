@@ -5,22 +5,34 @@ describe Api::RmqUtilsController do
   let :credentials do
     pass = "password123"
     user = FactoryBot.create(:user,
-                             password:              pass,
+                             password: pass,
                              password_confirmation: pass)
     token = Auth::CreateToken
-              .run!(email:        user.email,
-                    password:     pass,
-                    fbos_version: Gem::Version.new("99.99.99"))[:token].encoded
+      .run!(email: user.email,
+            password: pass,
+            fbos_version: Gem::Version.new("99.99.99"))[:token].encoded
     { username: "device_#{user.device.id}",
       password: token }
   end
 
+  it "reports people trying to use ADMIN_PASSWORD on non-local servers" do
+    k = "ADMIN_PASSWORD"
+    old_pw = ENV[k]
+    ENV.delete(k)
+
+    post :user_action, params: { username: "admin", password: old_pw }
+    expect(response.status).to eq(403)
+    expect(response.body).not_to include("allow")
+
+    ENV[k] = old_pw
+  end
+
   it "allows admins to do anything" do
-    all = \
+    all =
       [:user_action, :vhost_action, :resource_action, :topic_action]
     all.map do |action|
       post action, params: { username: "admin",
-                             password: ENV.fetch("ADMIN_PASSWORD") }
+                            password: ENV.fetch("ADMIN_PASSWORD") }
       expect(response.status).to eq(200)
       expect(response.body).to include("allow")
     end
@@ -28,7 +40,7 @@ describe Api::RmqUtilsController do
 
   it "denies public_broadcast write access to non-admin users" do
     routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
-    permission  = ["write", "configure"].sample
+    permission = ["write", "configure"].sample
     p = credentials.merge(routing_key: routing_key, permission: permission)
     post :topic_action, params: p
     expect(response.body).to eq("deny")
@@ -37,7 +49,7 @@ describe Api::RmqUtilsController do
 
   it "allows public_broadcast read access to non-admin users" do
     routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
-    permission  = "read"
+    permission = "read"
     p = credentials.merge(routing_key: routing_key, permission: permission)
     post :topic_action, params: p
     expect(response.body).to eq("allow")
@@ -65,7 +77,7 @@ describe Api::RmqUtilsController do
   end
 
   it "always denies guest users" do
-    no_no_no = \
+    no_no_no =
       { username: "guest",  # RabbitMQ Default user.
         password: "guest" } # RabbitMQ Default user.
     post :user_action, params: no_no_no
@@ -75,7 +87,7 @@ describe Api::RmqUtilsController do
 
   it "`allow`s admin users when ADMIN_PASSWORD is provided" do
     admin_params = { username: "admin",
-                     password: ENV.fetch("ADMIN_PASSWORD") }
+                    password: ENV.fetch("ADMIN_PASSWORD") }
     post :user_action, params: admin_params
     expect(response.body).to include("allow")
     expect(response.status).to eq(200)
@@ -126,16 +138,16 @@ describe Api::RmqUtilsController do
 
   it "allows RMQ resource usage" do
     post :resource_action, params: credentials.merge({
-      resource:   Api::RmqUtilsController::RESOURCES.sample,
-      permission: Api::RmqUtilsController::PERMISSIONS.sample,
-    })
+                             resource: Api::RmqUtilsController::RESOURCES.sample,
+                             permission: Api::RmqUtilsController::PERMISSIONS.sample,
+                           })
     expect(response.status).to eq(200)
     expect(response.body).to include("allow")
   end
 
   it "denies RMQ resource usage" do
-    post :resource_action, params: credentials.merge({ resource:   "something_else",
-                                                permission: "something_else" })
+    post :resource_action, params: credentials.merge({ resource: "something_else",
+                                                       permission: "something_else" })
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end
@@ -146,35 +158,33 @@ describe Api::RmqUtilsController do
 
   it "validates topic names" do
     r = Api::RmqUtilsController::DEVICE_SPECIFIC_CHANNELS
-    [ "*",
-      "#",
-      "foo",
-      "foo.*",
-      "bot.*",
-      random_channel,
-      random_channel(".nope"),
-      random_channel(".status_v3.*"),
-      random_channel(".status_v3"),
-    ].map { |x| expect(x.match(r)).to be(nil) }
+    ["*",
+     "#",
+     "foo",
+     "foo.*",
+     "bot.*",
+     random_channel,
+     random_channel(".nope"),
+     random_channel(".status_v3.*"),
+     random_channel(".status_v3")].map { |x| expect(x.match(r)).to be(nil) }
 
-    [ ".from_api.*",
-      ".from_api",
-      ".from_clients.*",
-      ".from_clients",
-      ".from_device.*",
-      ".from_device",
-      ".logs.*",
-      ".logs",
-      ".nerves_hub.*",
-      ".nerves_hub",
-      ".resources_v0.*",
-      ".resources_v0",
-      ".status.*",
-      ".status",
-      ".sync.*",
-      ".sync",
-      ".status_v8.*",
-      ".status_v8",
-    ].map { |x| expect(random_channel(x).match(r)).to be }
+    [".from_api.*",
+     ".from_api",
+     ".from_clients.*",
+     ".from_clients",
+     ".from_device.*",
+     ".from_device",
+     ".logs.*",
+     ".logs",
+     ".nerves_hub.*",
+     ".nerves_hub",
+     ".resources_v0.*",
+     ".resources_v0",
+     ".status.*",
+     ".status",
+     ".sync.*",
+     ".sync",
+     ".status_v8.*",
+     ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
   end
 end

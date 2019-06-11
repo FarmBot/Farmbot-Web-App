@@ -22,8 +22,12 @@ import { Actions } from "../constants";
 import { Popover, Position } from "@blueprintjs/core";
 import { ToggleButton } from "../controls/toggle_button";
 import { Content } from "../constants";
-import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
+import {
+  setWebAppConfigValue,
+  GetWebAppConfigValue,
+} from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -51,32 +55,44 @@ export interface SequenceSettingsMenuProps {
   getWebAppConfigValue: GetWebAppConfigValue;
 }
 
+interface SettingProps {
+  label: string;
+  description: string;
+  dispatch: Function;
+  setting: BooleanConfigKey;
+  getWebAppConfigValue: GetWebAppConfigValue;
+}
+
+const Setting = (props: SettingProps) => {
+  const value = !!props.getWebAppConfigValue(props.setting);
+  return <fieldset>
+    <label>
+      {t(props.label)}
+    </label>
+    <Help text={t(props.description)} requireClick={true} />
+    <ToggleButton
+      toggleValue={value}
+      toggleAction={() =>
+        props.dispatch(setWebAppConfigValue(props.setting, !value))} />
+  </fieldset>;
+};
+
 export const SequenceSettingsMenu =
   ({ dispatch, getWebAppConfigValue }: SequenceSettingsMenuProps) => {
-    const confirmStepDeletion =
-      !!getWebAppConfigValue(BooleanSetting.confirm_step_deletion);
-    const showPins = !!getWebAppConfigValue(BooleanSetting.show_pins);
+    const commonProps = { dispatch, getWebAppConfigValue };
     return <div className="sequence-settings-menu">
-      <fieldset>
-        <label>
-          {t("Confirm step deletion")}
-        </label>
-        <Help text={t(Content.CONFIRM_STEP_DELETION)} requireClick={true} />
-        <ToggleButton
-          toggleValue={confirmStepDeletion}
-          toggleAction={() => dispatch(setWebAppConfigValue(
-            BooleanSetting.confirm_step_deletion, !confirmStepDeletion))} />
-      </fieldset>
-      <fieldset>
-        <label>
-          {t("Show pins")}
-        </label>
-        <Help text={t(Content.SHOW_PINS)} requireClick={true} />
-        <ToggleButton
-          toggleValue={showPins}
-          toggleAction={() => dispatch(setWebAppConfigValue(
-            BooleanSetting.show_pins, !showPins))} />
-      </fieldset>
+      <Setting {...commonProps}
+        setting={BooleanSetting.confirm_step_deletion}
+        label={t("Confirm step deletion")}
+        description={Content.CONFIRM_STEP_DELETION} />
+      <Setting {...commonProps}
+        setting={BooleanSetting.show_pins}
+        label={t("Show pins")}
+        description={Content.SHOW_PINS} />
+      <Setting {...commonProps}
+        setting={"expand_step_options"}
+        label={t("Open options by default")}
+        description={Content.EXPAND_STEP_OPTIONS} />
     </div>;
   };
 
@@ -168,6 +184,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       collapsible={true}
       collapsed={props.variablesCollapsed}
       toggleVarShow={props.toggleVarShow}
+      listVarLabel={t("Defined outside of sequence")}
       shouldDisplay={props.shouldDisplay} />
   </div>;
 };
@@ -205,6 +222,7 @@ export class SequenceEditorMiddleActive extends
       shouldDisplay: this.props.shouldDisplay,
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),
+      expandStepOptions: !!getConfig("expand_step_options"),
     };
   }
 

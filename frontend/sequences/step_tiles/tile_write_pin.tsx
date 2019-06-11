@@ -54,6 +54,7 @@ export function TileWritePin(props: StepParams) {
           <FBSelect
             key={JSON.stringify(props.currentSequence)}
             selectedItem={celery2DropDown(pin_number, props.resources)}
+            customNullLabel={t("Select a peripheral")}
             onChange={setArgsDotPinNumber(props)}
             list={pinsAsDropDownsWritePin(props.resources, !!props.showPins)} />
         </Col>

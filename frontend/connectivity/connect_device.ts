@@ -2,12 +2,12 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
+import { FbjsEventName } from "farmbot/dist/constants";
 import { noop } from "lodash";
 import { success, error, info, warning } from "farmbot-toastr";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-
 import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
@@ -110,7 +110,7 @@ export const onOffline = () => {
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  }).catch(() => { }); // This is internal stuff, don't alert user.
+  }).catch(noop); // This is internal stuff, don't alert user.
 };
 const setBothUp = () => bothUp("Got a status message");
 
@@ -159,14 +159,15 @@ export function onMalformed() {
 }
 
 export const onOnline =
-  () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  () => {
+    success(t("Reconnected to the message broker."), t("Online"));
+    dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  };
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
 
-export const BROADCAST_CHANNEL = "public_broadcast";
-
 export function onPublicBroadcast(payl: unknown) {
-  console.log(BROADCAST_CHANNEL, payl);
+  console.log(FbjsEventName.publicBroadcast, payl);
   if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
     location.assign(window.location.origin || "/");
   } else {
@@ -179,16 +180,16 @@ export const attachEventListeners =
     if (bot.client) {
       startPinging(bot);
       readStatus().then(changeLastClientConnected(bot), noop);
-      bot.on("online", onOnline);
-      bot.on("online", () => bot.readStatus().then(noop, noop));
-      bot.on("offline", onOffline);
-      bot.on("sent", onSent(bot.client));
-      bot.on("logs", onLogs(dispatch, getState));
-      bot.on("legacy_status", onLegacyStatus(dispatch, getState));
-      bot.on("status_v8", onStatus(dispatch, getState));
-      bot.on("malformed", onMalformed);
-      bot.client.subscribe(BROADCAST_CHANNEL);
-      bot.on(BROADCAST_CHANNEL, onPublicBroadcast);
+      bot.on(FbjsEventName.online, onOnline);
+      bot.on(FbjsEventName.online, () => bot.readStatus().then(noop, noop));
+      bot.on(FbjsEventName.offline, onOffline);
+      bot.on(FbjsEventName.sent, onSent(bot.client));
+      bot.on(FbjsEventName.logs, onLogs(dispatch, getState));
+      bot.on(FbjsEventName.legacy_status, onLegacyStatus(dispatch, getState));
+      bot.on(FbjsEventName.upsert, onStatus(dispatch, getState));
+      bot.on(FbjsEventName.malformed, onMalformed);
+      bot.client.subscribe(FbjsEventName.publicBroadcast);
+      bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);
       bot.client.on("message", autoSync(dispatch, getState));
       bot.client.on("reconnect", onReconnect);
     }

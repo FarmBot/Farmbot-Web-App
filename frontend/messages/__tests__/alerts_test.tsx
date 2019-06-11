@@ -3,34 +3,35 @@ import { mount } from "enzyme";
 import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { Alert, AlertsProps, FirmwareAlertsProps } from "../interfaces";
+import { AlertsProps, FirmwareAlertsProps } from "../interfaces";
+import { Alert } from "farmbot";
 
 const FIRMWARE_MISSING_ALERT: Alert = {
   created_at: 123,
   problem_tag: "farmbot_os.firmware.missing",
   priority: 100,
-  slug: "slug",
+  slug: "slug1",
 };
 
 const SEED_DATA_MISSING_ALERT: Alert = {
   created_at: 123,
   problem_tag: "api.seed_data.missing",
   priority: 300,
-  slug: "slug",
+  slug: "slug3",
 };
 
 const UNKNOWN_ALERT: Alert = {
   created_at: 123,
   problem_tag: "farmbot_os.firmware.alert",
   priority: 200,
-  slug: "slug",
+  slug: "slug2",
 };
 
 const UNKNOWN_ALERT_2: Alert = {
   created_at: 456,
   problem_tag: "farmbot_os.firmware.alert",
   priority: 100,
-  slug: "slug",
+  slug: "slug4",
 };
 
 describe("<Alerts />", () => {
@@ -84,8 +85,8 @@ describe("<FirmwareAlerts />", () => {
   it("renders alerts", () => {
     const p = fakeProps();
     p.bot.hardware.alerts = {
-      "slug1": FIRMWARE_MISSING_ALERT,
-      "slug2": UNKNOWN_ALERT
+      [FIRMWARE_MISSING_ALERT.slug]: FIRMWARE_MISSING_ALERT,
+      [UNKNOWN_ALERT.slug]: UNKNOWN_ALERT
     };
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.text()).toContain("1");

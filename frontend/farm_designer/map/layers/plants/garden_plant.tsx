@@ -1,10 +1,11 @@
 import * as React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
-import { cachedCrop, DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
+import { DEFAULT_ICON, svgToUrl } from "../../../../open_farm/icons";
 import { round, transformXY } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
+import { cachedCrop } from "../../../../open_farm/cached_crop";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {

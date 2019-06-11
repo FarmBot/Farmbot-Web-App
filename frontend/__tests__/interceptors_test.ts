@@ -21,7 +21,7 @@ jest.mock("../session", () => ({
 import {
   responseFulfilled, isLocalRequest, requestFulfilled, responseRejected
 } from "../interceptors";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, Method } from "axios";
 import { uuid } from "farmbot";
 import { startTracking } from "../connectivity/data_consistency";
 import { SafeError } from "../interceptor_support";
@@ -35,7 +35,7 @@ const A_STRING = expect.any(String);
 
 interface FakeProps {
   uuid: string;
-  method: string;
+  method: Method;
   requestId: string;
   url: string;
 }
@@ -45,7 +45,7 @@ function fakeResponse(config: Partial<FakeProps>): AxiosResponse {
     headers: { "X-Farmbot-Rpc-Id": config.uuid || uuid() },
     config: {
       method: config.method || "put",
-      url: config.url || "http://my.farmbot.io/api/tools/6"
+      url: config.url || "http://my.farm.bot/api/tools/6"
     }
   };
 
@@ -56,7 +56,7 @@ describe("responseFulfilled", () => {
   it("won't fire for webcam feed updates", () => {
     const resp = fakeResponse({
       method: "post",
-      url: "https://staging.farmbot.io/api/webcam_feeds/"
+      url: "https://staging.farm.bot/api/webcam_feeds/"
     });
     responseFulfilled(resp);
     expect(startTracking).not.toHaveBeenCalled();

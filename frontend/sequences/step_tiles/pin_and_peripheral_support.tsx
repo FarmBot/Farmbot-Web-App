@@ -141,7 +141,7 @@ export const findByPinNumber =
   };
 
 export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin | Nothing):
-  DropDownItem {
+  DropDownItem | undefined {
   if (input.kind === "named_pin") {
     const { pin_type } = input.args;
     if (isPinType(pin_type)) {
@@ -164,7 +164,6 @@ export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin | Nothing):
       bail("Bad pin_type: " + JSON.stringify(pin_type));
     }
   }
-  return { label: t("Select a pin"), value: "", isNull: true };
 }
 
 export const dropDown2CeleryArg =
@@ -211,7 +210,8 @@ export const setArgsDotPinNumber =
 
 type PinNumber = ReadPin["args"]["pin_number"];
 
-export function celery2DropDown(input: PinNumber, ri: ResourceIndex): DropDownItem {
+export function celery2DropDown(input: PinNumber, ri: ResourceIndex):
+  DropDownItem | undefined {
   return isNumber(input)
     ? pinNumber2DropDown(n => n)(input)
     : namedPin2DropDown(ri, input);

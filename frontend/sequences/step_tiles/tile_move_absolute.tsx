@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
@@ -25,9 +24,13 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
-  state: MoveAbsState = { more: false };
+  state: MoveAbsState = {
+    more: !!this.props.expandStepOptions || this.hasOffset };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
+  get hasOffset(): boolean {
+    const {x, y, z} = this.args.offset.args;
+    return !!(x || y || z); }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
@@ -77,7 +80,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     <LocationForm
       variable={{
         celeryNode: this.celeryNode,
-        dropdown: determineDropdown(this.celeryNode, this.props.resources),
+        dropdown: determineDropdown(this.celeryNode, this.props.resources,
+          this.props.currentSequence.uuid),
         vector: this.vector,
       }}
       sequenceUuid={this.props.currentSequence.uuid}

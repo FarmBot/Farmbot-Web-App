@@ -27,6 +27,7 @@ import {
   onMalformed,
   speakLogAloud,
   onPublicBroadcast,
+  onReconnect,
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
@@ -39,6 +40,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
+import { FbjsEventName } from "farmbot/dist/constants";
 
 const A_STRING = expect.any(String);
 describe("readStatus()", () => {
@@ -170,6 +172,12 @@ describe("onOnline", () => {
   });
 });
 
+describe("onReconnect", () => {
+  onReconnect();
+  expect(warning)
+    .toHaveBeenCalledWith("Attempting to reconnect to the message broker", "Offline");
+});
+
 describe("changeLastClientConnected", () => {
   it("tells farmbot when the last browser session was opened", () => {
     const setUserEnv = jest.fn(() => Promise.resolve({}));
@@ -218,13 +226,29 @@ describe("onLogs", () => {
     globalQueue.maybeWork();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
   });
+
+  it("handles log fields correctly", () => {
+    const fn = onLogs(jest.fn(), fakeState);
+    const log = fakeLog(MessageType.info, []);
+    log.message = "online";
+    // tslint:disable-next-line:no-any
+    (log as any).meta = { y: 200 };
+    fn(log);
+    expect(log).toEqual(expect.objectContaining({ message: "online", y: 200 }));
+  });
 });
 
 describe("onPublicBroadcast", () => {
+  const expectBroadcastLog = () =>
+    expect(console.log).toHaveBeenCalledWith(
+      FbjsEventName.publicBroadcast, expect.any(Object));
+
   it("triggers when appropriate", () => {
     location.assign = jest.fn();
     window.confirm = jest.fn(() => true);
+    console.log = jest.fn();
     onPublicBroadcast({});
+    expectBroadcastLog();
     expect(window.confirm).toHaveBeenCalledWith(Content.FORCE_REFRESH_CONFIRM);
     expect(location.assign).toHaveBeenCalled();
   });
@@ -232,7 +256,9 @@ describe("onPublicBroadcast", () => {
   it("allows cancellation of refresh", () => {
     window.confirm = jest.fn(() => false);
     window.alert = jest.fn();
+    console.log = jest.fn();
     onPublicBroadcast({});
+    expectBroadcastLog();
     expect(window.alert).toHaveBeenCalledWith(Content.FORCE_REFRESH_CANCEL_WARNING);
     expect(location.assign).not.toHaveBeenCalled();
   });

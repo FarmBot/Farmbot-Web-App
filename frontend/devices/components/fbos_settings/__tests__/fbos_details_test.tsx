@@ -13,9 +13,10 @@ import { FbosDetailsProps } from "../interfaces";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex, fakeDevice
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<FbosDetails/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -27,6 +28,9 @@ describe("<FbosDetails/>", () => {
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
+    botToMqttLastSeen: "",
+    deviceAccount: fakeDevice(),
+    timeSettings: fakeTimeSettings(),
   });
 
   it("renders", () => {

@@ -70,3 +70,6 @@ export function BotTrail(props: BotTrailProps) {
     })}
   </g>;
 }
+
+export const resetVirtualTrail = () =>
+  sessionStorage.setItem(VirtualTrail.records, "[]");

@@ -19,11 +19,15 @@ class Kaboom extends React.Component<{}, {}> {
 
 describe("<ErrorBoundary/>", () => {
   it("handles exceptions", () => {
+    console.error = jest.fn();
     const nodes = <ErrorBoundary><Kaboom /></ErrorBoundary>;
     const el = mount<ErrorBoundary>(nodes);
     expect(el.text()).toContain("can't render this part of the page");
     const i = el.instance();
     expect(i.state.hasError).toBe(true);
     expect(catchErrors).toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalledWith(expect.any(String), Error("ALWAYS"));
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Kaboom"));
   });
 });

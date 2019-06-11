@@ -218,6 +218,7 @@ module CeleryScriptSettingsBag
     op: {
       defn: [e(:ALLOWED_OPS)],
     },
+    priority: { defn: [v(:integer)] },
     channel_name: {
       defn: [e(:ALLOWED_CHANNEL_NAMES)],
     },
@@ -402,7 +403,7 @@ module CeleryScriptSettingsBag
       tags: [:data],
     },
     rpc_request: {
-      args: [:label],
+      args: [:label, :priority],
       body: ALLOWED_RPC_NODES,
       tags: [:*],
     },

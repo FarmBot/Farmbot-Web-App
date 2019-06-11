@@ -50,7 +50,7 @@ export interface SlotMenuProps {
 
 export const SlotMenu = (props: SlotMenuProps) => {
   const { dispatch, slot, botPosition } = props;
-  const { pullout_direction } = slot.body;
+  const { pullout_direction, gantry_mounted } = slot.body;
   return <div className="toolbay-slot-menu">
     <fieldset>
       <label>
@@ -72,6 +72,13 @@ export const SlotMenu = (props: SlotMenuProps) => {
         <i className="fa fa-crosshairs" />
       </button>
       <p>{positionButtonTitle(botPosition)}</p>
+    </fieldset>
+    <fieldset>
+      <label>{t("Gantry-mounted")}</label>
+      <input type="checkbox"
+        onChange={() =>
+          dispatch(edit(slot, { gantry_mounted: !gantry_mounted }))}
+        checked={gantry_mounted} />
     </fieldset>
   </div>;
 };

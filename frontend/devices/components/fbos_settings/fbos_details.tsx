@@ -8,6 +8,7 @@ import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
 import { ConfigurationName } from "farmbot";
 import { t } from "../../../i18next_wrapper";
+import { LastSeen } from "./last_seen_row";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -201,6 +202,11 @@ export function FbosDetails(props: FbosDetailsProps) {
   } = props.botInfoSettings;
 
   return <div>
+    <LastSeen
+      dispatch={props.dispatch}
+      botToMqttLastSeen={props.botToMqttLastSeen}
+      timeSettings={props.timeSettings}
+      device={props.deviceAccount} />
     <p><b>Environment: </b>{env}</p>
     <CommitDisplay title={"Commit"} repo={"farmbot_os"} commit={commit} />
     <p><b>Target: </b>{target}</p>

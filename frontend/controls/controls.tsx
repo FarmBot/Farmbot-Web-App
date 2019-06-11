@@ -24,6 +24,10 @@ export class Controls extends React.Component<Props, {}> {
       this.props.botToMqttStatus);
   }
 
+  get hideSensors() {
+    return this.props.getWebAppConfigVal("hide_sensors");
+  }
+
   move = () => <Move
     bot={this.props.bot}
     dispatch={this.props.dispatch}
@@ -42,11 +46,13 @@ export class Controls extends React.Component<Props, {}> {
     feeds={this.props.feeds}
     dispatch={this.props.dispatch} />
 
-  sensors = () => <Sensors
-    bot={this.props.bot}
-    sensors={this.props.sensors}
-    dispatch={this.props.dispatch}
-    disabled={this.arduinoBusy || !this.botOnline} />
+  sensors = () => this.hideSensors
+    ? <div />
+    : <Sensors
+      bot={this.props.bot}
+      sensors={this.props.sensors}
+      dispatch={this.props.dispatch}
+      disabled={this.arduinoBusy || !this.botOnline} />
 
   sensorReadings = () => this.props.sensorReadings.length > 0
     ? <SensorReadings

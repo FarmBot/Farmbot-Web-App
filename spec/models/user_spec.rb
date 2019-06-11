@@ -1,3 +1,5 @@
+require "spec_helper"
+
 describe User do
   describe "#new" do
     it "Creates a new user" do

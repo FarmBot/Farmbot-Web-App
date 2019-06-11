@@ -1,17 +1,18 @@
 const mockDevice = {
-  checkUpdates: jest.fn(() => { return Promise.resolve(); }),
-  powerOff: jest.fn(() => { return Promise.resolve(); }),
+  checkUpdates: jest.fn(() => Promise.resolve()),
+  powerOff: jest.fn(() => Promise.resolve()),
   resetOS: jest.fn(),
-  reboot: jest.fn(() => { return Promise.resolve(); }),
-  rebootFirmware: jest.fn(() => { return Promise.resolve(); }),
-  checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
-  emergencyLock: jest.fn(() => { return Promise.resolve(); }),
-  emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
-  execSequence: jest.fn(() => { return Promise.resolve(); }),
-  resetMCU: jest.fn(() => { return Promise.resolve(); }),
-  togglePin: jest.fn(() => { return Promise.resolve(); }),
-  home: jest.fn(() => { return Promise.resolve(); }),
-  sync: jest.fn(() => { return Promise.resolve(); }),
+  reboot: jest.fn(() => Promise.resolve()),
+  rebootFirmware: jest.fn(() => Promise.resolve()),
+  flashFirmware: jest.fn(() => Promise.resolve()),
+  checkArduinoUpdates: jest.fn(() => Promise.resolve()),
+  emergencyLock: jest.fn(() => Promise.resolve()),
+  emergencyUnlock: jest.fn(() => Promise.resolve()),
+  execSequence: jest.fn(() => Promise.resolve()),
+  resetMCU: jest.fn(() => Promise.resolve()),
+  togglePin: jest.fn(() => Promise.resolve()),
+  home: jest.fn(() => Promise.resolve()),
+  sync: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
@@ -82,6 +83,14 @@ describe("restartFirmware()", function () {
   it("calls restartFirmware", async () => {
     await actions.restartFirmware();
     expect(mockDevice.rebootFirmware).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
+  });
+});
+
+describe("flashFirmware()", function () {
+  it("calls flashFirmware", async () => {
+    await actions.flashFirmware("arduino");
+    expect(mockDevice.flashFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });

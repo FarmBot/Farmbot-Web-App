@@ -8,22 +8,24 @@ module Api
     # List of AMQP/MQTT topics we support in the following format:
     # "bot.device_123.<MAIN TOPIC HERE>"
     BOT_CHANNELS = %w(
-      nerves_hub
+      from_api
       from_clients
       from_device
       logs
+      nerves_hub
+      ping
+      pong
+      resources_v0
       status
       status_v8
       sync
-      resources_v0
-      from_api
       \\#
       \\*
     ).map { |x| x + "(\\.|\\z)" }.join("|")
 
     # The only valid format for AMQP / MQTT topics.
     # Prevents a whole host of abuse / security issues.
-    DEVICE_SPECIFIC_CHANNELS = \
+    DEVICE_SPECIFIC_CHANNELS =
       Regexp.new("bot\\.device_\\d*\\.(#{BOT_CHANNELS})")
     PUBLIC_BROADCAST = "public_broadcast"
     PUBLIC_CHANNELS = ["", ".*", ".#"].map { |x| PUBLIC_BROADCAST + x }
@@ -32,6 +34,11 @@ module Api
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
+
+    class PasswordFailure < Exception; end
+
+    rescue_from PasswordFailure, with: :report_suspicious_behavior
+
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
 
@@ -100,9 +107,24 @@ module Api
     end
 
     def authenticate_admin
-      correct_pw = password_param == ENV.fetch("ADMIN_PASSWORD")
+      correct_pw = password_param == admin_password
       ok = admin? && correct_pw
-      ok ? allow("management", "administrator") : deny
+      if ok
+        allow("management", "administrator")
+      else
+        raise PasswordFailure
+      end
+    end
+
+    def admin_password
+      @admin_password ||= ENV.fetch("ADMIN_PASSWORD")
+    rescue KeyError
+      raise PasswordFailure
+    end
+
+    def report_suspicious_behavior
+      Rollbar.error("Failed password attempt on  RMQ: " + password_param)
+      deny
     end
 
     def deny

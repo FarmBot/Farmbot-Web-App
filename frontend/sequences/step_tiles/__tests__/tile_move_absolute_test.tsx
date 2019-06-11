@@ -81,9 +81,27 @@ describe("<TileMoveAbsolute/>", () => {
   });
 
   it("expands form", () => {
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...fakeProps()} />);
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(false);
     wrapper.find("h4").simulate("click");
+    expect(wrapper.state().more).toEqual(true);
+  });
+
+  it("expands form by default", () => {
+    const p = fakeProps();
+    p.expandStepOptions = true;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(true);
+  });
+
+  it("expands form when offset is present", () => {
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args.z = 100;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(true);
   });
 

@@ -2,7 +2,7 @@ import {
   SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay,
   SaveFarmwareEnv, UserEnv
 } from "../../interfaces";
-import { InformationalSettings } from "farmbot";
+import { InformationalSettings, TaggedDevice } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
 
 export interface AutoSyncRowProps {
@@ -58,6 +58,9 @@ export interface FarmbotOsRowProps {
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
   botOnline: boolean;
+  botToMqttLastSeen: string;
+  timeSettings: TimeSettings;
+  deviceAccount: TaggedDevice;
 }
 
 export interface FbosDetailsProps {
@@ -65,6 +68,9 @@ export interface FbosDetailsProps {
   dispatch: Function;
   shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
+  botToMqttLastSeen: string;
+  timeSettings: TimeSettings;
+  deviceAccount: TaggedDevice;
 }
 
 export interface OsUpdateButtonProps {

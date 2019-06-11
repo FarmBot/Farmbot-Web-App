@@ -1,5 +1,6 @@
 const mockDevice = {
-  send: jest.fn(() => { return Promise.resolve(); }),
+  send: jest.fn(() => Promise.resolve()),
+  rpcShim: jest.fn(() => Promise.resolve()),
 };
 
 jest.mock("../../../device", () => ({

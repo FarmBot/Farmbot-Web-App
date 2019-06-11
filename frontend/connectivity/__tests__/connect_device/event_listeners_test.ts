@@ -14,7 +14,8 @@ jest.mock("../../../device", () => { return { getDevice: () => mockBot }; });
 jest.mock("../../ping_mqtt", () => { return { startPinging: jest.fn() }; });
 
 import { getDevice } from "../../../device";
-import { attachEventListeners, BROADCAST_CHANNEL } from "../../connect_device";
+import { FbjsEventName } from "farmbot/dist/constants";
+import { attachEventListeners } from "../../connect_device";
 import { startPinging } from "../../ping_mqtt";
 
 describe("attachEventListeners", () => {
@@ -22,15 +23,15 @@ describe("attachEventListeners", () => {
     const dev = getDevice();
     attachEventListeners(dev, jest.fn(), jest.fn());
     [
-      "legacy_status",
-      "logs",
-      "malformed",
-      "offline",
-      "online",
-      "online",
-      "sent",
-      "status_v8",
-      BROADCAST_CHANNEL,
+      FbjsEventName.legacy_status,
+      FbjsEventName.logs,
+      FbjsEventName.malformed,
+      FbjsEventName.offline,
+      FbjsEventName.online,
+      FbjsEventName.online,
+      FbjsEventName.sent,
+      FbjsEventName.upsert,
+      FbjsEventName.publicBroadcast,
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
     [
       "message",

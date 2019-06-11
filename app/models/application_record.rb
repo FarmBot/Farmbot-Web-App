@@ -1,18 +1,19 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
-  after_save    :maybe_broadcast, on: [:create, :update]
+  after_save :maybe_broadcast, on: [:create, :update]
   after_destroy :maybe_broadcast
 
-  DONT_BROADCAST = [ "created_at",
-                     "last_saw_api",
-                     "last_saw_mq",
-                     "last_sign_in_at",
-                     "last_sign_in_ip",
-                     "sign_in_count",
-                     "updated_at",
-                     "current_sign_in_ip",
-                     "current_sign_in_at",
-                     "fbos_version" ]
+  DONT_BROADCAST = ["created_at",
+                    "last_saw_api",
+                    "last_saw_mq",
+                    "last_sign_in_at",
+                    "last_sign_in_ip",
+                    "sign_in_count",
+                    "updated_at",
+                    "current_sign_in_ip",
+                    "current_sign_in_at",
+                    "fbos_version"]
+
   def gone?
     destroyed? || self.try(:discarded?)
   end
@@ -70,5 +71,13 @@ class ApplicationRecord < ActiveRecord::Base
                               current_device.id,
                               chan_name,
                               Time.now.utc.to_i) if current_device
+  end
+
+  def manually_sync!
+    device.auto_sync_transaction do
+      update_attributes!(updated_at: Time.now)
+      broadcast!
+    end if device
+    self
   end
 end

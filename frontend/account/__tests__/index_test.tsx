@@ -1,6 +1,5 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("../labs/labs_features", () => ({ LabsFeatures: () => <div /> }));
 
 import * as React from "react";
 import { fakeState } from "../../__test_support__/fake_state";

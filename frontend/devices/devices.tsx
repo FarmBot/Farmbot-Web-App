@@ -8,6 +8,7 @@ import { Props } from "./interfaces";
 import { PinBindings } from "./pin_bindings/pin_bindings";
 import { selectAllDiagnosticDumps } from "../resources/selectors";
 import { getStatus } from "../connectivity/reducer_support";
+import { isFwHardwareValue } from "./components/fbos_settings/board_type";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -18,12 +19,14 @@ export class Devices extends React.Component<Props, {}> {
       const botToMqttLastSeen = (botToMqtt && botToMqttStatus === "up")
         ? botToMqtt.at
         : "";
+      const { value } = this.props.sourceFbosConfig("firmware_hardware");
+      const firmwareHardware = isFwHardwareValue(value) ? value : undefined;
       return <Page className="device-page">
         <Row>
           <Col xs={12} sm={6}>
             <FarmbotOsSettings
               diagnostics={selectAllDiagnosticDumps(this.props.resources)}
-              account={this.props.deviceAccount}
+              deviceAccount={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               bot={this.props.bot}
               timeSettings={this.props.timeSettings}
@@ -42,6 +45,7 @@ export class Devices extends React.Component<Props, {}> {
               bot={this.props.bot}
               botToMqttStatus={botToMqttStatus}
               shouldDisplay={this.props.shouldDisplay}
+              firmwareHardware={firmwareHardware}
               sourceFwConfig={this.props.sourceFwConfig}
               firmwareConfig={this.props.firmwareConfig} />
             <PinBindings

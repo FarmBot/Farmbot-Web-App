@@ -23,12 +23,14 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   time_format_24_hour: "time_format_24_hour",
   show_pins: "show_pins",
   disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
+  expand_step_options: "expand_step_options",
 
   /** "Labs" feature names. (App preferences) */
   stub_config: "stub_config",
   disable_i18n: "disable_i18n",
   confirm_step_deletion: "confirm_step_deletion",
   hide_webcam_widget: "hide_webcam_widget",
+  hide_sensors: "hide_sensors",
   dynamic_map: "dynamic_map",
   map_xl: "map_xl",
   disable_animations: "disable_animations",

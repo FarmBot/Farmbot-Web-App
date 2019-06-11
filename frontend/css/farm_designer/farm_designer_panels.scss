@@ -286,6 +286,9 @@
   .save-btn {
     margin: 1rem;
   }
+  .location-form {
+    width: 100% !important;
+  }
 }
 
 .add-farm-event-panel button.red,
@@ -375,6 +378,25 @@
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.settings-panel-content {
+  margin-top: 5rem;
+  button {
+    margin-top: 1.75rem;
+  }
+  p {
+    padding: 1rem;
+    margin-left: 1rem;
+  }
+  .map-size-inputs {
+    .row {
+      margin-bottom: 1rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
   }
 }
 

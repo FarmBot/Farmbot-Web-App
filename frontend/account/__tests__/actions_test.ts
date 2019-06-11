@@ -84,7 +84,7 @@ describe("deleteUser()", () => {
         expect(toastErrors).toHaveBeenCalled();
         expect(resp.config.url).toContain("api/device/reset");
         done();
-      });
+      }, console.log);
     });
   });
 });

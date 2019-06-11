@@ -9,6 +9,7 @@ import {
   TaggedDiagnosticDump,
   TaggedFarmwareInstallation,
   JobProgress,
+  FirmwareHardware,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -169,7 +170,7 @@ export type UserEnv = Record<string, string | undefined>;
 export interface FarmbotOsProps {
   bot: BotState;
   diagnostics: TaggedDiagnosticDump[];
-  account: TaggedDevice;
+  deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
   dispatch: Function;
@@ -244,6 +245,7 @@ export interface HardwareSettingsProps {
   shouldDisplay: ShouldDisplay;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface ControlPanelState {

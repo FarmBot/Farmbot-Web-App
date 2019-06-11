@@ -92,6 +92,8 @@ services:
     command: bundle exec rake api:log_digest
 
   rabbit_jobs:
+    stdin_open: true
+    tty: true
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]

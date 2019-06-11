@@ -28,7 +28,7 @@ module FarmEvents
         raise TRANSACTION_REQUIRED
       end
       create_fragment_for(owner)
-      owner
+      owner.manually_sync!
     end
 
     def handle_body_field
@@ -53,8 +53,8 @@ module FarmEvents
 
     def owner
       options = {
-        FarmEvents => -> () { farm_event },
-        Regimens => -> () { regimen },
+        FarmEvents => ->() { farm_event },
+        Regimens => ->() { regimen },
       }
       options.fetch(self.class.parent).call()
     end

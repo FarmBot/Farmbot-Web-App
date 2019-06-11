@@ -5,7 +5,6 @@ jest.mock("../../../../../history", () => ({
 
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
-import { shallow } from "enzyme";
 import {
   fakePlant, fakePlantTemplate
 } from "../../../../../__test_support__/fake_state/resources";
@@ -13,29 +12,28 @@ import { PlantLayerProps, GardenPlantProps } from "../../../interfaces";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<PlantLayer/>", () => {
-  function fakeProps(): PlantLayerProps {
-    return {
-      visible: true,
-      plants: [fakePlant()],
-      mapTransformProps: fakeMapTransformProps(),
-      currentPlant: undefined,
-      dragging: false,
-      editing: false,
-      selectedForDel: undefined,
-      dispatch: jest.fn(),
-      zoomLvl: 1,
-      activeDragXY: { x: undefined, y: undefined, z: undefined },
-      animate: true,
-    };
-  }
+  const fakeProps = (): PlantLayerProps => ({
+    visible: true,
+    plants: [fakePlant()],
+    mapTransformProps: fakeMapTransformProps(),
+    currentPlant: undefined,
+    dragging: false,
+    editing: false,
+    selectedForDel: undefined,
+    dispatch: jest.fn(),
+    zoomLvl: 1,
+    activeDragXY: { x: undefined, y: undefined, z: undefined },
+    animate: true,
+  });
 
   it("shows plants", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     const layer = wrapper.find("#plant-layer");
-    expect(layer.find(".plant-link-wrapper").length).toEqual(1);
+    expect(layer.find(".plant-link-wrapper").length).toEqual(2);
     ["soil-cloud",
       "plant-icon",
       "image visibility=\"visible\"",
@@ -50,21 +48,21 @@ describe("<PlantLayer/>", () => {
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const wrapper = shallow(<PlantLayer {...p} />);
-    expect(wrapper.html()).toEqual("<g id=\"plant-layer\"></g>");
+    const wrapper = svgMount(<PlantLayer {...p} />);
+    expect(wrapper.html()).toEqual("<svg><g id=\"plant-layer\"></g></svg>");
   });
 
   it("is in clickable mode", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style).toEqual({});
   });
 
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/select";
     const p = fakeProps();
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
   });
@@ -73,7 +71,7 @@ describe("<PlantLayer/>", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
     p.plants[0].body.id = 5;
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
       .toEqual("/app/designer/plants/5");
   });
@@ -83,7 +81,7 @@ describe("<PlantLayer/>", () => {
     const p = fakeProps();
     p.plants = [fakePlantTemplate()];
     p.plants[0].body.id = 5;
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
       .toEqual("/app/designer/saved_gardens/templates/5");
   });
@@ -94,7 +92,7 @@ describe("<PlantLayer/>", () => {
     const plant = fakePlant();
     p.plants = [plant];
     p.currentPlant = plant;
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
   });
 
@@ -104,7 +102,7 @@ describe("<PlantLayer/>", () => {
     const plant = fakePlant();
     p.plants = [plant];
     p.selectedForDel = [plant.uuid];
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect((wrapper.find("GardenPlant").props() as GardenPlantProps).grayscale)
       .toEqual(true);
   });
@@ -114,7 +112,7 @@ describe("<PlantLayer/>", () => {
     const plant = fakePlant();
     plant.body.id = 1;
     p.plants = [plant];
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect((wrapper.find("Link").props()).style).toEqual({});
   });
 
@@ -123,7 +121,7 @@ describe("<PlantLayer/>", () => {
     const plant = fakePlant();
     plant.body.id = 0;
     p.plants = [plant];
-    const wrapper = shallow(<PlantLayer {...p} />);
+    const wrapper = svgMount(<PlantLayer {...p} />);
     expect((wrapper.find("Link").props()).style)
       .toEqual({ pointerEvents: "none" });
   });

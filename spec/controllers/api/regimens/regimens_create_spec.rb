@@ -10,7 +10,7 @@ describe Api::RegimensController do
     it "kicks back missing parameters" do
       sign_in user
       celery = File.read("spec/lib/celery_script/ast_fixture5.json")
-      json = JSON.parse(celery).deep_symbolize_keys
+      json = JSON.parse(celery, symbolize_names: true)
       s = Sequences::Create.run!(json, device: user.device)
       # No paramaters here.
 
@@ -31,33 +31,34 @@ describe Api::RegimensController do
 
       expect(response.status).to eq(422)
       expect(before_count).to eq(after_count)
+      expect(json[:body].length).to eq(1)
     end
 
     it "creates a regimen that uses variables" do
       sign_in user
       s = FakeSequence.with_parameters
       payload = { device: s.device,
-                  name:   "specs",
-                  color:  "red",
-                  body: [
-                    {
-                      kind: "parameter_application",
-                      args: {
-                        label: "parent",
-                        data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0, } }
-                      }
-                    }
-                  ],
-                  regimen_items: [
-                    { time_offset: 100, sequence_id: s.id }
-                  ] }
+                 name: "specs",
+                 color: "red",
+                 body: [
+        {
+          kind: "parameter_application",
+          args: {
+            label: "parent",
+            data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
+          },
+        },
+      ],
+                 regimen_items: [
+        { time_offset: 100, sequence_id: s.id },
+      ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
       expect(declr).to be
       expect(declr.fetch(:kind)).to eq("parameter_application")
       path = [:args, :data_value, :args]
-      expect(declr.dig(*path)).to eq({x: 0, y: 0, z: 0})
+      expect(declr.dig(*path)).to eq({ x: 0, y: 0, z: 0 })
     end
 
     it "creates a new regimen" do
@@ -85,22 +86,22 @@ describe Api::RegimensController do
 
     it "creates a regimen that uses unbound variables" do
       sign_in user
-      s       = FakeSequence.with_parameters
+      s = FakeSequence.with_parameters
       payload = { device: s.device,
-                  name:   "specs",
-                  color:  "red",
-                  body: [
-                    {
-                      kind: "parameter_declaration",
-                      args: {
-                        label: "parent",
-                        default_value: {
-                          kind: "coordinate", args: { x: 0, y: 0, z: 0 }
-                        }
-                      }
-                    }
-                  ],
-                  regimen_items: [ { time_offset: 100, sequence_id: s.id } ] }
+                 name: "specs",
+                 color: "red",
+                 body: [
+        {
+          kind: "parameter_declaration",
+          args: {
+            label: "parent",
+            default_value: {
+              kind: "coordinate", args: { x: 0, y: 0, z: 0 },
+            },
+          },
+        },
+      ],
+                 regimen_items: [{ time_offset: 100, sequence_id: s.id }] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(200)
       declr = json.fetch(:body).first
@@ -114,20 +115,20 @@ describe Api::RegimensController do
       sign_in user
       s = FakeSequence.with_parameters
       payload = { device: s.device,
-                  name:   "specs",
-                  color:  "red",
-                  body: [
-                    {
-                      kind: "parameter_application",
-                      args: {
-                        label: "parent",
-                        data_value: { kind: "nothing", args: { } }
-                      }
-                    }
-                  ],
-                  regimen_items: [
-                    { time_offset: 100, sequence_id: s.id }
-                  ] }
+                 name: "specs",
+                 color: "red",
+                 body: [
+        {
+          kind: "parameter_application",
+          args: {
+            label: "parent",
+            data_value: { kind: "nothing", args: {} },
+          },
+        },
+      ],
+                 regimen_items: [
+        { time_offset: 100, sequence_id: s.id },
+      ] }
       post :create, body: payload.to_json, format: :json
       expect(response.status).to eq(422)
       msg = json.fetch(:error)

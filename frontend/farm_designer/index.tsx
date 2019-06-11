@@ -6,7 +6,7 @@ import { mapStateToProps } from "./state_to_props";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
-import { isUndefined, last } from "lodash";
+import { isUndefined, last, isFinite } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import {
   getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName
@@ -21,11 +21,12 @@ import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
-    if (getConfigValue(BooleanSetting.map_xl)) {
-      return { x: 5900, y: 2900 };
-    } else {
-      return { x: 2900, y: 1400 };
+    const mapSizeX = parseInt("" + getConfigValue(NumericSetting.map_size_x));
+    const mapSizeY = parseInt("" + getConfigValue(NumericSetting.map_size_y));
+    if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
+      return { x: mapSizeX, y: mapSizeY };
     }
+    return { x: 2900, y: 1400 };
   };
 
 export const getGridSize =
@@ -148,6 +149,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showFarmbot={show_farmbot}
         showImages={show_images}
         showSensorReadings={show_sensor_readings}
+        hasSensorReadings={this.props.sensorReadings.length > 0}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}

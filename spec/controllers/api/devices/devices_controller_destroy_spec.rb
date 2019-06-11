@@ -24,7 +24,7 @@ describe Api::DevicesController do
 
       device.update_attributes(name: "#{SecureRandom.hex(10)}")
 
-      run_jobs_now { post :reset, params: { password: password } }
+      run_jobs_now { post :reset, body: { password: password }.to_json }
 
       resources
         .without("token_issuance")
@@ -44,7 +44,7 @@ describe Api::DevicesController do
       sign_in user
       device = user.device
 
-      run_jobs_now { post :reset, params: {} }
+      run_jobs_now { post :reset, body: {}.to_json }
       expect(response.status).to eq(422)
       expect(json.fetch(:password)).to eq("Password is required")
     end

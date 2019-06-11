@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => { return []; }),
@@ -16,23 +14,21 @@ import { history } from "../../../history";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<PlantInfo />", () => {
-  function fakeProps(): EditPlantInfoProps {
-    return {
-      push: jest.fn(),
-      findPlant: fakePlant,
-      dispatch: jest.fn(),
-      openedSavedGarden: undefined,
-      timeSettings: fakeTimeSettings(),
-    };
-  }
+  const fakeProps = (): EditPlantInfoProps => ({
+    push: jest.fn(),
+    findPlant: fakePlant,
+    dispatch: jest.fn(),
+    openedSavedGarden: undefined,
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders", () => {
     const wrapper = mount(<PlantInfo {...fakeProps()} />);
     ["Strawberry Plant 1", "Plant Type", "Strawberry"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const buttons = wrapper.find("button");
-    expect(buttons.first().text()).toEqual("Move FarmBot to this plant");
-    expect(buttons.first().props().hidden).toBeFalsy();
+    expect(buttons.at(1).text()).toEqual("Move FarmBot to this plant");
+    expect(buttons.at(1).props().hidden).toBeFalsy();
   });
 
   it("renders: no plant", () => {
@@ -49,13 +45,5 @@ describe("<PlantInfo />", () => {
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.find("Link").first().props().to)
       .toContain("/app/designer/plants");
-  });
-
-  it("has link to plant templates", () => {
-    const p = fakeProps();
-    p.openedSavedGarden = "savedGardenUuid";
-    const wrapper = mount(<PlantInfo {...p} />);
-    expect(wrapper.find("Link").first().props().to)
-      .toContain("/app/designer/saved_gardens/templates");
   });
 });

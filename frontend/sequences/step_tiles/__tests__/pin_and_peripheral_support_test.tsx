@@ -226,10 +226,7 @@ describe("Pin and Peripheral support files", () => {
       const ri = buildResourceIndex([]).index;
       const n: Nothing = { kind: "nothing", args: {} };
       const result = namedPin2DropDown(ri, n);
-      const expected: DropDownItem = {
-        label: "Select a pin", value: "", isNull: true
-      };
-      expect(result).toEqual(expected);
+      expect(result).toEqual(undefined);
     });
 
     it("Rejects typos", () => {

@@ -112,7 +112,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
-    {DevSettings.futureFeaturesEnabled() &&
+    {DevSettings.futureFeaturesEnabled() && props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}

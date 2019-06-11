@@ -40,6 +40,7 @@ describe("refresh()", () => {
     const thunk = refresh(device1);
     const dispatch = jest.fn();
     const { mock } = dispatch;
+    console.error = jest.fn();
     thunk(dispatch);
     setImmediate(() => {
       expect(dispatch).toHaveBeenCalledTimes(2);
@@ -56,6 +57,9 @@ describe("refresh()", () => {
         "payload.err.message",
         "NO ERR MSG FOUND");
       expect(dispatchPayl).toEqual("Unable to refresh");
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining("Device"));
       done();
     });
   });
@@ -70,8 +74,12 @@ describe("updateViaAjax()", () => {
       index: buildResourceIndex([fakePeripheral()]).index
     };
     payload.uuid = Object.keys(payload.index.all)[0];
+    console.error = jest.fn();
     updateViaAjax(payload).catch(e => {
       expect("" + e).toEqual("Error: Just saved a malformed TR.");
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining("Peripheral"));
     });
   });
 });

@@ -8,7 +8,7 @@ describe Api::WebcamFeedsController do
     sign_in user
     input = { name: "name1", url: "url1" }
     b4 = WebcamFeed.count
-    post :create, params: input
+    post :create, body: input.to_json
     expect(response.status).to eq(200)
     expect(WebcamFeed.count).to be > b4
     expect(user.device.webcam_feeds.count).to eq(1)

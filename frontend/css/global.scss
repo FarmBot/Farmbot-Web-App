@@ -280,7 +280,8 @@ a {
 .drag-drop-area {
   &.visible {
     margin: 0.75rem 0;
-    margin-right: 15px;
+    margin-right: 25px;
+    margin-left: 10px;
     border-style: dashed;
     border-width: 2px;
     border-color: $light_gray;
@@ -845,6 +846,10 @@ ul {
   }
 }
 
+.farmware-info {
+  margin-top: 1rem;
+}
+
 .farmware-list-items {
   margin-left: -30px;
   margin-right: -20px;
@@ -984,6 +989,10 @@ ul {
   }
 }
 
+.map-size-setting {
+  margin-top: 1rem;
+}
+
 .release-notes-button {
   font-weight: bold;
   cursor: pointer;
@@ -1037,14 +1046,16 @@ ul {
       top: 38% !important;
     }
   }
+  input[type="checkbox"] {
+    vertical-align: middle;
+    margin-top: 0;
+    margin-left: 0.5rem;
+  }
 }
 
 .sensors-widget {
   p {
     margin-top: 0.75rem;
-  }
-  .fa-plus {
-    margin-right: 0.5rem;
   }
   .sensor-reading-display {
     &.moisture-sensor {
@@ -1137,6 +1148,14 @@ ul {
   .row {
     margin-bottom: 1rem;
     margin-top: 0.5rem;
+  }
+}
+
+.default-value-form {
+  position: relative;
+  .default-value-tooltip {
+    position: absolute;
+    right: 0;
   }
 }
 
