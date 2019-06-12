@@ -1,5 +1,5 @@
 import * as React from "react";
-import { readPin } from "../../devices/actions";
+import { readSensor } from "../../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
@@ -62,7 +62,7 @@ export const SensorList = (props: SensorListProps) =>
             disabled={props.disabled}
             title={t(`read ${label} sensor`)}
             onClick={() =>
-              readPin(pinNumber, `pin${pin}`, mode as ALLOWED_PIN_MODES)}>
+              readSensor(pinNumber, `pin${pin}`, mode as ALLOWED_PIN_MODES)}>
             {t("read sensor")}
           </button>
         </Col>

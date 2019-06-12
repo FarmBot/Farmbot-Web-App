@@ -54,12 +54,17 @@ describe("<SensorList/>", function () {
     expect(wrapper.find(".indicator").last().text()).toEqual("1");
   });
 
-  const expectedPayload = (pin_number: number, pin_mode: 0 | 1) =>
-    ({
-      pin_number,
-      label: `pin${pin_number}`,
-      pin_mode
-    });
+  const expectedPayload = (pin_id: number, pin_mode: 0 | 1) => ({
+    pin_number: {
+      kind: "named_pin",
+      args: {
+        pin_type: "Sensor",
+        pin_id
+      }
+    },
+    label: `pin${pin_id}`,
+    pin_mode
+  });
 
   it("reads pins", () => {
     const wrapper = mount(<SensorList {...fakeProps()} />);

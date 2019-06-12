@@ -10,7 +10,9 @@ import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
-  FirmwareHardware
+  FirmwareHardware,
+  AllowedPinTypes,
+  NamedPin
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -326,8 +328,13 @@ export function pinToggle(pin_number: number) {
     .then(noop, commandErr(noun));
 }
 
-export function readPin(pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES) {
+export function readSensor(pin_id: number,
+  label: string,
+  pin_mode: ALLOWED_PIN_MODES) {
   const noun = "Read pin";
+  const pin_type: AllowedPinTypes = "Sensor";
+  const pin_number: NamedPin =
+    ({ kind: "named_pin", args: { pin_type, pin_id } });
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
     .then(noop, commandErr(noun));
