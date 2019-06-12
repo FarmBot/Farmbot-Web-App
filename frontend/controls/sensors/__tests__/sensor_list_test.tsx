@@ -1,9 +1,5 @@
-const mockDevice = {
-  readPin: jest.fn(() => { return Promise.resolve(); })
-};
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+const mockDevice = { readPin: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -61,23 +57,23 @@ describe("<SensorList/>", function () {
       pin_mode
     });
 
-  it("reads pins", () => {
+  it("reads sensors", () => {
     const wrapper = mount(<SensorList {...fakeProps()} />);
-    const toggle = wrapper.find("button");
-    toggle.first().simulate("click");
+    const readSensorBtn = wrapper.find("button");
+    readSensorBtn.first().simulate("click");
     expect(mockDevice.readPin).toHaveBeenCalledWith(expectedPayload(51, 1));
-    toggle.last().simulate("click");
+    readSensorBtn.last().simulate("click");
     expect(mockDevice.readPin).toHaveBeenLastCalledWith(expectedPayload(50, 0));
     expect(mockDevice.readPin).toHaveBeenCalledTimes(2);
   });
 
-  it("pins toggles are disabled", () => {
+  it("sensor reading is disabled", () => {
     const p = fakeProps();
     p.disabled = true;
     const wrapper = mount(<SensorList {...p} />);
-    const toggle = wrapper.find("button");
-    toggle.first().simulate("click");
-    toggle.last().simulate("click");
+    const readSensorBtn = wrapper.find("button");
+    readSensorBtn.first().simulate("click");
+    readSensorBtn.last().simulate("click");
     expect(mockDevice.readPin).not.toHaveBeenCalled();
   });
 });

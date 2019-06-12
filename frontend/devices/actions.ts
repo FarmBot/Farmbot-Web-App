@@ -326,7 +326,9 @@ export function pinToggle(pin_number: number) {
     .then(noop, commandErr(noun));
 }
 
-export function readPin(pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES) {
+export function readPin(
+  pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES
+) {
   const noun = "Read pin";
   return getDevice()
     .readPin({ pin_number, label, pin_mode })

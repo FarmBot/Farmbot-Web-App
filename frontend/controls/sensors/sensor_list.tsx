@@ -13,27 +13,35 @@ interface SensorReadingDisplayProps {
   mode: number;
 }
 
+interface CalcStyleProps {
+  value: number;
+  mode: number;
+}
+
+const calcIndicatorStyle = ({ value, mode }: CalcStyleProps) => ({
+  left: `calc(${
+    (mode
+      ? value / 1024 * 0.95 // analog
+      : value / 2) // digital
+    * 100}%)`,
+  width: `${mode ? 5 : 50}%`
+});
+
+const calcValueStyle = ({ value, mode }: CalcStyleProps) => ({
+  marginLeft: `${mode
+    ? `${value > 500 ? -3.5 : 1.5}rem` // analog
+    : "7rem"}`, // digital
+  color: `${mode ? "" : "white"}`
+});
+
 const SensorReadingDisplay =
   ({ label, value, mode }: SensorReadingDisplayProps) => {
     const moistureSensor = label.toLowerCase().includes("moisture") ?
       "moisture-sensor" : "";
     return <div className={`sensor-reading-display ${moistureSensor}`}>
       {isNumber(value) && value >= 0 &&
-        <div className="indicator"
-          style={{
-            left: `calc(${
-              (mode
-                ? value / 1024 * 0.95 // analog
-                : value / 2) // digital
-              * 100}%)`,
-            width: `${mode ? 5 : 50}%`
-          }}>
-          <span style={{
-            marginLeft: `${mode
-              ? `${value > 500 ? -3.5 : 1.5}rem`
-              : "7rem"}`,
-            color: `${mode ? "" : "white"}`
-          }}>
+        <div className="indicator" style={calcIndicatorStyle({ value, mode })}>
+          <span style={calcValueStyle({ value, mode })}>
             {value}
           </span>
         </div>}
@@ -42,11 +50,11 @@ const SensorReadingDisplay =
 
 export const SensorList = (props: SensorListProps) =>
   <div className="sensor-list">
-    {sortResourcesById(props.sensors).map(p => {
-      const { label, mode, pin } = p.body;
+    {sortResourcesById(props.sensors).map(sensor => {
+      const { label, mode, pin } = sensor.body;
       const pinNumber = (isNumber(pin) && isFinite(pin)) ? pin : -1;
       const value = (props.pins[pinNumber] || { value: undefined }).value;
-      return <Row key={p.uuid + p.body.id}>
+      return <Row key={sensor.uuid}>
         <Col xs={3}>
           <label>{label}</label>
         </Col>
@@ -57,15 +65,31 @@ export const SensorList = (props: SensorListProps) =>
           <SensorReadingDisplay label={label} value={value} mode={mode} />
         </Col>
         <Col xs={2}>
-          <button
-            className={"fb-button gray"}
-            disabled={props.disabled}
-            title={t(`read ${label} sensor`)}
-            onClick={() =>
-              readPin(pinNumber, `pin${pin}`, mode as ALLOWED_PIN_MODES)}>
-            {t("read sensor")}
-          </button>
+          <ReadSensorButton
+            disabled={!!props.disabled}
+            sensorLabel={label}
+            pinNumber={pinNumber}
+            mode={mode} />
         </Col>
       </Row>;
     })}
   </div>;
+
+interface ReadSensorButtonProps {
+  disabled: boolean;
+  sensorLabel: string;
+  pinNumber: number;
+  mode: number;
+}
+
+const ReadSensorButton = (props: ReadSensorButtonProps) => {
+  const { disabled, sensorLabel, pinNumber, mode } = props;
+  return <button
+    className={"fb-button gray"}
+    disabled={disabled}
+    title={t(`read ${sensorLabel} sensor`)}
+    onClick={() =>
+      readPin(pinNumber, `pin${pinNumber}`, mode as ALLOWED_PIN_MODES)}>
+    {t("read sensor")}
+  </button>;
+};
