@@ -1,76 +1,39 @@
-import React, { ReactChild } from "react";
+import { connect, MqttClient } from "mqtt";
 import { detectLanguage } from "../i18n";
 import { shortRevision, attachToRoot } from "../util";
 import { stopIE } from "../util/stop_ie";
 import I from "i18next";
+import React from "react";
 
-/** The Demo loader works by creating a new guest user auth token and logging
- * the guest in with said token. If the user is already logged in, the user
- * is presented with choices about how to procede.*/
-
-namespace State {
-  /** === Level 0: Initialization */
-  export interface Start {
-    current: "start"
-  }
-
-  /** === Level 1: If a token is present in localStorage,
-   * determine if user wishes to use it. */
-  interface HasToken { token: string; }
-
-  export interface DetermineTokenIntent extends HasToken {
-    current: "DetermineTokenIntent"
-  }
-
-  export interface HasAndWantsOldToken extends HasToken {
-    current: "DontUseOldToken";
-  }
-
-  export interface DoesNotWantOldToken extends HasToken {
-    current: "UseOldToken";
-  }
-
-  export interface WantsNewToken {
-    current: "missingToken";
-  }
-
-  /** === Level 2: Token Fetching */
-
-  export interface TokenFetchError {
-    current: "TokenFetchError";
-  }
-
-  /** === Level 2: Forward to app */
-
-  export interface ReadyToDemo extends HasToken {
-    current: "readyToDemo";
-  }
+interface State {
+  client?: MqttClient;
+  connected: boolean;
 }
 
-type DemoState =
-  | State.Start
-  | State.DetermineTokenIntent
-  | State.HasAndWantsOldToken
-  | State.DoesNotWantOldToken
-  | State.WantsNewToken
-  | State.TokenFetchError
-  | State.ReadyToDemo;
+const WS_CONFIG = {
+  username: "farmbot_guest",
+  protocolId: "MQIsdp",
+  protocolVersion: 3
+};
 
-export class AppDemoLoader extends React.Component<{}, DemoState> {
-  state: State.Start = { current: "start" };
-
-  transitions: Record<DemoState["current"], () => ReactChild> = {
-    "start": () => <div>Work in progress</div>,
-    "DetermineTokenIntent": () => <div>Work in progress</div>,
-    "DontUseOldToken": () => <div>Work in progress</div>,
-    "UseOldToken": () => <div>Work in progress</div>,
-    "missingToken": () => <div>Work in progress</div>,
-    "TokenFetchError": () => <div>Work in progress</div>,
-    "readyToDemo": () => <div>Work in progress</div>,
+export class DemoLoader extends React.Component<{}, State> {
+  state = {
+    client: undefined,
+    connected: false
   };
 
+  componentWillMount() {
+    const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
+    client.on("packetreceive",
+      (x) => console.log("Packet: " + JSON.stringify(x)));
+    client.on("connect", () => {
+      this.setState({ connected: true });
+    });
+    this.setState({ client });
+  }
+
   render() {
-    return this.transitions[this.state.current]();
+    return <div>Hello, world!</div>;
   }
 }
 
@@ -79,5 +42,7 @@ stopIE();
 console.log(shortRevision());
 
 detectLanguage().then((config) => {
-  I.init(config, () => attachToRoot(AppDemoLoader));
+  I.init(config, () => {
+    attachToRoot(DemoLoader);
+  });
 });
