@@ -10,7 +10,7 @@ class Device < ApplicationRecord
                 "Suspending log storage and display until %s."
   THROTTLE_OFF = "Cooldown period has ended. " \
                  "Resuming log storage."
-  CACHE_KEY = "devices.%s"
+  CACHE_KEY = "devices:%s"
 
   PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
                         images logs peripherals pin_bindings plant_templates
