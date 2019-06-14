@@ -532,6 +532,9 @@ export namespace Content {
     trim(`Select a map origin by clicking on one of the four quadrants to
     adjust the garden map to your viewing angle.`);
 
+  export const CONFIRM_PLANT_DELETION =
+    trim(`Show a confirmation dialog when deleting a plant.`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);

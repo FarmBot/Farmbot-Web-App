@@ -14,6 +14,7 @@ import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "./map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "./map_size_setting";
 import { DesignerNavTabs } from "./panel_header";
+import { isUndefined } from "lodash";
 
 export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   dispatch: props.dispatch,
@@ -49,14 +50,16 @@ interface SettingDescriptionProps {
   invert?: boolean;
   callback?: () => void;
   children?: React.ReactChild;
+  defaultOn?: boolean;
 }
 
 interface SettingProps
   extends DesignerSettingsProps, SettingDescriptionProps { }
 
 const Setting = (props: SettingProps) => {
-  const { title, setting, callback } = props;
-  const value = setting ? !!props.getConfigValue(setting) : undefined;
+  const { title, setting, callback, defaultOn } = props;
+  const raw_value = setting ? props.getConfigValue(setting) : undefined;
+  const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   return <div className="designer-setting">
     <Row>
       <Col xs={9}>
@@ -113,6 +116,12 @@ const DESIGNER_SETTINGS =
       title: t("Map origin"),
       description: t(Content.MAP_ORIGIN),
       children: <OriginSelector {...settingsProps} />
+    },
+    {
+      title: t("Confirm plant deletion"),
+      description: t(Content.CONFIRM_PLANT_DELETION),
+      setting: "confirm_plant_deletion" as BooleanConfigKey,
+      defaultOn: true,
     },
   ]);
 

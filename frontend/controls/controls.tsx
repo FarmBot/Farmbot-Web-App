@@ -25,7 +25,7 @@ export class Controls extends React.Component<Props, {}> {
   }
 
   get hideSensors() {
-    return this.props.getWebAppConfigVal("hide_sensors");
+    return this.props.getWebAppConfigVal(BooleanSetting.hide_sensors);
   }
 
   move = () => <Move

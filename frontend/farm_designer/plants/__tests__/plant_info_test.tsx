@@ -28,6 +28,7 @@ describe("<PlantInfo />", () => {
     dispatch: jest.fn(),
     openedSavedGarden: undefined,
     timeSettings: fakeTimeSettings(),
+    getConfigValue: jest.fn(),
   });
 
   it("renders", () => {
@@ -97,6 +98,14 @@ describe("<PlantInfo />", () => {
   it("destroys plant", () => {
     const wrapper = mount<PlantInfo>(<PlantInfo {...fakeProps()} />);
     wrapper.instance().destroy("uuid");
-    expect(destroy).toHaveBeenCalledWith("uuid");
+    expect(destroy).toHaveBeenCalledWith("uuid", false);
+  });
+
+  it("force destroys plant", () => {
+    const p = fakeProps();
+    p.getConfigValue = jest.fn(() => false);
+    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
+    wrapper.instance().destroy("uuid");
+    expect(destroy).toHaveBeenCalledWith("uuid", true);
   });
 });

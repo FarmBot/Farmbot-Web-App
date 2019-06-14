@@ -25,6 +25,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmDesigner/>", () => {
   function fakeProps(): Props {
@@ -126,7 +127,7 @@ describe("<FarmDesigner/>", () => {
     state.resources = buildResourceIndex([fakeWebAppConfig()]);
     p.dispatch = jest.fn(x => x(dispatch, () => state));
     const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
-    wrapper.instance().toggle("show_plants")();
+    wrapper.instance().toggle(BooleanSetting.show_plants)();
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { bot_origin_quadrant: 2 });
   });
 });

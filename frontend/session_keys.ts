@@ -4,57 +4,70 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 
 export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
+  /** Move settings */
   x_axis_inverted: "x_axis_inverted",
   y_axis_inverted: "y_axis_inverted",
   z_axis_inverted: "z_axis_inverted",
-  raw_encoders: "raw_encoders",
   scaled_encoders: "scaled_encoders",
+  raw_encoders: "raw_encoders",
+  home_button_homing: "home_button_homing",
+  show_motor_plot: "show_motor_plot",
+
+  /** Designer settings */
   legend_menu_open: "legend_menu_open",
   show_plants: "show_plants",
   show_points: "show_points",
+  show_historic_points: "show_historic_points",
   show_spread: "show_spread",
   show_farmbot: "show_farmbot",
   show_images: "show_images",
   show_sensor_readings: "show_sensor_readings",
-  xy_swap: "xy_swap",
-  home_button_homing: "home_button_homing",
-  show_motor_plot: "show_motor_plot",
-  show_historic_points: "show_historic_points",
-  time_format_24_hour: "time_format_24_hour",
-  show_pins: "show_pins",
-  disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
-  expand_step_options: "expand_step_options",
-
-  /** "Labs" feature names. (App preferences) */
-  stub_config: "stub_config",
-  disable_i18n: "disable_i18n",
-  confirm_step_deletion: "confirm_step_deletion",
-  hide_webcam_widget: "hide_webcam_widget",
-  hide_sensors: "hide_sensors",
-  dynamic_map: "dynamic_map",
-  map_xl: "map_xl", // TODO: remove from FBJS
   disable_animations: "disable_animations",
   display_trail: "display_trail",
   encoder_figure: "encoder_figure",
+  dynamic_map: "dynamic_map",
+  xy_swap: "xy_swap",
+  map_xl: "map_xl", // TODO: remove from FBJS
+  // confirm_plant_deletion: "confirm_plant_deletion",
+
+  /** Sequence settings */
+  confirm_step_deletion: "confirm_step_deletion",
+  show_pins: "show_pins",
+  expand_step_options: "expand_step_options",
+
+  /** App settings */
+  disable_i18n: "disable_i18n",
+  hide_webcam_widget: "hide_webcam_widget",
+  hide_sensors: "hide_sensors",
   enable_browser_speak: "enable_browser_speak",
   discard_unsaved: "discard_unsaved",
+  time_format_24_hour: "time_format_24_hour",
+  disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
 
-  /** Farmware Settings Panel */
+  /** Farmware settings */
   show_first_party_farmware: "show_first_party_farmware",
+
+  /** Other */
+  stub_config: "stub_config",
 };
 
 export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
-  bot_origin_quadrant: "bot_origin_quadrant",
-  busy_log: "busy_log",
-  debug_log: "debug_log",
-  device_id: "device_id",
-  error_log: "error_log",
-  fun_log: "fun_log",
-  id: "id",
-  info_log: "info_log",
+  /** Logs settings */
   success_log: "success_log",
+  busy_log: "busy_log",
   warn_log: "warn_log",
+  error_log: "error_log",
+  info_log: "info_log",
+  fun_log: "fun_log",
+  debug_log: "debug_log",
+
+  /** Designer settings */
   zoom_level: "zoom_level",
   map_size_x: "map_size_x",
   map_size_y: "map_size_y",
+  bot_origin_quadrant: "bot_origin_quadrant",
+
+  /** Other */
+  id: "id",
+  device_id: "device_id",
 };

@@ -7,18 +7,24 @@ import { TaggedPlant } from "../map/interfaces";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
-import { isString } from "lodash";
+import { isString, isUndefined } from "lodash";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
+import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 @connect(mapStateToProps)
 export class PlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
   get stringyID() { return getPathArray()[this.templates ? 5 : 4] || ""; }
   get plant() { return this.props.findPlant(this.stringyID); }
+  get confirmDelete() {
+    const confirmSetting = this.props.getConfigValue(
+      "confirm_plant_deletion" as BooleanConfigKey);
+    return isUndefined(confirmSetting) ? true : confirmSetting;
+  }
 
   destroy = (plantUUID: string) => {
-    this.props.dispatch(destroy(plantUUID));
+    this.props.dispatch(destroy(plantUUID, !this.confirmDelete));
   }
 
   updatePlant = (plantUUID: string, update: PlantOptions) => {

@@ -1559,7 +1559,8 @@ CREATE TABLE public.web_app_configs (
     map_size_x integer DEFAULT 2900,
     map_size_y integer DEFAULT 1400,
     expand_step_options boolean DEFAULT false,
-    hide_sensors boolean DEFAULT false
+    hide_sensors boolean DEFAULT false,
+    confirm_plant_deletion boolean DEFAULT true
 );
 
 
@@ -2979,6 +2980,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190603233157'),
 ('20190605185311'),
 ('20190607192429'),
-('20190613190531');
+('20190613190531'),
+('20190613215319');
 
 

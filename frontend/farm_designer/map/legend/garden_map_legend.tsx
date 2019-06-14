@@ -56,11 +56,11 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     <LayerToggle
       value={props.showPlants}
       label={t("Plants?")}
-      onClick={toggle("show_plants")} />
+      onClick={toggle(BooleanSetting.show_plants)} />
     <LayerToggle
       value={props.showPoints}
       label={t("Points?")}
-      onClick={toggle("show_points")}
+      onClick={toggle(BooleanSetting.show_points)}
       submenuTitle={t("extras")}
       popover={DevSettings.futureFeaturesEnabled()
         ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
@@ -68,15 +68,15 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     <LayerToggle
       value={props.showSpread}
       label={t("Spread?")}
-      onClick={toggle("show_spread")} />
+      onClick={toggle(BooleanSetting.show_spread)} />
     <LayerToggle
       value={props.showFarmbot}
       label={t("FarmBot?")}
-      onClick={toggle("show_farmbot")} />
+      onClick={toggle(BooleanSetting.show_farmbot)} />
     <LayerToggle
       value={props.showImages}
       label={t("Photos?")}
-      onClick={toggle("show_images")}
+      onClick={toggle(BooleanSetting.show_images)}
       submenuTitle={t("filter")}
       popover={<ImageFilterMenu
         timeSettings={props.timeSettings}
@@ -87,7 +87,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}
-        onClick={toggle("show_sensor_readings")} />}
+        onClick={toggle(BooleanSetting.show_sensor_readings)} />}
   </div>;
 };
 
@@ -98,7 +98,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     style={{ zoom: 1 }}>
     <div
       className={"menu-pullout " + menuClass}
-      onClick={props.toggle("legend_menu_open")}>
+      onClick={props.toggle(BooleanSetting.legend_menu_open)}>
       <span>
         {t("Menu")}
       </span>
