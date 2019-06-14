@@ -1,7 +1,7 @@
 # Support class for Fragment. Please see fragment.rb for documentation.
 class Kind < ApplicationRecord
   EXPIRY = Rails.env.test? ? 1.second : 2.hours
-  KEY    = "kinds/%s"
+  KEY = "kinds:%s"
   has_many :nodes
 
   def self.cached_by_value(v)
