@@ -47,19 +47,19 @@ export class Controls extends React.Component<Props, {}> {
     dispatch={this.props.dispatch} />
 
   sensors = () => this.hideSensors
-    ? <div />
+    ? <div id="hidden-sensors-widget" />
     : <Sensors
       bot={this.props.bot}
       sensors={this.props.sensors}
       dispatch={this.props.dispatch}
       disabled={this.arduinoBusy || !this.botOnline} />
 
-  sensorReadings = () => this.props.sensorReadings.length > 0
-    ? <SensorReadings
+  sensorReadings = () => this.hideSensors
+    ? <div id="hidden-sensor-history-widget" />
+    : <SensorReadings
       sensorReadings={this.props.sensorReadings}
       sensors={this.props.sensors}
       timeSettings={this.props.timeSettings} />
-    : <div id="hidden-sensor-history-widget" />
 
   render() {
     const showWebcamWidget =

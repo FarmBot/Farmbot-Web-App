@@ -1521,7 +1521,6 @@ CREATE TABLE public.web_app_configs (
     encoder_figure boolean DEFAULT false,
     hide_webcam_widget boolean DEFAULT false,
     legend_menu_open boolean DEFAULT false,
-    map_xl boolean DEFAULT false,
     raw_encoders boolean DEFAULT false,
     scaled_encoders boolean DEFAULT false,
     show_spread boolean DEFAULT true,
@@ -2760,19 +2759,19 @@ ALTER TABLE ONLY public.points
 
 
 --
--- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
+
+
+--
+-- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2979,6 +2978,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190515205442'),
 ('20190603233157'),
 ('20190605185311'),
-('20190607192429');
+('20190607192429'),
+('20190613190531');
 
 

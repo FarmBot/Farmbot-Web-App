@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui";
+import { Row, Col, FBSelect } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -38,14 +38,6 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   return variable;
 };
 
-/** Determine DropdownItem for the current LocationForm selection. */
-const selectedLabelDDI = (ddi: DropDownItem, override?: string) => {
-  const newDDI = Object.assign({}, ddi);
-  newDDI.label = (ddi.value === "parameter_declaration" && override)
-    ? override : newDDI.label;
-  return newDDI;
-};
-
 /**
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
@@ -59,8 +51,10 @@ export const LocationForm =
     });
     const displayVariables = props.shouldDisplay(Feature.variables) &&
       allowedVariableNodes !== AllowedVariableNodes.variable;
-    const variableListItems = displayVariables ? [PARENT(props.listVarLabel ||
-      determineVarDDILabel("parent", resources, sequenceUuid))] : [];
+    const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
+    const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
+      label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
+    }))] : [];
     const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
     const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
@@ -82,7 +76,7 @@ export const LocationForm =
               <FBSelect
                 key={props.locationDropdownKey}
                 list={list}
-                selectedItem={selectedLabelDDI(dropdown, props.listVarLabel)}
+                selectedItem={dropdown}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
                 onChange={ddi => props.onChange(convertDDItoVariable({
                   label, allowedVariableNodes

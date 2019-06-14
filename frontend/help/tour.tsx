@@ -27,10 +27,11 @@ interface TourProps {
 interface TourState {
   run: boolean;
   index: number;
+  returnPath: string;
 }
 
 export class Tour extends React.Component<TourProps, TourState> {
-  state: TourState = { run: false, index: 0, };
+  state: TourState = { run: false, index: 0, returnPath: "", };
 
   callback = ({ action, index, step, type }: CallBackProps) => {
     console.log("Tour debug:", step.target, type, action);
@@ -45,13 +46,17 @@ export class Tour extends React.Component<TourProps, TourState> {
     }
     if (type === "tour:end") {
       this.setState({ run: false });
-      history.push("/app/messages");
+      history.push(this.state.returnPath);
       store.dispatch({ type: Actions.START_TOUR, payload: undefined });
     }
   };
 
   componentDidMount() {
-    this.setState({ run: true, index: 0 });
+    this.setState({
+      run: true,
+      index: 0,
+      returnPath: history.getCurrentLocation().pathname,
+    });
   }
 
   render() {

@@ -7,33 +7,33 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
-import { fakeFarmware, fakeFarmwares } from "../../__test_support__/fake_farmwares";
+import {
+  fakeFarmware, fakeFarmwares
+} from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<FarmwarePage />", () => {
-  const fakeProps = (): FarmwareProps => {
-    return {
-      farmwares: fakeFarmwares(),
-      botToMqttStatus: "up",
-      env: {},
-      user_env: {},
-      dispatch: jest.fn(),
-      currentImage: undefined,
-      images: [],
-      timeSettings: fakeTimeSettings(),
-      syncStatus: "synced",
-      getConfigValue: jest.fn(),
-      firstPartyFarmwareNames: [],
-      currentFarmware: undefined,
-      shouldDisplay: () => false,
-      saveFarmwareEnv: jest.fn(),
-      taggedFarmwareInstallations: [],
-      imageJobs: [],
-      infoOpen: false,
-    };
-  };
+  const fakeProps = (): FarmwareProps => ({
+    farmwares: fakeFarmwares(),
+    botToMqttStatus: "up",
+    env: {},
+    user_env: {},
+    dispatch: jest.fn(),
+    currentImage: undefined,
+    images: [],
+    timeSettings: fakeTimeSettings(),
+    syncStatus: "synced",
+    getConfigValue: jest.fn(),
+    firstPartyFarmwareNames: [],
+    currentFarmware: undefined,
+    shouldDisplay: () => false,
+    saveFarmwareEnv: jest.fn(),
+    taggedFarmwareInstallations: [],
+    imageJobs: [],
+    infoOpen: false,
+  });
 
   it("renders panels", () => {
     const wrapper = mount(<FarmwarePage {...fakeProps()} />);
@@ -42,8 +42,24 @@ describe("<FarmwarePage />", () => {
   });
 
   it("renders photos page by default", () => {
-    const wrapper = mount(<FarmwarePage {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount(<FarmwarePage {...p} />);
     expect(wrapper.text()).toContain("Take Photo");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE,
+      payload: "Photos"
+    });
+  });
+
+  it("doesn't render photos page by default", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const p = fakeProps();
+    const wrapper = mount(<FarmwarePage {...p} />);
+    wrapper.mount();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("renders photos page by default without farmware data", () => {

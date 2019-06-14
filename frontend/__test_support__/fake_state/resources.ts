@@ -278,7 +278,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     encoder_figure: false,
     hide_webcam_widget: false,
     legend_menu_open: false,
-    map_xl: false,
+    map_xl: false, // TODO: remove from FBJS
     raw_encoders: true,
     scaled_encoders: true,
     show_spread: false,

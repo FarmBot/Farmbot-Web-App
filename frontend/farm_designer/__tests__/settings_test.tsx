@@ -1,7 +1,7 @@
 jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn(() => true)),
+  getWebAppConfigValue: jest.fn(x => { x(); return jest.fn(() => true); }),
   setWebAppConfigValue: jest.fn(),
 }));
 
@@ -11,7 +11,7 @@ import {
   DesignerSettings, DesignerSettingsProps, mapStateToProps
 } from "../settings";
 import { fakeState } from "../../__test_support__/fake_state";
-import { BooleanSetting } from "../../session_keys";
+import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 
 describe("<DesignerSettings />", () => {
@@ -30,6 +30,16 @@ describe("<DesignerSettings />", () => {
     wrapper.find("button").at(1).simulate("click");
     expect(setWebAppConfigValue)
       .toHaveBeenCalledWith(BooleanSetting.display_trail, true);
+  });
+
+  it("changes origin", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => 2;
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.find("label").last().text()).toContain("origin");
+    wrapper.find("div").last().simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      NumericSetting.bot_origin_quadrant, 4);
   });
 });
 

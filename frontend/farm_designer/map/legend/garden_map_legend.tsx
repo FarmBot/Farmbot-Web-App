@@ -5,42 +5,13 @@ import { history } from "../../../history";
 import { atMaxZoom, atMinZoom } from "../zoom";
 import { ImageFilterMenu } from "../layers/images/image_filter_menu";
 import { BugsControls } from "../easter_eggs/bugs";
-import { BotOriginQuadrant, State } from "../../interfaces";
+import { State } from "../../interfaces";
 import { MoveModeLink } from "../../move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
-import {
-  GetWebAppConfigValue, setWebAppConfigValue
-} from "../../../config_storage/actions";
+import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
 import { t } from "../../../i18next_wrapper";
-
-const OriginSelector = ({ quadrant, update }: {
-  quadrant: BotOriginQuadrant,
-  update: (quadrant: number) => () => void
-}) =>
-  <div className="farmbot-origin">
-    <label>
-      {t("Origin")}
-    </label>
-    <div className="quadrants">
-      {[2, 1, 3, 4].map(q =>
-        <div key={"quadrant_" + q}
-          className={"quadrant " + (quadrant === q && "selected")}
-          onClick={update(q)} />
-      )}
-    </div>
-  </div>;
-
-export const RotationSelector = ({ dispatch, value }:
-  { dispatch: Function, value: boolean }) => {
-  const classNames = `fb-button fb-toggle-button ${value ? "green" : "red"}`;
-  return <div className={"map-rotate-button"}>
-    <label>{t("rotate")}</label>
-    <button className={classNames} onClick={() =>
-      dispatch(setWebAppConfigValue(BooleanSetting.xy_swap, !value))} />
-  </div>;
-};
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -136,11 +107,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     <div className="content">
       <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
       <LayerToggles {...props} />
-      <OriginSelector
-        quadrant={props.botOriginQuadrant}
-        update={props.updateBotOriginQuadrant} />
-      <RotationSelector dispatch={props.dispatch}
-        value={!!props.getConfigValue(BooleanSetting.xy_swap)} />
       <MoveModeLink />
       <SavedGardensLink />
       <BugsControls />

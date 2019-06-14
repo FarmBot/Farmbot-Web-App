@@ -32,7 +32,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   hide_webcam_widget: "hide_webcam_widget",
   hide_sensors: "hide_sensors",
   dynamic_map: "dynamic_map",
-  map_xl: "map_xl",
+  map_xl: "map_xl", // TODO: remove from FBJS
   disable_animations: "disable_animations",
   display_trail: "display_trail",
   encoder_figure: "encoder_figure",
