@@ -5,7 +5,7 @@ import { mount } from "enzyme";
 import { Controls } from "../controls";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
-  fakePeripheral, fakeWebcamFeed, fakeSensor, fakeSensorReading
+  fakePeripheral, fakeWebcamFeed, fakeSensor
 } from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { Props } from "../interfaces";
@@ -67,7 +67,7 @@ describe("<Controls />", () => {
 
   it("doesn't show sensor readings widget", () => {
     const p = fakeProps();
-    p.sensorReadings = [];
+    mockConfig.hide_sensors = true;
     const wrapper = mount(<Controls {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("sensor history");
@@ -75,7 +75,7 @@ describe("<Controls />", () => {
 
   it("shows sensor readings widget", () => {
     const p = fakeProps();
-    p.sensorReadings = [fakeSensorReading()];
+    mockConfig.hide_sensors = false;
     const wrapper = mount(<Controls {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("sensor history");

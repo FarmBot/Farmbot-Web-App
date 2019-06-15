@@ -250,14 +250,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/:plant_id/edit",
-    getModule,
-    key,
-    getChild: () => import("./farm_designer/plants/edit_plant_info"),
-    childKey: "EditPlantInfo"
-  }),
-  route({
-    children: true,
     $: "/designer/plants/:plant_id",
     getModule,
     key,
@@ -279,14 +271,6 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/plants/plant_inventory"),
     childKey: "Plants"
-  }),
-  route({
-    children: true,
-    $: "/designer/saved_gardens/templates/:plant_template_id/edit",
-    getModule,
-    key,
-    getChild: () => import("./farm_designer/plants/edit_plant_info"),
-    childKey: "EditPlantInfo"
   }),
   route({
     children: true,
