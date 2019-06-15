@@ -27,8 +27,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   encoder_figure: "encoder_figure",
   dynamic_map: "dynamic_map",
   xy_swap: "xy_swap",
-  map_xl: "map_xl", // TODO: remove from FBJS
-  // confirm_plant_deletion: "confirm_plant_deletion",
+  confirm_plant_deletion: "confirm_plant_deletion",
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",
