@@ -34,6 +34,8 @@ module Api
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
+    FARMBOT_GUEST_USER = "farmbot_guest"
+    GUEST_REGISTRY_ROOT = "guest_registry"
 
     class PasswordFailure < Exception; end
 
@@ -51,7 +53,12 @@ module Api
       #   "vhost"     => "/",
       #   "client_id" => "MQTT_FX_Client",
       case username_param
+      # NOTE: "guest" is not the same as "farmbot_guest".
+      #       We intentionally differentiate the
+      #       two types to avoid accidental
+      #       security issues. -RC
       when "guest" then deny
+      when FARMBOT_GUEST_USER then allow
       when "admin" then authenticate_admin
       else
         device_id_in_username == current_device.id ? allow : deny
@@ -102,6 +109,10 @@ module Api
       allow if admin?
     end
 
+    def farmbot_guest?
+      username_param == FARMBOT_GUEST_USER
+    end
+
     def admin?
       username_param == "admin"
     end
@@ -128,6 +139,8 @@ module Api
     end
 
     def deny
+      puts "==== #{action_name} ===="
+      pp params
       render json: "deny", status: 403
     end
 
@@ -162,9 +175,25 @@ module Api
     def if_topic_is_safe
       if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
-      else
-        render json: MALFORMED_TOPIC, status: 422
+        return
       end
+
+      if farmbot_guest?
+        a, b, c = routing_key_param.split(".")
+        if a == GUEST_REGISTRY_ROOT
+          puts "=========="
+          if !b.include?("*")
+            if !b.include?("#")
+              if c == nil
+                yield
+              end
+            end
+          end
+        end
+        return
+      end
+
+      render json: MALFORMED_TOPIC, status: 422
     end
 
     def device_id_in_topic
