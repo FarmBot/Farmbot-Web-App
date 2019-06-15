@@ -57,8 +57,17 @@ const maybeFindVariable = (
 
 const withPrefix = (label: string) => `${t("Location Variable")} - ${label}`;
 
+interface DetermineVarDDILabelProps {
+  label: string;
+  resources: ResourceIndex;
+  uuid?: UUID;
+  forceExternal?: boolean;
+}
+
 export const determineVarDDILabel =
-  (label: string, resources: ResourceIndex, uuid?: UUID): string => {
+  ({ label, resources, uuid, forceExternal }: DetermineVarDDILabelProps):
+    string => {
+    if (forceExternal) { return t("Externally defined"); }
     const variable = maybeFindVariable(label, resources, uuid);
     if (variable) {
       if (variable.celeryNode.kind === "parameter_declaration") {
@@ -78,8 +87,8 @@ export const determineDropdown =
   (node: VariableNode, resources: ResourceIndex, uuid?: UUID): DropDownItem => {
     if (node.kind === "parameter_declaration") {
       return {
-        label: t("Defined outside of sequence"),
-        value: "parameter_declaration"
+        label: t("Externally defined"),
+        value: "?"
       };
     }
 
@@ -90,7 +99,7 @@ export const determineDropdown =
         return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
       case "identifier":
         const { label } = data_value.args;
-        const varName = determineVarDDILabel(label, resources, uuid);
+        const varName = determineVarDDILabel({ label, resources, uuid });
         return { label: varName, value: "?" };
       // tslint:disable-next-line:no-any
       case "every_point" as any:

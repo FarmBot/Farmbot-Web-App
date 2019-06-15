@@ -872,9 +872,13 @@ ul {
 .farmware-button,
 .farmware-settings-menu {
   position: absolute !important;
-  top: 1rem;
+  top: 3rem;
   right: 3rem;
   float: right !important;
+}
+
+.farmware-settings-menu {
+  top: 1rem;
 }
 
 .farmware-settings-menu-contents {

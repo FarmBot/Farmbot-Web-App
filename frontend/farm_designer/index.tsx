@@ -1,7 +1,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
-import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
+import {
+  Props, State, BotOriginQuadrant, isBotOriginQuadrant
+} from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
@@ -11,7 +13,9 @@ import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import {
   getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName
 } from "./map/util";
-import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
+import {
+  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex
+} from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import {
@@ -111,7 +115,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       show_farmbot,
       show_images,
       show_sensor_readings,
-      bot_origin_quadrant,
       zoom_level
     } = this.state;
 
@@ -140,8 +143,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         className={this.mapPanelClassName}
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
-        updateBotOriginQuadrant={this.updateBotOriginQuadrant}
-        botOriginQuadrant={bot_origin_quadrant}
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
         showPoints={show_points}
@@ -182,7 +183,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
-          botOriginQuadrant={bot_origin_quadrant}
+          botOriginQuadrant={this.getBotOriginQuadrant()}
           gridSize={getGridSize(this.props.getConfigValue, botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}

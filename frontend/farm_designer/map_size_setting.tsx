@@ -1,19 +1,13 @@
 import * as React from "react";
 import {
   GetWebAppConfigValue, setWebAppConfigValue
-} from "../../config_storage/actions";
-import { t } from "../../i18next_wrapper";
-import { Row, Col } from "../../ui";
-import { NumericSetting } from "../../session_keys";
-import { Content } from "../../constants";
+} from "../config_storage/actions";
+import { t } from "../i18next_wrapper";
+import { Row, Col } from "../ui";
+import { NumericSetting } from "../session_keys";
 import {
   NumberConfigKey as WebAppNumberConfigKey
 } from "farmbot/dist/resources/configs/web_app";
-
-export interface MapSizeSettingProps {
-  getConfigValue: GetWebAppConfigValue;
-  dispatch: Function;
-}
 
 interface LengthInputProps {
   value: number;
@@ -24,10 +18,10 @@ interface LengthInputProps {
 
 const LengthInput = (props: LengthInputProps) =>
   <Row>
-    <Col xs={5}>
+    <Col xs={4}>
       <label style={{ float: "right" }}>{t(props.label)}</label>
     </Col>
-    <Col xs={7}>
+    <Col xs={5}>
       <input
         type="number"
         value={"" + props.value}
@@ -36,25 +30,7 @@ const LengthInput = (props: LengthInputProps) =>
     </Col>
   </Row>;
 
-export const MapSizeSetting =
-  ({ dispatch, getConfigValue }: MapSizeSettingProps) =>
-    <div className={"map-size-setting"}>
-      <Row>
-        <Col xs={4}>
-          <label>{t("garden map size")}</label>
-        </Col>
-        <Col xs={4}>
-          <p>{t(Content.MAP_SIZE)}</p>
-        </Col>
-        <Col xs={4}>
-          <MapSizeInputs
-            getConfigValue={getConfigValue}
-            dispatch={dispatch} />
-        </Col>
-      </Row>
-    </div>;
-
-interface MapSizeInputsProps {
+export interface MapSizeInputsProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
 }

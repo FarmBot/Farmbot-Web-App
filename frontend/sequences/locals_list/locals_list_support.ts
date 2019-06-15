@@ -55,8 +55,6 @@ interface CommonProps {
   collapsible?: boolean;
   collapsed?: boolean;
   toggleVarShow?: () => void;
-  /** Label to display for variable option in dropdown. */
-  listVarLabel?: string;
 }
 
 export interface LocalsListProps extends CommonProps {

@@ -474,16 +474,12 @@ export namespace Content {
     widget from the Controls page.`);
 
   export const DYNAMIC_MAP_SIZE =
-    trim(`Change the Farm Designer map size based on axis length.
+    trim(`Change the garden map size based on axis length.
     A value must be input in AXIS LENGTH and STOP AT MAX must be enabled in
     the HARDWARE widget. Overrides MAP SIZE values.`);
 
-  export const DOUBLE_MAP_DIMENSIONS =
-    trim(`Double the default dimensions of the Farm Designer map
-    for a map with four times the area. Overriden by MAP SIZE values.`);
-
   export const PLANT_ANIMATIONS =
-    trim(`Enable plant animations in the Farm Designer.`);
+    trim(`Enable plant animations in the garden map.`);
 
   export const BROWSER_SPEAK_LOGS =
     trim(`Have the browser also read aloud log messages on the
@@ -498,7 +494,7 @@ export namespace Content {
     will be discarded when refreshing or closing the page. Are you sure?`);
 
   export const VIRTUAL_TRAIL =
-    trim(`Display a virtual trail for FarmBot in the Farm Designer map to show
+    trim(`Display a virtual trail for FarmBot in the garden map to show
     movement and watering history while the map is open. Toggling this setting
     will clear data for the current trail.`);
 
@@ -523,9 +519,21 @@ export namespace Content {
     Are you sure you want to disable this feature?`);
 
   export const MAP_SIZE =
-    trim(`Specify custom Farm Designer Garden Map dimensions (in millimeters).
-    These values set the size of the garden map displayed in the designer
-    unless DYNAMIC MAP SIZE is enabled.`);
+    trim(`Specify custom map dimensions (in millimeters).
+    These values set the size of the garden map unless
+    DYNAMIC MAP SIZE is enabled.`);
+
+  export const MAP_SWAP_XY =
+    trim(`Swap map X and Y axes, making the Y axis horizontal and X axis
+    vertical. This setting will also swap the X and Y jog control buttons
+    in the Move widget.`);
+
+  export const MAP_ORIGIN =
+    trim(`Select a map origin by clicking on one of the four quadrants to
+    adjust the garden map to your viewing angle.`);
+
+  export const CONFIRM_PLANT_DELETION =
+    trim(`Show a confirmation dialog when deleting a plant.`);
 
   // Device
   export const NOT_HTTPS =

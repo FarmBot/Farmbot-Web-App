@@ -3,8 +3,8 @@ export const BASE_URL = "https://software.farm.bot/docs/";
 /** A centralized list of all documentation slugs in the app makes it easier to
  * rename / move links in the future. */
 export const DOC_SLUGS = {
-  "farmware#section-weed-detector": "Weed Detector",
-  "farmware#section-camera-calibration": "Camera Calibration",
+  "weed-detection": "Weed Detector",
+  "camera-calibration": "Camera Calibration",
   "the-farmbot-web-app": "Web App",
   "farmware": "Farmware",
 };

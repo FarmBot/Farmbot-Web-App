@@ -8,6 +8,7 @@ import { history } from "../../history";
 import { PlantStage } from "farmbot";
 import { TaggedPlant } from "../map/interfaces";
 import { isNumber, get } from "lodash";
+import { getWebAppConfigValue } from "../../config_storage/actions";
 
 export function mapStateToProps(props: Everything): EditPlantInfoProps {
   const openedSavedGarden =
@@ -28,6 +29,7 @@ export function mapStateToProps(props: Everything): EditPlantInfoProps {
     push: history.push,
     dispatch: props.dispatch,
     timeSettings: maybeGetTimeSettings(props.resources.index),
+    getConfigValue: getWebAppConfigValue(() => props),
   };
 }
 

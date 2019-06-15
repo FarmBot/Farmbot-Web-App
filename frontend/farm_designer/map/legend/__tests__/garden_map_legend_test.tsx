@@ -5,12 +5,10 @@ jest.mock("../../../../history", () => ({
 
 let mockAtMax = false;
 let mockAtMin = false;
-jest.mock("../../zoom", () => {
-  return {
-    atMaxZoom: () => mockAtMax,
-    atMinZoom: () => mockAtMin,
-  };
-});
+jest.mock("../../zoom", () => ({
+  atMaxZoom: () => mockAtMax,
+  atMinZoom: () => mockAtMin,
+}));
 
 let mockDev = false;
 jest.mock("../../../../account/dev/dev_support", () => ({
@@ -22,20 +20,20 @@ jest.mock("../../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  GardenMapLegend, ZoomControls, PointsSubMenu, RotationSelector
+  GardenMapLegend, ZoomControls, PointsSubMenu
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
-import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
+import {
+  fakeTimeSettings
+} from "../../../../__test_support__/fake_time_settings";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
     zoom: () => () => undefined,
     toggle: () => () => undefined,
-    updateBotOriginQuadrant: () => () => undefined,
-    botOriginQuadrant: 2,
     legendMenuOpen: true,
     showPlants: false,
     showPoints: false,
@@ -52,7 +50,7 @@ describe("<GardenMapLegend />", () => {
 
   it("renders", () => {
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    ["plants", "origin", "move"].map(string =>
+    ["plants", "move"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).not.toContain("extras");
@@ -115,21 +113,5 @@ describe("<PointsSubMenu />", () => {
     expect(toggleBtn.props().value).toEqual(true);
     toggleBtn.simulate("click");
     expect(toggle).toHaveBeenCalledWith(BooleanSetting.show_historic_points);
-  });
-});
-
-describe("<RotationSelector />", () => {
-  it("swaps map x&y", () => {
-    const dispatch = jest.fn();
-    const wrapper = mount(<RotationSelector
-      dispatch={dispatch} value={false} />);
-    wrapper.find("button").simulate("click");
-    expect(dispatch).toHaveBeenCalled();
-  });
-
-  it("shows correct status", () => {
-    const wrapper = mount(<RotationSelector
-      dispatch={jest.fn()} value={true} />);
-    expect(wrapper.find("button").hasClass("green")).toBeTruthy();
   });
 });

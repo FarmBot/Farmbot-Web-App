@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { getDevice } from "../device";
 import { FarmwareConfigMenuProps } from "./interfaces";
 import { commandErr } from "../devices/actions";
@@ -8,6 +7,7 @@ import { destroyAll } from "../api/crud";
 import { success, error } from "farmbot-toastr";
 import { Feature } from "../devices/interfaces";
 import { t } from "../i18next_wrapper";
+import { BooleanSetting } from "../session_keys";
 
 /** First-party Farmware settings. */
 export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
@@ -34,8 +34,8 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className={"fb-button fb-toggle-button " + listBtnColor}
-        onClick={() =>
-          props.dispatch(toggleWebAppBool("show_first_party_farmware"))} />
+        onClick={() => props.dispatch(
+          toggleWebAppBool(BooleanSetting.show_first_party_farmware))} />
     </fieldset>
     {props.shouldDisplay(Feature.api_farmware_env) &&
       <fieldset>

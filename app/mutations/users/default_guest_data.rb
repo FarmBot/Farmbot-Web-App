@@ -132,7 +132,6 @@
     encoder_figure: false,
     hide_webcam_widget: false,
     legend_menu_open: true,
-    map_xl: false,
     raw_encoders: false,
     scaled_encoders: false,
     show_spread: false,

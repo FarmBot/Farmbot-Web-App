@@ -25,6 +25,7 @@ import { getDevice } from "../../device";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { destroyAll } from "../../api/crud";
 import { success, error } from "farmbot-toastr";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmwareConfigMenu />", () => {
   const fakeProps = (): FarmwareConfigMenuProps => ({
@@ -57,7 +58,8 @@ describe("<FarmwareConfigMenu />", () => {
     expect(button.hasClass("green")).toBeTruthy();
     expect(button.hasClass("fb-toggle-button")).toBeTruthy();
     button.simulate("click");
-    expect(toggleWebAppBool).toHaveBeenCalledWith("show_first_party_farmware");
+    expect(toggleWebAppBool).toHaveBeenCalledWith(
+      BooleanSetting.show_first_party_farmware);
   });
 
   it("1st party farmware display is disabled", () => {
