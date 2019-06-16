@@ -5,54 +5,78 @@ import { stopIE } from "../util/stop_ie";
 import I from "i18next";
 import React from "react";
 import { uuid } from "farmbot";
+import axios from "axios";
+
+// TYPES AND INTERFACES ==========================
 
 interface State {
   client?: MqttClient;
-  connected: boolean;
-  secret: string;
+  error: Error | undefined;
 }
+
+// CONSTANTS =====================================
 
 const WS_CONFIG = {
   username: "farmbot_guest",
   password: "required, but not used.",
-  // protocolId: "MQIsdp",
-  // protocolVersion: 3
 };
+
+const SECRET = uuid().split("-").join("");
+const MQTT_CHAN = "guest_registry/" + SECRET;
+const HTTP_URL = "/api/guest_account";
+
+// APPLICATION CODE ==============================
 
 export class DemoLoader extends React.Component<{}, State> {
   state: State = {
     client: undefined,
-    connected: false,
-    secret: uuid()
+    error: undefined
   };
 
+  setError =
+    (error?: Error) => this.setState({ error });
+
   componentWillMount() {
-    const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
-
-    client.on("close", (x: {}) => console.log("close" + JSON.stringify(x)));
-    client.on("connect", (x: {}) => console.log("connect" + JSON.stringify(x)));
-    client.on("disconnect", (x: {}) => console.log("disconnect" + JSON.stringify(x)));
-    client.on("end", (x: {}) => console.log("end" + JSON.stringify(x)));
-    client.on("error", (x: {}) => console.log("error" + JSON.stringify(x)));
-    client.on("message", (x: {}) => console.log("message" + JSON.stringify(x)));
-    client.on("offline", (x: {}) => console.log("offline" + JSON.stringify(x)));
-    client.on("packetreceive", (x: {}) => console.log("packetreceive" + JSON.stringify(x)));
-    client.on("packetsend", (x: {}) => console.log("packetsend" + JSON.stringify(x)));
-    client.on("reconnect", (x: {}) => console.log("reconnect" + JSON.stringify(x)));
-
-    const channel = "guest_registry." + this.state.secret;
-
-    client.subscribe(channel, (error, ok) => {
-      if (error) { console.error(error); } else { console.dir(ok); }
-    });
-
+    const client =
+      connect(globalConfig.MQTT_WS, WS_CONFIG);
     this.setState({ client });
+    client.on("message", this.handleMessage);
+    client.subscribe(MQTT_CHAN, this.setError);
+  }
+
+  handleMessage =
+    (chan: string, buffer: Buffer) => {
+      debugger;
+    }
+
+  requestAccount = () => {
+    axios
+      .post<string>(HTTP_URL, { secret: SECRET })
+      .then(console.dir)
+      .catch(this.setError);
+  };
+
+  ok = () => <button onClick={this.requestAccount}>
+    TRY FARMBOT
+  </button>;
+
+  no = () => {
+    const message =
+      // tslint:disable-next-line:no-null-keyword
+      JSON.stringify(this.state.error, null, 2);
+
+    return <pre>
+      {message}
+    </pre>;
   }
 
   render() {
-    return <div>Hello, world!</div>;
+    return this.state.error ?
+      this.no() : this.ok();
   }
 }
+
+// BOOTSTRAPPING CODE ============================
 
 stopIE();
 

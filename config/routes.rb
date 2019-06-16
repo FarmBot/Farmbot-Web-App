@@ -27,6 +27,7 @@ FarmBot::Application.routes.draw do
 
     # Singular API Resources:
     {
+      guest_account: [:create],
       device_cert: [:create],
       device: [:create, :destroy, :show, :update],
       fbos_config: [:destroy, :show, :update],

@@ -139,8 +139,6 @@ module Api
     end
 
     def deny
-      puts "==== #{action_name} ===="
-      pp params
       render json: "deny", status: 403
     end
 
@@ -180,16 +178,21 @@ module Api
 
       if farmbot_guest?
         a, b, c = routing_key_param.split(".")
-        if a == GUEST_REGISTRY_ROOT
-          puts "=========="
-          if !b.include?("*")
-            if !b.include?("#")
-              if c == nil
-                yield
-              end
-            end
-          end
-        end
+
+        # First check- is it the correct root level?
+        return if a != GUEST_REGISTRY_ROOT
+
+        # Second check- is the user maliciously
+        #               trying to subscribe to
+        #               wildcard topics?
+        return if b.include?("*")
+        return if b.include?("#")
+
+        # Third check- Ensure subscription is only
+        #              2 levels deep.
+        return if c.present?
+
+        yield
         return
       end
 
