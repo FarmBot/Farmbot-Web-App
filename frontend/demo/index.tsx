@@ -12,6 +12,7 @@ import axios from "axios";
 interface State {
   client?: MqttClient;
   error: Error | undefined;
+  stage: string;
 }
 
 // CONSTANTS =====================================
@@ -30,7 +31,8 @@ const HTTP_URL = "/api/guest_account";
 export class DemoLoader extends React.Component<{}, State> {
   state: State = {
     client: undefined,
-    error: undefined
+    error: undefined,
+    stage: "Try FarmBot"
   };
 
   setError =
@@ -45,19 +47,24 @@ export class DemoLoader extends React.Component<{}, State> {
   }
 
   handleMessage =
-    (chan: string, buffer: Buffer) => {
-      debugger;
+    (_chan: string, _buffer: Buffer) => {
+      localStorage.setItem("session", _buffer.toString());
+      location.assign("/app/messages");
     }
 
   requestAccount = () => {
+    this.setState({ stage: "Request sent" });
+
     axios
       .post<string>(HTTP_URL, { secret: SECRET })
-      .then(console.dir)
+      .then(() => {
+        this.setState({ stage: "Request Received. Waiting" });
+      })
       .catch(this.setError);
   };
 
   ok = () => <button onClick={this.requestAccount}>
-    TRY FARMBOT
+    {this.state.stage}
   </button>;
 
   no = () => {
