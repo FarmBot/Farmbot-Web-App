@@ -69,8 +69,7 @@ module Api
     private
 
     def create_params
-      @create_params ||=
-        { secret: params[:secret] }
+      @create_params ||= { secret: raw_json.fetch(:secret) }
     end
   end
 end
