@@ -147,51 +147,68 @@ module Api
     end
 
     def username_param
-      @username ||= params["username"]
+      @username ||= params.fetch("username")
     end
 
     def password_param
-      @password ||= params["password"]
+      @password ||= params.fetch("password")
     end
 
     def routing_key_param
-      @routing_key ||= params["routing_key"]
+      @routing_key ||= params.fetch("routing_key")
     end
 
     def vhost_param
-      @vhost ||= params["vhost"]
+      @vhost ||= params.fetch("vhost")
     end
 
     def resource_param
-      @resource ||= params["resource"]
+      @resource ||= params.fetch("resource")
     end
 
     def permission_param
-      @permission ||= params["permission"]
+      @permission ||= params.fetch("permission")
     end
 
     def if_topic_is_safe
-      if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
+      if farmbot_guest?
+        a, b, c = (routing_key_param || "").split(".")
+
+        if !["read"].include?(permission_param)
+          deny
+          return
+        end
+
+        unless a == GUEST_REGISTRY_ROOT
+          deny
+          return
+        end
+
+        if b.nil?
+          deny
+          return
+        end
+
+        if b.include?("*")
+          deny
+          return
+        end
+
+        if b.include?("#")
+          deny
+          return
+        end
+
+        if c.present?
+          deny
+          return
+        end
+
         yield
         return
       end
 
-      if farmbot_guest?
-        a, b, c = routing_key_param.split(".")
-
-        # First check- is it the correct root level?
-        return if a != GUEST_REGISTRY_ROOT
-
-        # Second check- is the user maliciously
-        #               trying to subscribe to
-        #               wildcard topics?
-        return if b.include?("*")
-        return if b.include?("#")
-
-        # Third check- Ensure subscription is only
-        #              2 levels deep.
-        return if c.present?
-
+      if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
         return
       end

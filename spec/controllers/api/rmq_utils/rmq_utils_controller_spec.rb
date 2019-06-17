@@ -187,4 +187,47 @@ describe Api::RmqUtilsController do
      ".status_v8.*",
      ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
   end
+
+  sneaky_topics = ["guest_registry",
+                   "guest_registry.#",
+                   "guest_registry.*",
+                   "guest_registry.#.#",
+                   "guest_registry.*.*",
+                   "guest_registry.#.*",
+                   "guest_registry.*.#",
+                   "guest_registry.#.d3f91ygdrajxn8jk",
+                   "guest_registry.*.d3f91ygdrajxn8jk",
+                   "guest_registry.d3f91ygdrajxn8jk.#",
+                   "guest_registry.d3f91ygdrajxn8jk.*",
+                   "guest_registry.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
+                   nil]
+
+  # it "invalidates sneaky guest topic names" do
+  device_8 = "device_#{FactoryBot.create(:device).id}"
+  possible_attackers = [
+    # ["username", "permission"]
+    ["farmbot_guest", "read"],
+    ["farmbot_guest", "write"],
+    ["farmbot_guest", "configure"],
+    ["farmbot_guest", nil],
+    [device_8, "read"],
+    [device_8, "write"],
+    [device_8, "configure"],
+    [device_8, nil],
+  ]
+  TEST_NAME_TPL = "%{username} %{permission}-ing %{routing_key}"
+  possible_attackers.map do |(username, permission)|
+    sneaky_topics.map do |topic|
+      p = { username: username, permission: permission, routing_key: topic }
+      it(TEST_NAME_TPL % p) do
+        post :topic_action, params: p
+        if response.status == 422
+          expect(response.body).to(include("malformed"))
+        else
+          expect(response.body).to(eq("deny"))
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+  end
 end
