@@ -195,6 +195,17 @@ describe Api::RmqUtilsController do
     expect(response.body).to eq("allow")
   end
 
+  it "allows expected farmbot_guest topics" do
+    p = {
+      username: "farmbot_guest",
+      permission: "read",
+      routing_key: "guest_registry.d3f91ygdrajxn8jk",
+    }
+    post :topic_action, params: p
+    expect(response.body).to(eq("allow"))
+    expect(response.status).to eq(200)
+  end
+
   sneaky_topics = ["guest_registry",
                    "guest_registry.#",
                    "guest_registry.*",

@@ -53,8 +53,6 @@ module Api
       end
 
       def broadcast_the_token
-        puts "=" * 22
-
         fbos_version = Api::AbstractController::EXPECTED_VER
         routing_key =
           [Api::RmqUtilsController::GUEST_REGISTRY_ROOT, secret].join(".")
