@@ -53,12 +53,7 @@ module Api
       end
 
       def broadcast_the_token
-        fbos_version = Api::AbstractController::EXPECTED_VER
-        routing_key =
-          [Api::RmqUtilsController::GUEST_REGISTRY_ROOT, secret].join(".")
-        payload =
-          SessionToken.as_json(user, "GUEST", fbos_version).to_json
-        Transport.current.raw_amqp_send(payload, routing_key)
+        Transport.current.send_guest_token_to(user, secret)
       end
     end
 

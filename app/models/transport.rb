@@ -57,6 +57,15 @@ class Transport
       .topic("amq.topic", auto_delete: true)
   end
 
+  def send_guest_token_to(user, secret)
+    fbos_version = Api::AbstractController::EXPECTED_VER
+    routing_key =
+      [Api::RmqUtilsController::GUEST_REGISTRY_ROOT, secret].join(".")
+    payload =
+      SessionToken.as_json(user, "GUEST", fbos_version).to_json
+    raw_amqp_send(payload, routing_key)
+  end
+
   def amqp_send(message, id, channel)
     raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
     routing_key = "bot.device_#{id}.#{channel}"
