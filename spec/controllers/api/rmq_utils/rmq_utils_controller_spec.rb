@@ -188,6 +188,13 @@ describe Api::RmqUtilsController do
      ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
   end
 
+  it "allows farmbot_guest users, regardless of password" do
+    p = { username: "farmbot_guest", password: SecureRandom.alphanumeric }
+    post :user_action, params: p
+    expect(response.status).to eq(200)
+    expect(response.body).to eq("allow")
+  end
+
   sneaky_topics = ["guest_registry",
                    "guest_registry.#",
                    "guest_registry.*",
