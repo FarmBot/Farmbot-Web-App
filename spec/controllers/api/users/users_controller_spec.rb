@@ -136,6 +136,7 @@ describe Api::UsersController do
         tags = user.device.alerts.pluck(:problem_tag)
         defaults = Alert::DEFAULTS.index_by { |x| x.fetch(:problem_tag) }
         defaults.delete(Alert::BULLETIN.fetch(:problem_tag))
+        defaults.delete(Alert::DEMO.fetch(:problem_tag))
         defaults.map do |(problem_tag, data)|
           expect(tags).to include(problem_tag)
           alert = user.device.alerts.find_by(problem_tag: problem_tag)
