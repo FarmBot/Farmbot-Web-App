@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
       @current_device
     else
       @current_device = (current_user.try(:device) || no_device)
-      Device.current  = @current_device # Mutable state eww
+      Device.current = @current_device # Mutable state eww
       @current_device
     end
   end
