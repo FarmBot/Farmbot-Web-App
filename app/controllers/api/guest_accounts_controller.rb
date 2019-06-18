@@ -49,7 +49,7 @@ module Api
 
       def seed_user
         Devices::CreateSeedData.run!(device: user.device,
-                                     product_line: "express_xl_1.0")
+                                     product_line: "guest_account")
       end
 
       def broadcast_the_token
