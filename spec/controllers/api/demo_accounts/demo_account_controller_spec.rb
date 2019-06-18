@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Api::GuestAccountsController do
+describe Api::DemoAccountsController do
   include Devise::Test::ControllerHelpers
 
   describe "#create" do
@@ -12,7 +12,7 @@ describe Api::GuestAccountsController do
       user, secret_again = Transport
         .current
         .calls
-        .fetch(:send_guest_token_to)
+        .fetch(:send_demo_token_to)
         .last
       expect(response.status).to eq(200)
       expect(json).to eq({})

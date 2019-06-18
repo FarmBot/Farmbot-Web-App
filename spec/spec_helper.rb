@@ -24,7 +24,7 @@ require File.expand_path("../../config/environment", __FILE__)
 class FakeTransport < Transport
   # Theses are the "real" I/O inducing methods that must be Stubbed out.
   MOCKED_METHODS = [:bind, :create_channel, :publish, :queue,
-                    :send_guest_token_to, :subscribe, :topic]
+                    :send_demo_token_to, :subscribe, :topic]
 
   # When you call an AMQP I/O method, instead of doing real I/O, it will deposit
   # the call into the @calls dictionary for observation.

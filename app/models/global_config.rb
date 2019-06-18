@@ -24,8 +24,8 @@ class GlobalConfig < ApplicationRecord
     "NODE_ENV" => Rails.env || "development",
     "LONG_REVISION" => LONG_REVISION,
     "SHORT_REVISION" => LONG_REVISION.first(8),
-    # We only need this for the guest tour.
-    # Remove it if the guest tour does not require it.
+    # We only need this for the demo tour.
+    # Remove it if the demo tour does not require it.
     "MQTT_WS" => SessionToken::MQTT_WS,
   }.map do |(key, value)|
     self.find_or_create_by(key: key).update_attributes(key: key, value: value)

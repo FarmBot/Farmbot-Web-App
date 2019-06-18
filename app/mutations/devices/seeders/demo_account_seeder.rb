@@ -1,12 +1,12 @@
 module Devices
   module Seeders
-    class GuestAccountSeeder < ExpressXlOneZero
+    class DemoAccountSeeder < ExpressXlOneZero
       BASE_URL = "/app-resources/img/demo_accounts/"
       FEEDS = {
-        "Express" => "Express_Demo_Webcam.JPG",
         "Express XL" => "Express_XL_Demo_Webcam.JPG",
-        "Genesis" => "Genesis_Demo_Webcam.jpg",
+        "Express" => "Express_Demo_Webcam.JPG",
         "Genesis XL" => "Genesis_XL_Demo_Webcam.jpg",
+        "Genesis" => "Genesis_Demo_Webcam.jpg",
       }
 
       def webcam_feeds

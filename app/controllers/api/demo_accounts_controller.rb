@@ -1,5 +1,5 @@
 module Api
-  class GuestAccountsController < Api::AbstractController
+  class DemoAccountsController < Api::AbstractController
     skip_before_action :authenticate_user!, only: :create
 
     # Usually mutations go in seperate files.
@@ -49,11 +49,11 @@ module Api
 
       def seed_user
         Devices::CreateSeedData.run!(device: user.device,
-                                     product_line: "guest_account")
+                                     product_line: "demo_account")
       end
 
       def broadcast_the_token
-        Transport.current.send_guest_token_to(user, secret)
+        Transport.current.send_demo_token_to(user, secret)
       end
     end
 

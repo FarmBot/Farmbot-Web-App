@@ -9,7 +9,7 @@ module Devices
       "genesis_1.4" => Devices::Seeders::GenesisOneFour,
       "genesis_xl_1.4" => Devices::Seeders::GenesisXlOneFour,
 
-      "guest_account" => Devices::Seeders::GuestAccountSeeder,
+      "demo_account" => Devices::Seeders::DemoAccountSeeder,
       "none" => Devices::Seeders::None,
     }
 

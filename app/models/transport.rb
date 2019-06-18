@@ -57,7 +57,7 @@ class Transport
       .topic("amq.topic", auto_delete: true)
   end
 
-  def send_guest_token_to(user, secret)
+  def send_demo_token_to(user, secret)
     fbos_version = Api::AbstractController::EXPECTED_VER
     routing_key =
       [Api::RmqUtilsController::GUEST_REGISTRY_ROOT, secret].join(".")

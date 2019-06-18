@@ -34,8 +34,8 @@ module Api
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
-    FARMBOT_GUEST_USER = "farmbot_guest"
-    GUEST_REGISTRY_ROOT = "guest_registry"
+    FARMBOT_DEMO_USER = "farmbot_demo"
+    DEMO_REGISTRY_ROOT = "demos"
 
     class PasswordFailure < Exception; end
 
@@ -53,12 +53,12 @@ module Api
       #   "vhost"     => "/",
       #   "client_id" => "MQTT_FX_Client",
       case username_param
-      # NOTE: "guest" is not the same as "farmbot_guest".
-      #       We intentionally differentiate the
-      #       two types to avoid accidental
+      # NOTE: "guest" is not the same as
+      #       "farmbot_demo". We intentionally
+      #       differentiate to avoid accidental
       #       security issues. -RC
       when "guest" then deny
-      when FARMBOT_GUEST_USER then allow
+      when FARMBOT_DEMO_USER then allow
       when "admin" then authenticate_admin
       else
         device_id_in_username == current_device.id ? allow : deny
@@ -109,8 +109,8 @@ module Api
       allow if admin?
     end
 
-    def farmbot_guest?
-      username_param == FARMBOT_GUEST_USER
+    def farmbot_demo?
+      username_param == FARMBOT_DEMO_USER
     end
 
     def admin?
@@ -171,7 +171,7 @@ module Api
     end
 
     def if_topic_is_safe
-      if farmbot_guest?
+      if farmbot_demo?
         a, b, c = (routing_key_param || "").split(".")
 
         if !["read"].include?(permission_param)
@@ -179,7 +179,7 @@ module Api
           return
         end
 
-        unless a == GUEST_REGISTRY_ROOT
+        unless a == DEMO_REGISTRY_ROOT
           deny
           return
         end

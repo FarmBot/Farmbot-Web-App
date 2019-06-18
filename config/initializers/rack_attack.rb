@@ -9,7 +9,7 @@ class Rack::Attack
     req.ip if req.url.include?("/sync")
   end
 
-  ### Don't allow too many guest accounts ###
+  ### Don't allow too many demo account requests ###
   throttle("demo_accounts/ip", limit: 10, period: 10.minutes) do |req|
     req.ip if req.path.downcase == "/demo"
   end

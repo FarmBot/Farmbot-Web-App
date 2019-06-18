@@ -14,11 +14,11 @@ describe Transport do
     end
   end
 
-  it "sends guest credentials to guest user" do
+  it "sends demo credentials to non-registered users" do
     user = FactoryBot.create(:user)
     secret = SecureRandom.alphanumeric
     t = TransportTest.new
-    t.send_guest_token_to(user, secret)
+    t.send_demo_token_to(user, secret)
     call = t.collector.first
     token = JSON.parse(call.fetch(:message), symbolize_names: true)
     actual_secret = call.fetch(:routing_key).split(".").last
