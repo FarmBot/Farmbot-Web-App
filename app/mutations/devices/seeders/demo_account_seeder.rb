@@ -8,6 +8,7 @@ module Devices
         "Genesis XL" => "Genesis_XL_Demo_Webcam.jpg",
         "Genesis" => "Genesis_Demo_Webcam.jpg",
       }
+      UNUSED_ALERTS = ["api.seed_data.missing", "api.user.not_welcomed"]
 
       def webcam_feeds
         # device.webcam_feeds.destroy_all!
@@ -17,6 +18,13 @@ module Devices
                 device: device }
           WebcamFeeds::Create.run!(p)
         end
+      end
+
+      def misc
+        device
+          .alerts
+          .where(problem_tag: UNUSED_ALERTS)
+          .destroy_all
       end
     end
   end

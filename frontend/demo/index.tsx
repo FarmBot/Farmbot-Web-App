@@ -18,13 +18,13 @@ interface State {
 // CONSTANTS =====================================
 
 const WS_CONFIG = {
-  username: "farmbot_guest",
+  username: "farmbot_demo",
   password: "required, but not used.",
 };
 
 const SECRET = uuid().split("-").join("");
-const MQTT_CHAN = "guest_registry/" + SECRET;
-const HTTP_URL = "/api/guest_account";
+const MQTT_CHAN = "demos/" + SECRET;
+const HTTP_URL = "/api/demo_account";
 
 // APPLICATION CODE ==============================
 
@@ -49,7 +49,7 @@ export class DemoLoader extends React.Component<{}, State> {
   handleMessage =
     (_chan: string, _buffer: Buffer) => {
       localStorage.setItem("session", _buffer.toString());
-      location.assign("/app/messages");
+      location.assign("/app/designer/plants");
     }
 
   requestAccount = () => {

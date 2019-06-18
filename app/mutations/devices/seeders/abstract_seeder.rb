@@ -53,6 +53,9 @@ module Devices
 
         # WEBCAM FEEDS ===========================
         :webcam_feeds,
+
+        # EVERYTHING ELSE ========================
+        :misc,
       ]
 
       unless Rails.env.production?
@@ -236,6 +239,7 @@ module Devices
       end
 
       def webcam_feeds; end
+      def misc; end
     end
   end
 end
