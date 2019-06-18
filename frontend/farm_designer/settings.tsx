@@ -120,7 +120,7 @@ const DESIGNER_SETTINGS =
     {
       title: t("Confirm plant deletion"),
       description: t(Content.CONFIRM_PLANT_DELETION),
-      setting: "confirm_plant_deletion" as BooleanConfigKey,
+      setting: BooleanSetting.confirm_plant_deletion,
       defaultOn: true,
     },
   ]);

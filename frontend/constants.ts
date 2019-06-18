@@ -461,6 +461,21 @@ export namespace Content {
     based on the type of electronics in your FarmBot according to the reference
     table below.`);
 
+  export const DEMO_ACCOUNT =
+    trim(`Thanks for trying out the FarmBot web app!
+    This is a great way to introduce yourself to building sequences,
+    regimens, events, and designing a virtual garden.`);
+
+  export const DEMO_NOTE =
+    trim(`not all features of the app will work because there is not a
+    real FarmBot connected to this account. Additionally, keep in mind
+    that when you leave this web page, the demo account and all data will
+    be deleted.`);
+
+  export const MAKE_A_REAL_ACCOUNT =
+    trim(`If you want to play around and keep your data, feel free to make a
+    real account at`);
+
   // App Settings
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when deleting a sequence step.`);
