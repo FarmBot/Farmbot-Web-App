@@ -19,6 +19,7 @@
       window.process = { env: { NODE_ENV: <%= raw(Rails.env.inspect) %> } }
     </script>
     <%= render "addons" %>
+    <%= yield :head %>
   </head>
   <body>
     <h1 class="initial-loading-text">Loading...</h1>

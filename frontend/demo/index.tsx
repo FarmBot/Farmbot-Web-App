@@ -16,7 +16,8 @@ interface State {
 }
 
 // CONSTANTS =====================================
-
+const VIDEO_URL =
+  "https://cdn.shopify.com/s/files/1/2040/0289/files/Farm_Designer_Loop.mp4?9552037556691879018";
 const WS_CONFIG = {
   username: "farmbot_demo",
   password: "required, but not used.",
@@ -32,7 +33,7 @@ export class DemoLoader extends React.Component<{}, State> {
   state: State = {
     client: undefined,
     error: undefined,
-    stage: "Try FarmBot"
+    stage: "DEMO THE APP"
   };
 
   setError =
@@ -63,9 +64,17 @@ export class DemoLoader extends React.Component<{}, State> {
       .catch(this.setError);
   };
 
-  ok = () => <button onClick={this.requestAccount}>
-    {this.state.stage}
-  </button>;
+  ok = () => {
+
+    return <div className="demo-container">
+      <video muted={false} autoplay={true} loop={true} className="demo-video">
+        <source src={VIDEO_URL} type="video/mp4" />
+      </video>
+      <button className="demo-button" onClick={this.requestAccount}>
+        {this.state.stage}
+      </button>
+    </div>;
+  };
 
   no = () => {
     const message =

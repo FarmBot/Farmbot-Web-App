@@ -75,6 +75,14 @@ namespace :api do
     parcel "build"
   end
 
+  desc "Clean out old demo accounts"
+  task clean_demo_accounts: :environment do
+    User
+      .where("email ILIKE '%@farmbot.guest%'")
+      .where("updated_at < ?", 1.hour.ago)
+      .destroy_all
+  end
+
   desc "Reset _everything_, including your database"
   task :reset do
     puts "This is going to destroy _ALL_ of your local Farmbot SQL data and " \
