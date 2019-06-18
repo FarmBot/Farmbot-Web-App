@@ -10,7 +10,7 @@ import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { isString, isUndefined } from "lodash";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { BooleanSetting } from "../../session_keys";
 
 @connect(mapStateToProps)
 export class PlantInfo extends React.Component<EditPlantInfoProps, {}> {
@@ -19,7 +19,7 @@ export class PlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get plant() { return this.props.findPlant(this.stringyID); }
   get confirmDelete() {
     const confirmSetting = this.props.getConfigValue(
-      "confirm_plant_deletion" as BooleanConfigKey);
+      BooleanSetting.confirm_plant_deletion);
     return isUndefined(confirmSetting) ? true : confirmSetting;
   }
 
