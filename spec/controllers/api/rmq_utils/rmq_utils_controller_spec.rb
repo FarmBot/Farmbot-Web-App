@@ -189,7 +189,7 @@ describe Api::RmqUtilsController do
   end
 
   it "allows farmbot_guest users, regardless of password" do
-    p = { username: "farmbot_guest", password: SecureRandom.alphanumeric }
+    p = { username: "farmbot_demo", password: SecureRandom.alphanumeric }
     post :user_action, params: p
     expect(response.status).to eq(200)
     expect(response.body).to eq("allow")
@@ -197,37 +197,37 @@ describe Api::RmqUtilsController do
 
   it "allows expected farmbot_guest topics" do
     p = {
-      username: "farmbot_guest",
+      username: "farmbot_demo",
       permission: "read",
-      routing_key: "guest_registry.d3f91ygdrajxn8jk",
+      routing_key: "demos.d3f91ygdrajxn8jk",
     }
     post :topic_action, params: p
     expect(response.body).to(eq("allow"))
     expect(response.status).to eq(200)
   end
 
-  sneaky_topics = ["guest_registry",
-                   "guest_registry.#",
-                   "guest_registry.*",
-                   "guest_registry.#.#",
-                   "guest_registry.*.*",
-                   "guest_registry.#.*",
-                   "guest_registry.*.#",
-                   "guest_registry.#.d3f91ygdrajxn8jk",
-                   "guest_registry.*.d3f91ygdrajxn8jk",
-                   "guest_registry.d3f91ygdrajxn8jk.#",
-                   "guest_registry.d3f91ygdrajxn8jk.*",
-                   "guest_registry.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
+  sneaky_topics = ["demos",
+                   "demos.#",
+                   "demos.*",
+                   "demos.#.#",
+                   "demos.*.*",
+                   "demos.#.*",
+                   "demos.*.#",
+                   "demos.#.d3f91ygdrajxn8jk",
+                   "demos.*.d3f91ygdrajxn8jk",
+                   "demos.d3f91ygdrajxn8jk.#",
+                   "demos.d3f91ygdrajxn8jk.*",
+                   "demos.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
                    nil]
 
   # it "invalidates sneaky guest topic names" do
   device_8 = "device_#{FactoryBot.create(:device).id}"
   possible_attackers = [
     # ["username", "permission"]
-    ["farmbot_guest", "read"],
-    ["farmbot_guest", "write"],
-    ["farmbot_guest", "configure"],
-    ["farmbot_guest", nil],
+    ["farmbot_demo", "read"],
+    ["farmbot_demo", "write"],
+    ["farmbot_demo", "configure"],
+    ["farmbot_demo", nil],
     [device_8, "read"],
     [device_8, "write"],
     [device_8, "configure"],

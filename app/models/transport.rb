@@ -60,7 +60,7 @@ class Transport
   def send_demo_token_to(user, secret)
     fbos_version = Api::AbstractController::EXPECTED_VER
     routing_key =
-      [Api::RmqUtilsController::GUEST_REGISTRY_ROOT, secret].join(".")
+      [Api::RmqUtilsController::DEMO_REGISTRY_ROOT, secret].join(".")
     payload =
       SessionToken.as_json(user, "GUEST", fbos_version).to_json
     raw_amqp_send(payload, routing_key)

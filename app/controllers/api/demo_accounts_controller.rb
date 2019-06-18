@@ -3,11 +3,11 @@ module Api
     skip_before_action :authenticate_user!, only: :create
 
     # Usually mutations go in seperate files.
-    # In the case of Guest accounts, I want the
+    # In the case of demo accounts, I want the
     # feature to be easy to delete. If we decide
     # that things are working fine later on, we
     # can move this out.
-    class CreateGuest < Mutations::Command
+    class CreateDemo < Mutations::Command
       required { string :secret }
 
       def execute
@@ -58,7 +58,7 @@ module Api
     end
 
     def create
-      mutate CreateGuest.run(create_params)
+      mutate CreateDemo.run(create_params)
     end
 
     private
