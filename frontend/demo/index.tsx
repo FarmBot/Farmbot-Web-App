@@ -54,12 +54,12 @@ export class DemoLoader extends React.Component<{}, State> {
     }
 
   requestAccount = () => {
-    this.setState({ stage: "Request sent" });
-
+    (Math.round(Math.random() * 100) == 51) &&
+      this.setState({ stage: "BIRDS AREN'T REAL" });
     axios
       .post<string>(HTTP_URL, { secret: SECRET })
       .then(() => {
-        this.setState({ stage: "Request Received. Waiting" });
+        this.setState({ stage: "Planting your demo garden..." });
       })
       .catch(this.setError);
   };
