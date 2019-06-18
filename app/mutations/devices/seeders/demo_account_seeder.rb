@@ -20,11 +20,30 @@ module Devices
         end
       end
 
+      MARKETING_BULLETIN = GlobalBulletin.find_or_create_by(slug: "buy-a-farmbot") do |gb|
+        gb.href = "https://farm.bot"
+        gb.href_label = "Visit our website"
+        gb.slug = "buy-a-farmbot"
+        gb.title = "Buy a FarmBot"
+        gb.type = "info"
+        gb.content = [
+          "Ready to get a FarmBot of your own? Check out our website to",
+          " learn more about our various products. We offer FarmBots at",
+          " all different price points, sizes, and capabilities so you'",
+          "re sure to find one that suits your needs.",
+        ].join("")
+      end
+
+      DEMO_ALERTS = [
+        Alert::DEMO,
+        Alert::BULLETIN.merge(slug: "buy-a-farmbot", priority: 9999),
+      ]
+
       def misc
-        device
-          .alerts
-          .where(problem_tag: UNUSED_ALERTS)
-          .destroy_all
+        device.alerts.where(problem_tag: UNUSED_ALERTS).destroy_all
+        DEMO_ALERTS
+          .map { |p| p.merge(device: device) }
+          .map { |p| Alerts::Create.run!(p) }
       end
     end
   end
