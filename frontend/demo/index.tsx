@@ -68,11 +68,18 @@ export class DemoLoader extends React.Component<{}, State> {
 
     return <div className="demo-container">
       <video muted={true} autoPlay={true} loop={true} className="demo-video">
-        <source src={VIDEO_URL} type="video/mp4" />
+        <source
+          src={VIDEO_URL}
+          type="video/mp4" />
       </video>
-      <button className="demo-button" onClick={this.requestAccount}>
-        {this.state.stage}
-      </button>
+
+      <img
+        className="demo-phone"
+        src="https://cdn.shopify.com/s/files/1/2040/0289/files/Controls.png?9668345515035078097" />
+
+      <button className="demo-button">
+        DEMO THE APP
+    </button>
     </div>;
   };
 
