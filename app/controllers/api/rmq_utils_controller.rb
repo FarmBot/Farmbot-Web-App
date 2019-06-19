@@ -174,12 +174,12 @@ module Api
       if farmbot_demo?
         a, b, c = (routing_key_param || "").split(".")
 
-        if !["read"].include?(permission_param)
+        if !(permission_param == "read")
           deny
           return
         end
 
-        unless a == DEMO_REGISTRY_ROOT
+        if !(a == DEMO_REGISTRY_ROOT)
           deny
           return
         end

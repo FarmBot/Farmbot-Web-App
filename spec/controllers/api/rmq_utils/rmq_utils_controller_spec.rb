@@ -220,7 +220,6 @@ describe Api::RmqUtilsController do
                    "demos.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
                    nil]
 
-  # it "invalidates sneaky guest topic names" do
   device_8 = "device_#{FactoryBot.create(:device).id}"
   possible_attackers = [
     # ["username", "permission"]

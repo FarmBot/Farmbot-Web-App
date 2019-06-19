@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class DemoAccountSeeder < ExpressXlOneZero
+    class DemoAccountSeeder < ExpressOneZero
       BASE_URL = "/app-resources/img/demo_accounts/"
       FEEDS = {
         "Express XL" => "Express_XL_Demo_Webcam.JPG",
