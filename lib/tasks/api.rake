@@ -66,7 +66,7 @@ namespace :api do
     # Clear out cache and previous builds on initial load.
     sh ["rm -rf",
         DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR].join(" ")
+        DashboardController::PUBLIC_OUTPUT_DIR].join(" ") unless ENV["NO_CLEAN"]
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
