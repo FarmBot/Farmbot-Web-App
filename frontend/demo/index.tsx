@@ -77,9 +77,9 @@ export class DemoLoader extends React.Component<{}, State> {
         className="demo-phone"
         src="https://cdn.shopify.com/s/files/1/2040/0289/files/Controls.png?9668345515035078097" />
 
-      <button className="demo-button">
-        DEMO THE APP
-    </button>
+      <button className="demo-button" onClick={this.requestAccount}>
+        {this.state.stage}
+      </button>
     </div>;
   };
 
