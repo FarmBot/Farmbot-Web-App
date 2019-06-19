@@ -65,6 +65,8 @@ class DashboardController < ApplicationController
         response.headers["Cache-Control"] = "no-cache, no-store"
         response.headers["Pragma"] = "no-cache"
         response.headers["Expires"] = "0"
+        response.headers["X-Frame-Options"] =
+          "ALLOWALL" if [:main_app, :demo].include?(actn)
         load_css_assets
         load_js_assets
         render actn
