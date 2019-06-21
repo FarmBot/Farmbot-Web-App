@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
 import { ToolBayListProps } from "../interfaces";
 import { TaggedToolSlotPointer } from "farmbot";
@@ -15,7 +14,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
     const name = (tool && tool.body.name) || t("None");
     return <Row key={slot.uuid}>
       <Col xs={1}><label>{index + 1}</label></Col>
-      <Col xs={2}>{slot.body.gantry_mounted ? t("gantry") : slot.body.x}</Col>
+      <Col xs={2}>{slot.body.gantry_mounted ? t("Gantry") : slot.body.x}</Col>
       <Col xs={2}>{slot.body.y}</Col>
       <Col xs={2}>{slot.body.z}</Col>
       <Col xs={4}>{name}</Col>

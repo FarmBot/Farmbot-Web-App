@@ -1,7 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Col, Row, Page, ToolTip } from "../ui/index";
-import { ToolTips } from "../constants";
+import { Col, Row, Page } from "../ui/index";
 import { t } from "../i18next_wrapper";
 import { Alerts } from "./alerts";
 import { mapStateToProps } from "./state_to_props";
@@ -17,7 +16,6 @@ export class Messages extends React.Component<MessagesProps, {}> {
           <h3>
             <i>{t("Message Center")}</i>
           </h3>
-          <ToolTip helpText={ToolTips.MESSAGES} />
         </Col>
       </Row>
       <Row>

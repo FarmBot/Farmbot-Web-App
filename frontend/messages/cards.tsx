@@ -342,14 +342,14 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     </p>
     <p>
       {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
-      <a href={"https://my.farm.bot"}
+      <a href={"https://my.farm.bot"} target="_blank"
         onClick={() => Session.clear()}
         title={"my.farm.bot"}>
         {"my.farm.bot"}
       </a>.
     </p>
     <a className="link-button fb-button green"
-      href={"https://my.farm.bot"}
+      href={"https://my.farm.bot"} target="_blank"
       onClick={() => Session.clear()}
       title={t("Make a real account")}>
       {t("Make a real account")}

@@ -51,6 +51,7 @@ interface SettingDescriptionProps {
   callback?: () => void;
   children?: React.ReactChild;
   defaultOn?: boolean;
+  disabled?: boolean;
 }
 
 interface SettingProps
@@ -60,7 +61,8 @@ const Setting = (props: SettingProps) => {
   const { title, setting, callback, defaultOn } = props;
   const raw_value = setting ? props.getConfigValue(setting) : undefined;
   const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
-  return <div className="designer-setting">
+  return <div
+    className={`designer-setting ${props.disabled ? "disabled" : ""}`}>
     <Row>
       <Col xs={9}>
         <label>{t(title)}</label>
@@ -105,7 +107,8 @@ const DESIGNER_SETTINGS =
     {
       title: t("Map size"),
       description: t(Content.MAP_SIZE),
-      children: <MapSizeInputs {...settingsProps} />
+      children: <MapSizeInputs {...settingsProps} />,
+      disabled: !!settingsProps.getConfigValue(BooleanSetting.dynamic_map),
     },
     {
       title: t("Rotate map"),

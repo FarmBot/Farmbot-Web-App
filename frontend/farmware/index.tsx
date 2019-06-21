@@ -224,8 +224,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <LeftPanel
           className={`farmware-list-panel ${activeClasses}`}
-          title={t("Farmware")}
-          helpText={ToolTips.FARMWARE_LIST}>
+          title={t("Farmware")}>
           <FarmwareList
             current={this.current}
             dispatch={this.props.dispatch}

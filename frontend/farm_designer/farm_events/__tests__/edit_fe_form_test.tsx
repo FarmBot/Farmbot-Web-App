@@ -124,7 +124,7 @@ describe("<FarmEventForm/>", () => {
     const i = instance(p);
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
-      "Cannot change from a Regimen to a Sequence.");
+      "Cannot change between Sequences and Regimens.");
     expect(history.push).toHaveBeenCalledWith("/app/designer/events");
   });
 
