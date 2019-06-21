@@ -36,7 +36,7 @@ describe("<DemoIframe/>", () => {
   it("handles MQTT messages", () => {
     location.assign = jest.fn();
     const el = shallow<DemoIframe>(<DemoIframe />);
-    el.instance().handleMessage("foo", new Buffer("bar"));
+    el.instance().handleMessage("foo", Buffer.from("bar"));
     expect(location.assign).toHaveBeenCalledWith("/app/designer/plants");
   });
 
