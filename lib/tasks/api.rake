@@ -66,13 +66,21 @@ namespace :api do
     # Clear out cache and previous builds on initial load.
     sh ["rm -rf",
         DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR].join(" ")
+        DashboardController::PUBLIC_OUTPUT_DIR].join(" ") unless ENV["NO_CLEAN"]
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
   desc "Don't call this directly. Use `rake assets:precompile`."
   task parcel_compile: :environment do
     parcel "build"
+  end
+
+  desc "Clean out old demo accounts"
+  task clean_demo_accounts: :environment do
+    User
+      .where("email ILIKE '%@farmbot.guest%'")
+      .where("updated_at < ?", 1.hour.ago)
+      .destroy_all
   end
 
   desc "Reset _everything_, including your database"

@@ -34,6 +34,8 @@ module Api
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
     RESOURCES = ["queue", "exchange"]
     PERMISSIONS = ["configure", "read", "write"]
+    FARMBOT_DEMO_USER = "farmbot_demo"
+    DEMO_REGISTRY_ROOT = "demos"
 
     class PasswordFailure < Exception; end
 
@@ -51,7 +53,12 @@ module Api
       #   "vhost"     => "/",
       #   "client_id" => "MQTT_FX_Client",
       case username_param
+      # NOTE: "guest" is not the same as
+      #       "farmbot_demo". We intentionally
+      #       differentiate to avoid accidental
+      #       security issues. -RC
       when "guest" then deny
+      when FARMBOT_DEMO_USER then allow
       when "admin" then authenticate_admin
       else
         device_id_in_username == current_device.id ? allow : deny
@@ -102,6 +109,10 @@ module Api
       allow if admin?
     end
 
+    def farmbot_demo?
+      username_param == FARMBOT_DEMO_USER
+    end
+
     def admin?
       username_param == "admin"
     end
@@ -136,35 +147,73 @@ module Api
     end
 
     def username_param
-      @username ||= params["username"]
+      @username ||= params.fetch("username")
     end
 
     def password_param
-      @password ||= params["password"]
+      @password ||= params.fetch("password")
     end
 
     def routing_key_param
-      @routing_key ||= params["routing_key"]
+      @routing_key ||= params.fetch("routing_key")
     end
 
     def vhost_param
-      @vhost ||= params["vhost"]
+      @vhost ||= params.fetch("vhost")
     end
 
     def resource_param
-      @resource ||= params["resource"]
+      @resource ||= params.fetch("resource")
     end
 
     def permission_param
-      @permission ||= params["permission"]
+      @permission ||= params.fetch("permission")
     end
 
     def if_topic_is_safe
+      if farmbot_demo?
+        a, b, c = (routing_key_param || "").split(".")
+
+        if !(permission_param == "read")
+          deny
+          return
+        end
+
+        if !(a == DEMO_REGISTRY_ROOT)
+          deny
+          return
+        end
+
+        if b.nil?
+          deny
+          return
+        end
+
+        if b.include?("*")
+          deny
+          return
+        end
+
+        if b.include?("#")
+          deny
+          return
+        end
+
+        if c.present?
+          deny
+          return
+        end
+
+        yield
+        return
+      end
+
       if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
         yield
-      else
-        render json: MALFORMED_TOPIC, status: 422
+        return
       end
+
+      render json: MALFORMED_TOPIC, status: 422
     end
 
     def device_id_in_topic

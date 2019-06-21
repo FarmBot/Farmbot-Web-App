@@ -50,18 +50,20 @@ class Transport
       .bind("amq.topic", routing_key: RESOURCE_ROUTING_KEY)
   end
 
-  # def ping_channel
-  #   @ping_channel ||= self.connection
-  #                        .create_channel
-  #                        .queue("ping_workers")
-  #                        .bind("amq.topic", routing_key: "bot.*.ping.#")
-  # end
-
   def amqp_topic
     @amqp_topic ||= self
       .connection
       .create_channel
       .topic("amq.topic", auto_delete: true)
+  end
+
+  def send_demo_token_to(user, secret)
+    fbos_version = Api::AbstractController::EXPECTED_VER
+    routing_key =
+      [Api::RmqUtilsController::DEMO_REGISTRY_ROOT, secret].join(".")
+    payload =
+      SessionToken.as_json(user, "GUEST", fbos_version).to_json
+    raw_amqp_send(payload, routing_key)
   end
 
   def amqp_send(message, id, channel)

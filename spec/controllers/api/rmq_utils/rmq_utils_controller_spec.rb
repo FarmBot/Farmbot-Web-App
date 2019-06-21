@@ -187,4 +187,64 @@ describe Api::RmqUtilsController do
      ".status_v8.*",
      ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
   end
+
+  it "allows farmbot_guest users, regardless of password" do
+    p = { username: "farmbot_demo", password: SecureRandom.alphanumeric }
+    post :user_action, params: p
+    expect(response.status).to eq(200)
+    expect(response.body).to eq("allow")
+  end
+
+  it "allows expected farmbot_guest topics" do
+    p = {
+      username: "farmbot_demo",
+      permission: "read",
+      routing_key: "demos.d3f91ygdrajxn8jk",
+    }
+    post :topic_action, params: p
+    expect(response.body).to(eq("allow"))
+    expect(response.status).to eq(200)
+  end
+
+  sneaky_topics = ["demos",
+                   "demos.#",
+                   "demos.*",
+                   "demos.#.#",
+                   "demos.*.*",
+                   "demos.#.*",
+                   "demos.*.#",
+                   "demos.#.d3f91ygdrajxn8jk",
+                   "demos.*.d3f91ygdrajxn8jk",
+                   "demos.d3f91ygdrajxn8jk.#",
+                   "demos.d3f91ygdrajxn8jk.*",
+                   "demos.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
+                   nil]
+
+  device_8 = "device_#{FactoryBot.create(:device).id}"
+  possible_attackers = [
+    # ["username", "permission"]
+    ["farmbot_demo", "read"],
+    ["farmbot_demo", "write"],
+    ["farmbot_demo", "configure"],
+    ["farmbot_demo", nil],
+    [device_8, "read"],
+    [device_8, "write"],
+    [device_8, "configure"],
+    [device_8, nil],
+  ]
+  TEST_NAME_TPL = "%{username} %{permission}-ing %{routing_key}"
+  possible_attackers.map do |(username, permission)|
+    sneaky_topics.map do |topic|
+      p = { username: username, permission: permission, routing_key: topic }
+      it(TEST_NAME_TPL % p) do
+        post :topic_action, params: p
+        if response.status == 422
+          expect(response.body).to(include("malformed"))
+        else
+          expect(response.body).to(eq("deny"))
+          expect(response.status).to eq(403)
+        end
+      end
+    end
+  end
 end

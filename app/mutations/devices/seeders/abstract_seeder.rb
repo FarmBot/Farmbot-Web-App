@@ -50,6 +50,12 @@ module Devices
         :tool_slots_slot_4,
         :tool_slots_slot_5,
         :tool_slots_slot_6,
+
+        # WEBCAM FEEDS ===========================
+        :webcam_feeds,
+
+        # EVERYTHING ELSE ========================
+        :misc,
       ]
 
       unless Rails.env.production?
@@ -70,7 +76,7 @@ module Devices
          :sequences_unmount_tool,
          :sequences_water_plant].map do |x|
           COMMAND_ORDER.push(x)
-         end
+        end
       end
 
       def initialize(device)
@@ -231,6 +237,9 @@ module Devices
       def vacuum_id
         @vacuum_id ||= device.peripherals.find_by!(label: ToolNames::VACUUM).id
       end
+
+      def webcam_feeds; end
+      def misc; end
     end
   end
 end
