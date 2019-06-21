@@ -46,6 +46,7 @@ class NervesHub
   NERVES_HUB_HOST = ENV.fetch("NERVES_HUB_HOST") { "api.nerves-hub.org" }
   NERVES_HUB_PORT = ENV.fetch("NERVES_HUB_PORT") { 443 }
   NERVES_HUB_ORG = ENV.fetch("NERVES_HUB_ORG") { "farmbot" }
+  NERVES_HUB_PRODUCT = ENV.fetch("NERVES_HUB_PRODUCT") { "farmbot" }
   NERVES_HUB_BASE_URL = "https://#{NERVES_HUB_HOST}:#{NERVES_HUB_PORT}"
   NERVES_HUB_URI = URI.parse(NERVES_HUB_BASE_URL)
 
@@ -187,7 +188,7 @@ class NervesHub
 
   # Helper for making requests to a device url on NervesHub
   def self.devices_path(*chunks)
-    ["/orgs", NERVES_HUB_ORG, "devices"].concat(chunks).join("/")
+    ["/orgs", NERVES_HUB_ORG, "products", NERVES_HUB_PRODUCT, "devices"].concat(chunks).join("/")
   end
 
   # Helper for making requests to a particular device on NervesHub
