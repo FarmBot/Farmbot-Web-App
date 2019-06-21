@@ -30,6 +30,7 @@ module CeleryScript
         read_pin: "You must select a Sensor in the Read Sensor step.",
         move_to: "You must select a Location in the Move To step.",
         execute: "You must select a Sequence in the Execute step.",
+      # default_value: "TODO",
       },
     }.with_indifferent_access
 
