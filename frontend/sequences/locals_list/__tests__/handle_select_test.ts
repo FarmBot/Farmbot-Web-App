@@ -45,7 +45,25 @@ describe("convertDDItoDeclaration()", () => {
     expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
   });
 
+  it("returns variable declaration: default", () => {
+    const expected = expectedVariable(NOTHING_SELECTED);
+    expected.kind = "variable_declaration";
+    const variable = convertDDItoVariable({
+      label, allowedVariableNodes: AllowedVariableNodes.parameter
+    })(NO_VALUE_SELECTED_DDI());
+    expect(variable).toEqual(expected);
+  });
+
   it("returns location data: coordinate", () => {
+    const variable = convertDDItoVariable({
+      label, allowedVariableNodes
+    })(COORDINATE_DDI({ x: 1, y: 2, z: 3 }));
+    expect(variable).toEqual(expectedVariable({
+      kind: "coordinate", args: { x: 1, y: 2, z: 3 }
+    }));
+  });
+
+  it("returns location data: new coordinate", () => {
     const variable = convertDDItoVariable({
       label, allowedVariableNodes
     })(COORDINATE_DDI());

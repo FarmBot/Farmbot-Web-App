@@ -120,7 +120,11 @@ describe("getRegimenVariableData()", () => {
       },
       parent2: {
         celeryNode: varDeclaration,
-        dropdown: { label: "Coordinate (1, 2, 3)", value: "?" },
+        dropdown: {
+          label: "Coordinate (1, 2, 3)",
+          value: expect.any(String),
+          headingId: "Coordinate",
+        },
         vector: COORDINATE.args
       }
     });

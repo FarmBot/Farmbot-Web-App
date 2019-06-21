@@ -6,7 +6,7 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber } from "lodash";
@@ -138,8 +138,13 @@ export const safeEveryPointType = (x: string): EveryPointType => {
 export const everyPointDDI = (value: EveryPointType): DropDownItem =>
   ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
 
-export const COORDINATE_DDI = (): DropDownItem =>
-  ({ value: "", label: t("Custom Coordinates"), headingId: "Coordinate" });
+export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
+  label: vector
+    ? `${t("Coordinate")} (${vector.x}, ${vector.y}, ${vector.z})`
+    : t("Custom Coordinates"),
+  value: vector ? JSON.stringify(vector) : "",
+  headingId: "Coordinate"
+});
 
 export const NO_VALUE_SELECTED_DDI = (): DropDownItem =>
   ({ label: t("Select a location"), value: "", isNull: true });
