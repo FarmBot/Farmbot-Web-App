@@ -23,7 +23,7 @@ describe CeleryScript::Checker do
   let (:checker) { CeleryScript::Checker.new(tree, corpus, device) }
 
   it "disallows `change_ownership` on the server-side" do
-    hash[:body] = [ { kind: "change_ownership", args: { } } ]
+    hash[:body] = [{ kind: "change_ownership", args: {} }]
     expect { checker.run! }.to raise_error("Never.")
   end
 
@@ -293,6 +293,6 @@ describe CeleryScript::Checker do
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     message = "must provide a value for all parameters"
-    expect(chk.error.message).to include(message)
+    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_VAR)
   end
 end
