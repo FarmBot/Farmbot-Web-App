@@ -12,9 +12,7 @@ jest.mock("../../i18n", () => ({
 }));
 
 jest.mock("i18next", () => ({
-  default: {
-    init: jest.fn((_: {}, fn: Function) => fn())
-  }
+  init: jest.fn((_: {}, fn: Function) => fn())
 }));
 
 import { stopIE } from "../../util/stop_ie";
