@@ -27,7 +27,7 @@ describe FbosConfig do
     it "triggers callbacks" do
       conn = fake_conn("Create a cert")
       NervesHub.set_conn(conn)
-      url    = "/orgs/farmbot/devices/#{device.serial_number}"
+      url    = "/orgs/farmbot/products/farmbot/devices/#{device.serial_number}"
       resp   = StubResp.new("200", { "data" => { "tags": [] } }.to_json)
       resp2  = StubResp.new("201", { "data" => { "tags": [] } }.to_json)
       params = [ url,
