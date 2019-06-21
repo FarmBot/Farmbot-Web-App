@@ -23,7 +23,7 @@ export class HardwareSettings extends
   render() {
     const {
       bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
-      botToMqttStatus, firmwareHardware
+      botToMqttStatus, firmwareHardware, resources
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
     const firmwareVersion = informational_settings.firmware_version;
@@ -87,6 +87,7 @@ export class HardwareSettings extends
             sourceFwConfig={sourceFwConfig} />
           <PinGuard
             dispatch={dispatch}
+            resources={resources}
             controlPanelState={controlPanelState}
             sourceFwConfig={sourceFwConfig} />
           <DangerZone

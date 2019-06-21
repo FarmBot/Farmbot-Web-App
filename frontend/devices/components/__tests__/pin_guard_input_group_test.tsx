@@ -8,25 +8,26 @@ import { mount } from "enzyme";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { settingToggle } from "../../actions";
+import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 
 describe("<PinGuardMCUInputGroup/>", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => {
     return {
       name: "Pin Guard 1",
-      pinNumber: "pin_guard_1_pin_nr",
-      timeout: "pin_guard_1_time_out",
-      activeState: "pin_guard_1_active_state",
+      pinNumKey: "pin_guard_1_pin_nr",
+      timeoutKey: "pin_guard_1_time_out",
+      activeStateKey: "pin_guard_1_active_state",
       dispatch: jest.fn(),
-      sourceFwConfig: (x) => {
-        return { value: bot.hardware.mcu_params[x], consistent: true };
-      },
+      sourceFwConfig: x =>
+        ({ value: bot.hardware.mcu_params[x], consistent: true }),
+      resources: buildResourceIndex([]).index,
     };
   };
 
   it("calls toggle action ", () => {
     const p = fakeProps();
     const wrapper = mount(<PinGuardMCUInputGroup {...p} />);
-    wrapper.find("button").simulate("click");
+    wrapper.find("button").last().simulate("click");
     expect(settingToggle).toHaveBeenCalledWith("pin_guard_1_active_state",
       expect.any(Function));
   });

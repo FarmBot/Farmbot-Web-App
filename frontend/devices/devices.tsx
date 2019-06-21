@@ -42,6 +42,7 @@ export class Devices extends React.Component<Props, {}> {
             <HardwareSettings
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
+              resources={this.props.resources}
               bot={this.props.bot}
               botToMqttStatus={botToMqttStatus}
               shouldDisplay={this.props.shouldDisplay}
