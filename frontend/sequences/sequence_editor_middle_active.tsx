@@ -61,10 +61,13 @@ interface SettingProps {
   dispatch: Function;
   setting: BooleanConfigKey;
   getWebAppConfigValue: GetWebAppConfigValue;
+  confirmation?: string;
 }
 
 const Setting = (props: SettingProps) => {
   const value = !!props.getWebAppConfigValue(props.setting);
+  const proceed = () =>
+    props.confirmation ? confirm(t(props.confirmation)) : true;
   return <fieldset>
     <label>
       {t(props.label)}
@@ -72,7 +75,7 @@ const Setting = (props: SettingProps) => {
     <Help text={t(props.description)} requireClick={true} />
     <ToggleButton
       toggleValue={value}
-      toggleAction={() =>
+      toggleAction={() => proceed() &&
         props.dispatch(setWebAppConfigValue(props.setting, !value))} />
   </fieldset>;
 };
@@ -93,6 +96,11 @@ export const SequenceSettingsMenu =
         setting={BooleanSetting.expand_step_options}
         label={t("Open options by default")}
         description={Content.EXPAND_STEP_OPTIONS} />
+      <Setting {...commonProps}
+        setting={"discard_unsaved_sequences" as BooleanConfigKey}
+        confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
+        label={t("Discard unsaved sequence changes")}
+        description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
     </div>;
   };
 
