@@ -24,7 +24,7 @@ describe DeviceCerts::Create do
                    {"tags": tags}.to_json,
                    NervesHub::HEADERS]
       hmm       = a_string_including("\"identifier\":456")
-      post_args = ["/orgs/farmbot/devices/456/certificates/sign",
+      post_args = ["/orgs/farmbot/products/farmbot/devices/456/certificates/sign",
                    hmm,
                    {"Content-Type"=>"application/json"}]
       expect(NervesHub.conn).to(receive(:get).with(url).and_return(resp1))
