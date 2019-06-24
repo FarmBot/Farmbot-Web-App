@@ -107,6 +107,7 @@ FarmBot::Application.routes.draw do
 
   get "/app" => "dashboard#main_app", as: :dashboard
   get "/app/controls" => "dashboard#main_app", as: :app_landing_page
+  get "/app/messages" => "dashboard#main_app", as: :app_message_center
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
 
   get "/demo" => "dashboard#demo", as: :demo_main
