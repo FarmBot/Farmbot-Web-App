@@ -1560,7 +1560,8 @@ CREATE TABLE public.web_app_configs (
     map_size_y integer DEFAULT 1400,
     expand_step_options boolean DEFAULT false,
     hide_sensors boolean DEFAULT false,
-    confirm_plant_deletion boolean DEFAULT true
+    confirm_plant_deletion boolean DEFAULT true,
+    discard_unsaved_sequences boolean DEFAULT false
 );
 
 
@@ -2760,19 +2761,19 @@ ALTER TABLE ONLY public.points
 
 
 --
--- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
+
+
+--
+-- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2981,6 +2982,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190605185311'),
 ('20190607192429'),
 ('20190613190531'),
-('20190613215319');
+('20190613215319'),
+('20190621202204');
 
 

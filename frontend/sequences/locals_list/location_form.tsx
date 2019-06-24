@@ -59,6 +59,11 @@ export const LocationForm =
     const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
     const { label } = celeryNode.args;
+    if (variable.default) {
+      const defaultDDI = determineDropdown(variable.celeryNode, resources);
+      defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
+      list.unshift(defaultDDI);
+    }
     const formTitleWithType =
       props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;

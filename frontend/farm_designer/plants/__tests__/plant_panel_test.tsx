@@ -59,7 +59,6 @@ describe("<PlantPanel/>", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
-    expect(txt).not.toContain("june");
     expect(wrapper.find("button").length).toEqual(4);
   });
 
@@ -68,7 +67,7 @@ describe("<PlantPanel/>", () => {
     p.inSavedGarden = true;
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
-    expect(txt).toContain("june");
+    expect(txt).not.toContain("days old");
     expect(wrapper.find("button").length).toEqual(3);
   });
 

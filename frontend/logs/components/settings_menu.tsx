@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Help } from "../../ui/index";
 import { ToolTips } from "../../constants";
 import { ToggleButton } from "../../controls/toggle_button";
@@ -107,9 +106,9 @@ export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
       getConfigValue={getConfigValue} />;
   };
   return <div className={"logs-settings-menu"}>
-    {t("Create logs for sequence:")}
+    {t("Sequence logs:")}
     {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
-    {t("Firmware Logs:")}
+    {t("Firmware logs:")}
     {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
   </div>;
 };

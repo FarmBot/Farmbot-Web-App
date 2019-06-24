@@ -6,7 +6,7 @@ interface LeftPanelProps {
   children?: React.ReactNode;
   className: string;
   title: string;
-  helpText: string;
+  helpText?: string;
   width?: number;
 }
 
@@ -16,7 +16,7 @@ export function LeftPanel(props: LeftPanelProps) {
       <h3>
         <i>{t(props.title)}</i>
       </h3>
-      <ToolTip helpText={props.helpText} />
+      {props.helpText && <ToolTip helpText={props.helpText} />}
       {props.children}
     </div>
   </Col>;

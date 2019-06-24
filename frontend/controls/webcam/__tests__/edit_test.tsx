@@ -1,6 +1,6 @@
 import * as React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { props } from "../test_helpers";
 import { Edit } from "../edit";
 import { SpecialStatus } from "farmbot";
@@ -40,5 +40,12 @@ describe("<Edit/>", () => {
     p.feeds[1].specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<Edit {...p} />);
     expect(wrapper.find("button").at(1).text()).toEqual("Save");
+  });
+
+  it("deletes feed", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<Edit {...p} />);
+    wrapper.find("WidgetBody").find("KeyValEditRow").first().simulate("click");
+    expect(p.destroy).toHaveBeenCalledWith(p.feeds[0]);
   });
 });

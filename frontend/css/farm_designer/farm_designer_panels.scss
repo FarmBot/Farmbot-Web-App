@@ -225,6 +225,15 @@
   }
 }
 
+.plant-info-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+  }
+}
+
 .point-creation-panel {
   .panel-content {
     .row {
@@ -404,6 +413,13 @@
     }
     label {
       margin-top: 0.5rem;
+    }
+  }
+  .designer-setting {
+    &.disabled {
+      input {
+        background: $gray;
+      }
     }
   }
 }

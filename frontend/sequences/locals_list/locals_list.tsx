@@ -78,6 +78,7 @@ const convertFormVariable = (variable: SequenceMeta, resources: ResourceIndex):
       celeryNode: converted,
       dropdown: determineDropdown(converted, resources),
       vector: determineVector(converted, resources),
+      default: true,
     };
   }
 };

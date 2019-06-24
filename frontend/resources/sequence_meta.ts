@@ -9,7 +9,8 @@ import { findPointerByTypeAndId } from "./selectors";
 import { findSlotByToolId, findToolById } from "./selectors_by_id";
 import {
   formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI,
-  formatTool
+  formatTool,
+  COORDINATE_DDI
 } from "../sequences/locals_list/location_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { EveryPointShape } from "../sequences/locals_list/handle_select";
@@ -19,6 +20,7 @@ export interface SequenceMeta {
   celeryNode: VariableNode;
   dropdown: DropDownItem;
   vector: Vector3 | undefined;
+  default?: boolean;
 }
 
 /** Converts a "scope declaration body item" (AKA a CeleryScript variable) into
@@ -95,8 +97,7 @@ export const determineDropdown =
     const { data_value } = node.args;
     switch (data_value.kind) {
       case "coordinate":
-        const { x, y, z } = data_value.args;
-        return { label: `Coordinate (${x}, ${y}, ${z})`, value: "?" };
+        return COORDINATE_DDI(data_value.args);
       case "identifier":
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });

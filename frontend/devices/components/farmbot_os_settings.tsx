@@ -3,7 +3,7 @@ import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col, SaveBtn } from "../../ui";
 import { save, edit } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
-import { ToolTips, Content } from "../../constants";
+import { Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
 import { CameraSelection } from "./fbos_settings/camera_selection";
@@ -82,7 +82,7 @@ export class FarmbotOsSettings
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
-        <WidgetHeader title="Device" helpText={ToolTips.OS_SETTINGS}>
+        <WidgetHeader title="Device">
           <SaveBtn
             status={deviceAccount.specialStatus}
             onClick={this.updateBot} />
