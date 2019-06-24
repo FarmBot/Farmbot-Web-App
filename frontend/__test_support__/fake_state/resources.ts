@@ -307,6 +307,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     photo_filter_begin: "2018-01-11T20:20:38.362Z",
     photo_filter_end: "2018-01-22T15:32:41.970Z",
     discard_unsaved: false,
+    discard_unsaved_sequences: false,
     xy_swap: false,
     home_button_homing: false,
     show_motor_plot: false,

@@ -97,7 +97,7 @@ export const SequenceSettingsMenu =
         label={t("Open options by default")}
         description={Content.EXPAND_STEP_OPTIONS} />
       <Setting {...commonProps}
-        setting={"discard_unsaved_sequences" as BooleanConfigKey}
+        setting={"discard_unsaved_sequences"}
         confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
         label={t("Discard unsaved sequence changes")}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
