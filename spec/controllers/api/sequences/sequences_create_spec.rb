@@ -374,7 +374,7 @@ describe Api::SequencesController do
                body: [] }
       post :create, body: input.to_json, params: { format: :json }
       expect(response.status).to eq(422)
-      expect(json[:body]).to include(CeleryScript::Checker::MISSING_VAR)
+      expect(json[:body]).to include(CeleryScript::Checker::MISSING_PARAM)
     end
   end
 end

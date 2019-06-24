@@ -4,8 +4,8 @@ module Api
 
     def index
       render json: sequences
-        .to_a
-        .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
+               .to_a
+               .map { |s| CeleryScript::FetchCelery.run!(sequence: s) }
     end
 
     def show
@@ -18,8 +18,8 @@ module Api
 
     def update
       mutate Sequences::Update.run(sequence_params,
-                                    device: current_device,
-                                    sequence: sequence)
+                                   device: current_device,
+                                   sequence: sequence)
     end
 
     def destroy
@@ -29,7 +29,7 @@ module Api
     private
 
     def sequence_params
-        @sequence_params ||= raw_json[:sequence] || raw_json || {}
+      @sequence_params ||= raw_json[:sequence] || raw_json || {}
     end
 
     def sequences

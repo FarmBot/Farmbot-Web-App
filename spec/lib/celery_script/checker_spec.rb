@@ -82,7 +82,7 @@ describe CeleryScript::Checker do
     ]
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
-    expect(chk.error.message).to eq("missing a sequence selection for `execute` block.")
+    expect(chk.error.message).to eq("You must select a Sequence in the Execute step.")
   end
 
   it "validates peripheral presence" do
@@ -293,6 +293,6 @@ describe CeleryScript::Checker do
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     message = "must provide a value for all parameters"
-    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_VAR)
+    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_PARAM)
   end
 end

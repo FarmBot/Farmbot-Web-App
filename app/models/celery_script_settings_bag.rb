@@ -67,7 +67,7 @@ module CeleryScriptSettingsBag
   BAD_TOOL_ID = "Tool #%s does not exist."
   CANT_ANALOG = "Analog modes are not supported for Box LEDs"
   NO_PIN_ID = "%s requires a valid pin number"
-  NO_SUB_SEQ = "missing a sequence selection for `execute` block."
+  NO_SUB_SEQ = "You must select a Sequence in the Execute step."
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
   "as input. Please change your selection to a single" \
   " location."
