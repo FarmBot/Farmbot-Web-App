@@ -246,6 +246,7 @@ export interface HardwareSettingsProps {
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   firmwareHardware: FirmwareHardware | undefined;
+  resources: ResourceIndex;
 }
 
 export interface ControlPanelState {

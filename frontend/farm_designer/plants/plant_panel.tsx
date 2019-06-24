@@ -10,7 +10,7 @@ import moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
-import { parseIntInput, timeFormatString } from "../../util";
+import { parseIntInput } from "../../util";
 import { startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
@@ -196,18 +196,23 @@ export function PlantPanel(props: PlantPanelProps) {
           {startCase(slug)}
         </Link>
       </ListItem>
-      <ListItem name={t("Started")}>
-        {(timeSettings && !inSavedGarden)
-          ? <EditDatePlanted
-            uuid={uuid}
-            datePlanted={plantedAt}
-            timeSettings={timeSettings}
-            updatePlant={updatePlant} />
-          : plantedAt.format(`MMMM Do YYYY, ${timeFormatString(timeSettings)}`)}
-      </ListItem>
-      <ListItem name={t("Age")}>
-        {`${daysOld} ${t("days old")}`}
-      </ListItem>
+      {(timeSettings && !inSavedGarden) &&
+        <Row>
+          <Col xs={7}>
+            <ListItem name={t("Started")}>
+              <EditDatePlanted
+                uuid={uuid}
+                datePlanted={plantedAt}
+                timeSettings={timeSettings}
+                updatePlant={updatePlant} />
+            </ListItem>
+          </Col>
+          <Col xs={5}>
+            <ListItem name={t("Age")}>
+              {`${daysOld} ${t("days old")}`}
+            </ListItem>
+          </Col>
+        </Row>}
       <ListItem name={t("Location")}>
         <EditPlantLocation uuid={uuid}
           location={{ x, y }}

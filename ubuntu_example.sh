@@ -62,6 +62,18 @@ sudo docker-compose run web rake assets:precompile
 # This only happens during initialization
 sudo docker-compose up
 
+# At this point, setup is complete. Content should be visible at ===============
+#  http://YOUR_HOST:3000/.
+
+# You can optionally verify installation by running unit tests.
+
+# Create the database for the app to use:
+sudo docker-compose run -e RAILS_ENV=test web bundle exec rails db:setup
+# Run the tests in the "test" RAILS_ENV:
+sudo docker-compose run -e RAILS_ENV=test web rspec spec
+# Run user-interface unit tests REQUIRES AT LEAST 4 GB OF RAM:
+sudo docker-compose run web npm run test
+
 # === BEGIN OPTIONAL UPGRADES
   # To update to later versions of FarmBot,
   # shut down the server, create a database backup
@@ -73,14 +85,3 @@ sudo docker-compose up
   sudo docker-compose run web rails db:migrate # <== ⚠ UPGRADE USERS ONLY
 # === END OPTIONAL UPGRADES ^
 
-# At this point, setup is complete. Content should be visible at ===============
-#  http://YOUR_HOST:3000/.
-
-# You can optionally verify installation by running unit tests.
-
-# Create the database for the app to use:
-sudo docker-compose run -e RAILS_ENV=test web bundle exec rails db:setup
-# Run the tests in the "test" RAILS_ENV:
-sudo docker-compose run -e RAILS_ENV=test web rspec spec
-# Run user-interface unit tests:
-sudo docker-compose run web npm run test

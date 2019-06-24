@@ -1,7 +1,6 @@
 import * as React from "react";
-
 import { Widget, WidgetBody, WidgetHeader } from "../ui";
-import { ToolTips, Actions } from "../constants";
+import { Actions } from "../constants";
 import { tourNames } from "./tours";
 import { t } from "../i18next_wrapper";
 
@@ -19,7 +18,7 @@ export const TourList = ({ dispatch }: { dispatch: Function }) =>
 
 export const ToursWidget = ({ dispatch }: { dispatch: Function }) =>
   <Widget className="tours-widget">
-    <WidgetHeader helpText={ToolTips.TOURS} title={t("Tours")} />
+    <WidgetHeader title={t("Tours")} />
     <WidgetBody>
       {t("What do you need help with?")}
       <TourList dispatch={dispatch} />

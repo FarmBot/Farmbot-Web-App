@@ -34,6 +34,12 @@ export const fetchLabFeatures =
       callback: () => window.location.reload()
     },
     {
+      name: t("Use 24-hour time format"),
+      description: t(Content.TIME_FORMAT_24_HOUR),
+      storageKey: BooleanSetting.time_format_24_hour,
+      value: false,
+    },
+    {
       name: t("Hide Webcam widget"),
       description: t(Content.HIDE_WEBCAM_WIDGET),
       storageKey: BooleanSetting.hide_webcam_widget,
@@ -57,12 +63,6 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.discard_unsaved,
       value: false,
       confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
-    },
-    {
-      name: t("Use 24-hour time format"),
-      description: t(Content.TIME_FORMAT_24_HOUR),
-      storageKey: BooleanSetting.time_format_24_hour,
-      value: false,
     },
     {
       name: t("Confirm emergency unlock"),

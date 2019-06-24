@@ -508,6 +508,14 @@ export namespace Content {
     trim(`Warning! When enabled, any unsaved changes
     will be discarded when refreshing or closing the page. Are you sure?`);
 
+  export const DISCARD_UNSAVED_SEQUENCE_CHANGES =
+    trim(`Don't ask about saving sequence work before
+    closing browser tab. Warning: may cause loss of data.`);
+
+  export const DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM =
+    trim(`Warning! When enabled, any unsaved changes to sequences
+    will be discarded when refreshing or closing the page. Are you sure?`);
+
   export const VIRTUAL_TRAIL =
     trim(`Display a virtual trail for FarmBot in the garden map to show
     movement and watering history while the map is open. Toggling this setting

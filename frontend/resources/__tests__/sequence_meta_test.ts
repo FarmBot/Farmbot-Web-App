@@ -41,11 +41,11 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: {
         label: "x",
-        data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2 } }
+        data_value: { kind: "coordinate", args: { x: 0, y: 1.1, z: 2 } }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Coordinate (0, 1, 2)");
-    expect(r.value).toBe("?");
+    expect(r.label).toBe("Coordinate (0, 1.1, 2)");
+    expect(r.value).toBe("{\"x\":0,\"y\":1.1,\"z\":2}");
   });
 
   it("Returns a label for `identifier`", () => {
