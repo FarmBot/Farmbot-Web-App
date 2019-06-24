@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { init, error } from "farmbot-toastr";
+import { init, error } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";

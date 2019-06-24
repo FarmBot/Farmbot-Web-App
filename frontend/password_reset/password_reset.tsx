@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { error as log, init as logInit } from "farmbot-toastr";
+import { error as log, init as logInit } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";

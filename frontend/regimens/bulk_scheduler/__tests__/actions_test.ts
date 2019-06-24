@@ -14,11 +14,11 @@ import {
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
-import { error, warning } from "farmbot-toastr";
 import { newTaggedResource } from "../../../sync/actions";
 import { arrayUnwrap } from "../../../resources/util";
 import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
+import { error, warning } from "../../../toast/toast";
 
 const sequence_id = 23;
 const regimen_id = 32;

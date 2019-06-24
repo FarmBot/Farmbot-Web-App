@@ -4,9 +4,9 @@ import { Sensors } from "../index";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { SensorsProps } from "../../../devices/interfaces";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
-import { error } from "farmbot-toastr";
 import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "farmbot";
+import { error } from "../../../toast/toast";
 
 describe("<Sensors />", () => {
   function fakeProps(): SensorsProps {

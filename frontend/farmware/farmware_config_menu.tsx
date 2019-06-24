@@ -4,7 +4,7 @@ import { FarmwareConfigMenuProps } from "./interfaces";
 import { commandErr } from "../devices/actions";
 import { toggleWebAppBool } from "../config_storage/actions";
 import { destroyAll } from "../api/crud";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../toast/toast";
 import { Feature } from "../devices/interfaces";
 import { t } from "../i18next_wrapper";
 import { BooleanSetting } from "../session_keys";

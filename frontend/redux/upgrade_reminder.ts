@@ -1,4 +1,4 @@
-import { info } from "farmbot-toastr";
+import { info } from "../toast/toast";
 import { semverCompare, SemverResult, MinVersionOverride } from "../util";
 import { Content } from "../constants";
 import { Dictionary } from "lodash";

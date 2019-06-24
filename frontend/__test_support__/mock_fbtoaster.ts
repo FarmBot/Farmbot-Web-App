@@ -1,5 +1,5 @@
 jest.resetAllMocks();
-jest.mock("farmbot-toastr", () => ({
+jest.mock("../toast/toast", () => ({
   fun: jest.fn(),
   init: jest.fn(),
   success: jest.fn(),

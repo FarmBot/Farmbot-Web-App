@@ -29,8 +29,8 @@ import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
 import { movePlant } from "../../../../actions";
-import { error } from "farmbot-toastr";
 import { fakeCropLiveSearchResult } from "../../../../../__test_support__/fake_crop_search_result";
+import { error } from "../../../../../toast/toast";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {

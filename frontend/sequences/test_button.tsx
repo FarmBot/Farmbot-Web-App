@@ -12,9 +12,9 @@ import {
 } from "./locals_list/variable_support";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
-import { warning } from "farmbot-toastr";
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
+import { warning } from "../toast/toast";
 
 /** Can't test without saving and syncing sequence. */
 const saveAndSyncWarning = () =>

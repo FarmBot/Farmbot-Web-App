@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API } from "../../api";
-import { success, info } from "farmbot-toastr";
+import { success, info } from "../../toast/toast";
 import { history } from "../../history";
 import { Actions } from "../../constants";
 import { destroy, initSave, initSaveGetId } from "../../api/crud";

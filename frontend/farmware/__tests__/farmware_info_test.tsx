@@ -17,7 +17,7 @@ import { destroy } from "../../api/crud";
 import {
   fakeFarmwareInstallation
 } from "../../__test_support__/fake_state/resources";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
 
 describe("<FarmwareInfo />", () => {

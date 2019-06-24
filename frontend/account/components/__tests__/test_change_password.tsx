@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 import { SpecialStatus } from "farmbot";
 import * as moxios from "moxios";
 import { API } from "../../../api/api";
-import { error } from "farmbot-toastr";
+import { error } from "../../../toast/toast";
 
 describe("<ChangePassword/>", function () {
   function testCase() {

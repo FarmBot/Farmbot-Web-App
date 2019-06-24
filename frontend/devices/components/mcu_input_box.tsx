@@ -1,5 +1,5 @@
 import * as React from "react";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../toast/toast";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";

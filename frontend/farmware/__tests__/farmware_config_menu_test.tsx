@@ -24,7 +24,7 @@ import { FarmwareConfigMenuProps } from "../interfaces";
 import { getDevice } from "../../device";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { destroyAll } from "../../api/crud";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmwareConfigMenu />", () => {

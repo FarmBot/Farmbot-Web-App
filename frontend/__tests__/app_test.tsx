@@ -17,9 +17,9 @@ import { fakeState } from "../__test_support__/fake_state";
 import {
   buildResourceIndex
 } from "../__test_support__/resource_index_builder";
-import { error } from "farmbot-toastr";
 import { ResourceName } from "farmbot";
 import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
+import { error } from "../toast/toast";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];

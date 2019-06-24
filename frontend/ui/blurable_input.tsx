@@ -1,10 +1,10 @@
 import * as React from "react";
 import { equals, parseIntInput } from "../util";
 import { isNumber } from "lodash";
-import { error } from "farmbot-toastr";
 
 import { InputError } from "./input_error";
 import { t } from "../i18next_wrapper";
+import { error } from "../toast/toast";
 
 export interface BIProps {
   value: string | number;

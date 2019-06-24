@@ -39,7 +39,7 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { success, error, warning, info } from "farmbot-toastr";
+import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {

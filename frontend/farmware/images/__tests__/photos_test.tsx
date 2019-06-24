@@ -13,9 +13,9 @@ import { fakeImages } from "../../../__test_support__/fake_state/images";
 import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 import { PhotosProps } from "../interfaces";
-import { success, error } from "farmbot-toastr";
 import { selectImage } from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { success, error } from "../../../toast/toast";
 
 describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({

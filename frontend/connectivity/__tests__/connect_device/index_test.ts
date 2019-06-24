@@ -33,7 +33,6 @@ import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
-import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -41,6 +40,7 @@ import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
+import { info, error, success, warning } from "../../../toast/toast";
 
 const A_STRING = expect.any(String);
 describe("readStatus()", () => {

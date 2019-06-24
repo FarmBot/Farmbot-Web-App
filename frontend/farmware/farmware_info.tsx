@@ -5,7 +5,7 @@ import { commandErr } from "../devices/actions";
 import { Content } from "../constants";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { destroy } from "../api/crud";
-import { error } from "farmbot-toastr";
+import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
 import { Popover } from "@blueprintjs/core";
 import { retryFetchPackageName } from "./actions";

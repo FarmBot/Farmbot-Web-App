@@ -44,7 +44,6 @@
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.14.0",
     "farmbot": "8.0.1-rc8",
-    "farmbot-toastr": "1.0.3",
     "i18next": "17.0.4",
     "jest": "24.8.0",
     "jest-cli": "24.8.0",

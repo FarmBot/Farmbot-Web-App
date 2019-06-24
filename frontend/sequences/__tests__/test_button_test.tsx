@@ -21,7 +21,7 @@ import {
 } from "farmbot";
 import { mount } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../toast/toast";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { clickButton } from "../../__test_support__/helpers";

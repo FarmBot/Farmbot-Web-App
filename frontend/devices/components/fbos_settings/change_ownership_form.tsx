@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col, BlurableInput } from "../../../ui/index";
 
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";
 import { transferOwnership } from "../../transfer_ownership/transfer_ownership";
 import { API } from "../../../api";
