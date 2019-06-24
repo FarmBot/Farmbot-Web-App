@@ -293,6 +293,6 @@ describe CeleryScript::Checker do
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     message = "must provide a value for all parameters"
-    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_VAR)
+    expect(chk.error.message).to include(CeleryScript::Checker::MISSING_PARAM)
   end
 end

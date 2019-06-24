@@ -16,6 +16,7 @@ module CeleryScript
                "Expected one of: %s"
     T_MISMATCH = "Type mismatch. %s must be one of: %s. Got: %s"
     MISSING_VAR = "You must select a Location for the Location Variable."
+    MISSING_PARAM = "You must select a Default Value for the Location Variable."
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
     # For instance, A `nothing` node in a `parameter_declaration` is often an
@@ -26,7 +27,7 @@ module CeleryScript
       nothing: {
         write_pin: "You must select a Peripheral in the Control Peripheral step.",
         variable_declaration: MISSING_VAR,
-        parameter_declaration: MISSING_VAR,
+        parameter_declaration: MISSING_PARAM,
         read_pin: "You must select a Sensor in the Read Sensor step.",
         move_absolute: "You must select a Location in the Move To step.",
         execute: CeleryScriptSettingsBag::NO_SUB_SEQ,
