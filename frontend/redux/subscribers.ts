@@ -4,7 +4,6 @@ import { EnvName } from "./interfaces";
 import { all } from "../resources/selectors";
 import { getWebAppConfig } from "../resources/getters";
 import { TaggedResource, TaggedWebAppConfig } from "farmbot";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export function stopThem() { return "You have unsaved work."; }
 export function dontStopThem() { }
@@ -16,7 +15,7 @@ const shouldStop =
     const discardUnsaved = config && config.body.discard_unsaved;
     const sequenceResources = allResources.filter(r => r.kind === "Sequence");
     const discardUnsavedSequences =
-      config && config.body["discard_unsaved_sequences" as BooleanConfigKey];
+      config && config.body["discard_unsaved_sequences"];
 
     /**
      * For the unsaved notification to show, a user must:

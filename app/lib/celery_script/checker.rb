@@ -15,6 +15,7 @@ module CeleryScript
     BAD_BODY = "Body of '%s' node contains '%s' node. " \
                "Expected one of: %s"
     T_MISMATCH = "Type mismatch. %s must be one of: %s. Got: %s"
+    MISSING_VAR = "You must select a Location for the Location Variable."
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
     # For instance, A `nothing` node in a `parameter_declaration` is often an
@@ -24,8 +25,12 @@ module CeleryScript
     FRIENDLY_ERRORS = {
       nothing: {
         write_pin: "You must select a Peripheral in the Control Peripheral step.",
-        variable_declaration: "You must provide a value for all parameters",
-        parameter_declaration: "You must provide a value for all parameters",
+        variable_declaration: MISSING_VAR,
+        parameter_declaration: MISSING_VAR,
+        read_pin: "You must select a Sensor in the Read Sensor step.",
+        move_to: "You must select a Location in the Move To step.",
+        execute: "You must select a Sequence in the Execute step.",
+      # default_value: "TODO",
       },
     }.with_indifferent_access
 

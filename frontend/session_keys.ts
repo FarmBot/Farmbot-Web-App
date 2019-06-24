@@ -33,6 +33,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   confirm_step_deletion: "confirm_step_deletion",
   show_pins: "show_pins",
   expand_step_options: "expand_step_options",
+  discard_unsaved_sequences: "discard_unsaved_sequences",
 
   /** App settings */
   disable_i18n: "disable_i18n",
