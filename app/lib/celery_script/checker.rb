@@ -28,9 +28,8 @@ module CeleryScript
         variable_declaration: MISSING_VAR,
         parameter_declaration: MISSING_VAR,
         read_pin: "You must select a Sensor in the Read Sensor step.",
-        move_to: "You must select a Location in the Move To step.",
-        execute: "You must select a Sequence in the Execute step.",
-      # default_value: "TODO",
+        move_absolute: "You must select a Location in the Move To step.",
+        execute: CeleryScriptSettingsBag::NO_SUB_SEQ,
       },
     }.with_indifferent_access
 
