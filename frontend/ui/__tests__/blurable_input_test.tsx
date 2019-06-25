@@ -1,7 +1,7 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import { BlurableInput, BIProps } from "../blurable_input";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 
 describe("<BlurableInput />", () => {
   const fakeProps = (): BIProps => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../../ui";
-import { info } from "farmbot-toastr";
+import { info } from "../../../toast/toast";
 import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";

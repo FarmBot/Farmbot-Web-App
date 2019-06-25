@@ -10,7 +10,6 @@ import { User } from "../auth/interfaces";
 import { edit, save } from "../api/crud";
 import { updateNO } from "../resources/actions";
 import { deleteUser, resetAccount } from "./actions";
-import { success } from "farmbot-toastr/dist";
 import { LabsFeatures } from "./labs/labs_features";
 import { requestAccountExport } from "./request_account_export";
 import { DevWidget } from "./dev/dev_widget";
@@ -18,6 +17,7 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevMode } from "./dev/dev_mode";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
+import { success } from "../toast/toast";
 
 const KEYS: (keyof User)[] = ["id", "name", "email", "created_at", "updated_at"];
 

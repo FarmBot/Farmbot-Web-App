@@ -25,13 +25,13 @@ import {
   PinBindingInputGroup, PinNumberInputGroup, BindingTypeDropDown,
   ActionTargetDropDown, SequenceTargetDropDown
 } from "../pin_binding_input_group";
-import { error, warning } from "farmbot-toastr";
 import {
   fakeResourceIndex
 } from "../../../sequences/locals_list/test_helpers";
 import {
   PinBindingType, PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
+import { error, warning } from "../../../toast/toast";
 
 describe("<PinBindingInputGroup/>", () => {
   function fakeProps(): PinBindingInputGroupProps {

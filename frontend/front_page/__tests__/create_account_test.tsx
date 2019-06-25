@@ -15,7 +15,7 @@ import {
 } from "../create_account";
 import { shallow } from "enzyme";
 import { BlurableInput } from "../../ui/index";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { resendEmail } from "../resend_verification";
 import { ResendPanelBody } from "../resend_panel_body";
 import { BlurablePassword } from "../../ui/blurable_password";

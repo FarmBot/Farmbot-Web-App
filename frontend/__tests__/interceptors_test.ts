@@ -28,8 +28,8 @@ import { SafeError } from "../interceptor_support";
 import { API } from "../api";
 import { auth } from "../__test_support__/fake_state/token";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity";
-import { error } from "farmbot-toastr";
 import { Session } from "../session";
+import { error } from "../toast/toast";
 
 const A_STRING = expect.any(String);
 

@@ -4,7 +4,7 @@ import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { noop } from "lodash";
-import { success, error, info, warning } from "farmbot-toastr";
+import { success, error, info, warning } from "../toast/toast";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";

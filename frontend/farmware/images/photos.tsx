@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps, PhotoButtonsProps } from "./interfaces";
 import { getDevice } from "../../device";

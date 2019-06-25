@@ -10,7 +10,7 @@ import {
 } from "../ui/index";
 
 import { resendEmail } from "./resend_verification";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../toast/toast";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
 import { BlurablePassword } from "../ui/blurable_password";

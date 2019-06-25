@@ -15,7 +15,7 @@ jest.mock("../../api/api", () => ({
 
 import axios from "axios";
 import { fetchBulletinContent, seedAccount } from "../actions";
-import { info, error } from "farmbot-toastr";
+import { info, error } from "../../toast/toast";
 
 describe("fetchBulletinContent()", () => {
   it("fetches data", async () => {

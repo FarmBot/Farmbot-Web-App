@@ -1,5 +1,5 @@
 import * as React from "react";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";

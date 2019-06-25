@@ -26,9 +26,9 @@ import { deletePoints } from "../actions";
 import { scanImage, test } from "../actions";
 import axios from "axios";
 import { API } from "../../../api";
-import { success, error } from "farmbot-toastr";
 import { times } from "lodash";
 import { Actions } from "../../../constants";
+import { error, success } from "../../../toast/toast";
 
 describe("scanImage()", () => {
   it("calls out to the device", () => {

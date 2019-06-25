@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { success, warning, info, error } from "farmbot-toastr";
+import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {

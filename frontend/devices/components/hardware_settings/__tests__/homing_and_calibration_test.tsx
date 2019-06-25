@@ -10,7 +10,7 @@ import { updateMCU } from "../../../actions";
 import {
   fakeFirmwareConfig
 } from "../../../../__test_support__/fake_state/resources";
-import { warning, error } from "farmbot-toastr";
+import { error, warning } from "../../../../toast/toast";
 
 describe("<HomingAndCalibration />", () => {
   function testAxisLengthInput(

@@ -4,7 +4,7 @@ import { StepButton, stepClick } from "../index";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
-import { error } from "farmbot-toastr";
+import { error } from "../../../toast/toast";
 
 function props(): StepButtonParams {
   return {

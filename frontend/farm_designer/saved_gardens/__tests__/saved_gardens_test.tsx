@@ -27,7 +27,6 @@ import { mount, shallow } from "enzyme";
 import {
   SavedGardens, mapStateToProps, SavedGardensLink, SavedGardenHUD, savedGardenOpen
 } from "../saved_gardens";
-import { error } from "farmbot-toastr";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
   fakePlantTemplate, fakeSavedGarden
@@ -40,6 +39,7 @@ import {
 import { SavedGardensProps } from "../interfaces";
 import { applyGarden, destroySavedGarden, closeSavedGarden } from "../actions";
 import { Actions } from "../../../constants";
+import { error } from "../../../toast/toast";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({

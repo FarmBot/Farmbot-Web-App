@@ -10,11 +10,11 @@ import { SpecialStatus } from "farmbot";
 import Axios from "axios";
 import { API } from "../../api/index";
 import { prettyPrintApiErrors, equals, trim } from "../../util";
-import { success, error } from "farmbot-toastr/dist";
 import { Content } from "../../constants";
 import { uniq } from "lodash";
 import { BlurablePassword } from "../../ui/blurable_password";
 import { t } from "../../i18next_wrapper";
+import { success, error } from "../../toast/toast";
 
 interface PasswordForm {
   new_password: string;

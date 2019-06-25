@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { success, error, warning } from "farmbot-toastr";
+import { success, error, warning } from "../../toast/toast";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
   ParameterApplication

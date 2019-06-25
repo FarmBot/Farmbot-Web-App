@@ -1,4 +1,3 @@
-import { error } from "farmbot-toastr";
 import { Content } from "../../../../constants";
 import { initSave, edit, save } from "../../../../api/crud";
 import {
@@ -15,6 +14,7 @@ import { transformXY, round } from "../../util";
 import { movePlant } from "../../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
+import { error } from "../../../../toast/toast";
 
 /** Return a new plant or plantTemplate object. */
 export const newPlantKindAndBody = (props: {

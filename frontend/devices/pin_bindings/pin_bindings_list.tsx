@@ -4,7 +4,7 @@ import {
   generatePinLabel, sortByNameAndPin
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { Row, Col } from "../../ui";
 import { findSequenceById } from "../../resources/selectors";
 import { PinBindingColWidth } from "./pin_bindings";

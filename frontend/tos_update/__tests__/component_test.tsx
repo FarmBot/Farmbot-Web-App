@@ -14,7 +14,7 @@ import { shallow, mount } from "enzyme";
 import axios from "axios";
 import { API } from "../../api/index";
 import { Session } from "../../session";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 
 type E = React.FormEvent<HTMLInputElement>;
 

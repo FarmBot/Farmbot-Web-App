@@ -3,7 +3,7 @@ import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import {
   CameraSelectionProps, CameraSelectionState
 } from "./interfaces";
-import { info, success, error } from "farmbot-toastr";
+import { info, success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 import { Feature } from "../../interfaces";
