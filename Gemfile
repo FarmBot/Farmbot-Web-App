@@ -24,7 +24,6 @@ gem "request_store"
 gem "rollbar"
 gem "scenic"
 gem "secure_headers"
-gem "skylight"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
 gem "rabbitmq_http_api_client"
