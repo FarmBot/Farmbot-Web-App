@@ -21,15 +21,16 @@ const createToast = (message: string, title: string, color: string) => {
     throw new Error("toast-container is null.");
   } else {
 
-    /**
-     * Amount of time before each element is removed.
-     */
-    let timer = 7;
-
-    /**
-     * Declare if the user's mouse is hovering over the message.
-     */
-    let isHovered = false;
+    const state = {
+      /**
+       * Amount of time before each element is removed.
+       */
+      timer: 7,
+      /**
+       * Declare if the user's mouse is hovering over the message.
+       */
+      isHovered: false,
+    };
 
     /**
      * Create elements.
@@ -85,7 +86,7 @@ const createToast = (message: string, title: string, color: string) => {
       for (let i = 0; i < children.length; i++) {
         (children[i] as HTMLElement).style.animationPlayState = "paused";
       }
-      isHovered = true;
+      state.isHovered = true;
     });
 
     /**
@@ -96,7 +97,7 @@ const createToast = (message: string, title: string, color: string) => {
       for (let i = 0; i < children.length; i++) {
         (children[i] as HTMLElement).style.animationPlayState = "running";
       }
-      isHovered = false;
+      state.isHovered = false;
     });
 
     /**
@@ -114,15 +115,15 @@ const createToast = (message: string, title: string, color: string) => {
      * Start timer.
      */
     const interval = setInterval(() => {
-      if (timer <= 7) {
+      if (state.timer <= 7) {
         toastEl.classList.add("active");
       }
-      if (!isHovered && timer <= .800) {
+      if (!state.isHovered && state.timer <= 0.800) {
         toastEl.classList.add("poof");
       }
-      if (!isHovered) {
-        timer -= 0.100;
-        if (timer <= 0) {
+      if (!state.isHovered) {
+        state.timer -= 0.100;
+        if (state.timer <= 0) {
           clearInterval(interval);
           if (toastEl && toastEl.parentNode === tc) {
             if (!tc) {
@@ -142,27 +143,20 @@ const createToast = (message: string, title: string, color: string) => {
 /**
  * Yellow message with "Warning" as the default title.
  */
-export const warning = (
-  message: string,
-  title = "Warning",
-  color = "yellow"
-) => {
-  if (messageQueue.indexOf(message) > -1) {
-    console.warn(message);
-  } else {
-    createToast(message, title, color);
-    messageQueue.push(message);
-  }
-};
+export const warning =
+  (message: string, title = "Warning", color = "yellow") => {
+    if (messageQueue.indexOf(message) > -1) {
+      console.warn(message);
+    } else {
+      createToast(message, title, color);
+      messageQueue.push(message);
+    }
+  };
 
 /**
  *  Red message with "Error" as the default title.
  */
-export const error = (
-  message: string,
-  title = "Error",
-  color = "red"
-) => {
+export const error = (message: string, title = "Error", color = "red") => {
   if (messageQueue.indexOf(message) > -1) {
     console.error(message);
   } else {
@@ -174,35 +168,23 @@ export const error = (
 /**
  *  Green message with "Success" as the default title.
  */
-export const success = (
-  message: string,
-  title = "Success",
-  color = "green"
-) => {
-  createToast(message, title, color);
-};
+export const success =
+  (message: string, title = "Success", color = "green") =>
+    createToast(message, title, color);
 
 /**
  *  Red message with "FYI" as the default title.
  */
-export const info = (
-  message: string,
-  title = "FYI",
-  color = "blue"
-) => {
-  createToast(message, title, color);
-};
+export const info =
+  (message: string, title = "FYI", color = "blue") =>
+    createToast(message, title, color);
 
 /**
  *  Blue message with "Did you know?" as the default title.
  */
-export const fun = (
-  message: string,
-  title = "Did you know?",
-  color = "dark-blue"
-) => {
-  createToast(message, title, color);
-};
+export const fun =
+  (message: string, title = "Did you know?", color = "dark-blue") =>
+    createToast(message, title, color);
 
 /**
  *  Adds a hidden container div for holding toast messages.
