@@ -2,6 +2,7 @@ COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 THRESHOLD      = 0.001
 REPO_URL       = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
+PULL_REQUEST   = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR   = ".fraction"
@@ -17,10 +18,20 @@ def open_json(url)
   end
 end
 
+# Don't fail on staging builds (i.e., not a pull request) to allow auto-deploys.
+def exit_0?
+  CURRENT_BRANCH == "staging"
+end
+
+# Get pull request number. Return 0 if not a PR.
+def pr_number
+  PULL_REQUEST.split("/")[-1].to_i
+end
+
 # Get pull request information from the GitHub API.
 def fetch_pull_data()
-  if CURRENT_BRANCH.include? "/"
-    return open_json("#{REPO_URL}/pulls/#{CURRENT_BRANCH.split("/")[1]}")
+  if pr_number != 0
+    return open_json("#{REPO_URL}/pulls/#{pr_number}")
   end
   return {}
 end
@@ -37,6 +48,17 @@ def relevant_data(build)
     percent: build["covered_percent"]}
 end
 
+# Fetch relevant coverage build data from commit.
+def fetch_build_data_from_commit(commit)
+  if commit.nil?
+    puts "Commit not found."
+    build_data = {}
+  else
+    build_data = open_json("https://coveralls.io/builds/#{commit}.json")
+  end
+  return relevant_data(build_data)
+end
+
 # Fetch relevant remote coverage data for the latest commit on a branch.
 def fetch_latest_branch_build(branch)
   github_data = open_json("#{REPO_URL}/git/refs/heads/#{branch}")
@@ -44,8 +66,14 @@ def fetch_latest_branch_build(branch)
     github_data = {} # Didn't match a branch
   end
   commit = github_data.dig("object", "sha")
-  build_data = open_json("https://coveralls.io/builds/#{commit}.json")
-  return relevant_data(build_data)
+  return fetch_build_data_from_commit(commit)
+end
+
+# Fetch latest remote coverage data for a branch (commit fetched via GH PR API).
+def fetch_latest_pr_base_branch_build(branch)
+  github_data = open_json("#{REPO_URL}/pulls?state=closed&base=#{branch}")
+  commit = (github_data[0] || {}).dig("base", "sha")
+  return fetch_build_data_from_commit(commit)
 end
 
 # Fetch a page of build coverage report results.
@@ -72,7 +100,7 @@ def latest_build_data(build_history, branch)
     branch_builds = build_history.select{ |build| build[:branch] == branch }
   end
   if branch_builds.length > 0
-    puts "Coverage history (newest to oldest):"
+    puts "\nCoverage history (newest to oldest):"
     branch_builds.map{ |build|
       puts "#{build[:branch]}: #{build[:percent].round(3)}%"}
       branch_builds[0]
@@ -103,7 +131,14 @@ def to_percent(pair)
 end
 
 namespace :coverage do
-  desc "Coveralls stats stopped working :("
+  desc "Verify code test coverage changes remain within acceptable thresholds."\
+       "Compares current test coverage percentage from Jest output to previous"\
+       "values from the base branch of a PR (or the build branch if not a PR)."\
+       "This task is used during ci to fail PR builds if test coverage"\
+       "decreases significantly and can also be run locally after running"\
+       "`jest --coverage` or `npm test-slow`."\
+       "The Coveralls stats reporter used to perform this check, but didn't"\
+       "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
     # Fetch current build coverage data from the HTML summary.
     statements, branches, functions, lines = Nokogiri::HTML(open(COVERAGE_FILE_PATH))
@@ -135,13 +170,19 @@ namespace :coverage do
     remote = latest_build_data(coverage_history_data, current_branch)
 
     if remote[:percent].nil?
-      puts "Coveralls data for #{current_branch} not found within history."
-      puts "Attempting to get build coveralls data for latest commit."
+      puts "Coveralls data for '#{current_branch}' not found within history."
+      puts "Attempting to get coveralls build data for latest commit."
       remote = fetch_latest_branch_build(current_branch)
     end
 
+    if remote[:percent].nil?
+      puts "Coverage data for latest '#{current_branch}' commit not available."
+      puts "Attempting to use data from the previous commit (latest PR base)."
+      remote = fetch_latest_pr_base_branch_build(current_branch)
+    end
+
     if remote[:percent].nil? && current_branch != "staging"
-      puts "Error getting coveralls data for #{current_branch}."
+      puts "Error getting coveralls data for '#{current_branch}'."
       puts "Attempting to use staging build coveralls data."
       remote = latest_build_data(coverage_history_data, "staging")
     end
@@ -180,7 +221,7 @@ namespace :coverage do
 
     print_summary_text(build_percent, remote, pull_request_data)
 
-    exit pass ? 0 : 1
+    exit (pass || exit_0?) ? 0 : 1
 
   end
 end
