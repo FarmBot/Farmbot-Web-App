@@ -1,3 +1,5 @@
+/** This is a [surprisingly reliable] legacy component.
+ * TODO: Convert this to React. */
 export class FBToast {
   /**
    * Warnings and errors fire once, to avoid bombarding the user with repetition.
