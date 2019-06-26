@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Run JS Tests
           command: |
-            sudo docker-compose run web npm run test-slow
+            sudo docker-compose --verbose run web npm run test-slow
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
             sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" web rake coverage:run
       - run:
