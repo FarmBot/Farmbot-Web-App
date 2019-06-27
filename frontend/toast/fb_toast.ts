@@ -23,15 +23,17 @@ export class FBToast {
 
   /** Declare if the user's mouse is hovering over the message. */
   public isHovered = false;
+  public message = "";
 
   constructor(public parent: Element,
     title: string,
-    public message: string,
+    raw_message: string,
     color: string) {
 
+    this.message = raw_message.replace(/\s+/g, " ");
     /** Fill contents. */
     this.titleEl.innerText = title;
-    this.messageEl.innerText = message;
+    this.messageEl.innerText = this.message;
 
     /** Add classes. */
     this.toastEl.classList.add("toast");
@@ -105,7 +107,6 @@ export class FBToast {
   };
 
   run = () => {
-
     /** Append children. */
     this.parent.appendChild(this.toastEl);
     // TSC Thinks this is a node project :-\
