@@ -24,6 +24,7 @@ export class FBToast {
   /** Declare if the user's mouse is hovering over the message. */
   public isHovered = false;
   public message = "";
+  public isAttached = false;
 
   constructor(public parent: Element,
     title: string,
@@ -81,8 +82,12 @@ export class FBToast {
   };
 
   detach = () => {
-    this.parent.removeChild(this.toastEl);
+    clearInterval(this.intervalId);
     delete FBToast.everyMessage[this.message];
+    if (this.isAttached) {
+      this.parent.removeChild(this.toastEl);
+      this.isAttached = false;
+    }
   };
 
   onClick = (e: MouseEvent) => {
@@ -92,23 +97,17 @@ export class FBToast {
 
   /** Start timer. */
   doPolling = () => {
-    (this.timeout <= 7) && this.toastEl.classList.add("active");
-    (!this.isHovered && this.timeout <= 0.800) && this.toastEl.classList.add("poof");
-    if (!this.isHovered) {
-      this.timeout -= 0.100;
-      if (this.timeout <= 0) {
-        clearInterval(this.intervalId);
-        if (this.toastEl && this.toastEl.parentNode === this.parent) {
-          this.parent.removeChild(this.toastEl);
-          delete FBToast.everyMessage[this.message];
-        }
-      }
-    }
+    if (this.timeout <= 7) { this.toastEl.classList.add("active"); }
+    if (this.isHovered) { return; }
+    if (this.timeout <= 0.800) { this.toastEl.classList.add("poof"); }
+    this.timeout -= 0.100;
+    if (this.timeout <= 0) { this.detach(); }
   };
 
   run = () => {
     /** Append children. */
     this.parent.appendChild(this.toastEl);
+    this.isAttached = true;
     // TSC Thinks this is a node project :-\
     // tslint:disable-next-line:no-any
     this.intervalId = setInterval(this.doPolling, 100) as any;

@@ -86,9 +86,18 @@ describe("FBToast", () => {
     const { message } = i;
     FBToast.everyMessage[message] = true;
     p.removeChild = jest.fn();
+    i.isAttached = true;
     i.detach();
     expect(FBToast.everyMessage[message]).toBeFalsy();
     expect(p.removeChild).toHaveBeenCalledWith(i.toastEl);
   });
 
+  it("does polling", () => {
+    const [i] = newToast();
+    i.isHovered = false;
+    i.timeout = 0;
+    i.detach = jest.fn();
+    i.doPolling();
+    expect(i.detach).toHaveBeenCalled();
+  });
 });
