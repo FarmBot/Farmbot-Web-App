@@ -57,7 +57,9 @@ const maybeFindVariable = (
 ): SequenceMeta | undefined =>
   uuid ? findVariableByName(resources, uuid, label) : undefined;
 
-const withPrefix = (label: string) => `${t("Location Variable")} - ${label}`;
+/** Add "Location Variable - " prefix to string. */
+export const withPrefix = (label: string) =>
+  `${t("Location Variable")} - ${label}`;
 
 interface DetermineVarDDILabelProps {
   label: string;

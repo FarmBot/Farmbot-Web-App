@@ -13,7 +13,7 @@ import {
   findSequenceById,
   maybeGetTimeSettings
 } from "../resources/selectors";
-import { TaggedRegimen } from "farmbot";
+import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
@@ -109,6 +109,7 @@ const createRows = (
   (item: RegimenItem): RegimenItemCalendarRow => {
     const uuid = findId(index, "Sequence", item.sequence_id);
     const sequence = findSequence(index, uuid);
+    const variable = getParameterLabel(sequence);
     const { time_offset } = item;
     const d = moment.duration(time_offset);
     const { name } = sequence.body;
@@ -116,5 +117,13 @@ const createRows = (
     const FORMAT = timeFormatString(timeSettings);
     const hhmm = moment({ hour: d.hours(), minute: d.minutes() }).format(FORMAT);
     const day = Math.floor(moment.duration(time_offset).asDays()) + 1;
-    return { name, hhmm, color, day, dispatch, regimen, item, sortKey: time_offset };
+    return {
+      name, hhmm, color, day, dispatch, regimen, item, variable,
+      sortKey: time_offset
+    };
   };
+
+const getParameterLabel = (sequence: TaggedSequence): string | undefined =>
+  (sequence.body.args.locals.body || [])
+    .filter(variable => variable.kind === "parameter_declaration")
+    .map(variable => variable.args.label)[0];

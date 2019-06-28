@@ -51,7 +51,7 @@ export const addOrEditParamApps =
   };
 
 /** Convert array to a dictionary. */
-const reduceVariables = <T extends VariableNode>(
+export const reduceVariables = <T extends VariableNode>(
   variables: T[]):
   Dictionary<T> => {
   const items: Dictionary<T> = {};
