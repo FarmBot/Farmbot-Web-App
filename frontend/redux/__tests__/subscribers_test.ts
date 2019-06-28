@@ -10,6 +10,7 @@ import { SpecialStatus, TaggedWebAppConfig } from "farmbot";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { betterCompact } from "../../util";
+import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 
 describe("unsavedCheck", () => {
   beforeEach(() => {
@@ -18,8 +19,7 @@ describe("unsavedCheck", () => {
 
   function setItUp(
     dirty: Record<"seqDirty" | "otherDirty", boolean>,
-    // body: Partial<WebAppConfig> | undefined,
-    body: {} | undefined,
+    body: Partial<WebAppConfig> | undefined,
   ) {
     const status = (isDirty: boolean) =>
       isDirty ? SpecialStatus.DIRTY : SpecialStatus.SAVED;

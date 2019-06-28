@@ -118,8 +118,19 @@ describe("<FarmEventForm/>", () => {
     expect(i.state.fe.executable_id).toEqual("wow");
   });
 
+  it("allows proper changes to the executable", () => {
+    const p = props();
+    p.farmEvent.body.id = 0;
+    p.farmEvent.body.executable_type = "Sequence";
+    const i = instance(p);
+    i.executableSet({ value: "wow", label: "hey", headingId: "Regimen" });
+    expect(error).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+  });
+
   it("doesn't allow improper changes to the executable", () => {
     const p = props();
+    p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });

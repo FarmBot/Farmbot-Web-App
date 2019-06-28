@@ -478,14 +478,15 @@ fieldset {
     display: flex;
     margin: auto;
     max-height: 650px;
-    min-height: 200px;
   }
   img {
     max-width: 100%;
+    min-height: 100px;
   }
   iframe {
     width: 100%;
     border: none;
+    min-height: 300px;
   }
 }
 

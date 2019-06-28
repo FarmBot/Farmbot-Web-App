@@ -31,7 +31,9 @@ jest.mock("../../config_storage/actions", () => ({
 import * as React from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
-  SequenceSettingsMenu
+  SequenceSettingsMenu,
+  SequenceSetting,
+  SequenceSettingProps
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
@@ -260,5 +262,48 @@ describe("<SequenceSettingsMenu />", () => {
     wrapper.find("button").at(1).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
+  });
+});
+
+describe("<SequenceSetting />", () => {
+  const fakeProps = (): SequenceSettingProps => ({
+    label: "setting label",
+    description: "setting description",
+    dispatch: jest.fn(),
+    setting: BooleanSetting.discard_unsaved_sequences,
+    getWebAppConfigValue: jest.fn(),
+    confirmation: "setting confirmation",
+  });
+
+  it("confirms setting enable", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => false;
+    const wrapper = mount(<SequenceSetting {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith("setting confirmation");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.discard_unsaved_sequences, true);
+  });
+
+  it("cancels setting enable", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => false;
+    const wrapper = mount(<SequenceSetting {...p} />);
+    window.confirm = jest.fn(() => false);
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith("setting confirmation");
+    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+  });
+
+  it("doesn't confirm setting disable", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => true;
+    const wrapper = mount(<SequenceSetting {...p} />);
+    window.confirm = jest.fn();
+    wrapper.find("button").simulate("click");
+    expect(window.confirm).not.toHaveBeenCalled();
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.discard_unsaved_sequences, false);
   });
 });
