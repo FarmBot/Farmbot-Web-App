@@ -55,7 +55,7 @@ export interface SequenceSettingsMenuProps {
   getWebAppConfigValue: GetWebAppConfigValue;
 }
 
-interface SettingProps {
+export interface SequenceSettingProps {
   label: string;
   description: string;
   dispatch: Function;
@@ -64,10 +64,10 @@ interface SettingProps {
   confirmation?: string;
 }
 
-const Setting = (props: SettingProps) => {
+export const SequenceSetting = (props: SequenceSettingProps) => {
   const value = !!props.getWebAppConfigValue(props.setting);
   const proceed = () =>
-    props.confirmation ? confirm(t(props.confirmation)) : true;
+    (props.confirmation && !value) ? confirm(t(props.confirmation)) : true;
   return <fieldset>
     <label>
       {t(props.label)}
@@ -84,20 +84,20 @@ export const SequenceSettingsMenu =
   ({ dispatch, getWebAppConfigValue }: SequenceSettingsMenuProps) => {
     const commonProps = { dispatch, getWebAppConfigValue };
     return <div className="sequence-settings-menu">
-      <Setting {...commonProps}
+      <SequenceSetting {...commonProps}
         setting={BooleanSetting.confirm_step_deletion}
         label={t("Confirm step deletion")}
         description={Content.CONFIRM_STEP_DELETION} />
-      <Setting {...commonProps}
+      <SequenceSetting {...commonProps}
         setting={BooleanSetting.show_pins}
         label={t("Show pins")}
         description={Content.SHOW_PINS} />
-      <Setting {...commonProps}
+      <SequenceSetting {...commonProps}
         setting={BooleanSetting.expand_step_options}
         label={t("Open options by default")}
         description={Content.EXPAND_STEP_OPTIONS} />
-      <Setting {...commonProps}
-        setting={"discard_unsaved_sequences"}
+      <SequenceSetting {...commonProps}
+        setting={BooleanSetting.discard_unsaved_sequences}
         confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
         label={t("Discard unsaved sequence changes")}
         description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />

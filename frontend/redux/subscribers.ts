@@ -15,7 +15,7 @@ const shouldStop =
     const discardUnsaved = config && config.body.discard_unsaved;
     const sequenceResources = allResources.filter(r => r.kind === "Sequence");
     const discardUnsavedSequences =
-      config && config.body["discard_unsaved_sequences"];
+      config && config.body.discard_unsaved_sequences;
 
     /**
      * For the unsaved notification to show, a user must:
