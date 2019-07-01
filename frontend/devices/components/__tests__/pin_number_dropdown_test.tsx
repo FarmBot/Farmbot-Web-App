@@ -33,6 +33,14 @@ describe("<PinNumberDropdown />", () => {
   it("renders undefined", () => {
     const wrapper = mount(<PinNumberDropdown {...fakeProps()} />);
     expect(wrapper.text()).toEqual("Select a pin");
+    expect(wrapper.find(FBSelect).props().extraClass).toEqual("");
+  });
+
+  it("renders when inconsistent", () => {
+    const p = fakeProps();
+    p.sourceFwConfig = () => ({ value: 0, consistent: false });
+    const wrapper = mount(<PinNumberDropdown {...p} />);
+    expect(wrapper.find(FBSelect).props().extraClass).toEqual("dim");
   });
 
   it("renders pin label", () => {

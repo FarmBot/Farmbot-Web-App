@@ -6,7 +6,7 @@ import {
 import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui";
 import { mapStateToProps } from "./state_to_props";
-import { User } from "../auth/interfaces";
+import { User } from "farmbot/dist/resources/api_resources";
 import { edit, save } from "../api/crud";
 import { updateNO } from "../resources/actions";
 import { deleteUser, resetAccount } from "./actions";

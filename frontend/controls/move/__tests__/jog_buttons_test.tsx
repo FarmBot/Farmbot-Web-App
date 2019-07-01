@@ -77,7 +77,7 @@ describe("<JogButtons/>", function () {
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
-      .toHaveBeenCalledWith({ speed: 100, x: 100, y: 0, z: 0 });
+      .toHaveBeenCalledWith({ x: 100, y: 0, z: 0 });
   });
 
   it("has swapped xy jog buttons", () => {
@@ -89,6 +89,6 @@ describe("<JogButtons/>", function () {
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(mockDevice.moveRelative)
-      .toHaveBeenCalledWith({ speed: 100, x: 0, y: 100, z: 0 });
+      .toHaveBeenCalledWith({ x: 0, y: 100, z: 0 });
   });
 });

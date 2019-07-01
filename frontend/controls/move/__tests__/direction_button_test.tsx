@@ -54,7 +54,7 @@ describe("<DirectionButton/>", function () {
     const btn = mount(<DirectionButton {...buttonProps} />);
     btn.simulate("click");
     expect(mockDevice.moveRelative)
-      .toHaveBeenCalledWith({ speed: 100, x: 0, y: 1000, z: 0 });
+      .toHaveBeenCalledWith({ x: 0, y: 1000, z: 0 });
   });
 });
 

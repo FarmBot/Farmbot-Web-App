@@ -31,6 +31,7 @@ export const PinNumberDropdown = (props: PinNumberDropdownProps) => {
   const peripheralIds = peripheralDictionary(resources);
   const pinNumberNode = pinNumOrNamedPin(pinNumberValue, peripheralIds);
   return <FBSelect
+    extraClass={props.sourceFwConfig(pinNumKey).consistent ? "" : "dim"}
     selectedItem={pinNumberValue
       ? celery2DropDown(pinNumberNode, resources)
       : undefined}

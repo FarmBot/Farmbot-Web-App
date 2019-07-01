@@ -1,4 +1,4 @@
-import { User } from "../auth/interfaces";
+import { User } from "farmbot/dist/resources/api_resources";
 import { TaggedUser, SpecialStatus } from "farmbot";
 
 export let user: User = {
