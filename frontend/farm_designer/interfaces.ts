@@ -269,8 +269,3 @@ export interface CurrentPointPayl {
   r: number;
   color?: string;
 }
-
-export interface SavedGarden {
-  id?: number;
-  name?: string;
-}

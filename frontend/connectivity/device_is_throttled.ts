@@ -1,4 +1,4 @@
-import { DeviceAccountSettings } from "../devices/interfaces";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 /** Determines if the device was forced to wait due to log flooding. */
 export const deviceIsThrottled =

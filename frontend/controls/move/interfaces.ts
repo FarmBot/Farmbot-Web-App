@@ -31,13 +31,6 @@ export interface DirectionButtonProps {
   disabled: boolean | undefined;
 }
 
-export interface Payl {
-  speed: number;
-  x: number;
-  y: number;
-  z: number;
-}
-
 export interface StepSizeSelectorProps {
   choices: number[];
   selected: number;
