@@ -1531,7 +1531,7 @@ CREATE TABLE public.web_app_configs (
     y_axis_inverted boolean DEFAULT false,
     z_axis_inverted boolean DEFAULT false,
     bot_origin_quadrant integer DEFAULT 2,
-    zoom_level integer DEFAULT 1,
+    zoom_level integer DEFAULT '-2'::integer,
     success_log integer DEFAULT 1,
     busy_log integer DEFAULT 1,
     warn_log integer DEFAULT 1,
@@ -2983,6 +2983,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190607192429'),
 ('20190613190531'),
 ('20190613215319'),
-('20190621202204');
+('20190621202204'),
+('20190701155706');
 
 

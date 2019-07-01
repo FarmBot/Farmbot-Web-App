@@ -31,7 +31,7 @@ describe Api::WebAppConfigsController do
         y_axis_inverted: false,
         z_axis_inverted: false,
         bot_origin_quadrant: 2,
-        zoom_level: 1,
+        zoom_level: -2,
         success_log: 1,
         busy_log: 1,
         warn_log: 1,
