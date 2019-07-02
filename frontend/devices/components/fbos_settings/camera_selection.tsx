@@ -51,7 +51,7 @@ export class CameraSelection
       ? props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]))
       : getDevice()
         .setUserEnv(config)
-        .then(() => success(t("Successfully configured camera!"), t("Success")))
+        .then(() => success(t("Successfully configured camera!")))
         .catch(() => error(t("An error occurred during configuration.")));
   }
 

@@ -104,8 +104,8 @@ export const PhotoFooter = ({ image, timeSettings }: PhotoFooterProps) => {
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
-    const ok = () => success(t(Content.PROCESSING_PHOTO), t("Success"));
-    const no = () => error(t("Error taking photo"), t("Error"));
+    const ok = () => success(t(Content.PROCESSING_PHOTO));
+    const no = () => error(t("Error taking photo"));
     getDevice().takePhoto().then(ok, no);
   }
 
@@ -113,8 +113,8 @@ export class Photos extends React.Component<PhotosProps, {}> {
     const img = this.props.currentImage || this.props.images[0];
     if (img && img.uuid) {
       this.props.dispatch(destroy(img.uuid))
-        .then(() => success(t("Image Deleted."), t("Success")))
-        .catch(() => error(t("Could not delete image."), t("Error")));
+        .then(() => success(t("Image Deleted.")))
+        .catch(() => error(t("Could not delete image.")));
     }
   }
 

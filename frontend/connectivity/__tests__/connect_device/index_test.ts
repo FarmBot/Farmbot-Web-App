@@ -91,7 +91,7 @@ describe("showLogOnScreen", () => {
     types.map((x) => {
       const fun = fakeLog(x, ["toast"]);
       showLogOnScreen(fun);
-      expect(toastr).toHaveBeenCalledWith(fun.message, TITLE);
+      expect(toastr).toHaveBeenCalledWith(fun.message, TITLE());
     });
   }
 
@@ -160,7 +160,7 @@ describe("onOffline", () => {
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
-    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED, "Error");
+    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
   });
 });
 

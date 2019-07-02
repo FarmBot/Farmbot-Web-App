@@ -97,7 +97,7 @@ export function commitBulkEditor(): Thunk {
           return error(t("No day(s) selected."));
         }
       } else {
-        return error(t("Select a sequence from the dropdown first."), t("Error"));
+        return error(t("Select a sequence from the dropdown first."));
       }
     } else {
       return error(t("Select a regimen first or create one."));

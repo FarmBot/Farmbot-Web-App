@@ -52,7 +52,7 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
           backTo={"/app/designer/plants"} />}
       <DesignerPanelContent panelName={"saved-garden"}
         className={`${alt ? "with-nav" : ""}`}>
-        {alt && <p>{Content.SAVED_GARDENS}</p>}
+        {alt && <p>{t(Content.SAVED_GARDENS)}</p>}
         <GardenSnapshot
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}

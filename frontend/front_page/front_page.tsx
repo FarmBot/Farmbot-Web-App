@@ -1,6 +1,5 @@
 import * as React from "react";
 import axios from "axios";
-
 import { error as log, success, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, attachToRoot } from "../util";
@@ -125,7 +124,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     };
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
-      success(t(m), t("Success"));
+      success(t(m));
       this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));

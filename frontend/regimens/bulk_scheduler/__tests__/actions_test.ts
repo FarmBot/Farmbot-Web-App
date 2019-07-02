@@ -89,8 +89,7 @@ describe("commitBulkEditor()", () => {
     const state = newFakeState();
     state.resources.consumers.regimens.selectedSequenceUUID = undefined;
     returnsError(state,
-      "Select a sequence from the dropdown first.",
-      "Error");
+      "Select a sequence from the dropdown first.");
   });
 
   it("does nothing if no days are selected", () => {
