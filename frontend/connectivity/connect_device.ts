@@ -29,7 +29,7 @@ import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
 import { t } from "../i18next_wrapper";
 
-export const TITLE = "New message from bot";
+export const TITLE = () => t("New message from bot");
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -59,16 +59,16 @@ export function actOnChannelName(
 export function showLogOnScreen(log: Log) {
   switch (log.type) {
     case MessageType.success:
-      return success(log.message, t(TITLE));
+      return success(log.message, TITLE());
     case MessageType.warn:
-      return warning(log.message, t(TITLE));
+      return warning(log.message, TITLE());
     case MessageType.busy:
     case MessageType.error:
-      return error(log.message, t(TITLE));
+      return error(log.message, TITLE());
     case MessageType.fun:
     case MessageType.info:
     default:
-      return info(log.message, t(TITLE));
+      return info(log.message, TITLE());
   }
 }
 
@@ -104,7 +104,7 @@ export function readStatus() {
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt", undefined, "onOffline() callback");
-  error(t(Content.MQTT_DISCONNECTED), t("Error"));
+  error(t(Content.MQTT_DISCONNECTED));
 };
 
 export const changeLastClientConnected = (bot: Farmbot) => () => {

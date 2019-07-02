@@ -8,8 +8,9 @@
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "test-slow": "jest --coverage --ci -w 6 --colors",
-    "test": "jest --no-coverage --cache -w 5 --colors",
+    "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors # low CPU/RAM usage",
+    "test-slow": "./node_modules/.bin/jest -w 6 --colors",
+    "test": "./node_modules/.bin/jest -w 5 --no-coverage",
     "typecheck": "./node_modules/typescript/bin/tsc --noEmit",
     "tslint": "./node_modules/tslint/bin/tslint --project .",
     "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",

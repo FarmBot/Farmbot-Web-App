@@ -72,7 +72,7 @@ describe("deletePoints()", () => {
     });
     expect(mockInc).toHaveBeenCalledTimes(2);
     expect(mockFinish).toHaveBeenCalledTimes(1);
-    expect(success).toHaveBeenCalledWith("Deleted 3 weeds", "Success");
+    expect(success).toHaveBeenCalledWith("Deleted 3 weeds");
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -109,7 +109,7 @@ describe("deletePoints()", () => {
     });
     expect(mockInc).toHaveBeenCalledTimes(3);
     expect(mockFinish).toHaveBeenCalledTimes(1);
-    expect(success).toHaveBeenCalledWith("Deleted 200 weeds", "Success");
+    expect(success).toHaveBeenCalledWith("Deleted 200 weeds");
     expect(error).not.toHaveBeenCalled();
   });
 });

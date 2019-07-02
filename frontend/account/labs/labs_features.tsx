@@ -24,6 +24,7 @@ export class LabsFeatures extends React.Component<LabsFeaturesProps, {}> {
           onToggle={x => {
             maybeToggleFeature(getConfigValue, dispatch)(x);
             this.forceUpdate();
+            return Promise.resolve();
           }} />
       </WidgetBody>
     </Widget>;

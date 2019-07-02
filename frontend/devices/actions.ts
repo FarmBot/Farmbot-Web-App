@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
@@ -63,7 +62,7 @@ export const commandOK = (noun = "Command") => () => {
 
 /** Update FBOS. */
 export function checkControllerUpdates() {
-  const noun = "Check for Updates";
+  const noun = t("Check for Updates");
   commandOK(noun)();
   getDevice()
     .checkUpdates()
@@ -72,7 +71,7 @@ export function checkControllerUpdates() {
 
 /** Shutdown FBOS. */
 export function powerOff() {
-  const noun = "Power Off Bot";
+  const noun = t("Power Off Bot");
   getDevice()
     .powerOff()
     .then(commandOK(noun), commandErr(noun));
@@ -88,7 +87,7 @@ export function factoryReset() {
 
 /** Reboot FBOS. */
 export function reboot() {
-  const noun = "Reboot Bot";
+  const noun = t("Reboot Bot");
   getDevice()
     .reboot()
     .then(commandOK(noun), commandErr(noun));
@@ -96,28 +95,28 @@ export function reboot() {
 
 /** Restart Farmduino firmware serial connection. */
 export function restartFirmware() {
-  const noun = "Restart Firmware";
+  const noun = t("Restart Firmware");
   getDevice()
     .rebootFirmware()
     .then(commandOK(noun), commandErr(noun));
 }
 
 export function flashFirmware(firmwareName: FirmwareHardware) {
-  const noun = "Flash Firmware";
+  const noun = t("Flash Firmware");
   getDevice()
     .flashFirmware(firmwareName)
     .then(commandOK(noun), commandErr(noun));
 }
 
 export function emergencyLock() {
-  const noun = "Emergency stop";
+  const noun = t("Emergency stop");
   getDevice()
     .emergencyLock()
     .then(commandOK(noun), commandErr(noun));
 }
 
 export function emergencyUnlock(force = false) {
-  const noun = "Emergency unlock";
+  const noun = t("Emergency unlock");
   if (force || confirm(t(`Are you sure you want to unlock the device?`))) {
     getDevice()
       .emergencyUnlock()
@@ -126,7 +125,7 @@ export function emergencyUnlock(force = false) {
 }
 
 export function sync(): Thunk {
-  const noun = "Sync";
+  const noun = t("Sync");
   return function (_dispatch, getState) {
     const currentFBOSversion =
       getState().bot.hardware.informational_settings.controller_version;
@@ -149,7 +148,7 @@ export function execSequence(
   sequenceId: number | undefined,
   bodyVariables?: ParameterApplication[]
 ) {
-  const noun = "Sequence execution";
+  const noun = t("Sequence execution");
   if (sequenceId) {
     commandOK(noun)();
     return bodyVariables
@@ -161,7 +160,7 @@ export function execSequence(
 }
 
 export function requestDiagnostic() {
-  const noun = "Diagnostic Request";
+  const noun = t("Diagnostic Request");
   return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
 }
 
@@ -313,14 +312,14 @@ export function moveRelative(props: MoveRelProps) {
 }
 
 export function moveAbs(props: MoveRelProps) {
-  const noun = "Absolute movement";
+  const noun = t("Absolute movement");
   return getDevice()
     .moveAbsolute(props)
     .then(noop, commandErr(noun));
 }
 
 export function pinToggle(pin_number: number) {
-  const noun = "Setting toggle";
+  const noun = t("Setting toggle");
   return getDevice()
     .togglePin({ pin_number })
     .then(noop, commandErr(noun));
@@ -329,21 +328,21 @@ export function pinToggle(pin_number: number) {
 export function readPin(
   pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES
 ) {
-  const noun = "Read pin";
+  const noun = t("Read pin");
   return getDevice()
     .readPin({ pin_number, label, pin_mode })
     .then(noop, commandErr(noun));
 }
 
 export function homeAll(speed: number) {
-  const noun = "'Home All' command";
+  const noun = t("'Home All' command");
   getDevice()
     .home({ axis: "all", speed })
     .catch(commandErr(noun));
 }
 
 export function findHome(axis: Axis, speed = CONFIG_DEFAULTS.speed) {
-  const noun = "'Find Home' command";
+  const noun = t("'Find Home' command");
   getDevice()
     .findHome({ axis, speed })
     .catch(commandErr(noun));

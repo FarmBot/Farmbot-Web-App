@@ -61,7 +61,7 @@ describe("<ChangePassword/>", function () {
     };
     instance().save();
     const expectation = expect.stringContaining("Password not changed");
-    expect(error).toHaveBeenCalledWith(expectation, "Error");
+    expect(error).toHaveBeenCalledWith(expectation);
     expect(instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
@@ -74,7 +74,7 @@ describe("<ChangePassword/>", function () {
     };
     instance().save();
     const expectation = expect.stringContaining("do not match");
-    expect(error).toHaveBeenCalledWith(expectation, "Error");
+    expect(error).toHaveBeenCalledWith(expectation);
     expect(instance().state.status).toBe(SpecialStatus.SAVED);
   });
 

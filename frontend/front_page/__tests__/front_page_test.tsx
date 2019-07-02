@@ -128,7 +128,7 @@ describe("<FrontPage />", () => {
       }
     });
     expect(success).toHaveBeenCalledWith(
-      expect.stringContaining("Almost done!"), "Success");
+      expect.stringContaining("Almost done!"));
     expect(el.instance().state.registrationSent).toEqual(true);
   });
 

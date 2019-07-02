@@ -20,12 +20,12 @@ import { mount } from "enzyme";
 import { LabsFeatures } from "../labs_features";
 
 describe("<LabsFeatures/>", () => {
-  it("triggers the correct callback on click", () => {
+  it("triggers the correct callback on click", async () => {
     const el = mount(<LabsFeatures
       dispatch={jest.fn()}
       getConfigValue={jest.fn()} />);
     expect(mocks.fetchLabFeatures.mock.calls.length).toBeGreaterThan(0);
-    el.find("button").simulate("click");
+    await el.find("button").simulate("click");
     expect(mockFeatures[0].callback).toHaveBeenCalled();
     expect(mocks.maybeToggleFeature.mock.calls.length).toBeGreaterThan(0);
   });
