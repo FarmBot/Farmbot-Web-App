@@ -11,6 +11,7 @@ const mockDevice = {
   execSequence: jest.fn(() => Promise.resolve()),
   resetMCU: jest.fn(() => Promise.resolve()),
   togglePin: jest.fn(() => Promise.resolve()),
+  readPin: jest.fn(() => Promise.resolve()),
   home: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve()),
@@ -38,7 +39,7 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { success, error, warning, info } from "farmbot-toastr";
+import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {
@@ -232,6 +233,16 @@ describe("pinToggle()", function () {
   it("calls togglePin", async () => {
     await actions.pinToggle(5);
     expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
+    expect(success).not.toHaveBeenCalled();
+  });
+});
+
+describe("readPin()", function () {
+  it("calls readPin", async () => {
+    await actions.readPin(1, "label", 0);
+    expect(mockDevice.readPin).toHaveBeenCalledWith({
+      pin_number: 1, label: "label", pin_mode: 0,
+    });
     expect(success).not.toHaveBeenCalled();
   });
 });

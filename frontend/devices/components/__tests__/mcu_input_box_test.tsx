@@ -2,11 +2,11 @@ jest.mock("../../actions", () => ({ updateMCU: jest.fn() }));
 
 import * as React from "react";
 import { McuInputBox } from "../mcu_input_box";
-import { warning } from "farmbot-toastr";
 import { shallow } from "enzyme";
 import { McuInputBoxProps } from "../../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../actions";
+import { warning } from "../../../toast/toast";
 
 describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => {

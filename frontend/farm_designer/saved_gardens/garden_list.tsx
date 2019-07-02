@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Row, Col, BlurableInput } from "../../ui";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { isNumber, isString } from "lodash";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import {

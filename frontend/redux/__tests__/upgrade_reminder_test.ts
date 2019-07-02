@@ -1,4 +1,4 @@
-import { info } from "farmbot-toastr";
+import { info } from "../../toast/toast";
 
 describe("createReminderFn", () => {
   it("reminds the user as-needed, but never more than once", async () => {

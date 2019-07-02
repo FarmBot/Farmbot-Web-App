@@ -329,6 +329,9 @@ a {
     float: right;
     color: $dark_gray !important;
   }
+  .bp3-collapse {
+    overflow: hidden;
+  }
 }
 
 .firmware-setting-export-menu {
@@ -471,20 +474,19 @@ fieldset {
 }
 
 .webcam-stream-valid {
-  img {
+  img, iframe {
     display: flex;
     margin: auto;
-    max-width: 100%;
     max-height: 650px;
-    min-height: 300px;
+  }
+  img {
+    max-width: 100%;
+    min-height: 100px;
   }
   iframe {
-    display: flex;
-    margin: auto;
     width: 100%;
-    max-height: 650px;
-    min-height: 300px;
     border: none;
+    min-height: 300px;
   }
 }
 
@@ -872,9 +874,13 @@ ul {
 .farmware-button,
 .farmware-settings-menu {
   position: absolute !important;
-  top: 1rem;
+  top: 3rem;
   right: 3rem;
   float: right !important;
+}
+
+.farmware-settings-menu {
+  top: 1rem;
 }
 
 .farmware-settings-menu-contents {

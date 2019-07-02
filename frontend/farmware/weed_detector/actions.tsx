@@ -1,6 +1,5 @@
 import axios from "axios";
-
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { Thunk } from "../../redux/interfaces";
 import { API } from "../../api";
 import { Progress, ProgressCallback, trim } from "../../util";
@@ -41,7 +40,7 @@ export function deletePoints(
           });
           success(t("Deleted {{num}} {{points}}", {
             num: ids.length, points: pointName
-          }), t("Success"));
+          }));
           prog.finish();
         })
         .catch(function () {

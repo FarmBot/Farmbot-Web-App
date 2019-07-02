@@ -30,7 +30,6 @@ module Devices
         :settings_device_name,
         :settings_enable_encoders,
         :settings_firmware,
-        :settings_map_xl,
         :settings_hide_sensors,
 
         # TOOLS ==================================
@@ -51,6 +50,12 @@ module Devices
         :tool_slots_slot_4,
         :tool_slots_slot_5,
         :tool_slots_slot_6,
+
+        # WEBCAM FEEDS ===========================
+        :webcam_feeds,
+
+        # EVERYTHING ELSE ========================
+        :misc,
       ]
 
       unless Rails.env.production?
@@ -71,15 +76,11 @@ module Devices
          :sequences_unmount_tool,
          :sequences_water_plant].map do |x|
           COMMAND_ORDER.push(x)
-         end
+        end
       end
 
       def initialize(device)
         @device = device
-      end
-
-      def settings_map_xl
-        device.web_app_config.update_attributes!(map_xl: false)
       end
 
       def settings_hide_sensors
@@ -236,6 +237,9 @@ module Devices
       def vacuum_id
         @vacuum_id ||= device.peripherals.find_by!(label: ToolNames::VACUUM).id
       end
+
+      def webcam_feeds; end
+      def misc; end
     end
   end
 end

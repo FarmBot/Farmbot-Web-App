@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 
-import { fun as log, error as logError, init as logInit } from "farmbot-toastr";
+import { fun as log, error as logError, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
 import { prettyPrintApiErrors } from "../util";

@@ -66,13 +66,21 @@ namespace :api do
     # Clear out cache and previous builds on initial load.
     sh ["rm -rf",
         DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR].join(" ")
+        DashboardController::PUBLIC_OUTPUT_DIR].join(" ") unless ENV["NO_CLEAN"]
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
   desc "Don't call this directly. Use `rake assets:precompile`."
   task parcel_compile: :environment do
     parcel "build"
+  end
+
+  desc "Clean out old demo accounts"
+  task clean_demo_accounts: :environment do
+    User
+      .where("email ILIKE '%@farmbot.guest%'")
+      .where("updated_at < ?", 1.hour.ago)
+      .destroy_all
   end
 
   desc "Reset _everything_, including your database"
@@ -114,7 +122,7 @@ namespace :api do
     end
       .select do |pair|
       # Grab versions that are > current version and outside of cutoff window
-      (pair.head > current_version) && (pair.tail < cutoff)
+      (pair.head >= current_version) && (pair.tail < cutoff)
     end
       .sort_by { |p| p.tail } # Sort by release date
       .last(2) # Grab 2 latest versions (closest to cutoff)

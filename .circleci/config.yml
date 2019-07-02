@@ -5,40 +5,29 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Shuffle configs around, install Docker-Compose
+          name: Build and Install Deps
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-`uname -s`-`uname -m` > docker-compose
-            chmod +x docker-compose
-            sudo mv docker-compose /usr/local/bin
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             mv .circleci/circle_envs .env
-      - run:
-          name: Install Ruby/JS deps
-          command: |
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
-      - run:
-          name: Create databases and secrets
-          command: |
             sudo docker-compose run web bundle exec rails db:create
             sudo docker-compose run web bundle exec rails db:migrate
             sudo docker-compose run web rake keys:generate
       - run:
-          name: Run Ruby tests
+          name: Run Ruby Tests
           command: |
             sudo docker-compose run web rspec spec
       - run:
-          name: Run linters
+          name: Run JS Linters
           command: |
             sudo docker-compose run web npm run linters
       - run:
-          name: Run JS tests
+          name: Run JS Tests
           command: |
             sudo docker-compose run web npm run test-slow
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
-      - run:
-          name: Check Coveralls coverage on staging
-          command: |
-            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" web rake coverage:run
+            sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run
       - run:
           name: Report coverage to Coveralls
           command: |

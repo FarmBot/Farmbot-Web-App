@@ -60,7 +60,6 @@ export const LocalsList = (props: LocalsListProps) => {
           collapsible={props.collapsible}
           collapsed={props.collapsed}
           toggleVarShow={props.toggleVarShow}
-          listVarLabel={props.listVarLabel}
           onChange={props.onChange} />)}
   </div>;
 };
@@ -79,6 +78,7 @@ const convertFormVariable = (variable: SequenceMeta, resources: ResourceIndex):
       celeryNode: converted,
       dropdown: determineDropdown(converted, resources),
       vector: determineVector(converted, resources),
+      default: true,
     };
   }
 };

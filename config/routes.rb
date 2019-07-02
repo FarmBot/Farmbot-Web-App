@@ -27,6 +27,7 @@ FarmBot::Application.routes.draw do
 
     # Singular API Resources:
     {
+      demo_account: [:create],
       device_cert: [:create],
       device: [:create, :destroy, :show, :update],
       fbos_config: [:destroy, :show, :update],
@@ -106,10 +107,12 @@ FarmBot::Application.routes.draw do
 
   get "/app" => "dashboard#main_app", as: :dashboard
   get "/app/controls" => "dashboard#main_app", as: :app_landing_page
+  get "/app/messages" => "dashboard#main_app", as: :app_message_center
   match "/app/*path", to: "dashboard#main_app", via: :all, constraints: { format: "html" }
 
-  get "/tos_update" => "dashboard#tos_update", as: :tos_update
+  get "/demo" => "dashboard#demo", as: :demo_main
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
+  get "/tos_update" => "dashboard#tos_update", as: :tos_update
   get "/verify/:token" => "dashboard#confirmation_page", as: :confirmation_page
   post "/csp_reports" => "dashboard#csp_reports", as: :csp_report
   post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload

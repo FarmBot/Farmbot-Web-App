@@ -38,6 +38,8 @@ export interface RegimenItemCalendarRow {
   sortKey: number;
   day: number;
   dispatch: Function;
+  /** Variable label. */
+  variable: string | undefined;
 }
 
 /** Used by UI widgets that modify a regimen */

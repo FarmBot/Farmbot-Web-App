@@ -24,10 +24,10 @@
                     You have already verified your account.
                     Please <%= link_to "log in", "/" %>.
                   <% else %>
-                    You are now being <%= link_to "redirected", app_landing_page_path %>.
+                    You are now being <%= link_to "redirected", app_message_center_path %>.
                     <script>
                       localStorage.session = JSON.stringify(<%= raw @token %>);
-                      window.location.replace("<%= app_landing_page_path %>");
+                      window.location.replace("<%= app_message_center_path %>");
                     </script>
                   <% end %>
                 </div>

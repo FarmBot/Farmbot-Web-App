@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 import { SpecialStatus } from "farmbot";
 import * as moxios from "moxios";
 import { API } from "../../../api/api";
-import { error } from "farmbot-toastr";
+import { error } from "../../../toast/toast";
 
 describe("<ChangePassword/>", function () {
   function testCase() {
@@ -61,7 +61,7 @@ describe("<ChangePassword/>", function () {
     };
     instance().save();
     const expectation = expect.stringContaining("Password not changed");
-    expect(error).toHaveBeenCalledWith(expectation, "Error");
+    expect(error).toHaveBeenCalledWith(expectation);
     expect(instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
@@ -74,7 +74,7 @@ describe("<ChangePassword/>", function () {
     };
     instance().save();
     const expectation = expect.stringContaining("do not match");
-    expect(error).toHaveBeenCalledWith(expectation, "Error");
+    expect(error).toHaveBeenCalledWith(expectation);
     expect(instance().state.status).toBe(SpecialStatus.SAVED);
   });
 

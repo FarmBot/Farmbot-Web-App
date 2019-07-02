@@ -1,6 +1,5 @@
 import * as React from "react";
-
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
@@ -9,7 +8,7 @@ import { PeripheralState } from "./interfaces";
 import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
-import { uniq } from "lodash";
+import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 
 export class Peripherals
@@ -23,22 +22,16 @@ export class Peripherals
 
   maybeSave = () => {
     const { peripherals } = this.props;
-    const pinNums = peripherals.map(x => x.body.pin);
-    const positivePins = pinNums.filter(x => x && x > 0);
-    const smallPins = pinNums.filter(x => x && x < 1000);
-    // I hate adding client side validation, but this is a wonky endpoint - RC.
-    const allAreUniq = uniq(pinNums).length === pinNums.length;
-    const allArePositive = positivePins.length === pinNums.length;
-    const allAreSmall = smallPins.length === pinNums.length;
-    if (allAreUniq && allArePositive) {
-      if (allAreSmall) {
-        this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
-      } else {
-        error(t("Pin numbers must be less than 1000."));
-      }
-    } else {
-      error(t("Pin numbers are required and must be positive and unique."));
+    const pins = peripherals.map(x => x.body.pin);
+    const allAreUniq = uniq(pins).length === pins.length;
+    const allArePins = pins.filter(x => isNumber(x)).length === pins.length;
+    if (!allArePins) {
+      return error(t("Please select a pin."));
     }
+    if (!allAreUniq) {
+      return error(t("Pin numbers must be unique."));
+    }
+    this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
   }
 
   showPins = () => {
@@ -56,7 +49,10 @@ export class Peripherals
     }
   }
 
-  newPeripheral = (pin = 0, label = t("New Peripheral")) => {
+  newPeripheral = (
+    pin: number | undefined = undefined,
+    label = t("New Peripheral")
+  ) => {
     this.props.dispatch(init("Peripheral", { pin, label }));
   };
 

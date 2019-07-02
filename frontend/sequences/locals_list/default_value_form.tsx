@@ -8,6 +8,7 @@ import {
 } from "../../resources/sequence_meta";
 import { Help } from "../../ui";
 import { ToolTips } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
@@ -51,7 +52,7 @@ const defaultValueVariableData = (
 ): SequenceMeta => {
   const celeryNode: ParameterApplication = {
     kind: "parameter_application",
-    args: { label: "Default Value", data_value: node.args.default_value }
+    args: { label: t("Default Value"), data_value: node.args.default_value }
   };
   return {
     celeryNode,

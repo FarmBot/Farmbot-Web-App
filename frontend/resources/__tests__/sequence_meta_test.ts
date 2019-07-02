@@ -32,8 +32,8 @@ describe("determineDropdown", () => {
         }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Defined outside of sequence");
-    expect(r.value).toBe("parameter_declaration");
+    expect(r.label).toBe("Externally defined");
+    expect(r.value).toBe("?");
   });
 
   it("Returns a label for `coordinate`", () => {
@@ -41,11 +41,11 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: {
         label: "x",
-        data_value: { kind: "coordinate", args: { x: 0, y: 1, z: 2 } }
+        data_value: { kind: "coordinate", args: { x: 0, y: 1.1, z: 2 } }
       }
     }, buildResourceIndex([]).index);
-    expect(r.label).toBe("Coordinate (0, 1, 2)");
-    expect(r.value).toBe("?");
+    expect(r.label).toBe("Coordinate (0, 1.1, 2)");
+    expect(r.value).toBe("{\"x\":0,\"y\":1.1,\"z\":2}");
   });
 
   it("Returns a label for `identifier`", () => {
@@ -209,7 +209,9 @@ describe("createSequenceMeta", () => {
 describe("determineVarDDILabel()", () => {
   it("returns 'add new' variable label", () => {
     const ri = buildResourceIndex().index;
-    const label = determineVarDDILabel("variable", ri, undefined);
+    const label = determineVarDDILabel({
+      label: "variable", resources: ri, uuid: undefined
+    });
     expect(label).toEqual("Location Variable - Add new");
   });
 
@@ -219,7 +221,9 @@ describe("determineVarDDILabel()", () => {
     data && (data.celeryNode = NOTHING_SELECTED);
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
-    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    const label = determineVarDDILabel({
+      label: "variable", resources: ri, uuid: "sequence uuid"
+    });
     expect(label).toEqual("Location Variable - Select a location");
   });
 
@@ -236,7 +240,9 @@ describe("determineVarDDILabel()", () => {
     });
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
-    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    const label = determineVarDDILabel({
+      label: "variable", resources: ri, uuid: "sequence uuid"
+    });
     expect(label).toEqual("Location Variable - Externally defined");
   });
 
@@ -246,7 +252,9 @@ describe("determineVarDDILabel()", () => {
     data && (data.celeryNode.kind = "variable_declaration");
     const ri = buildResourceIndex().index;
     ri.sequenceMetas = { "sequence uuid": varData };
-    const label = determineVarDDILabel("variable", ri, "sequence uuid");
+    const label = determineVarDDILabel({
+      label: "variable", resources: ri, uuid: "sequence uuid"
+    });
     expect(label).toEqual("Location Variable - variable");
   });
 });

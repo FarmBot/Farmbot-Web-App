@@ -43,7 +43,7 @@ export function ToolSlotRow(props: ToolSlotRowProps) {
       .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
       .map(axisProps => (axisProps.axis === "x" && gantryMounted)
         ? <Col xs={2} key={slot.uuid + axisProps.axis}>
-            <input disabled value={t("gantry")} />
+            <input disabled value={t("Gantry")} />
           </Col>
         : <ToolBayNumberCol key={slot.uuid + axisProps.axis} {...axisProps} />)}
     <Col xs={4}>

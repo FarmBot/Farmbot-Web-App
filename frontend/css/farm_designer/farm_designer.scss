@@ -73,6 +73,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   margin-right: -10px;
+  padding-bottom: 5rem;
   .plant-catalog-tile {
     position: relative;
     cursor: pointer;
@@ -142,6 +143,7 @@
       position: absolute;
       top: 0.8rem;
       left: 1rem;
+      cursor: default !important;
     }
   }
   input {
@@ -449,86 +451,6 @@
     font-size: medium;
     cursor: pointer;
   }
-  .farmbot-origin {
-    .quadrants {
-      display: flex;
-      flex-wrap: wrap;
-      border: 1px solid $dark_gray;
-    }
-    .quadrant {
-      display: inline-block;
-      position: relative;
-      background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
-      background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
-      cursor: pointer;
-      border: 1px solid $dark_gray;
-      width: 50%;
-      height: 24px;
-      transition: all 0.2s ease-in-out;
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.1);
-      }
-      &.selected {
-        box-shadow: inset 0 0 8px $dark_gray;
-      } // Quadrant 1
-      &:nth-child(2) {
-        &:before {
-          top: 0;
-          right: 0;
-        }
-        &:after {
-          top: 8px;
-          right: 16px;
-        }
-      } // Quadrant 2
-      &:nth-child(1) {
-        &:before {
-          top: 0;
-          left: 0;
-        }
-        &:after {
-          top: 8px;
-          left: 16px;
-        }
-      } // Quadrant 3
-      &:nth-child(3) {
-        &:before {
-          left: 0;
-          bottom: 0;
-        }
-        &:after {
-          left: 16px;
-          bottom: 8px;
-        }
-      } // Quadrant 4
-      &:nth-child(4) {
-        &:before {
-          bottom: 0;
-          right: 0;
-        }
-        &:after {
-          bottom: 8px;
-          right: 16px;
-        }
-      }
-      &:before {
-        content: "";
-        position: absolute;
-        background: $black;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-      &:after {
-        content: "";
-        position: absolute;
-        background: $green;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-      }
-    }
-  }
   .more-bugs,
   .move-to-mode {
     button {
@@ -576,6 +498,89 @@
     text-align: center;
     .fb-button {
       float: none;
+    }
+  }
+}
+
+.farmbot-origin {
+  margin: auto;
+  width: 120px;
+  .quadrants {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid $dark_gray;
+  }
+  .quadrant {
+    display: inline-block;
+    position: relative;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
+    background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
+    cursor: pointer;
+    border: 1px solid $dark_gray;
+    width: 50%;
+    height: 24px;
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    &.selected {
+      box-shadow: inset 0 0 8px $dark_gray;
+    } // Quadrant 1
+    &:nth-child(2) {
+      &:before {
+        top: 0;
+        right: 0;
+      }
+      &:after {
+        top: 8px;
+        right: 16px;
+      }
+    } // Quadrant 2
+    &:nth-child(1) {
+      &:before {
+        top: 0;
+        left: 0;
+      }
+      &:after {
+        top: 8px;
+        left: 16px;
+      }
+    } // Quadrant 3
+    &:nth-child(3) {
+      &:before {
+        left: 0;
+        bottom: 0;
+      }
+      &:after {
+        left: 16px;
+        bottom: 8px;
+      }
+    } // Quadrant 4
+    &:nth-child(4) {
+      &:before {
+        bottom: 0;
+        right: 0;
+      }
+      &:after {
+        bottom: 8px;
+        right: 16px;
+      }
+    }
+    &:before {
+      content: "";
+      position: absolute;
+      background: $black;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    &:after {
+      content: "";
+      position: absolute;
+      background: $green;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
     }
   }
 }

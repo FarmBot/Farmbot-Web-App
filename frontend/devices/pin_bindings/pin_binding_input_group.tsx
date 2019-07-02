@@ -11,7 +11,7 @@ import {
 import { isNumber, includes } from "lodash";
 import { initSave } from "../../api/crud";
 import { pinBindingBody } from "./tagged_pin_binding_init";
-import { error, warning } from "farmbot-toastr";
+import { error, warning } from "../../toast/toast";
 import {
   validGpioPins, sysBindings, generatePinLabel, RpiPinList,
   bindingTypeLabelLookup, specialActionLabelLookup, specialActionList,

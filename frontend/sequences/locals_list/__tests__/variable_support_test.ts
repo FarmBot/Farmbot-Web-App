@@ -113,14 +113,18 @@ describe("getRegimenVariableData()", () => {
       parent1: {
         celeryNode: paramDeclaration,
         dropdown: {
-          label: "Defined outside of sequence",
-          value: "parameter_declaration"
+          label: "Externally defined",
+          value: "?"
         },
         vector: undefined
       },
       parent2: {
         celeryNode: varDeclaration,
-        dropdown: { label: "Coordinate (1, 2, 3)", value: "?" },
+        dropdown: {
+          label: "Coordinate (1, 2, 3)",
+          value: expect.any(String),
+          headingId: "Coordinate",
+        },
         vector: COORDINATE.args
       }
     });

@@ -217,6 +217,7 @@ export interface EditPlantInfoProps {
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
   openedSavedGarden: string | undefined;
   timeSettings: TimeSettings;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface DraggableEvent {
@@ -267,9 +268,4 @@ export interface CurrentPointPayl {
   cy: number;
   r: number;
   color?: string;
-}
-
-export interface SavedGarden {
-  id?: number;
-  name?: string;
 }

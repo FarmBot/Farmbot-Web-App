@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
+import { t } from "../i18next_wrapper";
 
 interface HelpProps {
   text: string;
@@ -13,6 +14,6 @@ export function Help(props: HelpProps) {
       ? PopoverInteractionKind.CLICK : PopoverInteractionKind.HOVER}
     popoverClassName={"help"} >
     <i className="fa fa-question-circle help-icon"></i>
-    <div>{props.text}</div>
+    <div>{t(props.text)}</div>
   </Popover>;
 }

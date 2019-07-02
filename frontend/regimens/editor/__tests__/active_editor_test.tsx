@@ -1,6 +1,4 @@
-jest.mock("../../../api/crud", () => ({
-  overwrite: jest.fn(),
-}));
+jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -18,8 +16,8 @@ import { Actions } from "../../../constants";
 const testVariable: VariableDeclaration = {
   kind: "variable_declaration",
   args: {
-    label: "label", data_value: {
-      kind: "identifier", args: { label: "new_var" }
+    label: "variable", data_value: {
+      kind: "coordinate", args: { x: 1, y: 2, z: 3 }
     }
   }
 };
@@ -40,7 +38,8 @@ describe("<ActiveEditor />", () => {
         regimen: fakeRegimen(),
         item: {
           sequence_id: 0, time_offset: 1000
-        }
+        },
+        variable: undefined,
       }]
     }],
     resources: buildResourceIndex([]).index,
@@ -114,6 +113,23 @@ describe("<ActiveEditor />", () => {
     const wrapper = mount<ActiveEditor>(<ActiveEditor {...fakeProps()} />);
     wrapper.instance().toggleVarShow();
     expect(wrapper.state()).toEqual({ variablesCollapsed: true });
+  });
+
+  it("shows location variable label: coordinate", () => {
+    const p = fakeProps();
+    p.calendar[0].items[0].regimen.body.body = [testVariable];
+    p.calendar[0].items[0].variable = testVariable.args.label;
+    const wrapper = mount(<ActiveEditor {...p} />);
+    expect(wrapper.find(".regimen-event-variable").text())
+      .toEqual("Location Variable - Coordinate (1, 2, 3)");
+  });
+
+  it("doesn't show location variable label", () => {
+    const p = fakeProps();
+    p.calendar[0].items[0].regimen.body.body = [];
+    p.calendar[0].items[0].variable = "variable";
+    const wrapper = mount(<ActiveEditor {...p} />);
+    expect(wrapper.find(".regimen-event-variable").length).toEqual(0);
   });
 });
 

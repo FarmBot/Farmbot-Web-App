@@ -29,7 +29,11 @@
       margin-right: 15px;
     }
     h3 {
+      max-width: 60%;
+      margin-left: 0;
+      margin-right: 0;
       margin-bottom: 2.5rem;
+      padding-left: 0 !important;
     }
     .button-group {
       margin-right: 15px;
@@ -326,7 +330,7 @@
     &.open {
       display: block;
       margin: 4rem;
-      margin-top: 0;
+      margin-top: 1rem;
       margin-left: 2rem;
     }
     &.farmware-info-open {

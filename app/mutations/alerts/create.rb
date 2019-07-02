@@ -6,7 +6,7 @@ module Alerts
     end
 
     optional do
-      string :slug
+      string :slug # Default is `SecureRandom.uuid`
       integer :priority, default: 99
     end
 

@@ -3,17 +3,20 @@
 # this part last
 module CeleryScript
   UNBOUND_VAR = "Unbound variable: %s"
+
   class TypeCheckError < StandardError; end
 
   class Checker
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
-    EXTRA_ARGS  = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
-    BAD_LEAF    = "Expected leaf '%{kind}' within '%{parent_kind}'"\
-                  " to be one of: %{allowed} but got %{actual}"
-    MALFORMED   = "Expected '%s' to be a node or leaf, but it was neither"
-    BAD_BODY    = "Body of '%s' node contains '%s' node. "\
-                  "Expected one of: %s"
-    T_MISMATCH  = "Type mismatch. %s must be one of: %s. Got: %s"
+    EXTRA_ARGS = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
+    BAD_LEAF = "Expected leaf '%{kind}' within '%{parent_kind}'" \
+               " to be one of: %{allowed} but got %{actual}"
+    MALFORMED = "Expected '%s' to be a node or leaf, but it was neither"
+    BAD_BODY = "Body of '%s' node contains '%s' node. " \
+               "Expected one of: %s"
+    T_MISMATCH = "Type mismatch. %s must be one of: %s. Got: %s"
+    MISSING_VAR = "You must select a Location for the Location Variable."
+    MISSING_PARAM = "You must select a Default Value for the Location Variable."
 
     # Certain CeleryScript pairing errors are more than just a syntax error.
     # For instance, A `nothing` node in a `parameter_declaration` is often an
@@ -22,8 +25,12 @@ module CeleryScript
     # BAD_LEAF template.
     FRIENDLY_ERRORS = {
       nothing: {
-        variable_declaration: "You must provide a value for all parameters",
-        parameter_declaration: "You must provide a value for all parameters",
+        write_pin: "You must select a Peripheral in the Control Peripheral step.",
+        variable_declaration: MISSING_VAR,
+        parameter_declaration: MISSING_PARAM,
+        read_pin: "You must select a Sensor in the Read Sensor step.",
+        move_absolute: "You must select a Location in the Move To step.",
+        execute: CeleryScriptSettingsBag::NO_SUB_SEQ,
       },
     }.with_indifferent_access
 
@@ -89,7 +96,7 @@ module CeleryScript
         unless has_key
           msgs = node.args.keys.join(", ")
           msgs = "nothing" if msgs.length < 1
-          msg  = MISSING_ARG % [node.kind, arg, msgs]
+          msg = MISSING_ARG % [node.kind, arg, msgs]
           raise TypeCheckError, msg
         end
       end

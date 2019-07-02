@@ -52,10 +52,10 @@ const getDocLinkByFarmware =
     if (farmwareName) {
       switch (urlFriendly(farmwareName).replace("-", "_")) {
         case "camera_calibration":
-          return "farmware#section-camera-calibration";
+          return "camera-calibration";
         case "plant_detection":
         case "weed_detector":
-          return "farmware#section-weed-detector";
+          return "weed-detection";
       }
     }
   };
@@ -124,10 +124,12 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
   }
 
   componentWillMount() {
-    this.props.dispatch({
-      type: Actions.SELECT_FARMWARE,
-      payload: "Photos"
-    });
+    if (window.innerWidth > 450) {
+      this.props.dispatch({
+        type: Actions.SELECT_FARMWARE,
+        payload: "Photos"
+      });
+    }
     const farmwareNames = Object.values(this.props.farmwares).map(x => x.name)
       .concat(Object.keys(FARMWARE_NAMES_1ST_PARTY));
     setActiveFarmwareByName(farmwareNames);
@@ -222,8 +224,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
       <Row>
         <LeftPanel
           className={`farmware-list-panel ${activeClasses}`}
-          title={t("Farmware")}
-          helpText={ToolTips.FARMWARE_LIST}>
+          title={t("Farmware")}>
           <FarmwareList
             current={this.current}
             dispatch={this.props.dispatch}

@@ -33,7 +33,6 @@ import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
-import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -41,6 +40,7 @@ import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
+import { info, error, success, warning } from "../../../toast/toast";
 
 const A_STRING = expect.any(String);
 describe("readStatus()", () => {
@@ -91,7 +91,7 @@ describe("showLogOnScreen", () => {
     types.map((x) => {
       const fun = fakeLog(x, ["toast"]);
       showLogOnScreen(fun);
-      expect(toastr).toHaveBeenCalledWith(fun.message, TITLE);
+      expect(toastr).toHaveBeenCalledWith(fun.message, TITLE());
     });
   }
 
@@ -160,7 +160,7 @@ describe("onOffline", () => {
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
-    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED, "Error");
+    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
   });
 });
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../toast/toast";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevSettings } from "./dev_support";

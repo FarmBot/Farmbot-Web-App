@@ -1,5 +1,5 @@
 import { isNaN, isNumber } from "lodash";
-import { error, warning, success } from "farmbot-toastr";
+import { error, warning, success } from "../../toast/toast";
 import { ReduxAction, Thunk } from "../../redux/interfaces";
 import { ToggleDayParams } from "./interfaces";
 import { findSequence, findRegimen } from "../../resources/selectors";
@@ -97,7 +97,7 @@ export function commitBulkEditor(): Thunk {
           return error(t("No day(s) selected."));
         }
       } else {
-        return error(t("Select a sequence from the dropdown first."), t("Error"));
+        return error(t("Select a sequence from the dropdown first."));
       }
     } else {
       return error(t("Select a regimen first or create one."));

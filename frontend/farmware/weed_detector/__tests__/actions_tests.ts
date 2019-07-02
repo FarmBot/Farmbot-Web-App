@@ -26,9 +26,9 @@ import { deletePoints } from "../actions";
 import { scanImage, test } from "../actions";
 import axios from "axios";
 import { API } from "../../../api";
-import { success, error } from "farmbot-toastr";
 import { times } from "lodash";
 import { Actions } from "../../../constants";
+import { error, success } from "../../../toast/toast";
 
 describe("scanImage()", () => {
   it("calls out to the device", () => {
@@ -72,7 +72,7 @@ describe("deletePoints()", () => {
     });
     expect(mockInc).toHaveBeenCalledTimes(2);
     expect(mockFinish).toHaveBeenCalledTimes(1);
-    expect(success).toHaveBeenCalledWith("Deleted 3 weeds", "Success");
+    expect(success).toHaveBeenCalledWith("Deleted 3 weeds");
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -109,7 +109,7 @@ describe("deletePoints()", () => {
     });
     expect(mockInc).toHaveBeenCalledTimes(3);
     expect(mockFinish).toHaveBeenCalledTimes(1);
-    expect(success).toHaveBeenCalledWith("Deleted 200 weeds", "Success");
+    expect(success).toHaveBeenCalledWith("Deleted 200 weeds");
     expect(error).not.toHaveBeenCalled();
   });
 });

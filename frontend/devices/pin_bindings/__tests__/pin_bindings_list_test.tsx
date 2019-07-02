@@ -36,8 +36,8 @@ import {
 import { destroy } from "../../../api/crud";
 import { PinBindingsList } from "../pin_bindings_list";
 import { PinBindingsListProps } from "../interfaces";
-import { error } from "farmbot-toastr";
 import { sysBtnBindingData } from "../tagged_pin_binding_init";
+import { error } from "../../../toast/toast";
 
 describe("<PinBindingsList/>", () => {
   function fakeProps(): PinBindingsListProps {

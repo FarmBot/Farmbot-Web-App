@@ -193,6 +193,7 @@
     max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-bottom: 5rem;
   }
 }
 
@@ -211,6 +212,7 @@
     padding-top: 5rem;
     padding-right: 0;
     padding-left: 0;
+    padding-bottom: 5rem;
     max-height: calc(100vh - 10rem);
     overflow-y: auto;
     overflow-x: hidden;
@@ -220,6 +222,15 @@
     img {
       filter: grayscale(100%);
     }
+  }
+}
+
+.plant-info-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
   }
 }
 
@@ -329,6 +340,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 2rem 1rem 6rem;
+    padding-bottom: 10rem;
     li {
       margin-bottom: 1rem;
       p {
@@ -382,13 +394,18 @@
 }
 
 .settings-panel-content {
+  max-height: calc(100vh - 15rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   margin-top: 5rem;
+  padding-bottom: 5rem;
   button {
     margin-top: 1.75rem;
   }
   p {
-    padding: 1rem;
+    padding: 0.5rem;
     margin-left: 1rem;
+    margin-right: 1rem;
   }
   .map-size-inputs {
     .row {
@@ -396,6 +413,13 @@
     }
     label {
       margin-top: 0.5rem;
+    }
+  }
+  .designer-setting {
+    &.disabled {
+      input {
+        background: $gray;
+      }
     }
   }
 }

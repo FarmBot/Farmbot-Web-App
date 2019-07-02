@@ -14,11 +14,11 @@ import {
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
-import { error, warning } from "farmbot-toastr";
 import { newTaggedResource } from "../../../sync/actions";
 import { arrayUnwrap } from "../../../resources/util";
 import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
+import { error, warning } from "../../../toast/toast";
 
 const sequence_id = 23;
 const regimen_id = 32;
@@ -89,8 +89,7 @@ describe("commitBulkEditor()", () => {
     const state = newFakeState();
     state.resources.consumers.regimens.selectedSequenceUUID = undefined;
     returnsError(state,
-      "Select a sequence from the dropdown first.",
-      "Error");
+      "Select a sequence from the dropdown first.");
   });
 
   it("does nothing if no days are selected", () => {

@@ -37,7 +37,7 @@ services:
 
   db:
     env_file: ".env"
-    image: postgres:10
+    image: postgres:10.9
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
 
   web:

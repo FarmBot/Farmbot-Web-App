@@ -17,6 +17,8 @@ jest.mock("../actions", () => ({
   seedAccount: jest.fn(),
 }));
 
+jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
+
 import * as React from "react";
 import { mount } from "enzyme";
 import { AlertCard, changeFirmwareHardware } from "../cards";
@@ -25,6 +27,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
 import { destroy } from "../../api/crud";
 import { updateConfig } from "../../devices/actions";
+import { Session } from "../../session";
 
 describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
@@ -90,6 +93,16 @@ describe("<AlertCard />", () => {
     expect(wrapper.text()).toContain("Learn");
   });
 
+  it("renders demo account card", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "api.demo_account.in_use";
+    const wrapper = mount(<AlertCard {...p} />);
+    expect(wrapper.text()).toContain("currently using");
+    wrapper.find("a").first().simulate("click");
+    wrapper.find("a").last().simulate("click");
+    expect(Session.clear).toHaveBeenCalledTimes(2);
+  });
+
   it("renders loading bulletin card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
@@ -145,5 +158,10 @@ describe("changeFirmwareHardware()", () => {
   it("changes firmware hardware value", () => {
     changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "arduino" });
     expect(updateConfig).toHaveBeenCalledWith({ firmware_hardware: "arduino" });
+  });
+
+  it("doesn't change firmware hardware value", () => {
+    changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "" });
+    expect(updateConfig).not.toHaveBeenCalled();
   });
 });

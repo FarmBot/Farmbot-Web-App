@@ -37,9 +37,10 @@ if Rails.env == "development"
                      password: "password123",
                      password_confirmation: "password123",
                      confirmed_at: Time.now,
-                     agreed_to_terms_at: Time.now)
+                     agreed_to_terms_at: Time.now,
+                     skip_email: true)
   User.update_all(confirmed_at: Time.now,
-                      agreed_to_terms_at: Time.now)
+                  agreed_to_terms_at: Time.now)
   u = User.last
   u.update_attributes(device: Devices::Create.run!(user: u))
   # === Parameterized Sequence stuff
@@ -117,4 +118,5 @@ if Rails.env == "development"
   d = u.device
   Sensors::Create
     .run!(device: d, pin: 14, label: "Stub sensor", mode: 0)
+  User.update_all(confirmed_at: Time.now)
 end

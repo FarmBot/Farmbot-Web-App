@@ -87,21 +87,6 @@ export enum Feature {
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
-/** How the device is stored in the API side.
- * This is what comes back from the API as JSON.
- */
-export interface DeviceAccountSettings {
-  id: number;
-  name: string;
-  timezone?: string | undefined;
-  tz_offset_hrs: number;
-  throttled_until?: string;
-  throttled_at?: string;
-  fbos_version?: string | undefined;
-  last_saw_api?: string | undefined;
-  last_saw_mq?: string | undefined;
-}
-
 export interface BotState {
   /** The browser optimistically overwrites FBOS sync status to "syncing..."
    * to reduce UI latency. When AJAX/sync operations fail, we need
@@ -159,11 +144,6 @@ export type BotPosition = Record<Xyz, (number | undefined)>;
 export type BotLocationData = Record<LocationName, BotPosition>;
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
-
-export interface CalibrationButtonProps {
-  disabled: boolean;
-  axis: Axis;
-}
 
 export type UserEnv = Record<string, string | undefined>;
 
@@ -246,6 +226,7 @@ export interface HardwareSettingsProps {
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   firmwareHardware: FirmwareHardware | undefined;
+  resources: ResourceIndex;
 }
 
 export interface ControlPanelState {

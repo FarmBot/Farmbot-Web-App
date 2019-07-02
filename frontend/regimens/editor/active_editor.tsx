@@ -17,6 +17,9 @@ import {
 import { addOrEditBodyVariables } from "../../sequences/locals_list/handle_select";
 import { t } from "../../i18next_wrapper";
 import { Actions } from "../../constants";
+import { reduceVariables } from "../../sequences/locals_list/variable_support";
+import { determineDropdown, withPrefix } from "../../resources/sequence_meta";
+import { ResourceIndex } from "../../resources/interfaces";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -45,7 +48,6 @@ export class ActiveEditor
       collapsible={true}
       collapsed={this.state.variablesCollapsed}
       toggleVarShow={this.toggleVarShow}
-      listVarLabel={t("Defined outside of regimen")}
       allowedVariableNodes={AllowedVariableNodes.parameter}
       shouldDisplay={this.props.shouldDisplay} />;
   }
@@ -61,7 +63,8 @@ export class ActiveEditor
       <OpenSchedulerButton dispatch={this.props.dispatch} />
       <RegimenRows {...this.regimenProps}
         calendar={this.props.calendar}
-        varsCollapsed={this.state.variablesCollapsed} />
+        varsCollapsed={this.state.variablesCollapsed}
+        resources={this.props.resources} />
     </div>;
   }
 }
@@ -112,28 +115,32 @@ interface RegimenRowsProps {
   calendar: CalendarRow[];
   dispatch: Function;
   varsCollapsed: boolean;
+  resources: ResourceIndex;
 }
 
 const RegimenRows = (props: RegimenRowsProps) =>
   <div className="regimen" style={{
     height: regimenSectionHeight(props.regimen, props.varsCollapsed)
   }}>
-    {props.calendar.map(regimenDay(props.dispatch))}
+    {props.calendar.map(regimenDay(props.dispatch, props.resources))}
   </div>;
 
-const regimenDay = (dispatch: Function) =>
+const regimenDay = (dispatch: Function, resources: ResourceIndex) =>
   (group: CalendarRow, dayIndex: number) =>
     <div className="regimen-day" key={dayIndex}>
       <label> {t("Day {{day}}", { day: group.day })} </label>
-      {group.items.map(regimenItemRow(dispatch, dayIndex))}
+      {group.items.map(regimenItemRow(dispatch, resources, dayIndex))}
     </div>;
 
-const regimenItemRow = (dispatch: Function, dayIndex: number) =>
+const regimenItemRow = (
+  dispatch: Function, resources: ResourceIndex, dayIndex: number
+) =>
   (row: RegimenItemCalendarRow, itemIndex: number) =>
     <div className={`${row.color} regimen-event`}
       key={`${dayIndex}.${itemIndex}`}>
       <span className="regimen-event-title">{row.name}</span>
       <span className="regimen-event-time">{row.hhmm}</span>
+      <DisplayVarValue row={row} resources={resources} />
       <i className="fa fa-trash regimen-control" onClick={() =>
         dispatch(removeRegimenItem(row.item, row.regimen))} />
     </div>;
@@ -142,4 +149,22 @@ const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {
   const copy = defensiveClone(r);
   copy.body.regimen_items = r.body.regimen_items.filter(x => x !== item);
   return overwrite(r, copy.body);
+};
+
+interface DisplayVarValueProps {
+  row: RegimenItemCalendarRow;
+  resources: ResourceIndex;
+}
+
+const DisplayVarValue = (props: DisplayVarValueProps) => {
+  const { variable, regimen } = props.row;
+  if (variable) {
+    const variableNode = reduceVariables(regimen.body.body)[variable];
+    if (variableNode) {
+      return <span className="regimen-event-variable">
+        {withPrefix(determineDropdown(variableNode, props.resources).label)}
+      </span>;
+    }
+  }
+  return <span />;
 };

@@ -56,7 +56,7 @@ var HelperNamespace = (function () {
     "Map Points", "Spread", "Row Spacing", "Height", "Taxon",
     "Growing Degree Days", "Svg Icon", "Invalid date", "yes", "Tools",
     "Messages", "Sequence Editor", "Commands", "Regimen Editor", "Scheduler",
-    "Farmware List", "SYNC NOW",
+    "Farmware List", "SYNC NOW", "Test", "SYNCING", "SYNCED",
   ];
 
   /**

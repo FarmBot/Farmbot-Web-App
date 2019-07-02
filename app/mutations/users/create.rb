@@ -1,10 +1,10 @@
 module Users
   class Create < Mutations::Command
     include Auth::ConsentHelpers
-    CANT_USE_SERVER    = "You are not authorized to use this server. "\
-                         "Please use an official email address."
+    CANT_USE_SERVER = "You are not authorized to use this server. " \
+                      "Please use an official email address."
     ALREADY_REGISTERED = "Already registered"
-    PW_MISMATCH        = "Password and confirmation do not match."
+    PW_MISMATCH = "Password and confirmation do not match."
 
     required do
       string :name
@@ -15,6 +15,7 @@ module Users
 
     optional do
       boolean :agree_to_terms
+      boolean :skip_email, default: User::SKIP_EMAIL_VALIDATION
     end
 
     def validate
@@ -28,17 +29,17 @@ module Users
     end
 
     def execute
-      params = { email:                 email,
-                 password:              password,
+      params = { email: email,
+                 password: password,
                  password_confirmation: password_confirmation,
-                 name:                  name }
+                 name: name }
       params[:agreed_to_terms_at] = Time.now
-      user   = User.create!(params)
+      user = User.create!(params)
       device = Devices::Create.run!(user: user)
       UserMailer
         .welcome_email(user)
-        .deliver_later unless User::SKIP_EMAIL_VALIDATION
-      {message: "Check your email!"}
+        .deliver_later unless skip_email
+      { message: "Check your email!" }
     end
 
     def allowed_domains

@@ -22,7 +22,6 @@ import {
 import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, ParameterApplication } from "farmbot";
-import { success, error, warning } from "farmbot-toastr";
 import moment from "moment";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { history } from "../../../history";
@@ -33,6 +32,7 @@ import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { error, success, warning } from "../../../toast/toast";
 
 const mockSequence = fakeSequence();
 
@@ -118,13 +118,24 @@ describe("<FarmEventForm/>", () => {
     expect(i.state.fe.executable_id).toEqual("wow");
   });
 
+  it("allows proper changes to the executable", () => {
+    const p = props();
+    p.farmEvent.body.id = 0;
+    p.farmEvent.body.executable_type = "Sequence";
+    const i = instance(p);
+    i.executableSet({ value: "wow", label: "hey", headingId: "Regimen" });
+    expect(error).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+  });
+
   it("doesn't allow improper changes to the executable", () => {
     const p = props();
+    p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
-      "Cannot change from a Regimen to a Sequence.");
+      "Cannot change between Sequences and Regimens.");
     expect(history.push).toHaveBeenCalledWith("/app/designer/events");
   });
 

@@ -4,6 +4,7 @@ jest.mock("../../../config_storage/actions", () => ({
 
 import * as ZoomUtils from "../zoom";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
+import { NumericSetting } from "../../../session_keys";
 
 describe("zoom utilities", () => {
   it("getZoomLevelIndex()", () => {
@@ -12,7 +13,8 @@ describe("zoom utilities", () => {
 
   it("saveZoomLevelIndex()", () => {
     ZoomUtils.saveZoomLevelIndex(jest.fn(), 9);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith("zoom_level", 1);
+    expect(setWebAppConfigValue)
+      .toHaveBeenCalledWith(NumericSetting.zoom_level, 1);
   });
 
   it("calcZoomLevel()", () => {

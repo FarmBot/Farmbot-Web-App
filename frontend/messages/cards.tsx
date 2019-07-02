@@ -24,6 +24,7 @@ import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
 import { DevSettings } from "../account/dev/dev_support";
+import { Session } from "../session";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -44,6 +45,8 @@ export const AlertCard = (props: AlertCardProps) => {
       return <DocumentationUnread {...commonProps} />;
     case "api.bulletin.unread":
       return <BulletinAlert {...commonProps} />;
+    case "api.demo_account.in_use":
+      return <DemoAccount {...commonProps} />;
     default:
       return <UnknownAlert {...commonProps} />;
   }
@@ -56,7 +59,8 @@ const timeOk = (timestamp: number) => timestamp > 1550000000;
 
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const { alert, findApiAlertById, dispatch } = props;
-  return <div className={`problem-alert ${props.className}`}>
+  return <div className={
+    `problem-alert ${props.className} priority-${props.alert.priority}`}>
     <div className="problem-alert-title">
       <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
@@ -319,5 +323,35 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
       href={docLink()} target="_blank"
       title={t("Open documentation in a new tab")}>
       {t("Read the docs")}
+    </a>
+  </AlertCardTemplate>;
+
+const DemoAccount = (props: CommonAlertCardProps) =>
+  <AlertCardTemplate
+    alert={props.alert}
+    className={"demo-account-alert"}
+    title={t("You're currently using a demo account")}
+    message={t(Content.DEMO_ACCOUNT)}
+    timeSettings={props.timeSettings}
+    dispatch={props.dispatch}
+    findApiAlertById={props.findApiAlertById}
+    iconName={"info-circle"}>
+    <p>
+      <i>{t("Please note:")}</i>&nbsp;
+      {t(Content.DEMO_NOTE)}
+    </p>
+    <p>
+      {t(Content.MAKE_A_REAL_ACCOUNT)}&nbsp;
+      <a href={"https://my.farm.bot"} target="_blank"
+        onClick={() => Session.clear()}
+        title={"my.farm.bot"}>
+        {"my.farm.bot"}
+      </a>.
+    </p>
+    <a className="link-button fb-button green"
+      href={"https://my.farm.bot"} target="_blank"
+      onClick={() => Session.clear()}
+      title={t("Make a real account")}>
+      {t("Make a real account")}
     </a>
   </AlertCardTemplate>;

@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { success, error, warning } from "farmbot-toastr";
+import { success, error, warning } from "../../toast/toast";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
   ParameterApplication
@@ -222,11 +222,11 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {
-      const prev_executable_type = this.props.farmEvent.body.executable_type;
+      const { id, executable_type } = this.props.farmEvent.body;
+      const prev_executable_type = executable_type;
       const next_executable_type = executableType(ddi.headingId);
-      if (prev_executable_type === "Regimen" &&
-        next_executable_type === "Sequence") {
-        error(t("Cannot change from a Regimen to a Sequence."));
+      if (id && prev_executable_type !== next_executable_type) {
+        error(t("Cannot change between Sequences and Regimens."));
         history.push("/app/designer/events");
       } else {
         const { uuid } = this.props.findExecutable(

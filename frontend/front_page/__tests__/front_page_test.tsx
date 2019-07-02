@@ -32,7 +32,7 @@ import { FrontPage, setField, PartialFormEvent } from "../front_page";
 import axios from "axios";
 import { API } from "../../api";
 import { Session } from "../../session";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { Content } from "../../constants";
 import { AuthState } from "../../auth/interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
@@ -128,7 +128,7 @@ describe("<FrontPage />", () => {
       }
     });
     expect(success).toHaveBeenCalledWith(
-      expect.stringContaining("Almost done!"), "Success");
+      expect.stringContaining("Almost done!"));
     expect(el.instance().state.registrationSent).toEqual(true);
   });
 

@@ -10,7 +10,7 @@ import { range } from "lodash";
 import {
   setWebAppConfigValue
 } from "../../../config_storage/actions";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../../toast/toast";
 
 describe("<DevMode/>", () => {
   it("triggers callbacks after 15 clicks", () => {

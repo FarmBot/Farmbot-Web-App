@@ -24,15 +24,9 @@ export interface PlantLayerProps {
   animate: boolean;
 }
 
-export interface CropSpreadDict {
-  [key: string]: number | undefined;
-}
-
 export interface GardenMapLegendProps {
   zoom: (value: number) => () => void;
   toggle: (property: keyof State) => () => void;
-  updateBotOriginQuadrant: (quadrant: number) => () => void;
-  botOriginQuadrant: number;
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
@@ -78,7 +72,7 @@ export interface GardenPointProps {
   point: TaggedGenericPointer;
 }
 
-export interface DragHelpersBaseProps {
+interface DragHelpersBaseProps {
   dragging: boolean;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;

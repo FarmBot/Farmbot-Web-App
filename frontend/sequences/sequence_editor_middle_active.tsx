@@ -55,16 +55,19 @@ export interface SequenceSettingsMenuProps {
   getWebAppConfigValue: GetWebAppConfigValue;
 }
 
-interface SettingProps {
+export interface SequenceSettingProps {
   label: string;
   description: string;
   dispatch: Function;
   setting: BooleanConfigKey;
   getWebAppConfigValue: GetWebAppConfigValue;
+  confirmation?: string;
 }
 
-const Setting = (props: SettingProps) => {
+export const SequenceSetting = (props: SequenceSettingProps) => {
   const value = !!props.getWebAppConfigValue(props.setting);
+  const proceed = () =>
+    (props.confirmation && !value) ? confirm(t(props.confirmation)) : true;
   return <fieldset>
     <label>
       {t(props.label)}
@@ -72,7 +75,7 @@ const Setting = (props: SettingProps) => {
     <Help text={t(props.description)} requireClick={true} />
     <ToggleButton
       toggleValue={value}
-      toggleAction={() =>
+      toggleAction={() => proceed() &&
         props.dispatch(setWebAppConfigValue(props.setting, !value))} />
   </fieldset>;
 };
@@ -81,18 +84,23 @@ export const SequenceSettingsMenu =
   ({ dispatch, getWebAppConfigValue }: SequenceSettingsMenuProps) => {
     const commonProps = { dispatch, getWebAppConfigValue };
     return <div className="sequence-settings-menu">
-      <Setting {...commonProps}
+      <SequenceSetting {...commonProps}
         setting={BooleanSetting.confirm_step_deletion}
         label={t("Confirm step deletion")}
         description={Content.CONFIRM_STEP_DELETION} />
-      <Setting {...commonProps}
+      <SequenceSetting {...commonProps}
         setting={BooleanSetting.show_pins}
         label={t("Show pins")}
         description={Content.SHOW_PINS} />
-      <Setting {...commonProps}
-        setting={"expand_step_options"}
+      <SequenceSetting {...commonProps}
+        setting={BooleanSetting.expand_step_options}
         label={t("Open options by default")}
         description={Content.EXPAND_STEP_OPTIONS} />
+      <SequenceSetting {...commonProps}
+        setting={BooleanSetting.discard_unsaved_sequences}
+        confirmation={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES_CONFIRM}
+        label={t("Discard unsaved sequence changes")}
+        description={Content.DISCARD_UNSAVED_SEQUENCE_CHANGES} />
     </div>;
   };
 
@@ -184,7 +192,6 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       collapsible={true}
       collapsed={props.variablesCollapsed}
       toggleVarShow={props.toggleVarShow}
-      listVarLabel={t("Defined outside of sequence")}
       shouldDisplay={props.shouldDisplay} />
   </div>;
 };
@@ -222,7 +229,7 @@ export class SequenceEditorMiddleActive extends
       shouldDisplay: this.props.shouldDisplay,
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),
-      expandStepOptions: !!getConfig("expand_step_options"),
+      expandStepOptions: !!getConfig(BooleanSetting.expand_step_options),
     };
   }
 

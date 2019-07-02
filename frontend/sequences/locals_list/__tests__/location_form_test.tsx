@@ -76,6 +76,7 @@ describe("<LocationForm/>", () => {
 
   it("shows parent in dropdown", () => {
     const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list)
@@ -92,19 +93,18 @@ describe("<LocationForm/>", () => {
   it("shows correct variable label", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    p.variable.dropdown.label = "not shown";
-    p.variable.dropdown.value = "parameter_declaration";
-    p.listVarLabel = "Variable Label";
+    p.variable.dropdown.label = "Externally defined";
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
-      label: "Variable Label", value: "parameter_declaration"
+      label: "Externally defined", value: 0
     });
     expect(wrapper.find(FBSelect).first().props().list)
-      .toEqual(expect.arrayContaining([PARENT(p.listVarLabel)]));
+      .toEqual(expect.arrayContaining([PARENT("Externally defined")]));
   });
 
   it("shows add new variable option", () => {
     const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.shouldDisplay = () => true;
     p.variable.dropdown.isNull = true;
     const wrapper = shallow(<LocationForm {...p} />);

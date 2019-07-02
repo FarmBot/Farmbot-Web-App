@@ -8,6 +8,7 @@ import { PIN_MODES } from "../sequences/step_tiles/tile_pin_support";
 import { t } from "../i18next_wrapper";
 import { TaggedPeripheral, TaggedSensor } from "farmbot";
 import { UUID } from "../resources/interfaces";
+import { isNumber } from "lodash";
 
 const MODES: { [s: string]: string } = {
   0: t("Digital"),
@@ -36,8 +37,9 @@ interface PinDropdownProps {
 
 export const PinDropdown = (props: PinDropdownProps) =>
   <FBSelect
-    selectedItem={
-      { label: t("Pin ") + `${props.value}`, value: props.value || "" }}
+    selectedItem={isNumber(props.value)
+      ? { label: t("Pin ") + `${props.value}`, value: props.value || "" }
+      : { label: t("Select a pin "), value: "" }}
     onChange={d => props.dispatch(edit(props.resource, {
       pin: parseInt(d.value.toString(), 10)
     }))}
