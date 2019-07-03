@@ -9,8 +9,6 @@ import { stopIE } from "./util/stop_ie";
 import { attachAppToDom } from "./routes";
 import I from "i18next";
 
-console.log("Caching fix, attempt I");
-
 stopIE();
 
 console.log(shortRevision());

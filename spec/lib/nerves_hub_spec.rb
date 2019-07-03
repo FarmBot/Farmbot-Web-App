@@ -106,20 +106,4 @@ describe NervesHub do
       expect(File.read(NervesHub::NERVES_HUB_CA_HACK)).to eq(pem)
     end
   end
-
-  it "detects malformed tags" do
-    tags = ["wrong", "also_wrong", "ok:tag"].shuffle
-    serial_number = "0xCAFEF00D"
-    expected = { error: NervesHub::BAD_TAG,
-                 serial_number: serial_number,
-                 tags: tags }
-    resp = StubResp.new("200", {
-      "data" => { hello: :world, identifier: "?" },
-    }.to_json)
-    do_it =
-      receive(:get).with("/orgs/farmbot/products/farmbot/devices/#{serial_number}").and_return(resp)
-    expect(NervesHub.conn).to do_it
-    expect(NervesHub).to receive(:report_problem).with(expected)
-    NervesHub.maybe_create_or_update(serial_number, tags)
-  end
 end
