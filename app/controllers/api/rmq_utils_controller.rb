@@ -47,6 +47,10 @@ module Api
     before_action :always_allow_admin, except: [:user_action]
 
     def user_action # Session entrypoint - Part I
+      if username_param == FARMBOT_DEMO_USER
+        deny
+        return
+      end
       # Example JSON:
       #   "username"  => "foo@bar.com",
       #   "password"  => "******",
@@ -66,6 +70,10 @@ module Api
     end
 
     def vhost_action # Session entrypoint - Part II
+      if username_param == FARMBOT_DEMO_USER
+        deny
+        return
+      end
       # Example JSON:
       #   "username" => "admin",
       #   "vhost"    => "/",
@@ -74,6 +82,10 @@ module Api
     end
 
     def resource_action
+      if username_param == FARMBOT_DEMO_USER
+        deny
+        return
+      end
       # Example JSON:
       #   "username"   => "admin",
       #   "vhost"      => "/",
@@ -85,6 +97,10 @@ module Api
     end
 
     def topic_action # Called during subscribe
+      if username_param == FARMBOT_DEMO_USER
+        deny
+        return
+      end
       # Example JSON:
       #   "name"        => "amq.topic",
       #   "permission"  => "read",
