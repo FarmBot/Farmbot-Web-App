@@ -39,9 +39,9 @@ export class DemoIframe extends React.Component<{}, State> {
     const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
     this.setState({ stage: WAITING_ON_API });
     return new Promise(resolve => {
-      this.setState({ stage: "Promise executor called" });
+      this.setState({ stage: "Connecting garden hose..." });
       client.on("connect", () => {
-        this.setState({ stage: "Connected" });
+        this.setState({ stage: "Opening seed packet..." });
         this.setState({ client });
         client.on("message", this.handleMessage);
         client.subscribe(MQTT_CHAN, this.setError);
