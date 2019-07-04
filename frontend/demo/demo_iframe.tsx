@@ -35,12 +35,28 @@ export class DemoIframe extends React.Component<{}, State> {
 
   setError = (error?: Error) => this.setState({ error });
 
-  componentWillMount() {
-    const client =
-      connect(globalConfig.MQTT_WS, WS_CONFIG);
-    this.setState({ client });
-    client.on("message", this.handleMessage);
-    client.subscribe(MQTT_CHAN, this.setError);
+  connectMqtt = (): Promise<MqttClient> => {
+    const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
+    this.setState({ stage: WAITING_ON_API });
+    return new Promise(resolve => {
+      this.setState({ stage: "Promise executor called" });
+      client.on("connect", () => {
+        this.setState({ stage: "Connected" });
+        this.setState({ client });
+        client.on("message", this.handleMessage);
+        client.subscribe(MQTT_CHAN, this.setError);
+        resolve(client);
+      });
+    });
+  }
+
+  connectApi = () => {
+    const is51 = (Math.round(Math.random() * 100) == 51);
+    is51 && this.setState({ stage: EASTER_EGG });
+    return axios
+      .post<string>(HTTP_URL, { secret: SECRET })
+      .then(() => this.setState({ stage: WAITING_ON_API }))
+      .catch(this.setError);
   }
 
   handleMessage =
@@ -50,12 +66,7 @@ export class DemoIframe extends React.Component<{}, State> {
     }
 
   requestAccount = () => {
-    const is51 = (Math.round(Math.random() * 100) == 51);
-    is51 && this.setState({ stage: EASTER_EGG });
-    return axios
-      .post<string>(HTTP_URL, { secret: SECRET })
-      .then(() => this.setState({ stage: WAITING_ON_API }))
-      .catch(this.setError);
+    return this.connectMqtt().then(this.connectApi);
   };
 
   ok = () => {
