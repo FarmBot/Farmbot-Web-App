@@ -53,7 +53,6 @@
 class Fragment < ApplicationRecord
   # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
   EVERYTHING = { nodes: Node::EVERYTHING }
-  SERIALIZER = "serialized"
   belongs_to :device
   belongs_to :owner,
     polymorphic: true,
@@ -76,7 +75,7 @@ class Fragment < ApplicationRecord
   end
 
   def json_cache_key
-    [cache_key_with_version, SERIALIZER].join(":")
+    ["fragments", id, updated_at.to_i].join(":")
   end
 
   def self.from_celery(device:, kind:, args:, body:, owner:)
