@@ -44,6 +44,9 @@ module Devices
         DEMO_ALERTS
           .map { |p| p.merge(device: device) }
           .map { |p| Alerts::Create.run!(p) }
+        device
+          .web_app_config
+          .update_attributes!(discard_unsaved: true)
       end
     end
   end
