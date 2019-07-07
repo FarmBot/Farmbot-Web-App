@@ -12,9 +12,21 @@ jest.mock("axios", () => {
   };
 });
 
+const mockMqttClient = {
+  on: jest.fn((ev: string, cb: Function) => {
+    (ev == "connect") && cb();
+  }),
+  subscribe: jest.fn(),
+};
+
+jest
+  .mock("mqtt", () => ({
+    connect: () => mockMqttClient
+  }));
+
 import * as React from "react";
 import { shallow } from "enzyme";
-import { DemoIframe, WAITING_ON_API, EASTER_EGG } from "../demo_iframe";
+import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
 import Axios from "axios";
 
 describe("<DemoIframe/>", () => {
@@ -43,7 +55,7 @@ describe("<DemoIframe/>", () => {
     mockResponse = new Error("Nope.");
     const el = shallow<DemoIframe>(<DemoIframe />);
 
-    await stubOutMqtt(el.instance()).requestAccount();
+    await el.instance().connectApi();
 
     expect(Axios.post).toHaveBeenCalled();
     el.render();
@@ -65,5 +77,14 @@ describe("<DemoIframe/>", () => {
     expect(Axios.post).toHaveBeenCalled();
     el.render();
     expect(el.text()).toContain(EASTER_EGG);
+  });
+
+  it("connects to MQTT", async () => {
+    const i = new DemoIframe({});
+    await i.connectMqtt();
+    const { on, subscribe } = mockMqttClient;
+    expect(subscribe).toHaveBeenCalledWith(MQTT_CHAN, i.setError);
+    expect(on).toHaveBeenCalledWith("message", i.handleMessage);
+    expect(on).toHaveBeenCalledWith("connect", expect.any(Function));
   });
 });

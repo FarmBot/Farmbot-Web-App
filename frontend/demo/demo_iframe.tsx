@@ -4,7 +4,6 @@ import { uuid } from "farmbot";
 import axios from "axios";
 
 interface State {
-  client?: MqttClient;
   error: Error | undefined;
   stage: string;
 }
@@ -19,30 +18,24 @@ const WS_CONFIG = {
 };
 
 const SECRET = uuid().split("-").join("");
-const MQTT_CHAN = "demos/" + SECRET;
+export const MQTT_CHAN = "demos/" + SECRET;
 const HTTP_URL = "/api/demo_account";
 export const EASTER_EGG = "BIRDS AREN'T REAL";
 export const WAITING_ON_API = "Planting your demo garden...";
 
 // APPLICATION CODE ==============================
 export class DemoIframe extends React.Component<{}, State> {
-  state: State = {
-    client: undefined,
-    error: undefined,
-    stage: "DEMO THE APP"
-  };
+  state: State =
+    { error: undefined, stage: "DEMO THE APP" };
 
   setError = (error?: Error) => this.setState({ error });
 
   connectMqtt = (): Promise<MqttClient> => {
     const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
     return new Promise(resolve => {
-      client.on("connect", () => {
-        this.setState({ client });
-        client.on("message", this.handleMessage);
-        client.subscribe(MQTT_CHAN, this.setError);
-        resolve();
-      });
+      client.on("message", this.handleMessage);
+      client.subscribe(MQTT_CHAN, this.setError);
+      client.on("connect", resolve);
     });
   }
 
