@@ -27,6 +27,8 @@ describe Api::DemoAccountsController do
         .web_app_config
         .discard_unsaved
       expect(discard_unsaved).to be(true)
+      version = user.device.fbos_version
+      expect(version).to eq("1000.0.0")
     end
   end
 end
