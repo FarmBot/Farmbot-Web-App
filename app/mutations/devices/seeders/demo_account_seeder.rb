@@ -45,6 +45,8 @@ module Devices
           .map { |p| p.merge(device: device) }
           .map { |p| Alerts::Create.run!(p) }
         device
+          .update_attributes!(fbos_version: "1000.0.0")
+        device
           .web_app_config
           .update_attributes!(discard_unsaved: true)
       end
