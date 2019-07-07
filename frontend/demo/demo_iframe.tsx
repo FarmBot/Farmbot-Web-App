@@ -21,11 +21,10 @@ const WS_CONFIG = {
 const SECRET = uuid().split("-").join("");
 const MQTT_CHAN = "demos/" + SECRET;
 const HTTP_URL = "/api/demo_account";
-const EASTER_EGG = "BIRDS AREN'T REAL";
+export const EASTER_EGG = "BIRDS AREN'T REAL";
 export const WAITING_ON_API = "Planting your demo garden...";
 
 // APPLICATION CODE ==============================
-
 export class DemoIframe extends React.Component<{}, State> {
   state: State = {
     client: undefined,
@@ -37,15 +36,12 @@ export class DemoIframe extends React.Component<{}, State> {
 
   connectMqtt = (): Promise<MqttClient> => {
     const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
-    this.setState({ stage: WAITING_ON_API });
     return new Promise(resolve => {
-      this.setState({ stage: "Connecting garden hose..." });
       client.on("connect", () => {
-        this.setState({ stage: "Opening seed packet..." });
         this.setState({ client });
         client.on("message", this.handleMessage);
         client.subscribe(MQTT_CHAN, this.setError);
-        resolve(client);
+        resolve();
       });
     });
   }
@@ -53,6 +49,7 @@ export class DemoIframe extends React.Component<{}, State> {
   connectApi = () => {
     const is51 = (Math.round(Math.random() * 100) == 51);
     is51 && this.setState({ stage: EASTER_EGG });
+
     return axios
       .post<string>(HTTP_URL, { secret: SECRET })
       .then(() => this.setState({ stage: WAITING_ON_API }))
@@ -85,7 +82,6 @@ export class DemoIframe extends React.Component<{}, State> {
   no = () => {
     // tslint:disable-next-line:no-null-keyword
     const message = JSON.stringify(this.state.error, null, 2);
-
     return <pre> {message} </pre>;
   }
 
