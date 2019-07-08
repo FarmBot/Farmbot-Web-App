@@ -64,7 +64,6 @@ class Device < ApplicationRecord
   def self.current=(dev)
     RequestStore.store[:device] = dev
   end
-
   # Sets Device.current to `self` and returns it to the previous value when
   #  finished running block. Usually this is unnecessary, but may be required in
   # background jobs. If you are not receiving auto_sync data on your client,
