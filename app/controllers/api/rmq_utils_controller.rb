@@ -45,7 +45,6 @@ module Api
     skip_before_action :authenticate_user!, except: []
 
     before_action :always_allow_admin, except: [:user_action]
-    before_action :no_demos
 
     def user_action # Session entrypoint - Part I
       if username_param == FARMBOT_DEMO_USER
