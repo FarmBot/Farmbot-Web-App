@@ -7,10 +7,15 @@
 #
 # It simplifies the process of finding Points that
 # are in use by the `resource_update` step.
-class PointUsageForResourceUpdateStep < ApplicationRecord
-  belongs_to :point, polymorphic: true
+class ResourceUpdateStep < ApplicationRecord
+  belongs_to :point
 
   def readonly?
     true
+  end
+
+  # Make sure you preload `self.point` before calling this.
+  def fancy_name
+    @fancy_name ||= point.fancy_name
   end
 end

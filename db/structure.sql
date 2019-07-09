@@ -1037,52 +1037,6 @@ ALTER SEQUENCE public.plant_templates_id_seq OWNED BY public.plant_templates.id;
 
 
 --
--- Name: primary_nodes; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.primary_nodes (
-    id bigint NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    sequence_id bigint NOT NULL,
-    kind character varying(50),
-    child_id bigint,
-    parent_id bigint,
-    parent_arg_name character varying(50),
-    next_id bigint,
-    body_id bigint,
-    comment character varying(240)
-);
-
-
---
--- Name: point_usage_for_resource_update_steps; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.point_usage_for_resource_update_steps AS
- SELECT x.primary_node_id,
-    max((
-        CASE
-            WHEN ((x.key)::text = 'resource_type'::text) THEN x.value
-            ELSE NULL::character varying
-        END)::text) AS pointer_type,
-    max((
-        CASE
-            WHEN ((x.key)::text = 'resource_id'::text) THEN x.value
-            ELSE NULL::character varying
-        END)::text) AS pointer_id,
-    max(x.sequence_id) AS sequence_id
-   FROM ( SELECT edge_nodes.sequence_id,
-            primary_nodes.id AS primary_node_id,
-            edge_nodes.kind AS key,
-            edge_nodes.value
-           FROM public.primary_nodes,
-            public.edge_nodes
-          WHERE ((primary_nodes.id = edge_nodes.primary_node_id) AND ((primary_nodes.kind)::text = 'resource_update'::text) AND ((edge_nodes.kind)::text = ANY (ARRAY[('resource_type'::character varying)::text, ('resource_id'::character varying)::text])))) x
-  GROUP BY x.primary_node_id;
-
-
---
 -- Name: points_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1100,6 +1054,25 @@ CREATE SEQUENCE public.points_id_seq
 --
 
 ALTER SEQUENCE public.points_id_seq OWNED BY public.points.id;
+
+
+--
+-- Name: primary_nodes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.primary_nodes (
+    id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    sequence_id bigint NOT NULL,
+    kind character varying(50),
+    child_id bigint,
+    parent_id bigint,
+    parent_arg_name character varying(50),
+    next_id bigint,
+    body_id bigint,
+    comment character varying(240)
+);
 
 
 --
@@ -1249,6 +1222,38 @@ CREATE SEQUENCE public.regimens_id_seq
 --
 
 ALTER SEQUENCE public.regimens_id_seq OWNED BY public.regimens.id;
+
+
+--
+-- Name: resource_update_steps; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.resource_update_steps AS
+ WITH resource_type AS (
+         SELECT edge_nodes.primary_node_id,
+            edge_nodes.kind,
+            edge_nodes.value
+           FROM public.edge_nodes
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+        ), resource_id AS (
+         SELECT edge_nodes.primary_node_id,
+            edge_nodes.kind,
+            edge_nodes.value,
+            edge_nodes.sequence_id
+           FROM public.edge_nodes
+          WHERE ((edge_nodes.kind)::text = 'resource_id'::text)
+        ), user_sequence AS (
+         SELECT sequences.name,
+            sequences.id
+           FROM public.sequences
+        )
+ SELECT j1.sequence_id,
+    j1.primary_node_id,
+    (j1.value)::bigint AS point_id,
+    j3.name AS sequence_name
+   FROM ((resource_id j1
+     JOIN resource_type j2 ON ((j1.primary_node_id = j2.primary_node_id)))
+     JOIN user_sequence j3 ON ((j3.id = j1.sequence_id)));
 
 
 --
@@ -3012,6 +3017,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190613215319'),
 ('20190621202204'),
 ('20190701155706'),
-('20190708205603');
+('20190709194037');
 
 

@@ -160,8 +160,14 @@ describe Points::Destroy do
     ]
     body = points.map { |x| mark_as(x) }
     sequence = Sequences::Create.run!(device: device, name: "X", body: body)
+    real_stuff = body.map do |x|
+      [x.dig(:args, :resource_id), x.dig(:args, :resource_type)]
+    end.to_h
     result = Points::Destroy.run(device: device, point_ids: points.map(&:id))
-    binding.pry
     expect(result.errors).to be
+    message = result.errors.message.fetch("whoops")
+    points.map do |p|
+      expect(message).to include(p.fancy_name)
+    end
   end
 end

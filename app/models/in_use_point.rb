@@ -4,10 +4,10 @@ class InUsePoint < ApplicationRecord
   belongs_to :device
 
   DEFAULT_NAME = "point"
-  FANCY_NAMES  = {
+  FANCY_NAMES = {
     GenericPointer.name => DEFAULT_NAME,
-    ToolSlot.name       => "tool slot",
-    Plant.name          => "plant",
+    ToolSlot.name => "tool slot",
+    Plant.name => "plant",
   }
 
   def readonly?
@@ -15,6 +15,6 @@ class InUsePoint < ApplicationRecord
   end
 
   def fancy_name
-    "#{FANCY_NAMES[pointer_type] || DEFAULT_NAME} at (#{x}, #{y}, #{z})"
+    "#{InUsePoint::FANCY_NAMES[pointer_type] || DEFAULT_NAME} at (#{x}, #{y}, #{z})"
   end
 end

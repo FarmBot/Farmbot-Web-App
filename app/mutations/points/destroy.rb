@@ -21,7 +21,7 @@ module Points
     def validate
       maybe_wrap_ids
       # Collect names of sequences that still use this point.
-      problems = (tool_seq + point_seq)
+      problems = (tool_seq + point_seq + resource_update_seq)
         .group_by(&:sequence_name)
         .to_a
         .reduce({ S => [], P => [] }) do |total, (seq_name, data)|
@@ -85,6 +85,12 @@ module Points
       @point_seq ||= InUsePoint
         .where(point_id: points.pluck(:id))
         .to_a
+    end
+
+    def resource_update_seq
+      @resource_update_seq ||= ResourceUpdateStep
+        .includes(:point)
+        .where(point_id: point_ids)
     end
 
     def tool_seq
