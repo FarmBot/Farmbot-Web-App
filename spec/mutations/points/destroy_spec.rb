@@ -161,7 +161,7 @@ describe Points::Destroy do
     body = points.map { |x| mark_as(x) }
     sequence = Sequences::Create.run!(device: device, name: "X", body: body)
     result = Points::Destroy.run(device: device, point_ids: points.map(&:id))
-    expect(result.errors).to be
     binding.pry
+    expect(result.errors).to be
   end
 end
