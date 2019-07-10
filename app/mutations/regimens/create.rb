@@ -23,10 +23,9 @@ module Regimens
           inputs[:regimen_items].map! do |i|
             RegimenItem.new(i)
           end
-          result = wrap_fragment_with(Regimen.create!(inputs.except(:body)))
+          wrap_fragment_with(Regimen.create!(inputs.except(:body)))
         end
-      end
-      result.manually_sync!
+      end.manually_sync!
     end
   end
 end
