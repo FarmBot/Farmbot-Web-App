@@ -480,6 +480,9 @@ export namespace Content {
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when deleting a sequence step.`);
 
+  export const CONFIRM_SEQUENCE_DELETION =
+    trim(`Show a confirmation dialog when deleting a sequence.`);
+
   export const HIDE_WEBCAM_WIDGET =
     trim(`If not using a webcam, use this setting to remove the
     widget from the Controls page.`);

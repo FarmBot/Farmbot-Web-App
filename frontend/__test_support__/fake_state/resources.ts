@@ -272,6 +272,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     updated_at: "2018-01-22T15:32:41.970Z",
     confirm_plant_deletion: true,
     confirm_step_deletion: false,
+    // confirm_sequence_deletion: true,
     disable_animations: false,
     disable_i18n: false,
     display_trail: false,
