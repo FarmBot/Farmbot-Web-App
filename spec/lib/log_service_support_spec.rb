@@ -20,6 +20,11 @@ describe LogService do
     FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
   end
 
+  it "Sends errors to rollbar" do
+    expect(Rollbar).to receive(:error)
+    LogService.new().deliver("") # Will raise NoMethodError
+  end
+
   it "has a log_channel" do
     calls = Transport.current.log_channel.calls[:bind]
     expect(calls).to include(["amq.topic", { routing_key: "bot.*.logs" }])

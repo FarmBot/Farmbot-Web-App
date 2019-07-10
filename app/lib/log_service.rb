@@ -28,6 +28,8 @@ class LogService < AbstractServiceRunner
     dev, log = [data.device, data.payload]
     dev.maybe_unthrottle
     Log.deliver(dev, Logs::Create.run!(log, device: dev))
+  rescue => x
+    Rollbar.error(x)
   end
 
   def warn_user(data, violation)

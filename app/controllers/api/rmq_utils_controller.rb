@@ -5,6 +5,45 @@ module Api
   # Any other response results in denial.
   # Results are cached for 10 minutes to prevent too many requests to the API.
   class RmqUtilsController < Api::AbstractController
+    class BrokerConnectionLimiter
+      attr_reader :cache
+
+      CACHE_KEY_TPL = "mqtt_limiter:%s"
+      TTL = 60 * 10 # Ten Minutes
+      PER_DEVICE_MAX = 10
+      MAX_GUEST_COUNT = 256
+      WARNING = "'%s' was rate limited."
+
+      class RateLimit < StandardError; end
+
+      def self.current(cache = Rails.cache.redis)
+        self.new(cache)
+      end
+
+      def initialize(cache)
+        @cache = cache
+      end
+
+      def maybe_continue(username)
+        is_guest = (username == FARMBOT_DEMO_USER)
+        max = is_guest ? MAX_GUEST_COUNT : PER_DEVICE_MAX
+        key = CACHE_KEY_TPL % username
+        total = (cache.get(key) || "0").to_i
+        needs_ttl = cache.ttl(key) < 1
+        if total < max
+          cache.incr(key)
+          cache.expire(key, TTL) if needs_ttl
+          yield
+        else
+          Device
+            .delay
+            .connection_warning(username) if !is_guest
+          Rollbar.error(WARNING % username)
+          raise RateLimit, username
+        end
+      end
+    end
+
     # List of AMQP/MQTT topics we support in the following format:
     # "bot.device_123.<MAIN TOPIC HERE>"
     BOT_CHANNELS = %w(
@@ -40,6 +79,7 @@ module Api
     class PasswordFailure < Exception; end
 
     rescue_from PasswordFailure, with: :report_suspicious_behavior
+    rescue_from BrokerConnectionLimiter::RateLimit, with: :deny
 
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
@@ -58,10 +98,12 @@ module Api
       #       differentiate to avoid accidental
       #       security issues. -RC
       when "guest" then deny
-      when FARMBOT_DEMO_USER then allow
       when "admin" then authenticate_admin
+      when FARMBOT_DEMO_USER
+        with_rate_limit { allow }
       else
-        device_id_in_username == current_device.id ? allow : deny
+        is_ok = device_id_in_username == current_device.id
+        is_ok ? (with_rate_limit { allow }) : deny
       end
     end
 
@@ -222,6 +264,12 @@ module Api
         .split(".") # ["9", "logs"]
         .first # "9"
         .to_i || 0 # 9
+    end
+
+    def with_rate_limit
+      BrokerConnectionLimiter
+        .current
+        .maybe_continue(username_param) { yield }
     end
 
     def current_device
