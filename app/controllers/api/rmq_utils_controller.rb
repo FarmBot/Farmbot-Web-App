@@ -6,14 +6,15 @@ module Api
   # Results are cached for 10 minutes to prevent too many requests to the API.
   class RmqUtilsController < Api::AbstractController
     class BrokerConnectionLimiter
-      class RateLimit < StandardError; end
-
       attr_reader :cache
 
       CACHE_KEY_TPL = "mqtt_limiter:%s"
       TTL = 60 * 10 # Ten Minutes
       PER_DEVICE_MAX = 20
       MAX_GUEST_COUNT = 512
+      WARNING = "User '%s' was rate limited."
+
+      class RateLimit < StandardError; end
 
       def self.current(cache = Rails.cache.redis)
         self.new(cache)
