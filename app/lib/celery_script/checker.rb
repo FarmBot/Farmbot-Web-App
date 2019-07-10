@@ -44,7 +44,12 @@ module CeleryScript
 
     # This is the type checker entry point after initialization.
     def run!
-      CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
+      # NOTE: Some nodes require knowledge of
+      # `Device.current` in order to validate
+      # properly
+      device.auto_sync_transaction do
+        CeleryScript::TreeClimber.travel(tree, method(:validate).to_proc)
+      end
       tree
     end
 

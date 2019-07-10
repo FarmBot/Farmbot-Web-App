@@ -30,8 +30,7 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
-  ALLOWED_RESOURCE_TYPE = %w(Device FarmEvent Image Log Peripheral Plant Point
-                             Regimen Sequence Tool ToolSlot User GenericPointer)
+  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot GenericPointer)
   ALLOWED_RPC_NODES = %w(calibrate change_ownership
                          check_updates dump_info emergency_lock
                          emergency_unlock execute execute_script
@@ -488,10 +487,10 @@ module CeleryScriptSettingsBag
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
       tags: [:function, :api_writer, :network_user],
-      blk: ->(x) do
-        resource_type = x.args.fetch(:resource_type).value
-        resource_id = x.args.fetch(:resource_id).value
-        check_resource_type(x, resource_type, resource_id)
+      blk: ->(n) do
+        resource_type = n.args.fetch(:resource_type).value
+        resource_id = n.args.fetch(:resource_id).value
+        check_resource_type(n, resource_type, resource_id, Device.current)
       end,
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
@@ -507,13 +506,14 @@ module CeleryScriptSettingsBag
     node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
   end
 
-  def self.check_resource_type(node, resource_type, resource_id)
+  def self.check_resource_type(node, resource_type, resource_id, owner)
+    raise "OPPS!" unless owner
     case resource_type # <= Security critical code (for const_get'ing)
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
       # For convenience, we try to set it here, defaulting to 0
-      node.args[:resource_id].instance_variable_set("@value", 0)
+      node.args[:resource_id].instance_variable_set("@value", owner.id)
     when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)
