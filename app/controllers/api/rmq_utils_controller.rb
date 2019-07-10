@@ -24,17 +24,19 @@ module Api
       end
 
       def maybe_continue(username)
-        max = (username == FARMBOT_DEMO_USER) ?
-          MAX_GUEST_COUNT : PER_DEVICE_MAX
+        is_guest = (username == FARMBOT_DEMO_USER)
+        max = is_guest ? MAX_GUEST_COUNT : PER_DEVICE_MAX
         key = CACHE_KEY_TPL % username
         total = (cache.get(key) || "0").to_i
         needs_ttl = cache.ttl(key) < 1
-
         if total < max
           cache.incr(key)
           cache.expire(key, TTL) if needs_ttl
           yield
         else
+          Device
+            .delay
+            .connection_warning(username) if is_guest
           Rollbar.error(WARNING % username)
           raise RateLimit, username
         end

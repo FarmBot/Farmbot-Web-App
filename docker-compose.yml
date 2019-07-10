@@ -33,7 +33,7 @@ services:
     volumes:
       - "./docker_volumes/redis/data:/data"
       - "./docker_volumes/redis/conf:/usr/local/etc/redis"
-    expose: ["6379"]
+    ports: ["6379:6379"]
 
   db:
     env_file: ".env"
