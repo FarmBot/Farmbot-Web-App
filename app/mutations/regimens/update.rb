@@ -20,7 +20,7 @@ module Regimens
     optional { body }
 
     def execute
-      device.auto_sync_transaction do
+      Regimen.silently do
         ActiveRecord::Base.transaction do
           regimen.regimen_items.destroy_all
           inputs[:regimen_items].map! do |ri|
