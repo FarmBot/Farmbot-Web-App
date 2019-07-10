@@ -180,8 +180,8 @@ export const fetchLatestGHBetaRelease =
       axios
         .get<GithubRelease[]>(releasesURL)
         .then(resp => {
-          const latestBeta = resp.data
-            .filter(x => x.tag_name.includes("beta"))[0];
+          const latestBeta = resp.data.filter(x =>
+            x.tag_name.includes("beta") || x.tag_name.includes("rc"))[0];
           const { tag_name, target_commitish } = latestBeta;
           const version = tagNameToVersionString(tag_name);
           dispatch({
