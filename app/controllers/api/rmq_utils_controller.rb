@@ -10,9 +10,9 @@ module Api
 
       CACHE_KEY_TPL = "mqtt_limiter:%s"
       TTL = 60 * 10 # Ten Minutes
-      PER_DEVICE_MAX = 20
-      MAX_GUEST_COUNT = 512
-      WARNING = "User '%s' was rate limited."
+      PER_DEVICE_MAX = 10
+      MAX_GUEST_COUNT = 256
+      WARNING = "'%s' was rate limited."
 
       class RateLimit < StandardError; end
 
@@ -87,26 +87,23 @@ module Api
     before_action :always_allow_admin, except: [:user_action]
 
     def user_action # Session entrypoint - Part I
-      BrokerConnectionLimiter
-        .current
-        .maybe_continue(username_param) do
-        # Example JSON:
-        #   "username"  => "foo@bar.com",
-        #   "password"  => "******",
-        #   "vhost"     => "/",
-        #   "client_id" => "MQTT_FX_Client",
-        case username_param
-        # NOTE: "guest" is not the same as
-        #       "farmbot_demo". We intentionally
-        #       differentiate to avoid accidental
-        #       security issues. -RC
-        when "guest" then deny
-        when FARMBOT_DEMO_USER then allow
-        when "admin" then authenticate_admin
-        else
-          is_ok = device_id_in_username == current_device.id
-          is_ok ? allow : deny
-        end
+      # Example JSON:
+      #   "username"  => "foo@bar.com",
+      #   "password"  => "******",
+      #   "vhost"     => "/",
+      #   "client_id" => "MQTT_FX_Client",
+      case username_param
+      # NOTE: "guest" is not the same as
+      #       "farmbot_demo". We intentionally
+      #       differentiate to avoid accidental
+      #       security issues. -RC
+      when "guest" then deny
+      when "admin" then authenticate_admin
+      when FARMBOT_DEMO_USER
+        with_rate_limit { allow }
+      else
+        is_ok = device_id_in_username == current_device.id
+        is_ok ? (with_rate_limit { allow }) : deny
       end
     end
 
@@ -267,6 +264,12 @@ module Api
         .split(".") # ["9", "logs"]
         .first # "9"
         .to_i || 0 # 9
+    end
+
+    def with_rate_limit
+      BrokerConnectionLimiter
+        .current
+        .maybe_continue(username_param) { yield }
     end
 
     def current_device
