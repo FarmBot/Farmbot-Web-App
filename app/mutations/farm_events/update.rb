@@ -33,9 +33,10 @@ module FarmEvents
       FarmEvent.silently do
         FarmEvent.transaction do
           handle_body_field
-          farm_event.update_attributes!(p) && farm_event
+          farm_event.update_attributes!(p)
         end
       end
+      farm_event.manually_sync!
     end
 
     def validate_ownership
