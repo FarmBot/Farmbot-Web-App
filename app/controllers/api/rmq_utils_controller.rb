@@ -37,7 +37,7 @@ module Api
         else
           Device
             .delay
-            .connection_warning(username) if is_guest
+            .connection_warning(username) if !is_guest
           Rollbar.error(WARNING % username)
           raise RateLimit, username
         end
