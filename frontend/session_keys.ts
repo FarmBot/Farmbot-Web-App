@@ -31,6 +31,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",
+  // confirm_sequence_deletion: "confirm_sequence_deletion",
   show_pins: "show_pins",
   expand_step_options: "expand_step_options",
   discard_unsaved_sequences: "discard_unsaved_sequences",

@@ -93,12 +93,24 @@ describe("<SequenceEditorMiddleActive/>", () => {
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 
-  it("deletes", () => {
+  it("deletes with confirmation", () => {
     const p = fakeProps();
+    p.getWebAppConfigValue = () => undefined;
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     clickButton(wrapper, 2, "Delete");
-    expect(destroy).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
+    expect(destroy).toHaveBeenCalledWith(
+      expect.stringContaining("Sequence"), false);
+  });
+
+  it("deletes without confirmation", () => {
+    const p = fakeProps();
+    p.getWebAppConfigValue = () => false;
+    p.dispatch = jest.fn(() => Promise.resolve());
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    clickButton(wrapper, 2, "Delete");
+    expect(destroy).toHaveBeenCalledWith(
+      expect.stringContaining("Sequence"), true);
   });
 
   it("copies", () => {
@@ -259,7 +271,7 @@ describe("<SequenceSettingsMenu />", () => {
     wrapper.find("button").at(0).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
-    wrapper.find("button").at(1).simulate("click");
+    wrapper.find("button").at(2).simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
   });
@@ -305,5 +317,16 @@ describe("<SequenceSetting />", () => {
     expect(window.confirm).not.toHaveBeenCalled();
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.discard_unsaved_sequences, false);
+  });
+
+  it("is enabled by default", () => {
+    const p = fakeProps();
+    p.confirmation = undefined;
+    p.defaultOn = true;
+    p.getWebAppConfigValue = () => undefined;
+    const wrapper = mount(<SequenceSetting {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      expect.any(String), false);
   });
 });
