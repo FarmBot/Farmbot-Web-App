@@ -33,11 +33,12 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   # Perform table operations without triggering
-  # auto_sync.
-  def self.silently
+  # echo-ey auto_syncs.
+  def self.auto_sync_debounce
     @auto_sync_paused = true
     result = yield
     @auto_sync_paused = false
+    result.broadcast!
     result
   end
 

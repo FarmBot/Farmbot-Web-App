@@ -30,13 +30,13 @@ module FarmEvents
       p = inputs.except(:farm_event, :body, :device)
       # Keeps cleanup operations on schedule:
       p[:end_time] = next_start_time + 1.minute if is_one_time_event
-      FarmEvent.silently do
+      FarmEvent.auto_sync_debounce do
         FarmEvent.transaction do
           handle_body_field
           farm_event.update_attributes!(p)
+          farm_event
         end
       end
-      farm_event.manually_sync!
     end
 
     def validate_ownership

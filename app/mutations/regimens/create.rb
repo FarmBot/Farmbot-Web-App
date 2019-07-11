@@ -18,14 +18,14 @@ module Regimens
     optional { body }
 
     def execute
-      Regimen.silently do
+      Regimen.auto_sync_debounce do
         ActiveRecord::Base.transaction do
           inputs[:regimen_items].map! do |i|
             RegimenItem.new(i)
           end
           wrap_fragment_with(Regimen.create!(inputs.except(:body)))
         end
-      end.manually_sync!
+      end
     end
   end
 end
