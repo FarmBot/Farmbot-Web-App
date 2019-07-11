@@ -4,7 +4,6 @@ import { uuid } from "farmbot";
 import axios from "axios";
 
 interface State {
-  client?: MqttClient;
   error: Error | undefined;
   stage: string;
 }
@@ -19,28 +18,35 @@ const WS_CONFIG = {
 };
 
 const SECRET = uuid().split("-").join("");
-const MQTT_CHAN = "demos/" + SECRET;
+export const MQTT_CHAN = "demos/" + SECRET;
 const HTTP_URL = "/api/demo_account";
-const EASTER_EGG = "BIRDS AREN'T REAL";
+export const EASTER_EGG = "BIRDS AREN'T REAL";
 export const WAITING_ON_API = "Planting your demo garden...";
 
 // APPLICATION CODE ==============================
-
 export class DemoIframe extends React.Component<{}, State> {
-  state: State = {
-    client: undefined,
-    error: undefined,
-    stage: "DEMO THE APP"
-  };
+  state: State =
+    { error: undefined, stage: "DEMO THE APP" };
 
   setError = (error?: Error) => this.setState({ error });
 
-  componentWillMount() {
-    const client =
-      connect(globalConfig.MQTT_WS, WS_CONFIG);
-    this.setState({ client });
-    client.on("message", this.handleMessage);
-    client.subscribe(MQTT_CHAN, this.setError);
+  connectMqtt = (): Promise<MqttClient> => {
+    const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
+    return new Promise(resolve => {
+      client.on("message", this.handleMessage);
+      client.subscribe(MQTT_CHAN, this.setError);
+      client.on("connect", resolve);
+    });
+  }
+
+  connectApi = () => {
+    const is51 = (Math.round(Math.random() * 100) == 51);
+    is51 && this.setState({ stage: EASTER_EGG });
+
+    return axios
+      .post<string>(HTTP_URL, { secret: SECRET })
+      .then(() => this.setState({ stage: WAITING_ON_API }))
+      .catch(this.setError);
   }
 
   handleMessage =
@@ -50,12 +56,7 @@ export class DemoIframe extends React.Component<{}, State> {
     }
 
   requestAccount = () => {
-    const is51 = (Math.round(Math.random() * 100) == 51);
-    is51 && this.setState({ stage: EASTER_EGG });
-    return axios
-      .post<string>(HTTP_URL, { secret: SECRET })
-      .then(() => this.setState({ stage: WAITING_ON_API }))
-      .catch(this.setError);
+    return this.connectMqtt().then(this.connectApi);
   };
 
   ok = () => {
@@ -74,7 +75,6 @@ export class DemoIframe extends React.Component<{}, State> {
   no = () => {
     // tslint:disable-next-line:no-null-keyword
     const message = JSON.stringify(this.state.error, null, 2);
-
     return <pre> {message} </pre>;
   }
 

@@ -22,6 +22,13 @@ describe Api::DemoAccountsController do
       expect(user.email).to include("@farmbot.guest")
       expect(user.agreed_to_terms_at).to be
       expect(user.confirmed_at).to be
+      discard_unsaved = user
+        .device
+        .web_app_config
+        .discard_unsaved
+      expect(discard_unsaved).to be(true)
+      version = user.device.fbos_version
+      expect(version).to eq("1000.0.0")
     end
   end
 end

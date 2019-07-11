@@ -15,6 +15,28 @@ describe Api::RmqUtilsController do
       password: token }
   end
 
+  it "limits users to 10 connections per 10 minutes" do
+    empty_mail_bag
+    u = credentials.fetch(:username)
+    p = credentials.fetch(:password)
+    Rails
+      .cache
+      .redis
+      .set("mqtt_limiter:" + u.split("_").last, 0)
+
+    10.times do
+      post :user_action, params: { username: u, password: p }
+      expect(response.status).to eq(200)
+      expect(response.body).to include("allow")
+    end
+
+    run_jobs_now do
+      post :user_action, params: { username: u, password: p }
+      expect(response.status).to eq(403)
+      expect(response.body).not_to include("allow")
+    end
+  end
+
   it "reports people trying to use ADMIN_PASSWORD on non-local servers" do
     k = "ADMIN_PASSWORD"
     old_pw = ENV[k]

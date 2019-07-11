@@ -1225,6 +1225,38 @@ ALTER SEQUENCE public.regimens_id_seq OWNED BY public.regimens.id;
 
 
 --
+-- Name: resource_update_steps; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.resource_update_steps AS
+ WITH resource_type AS (
+         SELECT edge_nodes.primary_node_id,
+            edge_nodes.kind,
+            edge_nodes.value
+           FROM public.edge_nodes
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+        ), resource_id AS (
+         SELECT edge_nodes.primary_node_id,
+            edge_nodes.kind,
+            edge_nodes.value,
+            edge_nodes.sequence_id
+           FROM public.edge_nodes
+          WHERE ((edge_nodes.kind)::text = 'resource_id'::text)
+        ), user_sequence AS (
+         SELECT sequences.name,
+            sequences.id
+           FROM public.sequences
+        )
+ SELECT j1.sequence_id,
+    j1.primary_node_id,
+    (j1.value)::bigint AS point_id,
+    j3.name AS sequence_name
+   FROM ((resource_id j1
+     JOIN resource_type j2 ON ((j1.primary_node_id = j2.primary_node_id)))
+     JOIN user_sequence j3 ON ((j3.id = j1.sequence_id)));
+
+
+--
 -- Name: saved_gardens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2761,19 +2793,19 @@ ALTER TABLE ONLY public.points
 
 
 --
+-- Name: farmware_envs fk_rails_ab55c3a1d1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farmware_envs
+    ADD CONSTRAINT fk_rails_ab55c3a1d1 FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: primary_nodes fk_rails_bca7fee3b9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.primary_nodes
     ADD CONSTRAINT fk_rails_bca7fee3b9 FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
-
-
---
--- Name: farmware_envs fk_rails_bdadc396eb; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.farmware_envs
-    ADD CONSTRAINT fk_rails_bdadc396eb FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -2984,6 +3016,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190613190531'),
 ('20190613215319'),
 ('20190621202204'),
-('20190701155706');
+('20190701155706'),
+('20190709194037');
 
 

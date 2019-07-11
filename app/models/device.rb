@@ -64,7 +64,6 @@ class Device < ApplicationRecord
   def self.current=(dev)
     RequestStore.store[:device] = dev
   end
-
   # Sets Device.current to `self` and returns it to the previous value when
   #  finished running block. Usually this is unnecessary, but may be required in
   # background jobs. If you are not receiving auto_sync data on your client,
@@ -194,5 +193,16 @@ class Device < ApplicationRecord
       .as_json(users.first, "SUPER", fbos_version)
       .fetch(:token)
       .encoded
+  end
+
+  TOO_MANY_CONNECTIONS =
+    "Your device is " +
+      "reconnecting to the server too often. Please " +
+      "see https://developer.farm.bot/docs/connectivity-issues"
+  def self.connection_warning(username)
+    device_id = username.split("_").last.to_i || 0
+    self
+      .find(device_id)
+      .tell(TOO_MANY_CONNECTIONS, ["fatal_email"]) if self.exists?(device_id)
   end
 end

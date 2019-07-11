@@ -28,6 +28,7 @@ import {
 } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { isUndefined } from "lodash";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -62,10 +63,12 @@ export interface SequenceSettingProps {
   setting: BooleanConfigKey;
   getWebAppConfigValue: GetWebAppConfigValue;
   confirmation?: string;
+  defaultOn?: boolean;
 }
 
 export const SequenceSetting = (props: SequenceSettingProps) => {
-  const value = !!props.getWebAppConfigValue(props.setting);
+  const raw_value = props.getWebAppConfigValue(props.setting);
+  const value = (props.defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   const proceed = () =>
     (props.confirmation && !value) ? confirm(t(props.confirmation)) : true;
   return <fieldset>
@@ -88,6 +91,11 @@ export const SequenceSettingsMenu =
         setting={BooleanSetting.confirm_step_deletion}
         label={t("Confirm step deletion")}
         description={Content.CONFIRM_STEP_DELETION} />
+      <SequenceSetting {...commonProps}
+        setting={"confirm_sequence_deletion" as BooleanConfigKey}
+        defaultOn={true}
+        label={t("Confirm sequence deletion")}
+        description={Content.CONFIRM_SEQUENCE_DELETION} />
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.show_pins}
         label={t("Show pins")}
@@ -130,8 +138,13 @@ const SequenceBtnGroup = ({
       dispatch={dispatch} />
     <button
       className="fb-button red"
-      onClick={() => dispatch(destroy(sequence.uuid))
-        .then(() => push("/app/sequences/"))}>
+      onClick={() => {
+        const confirm = getWebAppConfigValue(
+          "confirm_sequence_deletion" as BooleanConfigKey);
+        const force = isUndefined(confirm) ? false : !confirm;
+        dispatch(destroy(sequence.uuid, force))
+          .then(() => push("/app/sequences/"));
+      }}>
       {t("Delete")}
     </button>
     <button

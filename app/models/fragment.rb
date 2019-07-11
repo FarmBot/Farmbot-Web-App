@@ -53,11 +53,10 @@
 class Fragment < ApplicationRecord
   # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
   EVERYTHING = { nodes: Node::EVERYTHING }
-  SERIALIZER = "serialized"
   belongs_to :device
   belongs_to :owner,
     polymorphic: true,
-    inverse_of:  :fragment
+    inverse_of: :fragment
   has_many :primitives, dependent: :destroy
   has_many :nodes
   has_many :primitive_pairs
@@ -76,15 +75,15 @@ class Fragment < ApplicationRecord
   end
 
   def json_cache_key
-    [cache_key_with_version, SERIALIZER].join("/")
+    ["fragments", id, updated_at.to_i].join(":")
   end
 
   def self.from_celery(device:, kind:, args:, body:, owner:)
-    p        = { device: device, kind: kind, args: args, body: body }
+    p = { device: device, kind: kind, args: args, body: body }
     flat_ast = Fragments::Preprocessor.run!(p)
-    Fragments::Create.run!(device:   device,
+    Fragments::Create.run!(device: device,
                            flat_ast: flat_ast,
-                           owner:    owner)
+                           owner: owner)
   end
 
   def broadcast?
