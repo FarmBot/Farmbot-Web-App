@@ -150,6 +150,7 @@ export class FarmbotOsSettings
             <BoardType
               botOnline={botOnline}
               bot={bot}
+              alerts={this.props.alerts}
               dispatch={this.props.dispatch}
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}

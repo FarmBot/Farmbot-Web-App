@@ -75,7 +75,7 @@ export function mapStateToProps(props: Everything): AppProps {
     tour: props.resources.consumers.help.currentTour,
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
-    alertCount: getAlerts(props.resources.index, props.bot).length,
+    alertCount: getAlerts(props.resources.index).length,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */

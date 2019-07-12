@@ -1,5 +1,4 @@
 import * as React from "react";
-import { betterCompact } from "../util";
 import { sortBy, isNumber } from "lodash";
 import { ProblemTag, FirmwareAlertsProps, AlertsProps } from "./interfaces";
 import { AlertCard } from "./cards";
@@ -17,8 +16,7 @@ const filterIncompleteAlerts = (x: Alert) =>
   x.problem_tag && isNumber(x.priority) && x.created_at;
 
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
-  const alerts = betterCompact(Object.values(props.bot.hardware.alerts || {}));
-  const firmwareAlerts = sortAlerts(alerts)
+  const firmwareAlerts = sortAlerts(props.alerts)
     .filter(filterIncompleteAlerts)
     .filter(x => splitProblemTag(x.problem_tag).noun === "firmware");
   return <div className="firmware-alerts">

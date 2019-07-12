@@ -23,6 +23,7 @@ describe("<BoardType/>", () => {
 
   const fakeProps = (): BoardTypeProps => ({
     bot,
+    alerts: [],
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
