@@ -17,17 +17,19 @@ const FARMDUINO_K14 = {
 const EXPRESS_K10 = {
   label: "Farmduino (Express v1.0)", value: "express_k10"
 };
+const NONE = { label: "None", value: "none" };
 
 export const FIRMWARE_CHOICES_DDI = {
   [ARDUINO.value]: ARDUINO,
   [FARMDUINO.value]: FARMDUINO,
   [FARMDUINO_K14.value]: FARMDUINO_K14,
   [EXPRESS_K10.value]: EXPRESS_K10,
+  [NONE.value]: NONE
 };
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
-  const values: FirmwareHardware[] = [
-    "arduino", "farmduino", "farmduino_k14", "express_k10"];
+  const values: FirmwareHardware[] =
+    ["arduino", "farmduino", "farmduino_k14", "express_k10", "none"];
   return !!values.includes(x as FirmwareHardware);
 };
 
@@ -77,8 +79,14 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
 
   get firmwareChoices() {
     const { shouldDisplay } = this.props;
-    return [ARDUINO, FARMDUINO, FARMDUINO_K14,
-      ...(shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : [])];
+    const others = shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : [];
+    return [
+      NONE,
+      ARDUINO,
+      FARMDUINO,
+      FARMDUINO_K14,
+      ...others
+    ];
   }
 
   get firmwareVersion() {
@@ -97,6 +105,8 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         return FIRMWARE_CHOICES_DDI["farmduino_k14"];
       case "express_k10":
         return FIRMWARE_CHOICES_DDI["express_k10"];
+      case "none":
+        return FIRMWARE_CHOICES_DDI["none"];
       case "unknown":
         // If unknown/disconnected, display API FirmwareHardware value if valid
         return (this.sending && this.apiValue)
