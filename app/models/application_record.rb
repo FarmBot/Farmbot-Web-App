@@ -3,6 +3,10 @@ class ApplicationRecord < ActiveRecord::Base
   after_save :maybe_broadcast, on: [:create, :update]
   after_destroy :maybe_broadcast
 
+  class << self
+    attr_reader :auto_sync_paused
+  end
+
   DONT_BROADCAST = ["created_at",
                     "last_saw_api",
                     "last_saw_mq",
@@ -28,8 +32,20 @@ class ApplicationRecord < ActiveRecord::Base
     !the_changes.empty?
   end
 
+  # Perform table operations without triggering
+  # echo-ey auto_syncs.
+  def self.auto_sync_debounce
+    @auto_sync_paused = true
+    result = yield
+    @auto_sync_paused = false
+    result.broadcast!
+    result
+  end
+
   def broadcast?
-    current_device && (gone? || notable_changes?)
+    !self.class.auto_sync_paused &&
+      current_device &&
+      (gone? || notable_changes?)
   end
 
   def maybe_broadcast
@@ -76,7 +92,6 @@ class ApplicationRecord < ActiveRecord::Base
   def manually_sync!
     device.auto_sync_transaction do
       update_attributes!(updated_at: Time.now)
-      broadcast!
     end if device
     self
   end
