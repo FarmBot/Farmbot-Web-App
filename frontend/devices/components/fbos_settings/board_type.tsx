@@ -81,10 +81,10 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     const { shouldDisplay } = this.props;
     const others = shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : [];
     return [
-      ARDUINO,
-      FARMDUINO_K14,
-      FARMDUINO,
       NONE,
+      ARDUINO,
+      FARMDUINO,
+      FARMDUINO_K14,
       ...others
     ];
   }
