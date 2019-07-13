@@ -1,4 +1,3 @@
-DOCKER_COMPOSE_VERSION=1.22.0
 ADMIN_PASSWORD=this_is_a_fake_admin_pass
 POSTGRES_PASSWORD=fake_db_password_also
 API_HOST=10.1.10.219
