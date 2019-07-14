@@ -64,12 +64,18 @@ namespace :api do
     sh [intro, opts].join(" ")
   end
 
+  def clean_assets
+    # Clear out cache and previous builds on initial load.
+    sh [
+      "rm -rf",
+      DashboardController::CACHE_DIR,
+      DashboardController::PUBLIC_OUTPUT_DIR,
+    ].join(" ") unless ENV["NO_CLEAN"]
+  end
+
   desc "Serve javascript assets (via Parcel bundler)."
   task serve_assets: :environment do
-    # Clear out cache and previous builds on initial load.
-    sh ["rm -rf",
-        DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR].join(" ") unless ENV["NO_CLEAN"]
+    clean_assets
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
