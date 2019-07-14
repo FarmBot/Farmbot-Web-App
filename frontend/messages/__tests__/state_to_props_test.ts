@@ -6,13 +6,6 @@ import {
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
-  it("handles undefined", () => {
-    const state = fakeState();
-    state.bot.hardware.alerts = undefined;
-    const props = mapStateToProps(state);
-    expect(props.alerts).toEqual([]);
-  });
-
   it("shows API alerts", () => {
     const state = fakeState();
     const alert = fakeAlert();

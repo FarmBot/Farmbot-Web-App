@@ -1,6 +1,5 @@
 import { FirmwareHardware, Alert } from "farmbot";
 import { TimeSettings } from "../interfaces";
-import { BotState } from "../devices/interfaces";
 import { UUID } from "../resources/interfaces";
 
 export interface MessagesProps {
@@ -26,7 +25,7 @@ export interface ProblemTag {
 }
 
 export interface FirmwareAlertsProps {
-  bot: BotState;
+  alerts: Alert[];
   apiFirmwareValue: string | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;

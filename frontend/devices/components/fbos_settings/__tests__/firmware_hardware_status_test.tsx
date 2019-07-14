@@ -17,7 +17,7 @@ import { fakeTimeSettings } from "../../../../__test_support__/fake_time_setting
 
 describe("<FirmwareHardwareStatusDetails />", () => {
   const fakeProps = (): FirmwareHardwareStatusDetailsProps => ({
-    bot,
+    alerts: [],
     botOnline: true,
     apiFirmwareValue: undefined,
     botFirmwareValue: undefined,
@@ -76,6 +76,7 @@ describe("<FirmwareHardwareStatusIcon />", () => {
 describe("<FirmwareHardwareStatus />", () => {
   const fakeProps = (): FirmwareHardwareStatusProps => ({
     bot,
+    alerts: [],
     botOnline: true,
     apiFirmwareValue: undefined,
     shouldDisplay: () => true,

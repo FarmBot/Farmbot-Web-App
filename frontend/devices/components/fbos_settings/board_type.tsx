@@ -105,8 +105,6 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         return FIRMWARE_CHOICES_DDI["farmduino_k14"];
       case "express_k10":
         return FIRMWARE_CHOICES_DDI["express_k10"];
-      case "none":
-        return FIRMWARE_CHOICES_DDI["none"];
       case "unknown":
         // If unknown/disconnected, display API FirmwareHardware value if valid
         return (this.sending && this.apiValue)
@@ -148,6 +146,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
         <FirmwareHardwareStatus
           botOnline={this.props.botOnline}
           apiFirmwareValue={this.apiValue}
+          alerts={this.props.alerts}
           bot={this.props.bot}
           dispatch={this.props.dispatch}
           timeSettings={this.props.timeSettings}

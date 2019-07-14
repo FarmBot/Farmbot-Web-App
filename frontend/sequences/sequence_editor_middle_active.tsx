@@ -92,7 +92,7 @@ export const SequenceSettingsMenu =
         label={t("Confirm step deletion")}
         description={Content.CONFIRM_STEP_DELETION} />
       <SequenceSetting {...commonProps}
-        setting={"confirm_sequence_deletion" as BooleanConfigKey}
+        setting={BooleanSetting.confirm_sequence_deletion}
         defaultOn={true}
         label={t("Confirm sequence deletion")}
         description={Content.CONFIRM_SEQUENCE_DELETION} />
@@ -140,7 +140,7 @@ const SequenceBtnGroup = ({
       className="fb-button red"
       onClick={() => {
         const confirm = getWebAppConfigValue(
-          "confirm_sequence_deletion" as BooleanConfigKey);
+          BooleanSetting.confirm_sequence_deletion);
         const force = isUndefined(confirm) ? false : !confirm;
         dispatch(destroy(sequence.uuid, force))
           .then(() => push("/app/sequences/"));
