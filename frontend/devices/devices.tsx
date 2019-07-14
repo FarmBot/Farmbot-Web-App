@@ -28,6 +28,7 @@ export class Devices extends React.Component<Props, {}> {
               diagnostics={selectAllDiagnosticDumps(this.props.resources)}
               deviceAccount={this.props.deviceAccount}
               dispatch={this.props.dispatch}
+              alerts={this.props.alerts}
               bot={this.props.bot}
               timeSettings={this.props.timeSettings}
               botToMqttLastSeen={botToMqttLastSeen}

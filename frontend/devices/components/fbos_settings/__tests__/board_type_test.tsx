@@ -23,6 +23,7 @@ describe("<BoardType/>", () => {
 
   const fakeProps = (): BoardTypeProps => ({
     bot,
+    alerts: [],
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
@@ -111,7 +112,9 @@ describe("<BoardType/>", () => {
 
   it("displays standard boards", () => {
     const wrapper = shallow(<BoardType {...fakeProps()} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list).toEqual([
+      { label: "None", value: "none" },
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
       { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" }]);
@@ -121,7 +124,9 @@ describe("<BoardType/>", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = shallow(<BoardType {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list).toEqual([
+      { label: "None", value: "none" },
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
       { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },

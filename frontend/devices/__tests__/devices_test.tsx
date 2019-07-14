@@ -32,6 +32,7 @@ describe("<Devices/>", () => {
     env: {},
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
+    alerts: [],
   });
 
   it("renders relevant panels", () => {

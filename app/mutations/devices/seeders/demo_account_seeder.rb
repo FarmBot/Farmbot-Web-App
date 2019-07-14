@@ -39,13 +39,23 @@ module Devices
         Alert::BULLETIN.merge(slug: "buy-a-farmbot", priority: 9999),
       ]
 
+      # Note: At the time of publish, FBOS v8.0.0
+      # was the latest release. We are setting
+      # demo accounts to v100 because:
+      #  * We don't want to update this value
+      #    on every FBOS release.
+      #  * We don't want demo users hitting bugs
+      #    by setting their account to the beta
+      #    tester FBOS version `1000.0.0`.
+      READ_COMMENT_ABOVE = "100.0.0"
+
       def misc
         device.alerts.where(problem_tag: UNUSED_ALERTS).destroy_all
         DEMO_ALERTS
           .map { |p| p.merge(device: device) }
           .map { |p| Alerts::Create.run!(p) }
         device
-          .update_attributes!(fbos_version: "1000.0.0")
+          .update_attributes!(fbos_version: READ_COMMENT_ABOVE)
         device
           .web_app_config
           .update_attributes!(discard_unsaved: true)
