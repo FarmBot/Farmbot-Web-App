@@ -19,10 +19,7 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   const findApiAlertById = (id: number): UUID =>
     findResourceById(props.resources.index, "Alert", id);
   return {
-    alerts: [
-      ...getLocalAlerts(props.resources.consumers.alerts),
-      ...getApiAlerts(props.resources.index)
-    ],
+    alerts: getAllAlerts(props.resources),
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
       ? apiFirmwareValue : undefined,
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -30,6 +27,14 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
     findApiAlertById,
   };
 };
+
+export const getAllAlerts =
+  (resources: Everything["resources"]) => {
+    return [
+      ...getLocalAlerts(resources.consumers.alerts),
+      ...getApiAlerts(resources.index)
+    ];
+  };
 
 export const getApiAlerts = (resourceIndex: ResourceIndex): Alert[] =>
   selectAllAlerts(resourceIndex).map(x => x.body);
