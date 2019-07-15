@@ -24,6 +24,7 @@
   "author": "farmbot.io",
   "license": "MIT",
   "dependencies": {
+    "@babel/core": "7.5.4",
     "@blueprintjs/core": "3.17.1",
     "@blueprintjs/datetime": "3.11.0",
     "@blueprintjs/select": "3.9.0",
