@@ -13,6 +13,7 @@ import { FarmwareState } from "../farmware/interfaces";
 import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
+import { AlertReducerState } from "../messages/interfaces";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;
@@ -83,6 +84,7 @@ export interface RestResources {
     farm_designer: DesignerState;
     farmware: FarmwareState;
     help: HelpState;
+    alerts: AlertReducerState;
   }
 }
 

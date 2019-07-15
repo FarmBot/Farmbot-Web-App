@@ -18,7 +18,7 @@ import {
 } from "../farmware/state_to_props";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
 import { DevSettings } from "../account/dev/dev_support";
-import { getAlerts } from "../messages/state_to_props";
+import { getAllAlerts } from "../messages/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;
@@ -50,6 +50,6 @@ export function mapStateToProps(props: Everything): Props {
     env,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
-    alerts: getAlerts(props.resources.index),
+    alerts: getAllAlerts(props.resources),
   };
 }

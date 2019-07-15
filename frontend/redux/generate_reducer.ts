@@ -5,7 +5,7 @@ import { Dictionary } from "farmbot";
 
 /** A function that responds to a particular action from within a
  * generated reducer. */
-interface ActionHandler<State, Payl = unknown> {
+export interface ActionHandler<State, Payl = unknown> {
   (state: State, action: ReduxAction<Payl>): State;
 }
 

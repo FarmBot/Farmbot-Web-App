@@ -23,6 +23,7 @@ import {
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact } from "../util";
 import { createSequenceMeta } from "./sequence_meta";
+import { alertsReducer as alerts } from "../messages/reducer";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -148,7 +149,8 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   sequences,
   farm_designer,
   farmware,
-  help
+  help,
+  alerts
 } as any); // tslint:disable-line
 
 /** The resource reducer must have the first say when a resource-related action
@@ -162,6 +164,7 @@ export const afterEach = (state: RestResources, a: ReduxAction<unknown>) => {
     farm_designer: state.consumers.farm_designer,
     farmware: state.consumers.farmware,
     help: state.consumers.help,
+    alerts: state.consumers.alerts
   }, a);
   return state;
 };
