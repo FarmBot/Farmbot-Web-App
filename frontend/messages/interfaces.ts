@@ -1,4 +1,4 @@
-import { FirmwareHardware, Alert } from "farmbot";
+import { FirmwareHardware, Alert, Dictionary } from "farmbot";
 import { TimeSettings } from "../interfaces";
 import { UUID } from "../resources/interfaces";
 
@@ -89,7 +89,11 @@ export interface Bulletin {
   title: string | undefined;
 }
 
-export interface BulletinAlertState {
+export interface AlertComponentState {
   bulletin: Bulletin | undefined;
   no_content: boolean;
+}
+
+export interface AlertReducerState {
+  alerts: Dictionary<Alert | undefined>;
 }

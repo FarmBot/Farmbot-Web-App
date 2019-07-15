@@ -20,6 +20,7 @@ import { initialState as designerState } from "../farm_designer/reducer";
 import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
+import { initialState as alertState } from "../messages/reducer";
 
 export const emptyState = (): RestResources => {
   return {
@@ -29,6 +30,7 @@ export const emptyState = (): RestResources => {
       farm_designer: designerState,
       farmware: farmwareState,
       help: helpState,
+      alerts: alertState
     },
     loaded: [],
     index: {

@@ -6,7 +6,7 @@ import {
   CommonAlertCardProps,
   DismissAlertProps,
   Bulletin,
-  BulletinAlertState
+  AlertComponentState
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
@@ -83,8 +83,8 @@ const ICON_LOOKUP: { [x: string]: string } = {
 };
 
 class BulletinAlert
-  extends React.Component<CommonAlertCardProps, BulletinAlertState> {
-  state: BulletinAlertState = { bulletin: undefined, no_content: false };
+  extends React.Component<CommonAlertCardProps, AlertComponentState> {
+  state: AlertComponentState = { bulletin: undefined, no_content: false };
 
   componentDidMount() {
     fetchBulletinContent(this.props.alert.slug)

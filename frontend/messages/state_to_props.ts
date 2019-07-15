@@ -1,6 +1,6 @@
 import { Everything } from "../interfaces";
-import { MessagesProps } from "./interfaces";
-import { validFbosConfig } from "../util";
+import { MessagesProps, AlertReducerState } from "./interfaces";
+import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
 import {
@@ -19,7 +19,10 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   const findApiAlertById = (id: number): UUID =>
     findResourceById(props.resources.index, "Alert", id);
   return {
-    alerts: getAlerts(props.resources.index),
+    alerts: [
+      ...getLocalAlerts(props.resources.consumers.alerts),
+      ...getApiAlerts(props.resources.index)
+    ],
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
       ? apiFirmwareValue : undefined,
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -28,6 +31,8 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   };
 };
 
-export const getAlerts = (resourceIndex: ResourceIndex): Alert[] => {
-  return selectAllAlerts(resourceIndex).map(x => x.body);
-};
+export const getApiAlerts = (resourceIndex: ResourceIndex): Alert[] =>
+  selectAllAlerts(resourceIndex).map(x => x.body);
+
+export const getLocalAlerts = ({ alerts }: AlertReducerState) =>
+  betterCompact(Object.values(alerts));
