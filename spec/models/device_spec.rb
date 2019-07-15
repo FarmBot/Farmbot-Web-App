@@ -108,5 +108,8 @@ describe Device do
     Device.connection_warning("device_#{device.id.to_s}")
     time = device.reload.mqtt_rate_limit_email_sent_at
     expect(time).to be > 1.minute.ago
+    Device.connection_warning("device_#{device.id.to_s}")
+    time2 = device.reload.mqtt_rate_limit_email_sent_at
+    expect(time).to eq(time2)
   end
 end
