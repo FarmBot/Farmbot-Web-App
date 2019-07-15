@@ -23,15 +23,12 @@ describe("Contextual `Alert` creation", () => {
   });
 
   it("toggles off", () => {
-    // OVERWRITE_RESOURCE
     const c = fakeFbosConfig();
     const s: AlertReducerState = {
       alerts: {}
     };
-    const action = overwrite(c, {
-      ...c.body,
-      firmware_hardware: "none"
-    });
+    const action =
+      overwrite(c, { ...c.body, firmware_hardware: "none" });
     const { alerts } = alertsReducer(s, action);
     const results = Object.values(alerts);
     expect(results[0]).toEqual(undefined);
