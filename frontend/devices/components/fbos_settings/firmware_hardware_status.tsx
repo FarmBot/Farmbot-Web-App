@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
-import { FIRMWARE_CHOICES_DDI, isFwHardwareValue, boardType } from "./board_type";
+import { FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
 import { flashFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 import { BotState, Feature, ShouldDisplay } from "../../interfaces";
@@ -8,6 +8,7 @@ import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
 import { trim } from "../../../util";
 import { Alert } from "farmbot";
+import { isFwHardwareValue, boardType } from "../firmware_hardware_support";
 
 export interface FirmwareHardwareStatusIconProps {
   firmwareHardware: string | undefined;

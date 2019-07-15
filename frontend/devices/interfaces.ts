@@ -85,6 +85,7 @@ export enum Feature {
   long_scaling_factor = "long_scaling_factor",
   flash_firmware = "flash_firmware",
   express_k10 = "express_k10",
+  none_firmware = "none_firmware",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;

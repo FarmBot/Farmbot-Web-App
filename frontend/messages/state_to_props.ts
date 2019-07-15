@@ -6,7 +6,9 @@ import { sourceFbosConfigValue } from "../devices/components/source_config_value
 import {
   selectAllAlerts, maybeGetTimeSettings, findResourceById
 } from "../resources/selectors";
-import { isFwHardwareValue } from "../devices/components/fbos_settings/board_type";
+import {
+  isFwHardwareValue
+} from "../devices/components/firmware_hardware_support";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { Alert } from "farmbot";
 
@@ -28,16 +30,13 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   };
 };
 
-export const getAllAlerts =
-  (resources: Everything["resources"]) => {
-    return [
-      ...getLocalAlerts(resources.consumers.alerts),
-      ...getApiAlerts(resources.index)
-    ];
-  };
+export const getAllAlerts = (resources: Everything["resources"]) => ([
+  ...getApiAlerts(resources.index),
+  ...getLocalAlerts(resources.consumers.alerts),
+]);
 
-export const getApiAlerts = (resourceIndex: ResourceIndex): Alert[] =>
+const getApiAlerts = (resourceIndex: ResourceIndex): Alert[] =>
   selectAllAlerts(resourceIndex).map(x => x.body);
 
-export const getLocalAlerts = ({ alerts }: AlertReducerState) =>
+const getLocalAlerts = ({ alerts }: AlertReducerState): Alert[] =>
   betterCompact(Object.values(alerts));

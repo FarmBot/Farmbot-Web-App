@@ -17,7 +17,7 @@ describe("Contextual `Alert` creation", () => {
     expect(results[0]).toEqual({
       created_at: 1,
       problem_tag: "farmbot_os.firmware.missing",
-      priority: 99999,
+      priority: 0,
       slug: "firmware-missing",
     });
   });

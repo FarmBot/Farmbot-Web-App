@@ -85,7 +85,7 @@ describe("botToFirmware()", () => {
 
   it("board undefined", () => {
     const output = botToFirmware(undefined);
-    expect(output.to).toContain("Arduino");
+    expect(output.to).toContain("Farmduino");
   });
 
   it("handles lack of connectivity", () => {
