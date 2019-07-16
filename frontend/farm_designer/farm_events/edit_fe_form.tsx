@@ -337,8 +337,7 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       success(nextRunText);
       return true;
     } else {
-      warning(t("All items scheduled before the start time. Nothing to run."),
-        t("Warning"));
+      warning(t("All items scheduled before the start time. Nothing to run."));
       return false;
     }
   }

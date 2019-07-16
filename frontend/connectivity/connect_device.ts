@@ -4,7 +4,7 @@ import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { noop } from "lodash";
-import { success, error, info, warning } from "../toast/toast";
+import { success, error, info, warning, fun, busy } from "../toast/toast";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
@@ -57,19 +57,24 @@ export function actOnChannelName(
 /** Take a log message (of type toast) and determines the correct kind of toast
  * to execute. */
 export function showLogOnScreen(log: Log) {
-  switch (log.type) {
-    case MessageType.success:
-      return success(log.message, TITLE());
-    case MessageType.warn:
-      return warning(log.message, TITLE());
-    case MessageType.busy:
-    case MessageType.error:
-      return error(log.message, TITLE());
-    case MessageType.fun:
-    case MessageType.info:
-    default:
-      return info(log.message, TITLE());
-  }
+  const toast = () => {
+    switch (log.type) {
+      case MessageType.success:
+        return success;
+      case MessageType.warn:
+        return warning;
+      case MessageType.error:
+        return error;
+      case MessageType.fun:
+        return fun;
+      case MessageType.busy:
+        return busy;
+      case MessageType.info:
+      default:
+        return info;
+    }
+  };
+  toast()(log.message, TITLE());
 }
 
 export function speakLogAloud(getState: GetState) {
@@ -164,7 +169,8 @@ export const onOnline =
     dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
   };
 export const onReconnect =
-  () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
+  () => warning(t("Attempting to reconnect to the message broker"),
+  t("Offline"), "yellow");
 
 export function onPublicBroadcast(payl: unknown) {
   console.log(FbjsEventName.publicBroadcast, payl);
