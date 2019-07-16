@@ -102,4 +102,14 @@ describe Device do
     expect(results).to_not include(🚑)
     expect(results).to_not include(🍞)
   end
+
+  it "throttled emails about MQTT rate limiting" do
+    device.update_attributes!(mqtt_rate_limit_email_sent_at: 2.days.ago)
+    Device.connection_warning("device_#{device.id.to_s}")
+    time = device.reload.mqtt_rate_limit_email_sent_at
+    expect(time).to be > 1.minute.ago
+    Device.connection_warning("device_#{device.id.to_s}")
+    time2 = device.reload.mqtt_rate_limit_email_sent_at
+    expect(time).to eq(time2)
+  end
 end
