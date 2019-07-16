@@ -89,7 +89,7 @@ export interface Bulletin {
   title: string | undefined;
 }
 
-export interface AlertComponentState {
+export interface BulletinAlertComponentState {
   bulletin: Bulletin | undefined;
   no_content: boolean;
 }
