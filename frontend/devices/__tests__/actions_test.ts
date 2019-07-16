@@ -263,8 +263,9 @@ describe("isLog()", function () {
   });
 
   it("filters sensitive logs", () => {
-    expect(() => actions.isLog({ message: "NERVESPSKWPASSWORD" }))
-      .toThrowError(/Refusing to display log/);
+    const log = { message: "NERVESPSKWPASSWORD" };
+    const result = actions.isLog(log);
+    expect(result).toBe(false);
   });
 });
 

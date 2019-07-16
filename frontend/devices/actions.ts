@@ -37,12 +37,13 @@ export const FEATURE_MIN_VERSIONS_URL =
 // be reported to Rollbar for investigation.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 
-// tslint:disable-next-line:no-any
-export function isLog(x: any): x is Log {
-  const yup = isObject(x) && isString(get(x, "message" as keyof Log));
+export function isLog(x: unknown): x is Log {
+  const msg = get(x, "message" as keyof Log);
+  const yup = isObject(x) && isString(msg);
   if (yup) {
-    if (oneOf(BAD_WORDS, x.message.toUpperCase())) {// SECURITY CRITICAL CODE.
-      throw new Error("Refusing to display log: " + JSON.stringify(x));
+    if (oneOf(BAD_WORDS, msg.toUpperCase())) { // SECURITY CRITICAL CODE.
+      console.error("Refusing to display log: " + JSON.stringify(x));
+      return false;
     }
     return true;
   } else {
