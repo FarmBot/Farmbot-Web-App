@@ -201,8 +201,13 @@ class Device < ApplicationRecord
       "see https://developer.farm.bot/docs/connectivity-issues"
   def self.connection_warning(username)
     device_id = username.split("_").last.to_i || 0
-    self
-      .find(device_id)
-      .tell(TOO_MANY_CONNECTIONS, ["fatal_email"]) if self.exists?(device_id)
+    device = self.find_by(id: device_id)
+    return unless device
+
+    last_sent_at = device.mqtt_rate_limit_email_sent_at || 4.years.ago
+    if last_sent_at < 1.day.ago
+      device.update_attributes!(mqtt_rate_limit_email_sent_at: Time.now)
+      device.tell(TOO_MANY_CONNECTIONS, ["fatal_email"])
+    end
   end
 end
