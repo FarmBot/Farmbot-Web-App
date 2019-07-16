@@ -1,7 +1,6 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
-import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { AlertsProps, FirmwareAlertsProps } from "../interfaces";
 import { Alert } from "farmbot";
@@ -69,7 +68,7 @@ describe("<Alerts />", () => {
 
 describe("<FirmwareAlerts />", () => {
   const fakeProps = (): FirmwareAlertsProps => ({
-    bot,
+    alerts: [],
     apiFirmwareValue: undefined,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
@@ -77,17 +76,14 @@ describe("<FirmwareAlerts />", () => {
 
   it("renders no alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.alerts = undefined;
+    p.alerts = [];
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.html()).toEqual(`<div class="firmware-alerts"></div>`);
   });
 
   it("renders alerts", () => {
     const p = fakeProps();
-    p.bot.hardware.alerts = {
-      [FIRMWARE_MISSING_ALERT.slug]: FIRMWARE_MISSING_ALERT,
-      [UNKNOWN_ALERT.slug]: UNKNOWN_ALERT
-    };
+    p.alerts = [FIRMWARE_MISSING_ALERT, UNKNOWN_ALERT];
     const wrapper = mount(<FirmwareAlerts {...p} />);
     expect(wrapper.text()).toContain("1");
     expect(wrapper.text()).toContain("Your device has no firmware");

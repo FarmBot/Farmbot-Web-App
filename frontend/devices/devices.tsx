@@ -8,7 +8,7 @@ import { Props } from "./interfaces";
 import { PinBindings } from "./pin_bindings/pin_bindings";
 import { selectAllDiagnosticDumps } from "../resources/selectors";
 import { getStatus } from "../connectivity/reducer_support";
-import { isFwHardwareValue } from "./components/fbos_settings/board_type";
+import { isFwHardwareValue } from "./components/firmware_hardware_support";
 
 @connect(mapStateToProps)
 export class Devices extends React.Component<Props, {}> {
@@ -28,6 +28,7 @@ export class Devices extends React.Component<Props, {}> {
               diagnostics={selectAllDiagnosticDumps(this.props.resources)}
               deviceAccount={this.props.deviceAccount}
               dispatch={this.props.dispatch}
+              alerts={this.props.alerts}
               bot={this.props.bot}
               timeSettings={this.props.timeSettings}
               botToMqttLastSeen={botToMqttLastSeen}

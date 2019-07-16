@@ -66,8 +66,7 @@ export let initialState = (): BotState => ({
     user_env: {},
     process_info: {
       farmwares: {},
-    },
-    alerts: {},
+    }
   },
   dirty: false,
   currentOSVersion: undefined,

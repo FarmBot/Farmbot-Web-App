@@ -51,8 +51,7 @@ export let bot: Everything["bot"] = {
     "user_env": {},
     "process_info": {
       "farmwares": {}
-    },
-    "alerts": {},
+    }
   },
   "dirty": false,
   "currentOSVersion": "3.1.6",

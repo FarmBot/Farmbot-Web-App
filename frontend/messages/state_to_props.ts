@@ -1,14 +1,15 @@
 import { Everything } from "../interfaces";
-import { MessagesProps } from "./interfaces";
+import { MessagesProps, AlertReducerState } from "./interfaces";
 import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
 import {
   selectAllAlerts, maybeGetTimeSettings, findResourceById
 } from "../resources/selectors";
-import { isFwHardwareValue } from "../devices/components/fbos_settings/board_type";
+import {
+  isFwHardwareValue
+} from "../devices/components/firmware_hardware_support";
 import { ResourceIndex, UUID } from "../resources/interfaces";
-import { BotState } from "../devices/interfaces";
 import { Alert } from "farmbot";
 
 export const mapStateToProps = (props: Everything): MessagesProps => {
@@ -20,7 +21,7 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   const findApiAlertById = (id: number): UUID =>
     findResourceById(props.resources.index, "Alert", id);
   return {
-    alerts: getAlerts(props.resources.index, props.bot),
+    alerts: getAllAlerts(props.resources),
     apiFirmwareValue: isFwHardwareValue(apiFirmwareValue)
       ? apiFirmwareValue : undefined,
     timeSettings: maybeGetTimeSettings(props.resources.index),
@@ -29,9 +30,13 @@ export const mapStateToProps = (props: Everything): MessagesProps => {
   };
 };
 
-export const getAlerts =
-  (resourceIndex: ResourceIndex, bot: BotState): Alert[] => {
-    const botAlerts = betterCompact(Object.values(bot.hardware.alerts || {}));
-    const apiAlerts = selectAllAlerts(resourceIndex).map(x => x.body);
-    return botAlerts.concat(apiAlerts);
-  };
+export const getAllAlerts = (resources: Everything["resources"]) => ([
+  ...getApiAlerts(resources.index),
+  ...getLocalAlerts(resources.consumers.alerts),
+]);
+
+const getApiAlerts = (resourceIndex: ResourceIndex): Alert[] =>
+  selectAllAlerts(resourceIndex).map(x => x.body);
+
+const getLocalAlerts = ({ alerts }: AlertReducerState): Alert[] =>
+  betterCompact(Object.values(alerts));

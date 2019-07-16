@@ -2,7 +2,7 @@ import {
   SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay,
   SaveFarmwareEnv, UserEnv
 } from "../../interfaces";
-import { InformationalSettings, TaggedDevice } from "farmbot";
+import { InformationalSettings, TaggedDevice, Alert } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
 
 export interface AutoSyncRowProps {
@@ -30,6 +30,7 @@ export interface CameraSelectionState {
 export interface BoardTypeProps {
   botOnline: boolean;
   bot: BotState;
+  alerts: Alert[];
   dispatch: Function;
   shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;

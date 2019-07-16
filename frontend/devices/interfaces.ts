@@ -10,6 +10,7 @@ import {
   TaggedFarmwareInstallation,
   JobProgress,
   FirmwareHardware,
+  Alert,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -40,6 +41,7 @@ export interface Props {
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
+  alerts: Alert[];
 }
 
 /** Function to save a Farmware env variable to the API. */
@@ -83,6 +85,7 @@ export enum Feature {
   long_scaling_factor = "long_scaling_factor",
   flash_firmware = "flash_firmware",
   express_k10 = "express_k10",
+  none_firmware = "none_firmware",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
@@ -149,6 +152,7 @@ export type UserEnv = Record<string, string | undefined>;
 
 export interface FarmbotOsProps {
   bot: BotState;
+  alerts: Alert[];
   diagnostics: TaggedDiagnosticDump[];
   deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;

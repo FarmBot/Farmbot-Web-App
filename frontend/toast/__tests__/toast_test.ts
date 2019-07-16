@@ -14,6 +14,7 @@ const {
   info,
   fun,
   init,
+  busy,
 }: typeof import("../toast") = jest.requireActual("../toast");
 
 describe("toasts", () => {
@@ -21,7 +22,7 @@ describe("toasts", () => {
     warning("test suite msg 1");
     expect(createToastOnce).toHaveBeenCalledWith("test suite msg 1",
       "Warning",
-      "yellow",
+      "orange",
       console.warn);
   });
 
@@ -43,6 +44,18 @@ describe("toasts", () => {
     info("test suite msg");
     expect(createToast)
       .toHaveBeenCalledWith("test suite msg", "FYI", "blue");
+  });
+
+  it("pops a busy() toast", () => {
+    busy("test suite msg");
+    expect(createToast)
+      .toHaveBeenCalledWith("test suite msg", "Busy", "yellow");
+  });
+
+  it("pops a busy() toast with different title and color", () => {
+    busy("test suite msg", "new title", "purple");
+    expect(createToast)
+      .toHaveBeenCalledWith("test suite msg", "new title", "purple");
   });
 
   it("pops a fun() toast", () => {

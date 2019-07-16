@@ -51,22 +51,31 @@ namespace :api do
   end
 
   def parcel(cmd, opts = " ")
-    intro = ["node_modules/parcel-bundler/bin/cli.js",
-             cmd,
-             DashboardController::PARCEL_ASSET_LIST,
-             "--out-dir",
-             DashboardController::PUBLIC_OUTPUT_DIR,
-             "--public-url",
-             DashboardController::OUTPUT_URL].join(" ")
+    intro = [
+      "NODE_ENV=#{Rails.env}",
+      "node_modules/parcel-bundler/bin/cli.js",
+      cmd,
+      DashboardController::PARCEL_ASSET_LIST,
+      "--out-dir",
+      DashboardController::PUBLIC_OUTPUT_DIR,
+      "--public-url",
+      DashboardController::OUTPUT_URL,
+    ].join(" ")
     sh [intro, opts].join(" ")
+  end
+
+  def clean_assets
+    # Clear out cache and previous builds on initial load.
+    sh [
+      "rm -rf",
+      DashboardController::CACHE_DIR,
+      DashboardController::PUBLIC_OUTPUT_DIR,
+    ].join(" ") unless ENV["NO_CLEAN"]
   end
 
   desc "Serve javascript assets (via Parcel bundler)."
   task serve_assets: :environment do
-    # Clear out cache and previous builds on initial load.
-    sh ["rm -rf",
-        DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR].join(" ") unless ENV["NO_CLEAN"]
+    clean_assets
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 

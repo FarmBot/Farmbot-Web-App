@@ -1,12 +1,14 @@
 import * as React from "react";
 import { Popover, Position } from "@blueprintjs/core";
-import { FIRMWARE_CHOICES_DDI, isFwHardwareValue, boardType } from "./board_type";
+import { FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
 import { flashFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 import { BotState, Feature, ShouldDisplay } from "../../interfaces";
 import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
 import { trim } from "../../../util";
+import { Alert } from "farmbot";
+import { isFwHardwareValue, boardType } from "../firmware_hardware_support";
 
 export interface FirmwareHardwareStatusIconProps {
   firmwareHardware: string | undefined;
@@ -30,7 +32,7 @@ const lookup = (value: string | undefined) =>
 
 export interface FirmwareHardwareStatusDetailsProps {
   botOnline: boolean;
-  bot: BotState;
+  alerts: Alert[];
   apiFirmwareValue: string | undefined;
   botFirmwareValue: string | undefined;
   mcuFirmwareValue: string | undefined;
@@ -87,7 +89,7 @@ export const FirmwareHardwareStatusDetails =
             botOnline={props.botOnline} />
         </div>}
       <FirmwareAlerts
-        bot={props.bot}
+        alerts={props.alerts}
         dispatch={props.dispatch}
         apiFirmwareValue={props.apiFirmwareValue}
         timeSettings={props.timeSettings} />
@@ -96,6 +98,7 @@ export const FirmwareHardwareStatusDetails =
 
 export interface FirmwareHardwareStatusProps {
   apiFirmwareValue: string | undefined;
+  alerts: Alert[];
   bot: BotState;
   botOnline: boolean;
   timeSettings: TimeSettings;
@@ -113,7 +116,7 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
       firmwareHardware={firmware_hardware}
       status={status} />
     <FirmwareHardwareStatusDetails
-      bot={props.bot}
+      alerts={props.alerts}
       botOnline={props.botOnline}
       apiFirmwareValue={props.apiFirmwareValue}
       botFirmwareValue={firmware_hardware}

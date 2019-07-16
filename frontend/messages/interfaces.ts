@@ -1,6 +1,5 @@
-import { FirmwareHardware, Alert } from "farmbot";
+import { FirmwareHardware, Alert, Dictionary } from "farmbot";
 import { TimeSettings } from "../interfaces";
-import { BotState } from "../devices/interfaces";
 import { UUID } from "../resources/interfaces";
 
 export interface MessagesProps {
@@ -26,7 +25,7 @@ export interface ProblemTag {
 }
 
 export interface FirmwareAlertsProps {
-  bot: BotState;
+  alerts: Alert[];
   apiFirmwareValue: string | undefined;
   timeSettings: TimeSettings;
   dispatch: Function;
@@ -90,7 +89,11 @@ export interface Bulletin {
   title: string | undefined;
 }
 
-export interface BulletinAlertState {
+export interface BulletinAlertComponentState {
   bulletin: Bulletin | undefined;
   no_content: boolean;
+}
+
+export interface AlertReducerState {
+  alerts: Dictionary<Alert | undefined>;
 }

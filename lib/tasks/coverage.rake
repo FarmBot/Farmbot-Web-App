@@ -1,11 +1,11 @@
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
-THRESHOLD      = 0.001
-REPO_URL       = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
+THRESHOLD = 0.001
+REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
-PULL_REQUEST   = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
+PULL_REQUEST = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
-CSS_SELECTOR   = ".fraction"
+CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
@@ -44,8 +44,8 @@ end
 # Gather relevant coverage data.
 def relevant_data(build)
   { branch: build["branch"],
-    commit: build["commit_sha"],
-    percent: build["covered_percent"]}
+   commit: build["commit_sha"],
+   percent: build["covered_percent"] }
 end
 
 # Fetch relevant coverage build data from commit.
@@ -86,10 +86,10 @@ def fetch_build_data()
   build_data = fetch_builds_for_page(1)
   build_data.push(*fetch_builds_for_page(2))
   clean_build_data = build_data
-    .reject{ |build| build["covered_percent"].nil? }
-    .reject{ |build| build["branch"].include? "/" }
+    .reject { |build| build["covered_percent"].nil? }
+    .reject { |build| build["branch"].include? "/" }
   puts "Using data from #{clean_build_data.length} recent coverage builds."
-  clean_build_data.map{ |build| relevant_data(build)}
+  clean_build_data.map { |build| relevant_data(build) }
 end
 
 # Print history and return the most recent match for the provided branch.
@@ -97,15 +97,16 @@ def latest_build_data(build_history, branch)
   if branch == "*"
     branch_builds = build_history
   else
-    branch_builds = build_history.select{ |build| build[:branch] == branch }
+    branch_builds = build_history.select { |build| build[:branch] == branch }
   end
   if branch_builds.length > 0
     puts "\nCoverage history (newest to oldest):"
-    branch_builds.map{ |build|
-      puts "#{build[:branch]}: #{build[:percent].round(3)}%"}
-      branch_builds[0]
+    branch_builds.map { |build|
+      puts "#{build[:branch]}: #{build[:percent].round(3)}%"
+    }
+    branch_builds[0]
   else
-    {branch: branch, commit: nil, percent: nil}
+    { branch: branch, commit: nil, percent: nil }
   end
 end
 
@@ -121,9 +122,9 @@ def print_summary_text(build_percent, remote, pull_data)
   diff = (build_percent - remote[:percent]).round(3)
   direction = diff > 0 ? "increased" : "decreased"
   description = diff == 0 ? "remained the same at" : "#{direction} (#{diff}%) to"
-  puts "Coverage #{description} #{build_percent.round(3)}%"\
-  " when pulling #{branch_info_string?("head", pull_data)}"\
-  " into #{branch_info_string?("base", pull_data) || remote[:branch]}."
+  puts "Coverage #{description} #{build_percent.round(3)}%" \
+       " when pulling #{branch_info_string?("head", pull_data)}" \
+       " into #{branch_info_string?("base", pull_data) || remote[:branch]}."
 end
 
 def to_percent(pair)
@@ -131,13 +132,13 @@ def to_percent(pair)
 end
 
 namespace :coverage do
-  desc "Verify code test coverage changes remain within acceptable thresholds."\
-       "Compares current test coverage percentage from Jest output to previous"\
-       "values from the base branch of a PR (or the build branch if not a PR)."\
-       "This task is used during ci to fail PR builds if test coverage"\
-       "decreases significantly and can also be run locally after running"\
-       "`jest --coverage` or `npm test-slow`."\
-       "The Coveralls stats reporter used to perform this check, but didn't"\
+  desc "Verify code test coverage changes remain within acceptable thresholds." \
+       "Compares current test coverage percentage from Jest output to previous" \
+       "values from the base branch of a PR (or the build branch if not a PR)." \
+       "This task is used during ci to fail PR builds if test coverage" \
+       "decreases significantly and can also be run locally after running" \
+       "`jest --coverage` or `npm test-slow`." \
+       "The Coveralls stats reporter used to perform this check, but didn't" \
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
     # Fetch current build coverage data from the HTML summary.
@@ -155,8 +156,8 @@ namespace :coverage do
     puts "Lines:      #{to_percent(lines)}%"
 
     # Calculate an aggregate coverage percentage for the current build.
-    covered       = lines.head + branches.head
-    total         = lines.tail + branches.tail
+    covered = lines.head + branches.head
+    total = lines.tail + branches.tail
     build_percent = (covered / total) * 100
     puts "Aggregate:  #{build_percent.round(4)}%"
     puts
@@ -196,14 +197,15 @@ namespace :coverage do
     if remote[:percent].nil?
       puts "Error getting coveralls data."
       puts "Using 100 instead of nil for remote coverage value."
-      remote = {branch: "N/A", commit: "", percent: 100}
+      remote = { branch: "N/A", commit: "", percent: 100 }
     end
 
     # Adjust remote build data values for printing.
     r = {
-      branch: (remote[:branch] + ' ' * 8)[0,8],
+      branch: (remote[:branch] + " " * 8)[0, 8],
       percent: remote[:percent].round(8),
-      commit: remote[:commit][0,8]}
+      commit: remote[:commit][0, 8],
+    }
 
     # Calculate coverage difference between the current and previous build.
     diff = (build_percent - remote[:percent])
@@ -212,7 +214,7 @@ namespace :coverage do
     puts
     puts "=" * 37
     puts "COVERAGE RESULTS"
-    puts "This build:     #{build_percent.round(8)}% #{CURRENT_COMMIT[0,8]}"
+    puts "This build:     #{build_percent.round(8)}% #{CURRENT_COMMIT[0, 8]}"
     puts "#{r[:branch]} build: #{r[:percent]}% #{r[:commit]}"
     puts "=" * 37
     puts "Difference:     #{diff.round(8)}%"
@@ -222,6 +224,5 @@ namespace :coverage do
     print_summary_text(build_percent, remote, pull_request_data)
 
     exit (pass || exit_0?) ? 0 : 1
-
   end
 end
