@@ -2,10 +2,10 @@ import { createToast, createToastOnce } from "./toast_internal_support";
 import { t } from "../i18next_wrapper";
 
 /**
- * Yellow message with "Warning" as the default title.
+ * Orange message with "Warning" as the default title.
  */
 export const warning =
-  (message: string, title = t("Warning"), color = "yellow") => {
+  (message: string, title = t("Warning"), color = "orange") => {
     createToastOnce(message, title, color, console.warn);
   };
 
@@ -24,14 +24,21 @@ export const success =
     createToast(message, title, color);
 
 /**
- *  Red message with "FYI" as the default title.
+ *  Blue message with "FYI" as the default title.
  */
 export const info =
   (message: string, title = t("FYI"), color = "blue") =>
     createToast(message, title, color);
 
 /**
- *  Blue message with "Did you know?" as the default title.
+ *  Yellow message with "Busy" as the default title.
+ */
+export const busy =
+  (message: string, title = t("Busy"), color = "yellow") =>
+    createToast(message, title, color);
+
+/**
+ *  Dark blue message with "Did you know?" as the default title.
  */
 export const fun =
   (message: string, title = t("Did you know?"), color = "dark-blue") =>
