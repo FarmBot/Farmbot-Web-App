@@ -33,8 +33,7 @@ export const FEATURE_MIN_VERSIONS_URL =
   "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
   "FEATURE_MIN_VERSIONS.json";
 // Already filtering messages in FarmBot OS and the API- this is just for
-// an additional layer of safety. If sensitive data ever hits a client, it will
-// be reported to Rollbar for investigation.
+// an additional layer of safety.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 
 export function isLog(x: unknown): x is Log {
