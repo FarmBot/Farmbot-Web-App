@@ -352,7 +352,7 @@ describe("<FarmEventForm/>", () => {
     const i = instance(p);
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
     expect(warning).toHaveBeenCalledWith(expect.stringContaining(
-      "Nothing to run."), "Warning");
+      "Nothing to run."));
   });
 
   it("allows start time: edit with unsupported OS", () => {
