@@ -23,7 +23,7 @@ const toggleAlert = (s: State, body: TaggedFbosConfig["body"]) => {
     s.alerts[FIRMWARE_MISSING] = {
       created_at: 1,
       problem_tag: FIRMWARE_MISSING,
-      priority: 99999,
+      priority: 0,
       slug: "firmware-missing",
     };
   }
