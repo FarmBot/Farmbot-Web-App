@@ -9,7 +9,7 @@ module Api
       attr_reader :cache
 
       CACHE_KEY_TPL = "mqtt_limiter:%s"
-      TTL = 60 * 10 # Ten Minutes
+      TTL = 60 * 5 # Ten Minutes
       PER_DEVICE_MAX = 10
       MAX_GUEST_COUNT = 256
       WARNING = "'%s' was rate limited."
