@@ -264,8 +264,11 @@ describe("isLog()", function () {
 
   it("filters sensitive logs", () => {
     const log = { message: "NERVESPSKWPASSWORD" };
+    console.error = jest.fn();
     const result = actions.isLog(log);
     expect(result).toBe(false);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("Refusing to display log"));
   });
 });
 
