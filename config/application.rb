@@ -12,6 +12,7 @@ module FarmBot
     Delayed::Worker.max_attempts = 4
     REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
     REDIS_URL = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
+    config.active_storage.service = :local
     config.cache_store = :redis_cache_store, { url: REDIS_URL }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql

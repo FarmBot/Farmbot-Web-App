@@ -43,11 +43,12 @@ class Image < ApplicationRecord
   # validates_attachment_content_type :attachment,
   #   content_type: CONTENT_TYPES
   # ========= /DEPRECATED PAPERCLIP STUFF ========
+  has_one_attached :attachment
 
   def set_attachment_by_url(url)
     # File
     # URI::HTTPS
-    self.attachment = open(url)
+    attachment.attach(io: open(url), filename: "image_#{self.id}")
     self.attachment_processed_at = Time.now
     self
   end
@@ -66,6 +67,15 @@ class Image < ApplicationRecord
   end
 
   def attachment_url(size = "x640")
+    # Detect legacy attachments by way of
+    # superceded PaperClip-related field.
+    # If it has an `attachment_file_size`,
+    # it was made with paperclip.
+    if !attachment_file_size
+      return ROOT_PATH +
+               Rails.application.routes.url_helpers.rails_blob_path(attachment)
+    end
+
     if attachment_processed_at
       url = IMAGE_URL_TPL % {
         chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
@@ -77,13 +87,5 @@ class Image < ApplicationRecord
     else
       return DEFAULT_URL
     end
-  end
-
-  def attachment=(_)
-    puts "FIXME: THIS IS DEPRECATED"
-  end
-
-  def attachment
-    raise "Deprecated"
   end
 end
