@@ -71,7 +71,7 @@ class Image < ApplicationRecord
     # superceded PaperClip-related field.
     # If it has an `attachment_file_size`,
     # it was made with paperclip.
-    if !attachment_file_size
+    if attachment && attachment.attached?
       return ROOT_PATH +
                Rails.application.routes.url_helpers.rails_blob_path(attachment)
     end
@@ -84,8 +84,8 @@ class Image < ApplicationRecord
         timestamp: attachment_updated_at.to_i,
       }
       return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
-    else
-      return DEFAULT_URL
     end
+
+    return DEFAULT_URL
   end
 end

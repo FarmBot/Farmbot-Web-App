@@ -13,7 +13,6 @@ package-lock.json
 public/assets/
 public/direct_upload/temp/*.jpg
 public/dist
-public/system
 tmp
 api_docs.md
 erd_diagram.png
@@ -22,8 +21,12 @@ erd.pdf
 scratchpad.rb
 /config/master.key
 config/credentials.yml.enc
+# ActiveStorage blobs:
+storage/
+config/storage.yml
 
 # === Legacy
+public/system
 config/application.yml
 coverage
 mqtt/
