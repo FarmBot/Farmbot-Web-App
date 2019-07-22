@@ -26,17 +26,20 @@ class Image < ApplicationRecord
   CONFIG = { default_url: DEFAULT_URL,
             styles: RMAGICK_STYLES,
             size: { in: 0..MAX_IMAGE_SIZE } }
-  ROOT_PATH = ENV.key?("GCS_BUCKET") ? Image::CONFIG.fetch(:fog_host) : "/system"
-  IMAGE_URL_TPL = ROOT_PATH + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
-
   BUCKET = ENV["GCS_BUCKET"]
+
+  ROOT_PATH = BUCKET ?
+    "https://#{BUCKET}.storage.googleapis.com" : "/system"
+  IMAGE_URL_TPL =
+    ROOT_PATH + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
+
   CONTENT_TYPES = ["image/jpg", "image/jpeg", "image/png", "image/gif"]
   GCS_ACCESS_KEY_ID = ENV.fetch("GCS_KEY") { puts "Not using Google Cloud" }
   GCS_HOST = "http://#{BUCKET}.storage.googleapis.com"
   GCS_SECRET_ACCESS_KEY = ENV.fetch("GCS_ID") { puts "Not using Google Cloud" }
   # Worst case scenario for 1280x1280 BMP.
   GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
-  GCS_BUCKET_URL = "http://#{GCS_BUCKET_NAME}.storage.googleapis.com"
+  GCS_BUCKET_URL = "https://#{GCS_BUCKET_NAME}.storage.googleapis.com"
 
   # ========= DEPRECATED PAPERCLIP STUFF =========
   # has_attached_file :attachment, CONFIG
