@@ -38,21 +38,11 @@ class Image < ApplicationRecord
   GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
   GCS_BUCKET_URL = "http://#{GCS_BUCKET_NAME}.storage.googleapis.com"
 
-  CONFIG.merge!({
-    storage: :fog,
-    fog_host: GCS_BUCKET_URL,
-    fog_directory: GCS_BUCKET_NAME,
-    fog_credentials: {
-      provider: "Google",
-      google_storage_access_key_id: ENV.fetch("GCS_KEY"),
-      google_storage_secret_access_key: ENV.fetch("GCS_ID"),
-    },
-  }) if GCS_BUCKET_NAME
-
-  has_attached_file :attachment, CONFIG
-
-  validates_attachment_content_type :attachment,
-    content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+  # ========= DEPRECATED PAPERCLIP STUFF =========
+  # has_attached_file :attachment, CONFIG
+  # validates_attachment_content_type :attachment,
+  #   content_type: CONTENT_TYPES
+  # ========= /DEPRECATED PAPERCLIP STUFF ========
 
   def set_attachment_by_url(url)
     # File
@@ -87,5 +77,13 @@ class Image < ApplicationRecord
     else
       return DEFAULT_URL
     end
+  end
+
+  def attachment=(_)
+    puts "FIXME: THIS IS DEPRECATED"
+  end
+
+  def attachment
+    raise "Deprecated"
   end
 end
