@@ -12,7 +12,7 @@ module FarmBot
     Delayed::Worker.max_attempts = 4
     REDIS_ENV_KEY = ENV.fetch("WHERE_IS_REDIS_URL", "REDIS_URL")
     REDIS_URL = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
-    if %w[ GCS_KEYFILE GCS_PROJECT GCS_BUCKET ].all? { |s| ENV.key? s }
+    if %w[ GOOGLE_CLOUD_KEYFILE_JSON GCS_PROJECT GCS_BUCKET ].all? { |s| ENV.key? s }
       puts "Storing to Google Cloud Storage"
       config.active_storage.service = :google
     else
