@@ -1,3 +1,6 @@
+require "google/cloud/storage"
+require "google/cloud/storage/file"
+
 module Images
   class GeneratePolicy < Mutations::Command
     BUCKET = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
@@ -5,16 +8,37 @@ module Images
     SECRET = ENV.fetch("GCS_ID") { "YOU_MUST_CONFIG_GCS_ID" }
 
     def execute
+      config_string = ERB.new(File.read("config/storage.yml")).result(binding)
+      config = YAML.load(config_string).fetch("google")
+      stoarge = Google::Cloud::Storage.new
+      bucket_name = ENV.fetch("GCS_BUCKET")
+      bucket = stoarge.bucket(bucket_name)
+
+      file_path = random_filename
+      signer =
+        Google::Cloud::Storage::File::SignerV2.from_bucket bucket, file_path
+
+      policy1 = { expiration: Time.now.tomorrow.utc.midnight.xmlschema,
+                 conditions: [
+        { bucket: bucket_name },
+        { key: file_path },
+        { acl: "public-read" },
+        [:eq, "$Content-Type", "image/jpeg"],
+        ["content-length-range", 1, 7.megabytes],
+      ] }
+
+      signed_post1 = bucket.post_object file_path, policy: policy1
+
       {
         verb: "POST",
-        url: "//storage.googleapis.com/#{BUCKET}/",
+        url: "//storage.googleapis.com/#{bucket_name}/",
         form_data: {
           "key" => random_filename,
           "acl" => "public-read",
           "Content-Type" => "image/jpeg",
-          "policy" => policy,
-          "signature" => policy_signature,
-          "GoogleAccessId" => KEY,
+          "policy" => signed_post1.fields.fetch(:policy),
+          "signature" => signed_post1.fields.fetch(:signature),
+          "GoogleAccessId" => signed_post1.fields.fetch(:GoogleAccessId),
           "file" => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE",
         },
         instructions: "Send a 'from-data' request to the URL provided." \
