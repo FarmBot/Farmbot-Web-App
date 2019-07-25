@@ -39,7 +39,6 @@ class Image < ApplicationRecord
   GCS_SECRET_ACCESS_KEY = ENV.fetch("GCS_ID") { puts "Not using Google Cloud" }
   # Worst case scenario for 1280x1280 BMP.
   GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
-  GCS_BUCKET_URL = "https://#{GCS_BUCKET_NAME}.storage.googleapis.com"
 
   # ========= DEPRECATED PAPERCLIP STUFF =========
   # has_attached_file :attachment, CONFIG
@@ -78,11 +77,20 @@ class Image < ApplicationRecord
   end
 
   def regular_url
-    ROOT_PATH +
-      Rails.application.routes.url_helpers.rails_blob_path(attachment)
+    if BUCKET
+      # Not sure why. TODO: Investigate why Rails URL helpers don't work here.
+      "https://storage.cloud.google.com/#{BUCKET}/#{attachment.key}"
+    else
+      Rails
+        .application
+        .routes
+        .url_helpers
+        .rails_blob_url(x.attachment)
+    end
   end
 
   def legacy_url(size)
+    puts "Legacy URL"
     url = IMAGE_URL_TPL % {
       chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
       filename: attachment_file_name,
