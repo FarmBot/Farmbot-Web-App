@@ -23,7 +23,6 @@ scratchpad.rb
 config/credentials.yml.enc
 # ActiveStorage blobs:
 storage/
-config/storage.yml
 
 # === Legacy
 public/system
