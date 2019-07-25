@@ -13,4 +13,16 @@ describe Image do
     expect(image.attachment.attached?).to be true
     expect(image.attachment_processed_at).to be_truthy
   end
+
+  it "generates legacy URLs for images generated via (deprecated) PaperClip" do
+    now = Time.now
+    i = Image.new
+    i.id = 123
+    i.attachment_file_name = "foo.jpg"
+    i.attachment_updated_at = now
+    url = i.legacy_url("x640")
+
+    expect(url).to include("/system/images/attachments/000/000/123/x640/foo.jpg?")
+    expect(url).to include(now.to_i.to_s)
+  end
 end

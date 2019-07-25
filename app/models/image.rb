@@ -69,25 +69,37 @@ class Image < ApplicationRecord
     image.destroy! if image
   end
 
+  def legacy_image?
+    !!self.attachment_file_size # This is a now-unused legacy field.
+  end
+
+  def regular_image?
+    attachment && attachment.attached?
+  end
+
+  def regular_url
+    ROOT_PATH +
+      Rails.application.routes.url_helpers.rails_blob_path(attachment)
+  end
+
+  def legacy_url(size)
+    url = IMAGE_URL_TPL % {
+      chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
+      filename: attachment_file_name,
+      size: size,
+      timestamp: attachment_updated_at.to_i,
+    }
+    return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
+  end
+
   def attachment_url(size = "x640")
     # Detect legacy attachments by way of
     # superceded PaperClip-related field.
     # If it has an `attachment_file_size`,
     # it was made with paperclip.
-    if attachment && attachment.attached?
-      return ROOT_PATH +
-               Rails.application.routes.url_helpers.rails_blob_path(attachment)
-    end
+    return regular_url if regular_image?
 
-    if attachment_processed_at
-      url = IMAGE_URL_TPL % {
-        chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
-        filename: attachment_file_name,
-        size: size,
-        timestamp: attachment_updated_at.to_i,
-      }
-      return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
-    end
+    return legacy_url(size) if legacy_image?
 
     return DEFAULT_URL
   end
