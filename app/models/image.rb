@@ -85,12 +85,11 @@ class Image < ApplicationRecord
         .application
         .routes
         .url_helpers
-        .rails_blob_url(x.attachment)
+        .rails_blob_url(attachment)
     end
   end
 
   def legacy_url(size)
-    puts "Legacy URL"
     url = IMAGE_URL_TPL % {
       chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
       filename: attachment_file_name,
