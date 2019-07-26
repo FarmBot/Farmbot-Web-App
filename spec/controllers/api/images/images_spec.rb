@@ -1,8 +1,9 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
+
   it "Creates a policy object" do
     sign_in user
     b4 = Api::ImagesController.store_locally
@@ -15,8 +16,7 @@ describe Api::ImagesController do
     expect(json[:verb]).to eq("POST")
     expect(json[:url]).to include("googleapis")
     expect(json[:form_data].keys.sort).to include(:signature)
-    expect(json[:instructions])
-      .to include("POST the resulting URL as an 'attachment_url'")
+    expect(json[:instructions]).to include("POST the resulting URL as an 'attachment_url'")
   end
 
   it "Creates a (stub) policy object" do
@@ -29,13 +29,13 @@ describe Api::ImagesController do
     expect(json).to be_kind_of(Hash)
     expect(json[:verb]).to eq("POST")
     expect(json[:url]).to include($API_URL)
-    [ :policy, :signature, :GoogleAccessId ]
+    [:policy, :signature, :GoogleAccessId]
       .map { |key| expect(json.dig(:form_data, key)).to eq("N/A") }
     expect(json[:form_data].keys.sort).to include(:signature)
   end
 
-  describe '#index' do
-    it 'shows only the max images allowed' do
+  describe "#index" do
+    it "shows only the max images allowed" do
       sign_in user
       device = user.device
       # Using the *real* value (10) was super slow (~30 seconds)
@@ -48,8 +48,8 @@ describe Api::ImagesController do
     end
   end
 
-  describe '#show' do
-    it 'shows image meta data' do
+  describe "#show" do
+    it "shows image meta data" do
       sign_in user
       image = FactoryBot.create(:image, device: user.device)
       get :show, params: { id: image.id }
@@ -62,13 +62,13 @@ describe Api::ImagesController do
   end
 
   describe "#create" do
-    it 'creates one image', :slow do
+    it "creates one image", :slow do
       sign_in user
       before_count = Image.count
       post :create,
            body: { attachment_url: FAKE_ATTACHMENT_URL,
                    meta: { x: 1, z: 3 } }.to_json,
-           params: {format: :json}
+           params: { format: :json }
       expect(response.status).to eq(200)
       expect(Image.count).to be > before_count
       expect(json[:device_id]).to eq(user.device.id)
@@ -79,8 +79,8 @@ describe Api::ImagesController do
       expect(json.dig :meta, :z).to eq(3)
     end
 
-    describe '#delete' do
-      it 'deletes an image' do
+    describe "#delete" do
+      it "deletes an image" do
         sign_in user
         image = FactoryBot.create(:image, device: user.device)
         before_count = Image.count

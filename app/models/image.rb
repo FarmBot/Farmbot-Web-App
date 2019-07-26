@@ -26,38 +26,31 @@ class Image < ApplicationRecord
   CONFIG = { default_url: DEFAULT_URL,
             styles: RMAGICK_STYLES,
             size: { in: 0..MAX_IMAGE_SIZE } }
-  ROOT_PATH = ENV.key?("GCS_BUCKET") ? Image::CONFIG.fetch(:fog_host) : "/system"
-  IMAGE_URL_TPL = ROOT_PATH + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
-
   BUCKET = ENV["GCS_BUCKET"]
+
+  ROOT_PATH = BUCKET ?
+    "https://#{BUCKET}.storage.googleapis.com" : "/system"
+  IMAGE_URL_TPL =
+    ROOT_PATH + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
+
   CONTENT_TYPES = ["image/jpg", "image/jpeg", "image/png", "image/gif"]
   GCS_ACCESS_KEY_ID = ENV.fetch("GCS_KEY") { puts "Not using Google Cloud" }
   GCS_HOST = "http://#{BUCKET}.storage.googleapis.com"
   GCS_SECRET_ACCESS_KEY = ENV.fetch("GCS_ID") { puts "Not using Google Cloud" }
   # Worst case scenario for 1280x1280 BMP.
   GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
-  GCS_BUCKET_URL = "http://#{GCS_BUCKET_NAME}.storage.googleapis.com"
 
-  CONFIG.merge!({
-    storage: :fog,
-    fog_host: GCS_BUCKET_URL,
-    fog_directory: GCS_BUCKET_NAME,
-    fog_credentials: {
-      provider: "Google",
-      google_storage_access_key_id: ENV.fetch("GCS_KEY"),
-      google_storage_secret_access_key: ENV.fetch("GCS_ID"),
-    },
-  }) if GCS_BUCKET_NAME
-
-  has_attached_file :attachment, CONFIG
-
-  validates_attachment_content_type :attachment,
-    content_type: ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+  # ========= DEPRECATED PAPERCLIP STUFF =========
+  # has_attached_file :attachment, CONFIG
+  # validates_attachment_content_type :attachment,
+  #   content_type: CONTENT_TYPES
+  # ========= /DEPRECATED PAPERCLIP STUFF ========
+  has_one_attached :attachment
 
   def set_attachment_by_url(url)
     # File
     # URI::HTTPS
-    self.attachment = open(url)
+    attachment.attach(io: open(url), filename: "image_#{self.id}")
     self.attachment_processed_at = Time.now
     self
   end
@@ -75,17 +68,46 @@ class Image < ApplicationRecord
     image.destroy! if image
   end
 
-  def attachment_url(size = "x640")
-    if attachment_processed_at
-      url = IMAGE_URL_TPL % {
-        chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
-        filename: attachment_file_name,
-        size: size,
-        timestamp: attachment_updated_at.to_i,
-      }
-      return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
+  def legacy_image?
+    !!self.attachment_file_size # This is a now-unused legacy field.
+  end
+
+  def regular_image?
+    attachment && attachment.attached?
+  end
+
+  def regular_url
+    if BUCKET
+      # Not sure why. TODO: Investigate why Rails URL helpers don't work here.
+      "https://storage.cloud.google.com/#{BUCKET}/#{attachment.key}"
     else
-      return DEFAULT_URL
+      Rails
+        .application
+        .routes
+        .url_helpers
+        .rails_blob_url(attachment)
     end
+  end
+
+  def legacy_url(size)
+    url = IMAGE_URL_TPL % {
+      chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
+      filename: attachment_file_name,
+      size: size,
+      timestamp: attachment_updated_at.to_i,
+    }
+    return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
+  end
+
+  def attachment_url(size = "x640")
+    # Detect legacy attachments by way of
+    # superceded PaperClip-related field.
+    # If it has an `attachment_file_size`,
+    # it was made with paperclip.
+    return regular_url if regular_image?
+
+    return legacy_url(size) if legacy_image?
+
+    return DEFAULT_URL
   end
 end
