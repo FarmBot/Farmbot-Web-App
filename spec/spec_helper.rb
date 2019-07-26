@@ -117,8 +117,14 @@ end
 # Reassign constants without getting a bunch of warnings to STDOUT.
 # This is just for testing purposes, so NBD.
 def const_reassign(target, const, value)
+  b4 = target.const_get(const)
   target.send(:remove_const, const)
   target.const_set(const, value)
+  if block_given?
+    yield
+    target.send(:remove_const, const)
+    target.const_set(const, b4)
+  end
 end
 
 class StubResp
