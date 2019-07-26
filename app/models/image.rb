@@ -79,7 +79,7 @@ class Image < ApplicationRecord
   def regular_url
     if BUCKET
       # Not sure why. TODO: Investigate why Rails URL helpers don't work here.
-      "https://storage.cloud.google.com/#{BUCKET}/#{attachment.key}"
+      "https://storage.googleapis.com/#{BUCKET}/#{attachment.key}"
     else
       Rails
         .application
