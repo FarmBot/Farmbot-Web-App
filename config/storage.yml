@@ -1,3 +1,4 @@
+# Self-hosters, CI servers, etc:
 local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
