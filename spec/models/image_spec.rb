@@ -24,4 +24,13 @@ describe Image do
     expect(url).to include("/images/attachments/000/000/123/x640/foo.jpg?")
     expect(url).to include(now.to_i.to_s)
   end
+
+  it "generates a URL when BUCKET is set" do
+    const_reassign(Image, :BUCKET, "foo") do
+      i = Image.new
+      expect(i).to receive(:attachment).and_return(Struct.new(:key).new("bar"))
+      url = i.regular_url
+      expect(url).to eq("https://storage.cloud.google.com/foo/bar")
+    end
+  end
 end
