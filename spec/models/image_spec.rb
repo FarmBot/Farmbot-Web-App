@@ -30,7 +30,7 @@ describe Image do
       i = Image.new
       expect(i).to receive(:attachment).and_return(Struct.new(:key).new("bar"))
       url = i.regular_url
-      expect(url).to eq("https://storage.cloud.google.com/foo/bar")
+      expect(url).to eq("https://storage.googleapis.com/foo/bar")
     end
   end
 end
