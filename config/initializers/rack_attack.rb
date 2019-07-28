@@ -14,7 +14,7 @@ class Rack::Attack
     req.ip if req.path.downcase == "/demo"
   end
 
-  throttle("password_resets/ip", limit: 3, period: 1.minutes) do |req|
+  throttle("password_resets/ip", limit: 3, period: 1.hour) do |req|
     req.ip if req.path.downcase == "api/password_resets"
   end
 end
