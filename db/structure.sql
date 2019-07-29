@@ -1663,7 +1663,8 @@ CREATE TABLE public.web_app_configs (
     hide_sensors boolean DEFAULT false,
     confirm_plant_deletion boolean DEFAULT true,
     discard_unsaved_sequences boolean DEFAULT false,
-    confirm_sequence_deletion boolean DEFAULT true
+    confirm_sequence_deletion boolean DEFAULT true,
+    user_interface_read_only_mode boolean DEFAULT false
 );
 
 
@@ -3149,6 +3150,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190701155706'),
 ('20190709194037'),
 ('20190715214412'),
-('20190722160305');
+('20190722160305'),
+('20190729134954');
 
 

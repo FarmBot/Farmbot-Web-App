@@ -538,6 +538,10 @@ export namespace Content {
   export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
     trim(`Confirm when unlocking FarmBot after an emergency stop.`);
 
+  export const USER_INTERFACE_READ_ONLY_MODE =
+    trim(`Disallow account data changes. This does
+    not prevent Farmwares or FarmBot OS from changing settings.`);
+
   export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
     trim(`Warning! When disabled, clicking the UNLOCK button will immediately
     unlock FarmBot instead of confirming that it is safe to do so.

@@ -249,3 +249,14 @@ export function getUserAccountSettings(index: ResourceIndex): TaggedUser {
 export function all(index: ResourceIndex) {
   return betterCompact(Object.keys(index.all).map(uuid => index.references[uuid]));
 }
+
+/** Returns `true` if the user is allowed to modify account data.
+ * This is a helper function of the "readonly" account lock. */
+export function appIsReadonly(index: ResourceIndex) {
+  const conf = getWebAppConfig(index);
+  if (conf) {
+    return conf.body.user_interface_read_only_mode;
+  } else {
+    return true; // Don't allow data updates until config is found
+  }
+}
