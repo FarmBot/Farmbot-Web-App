@@ -1029,6 +1029,14 @@ ul {
     line-height: 1.75rem;
     margin-bottom: 1rem;
   }
+  p {
+    display: block;
+    color: $dark_gray;
+    text-overflow: inherit;
+    overflow: inherit;
+    width: inherit;
+    white-space: inherit;
+  }
 }
 
 .tools-widget,
