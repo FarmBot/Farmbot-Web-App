@@ -79,7 +79,8 @@ export let initialState = (): BotState => ({
   }
 });
 
-export let botReducer = generateReducer<BotState>(initialState(), afterEach)
+export let botReducer = generateReducer<BotState>(initialState())
+  .afterEach(afterEach)
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
     s.hardware.informational_settings.sync_status = maybeNegateStatus({

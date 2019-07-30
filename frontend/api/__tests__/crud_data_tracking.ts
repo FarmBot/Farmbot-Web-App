@@ -1,6 +1,7 @@
 jest.mock("../maybe_start_tracking", () => {
   return { maybeStartTracking: jest.fn() };
 });
+jest.mock("../../read_only_mode", () => ({ appIsReadonly: jest.fn() }));
 
 const mockBody: Partial<TaggedUser["body"]> = { id: 23 };
 jest.mock("axios", () => {

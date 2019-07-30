@@ -1,7 +1,17 @@
-const mockResource: { kind: string, body: { id: number | undefined } }
-  = { kind: "Regimen", body: { id: 1 } };
+interface MockRespone {
+  kind: string;
+  body: {
+    id: number | undefined;
+  }
+}
+
+const mockResource: MockRespone = { kind: "Regimen", body: { id: 1 } };
+
+let mockDelete: Promise<{} | void> = Promise.resolve({});
+
 jest.mock("../../resources/reducer_support", () => ({
-  findByUuid: () => (mockResource)
+  findByUuid: () => (mockResource),
+  afterEach: (s: {}) => s
 }));
 
 jest.mock("../../resources/actions", () => ({
@@ -13,10 +23,11 @@ jest.mock("../maybe_start_tracking", () => ({
   maybeStartTracking: jest.fn()
 }));
 
-let mockDelete: Promise<{} | void> = Promise.resolve({});
 jest.mock("axios", () => ({
   delete: jest.fn(() => mockDelete)
 }));
+
+jest.mock("../../read_only_mode", () => ({ appIsReadonly: jest.fn() }));
 
 import { destroy, destroyAll } from "../crud";
 import { API } from "../api";
