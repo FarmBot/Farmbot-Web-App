@@ -19,18 +19,7 @@ import { connectivityData } from "../devices/connectivity/generate_data";
 import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
-
-const ReadOnlyIcon = (p: { locked: boolean }) => {
-  if (p.locked) {
-    return <div className="fa-stack fa-lg">
-      <i className="fa fa-pencil fa-stack-1x"></i>
-      <i className="fa fa-ban fa-stack-2x fa-rotate-90 text-danger"></i>
-    </div>;
-
-  } else {
-    return <div />;
-  }
-};
+import { ReadOnlyIcon } from "../read_only_mode";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 

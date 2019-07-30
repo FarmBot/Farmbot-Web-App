@@ -75,10 +75,6 @@ module Api
 
     rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
 
-    rescue_from(ActionDispatch::Http::Parameters::ParseError) do
-      sorry NOT_JSON
-    end
-
     def default_serializer_options
       { root: false, user: current_user }
     end

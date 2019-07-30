@@ -23,7 +23,7 @@ import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
 import { assign, noop } from "lodash";
 import { t } from "../i18next_wrapper";
-import { appIsReadonly } from "../resources/selectors";
+import { appIsReadonly } from "../read_only_mode";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {

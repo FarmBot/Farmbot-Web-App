@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import {
   fetchReleases, fetchMinOsFeatureData, FEATURE_MIN_VERSIONS_URL,
   fetchLatestGHBetaRelease
@@ -15,9 +15,7 @@ import {
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
 import { getFirstPartyFarmwareList } from "../farmware/actions";
-import { store } from "../redux/store";
-import { appIsReadonly } from "../resources/selectors";
-import { warning } from "../toast/toast";
+import { readOnlyInterceptor } from "../read_only_mode";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -31,20 +29,6 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));
 }
-
-const readOnlyInterceptor = (config: AxiosRequestConfig) => {
-  const method = (config.method || "get").toLowerCase();
-  const relevant = ["put", "patch", "delete"].includes(method);
-
-  if (relevant && appIsReadonly(store.getState().resources.index)) {
-    if (!(config.url || "").includes("web_app_config")) {
-      warning("Refusing to modify data in read-only mode");
-      return Promise.reject(config);
-    }
-  }
-
-  return Promise.resolve(config);
-};
 
 /** Very important. Once called, all outbound HTTP requests will
  * have a JSON Web Token attached to their "Authorization" header,
