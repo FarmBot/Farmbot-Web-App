@@ -257,6 +257,6 @@ export function appIsReadonly(index: ResourceIndex) {
   if (conf) {
     return conf.body.user_interface_read_only_mode;
   } else {
-    return true; // Don't allow data updates until config is found
+    return true;
   }
 }
