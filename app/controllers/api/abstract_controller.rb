@@ -11,7 +11,7 @@ module Api
     CONSENT_REQUIRED =
       "all device users must agree to terms of service."
     NOT_JSON = "That request was not valid JSON. Consider checking the" \
-    " request body with a JSON validator.."
+    " request body with a JSON validator."
     NULL = Gem::Version.new("0.0.0")
     NOT_FBOS = Gem::Version.new("999.999.999")
 
@@ -74,6 +74,10 @@ module Api
     "Please reduce the amount of data stored in a single resource"
 
     rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
+
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) do
+      sorry NOT_JSON
+    end
 
     def default_serializer_options
       { root: false, user: current_user }

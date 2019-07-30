@@ -20,6 +20,18 @@ import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
 
+const ReadOnlyIcon = (p: { locked: boolean }) => {
+  if (p.locked) {
+    return <div className="fa-stack fa-lg">
+      <i className="fa fa-pencil fa-stack-1x"></i>
+      <i className="fa fa-ban fa-stack-2x fa-rotate-90 text-danger"></i>
+    </div>;
+
+  } else {
+    return <div />;
+  }
+};
+
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   state: NavBarState = {
@@ -57,6 +69,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   }
 
   render() {
+    const isLocked = this.props.getConfigValue("user_interface_read_only_mode");
     const hasName = this.props.user && this.props.user.body.name;
 
     const firstName = hasName ?
@@ -96,6 +109,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <span className="top-menu-container">
                       {NavLinks({ close, alertCount })}
                     </span>
+                    <ReadOnlyIcon locked={!!isLocked} />
                   </div>
                   <div className="nav-right">
                     <div className="menu-popover">
