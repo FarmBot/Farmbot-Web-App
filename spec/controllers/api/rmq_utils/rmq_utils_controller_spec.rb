@@ -15,7 +15,7 @@ describe Api::RmqUtilsController do
       password: token }
   end
 
-  it "limits users to 10 connections per 10 minutes" do
+  it "limits users to 20 connections per 5 minutes" do
     empty_mail_bag
     u = credentials.fetch(:username)
     p = credentials.fetch(:password)
@@ -24,7 +24,7 @@ describe Api::RmqUtilsController do
       .redis
       .set("mqtt_limiter:" + u.split("_").last, 0)
 
-    10.times do
+    20.times do
       post :user_action, params: { username: u, password: p }
       expect(response.status).to eq(200)
       expect(response.body).to include("allow")

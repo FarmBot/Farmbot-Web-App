@@ -74,7 +74,10 @@ module CeleryScriptSettingsBag
   RESOURCE_UPDATE_ARGS = [:resource_type, :resource_id, :label, :value]
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
-
+  MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
+  MAX_WAIT_MS_EXCEEDED =
+    "A single wait node cannot exceed #{MAX_WAIT_MS / 1000 / 60} minutes. " +
+    "Consider lowering the wait time or using multiple WAIT blocks."
   Corpus = CeleryScript::Corpus.new
 
   CORPUS_VALUES = {
@@ -453,6 +456,11 @@ module CeleryScriptSettingsBag
     wait: {
       args: [:milliseconds],
       tags: [:function],
+      blk: ->(node) do
+        ms_arg = node.args[:milliseconds]
+        ms = (ms_arg && ms_arg.value) || 0
+        node.invalidate!(MAX_WAIT_MS_EXCEEDED) if ms > MAX_WAIT_MS
+      end,
     },
     zero: {
       args: [:axis],
