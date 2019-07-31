@@ -11,8 +11,8 @@ import {
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
 import { EditResourceParams } from "../api/interfaces";
-import { defensiveClone, equals } from "../util";
-import { merge } from "lodash";
+import { defensiveClone, equals, unpackUUID } from "../util";
+import { merge, get } from "lodash";
 import { SyncBodyContents } from "../sync/actions";
 import { GeneralizedError } from "./actions";
 import { initialState as helpState } from "../help/reducer";
@@ -22,6 +22,7 @@ import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
 import { warning } from "../toast/toast";
+import { ReduxAction } from "../redux/interfaces";
 
 export const emptyState = (): RestResources => {
   return {
@@ -80,23 +81,45 @@ export const emptyState = (): RestResources => {
 export let resourceReducer =
   generateReducer<RestResources>(emptyState())
     .beforeEach((state, action, handler) => {
+      const { byKind, references } = state.index;
+      const w = references[Object.keys(byKind.WebAppConfig)[0]];
+      const readOnly = w &&
+        w.kind == "WebAppConfig" &&
+        w.body.user_interface_read_only_mode;
+      if (!readOnly) {
+        return handler(state, action);
+      }
+      const fail = (place: string) => {
+        console.log(action.type);
+        console.dir(action);
+        warning(`(${place}) Can't modify account data when in read-only mode.`);
+      };
+      const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z"));
+
       switch (action.type) {
+        case Actions.EDIT_RESOURCE:
+          if (kind === "WebAppConfig") {
+            // User is trying to exit read-only mode.
+            return handler(state, action);
+          } else {
+            fail("1");
+            return state;
+          }
+        case Actions.SAVE_RESOURCE_START:
+          if (kind !== "WebAppConfig") {
+            // User is trying to make HTTP requests.
+            fail("3");
+          }
+          // User is trying to exit read-only mode.
+          return handler(state, action);
         case Actions.BATCH_INIT:
         case Actions.INIT_RESOURCE:
         case Actions.OVERWRITE_RESOURCE:
-        case Actions.SAVE_RESOURCE_START:
-        case Actions.EDIT_RESOURCE:
-          const { byKind, references } = state.index;
-          const w = references[Object.keys(byKind.WebAppConfig)[0]];
-          if (w &&
-            w.kind == "WebAppConfig" &&
-            w.body.user_interface_read_only_mode) {
-            console.dir(action);
-            warning("Can't modify account data when in read-only mode.");
-            return state;
-          }
+          fail("2");
+          return state;
+        default:
+          return handler(state, action);
       }
-      return handler(state, action);
     })
     .afterEach(afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
