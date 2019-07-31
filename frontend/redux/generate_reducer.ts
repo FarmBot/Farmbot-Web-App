@@ -16,7 +16,7 @@ export function generateReducer<State>(initialState: State) {
    * INIT_RESOURCE when UI is set to "read-only" mode. */
   type BeforeEach = (state: State,
     action: ReduxAction<unknown>,
-    handler: ActionHandler<State>) => void;
+    handler: ActionHandler<State>) => State;
 
   interface GeneratedReducer extends ActionHandler<State> {
     /** Adds action handler for current reducer. */
@@ -34,7 +34,7 @@ export function generateReducer<State>(initialState: State) {
   interface PrivateStuff {
     actionHandlers: ActionHandlerDict;
     afterEach: ActionHandler<State>;
-    filter: BeforeEach;
+    beforeEach: BeforeEach;
   }
 
   type ActionHandlerDict = Dictionary<ActionHandler<State>>;
@@ -51,7 +51,7 @@ export function generateReducer<State>(initialState: State) {
   const priv: PrivateStuff = {
     actionHandlers: {},
     afterEach: EMPTY_HANDLER,
-    filter: DEFAULT_BEFORE_EACH
+    beforeEach: DEFAULT_BEFORE_EACH
   };
 
   const reducer: GeneratedReducer =
@@ -62,13 +62,11 @@ export function generateReducer<State>(initialState: State) {
 
       // Defensively clone the action and state to avoid accidental mutations.
       const clonedState = defensiveClone(state);
-      const clonedAction = defensiveClone(action);
-
       // Run main action handler
-      const state1 = handler(clonedState, clonedAction);
+      const beforeState = priv.beforeEach(clonedState, action, handler);
 
       // Run `afterEach` (if any). Else, just return the state object as-is.
-      return priv.afterEach(state1, action);
+      return priv.afterEach(beforeState, action);
     }) as GeneratedReducer;
 
   reducer.add = <X>(name: string, fn: ActionHandler<State, X>) => {
@@ -82,7 +80,7 @@ export function generateReducer<State>(initialState: State) {
   };
 
   reducer.beforeEach = (filter: BeforeEach) => {
-    priv.filter = filter;
+    priv.beforeEach = filter;
     return reducer;
   };
 

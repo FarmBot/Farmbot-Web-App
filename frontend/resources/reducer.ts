@@ -21,6 +21,7 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
+import { warning } from "../toast/toast";
 
 export const emptyState = (): RestResources => {
   return {
@@ -78,6 +79,25 @@ export const emptyState = (): RestResources => {
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
   generateReducer<RestResources>(emptyState())
+    .beforeEach((state, action, handler) => {
+      switch (action.type) {
+        case Actions.BATCH_INIT:
+        case Actions.INIT_RESOURCE:
+        case Actions.OVERWRITE_RESOURCE:
+        case Actions.SAVE_RESOURCE_START:
+        case Actions.EDIT_RESOURCE:
+          const { byKind, references } = state.index;
+          const w = references[Object.keys(byKind.WebAppConfig)[0]];
+          if (w &&
+            w.kind == "WebAppConfig" &&
+            w.body.user_interface_read_only_mode) {
+            console.dir(action);
+            warning("Can't modify account data when in read-only mode.");
+            return state;
+          }
+      }
+      return handler(state, action);
+    })
     .afterEach(afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
