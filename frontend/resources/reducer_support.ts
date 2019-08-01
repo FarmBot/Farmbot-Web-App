@@ -261,8 +261,6 @@ export const beforeEach = (state: RestResources,
     return handler(state, action);
   }
   const fail = (place: string) => {
-    console.log(action.type);
-    console.dir(action);
     warning(`(${place}) Can't modify account data when in read-only mode.`);
   };
   const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z"));
