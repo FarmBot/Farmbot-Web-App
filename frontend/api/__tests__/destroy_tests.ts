@@ -27,7 +27,10 @@ jest.mock("axios", () => ({
   delete: jest.fn(() => mockDelete)
 }));
 
-jest.mock("../../read_only_mode", () => ({ appIsReadonly: jest.fn() }));
+let mockReadonlyState = false;
+jest.mock("../../read_only_mode/app_is_read_only", () => ({
+  appIsReadonly: jest.fn(() => mockReadonlyState)
+}));
 
 import { destroy, destroyAll } from "../crud";
 import { API } from "../api";
@@ -38,6 +41,7 @@ describe("destroy", () => {
   beforeEach(() => {
     mockResource.body.id = 1;
     mockResource.kind = "Regimen";
+    mockReadonlyState = false;
   });
 
   API.setBaseUrl("http://localhost:3000");
@@ -106,6 +110,13 @@ describe("destroy", () => {
       statusBeforeError: undefined,
       uuid: "fakeResource"
     });
+  });
+
+  it("rejects all requests when in read only mode", async () => {
+    mockReadonlyState = true;
+    await expect(fakeDestroy())
+      .rejects
+      .toEqual("Application is in read-only mode.");
   });
 });
 
