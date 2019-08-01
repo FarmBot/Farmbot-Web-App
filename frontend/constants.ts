@@ -893,6 +893,7 @@ export namespace DiagnosticMessages {
 export enum Actions {
 
   // Resources
+  DESTROY_RESOURCE_START = "DESTROY_RESOURCE_START",
   DESTROY_RESOURCE_OK = "DESTROY_RESOURCE_OK",
   INIT_RESOURCE = "INIT_RESOURCE",
   BATCH_INIT = "BATCH_INIT",

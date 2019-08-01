@@ -194,8 +194,14 @@ export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
   return Promise.reject(err);
 };
 
+/** We need this to detect read-only deletion attempts */
+function destroyStart() {
+  return { type: Actions.DESTROY_RESOURCE_START, payload: {} };
+}
+
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
+    dispatch(destroyStart());
     /** Stop user from deleting resources if app is read only. */
     if (appIsReadonly(getState().resources.index)) {
       return Promise.reject("Application is in read-only mode.");

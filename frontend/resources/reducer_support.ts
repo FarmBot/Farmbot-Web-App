@@ -275,6 +275,7 @@ export const beforeEach = (state: RestResources,
         return state;
       }
     case Actions.SAVE_RESOURCE_START:
+    case Actions.DESTROY_RESOURCE_START:
       if (kind !== "WebAppConfig") {
         // User is trying to make HTTP requests.
         fail("3");
