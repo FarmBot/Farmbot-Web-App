@@ -1,22 +1,8 @@
-import { getWebAppConfig } from "../resources/getters";
 import { AxiosRequestConfig } from "axios";
-import { ResourceIndex } from "../resources/interfaces";
 import { store } from "../redux/store";
 import { warning } from "../toast/toast";
 import React from "react";
-
-/** Returns `true` if the user is allowed to modify account data.
- * This is a helper function of the "readonly" account lock. */
-export function appIsReadonly(index: ResourceIndex) {
-  const conf = getWebAppConfig(index);
-  if (conf) {
-    return conf.body.user_interface_read_only_mode;
-  } else {
-    // Assume user is allowed to change data if no
-    // configs are available.
-    return true;
-  }
-}
+import { appIsReadonly } from "./app_is_read_only";
 
 export const readOnlyInterceptor = (config: AxiosRequestConfig) => {
   const method = (config.method || "get").toLowerCase();

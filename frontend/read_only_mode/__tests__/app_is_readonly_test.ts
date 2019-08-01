@@ -1,5 +1,5 @@
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { appIsReadonly } from "..";
+import { appIsReadonly } from "../app_is_read_only";
 import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
 
 describe("appIsReadonly", () => {
@@ -24,9 +24,3 @@ describe("appIsReadonly", () => {
     expect(result).toBe(false);
   });
 });
-
-// describe("readOnlyInterceptor", () => {
-//   it("resolves the config when app is not read-only", () => {
-
-//   });
-// });
