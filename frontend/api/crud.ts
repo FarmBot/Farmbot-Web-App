@@ -23,6 +23,7 @@ import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
 import { assign, noop } from "lodash";
 import { t } from "../i18next_wrapper";
+import { appIsReadonly } from "../read_only_mode/app_is_read_only";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -195,6 +196,11 @@ export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
 
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
+    /** Stop user from deleting resources if app is read only. */
+    if (appIsReadonly(getState().resources.index)) {
+      return Promise.reject("Application is in read-only mode.");
+    }
+
     const resource = findByUuid(getState().resources.index, uuid);
     const maybeProceed = confirmationChecker(resource.kind, force);
     return maybeProceed(() => {

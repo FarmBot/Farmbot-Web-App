@@ -11,7 +11,7 @@ module Api
     CONSENT_REQUIRED =
       "all device users must agree to terms of service."
     NOT_JSON = "That request was not valid JSON. Consider checking the" \
-    " request body with a JSON validator.."
+    " request body with a JSON validator."
     NULL = Gem::Version.new("0.0.0")
     NOT_FBOS = Gem::Version.new("999.999.999")
 

@@ -7,6 +7,7 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
+  beforeEach
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -77,7 +78,9 @@ export const emptyState = (): RestResources => {
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
+  generateReducer<RestResources>(emptyState())
+    .beforeEach(beforeEach)
+    .afterEach(afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);

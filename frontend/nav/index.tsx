@@ -19,6 +19,7 @@ import { connectivityData } from "../devices/connectivity/generate_data";
 import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
+import { ReadOnlyIcon } from "../read_only_mode";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
@@ -57,6 +58,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   }
 
   render() {
+    const isLocked = this.props.getConfigValue("user_interface_read_only_mode");
     const hasName = this.props.user && this.props.user.body.name;
 
     const firstName = hasName ?
@@ -96,6 +98,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <span className="top-menu-container">
                       {NavLinks({ close, alertCount })}
                     </span>
+                    <ReadOnlyIcon locked={!!isLocked} />
                   </div>
                   <div className="nav-right">
                     <div className="menu-popover">

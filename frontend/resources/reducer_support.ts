@@ -1,6 +1,5 @@
 import { ResourceName, SpecialStatus } from "farmbot";
 import { combineReducers } from "redux";
-import { ReduxAction } from "../redux/interfaces";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
 import { farmwareReducer as farmware } from "../farmware/reducer";
@@ -21,9 +20,14 @@ import {
   selectAllRegimens
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
-import { betterCompact } from "../util";
+import { betterCompact, unpackUUID } from "../util";
 import { createSequenceMeta } from "./sequence_meta";
 import { alertsReducer as alerts } from "../messages/reducer";
+import { warning } from "../toast/toast";
+import { ReduxAction } from "../redux/interfaces";
+import { ActionHandler } from "../redux/generate_reducer";
+import { get } from "lodash";
+import { Actions } from "../constants";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -244,3 +248,45 @@ export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
   const after = AFTER_HOOKS[resource.kind];
   after && after(db, "ongoing");
 }
+
+export const beforeEach = (state: RestResources,
+  action: ReduxAction<unknown>,
+  handler: ActionHandler<RestResources, unknown>) => {
+  const { byKind, references } = state.index;
+  const w = references[Object.keys(byKind.WebAppConfig)[0]];
+  const readOnly = w &&
+    w.kind == "WebAppConfig" &&
+    w.body.user_interface_read_only_mode;
+  if (!readOnly) {
+    return handler(state, action);
+  }
+  const fail = (place: string) => {
+    warning(`(${place}) Can't modify account data when in read-only mode.`);
+  };
+  const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z"));
+
+  switch (action.type) {
+    case Actions.EDIT_RESOURCE:
+      if (kind === "WebAppConfig") {
+        // User is trying to exit read-only mode.
+        return handler(state, action);
+      } else {
+        fail("1");
+        return state;
+      }
+    case Actions.SAVE_RESOURCE_START:
+      if (kind !== "WebAppConfig") {
+        // User is trying to make HTTP requests.
+        fail("3");
+      }
+      // User is trying to exit read-only mode.
+      return handler(state, action);
+    case Actions.BATCH_INIT:
+    case Actions.INIT_RESOURCE:
+    case Actions.OVERWRITE_RESOURCE:
+      fail("2");
+      return state;
+    default:
+      return handler(state, action);
+  }
+};
