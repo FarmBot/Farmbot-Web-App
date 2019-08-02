@@ -18,9 +18,15 @@ export const readOnlyInterceptor = (config: AxiosRequestConfig) => {
   return Promise.resolve(config);
 };
 
+const MOVE_ME_ELSEWHERE: React.CSSProperties = {
+  float: "right",
+  boxSizing: "inherit",
+  margin: "9px 0px 0px 9px"
+};
+
 export const ReadOnlyIcon = (p: { locked: boolean }) => {
   if (p.locked) {
-    return <div className="fa-stack fa-lg">
+    return <div className="fa-stack fa-lg" style={MOVE_ME_ELSEWHERE}>
       <i className="fa fa-pencil fa-stack-1x"></i>
       <i className="fa fa-ban fa-stack-2x fa-rotate-90 text-danger"></i>
     </div>;
