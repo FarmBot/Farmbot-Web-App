@@ -98,9 +98,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                     <span className="top-menu-container">
                       {NavLinks({ close, alertCount })}
                     </span>
-                    <ReadOnlyIcon locked={!!isLocked} />
                   </div>
                   <div className="nav-right">
+                    <ReadOnlyIcon locked={!!isLocked} />
+
                     <div className="menu-popover">
                       <Popover
                         portalClassName={"nav-right"}
