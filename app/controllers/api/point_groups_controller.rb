@@ -6,10 +6,6 @@ module Api
       render json: your_point_groups
     end
 
-    def show
-      render json: the_point_group
-    end
-
     def create
       mutate PointGroups::Create.run(raw_json, point_group_params)
     end
@@ -29,7 +25,7 @@ module Api
     end
 
     def your_point_groups
-      PointGroup.where(point_group_params)
+      PointGroup.preload(:point_group_items).where(point_group_params)
     end
 
     def point_group_params

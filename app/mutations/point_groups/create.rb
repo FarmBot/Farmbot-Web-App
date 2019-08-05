@@ -9,7 +9,6 @@ module PointGroups
     end
 
     def validate
-      point_ids.sort!
       validate_point_ids
     end
 

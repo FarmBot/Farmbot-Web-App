@@ -7,7 +7,7 @@ module PointGroups
     end
 
     def validate_point_ids
-      unless point_ids == points.pluck(:id).sort
+      unless point_ids.sort! == points.pluck(:id).sort
         add_error :points, :points_bad, BAD_POINT_IDS
       end
     end
