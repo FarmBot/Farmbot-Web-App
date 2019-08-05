@@ -34,16 +34,17 @@ module PointGroups
 
     def maybe_reconcile_points
       # STEP 0: Setup
-      old_point_ids = Set.new(point_group.point_group_items.pluck(:point_id))
-      new_point_ids = Set.new(point_ids)
-      dont_delete = new_point_ids & old_point_ids
-      do_delete = (old_point_ids - dont_delete).to_a
+      @old_point_ids = Set.new(point_group.point_group_items.pluck(:id))
+      @new_point_ids = Set.new(point_ids)
+      @dont_delete = @new_point_ids & @old_point_ids
+      @do_delete = (@old_point_ids - @dont_delete).to_a
 
       # STEP 1: "Garbage Collection" of PGIs that are no longer used.
-      PointGroupItem.find_by!(id: do_delete).destroy!
+      PointGroupItem.where(id: @do_delete).map(&:destroy!)
 
       # STEP 2: Create missing PGIs
-      PointGroupItem.create!((new_point_ids - dont_delete).to_a.map do |id|
+      @do_create = (@new_point_ids - @dont_delete)
+      PointGroupItem.create!(@do_create.to_a.map do |id|
         { point_id: id, point_group_id: point_group.id }
       end)
     end
