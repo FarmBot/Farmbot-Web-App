@@ -16,10 +16,11 @@ module PointGroups
     def execute
       PointGroup.transaction do
         PointGroupItem.transaction do
-          pg = PointGroup.create!(name: name, device: device)
-          PointGroupItem.create!(point_ids.map do |id|
-            { point_id: id, point_group_id: pg.id }
-          end)
+          pg = PointGroup.new(name: name, device: device)
+          point_ids.map do |id|
+            pg.point_group_items << PointGroupItem.new(point_id: id)
+          end
+          pg.save!
           pg
         end
       end
