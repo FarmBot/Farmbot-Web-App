@@ -26,4 +26,15 @@ describe Api::PointGroupsController do
       expect(json[:point_ids]).to include(this_id)
     end
   end
+
+  it "alerts the user about bad point_ids" do
+    sign_in user
+    point_ids = [0]
+    payload = { name: "this is a group", point_ids: point_ids }
+    before = PointGroup.count
+    post :create, body: payload.to_json, format: :json
+    expect(response.status).to eq(422)
+    expect(before).to eq(PointGroup.count)
+    expect(json.fetch(:points)).to include(PointGroups::Create::BAD_POINT_IDS)
+  end
 end

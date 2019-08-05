@@ -1,6 +1,6 @@
 module PointGroups
   class Create < Mutations::Command
-    BAD_POINT_IDS = "The group contains invlaid points."
+    BAD_POINT_IDS = "The group contains invalid points."
 
     required do
       model :device, class: Device
