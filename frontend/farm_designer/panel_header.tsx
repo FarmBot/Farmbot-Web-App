@@ -10,6 +10,7 @@ export enum Panel {
   FarmEvents = "FarmEvents",
   SavedGardens = "SavedGardens",
   Settings = "Settings",
+  Groups = "Groups"
 }
 
 type Tabs = keyof typeof Panel;
@@ -20,6 +21,7 @@ export const TAB_COLOR: { [key in Panel]: string } = {
   [Panel.FarmEvents]: "yellow",
   [Panel.SavedGardens]: "green",
   [Panel.Settings]: "gray",
+  [Panel.Groups]: "blue",
 };
 
 const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;
@@ -30,6 +32,7 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.FarmEvents]: iconFile("calendar"),
   [Panel.SavedGardens]: iconFile("gardens"),
   [Panel.Settings]: iconFile("gardens"),
+  [Panel.Groups]: iconFile("groups")
 };
 
 const getCurrentTab = (): Tabs => {
@@ -42,6 +45,8 @@ const getCurrentTab = (): Tabs => {
     return Panel.SavedGardens;
   } else if (pathArray.includes("settings")) {
     return Panel.Settings;
+  } else if (pathArray.includes("groups")) {
+    return Panel.Groups;
   } else {
     return Panel.Plants;
   }
@@ -79,6 +84,9 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab panel={Panel.SavedGardens}
           linkTo={"/app/designer/saved_gardens"} title={t("Gardens")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab panel={Panel.Groups}
+          linkTo={"/app/designer/groups"} title={t("Groups")} />}
       <NavTab panel={Panel.Settings} icon={"fa fa-gear"}
         linkTo={"/app/designer/settings"} title={t("Settings")} />
     </div>

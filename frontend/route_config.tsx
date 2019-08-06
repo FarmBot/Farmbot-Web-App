@@ -296,4 +296,12 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./farm_designer/settings"),
     childKey: "DesignerSettings"
   }),
+  route({
+    children: true,
+    $: "/designer/groups",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/point_groups/panel"),
+    childKey: "GroupListPanel"
+  }),
 ].concat([NOT_FOUND_ROUTE]);

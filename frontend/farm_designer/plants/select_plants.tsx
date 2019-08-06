@@ -13,6 +13,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
+import { createGroup } from "../point_groups/actions";
 
 export function mapStateToProps(props: Everything) {
   const { selectedPlants } = props.resources.consumers.farm_designer;
@@ -81,6 +82,17 @@ export class SelectPlants
           payload: undefined
         })}>
         {t("Select none")}
+      </button>
+      <button className="fb-button blue"
+        onClick={() => createGroup({
+          points: this.props.selected,
+          dispatch: this.props.dispatch
+        })}>
+        {t("Create group")}
+      </button>
+      <button className="fb-button green"
+        onClick={() => { throw new Error("WIP"); }}>
+        {t("Create garden")}
       </button>
     </div>;
 
