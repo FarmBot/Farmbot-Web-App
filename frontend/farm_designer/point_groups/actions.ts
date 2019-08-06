@@ -1,6 +1,7 @@
 import { unpackUUID, betterCompact } from "../../util";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { initSave } from "../../api/crud";
+import { history } from "../../history";
 
 const UNTITLED = "Untitled Group";
 
@@ -19,7 +20,9 @@ export const createGroup =
   ({ points, name, dispatch }: CreateGroupProps) => {
     const all = points.map(x => unpackUUID(x).remoteId);
     const point_ids = betterCompact(all);
-    const group: PointGroup =
-      ({ name: name || UNTITLED, point_ids });
-    return initSave("PointGroup", group)(dispatch);
+    const group: PointGroup = ({ name: name || UNTITLED, point_ids });
+    const thunk = initSave("PointGroup", group);
+    const p: Promise<{}> = thunk(dispatch);
+
+    return p.then(() => history.push("/app/designer/groups"));
   };
