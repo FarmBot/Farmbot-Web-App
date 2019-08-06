@@ -6,8 +6,10 @@ import { t } from "../../i18next_wrapper";
 import { DesignerPanel, DesignerPanelTop, DesignerPanelContent } from "../plants/designer_panel";
 import { findAll } from "../../resources/find_all";
 import { TaggedPointGroup } from "farmbot";
+import { history } from "../../history";
+import { GroupInventoryItem } from "./group_inventory_item";
 
-export interface PlantInventoryProps {
+interface PlantInventoryProps {
   dispatch: Function;
   groups: TaggedPointGroup[];
 }
@@ -20,24 +22,6 @@ function mapStateToProps(props: Everything): PlantInventoryProps {
   const groups =
     findAll<TaggedPointGroup>(props.resources.index, "PointGroup");
   return { groups, dispatch: props.dispatch };
-}
-
-interface GroupInventoryItemProps {
-  group: TaggedPointGroup;
-  hovered: boolean;
-  dispatch: Function;
-}
-
-function GroupInventoryItem(props: GroupInventoryItemProps) {
-  return <div
-    className={`plant-search-item ${props.hovered ? "hovered" : ""}`}>
-    <span className="plant-search-item-name">
-      {props.group.body.name}
-    </span>
-    <i className="plant-search-item-age">
-      {t("{{count}} items", { count: props.group.body.point_ids.length })}
-    </i>
-  </div>;
 }
 
 @connect(mapStateToProps)
@@ -69,7 +53,9 @@ export class GroupListPanel extends React.Component<PlantInventoryProps, State> 
             key={group.uuid}
             group={group}
             hovered={false}
-            dispatch={this.props.dispatch} />)}
+            dispatch={this.props.dispatch}
+            onClick={() => history.push(`/app/designer/groups/${group.body.id || 0}`)}
+          />)}
       </DesignerPanelContent>
     </DesignerPanel>;
   }
