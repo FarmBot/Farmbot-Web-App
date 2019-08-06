@@ -117,6 +117,8 @@ export class API {
   get imagesPath() { return `${this.baseUrl}/api/images/`; }
   /** /api/points/ */
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
+  /** /api/point_groups/ */
+  get pointGroupsPath() { return `${this.baseUrl}/api/point_groups/`; }
   /** /api/points/?filter=all */
   get allPointsPath() { return `${this.pointsPath}?filter=all`; }
   /** /api/points/search */
