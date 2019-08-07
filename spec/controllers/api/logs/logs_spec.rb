@@ -20,17 +20,18 @@ describe Api::LogsController do
     it "creates one log (legacy format)" do
       sign_in user
       before_count = Log.count
-      now          = DateTime.now - 37.3.hours
-      created_at   = now.utc.to_i
+      now = DateTime.now - 37.3.hours
+      created_at = now.utc.to_i
       post :create, body: {
-             created_at: created_at,
-             meta: { x: 1,
-                     y: 2,
-                     z: 3,
-                     type: "info" },
-            channels: ["toast"],
-            message: "Hello, world!" }.to_json,
-           params: { format: :json }
+                      created_at: created_at,
+                      meta: { x: 1,
+                              y: 2,
+                              z: 3,
+                              type: "info" },
+                      channels: ["toast"],
+                      message: "Hello, world!",
+                    }.to_json,
+                    params: { format: :json }
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(Log.last.message).to eq("Hello, world!")
@@ -42,7 +43,7 @@ describe Api::LogsController do
       sign_in user
       before_count = Log.count
       body = {
-        channels: [ ],
+        channels: [],
         major_version: 6,
         message: "HELLO",
         minor_version: 4,
@@ -52,12 +53,12 @@ describe Api::LogsController do
         y: 0,
         z: 0,
       }
-      post :create, body: body.to_json, params: {format: :json}
+      post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(json[:created_at]).to be_kind_of(Integer)
       body.keys.map do |key|
-        actual   = json[key]
+        actual = json[key]
         expected = body[key]
 
         expect(actual).to eq(expected)
@@ -68,7 +69,7 @@ describe Api::LogsController do
       sign_in user
       before_count = Log.count
       body = { message: "HELLO" }
-      post :create, body: body.to_json, params: {format: :json}
+      post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(Log.count).to be > before_count
       expect(json[:message]).to eq("HELLO")
@@ -80,7 +81,7 @@ describe Api::LogsController do
                channels: ["toast"],
                message: "my password is foo123!" }
       sign_in user
-      post :create, body: stub.to_json, params: {format: :json}
+      post :create, body: stub.to_json, params: { format: :json }
       expect(json[:log]).to include(Logs::Create::BAD_WORDS)
       expect(response.status).to eq(422)
       expect(Log.count).to eq(0)
@@ -91,7 +92,7 @@ describe Api::LogsController do
       100.times { Log.create!(device: user.device) }
       sign_in user
       user.device.update_attributes!(max_log_count: 15)
-      get :index, params: {format: :json}
+      get :index, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
     end
@@ -107,7 +108,7 @@ describe Api::LogsController do
 
     it "delivers emails for logs marked as `email`" do
       log = Log.create!(device: user.device, channels: ["email"])
-      b4  = Log.where(sent_at: nil).count
+      b4 = Log.where(sent_at: nil).count
       ldm = LogDeliveryMailer.new
       allow(ldm).to receive(:mail)
       ldm.log_digest(log.device)
@@ -118,11 +119,11 @@ describe Api::LogsController do
       message = "KABOOOOMM - SYSTEM ERROR!"
       sign_in user
       empty_mail_bag
-      body         = { meta: { x: 1, y: 2, z: 3, type: "info" },
-                       channels: ["fatal_email"],
-                       message: message }.to_json
+      body = { meta: { x: 1, y: 2, z: 3, type: "info" },
+               channels: ["fatal_email"],
+               message: message }.to_json
       run_jobs_now do
-        post :create, body: body, params: {format: :json}
+        post :create, body: body, params: { format: :json }
         expect(response.status).to eq(200)
         expect(last_email).to be
         expect(last_email.body.to_s).to include(message)
@@ -162,19 +163,19 @@ describe Api::LogsController do
     it "filters ALL logs based on log filtering settings in `WebAppConfig` " do
       sign_in user
       Log.destroy_all
-      conf  = user.device.web_app_config
+      conf = user.device.web_app_config
       EXAMPLES.map do |(verbosity, type)|
-        FactoryBot.create(:log, device:    user.device,
+        FactoryBot.create(:log, device: user.device,
                                 verbosity: verbosity,
-                                type:      type)
+                                type: type)
       end
       conf.update_attributes(success_log: 3,
-                             busy_log:    3,
-                             warn_log:    3,
-                             error_log:   3,
-                             info_log:    3,
-                             fun_log:     3,
-                             debug_log:   3)
+                             busy_log: 3,
+                             warn_log: 3,
+                             error_log: 3,
+                             info_log: 3,
+                             fun_log: 3,
+                             debug_log: 3)
       get :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(EXAMPLES.length)
@@ -183,22 +184,37 @@ describe Api::LogsController do
     it "filters NO logs based on log filtering settings in `WebAppConfig` " do
       sign_in user
       Log.destroy_all
-      conf  = user.device.web_app_config
+      conf = user.device.web_app_config
       EXAMPLES.map do |(verbosity, type)|
-        FactoryBot.create(:log, device:    user.device,
+        FactoryBot.create(:log, device: user.device,
                                 verbosity: verbosity,
-                                type:      type)
+                                type: type)
       end
       conf.update_attributes(success_log: 0,
-                             busy_log:    0,
-                             warn_log:    0,
-                             error_log:   0,
-                             info_log:    0,
-                             fun_log:     0,
-                             debug_log:   0)
+                             busy_log: 0,
+                             warn_log: 0,
+                             error_log: 0,
+                             info_log: 0,
+                             fun_log: 0,
+                             debug_log: 0)
       get :search
       expect(response.status).to eq(200)
       expect(json.length).to eq(0)
+    end
+
+    it "filters logs based on criteria" do
+      sign_in user
+      Log.destroy_all
+      [-10, 0, 10, 20].map do |x|
+        FactoryBot.create(:log,
+                          device: user.device,
+                          x: x,
+                          message: "This is #{x}")
+      end
+      get :search, params: { x: -10 }
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(1)
+      expect(json.dig(0, :message)).to eq("This is -10")
     end
   end
 end
