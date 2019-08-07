@@ -37,6 +37,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.auto_sync_debounce
     @auto_sync_paused = true
     result = yield
+    result.update_attributes!(updated_at: Time.now)
     @auto_sync_paused = false
     result.broadcast!
     result

@@ -30,16 +30,15 @@ describe Api::PointsController do
             pointer_type: "Plant",
             openfarm_slug: "mung-bean",
             planted_at: time,
-            plant_stage: "sprouted"
-          }
+            plant_stage: "sprouted" }
       post :create, body: p.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       plant = Plant.last
-      expect(plant.x).to             eq(p[:x])
-      expect(plant.y).to             eq(p[:y])
-      expect(plant.name).to          eq(p[:name])
-      expect(plant.plant_stage).to   eq("sprouted")
-      expect(p[:plant_stage]).to     eq("sprouted")
+      expect(plant.x).to eq(p[:x])
+      expect(plant.y).to eq(p[:y])
+      expect(plant.name).to eq(p[:name])
+      expect(plant.plant_stage).to eq("sprouted")
+      expect(p[:plant_stage]).to eq("sprouted")
       expect(plant.openfarm_slug).to eq(p[:openfarm_slug])
       expect(plant.created_at).to be_truthy
       p.keys.each do |key|
@@ -52,20 +51,20 @@ describe Api::PointsController do
       body = { pointer_type: "TypoPointer", x: 0, y: 0 }
       post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(422)
-      expected = "Please provide a JSON object "\
+      expected = "Please provide a JSON object " \
                  "with a `pointer_type` that matches"
       expect(json.fetch(:pointer_type)).to include(expected)
     end
 
     it "creates a point" do
       sign_in user
-      body = { x:            1,
-               y:            2,
-               z:            3,
-               radius:       3,
-               name:         "YOLO",
+      body = { x: 1,
+               y: 2,
+               z: 3,
+               radius: 3,
+               name: "YOLO",
                pointer_type: "GenericPointer",
-               meta:         { foo: "BAR" } }
+               meta: { foo: "BAR" } }
       post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json[:name]).to eq(body[:name])
@@ -80,11 +79,11 @@ describe Api::PointsController do
 
     it "requires x" do
       sign_in user
-      body = { y:            2,
-               z:            3,
-               radius:       3,
+      body = { y: 2,
+               z: 3,
+               radius: 3,
                pointer_type: "GenericPointer",
-               meta:         { foo: "BAR" } }
+               meta: { foo: "BAR" } }
       post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:x]).to be
@@ -97,8 +96,7 @@ describe Api::PointsController do
       SmarfDoc.note("This is what happens when you post bad JSON")
       post :create, body: "{'x': 0, 'this isnt': 'JSON'}", params: { format: :json }
       expect(response.status).to eq(422)
-      expect(json[:error])
-        .to include("Please use a _valid_ JSON object or array")
+      expect(json[:error]).to include("Please use a _valid_ JSON object or array")
     end
 
     it "creates a toolslot with an valid pullout direction" do
@@ -106,15 +104,15 @@ describe Api::PointsController do
       sign_in user
       before_count = ToolSlot.count
       post :create,
-            body:   {
-              pointer_type: "ToolSlot",
-              name: "foo",
-              x: 0,
-              y: 0,
-              z: 0,
-              pullout_direction: direction
-            }.to_json,
-            params: { format: :json }
+           body: {
+             pointer_type: "ToolSlot",
+             name: "foo",
+             x: 0,
+             y: 0,
+             z: 0,
+             pullout_direction: direction,
+           }.to_json,
+           params: { format: :json }
       expect(response.status).to eq(200)
       expect(ToolSlot.count).to be > before_count
       expect(json[:pullout_direction]).to eq(direction)
@@ -128,7 +126,7 @@ describe Api::PointsController do
                   y: 0,
                   z: 0 }
       old_tool_count = ToolSlot.count
-      post :create, body: payload.to_json, params: {format: :json}
+      post :create, body: payload.to_json, params: { format: :json }
       expect(response.status).to eq(200)
       expect(ToolSlot.count).to be > old_tool_count
       expect(json[:pullout_direction]).to eq(0)
@@ -137,16 +135,32 @@ describe Api::PointsController do
     it "disallows bad `tool_id`s" do
       sign_in user
       payload = { pointer_type: "ToolSlot",
+                 name: "foo",
+                 x: 0,
+                 y: 0,
+                 z: 0,
+                 tool_id: (Tool.count + 100) }
+      old_tool_count = ToolSlot.count
+      post :create, body: payload.to_json, params: { format: :json }
+      expect(response.status).to eq(422)
+      expect(ToolSlot.count).to eq old_tool_count
+      expect(json[:tool_id]).to include("Can't find tool")
+    end
+
+    it "gracefully handles PG::ProgramLimitExceeded" do
+      absurdly_large_metadata =
+        { key: (1..85).to_a.map { |x| SecureRandom.hex }.join }
+      sign_in user
+      payload = { pointer_type: "GenericPointer",
                   name: "foo",
                   x: 0,
                   y: 0,
                   z: 0,
-                  tool_id: (Tool.count + 100) }
+                  meta: absurdly_large_metadata }
       old_tool_count = ToolSlot.count
-      post :create, body: payload.to_json, params: {format: :json}
+      post :create, body: payload.to_json, params: { format: :json }
       expect(response.status).to eq(422)
-      expect(ToolSlot.count).to eq old_tool_count
-      expect(json[:tool_id]).to include("Can't find tool")
+      expect(json.fetch(:error)).to eq(Api::AbstractController::TOO_MUCH_DATA)
     end
   end
 end

@@ -69,6 +69,8 @@
 }
 
 .first-ticker {
+  height: 3rem;
+  overflow: hidden;
   padding-bottom: 0.5rem;
   background: $black;
   .status-ticker-created-at {
