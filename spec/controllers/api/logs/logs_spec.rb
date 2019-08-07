@@ -205,7 +205,7 @@ describe Api::LogsController do
     it "filters logs based on criteria" do
       sign_in user
       Log.destroy_all
-      [-10, 0, 10, 20].map do |x|
+      [-10.0, 0, 10, 20].map do |x|
         FactoryBot.create(:log,
                           device: user.device,
                           x: x,
@@ -214,7 +214,7 @@ describe Api::LogsController do
       get :search, params: { x: -10 }
       expect(response.status).to eq(200)
       expect(json.length).to eq(1)
-      expect(json.dig(0, :message)).to eq("This is -10")
+      expect(json.dig(0, :message)).to eq("This is -10.0")
     end
   end
 end
