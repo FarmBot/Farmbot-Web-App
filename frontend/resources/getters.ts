@@ -8,7 +8,6 @@ import {
 
 /** @fileoverview Resource selectors for SINGULAR resources. */
 
-/** Wow! */
 export const getFbosConfig =
   (i: ResourceIndex): TaggedFbosConfig | undefined =>
     findAll<TaggedFbosConfig>(i, "FbosConfig")[0];

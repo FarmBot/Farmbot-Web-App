@@ -11,7 +11,7 @@ module Api
     CONSENT_REQUIRED =
       "all device users must agree to terms of service."
     NOT_JSON = "That request was not valid JSON. Consider checking the" \
-    " request body with a JSON validator.."
+    " request body with a JSON validator."
     NULL = Gem::Version.new("0.0.0")
     NOT_FBOS = Gem::Version.new("999.999.999")
 
@@ -24,7 +24,7 @@ module Api
     after_action :skip_set_cookies_header
 
     rescue_from(CeleryScript::TypeCheckError) do |err|
-      sorry err.message, 422
+      sorry err.message
     end
 
     rescue_from(ActionController::RoutingError) { sorry "Not found", 404 }
@@ -32,25 +32,25 @@ module Api
 
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
-    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON, 422 }
+    rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON }
 
     rescue_from(ActiveRecord::ValueTooLong) do
-      sorry "Please use reasonable lengths on string inputs", 422
+      sorry "Please use reasonable lengths on string inputs"
     end
 
     rescue_from Errors::Forbidden do |exc|
       sorry "You can't perform that action. #{exc.message}", 403
     end
 
-    ONLY_JSON = "This is a JSON API. "\
+    ONLY_JSON = "This is a JSON API. " \
     "Please use a _valid_ JSON object or array. " \
     "Validate JSON objects at https://jsonlint.com/"
     rescue_from OnlyJson do |e|
-      sorry ONLY_JSON, 422
+      sorry ONLY_JSON
     end
 
     rescue_from Errors::NoBot do |exc|
-      sorry "You need to register a device first.", 422
+      sorry "You need to register a device first."
     end
 
     rescue_from ActiveRecord::RecordNotFound do |exc|
@@ -67,8 +67,13 @@ module Api
 
     rescue_from ActiveModel::RangeError do |_|
       sorry "One of those numbers was too big/small. " +
-            "If you need larger numbers, let us know.", 422
+            "If you need larger numbers, let us know."
     end
+
+    TOO_MUCH_DATA = "The resource exceeds database limits. " \
+    "Please reduce the amount of data stored in a single resource"
+
+    rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
 
     def default_serializer_options
       { root: false, user: current_user }
@@ -147,7 +152,7 @@ module Api
             " provide a JSON Web Token in the `Authorization:` header.", 401)
     end
 
-    def sorry(msg, status)
+    def sorry(msg, status = 422)
       render json: { error: msg }, status: status
     end
 

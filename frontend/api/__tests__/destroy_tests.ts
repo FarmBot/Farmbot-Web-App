@@ -1,7 +1,17 @@
-const mockResource: { kind: string, body: { id: number | undefined } }
-  = { kind: "Regimen", body: { id: 1 } };
+interface MockRespone {
+  kind: string;
+  body: {
+    id: number | undefined;
+  }
+}
+
+const mockResource: MockRespone = { kind: "Regimen", body: { id: 1 } };
+
+let mockDelete: Promise<{} | void> = Promise.resolve({});
+
 jest.mock("../../resources/reducer_support", () => ({
-  findByUuid: () => (mockResource)
+  findByUuid: () => (mockResource),
+  afterEach: (s: {}) => s
 }));
 
 jest.mock("../../resources/actions", () => ({
@@ -13,9 +23,13 @@ jest.mock("../maybe_start_tracking", () => ({
   maybeStartTracking: jest.fn()
 }));
 
-let mockDelete: Promise<{} | void> = Promise.resolve({});
 jest.mock("axios", () => ({
   delete: jest.fn(() => mockDelete)
+}));
+
+let mockReadonlyState = false;
+jest.mock("../../read_only_mode/app_is_read_only", () => ({
+  appIsReadonly: jest.fn(() => mockReadonlyState)
 }));
 
 import { destroy, destroyAll } from "../crud";
@@ -27,6 +41,7 @@ describe("destroy", () => {
   beforeEach(() => {
     mockResource.body.id = 1;
     mockResource.kind = "Regimen";
+    mockReadonlyState = false;
   });
 
   API.setBaseUrl("http://localhost:3000");
@@ -95,6 +110,13 @@ describe("destroy", () => {
       statusBeforeError: undefined,
       uuid: "fakeResource"
     });
+  });
+
+  it("rejects all requests when in read only mode", async () => {
+    mockReadonlyState = true;
+    await expect(fakeDestroy())
+      .rejects
+      .toEqual("Application is in read-only mode.");
   });
 });
 

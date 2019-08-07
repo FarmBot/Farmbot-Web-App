@@ -9,6 +9,7 @@ import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
 import { ConfigurationName } from "farmbot";
 import { t } from "../../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
+import { Popover } from "@blueprintjs/core";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -28,10 +29,15 @@ export const colorFromTemp = (temp: number | undefined): string => {
   }
 };
 
+interface ChipTemperatureDisplayProps {
+  chip?: string;
+  temperature: number | undefined;
+}
+
 /** RPI CPU temperature display row: label, temperature, indicator. */
-export function ChipTemperatureDisplay({ chip, temperature }: {
-  chip?: string, temperature: number | undefined
-}): JSX.Element {
+export function ChipTemperatureDisplay(
+  { chip, temperature }: ChipTemperatureDisplayProps
+): JSX.Element {
   return <div className="chip-temp-display">
     <p>
       <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
@@ -41,15 +47,20 @@ export function ChipTemperatureDisplay({ chip, temperature }: {
   </div>;
 }
 
+interface WiFiStrengthDisplayProps {
+  wifiStrength: number | undefined;
+  wifiStrengthPercent?: number | undefined;
+}
+
 /** WiFi signal strength display row: label, strength, indicator. */
-export function WiFiStrengthDisplay({ wifiStrength }: {
-  wifiStrength: number | undefined
-}): JSX.Element {
+export function WiFiStrengthDisplay(
+  { wifiStrength, wifiStrengthPercent }: WiFiStrengthDisplayProps
+): JSX.Element {
   const percent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
   const dbString = `${wifiStrength || 0}dBm`;
-  const percentString = `${percent}%`;
+  const percentString = `${wifiStrengthPercent || percent}%`;
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi Strength")}: </b>
@@ -100,6 +111,36 @@ export const colorFromThrottle =
     }
   };
 
+const THROTTLE_COLOR_KEY = () => ({
+  red: t("active"),
+  yellow: t("occurred"),
+  green: t("clear")
+});
+
+interface ThrottleIndicatorProps {
+  throttleDataString: string;
+  throttleType: ThrottleType;
+}
+
+/** Saucer with color and title indicating throttle state. */
+const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
+  const { throttleDataString, throttleType } = props;
+  const throttleColor = colorFromThrottle(throttleDataString, throttleType);
+  return <Saucer className={"small-inline"}
+    title={THROTTLE_COLOR_KEY()[throttleColor]}
+    color={throttleColor} />;
+};
+
+/** Visual representation of throttle state. */
+const ThrottleDisplay = (dataString: string) =>
+  <div className="throttle-display">
+    {Object.keys(THROTTLE_BIT_LOOKUP).map((key: ThrottleType) =>
+      <div className="throttle-row" key={key}>
+        <ThrottleIndicator throttleDataString={dataString} throttleType={key} />
+        <p>{key}</p>
+      </div>)}
+  </div>;
+
 interface VoltageDisplayProps {
   chip?: string;
   throttled: string | undefined;
@@ -112,17 +153,27 @@ export const VoltageDisplay = ({ chip, throttled }: VoltageDisplayProps) =>
       <p>
         <b>{chip && chip.toUpperCase()} {t("Voltage")}: </b>
       </p>
-      <Saucer className={"small-inline"}
-        color={colorFromThrottle(throttled, ThrottleType.UnderVoltage)} />
+      <Popover usePortal={false}>
+        <ThrottleIndicator
+          throttleDataString={throttled}
+          throttleType={ThrottleType.UnderVoltage} />
+        {ThrottleDisplay(throttled)}
+      </Popover>
     </div> : <div className="voltage-display" />;
 
 /** Get the first 8 characters of a commit. */
 const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
 
+interface CommitDisplayProps {
+  title: string;
+  repo: string;
+  commit: string;
+}
+
 /** GitHub commit display row: label, commit link. */
-const CommitDisplay = ({ title, repo, commit }: {
-  title: string, repo: string, commit: string
-}): JSX.Element => {
+const CommitDisplay = (
+  { title, repo, commit }: CommitDisplayProps
+): JSX.Element => {
   const shortCommit = shortenCommit(commit);
   return <p>
     <b>{title}: </b>
@@ -136,8 +187,12 @@ const CommitDisplay = ({ title, repo, commit }: {
   </p>;
 };
 
+interface UptimeDisplayProps {
+  uptime_sec: number;
+}
+
 /** FBOS uptime display row: label and uptime in relevant unit. */
-const UptimeDisplay = ({ uptime_sec }: { uptime_sec: number }): JSX.Element => {
+const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
   const convertUptime = (seconds: number) => {
     if (seconds >= 172800) {
       return `${Math.round(seconds / 86400)} ${t("days")}`;
@@ -152,9 +207,15 @@ const UptimeDisplay = ({ uptime_sec }: { uptime_sec: number }): JSX.Element => {
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
-export const betaReleaseOptIn = ({ sourceFbosConfig, shouldDisplay }: {
-  sourceFbosConfig: SourceFbosConfig, shouldDisplay: ShouldDisplay
-}) => {
+interface BetaReleaseOptInParams {
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
+}
+
+/** Generate params for BetaReleaseOptInButton. */
+export const betaReleaseOptIn = (
+  { sourceFbosConfig, shouldDisplay }: BetaReleaseOptInParams
+) => {
   if (shouldDisplay(Feature.use_update_channel)) {
     const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName);
     const betaOptInValue = betaOptIn.value !== "stable";
@@ -172,34 +233,39 @@ export const betaReleaseOptIn = ({ sourceFbosConfig, shouldDisplay }: {
   }
 };
 
+interface BetaReleaseOptInButtonProps {
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
+}
+
 /** Label and toggle button for opting in to FBOS beta releases. */
-const BetaReleaseOptInButton =
-  ({ dispatch, sourceFbosConfig, shouldDisplay }: {
-    dispatch: Function,
-    sourceFbosConfig: SourceFbosConfig,
-    shouldDisplay: ShouldDisplay,
-  }): JSX.Element => {
-    const { betaOptIn, betaOptInValue, update } =
-      betaReleaseOptIn({ sourceFbosConfig, shouldDisplay });
-    return <fieldset>
-      <label style={{ marginTop: "0.75rem" }}>
-        {t("Beta release Opt-In")}
-      </label>
-      <ToggleButton
-        toggleValue={betaOptInValue}
-        dim={!betaOptIn.consistent}
-        toggleAction={() =>
-          (betaOptInValue || confirm(Content.OS_BETA_RELEASES)) &&
-          dispatch(updateConfig(update))} />
-    </fieldset>;
-  };
+const BetaReleaseOptInButton = (
+  { dispatch, sourceFbosConfig, shouldDisplay }: BetaReleaseOptInButtonProps
+): JSX.Element => {
+  const { betaOptIn, betaOptInValue, update } =
+    betaReleaseOptIn({ sourceFbosConfig, shouldDisplay });
+  return <fieldset>
+    <label style={{ marginTop: "0.75rem" }}>
+      {t("Beta release Opt-In")}
+    </label>
+    <ToggleButton
+      toggleValue={betaOptInValue}
+      dim={!betaOptIn.consistent}
+      toggleAction={() =>
+        (betaOptInValue || confirm(Content.OS_BETA_RELEASES)) &&
+        dispatch(updateConfig(update))} />
+  </fieldset>;
+};
 
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
-    soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled
-  } = props.botInfoSettings;
+    soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
+    wifi_level_percent,
+    // tslint:disable-next-line:no-any
+  } = props.botInfoSettings as any;
 
   return <div>
     <LastSeen
@@ -219,7 +285,8 @@ export function FbosDetails(props: FbosDetailsProps) {
       <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
-    <WiFiStrengthDisplay wifiStrength={wifi_level} />
+    <WiFiStrengthDisplay
+      wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
     <VoltageDisplay chip={target} throttled={throttled} />
     <BetaReleaseOptInButton
       dispatch={props.dispatch}

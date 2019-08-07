@@ -37,22 +37,23 @@ module Sequences
     end
 
     def execute
-      ActiveRecord::Base.transaction do
-        sequence.migrated_nodes = true
-        sequence.update_attributes!(inputs.except(*BLACKLIST))
-        CeleryScript::StoreCelery.run!(sequence: sequence,
-                                       args:     args,
-                                       body:     body)
+      Sequence.auto_sync_debounce do
+        ActiveRecord::Base.transaction do
+          sequence.migrated_nodes = true
+          sequence.update_attributes!(inputs.except(*BLACKLIST))
+          CeleryScript::StoreCelery.run!(sequence: sequence,
+                                         args: args,
+                                         body: body)
+        end
+        sequence
       end
-      sequence.manually_sync! # We must manually sync this resource.
-      CeleryScript::FetchCelery
-        .run!(sequence: sequence, args: args, body: body)
+      CeleryScript::FetchCelery.run!(sequence: sequence, args: args, body: body)
     end
 
     BASE = "Can't add 'parent' to sequence because "
     EXPL = {
       FarmEvent => BASE + "it is in use by FarmEvents on these dates: %{items}",
-      Regimen   => BASE + "the following Regimen(s) are using it: %{items}",
+      Regimen => BASE + "the following Regimen(s) are using it: %{items}",
     }
   end
 end

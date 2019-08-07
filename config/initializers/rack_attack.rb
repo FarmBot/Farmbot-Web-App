@@ -13,6 +13,10 @@ class Rack::Attack
   throttle("demo_accounts/ip", limit: 10, period: 10.minutes) do |req|
     req.ip if req.path.downcase == "/demo"
   end
+
+  throttle("password_resets/ip", limit: 3, period: 1.hour) do |req|
+    req.ip if req.path.downcase == "api/password_resets"
+  end
 end
 
 # Always allow requests from localhost

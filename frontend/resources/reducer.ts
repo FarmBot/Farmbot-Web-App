@@ -7,6 +7,7 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
+  beforeEach
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -36,31 +37,32 @@ export const emptyState = (): RestResources => {
     index: {
       all: {},
       byKind: {
-        WebcamFeed: {},
+        Alert: {},
+        Crop: {},
         Device: {},
+        DiagnosticDump: {},
         FarmEvent: {},
+        FarmwareEnv: {},
+        FarmwareInstallation: {},
+        FbosConfig: {},
+        FirmwareConfig: {},
         Image: {},
-        Plant: {},
         Log: {},
         Peripheral: {},
-        Crop: {},
+        PinBinding: {},
+        Plant: {},
+        PlantTemplate: {},
         Point: {},
+        PointGroup: {},
         Regimen: {},
+        SavedGarden: {},
+        Sensor: {},
+        SensorReading: {},
         Sequence: {},
         Tool: {},
         User: {},
-        FbosConfig: {},
-        FirmwareConfig: {},
         WebAppConfig: {},
-        SensorReading: {},
-        Sensor: {},
-        FarmwareInstallation: {},
-        FarmwareEnv: {},
-        PinBinding: {},
-        PlantTemplate: {},
-        SavedGarden: {},
-        DiagnosticDump: {},
-        Alert: {},
+        WebcamFeed: {},
       },
       byKindAndId: {},
       references: {},
@@ -77,7 +79,9 @@ export const emptyState = (): RestResources => {
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
+  generateReducer<RestResources>(emptyState())
+    .beforeEach(beforeEach)
+    .afterEach(afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);
