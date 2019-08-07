@@ -187,6 +187,15 @@ fieldset {
   }
 }
 
+.throttle-display {
+  .throttle-row {
+    display: flex;
+    .saucer {
+      margin-right: 1rem;
+    }
+  }
+}
+
 .wifi-strength-display {
   position: relative;
   .percent-bar {
@@ -1019,6 +1028,14 @@ ul {
     font-size: 1.1rem;
     line-height: 1.75rem;
     margin-bottom: 1rem;
+  }
+  p {
+    display: block;
+    color: $dark_gray;
+    text-overflow: inherit;
+    overflow: inherit;
+    width: inherit;
+    white-space: inherit;
   }
 }
 

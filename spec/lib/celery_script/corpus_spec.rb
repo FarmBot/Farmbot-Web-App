@@ -220,4 +220,14 @@ describe CeleryScript::Corpus do
     expect(value.fetch("tags").first).to eq("great")
     expect(value.fetch("docs")).to eq("spectacular")
   end
+
+  it "sets a MAX_WAIT_MS limit for `wait` nodes" do
+    bad = CeleryScript::AstNode.new({
+      kind: "wait",
+      args: { milliseconds: CeleryScriptSettingsBag::MAX_WAIT_MS + 10 },
+    })
+    check = CeleryScript::Checker.new(bad, corpus, device)
+    expect(check.valid?).to be_falsey
+    expect(check.error.message).to include("cannot exceed 3 minutes")
+  end
 end

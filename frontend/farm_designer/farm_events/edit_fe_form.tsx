@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { success, error, warning } from "../../toast/toast";
+import { success, error } from "../../toast/toast";
 import {
   TaggedFarmEvent, SpecialStatus, TaggedSequence, TaggedRegimen,
   ParameterApplication
@@ -90,6 +90,13 @@ export function destructureFarmEvent(
 const startTimeWarning = () => {
   const message =
     t("Event start time needs to be in the future, not the past.");
+  const title = t("Unable to save event.");
+  error(message, title);
+};
+
+const nothingToRunWarning = () => {
+  const message =
+    t("All items scheduled before the start time. Nothing to run.");
   const title = t("Unable to save event.");
   error(message, title);
 };
@@ -323,9 +330,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
     return recombine(vm, opts);
   }
 
-  /** Use the next item run time to display toast messages and return to
-   * the form if necessary. */
-  nextRunTimeActions = (now = moment()): boolean => {
+  /** Use the next item run time to display toast messages. */
+  nextRunTimeActions = (now = moment()) => {
     const nextRun = this.nextItemTime(this.props.farmEvent.body, now);
     if (nextRun) {
       const nextRunText = this.props.autoSyncEnabled
@@ -335,10 +341,6 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
       you must first SYNC YOUR DEVICE. If you do not sync, the event will
       not run.`.replace(/\s+/g, " "), { timeFromNow: nextRun.from(now) });
       success(nextRunText);
-      return true;
-    } else {
-      warning(t("All items scheduled before the start time. Nothing to run."));
-      return false;
     }
   }
 
@@ -346,15 +348,18 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
   *    - Regimen Farm Event:
   *      * If scheduled for today, warn about the possibility of missing tasks.
   *      * Display the start time difference from now and maybe prompt to sync.
-  *      * Return to calendar view if items exist to be run past the start time.
+  *      * Return to calendar view.
   *    - Sequence Farm Event:
   *      * Determine the time for the next item to be run.
   *      * If auto-sync is disabled, prompt the user to sync.
-  *      * Return to calendar view only if more items exist to be run.
+  *      * Return to calendar view.
   */
   commitViewModel = (now = moment()) => {
     if (this.maybeRejectStartTime(this.updatedFarmEvent)) {
       return startTimeWarning();
+    }
+    if (!this.nextItemTime(this.updatedFarmEvent, now)) {
+      return nothingToRunWarning();
     }
     this.dispatch(overwrite(this.props.farmEvent, this.updatedFarmEvent));
     this.dispatch(save(this.props.farmEvent.uuid))
@@ -362,8 +367,8 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
         this.setState({ specialStatusLocal: SpecialStatus.SAVED });
         this.dispatch(maybeWarnAboutMissedTasks(this.props.farmEvent,
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
-        const itemsScheduled = this.nextRunTimeActions(now);
-        if (itemsScheduled) { history.push("/app/designer/events"); }
+        this.nextRunTimeActions(now);
+        history.push("/app/designer/events");
       })
       .catch(() => {
         error(t("Unable to save event."));
