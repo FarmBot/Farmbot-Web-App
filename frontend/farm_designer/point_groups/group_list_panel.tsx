@@ -9,7 +9,7 @@ import { TaggedPointGroup } from "farmbot";
 import { history } from "../../history";
 import { GroupInventoryItem } from "./group_inventory_item";
 
-interface PlantInventoryProps {
+interface GroupListPanelProps {
   dispatch: Function;
   groups: TaggedPointGroup[];
 }
@@ -18,14 +18,14 @@ interface State {
   searchTerm: string;
 }
 
-function mapStateToProps(props: Everything): PlantInventoryProps {
+function mapStateToProps(props: Everything): GroupListPanelProps {
   const groups =
     findAll<TaggedPointGroup>(props.resources.index, "PointGroup");
   return { groups, dispatch: props.dispatch };
 }
 
 @connect(mapStateToProps)
-export class GroupListPanel extends React.Component<PlantInventoryProps, State> {
+export class GroupListPanel extends React.Component<GroupListPanelProps, State> {
 
   state: State = { searchTerm: "" };
 

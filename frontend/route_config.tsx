@@ -56,10 +56,11 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
     const { $ } = info;
     return {
       $,
-      enter: async () => {
+      enter: async (x) => {
         try {
           const comp = (await info.getModule())[info.key];
           if (info.children) {
+            console.log(x.params);
             const child = (await info.getChild())[info.childKey];
             callback(comp, child, info);
           } else {
