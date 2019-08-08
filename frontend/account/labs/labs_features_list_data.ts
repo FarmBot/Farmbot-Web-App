@@ -72,6 +72,13 @@ export const fetchLabFeatures =
       value: false,
       displayInvert: true,
     },
+    {
+      name: t("User Interface Read Only Mode"),
+      description: t(Content.USER_INTERFACE_READ_ONLY_MODE),
+      storageKey: BooleanSetting.user_interface_read_only_mode,
+      value: false,
+      displayInvert: false,
+    }
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).

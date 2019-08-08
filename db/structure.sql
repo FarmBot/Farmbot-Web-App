@@ -1106,6 +1106,70 @@ ALTER SEQUENCE public.plant_templates_id_seq OWNED BY public.plant_templates.id;
 
 
 --
+-- Name: point_group_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.point_group_items (
+    id bigint NOT NULL,
+    point_group_id bigint NOT NULL,
+    point_id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: point_group_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.point_group_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: point_group_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.point_group_items_id_seq OWNED BY public.point_group_items.id;
+
+
+--
+-- Name: point_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.point_groups (
+    id bigint NOT NULL,
+    name character varying(80) NOT NULL,
+    device_id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: point_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.point_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: point_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.point_groups_id_seq OWNED BY public.point_groups.id;
+
+
+--
 -- Name: points_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -1662,8 +1726,9 @@ CREATE TABLE public.web_app_configs (
     expand_step_options boolean DEFAULT false,
     hide_sensors boolean DEFAULT false,
     confirm_plant_deletion boolean DEFAULT true,
+    confirm_sequence_deletion boolean DEFAULT true,
     discard_unsaved_sequences boolean DEFAULT false,
-    confirm_sequence_deletion boolean DEFAULT true
+    user_interface_read_only_mode boolean DEFAULT false
 );
 
 
@@ -1885,6 +1950,20 @@ ALTER TABLE ONLY public.pin_bindings ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.plant_templates ALTER COLUMN id SET DEFAULT nextval('public.plant_templates_id_seq'::regclass);
+
+
+--
+-- Name: point_group_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_group_items ALTER COLUMN id SET DEFAULT nextval('public.point_group_items_id_seq'::regclass);
+
+
+--
+-- Name: point_groups id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_groups ALTER COLUMN id SET DEFAULT nextval('public.point_groups_id_seq'::regclass);
 
 
 --
@@ -2197,6 +2276,22 @@ ALTER TABLE ONLY public.pin_bindings
 
 ALTER TABLE ONLY public.plant_templates
     ADD CONSTRAINT plant_templates_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: point_group_items point_group_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_group_items
+    ADD CONSTRAINT point_group_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: point_groups point_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_groups
+    ADD CONSTRAINT point_groups_pkey PRIMARY KEY (id);
 
 
 --
@@ -2613,6 +2708,27 @@ CREATE INDEX index_plant_templates_on_device_id ON public.plant_templates USING 
 --
 
 CREATE INDEX index_plant_templates_on_saved_garden_id ON public.plant_templates USING btree (saved_garden_id);
+
+
+--
+-- Name: index_point_group_items_on_point_group_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_point_group_items_on_point_group_id ON public.point_group_items USING btree (point_group_id);
+
+
+--
+-- Name: index_point_group_items_on_point_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_point_group_items_on_point_id ON public.point_group_items USING btree (point_id);
+
+
+--
+-- Name: index_point_groups_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_point_groups_on_device_id ON public.point_groups USING btree (device_id);
 
 
 --
@@ -3149,6 +3265,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190701155706'),
 ('20190709194037'),
 ('20190715214412'),
-('20190722160305');
+('20190722160305'),
+('20190729134954'),
+('20190804194135'),
+('20190804194154');
 
 
