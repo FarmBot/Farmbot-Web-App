@@ -318,6 +318,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,
+    user_interface_read_only_mode: false
   });
 }
 

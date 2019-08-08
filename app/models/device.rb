@@ -14,9 +14,9 @@ class Device < ApplicationRecord
 
   PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
                         images logs peripherals pin_bindings plant_templates
-                        points regimens saved_gardens sensor_readings sensors
-                        sequences token_issuances tools webcam_feeds
-                        diagnostic_dumps fragments)
+                        points point_groups regimens saved_gardens
+                        sensor_readings sensors sequences token_issuances tools
+                        webcam_feeds diagnostic_dumps fragments)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 

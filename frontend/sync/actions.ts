@@ -80,7 +80,8 @@ export async function fetchSyncData(dispatch: Function) {
     ]),
     2: () => Promise.all<{}>([
       get("SensorReading", API.current.sensorReadingPath),
-      get("Sequence", API.current.sequencesPath)
+      get("Sequence", API.current.sequencesPath),
+      get("PointGroup", API.current.pointGroupsPath)
     ]),
     3: () => Promise.all<{}>([
       get("Regimen", API.current.regimensPath),
