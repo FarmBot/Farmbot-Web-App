@@ -1,6 +1,6 @@
 import * as React from "react";
 import { DiagnosticMessages } from "../../constants";
-import { Col, Row } from "../../ui/index";
+import { Col, Row, docLink } from "../../ui/index";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
@@ -41,6 +41,10 @@ export function Diagnosis(props: DiagnosisProps) {
         <p>
           {diagnose(props)}
         </p>
+        <a href={docLink("connecting-farmbot-to-the-internet")} target="_blank">
+          <i className="fa fa-external-link" />
+          {t("Click here to learn more about error codes.")}
+        </a>
       </Col>
     </Row>
   </div>;
