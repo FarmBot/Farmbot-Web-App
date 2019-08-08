@@ -1,4 +1,9 @@
-jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../history", () => ({
+  history: {
+    push: jest.fn(),
+    getCurrentLocation: () => ({ pathname: "/app/messages" }),
+  }
+}));
 
 import * as React from "react";
 import { tourNames, TOUR_STEPS } from "../tours";
@@ -22,6 +27,7 @@ describe("<RunTour />", () => {
 });
 
 describe("<Tour />", () => {
+  console.log = jest.fn();
   const fakeCallbackData = (data: Partial<CallBackProps>): CallBackProps => ({
     action: data.action || "start",
     index: data.index || 0,
@@ -36,8 +42,10 @@ describe("<Tour />", () => {
     const steps = [TOUR_STEPS()[tourNames()[0].name][0]];
     const wrapper = shallow<Tour>(<Tour steps={steps} />);
     wrapper.instance().callback(fakeCallbackData({ type: "tour:end" }));
-    expect(wrapper.state()).toEqual({ run: false, index: 0 });
-    expect(history.push).toHaveBeenCalledWith("/app/help");
+    expect(wrapper.state()).toEqual({
+      run: false, index: 0, returnPath: "/app/messages"
+    });
+    expect(history.push).toHaveBeenCalledWith("/app/messages");
   });
 
   it("navigates through tour: next", () => {
@@ -45,7 +53,9 @@ describe("<Tour />", () => {
     const wrapper = shallow<Tour>(<Tour steps={steps} />);
     wrapper.instance().callback(
       fakeCallbackData({ action: "next", type: "step:after" }));
-    expect(wrapper.state()).toEqual({ run: true, index: 1 });
+    expect(wrapper.state()).toEqual({
+      run: true, index: 1, returnPath: "/app/messages"
+    });
     expect(history.push).toHaveBeenCalledWith("/app/tools");
   });
 
@@ -54,7 +64,9 @@ describe("<Tour />", () => {
     const wrapper = shallow<Tour>(<Tour steps={steps} />);
     wrapper.instance().callback(
       fakeCallbackData({ action: "prev", index: 9, type: "step:after" }));
-    expect(wrapper.state()).toEqual({ run: true, index: 8 });
+    expect(wrapper.state()).toEqual({
+      run: true, index: 8, returnPath: "/app/messages"
+    });
     expect(history.push).not.toHaveBeenCalled();
   });
 });

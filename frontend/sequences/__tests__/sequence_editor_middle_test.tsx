@@ -25,7 +25,7 @@ describe("<SequenceEditorMiddle/>", () => {
         farmwareConfigs: {},
       },
       shouldDisplay: jest.fn(),
-      confirmStepDeletion: false,
+      getWebAppConfigValue: jest.fn(),
       menuOpen: false,
     };
   }

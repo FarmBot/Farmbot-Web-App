@@ -1,17 +1,19 @@
 const mockDevice = {
-  checkUpdates: jest.fn(() => { return Promise.resolve(); }),
-  powerOff: jest.fn(() => { return Promise.resolve(); }),
+  checkUpdates: jest.fn(() => Promise.resolve()),
+  powerOff: jest.fn(() => Promise.resolve()),
   resetOS: jest.fn(),
-  reboot: jest.fn(() => { return Promise.resolve(); }),
-  rebootFirmware: jest.fn(() => { return Promise.resolve(); }),
-  checkArduinoUpdates: jest.fn(() => { return Promise.resolve(); }),
-  emergencyLock: jest.fn(() => { return Promise.resolve(); }),
-  emergencyUnlock: jest.fn(() => { return Promise.resolve(); }),
-  execSequence: jest.fn(() => { return Promise.resolve(); }),
-  resetMCU: jest.fn(() => { return Promise.resolve(); }),
-  togglePin: jest.fn(() => { return Promise.resolve(); }),
-  home: jest.fn(() => { return Promise.resolve(); }),
-  sync: jest.fn(() => { return Promise.resolve(); }),
+  reboot: jest.fn(() => Promise.resolve()),
+  rebootFirmware: jest.fn(() => Promise.resolve()),
+  flashFirmware: jest.fn(() => Promise.resolve()),
+  checkArduinoUpdates: jest.fn(() => Promise.resolve()),
+  emergencyLock: jest.fn(() => Promise.resolve()),
+  emergencyUnlock: jest.fn(() => Promise.resolve()),
+  execSequence: jest.fn(() => Promise.resolve()),
+  resetMCU: jest.fn(() => Promise.resolve()),
+  togglePin: jest.fn(() => Promise.resolve()),
+  readPin: jest.fn(() => Promise.resolve()),
+  home: jest.fn(() => Promise.resolve()),
+  sync: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
@@ -37,7 +39,7 @@ import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { API } from "../../api/index";
 import axios from "axios";
-import { success, error, warning, info } from "farmbot-toastr";
+import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 
 describe("checkControllerUpdates()", function () {
@@ -82,6 +84,14 @@ describe("restartFirmware()", function () {
   it("calls restartFirmware", async () => {
     await actions.restartFirmware();
     expect(mockDevice.rebootFirmware).toHaveBeenCalled();
+    expect(success).toHaveBeenCalled();
+  });
+});
+
+describe("flashFirmware()", function () {
+  it("calls flashFirmware", async () => {
+    await actions.flashFirmware("arduino");
+    expect(mockDevice.flashFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -227,6 +237,16 @@ describe("pinToggle()", function () {
   });
 });
 
+describe("readPin()", function () {
+  it("calls readPin", async () => {
+    await actions.readPin(1, "label", 0);
+    expect(mockDevice.readPin).toHaveBeenCalledWith({
+      pin_number: 1, label: "label", pin_mode: 0,
+    });
+    expect(success).not.toHaveBeenCalled();
+  });
+});
+
 describe("homeAll()", function () {
   it("calls home", async () => {
     await actions.homeAll(100);
@@ -243,8 +263,12 @@ describe("isLog()", function () {
   });
 
   it("filters sensitive logs", () => {
-    expect(() => actions.isLog({ message: "NERVESPSKWPASSWORD" }))
-      .toThrowError(/Refusing to display log/);
+    const log = { message: "NERVESPSKWPASSWORD" };
+    console.error = jest.fn();
+    const result = actions.isLog(log);
+    expect(result).toBe(false);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("Refusing to display log"));
   });
 });
 
@@ -344,17 +368,21 @@ describe("fetchReleases()", () => {
 });
 
 describe("fetchLatestGHBetaRelease()", () => {
-  it("fetches latest beta OS release version", async () => {
-    mockGetRelease = Promise.resolve({ data: [{ tag_name: "v1.0.0-beta" }] });
-    const dispatch = jest.fn();
-    await actions.fetchLatestGHBetaRelease("url/001")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      payload: { version: "1.0.0-beta", commit: undefined },
-      type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
+  const testFetchBeta = (tag_name: string, version: string) =>
+    it(`fetches latest beta OS release version: ${tag_name}`, async () => {
+      mockGetRelease = Promise.resolve({ data: [{ tag_name }] });
+      const dispatch = jest.fn();
+      await actions.fetchLatestGHBetaRelease("url/001")(dispatch);
+      expect(axios.get).toHaveBeenCalledWith("url");
+      expect(error).not.toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledWith({
+        payload: { version, commit: undefined },
+        type: Actions.FETCH_BETA_OS_UPDATE_INFO_OK
+      });
     });
-  });
+
+  testFetchBeta("v1.0.0-beta", "1.0.0-beta");
+  testFetchBeta("v1.0.0-rc1", "1.0.0-rc1");
 
   it("fails to fetches latest beta OS release version", async () => {
     mockGetRelease = Promise.reject("error");

@@ -63,7 +63,7 @@ function route<T, U>(info: UnboundRouteConfig<T, U>) {
             const child = (await info.getChild())[info.childKey];
             callback(comp, child, info);
           } else {
-            callback((await info.getModule())[info.key], undefined, info);
+            callback(comp, undefined, info);
           }
         } catch (e) {
           console.error(e);
@@ -89,8 +89,9 @@ const key = "FarmDesigner";
 /** Bind the route to a callback by calling in a function that passes the
   callback in as the first argument.
  *
- * DO NOT RE-ORDER ITEMS FOR READABILITY- they are order dependant.
+ * DO NOT RE-ORDER ITEMS FOR READABILITY--they are order-dependent.
  * Stuff will break if the route order is changed.
+ * (e.g., must be "a" then "a/:b/c" then "a/:b", 404 must be last, etc.)
  */
 export const UNBOUND_ROUTES = [
   route({
@@ -131,6 +132,12 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: false,
+    $: "/messages",
+    getModule: () => import("./messages"),
+    key: "Messages",
+  }),
+  route({
+    children: false,
     $: "/regimens(/:regimen)",
     getModule: () => import("./regimens"),
     key: "Regimens",
@@ -155,7 +162,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events",
+    $: "/designer/events",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/farm_events"),
@@ -163,7 +170,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events/add",
+    $: "/designer/events/add",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/add_farm_event"),
@@ -171,7 +178,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/farm_events/:farm_event_id",
+    $: "/designer/events/:farm_event_id",
     getModule,
     key,
     getChild: () => import("./farm_designer/farm_events/edit_farm_event"),
@@ -243,14 +250,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/:plant_id/edit",
-    getModule,
-    key,
-    getChild: () => import("./farm_designer/plants/edit_plant_info"),
-    childKey: "EditPlantInfo"
-  }),
-  route({
-    children: true,
     $: "/designer/plants/:plant_id",
     getModule,
     key,
@@ -275,14 +274,6 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/saved_gardens/templates/:plant_template_id/edit",
-    getModule,
-    key,
-    getChild: () => import("./farm_designer/plants/edit_plant_info"),
-    childKey: "EditPlantInfo"
-  }),
-  route({
-    children: true,
     $: "/designer/saved_gardens/templates/:plant_template_id",
     getModule,
     key,
@@ -296,5 +287,13 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
     childKey: "SavedGardens"
+  }),
+  route({
+    children: true,
+    $: "/designer/settings",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/settings"),
+    childKey: "DesignerSettings"
   }),
 ].concat([NOT_FOUND_ROUTE]);

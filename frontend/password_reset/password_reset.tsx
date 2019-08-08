@@ -1,11 +1,11 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
-import { error as log, init as logInit } from "farmbot-toastr";
+import { error as log, init as logInit } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 import { Session } from "../session";
+import { t } from "../i18next_wrapper";
 
 export interface State {
   password?: string;
@@ -75,7 +75,9 @@ export class PasswordReset extends React.Component<Props, State> {
         <Row>
           <Col xs={12} sm={6} className="col-sm-push-3">
             <Widget>
-              <WidgetHeader title={"Reset Password"} />
+              <WidgetHeader
+                title={"Reset Password"}
+                helpText={t("Password must be 8 or more characters.")} />
               <WidgetBody>
                 <form onSubmit={this.submit.bind(this)}>
                   <label>

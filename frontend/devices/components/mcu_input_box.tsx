@@ -1,13 +1,14 @@
 import * as React from "react";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../toast/toast";
 import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
 import {
   clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize
 } from "../../util";
-import { t } from "i18next";
+
 import { isUndefined } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export class McuInputBox extends React.Component<McuInputBoxProps, {}> {
 

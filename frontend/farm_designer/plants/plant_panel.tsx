@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
@@ -12,20 +11,23 @@ import { Actions } from "../../constants";
 import { Link } from "../../link";
 import { DesignerPanelContent } from "./designer_panel";
 import { parseIntInput } from "../../util";
-import { startCase, isNumber } from "lodash";
+import { startCase } from "lodash";
+import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
-  onDestroy?(uuid: string): void;
-  updatePlant?(uuid: string, update: PlantOptions): void;
+  onDestroy(uuid: string): void;
+  updatePlant(uuid: string, update: PlantOptions): void;
   inSavedGarden: boolean;
   dispatch: Function;
-  timeOffset?: number;
+  timeSettings?: TimeSettings;
 }
 
 export const PLANT_STAGES: DropDownItem[] = [
   { value: "planned", label: t("Planned") },
   { value: "planted", label: t("Planted") },
+  { value: "sprouted", label: t("Sprouted") },
   { value: "harvested", label: t("Harvested") },
 ];
 
@@ -41,6 +43,10 @@ export const PLANT_STAGES_DDI = {
   [PLANT_STAGES[2].value]: {
     label: PLANT_STAGES[2].label,
     value: PLANT_STAGES[2].value
+  },
+  [PLANT_STAGES[3].value]: {
+    label: PLANT_STAGES[3].label,
+    value: PLANT_STAGES[3].value
   },
 };
 
@@ -74,17 +80,17 @@ export function EditPlantStatus(props: EditPlantStatusProps) {
 
 export interface EditDatePlantedProps extends EditPlantProperty {
   datePlanted: Moment;
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export const EditDatePlanted = (props: EditDatePlantedProps) => {
-  const { datePlanted, updatePlant, uuid, timeOffset } = props;
+  const { datePlanted, updatePlant, uuid, timeSettings } = props;
   return <BlurableInput
     type="date"
-    value={datePlanted.utcOffset(timeOffset).format("YYYY-MM-DD")}
+    value={datePlanted.utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD")}
     onCommit={e => updatePlant(uuid, {
       planted_at: moment(e.currentTarget.value)
-        .utcOffset(timeOffset).toISOString()
+        .utcOffset(timeSettings.utcOffset).toISOString()
     })} />;
 };
 
@@ -118,16 +124,50 @@ const chooseLocation = (to: Record<"x" | "y", number | undefined>) =>
     return Promise.resolve();
   };
 
-const MoveToPlant =
-  (props: { x: number, y: number, dispatch: Function, isEditing: boolean }) =>
-    <button className="fb-button gray"
-      hidden={props.isEditing}
-      onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
-        .then(() => history.push("/app/designer/move_to"))}>
-      {t("Move FarmBot to this plant")}
-    </button>;
+interface MoveToPlantProps {
+  x: number;
+  y: number;
+  dispatch: Function;
+}
 
-const ListItem = (props: { name: string, children: React.ReactChild }) =>
+const MoveToPlant = (props: MoveToPlantProps) =>
+  <button className="fb-button gray no-float"
+    style={{ marginTop: "1rem" }}
+    onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
+      .then(() => history.push("/app/designer/move_to"))}>
+    {t("Move FarmBot to this plant")}
+  </button>;
+
+interface DeleteButtonsProps {
+  destroy(): void;
+}
+
+const DeleteButtons = (props: DeleteButtonsProps) =>
+  <div>
+    <div>
+      <label>
+        {t("Delete this plant")}
+      </label>
+    </div>
+    <button
+      className="fb-button red no-float"
+      onClick={props.destroy}>
+      {t("Delete")}
+    </button>
+    <button
+      className="fb-button gray no-float"
+      style={{ marginRight: "10px" }}
+      onClick={() => history.push("/app/designer/plants/select")} >
+      {t("Delete multiple")}
+    </button>
+  </div>;
+
+interface ListItemProps {
+  name: string;
+  children: React.ReactChild;
+}
+
+const ListItem = (props: ListItemProps) =>
   <li>
     <p>
       {props.name}
@@ -138,20 +178,17 @@ const ListItem = (props: { name: string, children: React.ReactChild }) =>
   </li>;
 
 export function PlantPanel(props: PlantPanelProps) {
-  const { info, onDestroy, updatePlant, dispatch, inSavedGarden } = props;
-  const { name, slug, plantedAt, daysOld, uuid, plantStatus } = info;
-  let { x, y } = info;
-  const isEditing = !!onDestroy;
-  if (isEditing) { x = round(x); y = round(y); }
-  const destroy = () => onDestroy && onDestroy(uuid);
+  const {
+    info, onDestroy, updatePlant, dispatch, inSavedGarden, timeSettings
+  } = props;
+  const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
+  const { x, y } = info;
+  const destroy = () => onDestroy(uuid);
   return <DesignerPanelContent panelName={"plants"}>
     <label>
       {t("Plant Info")}
     </label>
     <ul>
-      <ListItem name={t("Full Name")}>
-        {startCase(name)}
-      </ListItem>
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
@@ -159,27 +196,31 @@ export function PlantPanel(props: PlantPanelProps) {
           {startCase(slug)}
         </Link>
       </ListItem>
-      <ListItem name={t("Started")}>
-        {(updatePlant && isNumber(props.timeOffset) && !inSavedGarden)
-          ? <EditDatePlanted
-            uuid={uuid}
-            datePlanted={plantedAt}
-            timeOffset={props.timeOffset}
-            updatePlant={updatePlant} />
-          : plantedAt.format("MMMM Do YYYY, h:mma")}
-      </ListItem>
-      <ListItem name={t("Age")}>
-        {`${daysOld} ${t("days old")}`}
-      </ListItem>
+      {(timeSettings && !inSavedGarden) &&
+        <Row>
+          <Col xs={7}>
+            <ListItem name={t("Started")}>
+              <EditDatePlanted
+                uuid={uuid}
+                datePlanted={plantedAt}
+                timeSettings={timeSettings}
+                updatePlant={updatePlant} />
+            </ListItem>
+          </Col>
+          <Col xs={5}>
+            <ListItem name={t("Age")}>
+              {`${daysOld} ${t("days old")}`}
+            </ListItem>
+          </Col>
+        </Row>}
       <ListItem name={t("Location")}>
-        {updatePlant
-          ? <EditPlantLocation uuid={uuid}
-            location={{ x, y }}
-            updatePlant={updatePlant} />
-          : `(${x}, ${y})`}
+        <EditPlantLocation uuid={uuid}
+          location={{ x, y }}
+          updatePlant={updatePlant} />
       </ListItem>
+      <MoveToPlant x={x} y={y} dispatch={dispatch} />
       <ListItem name={t("Status")}>
-        {(updatePlant && !inSavedGarden)
+        {(!inSavedGarden)
           ? <EditPlantStatus
             uuid={uuid}
             plantStatus={plantStatus}
@@ -187,24 +228,6 @@ export function PlantPanel(props: PlantPanelProps) {
           : t(startCase(plantStatus))}
       </ListItem>
     </ul>
-    <MoveToPlant x={x} y={y} dispatch={dispatch} isEditing={isEditing} />
-    <div>
-      <label hidden={!isEditing}>
-        {t("Delete this plant")}
-      </label>
-    </div>
-    <button
-      className="fb-button red"
-      hidden={!isEditing}
-      onClick={destroy}>
-      {t("Delete")}
-    </button>
-    <button
-      className="fb-button gray"
-      style={{ marginRight: "10px" }}
-      hidden={!isEditing}
-      onClick={() => history.push("/app/designer/plants/select")} >
-      {t("Delete multiple")}
-    </button>
+    <DeleteButtons destroy={destroy} />
   </DesignerPanelContent>;
 }

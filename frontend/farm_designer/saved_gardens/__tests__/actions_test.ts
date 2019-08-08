@@ -1,6 +1,8 @@
 jest.mock("axios", () => ({
   post: jest.fn(() => Promise.resolve()),
-  patch: jest.fn(() => Promise.resolve()),
+  patch: jest.fn(() => Promise.resolve({
+    headers: { "x-farmbot-rpc-id": "123" }
+  })),
 }));
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));

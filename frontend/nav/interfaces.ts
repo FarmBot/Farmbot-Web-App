@@ -1,12 +1,14 @@
 import { BotState } from "../devices/interfaces";
-import { TaggedUser, TaggedLog } from "farmbot";
+import { TaggedUser, TaggedLog, TaggedDevice } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface SyncButtonProps {
   dispatch: Function;
   bot: BotState;
   consistent: boolean;
   onClick?: () => void;
+  autoSync: boolean;
 }
 
 export interface NavBarProps {
@@ -15,9 +17,12 @@ export interface NavBarProps {
   bot: BotState;
   user: TaggedUser | undefined;
   dispatch: Function;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   tour: string | undefined;
+  device: TaggedDevice;
+  autoSync: boolean;
+  alertCount: number;
 }
 
 export interface NavBarState {
@@ -31,18 +36,20 @@ type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
 export interface MobileMenuProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   mobileMenuOpen: boolean;
+  alertCount: number;
 }
 
 export interface TickerListProps {
   toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: TaggedLog[]
   tickerListOpen: boolean;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
 }
 
 export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
+  alertCount: number;
 }
 
 export interface AccountMenuProps {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Col, Row } from "../../ui";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
 
 export function ToolBayHeader() {
   return <Row>
@@ -17,7 +17,7 @@ export function ToolBayHeader() {
       <label>{t("Z")}</label>
     </Col>
     <Col xs={4}>
-      <label>{t("Tool")}</label>
+      <label>{t("Tool or Seed Container")}</label>
     </Col>
   </Row>;
 }

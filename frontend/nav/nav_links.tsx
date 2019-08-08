@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
   computeEditorUrlFromState, computeFarmwareUrlFromState
 } from "./compute_editor_url_from_state";
 import { Link } from "../link";
+import { t } from "../i18next_wrapper";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -40,7 +41,7 @@ export const links: NavLinkParams[] = [
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState
   },
-  { name: "Logs", icon: "list", slug: "logs" },
+  { name: "Messages", icon: "list", slug: "messages" },
 ];
 
 export const NavLinks = (props: NavLinksProps) => {
@@ -58,7 +59,13 @@ export const NavLinks = (props: NavLinksProps) => {
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
-          {t(link.name)}
+          <div>
+            {t(link.name)}
+            {link.slug === "messages" && props.alertCount > 0 &&
+              <div className={"saucer fun"}>
+                <p>{props.alertCount}</p>
+              </div>}
+          </div>
         </Link>;
       })}
     </div>

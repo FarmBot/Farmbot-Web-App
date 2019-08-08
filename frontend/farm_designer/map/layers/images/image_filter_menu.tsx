@@ -1,6 +1,5 @@
 import * as React from "react";
 import { BlurableInput } from "../../../../ui/index";
-import { t } from "i18next";
 import { offsetTime } from "../../../farm_events/edit_fe_form";
 import {
   setWebAppConfigValue, GetWebAppConfigValue
@@ -10,6 +9,8 @@ import {
   formatDate, formatTime
 } from "../../../farm_events/map_state_to_props_add_edit";
 import { Slider } from "@blueprintjs/core";
+import { t } from "../../../../i18next_wrapper";
+import { TimeSettings } from "../../../../interfaces";
 
 interface ImageFilterMenuState {
   beginDate: string | undefined;
@@ -20,7 +21,7 @@ interface ImageFilterMenuState {
 }
 
 export interface ImageFilterMenuProps {
-  tzOffset: number;
+  timeSettings: TimeSettings;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   imageAgeInfo: { newestDate: string, toOldest: number };
@@ -51,16 +52,16 @@ export class ImageFilterMenu
   updateState = () => {
     const beginDatetime = this.props.getConfigValue("photo_filter_begin");
     const endDatetime = this.props.getConfigValue("photo_filter_end");
-    const { tzOffset } = this.props;
+    const { timeSettings } = this.props;
     this.setState({
       beginDate: beginDatetime
-        ? formatDate(beginDatetime.toString(), tzOffset) : undefined,
+        ? formatDate(beginDatetime.toString(), timeSettings) : undefined,
       beginTime: beginDatetime
-        ? formatTime(beginDatetime.toString(), tzOffset) : undefined,
+        ? formatTime(beginDatetime.toString(), timeSettings) : undefined,
       endDate: endDatetime
-        ? formatDate(endDatetime.toString(), tzOffset) : undefined,
+        ? formatDate(endDatetime.toString(), timeSettings) : undefined,
       endTime: endDatetime
-        ? formatTime(endDatetime.toString(), tzOffset) : undefined,
+        ? formatTime(endDatetime.toString(), timeSettings) : undefined,
     });
   }
 
@@ -69,26 +70,26 @@ export class ImageFilterMenu
       const input = e.currentTarget.value;
       this.setState({ [datetime]: input });
       const { beginDate, beginTime, endDate, endTime } = this.state;
-      const { dispatch, tzOffset } = this.props;
+      const { dispatch, timeSettings } = this.props;
       let value = undefined;
       switch (datetime) {
         case "beginDate":
-          value = offsetTime(input, beginTime || "00:00", tzOffset);
+          value = offsetTime(input, beginTime || "00:00", timeSettings);
           dispatch(setWebAppConfigValue("photo_filter_begin", value));
           break;
         case "beginTime":
           if (beginDate) {
-            value = offsetTime(beginDate, input, tzOffset);
+            value = offsetTime(beginDate, input, timeSettings);
             dispatch(setWebAppConfigValue("photo_filter_begin", value));
           }
           break;
         case "endDate":
-          value = offsetTime(input, endTime || "00:00", tzOffset);
+          value = offsetTime(input, endTime || "00:00", timeSettings);
           dispatch(setWebAppConfigValue("photo_filter_end", value));
           break;
         case "endTime":
           if (endDate) {
-            value = offsetTime(endDate, input, tzOffset);
+            value = offsetTime(endDate, input, timeSettings);
             dispatch(setWebAppConfigValue("photo_filter_end", value));
           }
           break;
@@ -99,11 +100,11 @@ export class ImageFilterMenu
   sliderChange = (slider: number) => {
     const { newestDate, toOldest } = this.props.imageAgeInfo;
     this.setState({ slider });
-    const { dispatch, tzOffset } = this.props;
+    const { dispatch, timeSettings } = this.props;
     const calcDate = (day: number) =>
       moment(newestDate).subtract(toOldest - day, "days").toISOString();
-    const begin = offsetTime(calcDate(slider - 1), "00:00", tzOffset);
-    const end = offsetTime(calcDate(slider), "00:00", tzOffset);
+    const begin = offsetTime(calcDate(slider - 1), "00:00", timeSettings);
+    const end = offsetTime(calcDate(slider), "00:00", timeSettings);
     dispatch(setWebAppConfigValue("photo_filter_begin", begin));
     dispatch(setWebAppConfigValue("photo_filter_end", end));
   }
@@ -111,7 +112,7 @@ export class ImageFilterMenu
   renderLabel = (day: number) => {
     const { newestDate, toOldest } = this.props.imageAgeInfo;
     return moment(newestDate)
-      .utcOffset(this.props.tzOffset)
+      .utcOffset(this.props.timeSettings.utcOffset)
       .subtract(toOldest + 1 - day, "days")
       .format("MMM-D");
   }

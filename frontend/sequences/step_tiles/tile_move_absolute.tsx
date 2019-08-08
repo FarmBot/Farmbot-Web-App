@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { StepParams } from "../interfaces";
 import { MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication } from "farmbot";
@@ -20,10 +19,18 @@ import {
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
 import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
+import { t } from "../../i18next_wrapper";
+import { Collapse } from "@blueprintjs/core";
+import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
+  state: MoveAbsState = {
+    more: !!this.props.expandStepOptions || this.hasOffset };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
+  get hasOffset(): boolean {
+    const {x, y, z} = this.args.offset.args;
+    return !!(x || y || z); }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
@@ -45,7 +52,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
     const location = variable.args.data_value;
-    if (location.kind === "every_point") {
+    if (location.kind === "every_point" as unknown) {
       throw new Error("Can't put `every_point` into `move_abs");
     } else {
       this.updateArgs({ location });
@@ -73,7 +80,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     <LocationForm
       variable={{
         celeryNode: this.celeryNode,
-        dropdown: determineDropdown(this.celeryNode, this.props.resources),
+        dropdown: determineDropdown(this.celeryNode, this.props.resources,
+          this.props.currentSequence.uuid),
         vector: this.vector,
       }}
       sequenceUuid={this.props.currentSequence.uuid}
@@ -137,7 +145,14 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       </StepHeader>
       <StepContent className={className}>
         <this.LocationForm />
-        <this.OffsetForm />
+        <ExpandableHeader
+          expanded={this.state.more}
+          title={t("More")}
+          onClick={() =>
+            this.setState({ more: !this.state.more })} />
+        <Collapse isOpen={this.state.more}>
+          <this.OffsetForm />
+        </Collapse>
       </StepContent>
     </StepWrapper>;
   }

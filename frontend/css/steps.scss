@@ -58,6 +58,7 @@
     box-shadow: none;
     color: $dark_gray;
     font-weight: bold;
+    min-width: 130px;
   }
   p {
     font-size: 1rem;
@@ -234,5 +235,11 @@
   input,
   select {
     width: 100%;
+  }
+  .expandable-header {
+    font-size: 1.6rem;
+  }
+  .bp3-collapse {
+    overflow: hidden;
   }
 }

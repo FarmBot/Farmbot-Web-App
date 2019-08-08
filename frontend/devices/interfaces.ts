@@ -9,6 +9,8 @@ import {
   TaggedDiagnosticDump,
   TaggedFarmwareInstallation,
   JobProgress,
+  FirmwareHardware,
+  Alert,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -18,7 +20,8 @@ import {
 import { IntegerSize } from "../util";
 import { Farmwares } from "../farmware/interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
-import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface Props {
   userToApi: ConnectionStatus | undefined;
@@ -37,6 +40,8 @@ export interface Props {
   isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
+  timeSettings: TimeSettings;
+  alerts: Alert[];
 }
 
 /** Function to save a Farmware env variable to the API. */
@@ -64,6 +69,7 @@ export enum Feature {
   sensors = "sensors",
   change_ownership = "change_ownership",
   variables = "variables",
+  loops = "loops",
   api_pin_bindings = "api_pin_bindings",
   farmduino_k14 = "farmduino_k14",
   jest_feature = "jest_feature", // for tests
@@ -77,24 +83,12 @@ export enum Feature {
   api_farmware_env = "api_farmware_env",
   use_update_channel = "use_update_channel",
   long_scaling_factor = "long_scaling_factor",
+  flash_firmware = "flash_firmware",
+  express_k10 = "express_k10",
+  none_firmware = "none_firmware",
 }
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
-
-/** How the device is stored in the API side.
- * This is what comes back from the API as JSON.
- */
-export interface DeviceAccountSettings {
-  id: number;
-  name: string;
-  timezone?: string | undefined;
-  tz_offset_hrs: number;
-  throttled_until?: string;
-  throttled_at?: string;
-  fbos_version?: string | undefined;
-  last_saw_api?: string | undefined;
-  last_saw_mq?: string | undefined;
-}
 
 export interface BotState {
   /** The browser optimistically overwrites FBOS sync status to "syncing..."
@@ -154,17 +148,13 @@ export type BotLocationData = Record<LocationName, BotPosition>;
 
 export type StepsPerMmXY = Record<"x" | "y", (number | undefined)>;
 
-export interface CalibrationButtonProps {
-  disabled: boolean;
-  axis: Axis;
-}
-
 export type UserEnv = Record<string, string | undefined>;
 
 export interface FarmbotOsProps {
   bot: BotState;
+  alerts: Alert[];
   diagnostics: TaggedDiagnosticDump[];
-  account: TaggedDevice;
+  deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: string;
   dispatch: Function;
@@ -173,6 +163,7 @@ export interface FarmbotOsProps {
   isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
+  timeSettings: TimeSettings;
 }
 
 export interface FarmbotOsState {
@@ -193,6 +184,7 @@ export interface McuInputBoxProps {
 
 export interface EStopButtonProps {
   bot: BotState;
+  forceUnlock: boolean;
 }
 
 export interface PeripheralsProps {
@@ -217,15 +209,16 @@ export interface FarmwareProps {
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;
   farmwares: Farmwares;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   syncStatus: SyncStatus | undefined;
-  webAppConfig: Partial<WebAppConfig>;
+  getConfigValue: GetWebAppConfigValue;
   firstPartyFarmwareNames: string[];
   currentFarmware: string | undefined;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   taggedFarmwareInstallations: TaggedFarmwareInstallation[];
   imageJobs: JobProgress[];
+  infoOpen: boolean;
 }
 
 export interface HardwareSettingsProps {
@@ -236,6 +229,8 @@ export interface HardwareSettingsProps {
   shouldDisplay: ShouldDisplay;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
+  resources: ResourceIndex;
 }
 
 export interface ControlPanelState {

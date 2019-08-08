@@ -25,19 +25,22 @@ import {
   onSent,
   onOnline,
   onMalformed,
-  speakLogAloud
+  speakLogAloud,
+  onPublicBroadcast,
+  onReconnect,
 } from "../../connect_device";
 import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
-import { success, error, info, warning } from "farmbot-toastr";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { talk } from "browser-speech";
 import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
+import { FbjsEventName } from "farmbot/dist/constants";
+import { info, error, success, warning, fun, busy } from "../../../toast/toast";
 
 const A_STRING = expect.any(String);
 describe("readStatus()", () => {
@@ -86,21 +89,32 @@ describe("showLogOnScreen", () => {
   function assertToastr(types: ALLOWED_MESSAGE_TYPES[], toastr: Function) {
     jest.resetAllMocks();
     types.map((x) => {
-      const fun = fakeLog(x, ["toast"]);
-      showLogOnScreen(fun);
-      expect(toastr).toHaveBeenCalledWith(fun.message, TITLE);
+      const log = fakeLog(x, ["toast"]);
+      showLogOnScreen(log);
+      expect(toastr).toHaveBeenCalledWith(log.message, TITLE());
     });
   }
 
-  it("routes `fun`, `info` and all others to toastr.info()", () => {
+  it("routes `info` and all others to toastr.info()", () => {
     assertToastr([
-      MessageType.fun,
       MessageType.info,
       ("FOO" as ALLOWED_MESSAGE_TYPES)], info);
   });
 
-  it("routes `busy`, `warn` and `error` to toastr.error()", () => {
-    assertToastr([MessageType.busy, MessageType.warn, MessageType.error], error);
+  it("routes `error` to toastr.error()", () => {
+    assertToastr([MessageType.error], error);
+  });
+
+  it("routes `warn` to toastr.warning()", () => {
+    assertToastr([MessageType.warn], warning);
+  });
+
+  it("routes `busy` to toastr.busy()", () => {
+    assertToastr([MessageType.busy], busy);
+  });
+
+  it("routes `fun` to toastr.fun()", () => {
+    assertToastr([MessageType.fun], fun);
   });
 
   it("routes `success` to toastr.success()", () => {
@@ -157,7 +171,7 @@ describe("onOffline", () => {
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
-    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED, "Error");
+    expect(error).toHaveBeenCalledWith(Content.MQTT_DISCONNECTED);
   });
 });
 
@@ -167,6 +181,12 @@ describe("onOnline", () => {
     onOnline();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", undefined, A_STRING);
   });
+});
+
+describe("onReconnect", () => {
+  onReconnect();
+  expect(warning).toHaveBeenCalledWith(
+    "Attempting to reconnect to the message broker", "Offline", "yellow");
 });
 
 describe("changeLastClientConnected", () => {
@@ -216,5 +236,41 @@ describe("onLogs", () => {
     fn(log);
     globalQueue.maybeWork();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("bot.mqtt", undefined, A_STRING);
+  });
+
+  it("handles log fields correctly", () => {
+    const fn = onLogs(jest.fn(), fakeState);
+    const log = fakeLog(MessageType.info, []);
+    log.message = "online";
+    // tslint:disable-next-line:no-any
+    (log as any).meta = { y: 200 };
+    fn(log);
+    expect(log).toEqual(expect.objectContaining({ message: "online", y: 200 }));
+  });
+});
+
+describe("onPublicBroadcast", () => {
+  const expectBroadcastLog = () =>
+    expect(console.log).toHaveBeenCalledWith(
+      FbjsEventName.publicBroadcast, expect.any(Object));
+
+  it("triggers when appropriate", () => {
+    location.assign = jest.fn();
+    window.confirm = jest.fn(() => true);
+    console.log = jest.fn();
+    onPublicBroadcast({});
+    expectBroadcastLog();
+    expect(window.confirm).toHaveBeenCalledWith(Content.FORCE_REFRESH_CONFIRM);
+    expect(location.assign).toHaveBeenCalled();
+  });
+
+  it("allows cancellation of refresh", () => {
+    window.confirm = jest.fn(() => false);
+    window.alert = jest.fn();
+    console.log = jest.fn();
+    onPublicBroadcast({});
+    expectBroadcastLog();
+    expect(window.alert).toHaveBeenCalledWith(Content.FORCE_REFRESH_CANCEL_WARNING);
+    expect(location.assign).not.toHaveBeenCalled();
   });
 });

@@ -8,10 +8,10 @@ def check_for_digests
     .pluck(:device_id)
     .uniq
     .map do |id|
-      device = Device.find(id)
-      puts "Sending log digest to device \##{id} (#{device.name})"
-      LogDeliveryMailer.log_digest(device).deliver
-    end
+    device = Device.find(id)
+    puts "Sending log digest to device \##{id} (#{device.name})"
+    LogDeliveryMailer.log_digest(device).deliver
+  end
   sleep 10.minutes
 end
 
@@ -38,7 +38,7 @@ def user_typed?(word)
 end
 
 namespace :api do
-  desc "Runs pending email digests. "\
+  desc "Runs pending email digests. " \
        "Use the `FOREVER` ENV var to continually check."
   task log_digest: :environment do
     puts "Running log digest loop..."
@@ -51,24 +51,31 @@ namespace :api do
   end
 
   def parcel(cmd, opts = " ")
-    intro = [ "node_modules/parcel-bundler/bin/cli.js",
-              cmd,
-              DashboardController::PARCEL_ASSET_LIST,
-              "--out-dir",
-              DashboardController::PUBLIC_OUTPUT_DIR,
-              "--public-url",
-              DashboardController::OUTPUT_URL,
-            ].join(" ")
-    sh [intro, opts, DashboardController::PARCEL_CLI_OUTRO].join(" ")
+    intro = [
+      "NODE_ENV=#{Rails.env}",
+      "node_modules/parcel-bundler/bin/cli.js",
+      cmd,
+      DashboardController::PARCEL_ASSET_LIST,
+      "--out-dir",
+      DashboardController::PUBLIC_OUTPUT_DIR,
+      "--public-url",
+      DashboardController::OUTPUT_URL,
+    ].join(" ")
+    sh [intro, opts].join(" ")
+  end
+
+  def clean_assets
+    # Clear out cache and previous builds on initial load.
+    sh [
+      "rm -rf",
+      DashboardController::CACHE_DIR,
+      DashboardController::PUBLIC_OUTPUT_DIR,
+    ].join(" ") unless ENV["NO_CLEAN"]
   end
 
   desc "Serve javascript assets (via Parcel bundler)."
   task serve_assets: :environment do
-    # Clear out cache and previous builds on initial load.
-    sh ["rm -rf",
-        DashboardController::CACHE_DIR,
-        DashboardController::PUBLIC_OUTPUT_DIR
-       ].join(" ")
+    clean_assets
     parcel "watch", DashboardController::PARCEL_HMR_OPTS
   end
 
@@ -77,9 +84,17 @@ namespace :api do
     parcel "build"
   end
 
+  desc "Clean out old demo accounts"
+  task clean_demo_accounts: :environment do
+    User
+      .where("email ILIKE '%@farmbot.guest%'")
+      .where("updated_at < ?", 1.hour.ago)
+      .destroy_all
+  end
+
   desc "Reset _everything_, including your database"
   task :reset do
-    puts "This is going to destroy _ALL_ of your local Farmbot SQL data and "\
+    puts "This is going to destroy _ALL_ of your local Farmbot SQL data and " \
          "configs. Type 'destroy' to continue, enter to abort."
     if user_typed?("destroy")
       hard_reset_api
@@ -88,38 +103,40 @@ namespace :api do
     end
   end
 
-  VERSION   = "tag_name"
+  VERSION = "tag_name"
   TIMESTAMP = "created_at"
+  PRERELEASE = "prerelease"
 
   desc "Update GlobalConfig to deprecate old FBOS versions"
   task deprecate: :environment do
     # Get current version
-    version_str     = GlobalConfig.dump.fetch("FBOS_END_OF_LIFE_VERSION")
+    version_str = GlobalConfig.dump.fetch("FBOS_END_OF_LIFE_VERSION")
     # Convert it to Gem::Version for easy comparisons (>, <, ==, etc)
     current_version = Gem::Version::new(version_str)
     # 60 days is the current policy.
-    cutoff   = 60.days.ago
+    cutoff = 60.days.ago
     # Download release data from github
     stringio = open("https://api.github.com/repos/farmbot/farmbot_os/releases")
-    string   = stringio.read
-    data     = JSON
-    .parse(string)
-    .map    { |x| x.slice(VERSION, TIMESTAMP)    } # Only grab keys that matter
-    .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
-    .map   do |x|
+    string = stringio.read
+    data = JSON
+      .parse(string)
+      .map { |x| x.slice(VERSION, TIMESTAMP, PRERELEASE) } # Only grab keys that matter
+      .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
+      .reject { |x| x.fetch(PRERELEASE) } # Remove pre-releases
+      .map do |x|
       # Convert string-y version/timestamps to Real ObjectsTM
       version = Gem::Version::new(x.fetch(VERSION).gsub("v", ""))
-      time    = DateTime.parse(x.fetch(TIMESTAMP))
+      time = DateTime.parse(x.fetch(TIMESTAMP))
       Pair.new(version, time)
     end
-    .select do |pair|
+      .select do |pair|
       # Grab versions that are > current version and outside of cutoff window
-      (pair.head > current_version) && (pair.tail < cutoff)
+      (pair.head >= current_version) && (pair.tail < cutoff)
     end
-    .sort_by { |p| p.tail } # Sort by release date
-    .last(2) # Grab 2 latest versions (closest to cuttof)
-    .first   # Give 'em some leeway, grabbing the 2nd most outdated version.
-    .try(:head) # We might already be up-to-date?
+      .sort_by { |p| p.tail } # Sort by release date
+      .last(2) # Grab 2 latest versions (closest to cutoff)
+      .first # Give 'em some leeway, grabbing the 2nd most outdated version.
+      .try(:head) # We might already be up-to-date?
     if data # ...or not
       puts "Setting new support target to #{data.to_s}"
       GlobalConfig # Set the new oldest support version.

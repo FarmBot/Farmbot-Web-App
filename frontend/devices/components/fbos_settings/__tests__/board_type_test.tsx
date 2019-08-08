@@ -8,11 +8,17 @@ import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
-import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+import {
+  fakeFbosConfig
+} from "../../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
+import { bot } from "../../../../__test_support__/fake_state/bot";
+import {
+  fakeTimeSettings
+} from "../../../../__test_support__/fake_time_settings";
 
 describe("<BoardType/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -20,58 +26,17 @@ describe("<BoardType/>", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): BoardTypeProps => ({
-    firmwareVersion: "",
+    bot,
+    alerts: [],
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
-  });
-
-  it("Farmduino", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "5.0.3.F";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("Farmduino");
-  });
-
-  it("Farmduino k1.4", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "5.0.3.G";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("1.4");
-  });
-
-  it("Arduino/RAMPS", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "5.0.3.R";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("Arduino/RAMPS");
-  });
-
-  it("Undefined", () => {
-    const p = fakeProps();
-    p.firmwareVersion = undefined;
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("None");
-  });
-
-  it("Disconnected", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
-    expect(mount(<BoardType {...p} />).text()).toContain("None");
-    p.firmwareVersion = "disconnected";
-    expect(mount(<BoardType {...p} />).text()).toContain("None");
-  });
-
-  it("Stubbed", () => {
-    const p = fakeProps();
-    p.firmwareVersion = "STUBFW";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("None");
+    botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("Disconnected with valid FirmwareConfig", () => {
     const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
     p.sourceFbosConfig = () => ({ value: "farmduino", consistent: false });
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
@@ -79,28 +44,45 @@ describe("<BoardType/>", () => {
 
   it("calls updateConfig", () => {
     const p = fakeProps();
-    p.firmwareVersion = "Arduino Disconnected!";
     const wrapper = shallow(<BoardType {...p} />);
     wrapper.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { firmware_hardware: "farmduino" });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, {
+      firmware_hardware: "farmduino"
+    });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+  });
+
+  it("deosn't call updateConfig", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<BoardType {...p} />);
+    wrapper.find("FBSelect").simulate("change",
+      { label: "firmware_hardware", value: "unknown" });
+    expect(edit).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("displays standard boards", () => {
     const wrapper = shallow(<BoardType {...fakeProps()} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" }]);
+      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
+      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+    ]);
   });
 
-  it("displays new board", () => {
+  it("displays new boards", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
     const wrapper = shallow(<BoardType {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
-      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" }]);
+      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+      { label: "Farmduino (Express v1.0)", value: "express_k10" },
+      { label: "None", value: "none" },
+    ]);
   });
 });

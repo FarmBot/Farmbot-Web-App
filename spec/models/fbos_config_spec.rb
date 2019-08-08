@@ -27,7 +27,7 @@ describe FbosConfig do
     it "triggers callbacks" do
       conn = fake_conn("Create a cert")
       NervesHub.set_conn(conn)
-      url    = "/orgs/farmbot/devices/#{device.serial_number}"
+      url    = "/orgs/farmbot/products/farmbot/devices/#{device.serial_number}"
       resp   = StubResp.new("200", { "data" => { "tags": [] } }.to_json)
       resp2  = StubResp.new("201", { "data" => { "tags": [] } }.to_json)
       params = [ url,
@@ -39,5 +39,9 @@ describe FbosConfig do
       run_jobs_now do
         config.update_attributes!(update_channel: "beta")
       end
+    end
+
+    it "has default firmware_hardware" do
+      expect(FbosConfig.create!.firmware_hardware).to eq(nil)
     end
 end

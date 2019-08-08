@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { getDevice } from "../../../device";
 import { Axis } from "../../interfaces";
 import { ToolTips } from "../../../constants";
 import { Row, Col } from "../../../ui/index";
 import { ZeroRowProps } from "../interfaces";
 import { commandErr } from "../../actions";
+import { t } from "../../../i18next_wrapper";
 
 const zero =
   (axis: Axis) => getDevice().setZero(axis).catch(commandErr("Zeroing"));

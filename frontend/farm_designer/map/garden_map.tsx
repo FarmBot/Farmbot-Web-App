@@ -259,7 +259,10 @@ export class GardenMap extends
     cameraCalibrationData={this.props.cameraCalibrationData}
     visible={!!this.props.showImages}
     mapTransformProps={this.mapTransformProps}
-    getConfigValue={this.props.getConfigValue} />
+    imageFilterBegin={
+      (this.props.getConfigValue("photo_filter_begin") || "").toString()}
+    imageFilterEnd={
+      (this.props.getConfigValue("photo_filter_end") || "").toString()} />
   Grid = () => <Grid
     onClick={this.closePanel()}
     mapTransformProps={this.mapTransformProps} />
@@ -267,7 +270,7 @@ export class GardenMap extends
     visible={!!this.props.showSensorReadings}
     sensorReadings={this.props.sensorReadings}
     mapTransformProps={this.mapTransformProps}
-    timeOffset={this.props.timeOffset}
+    timeSettings={this.props.timeSettings}
     sensors={this.props.sensors} />
   SpreadLayer = () => <SpreadLayer
     mapTransformProps={this.mapTransformProps}
@@ -299,6 +302,7 @@ export class GardenMap extends
   ToolSlotLayer = () => <ToolSlotLayer
     mapTransformProps={this.mapTransformProps}
     visible={!!this.props.showFarmbot}
+    botPositionX={this.props.botLocationData.position.x}
     slots={this.props.toolSlots} />
   FarmBotLayer = () => <FarmBotLayer
     mapTransformProps={this.mapTransformProps}

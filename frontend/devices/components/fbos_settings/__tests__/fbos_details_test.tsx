@@ -4,16 +4,19 @@ jest.mock("../../../../api/crud", () => ({
 }));
 
 import * as React from "react";
-import { FbosDetails, colorFromTemp, betaReleaseOptIn } from "../fbos_details";
+import {
+  FbosDetails, colorFromTemp, betaReleaseOptIn, colorFromThrottle, ThrottleType
+} from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { FbosDetailsProps } from "../interfaces";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex, fakeDevice
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<FbosDetails/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -25,6 +28,9 @@ describe("<FbosDetails/>", () => {
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: true, consistent: true }),
     shouldDisplay: () => false,
+    botToMqttLastSeen: "",
+    deviceAccount: fakeDevice(),
+    timeSettings: fakeTimeSettings(),
   });
 
   it("renders", () => {
@@ -153,6 +159,20 @@ describe("<FbosDetails/>", () => {
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("2 days");
   });
+
+  it("doesn't display when throttled value is undefined", () => {
+    const p = fakeProps();
+    p.botInfoSettings.throttled = undefined;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("voltage");
+  });
+
+  it("displays voltage indicator", () => {
+    const p = fakeProps();
+    p.botInfoSettings.throttled = "0x0";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("voltage");
+  });
 });
 
 describe("betaReleaseOptIn()", () => {
@@ -217,5 +237,17 @@ describe("colorFromTemp()", () => {
   it("temperature is cold", () => {
     expect(colorFromTemp(9)).toEqual("blue");
     expect(colorFromTemp(-1)).toEqual("lightblue");
+  });
+});
+
+describe("colorFromThrottle()", () => {
+  it("is currently throttled", () => {
+    expect(colorFromThrottle("0x40004", ThrottleType.Throttled)).toEqual("red");
+  });
+  it("was throttled", () => {
+    expect(colorFromThrottle("0x40000", ThrottleType.Throttled)).toEqual("yellow");
+  });
+  it("hasn't been throttled", () => {
+    expect(colorFromThrottle("0x0", ThrottleType.Throttled)).toEqual("green");
   });
 });

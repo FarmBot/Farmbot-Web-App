@@ -1,5 +1,5 @@
 import { render } from "react-dom";
-import { init } from "i18next";
+import I from "i18next";
 import { detectLanguage } from "../i18n";
 import * as _React from "react";
 import { createElement } from "react";
@@ -13,4 +13,4 @@ const reactElem = createElement(TosUpdate, {});
 
 const ok = () => domElem && render(reactElem, domElem);
 
-detectLanguage().then(conf => init(conf, ok));
+detectLanguage().then(conf => I.init(conf, ok));

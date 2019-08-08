@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ToolListAndFormProps } from "../interfaces";
-import { t } from "i18next";
+
 import {
   Row,
   Col,
@@ -14,6 +14,7 @@ import { getArrayStatus } from "../../resources/tagged_resources";
 import { edit, destroy, init, saveAll } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { TaggedTool } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
   get newToolName() { return t("Tool ") + (this.props.tools.length + 1); }
@@ -82,13 +83,13 @@ export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
 
   render() {
     return <Widget className="tools-widget">
-      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools">
+      <WidgetHeader helpText={ToolTips.TOOL_LIST} title="Tools and Seed Containers">
         <this.HeaderButtons />
       </WidgetHeader>
       <WidgetBody>
         <Row>
           <Col xs={12}>
-            <label>{t("Tool Name")}</label>
+            <label>{t("Name")}</label>
           </Col>
         </Row>
         {this.props.tools.map(this.ToolForm)}

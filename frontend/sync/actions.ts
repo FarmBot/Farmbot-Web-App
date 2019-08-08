@@ -73,13 +73,15 @@ export async function fetchSyncData(dispatch: Function) {
     1: () => Promise.all<{}>([
       get("PlantTemplate", API.current.plantTemplatePath),
       get("Peripheral", API.current.peripheralsPath),
-      get("Point", API.current.pointsPath),
+      get("Point", API.current.allPointsPath),
       get("Sensor", API.current.sensorPath),
-      get("Tool", API.current.toolsPath)
+      get("Tool", API.current.toolsPath),
+      get("Alert", API.current.alertPath),
     ]),
     2: () => Promise.all<{}>([
       get("SensorReading", API.current.sensorReadingPath),
-      get("Sequence", API.current.sequencesPath)
+      get("Sequence", API.current.sequencesPath),
+      get("PointGroup", API.current.pointGroupsPath)
     ]),
     3: () => Promise.all<{}>([
       get("Regimen", API.current.regimensPath),

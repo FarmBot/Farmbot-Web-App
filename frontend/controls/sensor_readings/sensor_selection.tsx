@@ -1,8 +1,8 @@
 import * as React from "react";
 import { FBSelect, DropDownItem } from "../../ui";
-import { t } from "i18next";
 import { TaggedSensor } from "farmbot";
 import { SensorSelectionProps } from "./interfaces";
+import { t } from "../../i18next_wrapper";
 
 const ALL_CHOICE: DropDownItem = { label: t("All"), value: "" };
 
@@ -16,7 +16,7 @@ export const SensorSelection = ({
   sensors.map(x => {
     sensorDDIByUuidLookup[x.uuid] = { label: x.body.label, value: x.uuid };
   });
-  return <div>
+  return <div className="sensor-selection">
     <label>{t("Sensor")}</label>
     <FBSelect
       key={selectedSensor ? selectedSensor.uuid : "all_sensors"}

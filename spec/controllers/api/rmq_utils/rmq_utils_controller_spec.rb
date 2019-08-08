@@ -5,116 +5,171 @@ describe Api::RmqUtilsController do
   let :credentials do
     pass = "password123"
     user = FactoryBot.create(:user,
-                             password:              pass,
+                             password: pass,
                              password_confirmation: pass)
     token = Auth::CreateToken
-              .run!(email:        user.email,
-                    password:     pass,
-                    fbos_version: Gem::Version.new("99.99.99"))[:token].encoded
+      .run!(email: user.email,
+            password: pass,
+            fbos_version: Gem::Version.new("99.99.99"))[:token].encoded
     { username: "device_#{user.device.id}",
       password: token }
   end
 
+  it "limits users to 20 connections per 5 minutes" do
+    empty_mail_bag
+    u = credentials.fetch(:username)
+    p = credentials.fetch(:password)
+    Rails
+      .cache
+      .redis
+      .set("mqtt_limiter:" + u.split("_").last, 0)
+
+    20.times do
+      post :user_action, params: { username: u, password: p }
+      expect(response.status).to eq(200)
+      expect(response.body).to include("allow")
+    end
+
+    run_jobs_now do
+      post :user_action, params: { username: u, password: p }
+      expect(response.status).to eq(403)
+      expect(response.body).not_to include("allow")
+    end
+  end
+
+  it "reports people trying to use ADMIN_PASSWORD on non-local servers" do
+    k = "ADMIN_PASSWORD"
+    old_pw = ENV[k]
+    ENV.delete(k)
+
+    post :user_action, params: { username: "admin", password: old_pw }
+    expect(response.status).to eq(403)
+    expect(response.body).not_to include("allow")
+
+    ENV[k] = old_pw
+  end
+
   it "allows admins to do anything" do
-    Api::RmqUtilsController::ALL.map do |action|
+    all =
+      [:user_action, :vhost_action, :resource_action, :topic_action]
+    all.map do |action|
       post action, params: { username: "admin",
-                             password: ENV.fetch("ADMIN_PASSWORD") }
+                            password: ENV.fetch("ADMIN_PASSWORD") }
       expect(response.status).to eq(200)
       expect(response.body).to include("allow")
     end
   end
 
+  it "denies public_broadcast write access to non-admin users" do
+    routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
+    permission = ["write", "configure"].sample
+    p = credentials.merge(routing_key: routing_key, permission: permission)
+    post :topic_action, params: p
+    expect(response.body).to eq("deny")
+    expect(response.status).to eq(403)
+  end
+
+  it "allows public_broadcast read access to non-admin users" do
+    routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
+    permission = "read"
+    p = credentials.merge(routing_key: routing_key, permission: permission)
+    post :topic_action, params: p
+    expect(response.body).to eq("allow")
+    expect(response.status).to eq(200)
+  end
+
   it "allows access to ones own topic" do
     p = credentials.merge(routing_key: "bot.#{credentials[:username]}.logs")
-    post :topic, params: p
+    post :topic_action, params: p
     expect(response.body).to include("allow")
     expect(response.status).to eq(200)
   end
 
   it "denies invalid topics" do
-    post :topic, params: credentials.merge(routing_key: "*")
+    post :topic_action, params: credentials.merge(routing_key: "*")
     expect(response.body).to include("malformed topic")
     expect(response.status).to eq(422)
   end
 
   it "denies viewing other people's topics" do
     p = credentials.merge(routing_key: "bot.device_0.from_device")
-    post :topic, params: p
+    post :topic_action, params: p
     expect(response.body).to include("deny")
     expect(response.status).to eq(403)
   end
 
   it "always denies guest users" do
-    no_no_no = \
+    no_no_no =
       { username: "guest",  # RabbitMQ Default user.
         password: "guest" } # RabbitMQ Default user.
-    post :user, params: no_no_no
+    post :user_action, params: no_no_no
     expect(response.body).to include("deny")
     expect(response.status).to eq(403)
   end
 
   it "`allow`s admin users when ADMIN_PASSWORD is provided" do
     admin_params = { username: "admin",
-                     password: ENV.fetch("ADMIN_PASSWORD") }
-    post :user, params: admin_params
+                    password: ENV.fetch("ADMIN_PASSWORD") }
+    post :user_action, params: admin_params
     expect(response.body).to include("allow")
     expect(response.status).to eq(200)
   end
 
   it "denies admin users when ADMIN_PASSWORD is wrong" do
-    admin_params = { username: "admin",
-                     password: ENV.fetch("ADMIN_PASSWORD").reverse + "X" }
-    post :user, params: admin_params
+    # If this test fails, something *very* bad is happening. - RC
+    bad_pw = ENV.fetch("ADMIN_PASSWORD").reverse + "X"
+    admin_params = { username: "admin", password: bad_pw }
+    post :user_action, params: admin_params
     expect(response.body).to include("deny")
     expect(response.status).to eq(403)
   end
 
   it "`allow`s end users and farmbots when JWT is provided" do
-    post :user, params: credentials
+    post :user_action, params: credentials
     expect(response.body).to include("allow")
     expect(response.status).to eq(200)
   end
 
   it "`deny`s end users and farmbots when JWT is provided" do
     credentials[:password] = credentials[:password].reverse + "X"
-    post :user, params: credentials
+    post :user_action, params: credentials
     expect(response.status).to eq(401)
     expect(json[:error]).to include("failed to authenticate")
   end
 
   it "`deny`s users who try spoofing usernames" do
     credentials[:username] = "device_0"
-    post :user, params: credentials
+    post :user_action, params: credentials
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end
 
   it "validates vHost" do
     vhost = Api::RmqUtilsController::VHOST
-    post :vhost, params: credentials.merge(vhost: vhost)
+    post :vhost_action, params: credentials.merge(vhost: vhost)
     expect(response.status).to eq(200)
     expect(response.body).to include("allow")
   end
 
   it "invalidates vHost" do
     vhost = Api::RmqUtilsController::VHOST + "NO"
-    post :vhost, params: credentials.merge(vhost: vhost)
+    post :vhost_action, params: credentials.merge(vhost: vhost)
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end
 
   it "allows RMQ resource usage" do
-    post :resource, params: credentials.merge({
-      resource:   Api::RmqUtilsController::RESOURCES.sample,
-      permission: Api::RmqUtilsController::PERMISSIONS.sample,
-    })
+    post :resource_action, params: credentials.merge({
+                             resource: Api::RmqUtilsController::RESOURCES.sample,
+                             permission: Api::RmqUtilsController::PERMISSIONS.sample,
+                           })
     expect(response.status).to eq(200)
     expect(response.body).to include("allow")
   end
 
   it "denies RMQ resource usage" do
-    post :resource, params: credentials.merge({ resource:   "something_else",
-                                                permission: "something_else" })
+    post :resource_action, params: credentials.merge({ resource: "something_else",
+                                                       permission: "something_else" })
     expect(response.status).to eq(403)
     expect(response.body).to include("deny")
   end
@@ -124,36 +179,94 @@ describe Api::RmqUtilsController do
   end
 
   it "validates topic names" do
-    r = Api::RmqUtilsController::TOPIC_REGEX
-    [ "*",
-      "#",
-      "foo",
-      "foo.*",
-      "bot.*",
-      random_channel,
-      random_channel(".nope"),
-      random_channel(".status_v3.*"),
-      random_channel(".status_v3"),
-    ].map { |x| expect(x.match(r)).to be(nil) }
+    r = Api::RmqUtilsController::DEVICE_SPECIFIC_CHANNELS
+    ["*",
+     "#",
+     "foo",
+     "foo.*",
+     "bot.*",
+     random_channel,
+     random_channel(".nope"),
+     random_channel(".status_v3.*"),
+     random_channel(".status_v3")].map { |x| expect(x.match(r)).to be(nil) }
 
-    [ ".from_api.*",
-      ".from_api",
-      ".from_clients.*",
-      ".from_clients",
-      ".from_device.*",
-      ".from_device",
-      ".logs.*",
-      ".logs",
-      ".nerves_hub.*",
-      ".nerves_hub",
-      ".resources_v0.*",
-      ".resources_v0",
-      ".status.*",
-      ".status",
-      ".sync.*",
-      ".sync",
-      ".status_v8.*",
-      ".status_v8",
-    ].map { |x| expect(random_channel(x).match(r)).to be }
+    [".from_api.*",
+     ".from_api",
+     ".from_clients.*",
+     ".from_clients",
+     ".from_device.*",
+     ".from_device",
+     ".logs.*",
+     ".logs",
+     ".nerves_hub.*",
+     ".nerves_hub",
+     ".resources_v0.*",
+     ".resources_v0",
+     ".status.*",
+     ".status",
+     ".sync.*",
+     ".sync",
+     ".status_v8.*",
+     ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }
+  end
+
+  it "allows farmbot_guest users, regardless of password" do
+    p = { username: "farmbot_demo", password: SecureRandom.alphanumeric }
+    post :user_action, params: p
+    expect(response.status).to eq(200)
+    expect(response.body).to eq("allow")
+  end
+
+  it "allows expected farmbot_guest topics" do
+    p = {
+      username: "farmbot_demo",
+      permission: "read",
+      routing_key: "demos.d3f91ygdrajxn8jk",
+    }
+    post :topic_action, params: p
+    expect(response.body).to(eq("allow"))
+    expect(response.status).to eq(200)
+  end
+
+  sneaky_topics = ["demos",
+                   "demos.#",
+                   "demos.*",
+                   "demos.#.#",
+                   "demos.*.*",
+                   "demos.#.*",
+                   "demos.*.#",
+                   "demos.#.d3f91ygdrajxn8jk",
+                   "demos.*.d3f91ygdrajxn8jk",
+                   "demos.d3f91ygdrajxn8jk.#",
+                   "demos.d3f91ygdrajxn8jk.*",
+                   "demos.d3f91ygdrajxn8jk.d3f91ygdrajxn8jk",
+                   nil]
+
+  device_8 = "device_#{FactoryBot.create(:device).id}"
+  possible_attackers = [
+    # ["username", "permission"]
+    ["farmbot_demo", "read"],
+    ["farmbot_demo", "write"],
+    ["farmbot_demo", "configure"],
+    ["farmbot_demo", nil],
+    [device_8, "read"],
+    [device_8, "write"],
+    [device_8, "configure"],
+    [device_8, nil],
+  ]
+  TEST_NAME_TPL = "%{username} %{permission}-ing %{routing_key}"
+  possible_attackers.map do |(username, permission)|
+    sneaky_topics.map do |topic|
+      p = { username: username, permission: permission, routing_key: topic }
+      it(TEST_NAME_TPL % p) do
+        post :topic_action, params: p
+        if response.status == 422
+          expect(response.body).to(include("malformed"))
+        else
+          expect(response.body).to(eq("deny"))
+          expect(response.status).to eq(403)
+        end
+      end
+    end
   end
 end

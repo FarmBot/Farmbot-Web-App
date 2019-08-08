@@ -3,7 +3,9 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
-import { fakeFbosConfig, fakeLog } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFbosConfig, fakeLog
+} from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
   function fakeLogs(count: number): TaggedLog[] {

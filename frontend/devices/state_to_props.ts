@@ -4,6 +4,7 @@ import {
   selectAllImages,
   getDeviceAccountSettings,
   maybeGetDevice,
+  maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
   sourceFbosConfigValue, sourceFwConfigValue
@@ -16,6 +17,8 @@ import {
   saveOrEditFarmwareEnv, reduceFarmwareEnv
 } from "../farmware/state_to_props";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
+import { DevSettings } from "../account/dev/dev_support";
+import { getAllAlerts } from "../messages/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;
@@ -23,8 +26,9 @@ export function mapStateToProps(props: Everything): Props {
   const firmwareConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const shouldDisplay =
-    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
@@ -45,5 +49,7 @@ export function mapStateToProps(props: Everything): Props {
     isValidFbosConfig: !!fbosConfig,
     env,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
+    alerts: getAllAlerts(props.resources),
   };
 }

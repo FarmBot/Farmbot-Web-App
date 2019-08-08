@@ -4,7 +4,7 @@ describe CeleryScript::AstNode do
   FIXTURE_FILE = File.read("./spec/lib/celery_script/ast_fixture2.json")
 
   let(:hash) do
-      JSON.parse(FIXTURE_FILE).deep_symbolize_keys
+      JSON.parse(FIXTURE_FILE, symbolize_names: true)
   end
 
   let (:node) { CeleryScript::AstNode.new(**hash) }

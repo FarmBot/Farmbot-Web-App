@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Color } from "./ui";
+import { t } from "./i18next_wrapper";
 
 /* tslint:disable:max-line-length */
 

@@ -1,28 +1,31 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
-import { t } from "i18next";
 import {
   CameraSelectionProps, CameraSelectionState
 } from "./interfaces";
-import { info, success, error } from "farmbot-toastr";
+import { info, success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 import { Feature } from "../../interfaces";
+import { t } from "../../../i18next_wrapper";
 
-const CAMERA_CHOICES = [
+const CAMERA_CHOICES = () => ([
   { label: t("USB Camera"), value: "USB" },
   { label: t("Raspberry Pi Camera"), value: "RPI" }
-];
+]);
 
-const CAMERA_CHOICES_DDI = {
-  [CAMERA_CHOICES[0].value]: {
-    label: CAMERA_CHOICES[0].label,
-    value: CAMERA_CHOICES[0].value
-  },
-  [CAMERA_CHOICES[1].value]: {
-    label: CAMERA_CHOICES[1].label,
-    value: CAMERA_CHOICES[1].value
-  }
+const CAMERA_CHOICES_DDI = () => {
+  const CHOICES = CAMERA_CHOICES();
+  return {
+    [CHOICES[0].value]: {
+      label: CHOICES[0].label,
+      value: CHOICES[0].value
+    },
+    [CHOICES[1].value]: {
+      label: CHOICES[1].label,
+      value: CHOICES[1].value
+    }
+  };
 };
 
 export class CameraSelection
@@ -35,8 +38,8 @@ export class CameraSelection
   selectedCamera(): DropDownItem {
     const camera = this.props.env["camera"];
     return camera
-      ? CAMERA_CHOICES_DDI[JSON.parse(camera)]
-      : CAMERA_CHOICES_DDI["USB"];
+      ? CAMERA_CHOICES_DDI()[JSON.parse(camera)]
+      : CAMERA_CHOICES_DDI()["USB"];
   }
 
   sendOffConfig = (selectedCamera: DropDownItem) => {
@@ -48,7 +51,7 @@ export class CameraSelection
       ? props.dispatch(props.saveFarmwareEnv(configKey, config[configKey]))
       : getDevice()
         .setUserEnv(config)
-        .then(() => success(t("Successfully configured camera!"), t("Success")))
+        .then(() => success(t("Successfully configured camera!")))
         .catch(() => error(t("An error occurred during configuration.")));
   }
 
@@ -63,9 +66,8 @@ export class CameraSelection
         <div>
           <FBSelect
             allowEmpty={false}
-            list={CAMERA_CHOICES}
+            list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
-            placeholder="Select a camera..."
             onChange={this.sendOffConfig}
             extraClass={this.props.botOnline ? "" : "disabled"} />
         </div>

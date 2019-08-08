@@ -20,7 +20,7 @@ module Regimens
     optional { body }
 
     def execute
-      device.auto_sync_transaction do
+      Regimen.auto_sync_debounce do
         ActiveRecord::Base.transaction do
           regimen.regimen_items.destroy_all
           inputs[:regimen_items].map! do |ri|
@@ -28,13 +28,14 @@ module Regimens
           end
           handle_body_field
           regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
+          regimen
         end
       end
-      regimen
     rescue ActiveRecord::RecordInvalid => e
       offender = e.record.as_json.slice("time_offset", "sequence_id").to_s
       add_error :regimen_items, :probably_bad, BAD_RECORD + offender
     end
   end
 end
+
 Regimina ||= Regimens # Lol, inflection errors

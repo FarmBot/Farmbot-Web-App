@@ -1,8 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
 import { Button, Classes, MenuItem, Alignment } from "@blueprintjs/core";
 import { Select, ItemRenderer } from "@blueprintjs/select";
 import { DropDownItem } from "./fb_select";
+import { t } from "../i18next_wrapper";
 
 const SelectComponent = Select.ofType<DropDownItem | undefined>();
 
@@ -32,7 +32,7 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
     return <SelectComponent
       {...flags}
       items={this.props.items}
-      itemPredicate={this.filter}
+      itemPredicate={this.filter(this.props.items)}
       itemRenderer={this.default}
       noResults={<MenuItem disabled text={t("No results.")} />}
       onItemSelect={this.handleValueChange}
@@ -66,18 +66,33 @@ export class FilterSearch extends React.Component<Props, Partial<State>> {
         text={`${i.label}`} />;
     }
 
-  private filter(query: string, item: DropDownItem) {
-    if (item.heading) { return true; }
-    const itemHeadingId = item.headingId ? item.headingId : "";
-    const itemSearchLabel = `${itemHeadingId}: ${item.label}`;
-    return itemSearchLabel.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-  }
+  private filter = (items: DropDownItem[]) =>
+    (query: string, item: DropDownItem): boolean => {
+      const matchedItems = allMatchedItems(items, query);
+      return item.heading
+        ? sectionHasItems(item.headingId, matchedItems)
+        : isMatch(item, query);
+    }
 
   private handleValueChange = (item: DropDownItem | undefined) => {
-    if (item) {
+    if (item && !item.heading) {
       this.props.onChange(item);
       this.setState({ item });
     }
   }
 
 }
+
+const isMatch = (item: DropDownItem, query: string): boolean =>
+  `${item.headingId || ""}: ${item.label}`
+    .toLowerCase().indexOf(query.toLowerCase()) >= 0;
+
+const allMatchedItems =
+  (allItems: DropDownItem[], query: string): DropDownItem[] =>
+    allItems.filter(x => !x.heading).filter(x => isMatch(x, query));
+
+const sectionHasItems =
+  (headingId: string | undefined, matchedItems: DropDownItem[]): boolean => {
+    const sectionItems = matchedItems.filter(x => x.headingId === headingId);
+    return sectionItems.length > 0;
+  };

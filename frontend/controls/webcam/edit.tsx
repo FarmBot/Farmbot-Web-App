@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
-import { t } from "i18next";
+
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";
 import { SpecialStatus, TaggedWebcamFeed } from "farmbot";
 import { sortBy } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export function sortedFeeds(feeds: TaggedWebcamFeed[]): TaggedWebcamFeed[] {
   return sortBy(feeds, (f) => { return f.body.id || Infinity; });

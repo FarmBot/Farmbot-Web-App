@@ -1,13 +1,14 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "/app/designer/plants";
 jest.mock("../../history", () => ({
-  history: {
-    getCurrentLocation: jest.fn(() => { return { pathname: mockPath }; }),
-  },
-  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
+  history: { getCurrentLocation: jest.fn(() => ({ pathname: mockPath })) },
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
+jest.mock("../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
@@ -16,8 +17,15 @@ import { mount } from "enzyme";
 import { Props } from "../interfaces";
 import { GardenMapLegendProps } from "../map/interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { fakeImage } from "../../__test_support__/fake_state/resources";
+import {
+  fakeImage, fakeWebAppConfig
+} from "../../__test_support__/fake_state/resources";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { fakeState } from "../../__test_support__/fake_state";
+import { edit } from "../../api/crud";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmDesigner/>", () => {
   function fakeProps(): Props {
@@ -47,7 +55,7 @@ describe("<FarmDesigner/>", () => {
         origin: undefined,
         calibrationZ: undefined
       },
-      tzOffset: 0,
+      timeSettings: fakeTimeSettings(),
       getConfigValue: jest.fn(),
       sensorReadings: [],
       sensors: [],
@@ -55,16 +63,15 @@ describe("<FarmDesigner/>", () => {
   }
 
   it("loads default map settings", () => {
-    localStorage.setItem("showPoints", "false");
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps =
+      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.legendMenuOpen).toBeFalsy();
     expect(legendProps.showPlants).toBeTruthy();
     expect(legendProps.showPoints).toBeTruthy();
     expect(legendProps.showSpread).toBeFalsy();
     expect(legendProps.showFarmbot).toBeTruthy();
     expect(legendProps.showImages).toBeFalsy();
-    expect(legendProps.botOriginQuadrant).toEqual(2);
     expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
     // tslint:disable-next-line:no-any
     const gardenMapProps = wrapper.find("GardenMap").props() as any;
@@ -80,7 +87,8 @@ describe("<FarmDesigner/>", () => {
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
     const wrapper = mount(<FarmDesigner {...p} />);
-    const legendProps = wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
+    const legendProps =
+      wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.imageAgeInfo)
       .toEqual({ newestDate: "2001-01-03T00:00:00.000Z", toOldest: 2 });
   });
@@ -91,7 +99,7 @@ describe("<FarmDesigner/>", () => {
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeTruthy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeFalsy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open")).toBeTruthy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeTruthy();
   });
 
@@ -101,7 +109,7 @@ describe("<FarmDesigner/>", () => {
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeFalsy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("hidden")).toBeTruthy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open")).toBeFalsy();
     expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeFalsy();
   });
 
@@ -110,5 +118,16 @@ describe("<FarmDesigner/>", () => {
     p.designer.openedSavedGarden = "SavedGardenUuid";
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+  });
+
+  it("toggles setting", () => {
+    const p = fakeProps();
+    const state = fakeState();
+    const dispatch = jest.fn();
+    state.resources = buildResourceIndex([fakeWebAppConfig()]);
+    p.dispatch = jest.fn(x => x(dispatch, () => state));
+    const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
+    wrapper.instance().toggle(BooleanSetting.show_plants)();
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { bot_origin_quadrant: 2 });
   });
 });

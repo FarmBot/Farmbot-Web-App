@@ -3,7 +3,7 @@
 module Api
   class WebcamFeedsController < Api::AbstractController
     def create
-      mutate WebcamFeeds::Create.run(params.as_json, device: current_device)
+      mutate WebcamFeeds::Create.run(raw_json, device: current_device)
     end
 
     def index
@@ -15,14 +15,14 @@ module Api
     end
 
     def update
-      mutate WebcamFeeds::Update.run(params.as_json, webcam_feed: webcam)
+      mutate WebcamFeeds::Update.run(raw_json, webcam_feed: webcam)
     end
 
     def destroy
       render json: webcam.destroy! && ""
     end
 
-  private
+    private
 
     def webcam
       webcams.find(params[:id])

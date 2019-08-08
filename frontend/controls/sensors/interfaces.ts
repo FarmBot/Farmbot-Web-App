@@ -5,13 +5,6 @@ export interface SensorState {
   isEditing: boolean;
 }
 
-export interface Sensor {
-  id?: number;
-  pin: number | undefined;
-  mode: number;
-  label: string;
-}
-
 export interface SensorFormProps {
   dispatch: Function;
   sensors: TaggedSensor[];

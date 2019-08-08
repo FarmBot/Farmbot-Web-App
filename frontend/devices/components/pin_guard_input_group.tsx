@@ -4,14 +4,15 @@ import { PinGuardMCUInputGroupProps } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { settingToggle } from "../actions";
 import { ToggleButton } from "../../controls/toggle_button";
-import { t } from "i18next";
 import { isUndefined } from "lodash";
+import { t } from "../../i18next_wrapper";
+import { PinNumberDropdown } from "./pin_number_dropdown";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
-  const { sourceFwConfig, dispatch, name, pinNumber, timeout, activeState
+  const { sourceFwConfig, dispatch, name, pinNumKey, timeoutKey, activeStateKey
   } = props;
-  const activeStateValue = sourceFwConfig(activeState).value;
+  const activeStateValue = sourceFwConfig(activeStateKey).value;
   const inactiveState = isUndefined(activeStateValue)
     ? undefined
     : !activeStateValue;
@@ -22,15 +23,15 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
       </label>
     </Col>
     <Col xs={3}>
-      <McuInputBox
-        setting={pinNumber}
-        sourceFwConfig={sourceFwConfig}
+      <PinNumberDropdown
+        pinNumKey={pinNumKey}
         dispatch={dispatch}
-        filter={32000} />
+        resources={props.resources}
+        sourceFwConfig={sourceFwConfig} />
     </Col>
     <Col xs={4}>
       <McuInputBox
-        setting={timeout}
+        setting={timeoutKey}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         filter={32000} />
@@ -39,8 +40,9 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
       <ToggleButton
         customText={{ textFalse: t("low"), textTrue: t("high") }}
         toggleValue={inactiveState}
-        dim={!sourceFwConfig(activeState).consistent}
-        toggleAction={() => dispatch(settingToggle(activeState, sourceFwConfig))} />
+        dim={!sourceFwConfig(activeStateKey).consistent}
+        toggleAction={() =>
+          dispatch(settingToggle(activeStateKey, sourceFwConfig))} />
     </Col>
   </Row>;
 }

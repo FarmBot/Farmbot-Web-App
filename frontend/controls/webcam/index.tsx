@@ -4,9 +4,10 @@ import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
 import { TaggedWebcamFeed, SpecialStatus } from "farmbot";
 import { edit, save, destroy, init } from "../../api/crud";
-import { error } from "farmbot-toastr";
-import { t } from "i18next";
+import { error } from "../../toast/toast";
+
 import { WebcamFeed } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 const HTTP = "http://";
 

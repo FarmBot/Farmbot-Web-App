@@ -27,7 +27,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../ui";
 import {
-  NamedPin, AllowedPinTypes, TaggedSensor, TaggedSequence
+  NamedPin, AllowedPinTypes, TaggedSensor, TaggedSequence, Nothing
 } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
@@ -111,48 +111,40 @@ describe("Pin and Peripheral support files", () => {
   });
 
   describe("pinsAsDropDownsWritePin()", () => {
-    it("doesn't display peripherals", () => {
-      const s = fakeSensor();
-      const p = fakePeripheral();
-      s.body.label = "not displayed";
-      p.body.label = "not displayed";
-      const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => false);
-      expect(JSON.stringify(result)).not.toContain("not displayed");
-    });
-
     it("displays peripherals", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "not displayed";
       p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsWritePin(ri.index, () => true);
+      const result = pinsAsDropDownsWritePin(ri.index, true);
       expect(JSON.stringify(result)).toContain("displayed peripheral");
       expect(JSON.stringify(result)).not.toContain("not displayed");
+    });
+
+    it("displays pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsWritePin(ri.index, true);
+      expect(JSON.stringify(result)).toContain("Pin 13");
     });
   });
 
   describe("pinsAsDropDownsReadPin()", () => {
-    it("doesn't display peripherals and sensors", () => {
-      const s = fakeSensor();
-      const p = fakePeripheral();
-      s.body.label = "not displayed";
-      p.body.label = "not displayed";
-      const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => false);
-      expect(JSON.stringify(result)).not.toContain("not displayed");
-    });
-
     it("displays peripherals and sensors", () => {
       const s = fakeSensor();
       const p = fakePeripheral();
       s.body.label = "displayed sensor";
       p.body.label = "displayed peripheral";
       const ri = buildResourceIndex([s, p]);
-      const result = pinsAsDropDownsReadPin(ri.index, () => true);
+      const result = pinsAsDropDownsReadPin(ri.index, true);
       expect(JSON.stringify(result)).toContain("displayed sensor");
       expect(JSON.stringify(result)).toContain("displayed peripheral");
+    });
+
+    it("displays pins", () => {
+      const ri = buildResourceIndex([]);
+      const result = pinsAsDropDownsReadPin(ri.index, true);
+      expect(JSON.stringify(result)).toContain("Pin 13");
     });
   });
 
@@ -213,15 +205,6 @@ describe("Pin and Peripheral support files", () => {
       expect(result).toEqual(expected);
     });
 
-    it("Rejects typos", () => {
-      const ri = buildResourceIndex([]).index;
-      const pin_type = "no" as AllowedPinTypes;
-      const pin_id = 0;
-      const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
-      const boom = () => namedPin2DropDown(ri, np);
-      expect(boom).toThrowError("Bad pin_type: \"no\"");
-    });
-
     Object.values(BoxLed).map(boxLed => {
       it(`converts ${boxLed} named pin to DropDownItem`, () => {
         const ri = buildResourceIndex([]).index;
@@ -237,6 +220,22 @@ describe("Pin and Peripheral support files", () => {
         };
         expect(result).toEqual(expected);
       });
+    });
+
+    it("converts nothing to DropDownItems", () => {
+      const ri = buildResourceIndex([]).index;
+      const n: Nothing = { kind: "nothing", args: {} };
+      const result = namedPin2DropDown(ri, n);
+      expect(result).toEqual(undefined);
+    });
+
+    it("Rejects typos", () => {
+      const ri = buildResourceIndex([]).index;
+      const pin_type = "no" as AllowedPinTypes;
+      const pin_id = 0;
+      const np: NamedPin = { kind: "named_pin", args: { pin_id, pin_type } };
+      const boom = () => namedPin2DropDown(ri, np);
+      expect(boom).toThrowError("Bad pin_type: \"no\"");
     });
   });
 

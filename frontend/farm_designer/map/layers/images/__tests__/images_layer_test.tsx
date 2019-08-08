@@ -26,14 +26,14 @@ describe("<ImageLayer/>", () => {
       images: [image],
       mapTransformProps: fakeMapTransformProps(),
       cameraCalibrationData: {
-        offset: { x: "0", y: "0" },
-        origin: "TOP_LEFT",
-        rotation: "0",
-        scale: "1",
-        calibrationZ: "0"
+        offset: { x: undefined, y: undefined },
+        origin: undefined,
+        rotation: undefined,
+        scale: undefined,
+        calibrationZ: undefined,
       },
-      sizeOverride: { width: 10, height: 10 },
-      getConfigValue: jest.fn(),
+      imageFilterBegin: "",
+      imageFilterEnd: "",
     };
   }
 
@@ -41,7 +41,7 @@ describe("<ImageLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
-    expect(layer.find("MapImage").html()).toContain("x=\"0\"");
+    expect(layer.find("MapImage").html()).toContain("image");
   });
 
   it("toggles visibility off", () => {
@@ -55,7 +55,7 @@ describe("<ImageLayer/>", () => {
   it("filters old images", () => {
     const p = fakeProps();
     p.images[0].body.created_at = "2018-01-22T05:00:00.000Z";
-    p.getConfigValue = () => "2018-01-23T05:00:00.000Z";
+    p.imageFilterBegin = "2018-01-23T05:00:00.000Z";
     const wrapper = shallow(<ImageLayer {...p} />);
     const layer = wrapper.find("#image-layer");
     expect(layer.find("MapImage").length).toEqual(0);

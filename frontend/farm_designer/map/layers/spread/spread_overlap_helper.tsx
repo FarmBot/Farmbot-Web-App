@@ -2,7 +2,7 @@ import * as React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
 import { round, transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
-import { cachedCrop } from "../../../../open_farm/icons";
+import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { isUndefined } from "lodash";
 
 enum OverlapColor {

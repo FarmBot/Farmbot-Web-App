@@ -11,7 +11,8 @@ jest.mock("../../config_storage/actions", () => ({
   toggleWebAppBool: jest.fn()
 }));
 
-let mockDestroyAllPromise: Promise<void | never> = Promise.reject("error");
+let mockDestroyAllPromise: Promise<void | never> =
+  Promise.reject("error").catch(() => { });
 jest.mock("../../api/crud", () => ({
   destroyAll: jest.fn(() => mockDestroyAllPromise)
 }));
@@ -23,7 +24,8 @@ import { FarmwareConfigMenuProps } from "../interfaces";
 import { getDevice } from "../../device";
 import { toggleWebAppBool } from "../../config_storage/actions";
 import { destroyAll } from "../../api/crud";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmwareConfigMenu />", () => {
   const fakeProps = (): FarmwareConfigMenuProps => ({
@@ -33,14 +35,14 @@ describe("<FarmwareConfigMenu />", () => {
     shouldDisplay: () => false,
   });
 
-  it("calls install 1st party farmwares", () => {
+  it("calls install 1st party farmware", () => {
     const wrapper = mount(<FarmwareConfigMenu {...fakeProps()} />);
     const button = wrapper.find("button").first();
     expect(button.hasClass("fa-download")).toBeTruthy();
     button.simulate("click");
   });
 
-  it("1st party farmwares all installed", () => {
+  it("1st party farmware all installed", () => {
     const p = fakeProps();
     p.firstPartyFwsInstalled = true;
     const wrapper = mount(<FarmwareConfigMenu {...p} />);
@@ -56,7 +58,8 @@ describe("<FarmwareConfigMenu />", () => {
     expect(button.hasClass("green")).toBeTruthy();
     expect(button.hasClass("fb-toggle-button")).toBeTruthy();
     button.simulate("click");
-    expect(toggleWebAppBool).toHaveBeenCalledWith("show_first_party_farmware");
+    expect(toggleWebAppBool).toHaveBeenCalledWith(
+      BooleanSetting.show_first_party_farmware);
   });
 
   it("1st party farmware display is disabled", () => {

@@ -1,7 +1,6 @@
 import { AddEditFarmEventProps } from "../interfaces";
-import { Everything } from "../../interfaces";
+import { Everything, TimeSettings } from "../../interfaces";
 import moment from "moment";
-import { t } from "i18next";
 import { history, getPathArray } from "../../history";
 import {
   selectAllFarmEvents,
@@ -14,7 +13,8 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  maybeGetDevice
+  maybeGetDevice,
+  maybeGetTimeSettings
 } from "../../resources/selectors";
 import {
   TaggedFarmEvent,
@@ -33,15 +33,17 @@ import {
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { getFbosConfig } from "../../resources/getters";
+import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../account/dev/dev_support";
 
-export let formatTime = (input: string, timeOffset: number) => {
+export let formatTime = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).utcOffset(timeOffset).format("HH:mm");
+  return moment(iso).utcOffset(timeSettings.utcOffset).format("HH:mm");
 };
 
-export let formatDate = (input: string, timeOffset: number) => {
+export let formatDate = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
-  return moment(iso).utcOffset(timeOffset).format("YYYY-MM-DD");
+  return moment(iso).utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD");
 };
 
 export let repeatOptions = [
@@ -114,13 +116,16 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const sequencesById = indexSequenceById(props.resources.index);
   const farmEventsById = indexFarmEventById(props.resources.index);
   const farmEvents = selectAllFarmEvents(props.resources.index);
+  const findFarmEventByUuid =
+    (uuid: string | undefined): TaggedFarmEvent | undefined =>
+      uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
   const getFarmEvent = (): TaggedFarmEvent | undefined => {
     const id = parseInt(getPathArray()[4]);
     if (id && hasId(props.resources.index, "FarmEvent", id)) {
       return findFarmEventById(props.resources.index, id);
     } else {
-      history.push("/app/designer/farm_events");
+      history.push("/app/designer/events");
     }
   };
 
@@ -141,8 +146,9 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
   const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData);
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   return {
     deviceTimezone: dev
@@ -157,8 +163,9 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     handleTime,
     farmEvents,
     getFarmEvent,
+    findFarmEventByUuid,
     findExecutable,
-    timeOffset: dev.body.tz_offset_hrs,
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     autoSyncEnabled,
     resources: props.resources.index,
     shouldDisplay,

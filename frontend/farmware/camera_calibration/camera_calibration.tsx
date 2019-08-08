@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { Row, Col } from "../../ui/index";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace } from "../weed_detector/image_workspace";
@@ -8,10 +7,11 @@ import { WDENVKey } from "../weed_detector/remote_env/interfaces";
 import { selectImage } from "../images/actions";
 import { calibrate, scanImage } from "./actions";
 import { envGet } from "../weed_detector/remote_env/selectors";
-import { MustBeOnline } from "../../devices/must_be_online";
+import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { WeedDetectorConfig } from "../weed_detector/config";
 import { Feature } from "../../devices/interfaces";
 import { namespace } from "../weed_detector";
+import { t } from "../../i18next_wrapper";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -36,7 +36,7 @@ export class CameraCalibration extends
           lockOpen={process.env.NODE_ENV !== "production"}>
           <button
             onClick={this.props.dispatch(calibrate)}
-            className="fb-button green farmware-button" >
+            className="fb-button green" >
             {t("Calibrate")}
           </button>
         </MustBeOnline>
@@ -48,12 +48,14 @@ export class CameraCalibration extends
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"}>
             <ImageWorkspace
+              botOnline={
+                isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
               onProcessPhoto={id => this.props.dispatch(scanImage(id))}
               onFlip={uuid => this.props.dispatch(selectImage(uuid))}
               images={this.props.images}
               currentImage={this.props.currentImage}
               onChange={this.change}
-              timeOffset={this.props.timeOffset}
+              timeSettings={this.props.timeSettings}
               iteration={this.props.iteration}
               morph={this.props.morph}
               blur={this.props.blur}

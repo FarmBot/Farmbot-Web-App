@@ -1,4 +1,4 @@
-import { Dictionary, FarmwareManifest, SyncStatus } from "farmbot/dist";
+import { Dictionary, SyncStatus, FarmwareConfig } from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { ShouldDisplay } from "../devices/interfaces";
@@ -21,6 +21,7 @@ export interface FarmwareState {
   currentFarmware: string | undefined;
   currentImage: string | undefined;
   firstPartyFarmwareNames: string[];
+  infoOpen: boolean;
 }
 
 export type FarmwareManifestEntry = Record<"name" | "manifest", string>;
@@ -32,10 +33,25 @@ export interface FarmwareConfigMenuProps {
   shouldDisplay: ShouldDisplay;
 }
 
-export type Farmwares = Dictionary<FarmwareManifest | undefined>;
+export type Farmwares = Dictionary<FarmwareManifestInfo>;
 
 export interface FarmwareEnv {
   id?: number;
   key: string;
   value: string | number | boolean;
+}
+
+export interface FarmwareManifestInfo {
+  name: string;
+  installation_pending: boolean;
+  url: string;
+  config: FarmwareConfig[];
+  meta: {
+    fbos_version: string;
+    farmware_tools_version: string;
+    description: string;
+    language: string;
+    version: string;
+    author: string;
+  }
 }

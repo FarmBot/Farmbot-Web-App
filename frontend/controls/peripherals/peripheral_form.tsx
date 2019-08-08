@@ -1,34 +1,30 @@
 import * as React from "react";
-import { t } from "i18next";
-import { destroy, edit } from "../../api/crud";
 import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
-import { KeyValEditRow } from "../key_val_edit_row";
+import { Row, Col } from "../../ui";
+import { NameInputBox, PinDropdown, DeleteButton } from "../pin_form_fields";
 
-export function PeripheralForm(props: PeripheralFormProps) {
-  const { dispatch, peripherals } = props;
-
-  return <div>
-    {sortResourcesById(peripherals).map(p => {
-
-      return <KeyValEditRow
-        key={p.uuid}
-        label={p.body.label}
-        onLabelChange={(e) => {
-          const { value } = e.currentTarget;
-          dispatch(edit(p, { label: value }));
-        }}
-        labelPlaceholder="Name"
-        value={(p.body.pin || "").toString()}
-        valuePlaceholder={t("Pin #")}
-        onValueChange={(e) => {
-          const { value } = e.currentTarget;
-          const update: Partial<typeof p.body> = { pin: parseInt(value, 10) };
-          dispatch(edit(p, update));
-        }}
-        onClick={() => { dispatch(destroy(p.uuid)); }}
-        disabled={false}
-        valueType="number" />;
-    })}
+export const PeripheralForm = (props: PeripheralFormProps) =>
+  <div className="peripheral-form">
+    {sortResourcesById(props.peripherals).map(peripheral =>
+      <Row key={peripheral.uuid}>
+        <Col xs={6}>
+          <NameInputBox
+            dispatch={props.dispatch}
+            value={peripheral.body.label}
+            resource={peripheral} />
+        </Col>
+        <Col xs={4}>
+          <PinDropdown
+            dispatch={props.dispatch}
+            value={peripheral.body.pin}
+            resource={peripheral} />
+        </Col>
+        <Col xs={2}>
+          <DeleteButton
+            dispatch={props.dispatch}
+            uuid={peripheral.uuid} />
+        </Col>
+      </Row>
+    )}
   </div>;
-}

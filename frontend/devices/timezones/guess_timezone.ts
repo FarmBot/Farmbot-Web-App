@@ -1,31 +1,14 @@
-import { t } from "i18next";
-import { Content } from "../../constants";
 import { isString } from "lodash";
+import { TaggedDevice } from "farmbot";
+import { edit, save } from "../../api/crud";
 
-/** Used for every new account the first time the Device page is loaded. */
-const ONLY_ONCE = {
-  need_to_talk: true
-};
+/** Use browser's i18n functionality to guess timezone. */
+const maybeResolveTZ = (): string | undefined => Intl &&
+  Intl.DateTimeFormat &&
+  Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-export function inferTimezone(current: string | undefined): string {
-  if (current) {
-    return current;
-  }
-  const browserTime = maybeResolveTZ();
-  if (browserTime) {
-    if (ONLY_ONCE.need_to_talk) {
-      alert(t(Content.TIMEZONE_GUESS_BROWSER));
-      ONLY_ONCE.need_to_talk = false;
-    }
-    // WARNING SIDE EFFECTS!!!
-    return browserTime;
-  }
-  if (ONLY_ONCE.need_to_talk) {
-    alert(t(Content.TIMEZONE_GUESS_UTC));
-    ONLY_ONCE.need_to_talk = false;
-  }
-  return "UTC";
-}
+export const inferTimezone = (current: string | undefined): string =>
+  current || maybeResolveTZ() || "UTC";
 
 /** Sometimes, a mismatch between the device time zone and the user time zone
  * can occur. When this happens,
@@ -41,14 +24,9 @@ export function timezoneMismatch(botTime: string | undefined,
   }
 }
 
-/** Use browser's i18n functionality to guess timezone. */
-function maybeResolveTZ(): string | undefined {
-  if (Intl && Intl.DateTimeFormat) {
-    // WARNING SIDE EFFECTS!!!
-    return Intl
-      .DateTimeFormat()
-      .resolvedOptions()
-      .timeZone;
+export function maybeSetTimezone(dispatch: Function, device: TaggedDevice) {
+  if (!device.body.timezone) {
+    dispatch(edit(device, { timezone: inferTimezone(undefined) }));
+    dispatch(save(device.uuid));
   }
-  return undefined;
 }

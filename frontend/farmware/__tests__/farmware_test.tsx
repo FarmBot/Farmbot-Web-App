@@ -1,50 +1,39 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
-jest.mock("../../history", () => ({
-  history: {
-    push: jest.fn(),
-    getCurrentLocation: () => ({ pathname: "" })
-  },
-}));
-
-const mockDevice = {
-  execScript: jest.fn(() => Promise.resolve({})),
-};
-
-jest.mock("../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
+jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount } from "enzyme";
 import { FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
-import { fakeFarmware, fakeFarmwares } from "../../__test_support__/fake_farmwares";
+import {
+  fakeFarmware, fakeFarmwares
+} from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
+import { Actions } from "../../constants";
+import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("<FarmwarePage />", () => {
-  const fakeProps = (): FarmwareProps => {
-    return {
-      farmwares: fakeFarmwares(),
-      botToMqttStatus: "up",
-      env: {},
-      user_env: {},
-      dispatch: jest.fn(),
-      currentImage: undefined,
-      images: [],
-      timeOffset: 0,
-      syncStatus: "synced",
-      webAppConfig: {},
-      firstPartyFarmwareNames: [],
-      currentFarmware: undefined,
-      shouldDisplay: () => false,
-      saveFarmwareEnv: jest.fn(),
-      taggedFarmwareInstallations: [],
-      imageJobs: [],
-    };
-  };
+  const fakeProps = (): FarmwareProps => ({
+    farmwares: fakeFarmwares(),
+    botToMqttStatus: "up",
+    env: {},
+    user_env: {},
+    dispatch: jest.fn(),
+    currentImage: undefined,
+    images: [],
+    timeSettings: fakeTimeSettings(),
+    syncStatus: "synced",
+    getConfigValue: jest.fn(),
+    firstPartyFarmwareNames: [],
+    currentFarmware: undefined,
+    shouldDisplay: () => false,
+    saveFarmwareEnv: jest.fn(),
+    taggedFarmwareInstallations: [],
+    imageJobs: [],
+    infoOpen: false,
+  });
 
   it("renders panels", () => {
     const wrapper = mount(<FarmwarePage {...fakeProps()} />);
@@ -53,7 +42,30 @@ describe("<FarmwarePage />", () => {
   });
 
   it("renders photos page by default", () => {
-    const wrapper = mount(<FarmwarePage {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount(<FarmwarePage {...p} />);
+    expect(wrapper.text()).toContain("Take Photo");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE,
+      payload: "Photos"
+    });
+  });
+
+  it("doesn't render photos page by default", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    const p = fakeProps();
+    const wrapper = mount(<FarmwarePage {...p} />);
+    wrapper.mount();
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("renders photos page by default without farmware data", () => {
+    const p = fakeProps();
+    p.farmwares = {};
+    const wrapper = mount(<FarmwarePage {...p} />);
     expect(wrapper.text()).toContain("Take Photo");
   });
 
@@ -109,8 +121,53 @@ describe("<FarmwarePage />", () => {
     p.farmwares["My Fake Test Farmware"] = farmware;
     p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
-    clickButton(wrapper, 1, "Run");
+    clickButton(wrapper, 2, "Run");
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Fake Test Farmware");
+  });
+
+  it("shows Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = true;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    expect(wrapper.html()).toContain("farmware-info-open");
+  });
+
+  it("opens Farmware list", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = false;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    const back = wrapper.find(".fa-arrow-left").first();
+    expect(back.props().title).toEqual("back to farmware list");
+    back.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_FARMWARE, payload: undefined
+    });
+  });
+
+  it("closes Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = true;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    const back = wrapper.find(".fa-arrow-left").first();
+    expect(back.props().title).toEqual("back to farmware");
+    back.simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FARMWARE_INFO_STATE, payload: false
+    });
+  });
+
+  it("opens Farmware info", () => {
+    const p = fakeProps();
+    p.botToMqttStatus = "up";
+    p.infoOpen = false;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    clickButton(wrapper, 1, "farmware info");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_FARMWARE_INFO_STATE, payload: true
+    });
   });
 });
 
@@ -118,8 +175,9 @@ describe("<BasicFarmwarePage />", () => {
   it("renders Farmware pending install", () => {
     const farmware = fakeFarmware();
     farmware.name = "My Farmware 1";
-    farmware.uuid = "pending installation";
+    farmware.installation_pending = true;
     const wrapper = mount(<BasicFarmwarePage
+      botOnline={true}
       farmware={farmware}
       farmwareName={farmware.name} />);
     expect(wrapper.text().toLowerCase()).toContain("pending installation");

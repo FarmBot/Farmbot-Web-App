@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
+
 import { history } from "../../history";
 import { unselectPlant } from "../actions";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../plants/designer_panel";
 import { DevSettings } from "../../account/dev/dev_support";
 import { DesignerNavTabs } from "../panel_header";
+import { t } from "../../i18next_wrapper";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -51,7 +52,7 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
           backTo={"/app/designer/plants"} />}
       <DesignerPanelContent panelName={"saved-garden"}
         className={`${alt ? "with-nav" : ""}`}>
-        {alt && <p>{Content.SAVED_GARDENS}</p>}
+        {alt && <p>{t(Content.SAVED_GARDENS)}</p>}
         <GardenSnapshot
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}

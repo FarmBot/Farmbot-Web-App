@@ -105,6 +105,6 @@ describe("<PureFarmEvents/>", () => {
   it("has add new farm event link", () => {
     const wrapper = mount(<PureFarmEvents {...fakeProps()} />);
     expect(wrapper.html()).toContain("fa-plus");
-    expect(wrapper.html()).toContain("/app/designer/farm_events/add");
+    expect(wrapper.html()).toContain("/app/designer/events/add");
   });
 });

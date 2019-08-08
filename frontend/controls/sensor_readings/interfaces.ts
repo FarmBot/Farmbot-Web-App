@@ -1,10 +1,11 @@
 import { TaggedSensorReading, TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../interfaces";
+import { TimeSettings } from "../../interfaces";
 
 export interface SensorReadingsProps {
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export interface SensorReadingsState {
@@ -26,7 +27,7 @@ export interface SensorReadingsState {
 export interface SensorReadingsTableProps {
   readingsForPeriod: (period: "current" | "previous") => TaggedSensorReading[];
   sensors: TaggedSensor[];
-  timeOffset: number;
+  timeSettings: TimeSettings;
   /** TaggedSensorReading UUID */
   hovered: string | undefined;
   hover: (hovered: string | undefined) => void;
@@ -35,7 +36,7 @@ export interface SensorReadingsTableProps {
 export interface TableRowProps {
   sensorReading: TaggedSensorReading;
   sensorName: string;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   period: "previous" | "current";
   /** TaggedSensorReading UUID */
   hovered: string | undefined;
@@ -70,7 +71,7 @@ export interface TimePeriodSelectionProps {
 export interface DateDisplayProps {
   /** seconds */
   endDate: number;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   /** seconds */
   timePeriod: number;
   showPreviousPeriod: boolean;
@@ -80,7 +81,7 @@ export interface SensorReadingPlotProps {
   readingsForPeriod: (period: "current" | "previous") => TaggedSensorReading[];
   /** seconds */
   endDate: number;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   /** TaggedSensorReading UUID */
   hovered: string | undefined;
   hover: (hovered: string | undefined) => void;

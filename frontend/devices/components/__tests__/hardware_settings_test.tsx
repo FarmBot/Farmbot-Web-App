@@ -5,23 +5,27 @@ import { HardwareSettingsProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
-import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeFirmwareConfig
+} from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<HardwareSettings />", () => {
-  const fakeProps = (): HardwareSettingsProps => {
-    return {
-      bot,
-      controlPanelState: panelState(),
-      botToMqttStatus: "up",
-      dispatch: jest.fn(),
-      sourceFwConfig: (x) => {
-        return { value: bot.hardware.mcu_params[x], consistent: true };
-      },
-      firmwareConfig: undefined,
-      shouldDisplay: jest.fn(),
-    };
-  };
+  const fakeProps = (): HardwareSettingsProps => ({
+    bot,
+    controlPanelState: panelState(),
+    botToMqttStatus: "up",
+    dispatch: jest.fn(),
+    sourceFwConfig: x =>
+      ({ value: fakeFirmwareConfig().body[x], consistent: true }),
+    firmwareConfig: undefined,
+    shouldDisplay: jest.fn(),
+    firmwareHardware: undefined,
+    resources: buildResourceIndex().index,
+  });
 
   it("renders", () => {
     const wrapper = mount(<HardwareSettings {...fakeProps()} />);

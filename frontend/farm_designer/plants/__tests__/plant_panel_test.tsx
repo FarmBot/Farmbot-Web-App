@@ -12,6 +12,7 @@ import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
 import moment from "moment";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -26,16 +27,14 @@ describe("<PlantPanel/>", () => {
     plantStatus: "planned",
   };
 
-  const fakeProps = (): PlantPanelProps => {
-    return {
-      info,
-      onDestroy: jest.fn(),
-      updatePlant: jest.fn(),
-      dispatch: jest.fn(),
-      inSavedGarden: false,
-      timeOffset: 0,
-    };
-  };
+  const fakeProps = (): PlantPanelProps => ({
+    info,
+    onDestroy: jest.fn(),
+    updatePlant: jest.fn(),
+    dispatch: jest.fn(),
+    inSavedGarden: false,
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders: editing", () => {
     const p = fakeProps();
@@ -44,33 +43,38 @@ describe("<PlantPanel/>", () => {
     expect(txt).toContain("1 days old");
     const x = wrapper.find("input").at(1).props().value;
     const y = wrapper.find("input").at(2).props().value;
-    expect(x).toEqual(10);
-    expect(y).toEqual(30);
+    expect(x).toEqual(12);
+    expect(y).toEqual(34);
   });
 
   it("calls destroy", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantPanel {...p} />);
-    clickButton(wrapper, 0, "Delete");
+    const wrapper = mount(<PlantPanel {...p} />);
+    clickButton(wrapper, 2, "Delete");
     expect(p.onDestroy).toHaveBeenCalledWith("Plant.0.0");
   });
 
   it("renders", () => {
     const p = fakeProps();
-    p.onDestroy = undefined;
-    p.updatePlant = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 days old");
-    expect(txt).toContain("(12, 34)");
+    expect(wrapper.find("button").length).toEqual(4);
+  });
+
+  it("renders in saved garden", () => {
+    const p = fakeProps();
+    p.inSavedGarden = true;
+    const wrapper = mount(<PlantPanel {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    expect(txt).not.toContain("days old");
+    expect(wrapper.find("button").length).toEqual(3);
   });
 
   it("enters select mode", () => {
     const p = fakeProps();
-    p.onDestroy = undefined;
-    p.updatePlant = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 2, "Delete multiple");
+    clickButton(wrapper, 3, "Delete multiple");
     expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 
@@ -78,8 +82,6 @@ describe("<PlantPanel/>", () => {
     const p = fakeProps();
     const innerDispatch = jest.fn();
     p.dispatch = jest.fn(x => x(innerDispatch));
-    p.onDestroy = undefined;
-    p.updatePlant = undefined;
     const wrapper = mount(<PlantPanel {...p} />);
     await clickButton(wrapper, 0, "Move FarmBot to this plant");
     expect(history.push).toHaveBeenCalledWith("/app/designer/move_to");
@@ -91,13 +93,11 @@ describe("<PlantPanel/>", () => {
 });
 
 describe("<EditPlantStatus />", () => {
-  const fakeProps = (): EditPlantStatusProps => {
-    return {
-      uuid: "Plant.0.0",
-      plantStatus: "planned",
-      updatePlant: jest.fn(),
-    };
-  };
+  const fakeProps = (): EditPlantStatusProps => ({
+    uuid: "Plant.0.0",
+    plantStatus: "planned",
+    updatePlant: jest.fn(),
+  });
 
   it("changes stage to planted", () => {
     const p = fakeProps();
@@ -125,7 +125,7 @@ describe("<EditDatePlanted />", () => {
     uuid: "Plant.0.0",
     datePlanted: moment("2017-06-19T08:02:22.466-05:00"),
     updatePlant: jest.fn(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("changes date planted", () => {

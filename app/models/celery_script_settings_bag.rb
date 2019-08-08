@@ -20,9 +20,8 @@ module CeleryScriptSettingsBag
                   "BoxLed3" => BoxLed,
                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
-  ALLOWED_CHAGES = %w(add remove update)
+  ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
-  ALLOWED_EVERY_POINT_TYPE = %w(Tool GenericPointer Plant ToolSlot)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
   ALLOWED_LHS_TYPES = [String, :named_pin]
   ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
@@ -31,23 +30,23 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
-  ALLOWED_RESOURCE_TYPE = %w(Device FarmEvent Image Log Peripheral Plant Point
-                             Regimen Sequence Tool ToolSlot User GenericPointer)
-  ALLOWED_RPC_NODES = %w(calibrate change_ownership check_updates dump_info
-                         emergency_lock emergency_unlock execute execute_script
-                         factory_reset find_home home install_farmware
-                         install_first_party_farmware _if move_absolute
-                         move_relative power_off read_pin read_status reboot
-                         remove_farmware resource_update send_message
-                         set_servo_angle set_user_env sync take_photo
-                         toggle_pin update_farmware wait write_pin zero)
+  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot GenericPointer)
+  ALLOWED_RPC_NODES = %w(calibrate change_ownership
+                         check_updates dump_info emergency_lock
+                         emergency_unlock execute execute_script
+                         factory_reset find_home flash_firmware home
+                         install_farmware install_first_party_farmware _if
+                         move_absolute move_relative power_off read_pin
+                         read_status reboot remove_farmware resource_update
+                         send_message set_servo_angle set_user_env sync
+                         take_photo toggle_pin update_farmware wait
+                         write_pin zero)
   ALLOWED_SPEC_ACTION = %w(dump_info emergency_lock emergency_unlock power_off
                            read_status reboot sync take_photo)
-  ANY_VARIABLE = %i(tool coordinate point identifier every_point)
+  ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
   BAD_AXIS = '"%s" is not a valid axis. Allowed values: %s'
   BAD_CHANNEL_NAME = '"%s" is not a valid channel_name. Allowed values: %s'
-  BAD_EVERY_POINT_TYPE = '"%s" is not a type of group. Allowed values: %s'
   BAD_LHS = 'Can not put "%s" into a left hand side (LHS)' \
   " argument. Allowed values: %s"
   BAD_MESSAGE = "Messages must be between 1 and 300 characters"
@@ -67,7 +66,7 @@ module CeleryScriptSettingsBag
   BAD_TOOL_ID = "Tool #%s does not exist."
   CANT_ANALOG = "Analog modes are not supported for Box LEDs"
   NO_PIN_ID = "%s requires a valid pin number"
-  NO_SUB_SEQ = "missing a sequence selection for `execute` block."
+  NO_SUB_SEQ = "You must select a Sequence in the Execute step."
   ONLY_ONE_COORD = "Move Absolute does not accept a group of locations " \
   "as input. Please change your selection to a single" \
   " location."
@@ -75,7 +74,10 @@ module CeleryScriptSettingsBag
   RESOURCE_UPDATE_ARGS = [:resource_type, :resource_id, :label, :value]
   SCOPE_DECLARATIONS = [:variable_declaration, :parameter_declaration]
   MISC_ENUM_ERR = '"%s" is not valid. Allowed values: %s'
-
+  MAX_WAIT_MS = 1000 * 60 * 3 # Three Minutes
+  MAX_WAIT_MS_EXCEEDED =
+    "A single wait node cannot exceed #{MAX_WAIT_MS / 1000 / 60} minutes. " +
+    "Consider lowering the wait time or using multiple WAIT blocks."
   Corpus = CeleryScript::Corpus.new
 
   CORPUS_VALUES = {
@@ -92,10 +94,9 @@ module CeleryScriptSettingsBag
     ALLOWED_OPS: [ALLOWED_OPS, BAD_OP],
     ALLOWED_PACKAGES: [ALLOWED_PACKAGES, BAD_PACKAGE],
     ALLOWED_PIN_MODES: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
-    AllowedGroupTypes: [ALLOWED_EVERY_POINT_TYPE, BAD_EVERY_POINT_TYPE],
     AllowedPinTypes: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
     Color: [Sequence::COLORS, MISC_ENUM_ERR],
-    DataChangeType: [ALLOWED_CHAGES, MISC_ENUM_ERR],
+    DataChangeType: [ALLOWED_CHANGES, MISC_ENUM_ERR],
     LegalSequenceKind: [ALLOWED_RPC_NODES.sort, MISC_ENUM_ERR],
     lhs: [ALLOWED_LHS_STRINGS, BAD_LHS],
     PlantStage: [PLANT_STAGES, MISC_ENUM_ERR],
@@ -185,7 +186,7 @@ module CeleryScriptSettingsBag
     },
     pointer_id: {
       defn: [v(:integer)],
-      blk: -> (node, device) do
+      blk: ->(node, device) do
         bad_node = !Point.where(id: node.value, device_id: device.id).exists?
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
       end,
@@ -198,7 +199,7 @@ module CeleryScriptSettingsBag
     },
     sequence_id: {
       defn: [v(:integer)],
-      blk: -> (node) do
+      blk: ->(node) do
         if (node.value == 0)
           node.invalidate!(NO_SUB_SEQ)
         else
@@ -209,16 +210,17 @@ module CeleryScriptSettingsBag
     },
     lhs: {
       defn: [v(:string), n(:named_pin)], # See ALLOWED_LHS_TYPES
-      blk: -> (node) do
+      blk: ->(node) do
         x = [ALLOWED_LHS_STRINGS, node, BAD_LHS]
         # This would never have happened if we hadn't allowed
-        #  heterogenus args :(
+        #  heterogenous args :(
         manual_enum(*x) unless node.is_a?(CeleryScript::AstNode)
       end,
     },
     op: {
       defn: [e(:ALLOWED_OPS)],
     },
+    priority: { defn: [v(:integer)] },
     channel_name: {
       defn: [e(:ALLOWED_CHANNEL_NAMES)],
     },
@@ -227,7 +229,7 @@ module CeleryScriptSettingsBag
     },
     tool_id: {
       defn: [v(:integer)],
-      blk: -> (node) do
+      blk: ->(node) do
         node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
       end,
     },
@@ -237,14 +239,16 @@ module CeleryScriptSettingsBag
       # (FBOS vs. API). Corpus-native enums cannot be used for validation
       # outside of the API. If `package` _was_ declared as a native enum (rather
       # than a string), it would cause false type errors in FE/FBJS.
-      blk: -> (node) { manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE) },
+      blk: ->(node) do
+        manual_enum(ALLOWED_PACKAGES, node, BAD_PACKAGE)
+      end,
     },
     axis: {
       defn: [e(:ALLOWED_AXIS)],
     },
     message: {
       defn: [v(:string)],
-      blk: -> (node) do
+      blk: ->(node) do
         notString = !node.value.is_a?(String)
         tooShort = notString || node.value.length == 0
         tooLong = notString || node.value.length > 300
@@ -257,21 +261,11 @@ module CeleryScriptSettingsBag
     resource_type: {
       defn: [e(:resource_type)],
     },
-    every_point_type: {
-      defn: [e(:PointType)],
-    },
   }.map do |(name, conf)|
     blk = conf[:blk]
     defn = conf.fetch(:defn)
     blk ? Corpus.arg(name, defn, &blk) : Corpus.arg(name, defn)
   end
-
-  IDEA_BIN = [
-    :function,
-    :data,
-    :private,
-
-  ]
 
   CORPUS_NODES = {
     _if: {
@@ -286,7 +280,7 @@ module CeleryScriptSettingsBag
     change_ownership: {
       body: [:pair],
       tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
-      blk: -> (node) { raise "Never." }, # Security critical.
+      blk: ->(node) { raise "Never." }, # Security critical.
       docs: "Not a commonly used node. May be removed without notice.",
     },
     channel: {
@@ -312,11 +306,6 @@ module CeleryScriptSettingsBag
     emergency_unlock: {
       tags: [:function, :firmware_user],
     },
-    every_point: {
-      args: [:every_point_type],
-      tags: [:data, :list_like, :control_flow],
-      docs: "Experimental node used for iteration.",
-    },
     execute_script: {
       args: [:label],
       body: [:pair],
@@ -338,6 +327,10 @@ module CeleryScriptSettingsBag
     find_home: {
       args: [:speed, :axis],
       tags: [:function, :firmware_user],
+    },
+    flash_firmware: {
+      args: [:package],
+      tags: [:api_writer, :disk_user, :firmware_user, :function, :network_user],
     },
     home: {
       args: [:speed, :axis],
@@ -412,7 +405,7 @@ module CeleryScriptSettingsBag
       tags: [:data],
     },
     rpc_request: {
-      args: [:label],
+      args: [:label, :priority],
       body: ALLOWED_RPC_NODES,
       tags: [:*],
     },
@@ -463,6 +456,11 @@ module CeleryScriptSettingsBag
     wait: {
       args: [:milliseconds],
       tags: [:function],
+      blk: ->(node) do
+        ms_arg = node.args[:milliseconds]
+        ms = (ms_arg && ms_arg.value) || 0
+        node.invalidate!(MAX_WAIT_MS_EXCEEDED) if ms > MAX_WAIT_MS
+      end,
     },
     zero: {
       args: [:axis],
@@ -471,7 +469,7 @@ module CeleryScriptSettingsBag
     named_pin: {
       args: [:pin_type, :pin_id],
       tags: [:api_validated, :firmware_user, :rpi_user, :data, :function],
-      blk: -> (node) do
+      blk: ->(node) do
         args = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id = args[:pin_id].value
@@ -483,28 +481,24 @@ module CeleryScriptSettingsBag
     move_absolute: {
       args: [:location, :speed, :offset],
       tags: [:function, :firmware_user],
-      blk: -> (n) do
-        loc = n.args[:location].try(:kind)
-        n.invalidate!(ONLY_ONE_COORD) if loc == "every_point"
-      end,
     },
     write_pin: {
       args: [:pin_number, :pin_value, :pin_mode],
       tags: [:function, :firmware_user, :rpi_user],
-      blk: -> (n) { no_rpi_analog(n) },
+      blk: ->(n) { no_rpi_analog(n) },
     },
     read_pin: {
       args: [:pin_number, :label, :pin_mode],
       tags: [:function, :firmware_user, :rpi_user],
-      blk: -> (n) { no_rpi_analog(n) },
+      blk: ->(n) { no_rpi_analog(n) },
     },
     resource_update: {
       args: RESOURCE_UPDATE_ARGS,
       tags: [:function, :api_writer, :network_user],
-      blk: -> (x) do
-        resource_type = x.args.fetch(:resource_type).value
-        resource_id = x.args.fetch(:resource_id).value
-        check_resource_type(x, resource_type, resource_id)
+      blk: ->(n) do
+        resource_type = n.args.fetch(:resource_type).value
+        resource_id = n.args.fetch(:resource_id).value
+        check_resource_type(n, resource_type, resource_id, Device.current)
       end,
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
@@ -520,13 +514,14 @@ module CeleryScriptSettingsBag
     node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
   end
 
-  def self.check_resource_type(node, resource_type, resource_id)
+  def self.check_resource_type(node, resource_type, resource_id, owner)
+    raise "OPPS!" unless owner
     case resource_type # <= Security critical code (for const_get'ing)
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
       # For convenience, we try to set it here, defaulting to 0
-      node.args[:resource_id].instance_variable_set("@value", 0)
+      node.args[:resource_id].instance_variable_set("@value", owner.id)
     when *ALLOWED_RESOURCE_TYPE.without("Device")
       klass = Kernel.const_get(resource_type)
       resource_ok = klass.exists?(resource_id)

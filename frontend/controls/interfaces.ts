@@ -8,6 +8,7 @@ import {
 } from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { TimeSettings } from "../interfaces";
 
 export interface Props {
   dispatch: Function;
@@ -20,7 +21,7 @@ export interface Props {
   shouldDisplay: ShouldDisplay;
   getWebAppConfigVal: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export interface AxisDisplayGroupProps {
@@ -46,10 +47,6 @@ export interface AxisInputBoxProps {
   onChange: (key: string, val: number | undefined) => void;
 }
 
-export interface AxisInputBoxState {
-  value: string | undefined;
-}
-
 export interface ToggleButtonProps {
   /** Function that is executed when the toggle button is clicked */
   toggleAction: () => void;
@@ -59,30 +56,4 @@ export interface ToggleButtonProps {
   dim?: boolean;
   grayscale?: boolean;
   title?: string;
-}
-
-export interface WebcamFeed {
-  id?: number;
-  url: string;
-  name: string;
-  updated_at?: string;
-  created_at?: string;
-}
-
-export interface Sensor {
-  id?: number;
-  pin: number | undefined;
-  label: string;
-  mode: number;
-}
-
-export interface SensorReading {
-  id?: number | undefined;
-  x: number | undefined;
-  y: number | undefined;
-  z: number | undefined;
-  value: number;
-  mode: number;
-  pin: number;
-  created_at: string;
 }

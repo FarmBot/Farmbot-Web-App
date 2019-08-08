@@ -37,7 +37,8 @@ describe("<RegimenEditor />", () => {
           regimen: regimen,
           item: {
             sequence_id: 0, time_offset: 1000
-          }
+          },
+          variable: undefined,
         }]
       }],
       resources: buildResourceIndex([]).index,

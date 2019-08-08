@@ -9,7 +9,7 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraSelection } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
-import { info, error } from "farmbot-toastr";
+import { info, error } from "../../../../toast/toast";
 
 describe("<CameraSelection/>", () => {
   const fakeProps = (): CameraSelectionProps => {

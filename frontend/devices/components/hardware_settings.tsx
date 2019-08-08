@@ -1,9 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
-import { MustBeOnline, isBotUp } from "../must_be_online";
+import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
@@ -16,19 +15,20 @@ import {
 import { SpecialStatus } from "farmbot";
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";
+import { t } from "../../i18next_wrapper";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
 
   render() {
     const {
-      bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig
+      bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
+      botToMqttStatus, firmwareHardware, resources
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
     const firmwareVersion = informational_settings.firmware_version;
     const { sync_status } = informational_settings;
-    const botDisconnected = !(isBotUp(sync_status) &&
-      this.props.botToMqttStatus === "up");
+    const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
         <MustBeOnline
@@ -78,7 +78,8 @@ export class HardwareSettings extends
             firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
             sourceFwConfig={sourceFwConfig}
-            isValidFwConfig={!!firmwareConfig} />
+            isValidFwConfig={!!firmwareConfig}
+            firmwareHardware={firmwareHardware} />
           <EncodersAndEndStops
             dispatch={dispatch}
             shouldDisplay={this.props.shouldDisplay}
@@ -86,6 +87,7 @@ export class HardwareSettings extends
             sourceFwConfig={sourceFwConfig} />
           <PinGuard
             dispatch={dispatch}
+            resources={resources}
             controlPanelState={controlPanelState}
             sourceFwConfig={sourceFwConfig} />
           <DangerZone

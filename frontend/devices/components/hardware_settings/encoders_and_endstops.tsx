@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
@@ -7,6 +6,7 @@ import { EncodersProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Feature } from "../../interfaces";
+import { t } from "../../../i18next_wrapper";
 
 export function EncodersAndEndStops(props: EncodersProps) {
 
@@ -76,6 +76,9 @@ export function EncodersAndEndStops(props: EncodersProps) {
         x={"encoder_scaling_x"}
         y={"encoder_scaling_y"}
         z={"encoder_scaling_z"}
+        xScale={sourceFwConfig("movement_microsteps_x").value}
+        yScale={sourceFwConfig("movement_microsteps_y").value}
+        zScale={sourceFwConfig("movement_microsteps_z").value}
         intSize={shouldDisplay(Feature.long_scaling_factor) ? "long" : "short"}
         gray={encodersDisabled}
         sourceFwConfig={sourceFwConfig}
@@ -101,20 +104,19 @@ export function EncodersAndEndStops(props: EncodersProps) {
         }}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      {shouldDisplay(Feature.endstop_invert) &&
-        <BooleanMCUInputGroup
-          name={t("Invert Endstops")}
-          tooltip={ToolTips.INVERT_ENDPOINTS}
-          x={"movement_invert_2_endpoints_x"}
-          y={"movement_invert_2_endpoints_y"}
-          z={"movement_invert_2_endpoints_z"}
-          grayscale={{
-            x: !sourceFwConfig("movement_enable_endpoints_x").value,
-            y: !sourceFwConfig("movement_enable_endpoints_y").value,
-            z: !sourceFwConfig("movement_enable_endpoints_z").value
-          }}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
+      <BooleanMCUInputGroup
+        name={t("Invert Endstops")}
+        tooltip={ToolTips.INVERT_ENDPOINTS}
+        x={"movement_invert_2_endpoints_x"}
+        y={"movement_invert_2_endpoints_y"}
+        z={"movement_invert_2_endpoints_z"}
+        grayscale={{
+          x: !sourceFwConfig("movement_enable_endpoints_x").value,
+          y: !sourceFwConfig("movement_enable_endpoints_y").value,
+          z: !sourceFwConfig("movement_enable_endpoints_z").value
+        }}
+        dispatch={dispatch}
+        sourceFwConfig={sourceFwConfig} />
     </Collapse>
   </section>;
 }

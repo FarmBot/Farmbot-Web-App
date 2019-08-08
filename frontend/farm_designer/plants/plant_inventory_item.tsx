@@ -1,12 +1,13 @@
 import * as React from "react";
-import { t } from "i18next";
 import moment from "moment";
-import { DEFAULT_ICON, cachedCrop, svgToUrl } from "../../open_farm/icons";
+import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
 import { Actions } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { get } from "lodash";
 import { unpackUUID } from "../../util";
+import { t } from "../../i18next_wrapper";
+import { cachedCrop } from "../../open_farm/cached_crop";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 

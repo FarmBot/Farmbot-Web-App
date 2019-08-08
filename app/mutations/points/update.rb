@@ -19,6 +19,7 @@ module Points
       string  :plant_stage,       in: CeleryScriptSettingsBag::PLANT_STAGES
       time    :planted_at
       hstore  :meta
+      boolean :gantry_mounted
     end
 
     def validate

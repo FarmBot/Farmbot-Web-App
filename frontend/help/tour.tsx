@@ -1,9 +1,11 @@
 import * as React from "react";
-import { t } from "i18next";
 import Joyride, { Step as TourStep, CallBackProps } from "react-joyride";
 import { Color } from "../ui";
 import { history } from "../history";
 import { TOUR_STEPS, tourPageNavigation } from "./tours";
+import { t } from "../i18next_wrapper";
+import { Actions } from "../constants";
+import { store } from "../redux/store";
 
 const strings = () => ({
   back: t("Back"),
@@ -25,10 +27,11 @@ interface TourProps {
 interface TourState {
   run: boolean;
   index: number;
+  returnPath: string;
 }
 
 export class Tour extends React.Component<TourProps, TourState> {
-  state: TourState = { run: false, index: 0, };
+  state: TourState = { run: false, index: 0, returnPath: "", };
 
   callback = ({ action, index, step, type }: CallBackProps) => {
     console.log("Tour debug:", step.target, type, action);
@@ -43,12 +46,17 @@ export class Tour extends React.Component<TourProps, TourState> {
     }
     if (type === "tour:end") {
       this.setState({ run: false });
-      history.push("/app/help");
+      history.push(this.state.returnPath);
+      store.dispatch({ type: Actions.START_TOUR, payload: undefined });
     }
   };
 
   componentDidMount() {
-    this.setState({ run: true, index: 0 });
+    this.setState({
+      run: true,
+      index: 0,
+      returnPath: history.getCurrentLocation().pathname,
+    });
   }
 
   render() {

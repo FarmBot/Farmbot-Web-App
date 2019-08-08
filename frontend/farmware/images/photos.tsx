@@ -1,13 +1,12 @@
 import * as React from "react";
 import moment from "moment";
-import { t } from "i18next";
-import { success, error } from "farmbot-toastr";
+import { success, error } from "../../toast/toast";
 import { ImageFlipper } from "./image_flipper";
 import { PhotosProps, PhotoButtonsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { Content } from "../../constants";
 import { selectImage } from "./actions";
-import { safeStringFetch } from "../../util";
+import { safeStringFetch, timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import {
   downloadProgress
@@ -15,6 +14,8 @@ import {
 import { TaggedImage } from "farmbot";
 import { startCase } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
+import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -75,14 +76,16 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
   </div>;
 };
 
-export const PhotoFooter = ({ image, timeOffset }: {
-  image: TaggedImage | undefined,
-  timeOffset: number
-}) => {
+interface PhotoFooterProps {
+  image: TaggedImage | undefined;
+  timeSettings: TimeSettings;
+}
+
+export const PhotoFooter = ({ image, timeSettings }: PhotoFooterProps) => {
   const created_at = image
     ? moment(image.body.created_at)
-      .utcOffset(timeOffset)
-      .format("MMMM Do, YYYY h:mma")
+      .utcOffset(timeSettings.utcOffset)
+      .format(`MMMM Do, YYYY ${timeFormatString(timeSettings)}`)
     : "";
   return <div className="photos-footer">
     {/** Separated from <MetaInfo /> for stylistic purposes. */}
@@ -101,8 +104,8 @@ export const PhotoFooter = ({ image, timeOffset }: {
 export class Photos extends React.Component<PhotosProps, {}> {
 
   takePhoto = () => {
-    const ok = () => success(t(Content.PROCESSING_PHOTO), t("Success"));
-    const no = () => error(t("Error taking photo"), t("Error"));
+    const ok = () => success(t(Content.PROCESSING_PHOTO));
+    const no = () => error(t("Error taking photo"));
     getDevice().takePhoto().then(ok, no);
   }
 
@@ -110,8 +113,8 @@ export class Photos extends React.Component<PhotosProps, {}> {
     const img = this.props.currentImage || this.props.images[0];
     if (img && img.uuid) {
       this.props.dispatch(destroy(img.uuid))
-        .then(() => success(t("Image Deleted."), t("Success")))
-        .catch(() => error(t("Could not delete image."), t("Error")));
+        .then(() => success(t("Image Deleted.")))
+        .catch(() => error(t("Could not delete image.")));
     }
   }
 
@@ -129,7 +132,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         images={this.props.images} />
       <PhotoFooter
         image={this.props.currentImage}
-        timeOffset={this.props.timeOffset} />
+        timeSettings={this.props.timeSettings} />
     </div>;
   }
 }

@@ -1,7 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-import { t } from "i18next";
-import { error as log, success, init as logInit } from "farmbot-toastr";
+import { error as log, success, init as logInit } from "../toast/toast";
 import { AuthState } from "../auth/interfaces";
 import { prettyPrintApiErrors, attachToRoot } from "../util";
 import { API } from "../api";
@@ -16,6 +15,7 @@ import { Content } from "../constants";
 import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
+import { t } from "../i18next_wrapper";
 
 export const attachFrontPage =
   () => attachToRoot(FrontPage, {});
@@ -36,21 +36,24 @@ export interface PartialFormEvent {
   }
 }
 
+/** Set value for front page state field (except for "activePanel"). */
 export const setField =
-  (name: keyof FrontPageState, cb: SetterCB) => (event: PartialFormEvent) => {
-    const state: Partial<FrontPageState> = {};
+  (name: keyof Omit<FrontPageState, "activePanel">, cb: SetterCB) =>
+    (event: PartialFormEvent) => {
+      const state: Partial<FrontPageState> = {};
 
-    switch (name) {
-      // Booleans
-      case "agreeToTerms":
-        state[name] = event.currentTarget.checked;
-        break;
-      // all others (string)
-      default:
-        state[name] = event.currentTarget.value;
-    }
-    cb(state);
-  };
+      switch (name) {
+        // Booleans
+        case "agreeToTerms":
+        case "registrationSent":
+          state[name] = event.currentTarget.checked;
+          break;
+        // all others (string)
+        default:
+          state[name] = event.currentTarget.value;
+      }
+      cb(state);
+    };
 
 export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   constructor(props: {}) {
@@ -69,7 +72,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
   }
 
   componentDidMount() {
-    if (Session.fetchStoredToken()) { window.location.href = "/app/controls"; }
+    if (Session.fetchStoredToken()) { window.location.assign("/app/controls"); }
     logInit();
     API.setBaseUrl(API.fetchBrowserLocation());
     this.setState({});
@@ -83,7 +86,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     axios.post<AuthState>(API.current.tokensPath, payload)
       .then(resp => {
         Session.replaceToken(resp.data);
-        window.location.href = "/app/controls";
+        window.location.assign("/app/controls");
       }).catch((error: Error) => {
         switch (get(error, "response.status")) {
           case 451: // TOS was updated; User must agree to terms.
@@ -121,7 +124,7 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     };
     axios.post(API.current.usersPath, form).then(() => {
       const m = "Almost done! Check your email for the verification link.";
-      success(t(m), t("Success"));
+      success(t(m));
       this.setState({ registrationSent: true });
     }).catch(error => {
       log(prettyPrintApiErrors(error));

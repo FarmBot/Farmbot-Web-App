@@ -17,7 +17,7 @@ import { destroy } from "../../api/crud";
 import {
   fakeFarmwareInstallation
 } from "../../__test_support__/fake_state/resources";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
 
 describe("<FarmwareInfo />", () => {
@@ -48,14 +48,14 @@ describe("<FarmwareInfo />", () => {
 
   it("doesn't render farmware tools version", () => {
     const p = fakeProps();
-    if (p.farmware) { p.farmware.farmware_tools_version = "latest"; }
+    if (p.farmware) { p.farmware.meta.farmware_tools_version = "latest"; }
     const wrapper = mount(<FarmwareInfo {...p} />);
     expect(wrapper.text()).not.toContain("Farmware Tools version");
   });
 
   it("renders farmware tools version", () => {
     const p = fakeProps();
-    if (p.farmware) { p.farmware.farmware_tools_version = "1.0.0"; }
+    if (p.farmware) { p.farmware.meta.farmware_tools_version = "1.0.0"; }
     const wrapper = mount(<FarmwareInfo {...p} />);
     expect(wrapper.text()).toContain("Farmware Tools version");
   });
@@ -206,7 +206,8 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware();
     farmware.meta.version = "";
-    farmware.meta.min_os_version_major = "";
+    farmware.meta.farmware_tools_version = "";
+    farmware.meta.fbos_version = "";
     p.farmware = farmware;
     const wrapper = mount(<FarmwareInfo {...p} />);
     expect(wrapper.text()).not.toContain(".0.0");
@@ -216,9 +217,9 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware();
     farmware.meta.version = "";
-    farmware.meta.min_os_version_major = "1";
+    farmware.meta.fbos_version = ">=1.0.0";
     p.farmware = farmware;
     const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toContain("1.0.0");
+    expect(wrapper.text()).toContain(">=1.0.0");
   });
 });

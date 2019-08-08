@@ -1,6 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
-import { urlFriendly, betterCompact } from "../util";
+import { urlFriendly } from "../util";
 import { Actions } from "../constants";
 import { Farmwares } from "./interfaces";
 import { getDevice } from "../device";
@@ -12,6 +11,8 @@ import { Link } from "../link";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { initSave } from "../api/crud";
 import { TaggedFarmwareInstallation } from "farmbot";
+import { t } from "../i18next_wrapper";
+import { getFormattedFarmwareName } from "./index";
 
 const DISPLAY_NAMES: Dictionary<string> = {
   "Photos": t("Photos"),
@@ -26,7 +27,7 @@ const farmwareListItem = (dispatch: Function, current: string | undefined) =>
       type: Actions.SELECT_FARMWARE,
       payload: farmwareName
     });
-    const selected = (farmwareName == current)
+    const selected = (farmwareName == getFormattedFarmwareName(current || ""))
       || (!current && farmwareName == "Photos")
       ? "selected" : "";
     const displayName = Object.keys(DISPLAY_NAMES).includes(farmwareName)
@@ -79,26 +80,19 @@ export class FarmwareList
   }
 
   firstPartyFarmwaresPresent = (firstPartyList: string[] | undefined) => {
-    const fws = this.props.farmwares;
-    const farmwareList = betterCompact(Object.keys(fws)
-      .map(x => fws[x]).map(x => x && x.name));
-    const allPresent = every(
-      firstPartyList, (value) => farmwareList.includes(value));
+    const farmwareList = Object.values(this.props.farmwares).map(x => x.name);
+    const allPresent = every(firstPartyList, fw => farmwareList.includes(fw));
     return allPresent;
   }
 
   render() {
     const { current, dispatch, farmwares, showFirstParty, firstPartyFarmwareNames
     } = this.props;
-    const listed1stPartyNames = firstPartyFarmwareNames
-      .filter(x => ["take-photo", "camera-calibration", "plant-detection"]
-        .includes(x));
-    const farmwareNames = betterCompact(Object
-      .keys(farmwares)
-      .map(x => farmwares[x]))
-      .filter(x => (firstPartyFarmwareNames && !showFirstParty)
-        ? !firstPartyFarmwareNames.includes(x.name) : x)
-      .map(fw => fw.name);
+    const listed1stPartyNames =
+      ["take-photo", "camera-calibration", "plant-detection"];
+    const farmwareNames = Object.values(farmwares).map(fw => fw.name)
+      .filter(x => showFirstParty || !firstPartyFarmwareNames.includes(x))
+      .filter(x => !listed1stPartyNames.includes(x));
 
     return <div>
       <div className="farmware-settings-menu">
@@ -113,17 +107,12 @@ export class FarmwareList
                 this.props.firstPartyFarmwareNames)} />
         </Popover>
       </div>
-      {["Photos", "Camera Calibration", "Weed Detector"]
-        .map(farmwareListItem(dispatch, current))}
+      {Object.keys(DISPLAY_NAMES).map(farmwareListItem(dispatch, current))}
       <hr />
       <label>
         {t("My Farmware")}
       </label>
-      {farmwareNames
-        .filter(x => (firstPartyFarmwareNames && !showFirstParty)
-          ? !firstPartyFarmwareNames.includes(x)
-          : !listed1stPartyNames.includes(x))
-        .map(farmwareListItem(dispatch, current))}
+      {farmwareNames.map(farmwareListItem(dispatch, current))}
       <hr />
       <label>
         {t("Install new Farmware")}

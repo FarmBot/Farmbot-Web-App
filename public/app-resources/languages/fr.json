@@ -727,7 +727,7 @@
     "Z position": "Position Z",
     "zero {{axis}}": "zéro {{axe}}",
     "zoom in": "Zoomer",
-    "zoom out": "Dé zoomer"
+    "zoom out": "Dé zoomer",
     " copy ": " copier ",
     "(x, y, z)": "(x, y, z)",
     "{{axis}} (mm)": "{{axis}} (mm)",
@@ -749,7 +749,7 @@
     "X": "X",
     "X (mm)": "X (mm)",
     "Y": "Y",
-    "Y (mm)": "Y (mm)",
+    "Y (mm)": "Y (mm)"
   },
   "untranslated": {    
     "A new version of the FarmBot web app has been released. Refresh page?": "A new version of the FarmBot web app has been released. Refresh page?",

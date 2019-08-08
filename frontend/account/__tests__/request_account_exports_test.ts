@@ -10,7 +10,7 @@ jest.mock("axios",
 import { API } from "../../api";
 import { Content } from "../../constants";
 import { requestAccountExport, generateFilename } from "../request_account_export";
-import { success } from "farmbot-toastr";
+import { success } from "../../toast/toast";
 import axios from "axios";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 

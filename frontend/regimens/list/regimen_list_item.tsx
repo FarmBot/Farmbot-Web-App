@@ -2,9 +2,10 @@ import * as React from "react";
 import { RegimenListItemProps } from "../interfaces";
 import { lastUrlChunk, urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
-import { t } from "i18next";
+
 import { Content } from "../../constants";
 import { Link } from "../../link";
+import { t } from "../../i18next_wrapper";
 
 export function RegimenListItem({ regimen, dispatch, inUse }: RegimenListItemProps) {
   const name = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import {
   Row, Col, BlurableInput, FBSelect, DropDownItem
 } from "../../ui/index";
@@ -8,6 +7,8 @@ import { keyBy } from "lodash";
 import { FarmEventViewModel } from "./edit_fe_form";
 import { EventTimePicker } from "./event_time_picker";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
 
 type Ev = React.SyntheticEvent<HTMLInputElement>;
 type Key = keyof FarmEventViewModel;
@@ -22,7 +23,7 @@ export interface RepeatFormProps {
   repeat: string;
   endDate: string;
   endTime: string;
-  tzOffset: number;
+  timeSettings: TimeSettings;
   dateError?: string;
   timeError?: string;
 }
@@ -76,7 +77,7 @@ export function FarmEventRepeatForm(props: RepeatFormProps) {
           disabled={disabled}
           className="add-event-end-time"
           name="endTime"
-          tzOffset={props.tzOffset}
+          timeSettings={props.timeSettings}
           value={endTime}
           onCommit={changeHandler("endTime")}
           error={props.timeError} />

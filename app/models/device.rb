@@ -1,49 +1,46 @@
 # Farmbot Device models all data related to an actual FarmBot in the real world.
 class Device < ApplicationRecord
-  DEFAULT_MAX_CONFIGS = 100
-  DEFAULT_MAX_IMAGES  = 100
-  DEFAULT_MAX_LOGS    = 1000
+  DEFAULT_MAX_CONFIGS = 300
+  DEFAULT_MAX_IMAGES = 100
+  DEFAULT_MAX_LOGS = 1000
 
-  TIMEZONES     = TZInfo::Timezone.all_identifiers
-  BAD_TZ        = "%{value} is not a valid timezone"
-  THROTTLE_ON   = "Device is sending too many logs (%s). " \
-                  "Suspending log storage and display until %s."
-  THROTTLE_OFF  = "Cooldown period has ended. "\
-                  "Resuming log storage."
-  CACHE_KEY     = "devices.%s"
+  TIMEZONES = TZInfo::Timezone.all_identifiers
+  BAD_TZ = "%{value} is not a valid timezone"
+  THROTTLE_ON = "Device is sending too many logs (%s). " \
+                "Suspending log storage and display until %s."
+  THROTTLE_OFF = "Cooldown period has ended. " \
+                 "Resuming log storage."
+  CACHE_KEY = "devices:%s"
 
-  has_many  :farmware_envs,          dependent: :destroy
-  has_many  :farm_events,            dependent: :destroy
-  has_many  :farmware_installations, dependent: :destroy
-  has_many  :images,                 dependent: :destroy
-  has_many  :logs,                   dependent: :destroy
-  has_many  :peripherals,            dependent: :destroy
-  has_many  :pin_bindings,           dependent: :destroy
-  has_many  :plant_templates,        dependent: :destroy
-  has_many  :points,                 dependent: :destroy
-  has_many  :regimens,               dependent: :destroy
-  has_many  :saved_gardens,          dependent: :destroy
-  has_many  :sensor_readings,        dependent: :destroy
-  has_many  :sensors,                dependent: :destroy
-  has_many  :sequences,              dependent: :destroy
-  has_many  :token_issuances,        dependent: :destroy
-  has_many  :tools,                  dependent: :destroy
-  has_many  :webcam_feeds,           dependent: :destroy
-  has_many  :diagnostic_dumps,       dependent: :destroy
-  has_many  :fragments,              dependent: :destroy
-  has_one   :fbos_config,            dependent: :destroy
-  has_many  :in_use_tools
-  has_many  :in_use_points
-  has_many  :users
+  PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
+                        images logs peripherals pin_bindings plant_templates
+                        points point_groups regimens saved_gardens
+                        sensor_readings sensors sequences token_issuances tools
+                        webcam_feeds diagnostic_dumps fragments)
 
-  validates_presence_of :name
-  validates :timezone,
-    inclusion: { in: TIMEZONES, message: BAD_TZ, allow_nil: true }
-  [FbosConfig, FirmwareConfig, WebAppConfig].map do |klass|
-    name = klass.table_name.singularize.to_sym
+  PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
+
+  SINGULAR_RESOURCES = {
+    fbos_config: FbosConfig,
+    firmware_config: FirmwareConfig,
+    web_app_config: WebAppConfig,
+  }
+
+  SINGULAR_RESOURCES.map do |(name, klass)|
     has_one name, dependent: :destroy
     define_method(name) { super() || klass.create!(device: self) }
   end
+
+  has_many :in_use_tools
+  has_many :in_use_points
+  has_many :users
+
+  validates_presence_of :name
+  validates :timezone, inclusion: {
+                         in: TIMEZONES,
+                         message: BAD_TZ,
+                         allow_nil: true,
+                       }
 
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
@@ -67,13 +64,12 @@ class Device < ApplicationRecord
   def self.current=(dev)
     RequestStore.store[:device] = dev
   end
-
   # Sets Device.current to `self` and returns it to the previous value when
   #  finished running block. Usually this is unnecessary, but may be required in
   # background jobs. If you are not receiving auto_sync data on your client,
   # you probably need to use this method.
   def auto_sync_transaction
-    prev           = Device.current
+    prev = Device.current
     Device.current = self
     yield
     Device.current = prev
@@ -85,6 +81,14 @@ class Device < ApplicationRecord
 
   def plants
     points.where(pointer_type: "Plant")
+  end
+
+  def tool_slots
+    points.where(pointer_type: "ToolSlot")
+  end
+
+  def generic_pointers
+    points.where(pointer_type: "GenericPointer")
   end
 
   TIMEOUT = 150.seconds
@@ -114,7 +118,7 @@ class Device < ApplicationRecord
     if (violation && throttled_until.nil?)
       et = violation.ends_at
       reload.update_attributes!(throttled_until: et,
-                                throttled_at:    Time.now)
+                                throttled_at: Time.now)
       refresh_cache
       cooldown = et.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
@@ -131,16 +135,17 @@ class Device < ApplicationRecord
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
   end
+
   # Send a realtime message to a logged in user.
   def tell(message, channels = [], type = "info")
-    log  = Log.new({ device:        self,
-                     message:       message,
-                     created_at:    Time.now,
-                     channels:      channels,
-                     major_version: 99,
-                     minor_version: 99,
-                     meta:          {},
-                     type:          type })
+    log = Log.new({ device: self,
+                    message: message,
+                    created_at: Time.now,
+                    channels: channels,
+                    major_version: 99,
+                    minor_version: 99,
+                    meta: {},
+                    type: type })
     json = LogSerializer.new(log).as_json.to_json
 
     Transport.current.amqp_send(json, self.id, "logs")
@@ -148,9 +153,9 @@ class Device < ApplicationRecord
   end
 
   def cooldown_notice(message, throttle_time, type, now = Time.current)
-    hours    = ((throttle_time - now) / 1.hour).round
+    hours = ((throttle_time - now) / 1.hour).round
     channels = [(hours > 2) ? "email" : "toast"]
-    tell(message, channels , type).save
+    tell(message, channels, type).save
   end
 
   def regimina
@@ -176,5 +181,33 @@ class Device < ApplicationRecord
       .where
       .not(Log::IS_FATAL_EMAIL) # Filter out `fatal_email`s
       .order(created_at: :desc)
+  end
+
+  # Helper method to create an auth token.
+  # Used by sys admins to debug problems without performing a password reset.
+  def create_token
+    # If something manages to call this method, I'd like to be alerted of it.
+    Rollbar.error("Someone is creating a debug user token", { device: self.id })
+    fbos_version = Api::AbstractController::EXPECTED_VER
+    SessionToken
+      .as_json(users.first, "SUPER", fbos_version)
+      .fetch(:token)
+      .encoded
+  end
+
+  TOO_MANY_CONNECTIONS =
+    "Your device is " +
+      "reconnecting to the server too often. Please " +
+      "see https://developer.farm.bot/docs/connectivity-issues"
+  def self.connection_warning(username)
+    device_id = username.split("_").last.to_i || 0
+    device = self.find_by(id: device_id)
+    return unless device
+
+    last_sent_at = device.mqtt_rate_limit_email_sent_at || 4.years.ago
+    if last_sent_at < 1.day.ago
+      device.update_attributes!(mqtt_rate_limit_email_sent_at: Time.now)
+      device.tell(TOO_MANY_CONNECTIONS, ["fatal_email"])
+    end
   end
 end

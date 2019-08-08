@@ -2,7 +2,14 @@ require "spec_helper"
 
 describe Device do
   let(:device) { FactoryBot.create(:device, users: [FactoryBot.create(:user)]) }
-  let(:user)   { device.users.first }
+  let(:user) { device.users.first }
+
+  it "creates a token" do
+    jwt = device.create_token
+    expect(jwt).to be_kind_of(String)
+    d2 = Auth::FromJWT.run!(jwt: jwt).device
+    expect(d2.id).to eq(device.id)
+  end
 
   it "is associated with a user" do
     expect(device.users.first).to be_kind_of(User)
@@ -10,11 +17,11 @@ describe Device do
   end
 
   it "destroys dependent devices" do
-    bot_id  = device.id
+    bot_id = device.id
     user_id = user.id
     user.destroy
     user_results = User.where(id: user_id).first
-    bot_results  = Device.where(id: bot_id).first
+    bot_results = Device.where(id: bot_id).first
     expect(bot_results).to be_nil
     expect(user_results).to be_nil
   end
@@ -28,17 +35,17 @@ describe Device do
 
   it "sends specific users toast messages" do
     Transport.current.clear!
-    hello      = "Hello!"
-    log        = device.tell(hello)
+    hello = "Hello!"
+    log = device.tell(hello)
     json, info = Transport.current.connection.calls[:publish].last
-    json       = JSON.parse(json)
+    json = JSON.parse(json)
     expect(info[:routing_key]).to eq("bot.device_#{device.id}.logs")
     expect(log.message).to eq(hello)
     expect(json["message"]).to eq(hello)
   end
 
   it "allows for caching" do
-    id        = device.id
+    id = device.id
     cache_key = Device::CACHE_KEY % id
     Rails.cache.delete(cache_key)
     expect(Rails.cache.exist?(cache_key)).to be false
@@ -50,10 +57,10 @@ describe Device do
   end
 
   it "refreshes the cache" do
-    id        = device.id
+    id = device.id
     cache_key = Device::CACHE_KEY % id
     Rails.cache.delete(cache_key)
-    b4        = device.name
+    b4 = device.name
     expect(Device.cached_find(id).name).to eq(b4)
     device.name = "blah"
     expect(Device.cached_find(id).name).to eq(b4)
@@ -66,8 +73,8 @@ describe Device do
     device.update_attributes!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
     five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
-    rule         = ThrottlePolicy::Rule.new(five_minutes, 500)
-    violation    = ThrottlePolicy::Violation.new(rule)
+    rule = ThrottlePolicy::Rule.new(five_minutes, 500)
+    violation = ThrottlePolicy::Violation.new(rule)
     device.maybe_throttle(violation)
     expect(device.throttled_until).to eq(violation.ends_at)
   end
@@ -91,8 +98,18 @@ describe Device do
     🚑 = FactoryBot.create(:log, device: 🤖, channels: ["fatal_email"])
     🍞 = FactoryBot.create(:log, device: 🤖, channels: ["toast"])
     results = 🤖.unsent_routine_emails
-    expect(results).to     include(📧)
+    expect(results).to include(📧)
     expect(results).to_not include(🚑)
     expect(results).to_not include(🍞)
+  end
+
+  it "throttled emails about MQTT rate limiting" do
+    device.update_attributes!(mqtt_rate_limit_email_sent_at: 2.days.ago)
+    Device.connection_warning("device_#{device.id.to_s}")
+    time = device.reload.mqtt_rate_limit_email_sent_at
+    expect(time).to be > 1.minute.ago
+    Device.connection_warning("device_#{device.id.to_s}")
+    time2 = device.reload.mqtt_rate_limit_email_sent_at
+    expect(time).to eq(time2)
   end
 end

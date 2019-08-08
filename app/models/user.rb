@@ -1,7 +1,8 @@
 # A human
 class User < ApplicationRecord
   class AlreadyVerified < StandardError; end
-  ENFORCE_TOS           = ENV.fetch("TOS_URL") { false }
+
+  ENFORCE_TOS = ENV.fetch("TOS_URL") { false }
   SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
   validates :email, uniqueness: true
 
@@ -41,5 +42,13 @@ class User < ApplicationRecord
 
   def update_tracked_fields!(request)
     super(request) unless FbosDetector.is_fbos_ua?(request)
+  end
+
+  def self.refresh_everyones_ui
+    Rollbar.error("Global UI refresh triggered")
+
+    Transport
+      .current
+      .raw_amqp_send({}.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
   end
 end

@@ -1,23 +1,19 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
-jest.mock("../../../history", () => ({
-  history: {
-    push: jest.fn()
-  }
-}));
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import { AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import {
-  fakeFarmEvent, fakeSequence
+  fakeFarmEvent, fakeSequence, fakeRegimen
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
+import { Actions } from "../../../constants";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -36,8 +32,9 @@ describe("<AddFarmEvent />", () => {
       handleTime: jest.fn(),
       farmEvents: [farmEvent],
       getFarmEvent: () => farmEvent,
+      findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
-      timeOffset: 0,
+      timeSettings: fakeTimeSettings(),
       autoSyncEnabled: false,
       shouldDisplay: () => false,
       resources: buildResourceIndex([]).index,
@@ -47,7 +44,7 @@ describe("<AddFarmEvent />", () => {
   it("renders", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     wrapper.setState({ uuid: "FarmEvent" });
-    ["Add Farm Event", "Sequence or Regimen", "fake", "Save"].map(string =>
+    ["Add Event", "Sequence or Regimen", "fake", "Save"].map(string =>
       expect(wrapper.text()).toContain(string));
     const deleteBtn = wrapper.find("button").last();
     expect(deleteBtn.text()).toEqual("Delete");
@@ -55,16 +52,37 @@ describe("<AddFarmEvent />", () => {
   });
 
   it("redirects", () => {
-    const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
+    const p = fakeProps();
+    p.findFarmEventByUuid = jest.fn();
+    const wrapper = mount(<AddFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Loading");
   });
 
-  it("renders `none`", () => {
-    const props: Partial<AddEditFarmEventProps> = {};
-    const comp = new AddFarmEvent(props as AddEditFarmEventProps);
-    const results = shallow(<div>{comp.none()}</div>);
-    expect(results.text())
+  it("renders with no executables", () => {
+    const p = fakeProps();
+    p.findFarmEventByUuid = jest.fn();
+    p.sequencesById = {};
+    p.regimensById = {};
+    const wrapper = mount(<AddFarmEvent {...p} />);
+    expect(wrapper.text())
       .toContain("You haven't made any regimens or sequences yet.");
+  });
+
+  it("renders with no sequences", () => {
+    const p = fakeProps();
+    p.sequencesById = {};
+    const regimen = fakeRegimen();
+    regimen.body.id = 1;
+    p.regimensById = { "1": regimen };
+    const wrapper = mount(<AddFarmEvent {...p} />);
+    wrapper.mount();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.INIT_RESOURCE,
+      payload: expect.objectContaining({
+        kind: "FarmEvent",
+        body: expect.objectContaining({ executable_type: "Regimen" })
+      })
+    });
   });
 
   it("cleans up when unmounting", () => {

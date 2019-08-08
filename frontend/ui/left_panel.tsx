@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Col, ToolTip } from ".";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
 
 interface LeftPanelProps {
   children?: React.ReactNode;
   className: string;
   title: string;
-  helpText: string;
+  helpText?: string;
   width?: number;
 }
 
@@ -16,7 +16,7 @@ export function LeftPanel(props: LeftPanelProps) {
       <h3>
         <i>{t(props.title)}</i>
       </h3>
-      <ToolTip helpText={props.helpText} />
+      {props.helpText && <ToolTip helpText={props.helpText} />}
       {props.children}
     </div>
   </Col>;

@@ -32,6 +32,7 @@ describe("<Motors/>", () => {
       controlPanelState,
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       isValidFwConfig: true,
+      firmwareHardware: undefined,
     };
   };
 
@@ -40,7 +41,7 @@ describe("<Motors/>", () => {
     ["Enable 2nd X Motor",
       "Max Retries",
       "E-Stop on Movement Error",
-      "Max Speed (steps/s)"
+      "Max Speed (mm/s)"
     ].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
@@ -83,4 +84,12 @@ describe("<Motors/>", () => {
   testParamToggle("toggles retries e-stop parameter", "param_e_stop_on_mov_err", 0);
   testParamToggle("toggles enable X2", "movement_secondary_motor_x", 7);
   testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 8);
+
+  it("renders TMC params", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = render(<Motors {...p} />);
+    expect(wrapper.text()).toContain("Motor Current");
+    expect(wrapper.text()).toContain("Stall Sensitivity");
+  });
 });

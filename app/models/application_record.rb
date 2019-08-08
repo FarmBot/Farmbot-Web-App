@@ -1,18 +1,23 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
-  after_save    :maybe_broadcast, on: [:create, :update]
+  after_save :maybe_broadcast, on: [:create, :update]
   after_destroy :maybe_broadcast
 
-  DONT_BROADCAST = [ "created_at",
-                     "last_saw_api",
-                     "last_saw_mq",
-                     "last_sign_in_at",
-                     "last_sign_in_ip",
-                     "sign_in_count",
-                     "updated_at",
-                     "current_sign_in_ip",
-                     "current_sign_in_at",
-                     "fbos_version" ]
+  class << self
+    attr_reader :auto_sync_paused
+  end
+
+  DONT_BROADCAST = ["created_at",
+                    "last_saw_api",
+                    "last_saw_mq",
+                    "last_sign_in_at",
+                    "last_sign_in_ip",
+                    "sign_in_count",
+                    "updated_at",
+                    "current_sign_in_ip",
+                    "current_sign_in_at",
+                    "fbos_version"]
+
   def gone?
     destroyed? || self.try(:discarded?)
   end
@@ -27,8 +32,21 @@ class ApplicationRecord < ActiveRecord::Base
     !the_changes.empty?
   end
 
+  # Perform table operations without triggering
+  # echo-ey auto_syncs.
+  def self.auto_sync_debounce
+    @auto_sync_paused = true
+    result = yield
+    result.update_attributes!(updated_at: Time.now)
+    @auto_sync_paused = false
+    result.broadcast!
+    result
+  end
+
   def broadcast?
-    current_device && (gone? || notable_changes?)
+    !self.class.auto_sync_paused &&
+      current_device &&
+      (gone? || notable_changes?)
   end
 
   def maybe_broadcast
@@ -70,5 +88,12 @@ class ApplicationRecord < ActiveRecord::Base
                               current_device.id,
                               chan_name,
                               Time.now.utc.to_i) if current_device
+  end
+
+  def manually_sync!
+    device.auto_sync_transaction do
+      update_attributes!(updated_at: Time.now)
+    end if device
+    self
   end
 end

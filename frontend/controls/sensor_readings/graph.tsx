@@ -1,9 +1,11 @@
 import * as React from "react";
 import moment from "moment";
 import { range, clamp } from "lodash";
-import { t } from "i18next";
 import { SensorReadingPlotProps } from "./interfaces";
 import { calcEndOfPeriod } from "./filter_readings";
+import { t } from "../../i18next_wrapper";
+import { TimeSettings } from "../../interfaces";
+import { timeFormatString } from "../../util";
 
 /** For SensorReadings plot. */
 export const calcTimeParams = (timePeriod: number): {
@@ -31,6 +33,7 @@ interface PlotProps {
   yMax: number;
   xMax: number;
   showPreviousPeriod: boolean;
+  timeSettings: TimeSettings;
 }
 
 /** Plot axes and labels. */
@@ -79,12 +82,13 @@ const HorizontalGridlines = (props: PlotProps) =>
 
 /** x-axis (time) labels */
 const createTimeLabel =
-  (x: number, timePeriod: number, timeStep: number, timeMax: moment.Moment) =>
+  (x: number, timePeriod: number, timeStep: number, timeMax: moment.Moment,
+    timeSettings: TimeSettings) =>
     (period: "current" | "previous"): string => {
       const calcFormat = () => {
         if (timePeriod > 3600 * 24 * 32) { return "MMM D YYYY"; }
         if (timeStep > 3600) { return "MMM D"; }
-        return "h:mm A";
+        return timeFormatString(timeSettings);
       };
       return timeMax.clone()
         .subtract(timePeriod * (period === "current" ? 1 : 2) - x,
@@ -100,8 +104,8 @@ const VerticalGridlines = (props: PlotProps) =>
       /** label & major gridline every 3 hours/days/months and every week day */
       const major = (x / props.timeStep)
         % (props.timePeriod == 3600 * 24 * 7 ? 1 : 3) == 0;
-      const createLabel =
-        createTimeLabel(x, props.timePeriod, props.timeStep, props.timeMax);
+      const createLabel = createTimeLabel(
+        x, props.timePeriod, props.timeStep, props.timeMax, props.timeSettings);
       return <g id={id} key={id}>
         {major &&
           <text textAnchor="middle"
@@ -133,7 +137,7 @@ const DataPoints = ({ plotProps, parentProps }: {
       <g id={period} key={period}>
         {parentProps.readingsForPeriod(period).map(r => {
           const created_at =
-            moment(r.body.created_at).utcOffset(parentProps.timeOffset);
+            moment(r.body.created_at).utcOffset(parentProps.timeSettings.utcOffset);
           const unixMax = calcEndOfPeriod(plotProps.timePeriod,
             plotProps.timeMax.unix(), period);
           /** calculated using scaled plot distance from x-axis end */
@@ -162,7 +166,7 @@ const DataPoints = ({ plotProps, parentProps }: {
   </g>;
 
 export const SensorReadingsPlot = (props: SensorReadingPlotProps) => {
-  const { timePeriod, endDate, timeOffset, showPreviousPeriod } = props;
+  const { timePeriod, endDate, timeSettings, showPreviousPeriod } = props;
   const timeVBMax = 2800;
   const yZero = 1100;
   const { timeStep, timeScale } = calcTimeParams(props.timePeriod);
@@ -170,11 +174,12 @@ export const SensorReadingsPlot = (props: SensorReadingPlotProps) => {
     timePeriod,
     timeStep,
     timeScale,
-    timeMax: moment.unix(endDate).startOf("hour").utcOffset(timeOffset),
+    timeMax: moment.unix(endDate).startOf("hour").utcOffset(timeSettings.utcOffset),
     yZero,
     yMax: yZero - 1023,
     xMax: timeVBMax - 640,
     showPreviousPeriod,
+    timeSettings,
   };
 
   return <svg

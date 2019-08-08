@@ -4,11 +4,12 @@ class Point < ApplicationRecord
                          # axis value > 21k right now - RC
   # Using real constants instead of strings results
   # in circular dep. errors.
-  POINTER_KINDS           = ["GenericPointer", "Plant", "ToolSlot"]
+  POINTER_KINDS = ["GenericPointer", "Plant", "ToolSlot"]
   self.inheritance_column = "pointer_type"
 
   belongs_to :device
   validates_presence_of :device
+  has_many :point_group_items
 
   after_discard :maybe_broadcast
 
@@ -18,5 +19,11 @@ class Point < ApplicationRecord
 
   def name_used_when_syncing
     "Point"
+  end
+
+  def fancy_name
+    n = InUsePoint::FANCY_NAMES[pointer_type] ||
+        InUsePoint::DEFAULT_NAME
+    "#{n} at (#{x}, #{y}, #{z})"
   end
 end

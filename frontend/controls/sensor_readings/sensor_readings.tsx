@@ -9,10 +9,10 @@ import {
 import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";
 import { ToolTips } from "../../constants";
-import { t } from "i18next";
 import { TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../interfaces";
 import { SensorReadingsPlot } from "./graph";
+import { t } from "../../i18next_wrapper";
 
 export class SensorReadings
   extends React.Component<SensorReadingsProps, SensorReadingsState> {
@@ -80,7 +80,7 @@ export class SensorReadings
         <SensorReadingsPlot
           readingsForPeriod={readingsForPeriod}
           endDate={this.state.endDate}
-          timeOffset={this.props.timeOffset}
+          timeSettings={this.props.timeSettings}
           hover={this.hover}
           hovered={this.state.hovered}
           showPreviousPeriod={this.state.showPreviousPeriod}
@@ -88,7 +88,7 @@ export class SensorReadings
         <SensorReadingsTable
           readingsForPeriod={readingsForPeriod}
           sensors={this.props.sensors}
-          timeOffset={this.props.timeOffset}
+          timeSettings={this.props.timeSettings}
           hover={this.hover}
           hovered={this.state.hovered} />
       </WidgetBody>
@@ -98,7 +98,7 @@ export class SensorReadings
             endDate={this.state.endDate}
             showPreviousPeriod={this.state.showPreviousPeriod}
             timePeriod={this.state.timePeriod}
-            timeOffset={this.props.timeOffset} />
+            timeSettings={this.props.timeSettings} />
           <LocationDisplay
             location={this.state.location}
             deviation={this.state.deviation} />

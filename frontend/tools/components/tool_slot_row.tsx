@@ -6,6 +6,7 @@ import { TaggedToolSlotPointer } from "farmbot";
 import { destroy } from "../../api/crud";
 import { Xyz } from "../../devices/interfaces";
 import { ToolBayNumberCol } from "./toolbay_number_column";
+import { t } from "../../i18next_wrapper";
 
 export interface ToolSlotRowProps {
   dispatch: Function;
@@ -17,20 +18,16 @@ export interface ToolSlotRowProps {
   chosenToolOption: DropDownItem;
   /** Broadcast tool change back up to parent. */
   onToolSlotChange(item: DropDownItem): void;
+  /** Gantry-mounted tool slot. */
+  gantryMounted: boolean;
 }
 
 type Axis = Xyz & keyof (TaggedToolSlotPointer["body"]);
 const axes: Axis[] = ["x", "y", "z"];
 
 export function ToolSlotRow(props: ToolSlotRowProps) {
-  const {
-    dispatch,
-    slot,
-    botPosition,
-    toolOptions,
-    onToolSlotChange,
-    chosenToolOption
-  } = props;
+  const { dispatch, slot, botPosition, toolOptions, onToolSlotChange,
+    chosenToolOption, gantryMounted } = props;
 
   return <Row>
     <Col xs={1}>
@@ -44,8 +41,11 @@ export function ToolSlotRow(props: ToolSlotRowProps) {
     </Col>
     {axes
       .map(axis => ({ axis, dispatch, slot, value: (slot.body[axis] || 0) }))
-      .map(axisProps =>
-        <ToolBayNumberCol key={slot.uuid + axisProps.axis} {...axisProps} />)}
+      .map(axisProps => (axisProps.axis === "x" && gantryMounted)
+        ? <Col xs={2} key={slot.uuid + axisProps.axis}>
+            <input disabled value={t("Gantry")} />
+          </Col>
+        : <ToolBayNumberCol key={slot.uuid + axisProps.axis} {...axisProps} />)}
     <Col xs={4}>
       <FBSelect
         list={toolOptions}

@@ -80,11 +80,12 @@ describe("botToFirmware()", () => {
   it("returns board name", () => {
     expect(botToFirmware("0.0.0.F").to).toContain("Farmduino");
     expect(botToFirmware("0.0.0.G").to).toContain("Farmduino");
+    expect(botToFirmware("0.0.0.E").to).toContain("Farmduino");
   });
 
   it("board undefined", () => {
     const output = botToFirmware(undefined);
-    expect(output.to).toContain("Arduino");
+    expect(output.to).toContain("Farmduino");
   });
 
   it("handles lack of connectivity", () => {

@@ -1,20 +1,19 @@
 import * as React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";
-import { mount } from "enzyme";
 import {
   fakeToolSlot, fakeTool
 } from "../../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<ToolSlotPoint/>", () => {
-  function fakeProps(): TSPProps {
-    return {
-      mapTransformProps: fakeMapTransformProps(),
-      slot: { toolSlot: fakeToolSlot(), tool: fakeTool() }
-    };
-  }
+  const fakeProps = (): TSPProps => ({
+    mapTransformProps: fakeMapTransformProps(),
+    botPositionX: undefined,
+    slot: { toolSlot: fakeToolSlot(), tool: fakeTool() }
+  });
 
   const testToolSlotGraphics = (tool: 0 | 1, slot: 0 | 1) => {
     it(`renders ${tool ? "" : "no"} tool and ${slot ? "" : "no"} slot`, () => {
@@ -22,7 +21,7 @@ describe("<ToolSlotPoint/>", () => {
       const p = fakeProps();
       if (!tool) { p.slot.tool = undefined; }
       p.slot.toolSlot.body.pullout_direction = slot;
-      const wrapper = mount(<ToolSlotPoint {...p} />);
+      const wrapper = svgMount(<ToolSlotPoint {...p} />);
       expect(wrapper.find("circle").length).toEqual(tool);
       expect(wrapper.find("use").length).toEqual(slot);
     });
@@ -35,8 +34,8 @@ describe("<ToolSlotPoint/>", () => {
   it("displays tool name", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.pullout_direction = 2;
-    const wrapper = mount(<ToolSlotPoint {...p} />);
-    wrapper.setState({ hovered: true });
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    wrapper.find(ToolSlotPoint).setState({ hovered: true });
     expect(wrapper.find("text").props().visibility).toEqual("visible");
     expect(wrapper.find("text").text()).toEqual("Foo");
     expect(wrapper.find("text").props().dx).toEqual(-40);
@@ -45,28 +44,43 @@ describe("<ToolSlotPoint/>", () => {
   it("displays 'no tool'", () => {
     const p = fakeProps();
     p.slot.tool = undefined;
-    const wrapper = mount(<ToolSlotPoint {...p} />);
-    wrapper.setState({ hovered: true });
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    wrapper.find(ToolSlotPoint).setState({ hovered: true });
     expect(wrapper.find("text").text()).toEqual("no tool");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 
   it("doesn't display tool name", () => {
-    const wrapper = mount(<ToolSlotPoint {...fakeProps()} />);
+    const wrapper = svgMount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
   });
 
   it("renders bin", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed bin"; }
-    const wrapper = mount(<ToolSlotPoint {...p} />);
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedBinGradient").length).toEqual(1);
   });
 
   it("renders tray", () => {
     const p = fakeProps();
     if (p.slot.tool) { p.slot.tool.body.name = "seed tray"; }
-    const wrapper = mount(<ToolSlotPoint {...p} />);
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
     expect(wrapper.find("#SeedTrayPattern").length).toEqual(1);
+  });
+
+  it("renders trough", () => {
+    const p = fakeProps();
+    p.slot.toolSlot.body.gantry_mounted = true;
+    if (p.slot.tool) { p.slot.tool.body.name = "seed trough"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#seed-trough").length).toEqual(1);
+  });
+
+  it("sets hover", () => {
+    const wrapper = svgMount(<ToolSlotPoint {...fakeProps()} />);
+    expect(wrapper.find(ToolSlotPoint).state().hovered).toBeFalsy();
+    (wrapper.find(ToolSlotPoint).instance() as ToolSlotPoint).setHover(true);
+    expect(wrapper.find(ToolSlotPoint).state().hovered).toBeTruthy();
   });
 });

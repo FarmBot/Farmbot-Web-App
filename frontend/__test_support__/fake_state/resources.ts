@@ -24,6 +24,7 @@ import {
   TaggedToolSlotPointer,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
+  TaggedAlert,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -121,7 +122,8 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
     meta: {},
     tool_id: undefined,
     name: "Tool Slot",
-    pullout_direction: 0
+    pullout_direction: 0,
+    gantry_mounted: false,
   });
 }
 
@@ -268,7 +270,9 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     device_id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
+    confirm_plant_deletion: true,
     confirm_step_deletion: false,
+    confirm_sequence_deletion: true,
     disable_animations: false,
     disable_i18n: false,
     display_trail: false,
@@ -276,7 +280,6 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     encoder_figure: false,
     hide_webcam_widget: false,
     legend_menu_open: false,
-    map_xl: false,
     raw_encoders: true,
     scaled_encoders: true,
     show_spread: false,
@@ -299,14 +302,23 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     debug_log: 3,
     stub_config: false,
     show_first_party_farmware: false,
+    expand_step_options: false,
+    hide_sensors: false,
     enable_browser_speak: false,
     photo_filter_begin: "2018-01-11T20:20:38.362Z",
     photo_filter_end: "2018-01-22T15:32:41.970Z",
     discard_unsaved: false,
+    discard_unsaved_sequences: false,
     xy_swap: false,
     home_button_homing: false,
     show_motor_plot: false,
     show_historic_points: false,
+    time_format_24_hour: false,
+    show_pins: false,
+    disable_emergency_unlock_confirmation: false,
+    map_size_x: 2900,
+    map_size_y: 1400,
+    user_interface_read_only_mode: false
   });
 }
 
@@ -371,6 +383,15 @@ export function fakeFirmwareConfig(): TaggedFirmwareConfig {
     movement_step_per_mm_x: 5,
     movement_step_per_mm_y: 5,
     movement_step_per_mm_z: 25,
+    movement_microsteps_x: 1,
+    movement_microsteps_y: 1,
+    movement_microsteps_z: 1,
+    movement_motor_current_x: 600,
+    movement_motor_current_y: 600,
+    movement_motor_current_z: 600,
+    movement_stall_sensitivity_x: 30,
+    movement_stall_sensitivity_y: 30,
+    movement_stall_sensitivity_z: 30,
     movement_steps_acc_dec_x: 300,
     movement_steps_acc_dec_y: 300,
     movement_steps_acc_dec_z: 300,
@@ -420,5 +441,14 @@ export function fakeFarmwareInstallation(): TaggedFarmwareInstallation {
     url: "https://",
     package: undefined,
     package_error: undefined,
+  });
+}
+
+export function fakeAlert(): TaggedAlert {
+  return fakeResource("Alert", {
+    slug: "slug",
+    created_at: 123,
+    problem_tag: "api.noun.verb",
+    priority: 100,
   });
 }

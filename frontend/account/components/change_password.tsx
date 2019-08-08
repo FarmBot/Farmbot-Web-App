@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import {
   Widget,
   WidgetHeader,
@@ -10,10 +9,11 @@ import { SpecialStatus } from "farmbot";
 import Axios from "axios";
 import { API } from "../../api/index";
 import { prettyPrintApiErrors, equals, trim } from "../../util";
-import { success, error } from "farmbot-toastr/dist";
 import { Content } from "../../constants";
 import { uniq } from "lodash";
 import { BlurablePassword } from "../../ui/blurable_password";
+import { t } from "../../i18next_wrapper";
+import { success, error } from "../../toast/toast";
 
 interface PasswordForm {
   new_password: string;
@@ -53,11 +53,10 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     Axios
       .patch(API.current.usersPath, this.state.form)
       .then(() => {
-        success(t("Your password is changed."), t("Success"));
+        success(t("Your password is changed."));
         this.clearForm();
       }, (e) => {
-        error(e ? prettyPrintApiErrors(e) : t("Password change failed."),
-          t("Error"));
+        error(e ? prettyPrintApiErrors(e) : t("Password change failed."));
         this.clearForm();
       });
 
@@ -65,8 +64,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
     const numUniqueValues = uniq(Object.values(this.state.form)).length;
     switch (numUniqueValues) {
       case 1:
-        error(t("Provided new and old passwords match. Password not changed."),
-          t("Error"));
+        error(t("Provided new and old passwords match. Password not changed."));
         this.clearForm();
         break;
       case 2:
@@ -77,7 +75,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
         this.clearForm();
         break;
       case 3:
-        error(t("New password and confirmation do not match."), t("Error"));
+        error(t("New password and confirmation do not match."));
         this.clearForm();
         break;
       default:

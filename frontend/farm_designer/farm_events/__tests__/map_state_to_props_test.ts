@@ -11,6 +11,7 @@ import {
 import moment from "moment";
 import { countBy } from "lodash";
 import { TimeUnit } from "farmbot/dist/resources/api_resources";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 describe("mapStateToProps()", () => {
   function testState() {
@@ -59,7 +60,7 @@ describe("mapStateToProps()", () => {
             id: 1,
             mmddyy: "022222",
             sortKey: 7956842400,
-            timeStr: "02:00am"
+            timeStr: "2:00am"
           }],
         month: "Feb",
         sortKey: 7956842400,
@@ -75,7 +76,7 @@ describe("mapStateToProps()", () => {
             mmddyy: "022322",
             sortKey: 7956928800,
             subheading: "",
-            timeStr: "02:00am"
+            timeStr: "2:00am"
           },
           {
             executableId: 1,
@@ -84,7 +85,7 @@ describe("mapStateToProps()", () => {
             mmddyy: "022322",
             sortKey: 7956950400,
             subheading: "fake",
-            timeStr: "08:00am"
+            timeStr: "8:00am"
           }],
         month: "Feb",
         sortKey: 7956928800,
@@ -138,7 +139,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     };
     const testTime = moment("2017-12-15T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
-      fakeSeqFEResources(eventData).index, testTime);
+      fakeSeqFEResources(eventData).index, fakeTimeSettings(), testTime);
     expect(calendar.getAll()).toEqual(fakeSequenceFE);
   });
 
@@ -151,7 +152,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     };
     const testTime = moment("2017-12-15T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
-      fakeSeqFEResources(eventData).index, testTime);
+      fakeSeqFEResources(eventData).index, fakeTimeSettings(), testTime);
     const dayOneItems = calendar.getAll()[0].items;
     expect(countBy(dayOneItems, "heading")).toEqual({
       "fake": 59,
@@ -168,7 +169,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     };
     const testTime = moment("2017-12-30T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
-      fakeSeqFEResources(eventData).index, testTime);
+      fakeSeqFEResources(eventData).index, fakeTimeSettings(), testTime);
     const dayOneItems = calendar.getAll()[0].items;
     expect(countBy(dayOneItems, "heading")).toEqual({ "*Empty*": 1 });
   });
@@ -233,15 +234,15 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
 
   it("returns calendar rows", () => {
     const testTime = moment("2017-12-15T01:00:00.000Z");
-    const calendar =
-      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
+    const calendar = mapResourcesToCalendar(
+      fakeRegFEResources().index, fakeTimeSettings(), testTime);
     expect(calendar.getAll()).toEqual(fakeRegimenFE);
   });
 
   it(`returns "*Empty*" calendar row after event is over`, () => {
     const testTime = moment("2017-12-27T01:00:00.000Z");
-    const calendar =
-      mapResourcesToCalendar(fakeRegFEResources().index, testTime);
+    const calendar = mapResourcesToCalendar(
+      fakeRegFEResources().index, fakeTimeSettings(), testTime);
     expect(calendar.getAll()).toEqual([{
       "day": expect.any(Number),
       "items": [expect.objectContaining({ "heading": "*Empty*" })],

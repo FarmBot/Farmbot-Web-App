@@ -5,7 +5,7 @@ jest.mock("../../../../../api/crud", () => ({
 }));
 
 const mockSpreads: { [x: string]: number } = { mint: 100 };
-jest.mock("../../../../../open_farm/icons", () => ({
+jest.mock("../../../../../open_farm/cached_crop", () => ({
   cachedCrop: jest.fn(p => Promise.resolve({ spread: mockSpreads[p] })),
 }));
 
@@ -24,13 +24,13 @@ import {
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { edit, save, initSave } from "../../../../../api/crud";
-import { cachedCrop } from "../../../../../open_farm/icons";
+import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
 import { movePlant } from "../../../../actions";
-import { error } from "farmbot-toastr";
 import { fakeCropLiveSearchResult } from "../../../../../__test_support__/fake_crop_search_result";
+import { error } from "../../../../../toast/toast";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {

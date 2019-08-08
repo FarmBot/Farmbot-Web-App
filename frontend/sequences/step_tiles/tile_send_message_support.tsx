@@ -1,6 +1,7 @@
-import { t } from "i18next";
+
 import { Channel } from "farmbot/dist";
 import { ChannelName, MessageType } from "../interfaces";
+import { t } from "../../i18next_wrapper";
 
 /** All the attributes/config you need to render a Channel */
 interface ChanInfo {

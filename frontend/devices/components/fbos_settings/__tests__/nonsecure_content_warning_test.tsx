@@ -4,7 +4,7 @@ import { shallow } from "enzyme";
 
 describe("allUrlsAreSafe", () => {
   const HTTP = "http://farm.bot";
-  const HTTPS = "https://farmbot.io";
+  const HTTPS = "https://farm.bot";
   it("catches HTTPS vs HTTP urls", () => {
     /** Always fails if there is even one http: URL */
     expect(allAreHttps([HTTP, HTTPS])).toBeFalsy();

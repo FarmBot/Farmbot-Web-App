@@ -1,21 +1,22 @@
 import * as React from "react";
-import { t } from "i18next";
-import { FarmwareManifest, TaggedFarmwareInstallation } from "farmbot";
+import { TaggedFarmwareInstallation } from "farmbot";
 import { getDevice } from "../device";
 import { commandErr } from "../devices/actions";
 import { Content } from "../constants";
 import { ShouldDisplay, Feature } from "../devices/interfaces";
 import { destroy } from "../api/crud";
-import { error } from "farmbot-toastr";
+import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
 import { Popover } from "@blueprintjs/core";
 import { retryFetchPackageName } from "./actions";
 import { history } from "../history";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
+import { FarmwareManifestInfo } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export interface FarmwareInfoProps {
   dispatch: Function;
-  farmware: FarmwareManifest | undefined;
+  farmware: FarmwareManifestInfo | undefined;
   showFirstParty: boolean;
   firstPartyFarmwareNames: string[];
   installations: TaggedFarmwareInstallation[];
@@ -42,8 +43,7 @@ const removeFromAPI = (props: {
 
 const FarmwareToolsVersionField =
   ({ version }: { version: string | undefined }) =>
-    (version &&
-      version != "latest")
+    (version && version != "latest")
       ? <div>
         <label>{t("Farmware Tools version")}</label>
         <p>{version}</p>
@@ -76,7 +76,7 @@ type RemoveFarmwareFunction =
 
 const FarmwareManagementSection =
   ({ farmware, remove }: {
-    farmware: FarmwareManifest,
+    farmware: FarmwareManifestInfo,
     remove: RemoveFarmwareFunction,
   }) =>
     <div>
@@ -135,19 +135,16 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
     }
   };
 
-const addMinorAndPatchZeros = (version: string | undefined): string =>
-  version ? version + ".0.0" : "";
-
 export function FarmwareInfo(props: FarmwareInfoProps) {
   const { farmware } = props;
-  return farmware ? <div>
+  return farmware ? <div className="farmware-info">
     <label>{t("Description")}</label>
     <p>{farmware.meta.description}</p>
     <label>{t("Version")}</label>
     <p>{farmware.meta.version}</p>
     <label>{t("Min OS version required")}</label>
-    <p>{addMinorAndPatchZeros(farmware.meta.min_os_version_major)}</p>
-    <FarmwareToolsVersionField version={farmware.farmware_tools_version} />
+    <p>{farmware.meta.fbos_version}</p>
+    <FarmwareToolsVersionField version={farmware.meta.farmware_tools_version} />
     <label>{t("Language")}</label>
     <p>{farmware.meta.language}</p>
     <label>{t("Author")}</label>

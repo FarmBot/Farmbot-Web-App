@@ -37,7 +37,8 @@ export function fakeResourceIndex(): ResourceIndex {
       "y": 200,
       "z": 300,
       "tool_id": 1,
-      "pullout_direction": 0
+      "pullout_direction": 0,
+      "gantry_mounted": false,
     }),
     ...newTaggedResource("Point", {
       "id": 4,

@@ -1,10 +1,14 @@
+jest.mock("../../../../api/crud", () => ({ refresh: jest.fn() }));
+
 import * as React from "react";
 import { fakeResource } from "../../../../__test_support__/fake_resource";
 import { LastSeen, LastSeenProps } from "../last_seen_row";
 import { mount } from "enzyme";
 import { SpecialStatus, TaggedDevice } from "farmbot";
+import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
+import { refresh } from "../../../../api/crud";
 
-describe("<LastSeen/>", () => {
+describe("<LastSeen />", () => {
   const resource = (): TaggedDevice => fakeResource("Device", {
     id: 1,
     name: "foo",
@@ -12,13 +16,12 @@ describe("<LastSeen/>", () => {
     tz_offset_hrs: 0
   });
 
-  const props = (): LastSeenProps => {
-    return {
-      device: resource(),
-      botToMqttLastSeen: "",
-      onClick: jest.fn()
-    };
-  };
+  const props = (): LastSeenProps => ({
+    device: resource(),
+    botToMqttLastSeen: "",
+    dispatch: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("blinks when loading", () => {
     const p = props();
@@ -32,10 +35,18 @@ describe("<LastSeen/>", () => {
     expect(wrapper.text()).toContain("network connectivity issue");
   });
 
-  it("tells you when the device was last seen, latest: API", () => {
+  it("tells you when the device was last seen, no MQTT", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = "";
+    const wrapper = mount<LastSeen>(<LastSeen {...p} />);
+    expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
+  });
+
+  it("tells you when the device was last seen, latest: API", () => {
+    const p = props();
+    p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
+    p.botToMqttLastSeen = "2016-08-07T19:40:01.487Z";
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
     expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
   });
@@ -52,6 +63,6 @@ describe("<LastSeen/>", () => {
     const p = props();
     const wrapper = mount(<LastSeen {...p} />);
     wrapper.find("i").simulate("click");
-    expect(p.onClick).toHaveBeenCalled();
+    expect(refresh).toHaveBeenCalled();
   });
 });

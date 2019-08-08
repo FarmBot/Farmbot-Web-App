@@ -3,11 +3,12 @@ require "bunny"
 # A wrapper around AMQP to stay DRY. Will make life easier if we ever need to
 # change protocols
 class Transport
-  OPTS = { read_timeout: 10, heartbeat: 10, log_level: "info" }
+  OPTS = { read_timeout: 10, heartbeat: 10, log_level: "warn" }
+  RESOURCE_ROUTING_KEY = "bot.*.resources_v0.*.*.*.*"
 
   def self.amqp_url
-    @amqp_url ||= ENV['CLOUDAMQP_URL'] ||
-                  ENV['RABBITMQ_URL']  ||
+    @amqp_url ||= ENV["CLOUDAMQP_URL"] ||
+                  ENV["RABBITMQ_URL"] ||
                   "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@mqtt:5672"
   end
 
@@ -31,7 +32,7 @@ class Transport
 
   def connection
     @connection ||= Transport
-                    .default_amqp_adapter.new(Transport.amqp_url, OPTS).start
+      .default_amqp_adapter.new(Transport.amqp_url, OPTS).start
   end
 
   def log_channel
@@ -42,22 +43,36 @@ class Transport
   end
 
   def resource_channel
-    @resource_channel ||= self.connection
-                         .create_channel
-                         .queue("resource_workers")
-                         .bind("amq.topic", routing_key: "bot.*.resources_v0.#")
+    @resource_channel ||= self
+      .connection
+      .create_channel
+      .queue("resource_workers")
+      .bind("amq.topic", routing_key: RESOURCE_ROUTING_KEY)
   end
 
   def amqp_topic
     @amqp_topic ||= self
-                  .connection
-                  .create_channel
-                  .topic("amq.topic", auto_delete: true)
+      .connection
+      .create_channel
+      .topic("amq.topic", auto_delete: true)
+  end
+
+  def send_demo_token_to(user, secret)
+    fbos_version = Api::AbstractController::EXPECTED_VER
+    routing_key =
+      [Api::RmqUtilsController::DEMO_REGISTRY_ROOT, secret].join(".")
+    payload =
+      SessionToken.as_json(user, "GUEST", fbos_version).to_json
+    raw_amqp_send(payload, routing_key)
   end
 
   def amqp_send(message, id, channel)
     raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
     routing_key = "bot.device_#{id}.#{channel}"
+    raw_amqp_send(message, routing_key)
+  end
+
+  def raw_amqp_send(message, routing_key)
     puts message if Rails.env.production?
     amqp_topic.publish(message, routing_key: routing_key)
   end
@@ -84,10 +99,10 @@ class Transport
     end
 
     def self.api_url
-      uri        = URI(Transport.amqp_url)
+      uri = URI(Transport.amqp_url)
       uri.scheme = ENV["FORCE_SSL"] ? "https" : "http"
-      uri.user   = nil
-      uri.port   = 15672
+      uri.user = nil
+      uri.port = 15672
       uri.to_s
     end
 

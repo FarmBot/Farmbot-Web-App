@@ -1,17 +1,35 @@
 import { DirectionAxesProps } from "./interfaces";
 import { McuParams } from "farmbot";
 
-const _ = (nr_steps: number | undefined, steps_mm: number | undefined) => {
-  return (nr_steps || 0) / (steps_mm || 1);
+export const calcMicrostepsPerMm = (
+  steps_per_mm: number | undefined,
+  microsteps_per_step: number | undefined) =>
+  // The firmware currently interprets steps_per_mm as microsteps_per_mm.
+  (steps_per_mm || 1) * (1 || microsteps_per_step || 1);
+
+const calcAxisLength = (
+  nr_steps: number | undefined,
+  steps_per_mm: number | undefined,
+  microsteps_per_step: number | undefined) => {
+  return (nr_steps || 0)
+    / calcMicrostepsPerMm(steps_per_mm, microsteps_per_step);
 };
 
-function calculateAxialLengths(props: { firmwareSettings: McuParams }) {
+export function calculateAxialLengths(props: { firmwareSettings: McuParams }) {
   const fwParams = props.firmwareSettings;
-
   return {
-    x: _(fwParams.movement_axis_nr_steps_x, fwParams.movement_step_per_mm_x),
-    y: _(fwParams.movement_axis_nr_steps_y, fwParams.movement_step_per_mm_y),
-    z: _(fwParams.movement_axis_nr_steps_z, fwParams.movement_step_per_mm_z),
+    x: calcAxisLength(
+      fwParams.movement_axis_nr_steps_x,
+      fwParams.movement_step_per_mm_x,
+      fwParams.movement_microsteps_x),
+    y: calcAxisLength(
+      fwParams.movement_axis_nr_steps_y,
+      fwParams.movement_step_per_mm_y,
+      fwParams.movement_microsteps_y),
+    z: calcAxisLength(
+      fwParams.movement_axis_nr_steps_z,
+      fwParams.movement_step_per_mm_z,
+      fwParams.movement_microsteps_z),
   };
 }
 

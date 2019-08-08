@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
-import { t } from "i18next";
+
 import { ToolListAndFormProps } from "../interfaces";
 import { TaggedTool } from "farmbot";
 import { ToolTips } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 enum ColWidth {
   toolName = 8,
@@ -27,7 +28,7 @@ export class ToolList extends React.Component<ToolListAndFormProps, {}> {
     const { tools, toggle } = this.props;
 
     return <Widget className="tool-list">
-      <WidgetHeader helpText={ToolTips.TOOL_LIST} title={t("Tools")}>
+      <WidgetHeader helpText={ToolTips.TOOL_LIST} title={t("Tools and Seed Containers")}>
         <button
           className="fb-button gray"
           onClick={toggle}>
@@ -37,7 +38,7 @@ export class ToolList extends React.Component<ToolListAndFormProps, {}> {
       <WidgetBody>
         <Row>
           <Col xs={ColWidth.toolName}>
-            <label>{t("Tool Name")}</label>
+            <label>{t("Name")}</label>
           </Col>
           <Col xs={ColWidth.status}>
             <label>{t("Status")}</label>

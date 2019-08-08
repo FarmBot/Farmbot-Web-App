@@ -3,8 +3,9 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
-import { t } from "i18next";
+
 import { Link } from "../../link";
+import { t } from "../../i18next_wrapper";
 
 export function TileTakePhoto(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;

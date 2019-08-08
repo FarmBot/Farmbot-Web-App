@@ -1,13 +1,13 @@
 jest.mock("../../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
-  closePlantInfo: jest.fn(),
+  closePlantInfo: jest.fn(() => jest.fn()),
 }));
 
 import { Mode } from "../interfaces";
 let mockMode = Mode.none;
 jest.mock("../util", () => ({
   getMode: () => mockMode,
-  getMapSize: () => ({ h: undefined, w: undefined }),
+  getMapSize: () => ({ h: 100, w: 100 }),
   getGardenCoordinates: jest.fn(),
   transformXY: jest.fn(() => ({ qx: 0, qy: 0 })),
   transformForQuadrant: jest.fn(),
@@ -53,6 +53,7 @@ import {
   fakeDesignerState
 } from "../../../__test_support__/fake_designer_state";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -97,7 +98,7 @@ const fakeProps = (): GardenMapProps => ({
   getConfigValue: jest.fn(),
   sensorReadings: [],
   sensors: [],
-  timeOffset: 0,
+  timeSettings: fakeTimeSettings(),
 });
 
 describe("<GardenMap/>", () => {
@@ -138,6 +139,15 @@ describe("<GardenMap/>", () => {
     expect(startNewSelectionBox).toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
+  });
+
+  it("starts drag: click-to-add mode", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.clickToAdd;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-svg").simulate("mouseDown", e);
+    expect(beginPlantDrag).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
   it("drags: selecting", () => {
@@ -233,7 +243,14 @@ describe("<GardenMap/>", () => {
     const p = fakeProps();
     p.designer.selectedPlants = undefined;
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
-    wrapper.instance().closePanel();
+    wrapper.instance().closePanel()();
+    expect(closePlantInfo).toHaveBeenCalled();
+  });
+
+  it("closes panel when not in select mode", () => {
+    mockMode = Mode.none;
+    const wrapper = mount<GardenMap>(<GardenMap {...fakeProps()} />);
+    wrapper.instance().closePanel()();
     expect(closePlantInfo).toHaveBeenCalled();
   });
 
@@ -242,7 +259,7 @@ describe("<GardenMap/>", () => {
     const p = fakeProps();
     p.designer.selectedPlants = [fakePlant().uuid];
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
-    wrapper.instance().closePanel();
+    wrapper.instance().closePanel()();
     expect(closePlantInfo).not.toHaveBeenCalled();
   });
 

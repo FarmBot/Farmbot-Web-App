@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../../interfaces";
 import { initSave } from "../../api/crud";
@@ -15,6 +15,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
 import { parseIntInput } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -76,7 +77,8 @@ export class CreatePoints
     });
   }
 
-  update = (key: keyof CreatePointsState) => {
+  /** Update number fields. */
+  updateNumberValue = (key: keyof Omit<CreatePointsState, "color">) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const value = parseIntInput(e.currentTarget.value);
       this.setState({ [key]: value });
@@ -126,7 +128,7 @@ export class CreatePoints
         <BlurableInput
           name="cx"
           type="number"
-          onCommit={this.update("cx")}
+          onCommit={this.updateNumberValue("cx")}
           value={cx || 0} />
       </Col>
       <Col xs={3}>
@@ -134,7 +136,7 @@ export class CreatePoints
         <BlurableInput
           name="cy"
           type="number"
-          onCommit={this.update("cy")}
+          onCommit={this.updateNumberValue("cy")}
           value={cy || 0} />
       </Col>
       <Col xs={3}>
@@ -142,7 +144,7 @@ export class CreatePoints
         <BlurableInput
           name="r"
           type="number"
-          onCommit={this.update("r")}
+          onCommit={this.updateNumberValue("r")}
           value={r || 0}
           min={0} />
       </Col>

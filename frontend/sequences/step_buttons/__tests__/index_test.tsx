@@ -4,7 +4,7 @@ import { StepButton, stepClick } from "../index";
 import { shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
-import { error } from "farmbot-toastr";
+import { error } from "../../../toast/toast";
 
 function props(): StepButtonParams {
   return {
@@ -16,7 +16,8 @@ function props(): StepButtonParams {
       },
     },
     dispatch: jest.fn(),
-    color: "blue"
+    color: "blue",
+    index: 1,
   };
 }
 
@@ -24,7 +25,7 @@ describe("<StepButton/>", () => {
 
   it("clicks it", () => {
     const p = props();
-    const el = shallow(<StepButton {...p } />);
+    const el = shallow(<StepButton {...p} />);
     el.find("button").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: expect.objectContaining({
@@ -33,6 +34,10 @@ describe("<StepButton/>", () => {
         }),
       }),
       type: Actions.OVERWRITE_RESOURCE
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_SEQUENCE_STEP_POSITION,
+      payload: undefined,
     });
   });
 });

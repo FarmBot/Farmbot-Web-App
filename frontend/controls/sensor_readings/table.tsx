@@ -1,9 +1,9 @@
 import * as React from "react";
 import { SensorReadingsTableProps, TableRowProps } from "./interfaces";
-import { t } from "i18next";
 import { xyzTableEntry } from "../../logs/components/logs_table";
 import { formatLogTime } from "../../logs";
 import moment from "moment";
+import { t } from "../../i18next_wrapper";
 
 enum TableColWidth {
   sensor = 125,
@@ -35,7 +35,7 @@ const TableHeader = () =>
         </th>
         <th style={{ width: `${TableColWidth.location}px` }}>
           <label>
-            {t("Position (x, y, z)")}
+            {t("(x, y, z)")}
           </label>
         </th>
         <th style={{ width: `${TableColWidth.date}px` }}>
@@ -50,7 +50,7 @@ const TableHeader = () =>
 /** Sensor reading. */
 const TableRow = (props: TableRowProps) => {
   const {
-    sensorReading, timeOffset, period, sensorName, hover, hovered
+    sensorReading, timeSettings, period, sensorName, hover, hovered
   } = props;
   const { uuid, body } = sensorReading;
   const { value, x, y, z, created_at, mode } = body;
@@ -71,8 +71,7 @@ const TableRow = (props: TableRowProps) => {
       {xyzTableEntry(x, y, z)}
     </td>
     <td style={{ width: `${TableColWidth.date}px` }}>
-      {formatLogTime(moment(created_at).unix(),
-        timeOffset)}
+      {formatLogTime(moment(created_at).unix(), timeSettings)}
     </td>
   </tr>;
 };
@@ -98,7 +97,7 @@ export class SensorReadingsTable
                   key={sensorReading.uuid}
                   sensorName={sensorName}
                   sensorReading={sensorReading}
-                  timeOffset={this.props.timeOffset}
+                  timeSettings={this.props.timeSettings}
                   period={period}
                   hover={this.props.hover}
                   hovered={this.props.hovered} />;

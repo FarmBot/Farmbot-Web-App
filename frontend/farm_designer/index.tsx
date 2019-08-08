@@ -1,28 +1,36 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
-import { Props, State, BotOriginQuadrant, isBotOriginQuadrant } from "./interfaces";
+import {
+  Props, State, BotOriginQuadrant, isBotOriginQuadrant
+} from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { history } from "../history";
 import { Plants } from "./plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
-import { isUndefined, last } from "lodash";
+import { isUndefined, last, isFinite } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
-import { getBotSize, round } from "./map/util";
-import { calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex } from "./map/zoom";
+import {
+  getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName
+} from "./map/util";
+import {
+  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex
+} from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
-import { setWebAppConfigValue, GetWebAppConfigValue } from "../config_storage/actions";
+import {
+  setWebAppConfigValue, GetWebAppConfigValue
+} from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): AxisNumberProperty => {
-    if (getConfigValue(BooleanSetting.map_xl)) {
-      return { x: 5900, y: 2900 };
-    } else {
-      return { x: 2900, y: 1400 };
+    const mapSizeX = parseInt("" + getConfigValue(NumericSetting.map_size_x));
+    const mapSizeY = parseInt("" + getConfigValue(NumericSetting.map_size_y));
+    if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
+      return { x: mapSizeX, y: mapSizeY };
     }
+    return { x: 2900, y: 1400 };
   };
 
 export const getGridSize =
@@ -63,7 +71,8 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
     show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
     show_images: this.initializeSetting(BooleanSetting.show_images, false),
-    show_sensor_readings: this.initializeSetting(BooleanSetting.show_sensor_readings, false),
+    show_sensor_readings: this.initializeSetting(
+      BooleanSetting.show_sensor_readings, false),
     bot_origin_quadrant: this.getBotOriginQuadrant(),
     zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue))
   };
@@ -95,9 +104,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     return this.props.children || React.createElement(Plants, props);
   }
 
-  get mapOnly() {
-    return history.getCurrentLocation().pathname === "/app/designer";
-  }
+  get mapPanelClassName() { return mapPanelClassName(); }
 
   render() {
     const {
@@ -108,7 +115,6 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       show_farmbot,
       show_images,
       show_sensor_readings,
-      bot_origin_quadrant,
       zoom_level
     } = this.state;
 
@@ -131,15 +137,12 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
 
-    const displayPanel = this.mapOnly ? "hidden" : "";
-
     return <div className="farm-designer">
 
       <GardenMapLegend
+        className={this.mapPanelClassName}
         zoom={this.updateZoomLevel}
         toggle={this.toggle}
-        updateBotOriginQuadrant={this.updateBotOriginQuadrant}
-        botOriginQuadrant={bot_origin_quadrant}
         legendMenuOpen={legend_menu_open}
         showPlants={show_plants}
         showPoints={show_points}
@@ -147,18 +150,19 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
         showFarmbot={show_farmbot}
         showImages={show_images}
         showSensorReadings={show_sensor_readings}
+        hasSensorReadings={this.props.sensorReadings.length > 0}
         dispatch={this.props.dispatch}
-        tzOffset={this.props.tzOffset}
+        timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
         imageAgeInfo={imageAgeInfo} />
 
-      <DesignerNavTabs hidden={!this.mapOnly} />
-      <div className={`farm-designer-panels ${displayPanel}`}>
+      <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
+      <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
         {this.childComponent(this.props)}
       </div>
 
       <div
-        className={`farm-designer-map ${this.mapOnly ? "" : "panel-open"}`}
+        className={`farm-designer-map ${this.mapPanelClassName}`}
         style={{ zoom: zoom_level }}>
         <GardenMap
           showPoints={show_points}
@@ -179,7 +183,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           stopAtHome={stopAtHome}
           hoveredPlant={this.props.hoveredPlant}
           zoomLvl={zoom_level}
-          botOriginQuadrant={bot_origin_quadrant}
+          botOriginQuadrant={this.getBotOriginQuadrant()}
           gridSize={getGridSize(this.props.getConfigValue, botSize)}
           gridOffset={gridOffset}
           peripherals={this.props.peripherals}
@@ -188,7 +192,7 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
           cameraCalibrationData={this.props.cameraCalibrationData}
           getConfigValue={this.props.getConfigValue}
           sensorReadings={this.props.sensorReadings}
-          timeOffset={this.props.tzOffset}
+          timeSettings={this.props.timeSettings}
           sensors={this.props.sensors} />
       </div>
 

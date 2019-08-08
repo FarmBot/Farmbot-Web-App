@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { McuParams } from "farmbot";
 import { BotPosition } from "../../devices/interfaces";
 import { changeStepSize } from "../../devices/actions";
@@ -7,6 +7,7 @@ import { StepSizeSelector } from "./step_size_selector";
 import { GetWebAppBool } from "./interfaces";
 import { JogButtons } from "./jog_buttons";
 import { BooleanSetting } from "../../session_keys";
+import { t } from "../../i18next_wrapper";
 
 interface JogControlsGroupProps {
   dispatch: Function;

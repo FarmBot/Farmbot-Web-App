@@ -1,6 +1,6 @@
-DO_INTEGRATION   = !!ENV["RUN_CAPYBARA"]
+DO_INTEGRATION = !!ENV["RUN_CAPYBARA"]
 ENV["MQTT_HOST"] = "blooper.io"
-ENV["OS_UPDATE_SERVER"] = "http://non_legacy_update_url.com"
+ENV["OS_UPDATE_SERVER"] = "http://example-server.com"
 # require "deep_cover/builtin_takeover"
 require "simplecov"
 #Ignore anything with the word "spec" in it. No need to test your tests.
@@ -8,7 +8,7 @@ SimpleCov.start do
   add_filter "/spec/"
   add_filter "config/initializers"
 end
-SimpleCov.coverage_dir('coverage_api')
+SimpleCov.coverage_dir("coverage_api")
 
 require "codecov"
 SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
@@ -23,8 +23,8 @@ require File.expand_path("../../config/environment", __FILE__)
 # AMQP for real.
 class FakeTransport < Transport
   # Theses are the "real" I/O inducing methods that must be Stubbed out.
-  MOCKED_METHODS = \
-    [ :bind, :publish, :queue, :subscribe, :create_channel, :topic ]
+  MOCKED_METHODS = [:bind, :create_channel, :publish, :queue,
+                    :send_demo_token_to, :subscribe, :topic]
 
   # When you call an AMQP I/O method, instead of doing real I/O, it will deposit
   # the call into the @calls dictionary for observation.
@@ -32,14 +32,12 @@ class FakeTransport < Transport
 
   MOCKED_METHODS.map do |name|
     # Eval is Evil, but this is pretty quick for testing.
-    eval """
-      def #{name}(*x)
-        key  = #{name.inspect}
-        (@calls[key] ||= []).push(x)
-        @calls[key] = @calls[key].last(10)
-        self
-      end
-    """
+    eval "def #{name}(*x)
+            key  = #{name.inspect}
+            (@calls[key] ||= []).push(x)
+            @calls[key] = @calls[key].last(10)
+            self
+          end"
   end
 
   def initialize(*)
@@ -66,7 +64,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 SmarfDoc.config do |c|
   c.template_file = "api_docs.md.erb"
-  c.output_file   = "api_docs.md"
+  c.output_file = "api_docs.md"
 end
 
 require "database_cleaner"
@@ -81,14 +79,14 @@ RSpec.configure do |config|
     require "capybara/rspec"
     require "selenium/webdriver"
     # Be sure to run the server in a separate window!
-    Capybara.run_server  = false
-    Capybara.app_host    = "http://localhost:3000"
+    Capybara.run_server = false
+    Capybara.app_host = "http://localhost:3000"
     Capybara.server_host = "localhost"
     Capybara.server_port = "3000"
   end
 
   config.color = true
-  config.fail_fast = 10
+  # config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]
   config.filter_run_excluding type: :feature unless DO_INTEGRATION
   config.include Helpers
@@ -105,6 +103,10 @@ RSpec.configure do |config|
   end
 end
 
+FAKE_ATTACHMENT_URL = "https://cdn.shopify.com/s/files/1/2040/0" \
+                      "289/files/FarmBot.io_Trimmed_Logo_Gray_o" \
+                      "n_Transparent_1_434x200.png?v=1525220371"
+
 def run_jobs_now
   delay_jobs = Delayed::Worker.delay_jobs
   Delayed::Worker.delay_jobs = false
@@ -115,8 +117,14 @@ end
 # Reassign constants without getting a bunch of warnings to STDOUT.
 # This is just for testing purposes, so NBD.
 def const_reassign(target, const, value)
+  b4 = target.const_get(const)
   target.send(:remove_const, const)
   target.const_set(const, value)
+  if block_given?
+    yield
+    target.send(:remove_const, const)
+    target.const_set(const, b4)
+  end
 end
 
 class StubResp
@@ -131,7 +139,7 @@ class NiceResponse
   attr_reader :r, :body
 
   def initialize(r)
-    @r    = r
+    @r = r
     @body = r.body.read
   end
 

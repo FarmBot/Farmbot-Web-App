@@ -1,6 +1,6 @@
 import { Everything } from "../interfaces";
 import {
-  selectAllImages, maybeGetTimeOffset, maybeGetDevice
+  selectAllImages, maybeGetDevice, maybeGetTimeSettings
 } from "../resources/selectors";
 import {
   FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
@@ -15,11 +15,15 @@ import {
   betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
-import { TaggedFarmwareEnv, FarmwareManifest, JobProgress } from "farmbot";
+import { TaggedFarmwareEnv, JobProgress } from "farmbot";
 import { save, edit, initSave } from "../api/crud";
-import { t } from "i18next";
-import { getWebAppConfig } from "../resources/getters";
-import { chain, cloneDeep } from "lodash";
+import { chain } from "lodash";
+import { FarmwareManifestInfo, Farmwares } from "./interfaces";
+import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
+import { t } from "../i18next_wrapper";
+import { getStatus } from "../connectivity/reducer_support";
+import { DevSettings } from "../account/dev/dev_support";
+import { getWebAppConfigValue } from "../config_storage/actions";
 
 /** Edit an existing Farmware env variable or add a new one. */
 export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
@@ -36,8 +40,8 @@ export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
     }
   };
 
-export const isPendingInstallation = (farmware: FarmwareManifest | undefined) =>
-  !farmware || farmware.uuid == "pending installation";
+export const isPendingInstallation = (farmware: FarmwareManifestInfo | undefined) =>
+  !farmware || farmware.installation_pending;
 
 export const reduceFarmwareEnv =
   (ri: ResourceIndex): UserEnv => {
@@ -56,15 +60,15 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const currentImage = images
     .filter(i => i.uuid === props.resources.consumers.farmware.currentImage)[0]
     || firstImage;
-  const { farmwares } = cloneDeep(props.bot.hardware.process_info);
-  const conf = getWebAppConfig(props.resources.index);
-  const { currentFarmware, firstPartyFarmwareNames } =
+  const botStateFarmwares = props.bot.hardware.process_info.farmwares;
+  const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
     props.resources.consumers.farmware;
 
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
-  const shouldDisplay =
-    shouldDisplayFunc(installedOsVersion, props.bot.minOsFeatureData);
+  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = shouldDisplayFunc(
+    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
@@ -79,28 +83,19 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       return nameBase + pendingInstall;
     };
 
+  const farmwares: Farmwares = {};
+  Object.values(botStateFarmwares).map((fm: unknown) => {
+    const info = manifestInfo(fm);
+    farmwares[info.name] = manifestInfo(fm);
+  });
   shouldDisplay(Feature.api_farmware_installations) &&
     taggedFarmwareInstallations.map(x => {
       const name = namePendingInstall(x.body.package, x.body.id);
-      if (x.body.id && !Object.keys(farmwares).includes(name) &&
-        !Object.values(farmwares).map(fw => fw.url).includes(x.body.url)) {
-        farmwares[name] = {
-          name,
-          uuid: "pending installation",
-          executable: "",
-          args: [],
-          url: x.body.url,
-          path: "",
-          config: [],
-          meta: {
-            min_os_version_major: "",
-            description: t("installation pending"),
-            language: "",
-            version: "",
-            author: "",
-            zip: ""
-          }
-        };
+      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || name);
+      const alreadyInstalled = Object.values(farmwares)
+        .map(fw => fw.url).includes(x.body.url);
+      if (x.body.id && !alreadyAdded && !alreadyInstalled) {
+        farmwares[name] = manifestInfoPending(name, x.body.url);
       }
     });
 
@@ -112,12 +107,11 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       .reverse()
       .value();
 
-  const bot2mqtt = props.bot.connectivity["bot.mqtt"];
-  const botToMqttStatus = bot2mqtt ? bot2mqtt.state : "down";
+  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
   const syncStatus = props.bot.hardware.informational_settings.sync_status;
 
   return {
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     currentFarmware,
     farmwares,
     botToMqttStatus,
@@ -127,11 +121,12 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentImage,
     images,
     syncStatus,
-    webAppConfig: conf ? conf.body : {},
+    getConfigValue: getWebAppConfigValue(() => props),
     firstPartyFarmwareNames,
     shouldDisplay,
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     taggedFarmwareInstallations,
     imageJobs,
+    infoOpen,
   };
 }

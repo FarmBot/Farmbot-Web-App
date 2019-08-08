@@ -25,6 +25,7 @@ export interface Props {
   calendar: CalendarRow[];
   regimenUsageStats: Record<UUID, boolean | undefined>;
   shouldDisplay: ShouldDisplay;
+  schedulerOpen: boolean;
 }
 
 export interface RegimenItemCalendarRow {
@@ -37,6 +38,8 @@ export interface RegimenItemCalendarRow {
   sortKey: number;
   day: number;
   dispatch: Function;
+  /** Variable label. */
+  variable: string | undefined;
 }
 
 /** Used by UI widgets that modify a regimen */

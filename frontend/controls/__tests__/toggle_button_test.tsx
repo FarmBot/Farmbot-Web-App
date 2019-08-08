@@ -1,52 +1,60 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { ToggleButton } from "../toggle_button";
+import { ToggleButtonProps } from "../interfaces";
 
 describe("<ToggleButton/>", function () {
+  const fakeProps = (): ToggleButtonProps => ({
+    toggleValue: 0,
+    toggleAction: jest.fn(),
+  });
+
   it("calls toggle action", () => {
-    const toggle = jest.fn();
-    const toggleButton = mount(<ToggleButton
-      toggleValue={0}
-      toggleAction={() => toggle()} />);
+    const p = fakeProps();
+    const toggleButton = mount(<ToggleButton {...p} />);
     toggleButton.simulate("click");
-    expect(toggle).toHaveBeenCalledTimes(1);
+    expect(p.toggleAction).toHaveBeenCalledTimes(1);
   });
 
   it("displays no", () => {
-    const toggleButton = mount(<ToggleButton
-      toggleValue={0}
-      toggleAction={jest.fn()} />);
+    const toggleButton = mount(<ToggleButton {...fakeProps()} />);
     expect(toggleButton.text()).toBe("no");
   });
 
   it("displays yes", () => {
-    const toggleButton = mount(<ToggleButton
-      toggleValue={1}
-      toggleAction={jest.fn()} />);
+    const p = fakeProps();
+    p.toggleValue = 1;
+    const toggleButton = mount(<ToggleButton {...p} />);
     expect(toggleButton.text()).toBe("yes");
   });
 
   it("displays off", () => {
-    const toggleButton = mount(<ToggleButton
-      toggleValue={0}
-      toggleAction={jest.fn()}
-      customText={{ textFalse: "off", textTrue: "on" }} />);
+    const p = fakeProps();
+    p.customText = { textFalse: "off", textTrue: "on" };
+    const toggleButton = mount(<ToggleButton {...p} />);
     expect(toggleButton.text()).toEqual("off");
   });
 
   it("displays on", () => {
-    const toggleButton = mount(<ToggleButton
-      toggleValue={1}
-      toggleAction={jest.fn()}
-      customText={{ textFalse: "off", textTrue: "on" }} />);
+    const p = fakeProps();
+    p.toggleValue = 1;
+    p.customText = { textFalse: "off", textTrue: "on" };
+    const toggleButton = mount(<ToggleButton {...p} />);
     expect(toggleButton.text()).toEqual("on");
   });
 
   it("displays 🚫", () => {
-    const toggleButton = mount(<ToggleButton
-      toggleValue={undefined}
-      toggleAction={jest.fn()}
-      customText={{ textFalse: "off", textTrue: "on" }} />);
+    const p = fakeProps();
+    p.toggleValue = undefined;
+    p.customText = { textFalse: "off", textTrue: "on" };
+    const toggleButton = mount(<ToggleButton {...p} />);
     expect(toggleButton.text()).toEqual("🚫");
+  });
+
+  it("displays dim", () => {
+    const p = fakeProps();
+    p.dim = true;
+    const toggleButton = mount(<ToggleButton {...p} />);
+    expect(toggleButton.html()).toContain("dim");
   });
 });

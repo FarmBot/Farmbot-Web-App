@@ -20,13 +20,14 @@ import {
   TaggedPlantTemplate,
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
+  TaggedAlert,
 } from "farmbot";
 import {
   isTaggedResource,
   sanityCheck,
 } from "./tagged_resources";
 import { bail } from "../util";
-import { error } from "farmbot-toastr";
+import { error } from "../toast/toast";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
 import { findAll } from "./find_all";
@@ -99,6 +100,8 @@ export const selectAllWebcamFeeds =
   (i: ResourceIndex) => findAll<TaggedWebcamFeed>(i, "WebcamFeed");
 export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
+export const selectAllAlerts =
+  (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
 
 export const findByKindAndId = <T extends TaggedResource>(
   i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {

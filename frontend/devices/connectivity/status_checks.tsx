@@ -2,7 +2,10 @@ import { isUndefined } from "lodash";
 import moment from "moment";
 import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
-import { t } from "i18next";
+import { t } from "../../i18next_wrapper";
+import {
+  getBoardCategory, isKnownBoard
+} from "../components/firmware_hardware_support";
 
 const HOUR = 1000 * 60 * 60;
 
@@ -59,9 +62,8 @@ export function browserToMQTT(status:
 }
 
 export function botToFirmware(version: string | undefined): StatusRowProps {
-  const boardIdentifier = version ? version.slice(-1) : "undefined";
   const connection = (): { status: boolean | undefined, msg: string } => {
-    const status = ["R", "F", "G"].includes(boardIdentifier);
+    const status = isKnownBoard(version);
     if (isUndefined(version)) {
       return { status: undefined, msg: t("Unknown.") };
     }
@@ -74,7 +76,7 @@ export function botToFirmware(version: string | undefined): StatusRowProps {
   return {
     connectionName: "botFirmware",
     from: "Raspberry Pi",
-    to: ["F", "G"].includes(boardIdentifier) ? "Farmduino" : "Arduino",
+    to: getBoardCategory(version),
     children: connection().msg,
     connectionStatus: connection().status
   };

@@ -1,9 +1,10 @@
-import { t } from "i18next";
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
-import { VirtualTrail } from "../../farm_designer/map/layers/farmbot/bot_trail";
-import { GetWebAppConfigValue, setWebAppConfigValue } from "../../config_storage/actions";
+import {
+  GetWebAppConfigValue, setWebAppConfigValue
+} from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { t } from "../../i18next_wrapper";
 
 export interface LabsFeature {
   /** Toggle label. */
@@ -33,10 +34,10 @@ export const fetchLabFeatures =
       callback: () => window.location.reload()
     },
     {
-      name: t("Confirm Sequence step deletion"),
-      description: t(Content.CONFIRM_STEP_DELETION),
-      storageKey: BooleanSetting.confirm_step_deletion,
-      value: false
+      name: t("Use 24-hour time format"),
+      description: t(Content.TIME_FORMAT_24_HOUR),
+      storageKey: BooleanSetting.time_format_24_hour,
+      value: false,
     },
     {
       name: t("Hide Webcam widget"),
@@ -45,23 +46,10 @@ export const fetchLabFeatures =
       value: false
     },
     {
-      name: t("Dynamic map size"),
-      description: t(Content.DYNAMIC_MAP_SIZE),
-      storageKey: BooleanSetting.dynamic_map,
+      name: t("Hide Sensors widget"),
+      description: t(Content.HIDE_SENSORS_WIDGET),
+      storageKey: BooleanSetting.hide_sensors,
       value: false
-    },
-    {
-      name: t("Double default map dimensions"),
-      description: t(Content.DOUBLE_MAP_DIMENSIONS),
-      storageKey: BooleanSetting.map_xl,
-      value: false
-    },
-    {
-      name: t("Display plant animations"),
-      description: t(Content.PLANT_ANIMATIONS),
-      storageKey: BooleanSetting.disable_animations,
-      value: false,
-      displayInvert: true
     },
     {
       name: t("Read speak logs in browser"),
@@ -77,12 +65,20 @@ export const fetchLabFeatures =
       confirmationMessage: t(Content.DISCARD_UNSAVED_CHANGES_CONFIRM)
     },
     {
-      name: t("Display virtual FarmBot trail"),
-      description: t(Content.VIRTUAL_TRAIL),
-      storageKey: BooleanSetting.display_trail,
+      name: t("Confirm emergency unlock"),
+      description: t(Content.EMERGENCY_UNLOCK_CONFIRM_CONFIG),
+      confirmationMessage: t(Content.CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE),
+      storageKey: BooleanSetting.disable_emergency_unlock_confirmation,
       value: false,
-      callback: () => sessionStorage.setItem(VirtualTrail.records, "[]")
+      displayInvert: true,
     },
+    {
+      name: t("User Interface Read Only Mode"),
+      description: t(Content.USER_INTERFACE_READ_ONLY_MODE),
+      storageKey: BooleanSetting.user_interface_read_only_mode,
+      value: false,
+      displayInvert: false,
+    }
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).

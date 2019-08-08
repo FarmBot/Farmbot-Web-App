@@ -1,8 +1,10 @@
 require "net/http"
 require "openssl"
 require "base64"
+
 class NervesHub
   class NervesHubHTTPError < StandardError; end
+
   # There is a lot of configuration available in this class to support:
   #   * Self Hosters
   #   * Running a local instance of Nerves-Hub
@@ -41,27 +43,28 @@ class NervesHub
   #     via AMQP.
   #   * FarmBot burns that cert into internal storage on it's SD card.
 
-  NERVES_HUB_HOST             = ENV.fetch("NERVES_HUB_HOST") { "api.nerves-hub.org" }
-  NERVES_HUB_PORT             = ENV.fetch("NERVES_HUB_PORT") { 443 }
-  NERVES_HUB_ORG              = ENV.fetch("NERVES_HUB_ORG")  { "farmbot" }
-  NERVES_HUB_BASE_URL         = "https://#{NERVES_HUB_HOST}:#{NERVES_HUB_PORT}"
-  NERVES_HUB_URI              = URI.parse(NERVES_HUB_BASE_URL)
+  NERVES_HUB_HOST = ENV.fetch("NERVES_HUB_HOST") { "api.nerves-hub.org" }
+  NERVES_HUB_PORT = ENV.fetch("NERVES_HUB_PORT") { 443 }
+  NERVES_HUB_ORG = ENV.fetch("NERVES_HUB_ORG") { "farmbot" }
+  NERVES_HUB_PRODUCT = ENV.fetch("NERVES_HUB_PRODUCT") { "farmbot" }
+  NERVES_HUB_BASE_URL = "https://#{NERVES_HUB_HOST}:#{NERVES_HUB_PORT}"
+  NERVES_HUB_URI = URI.parse(NERVES_HUB_BASE_URL)
 
   # Locations of where files _may_ exist.
-  NERVES_HUB_CERT_PATH        = "nerves_hub_cert.#{Rails.env}.pem"
-  NERVES_HUB_KEY_PATH         = "nerves_hub_key.#{Rails.env}.pem"
-  NERVES_HUB_CA_PATH          = "nerves_hub_ca.#{Rails.env}.pem"
+  NERVES_HUB_CERT_PATH = "nerves_hub_cert.#{Rails.env}.pem"
+  NERVES_HUB_KEY_PATH = "nerves_hub_key.#{Rails.env}.pem"
+  NERVES_HUB_CA_PATH = "nerves_hub_ca.#{Rails.env}.pem"
 
   # This file is for loading the CA from ENV.
   # net/http doesn't support loading this as a X509::Certificate
   # So it needs to be written to a path.
-  NERVES_HUB_CA_HACK          = "/tmp/nerves_hub_ca.#{Rails.env}.pem"
-  NERVES_HUB_ERROR            = "NervesHub request failed: %s: %s"
-  COLON                       = ":"
-  BAD_TAG                     = "A device sent a malformed tag"
+  NERVES_HUB_CA_HACK = "/tmp/nerves_hub_ca.#{Rails.env}.pem"
+  NERVES_HUB_ERROR = "NervesHub request failed: %s: %s"
+  COLON = ":"
+  BAD_TAG = "A device sent a malformed tag"
 
   # HEADERS for HTTP requests to NervesHub
-  HEADERS      = {"Content-Type" => "application/json"}
+  HEADERS = { "Content-Type" => "application/json" }
   DEFAULT_HTTP = Net::HTTP.new(NERVES_HUB_URI.host, NERVES_HUB_URI.port)
 
   # Raises an exception for when NervesHub API requests fail.
@@ -70,7 +73,7 @@ class NervesHub
   end
 
   APPLICATION = "application"
-  CHANNEL     = "channel"
+  CHANNEL = "channel"
 
   def self.update_channel(serial_number, channel)
     dev = device(serial_number)
@@ -80,21 +83,20 @@ class NervesHub
     # NEVER DUPLICATE TAG PREFIXES (thing before COLON). Must be unique!
     tag_map = dev.fetch(:tags).map { |x| x.split(COLON) }.to_h
     tag_map[CHANNEL] = channel
-    next_tags        = tag_map.to_a.map { |x| x.join(COLON) }
+    next_tags = tag_map.to_a.map { |x| x.join(COLON) }
     update(serial_number, next_tags)
   end
 
   # Checks if a device exists in NervesHub
   # if it does     -> does a PUT request updating the tags.
   # if it does not -> does a POST request creating the device with given tags.
-  def self.create_or_update(serial_number, tags)
+  def self.maybe_create_or_update(serial_number, tags)
     # Hash | nil
     current_nerves_hub_device = device(serial_number)
 
     # It's really hard to debug malformed tags; Catch them here:
-    if tags.detect{|x| !x.include?(COLON) }
+    if tags.detect { |x| !x.include?(COLON) }
       report_problem(error: BAD_TAG, serial_number: serial_number, tags: tags)
-      return
     end
 
     if current_nerves_hub_device
@@ -119,7 +121,7 @@ class NervesHub
 
   # PUT request to a device to update it's tags.
   def self.update(serial_number, tags)
-    data = {tags: tags}
+    data = { tags: tags }
     resp = conn.put(device_path(serial_number), data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "201"
     JSON(resp.body)["data"].deep_symbolize_keys
@@ -129,8 +131,8 @@ class NervesHub
   # to identify the ENV that FarmBotOS is running in.
   def self.new_device(serial_number, tags)
     data = { description: "farmbot-#{serial_number}",
-             identifier:  serial_number,
-             tags:        tags }
+             identifier: serial_number,
+             tags: tags }
     resp = conn.post(devices_path, data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "201"
     JSON(resp.body)["data"].deep_symbolize_keys
@@ -146,14 +148,14 @@ class NervesHub
     csr_safe = Base64.strict_encode64(csr.to_pem)
 
     data = { identifier: serial_number,
-             csr:        csr_safe, }
+             csr: csr_safe }
     resp = conn.post(device_sign_path(serial_number), data.to_json, HEADERS)
     bad_http(resp.code, resp.body) if resp.code != "200"
     cert = JSON(resp.body)["data"].deep_symbolize_keys[:cert]
 
     return { cert: Base64.strict_encode64(cert),
-             csr:  csr_safe,
-             key:  key_safe, }
+             csr: csr_safe,
+             key: key_safe }
   end
 
   # Is the NervesHub module configured.
@@ -163,16 +165,16 @@ class NervesHub
   end
 
   def self.set_conn(obj = DEFAULT_HTTP)
-    @conn            = obj
+    @conn = obj
     # Setting the contents of this
     # in the CA store doesn't work for some reason?
-    @conn.ca_file    = self.current_ca_file
+    @conn.ca_file = self.current_ca_file
     # Don't think this is absolutely needed.
     @conn.cert_store = nil
-    @conn            = obj
-    @conn.use_ssl    = true
-    @conn.cert       = current_cert
-    @conn.key        = current_key
+    @conn = obj
+    @conn.use_ssl = true
+    @conn.cert = current_cert
+    @conn.key = current_key
     @conn
   end
 
@@ -181,11 +183,11 @@ class NervesHub
     (active? && !@conn) ? set_conn : @conn
   end
 
-private
+  private
 
   # Helper for making requests to a device url on NervesHub
   def self.devices_path(*chunks)
-    ["/orgs", NERVES_HUB_ORG, "devices"].concat(chunks).join("/")
+    ["/orgs", NERVES_HUB_ORG, "products", NERVES_HUB_PRODUCT, "devices"].concat(chunks).join("/")
   end
 
   # Helper for making requests to a particular device on NervesHub
@@ -216,7 +218,7 @@ private
     request = OpenSSL::X509::Request.new
     request.version = 0
     request.subject = OpenSSL::X509::Name.new([
-      ['O', options[:organization], OpenSSL::ASN1::UTF8STRING],
+      ["O", options[:organization], OpenSSL::ASN1::UTF8STRING],
     ])
     request.public_key = real_public_key(key)
     request.sign(key, OpenSSL::Digest::SHA1.new)
@@ -236,7 +238,7 @@ private
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_cert
-    OpenSSL::X509::Certificate.new(ENV['NERVES_HUB_CERT']) if ENV['NERVES_HUB_CERT']
+    OpenSSL::X509::Certificate.new(ENV["NERVES_HUB_CERT"]) if ENV["NERVES_HUB_CERT"]
   end
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
@@ -249,7 +251,7 @@ private
 
   # Cert for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
   def self.try_env_key
-    OpenSSL::PKey::EC.new(ENV['NERVES_HUB_KEY']) if ENV['NERVES_HUB_KEY']
+    OpenSSL::PKey::EC.new(ENV["NERVES_HUB_KEY"]) if ENV["NERVES_HUB_KEY"]
   end
 
   # Private Key for authenticating Farmbot API (NOT FARMBOT OS) to NervesHub
@@ -276,9 +278,9 @@ private
   # loading a file from the filesystem.
   # https://stackoverflow.com/questions/36993208/how-to-enumerate-through-multiple-certificates-in-a-bundle
   def self.try_env_ca_file
-    if ENV['NERVES_HUB_CA']
-      file = File.open(NERVES_HUB_CA_HACK, 'w')
-      file.write(ENV['NERVES_HUB_CA'])
+    if ENV["NERVES_HUB_CA"]
+      file = File.open(NERVES_HUB_CA_HACK, "w")
+      file.write(ENV["NERVES_HUB_CA"])
       file.close
       NERVES_HUB_CA_HACK
     end

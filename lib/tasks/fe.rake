@@ -1,6 +1,6 @@
 PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
-EXCLUDE           = ["i18next", "@types/i18next"]
+EXCLUDE           = []
 
 # Load package.json as JSON.
 def load_package_json()
@@ -31,7 +31,7 @@ def fetch_available_upgrades()
   return latest_versions
 end
 
-# Install depdendency updates.
+# Install dependency updates.
 def install_updates
   sh "sudo docker-compose run web npm install"
 end
@@ -58,10 +58,12 @@ namespace :fe do
       puts "=" * 40
 
       puts "Type 'save' to update #{PACKAGE_JSON_FILE}, enter to abort."
-      save_package_json(package_json) if user_typed?("save")
-
-      puts "Saved. Use 'sudo docker-compose run web npm install' to upgrade."
-      # install_updates if user_typed?("update")
+      if user_typed?("save")
+        save_package_json(package_json)
+        puts "Saved. Use 'sudo docker-compose run web npm install' to upgrade."
+      else
+        puts "Aborted. No changes made."
+      end
     else
       puts "No updates available."
     end

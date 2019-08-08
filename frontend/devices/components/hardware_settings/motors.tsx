@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { SpacePanelToolTip } from "../space_panel_tool_tip";
@@ -12,6 +11,10 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
+import { t } from "../../../i18next_wrapper";
+import { Xyz, McuParamName } from "farmbot";
+import { SourceFwConfig } from "../../interfaces";
+import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -30,15 +33,30 @@ const SingleSettingRow =
         : <Col xs={6}>{children}</Col>}
     </Row>;
 
+export const calculateScale =
+  (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
+    const getV = (name: McuParamName) => sourceFwConfig(name).value;
+    return {
+      x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
+        getV("movement_microsteps_x")),
+      y: calcMicrostepsPerMm(getV("movement_step_per_mm_y"),
+        getV("movement_microsteps_y")),
+      z: calcMicrostepsPerMm(getV("movement_step_per_mm_z"),
+        getV("movement_microsteps_z")),
+    };
+  };
+
 export function Motors(props: MotorsProps) {
   const {
     dispatch, firmwareVersion, controlPanelState,
-    sourceFwConfig, isValidFwConfig
+    sourceFwConfig, isValidFwConfig, firmwareHardware
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
-
+  const scale = calculateScale(sourceFwConfig);
+  const isFarmduinoExpress = firmwareHardware &&
+    firmwareHardware.includes("express");
   return <section>
     <Header
       expanded={controlPanelState.motors}
@@ -64,36 +82,48 @@ export function Motors(props: MotorsProps) {
             settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
       </SingleSettingRow>
       <NumericMCUInputGroup
-        name={t("Max Speed (steps/s)")}
+        name={t("Max Speed (mm/s)")}
         tooltip={ToolTips.MAX_SPEED}
         x={"movement_max_spd_x"}
         y={"movement_max_spd_y"}
         z={"movement_max_spd_z"}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       {(minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) &&
         <NumericMCUInputGroup
-          name={t("Homing Speed (steps/s)")}
+          name={t("Homing Speed (mm/s)")}
           tooltip={ToolTips.HOME_SPEED}
           x={"movement_home_spd_x"}
           y={"movement_home_spd_y"}
           z={"movement_home_spd_z"}
+          xScale={scale.x}
+          yScale={scale.y}
+          zScale={scale.z}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
       <NumericMCUInputGroup
-        name={t("Minimum Speed (steps/s)")}
+        name={t("Minimum Speed (mm/s)")}
         tooltip={ToolTips.MIN_SPEED}
         x={"movement_min_spd_x"}
         y={"movement_min_spd_y"}
         z={"movement_min_spd_z"}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Accelerate for (steps)")}
+        name={t("Accelerate for (mm)")}
         tooltip={ToolTips.ACCELERATE_FOR}
         x={"movement_steps_acc_dec_x"}
         y={"movement_steps_acc_dec_y"}
         z={"movement_steps_acc_dec_z"}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
@@ -102,7 +132,18 @@ export function Motors(props: MotorsProps) {
         x={"movement_step_per_mm_x"}
         y={"movement_step_per_mm_y"}
         z={"movement_step_per_mm_z"}
+        xScale={sourceFwConfig("movement_microsteps_x").value}
+        yScale={sourceFwConfig("movement_microsteps_y").value}
+        zScale={sourceFwConfig("movement_microsteps_z").value}
         float={false}
+        sourceFwConfig={props.sourceFwConfig}
+        dispatch={props.dispatch} />
+      <NumericMCUInputGroup
+        name={t("Microsteps per step")}
+        tooltip={ToolTips.MICROSTEPS_PER_STEP}
+        x={"movement_microsteps_x"}
+        y={"movement_microsteps_y"}
+        z={"movement_microsteps_z"}
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
       <BooleanMCUInputGroup
@@ -121,6 +162,24 @@ export function Motors(props: MotorsProps) {
         z={"movement_invert_motor_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
+      {isFarmduinoExpress &&
+        <NumericMCUInputGroup
+          name={t("Motor Current")}
+          tooltip={ToolTips.MOTOR_CURRENT}
+          x={"movement_motor_current_x"}
+          y={"movement_motor_current_y"}
+          z={"movement_motor_current_z"}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
+      {isFarmduinoExpress &&
+        <NumericMCUInputGroup
+          name={t("Stall Sensitivity")}
+          tooltip={ToolTips.STALL_SENSITIVITY}
+          x={"movement_stall_sensitivity_x"}
+          y={"movement_stall_sensitivity_y"}
+          z={"movement_stall_sensitivity_z"}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"
         label={t("Enable 2nd X Motor")}
         tooltip={ToolTips.ENABLE_X2_MOTOR}>

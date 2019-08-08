@@ -3,7 +3,6 @@ import { Row, Col } from "../ui";
 import { Everything } from "../interfaces";
 import { BotPosition } from "../devices/interfaces";
 import { connect } from "react-redux";
-import { t } from "i18next";
 import { moveAbs } from "../devices/actions";
 import { history } from "../history";
 import { AxisInputBox } from "../controls/axis_input_box";
@@ -15,21 +14,26 @@ import { AxisNumberProperty } from "./map/interfaces";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader
 } from "./plants/designer_panel";
-import { DevSettings } from "../account/dev/dev_support";
-import { DesignerNavTabs } from "./panel_header";
+import { t } from "../i18next_wrapper";
+import { isBotOnline } from "../devices/must_be_online";
+import { getStatus } from "../connectivity/reducer_support";
 
-export function mapStateToProps(props: Everything) {
+export function mapStateToProps(props: Everything): MoveToProps {
+  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
+  const { sync_status } = props.bot.hardware.informational_settings;
   return {
     chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
     currentBotLocation:
       validBotLocationData(props.bot.hardware.location_data).position,
     dispatch: props.dispatch,
+    botOnline: isBotOnline(sync_status, botToMqttStatus),
   };
 }
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
   currentBotLocation: BotPosition;
+  botOnline: boolean;
 }
 
 export interface MoveToProps extends MoveToFormProps {
@@ -58,6 +62,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
 
   render() {
     const { x, y } = this.props.chosenLocation;
+    const { botOnline } = this.props;
     return <div>
       <Row>
         <Col xs={4}>
@@ -84,8 +89,8 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <Row>
           <button
             onClick={() => moveAbs(this.vector)}
-            disabled={false}
-            className="fb-button gray" >
+            className={`fb-button gray ${botOnline ? "" : "pseudo-disabled"}`}
+            title={botOnline ? "" : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
             {t("Move to this coordinate")}
           </button>
         </Row>
@@ -109,21 +114,18 @@ export class MoveTo extends React.Component<MoveToProps, {}> {
   }
 
   render() {
-    const alt = DevSettings.futureFeaturesEnabled();
-    return <DesignerPanel panelName={"move-to"} panelColor={"green"}>
-      {alt ? <DesignerNavTabs />
-        : <DesignerPanelHeader
-          panelName={"move-to"}
-          panelColor={"gray"}
-          title={t("Move to location")}
-          backTo={"/app/designer/plants"}
-          description={Content.MOVE_MODE_DESCRIPTION} />}
-      <DesignerPanelContent panelName={"move-to"}
-        className={`${alt ? "with-nav" : ""}`}>
-        {alt && <p>{Content.MOVE_MODE_DESCRIPTION}</p>}
+    return <DesignerPanel panelName={"move-to"} panelColor={"gray"}>
+      <DesignerPanelHeader
+        panelName={"move-to"}
+        panelColor={"gray"}
+        title={t("Move to location")}
+        backTo={"/app/designer/plants"}
+        description={Content.MOVE_MODE_DESCRIPTION} />
+      <DesignerPanelContent panelName={"move-to"}>
         <MoveToForm
           chosenLocation={this.props.chosenLocation}
-          currentBotLocation={this.props.currentBotLocation} />
+          currentBotLocation={this.props.currentBotLocation}
+          botOnline={this.props.botOnline} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }
@@ -133,7 +135,6 @@ export const MoveModeLink = () =>
   <div className="move-to-mode">
     <button
       className="fb-button gray"
-      hidden={DevSettings.futureFeaturesEnabled()}
       title={t("open move mode panel")}
       onClick={() => history.push("/app/designer/move_to")}>
       {t("move mode")}

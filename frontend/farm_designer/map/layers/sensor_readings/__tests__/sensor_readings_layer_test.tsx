@@ -1,5 +1,4 @@
 import * as React from "react";
-import { mount } from "enzyme";
 import {
   SensorReadingsLayer, SensorReadingsLayerProps
 } from "../sensor_readings_layer";
@@ -9,18 +8,22 @@ import {
 import {
   fakeSensorReading, fakeSensor
 } from "../../../../../__test_support__/fake_state/resources";
+import {
+  fakeTimeSettings
+} from "../../../../../__test_support__/fake_time_settings";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<SensorReadingsLayer />", () => {
   const fakeProps = (): SensorReadingsLayerProps => ({
     visible: true,
     sensorReadings: [fakeSensorReading()],
     mapTransformProps: fakeMapTransformProps(),
-    timeOffset: 0,
+    timeSettings: fakeTimeSettings(),
     sensors: [fakeSensor()],
   });
 
   it("renders", () => {
-    const wrapper = mount(<SensorReadingsLayer {...fakeProps()} />);
+    const wrapper = svgMount(<SensorReadingsLayer {...fakeProps()} />);
     expect(wrapper.html()).toContain("sensor-readings-layer");
   });
 });

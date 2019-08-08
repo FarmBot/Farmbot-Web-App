@@ -3,7 +3,9 @@ import {
   VariableDeclaration,
   ParameterApplication
 } from "farmbot";
-import { ResourceIndex, VariableNameSet, UUID } from "../../resources/interfaces";
+import {
+  ResourceIndex, VariableNameSet, UUID
+} from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { ShouldDisplay } from "../../devices/interfaces";
 
@@ -24,7 +26,7 @@ export enum AllowedVariableNodes {
   identifier,
   /** Allow ParameterDeclarations,
    * and use VariableDeclarations instead of ParameterApplications.
-   * Used only in sequence header form (ScopeDeclaration). */
+   * Used only in sequence (ScopeDeclaration) and regimen header forms. */
   parameter,
   /** Allow only ParameterApplications without identifiers.
    * Reassignment and creation of new variables not allowed.
@@ -49,6 +51,10 @@ interface CommonProps {
   allowedVariableNodes: AllowedVariableNodes;
   /** Don't display group dropdown items. */
   disallowGroups?: boolean;
+  /** Add ability to collapse the form content. */
+  collapsible?: boolean;
+  collapsed?: boolean;
+  toggleVarShow?: () => void;
 }
 
 export interface LocalsListProps extends CommonProps {
@@ -68,5 +74,5 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
 }
 
-export const PARENT =
-  ({ value: "parent", label: "Parent", headingId: "parameter" });
+export const PARENT = (label: string) =>
+  ({ value: "parent", label, headingId: "parameter" });

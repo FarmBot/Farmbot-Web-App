@@ -6,6 +6,7 @@ let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
 const mockImages: TaggedImage | undefined = fakeImage();
 
 jest.mock("../../resources/selectors_by_kind", () => ({
+  selectAllAlerts: () => [],
   selectAllFarmEvents: () => [],
   selectAllRegimens: () => [],
   selectAllLogs: () => [],
@@ -16,6 +17,7 @@ jest.mock("../../resources/selectors_by_kind", () => ({
 jest.mock("../../resources/getters", () => ({
   getFbosConfig: () => mockFbosConfig,
   getFirmwareConfig: () => undefined,
+  getWebAppConfig: jest.fn(),
 }));
 
 import { mapStateToProps } from "../state_to_props";

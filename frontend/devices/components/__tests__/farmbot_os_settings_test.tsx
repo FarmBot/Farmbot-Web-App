@@ -1,6 +1,11 @@
 let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
-  get: jest.fn(() => { return Promise.resolve(mockReleaseNoteData); })
+  get: jest.fn(() => Promise.resolve(mockReleaseNoteData))
+}));
+
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
 }));
 
 import * as React from "react";
@@ -10,37 +15,37 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeResource } from "../../../__test_support__/fake_resource";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
-import { Actions } from "../../../constants";
-import { SpecialStatus } from "farmbot";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { SaveBtn } from "../../../ui";
+import { save, edit } from "../../../api/crud";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {
     window.alert = jest.fn();
   });
 
-  const fakeProps = (): FarmbotOsProps => {
-    return {
-      account: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
-      diagnostics: [],
-      dispatch: jest.fn(),
-      bot,
-      botToMqttLastSeen: "",
-      botToMqttStatus: "up",
-      sourceFbosConfig: (x) => {
-        return { value: bot.hardware.configuration[x], consistent: true };
-      },
-      shouldDisplay: jest.fn(),
-      isValidFbosConfig: false,
-      env: {},
-      saveFarmwareEnv: jest.fn(),
-    };
-  };
+  const fakeProps = (): FarmbotOsProps => ({
+    deviceAccount: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
+    diagnostics: [],
+    dispatch: jest.fn(),
+    bot,
+    alerts: [],
+    botToMqttLastSeen: "",
+    botToMqttStatus: "up",
+    sourceFbosConfig: x =>
+      ({ value: bot.hardware.configuration[x], consistent: true }),
+    shouldDisplay: jest.fn(),
+    isValidFbosConfig: false,
+    env: {},
+    saveFarmwareEnv: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+  });
 
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
     expect(osSettings.find("button").length).toBe(7);
-    ["NAME", "TIME ZONE", "LAST SEEN", "FARMBOT OS", "CAMERA", "FIRMWARE"]
+    ["NAME", "TIME ZONE", "FARMBOT OS", "CAMERA", "FIRMWARE"]
       .map(string => expect(osSettings.text()).toContain(string));
   });
 
@@ -68,17 +73,17 @@ describe("<FarmbotOsSettings/>", () => {
 
   it("changes bot name", () => {
     const p = fakeProps();
+    const newName = "new bot name";
     const osSettings = shallow(<FarmbotOsSettings {...p} />);
     osSettings.find("input")
-      .simulate("change", { currentTarget: { value: "new bot name" } });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: {
-        specialStatus: SpecialStatus.DIRTY,
-        update: { name: "new bot name" },
-        uuid: expect.stringContaining("Device")
-      },
-      type: Actions.EDIT_RESOURCE
-    });
+      .simulate("change", { currentTarget: { value: newName } });
+    expect(edit).toHaveBeenCalledWith(p.deviceAccount, { name: newName });
   });
 
+  it("saves device", () => {
+    const p = fakeProps();
+    const wrapper = shallow<FarmbotOsSettings>(<FarmbotOsSettings {...p} />);
+    wrapper.find(SaveBtn).simulate("click");
+    expect(save).toHaveBeenCalledWith(p.deviceAccount.uuid);
+  });
 });

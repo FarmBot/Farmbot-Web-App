@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { t } from "i18next";
 import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import {
@@ -17,6 +16,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";
 import { some, uniq, map, sortBy } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 const filterSearch = (term: string) => (item: CalendarOccurrence) =>
   item.heading.toLowerCase().includes(term)
@@ -38,7 +38,7 @@ export class PureFarmEvents
     return sortBy(items, x => x.sortKey)
       .filter(filterSearch(this.searchTerm))
       .map((occur, index) => {
-        const url = `/app/designer/farm_events/`
+        const url = `/app/designer/events/`
           + (occur.id || "UNSAVED_EVENT").toString();
         const heading = occur.subheading
           ? occur.subheading
@@ -124,7 +124,7 @@ export class PureFarmEvents
     return <div className="farm-event-panel-normal-content">
       <DesignerPanelTop
         panel={Panel.FarmEvents}
-        linkTo={"/app/designer/farm_events/add"}
+        linkTo={"/app/designer/events/add"}
         title={t("Add event")}
         noIcon={true}>
         <i className="fa fa-calendar" onClick={this.resetCalendar} />
@@ -150,7 +150,7 @@ export class PureFarmEvents
   };
 
   render() {
-    return <DesignerPanel panelName={"farm-event"} panelColor={"magenta"}>
+    return <DesignerPanel panelName={"farm-event"} panelColor={"yellow"}>
       <DesignerNavTabs />
       {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
     </DesignerPanel>;

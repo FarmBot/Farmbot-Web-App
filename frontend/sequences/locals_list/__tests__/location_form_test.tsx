@@ -12,7 +12,7 @@ import {
   LocationFormProps, PARENT, AllowedVariableNodes
 } from "../locals_list_support";
 import { difference } from "lodash";
-import { locationFormList } from "../location_form_list";
+import { locationFormList, everyPointDDI } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -44,7 +44,7 @@ describe("<LocationForm/>", () => {
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT], true);
+    const choices = locationFormList(p.resources, [PARENT("")], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -56,7 +56,7 @@ describe("<LocationForm/>", () => {
         label: "label",
         allowedVariableNodes: p.allowedVariableNodes
       })(choice));
-    expect(inputs.length).toBe(3);
+    expect(inputs.length).toBe(0);
   });
 
   it("uses body variable data", () => {
@@ -70,19 +70,70 @@ describe("<LocationForm/>", () => {
       }
     }];
     const wrapper = mount(<LocationForm {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("new_var");
+    expect(wrapper.text().toLowerCase())
+      .toContain("location variable - add new");
   });
 
   it("shows parent in dropdown", () => {
     const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.shouldDisplay = () => true;
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list).toContain(PARENT);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
   });
 
   it("doesn't show parent in dropdown", () => {
     const p = fakeProps();
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list).not.toContain(PARENT);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .not.toEqual(expect.arrayContaining([PARENT("label")]));
+  });
+
+  it("shows correct variable label", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.variable.dropdown.label = "Externally defined";
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
+      label: "Externally defined", value: 0
+    });
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT("Externally defined")]));
+  });
+
+  it("shows add new variable option", () => {
+    const p = fakeProps();
+    p.allowedVariableNodes = AllowedVariableNodes.identifier;
+    p.shouldDisplay = () => true;
+    p.variable.dropdown.isNull = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toEqual(expect.arrayContaining([PARENT("Location Variable - Add new")]));
+  });
+
+  it("shows groups in dropdown", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    p.disallowGroups = false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.find(FBSelect).first().props().list)
+      .toContainEqual(everyPointDDI("Tool"));
+  });
+
+  it("renders collapse icon: open", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.collapsed = false;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("fa-caret-up");
+  });
+
+  it("renders collapse icon: closed", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    p.collapsed = true;
+    const wrapper = shallow(<LocationForm {...p} />);
+    expect(wrapper.html()).toContain("fa-caret-down");
   });
 });

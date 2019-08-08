@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
@@ -11,6 +10,8 @@ import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { minFwVersionCheck } from "../../../util";
+import { t } from "../../../i18next_wrapper";
+import { calculateScale } from "./motors";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
@@ -30,6 +31,8 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
    * FARMBOT WILL CRASH INTO WALLS IF THIS IS WRONG! BE CAREFUL.
    */
   const disabled = disabledAxisMap(hardware);
+
+  const scale = calculateScale(sourceFwConfig);
 
   return <section>
     <Header
@@ -79,11 +82,11 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         name={t("Axis Length (mm)")}
         tooltip={ToolTips.LENGTH}
         x={"movement_axis_nr_steps_x"}
-        xScale={sourceFwConfig("movement_step_per_mm_x").value}
         y={"movement_axis_nr_steps_y"}
-        yScale={sourceFwConfig("movement_step_per_mm_y").value}
         z={"movement_axis_nr_steps_z"}
-        zScale={sourceFwConfig("movement_step_per_mm_z").value}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
         gray={{
           x: !sourceFwConfig("movement_stop_at_max_x").value,
           y: !sourceFwConfig("movement_stop_at_max_y").value,

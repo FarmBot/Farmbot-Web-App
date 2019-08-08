@@ -1,5 +1,7 @@
 import { Everything } from "../interfaces";
-import { selectAllLogs, maybeGetTimeOffset } from "../resources/selectors";
+import {
+  selectAllLogs, maybeGetTimeSettings
+} from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
   sourceFbosConfigValue
@@ -24,12 +26,13 @@ export function takeSortedLogs(
 export function mapStateToProps(props: Everything): LogsProps {
   const { hardware } = props.bot;
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const sourceFbosConfig =
+    sourceFbosConfigValue(fbosConfig, hardware.configuration);
   return {
     dispatch: props.dispatch,
-    sourceFbosConfig: sourceFbosConfigValue(fbosConfig, hardware.configuration),
+    sourceFbosConfig,
     logs: takeSortedLogs(250, props.resources.index),
-    timeOffset: maybeGetTimeOffset(props.resources.index),
+    timeSettings: maybeGetTimeSettings(props.resources.index),
     getConfigValue: getWebAppConfigValue(() => props),
   };
-
 }

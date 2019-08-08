@@ -23,6 +23,19 @@ nav {
   padding: 0 1rem;
 }
 
+.nav-sync {
+  min-width: 90px;
+  &.auto-sync {
+    background: none !important;
+    box-shadow: none;
+    font-style: italic;
+    text-transform: none;
+  }
+  &:hover {
+    background: none !important;
+  }
+}
+
 .links {
   display: inline-block;
   a {
@@ -35,52 +48,79 @@ nav {
   .external-links {
     display: none;
   }
-  .nav-links a {
-    display: inline-block;
-    position: relative;
-    font-size: 1.2rem;
-    white-space: nowrap;
-    padding: 2rem 1rem;
-    letter-spacing: 1.2px;
-    transition: font-weight 0.2s ease;
-    &:focus {
-      font-weight: bold;
-    }
-    &:hover {
-      font-weight: bold;
-      color: $white;
-    }
-    &.active {
-      pointer-events: none;
-      font-weight: bold;
-      color: $white;
+  .nav-links {
+    display: inline-flex;
+    a {
+      display: inline-block;
+      position: relative;
+      height: 5.5rem;
+      font-size: 1.2rem;
+      white-space: nowrap;
+      padding: 2rem 1rem;
+      letter-spacing: 1.2px;
+      transition: font-weight 0.2s ease;
+      &:focus {
+        font-weight: bold;
+      }
+      &:hover {
+        font-weight: bold;
+        color: $white;
+      }
+      &.active {
+        pointer-events: none;
+        font-weight: bold;
+        color: $white;
+        &:after {
+          transition: all 0.4s ease;
+          transform: translateY(-3px);
+        }
+      }
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 3px;
+        background: $white;
+      }
       &:after {
-        transition: all 0.4s ease;
-        transform: translateY(-3px);
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 3px;
+        background: $dark_gray;
+      }
+      div .saucer {
+        display: inline-flex;
+        margin-left: 1rem;
+        text-align: center;
+        vertical-align: top;
+        margin-top: -0.2rem;
+        p {
+          width: 100%;
+          margin-left: 0.2rem;
+        }
       }
     }
-    &:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      height: 3px;
-      background: $white;
-    }
-    &:after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      height: 3px;
-      background: $dark_gray;
+    div {
+      display: inline;
+      vertical-align: middle;
     }
   }
 }
 
 .nav-right {
+  height: 5rem;
+  overflow: hidden;
+  .connection-status-popover {
+    display: inline;
+    .bp3-popover-wrapper {
+      margin: 1.85rem;
+    }
+  }
   a {
     font-weight: normal;
     color: $black;
@@ -92,17 +132,23 @@ nav {
       margin-right: 0.8rem;
     }
   }
-  .app-version {
-    color: $white;
-    a {
-      color: $white;
-    }
-  }
+}
+
+.menu-popover {
+  display: inline;
   .bp3-popover-content {
     position: relative;
     width: 22rem;
+    background: $dark_gray;
+    i {
+      margin-right: 0.8rem;
+    }
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
     a:not(.app-version) {
       display: inline-block;
+      text-transform: uppercase;
+      color: $off_white;
       margin-bottom: 0.6rem;
     }
     .app-version {
@@ -115,6 +161,9 @@ nav {
       label {
         color: $white;
       }
+      a {
+        color: $white;
+      }
       p {
         display: inline;
         color: $gray;
@@ -122,27 +171,17 @@ nav {
       }
     }
   }
-  .bp3-overlay-content {
-    margin-top: 1.6rem;
-    color: $white;
-  }
-  .bp3-popover-wrapper {
-    a {
-      color: $white;
-    }
-    .bp3-popover-arrow-fill {
-      fill: $dark_gray;
-    }
-    .bp3-popover-content {
-      background: $dark_gray;
-    }
-  }
 }
 
 .mobile-menu {
   .nav-links {
+    display: block;
     a {
       display: block;
+      div .saucer {
+        display: inline-flex;
+        margin-left: 1rem;
+      }
     }
     i {
       display: inline-block;
@@ -151,13 +190,13 @@ nav {
   }
 }
 
-@media screen and (max-width: 974px) {
+@media screen and (max-width: 1075px) {
   .top-menu-container .nav-links {
-    display: none;
+    display: none !important;
   }
 }
 
-@media screen and (min-width: 975px) {
+@media screen and (min-width: 1075px) {
   .mobile-menu-icon {
     display: none !important;
   }

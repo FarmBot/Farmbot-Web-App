@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
-import { t } from "i18next";
+
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, TaggedSequence } from "farmbot";
 import { StepParams, ChannelName, isMessageType } from "../interfaces";
@@ -14,6 +14,7 @@ import {
   MESSAGE_STATUSES_DDI
 } from "./tile_send_message_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import { t } from "../../i18next_wrapper";
 
 export function TileSendMessage(props: StepParams) {
   if (props.currentStep.kind === "send_message") {

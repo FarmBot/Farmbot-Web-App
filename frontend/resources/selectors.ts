@@ -22,10 +22,15 @@ import {
 } from "./tagged_resources";
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
-import { findPoints, selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
+import {
+  findPoints, selectAllPoints, selectAllActivePoints
+} from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
 import { chain } from "lodash";
+import { getWebAppConfig } from "./getters";
+import { TimeSettings } from "../interfaces";
+import { BooleanSetting } from "../session_keys";
 
 export * from "./selectors_by_id";
 export * from "./selectors_by_kind";
@@ -162,7 +167,8 @@ export let currentToolInSlot = (index: ResourceIndex) =>
 
 /** FINDS: All tools that are in use. */
 export function toolsInUse(index: ResourceIndex): TaggedTool[] {
-  const ids = betterCompact(selectAllToolSlotPointers(index).map(ts => ts.body.tool_id));
+  const ids = betterCompact(selectAllToolSlotPointers(index)
+    .map(ts => ts.body.tool_id));
   return findAllById(index, ids, "Tool") as TaggedTool[];
 }
 
@@ -185,6 +191,19 @@ export function maybeGetRegimen(index: ResourceIndex,
 export function maybeGetTimeOffset(index: ResourceIndex): number {
   const dev = maybeGetDevice(index);
   return dev ? dev.body.tz_offset_hrs : 0;
+}
+
+/** Return 12/24hr time format preference if possible. If not, use 12hr. */
+export function maybeGet24HourTimeSetting(index: ResourceIndex): boolean {
+  const conf = getWebAppConfig(index);
+  return conf ? conf.body[BooleanSetting.time_format_24_hour] : false;
+}
+
+export function maybeGetTimeSettings(index: ResourceIndex): TimeSettings {
+  return {
+    utcOffset: maybeGetTimeOffset(index),
+    hour24: maybeGet24HourTimeSetting(index),
+  };
 }
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {

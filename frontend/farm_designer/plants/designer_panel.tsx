@@ -1,9 +1,9 @@
 import * as React from "react";
-import { t } from "i18next";
 import { history as routeHistory } from "../../history";
 import { last, trim } from "lodash";
 import { Link } from "../../link";
 import { Panel, TAB_COLOR } from "../panel_header";
+import { t } from "../../i18next_wrapper";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -80,7 +80,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     {props.linkTo &&
       <Link to={props.linkTo}>
         <div className={`fb-button ${TAB_COLOR[props.panel || Panel.Plants]}`}>
-          <i className="fa fa-2x fa-plus" title={props.title} />
+          <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}
   </div>;

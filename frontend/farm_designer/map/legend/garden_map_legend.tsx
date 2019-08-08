@@ -1,34 +1,17 @@
 import * as React from "react";
-import { t } from "i18next";
 import { LayerToggle } from "../legend/layer_toggle";
 import { GardenMapLegendProps } from "../interfaces";
 import { history } from "../../../history";
 import { atMaxZoom, atMinZoom } from "../zoom";
 import { ImageFilterMenu } from "../layers/images/image_filter_menu";
 import { BugsControls } from "../easter_eggs/bugs";
-import { BotOriginQuadrant, State } from "../../interfaces";
+import { State } from "../../interfaces";
 import { MoveModeLink } from "../../move_to";
 import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
-
-const OriginSelector = ({ quadrant, update }: {
-  quadrant: BotOriginQuadrant,
-  update: (quadrant: number) => () => void
-}) =>
-  <div className="farmbot-origin">
-    <label>
-      {t("Origin")}
-    </label>
-    <div className="quadrants">
-      {[2, 1, 3, 4].map(q =>
-        <div key={"quadrant_" + q}
-          className={"quadrant " + (quadrant === q && "selected")}
-          onClick={update(q)} />
-      )}
-    </div>
-  </div>;
+import { t } from "../../../i18next_wrapper";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -73,11 +56,11 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     <LayerToggle
       value={props.showPlants}
       label={t("Plants?")}
-      onClick={toggle("show_plants")} />
+      onClick={toggle(BooleanSetting.show_plants)} />
     <LayerToggle
       value={props.showPoints}
       label={t("Points?")}
-      onClick={toggle("show_points")}
+      onClick={toggle(BooleanSetting.show_points)}
       submenuTitle={t("extras")}
       popover={DevSettings.futureFeaturesEnabled()
         ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
@@ -85,37 +68,37 @@ const LayerToggles = (props: GardenMapLegendProps) => {
     <LayerToggle
       value={props.showSpread}
       label={t("Spread?")}
-      onClick={toggle("show_spread")} />
+      onClick={toggle(BooleanSetting.show_spread)} />
     <LayerToggle
       value={props.showFarmbot}
       label={t("FarmBot?")}
-      onClick={toggle("show_farmbot")} />
+      onClick={toggle(BooleanSetting.show_farmbot)} />
     <LayerToggle
       value={props.showImages}
       label={t("Photos?")}
-      onClick={toggle("show_images")}
+      onClick={toggle(BooleanSetting.show_images)}
       submenuTitle={t("filter")}
       popover={<ImageFilterMenu
-        tzOffset={props.tzOffset}
+        timeSettings={props.timeSettings}
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
-    {DevSettings.futureFeaturesEnabled() &&
+    {DevSettings.futureFeaturesEnabled() && props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}
         label={t("Readings?")}
-        onClick={toggle("show_sensor_readings")} />}
+        onClick={toggle(BooleanSetting.show_sensor_readings)} />}
   </div>;
 };
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
   const menuClass = props.legendMenuOpen ? "active" : "";
   return <div
-    className={"garden-map-legend " + menuClass}
+    className={`garden-map-legend ${menuClass} ${props.className}`}
     style={{ zoom: 1 }}>
     <div
       className={"menu-pullout " + menuClass}
-      onClick={props.toggle("legend_menu_open")}>
+      onClick={props.toggle(BooleanSetting.legend_menu_open)}>
       <span>
         {t("Menu")}
       </span>
@@ -124,9 +107,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
     <div className="content">
       <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
       <LayerToggles {...props} />
-      <OriginSelector
-        quadrant={props.botOriginQuadrant}
-        update={props.updateBotOriginQuadrant} />
       <MoveModeLink />
       <SavedGardensLink />
       <BugsControls />

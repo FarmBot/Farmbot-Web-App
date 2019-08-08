@@ -1,10 +1,19 @@
 .farmware-input-panel,
 .sequence-editor-panel,
 .regimen-editor-panel {
-  margin: -3rem -1.5rem -6rem;
+  margin: -3rem -1.5rem -3rem;
   height: calc(100vh - 5rem);
   background: $light_gray;
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 767px) {
+    display: none;
+    &.open {
+      display: block;
+      &.farmware-info-open,
+      &.inserting-item,
+      &.inserting-step {
+        display: none;
+      }
+    }
     margin-bottom: 3rem;
   }
   padding: 3rem 1.5rem 8rem;
@@ -13,17 +22,22 @@
     float: left;
     margin-top: 0.4rem;
   }
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     h3,
     p {
       margin-left: 15px;
       margin-right: 15px;
     }
     h3 {
+      max-width: 60%;
+      margin-left: 0;
+      margin-right: 0;
       margin-bottom: 2.5rem;
+      padding-left: 0 !important;
     }
     .button-group {
       margin-right: 15px;
+      margin-top: -1rem;
     }
     .title-help-text {
       padding-left: 15px;
@@ -42,7 +56,7 @@
     padding-left: 15px;
     padding-right: 15px;
   }
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     .title-help-text {
       padding-left: 3rem;
       padding-right: 3rem;
@@ -54,23 +68,63 @@
 .sequence-editor-content,
 .regimen-editor-content {
   margin-right: -15px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 0;
+  }
+}
+
+.farmware-input-panel-contents {
+  .farmware-info-button {
+    position: absolute;
+    top: 7rem;
+    left: 35%;
+  }
+}
+
+.sequence-editor-content {
+  hr {
+    margin-right: 15px;
   }
 }
 
 .sequence-editor-tools,
 .regimen-editor-tools {
   margin-right: 15px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-right: 10px;
   }
   .locals-list {
     margin-top: 1rem;
-    max-height: 14rem;
+    max-height: 25rem;
     overflow-y: auto;
     overflow-x: hidden;
+  }
+}
+
+.locals-list {
+  >.location-form {
+    margin: auto;
+    margin-top: 1rem;
+    width: 80%;
+    max-width: 40rem;
+    background: $off_white;
+    label {
+      margin-top: 0;
+    }
+    >.location-form-header {
+      width: 100%;
+      background: darken($off_white, 5%);
+      padding: 1rem;
+      i {
+        float: right;
+        font-size: 2rem;
+        color: $dark_gray;
+      }
+    }
+    >.location-form-content {
+      padding: 1rem;
+    }
   }
 }
 
@@ -93,7 +147,8 @@
 }
 
 .sequence-steps {
-  margin-right: 15px;
+  margin-right: 25px;
+  margin-left: 10px;
 }
 
 .step-button-cluster,
@@ -111,18 +166,34 @@
 
 .farmware-info-panel,
 .step-button-cluster-panel {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
+    display: none;
+    &.farmware-info-open,
+    &.inserting-step {
+      display: block;
+    }
     margin-left: 15px;
     margin-right: 15px;
   }
 }
 
-.farmware-info-panel button {
-  margin-bottom: 3rem;
+.step-button-cluster {
+  @media screen and (max-width: 767px) {
+    width: 40rem;
+  }
+}
+
+.farmware-info-panel {
+  .back-to-farmware {
+    text-align: left !important;
+  }
+  button {
+    margin-bottom: 3rem;
+  }
 }
 
 .step-button-cluster {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 0;
     margin-right: 0;
   }
@@ -132,6 +203,7 @@
 .sequence-list-items,
 .regimen-list {
   button {
+    text-align: left;
     label {
       width: 90%;
       overflow: hidden;
@@ -157,9 +229,31 @@
   padding-top: 0.4rem;
   margin-bottom: 3rem;
   margin-right: 5px;
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 1075px) {
+    margin-left: 15px;
+  }
+  .empty-state {
+    display: none;
+    .empty-state-graphic {
+      margin-top: 25%;
+    }
+  }
+  @media screen and (max-width: 767px) {
+    &.open {
+      display: none;
+    }
     margin-left: 15px;
     margin-right: 15px;
+    .empty-state {
+      display: block;
+    }
+  }
+  .panel-top {
+    margin: 0;
+    .text-input-wrapper {
+      margin: 0.1rem;
+      margin-right: 1rem;
+    }
   }
 }
 
@@ -179,14 +273,68 @@
 }
 
 .farmware-input-panel-contents {
-  @media screen and (max-width: 974px) {
+  @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 15px;
     padding-right: 5rem;
   }
 }
 
-.sequence-list-panel input,
-.regimen-list-panel input {
-  margin-bottom: 1rem;
+.back-to-farmware,
+.back-to-regimens,
+.back-to-sequences {
+  display: none;
+  &.open {
+    @media screen and (max-width: 767px) {
+      display: block;
+      margin-top: -2rem;
+      float: left !important;
+      height: 6rem;
+      width: 4rem;
+      font-size: 2rem;
+      text-align: center;
+      line-height: 6rem;
+      margin-left: 15px;
+      &.farmware-info-open,
+      &.inserting-step,
+      &.inserting-item {
+        margin-left: 0;
+      }
+    }
+  }
+}
+
+.drag-drop-area {
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
+
+.add-command-button-container {
+  display: none;
+  @media screen and (max-width: 767px) {
+    display: block;
+    min-height: 3rem;
+    .add-command {
+      display: block;
+      margin: auto;
+      margin-top: 1rem;
+      float: none !important;
+    }
+  }
+}
+
+.farmware-info-button {
+  display: none;
+  @media screen and (max-width: 767px) {
+    &.open {
+      display: block;
+      margin: 4rem;
+      margin-top: 1rem;
+      margin-left: 2rem;
+    }
+    &.farmware-info-open {
+      display: none;
+    }
+  }
 }

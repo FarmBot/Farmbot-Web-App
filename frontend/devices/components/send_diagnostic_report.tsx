@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Row, Col } from "../../ui";
 import { ColWidth } from "./farmbot_os_settings";
-import { t } from "i18next";
+
 import { Collapse } from "@blueprintjs/core";
 import { Header } from "./hardware_settings/header";
 import { ShouldDisplay, Feature } from "../interfaces";
@@ -9,12 +9,14 @@ import { TaggedDiagnosticDump } from "farmbot";
 import { DiagnosticDumpRow } from "./diagnostic_dump_row";
 import { requestDiagnostic } from "../actions";
 import { Content } from "../../constants";
+import { t } from "../../i18next_wrapper";
 
 export interface DiagReportProps {
   dispatch: Function;
   expanded: boolean;
   shouldDisplay: ShouldDisplay;
   diagnostics: TaggedDiagnosticDump[];
+  botOnline: boolean;
 }
 
 export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
@@ -40,6 +42,7 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
           <Col xs={3}>
             <button
               className="fb-button yellow"
+              disabled={!this.props.botOnline}
               onClick={requestDiagnostic}>
               {t("Record Diagnostic")}
             </button>

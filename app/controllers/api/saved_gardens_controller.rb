@@ -19,13 +19,13 @@ module Api
     end
 
     def snapshot
-      mutate SavedGardens::Snapshot.run(params.as_json, device: current_device)
+      mutate SavedGardens::Snapshot.run(device: current_device)
     end
 
     def apply
-      params  = { garden:      garden,
-                  device:      current_device,
-                  destructive: (request.method == "POST") }
+      params = { garden: garden,
+                device: current_device,
+                destructive: (request.method == "POST") }
       mutate SavedGardens::Apply.run(params)
     end
 

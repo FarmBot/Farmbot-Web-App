@@ -1,6 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { ToggleButtonProps } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   caption() {
@@ -22,7 +23,6 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
 
   css() {
     const css = "fb-toggle-button fb-button ";
-    if (this.props.disabled) { return css + "gray"; }
     const greenCSS = css + "green";
     const redCSS = css + "red";
     const yellowCSS = css + "yellow";

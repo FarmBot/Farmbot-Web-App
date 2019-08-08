@@ -1,16 +1,16 @@
 import * as React from "react";
-import { t } from "i18next";
 import {
   bindingTypeLabelLookup, specialActionLabelLookup,
   generatePinLabel, sortByNameAndPin
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { Row, Col } from "../../ui";
 import { findSequenceById } from "../../resources/selectors";
 import { PinBindingColWidth } from "./pin_bindings";
 import { PinBindingsListProps } from "./interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
+import { t } from "../../i18next_wrapper";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
   const { pinBindings, resources, dispatch } = props;

@@ -1,5 +1,3 @@
-
-import { t } from "i18next";
 import {
   selectAllSavedPeripherals,
   selectAllSavedSensors
@@ -8,14 +6,14 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
-  TaggedPeripheral, TaggedSensor, ResourceName
+  TaggedPeripheral, TaggedSensor, ResourceName, Nothing
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
 import { StepParams } from "../interfaces";
 import { editStep } from "../../api/crud";
-import { ShouldDisplay, Feature } from "../../devices/interfaces";
 import { joinKindAndId } from "../../resources/reducer_support";
+import { t } from "../../i18next_wrapper";
 
 /** `headingIds` required to group the four kinds of pins. */
 export enum PinGroupName {
@@ -38,21 +36,21 @@ const BOX_LED_LABELS: { [x: string]: string } = {
 };
 
 export const PERIPHERAL_HEADING: DropDownItem =
-  ({ heading: true, label: t("Peripherals"), value: 0 });
+  ({ heading: true, label: t("Peripherals"), value: 0, headingId: PinGroupName.Peripheral });
 
 export const SENSOR_HEADING: DropDownItem =
-  ({ heading: true, label: t("Sensors"), value: 0 });
+  ({ heading: true, label: t("Sensors"), value: 0, headingId: PinGroupName.Sensor });
 
 export const BOX_LED_HEADING: DropDownItem =
-  ({ heading: true, label: t("Box LEDs"), value: 0 });
+  ({ heading: true, label: t("Box LEDs"), value: 0, headingId: PinGroupName.BoxLed });
 
 export const PIN_HEADING: DropDownItem =
-  ({ heading: true, label: t("Pins"), value: 0 });
+  ({ heading: true, label: t("Pins"), value: 0, headingId: PinGroupName.Pin });
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
 export const pinNumber2DropDown =
   (valueFormat: (n: number) => (string | number)) =>
-    (n: number) => {
+    (n: number): DropDownItem => {
       const analog = n > 53 ? ` (A${n - 54})` : "";
       const label = `${t("Pin")} ${n}${analog}`;
       return { label, value: valueFormat(n), headingId: PinGroupName.Pin };
@@ -102,18 +100,20 @@ export function pinDropdowns(
   return [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
 }
 
-export const pinsAsDropDownsWritePin =
-  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
-    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
-    ...(shouldDisplay(Feature.rpi_led_control) ? boxLedsAsDropDowns() : []),
-    ...pinDropdowns(n => n),
+export const pinsAsDropDownsWritePin = (
+  input: ResourceIndex, showPins: boolean
+): DropDownItem[] => [
+    ...peripheralsAsDropDowns(input),
+    ...boxLedsAsDropDowns(),
+    ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
-export const pinsAsDropDownsReadPin =
-  (input: ResourceIndex, shouldDisplay: ShouldDisplay): DropDownItem[] => [
-    ...(shouldDisplay(Feature.named_pins) ? peripheralsAsDropDowns(input) : []),
-    ...(shouldDisplay(Feature.named_pins) ? sensorsAsDropDowns(input) : []),
-    ...pinDropdowns(n => n),
+export const pinsAsDropDownsReadPin = (
+  input: ResourceIndex, showPins: boolean
+): DropDownItem[] => [
+    ...sensorsAsDropDowns(input),
+    ...peripheralsAsDropDowns(input),
+    ...(showPins ? pinDropdowns(n => n) : []),
   ];
 
 const TYPE_MAPPING: Record<AllowedPinTypes, PinGroupName | BoxLed> = {
@@ -140,27 +140,29 @@ export const findByPinNumber =
     }
   };
 
-export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin) {
-  const { pin_type } = input.args;
-
-  if (isPinType(pin_type)) {
-    switch (pin_type) {
-      case BoxLed.BoxLed3:
-      case BoxLed.BoxLed4:
-        return boxLed2DropDown(pin_type as BoxLed);
-      case PinGroupName.Peripheral:
-      case PinGroupName.Sensor:
-      default:
-        const item = findByPinNumber(ri, input);
-        switch (item.kind) {
-          case PinGroupName.Peripheral:
-            return peripheral2DropDown(item);
-          case PinGroupName.Sensor:
-            return sensor2DropDown(item);
-        }
+export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin | Nothing):
+  DropDownItem | undefined {
+  if (input.kind === "named_pin") {
+    const { pin_type } = input.args;
+    if (isPinType(pin_type)) {
+      switch (pin_type) {
+        case BoxLed.BoxLed3:
+        case BoxLed.BoxLed4:
+          return boxLed2DropDown(pin_type as BoxLed);
+        case PinGroupName.Peripheral:
+        case PinGroupName.Sensor:
+        default:
+          const item = findByPinNumber(ri, input);
+          switch (item.kind) {
+            case PinGroupName.Peripheral:
+              return peripheral2DropDown(item);
+            case PinGroupName.Sensor:
+              return sensor2DropDown(item);
+          }
+      }
+    } else {
+      bail("Bad pin_type: " + JSON.stringify(pin_type));
     }
-  } else {
-    bail("Bad pin_type: " + JSON.stringify(pin_type));
   }
 }
 
@@ -208,7 +210,8 @@ export const setArgsDotPinNumber =
 
 type PinNumber = ReadPin["args"]["pin_number"];
 
-export function celery2DropDown(input: PinNumber, ri: ResourceIndex) {
+export function celery2DropDown(input: PinNumber, ri: ResourceIndex):
+  DropDownItem | undefined {
   return isNumber(input)
     ? pinNumber2DropDown(n => n)(input)
     : namedPin2DropDown(ri, input);

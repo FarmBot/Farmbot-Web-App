@@ -1,6 +1,7 @@
-jest.mock("../../../config_storage/actions", () => {
-  return { setWebAppConfigValue: jest.fn() };
-});
+jest.mock("../../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(() => () => { }),
+  getWebAppConfigValue: jest.fn(() => () => { }),
+}));
 
 import { mount } from "enzyme";
 import { DevMode } from "../dev_mode";
@@ -9,7 +10,7 @@ import { range } from "lodash";
 import {
   setWebAppConfigValue
 } from "../../../config_storage/actions";
-import { warning } from "farmbot-toastr";
+import { warning } from "../../../toast/toast";
 
 describe("<DevMode/>", () => {
   it("triggers callbacks after 15 clicks", () => {

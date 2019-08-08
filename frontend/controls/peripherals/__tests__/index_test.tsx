@@ -6,7 +6,7 @@ import { PeripheralsProps } from "../../../devices/interfaces";
 import { fakePeripheral } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
 import { SpecialStatus } from "farmbot";
-import { error } from "farmbot-toastr";
+import { error } from "../../../toast/toast";
 
 describe("<Peripherals />", () => {
   function fakeProps(): PeripheralsProps {
@@ -34,21 +34,26 @@ describe("<Peripherals />", () => {
     expect(wrapper.instance().state.isEditing).toBeTruthy();
   });
 
-  function attemptSave(num: number, errorString: string) {
+  it("save attempt: pin number undefined", () => {
     const p = fakeProps();
-    p.peripherals[0].body.pin = num;
+    p.peripherals[0].body.pin = undefined;
     p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
     const wrapper = mount(<Peripherals {...p} />);
     clickButton(wrapper, 1, "save", { partial_match: true });
-    expect(error).toHaveBeenLastCalledWith(errorString);
-  }
-
-  it("save attempt: pin number too small", () => {
-    attemptSave(0, "Pin numbers are required and must be positive and unique.");
+    expect(error).toHaveBeenLastCalledWith("Please select a pin.");
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
-  it("save attempt: pin number too large", () => {
-    attemptSave(9999, "Pin numbers must be less than 1000.");
+  it("save attempt: pin number not unique", () => {
+    const p = fakeProps();
+    p.peripherals = [fakePeripheral(), fakePeripheral()];
+    p.peripherals[0].body.pin = 1;
+    p.peripherals[1].body.pin = 1;
+    p.peripherals[0].specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<Peripherals {...p} />);
+    clickButton(wrapper, 1, "save", { partial_match: true });
+    expect(error).toHaveBeenLastCalledWith("Pin numbers must be unique.");
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("saves", () => {

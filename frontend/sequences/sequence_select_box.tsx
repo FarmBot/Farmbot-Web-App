@@ -40,6 +40,5 @@ export function SequenceSelectBox(props: SequenceSelectBoxProps) {
   return <FBSelect
     onChange={props.onChange}
     selectedItem={selectedSequence()}
-    list={sequenceDropDownList()}
-    placeholder="Pick a sequence (or save a new one)" />;
+    list={sequenceDropDownList()} />;
 }

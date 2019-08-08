@@ -6,45 +6,34 @@ require_relative "../app/lib/resources.rb"
 require_relative "../app/lib/resources/job.rb"
 require_relative "../app/lib/resources/preprocessor.rb"
 require_relative "../app/lib/resources/service.rb"
-require_relative "../app/lib/service_runner_base.rb"
-require_relative "../app/lib/service_runner_base.rb"
 
 class RabbitWorker
-  WAIT     = 3
-  SERVICES = {
-    log_channel:      LogService,
-    resource_channel: Resources::Service
-  }
-
-  def run_it!(chan, service)
-    puts " Attempting to connect #{service} to #{chan}"
-    ServiceRunner.go!(Transport.current.send(chan), service)
-  rescue
-    puts "Connecting to broker in #{WAIT} seconds."
-    sleep WAIT
-    retry
-  end
-
-  def thread(channel, service)
-    Thread.new { run_it!(channel, service) }
-  end
-
-  def threads
-    @threads ||= SERVICES.map { |(c,s)| thread(c, s) }
+  WAIT = 3
+  def self.thread
+    Thread.new do
+      yield
+    rescue => e
+      puts "Connecting to broker in #{WAIT} seconds. (#{e.inspect})"
+      sleep WAIT
+      retry
+    end
   end
 
   def self.go!
+    t = Transport.current
+
     loop do
-      ThreadsWait.all_waits(self.new.threads)
+      ThreadsWait.all_waits([
+        thread { LogService.new.go!(t.log_channel) },
+        thread { Resources::Service.new.go!(t.resource_channel) },
+      ])
     end
+  rescue
+    sleep RabbitWorker::WAIT
+    retry
   end
 end
 
 sleep(RabbitWorker::WAIT * 2)
 
-begin
-  RabbitWorker.go!
-rescue
-  sleep RabbitWorker::WAIT
-  retry
-end
+RabbitWorker.go!

@@ -13,7 +13,7 @@ describe("destroyCatch", () => {
       uuid,
       statusBeforeError
     });
-    handler(err);
+    handler(err).catch(() => { });
     const expected = destroyNO({ err, uuid, statusBeforeError });
     expect(dispatch).toHaveBeenCalledWith(expected);
   });

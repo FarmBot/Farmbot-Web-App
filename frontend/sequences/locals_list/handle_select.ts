@@ -9,7 +9,6 @@ import {
   Identifier,
   Point,
   Tool,
-  EveryPoint,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
   PointType,
@@ -25,6 +24,12 @@ import { betterCompact } from "../../util";
 // tslint:disable-next-line:no-any
 export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
+export interface EveryPointShape {
+  kind: "every_point";
+  args: { every_point_type: PointType; }
+}
+// tslint:disable-next-line:no-any
+type EveryPoint = any;
 type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
 
 type CreateVariableDeclaration =
@@ -87,10 +92,11 @@ const everyPointVar = (value: string | number) =>
       args: { every_point_type: "" + value as PointType }
     });
 
-const manualEntry =
+const manualEntry = (value: string | number) =>
   ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
-      kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+      kind: "coordinate",
+      args: value ? JSON.parse("" + value) : { x: 0, y: 0, z: 0 }
     });
 
 interface NewVariableProps extends NewVarProps {
@@ -123,7 +129,7 @@ const newVariableCreator = (ddi: DropDownItem):
     case "Tool": return toolVar(ddi.value);
     case "parameter": return newParameter; // Caller decides X/Y/Z
     case "every_point": return everyPointVar(ddi.value);
-    case "Coordinate": return manualEntry;
+    case "Coordinate": return manualEntry(ddi.value);
   }
   return () => undefined;
 };

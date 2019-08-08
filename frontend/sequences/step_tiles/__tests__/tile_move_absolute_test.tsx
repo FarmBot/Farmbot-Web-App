@@ -53,13 +53,14 @@ describe("<TileMoveAbsolute/>", () => {
 
   it("renders inputs", () => {
     const block = mount(<TileMoveAbsolute {...fakeProps()} />);
+    block.setState({ more: true });
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
     expect(inputs.length).toEqual(8);
     expect(labels.length).toEqual(8);
     expect(buttons.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Move Absolute");
+    expect(inputs.first().props().placeholder).toEqual("Move To");
     expect(buttons.at(0).text()).toEqual("Coordinate (1.1, 2, 3)");
     checkField(block, 1, "x (mm)", "1.1");
     checkField(block, 2, "y (mm)", "2");
@@ -77,6 +78,31 @@ describe("<TileMoveAbsolute/>", () => {
     const cb = tma.updateInputValue("x", "location");
     cb(inputEvent("23.456"));
     expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
+  });
+
+  it("expands form", () => {
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(false);
+    wrapper.find("h4").simulate("click");
+    expect(wrapper.state().more).toEqual(true);
+  });
+
+  it("expands form by default", () => {
+    const p = fakeProps();
+    p.expandStepOptions = true;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(true);
+  });
+
+  it("expands form when offset is present", () => {
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args.z = 100;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(true);
   });
 
   describe("updateArgs", () => {
@@ -135,12 +161,14 @@ describe("<TileMoveAbsolute/>", () => {
     it("does not handle every_point nodes", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
+      const data_value = {
+        kind: "every_point",
+        args: { every_point_type: "Plant" }
+        // tslint:disable-next-line:no-any
+      } as any;
       const boom = () => block.updateLocation({
         kind: "parameter_application",
-        args: {
-          label: "parent",
-          data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
-        }
+        args: { label: "parent", data_value }
       });
       expect(boom).toThrowError("Can't put `every_point` into `move_abs");
     });

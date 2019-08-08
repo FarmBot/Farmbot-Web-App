@@ -1,5 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
+import { t } from "./i18next_wrapper";
 
 // No reusability here. Why not just keep it from taking up sass?
 const STYLES: React.CSSProperties = {

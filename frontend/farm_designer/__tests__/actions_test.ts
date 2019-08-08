@@ -13,7 +13,7 @@ import { MovePlantProps } from "../interfaces";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { edit } from "../../api/crud";
 import { Actions } from "../../constants";
-import { DEFAULT_ICON } from "../../open_farm/icons";
+import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { history } from "../../history";
 
 describe("movePlant", () => {
@@ -58,11 +58,13 @@ describe("closePlantInfo()", () => {
   });
 
   it("plant edit open", () => {
-    mockPath = "/app/designer/plants/1/edit";
+    mockPath = "/app/designer/plants/1";
     const dispatch = jest.fn();
     closePlantInfo(dispatch)();
-    expect(history.push).not.toHaveBeenCalled();
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: undefined, type: Actions.SELECT_PLANT
+    });
   });
 
   it("plant info open", () => {
@@ -82,7 +84,7 @@ describe("setDragIcon()", () => {
     const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
     setDragIcon("icon")(e);
     const img = new Image();
-    img.src = "data:image/svg+xml;utf8,icon";
+    img.src = svgToUrl("icon");
     expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
   });
 

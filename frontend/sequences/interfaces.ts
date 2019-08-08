@@ -14,6 +14,7 @@ import { StepMoveDataXfer, StepSpliceDataXfer } from "../draggable/interfaces";
 import { TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -44,8 +45,9 @@ export interface Props {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
-  confirmStepDeletion: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequenceEditorMiddleProps {
@@ -56,7 +58,7 @@ export interface SequenceEditorMiddleProps {
   hardwareFlags: HardwareFlags;
   farmwareInfo: FarmwareInfo;
   shouldDisplay: ShouldDisplay;
-  confirmStepDeletion: boolean;
+  getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
 }
 
@@ -71,6 +73,9 @@ export interface SequenceHeaderProps {
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
   menuOpen: boolean;
+  variablesCollapsed: boolean;
+  toggleVarShow: () => void;
+  getWebAppConfigValue: GetWebAppConfigValue;
 }
 
 export type ChannelName = ALLOWED_CHANNEL_NAMES;
@@ -107,6 +112,7 @@ export interface Sequence extends CeleryScriptSequence {
 export interface SequenceReducerState {
   current: string | undefined;
   menuOpen: boolean;
+  stepIndex: number | undefined;
 }
 
 export interface SequencesListProps {
@@ -122,7 +128,7 @@ export interface SequencesListState {
 }
 
 export interface MoveAbsState {
-  isToolSelected: boolean;
+  more: boolean;
 }
 
 export interface StepButtonParams {
@@ -139,6 +145,7 @@ export interface StepButtonParams {
   | "purple"
   | "pink"
   | "gray";
+  index?: number | undefined;
 }
 
 export interface CopyParams {
@@ -196,4 +203,6 @@ export interface StepParams {
   farmwareInfo?: FarmwareInfo;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
+  showPins?: boolean;
+  expandStepOptions?: boolean;
 }

@@ -1,7 +1,8 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "./actions";
 import { TaggedPlantTemplate, TaggedSavedGarden } from "farmbot";
+import { t } from "../../i18next_wrapper";
 
 export interface GardenSnapshotProps {
   currentSavedGarden: TaggedSavedGarden | undefined;

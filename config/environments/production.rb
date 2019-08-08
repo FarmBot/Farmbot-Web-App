@@ -2,7 +2,7 @@ FarmBot::Application.configure do
 
   config
     .action_mailer
-    .default_url_options = { host: ENV.fetch("API_HOST", "my.farmbot.io") }
+    .default_url_options = { host: ENV.fetch("API_HOST", "my.farm.bot") }
   config.active_support.deprecation  = :notify
   config.cache_classes               = true
   config.consider_all_requests_local = false

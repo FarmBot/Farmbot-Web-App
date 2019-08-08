@@ -1,19 +1,22 @@
 import * as React from "react";
 import { Col, BlurableInput } from "../ui/index";
-import { t } from "i18next";
-import { FarmwareManifest, Pair, FarmwareConfig } from "farmbot";
+
+import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
 import {
   ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv
 } from "../devices/interfaces";
 import { kebabCase, toString, snakeCase } from "lodash";
+import { FarmwareManifestInfo } from "./interfaces";
+import { t } from "../i18next_wrapper";
 
 export interface FarmwareFormProps {
-  farmware: FarmwareManifest;
+  farmware: FarmwareManifestInfo;
   user_env: UserEnv;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
+  botOnline: boolean;
 }
 
 /** Namespace a Farmware config with the Farmware name. */
@@ -22,7 +25,7 @@ export function getConfigEnvName(farmwareName: string, configName: string) {
 }
 
 /** Farmware description and version info for help text contents. */
-export function farmwareHelpText(farmware: FarmwareManifest | undefined): string {
+export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined): string {
   if (farmware) {
     const description = farmware.meta.description;
     const versionString = " (version: " + farmware.meta.version + ")";
@@ -33,7 +36,7 @@ export function farmwareHelpText(farmware: FarmwareManifest | undefined): string
 
 /** Return a div that includes all Farmware input fields. */
 export function ConfigFields(props: {
-  farmware: FarmwareManifest,
+  farmware: FarmwareManifestInfo,
   getValue: (farmwareName: string, currentConfig: FarmwareConfig) => string,
   shouldDisplay: ShouldDisplay,
   saveFarmwareEnv: SaveFarmwareEnv,
@@ -89,6 +92,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
     <div className={kebabCase(farmware.name)}>
       <button
         className="fb-button green farmware-button"
+        disabled={!props.botOnline}
         onClick={() => run(farmware.name, farmware.config)}>
         {t("Run")}
       </button>
@@ -103,7 +107,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
 }
 
 /** Determine if a Farmware has requested inputs. */
-export function needsFarmwareForm(farmware: FarmwareManifest): Boolean {
+export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
   const needsWidget = farmware.config && farmware.config.length > 0;
   return needsWidget;
 }

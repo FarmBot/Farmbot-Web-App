@@ -1,6 +1,6 @@
 import { Regimen } from "../../../regimens/interfaces";
 import { Sequence } from "../../../sequences/interfaces";
-import { ExecutableType, FarmEvent } from "farmbot/dist/resources/api_resources";
+import { FarmEvent } from "farmbot/dist/resources/api_resources";
 
 /** Would it be better to make a fully formed farm event? Join regimen, sequence, etc. */
 
@@ -22,14 +22,4 @@ export interface FarmEventWithRegimen extends FarmEvent {
 }
 
 /** STEP 2: Once all the resource queries are done, create data that looks
- *          like this: */
-export interface NewCalendarItem {
-  dayOfMonth: number;
-  month: string;
-  executable_id: number;
-  executable_type: ExecutableType;
-  farm_event_id: number;
-  label: string;
-  sortKey: number;
-  timeStr: string;
-}
+ *          like `CalendarDay`. */

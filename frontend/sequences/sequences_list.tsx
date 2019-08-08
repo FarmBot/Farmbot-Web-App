@@ -1,5 +1,4 @@
 import * as React from "react";
-import { t } from "i18next";
 import { push } from "../history";
 import { SequencesListProps, SequencesListState } from "./interfaces";
 import { sortResourcesById, urlFriendly, lastUrlChunk } from "../util";
@@ -12,6 +11,8 @@ import { Link } from "../link";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { UUID, VariableNameSet } from "../resources/interfaces";
 import { variableList } from "./locals_list/variable_support";
+import { t } from "../i18next_wrapper";
+import { EmptyStateWrapper, EmptyStateGraphic } from "../ui/empty_state_wrapper";
 
 const filterFn = (searchTerm: string) => (seq: TaggedSequence): boolean => seq
   .body
@@ -57,6 +58,45 @@ const sequenceList = (props: {
     </div>;
   };
 
+const emptySequenceBody = (seqCount: number): TaggedSequence["body"] => ({
+  name: t("new sequence {{ num }}", { num: seqCount }),
+  args: {
+    version: -999,
+    locals: { kind: "scope_declaration", args: {} },
+  },
+  color: "gray",
+  kind: "sequence",
+  body: []
+});
+
+interface SequenceListHeaderProps {
+  onChange(e: React.SyntheticEvent<HTMLInputElement>): void;
+  sequenceCount: number;
+  dispatch: Function;
+}
+
+const SequenceListHeader = (props: SequenceListHeaderProps) =>
+  <div className={"panel-top with-button"}>
+    <div className="thin-search-wrapper">
+      <div className="text-input-wrapper">
+        <i className="fa fa-search"></i>
+        <input
+          onChange={props.onChange}
+          placeholder={t("Search Sequences...")} />
+      </div>
+    </div>
+    <button
+      className="fb-button green add"
+      onClick={() => {
+        const newSequence = emptySequenceBody(props.sequenceCount);
+        props.dispatch(init("Sequence", newSequence));
+        push("/app/sequences/" + urlFriendly(newSequence.name));
+        setActiveSequenceByName();
+      }}>
+      <i className="fa fa-plus" />
+    </button>
+  </div>;
+
 export class SequencesList extends
   React.Component<SequencesListProps, SequencesListState> {
 
@@ -67,41 +107,28 @@ export class SequencesList extends
   onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
     this.setState({ searchTerm: e.currentTarget.value });
 
-  emptySequenceBody = (): TaggedSequence["body"] => ({
-    name: t("new sequence {{ num }}", { num: this.props.sequences.length }),
-    args: {
-      version: -999,
-      locals: { kind: "scope_declaration", args: {} },
-    },
-    color: "gray",
-    kind: "sequence",
-    body: []
-  });
-
   render() {
     const { sequences, dispatch, resourceUsage, sequenceMetas } = this.props;
     const searchTerm = this.state.searchTerm.toLowerCase();
     return <div>
-      <button
-        className="fb-button green add"
-        onClick={() => {
-          const newSequence = this.emptySequenceBody();
-          dispatch(init("Sequence", newSequence));
-          push("/app/sequences/" + urlFriendly(newSequence.name));
-          setActiveSequenceByName();
-        }}>
-        <i className="fa fa-plus" />
-      </button>
-      <input
-        onChange={this.onChange}
-        placeholder={t("Search Sequences...")} />
+      <SequenceListHeader
+        dispatch={dispatch}
+        sequenceCount={this.props.sequences.length}
+        onChange={this.onChange} />
       <Row>
         <Col xs={12}>
-          <div className="sequence-list">
-            {sortResourcesById(sequences)
-              .filter(filterFn(searchTerm))
-              .map(sequenceList({ dispatch, resourceUsage, sequenceMetas }))}
-          </div>
+          <EmptyStateWrapper
+            notEmpty={sequences.length > 0}
+            graphic={EmptyStateGraphic.sequences}
+            title={t("No Sequences.")}
+            text={Content.NO_SEQUENCES}>
+            {sequences.length > 0 &&
+              <div className="sequence-list">
+                {sortResourcesById(sequences)
+                  .filter(filterFn(searchTerm))
+                  .map(sequenceList({ dispatch, resourceUsage, sequenceMetas }))}
+              </div>}
+          </EmptyStateWrapper>
         </Col>
       </Row>
     </div>;

@@ -11,7 +11,9 @@ import {
   TaggedSensor,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex } from "../resources/interfaces";
-import { BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay } from "../devices/interfaces";
+import {
+  BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay
+} from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
 import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
@@ -21,6 +23,7 @@ import {
   ExecutableType, PlantPointer
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import { TimeSettings } from "../interfaces";
 
 /* BotOriginQuadrant diagram
 
@@ -67,7 +70,7 @@ export interface Props {
   eStopStatus: boolean;
   latestImages: TaggedImage[];
   cameraCalibrationData: CameraCalibrationData;
-  tzOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
@@ -118,10 +121,11 @@ export interface AddEditFarmEventProps {
   sequencesById: CowardlyDictionary<TaggedSequence>;
   farmEventsById: CowardlyDictionary<TaggedFarmEvent>;
   getFarmEvent(): TaggedFarmEvent | undefined;
+  findFarmEventByUuid(uuid: string | undefined): TaggedFarmEvent | undefined;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;
   findExecutable: ExecutableQuery;
-  timeOffset: number;
+  timeSettings: TimeSettings;
   autoSyncEnabled: boolean;
   resources: ResourceIndex;
   shouldDisplay: ShouldDisplay;
@@ -192,7 +196,7 @@ export interface GardenMapProps {
   getConfigValue: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
-  timeOffset: number;
+  timeSettings: TimeSettings;
 }
 
 export interface GardenMapState {
@@ -212,7 +216,8 @@ export interface EditPlantInfoProps {
   dispatch: Function;
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
   openedSavedGarden: string | undefined;
-  timeOffset: number;
+  timeSettings: TimeSettings;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export interface DraggableEvent {
@@ -263,9 +268,4 @@ export interface CurrentPointPayl {
   cy: number;
   r: number;
   color?: string;
-}
-
-export interface SavedGarden {
-  id?: number;
-  name?: string;
 }

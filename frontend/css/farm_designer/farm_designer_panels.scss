@@ -3,6 +3,9 @@
   position: fixed;
   top: 8.9rem;
   width: 30rem;
+  @media screen and (max-width: 450px) {
+    width: 100%;
+  }
 }
 
 @keyframes panel-pullout {
@@ -17,6 +20,12 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  &.panel-closed {
+    display: none !important;
+  }
+  &.short-panel {
+    height: 24rem;
+  }
   .panel-container {
     width: 100%;
     height: 100%;
@@ -36,19 +45,31 @@
 .panel-container {
   overflow: hidden;
   &.green-panel {
-    background-color: $light_green;
+    background-color: $panel_light_green;
   }
   &.cyan-panel {
     background-color: $light_cyan;
   }
   &.brown-panel {
-    background-color: $light_brown;
+    background-color: $panel_light_brown;
   }
   &.magenta-panel {
     background-color: $light_magenta;
   }
   &.gray-panel {
-    background-color: $medium_light_gray;
+    background-color: $panel_light_gray;
+  }
+  &.yellow-panel {
+    background-color: $panel_light_yellow;
+  }
+  &.blue-panel {
+    background-color: $panel_light_blue;
+  }
+  &.teal-panel {
+    background-color: $panel_light_teal;
+  }
+  &.red-panel {
+    background-color: $panel_light_red;
   }
 }
 
@@ -56,24 +77,40 @@
 .panel-header {
   color: $light_gray;
   &.green-panel {
-    background-color: $dark_green;
+    background-color: $panel_green;
   }
   &.cyan-panel {
     background-color: $cyan;
   }
   &.brown-panel {
-    background-color: $dark_brown;
+    background-color: $panel_brown;
   }
   &.magenta-panel {
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $dark_gray;
+    background-color: $panel_gray;
+  }
+  &.yellow-panel {
+    background-color: $panel_yellow;
+  }
+  &.blue-panel {
+    background-color: $panel_blue;
+  }
+  &.teal-panel {
+    background-color: $panel_teal;
+  }
+  &.red-panel {
+    background-color: $panel_red;
   }
 }
 
 .panel-tabs {
   display: flex;
+  img {
+    filter: brightness(0%) invert(100%);
+    opacity: 0.8;
+  }
   a {
     display: block;
     flex: 1;
@@ -87,6 +124,9 @@
       border-bottom: 3px solid $white;
       font-weight: bold;
       color: $white;
+      img {
+        opacity: 1;
+      }
     }
     &:hover {
       color: $off_white;
@@ -103,33 +143,30 @@
 
 .panel-title {
   height: 50px;
-  padding-top: 1.8rem;
-  padding-left: 1.4rem;
-  padding-right: 2rem;
   .back-arrow {
-    display: inline-block;
+    float: left;
     color: $off_white;
-    margin-right: 1rem;
+    text-align: center;
     font-size: 1.8rem;
-    margin-top: -1.8rem;
-    vertical-align: middle;
+    width: 50px;
+    line-height: 50px;
     &:hover {
       color: $white;
     }
   }
   .title {
-    display: inline-block;
-    color: $white;
+    float: left;
+    color: $off_white;
     font-size: 1.8rem;
-    margin-top: 0.4rem;
     white-space: nowrap;
-    width: 10em;
+    width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 2rem;
-    padding: 0.2rem;
+    line-height: 50px;
   }
   .right-button {
+    position: absolute;
+    right: 0;
     float: right;
     text-transform: uppercase;
     font-size: 1rem;
@@ -139,6 +176,8 @@
     letter-spacing: 1px;
     border-radius: 4px;
     color: $off_white;
+    margin-top: 1.25rem;
+    margin-right: 1.5rem;
     &:hover {
       color: $white;
     }
@@ -154,6 +193,7 @@
     max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-bottom: 5rem;
   }
 }
 
@@ -172,6 +212,7 @@
     padding-top: 5rem;
     padding-right: 0;
     padding-left: 0;
+    padding-bottom: 5rem;
     max-height: calc(100vh - 10rem);
     overflow-y: auto;
     overflow-x: hidden;
@@ -184,13 +225,22 @@
   }
 }
 
+.plant-info-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+  }
+}
+
 .point-creation-panel {
   .panel-content {
     .row {
       margin-left: 0;
       margin-right: 0;
     }
-    padding: 10rem 3rem;
+    padding: 0 3rem;
     padding-right: 0;
     padding-left: 0;
     .fb-button {
@@ -219,8 +269,15 @@
   &.with-button {
     display: flex;
     margin-top: 5rem;
-    a {
+    .fb-button {
       margin: 1rem;
+      margin-left: 0;
+    }
+    a {
+      margin-top: 0.5rem;
+    }
+    i {
+      font-size: 1.5rem;
     }
   }
 }
@@ -237,6 +294,12 @@
   input {
     background: $white;
   }
+  .save-btn {
+    margin: 1rem;
+  }
+  .location-form {
+    width: 100% !important;
+  }
 }
 
 .add-farm-event-panel button.red,
@@ -250,7 +313,6 @@
 .panel-nav {
   position: fixed;
   z-index: 2;
-  width: 300px;
 }
 
 .panel-header {
@@ -267,9 +329,6 @@
 }
 
 .crop-info-panel {
-  .title {
-    width: 50%;
-  }
   .panel-header {
     position: inherit;
     background-size: 144% !important;
@@ -281,6 +340,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 2rem 1rem 6rem;
+    padding-bottom: 10rem;
     li {
       margin-bottom: 1rem;
       p {
@@ -305,6 +365,17 @@
   }
 }
 
+.add-plant-panel,
+.move-to-panel {
+  padding-bottom: 0 !important;
+}
+
+.add-plant-panel {
+  .panel-header {
+    height: 100%;
+  }
+}
+
 .move-to-panel-content {
   &.with-nav {
     margin-top: 6rem;
@@ -319,6 +390,37 @@
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.settings-panel-content {
+  max-height: calc(100vh - 15rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 5rem;
+  padding-bottom: 5rem;
+  button {
+    margin-top: 1.75rem;
+  }
+  p {
+    padding: 0.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  .map-size-inputs {
+    .row {
+      margin-bottom: 1rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+  }
+  .designer-setting {
+    &.disabled {
+      input {
+        background: $gray;
+      }
+    }
   }
 }
 

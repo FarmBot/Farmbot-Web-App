@@ -2,12 +2,12 @@ import { fetchNewDevice, getDevice } from "../device";
 import { dispatchNetworkUp, dispatchNetworkDown } from "./index";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { Farmbot, BotStateTree, TaggedResource } from "farmbot";
+import { FbjsEventName } from "farmbot/dist/constants";
 import { noop } from "lodash";
-import { success, error, info, warning } from "farmbot-toastr";
+import { success, error, info, warning, fun, busy } from "../toast/toast";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-import { t } from "i18next";
 import {
   EXPECTED_MAJOR,
   EXPECTED_MINOR,
@@ -27,8 +27,9 @@ import { onLogs } from "./log_handlers";
 import { ChannelName, MessageType } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
+import { t } from "../i18next_wrapper";
 
-export const TITLE = "New message from bot";
+export const TITLE = () => t("New message from bot");
 /** TODO: This ought to be stored in Redux. It is here because of historical
  * reasons. Feel free to factor out when time allows. -RC, 10 OCT 17 */
 export const HACKY_FLAGS = {
@@ -56,19 +57,24 @@ export function actOnChannelName(
 /** Take a log message (of type toast) and determines the correct kind of toast
  * to execute. */
 export function showLogOnScreen(log: Log) {
-  switch (log.type) {
-    case MessageType.success:
-      return success(log.message, t(TITLE));
-    case MessageType.warn:
-      return warning(log.message, t(TITLE));
-    case MessageType.busy:
-    case MessageType.error:
-      return error(log.message, t(TITLE));
-    case MessageType.fun:
-    case MessageType.info:
-    default:
-      return info(log.message, t(TITLE));
-  }
+  const toast = () => {
+    switch (log.type) {
+      case MessageType.success:
+        return success;
+      case MessageType.warn:
+        return warning;
+      case MessageType.error:
+        return error;
+      case MessageType.fun:
+        return fun;
+      case MessageType.busy:
+        return busy;
+      case MessageType.info:
+      default:
+        return info;
+    }
+  };
+  toast()(log.message, TITLE());
 }
 
 export function speakLogAloud(getState: GetState) {
@@ -103,23 +109,20 @@ export function readStatus() {
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt", undefined, "onOffline() callback");
-  error(t(Content.MQTT_DISCONNECTED), t("Error"));
+  error(t(Content.MQTT_DISCONNECTED));
 };
 
 export const changeLastClientConnected = (bot: Farmbot) => () => {
   bot.setUserEnv({
     "LAST_CLIENT_CONNECTED": JSON.stringify(new Date())
-  }).catch(() => { }); // This is internal stuff, don't alert user.
+  }).catch(noop); // This is internal stuff, don't alert user.
 };
 const setBothUp = () => bothUp("Got a status message");
 
 const legacyChecks = (getState: GetState) => {
-  if (HACKY_FLAGS.needVersionCheck) {
-    const IS_OK = versionOK(getState()
-      .bot
-      .hardware
-      .informational_settings
-      .controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+  const { controller_version } = getState().bot.hardware.informational_settings;
+  if (HACKY_FLAGS.needVersionCheck && controller_version) {
+    const IS_OK = versionOK(controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
     if (!IS_OK) { badVersion(); }
     HACKY_FLAGS.needVersionCheck = false;
   }
@@ -161,22 +164,38 @@ export function onMalformed() {
 }
 
 export const onOnline =
-  () => dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  () => {
+    success(t("Reconnected to the message broker."), t("Online"));
+    dispatchNetworkUp("user.mqtt", undefined, "MQTT.js is online");
+  };
 export const onReconnect =
-  () => warning(t("Attempting to reconnect to the message broker"), t("Offline"));
-const attachEventListeners =
+  () => warning(t("Attempting to reconnect to the message broker"),
+  t("Offline"), "yellow");
+
+export function onPublicBroadcast(payl: unknown) {
+  console.log(FbjsEventName.publicBroadcast, payl);
+  if (confirm(t(Content.FORCE_REFRESH_CONFIRM))) {
+    location.assign(window.location.origin || "/");
+  } else {
+    alert(t(Content.FORCE_REFRESH_CANCEL_WARNING));
+  }
+}
+
+export const attachEventListeners =
   (bot: Farmbot, dispatch: Function, getState: GetState) => {
     if (bot.client) {
       startPinging(bot);
       readStatus().then(changeLastClientConnected(bot), noop);
-      bot.on("online", onOnline);
-      bot.on("online", () => bot.readStatus().then(noop, noop));
-      bot.on("offline", onOffline);
-      bot.on("sent", onSent(bot.client));
-      bot.on("logs", onLogs(dispatch, getState));
-      bot.on("legacy_status", onLegacyStatus(dispatch, getState));
-      bot.on("status_v8", onStatus(dispatch, getState));
-      bot.on("malformed", onMalformed);
+      bot.on(FbjsEventName.online, onOnline);
+      bot.on(FbjsEventName.online, () => bot.readStatus().then(noop, noop));
+      bot.on(FbjsEventName.offline, onOffline);
+      bot.on(FbjsEventName.sent, onSent(bot.client));
+      bot.on(FbjsEventName.logs, onLogs(dispatch, getState));
+      bot.on(FbjsEventName.legacy_status, onLegacyStatus(dispatch, getState));
+      bot.on(FbjsEventName.upsert, onStatus(dispatch, getState));
+      bot.on(FbjsEventName.malformed, onMalformed);
+      bot.client.subscribe(FbjsEventName.publicBroadcast);
+      bot.on(FbjsEventName.publicBroadcast, onPublicBroadcast);
       bot.client.on("message", autoSync(dispatch, getState));
       bot.client.on("reconnect", onReconnect);
     }

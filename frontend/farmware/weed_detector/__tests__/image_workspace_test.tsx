@@ -1,8 +1,12 @@
+import React from "react";
+import { mount } from "enzyme";
 import { ImageWorkspace, ImageWorkspaceProps } from "../image_workspace";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
+import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { clickButton } from "../../../__test_support__/helpers";
 
-describe("<Body/>", () => {
+describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
     onFlip: jest.fn(),
     onProcessPhoto: jest.fn(),
@@ -18,7 +22,8 @@ describe("<Body/>", () => {
     H_HI: 8,
     S_HI: 10,
     V_HI: 12,
-    timeOffset: 0,
+    botOnline: true,
+    timeSettings: fakeTimeSettings(),
   });
 
   it("triggers onChange() event", () => {
@@ -81,5 +86,22 @@ describe("<Body/>", () => {
     const iw = new ImageWorkspace(p);
     iw.maybeProcessPhoto();
     expect(p.onProcessPhoto).toHaveBeenCalledWith(photo2.body.id);
+  });
+
+  it("scans image", () => {
+    const image = fakeImage();
+    const p = fakeProps();
+    p.botOnline = true;
+    p.images = [image];
+    const wrapper = mount(<ImageWorkspace {...p} />);
+    clickButton(wrapper, 0, "scan image");
+    expect(p.onProcessPhoto).toHaveBeenCalledWith(image.body.id);
+  });
+
+  it("disables scan image button when offline", () => {
+    const p = fakeProps();
+    p.botOnline = false;
+    const wrapper = mount(<ImageWorkspace {...p} />);
+    expect(wrapper.find("button").first().props().disabled).toBeTruthy();
   });
 });

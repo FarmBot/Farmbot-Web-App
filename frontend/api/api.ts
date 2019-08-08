@@ -89,6 +89,10 @@ export class API {
   get passwordResetPath() { return `${this.baseUrl}/api/password_resets/`; }
   /** /api/device/ */
   get devicePath() { return `${this.baseUrl}/api/device/`; }
+  /** /api/device/seed */
+  get accountSeedPath() { return `${this.devicePath}seed`; }
+  /** /api/device/reset */
+  get accountResetPath() { return `${this.devicePath}reset`; }
   /** /api/users/ */
   get usersPath() { return `${this.baseUrl}/api/users/`; }
   /** /api/users/control_certificate */
@@ -113,6 +117,8 @@ export class API {
   get imagesPath() { return `${this.baseUrl}/api/images/`; }
   /** /api/points/ */
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
+  /** /api/point_groups/ */
+  get pointGroupsPath() { return `${this.baseUrl}/api/point_groups/`; }
   /** /api/points/?filter=all */
   get allPointsPath() { return `${this.pointsPath}?filter=all`; }
   /** /api/points/search */
@@ -152,5 +158,9 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations/`;
   }
-  get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
+  /** /api/alerts/:id */
+  get alertPath() { return `${this.baseUrl}/api/alerts/`; }
+  /** /api/global_bulletins/:id */
+  get globalBulletinPath() { return `${this.baseUrl}/api/global_bulletins/`; }
+  // get syncPath() { return `${this.baseUrl}/api/device/sync/`; }
 }

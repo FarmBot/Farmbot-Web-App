@@ -18,15 +18,31 @@ npm run translation-check
 
 See the [README](https://github.com/FarmBot/Farmbot-Web-App#translating-the-web-app-into-your-language) for contribution instructions.
 
-Total number of phrases identified by the language helper for translation: __866__
+Total number of phrases identified by the language helper for translation: __1023__
 
 |Language|Percent translated|Translated|Untranslated|Other Translations|
 |:---:|---:|---:|---:|---:|
-|de|56%|486|380|36|
-|es|10%|83|783|56|
-|fr|11%|93|773|90|
-|it|11%|96|770|89|
-|nl|10%|88|778|56|
-|pt|9%|78|788|75|
-|ru|77%|669|197|128|
-|zh|11%|95|771|56|
+|da|11%|111|912|22|
+|de|42%|425|598|122|
+|es|100%|1023|0|152|
+|fr|70%|719|304|180|
+|it|9%|88|935|174|
+|nl|8%|80|943|142|
+|pt|7%|72|951|161|
+|ru|59%|606|417|205|
+|zh|9%|87|936|142|
+
+**Percent translated** refers to the percent of phrases identified by the
+language helper that have been translated. Additional phrases not identified
+by the language helper may exist in the Web App.
+
+
+**Untranslated** includes phrases not yet translated or phrases that do not
+need translation. Phrases that are identical before and after translation
+can be moved to `translated` to indicate translation status to the language
+helper.
+
+**Other Translations** include translated phrases that do not match any of
+the phrases identified by the language helper. These are usually phrases
+not identified by the language helper or phrases that have been changed
+or removed from the Web App.

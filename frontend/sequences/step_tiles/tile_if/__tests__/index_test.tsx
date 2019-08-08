@@ -47,6 +47,7 @@ function fakeProps(): IfParams {
     resources: fakeResourceIndex,
     shouldDisplay: jest.fn(),
     confirmStepDeletion: false,
+    showPins: true,
   };
 }
 
@@ -60,26 +61,15 @@ describe("seqDropDown()", () => {
 });
 
 describe("LHSOptions()", () => {
-  it("returns positions and pins", () => {
-    const s = fakeSensor();
-    const p = fakePeripheral();
-    s.body.label = "not displayed";
-    p.body.label = "not displayed";
-    const ri = buildResourceIndex([s, p]);
-    const result = JSON.stringify(LHSOptions(ri.index, () => false));
-    expect(result).not.toContain("not displayed");
-    expect(result).toContain("X position");
-    expect(result).toContain("Pin 25");
-  });
-
   it("returns positions, peripherals, sensors, pins", () => {
     const s = fakeSensor();
     const p = fakePeripheral();
     s.body.label = "displayed";
     p.body.label = "displayed";
     const ri = buildResourceIndex([s, p]);
-    const result = JSON.stringify(LHSOptions(ri.index, () => true));
+    const result = JSON.stringify(LHSOptions(ri.index, true));
     expect(result).toContain("displayed");
+    expect(result).toContain("Pin 25");
   });
 });
 

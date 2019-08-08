@@ -1,6 +1,7 @@
 let mockPath = "";
 jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
 jest.mock("../../saved_gardens/saved_gardens", () => ({
@@ -16,6 +17,8 @@ import {
   transformForQuadrant,
   getMode,
   getGardenCoordinates,
+  MapPanelStatus,
+  mapPanelClassName,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -41,7 +44,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 1,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: false,
+      panelStatus: MapPanelStatus.open,
     });
     expect(result).toEqual({ x: 180, y: 80 });
   });
@@ -53,7 +56,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.33,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: false,
+      panelStatus: MapPanelStatus.open,
     });
     expect(result).toEqual({ x: 2470, y: 840 });
   });
@@ -65,7 +68,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 1.5,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: false,
+      panelStatus: MapPanelStatus.open,
     });
     expect(result).toEqual({ x: 520, y: 150 });
   });
@@ -80,7 +83,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.75,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: false,
+      panelStatus: MapPanelStatus.open,
     });
     expect(result).toEqual({ x: 0, y: 130 });
   });
@@ -96,7 +99,7 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 0.75,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: false,
+      panelStatus: MapPanelStatus.open,
     });
     expect(result).toEqual({ x: 130, y: 0 });
   });
@@ -108,9 +111,21 @@ describe("translateScreenToGarden()", () => {
       scroll: { left: 10, top: 20 },
       zoomLvl: 1,
       gridOffset: { x: 30, y: 40 },
-      mapOnly: true,
+      panelStatus: MapPanelStatus.closed,
     });
     expect(result).toEqual({ x: 480, y: 30 });
+  });
+
+  it("translates screen coords to garden coords: short panel", () => {
+    const result = translateScreenToGarden({
+      mapTransformProps: fakeMapTransformProps(),
+      page: { x: 520, y: 412 },
+      scroll: { left: 10, top: 20 },
+      zoomLvl: 1,
+      gridOffset: { x: 30, y: 40 },
+      panelStatus: MapPanelStatus.short,
+    });
+    expect(result).toEqual({ x: 480, y: 40 });
   });
 });
 
@@ -312,6 +327,10 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/saved_gardens/templates/1/edit";
     expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/plants/1";
+    expect(getMode()).toEqual(Mode.editPlant);
+    mockPath = "/app/designer/saved_gardens/templates/1";
+    expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/plants/select";
     expect(getMode()).toEqual(Mode.boxSelect);
     mockPath = "/app/designer/plants/crop_search/mint";
@@ -363,5 +382,29 @@ describe("getGardenCoordinates()", () => {
     });
     const result = getGardenCoordinates(fakeProps());
     expect(result).toEqual(undefined);
+  });
+});
+
+describe("mapPanelClassName()", () => {
+  it("returns correct panel status: short panel", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 400,
+      configurable: true
+    });
+    mockPath = "/app/designer/move_to";
+    expect(mapPanelClassName()).toEqual("short-panel");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("short-panel");
+  });
+
+  it("returns correct panel status: panel open", () => {
+    Object.defineProperty(window, "innerWidth", {
+      value: 500,
+      configurable: true
+    });
+    mockPath = "/app/designer/move_to";
+    expect(mapPanelClassName()).toEqual("panel-open");
+    mockPath = "/app/designer/plants/crop_search/mint/add";
+    expect(mapPanelClassName()).toEqual("panel-open");
   });
 });

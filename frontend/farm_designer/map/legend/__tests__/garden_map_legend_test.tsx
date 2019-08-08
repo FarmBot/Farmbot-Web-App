@@ -5,12 +5,17 @@ jest.mock("../../../../history", () => ({
 
 let mockAtMax = false;
 let mockAtMin = false;
-jest.mock("../../zoom", () => {
-  return {
-    atMaxZoom: () => mockAtMax,
-    atMinZoom: () => mockAtMin,
-  };
-});
+jest.mock("../../zoom", () => ({
+  atMaxZoom: () => mockAtMax,
+  atMinZoom: () => mockAtMin,
+}));
+
+let mockDev = false;
+jest.mock("../../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
 
 import * as React from "react";
 import { shallow, mount } from "enzyme";
@@ -21,14 +26,14 @@ import { GardenMapLegendProps } from "../../interfaces";
 import { clickButton } from "../../../../__test_support__/helpers";
 import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
-import { DevSettings } from "../../../../account/dev/dev_support";
+import {
+  fakeTimeSettings
+} from "../../../../__test_support__/fake_time_settings";
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
     zoom: () => () => undefined,
     toggle: () => () => undefined,
-    updateBotOriginQuadrant: () => () => undefined,
-    botOriginQuadrant: 2,
     legendMenuOpen: true,
     showPlants: false,
     showPoints: false,
@@ -36,25 +41,29 @@ describe("<GardenMapLegend />", () => {
     showFarmbot: false,
     showImages: false,
     showSensorReadings: false,
+    hasSensorReadings: false,
     dispatch: jest.fn(),
-    tzOffset: 0,
+    timeSettings: fakeTimeSettings(),
     getConfigValue: jest.fn(),
     imageAgeInfo: { newestDate: "", toOldest: 1 },
   });
 
   it("renders", () => {
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    ["plants", "origin", "move"].map(string =>
+    ["plants", "move"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).not.toContain("extras");
   });
 
   it("shows submenu", () => {
-    DevSettings.enableFutureFeatures();
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    mockDev = true;
+    const p = fakeProps();
+    p.hasSensorReadings = true;
+    const wrapper = mount(<GardenMapLegend {...p} />);
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
+    mockDev = false;
   });
 });
 

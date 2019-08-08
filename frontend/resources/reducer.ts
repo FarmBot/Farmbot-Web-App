@@ -7,6 +7,7 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
+  beforeEach
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -20,6 +21,7 @@ import { initialState as designerState } from "../farm_designer/reducer";
 import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
+import { initialState as alertState } from "../messages/reducer";
 
 export const emptyState = (): RestResources => {
   return {
@@ -29,35 +31,38 @@ export const emptyState = (): RestResources => {
       farm_designer: designerState,
       farmware: farmwareState,
       help: helpState,
+      alerts: alertState
     },
     loaded: [],
     index: {
       all: {},
       byKind: {
-        WebcamFeed: {},
+        Alert: {},
+        Crop: {},
         Device: {},
+        DiagnosticDump: {},
         FarmEvent: {},
+        FarmwareEnv: {},
+        FarmwareInstallation: {},
+        FbosConfig: {},
+        FirmwareConfig: {},
         Image: {},
-        Plant: {},
         Log: {},
         Peripheral: {},
-        Crop: {},
+        PinBinding: {},
+        Plant: {},
+        PlantTemplate: {},
         Point: {},
+        PointGroup: {},
         Regimen: {},
+        SavedGarden: {},
+        Sensor: {},
+        SensorReading: {},
         Sequence: {},
         Tool: {},
         User: {},
-        FbosConfig: {},
-        FirmwareConfig: {},
         WebAppConfig: {},
-        SensorReading: {},
-        Sensor: {},
-        FarmwareInstallation: {},
-        FarmwareEnv: {},
-        PinBinding: {},
-        PlantTemplate: {},
-        SavedGarden: {},
-        DiagnosticDump: {}
+        WebcamFeed: {},
       },
       byKindAndId: {},
       references: {},
@@ -74,7 +79,9 @@ export const emptyState = (): RestResources => {
 
 /** Responsible for all RESTful resources. */
 export let resourceReducer =
-  generateReducer<RestResources>(emptyState(), (s, a) => afterEach(s, a))
+  generateReducer<RestResources>(emptyState())
+    .beforeEach(beforeEach)
+    .afterEach(afterEach)
     .add<TaggedResource>(Actions.SAVE_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index, SpecialStatus.SAVED);

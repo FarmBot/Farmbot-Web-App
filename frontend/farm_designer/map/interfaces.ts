@@ -6,6 +6,7 @@ import {
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
+import { TimeSettings } from "../../interfaces";
 
 export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 
@@ -23,15 +24,9 @@ export interface PlantLayerProps {
   animate: boolean;
 }
 
-export interface CropSpreadDict {
-  [key: string]: number | undefined;
-}
-
 export interface GardenMapLegendProps {
   zoom: (value: number) => () => void;
   toggle: (property: keyof State) => () => void;
-  updateBotOriginQuadrant: (quadrant: number) => () => void;
-  botOriginQuadrant: number;
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
@@ -39,11 +34,13 @@ export interface GardenMapLegendProps {
   showFarmbot: boolean;
   showImages: boolean;
   showSensorReadings: boolean;
+  hasSensorReadings: boolean;
   dispatch: Function;
-  tzOffset: number;
+  timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   imageAgeInfo: { newestDate: string, toOldest: number };
   gardenId?: number;
+  className?: string;
 }
 
 export type MapTransformProps = {
@@ -75,7 +72,7 @@ export interface GardenPointProps {
   point: TaggedGenericPointer;
 }
 
-export interface DragHelpersBaseProps {
+interface DragHelpersBaseProps {
   dragging: boolean;
   mapTransformProps: MapTransformProps;
   zoomLvl: number;

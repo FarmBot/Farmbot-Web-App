@@ -1,7 +1,7 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { Row, Col, BlurableInput } from "../../ui";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { isNumber, isString } from "lodash";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import {
@@ -10,6 +10,7 @@ import {
 } from "./interfaces";
 import { edit, save } from "../../api/crud";
 import { trim } from "../../util";
+import { t } from "../../i18next_wrapper";
 
 /** Name input and PlantTemplate count for a single SavedGarden. */
 export const GardenInfo = (props: SavedGardenInfoProps) => {

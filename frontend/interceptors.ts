@@ -1,9 +1,4 @@
-import { t } from "i18next";
-import { error } from "farmbot-toastr";
-import {
-  SafeError,
-  isSafeError
-} from "./interceptor_support";
+import { SafeError, isSafeError } from "./interceptor_support";
 import { API } from "./api/index";
 import { AuthState } from "./auth/interfaces";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
@@ -13,6 +8,8 @@ import { Dictionary } from "farmbot";
 import { outstandingRequests } from "./connectivity/data_consistency";
 import { Session } from "./session";
 import { get } from "lodash";
+import { t } from "./i18next_wrapper";
+import { error } from "./toast/toast";
 
 export function responseFulfilled(input: AxiosResponse): AxiosResponse {
   dispatchNetworkUp("user.api", undefined, "responseFulfilled()");

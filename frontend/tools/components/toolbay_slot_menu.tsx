@@ -1,11 +1,12 @@
 import * as React from "react";
-import { t } from "i18next";
+
 import { isNumber } from "lodash";
 import { BotPosition } from "../../devices/interfaces";
 import { TaggedToolSlotPointer } from "farmbot";
 import { edit } from "../../api/crud";
 import { SlotDirectionSelect } from "./toolbay_slot_direction_selection";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { t } from "../../i18next_wrapper";
 
 const positionIsDefined = (position: BotPosition): boolean =>
   isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
@@ -49,7 +50,7 @@ export interface SlotMenuProps {
 
 export const SlotMenu = (props: SlotMenuProps) => {
   const { dispatch, slot, botPosition } = props;
-  const { pullout_direction } = slot.body;
+  const { pullout_direction, gantry_mounted } = slot.body;
   return <div className="toolbay-slot-menu">
     <fieldset>
       <label>
@@ -71,6 +72,13 @@ export const SlotMenu = (props: SlotMenuProps) => {
         <i className="fa fa-crosshairs" />
       </button>
       <p>{positionButtonTitle(botPosition)}</p>
+    </fieldset>
+    <fieldset>
+      <label>{t("Gantry-mounted")}</label>
+      <input type="checkbox"
+        onChange={() =>
+          dispatch(edit(slot, { gantry_mounted: !gantry_mounted }))}
+        checked={gantry_mounted} />
     </fieldset>
   </div>;
 };

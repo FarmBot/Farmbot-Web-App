@@ -5,15 +5,17 @@ import { defensiveClone } from "../util";
 import { push } from "../history";
 import { urlFriendly } from "../util";
 import { Actions } from "../constants";
-import { t } from "i18next";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
+import { t } from "../i18next_wrapper";
+import { isNumber } from "lodash";
 
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
-  sequence: TaggedSequence) {
+  sequence: TaggedSequence,
+  index?: number | undefined) {
   const next = defensiveClone(sequence);
   next.body.body = next.body.body || [];
-  next.body.body.push(defensiveClone(step));
+  next.body.body.splice(isNumber(index) ? index : Infinity, 0, defensiveClone(step));
   dispatch(overwrite(sequence, next.body));
 }
 
@@ -40,3 +42,13 @@ export function selectSequence(uuid: string): SelectSequence {
     payload: uuid
   };
 }
+
+export const unselectSequence = () => {
+  push("/app/sequences");
+  return { type: Actions.SELECT_SEQUENCE, payload: undefined };
+};
+
+export const closeCommandMenu = () => ({
+  type: Actions.SET_SEQUENCE_STEP_POSITION,
+  payload: undefined,
+});

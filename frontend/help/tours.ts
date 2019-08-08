@@ -1,7 +1,8 @@
 import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
-import { t } from "i18next";
+
 import { TourContent } from "../constants";
+import { t } from "../i18next_wrapper";
 
 export enum Tours {
   gettingStarted = "gettingStarted",
@@ -50,7 +51,7 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
     {
       target: ".farm-event-panel",
       content: TourContent.ADD_FARM_EVENTS,
-      title: t("Create farm events"),
+      title: t("Create events"),
     },
   ],
   [Tours.monitoring]: [
@@ -93,7 +94,7 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
       history.push("/app/designer/plants");
       break;
     case ".farm-event-panel":
-      history.push("/app/designer/farm_events");
+      history.push("/app/designer/events");
       break;
     case ".move-widget":
     case ".peripherals-widget":

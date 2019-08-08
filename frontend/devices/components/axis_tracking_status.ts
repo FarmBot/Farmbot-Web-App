@@ -36,7 +36,6 @@ export function enabledAxisMap(h: McuParams): Record<Xyz, boolean> {
 export function disabledAxisMap(h: McuParams): Record<Xyz, boolean> {
   return transform<boolean, Record<Xyz, boolean>>(
     enabledAxisMap(h),
-    (d: Record<Xyz, boolean>[], value: boolean, key: Xyz) => {
-      d[0][key] = !value;
-    }, [{ x: false, y: false, z: false }])[0];
+    (d: Record<Xyz, boolean>, value: boolean, key: Xyz) => { d[key] = !value; },
+    { x: false, y: false, z: false });
 }

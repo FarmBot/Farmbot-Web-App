@@ -1,6 +1,5 @@
 import * as React from "react";
-import { t } from "i18next";
-import { error } from "farmbot-toastr";
+import { error } from "../../toast/toast";
 import { SensorList } from "./sensor_list";
 import { SensorForm } from "./sensor_form";
 import { Widget, WidgetBody, WidgetHeader, SaveBtn } from "../../ui/index";
@@ -10,6 +9,7 @@ import { getArrayStatus } from "../../resources/tagged_resources";
 import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { uniq } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export class Sensors extends React.Component<SensorsProps, SensorState> {
   constructor(props: SensorsProps) {
@@ -84,7 +84,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           className="fb-button green"
           type="button"
           onClick={this.stockSensors}>
-          <i className="fa fa-plus" />
+          <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
           {t("Stock sensors")}
         </button>
       </WidgetHeader>

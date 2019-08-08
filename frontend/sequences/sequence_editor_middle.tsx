@@ -6,7 +6,7 @@ import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../ui/empty_state_wrapper";
 import { Content } from "../constants";
-import { t } from "i18next";
+import { t } from "../i18next_wrapper";
 
 export class SequenceEditorMiddle
   extends React.Component<SequenceEditorMiddleProps, {}> {
@@ -25,7 +25,7 @@ export class SequenceEditorMiddle
         hardwareFlags={this.props.hardwareFlags}
         farmwareInfo={this.props.farmwareInfo}
         shouldDisplay={this.props.shouldDisplay}
-        confirmStepDeletion={this.props.confirmStepDeletion}
+        getWebAppConfigValue={this.props.getWebAppConfigValue}
         menuOpen={this.props.menuOpen} />}
     </EmptyStateWrapper>;
   }
