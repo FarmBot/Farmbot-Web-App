@@ -7,6 +7,7 @@ export const DOC_SLUGS = {
   "camera-calibration": "Camera Calibration",
   "the-farmbot-web-app": "Web App",
   "farmware": "Farmware",
+  "connecting-farmbot-to-the-internet": "Connecting FarmBot to the Internet"
 };
 
 export type DocSlug = keyof typeof DOC_SLUGS;
