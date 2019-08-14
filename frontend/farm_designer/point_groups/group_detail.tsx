@@ -8,11 +8,12 @@ import {
   DesignerPanelContent,
   DesignerPanelHeader
 } from "../plants/designer_panel";
-import { TaggedPointGroup, TaggedPoint } from "farmbot";
+import { TaggedPointGroup, TaggedPoint, SpecialStatus } from "farmbot";
 import { findByKindAndId } from "../../resources/selectors";
 import { betterCompact } from "../../util/util";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl } from "../../open_farm/icons";
+import { overwrite, save } from "../../api/crud";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -88,7 +89,7 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
             return <i key={point.uuid} className="fa fa-leaf" />;
 
           case "Plant":
-            return <span><img
+            return <span onClick={() => this.removePoint(body.id || 0)}><img
               key={point.uuid}
               src={svgToUrl(FIXME)}
               alt={t("plant icon")}
@@ -97,6 +98,22 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
         }
       });
   }
+
+  removePoint = (pointId: number) => {
+    const { group } = this.props;
+    if (group) {
+      type Body = (typeof group)["body"];
+      const nextGroup: Body = { ...group.body };
+      nextGroup.point_ids = nextGroup.point_ids.filter(x => x !== pointId);
+      this.props.dispatch(overwrite(group, nextGroup));
+    }
+  }
+
+  saveGroup = () => {
+    const { group } = this.props;
+    group && this.props.dispatch(save(group.uuid));
+  }
+
   hasGroup = (group: TaggedPointGroup) => {
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
@@ -107,8 +124,8 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
         <a
           className="right-button"
           title={t("Save Changes to Group")}
-          onClick={() => { alert("TODO"); }}>
-          {t("Save")}
+          onClick={this.saveGroup}>
+          {t("Save")}{group.specialStatus === SpecialStatus.SAVED ? "" : "*"}
         </a>
       </DesignerPanelHeader>
       <DesignerPanelContent
