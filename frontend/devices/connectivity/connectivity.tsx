@@ -42,13 +42,6 @@ export class Connectivity
             <WiFiStrengthDisplay wifiStrength={wifi_level} />
             <VoltageDisplay throttled={throttled} />
           </div>
-          <div>
-            <i className="fa fa-question-circle" />
-            {" "}
-            <a href="https://software.farm.bot/docs/connecting-farmbot-to-the-internet">
-              Click here to learn more about error codes.
-              </a>
-          </div>
         </Col>
         <Col md={12} lg={8}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
