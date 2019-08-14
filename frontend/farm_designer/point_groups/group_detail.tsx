@@ -11,6 +11,8 @@ import {
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { findByKindAndId } from "../../resources/selectors";
 import { betterCompact } from "../../util/util";
+import { DeleteButton } from "../../controls/pin_form_fields";
+import { svgToUrl } from "../../open_farm/icons";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -20,6 +22,10 @@ interface GroupDetailProps {
 
 interface State {
 }
+
+const FIXME = Object.values<{ svg_icon: string }>(
+  JSON.parse(localStorage.getItem("openfarm_icons_with_spread") || "[]")
+)[0].svg_icon;
 
 function mapStateToProps(props: Everything): GroupDetailProps {
   const points: TaggedPoint[] = [];
@@ -77,30 +83,55 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
         const { body } = point;
         switch (body.pointer_type) {
           case "GenericPointer":
-            return <i className="fa fa-dot-circle-o" />;
+            return <i key={point.uuid} className="fa fa-dot-circle-o" />;
           case "ToolSlot":
-            return <i className="fa fa-wrench" />;
+            return <i key={point.uuid} className="fa fa-leaf" />;
+
           case "Plant":
-            return <i className="fa fa-leaf" />;
+            return <span><img
+              key={point.uuid}
+              src={svgToUrl(FIXME)}
+              alt={t("plant icon")}
+              width={32}
+              height={32} /></span>;
         }
       });
   }
-  render() {
-    return <DesignerPanel panelName={"groups"} panelColor={"gray"}>
+  hasGroup = (group: TaggedPointGroup) => {
+    return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
         panelName={Panel.Groups}
-        panelColor={"green"}
+        panelColor={"blue"}
         title={t("Edit Group")}
-        backTo={"/app/designer/plants"}
-        onBack={() => { throw new Error("TODO: Make back btn"); }}>
+        backTo={"/app/designer/groups"}>
+        <a
+          className="right-button"
+          title={t("Save Changes to Group")}
+          onClick={() => { alert("TODO"); }}>
+          {t("Save")}
+        </a>
       </DesignerPanelHeader>
       <DesignerPanelContent
         panelName={"groups"}>
-        <h1>{this.name}</h1>
-        <p>Items:</p>
+        <h5>{t("GROUP NAME")}</h5>
+        <input defaultValue={this.name} />
+        <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
         {this.icons}
-
+        <DeleteButton
+          dispatch={this.props.dispatch}
+          uuid={group.uuid}
+          onDestroy={history.back}>
+          {t("DELETE GROUP")}
+        </DeleteButton>
       </DesignerPanelContent>
     </DesignerPanel>;
+  }
+  render() {
+    const { group } = this.props;
+    if (group) {
+      return this.hasGroup(group);
+    } else {
+      return <div>Work in progress...</div>;
+    }
   }
 }
