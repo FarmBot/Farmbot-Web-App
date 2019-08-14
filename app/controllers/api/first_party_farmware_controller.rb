@@ -1,6 +1,6 @@
 module Api
   class FirstPartyFarmwareController < Api::AbstractController
-    UPDATED_AT = Date.parse("2019-08-06T18:31:28.099Z")
+    UPDATED_AT = "2019-08-14 18:33:08.428306"
     STUBS = {
       "take-photo" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/master/packages/take-photo/manifest_v2.json",
       "camera-calibration" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/master/packages/camera-calibration/manifest_v2.json",
