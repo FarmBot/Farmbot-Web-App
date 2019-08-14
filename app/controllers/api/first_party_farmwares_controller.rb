@@ -1,5 +1,5 @@
 module Api
-  class FirstPartyFarmwareController < Api::AbstractController
+  class FirstPartyFarmwaresController < Api::AbstractController
     UPDATED_AT = "2019-08-14 18:33:08.428306"
     STUBS = {
       "take-photo" => "https://raw.githubusercontent.com/FarmBot-Labs/farmware_manifests/master/packages/take-photo/manifest_v2.json",
@@ -12,17 +12,17 @@ module Api
       .each_with_index
       .map do |(package, url), id|
       {
-        id: (id + 1).to_s,
+        id: (id + 1),
         created_at: UPDATED_AT,
         updated_at: UPDATED_AT,
         url: url,
         package: package,
         package_error: nil,
       }.with_indifferent_access
-    end.index_by { |x| x.fetch(:id) }
+    end.index_by { |x| x.fetch(:id).to_s }
 
     def index
-      render json: STUBS
+      render json: STUBS.values
     end
 
     def show

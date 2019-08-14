@@ -20,7 +20,7 @@ module Devices
       firmware_configs: [SEL, "firmware_configs", WHERE].join(" "),
     }
 
-    STUB_FARMWARES = Api::FirstPartyFarmwareController::STUBS.values.map do |x|
+    STUB_FARMWARES = Api::FirstPartyFarmwaresController::STUBS.values.map do |x|
       [x.fetch(:id).to_i, x.fetch(:updated_at).as_json]
     end
 
