@@ -6,9 +6,9 @@ module Api
       message: :to_s,
       type: :to_s,
       verbosity: :to_i,
-      x: :to_i,
-      y: :to_i,
-      z: :to_i,
+      x: :to_f,
+      y: :to_f,
+      z: :to_f,
     }
 
     def search
