@@ -12,9 +12,12 @@ import { TaggedPointGroup, TaggedPoint, SpecialStatus } from "farmbot";
 import { findByKindAndId } from "../../resources/selectors";
 import { betterCompact } from "../../util/util";
 import { DeleteButton } from "../../controls/pin_form_fields";
-import { svgToUrl } from "../../open_farm/icons";
+import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save } from "../../api/crud";
 import { push } from "../../history";
+import { Dictionary } from "lodash";
+import { TaggedPlant } from "../map/interfaces";
+import { cachedCrop } from "../../open_farm/cached_crop";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -23,11 +26,8 @@ interface GroupDetailProps {
 }
 
 interface State {
+  icons: Dictionary<string | undefined>
 }
-
-const FIXME = Object.values<{ svg_icon: string }>(
-  JSON.parse(localStorage.getItem("openfarm_icons_with_spread") || "[]")
-)[0].svg_icon;
 
 function mapStateToProps(props: Everything): GroupDetailProps {
   const points: TaggedPoint[] = [];
@@ -66,11 +66,29 @@ function mapStateToProps(props: Everything): GroupDetailProps {
 @connect(mapStateToProps)
 export class GroupDetail extends React.Component<GroupDetailProps, State> {
 
-  state: State = { searchTerm: "" };
+  state: State = { icons: {} };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     console.log(currentTarget.value);
   };
+
+  findIcon = (plant: TaggedPlant) => {
+    const svg = this.state.icons[plant.uuid];
+    if (svg) {
+      return svgToUrl(svg);
+    } else {
+      cachedCrop(plant.body.openfarm_slug)
+        .then(x => {
+          this.setState({
+            icons: {
+              ...this.state.icons,
+              [plant.uuid]: x.svg_icon
+            }
+          });
+        });
+      return DEFAULT_ICON;
+    }
+  }
 
   get name() {
     const { group } = this.props;
@@ -90,12 +108,13 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
             return <i key={point.uuid} className="fa fa-leaf" />;
 
           case "Plant":
+            const p = point as TaggedPlant;
             return <span
               key={point.uuid}
               onClick={() => this.removePoint(body.id || 0)}>
               <img
-                src={svgToUrl(FIXME)}
-                alt={t("plant icon")}
+                src={this.findIcon(p)}
+                alt={p.body.name}
                 width={32}
                 height={32} />
             </span>;
@@ -149,6 +168,7 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
       </DesignerPanelContent>
     </DesignerPanel>;
   }
+
   render() {
     const { group } = this.props;
     if (group) {
