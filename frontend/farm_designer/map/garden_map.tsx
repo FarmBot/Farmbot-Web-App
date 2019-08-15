@@ -56,7 +56,7 @@ export class GardenMap extends
   get xySwap() { return this.mapTransformProps.xySwap; }
 
   /** Currently editing a plant? */
-  get isEditing(): boolean { return getMode() === Mode.editPlant; }
+  get isEditing(): boolean { return getMode("isEditing") === Mode.editPlant; }
 
   /** Display plant animations? */
   get animate(): boolean {
@@ -93,7 +93,7 @@ export class GardenMap extends
 
   /** Map drag start actions. */
   startDrag = (e: React.MouseEvent<SVGElement>): void => {
-    switch (getMode()) {
+    switch (getMode("startDrag")) {
       case Mode.editPlant:
         beginPlantDrag({
           plant: this.getPlant(),
@@ -123,7 +123,7 @@ export class GardenMap extends
 
   /** Return the selected plant, mode-allowing. */
   getPlant = (): TaggedPlant | undefined => {
-    switch (getMode()) {
+    switch (getMode("getPlant")) {
       case Mode.boxSelect:
       case Mode.moveTo:
       case Mode.createPoint:
@@ -134,7 +134,7 @@ export class GardenMap extends
   }
 
   handleDragOver = (e: React.DragEvent<HTMLElement>) => {
-    switch (getMode()) {
+    switch (getMode("handleDragOver")) {
       case Mode.addPlant:
       case Mode.clickToAdd:
         e.preventDefault(); // Allows dragged-in plants to be placed in the map
@@ -143,7 +143,7 @@ export class GardenMap extends
   }
 
   handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
-    switch (getMode()) {
+    switch (getMode("handleDragEnter")) {
       case Mode.addPlant:
         e.preventDefault();
     }
@@ -162,7 +162,7 @@ export class GardenMap extends
     };
 
   click = (e: React.MouseEvent<SVGElement>) => {
-    switch (getMode()) {
+    switch (getMode("click")) {
       case Mode.clickToAdd:
         // Create a new plant in the map
         this.handleDrop(e);
@@ -179,7 +179,7 @@ export class GardenMap extends
 
   /** Map drag actions. */
   drag = (e: React.MouseEvent<SVGElement>) => {
-    switch (getMode()) {
+    switch (getMode("drag")) {
       case Mode.editPlant:
         dragPlant({
           getPlant: this.getPlant,
@@ -217,7 +217,7 @@ export class GardenMap extends
 
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
-    switch (getMode()) {
+    switch (getMode("closePanel")) {
       case Mode.boxSelect:
         return this.props.designer.selectedPlants
           ? () => { }

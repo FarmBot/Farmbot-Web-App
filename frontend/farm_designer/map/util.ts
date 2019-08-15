@@ -62,7 +62,7 @@ export const getPanelStatus = (): MapPanelStatus => {
   if (history.getCurrentLocation().pathname === "/app/designer") {
     return MapPanelStatus.closed;
   }
-  const mode = getMode();
+  const mode = getMode("getPanelStatus");
   if (window.innerWidth <= 450 &&
     (mode === Mode.moveTo || mode === Mode.clickToAdd)) {
     return MapPanelStatus.short;
@@ -286,10 +286,10 @@ export const transformForQuadrant =
   };
 
 /** Determine the current map mode based on path. */
-export const getMode = (): Mode => {
+export const getMode = (why = "test"): Mode => {
+  console.log(why);
   const pathArray = getPathArray();
   if (pathArray) {
-    console.log(JSON.stringify(pathArray));
     if ((pathArray[3] === "groups") && pathArray[4]) {
       return Mode.addPointToGroup;
     }
@@ -334,7 +334,7 @@ export const getGardenCoordinates = (props: {
 
 export const maybeNoPointer =
   (defaultStyle: React.CSSProperties): React.SVGProps<SVGGElement>["style"] => {
-    switch (getMode()) {
+    switch (getMode("maybeNoPointer")) {
       case Mode.boxSelect:
       case Mode.clickToAdd:
       case Mode.moveTo:
