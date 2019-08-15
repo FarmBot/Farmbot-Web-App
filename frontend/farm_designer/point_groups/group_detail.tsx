@@ -133,7 +133,9 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
         <h5>{t("GROUP NAME")}</h5>
         <input defaultValue={this.name} />
         <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
-        {this.icons}
+        <div>
+          {this.icons}
+        </div>
         <DeleteButton
           dispatch={this.props.dispatch}
           uuid={group.uuid}
