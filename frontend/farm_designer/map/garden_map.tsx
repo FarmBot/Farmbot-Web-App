@@ -94,6 +94,9 @@ export class GardenMap extends
   /** Map drag start actions. */
   startDrag = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode("startDrag")) {
+      case Mode.addPointToGroup:
+        console.log("Wuddup");
+        break;
       case Mode.editPlant:
         beginPlantDrag({
           plant: this.getPlant(),
@@ -124,6 +127,10 @@ export class GardenMap extends
   /** Return the selected plant, mode-allowing. */
   getPlant = (): TaggedPlant | undefined => {
     switch (getMode("getPlant")) {
+      case Mode.addPointToGroup:
+        console.log("Wuddup");
+        return undefined;
+        break;
       case Mode.boxSelect:
       case Mode.moveTo:
       case Mode.createPoint:

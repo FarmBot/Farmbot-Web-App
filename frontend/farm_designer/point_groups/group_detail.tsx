@@ -14,6 +14,7 @@ import { betterCompact } from "../../util/util";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl } from "../../open_farm/icons";
 import { overwrite, save } from "../../api/crud";
+import { push } from "../../history";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -89,12 +90,15 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
             return <i key={point.uuid} className="fa fa-leaf" />;
 
           case "Plant":
-            return <span onClick={() => this.removePoint(body.id || 0)}><img
+            return <span
               key={point.uuid}
-              src={svgToUrl(FIXME)}
-              alt={t("plant icon")}
-              width={32}
-              height={32} /></span>;
+              onClick={() => this.removePoint(body.id || 0)}>
+              <img
+                src={svgToUrl(FIXME)}
+                alt={t("plant icon")}
+                width={32}
+                height={32} />
+            </span>;
         }
       });
   }
@@ -150,7 +154,8 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
     if (group) {
       return this.hasGroup(group);
     } else {
-      return <div>Work in progress...</div>;
+      push("/app/designer/groups");
+      return <div>loading...</div>;
     }
   }
 }

@@ -286,8 +286,8 @@ export const transformForQuadrant =
   };
 
 /** Determine the current map mode based on path. */
-export const getMode = (why = "test"): Mode => {
-  console.log(why);
+export const getMode = (_why = "test"): Mode => {
+  // console.log(why);
   const pathArray = getPathArray();
   if (pathArray) {
     if ((pathArray[3] === "groups") && pathArray[4]) {
