@@ -141,5 +141,6 @@ export enum Mode {
   addPlant = "addPlant",
   moveTo = "moveTo",
   createPoint = "createPoint",
-  templateView = "templateView"
+  templateView = "templateView",
+  addPointToGroup = "addPlantToGroup",
 }

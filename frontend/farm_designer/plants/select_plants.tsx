@@ -90,10 +90,10 @@ export class SelectPlants
         })}>
         {t("Create group")}
       </button>
-      <button className="fb-button green"
+      {/* <button className="fb-button green"
         onClick={() => { throw new Error("WIP"); }}>
         {t("Create garden")}
-      </button>
+      </button> */}
     </div>;
 
   render() {

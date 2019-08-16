@@ -151,19 +151,23 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
     group && this.props.dispatch(save(group.uuid));
   }
 
+  /** TODO: Add undo feature to ResourceReducer */
+  componentWillUnmount = () => {
+    this.saveGroup;
+  }
+
   hasGroup = (group: TaggedPointGroup) => {
-    const isSaved = group.specialStatus === SpecialStatus.SAVED;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
         panelName={Panel.Groups}
         panelColor={"blue"}
         title={t("Edit Group")}
-        backTo={isSaved ? "/app/designer/groups" : undefined}>
+        backTo={"/app/designer/groups"}>
         <a
           className="right-button"
           title={t("Save Changes to Group")}
           onClick={this.saveGroup}>
-          {t("Save")}{isSaved ? "" : "*"}
+          {t("Save")}{group.specialStatus === SpecialStatus.SAVED ? "" : "*"}
         </a>
       </DesignerPanelHeader>
       <DesignerPanelContent
@@ -171,6 +175,9 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
         <h5>{t("GROUP NAME")}</h5>
         <input defaultValue={this.name} />
         <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
+        <p>
+          {t("Click plants in map to add or remove.")}
+        </p>
         <div>
           {this.icons}
         </div>
