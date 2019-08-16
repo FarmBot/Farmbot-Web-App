@@ -18,6 +18,7 @@ import { push } from "../../history";
 import { Dictionary } from "lodash";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
+import { Actions } from "../../constants";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -106,14 +107,27 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
             return <i key={point.uuid} className="fa fa-dot-circle-o" />;
           case "ToolSlot":
             return <i key={point.uuid} className="fa fa-leaf" />;
-
           case "Plant":
             const p = point as TaggedPlant;
+            const icon = this.findIcon(p);
+            const plantUUID = point.uuid;
             return <span
-              key={point.uuid}
+              onMouseEnter={() => {
+                this.props.dispatch({
+                  type: Actions.TOGGLE_HOVERED_PLANT,
+                  payload: { plantUUID, icon }
+                });
+              }}
+              onMouseLeave={() => {
+                this.props.dispatch({
+                  type: Actions.TOGGLE_HOVERED_PLANT,
+                  payload: { plantUUID: undefined, icon }
+                });
+              }}
+              key={plantUUID}
               onClick={() => this.removePoint(body.id || 0)}>
               <img
-                src={this.findIcon(p)}
+                src={icon}
                 alt={p.body.name}
                 width={32}
                 height={32} />
