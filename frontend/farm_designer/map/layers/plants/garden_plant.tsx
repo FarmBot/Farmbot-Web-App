@@ -6,6 +6,7 @@ import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
+import { selectPlant } from "../../../actions";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -21,10 +22,9 @@ export class GardenPlant extends
   }
 
   click = () => {
-    this.props.dispatch({
-      type: Actions.SELECT_PLANT,
-      payload: [this.props.uuid]
-    });
+    console
+      .log("Update this when getMode === Mode.addPointToGroup");
+    this.props.dispatch(selectPlant([this.props.uuid]));
     this.props.dispatch({
       type: Actions.TOGGLE_HOVERED_PLANT, payload: {
         plantUUID: this.props.uuid, icon: this.state.icon

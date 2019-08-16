@@ -18,8 +18,12 @@ export function movePlant(payload: MovePlantProps) {
   return edit(tr, update);
 }
 
+export const selectPlant = (payload: string[] | undefined) => {
+  return { type: Actions.SELECT_PLANT, payload };
+};
+
 export const unselectPlant = (dispatch: Function) => () => {
-  dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
+  dispatch(selectPlant(undefined));
   dispatch({
     type: Actions.TOGGLE_HOVERED_PLANT, payload: {
       plantUUID: undefined, icon: ""

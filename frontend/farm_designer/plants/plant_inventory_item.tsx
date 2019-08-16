@@ -8,6 +8,7 @@ import { get } from "lodash";
 import { unpackUUID } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { cachedCrop } from "../../open_farm/cached_crop";
+import { selectPlant } from "../actions";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
@@ -49,7 +50,7 @@ export class PlantInventoryItem extends
           ? "saved_gardens/templates"
           : "plants";
       push(`/app/designer/${plantCategory}/${plantId}`);
-      dispatch({ type: Actions.SELECT_PLANT, payload: [tpp.uuid] });
+      dispatch(selectPlant([tpp.uuid]));
     };
 
     // See `cachedIcon` for more details on this.

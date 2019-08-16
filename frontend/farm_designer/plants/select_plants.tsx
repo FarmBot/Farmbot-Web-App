@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { unselectPlant } from "../actions";
+import { unselectPlant, selectPlant } from "../actions";
 import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
@@ -70,17 +70,13 @@ export class SelectPlants
         {t("Delete selected")}
       </button>
       <button className="fb-button gray"
-        onClick={() => this.props.dispatch({
-          type: Actions.SELECT_PLANT,
-          payload: this.props.plants.map(p => p.uuid)
-        })}>
+        onClick={() => this
+          .props
+          .dispatch(this.props.plants.map(p => p.uuid))}>
         {t("Select all")}
       </button>
       <button className="fb-button gray"
-        onClick={() => this.props.dispatch({
-          type: Actions.SELECT_PLANT,
-          payload: undefined
-        })}>
+        onClick={() => this.props.dispatch(selectPlant(undefined))}>
         {t("Select none")}
       </button>
       <button className="fb-button blue"
