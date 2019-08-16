@@ -7,6 +7,7 @@ import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
 import { getMode } from "./map/util";
 import { Mode } from "./map/interfaces";
 import { clamp } from "lodash";
+import { GetState } from "../redux/interfaces";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -22,13 +23,28 @@ export const selectPlant = (payload: string[] | undefined) => {
   return { type: Actions.SELECT_PLANT, payload };
 };
 
+export const toggleHoveredPlant =
+  (plantUUID: string | undefined, icon: string) => {
+    return {
+      type: Actions.TOGGLE_HOVERED_PLANT,
+      payload: { plantUUID, icon }
+    };
+  };
+
+export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
+  return (dispatch: Function, _getState: GetState) => {
+    dispatch(selectPlant([clickedPlantUuid]));
+    dispatch(toggleHoveredPlant(clickedPlantUuid, icon));
+    const isEditingGroup = getMode() === Mode.addPointToGroup;
+    if (isEditingGroup) {
+      console.log("TODO: Finish this. EDIT current group to add plant UUID");
+    }
+  };
+};
+
 export const unselectPlant = (dispatch: Function) => () => {
   dispatch(selectPlant(undefined));
-  dispatch({
-    type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-      plantUUID: undefined, icon: ""
-    }
-  });
+  dispatch(toggleHoveredPlant(undefined, ""));
   dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
 };
 

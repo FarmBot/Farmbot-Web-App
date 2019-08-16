@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { unselectPlant, selectPlant } from "../actions";
+import { unselectPlant, selectPlant, toggleHoveredPlant } from "../actions";
 import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
@@ -41,11 +41,7 @@ export class SelectPlants
     if (selected && selected.length == 1) {
       unselectPlant(dispatch)();
     } else {
-      dispatch({
-        type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-          plantUUID: undefined, icon: ""
-        }
-      });
+      dispatch(toggleHoveredPlant(undefined, ""));
       dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
     }
   }
@@ -72,7 +68,7 @@ export class SelectPlants
       <button className="fb-button gray"
         onClick={() => this
           .props
-          .dispatch(this.props.plants.map(p => p.uuid))}>
+          .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
         {t("Select all")}
       </button>
       <button className="fb-button gray"

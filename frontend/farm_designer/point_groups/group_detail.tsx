@@ -18,7 +18,7 @@ import { push } from "../../history";
 import { Dictionary } from "lodash";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
-import { Actions } from "../../constants";
+import { toggleHoveredPlant } from "../actions";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -113,16 +113,10 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
             const plantUUID = point.uuid;
             return <span
               onMouseEnter={() => {
-                this.props.dispatch({
-                  type: Actions.TOGGLE_HOVERED_PLANT,
-                  payload: { plantUUID, icon }
-                });
+                this.props.dispatch(toggleHoveredPlant(plantUUID, icon));
               }}
               onMouseLeave={() => {
-                this.props.dispatch({
-                  type: Actions.TOGGLE_HOVERED_PLANT,
-                  payload: { plantUUID: undefined, icon }
-                });
+                this.props.dispatch(toggleHoveredPlant(undefined, icon));
               }}
               key={plantUUID}
               onClick={() => this.removePoint(body.id || 0)}>
