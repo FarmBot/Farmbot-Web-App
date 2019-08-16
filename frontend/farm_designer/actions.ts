@@ -30,7 +30,7 @@ export const unselectPlant = (dispatch: Function) => () => {
 
 /** Unselect plant and close plant info or select panel if selected and open. */
 export const closePlantInfo = (dispatch: Function) => () => {
-  const mode = getMode("closePlantInfo");
+  const mode = getMode();
   if (mode == Mode.editPlant || mode == Mode.boxSelect) {
     unselectPlant(dispatch)();
     history.push("/app/designer/plants");

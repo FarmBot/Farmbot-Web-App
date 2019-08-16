@@ -152,17 +152,18 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
   }
 
   hasGroup = (group: TaggedPointGroup) => {
+    const isSaved = group.specialStatus === SpecialStatus.SAVED;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
         panelName={Panel.Groups}
         panelColor={"blue"}
         title={t("Edit Group")}
-        backTo={"/app/designer/groups"}>
+        backTo={isSaved ? "/app/designer/groups" : undefined}>
         <a
           className="right-button"
           title={t("Save Changes to Group")}
           onClick={this.saveGroup}>
-          {t("Save")}{group.specialStatus === SpecialStatus.SAVED ? "" : "*"}
+          {t("Save")}{isSaved ? "" : "*"}
         </a>
       </DesignerPanelHeader>
       <DesignerPanelContent

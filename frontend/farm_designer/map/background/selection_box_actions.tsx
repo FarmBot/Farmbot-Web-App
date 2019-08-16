@@ -45,7 +45,7 @@ export const resizeBox = (props: {
       props.setMapState({ selectionBox: newSelectionBox });
       // Select all plants within the updated selection box
       const payload = getSelected(props.plants, newSelectionBox);
-      if (payload && getMode("resizeBox") === Mode.none) {
+      if (payload && getMode() === Mode.none) {
         history.push("/app/designer/plants/select");
       }
       props.dispatch({ type: Actions.SELECT_PLANT, payload });
