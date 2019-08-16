@@ -18,6 +18,7 @@ interface CreateGroupProps {
  */
 export const createGroup =
   ({ points, name, dispatch }: CreateGroupProps) => {
+    console.warn("TODO: Handle points with a localID of 0");
     const all = points.map(x => unpackUUID(x).remoteId);
     const point_ids = betterCompact(all);
     const group: PointGroup = ({ name: name || UNTITLED, point_ids });

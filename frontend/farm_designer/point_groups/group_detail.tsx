@@ -19,6 +19,7 @@ import { Dictionary } from "lodash";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
+import { ResourceIndex } from "../../resources/interfaces";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -30,20 +31,22 @@ interface State {
   icons: Dictionary<string | undefined>
 }
 
-function mapStateToProps(props: Everything): GroupDetailProps {
-  const points: TaggedPoint[] = [];
-
+export function fetchGroupFromUrl(index: ResourceIndex) {
   /** TODO: Write better selectors. */
   const groupId = parseInt(location.pathname.split("/").pop() || "?", 10);
   let group: TaggedPointGroup | undefined;
   try {
-    group = findByKindAndId<TaggedPointGroup>(props.resources.index,
-      "PointGroup",
-      groupId);
+    group =
+      findByKindAndId<TaggedPointGroup>(index, "PointGroup", groupId);
   } catch (error) {
     group = undefined;
   }
+  return group;
+}
 
+function mapStateToProps(props: Everything): GroupDetailProps {
+  const points: TaggedPoint[] = [];
+  const group = fetchGroupFromUrl(props.resources.index);
   if (group) {
     betterCompact(group
       .body

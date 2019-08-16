@@ -1,13 +1,15 @@
 import { MovePlantProps, DraggableEvent } from "./interfaces";
 import { defensiveClone } from "../util";
-import { edit } from "../api/crud";
+import { edit, overwrite } from "../api/crud";
 import { history } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
 import { getMode } from "./map/util";
 import { Mode } from "./map/interfaces";
-import { clamp } from "lodash";
+import { clamp, uniq } from "lodash";
 import { GetState } from "../redux/interfaces";
+import { fetchGroupFromUrl } from "./point_groups/group_detail";
+import { TaggedPoint } from "farmbot";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -32,12 +34,23 @@ export const toggleHoveredPlant =
   };
 
 export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
-  return (dispatch: Function, _getState: GetState) => {
+  return (dispatch: Function, getState: GetState) => {
     dispatch(selectPlant([clickedPlantUuid]));
     dispatch(toggleHoveredPlant(clickedPlantUuid, icon));
     const isEditingGroup = getMode() === Mode.addPointToGroup;
     if (isEditingGroup) {
-      console.log("TODO: Finish this. EDIT current group to add plant UUID");
+      const { resources } = getState();
+      const group = fetchGroupFromUrl(resources.index);
+      const point =
+        resources.index.references[clickedPlantUuid] as TaggedPoint | undefined;
+      if (group && point && point.body.id) {
+        type Body = (typeof group)["body"];
+        const nextGroup: Body =
+          ({ ...group.body, point_ids: [...group.body.point_ids] });
+        nextGroup.point_ids.push(point.body.id);
+        nextGroup.point_ids = uniq(nextGroup.point_ids);
+        dispatch(overwrite(group, nextGroup));
+      }
     }
   };
 };
