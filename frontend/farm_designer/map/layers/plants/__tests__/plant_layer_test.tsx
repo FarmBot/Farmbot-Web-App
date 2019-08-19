@@ -62,6 +62,7 @@ describe("<PlantLayer/>", () => {
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/select";
     const p = fakeProps();
+
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
@@ -124,5 +125,13 @@ describe("<PlantLayer/>", () => {
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect((wrapper.find("Link").props()).style)
       .toEqual({ pointerEvents: "none" });
+  });
+
+  it("wraps the component in <g> (instead of <Link>", () => {
+    mockPath = "/app/designer/groups/15";
+    const p = fakeProps();
+    const wrapper = svgMount(<PlantLayer {...p} />);
+    expect(wrapper.find("a").length).toBe(0);
+    expect(wrapper.find("g").length).toBeGreaterThan(0);
   });
 });

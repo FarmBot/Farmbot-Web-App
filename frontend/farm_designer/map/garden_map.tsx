@@ -5,7 +5,7 @@ import {
   MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
-import { getMapSize, getMode, getGardenCoordinates } from "./util";
+import { getMapSize, getGardenCoordinates, getMode } from "./util";
 import {
   Grid, MapBackground,
   TargetCoordinate,

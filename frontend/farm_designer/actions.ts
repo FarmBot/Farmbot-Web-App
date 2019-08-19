@@ -4,12 +4,12 @@ import { edit, overwrite } from "../api/crud";
 import { history } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
-import { getMode } from "./map/util";
 import { Mode } from "./map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../redux/interfaces";
 import { fetchGroupFromUrl } from "./point_groups/group_detail";
 import { TaggedPoint } from "farmbot";
+import { getMode } from "./map/util";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;

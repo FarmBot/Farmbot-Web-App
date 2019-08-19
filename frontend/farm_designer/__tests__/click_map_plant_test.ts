@@ -48,7 +48,7 @@ describe("clickMapPlant", () => {
   });
 
   it("adds a point to current group if group editor is active", () => {
-    mockMode = "addPlantToGroup";
+    mockMode = "addPointToGroup";
     const state = fakeState();
     const plant = fakePlant();
     plant.body.id = 23;

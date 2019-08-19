@@ -2,9 +2,9 @@ import { isNumber } from "lodash";
 import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
-import { getMode } from "../util";
 import { history } from "../../../history";
 import { selectPlant } from "../../actions";
+import { getMode } from "../util";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
