@@ -30,7 +30,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
   state: State = { searchTerm: "" };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    console.log(currentTarget.value);
+    this.setState({ searchTerm: currentTarget.value });
   };
 
   render() {

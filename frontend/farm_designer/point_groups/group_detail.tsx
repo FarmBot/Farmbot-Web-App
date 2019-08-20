@@ -13,7 +13,7 @@ import { findByKindAndId } from "../../resources/selectors";
 import { betterCompact } from "../../util/util";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
-import { overwrite, save } from "../../api/crud";
+import { overwrite, save, edit } from "../../api/crud";
 import { push } from "../../history";
 import { Dictionary } from "lodash";
 import { TaggedPlant } from "../map/interfaces";
@@ -73,7 +73,9 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
   state: State = { icons: {} };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    console.log(currentTarget.value);
+    if (this.props.group) {
+      this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
+    }
   };
 
   findIcon = (plant: TaggedPlant) => {
@@ -149,9 +151,7 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
   }
 
   /** TODO: Add undo feature to ResourceReducer */
-  componentWillUnmount = () => {
-    this.saveGroup;
-  }
+  componentWillUnmount = () => { this.saveGroup(); };
 
   hasGroup = (group: TaggedPointGroup) => {
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
@@ -170,7 +170,10 @@ export class GroupDetail extends React.Component<GroupDetailProps, State> {
       <DesignerPanelContent
         panelName={"groups"}>
         <h5>{t("GROUP NAME")}</h5>
-        <input defaultValue={this.name} />
+        <input
+          defaultValue={this.name}
+          onChange={this.update}
+        />
         <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
         <p>
           {t("Click plants in map to add or remove.")}
