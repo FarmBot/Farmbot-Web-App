@@ -29,7 +29,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
 
   state: State = { searchTerm: "" };
 
-  update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
+  doUpdate = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     this.setState({ searchTerm: currentTarget.value });
   };
 
@@ -43,7 +43,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
         linkTo={"/app/designer/plants/select"}
         title={t("Add Group")}>
         <input type="text"
-          onChange={this.update}
+          onChange={this.doUpdate}
           placeholder={t("Search your groups...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"groups"}>

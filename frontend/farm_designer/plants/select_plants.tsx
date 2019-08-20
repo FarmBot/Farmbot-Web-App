@@ -16,9 +16,8 @@ import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 
 export function mapStateToProps(props: Everything) {
-  const { selectedPlants } = props.resources.consumers.farm_designer;
   return {
-    selected: selectedPlants,
+    selected: props.resources.consumers.farm_designer.selectedPlants,
     plants: getPlants(props.resources),
     dispatch: props.dispatch,
   };
