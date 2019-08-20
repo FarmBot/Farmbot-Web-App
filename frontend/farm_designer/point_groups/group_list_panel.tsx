@@ -23,15 +23,19 @@ function mapStateToProps(props: Everything): GroupListPanelProps {
     findAll<TaggedPointGroup>(props.resources.index, "PointGroup");
   return { groups, dispatch: props.dispatch };
 }
+/** I wanted this to be a member method of <GroupListPanel/> but testing was
+ * too wonky due to @connect(). If anyone knows a way to test this, feel free
+ * to do a non-curried solution. -RC*/
+export const newUpdater =
+  (cb: Function, key: keyof GroupListPanel["state"]) =>
+    (e: React.SyntheticEvent<HTMLInputElement>) => {
+      cb({ [key]: e.currentTarget.value });
+    };
 
 @connect(mapStateToProps)
 export class GroupListPanel extends React.Component<GroupListPanelProps, State> {
 
   state: State = { searchTerm: "" };
-
-  doUpdate = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this.setState({ searchTerm: currentTarget.value });
-  };
 
   navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
 
@@ -43,7 +47,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
         linkTo={"/app/designer/plants/select"}
         title={t("Add Group")}>
         <input type="text"
-          onChange={this.doUpdate}
+          onChange={newUpdater(this.setState, "searchTerm")}
           placeholder={t("Search your groups...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"groups"}>
