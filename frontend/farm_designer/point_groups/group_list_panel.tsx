@@ -33,6 +33,8 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
     this.setState({ searchTerm: currentTarget.value });
   };
 
+  navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
+
   render() {
     return <DesignerPanel panelName={"groups"} panelColor={"gray"}>
       <DesignerNavTabs />
@@ -54,7 +56,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
             group={group}
             hovered={false}
             dispatch={this.props.dispatch}
-            onClick={() => history.push(`/app/designer/groups/${group.body.id || 0}`)}
+            onClick={() => this.navigate(group.body.id || 0)}
           />)}
       </DesignerPanelContent>
     </DesignerPanel>;
