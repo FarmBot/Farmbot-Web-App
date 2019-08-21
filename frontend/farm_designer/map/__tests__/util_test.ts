@@ -15,10 +15,10 @@ import {
   getMapSize,
   transformXY,
   transformForQuadrant,
-  getMode,
   getGardenCoordinates,
   MapPanelStatus,
   mapPanelClassName,
+  getMode,
 } from "../util";
 import { McuParams } from "farmbot";
 import {

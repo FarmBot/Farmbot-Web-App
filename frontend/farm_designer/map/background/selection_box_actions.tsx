@@ -1,10 +1,10 @@
 import { isNumber } from "lodash";
 import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
-import { Actions } from "../../../constants";
 import { GardenMapState } from "../../interfaces";
-import { getMode } from "../util";
 import { history } from "../../../history";
+import { selectPlant } from "../../actions";
+import { getMode } from "../util";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -48,7 +48,7 @@ export const resizeBox = (props: {
       if (payload && getMode() === Mode.none) {
         history.push("/app/designer/plants/select");
       }
-      props.dispatch({ type: Actions.SELECT_PLANT, payload });
+      props.dispatch(selectPlant(payload));
     }
   }
 };
@@ -69,5 +69,5 @@ export const startNewSelectionBox = (props: {
     });
   }
   // Clear the previous plant selection when starting a new selection box
-  props.dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
+  props.dispatch(selectPlant(undefined));
 };

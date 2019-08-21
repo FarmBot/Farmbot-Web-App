@@ -44,7 +44,7 @@ module PointGroups
 
       # STEP 2: Create missing PGIs
       @do_create = (@new_point_ids - @dont_delete)
-      PointGroupItem.create!(@do_create.to_a.map do |id|
+      PointGroupItem.create!(@do_create.to_a.uniq.map do |id|
         { point_id: id, point_group_id: point_group.id }
       end)
     end

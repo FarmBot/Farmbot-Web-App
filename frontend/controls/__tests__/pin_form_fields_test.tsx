@@ -67,7 +67,7 @@ describe("<ModeDropdown />", () => {
 
 describe("<DeleteButton />", () => {
   const fakeProps = () => ({
-    dispatch: jest.fn(),
+    dispatch: jest.fn(() => Promise.resolve()),
     uuid: "resource uuid",
   });
 

@@ -1,12 +1,15 @@
 import { MovePlantProps, DraggableEvent } from "./interfaces";
 import { defensiveClone } from "../util";
-import { edit } from "../api/crud";
+import { edit, overwrite } from "../api/crud";
 import { history } from "../history";
 import { Actions } from "../constants";
 import { svgToUrl, DEFAULT_ICON } from "../open_farm/icons";
-import { getMode } from "./map/util";
 import { Mode } from "./map/interfaces";
-import { clamp } from "lodash";
+import { clamp, uniq } from "lodash";
+import { GetState } from "../redux/interfaces";
+import { fetchGroupFromUrl } from "./point_groups/group_detail";
+import { TaggedPoint } from "farmbot";
+import { getMode } from "./map/util";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -18,13 +21,43 @@ export function movePlant(payload: MovePlantProps) {
   return edit(tr, update);
 }
 
-export const unselectPlant = (dispatch: Function) => () => {
-  dispatch({ type: Actions.SELECT_PLANT, payload: undefined });
-  dispatch({
-    type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-      plantUUID: undefined, icon: ""
+export const selectPlant = (payload: string[] | undefined) => {
+  return { type: Actions.SELECT_PLANT, payload };
+};
+
+export const toggleHoveredPlant =
+  (plantUUID: string | undefined, icon: string) => {
+    return {
+      type: Actions.TOGGLE_HOVERED_PLANT,
+      payload: { plantUUID, icon }
+    };
+  };
+
+export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
+  return (dispatch: Function, getState: GetState) => {
+    dispatch(selectPlant([clickedPlantUuid]));
+    dispatch(toggleHoveredPlant(clickedPlantUuid, icon));
+    const isEditingGroup = getMode() === Mode.addPointToGroup;
+    if (isEditingGroup) {
+      const { resources } = getState();
+      const group = fetchGroupFromUrl(resources.index);
+      const point =
+        resources.index.references[clickedPlantUuid] as TaggedPoint | undefined;
+      if (group && point && point.body.id) {
+        type Body = (typeof group)["body"];
+        const nextGroup: Body =
+          ({ ...group.body, point_ids: [...group.body.point_ids] });
+        nextGroup.point_ids.push(point.body.id);
+        nextGroup.point_ids = uniq(nextGroup.point_ids);
+        dispatch(overwrite(group, nextGroup));
+      }
     }
-  });
+  };
+};
+
+export const unselectPlant = (dispatch: Function) => () => {
+  dispatch(selectPlant(undefined));
+  dispatch(toggleHoveredPlant(undefined, ""));
   dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
 };
 

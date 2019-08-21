@@ -25,6 +25,7 @@ import {
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
   TaggedAlert,
+  TaggedPointGroup,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -450,5 +451,11 @@ export function fakeAlert(): TaggedAlert {
     created_at: 123,
     problem_tag: "api.noun.verb",
     priority: 100,
+  });
+}
+export function fakePointGroup(): TaggedPointGroup {
+  return fakeResource("PointGroup", {
+    name: "Fake",
+    point_ids: []
   });
 }
