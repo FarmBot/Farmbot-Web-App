@@ -159,6 +159,8 @@ export function renderCeleryNode(props: StepParams) {
     case "emergency_unlock": case "emergency_lock":
     case "install_first_party_farmware":
       return <TileSystemAction {...props} />;
+    case "assertion":
+      return <div> WIP!</div>;
     default: return <TileUnknown {...props} />;
   }
 }
