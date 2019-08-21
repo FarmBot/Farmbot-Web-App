@@ -35,12 +35,12 @@ interface LittleIconProps {
   /** URL (or even a data-url) to the icon image. */
   icon: string;
   group: TaggedPointGroup;
-  point: TaggedPlant;
+  plant: TaggedPlant;
   dispatch: Function;
 }
 
 export const LittleIcon =
-  ({ group, point, icon, dispatch }: LittleIconProps) => {
+  ({ group, plant: point, icon, dispatch }: LittleIconProps) => {
     const { body } = point;
     const p = point;
     const plantUUID = point.uuid;
@@ -95,24 +95,21 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
           key={point.uuid}
           icon={this.findIcon(point)}
           group={this.props.group}
-          point={point}
+          plant={point}
           dispatch={this.props.dispatch}
         />;
       });
   }
 
   saveGroup = () => {
-    const { group } = this.props;
-    group && this.props.dispatch(save(group.uuid));
+    this.props.dispatch(save(this.props.group.uuid));
   }
-
-  /** TODO: Add undo feature to ResourceReducer */
-  componentWillUnmount = () => { this.saveGroup(); };
 
   render() {
     const { group } = this.props;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
+        onBack={this.saveGroup}
         panelName={Panel.Groups}
         panelColor={"blue"}
         title={t("Edit Group")}
@@ -129,8 +126,7 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
         <h5>{t("GROUP NAME")}</h5>
         <input
           defaultValue={this.name}
-          onChange={this.update}
-        />
+          onChange={this.update} />
         <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
         <p>
           {t("Click plants in map to add or remove.")}
