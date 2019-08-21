@@ -1,9 +1,6 @@
 import { ReactWrapper, ShallowWrapper } from "enzyme";
 import { range } from "lodash";
 
-export const getProp =
-  <T, K extends keyof T>(i: ReactWrapper<T, {}>, key: K): T[K] => i.props()[key];
-
 /** Simulate a click and check button text for a button in a wrapper. */
 export function clickButton(
   wrapper: ReactWrapper | ShallowWrapper,
