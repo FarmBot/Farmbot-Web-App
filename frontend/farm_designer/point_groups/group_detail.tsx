@@ -7,11 +7,12 @@ import { betterCompact } from "../../util/util";
 import { push, getPathArray } from "../../history";
 import { ResourceIndex } from "../../resources/interfaces";
 import { GroupDetailActive } from "./group_detail_active";
+import { TaggedPlant } from "../map/interfaces";
 
 interface GroupDetailProps {
   dispatch: Function;
   group: TaggedPointGroup | undefined;
-  points: TaggedPoint[];
+  plants: TaggedPlant[];
 }
 
 export function fetchGroupFromUrl(index: ResourceIndex) {
@@ -28,7 +29,7 @@ export function fetchGroupFromUrl(index: ResourceIndex) {
 }
 
 function mapStateToProps(props: Everything): GroupDetailProps {
-  const points: TaggedPoint[] = [];
+  const plants: TaggedPlant[] = [];
   const group = fetchGroupFromUrl(props.resources.index);
   if (group) {
     betterCompact(group
@@ -39,15 +40,17 @@ function mapStateToProps(props: Everything): GroupDetailProps {
       })).map(uuid => {
         const p =
           props.resources.index.references[uuid] as TaggedPoint | undefined;
-        p && points.push(p);
+        if (p) {
+          if (p.kind === "Point") {
+            if (p.body.pointer_type == "Plant") {
+              plants.push(p as TaggedPlant); // Sorry.
+            }
+          }
+        }
       });
   }
 
-  return {
-    points,
-    group,
-    dispatch: props.dispatch
-  };
+  return { plants, group, dispatch: props.dispatch };
 }
 
 @connect(mapStateToProps)

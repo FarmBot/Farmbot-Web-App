@@ -6,24 +6,52 @@ import {
   DesignerPanelContent,
   DesignerPanelHeader
 } from "../plants/designer_panel";
-import { TaggedPointGroup, TaggedPoint, SpecialStatus } from "farmbot";
+import { TaggedPointGroup, SpecialStatus } from "farmbot";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save, edit } from "../../api/crud";
 import { Dictionary } from "lodash";
-import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
+import { TaggedPlant } from "../map/interfaces";
 
 interface GroupDetailActiveProps {
   dispatch: Function;
   group: TaggedPointGroup;
-  points: TaggedPoint[];
+  plants: TaggedPlant[];
 }
 
 interface State {
   icons: Dictionary<string | undefined>
 }
+const removePoint = (group: TaggedPointGroup, pointId: number) => {
+  type Body = (typeof group)["body"];
+  const nextGroup: Body = { ...group.body };
+  nextGroup.point_ids = nextGroup.point_ids.filter(x => x !== pointId);
+  return overwrite(group, nextGroup);
+};
+
+interface LittleIconProps {
+  /** URL (or even a data-url) to the icon image. */
+  icon: string;
+  group: TaggedPointGroup;
+  point: TaggedPlant;
+  dispatch: Function;
+}
+
+export const LittleIcon =
+  ({ group, point, icon, dispatch }: LittleIconProps) => {
+    const { body } = point;
+    const p = point;
+    const plantUUID = point.uuid;
+    return <span
+      key={plantUUID}
+      onMouseEnter={() => dispatch(toggleHoveredPlant(plantUUID, icon))}
+      onMouseLeave={() => dispatch(toggleHoveredPlant(undefined, icon))}
+      onClick={() => dispatch(removePoint(group, body.id || 0))}>
+      <img src={icon} alt={p.body.name} width={32} height={32} />
+    </span>;
+  };
 
 export class GroupDetailActive extends React.Component<GroupDetailActiveProps, State> {
 
@@ -61,45 +89,16 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
   get icons() {
     return this
       .props
-      .points
+      .plants
       .map(point => {
-        const { body } = point;
-        switch (body.pointer_type) {
-          case "GenericPointer":
-            return <i key={point.uuid} className="fa fa-dot-circle-o" />;
-          case "ToolSlot":
-            return <i key={point.uuid} className="fa fa-leaf" />;
-          case "Plant":
-            const p = point as TaggedPlant;
-            const icon = this.findIcon(p);
-            const plantUUID = point.uuid;
-            return <span
-              onMouseEnter={() => {
-                this.props.dispatch(toggleHoveredPlant(plantUUID, icon));
-              }}
-              onMouseLeave={() => {
-                this.props.dispatch(toggleHoveredPlant(undefined, icon));
-              }}
-              key={plantUUID}
-              onClick={() => this.removePoint(body.id || 0)}>
-              <img
-                src={icon}
-                alt={p.body.name}
-                width={32}
-                height={32} />
-            </span>;
-        }
+        return <LittleIcon
+          key={point.uuid}
+          icon={this.findIcon(point)}
+          group={this.props.group}
+          point={point}
+          dispatch={this.props.dispatch}
+        />;
       });
-  }
-
-  removePoint = (pointId: number) => {
-    const { group } = this.props;
-    if (group) {
-      type Body = (typeof group)["body"];
-      const nextGroup: Body = { ...group.body };
-      nextGroup.point_ids = nextGroup.point_ids.filter(x => x !== pointId);
-      this.props.dispatch(overwrite(group, nextGroup));
-    }
   }
 
   saveGroup = () => {
