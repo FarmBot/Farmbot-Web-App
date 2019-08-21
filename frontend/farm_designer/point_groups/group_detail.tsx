@@ -4,7 +4,7 @@ import { Everything } from "../../interfaces";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { findByKindAndId } from "../../resources/selectors";
 import { betterCompact } from "../../util/util";
-import { push } from "../../history";
+import { push, getPathArray } from "../../history";
 import { ResourceIndex } from "../../resources/interfaces";
 import { GroupDetailActive } from "./group_detail_active";
 
@@ -16,7 +16,7 @@ interface GroupDetailProps {
 
 export function fetchGroupFromUrl(index: ResourceIndex) {
   /** TODO: Write better selectors. */
-  const groupId = parseInt(location.pathname.split("/").pop() || "?", 10);
+  const groupId = parseInt(getPathArray().pop() || "?", 10);
   let group: TaggedPointGroup | undefined;
   try {
     group =

@@ -7,7 +7,6 @@ import {
   DesignerPanelHeader
 } from "../plants/designer_panel";
 import { TaggedPointGroup, TaggedPoint, SpecialStatus } from "farmbot";
-import { findByKindAndId } from "../../resources/selectors";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save, edit } from "../../api/crud";
@@ -15,7 +14,6 @@ import { Dictionary } from "lodash";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
-import { ResourceIndex } from "../../resources/interfaces";
 
 interface GroupDetailActiveProps {
   dispatch: Function;
@@ -25,19 +23,6 @@ interface GroupDetailActiveProps {
 
 interface State {
   icons: Dictionary<string | undefined>
-}
-
-export function fetchGroupFromUrl(index: ResourceIndex) {
-  /** TODO: Write better selectors. */
-  const groupId = parseInt(location.pathname.split("/").pop() || "?", 10);
-  let group: TaggedPointGroup | undefined;
-  try {
-    group =
-      findByKindAndId<TaggedPointGroup>(index, "PointGroup", groupId);
-  } catch (error) {
-    group = undefined;
-  }
-  return group;
 }
 
 export class GroupDetailActive extends React.Component<GroupDetailActiveProps, State> {
