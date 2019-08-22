@@ -66,7 +66,7 @@ interface DeleteButtonProps {
   onDestroy?: Function;
 }
 
-const MINUS_BTN = <i className="fa fa-minus" />;
+const DELETE_BTN = <i className="fa fa-times" />;
 
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
@@ -76,5 +76,5 @@ export const DeleteButton = (props: DeleteButtonProps) =>
         .dispatch(destroy(props.uuid))
         .then(props.onDestroy || (() => { }));
     }}>
-    {props.children ? props.children : MINUS_BTN}
+    {props.children ? props.children : DELETE_BTN}
   </button >;
