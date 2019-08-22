@@ -77,7 +77,7 @@ export class PlantInventoryItem extends
       key={plantId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
-      onClick={click} >
+      onClick={click}>
       <img
         className="plant-search-item-image"
         src={DEFAULT_ICON}
@@ -88,6 +88,6 @@ export class PlantInventoryItem extends
       <i className="plant-search-item-age">
         {daysOld} {t("days old")}
       </i>
-    </div >;
+    </div>;
   }
 }
