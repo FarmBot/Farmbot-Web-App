@@ -24,7 +24,9 @@ describe("<LuaPart/>", () => {
       expect(calledWith.payload.uuid).toEqual(p.currentSequence.uuid);
       const s = calledWith.payload.update as TaggedSequence;
       expect(s).toBeTruthy();
-      console.log("I STOPPED HERE. I NEED TO FINISH THIS TEST");
+      const item = ((s.body && s.body.body) || [])[1]
+      console.log(item);
+      debugger;
     } else {
       fail();
     }

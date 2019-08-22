@@ -4,7 +4,7 @@ import React from "react";
 import { AssertionStepProps } from "./support";
 
 export function LuaPart(props: AssertionStepProps) {
-  const luaBlur = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const luaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.dispatch(editStep({
       step: props.currentStep,
       index: props.index,
@@ -18,7 +18,7 @@ export function LuaPart(props: AssertionStepProps) {
   return <div>
     <textarea
       value={lua}
-      onBlur={luaBlur}
+      onChange={luaChange}
       style={{
         width: "100%",
         height: `${((lua.split("\n").length) + 1) * 1.25}em`
