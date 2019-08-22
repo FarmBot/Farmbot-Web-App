@@ -3,55 +3,26 @@ import React from "react";
 import { editStep } from "../../api/crud";
 import { Assertion, ALLOWED_ASSERTION_TYPES } from "farmbot";
 import { SequenceSelectBox } from "../sequence_select_box";
-import { FBSelect, DropDownItem } from "../../ui";
+import { FBSelect, DropDownItem, Row, Col } from "../../ui";
 import { StepHeader } from "../step_ui/step_header";
+import { StepContent, StepWrapper } from "../step_ui";
 
 interface AssertionStepParams extends StepParams {
   currentStep: Assertion;
 }
 
-export function TileAssertion(props: StepParams) {
-
-  const step = props.currentStep;
-
-  if (step.kind !== "assertion") {
-    throw new Error("Not an assertion");
-  }
-  const p = props as AssertionStepParams;
-
-  return <div style={{ border: "2px dotted black" }}>
-    <StepHeader
-      className={"execute-step"}
-      helpText={""}
-      currentSequence={p.currentSequence}
-      currentStep={p.currentStep}
-      dispatch={p.dispatch}
-      index={p.index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <LuaPart {...p} />
-    <SequencePart {...p} />
-    <TypePart {...p} />
-  </div>;
-}
+const CLASS_NAME = "send-message-step";
 
 const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
-  "abort": {
-    label: "Abort",
-    value: "abort"
-  },
-  "recover": {
-    label: "Recover",
-    value: "recover"
-  },
-  "abort_recover": {
-    label: "Abort and Recover",
-    value: "abort_recover"
-  },
+  "abort": { label: "Abort", value: "abort" },
+  "recover": { label: "Recover", value: "recover" },
+  "abort_recover": { label: "Abort and Recover", value: "abort_recover" },
+  "continue": { label: "Continue", value: "continue" },
 };
 
 function TypePart(props: AssertionStepParams) {
   const { assertion_type } = props.currentStep.args;
-  return <span>Assertion Type:
+  return <span>If Test Fails:
     <FBSelect
       selectedItem={ASSERTION_TYPES[assertion_type]}
       onChange={(ddi) => {
@@ -87,6 +58,40 @@ function LuaPart(props: AssertionStepParams) {
   </div>;
 }
 
+export function TileAssertion(props: StepParams) {
+  const step = props.currentStep;
+
+  if (step.kind !== "assertion") { throw new Error("Not an assertion"); }
+
+  const p = props as AssertionStepParams;
+
+  return <StepWrapper>
+    <StepHeader
+      className={CLASS_NAME}
+      helpText={""}
+      currentSequence={p.currentSequence}
+      currentStep={p.currentStep}
+      dispatch={p.dispatch}
+      index={p.index}
+      confirmStepDeletion={props.confirmStepDeletion} />
+    <StepContent className={CLASS_NAME}>
+      <Row>
+        <Col xs={12}>
+          <LuaPart {...p} />
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={6}>
+          <SequencePart {...p} />
+        </Col>
+        <Col xs={6}>
+          <TypePart {...p} />
+        </Col>
+      </Row>
+    </StepContent>
+  </StepWrapper>;
+}
+
 function SequencePart(props: AssertionStepParams) {
   const onChange = (ddi: DropDownItem) => props.dispatch(editStep({
     step: props.currentStep,
@@ -106,7 +111,7 @@ function SequencePart(props: AssertionStepParams) {
     sequenceId = _then.args.sequence_id;
   }
   return <span>
-    Sequence:
+    Recovery Sequence:
   <SequenceSelectBox
       onChange={onChange}
       resources={props.resources}

@@ -20,7 +20,7 @@ module CeleryScriptSettingsBag
                   "BoxLed3" => BoxLed,
                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
-  ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover)
+  ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover continue)
   ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
