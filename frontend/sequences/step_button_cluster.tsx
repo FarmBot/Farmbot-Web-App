@@ -138,7 +138,7 @@ export function StepButtonCluster(props: StepButtonProps) {
         assertion_type: "abort_recover",
       }
     }}
-    color="red">
+    color="purple">
     {t("ASSERTION")}
   </StepButton>);
 

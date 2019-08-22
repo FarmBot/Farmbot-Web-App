@@ -11,18 +11,22 @@ interface AssertionStepParams extends StepParams {
   currentStep: Assertion;
 }
 
-const CLASS_NAME = "send-message-step";
+const CLASS_NAME = "if-step";
+const MOVE_THIS_CSS_PLZ = {
+  marginTop: "10px"
+};
 
 const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
   "abort": { label: "Abort", value: "abort" },
-  "recover": { label: "Recover", value: "recover" },
-  "abort_recover": { label: "Abort and Recover", value: "abort_recover" },
+  "recover": { label: "Recover and continue", value: "recover" },
+  "abort_recover": { label: "Abort and recover", value: "abort_recover" },
   "continue": { label: "Continue", value: "continue" },
 };
 
 function TypePart(props: AssertionStepParams) {
   const { assertion_type } = props.currentStep.args;
-  return <span>If Test Fails:
+  return <span>
+    <label>If Test Fails</label>
     <FBSelect
       selectedItem={ASSERTION_TYPES[assertion_type]}
       onChange={(ddi) => {
@@ -35,7 +39,7 @@ function TypePart(props: AssertionStepParams) {
           }
         }));
       }}
-      list={Object.values(ASSERTION_TYPES)} />;
+      list={Object.values(ASSERTION_TYPES)} />
   </span>;
 }
 
@@ -50,12 +54,43 @@ function LuaPart(props: AssertionStepParams) {
       }
     }));
   };
+  const { lua } = props.currentStep.args;
   return <div>
     <textarea
-      value={props.currentStep.args.lua}
+      value={lua}
       onChange={luaChange}
-      style={{ width: "100%" }} />
+      style={{
+        width: "100%",
+        height: `${((lua.split("\n").length) + 1) * 1.25}em`
+      }} />
   </div>;
+}
+
+function SequencePart(props: AssertionStepParams) {
+  const onChange = (ddi: DropDownItem) => props.dispatch(editStep({
+    step: props.currentStep,
+    index: props.index,
+    sequence: props.currentSequence,
+    executor(c: Assertion) {
+      c.args._then = {
+        kind: "execute",
+        args: { sequence_id: ddi.value as number }
+      };
+    }
+  }));
+
+  let sequenceId: number | undefined;
+  const { _then } = props.currentStep.args;
+  if (_then.kind == "execute") {
+    sequenceId = _then.args.sequence_id;
+  }
+  return <span>
+    <label>Recovery Sequence</label>
+    <SequenceSelectBox
+      onChange={onChange}
+      resources={props.resources}
+      sequenceId={sequenceId} />
+  </span>;
 }
 
 export function TileAssertion(props: StepParams) {
@@ -80,41 +115,10 @@ export function TileAssertion(props: StepParams) {
           <LuaPart {...p} />
         </Col>
       </Row>
-      <Row>
-        <Col xs={6}>
-          <SequencePart {...p} />
-        </Col>
-        <Col xs={6}>
-          <TypePart {...p} />
-        </Col>
+      <Row >
+        <Col xs={6}><div style={MOVE_THIS_CSS_PLZ}> <TypePart {...p} /></div> </Col>
+        <Col xs={6}><div style={MOVE_THIS_CSS_PLZ}> <SequencePart {...p} /></div> </Col>
       </Row>
     </StepContent>
   </StepWrapper>;
-}
-
-function SequencePart(props: AssertionStepParams) {
-  const onChange = (ddi: DropDownItem) => props.dispatch(editStep({
-    step: props.currentStep,
-    index: props.index,
-    sequence: props.currentSequence,
-    executor(c: Assertion) {
-      c.args._then = {
-        kind: "execute",
-        args: { sequence_id: ddi.value as number }
-      };
-    }
-  }));
-
-  let sequenceId: number | undefined;
-  const { _then } = props.currentStep.args;
-  if (_then.kind == "execute") {
-    sequenceId = _then.args.sequence_id;
-  }
-  return <span>
-    Recovery Sequence:
-  <SequenceSelectBox
-      onChange={onChange}
-      resources={props.resources}
-      sequenceId={sequenceId} />
-  </span>;
 }
