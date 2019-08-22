@@ -1,6 +1,5 @@
 import * as React from "react";
 import { history } from "../../history";
-
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -14,6 +13,7 @@ import {
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
+import { DevSettings } from "../../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -28,8 +28,6 @@ export interface SelectPlantsProps {
   dispatch: Function;
   selected: string[];
 }
-
-const YOU_SURE = "Are you sure you want to delete {{length}} plants?";
 
 @connect(mapStateToProps)
 export class SelectPlants
@@ -47,7 +45,8 @@ export class SelectPlants
 
   destroySelected = (plantUUIDs: string[]) => {
     if (plantUUIDs &&
-      confirm(t(YOU_SURE, { length: plantUUIDs.length }))) {
+      confirm(t("Are you sure you want to delete {{length}} plants?",
+        { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
         this
           .props
@@ -74,17 +73,19 @@ export class SelectPlants
         onClick={() => this.props.dispatch(selectPlant(undefined))}>
         {t("Select none")}
       </button>
-      <button className="fb-button blue"
-        onClick={() => createGroup({
-          points: this.props.selected,
-          dispatch: this.props.dispatch
-        })}>
-        {t("Create group")}
-      </button>
-      {/* <button className="fb-button green"
-        onClick={() => { throw new Error("WIP"); }}>
-        {t("Create garden")}
-      </button> */}
+      {DevSettings.futureFeaturesEnabled() &&
+        <button className="fb-button blue"
+          onClick={() => createGroup({
+            points: this.props.selected,
+            dispatch: this.props.dispatch
+          })}>
+          {t("Create group")}
+        </button>}
+      {DevSettings.futureFeaturesEnabled() &&
+        <button className="fb-button green"
+          onClick={() => { throw new Error("WIP"); }}>
+          {t("Create garden")}
+        </button>}
     </div>;
 
   render() {
