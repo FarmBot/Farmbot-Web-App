@@ -2,12 +2,12 @@ import * as React from "react";
 import moment from "moment";
 import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { push } from "../../history";
-import { Actions } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { get } from "lodash";
 import { unpackUUID } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { cachedCrop } from "../../open_farm/cached_crop";
+import { selectPlant, toggleHoveredPlant } from "../actions";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
@@ -33,14 +33,10 @@ export class PlantInventoryItem extends
     const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
-      const { icon } = this.state;
       const isEnter = action === "enter";
-      dispatch({
-        type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-          plantUUID: (isEnter ? tpp.uuid : undefined),
-          icon: (isEnter ? icon : "")
-        }
-      });
+      const plantUUID = isEnter ? tpp.uuid : undefined;
+      const icon = isEnter ? this.state.icon : "";
+      dispatch(toggleHoveredPlant(plantUUID, icon));
     };
 
     const click = () => {
@@ -49,7 +45,7 @@ export class PlantInventoryItem extends
           ? "saved_gardens/templates"
           : "plants";
       push(`/app/designer/${plantCategory}/${plantId}`);
-      dispatch({ type: Actions.SELECT_PLANT, payload: [tpp.uuid] });
+      dispatch(selectPlant([tpp.uuid]));
     };
 
     // See `cachedIcon` for more details on this.
@@ -81,7 +77,7 @@ export class PlantInventoryItem extends
       key={plantId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
-      onClick={click}>
+      onClick={click} >
       <img
         className="plant-search-item-image"
         src={DEFAULT_ICON}
@@ -92,6 +88,6 @@ export class PlantInventoryItem extends
       <i className="plant-search-item-age">
         {daysOld} {t("days old")}
       </i>
-    </div>;
+    </div >;
   }
 }

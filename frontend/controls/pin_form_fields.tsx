@@ -62,11 +62,19 @@ export const ModeDropdown = (props: ModeDropdownProps) =>
 interface DeleteButtonProps {
   dispatch: Function;
   uuid: UUID;
+  children?: React.ReactChild
+  onDestroy?: Function;
 }
+
+const MINUS_BTN = <i className="fa fa-minus" />;
 
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
     className="red fb-button"
-    onClick={() => props.dispatch(destroy(props.uuid))}>
-    <i className="fa fa-minus" />
-  </button>;
+    onClick={() => {
+      props
+        .dispatch(destroy(props.uuid))
+        .then(props.onDestroy || (() => { }));
+    }}>
+    {props.children ? props.children : MINUS_BTN}
+  </button >;

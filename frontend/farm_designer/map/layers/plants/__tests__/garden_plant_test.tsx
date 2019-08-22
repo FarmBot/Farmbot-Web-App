@@ -48,10 +48,7 @@ describe("<GardenPlant/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenPlant {...p} />);
     wrapper.find("image").at(0).simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SELECT_PLANT,
-      payload: [p.uuid]
-    });
+    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 
   it("begins hover", () => {

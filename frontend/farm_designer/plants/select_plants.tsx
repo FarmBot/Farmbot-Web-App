@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { unselectPlant } from "../actions";
+import { unselectPlant, selectPlant, toggleHoveredPlant } from "../actions";
 import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
@@ -13,11 +13,11 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
+import { createGroup } from "../point_groups/actions";
 
 export function mapStateToProps(props: Everything) {
-  const { selectedPlants } = props.resources.consumers.farm_designer;
   return {
-    selected: selectedPlants,
+    selected: props.resources.consumers.farm_designer.selectedPlants,
     plants: getPlants(props.resources),
     dispatch: props.dispatch,
   };
@@ -40,11 +40,7 @@ export class SelectPlants
     if (selected && selected.length == 1) {
       unselectPlant(dispatch)();
     } else {
-      dispatch({
-        type: Actions.TOGGLE_HOVERED_PLANT, payload: {
-          plantUUID: undefined, icon: ""
-        }
-      });
+      dispatch(toggleHoveredPlant(undefined, ""));
       dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
     }
   }
@@ -69,19 +65,26 @@ export class SelectPlants
         {t("Delete selected")}
       </button>
       <button className="fb-button gray"
-        onClick={() => this.props.dispatch({
-          type: Actions.SELECT_PLANT,
-          payload: this.props.plants.map(p => p.uuid)
-        })}>
+        onClick={() => this
+          .props
+          .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
         {t("Select all")}
       </button>
       <button className="fb-button gray"
-        onClick={() => this.props.dispatch({
-          type: Actions.SELECT_PLANT,
-          payload: undefined
-        })}>
+        onClick={() => this.props.dispatch(selectPlant(undefined))}>
         {t("Select none")}
       </button>
+      <button className="fb-button blue"
+        onClick={() => createGroup({
+          points: this.props.selected,
+          dispatch: this.props.dispatch
+        })}>
+        {t("Create group")}
+      </button>
+      {/* <button className="fb-button green"
+        onClick={() => { throw new Error("WIP"); }}>
+        {t("Create garden")}
+      </button> */}
     </div>;
 
   render() {
