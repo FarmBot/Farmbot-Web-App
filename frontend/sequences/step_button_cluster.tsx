@@ -128,6 +128,20 @@ export function StepButtonCluster(props: StepButtonProps) {
     </StepButton>,
   ];
 
+  shouldDisplay(Feature.assertion_block) && ALL_THE_BUTTONS.push(<StepButton
+    {...commonStepProps}
+    step={{
+      kind: "assertion",
+      args: {
+        lua: "2 + 2 == 4",
+        _then: { kind: "nothing", args: {} },
+        assertion_type: "abort_recover",
+      }
+    }}
+    color="red">
+    {t("ASSERTION")}
+  </StepButton>);
+
   shouldDisplay(Feature.mark_as_step) && ALL_THE_BUTTONS.push(<StepButton
     {...commonStepProps}
     step={{
