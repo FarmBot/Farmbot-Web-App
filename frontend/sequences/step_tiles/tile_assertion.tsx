@@ -69,7 +69,7 @@ function TypePart(props: AssertionStepParams) {
 }
 
 function LuaPart(props: AssertionStepParams) {
-  const luaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const luaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     props.dispatch(editStep({
       step: props.currentStep,
       index: props.index,
@@ -79,10 +79,12 @@ function LuaPart(props: AssertionStepParams) {
       }
     }));
   };
-  return <span>
-    Lua:
-  <input value={props.currentStep.args.lua} onChange={luaChange} />
-  </span>;
+  return <div>
+    <textarea
+      value={props.currentStep.args.lua}
+      onChange={luaChange}
+      style={{ width: "100%" }} />
+  </div>;
 }
 
 function SequencePart(props: AssertionStepParams) {

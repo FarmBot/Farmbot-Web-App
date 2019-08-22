@@ -133,7 +133,7 @@ export function StepButtonCluster(props: StepButtonProps) {
     step={{
       kind: "assertion",
       args: {
-        lua: "2 + 2 == 4",
+        lua: "return 2 + 2 == 4",
         _then: { kind: "nothing", args: {} },
         assertion_type: "abort_recover",
       }
