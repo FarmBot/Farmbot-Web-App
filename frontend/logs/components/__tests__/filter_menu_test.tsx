@@ -46,7 +46,7 @@ describe("<LogsFilterMenu />", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
     const toggles = wrapper.find("button");
     expect(toggles.last().hasClass("green")).toBeTruthy();
-    expect(toggles.at(2).hasClass("red")).toBeTruthy();
+    expect(toggles.at(3).hasClass("red")).toBeTruthy();
   });
 
   it("bulk toggles filter levels", () => {
