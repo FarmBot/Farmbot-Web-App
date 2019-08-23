@@ -9,7 +9,7 @@ const logTypes = MESSAGE_TYPES;
 
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
-    autoscroll: true, success: 1, busy: 1, warn: 1,
+    autoscroll: true, assertion: 1, success: 1, busy: 1, warn: 1,
     error: 1, info: 1, fun: 1, debug: 1
   };
 
