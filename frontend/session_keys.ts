@@ -55,6 +55,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
 
 export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
   /** Logs settings */
+  assertion_log: "assertion_log",
   success_log: "success_log",
   busy_log: "busy_log",
   warn_log: "warn_log",

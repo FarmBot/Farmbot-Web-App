@@ -1362,3 +1362,15 @@ ul {
     color: $dark_gray;
   }
 }
+
+textarea {
+  border: 0;
+  padding: 6px 8px;
+  box-shadow: 0 0 10px #ddd;
+  outline: none!important;
+  resize: vertical;
+}
+
+textarea:focus {
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+}

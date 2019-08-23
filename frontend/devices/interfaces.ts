@@ -65,6 +65,7 @@ export type SourceFwConfig = (config: McuParamName) =>
 export type ShouldDisplay = (x: Feature) => boolean;
 /** Names of features that use minimum FBOS version checking. */
 export enum Feature {
+  assertion_block = "assertion_block",
   named_pins = "named_pins",
   sensors = "sensors",
   change_ownership = "change_ownership",
