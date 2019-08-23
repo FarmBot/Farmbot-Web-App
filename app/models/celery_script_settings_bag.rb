@@ -20,7 +20,7 @@ module CeleryScriptSettingsBag
                   "BoxLed3" => BoxLed,
                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
-  ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover)
+  ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover continue)
   ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
@@ -32,7 +32,7 @@ module CeleryScriptSettingsBag
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot GenericPointer)
-  ALLOWED_RPC_NODES = %w(calibrate change_ownership
+  ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
                          check_updates dump_info emergency_lock
                          emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
