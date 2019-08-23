@@ -1,17 +1,15 @@
 import React from "react";
 import { LuaPart } from "../lua_part";
 import { shallow } from "enzyme";
-import { fakeAssertProps } from "./test_support";
 import { ReduxAction } from "../../../../redux/interfaces";
 import { EditResourceParams } from "../../../../api/interfaces";
 import { Actions } from "../../../../constants";
 import { TaggedSequence } from "farmbot";
+import { fakeAssertProps } from "../../__tests__/tile_assertion_test";
 
 describe("<LuaPart/>", () => {
   it("renders default verbiage and props", () => {
-    const p =
-      fakeAssertProps({ confirmStepDeletion: true });
-    expect(p.confirmStepDeletion).toBe(true);
+    const p = fakeAssertProps();
     const el = shallow(<LuaPart {...p} />);
     const fakeEvent =
       ({ currentTarget: { value: "hello" } });
