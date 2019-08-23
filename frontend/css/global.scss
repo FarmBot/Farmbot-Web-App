@@ -344,9 +344,20 @@ a {
     float: right;
     color: $dark_gray !important;
   }
-  .bp3-collapse {
-    overflow: hidden;
+  .bp3-collapse::-webkit-scrollbar {
+    display:none !important;
+    width: 0px !important;
+    background-color: transparent !important;
   }
+  .disable_scrollbar::-webkit-scrollbar{
+    width: 0px;
+    background: transparent;
+  }
+  .bp3-collapse-body::-webkit-scrollbar{
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
+    }
 }
 
 .firmware-setting-export-menu {
