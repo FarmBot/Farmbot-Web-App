@@ -6,6 +6,7 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children?: React.ReactChild | React.ReactChild[];
   style?: React.CSSProperties;
   className?: string;
+  disabled?: boolean;
 }
 
 export const maybeStripLegacyUrl =
@@ -23,6 +24,8 @@ export const clickHandler =
 export class Link extends React.Component<LinkProps, {}> {
   render() {
     const { props } = this;
-    return <a {...props} href={props.to} onClick={clickHandler(props)} />;
+    return props.disabled
+      ? <a {...props} />
+      : <a {...props} href={props.to} onClick={clickHandler(props)} />;
   }
 }

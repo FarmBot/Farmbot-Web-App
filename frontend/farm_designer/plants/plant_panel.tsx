@@ -167,7 +167,7 @@ interface ListItemProps {
   children: React.ReactChild;
 }
 
-const ListItem = (props: ListItemProps) =>
+export const ListItem = (props: ListItemProps) =>
   <li>
     <p>
       {props.name}

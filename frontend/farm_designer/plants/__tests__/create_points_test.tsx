@@ -103,7 +103,7 @@ describe("<CreatePoints />", () => {
     const wrapper = shallow<CreatePoints>(<CreatePoints {...fakeProps()} />);
     wrapper.instance().getPointData();
     expect(wrapper.instance().state).toEqual({
-      color: "green", cx: 0, cy: 0, r: 1
+      color: "green", cx: 0, cy: 0, r: 1, name: "Created Point"
     });
   });
 

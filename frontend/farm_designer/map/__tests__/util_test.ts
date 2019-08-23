@@ -337,10 +337,12 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.addPlant);
     mockPath = "/app/designer/move_to";
     expect(getMode()).toEqual(Mode.moveTo);
-    mockPath = "/app/designer/plants/create_point";
+    mockPath = "/app/designer/points/add";
     expect(getMode()).toEqual(Mode.createPoint);
     mockPath = "/app/designer/saved_gardens";
     expect(getMode()).toEqual(Mode.templateView);
+    mockPath = "/app/designer/groups/1";
+    expect(getMode()).toEqual(Mode.addPointToGroup);
   });
 });
 
