@@ -3,10 +3,14 @@ import React from "react";
 import { Row, Col } from "../../ui";
 import { StepHeader } from "../step_ui/step_header";
 import { StepContent, StepWrapper } from "../step_ui";
-import { AssertionStepProps } from "./tile_assertion/support";
 import { TypePart } from "./tile_assertion/type_part";
 import { LuaPart } from "./tile_assertion/lua_part";
 import { SequencePart } from "./tile_assertion/sequence_part";
+import { Assertion } from "farmbot/dist/corpus";
+
+export interface AssertionStepProps extends StepParams {
+  currentStep: Assertion;
+}
 
 const CLASS_NAME = "if-step";
 const MOVE_THIS_CSS_PLZ = { marginTop: "10px" };

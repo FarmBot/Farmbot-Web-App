@@ -2,7 +2,7 @@ import React from "react";
 import { ALLOWED_ASSERTION_TYPES, Assertion } from "farmbot";
 import { DropDownItem, FBSelect } from "../../../ui";
 import { editStep } from "../../../api/crud";
-import { AssertionStepProps } from "./support";
+import { AssertionStepProps } from "../tile_assertion";
 
 const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
   "continue": { label: "Continue", value: "continue" },

@@ -1,7 +1,7 @@
 import { editStep } from "../../../api/crud";
 import { Assertion } from "farmbot/dist/corpus";
 import React from "react";
-import { AssertionStepProps } from "./support";
+import { AssertionStepProps } from "../tile_assertion";
 
 export function LuaPart(props: AssertionStepProps) {
   const luaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

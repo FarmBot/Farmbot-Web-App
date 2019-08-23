@@ -1,19 +1,19 @@
 import React from "react";
 import { shallow } from "enzyme";
-import { TileAssertion } from "../tile_assertion";
+import { TileAssertion, AssertionStepProps } from "../tile_assertion";
 import { Wait } from "farmbot";
 import { StepWrapper } from "../../step_ui/step_wrapper";
 import { DeepPartial } from "redux";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
-import { AssertionStepProps as Props } from "../tile_assertion/support";
+import { renderCeleryNode } from "..";
 
-const EMPTY: DeepPartial<Props> = {};
+const EMPTY: DeepPartial<AssertionStepProps> = {};
 
-export const fakeAssertProps = (extras = EMPTY): Props => {
+export const fakeAssertProps = (extras = EMPTY): AssertionStepProps => {
   const currentSequence = fakeSequence();
   const resources = buildResourceIndex().index;
-  const props: Props = {
+  const props: AssertionStepProps = {
     currentSequence,
     currentStep: {
       kind: "assertion",
@@ -34,8 +34,17 @@ export const fakeAssertProps = (extras = EMPTY): Props => {
     confirmStepDeletion: false,
   };
 
-  return { ...props, ...(extras as Props) };
+  return { ...props, ...(extras as AssertionStepProps) };
 };
+
+describe("renderer", () => {
+  it("displays the correct component", () => {
+    const props = fakeAssertProps();
+    const actual = renderCeleryNode(props);
+    const expected = <TileAssertion {...props} />;
+    expect(actual).toEqual(expected);
+  });
+});
 
 describe("<TileAssertion/>", () => {
   it("crashes on non-assertion steps", () => {
