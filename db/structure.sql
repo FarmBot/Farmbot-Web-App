@@ -1728,7 +1728,8 @@ CREATE TABLE public.web_app_configs (
     confirm_plant_deletion boolean DEFAULT true,
     confirm_sequence_deletion boolean DEFAULT true,
     discard_unsaved_sequences boolean DEFAULT false,
-    user_interface_read_only_mode boolean DEFAULT false
+    user_interface_read_only_mode boolean DEFAULT false,
+    assertion_log integer DEFAULT 1
 );
 
 
@@ -3268,6 +3269,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190722160305'),
 ('20190729134954'),
 ('20190804194135'),
-('20190804194154');
+('20190804194154'),
+('20190823164837');
 
 

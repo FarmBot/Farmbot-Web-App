@@ -98,7 +98,14 @@ describe("<Logs />", () => {
   it("shows overall filter status", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState({
-      success: 3, busy: 3, warn: 3, error: 3, info: 3, fun: 3, debug: 3
+      assertion: 3,
+      busy: 3,
+      debug: 3,
+      error: 3,
+      fun: 3,
+      info: 3,
+      success: 3,
+      warn: 3,
     });
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filter");

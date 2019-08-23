@@ -49,6 +49,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     info: this.initialize(NumericSetting.info_log, 1),
     fun: this.initialize(NumericSetting.fun_log, 1),
     debug: this.initialize(NumericSetting.debug_log, 1),
+    assertion: this.initialize(NumericSetting.assertion_log, 1),
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/

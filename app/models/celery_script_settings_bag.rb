@@ -25,7 +25,7 @@ module CeleryScriptSettingsBag
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
   ALLOWED_LHS_TYPES = [String, :named_pin]
-  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
+  ALLOWED_MESSAGE_TYPES = %w(assertion busy debug error fun info success warn)
   ALLOWED_OPS = %w(< > is not is_undefined)
   ALLOWED_PACKAGES = %w(farmbot_os arduino_firmware)
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]

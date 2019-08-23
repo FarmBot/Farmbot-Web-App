@@ -17,6 +17,24 @@ describe Api::LogsController do
   end
 
   describe "#create" do
+    it "allows `assertion` logs" do
+      sign_in user
+      before_count = Log.count
+      body = {
+        channels: [],
+        major_version: 6,
+        message: "HELLO",
+        minor_version: 4,
+        type: "assertion",
+        verbosity: 1,
+        x: 0,
+        y: 0,
+        z: 0,
+      }
+      post :create, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+    end
+
     it "creates one log (legacy format)" do
       sign_in user
       before_count = Log.count
