@@ -36,7 +36,7 @@ describe("<LogsFilterMenu />", () => {
     p.toggle = (x) => () => toggle(x);
     p.setFilterLevel = (x) => () => setFilterLevel(x);
     const wrapper = mount(<LogsFilterMenu {...p} />);
-    wrapper.find("button").at(2).simulate("click");
+    wrapper.find("button").at(3).simulate("click");
     expect(toggle).toHaveBeenCalledWith(MessageType.success);
   });
 
