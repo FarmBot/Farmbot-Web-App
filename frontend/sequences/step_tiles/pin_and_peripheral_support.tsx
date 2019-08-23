@@ -35,16 +35,16 @@ const BOX_LED_LABELS: { [x: string]: string } = {
   [BoxLed.BoxLed4]: t("Box LED 4"),
 };
 
-export const PERIPHERAL_HEADING: DropDownItem =
+export const PERIPHERAL_HEADING = (): DropDownItem =>
   ({ heading: true, label: t("Peripherals"), value: 0, headingId: PinGroupName.Peripheral });
 
-export const SENSOR_HEADING: DropDownItem =
+export const SENSOR_HEADING = (): DropDownItem =>
   ({ heading: true, label: t("Sensors"), value: 0, headingId: PinGroupName.Sensor });
 
-export const BOX_LED_HEADING: DropDownItem =
+export const BOX_LED_HEADING = (): DropDownItem =>
   ({ heading: true, label: t("Box LEDs"), value: 0, headingId: PinGroupName.BoxLed });
 
-export const PIN_HEADING: DropDownItem =
+export const PIN_HEADING = (): DropDownItem =>
   ({ heading: true, label: t("Pins"), value: 0, headingId: PinGroupName.Pin });
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
@@ -79,17 +79,17 @@ const boxLed2DropDown =
 
 export function peripheralsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   const list = selectAllSavedPeripherals(input).map(peripheral2DropDown);
-  return list.length ? [PERIPHERAL_HEADING, ...list] : [];
+  return list.length ? [PERIPHERAL_HEADING(), ...list] : [];
 }
 
 export function sensorsAsDropDowns(input: ResourceIndex): DropDownItem[] {
   const list = selectAllSavedSensors(input).map(sensor2DropDown);
-  return list.length ? [SENSOR_HEADING, ...list] : [];
+  return list.length ? [SENSOR_HEADING(), ...list] : [];
 }
 
 export function boxLedsAsDropDowns(): DropDownItem[] {
   const list = Object.values(BoxLed).map(boxLed2DropDown);
-  return [BOX_LED_HEADING, ...list];
+  return [BOX_LED_HEADING(), ...list];
 }
 
 /** Number of pins in an Arduino Mega */
@@ -97,7 +97,7 @@ export const PIN_RANGE = range(0, 70);
 
 export function pinDropdowns(
   valueFormat: (n: number) => string | number): DropDownItem[] {
-  return [PIN_HEADING, ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
+  return [PIN_HEADING(), ...PIN_RANGE.map(pinNumber2DropDown(valueFormat))];
 }
 
 export const pinsAsDropDownsWritePin = (

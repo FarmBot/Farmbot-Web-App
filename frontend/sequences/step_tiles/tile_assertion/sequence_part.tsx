@@ -26,6 +26,7 @@ export function SequencePart(props: AssertionStepProps) {
   return <span>
     <label>Recovery Sequence</label>
     <SequenceSelectBox
+      key={JSON.stringify(props.currentStep)}
       onChange={onChange}
       resources={props.resources}
       sequenceId={sequenceId} />
