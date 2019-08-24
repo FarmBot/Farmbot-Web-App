@@ -271,6 +271,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     device_id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
+    assertion_log: 1,
     confirm_plant_deletion: true,
     confirm_step_deletion: false,
     confirm_sequence_deletion: true,

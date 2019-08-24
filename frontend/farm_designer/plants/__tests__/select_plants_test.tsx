@@ -1,6 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn() }));
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
@@ -8,9 +6,14 @@ jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/"))
 }));
 
-jest.mock("../../../api/crud", () => ({
-  destroy: jest.fn(),
+jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
+
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
+
+jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -19,6 +22,7 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
+import { createGroup } from "../../point_groups/actions";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -105,5 +109,17 @@ describe("<SelectPlants />", () => {
     wrapper.find("button").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith("plant.1", true);
     expect(destroy).toHaveBeenCalledWith("plant.2", true);
+  });
+
+  it("shows other buttons", () => {
+    mockDev = true;
+    const wrapper = mount(<SelectPlants {...fakeProps()} />);
+    expect(wrapper.text()).toContain("Create");
+  });
+
+  it("creates group", () => {
+    const wrapper = mount(<SelectPlants {...fakeProps()} />);
+    wrapper.find(".blue").simulate("click");
+    expect(createGroup).toHaveBeenCalled();
   });
 });
