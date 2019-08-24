@@ -83,7 +83,6 @@ describe("<SyncButton/>", function () {
     expect(result.text()).toContain(expected);
   };
 
-
   it("renders differently with auto-sync enabled", () => {
     testCase("syncing", "Syncing...");
     testCase("sync_now", "Syncing...");
