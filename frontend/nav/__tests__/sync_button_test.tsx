@@ -59,14 +59,30 @@ describe("<SyncButton/>", function () {
     expect(result.find(".btn-spinner").length).toEqual(1);
   });
 
+  it("standart font when synced (autosync)", () => {
+    const p = fakeProps();
+    p.autoSync = true;
+    p.bot.hardware.informational_settings.sync_status = "synced";
+    const result = shallow(<SyncButton {...p} />);
+    expect(result.find(".auto-sync").length).toEqual(1);
+  });
+
+  it("italicized font when syncing (autosync)", () => {
+    const p = fakeProps();
+    p.autoSync = true;
+    p.bot.hardware.informational_settings.sync_status = "syncing";
+    const result = shallow(<SyncButton {...p} />);
+    expect(result.find(".auto-sync-busy").length).toEqual(1);
+  });
+
   const testCase = (input: SyncStatus, expected: string) => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = input;
     p.autoSync = true;
     const result = shallow(<SyncButton {...p} />);
-    expect(result.find(".auto-sync").length).toEqual(1);
     expect(result.text()).toContain(expected);
   };
+
 
   it("renders differently with auto-sync enabled", () => {
     testCase("syncing", "Syncing...");

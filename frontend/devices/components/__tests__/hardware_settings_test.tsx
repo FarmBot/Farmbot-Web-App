@@ -48,12 +48,12 @@ describe("<HardwareSettings />", () => {
   }
 
   it("expands all", () => {
-    checkDispatch("button", 1, "expand all",
+    checkDispatch("button", 0, "expand all",
       Actions.BULK_TOGGLE_CONTROL_PANEL, true);
   });
 
   it("collapses all", () => {
-    checkDispatch("button", 2, "collapse all",
+    checkDispatch("button", 1, "collapse all",
       Actions.BULK_TOGGLE_CONTROL_PANEL, false);
   });
 
