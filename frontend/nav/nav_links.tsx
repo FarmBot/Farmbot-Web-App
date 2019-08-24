@@ -7,6 +7,8 @@ import {
 } from "./compute_editor_url_from_state";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
+import { betterCompact } from "../util";
+import { DevSettings } from "../account/dev/dev_support";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -24,7 +26,7 @@ interface NavLinkParams {
   computeHref?: LinkComputeFn
 }
 
-export const links: NavLinkParams[] = [
+export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
   { name: "Device", icon: "cog", slug: "device" },
@@ -36,19 +38,21 @@ export const links: NavLinkParams[] = [
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  { name: "Tools", icon: "wrench", slug: "tools" },
+  DevSettings.futureFeaturesEnabled()
+    ? undefined
+    : { name: "Tools", icon: "wrench", slug: "tools" },
   {
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState
   },
   { name: "Messages", icon: "list", slug: "messages" },
-];
+]);
 
 export const NavLinks = (props: NavLinksProps) => {
   const currPageSlug = getPathArray()[2];
   return <div className="links">
     <div className="nav-links">
-      {links.map(link => {
+      {getLinks().map(link => {
         const isActive = (currPageSlug === link.slug) ? "active" : "";
         const childPath = link.slug === "designer" ? "/plants" : "";
         const fn = link.computeHref || DEFAULT;

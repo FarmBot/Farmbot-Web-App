@@ -9,24 +9,31 @@ const logTypes = MESSAGE_TYPES;
 
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
-    autoscroll: true, assertion: 1, success: 1, busy: 1, warn: 1,
-    error: 1, info: 1, fun: 1, debug: 1
+    autoscroll: true, success: 1, busy: 1, warn: 1,
+    error: 1, info: 1, fun: 1, debug: 1, assertion: 1,
   };
 
-  const fakeProps = (): LogsFilterMenuProps => {
-    return {
-      toggle: jest.fn(),
-      setFilterLevel: jest.fn(),
-      state: fakeState,
-    };
-  };
+  const fakeProps = (): LogsFilterMenuProps => ({
+    toggle: jest.fn(),
+    setFilterLevel: jest.fn(),
+    state: fakeState,
+    shouldDisplay: () => false,
+  });
 
   it("renders", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
+    logTypes.filter(x => x !== "assertion").map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
+  });
+
+  it("renders new types", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
-      expect(wrapper.text().toLowerCase())
-        .toContain(string.toLowerCase()));
-    expect(wrapper.text()).not.toContain("autscroll");
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
   });
 
   it("filters logs", () => {
@@ -36,7 +43,7 @@ describe("<LogsFilterMenu />", () => {
     p.toggle = (x) => () => toggle(x);
     p.setFilterLevel = (x) => () => setFilterLevel(x);
     const wrapper = mount(<LogsFilterMenu {...p} />);
-    wrapper.find("button").at(3).simulate("click");
+    wrapper.find("button").at(2).simulate("click");
     expect(toggle).toHaveBeenCalledWith(MessageType.success);
   });
 
@@ -46,7 +53,7 @@ describe("<LogsFilterMenu />", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
     const toggles = wrapper.find("button");
     expect(toggles.last().hasClass("green")).toBeTruthy();
-    expect(toggles.at(3).hasClass("red")).toBeTruthy();
+    expect(toggles.at(2).hasClass("red")).toBeTruthy();
   });
 
   it("bulk toggles filter levels", () => {

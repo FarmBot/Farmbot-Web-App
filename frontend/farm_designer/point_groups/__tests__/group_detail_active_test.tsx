@@ -1,18 +1,18 @@
-jest.mock("../../../api/crud", () => {
-  return {
-    save: jest.fn(),
-    overwrite: jest.fn()
-  };
-});
+jest.mock("../../../api/crud", () => ({
+  save: jest.fn(),
+  overwrite: jest.fn()
+}));
 
-jest.mock("../../actions", () => {
-  return { toggleHoveredPlant: jest.fn() };
-});
+jest.mock("../../actions", () => ({
+  toggleHoveredPlant: jest.fn()
+}));
 
 import React from "react";
 import { GroupDetailActive, LittleIcon } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
-import { fakePointGroup, fakePlant } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePointGroup, fakePlant
+} from "../../../__test_support__/fake_state/resources";
 import { save, overwrite } from "../../../api/crud";
 import { toggleHoveredPlant } from "../../actions";
 

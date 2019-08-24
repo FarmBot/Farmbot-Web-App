@@ -747,6 +747,15 @@ export namespace Content {
   export const NO_PLANTS =
     trim(`Press "+" to add a plant to your garden.`);
 
+  export const NO_GARDENS =
+    trim(`Press "CREATE NEW GARDEN" to add a garden.`);
+
+  export const NO_POINTS =
+    trim(`Press "+" to add a point to your garden.`);
+
+  export const NO_GROUPS =
+    trim(`Press "+" to add a point group.`);
+
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
 
@@ -755,6 +764,9 @@ export namespace Content {
 
   export const CROP_NOT_FOUND_LINK =
     trim(`add this crop on OpenFarm?`);
+
+  export const NO_TOOLS =
+    trim(`Press "+" to add a new tool.`);
 
   // Farm Events
   export const NOTHING_SCHEDULED =
@@ -945,6 +957,7 @@ export enum Actions {
   SEARCH_QUERY_CHANGE = "SEARCH_QUERY_CHANGE",
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
+  TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",

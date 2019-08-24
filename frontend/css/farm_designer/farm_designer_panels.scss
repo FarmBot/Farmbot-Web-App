@@ -187,6 +187,7 @@
   }
 }
 
+.point-inventory-panel,
 .plant-inventory-panel {
   .panel-content {
     padding: 0;
@@ -194,6 +195,18 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 5rem;
+  }
+}
+
+.points-panel-tabs {
+  i {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  label {
+    padding-left: 10rem;
+    padding-right: 10rem;
+    margin-top: 0 !important;
   }
 }
 
@@ -393,6 +406,12 @@
   }
 }
 
+.tools-panel-content {
+  button {
+    margin-top: 1rem;
+  }
+}
+
 .settings-panel-content {
   max-height: calc(100vh - 15rem);
   overflow-y: auto;
@@ -448,5 +467,11 @@
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.point-panel-content {
+  .point-search-item-name {
+    width: 40%;
   }
 }

@@ -16,6 +16,7 @@ export function TypePart(props: AssertionStepProps) {
   return <span>
     <label>If Test Fails</label>
     <FBSelect
+      key={JSON.stringify(props.currentStep)}
       selectedItem={ASSERTION_TYPES[assertion_type]}
       onChange={(ddi) => {
         props.dispatch(editStep({

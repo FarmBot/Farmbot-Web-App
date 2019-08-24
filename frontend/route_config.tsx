@@ -91,7 +91,8 @@ const key = "FarmDesigner";
  *
  * DO NOT RE-ORDER ITEMS FOR READABILITY--they are order-dependent.
  * Stuff will break if the route order is changed.
- * (e.g., must be "a" then "a/:b/c" then "a/:b", 404 must be last, etc.)
+ * (e.g., must be ["a", "a/b", "a/b/:c/d", "a/b/:c", "a/:e"],
+ *        404 must be last, etc.)
  */
 export const UNBOUND_ROUTES = [
   route({
@@ -218,11 +219,27 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/create_point",
+    $: "/designer/points",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/point_inventory"),
+    childKey: "Points"
+  }),
+  route({
+    children: true,
+    $: "/designer/points/add",
     getModule,
     key,
     getChild: () => import("./farm_designer/plants/create_points"),
     childKey: "CreatePoints"
+  }),
+  route({
+    children: true,
+    $: "/designer/points/:point_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/point_info"),
+    childKey: "EditPoint"
   }),
   route({
     children: true,
@@ -295,6 +312,30 @@ export const UNBOUND_ROUTES = [
     key,
     getChild: () => import("./farm_designer/settings"),
     childKey: "DesignerSettings"
+  }),
+  route({
+    children: true,
+    $: "/designer/tools",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/tools"),
+    childKey: "Tools"
+  }),
+  route({
+    children: true,
+    $: "/designer/tools/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/tools/add_tool"),
+    childKey: "AddTool"
+  }),
+  route({
+    children: true,
+    $: "/designer/tools/:tool_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/tools/edit_tool"),
+    childKey: "EditTool"
   }),
   route({
     children: true,

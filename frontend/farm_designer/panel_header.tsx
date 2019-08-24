@@ -9,8 +9,10 @@ export enum Panel {
   Plants = "Plants",
   FarmEvents = "FarmEvents",
   SavedGardens = "SavedGardens",
+  Tools = "Tools",
   Settings = "Settings",
-  Groups = "Groups"
+  Points = "Points",
+  Groups = "Groups",
 }
 
 type Tabs = keyof typeof Panel;
@@ -20,7 +22,9 @@ export const TAB_COLOR: { [key in Panel]: string } = {
   [Panel.Plants]: "green",
   [Panel.FarmEvents]: "yellow",
   [Panel.SavedGardens]: "green",
+  [Panel.Tools]: "gray",
   [Panel.Settings]: "gray",
+  [Panel.Points]: "gray",
   [Panel.Groups]: "blue",
 };
 
@@ -31,8 +35,10 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Plants]: iconFile("plant"),
   [Panel.FarmEvents]: iconFile("calendar"),
   [Panel.SavedGardens]: iconFile("gardens"),
-  [Panel.Settings]: iconFile("gardens"),
-  [Panel.Groups]: iconFile("groups")
+  [Panel.Tools]: iconFile("tool"),
+  [Panel.Settings]: iconFile("settings"),
+  [Panel.Points]: iconFile("point"),
+  [Panel.Groups]: iconFile("groups"),
 };
 
 const getCurrentTab = (): Tabs => {
@@ -43,8 +49,12 @@ const getCurrentTab = (): Tabs => {
     return Panel.FarmEvents;
   } else if (pathArray.includes("saved_gardens")) {
     return Panel.SavedGardens;
+  } else if (pathArray.includes("tools")) {
+    return Panel.Tools;
   } else if (pathArray.includes("settings")) {
     return Panel.Settings;
+  } else if (pathArray.includes("points")) {
+    return Panel.Points;
   } else if (pathArray.includes("groups")) {
     return Panel.Groups;
   } else {
@@ -85,8 +95,14 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         <NavTab panel={Panel.SavedGardens}
           linkTo={"/app/designer/saved_gardens"} title={t("Gardens")} />}
       {DevSettings.futureFeaturesEnabled() &&
+        <NavTab panel={Panel.Points}
+          linkTo={"/app/designer/points"} title={t("Points")} />}
+      {DevSettings.futureFeaturesEnabled() &&
         <NavTab panel={Panel.Groups}
           linkTo={"/app/designer/groups"} title={t("Groups")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab panel={Panel.Tools}
+          linkTo={"/app/designer/tools"} title={t("Tools")} />}
       <NavTab panel={Panel.Settings} icon={"fa fa-gear"}
         linkTo={"/app/designer/settings"} title={t("Settings")} />
     </div>

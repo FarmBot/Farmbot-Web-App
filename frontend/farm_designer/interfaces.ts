@@ -264,6 +264,7 @@ export interface CameraCalibrationData {
 }
 
 export interface CurrentPointPayl {
+  name?: string;
   cx: number;
   cy: number;
   r: number;

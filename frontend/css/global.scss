@@ -840,6 +840,13 @@ ul {
       color: $panel_green;
     }
   }
+  &.gardens {
+    p,
+    h5,
+    a {
+      color: $panel_green;
+    }
+  }
   &.events {
     p,
     h5,
@@ -848,6 +855,33 @@ ul {
     }
     .empty-state-graphic {
       filter: sepia(1) contrast(1.2) saturate(1.2);
+    }
+  }
+  &.points {
+    p,
+    h5,
+    a {
+      color: $panel_gray;
+    }
+    .empty-state-graphic {
+      filter: saturate(0);
+    }
+  }
+  &.tools {
+    p,
+    h5,
+    a {
+      color: $panel_gray;
+    }
+  }
+  &.groups {
+    p,
+    h5,
+    a {
+      color: $panel_blue;
+    }
+    .empty-state-graphic {
+      filter: hue-rotate(60deg) saturate(0.6);
     }
   }
 }

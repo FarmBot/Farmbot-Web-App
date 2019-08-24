@@ -94,7 +94,8 @@ export enum MessageType {
   error = "error",
   info = "info",
   fun = "fun",
-  debug = "debug"
+  debug = "debug",
+  assertion = "assertion",
 }
 
 export const MESSAGE_TYPES = Object.keys(MessageType);

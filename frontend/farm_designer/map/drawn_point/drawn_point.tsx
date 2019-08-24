@@ -18,7 +18,7 @@ export function DrawnPoint(props: DrawnPointProps) {
     stroke={color ? color : "green"}
     strokeOpacity={0.75}
     strokeWidth={3}
-    fill="none">
+    fill={"none"}>
     <circle id="point-radius" cx={qx} cy={qy} r={r} strokeDasharray="4 5" />
     <circle id="point-center" cx={qx} cy={qy} r={2} />
   </g>;

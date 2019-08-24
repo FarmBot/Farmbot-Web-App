@@ -211,6 +211,38 @@
     text-overflow: ellipsis;
     margin-left: 1rem;
   }
+  .point-search-item {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    &:hover,
+    &.hovered {
+      background: darken($light_brown, 10%);
+      transition: background 0.2s ease;
+    }
+    .saucer {
+      display: inline-block;
+      margin: 0 1rem 0 0;
+      height: 2rem;
+      width: 2rem;
+      vertical-align: middle;
+    }
+  }
+  .point-search-item-info {
+    text-align: right;
+    font-size: 1rem;
+    padding-top: 0.6rem;
+    padding-right: 1rem;
+    float: right;
+  }
+  .point-search-item-name {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 1rem;
+  }
 }
 
 .thin-search {

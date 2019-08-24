@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-
 import { history } from "../../history";
 import { unselectPlant } from "../actions";
 import {
@@ -19,6 +18,7 @@ import {
 import { DevSettings } from "../../account/dev/dev_support";
 import { DesignerNavTabs } from "../panel_header";
 import { t } from "../../i18next_wrapper";
+import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -58,9 +58,14 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
           plantTemplates={this.props.plantTemplates}
           dispatch={this.props.dispatch} />
         <hr />
-        {this.props.savedGardens.length > 0
-          ? <SavedGardenList {...this.props} />
-          : <p>{t("No saved gardens yet.")}</p>}
+        <EmptyStateWrapper
+          notEmpty={this.props.savedGardens.length > 0}
+          title={t("No saved gardens yet.")}
+          // text={t(Content.NO_GARDENS)}
+          colorScheme="gardens"
+          graphic={EmptyStateGraphic.plants}>
+          <SavedGardenList {...this.props} />
+        </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

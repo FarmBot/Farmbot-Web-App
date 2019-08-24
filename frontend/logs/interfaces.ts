@@ -1,5 +1,5 @@
 import { TaggedLog, ConfigurationName, ALLOWED_MESSAGE_TYPES } from "farmbot";
-import { SourceFbosConfig } from "../devices/interfaces";
+import { SourceFbosConfig, ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 
@@ -9,6 +9,7 @@ export interface LogsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   getConfigValue: GetWebAppConfigValue;
+  shouldDisplay: ShouldDisplay;
 }
 
 export type Filters = Record<ALLOWED_MESSAGE_TYPES, number>;
@@ -30,6 +31,7 @@ export interface LogsFilterMenuProps {
   toggle: (property: keyof LogsState) => ToggleEventHandler;
   state: LogsState;
   setFilterLevel: SetNumSetting;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface LogSettingProps {
