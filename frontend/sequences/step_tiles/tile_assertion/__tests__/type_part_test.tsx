@@ -13,7 +13,6 @@ describe("<TypePart/>", () => {
       .simulate("change", { value: "anything", label: "y" });
     expect(p.dispatch).toHaveBeenCalled();
     const calls = (p.dispatch as jest.Mock).mock.calls[0][0];
-    console.log(calls);
     const { assertion_type } = calls.payload.update.body[1].args;
     expect(assertion_type).toEqual("anything");
   });

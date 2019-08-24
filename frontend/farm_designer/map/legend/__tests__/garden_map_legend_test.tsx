@@ -101,7 +101,7 @@ describe("<PointsSubMenu />", () => {
       getConfigValue={jest.fn()} />);
     clickButton(wrapper, 0, "point creator");
     expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/plants/create_point");
+      "/app/designer/points/add");
   });
 
   it("shows historic points", () => {

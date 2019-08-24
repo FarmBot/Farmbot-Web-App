@@ -299,7 +299,10 @@ export const getMode = (): Mode => {
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[3] === "move_to") { return Mode.moveTo; }
-    if (pathArray[4] === "create_point") { return Mode.createPoint; }
+    if (pathArray[3] === "points") {
+      if (pathArray[4] === "add") { return Mode.createPoint; }
+      return Mode.points;
+    }
     if (savedGardenOpen(pathArray)) { return Mode.templateView; }
   }
   return Mode.none;
@@ -337,6 +340,7 @@ export const maybeNoPointer =
       case Mode.boxSelect:
       case Mode.clickToAdd:
       case Mode.moveTo:
+      case Mode.points:
       case Mode.createPoint:
         return { "pointerEvents": "none" };
       default:

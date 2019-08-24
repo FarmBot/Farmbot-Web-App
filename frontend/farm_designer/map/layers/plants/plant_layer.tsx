@@ -25,7 +25,8 @@ export function PlantLayer(props: PlantLayerProps) {
       const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
       const grayscale = !!(selectedForDel && (selectedForDel.includes(p.uuid)));
       const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
-        ? "saved_gardens/templates" : "plants";
+        ? "saved_gardens/templates"
+        : "plants";
       const plant = <GardenPlant
         uuid={p.uuid}
         mapTransformProps={mapTransformProps}
@@ -42,16 +43,12 @@ export function PlantLayer(props: PlantLayerProps) {
         style: maybeNoPointer(p.body.id ? {} : { pointerEvents: "none" }),
         key: p.uuid,
       };
-      if (getMode() === Mode.addPointToGroup) {
-        return <g {...wrapperProps}>
-          {plant}
-        </g>;
-      } else {
-        return <Link {...wrapperProps}
+      return getMode() === Mode.addPointToGroup
+        ? <g {...wrapperProps}>{plant}</g>
+        : <Link {...wrapperProps}
           to={`/app/designer/${plantCategory}/${"" + p.body.id}`}>
           {plant}
         </Link>;
-      }
     })}
   </g>;
 }

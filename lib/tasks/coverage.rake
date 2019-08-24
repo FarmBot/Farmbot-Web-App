@@ -2,6 +2,8 @@ COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 THRESHOLD = 0.001
 REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
+COV_API_BUILDS_PER_PAGE = 5
+COV_BUILDS_TO_FETCH = 15
 PULL_REQUEST = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
@@ -81,14 +83,22 @@ def fetch_builds_for_page(page_number)
   open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"]
 end
 
-# Fetch coverage data from the last 10 builds.
+# Number of coverage build data pages required to fetch the desired build count.
+def cov_pages_required
+  (COV_BUILDS_TO_FETCH / COV_API_BUILDS_PER_PAGE.to_f).ceil
+end
+
+# Fetch coverage data from the last COV_BUILDS_TO_FETCH builds.
 def fetch_build_data()
   build_data = fetch_builds_for_page(1)
-  build_data.push(*fetch_builds_for_page(2))
+  for page_number in 2..cov_pages_required
+    build_data.push(*fetch_builds_for_page(page_number))
+  end
   clean_build_data = build_data
     .reject { |build| build["covered_percent"].nil? }
     .reject { |build| build["branch"].include? "/" }
-  puts "Using data from #{clean_build_data.length} recent coverage builds."
+  puts "Using data from #{clean_build_data.length} of #{build_data.length}" \
+       " recent coverage builds."
   clean_build_data.map { |build| relevant_data(build) }
 end
 
@@ -184,13 +194,13 @@ namespace :coverage do
 
     if remote[:percent].nil? && current_branch != "staging"
       puts "Error getting coveralls data for '#{current_branch}'."
-      puts "Attempting to use staging build coveralls data."
+      puts "Attempting to use staging build coveralls data from history."
       remote = latest_build_data(coverage_history_data, "staging")
     end
 
     if remote[:percent].nil?
       puts "Error getting coveralls data for staging."
-      puts "Attempting to use latest build coveralls data."
+      puts "Attempting to use latest build coveralls data in history."
       remote = latest_build_data(coverage_history_data, "*")
     end
 

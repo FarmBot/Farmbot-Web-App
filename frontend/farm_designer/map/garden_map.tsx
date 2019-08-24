@@ -126,6 +126,7 @@ export class GardenMap extends
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.moveTo:
+      case Mode.points:
       case Mode.createPoint:
         return undefined; // For modes without plant interaction
       default:

@@ -59,7 +59,7 @@ describe("Pin and Peripheral support files", () => {
   it("has a list of unnamed pins", () => {
     expect(pinDropdowns(n => n).length)
       .toBe(PIN_RANGE.length + 1); // 54 pins plus the header.
-    expect(pinDropdowns(n => n)[0]).toBe(PIN_HEADING);
+    expect(pinDropdowns(n => n)[0]).toEqual(PIN_HEADING());
     // Grab all uniq heading IDs- we expect only 1.
     const values = chain(pinDropdowns(n => n))
       .tail()
@@ -75,7 +75,7 @@ describe("Pin and Peripheral support files", () => {
     const ri = buildResourceIndex([p]);
     const result = peripheralsAsDropDowns(ri.index);
     expect(result.length).toEqual(2); // Heading + 1 peripheral
-    expect(result[0]).toBe(PERIPHERAL_HEADING);
+    expect(result[0]).toEqual(PERIPHERAL_HEADING());
     expect(result[1]).toEqual({
       label: p.body.label,
       headingId: PinGroupName.Peripheral,
@@ -89,7 +89,7 @@ describe("Pin and Peripheral support files", () => {
     const ri = buildResourceIndex([s]);
     const result = sensorsAsDropDowns(ri.index);
     expect(result.length).toEqual(2); // Heading + 1 sensor
-    expect(result[0]).toBe(SENSOR_HEADING);
+    expect(result[0]).toEqual(SENSOR_HEADING());
     expect(result[1]).toEqual({
       label: s.body.label,
       headingId: PinGroupName.Sensor,
@@ -101,8 +101,8 @@ describe("Pin and Peripheral support files", () => {
     const ri = buildResourceIndex([]);
     const sResult = sensorsAsDropDowns(ri.index);
     const pResult = peripheralsAsDropDowns(ri.index);
-    expect(sResult).not.toContain(SENSOR_HEADING);
-    expect(pResult).not.toContain(PERIPHERAL_HEADING);
+    expect(sResult).not.toContain(SENSOR_HEADING());
+    expect(pResult).not.toContain(PERIPHERAL_HEADING());
   });
 
   it("Validates correctness of `pin_type` at runtime", () => {

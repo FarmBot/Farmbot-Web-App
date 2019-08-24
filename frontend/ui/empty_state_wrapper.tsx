@@ -16,7 +16,7 @@ interface EmptyStateWrapperProps {
   text?: string;
   textElement?: JSX.Element;
   graphic: string;
-  colorScheme?: "plants" | "events";
+  colorScheme?: "plants" | "events" | "gardens" | "points" | "tools" | "groups";
   children?: React.ReactNode;
 }
 

@@ -1,11 +1,28 @@
 import * as React from "react";
 import { LogsFilterMenuProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-
 import { Filters } from "../interfaces";
 import { startCase } from "lodash";
-import { MESSAGE_TYPES } from "../../sequences/interfaces";
+import { MESSAGE_TYPES, MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
+import { Feature } from "../../devices/interfaces";
+
+const MENU_ORDER: string[] = [
+  MessageType.success,
+  MessageType.busy,
+  MessageType.warn,
+  MessageType.error,
+  MessageType.info,
+  MessageType.fun,
+  MessageType.debug,
+  MessageType.assertion,
+];
+
+const REVERSE_MENU_ORDER = MENU_ORDER.slice().reverse();
+
+/** Order the log filter sort menu, adding unknown types last. */
+const menuSort = (a: string, b: string) =>
+  REVERSE_MENU_ORDER.indexOf(b) - REVERSE_MENU_ORDER.indexOf(a);
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */
@@ -27,8 +44,10 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         {t("normal")}
       </button>
     </fieldset>
-    {Object.keys(props.state)
-      .filter(x => { if (!(x == "autoscroll")) { return x; } })
+    {Object.keys(props.state).sort(menuSort)
+      .filter(x => x !== "autoscroll")
+      .filter(x =>
+        props.shouldDisplay(Feature.assertion_block) || x !== "assertion")
       .map((logType: keyof Filters) => {
         return <fieldset key={logType}>
           <label>
