@@ -17,6 +17,7 @@ import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { timeFormatString } from "../util";
+import { Feature } from "../devices/interfaces";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime =
@@ -75,7 +76,9 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
   /** Determine if log type filters are active. */
   get filterActive() {
     const filterKeys = Object.keys(this.state)
-      .filter(x => !(x === "autoscroll"));
+      .filter(x => !(x === "autoscroll"))
+      .filter(x => this.props.shouldDisplay(Feature.assertion_block)
+        || x !== "assertion");
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
