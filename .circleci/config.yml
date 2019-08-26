@@ -28,6 +28,7 @@ jobs:
             sudo docker-compose run web npm run test-slow
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
             sudo docker-compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run
+          no_output_timeout: 20m
       - run:
           name: Report coverage to Coveralls
           command: |
