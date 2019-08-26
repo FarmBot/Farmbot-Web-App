@@ -39,8 +39,9 @@ export function SyncButton(props: SyncButtonProps) {
     : normalColor;
   const text = TEXT_MAPPING(autoSync)[syncStatus] || syncStatus.replace("_", " ");
   const spinnerEl = (syncStatus === "syncing") ? spinner : "";
+  const autoSyncfront = (syncStatus === "syncing") ? "auto-sync-busy" : "auto-sync";
   const className = autoSync
-    ? "nav-sync fb-button auto-sync"
+    ? `nav-sync fb-button ${autoSyncfront}`
     : `nav-sync ${color} fb-button`;
 
   return <button

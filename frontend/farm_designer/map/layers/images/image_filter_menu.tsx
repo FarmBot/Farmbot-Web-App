@@ -45,7 +45,7 @@ export class ImageFilterMenu
     this.updateState();
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.updateState();
   }
 

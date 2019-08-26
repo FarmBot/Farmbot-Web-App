@@ -16,7 +16,7 @@ export class FallbackImg extends React.Component<Props, State> {
 
   state: State = { needsFallback: false };
 
-  componentWillReceiveProps(next: Props) {
+  UNSAFE_componentWillReceiveProps(next: Props) {
     // Sorry. The webcam page needs live updates. <img/> tag was acting wonky.
     (next.src !== this.props.src) && this.setState({ needsFallback: false });
   }

@@ -28,7 +28,7 @@ export function KeyValEditRow(p: Props) {
       <button
         className="red fb-button"
         onClick={p.onClick}>
-        <i className="fa fa-minus" />
+        <i className="fa fa-times" />
       </button>
     </Col>
   </Row>;

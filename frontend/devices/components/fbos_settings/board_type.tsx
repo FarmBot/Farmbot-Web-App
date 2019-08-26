@@ -18,7 +18,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     sending: this.sending
   };
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.setState({ sending: this.sending });
   }
 
