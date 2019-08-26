@@ -7,7 +7,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
-import { LogsFilterMenu } from "./components/filter_menu";
+import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
 import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
@@ -17,7 +17,6 @@ import { NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { timeFormatString } from "../util";
-import { Feature } from "../devices/interfaces";
 
 /** Format log date and time for display in the app. */
 export const formatLogTime =
@@ -75,10 +74,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Determine if log type filters are active. */
   get filterActive() {
-    const filterKeys = Object.keys(this.state)
-      .filter(x => !(x === "autoscroll"))
-      .filter(x => this.props.shouldDisplay(Feature.assertion_block)
-        || x !== "assertion");
+    const filterKeys = filterStateKeys(this.state, this.props.shouldDisplay);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
