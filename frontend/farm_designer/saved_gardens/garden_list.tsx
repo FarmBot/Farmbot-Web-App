@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col, BlurableInput } from "../../ui";
 import { error } from "../../toast/toast";
 import { isNumber, isString } from "lodash";
@@ -62,7 +61,8 @@ const ApplyGardenButton =
 const DestroyGardenButton =
   (props: { dispatch: Function, gardenUuid: string }) =>
     <button
-      className="fb-button red"
+      className="fb-button red del-button"
+      title={t("Delete")}
       onClick={() => props.dispatch(destroySavedGarden(props.gardenUuid))}>
       <i className="fa fa-times" />
     </button>;

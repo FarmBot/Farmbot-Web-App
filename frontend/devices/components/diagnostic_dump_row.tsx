@@ -25,6 +25,7 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
       <Col xs={1}>
         <button
           className="red fb-button del-button"
+          title={t("Delete")}
           onClick={this.destroy}>
           <i className="fa fa-times" />
         </button>

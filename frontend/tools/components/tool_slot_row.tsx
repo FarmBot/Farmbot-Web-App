@@ -56,6 +56,7 @@ export function ToolSlotRow(props: ToolSlotRowProps) {
     <Col xs={1}>
       <button
         className="red fb-button del-button"
+        title={t("Delete")}
         onClick={() => dispatch(destroy(slot.uuid))}>
         <i className="fa fa-times" />
       </button>

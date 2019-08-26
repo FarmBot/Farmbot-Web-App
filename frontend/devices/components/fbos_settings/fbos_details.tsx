@@ -114,7 +114,7 @@ export const colorFromThrottle =
 const THROTTLE_COLOR_KEY = () => ({
   red: t("active"),
   yellow: t("occurred"),
-  green: t("clear")
+  green: t("ok")
 });
 
 interface ThrottleIndicatorProps {

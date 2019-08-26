@@ -33,7 +33,7 @@ export function TileWritePin(props: StepParams) {
         key={JSON.stringify(props.currentSequence)}
         onChange={x => setPinValue(x, props)}
         selectedItem={currentValueSelection(currentStep)}
-        list={PIN_VALUES} />;
+        list={PIN_VALUES()} />;
 
   const className = "write-pin-step";
   const { pin_number } = currentStep.args;

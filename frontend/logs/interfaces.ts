@@ -20,6 +20,7 @@ export interface LogsState extends Filters {
 
 export interface LogsTableProps {
   logs: TaggedLog[];
+  dispatch: Function;
   state: LogsState;
   timeSettings: TimeSettings;
 }
