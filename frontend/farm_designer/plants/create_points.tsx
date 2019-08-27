@@ -44,7 +44,7 @@ export class CreatePoints
     this.state = {};
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.getPointData();
   }
 
