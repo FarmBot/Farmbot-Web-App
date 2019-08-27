@@ -53,21 +53,23 @@ export class HoveredPlant extends
       {visible && hovered &&
         <g id={"hovered-plant-" + id}>
           {currentPlant &&
-            <g id="selected-plant-indicators">
+            <g id="selected-plant-spread-indicator">
               <SpreadCircle
                 plant={currentPlant}
                 key={currentPlant.uuid}
                 mapTransformProps={mapTransformProps}
                 visible={!spreadLayerVisible}
                 animate={animate} />
-
+                </g>}
+          
+            <g id="plant-indicator">
               <Circle
-                className={animate ? "plant-indicator" : ""}
+                className={"plant-indicator"}
                 x={qx}
                 y={qy}
-                r={radius}
+                r={scaledRadius}
                 selected={true} />
-            </g>}
+            </g>
 
           <g id="hovered-plant-icon">
             <image

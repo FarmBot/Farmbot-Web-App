@@ -33,6 +33,9 @@ describe("<HoveredPlant/>", () => {
     expect(icon.opacity).toEqual(1);
     expect(icon.x).toEqual(70);
     expect(icon.width).toEqual(60);
+    expect(wrapper.find("#plant-indicator").length).toEqual(1);
+    expect(wrapper.find("Circle").length).toEqual(1);
+    expect(wrapper.find("Circle").props().selected).toBeTruthy();
   });
 
   it("shows selected plant indicators", () => {
@@ -40,7 +43,8 @@ describe("<HoveredPlant/>", () => {
     p.designer.hoveredPlant.icon = "fake icon";
     p.currentPlant = fakePlant();
     const wrapper = shallow(<HoveredPlant {...p} />);
-    expect(wrapper.find("#selected-plant-indicators").length).toEqual(1);
+    expect(wrapper.find("#selected-plant-spread-indicator").length).toEqual(1);
+    expect(wrapper.find("#plant-indicator").length).toEqual(1);
     expect(wrapper.find("Circle").length).toEqual(1);
     expect(wrapper.find("Circle").props().selected).toBeTruthy();
     expect(wrapper.find("SpreadCircle").length).toEqual(1);
