@@ -63,7 +63,7 @@ export class HoveredPlant extends
             </g>}
           <g id="plant-indicator">
               <Circle
-                className={"plant-indicator"}
+                className={animate ? "plant-indicator" : ""}
                 x={qx}
                 y={qy}
                 r={scaledRadius}
