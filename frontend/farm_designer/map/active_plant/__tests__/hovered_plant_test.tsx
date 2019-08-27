@@ -45,7 +45,7 @@ describe("<HoveredPlant/>", () => {
     const wrapper = shallow(<HoveredPlant {...p} />);
     expect(wrapper.find(".plant-indicator").length).toEqual(1);
   });
-  
+
   it("shows selected plant indicators", () => {
     const p = fakeProps();
     p.designer.hoveredPlant.icon = "fake icon";
