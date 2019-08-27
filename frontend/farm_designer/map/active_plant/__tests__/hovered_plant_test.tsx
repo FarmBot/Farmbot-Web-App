@@ -38,6 +38,14 @@ describe("<HoveredPlant/>", () => {
     expect(wrapper.find("Circle").props().selected).toBeTruthy();
   });
 
+  it("shows animated hovered plant indicator", () => {
+    const p = fakeProps();
+    p.designer.hoveredPlant.icon = "fake icon";
+    p.animate = true;
+    const wrapper = shallow(<HoveredPlant {...p} />);
+    expect(wrapper.find(".plant-indicator").length).toEqual(1);
+  });
+  
   it("shows selected plant indicators", () => {
     const p = fakeProps();
     p.designer.hoveredPlant.icon = "fake icon";
