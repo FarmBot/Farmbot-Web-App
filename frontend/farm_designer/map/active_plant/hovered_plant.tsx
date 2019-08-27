@@ -60,17 +60,15 @@ export class HoveredPlant extends
                 mapTransformProps={mapTransformProps}
                 visible={!spreadLayerVisible}
                 animate={animate} />
-                </g>}
-          
-            <g id="plant-indicator">
+            </g>}
+          <g id="plant-indicator">
               <Circle
                 className={"plant-indicator"}
                 x={qx}
                 y={qy}
                 r={scaledRadius}
                 selected={true} />
-            </g>
-
+           </g>
           <g id="hovered-plant-icon">
             <image
               visibility={hovered ? "visible" : "hidden"}
