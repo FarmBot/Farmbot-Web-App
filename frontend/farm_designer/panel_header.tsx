@@ -72,7 +72,8 @@ interface NavTabProps {
 }
 
 const NavTab = (props: NavTabProps) =>
-  <Link to={props.linkTo} style={props.icon ? { flex: 0.3 } : {}}
+  <Link to={props.linkTo} style={(props.icon
+    && !DevSettings.futureFeaturesEnabled()) ? { flex: 0.3 } : {}}
     className={getCurrentTab() === props.panel ? "active" : ""}>
     {DevSettings.futureFeaturesEnabled()
       ? <img {...common}

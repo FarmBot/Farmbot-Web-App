@@ -62,16 +62,16 @@ export class HoveredPlant extends
                 animate={animate} />
             </g>}
           <g id="plant-indicator">
-              <Circle
-                className={animate ? "plant-indicator" : ""}
-                x={qx}
-                y={qy}
-                r={scaledRadius}
-                selected={true} />
-           </g>
+            <Circle
+              className={`plant-indicator ${animate ? "animate" : ""}`}
+              x={qx}
+              y={qy}
+              r={scaledRadius}
+              selected={true} />
+          </g>
           <g id="hovered-plant-icon">
             <image
-              visibility={hovered ? "visible" : "hidden"}
+              visibility={"visible"}
               style={isEditing ? {} : { pointerEvents: "none" }}
               onClick={noop}
               className="hovered-plant-copy"
