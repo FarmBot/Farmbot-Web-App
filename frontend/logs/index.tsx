@@ -7,7 +7,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
-import { LogsFilterMenu } from "./components/filter_menu";
+import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
 import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
@@ -74,8 +74,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Determine if log type filters are active. */
   get filterActive() {
-    const filterKeys = Object.keys(this.state)
-      .filter(x => !(x === "autoscroll"));
+    const filterKeys = filterStateKeys(this.state, this.props.shouldDisplay);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
@@ -118,6 +117,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
       </Row>
       <Row>
         <LogsTable logs={this.props.logs}
+          dispatch={this.props.dispatch}
           state={this.state}
           timeSettings={this.props.timeSettings} />
       </Row>

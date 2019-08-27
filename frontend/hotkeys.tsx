@@ -39,8 +39,8 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
       onClose={this.toggle("guideOpen")}>
       <div className={hotkeyGuideClasses}>
         <h3>{t("Hotkeys")}</h3>
-        <i
-          className="fa fa-times"
+        <i className="fa fa-times"
+          title={t("Close")}
           onClick={this.toggle("guideOpen")} />
         {this.hotkeys(this.props.dispatch, "")
           .map(hotkey => <Row key={hotkey.combo}>

@@ -31,7 +31,7 @@ export const SequenceBackButton = (props: SequenceBackButtonProps) => {
 
 @connect(mapStateToProps)
 export class Sequences extends React.Component<Props, {}> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
   }
 

@@ -396,7 +396,9 @@ a {
     margin-left: 0.5rem;
   }
   .fb-button {
-    margin-top: 0.5rem;
+    &.green {
+      margin-top: 0.5rem;
+    }
   }
   .bindings-list {
     margin-bottom: 1rem;
@@ -404,7 +406,7 @@ a {
   }
   .stock-pin-bindings-button {
     button {
-      margin: 0;
+      margin: 0 !important;
     }
     i {
       margin-right: 0.5rem;
@@ -1012,9 +1014,12 @@ ul {
 
 .logs-table {
   background: $white;
-  div {
+  .log-verbosity-saucer, .saucer {
     float: left;
     margin-right: 10px;
+  }
+  button {
+    float: none;
   }
   thead {
     background: $gray;
@@ -1096,9 +1101,6 @@ ul {
     color: $dark_gray;
     margin-top: 0.5rem;
   }
-  .del-button {
-    margin-top: 0.5rem;
-  }
   .fb-button {
     margin-left: 1rem;
   }
@@ -1150,6 +1152,16 @@ ul {
         top: 0.15rem;
       }
     }
+  }
+}
+
+.sensors-widget,
+.webcam-widget,
+.peripherals-widget,
+.tools-widget,
+.toolbay-widget {
+  .del-button {
+    margin-top: 0.5rem;
   }
 }
 

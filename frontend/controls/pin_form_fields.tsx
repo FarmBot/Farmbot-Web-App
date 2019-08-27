@@ -10,10 +10,10 @@ import { TaggedPeripheral, TaggedSensor } from "farmbot";
 import { UUID } from "../resources/interfaces";
 import { isNumber } from "lodash";
 
-const MODES: { [s: string]: string } = {
+const MODES = (): { [s: string]: string } => ({
   0: t("Digital"),
   1: t("Analog")
-};
+});
 
 interface NameInputBoxProps {
   dispatch: Function;
@@ -53,11 +53,11 @@ interface ModeDropdownProps {
 
 export const ModeDropdown = (props: ModeDropdownProps) =>
   <FBSelect
-    onChange={d => {
-      props.dispatch(edit(props.resource, { mode: parseInt(d.value.toString(), 10) }));
-    }}
-    selectedItem={{ label: MODES[props.value], value: props.value }}
-    list={PIN_MODES} />;
+    onChange={d => props.dispatch(edit(props.resource, {
+      mode: parseInt(d.value.toString(), 10)
+    }))}
+    selectedItem={{ label: MODES()[props.value], value: props.value }}
+    list={PIN_MODES()} />;
 
 interface DeleteButtonProps {
   dispatch: Function;
@@ -66,15 +66,12 @@ interface DeleteButtonProps {
   onDestroy?: Function;
 }
 
-const DELETE_BTN = <i className="fa fa-times" />;
-
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
-    className="red fb-button"
-    onClick={() => {
-      props
-        .dispatch(destroy(props.uuid))
-        .then(props.onDestroy || (() => { }));
-    }}>
-    {props.children ? props.children : DELETE_BTN}
+    className="red fb-button del-button"
+    title={t("Delete")}
+    onClick={() =>
+      props.dispatch(destroy(props.uuid))
+        .then(props.onDestroy || (() => { }))}>
+    {props.children || <i className="fa fa-times" />}
   </button >;

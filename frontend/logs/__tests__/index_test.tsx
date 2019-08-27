@@ -96,18 +96,44 @@ describe("<Logs />", () => {
     expect(wrapper.instance().state.warn).toEqual(3);
   });
 
+  const fakeLogsState = () => ({
+    assertion: 3,
+    busy: 3,
+    debug: 3,
+    error: 3,
+    fun: 3,
+    info: 3,
+    success: 3,
+    warn: 3,
+  });
+
   it("shows overall filter status", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
-    wrapper.setState({
-      assertion: 3,
-      busy: 3,
-      debug: 3,
-      error: 3,
-      fun: 3,
-      info: 3,
-      success: 3,
-      warn: 3,
-    });
+    wrapper.setState(fakeLogsState());
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filter");
+    expect(filterBtn.hasClass("gray")).toBeTruthy();
+  });
+
+  it("shows filtered overall filter status", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<Logs {...p} />);
+    const state = fakeLogsState();
+    state.assertion = 2;
+    wrapper.setState(state);
+    const filterBtn = wrapper.find("button").first();
+    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
+    expect(filterBtn.hasClass("green")).toBeTruthy();
+  });
+
+  it("shows unfiltered overall filter status", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => false;
+    const wrapper = mount(<Logs {...p} />);
+    const state = fakeLogsState();
+    state.assertion = 2;
+    wrapper.setState(state);
     const filterBtn = wrapper.find("button").first();
     expect(filterBtn.text().toLowerCase()).toEqual("filter");
     expect(filterBtn.hasClass("gray")).toBeTruthy();

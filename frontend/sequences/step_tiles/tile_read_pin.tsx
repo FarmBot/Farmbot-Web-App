@@ -19,7 +19,7 @@ export function PinMode(props: StepParams) {
       key={JSON.stringify(props.currentSequence)}
       onChange={(x) => setPinMode(x, props)}
       selectedItem={currentModeSelection(props.currentStep)}
-      list={PIN_MODES} />
+      list={PIN_MODES()} />
   </Col>;
 
 }
