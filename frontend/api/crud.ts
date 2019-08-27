@@ -261,7 +261,7 @@ export function urlFor(tag: ResourceName) {
     FbosConfig: API.current.fbosConfigPath,
     FirmwareConfig: API.current.firmwareConfigPath,
     Image: API.current.imagesPath,
-    Log: API.current.filteredLogsPath,
+    Log: API.current.logsPath,
     Peripheral: API.current.peripheralsPath,
     PinBinding: API.current.pinBindingPath,
     PlantTemplate: API.current.plantTemplatePath,

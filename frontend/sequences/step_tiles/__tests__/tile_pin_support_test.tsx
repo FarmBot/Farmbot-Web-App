@@ -40,13 +40,13 @@ describe("Pin tile support functions", () => {
   }
 
   it("PIN_MODES", () => {
-    expect(PIN_MODES[0].value).toEqual(1);
-    expect(PIN_MODES[0].label).toEqual("Analog");
+    expect(PIN_MODES()[0].value).toEqual(1);
+    expect(PIN_MODES()[0].label).toEqual("Analog");
   });
 
   it("PIN_VALUES", () => {
-    expect(PIN_VALUES[0].value).toEqual(1);
-    expect(PIN_VALUES[0].label).toEqual("ON");
+    expect(PIN_VALUES()[0].value).toEqual(1);
+    expect(PIN_VALUES()[0].label).toEqual("ON");
   });
 
   it("currentModeSelection()", () => {
@@ -67,7 +67,7 @@ describe("Pin tile support functions", () => {
     const p = fakeProps();
     p.currentStep.args.pin_mode = 0;
     p.currentStep.args.pin_value = 0;
-    setPinMode(PIN_MODES[0], p);
+    setPinMode(PIN_MODES()[0], p);
     const step = p.currentStep;
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_mode).toEqual(1);
@@ -85,7 +85,7 @@ describe("Pin tile support functions", () => {
   it("setPinValue()", () => {
     const p = fakeProps();
     p.currentStep.args.pin_value = 5;
-    setPinValue(PIN_VALUES[0], p);
+    setPinValue(PIN_VALUES()[0], p);
     const step = p.currentStep;
     mockEditStep.mock.calls[0][0].executor(step);
     expect(step.args.pin_value).toEqual(1);

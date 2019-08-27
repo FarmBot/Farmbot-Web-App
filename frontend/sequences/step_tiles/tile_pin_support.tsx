@@ -15,12 +15,12 @@ enum PinMode {
 const isPinMode = (x: any): x is ALLOWED_PIN_MODES =>
   Object.values(PinMode).includes(x);
 
-export const PIN_MODES = [
+export const PIN_MODES = () => [
   { value: PinMode.analog, label: t("Analog") },
   { value: PinMode.digital, label: t("Digital") }
 ];
 
-export const PIN_VALUES = [
+export const PIN_VALUES = () => [
   { value: 1, label: t("ON") },
   { value: 0, label: t("OFF") }
 ];

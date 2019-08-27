@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ToolListAndFormProps } from "../interfaces";
-
 import {
   Row,
   Col,
@@ -73,7 +72,7 @@ export class ToolForm extends React.Component<ToolListAndFormProps, {}> {
       <Col xs={2}>
         <button
           className={`fb-button red ${inSlotClass} del-button`}
-          title={isActive(tool) ? t("in slot") : ""}
+          title={isActive(tool) ? t("in slot") : t("Delete")}
           onClick={() => dispatch(destroy(tool.uuid))}>
           <i className="fa fa-times"></i>
         </button>
