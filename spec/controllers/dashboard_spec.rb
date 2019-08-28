@@ -20,14 +20,15 @@ describe DashboardController do
     end
 
     it "receives CSP violation reports (malformed JSON)" do
-      expect(Rollbar).to receive(:info)
-          .with("CSP Violation", { problem: "Crashed while parsing report" })
+      # expect(Rollbar).to receive(:info)
+      # .with("CSP Violation", { problem: "Crashed while parsing report" })
       post :csp_reports, body: "NOT JSON ! ! !"
+      expect(json).to eq(problem: "Crashed while parsing report")
     end
 
     it "receives CSP violation reports (malformed JSON)" do
-      expect(Rollbar).to receive(:info).with("CSP Violation", {})
       post :csp_reports, body: {}.to_json, params: { format: :json }
+      expect(json).to eq({})
     end
 
     it "creates a new user" do

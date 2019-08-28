@@ -44,6 +44,22 @@ describe("<DesignerNavTabs />", () => {
     expect(wrapper.html()).toContain("active");
   });
 
+  it("renders for points", () => {
+    mockPath = "/app/designer/points";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for groups", () => {
+    mockPath = "/app/designer/groups";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("blue-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
   it("renders for settings", () => {
     mockPath = "/app/designer/settings";
     mockDev = true;

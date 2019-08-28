@@ -273,7 +273,9 @@
 }
 
 .plant-indicator.is-chosen-true {
-  animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  &.animate {
+    animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  }
   transform-origin: center;
   transform-box: fill-box;
 }
