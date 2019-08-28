@@ -49,11 +49,7 @@ export const LittleIcon =
       onMouseEnter={() => dispatch(toggleHoveredPlant(plantUUID, icon))}
       onMouseLeave={() => dispatch(toggleHoveredPlant(undefined, icon))}
       onClick={() => dispatch(removePoint(group, body.id || 0))}>
-      <img
-        src={icon}
-        alt={p.body.name}
-        width={32}
-        height={32} />
+      <img src={icon} alt={p.body.name} width={32} height={32} />
     </span>;
   };
 
@@ -134,11 +130,11 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
         <p>
           {t("Click plants in map to add or remove.")}
         </p>
-        <div style={{ padding: "0.5em 0em" }}>
+        <div className="groups-list-wrapper">
           {this.icons}
         </div>
         <DeleteButton
-          style={{ float: "left", marginTop: "1em" }}
+          className="groups-delete-btn"
           dispatch={this.props.dispatch}
           uuid={group.uuid}
           onDestroy={history.back}>

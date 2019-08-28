@@ -205,12 +205,16 @@
   .group-item-count {
     @extend .plant-search-item-age;
     padding-top: 0.6rem;
-     // .groups-panel-content padding should be 0
-     // on the groups list panel, but stay the
-     // same on the group details panel.
   }
   .groups-panel-content {
     padding: 0px;
+  }
+  .groups-list-wrapper {
+    padding: 0.5em 0em;
+  }
+  .groups-delete-btn {
+    float: left;
+    margin-top: 1em;
   }
   .plant-search-item-name {
     display: inline-block;
