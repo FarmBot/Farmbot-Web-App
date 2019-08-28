@@ -64,12 +64,14 @@ interface DeleteButtonProps {
   uuid: UUID;
   children?: React.ReactChild
   onDestroy?: Function;
+  style?: React.CSSProperties;
 }
 
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
     className="red fb-button del-button"
     title={t("Delete")}
+    style={props.style || {}}
     onClick={() =>
       props.dispatch(destroy(props.uuid))
         .then(props.onDestroy || (() => { }))}>

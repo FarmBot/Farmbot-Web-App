@@ -49,7 +49,11 @@ export const LittleIcon =
       onMouseEnter={() => dispatch(toggleHoveredPlant(plantUUID, icon))}
       onMouseLeave={() => dispatch(toggleHoveredPlant(undefined, icon))}
       onClick={() => dispatch(removePoint(group, body.id || 0))}>
-      <img src={icon} alt={p.body.name} width={32} height={32} />
+      <img
+        src={icon}
+        alt={p.body.name}
+        width={32}
+        height={32} />
     </span>;
   };
 
@@ -96,8 +100,7 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
           icon={this.findIcon(point)}
           group={this.props.group}
           plant={point}
-          dispatch={this.props.dispatch}
-        />;
+          dispatch={this.props.dispatch} />;
       });
   }
 
@@ -123,18 +126,19 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
       </DesignerPanelHeader>
       <DesignerPanelContent
         panelName={"groups"}>
-        <h5>{t("GROUP NAME")}</h5>
+        <label>{t("GROUP NAME")}</label>
         <input
           defaultValue={this.name}
           onChange={this.update} />
-        <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
+        <label>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</label>
         <p>
           {t("Click plants in map to add or remove.")}
         </p>
-        <div>
+        <div style={{ padding: "0.5em 0em" }}>
           {this.icons}
         </div>
         <DeleteButton
+          style={{ float: "left", marginTop: "1em" }}
           dispatch={this.props.dispatch}
           uuid={group.uuid}
           onDestroy={history.back}>

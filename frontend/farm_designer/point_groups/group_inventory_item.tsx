@@ -16,7 +16,7 @@ export function GroupInventoryItem(props: GroupInventoryItemProps) {
     <span className="plant-search-item-name">
       {props.group.body.name}
     </span>
-    <i className="plant-search-item-age">
+    <i className="group-search-item">
       {t("{{count}} items", { count: props.group.body.point_ids.length })}
     </i>
   </div>;

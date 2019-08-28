@@ -202,6 +202,16 @@
     padding-right: 1rem;
     float: right;
   }
+  .group-item-count {
+    @extend .plant-search-item-age;
+    padding-top: 0.6rem;
+     // .groups-panel-content padding should be 0
+     // on the groups list panel, but stay the
+     // same on the group details panel.
+  }
+  .groups-panel-content {
+    padding: 0px;
+  }
   .plant-search-item-name {
     display: inline-block;
     vertical-align: middle;
