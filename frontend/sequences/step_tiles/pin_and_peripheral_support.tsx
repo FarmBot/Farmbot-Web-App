@@ -30,10 +30,10 @@ export enum BoxLed {
   BoxLed4 = "BoxLed4",
 }
 
-const BOX_LED_LABELS: { [x: string]: string } = {
+const BOX_LED_LABELS = () : { [x: string]: string } => ({
   [BoxLed.BoxLed3]: t("Box LED 3"),
   [BoxLed.BoxLed4]: t("Box LED 4"),
-};
+});
 
 export const PERIPHERAL_HEADING = (): DropDownItem =>
   ({ heading: true, label: t("Peripherals"), value: 0, headingId: PinGroupName.Peripheral });
@@ -72,7 +72,7 @@ const sensor2DropDown =
 
 const boxLed2DropDown =
   (boxLed: BoxLed): DropDownItem => ({
-    label: t(BOX_LED_LABELS[boxLed]),
+    label: t(BOX_LED_LABELS()[boxLed]),
     value: boxLed,
     headingId: PinGroupName.BoxLed
   });
