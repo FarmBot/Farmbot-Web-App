@@ -90,10 +90,15 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
         onKeyDown: () => push("/app/designer/events/add")
       },
       {
+        combo: "esc",
+        label: "Back to plant overview",
+        onKeyDown: () => push("/app/designer/plants")
+      },
+      {
         combo: "ctrl + shift + /",
         label: "Toggle Guide",
         onKeyDown: () => this.toggle("guideOpen")()
-      },
+      }
     ];
     return hotkeyMap;
   }
