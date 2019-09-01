@@ -30,7 +30,7 @@ export enum BoxLed {
   BoxLed4 = "BoxLed4",
 }
 
-const BOX_LED_LABELS = () : { [x: string]: string } => ({
+const BOX_LED_LABELS = (): { [x: string]: string } => ({
   [BoxLed.BoxLed3]: t("Box LED 3"),
   [BoxLed.BoxLed4]: t("Box LED 4"),
 });
