@@ -76,7 +76,7 @@ describe("LHSOptions()", () => {
 describe("<InnerIf />", () => {
   it("renders", () => {
     const wrapper = mount(<InnerIf {...fakeProps()} />);
-    ["IF", "THEN", "ELSE"].map(string =>
+    ["Variable", "Operator", "Value", "Then Execute", "Else Execute"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 

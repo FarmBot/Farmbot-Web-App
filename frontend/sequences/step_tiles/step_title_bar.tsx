@@ -11,7 +11,7 @@ function translate(input: Step): string {
   // i18next might not have the correct translation loaded. To get around this,
   // I had to put the translations in the function.
   const TRANSLATIONS: Partial<Record<SequenceBodyItem["kind"], string>> = {
-    "_if": t("If Statement"),
+    "_if": t("If ..."),
     "execute_script": t("Run Farmware"),
     "execute": t("Execute Sequence"),
     "find_home": t("Find Home"),

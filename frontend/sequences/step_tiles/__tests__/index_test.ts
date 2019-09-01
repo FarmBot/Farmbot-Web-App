@@ -104,7 +104,7 @@ describe("renderCeleryNode()", () => {
           lhs: "pin0", op: "is", rhs: 0, _then: { kind: "nothing", args: {} },
           _else: { kind: "nothing", args: {} }
         }
-      } as If, expected: "THEN"
+      } as If, expected: "Then Execute"
     },
     {
       node: {
