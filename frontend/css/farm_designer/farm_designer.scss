@@ -195,15 +195,18 @@
       width: 4rem;
     }
   }
-  .plant-search-item-age {
+  %panel-item-base {
     text-align: right;
     font-size: 1rem;
     padding-top: 1.4rem;
     padding-right: 1rem;
     float: right;
   }
+  .plant-search-item-age {
+    @extend %panel-item-base;
+  }
   .group-item-count {
-    @extend .plant-search-item-age;
+    @extend %panel-item-base;
     padding-top: 0.6rem;
   }
   .groups-panel-content {

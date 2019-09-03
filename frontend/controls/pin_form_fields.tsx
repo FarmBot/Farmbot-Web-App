@@ -9,7 +9,7 @@ import { t } from "../i18next_wrapper";
 import { TaggedPeripheral, TaggedSensor } from "farmbot";
 import { UUID } from "../resources/interfaces";
 import { isNumber } from "lodash";
-
+import { omit } from "lodash";
 const MODES = (): { [s: string]: string } => ({
   0: t("Digital"),
   1: t("Analog")
@@ -58,19 +58,31 @@ export const ModeDropdown = (props: ModeDropdownProps) =>
     }))}
     selectedItem={{ label: MODES()[props.value], value: props.value }}
     list={PIN_MODES()} />;
-type ButtonProps =
-  React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-interface DeleteButtonProps extends ButtonProps {
+interface ButtonCustomProps {
   dispatch: Function;
   uuid: UUID;
   children?: React.ReactChild
   onDestroy?: Function;
 }
 
+type ButtonHtmlProps =
+  React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+type DeleteButtonProps =
+  ButtonCustomProps & ButtonHtmlProps;
+
+/** Unfortunately, React will trigger a runtime
+ * warning if we pass extra props to HTML elements */
+const OMIT_THESE: Record<keyof ButtonCustomProps, true> = {
+  "dispatch": true,
+  "uuid": true,
+  "children": true,
+  "onDestroy": true,
+};
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
-    {...props}
+    {...omit(props, Object.keys(OMIT_THESE))}
     className="red fb-button del-button"
     title={t("Delete")}
     onClick={() =>
