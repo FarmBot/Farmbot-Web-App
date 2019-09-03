@@ -55,10 +55,10 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
     </Overlay>;
   }
 
-  private toggle = (property: keyof State) => () =>
+  toggle = (property: keyof State) => () =>
     this.setState({ [property]: !this.state[property] });
 
-  private hotkeys(dispatch: Function, slug: string) {
+  hotkeys(dispatch: Function, slug: string) {
     const links = getLinks();
     const idx = findIndex(links, { slug });
     const right = "/app/" + (links[idx + 1] || links[0]).slug;
@@ -90,10 +90,15 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
         onKeyDown: () => push("/app/designer/events/add")
       },
       {
+        combo: "esc",
+        label: "Back to plant overview",
+        onKeyDown: () => push("/app/designer/plants")
+      },
+      {
         combo: "ctrl + shift + /",
         label: "Toggle Guide",
         onKeyDown: () => this.toggle("guideOpen")()
-      },
+      }
     ];
     return hotkeyMap;
   }
