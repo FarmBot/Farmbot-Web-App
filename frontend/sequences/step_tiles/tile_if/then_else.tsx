@@ -33,5 +33,5 @@ export function ThenElse(props: ThenElseParams) {
           allowedVariableNodes={AllowedVariableNodes.identifier}
           shouldDisplay={props.shouldDisplay || (() => false)} />
       </Col>}
-  </Col>
+  </Col>;
 }
