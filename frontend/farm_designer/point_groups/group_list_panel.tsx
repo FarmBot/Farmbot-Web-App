@@ -40,7 +40,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
   navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
 
   render() {
-    return <DesignerPanel panelName={"groups"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Groups}

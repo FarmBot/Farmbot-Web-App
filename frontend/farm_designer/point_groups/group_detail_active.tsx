@@ -96,8 +96,7 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
           icon={this.findIcon(point)}
           group={this.props.group}
           plant={point}
-          dispatch={this.props.dispatch}
-        />;
+          dispatch={this.props.dispatch} />;
       });
   }
 
@@ -123,18 +122,19 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
       </DesignerPanelHeader>
       <DesignerPanelContent
         panelName={"groups"}>
-        <h5>{t("GROUP NAME")}</h5>
+        <label>{t("GROUP NAME")}</label>
         <input
           defaultValue={this.name}
           onChange={this.update} />
-        <h5>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</h5>
+        <label>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</label>
         <p>
           {t("Click plants in map to add or remove.")}
         </p>
-        <div>
+        <div className="groups-list-wrapper">
           {this.icons}
         </div>
         <DeleteButton
+          className="groups-delete-btn"
           dispatch={this.props.dispatch}
           uuid={group.uuid}
           onDestroy={history.back}>
