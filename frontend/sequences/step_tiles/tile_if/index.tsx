@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DropDownItem, NULL_CHOICE } from "../../../ui/index";
+import { DropDownItem, NULL_CHOICE, Row } from "../../../ui/index";
 import { TaggedSequence, ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
@@ -104,8 +104,10 @@ export function InnerIf(props: IfParams) {
     </StepHeader>
     <StepContent className={className}>
       <If_ {...props} />
-      <ThenElse thenElseKey={"_then"} {...props} />
-      <ThenElse thenElseKey={"_else"} {...props} />
+      <Row>
+        <ThenElse thenElseKey={"_then"} {...props} />
+        <ThenElse thenElseKey={"_else"} {...props} />
+      </Row>
     </StepContent>
   </StepWrapper>;
 }

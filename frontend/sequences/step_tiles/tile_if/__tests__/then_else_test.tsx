@@ -31,8 +31,7 @@ describe("<ThenElse/>", () => {
 
   it("renders 'then'", () => {
     const wrapper = mount(<ThenElse {...fakeProps()} />);
-    ["THEN", "Execute Sequence"].map(string =>
-      expect(wrapper.text()).toContain(string));
+    expect(wrapper.text()).toContain("Then Execute");
     expect(wrapper.find("button").length).toEqual(1);
   });
 
@@ -40,8 +39,7 @@ describe("<ThenElse/>", () => {
     const p = fakeProps();
     p.thenElseKey = "_else";
     const wrapper = mount(<ThenElse {...p} />);
-    ["ELSE", "Execute Sequence"].map(string =>
-      expect(wrapper.text()).toContain(string));
+    expect(wrapper.text()).toContain("Else Execute");
     expect(wrapper.find("button").length).toEqual(1);
   });
 });
