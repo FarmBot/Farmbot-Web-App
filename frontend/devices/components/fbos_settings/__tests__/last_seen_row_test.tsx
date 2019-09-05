@@ -56,7 +56,8 @@ describe("<LastSeen />", () => {
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.botToMqttLastSeen = new Date("2017-08-07T20:40:01.487Z").getTime();
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
-    expect(wrapper.instance().lastSeen).toEqual("2017-08-07T20:40:01.487Z");
+    const t = new Date("2017-08-07T20:40:01.487Z").getTime();
+    expect(wrapper.instance().lastSeen).toEqual(t);
   });
 
   it("handles a click", () => {

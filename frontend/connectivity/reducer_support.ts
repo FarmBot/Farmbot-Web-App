@@ -1,11 +1,6 @@
 import { ConnectionStatus } from "./interfaces";
 import m from "moment";
-import { isString, max } from "lodash";
-
-export function maxDate(l: m.Moment, r: m.Moment): string {
-  const dates = [l, r].map(y => y.toDate());
-  return (max(dates) || dates[0]).toJSON();
-}
+import { isString } from "lodash";
 
 export function getStatus(cs: ConnectionStatus | undefined): "up" | "down" {
   return (cs && cs.state) || "down";

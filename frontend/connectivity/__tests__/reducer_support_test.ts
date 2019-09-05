@@ -1,4 +1,4 @@
-import { computeBestTime, getStatus, maxDate } from "../reducer_support";
+import { computeBestTime, getStatus } from "../reducer_support";
 import moment from "moment";
 import { ConnectionStatus } from "../interfaces";
 
@@ -23,17 +23,6 @@ describe("computeBestTime()", () => {
   it("computes best time when enough information is present", () => {
     const expected: ConnectionStatus = { state: "down", at: LATER_JSON };
     expect(computeBestTime(STUB, LATER)).toEqual(expected);
-  });
-});
-
-describe("maxDate()", () => {
-  it("picks the max time, regardless of position", () => {
-    expect(maxDate(moment(NOW), moment(LATER))).toBe(LATER_JSON);
-    expect(maxDate(moment(LATER), moment(NOW))).toBe(LATER_JSON);
-  });
-
-  it("picks dates[0] when there is a tie", () => {
-    expect(maxDate(moment(LATER), moment(LATER))).toBe(LATER_JSON);
   });
 });
 

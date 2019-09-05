@@ -51,7 +51,7 @@ describe("<Devices/>", () => {
     p.botToMqtt = { at: 123, state: "up" };
     const wrapper = shallow(<Devices {...p} />);
     expect(wrapper.find(FarmbotOsSettings).props().botToMqttLastSeen)
-      .toEqual("123");
+      .toEqual(123);
   });
 
   it("provides correct firmwareHardware value", () => {
