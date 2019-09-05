@@ -7,11 +7,11 @@ import { ConnectionStatus } from "../interfaces";
 const NOW = "Tue, 03 Oct 2017 09:00:00 -0500";
 const LATER = "Wed, 04 Oct 2017 09:00:00 -0500";
 
-const LATER_JSON = moment(LATER).toJSON();
-const NOW_JSON = moment(NOW).toJSON();
+const LATER_JSON = moment(LATER).toDate().getTime();
+const NOW_UNIX = (new Date(NOW)).getTime();
 
 describe("computeBestTime()", () => {
-  const STUB: ConnectionStatus = { state: "down", at: NOW_JSON };
+  const STUB: ConnectionStatus = { state: "down", at: NOW_UNIX };
 
   it("returns same input when `last_saw_mq` is unavailable", () => {
     expect(computeBestTime(undefined, undefined)).toBe(undefined);
@@ -43,6 +43,6 @@ describe("getStatus()", () => {
   });
 
   it("returns status.state when given a ConnectionStatus object", () => {
-    expect(getStatus({ at: NOW, state: "up" })).toBe("up");
+    expect(getStatus({ at: NOW_UNIX, state: "up" })).toBe("up");
   });
 });

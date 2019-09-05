@@ -18,12 +18,13 @@ export function getStatus(cs: ConnectionStatus | undefined): "up" | "down" {
  * unable to make a determination. */
 export function computeBestTime(cs: ConnectionStatus | undefined,
   lastSawMq: string | undefined): ConnectionStatus | undefined {
-
+  const left = m(cs ? cs.at : lastSawMq);
+  const right = m(lastSawMq);
   // Only use the `last_saw_mq` time if it is more recent than the local
   // timestamp.
   // don't bother guessing if info is unavailable
   const guess: ConnectionStatus = {
-    at: maxDate(m(cs ? cs.at : lastSawMq), m(lastSawMq)),
+    at: Math.max(left.toDate().getTime(), right.toDate().getTime()),
     state: getStatus(cs)
   };
   return isString(lastSawMq) ? guess : cs;

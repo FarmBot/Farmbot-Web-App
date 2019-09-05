@@ -5,7 +5,7 @@ export type NetworkState = "up" | "down";
 /** Description of a connection between two points on the network. */
 export interface ConnectionStatus {
   state: NetworkState;
-  at: string;
+  at: number;
 }
 
 export interface EdgeStatus {
