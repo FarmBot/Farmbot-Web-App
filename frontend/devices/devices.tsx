@@ -31,7 +31,7 @@ export class Devices extends React.Component<Props, {}> {
               alerts={this.props.alerts}
               bot={this.props.bot}
               timeSettings={this.props.timeSettings}
-              botToMqttLastSeen={new Date(botToMqttLastSeen).toJSON()}
+              botToMqttLastSeen={new Date(botToMqttLastSeen).getTime()}
               botToMqttStatus={botToMqttStatus}
               sourceFbosConfig={this.props.sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}

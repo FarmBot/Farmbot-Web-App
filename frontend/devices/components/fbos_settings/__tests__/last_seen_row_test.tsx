@@ -18,7 +18,7 @@ describe("<LastSeen />", () => {
 
   const props = (): LastSeenProps => ({
     device: resource(),
-    botToMqttLastSeen: "",
+    botToMqttLastSeen: 0,
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
@@ -38,7 +38,7 @@ describe("<LastSeen />", () => {
   it("tells you when the device was last seen, no MQTT", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
-    p.botToMqttLastSeen = "";
+    p.botToMqttLastSeen = 0;
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
     expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
   });
@@ -46,7 +46,7 @@ describe("<LastSeen />", () => {
   it("tells you when the device was last seen, latest: API", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
-    p.botToMqttLastSeen = "2016-08-07T19:40:01.487Z";
+    p.botToMqttLastSeen = new Date("2016-08-07T19:40:01.487Z").getTime();
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
     expect(wrapper.instance().lastSeen).toEqual("2017-08-07T19:40:01.487Z");
   });
@@ -54,7 +54,7 @@ describe("<LastSeen />", () => {
   it("tells you when the device was last seen, latest: message broker", () => {
     const p = props();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
-    p.botToMqttLastSeen = "2017-08-07T20:40:01.487Z";
+    p.botToMqttLastSeen = new Date("2017-08-07T20:40:01.487Z").getTime();
     const wrapper = mount<LastSeen>(<LastSeen {...p} />);
     expect(wrapper.instance().lastSeen).toEqual("2017-08-07T20:40:01.487Z");
   });
