@@ -24,7 +24,7 @@ interface Complete {
 export type Ping = Complete | Pending | Timeout;
 export type PingDictionary = Record<string, Ping | undefined>;
 
-const now = () => (new Date()).getTime();
+export const now = () => (new Date()).getTime();
 
 export const startPing =
   (s: PingDictionary, id: string, start = now()): PingDictionary => {

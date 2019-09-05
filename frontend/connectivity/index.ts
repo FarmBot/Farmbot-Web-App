@@ -32,16 +32,16 @@ export const dispatchQosStart = (id: string) => {
   });
 };
 
-export let dispatchNetworkUp = (edge: Edge, at = (new Date()).getTime()) => {
+export let dispatchNetworkUp = (edge: Edge, at: number, qosPingId?: string) => {
   console.log("TODO: Insert ID HERE");
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkUp(edge, at));
+  store.dispatch(networkUp(edge, at, qosPingId));
   bumpThrottle(edge, at);
 };
 
-export let dispatchNetworkDown = (edge: Edge, at = (new Date()).getTime()) => {
+export let dispatchNetworkDown = (edge: Edge, at: number, qosPingId?: string) => {
   console.log("TODO: Insert ID HERE");
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkDown(edge, at));
+  store.dispatch(networkDown(edge, at, qosPingId));
   bumpThrottle(edge, at);
 };

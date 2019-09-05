@@ -3,7 +3,7 @@ jest.mock("../index", () => ({
   dispatchNetworkUp: jest.fn(),
   dispatchQosStart: jest.fn()
 }));
-
+const ANY_NUMBER = expect.any(Number);
 const mockTimestamp = 0;
 jest.mock("../../util", () => ({ timestamp: () => mockTimestamp }));
 
@@ -50,14 +50,14 @@ function fakeBot(): Farmbot {
 
 function expectStale() {
   expect(dispatchNetworkDown)
-    .toHaveBeenCalledWith("bot.mqtt");
+    .toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER, "TESTS");
 }
 
 function expectActive() {
   expect(dispatchNetworkUp)
-    .toHaveBeenCalledWith("bot.mqtt");
+    .toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER, "TESTS");
   expect(dispatchNetworkUp)
-    .toHaveBeenCalledWith("user.mqtt");
+    .toHaveBeenCalledWith("user.mqtt", ANY_NUMBER, "TESTS");
 }
 
 describe("ping util", () => {

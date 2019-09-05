@@ -30,10 +30,8 @@ export let connectivityReducer =
       const { qosPingId, status } = payload;
       if (qosPingId) {
         if (status.state == "up") {
-          console.log("OK!!!");
           s.pings = completePing(s.pings, qosPingId, status.at);
         } else {
-          console.log("FAILED");
           s.pings = failPing(s.pings, qosPingId);
         }
       }

@@ -8,6 +8,7 @@ import { isNumber } from "lodash";
 import axios from "axios";
 import { API } from "../api/index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
+import { now } from "../devices/connectivity/qos";
 
 export const PING_INTERVAL = 4000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
@@ -21,19 +22,17 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
   return isNumber(val) ? val : undefined;
 }
 
-export function markStale(_uuid: string) {
-  // dispatch({ pings: failPing(this.pingState, id) })
-  dispatchNetworkDown("bot.mqtt");
+export function markStale(qosPingId: string) {
+  dispatchNetworkDown("bot.mqtt", now(), qosPingId);
 }
 
-export function markActive(_uuid: string) {
-  // dispatch({ pings: completePing(this.pingState, id) })
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
+export function markActive(qosPingId: string) {
+  dispatchNetworkUp("user.mqtt", now(), qosPingId);
+  dispatchNetworkUp("bot.mqtt", now(), qosPingId);
 }
 
-export function isInactive(last: number, now: number): boolean {
-  return last ? (now - last) > ACTIVE_THRESHOLD : true;
+export function isInactive(last: number, now_: number): boolean {
+  return last ? (now_ - last) > ACTIVE_THRESHOLD : true;
 }
 
 export function sendOutboundPing(bot: Farmbot) {
@@ -51,7 +50,7 @@ export function startPinging(bot: Farmbot) {
 }
 
 export function pingAPI() {
-  const ok = () => dispatchNetworkUp("user.api");
-  const no = () => dispatchNetworkDown("user.api");
+  const ok = () => dispatchNetworkUp("user.api", now());
+  const no = () => dispatchNetworkDown("user.api", now());
   return axios.get(API.current.devicePath).then(ok, no);
 }

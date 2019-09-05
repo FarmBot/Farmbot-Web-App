@@ -11,6 +11,7 @@ import { Log } from "farmbot/dist/resources/api_resources";
 import { globalQueue } from "./batch_queue";
 import { isUndefined, get } from "lodash";
 import { MessageType } from "../sequences/interfaces";
+import { now } from "../devices/connectivity/qos";
 
 const LEGACY_META_KEY_NAMES: (keyof Log)[] = [
   "type",
@@ -49,6 +50,6 @@ export const onLogs =
       // TODO:             Make a `bot/device_123/offline` channel.
       const died =
         msg.message.includes("is offline") && msg.type === MessageType.error;
-      died && dispatchNetworkDown("bot.mqtt");
+      died && dispatchNetworkDown("bot.mqtt", now());
     }
   };

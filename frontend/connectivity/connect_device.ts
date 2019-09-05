@@ -28,6 +28,7 @@ import { ChannelName, MessageType } from "../sequences/interfaces";
 import { DeepPartial } from "redux";
 import { slowDown } from "./slow_down";
 import { t } from "../i18next_wrapper";
+import { now } from "../devices/connectivity/qos";
 
 export const TITLE = () => t("New message from bot");
 /** TODO: This ought to be stored in Redux. It is here because of historical
@@ -96,8 +97,8 @@ export const batchInitResources =
   };
 
 export const bothUp = () => {
-  dispatchNetworkUp("user.mqtt");
-  dispatchNetworkUp("bot.mqtt");
+  dispatchNetworkUp("user.mqtt", now());
+  dispatchNetworkUp("bot.mqtt", now());
 };
 
 export function readStatus() {
@@ -108,7 +109,7 @@ export function readStatus() {
 }
 
 export const onOffline = () => {
-  dispatchNetworkDown("user.mqtt");
+  dispatchNetworkDown("user.mqtt", now());
   error(t(Content.MQTT_DISCONNECTED));
 };
 
@@ -151,7 +152,7 @@ type Client = { connected?: boolean };
 export const onSent = (client: Client) => () => {
   const connected = !!client.connected;
   const cb = connected ? dispatchNetworkUp : dispatchNetworkDown;
-  cb("user.mqtt");
+  cb("user.mqtt", now());
 };
 
 export function onMalformed() {
@@ -165,7 +166,7 @@ export function onMalformed() {
 export const onOnline =
   () => {
     success(t("Reconnected to the message broker."), t("Online"));
-    dispatchNetworkUp("user.mqtt");
+    dispatchNetworkUp("user.mqtt", now());
   };
 export const onReconnect =
   () => warning(t("Attempting to reconnect to the message broker"),
