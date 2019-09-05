@@ -5,7 +5,7 @@ import axios from "axios";
 import { API } from "../api/index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 
-export const PING_INTERVAL = 3000;
+export const PING_INTERVAL = 4000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
@@ -31,10 +31,12 @@ export function isInactive(last: number, now: number): boolean {
 }
 
 export function sendOutboundPing(bot: Farmbot) {
+  console.log("TODO");
   bot.ping().then(markActive, markStale);
 }
 
 export function startPinging(bot: Farmbot) {
+  sendOutboundPing(bot);
   setInterval(() => sendOutboundPing(bot), PING_INTERVAL);
 }
 
