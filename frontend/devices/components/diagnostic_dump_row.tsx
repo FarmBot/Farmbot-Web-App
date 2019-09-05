@@ -13,7 +13,7 @@ export interface Props {
 export class DiagnosticDumpRow extends React.Component<Props, {}> {
   get ticket() { return this.props.diag.body.ticket_identifier; }
 
-  get age() { return ago(this.props.diag.body.created_at); }
+  get age() { return ago(new Date(this.props.diag.body.created_at).getTime()); }
 
   destroy = () => this.props.dispatch(destroy(this.props.diag.uuid));
 

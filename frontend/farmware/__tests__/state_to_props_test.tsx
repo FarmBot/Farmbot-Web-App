@@ -136,7 +136,10 @@ describe("mapStateToProps()", () => {
   it("returns bot status", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.sync_status = "sync_now";
-    state.bot.connectivity["bot.mqtt"] = { state: "up", at: "" };
+    state.bot.connectivity.uptime["bot.mqtt"] = {
+      state: "up",
+      at: (new Date()).getTime()
+    };
     const props = mapStateToProps(state);
     expect(props.syncStatus).toEqual("sync_now");
     expect(props.botToMqttStatus).toEqual("up");

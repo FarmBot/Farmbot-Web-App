@@ -18,7 +18,7 @@ describe("<FarmbotOsRow/>", () => {
     },
     shouldDisplay: () => false,
     botOnline: false,
-    botToMqttLastSeen: "",
+    botToMqttLastSeen: 0,
     deviceAccount: fakeDevice(),
     timeSettings: fakeTimeSettings(),
   });

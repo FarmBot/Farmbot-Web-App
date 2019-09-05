@@ -5,7 +5,7 @@ export type NetworkState = "up" | "down";
 /** Description of a connection between two points on the network. */
 export interface ConnectionStatus {
   state: NetworkState;
-  at: string;
+  at: number;
 }
 
 export interface EdgeStatus {
@@ -25,7 +25,10 @@ type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */
-export type ConnectionState = ConnectionRecord;
+export type ConnectionState = {
+  uptime: ConnectionRecord;
+  pings: {}
+};
 
 export interface UpdateMqttData<T extends TaggedResource> {
   status: "UPDATE"
