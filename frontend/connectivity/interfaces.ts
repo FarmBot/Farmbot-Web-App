@@ -25,7 +25,10 @@ type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
 
 /** Mapping of known connection status.
  * An `undefined` value means we don't know. */
-export type ConnectionState = ConnectionRecord;
+export type ConnectionState = {
+  uptime: ConnectionRecord;
+  pings: {}
+};
 
 export interface UpdateMqttData<T extends TaggedResource> {
   status: "UPDATE"

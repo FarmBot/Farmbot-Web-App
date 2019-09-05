@@ -118,7 +118,7 @@ export class App extends React.Component<AppProps, {}> {
     const currentPage = getPathArray()[2];
     const { location_data, mcu_params } = this.props.bot.hardware;
     const { sync_status } = this.props.bot.hardware.informational_settings;
-    const bot2mqtt = this.props.bot.connectivity["bot.mqtt"];
+    const bot2mqtt = this.props.bot.connectivity.uptime["bot.mqtt"];
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
