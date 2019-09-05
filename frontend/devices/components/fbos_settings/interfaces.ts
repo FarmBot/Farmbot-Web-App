@@ -59,7 +59,7 @@ export interface FarmbotOsRowProps {
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
   botOnline: boolean;
-  botToMqttLastSeen: string;
+  botToMqttLastSeen: number;
   timeSettings: TimeSettings;
   deviceAccount: TaggedDevice;
 }
@@ -69,7 +69,7 @@ export interface FbosDetailsProps {
   dispatch: Function;
   shouldDisplay: ShouldDisplay;
   sourceFbosConfig: SourceFbosConfig;
-  botToMqttLastSeen: string;
+  botToMqttLastSeen: number;
   timeSettings: TimeSettings;
   deviceAccount: TaggedDevice;
 }

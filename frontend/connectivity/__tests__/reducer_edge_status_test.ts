@@ -6,7 +6,7 @@ describe("connectivityReducer", () => {
     const state = connectivityReducer(DEFAULT_STATE,
       networkUp("user.mqtt", undefined, "tests"));
     expect(state).toBeDefined();
-    const x = state && state["user.mqtt"];
+    const x = state && state.uptime["user.mqtt"];
     if (x) {
       expect(x.state).toBe("up");
       expect(x.at).toBeTruthy();
@@ -18,7 +18,7 @@ describe("connectivityReducer", () => {
   it("goes down", () => {
     const state = connectivityReducer(DEFAULT_STATE,
       networkDown("user.api", undefined, "tests"));
-    const x = state && state["user.api"];
+    const x = state && state.uptime["user.api"];
     if (x) {
       expect(x.state).toBe("down");
       expect(x.at).toBeTruthy();

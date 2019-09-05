@@ -10,15 +10,15 @@ import { autoSync, routeMqttData } from "../auto_sync";
 import { handleInbound } from "../auto_sync_handle_inbound";
 
 const NOW = new Date();
-const SHORT_TIME_LATER = new Date(NOW.getTime() + 500);
-const LONGER_TIME_LATER = new Date(NOW.getTime() + 5000);
+const SHORT_TIME_LATER = new Date(NOW.getTime() + 500).getTime();
+const LONGER_TIME_LATER = new Date(NOW.getTime() + 5000).getTime();
 
 describe("dispatchNetworkUp", () => {
-  const NOW_UP = networkUp("bot.mqtt", NOW.toJSON(), "tests");
-  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER.toJSON(), "tests");
+  const NOW_UP = networkUp("bot.mqtt", NOW.getTime(), "tests");
+  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER, "tests");
 
   it("calls redux directly", () => {
-    dispatchNetworkUp("bot.mqtt", NOW, "tests");
+    dispatchNetworkUp("bot.mqtt", NOW.getTime(), "tests");
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
     dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER, "tests");
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
@@ -28,11 +28,11 @@ describe("dispatchNetworkUp", () => {
 });
 
 describe("dispatchNetworkDown", () => {
-  const NOW_DOWN = networkDown("user.api", NOW.toJSON(), "tests");
-  const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER.toJSON(), "tests");
+  const NOW_DOWN = networkDown("user.api", NOW.getTime(), "tests");
+  const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER, "tests");
 
   it("calls redux directly", () => {
-    dispatchNetworkDown("user.api", NOW, "tests");
+    dispatchNetworkDown("user.api", NOW.getTime(), "tests");
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);
     dispatchNetworkDown("user.api", SHORT_TIME_LATER, "tests");
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);

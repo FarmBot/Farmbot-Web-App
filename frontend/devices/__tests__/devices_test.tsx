@@ -48,10 +48,10 @@ describe("<Devices/>", () => {
 
   it("has correct connection status", () => {
     const p = fakeProps();
-    p.botToMqtt = { at: "123", state: "up" };
+    p.botToMqtt = { at: 123, state: "up" };
     const wrapper = shallow(<Devices {...p} />);
     expect(wrapper.find(FarmbotOsSettings).props().botToMqttLastSeen)
-      .toEqual("123");
+      .toEqual(123);
   });
 
   it("provides correct firmwareHardware value", () => {

@@ -8,6 +8,6 @@ describe("Connectivity Reducer - RESOURCE_READY", () => {
     device.body.last_saw_mq = "Tue, 03 Oct 2017 09:00:00 -0500";
     const action = resourceReady("Device", device);
     const result = connectivityReducer(DEFAULT_STATE, action);
-    expect(result["bot.mqtt"]).not.toBe(undefined);
+    expect(result.uptime["bot.mqtt"]).not.toBe(undefined);
   });
 });

@@ -157,7 +157,7 @@ export interface FarmbotOsProps {
   diagnostics: TaggedDiagnosticDump[];
   deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;
-  botToMqttLastSeen: string;
+  botToMqttLastSeen: number;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;

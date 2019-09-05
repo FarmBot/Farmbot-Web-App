@@ -128,7 +128,7 @@ export class FarmbotOsSettings
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline}
-              botToMqttLastSeen={this.props.botToMqttLastSeen}
+              botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
               timeSettings={this.props.timeSettings}
               deviceAccount={this.props.deviceAccount} />
             <AutoUpdateRow

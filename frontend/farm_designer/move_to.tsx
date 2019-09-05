@@ -19,7 +19,7 @@ import { isBotOnline } from "../devices/must_be_online";
 import { getStatus } from "../connectivity/reducer_support";
 
 export function mapStateToProps(props: Everything): MoveToProps {
-  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
+  const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
   const { sync_status } = props.bot.hardware.informational_settings;
   return {
     chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
