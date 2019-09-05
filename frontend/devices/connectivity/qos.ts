@@ -3,30 +3,32 @@ import { betterCompact } from "../../util";
 interface Pending {
   kind: "pending";
   id: string;
-  start: Date;
-  end?: undefined;
+  start: number;
+  end?: number;
 }
 
 interface Timeout {
   kind: "timeout";
   id: string;
-  start: Date;
-  end?: undefined;
+  start: number;
+  end?: number;
 }
 
 interface Complete {
   kind: "complete";
   id: string;
-  start: Date;
-  end: Date;
+  start: number;
+  end: number;
 }
 
 export type Ping = Complete | Pending | Timeout;
 export type PingDictionary = Record<string, Ping | undefined>;
 
+const now = () => (new Date()).getTime();
+
 export const startPing =
-  (s: PingDictionary, id: string): PingDictionary => {
-    return { ...s, [id]: { kind: "pending", id, start: new Date() } };
+  (s: PingDictionary, id: string, start = now()): PingDictionary => {
+    return { ...s, [id]: { kind: "pending", id, start } };
   };
 
 export const failPing =
@@ -45,7 +47,7 @@ export const failPing =
   };
 
 export const completePing =
-  (s: PingDictionary, id: string): PingDictionary => {
+  (s: PingDictionary, id: string, end = now()): PingDictionary => {
     const failure = s[id];
     if (failure && failure.kind == "pending") {
       return {
@@ -54,7 +56,7 @@ export const completePing =
           kind: "complete",
           id,
           start: failure.start,
-          end: new Date()
+          end
         }
       };
     }
@@ -87,11 +89,8 @@ interface LatencyReport {
   total: number;
 }
 
-const mapper = (p: Ping) => {
-  if (p.kind === "complete") {
-    return p.end.getTime() - p.start.getTime();
-  }
-};
+const mapper = (p: Ping) => (p.kind === "complete") ?
+  p.end - p.start : undefined;
 
 export const calculateLatency =
   (s: PingDictionary): LatencyReport => {

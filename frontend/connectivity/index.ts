@@ -1,6 +1,7 @@
 import { store } from "../redux/store";
 import { networkUp, networkDown } from "./actions";
 import { Edge } from "./interfaces";
+import { Actions } from "../constants";
 
 /* ABOUT THIS FILE: These functions allow us to mark the network as up or
 down from anywhere within the app (even outside of React-Redux). I usually avoid
@@ -24,14 +25,23 @@ function bumpThrottle(edge: Edge, now: number) {
   lastCalledAt[edge] = now;
 }
 
-export let dispatchNetworkUp = (edge: Edge, at = (new Date()).getTime(), why: string) => {
+export const dispatchQosStart = (id: string) => {
+  store.dispatch({
+    type: Actions.START_QOS_PING,
+    payload: { id }
+  });
+};
+
+export let dispatchNetworkUp = (edge: Edge, at = (new Date()).getTime()) => {
+  console.log("TODO: Insert ID HERE");
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkUp(edge, at, why));
+  store.dispatch(networkUp(edge, at));
   bumpThrottle(edge, at);
 };
 
-export let dispatchNetworkDown = (edge: Edge, at = (new Date()).getTime(), why: string) => {
+export let dispatchNetworkDown = (edge: Edge, at = (new Date()).getTime()) => {
+  console.log("TODO: Insert ID HERE");
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkDown(edge, at, why));
+  store.dispatch(networkDown(edge, at));
   bumpThrottle(edge, at);
 };

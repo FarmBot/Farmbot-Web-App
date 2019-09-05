@@ -14,29 +14,29 @@ const SHORT_TIME_LATER = new Date(NOW.getTime() + 500).getTime();
 const LONGER_TIME_LATER = new Date(NOW.getTime() + 5000).getTime();
 
 describe("dispatchNetworkUp", () => {
-  const NOW_UP = networkUp("bot.mqtt", NOW.getTime(), "tests");
-  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER, "tests");
+  const NOW_UP = networkUp("bot.mqtt", NOW.getTime());
+  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER);
 
   it("calls redux directly", () => {
-    dispatchNetworkUp("bot.mqtt", NOW.getTime(), "tests");
+    dispatchNetworkUp("bot.mqtt", NOW.getTime());
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER, "tests");
+    dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER);
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", LONGER_TIME_LATER, "tests");
+    dispatchNetworkUp("bot.mqtt", LONGER_TIME_LATER);
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(LATER_UP);
   });
 });
 
 describe("dispatchNetworkDown", () => {
-  const NOW_DOWN = networkDown("user.api", NOW.getTime(), "tests");
-  const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER, "tests");
+  const NOW_DOWN = networkDown("user.api", NOW.getTime());
+  const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER);
 
   it("calls redux directly", () => {
-    dispatchNetworkDown("user.api", NOW.getTime(), "tests");
+    dispatchNetworkDown("user.api", NOW.getTime());
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);
-    dispatchNetworkDown("user.api", SHORT_TIME_LATER, "tests");
+    dispatchNetworkDown("user.api", SHORT_TIME_LATER);
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(NOW_DOWN);
-    dispatchNetworkDown("user.api", LONGER_TIME_LATER, "tests");
+    dispatchNetworkDown("user.api", LONGER_TIME_LATER);
     expect(mockRedux.store.dispatch).toHaveBeenLastCalledWith(LATER_DOWN);
   });
 });

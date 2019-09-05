@@ -1,5 +1,9 @@
-import { Farmbot } from "farmbot";
-import { dispatchNetworkDown, dispatchNetworkUp } from "./index";
+import { Farmbot, uuid } from "farmbot";
+import {
+  dispatchNetworkDown,
+  dispatchNetworkUp,
+  dispatchQosStart
+} from "./index";
 import { isNumber } from "lodash";
 import axios from "axios";
 import { API } from "../api/index";
@@ -17,13 +21,15 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
   return isNumber(val) ? val : undefined;
 }
 
-export function markStale() {
-  dispatchNetworkDown("bot.mqtt", undefined, "markStale()");
+export function markStale(_uuid: string) {
+  // dispatch({ pings: failPing(this.pingState, id) })
+  dispatchNetworkDown("bot.mqtt");
 }
 
-export function markActive() {
-  dispatchNetworkUp("user.mqtt", undefined, "markActive()");
-  dispatchNetworkUp("bot.mqtt", undefined, "markActive()");
+export function markActive(_uuid: string) {
+  // dispatch({ pings: completePing(this.pingState, id) })
+  dispatchNetworkUp("user.mqtt");
+  dispatchNetworkUp("bot.mqtt");
 }
 
 export function isInactive(last: number, now: number): boolean {
@@ -31,8 +37,12 @@ export function isInactive(last: number, now: number): boolean {
 }
 
 export function sendOutboundPing(bot: Farmbot) {
-  console.log("TODO");
-  bot.ping().then(markActive, markStale);
+  const id = uuid();
+  const ok = () => markActive(id);
+  const no = () => markStale(id);
+  dispatchQosStart(id);
+  setTimeout(no, PING_INTERVAL);
+  bot.ping().then(ok, no);
 }
 
 export function startPinging(bot: Farmbot) {
@@ -41,7 +51,7 @@ export function startPinging(bot: Farmbot) {
 }
 
 export function pingAPI() {
-  const ok = () => dispatchNetworkUp("user.api", undefined, "pingApi OK");
-  const no = () => dispatchNetworkDown("user.api", undefined, "pingApi NO");
+  const ok = () => dispatchNetworkUp("user.api");
+  const no = () => dispatchNetworkDown("user.api");
   return axios.get(API.current.devicePath).then(ok, no);
 }
