@@ -58,7 +58,7 @@ export class QosPanel extends React.Component<Props, {}> {
       <div className="chip-temp-display">
         <Row k="Percent OK" v={pct(errorRate, PCT)} />
         <Row k="Pings sent" v={pct(r.total, NONE)} />
-        <Row k="Pings received" v={pct(r.complete, PCT)} />
+        <Row k="Pings received" v={pct(r.complete, NONE)} />
         <Row k="Best time" v={pct(r.best, MS)} />
         <Row k="Worst time" v={pct(r.worst, MS)} />
         <Row k="Average time" v={pct(r.average, MS)} />

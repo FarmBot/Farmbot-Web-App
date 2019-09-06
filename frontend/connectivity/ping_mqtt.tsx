@@ -41,7 +41,7 @@ export function sendOutboundPing(bot: Farmbot) {
   const no = () => markStale(id);
   dispatchQosStart(id);
   bot.ping().then(ok, no);
-  setTimeout(no, PING_INTERVAL);
+  // setTimeout(no, PING_INTERVAL);
 }
 
 export function startPinging(bot: Farmbot) {
