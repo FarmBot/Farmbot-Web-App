@@ -8,12 +8,14 @@ import { Connectivity } from "./connectivity";
 import { BotState } from "../interfaces";
 import { connectivityData } from "./generate_data";
 import { resetConnectionInfo } from "../actions";
+import { PingDictionary } from "./qos";
 
 interface Props {
   status: SpecialStatus;
   dispatch: Function;
   bot: BotState;
   deviceAccount: TaggedDevice;
+  pings: PingDictionary;
 }
 
 export class ConnectivityPanel extends React.Component<Props, {}> {
@@ -39,7 +41,8 @@ export class ConnectivityPanel extends React.Component<Props, {}> {
         <Connectivity
           bot={this.props.bot}
           rowData={this.data.rowData}
-          flags={this.data.flags} />
+          flags={this.data.flags}
+          pings={this.props.pings} />
       </WidgetBody>
     </Widget>;
   }

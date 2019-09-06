@@ -7,6 +7,7 @@ import { SpecialStatus } from "farmbot";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { resetConnectionInfo } from "../../actions";
+import { fakePings } from "../../../__test_support__/fake_state/pings";
 
 describe("<ConnectivityPanel/>", () => {
   const fakeProps = (): ConnectivityPanel["props"] => ({
@@ -14,6 +15,7 @@ describe("<ConnectivityPanel/>", () => {
     dispatch: jest.fn(),
     deviceAccount: fakeDevice(),
     status: SpecialStatus.SAVED,
+    pings: fakePings()
   });
 
   it("renders the default use case", () => {

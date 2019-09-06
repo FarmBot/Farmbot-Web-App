@@ -94,13 +94,17 @@ const mapper = (p: Ping) => (p.kind === "complete") ?
 
 export const calculateLatency =
   (s: PingDictionary): LatencyReport => {
-    const latency: number[] =
+    let latency: number[] =
       betterCompact(getAll(s).map(mapper));
-
+    // Prevents "Infinity" from showing up in UI
+    // when the app is loading or the bot is 100%
+    // offline:
+    if (latency.length == 0) { latency = [0]; }
+    const average = Math.round(latency.reduce((a, b) => a + b, 0) / latency.length);
     return {
-      best: Math.min(...latency) || 0,
-      worst: Math.max(...latency) || 0,
-      average: latency.reduce((a, b) => a + b, 0) / latency.length,
+      best: Math.min(...latency),
+      worst: Math.max(...latency),
+      average,
       total: latency.length
     };
   };
