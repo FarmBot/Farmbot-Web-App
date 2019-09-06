@@ -2,21 +2,17 @@ import { betterCompact } from "../../util";
 
 interface Pending {
   kind: "pending";
-  id: string;
   start: number;
-  end?: number;
 }
 
 interface Timeout {
   kind: "timeout";
-  id: string;
   start: number;
-  end?: number;
+  end: number;
 }
 
 interface Complete {
   kind: "complete";
-  id: string;
   start: number;
   end: number;
 }
@@ -28,17 +24,17 @@ export const now = () => (new Date()).getTime();
 
 export const startPing =
   (s: PingDictionary, id: string, start = now()): PingDictionary => {
-    return { ...s, [id]: { kind: "pending", id, start } };
+    return { ...s, [id]: { kind: "pending", start } };
   };
 
 export const failPing =
-  (s: PingDictionary, id: string): PingDictionary => {
+  (s: PingDictionary, id: string, end = now()): PingDictionary => {
     const failure = s[id];
     if (failure && failure.kind != "complete") {
       const nextFailure: Timeout = {
         kind: "timeout",
-        id,
-        start: failure.start
+        start: failure.start,
+        end
       };
       return { ...s, [id]: nextFailure };
     }
@@ -54,7 +50,6 @@ export const completePing =
         ...s,
         [id]: {
           kind: "complete",
-          id,
           start: failure.start,
           end
         }
