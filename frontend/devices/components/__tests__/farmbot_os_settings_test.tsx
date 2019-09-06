@@ -29,7 +29,7 @@ describe("<FarmbotOsSettings/>", () => {
     dispatch: jest.fn(),
     bot,
     alerts: [],
-    botToMqttLastSeen: "",
+    botToMqttLastSeen: 0,
     botToMqttStatus: "up",
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),

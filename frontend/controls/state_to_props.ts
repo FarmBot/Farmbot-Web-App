@@ -34,7 +34,7 @@ export function mapStateToProps(props: Everything): Props {
     bot: props.bot,
     peripherals: uniq(selectAllPeripherals(props.resources.index)),
     sensors: uniq(selectAllSensors(props.resources.index)),
-    botToMqttStatus: getStatus(props.bot.connectivity["bot.mqtt"]),
+    botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
     firmwareSettings: fwConfig || mcu_params,
     getWebAppConfigVal: getWebAppConfigValue(() => props),
     shouldDisplay,
