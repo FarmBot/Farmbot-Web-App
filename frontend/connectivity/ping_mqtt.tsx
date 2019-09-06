@@ -37,14 +37,8 @@ export function isInactive(last: number, now_: number): boolean {
 
 export function sendOutboundPing(bot: Farmbot) {
   const id = uuid();
-  const ok = () => markActive(id);
-  const no = () => markStale(id);
   dispatchQosStart(id);
-  // THEORY: The code below is not checking if the
-  //         ping already succeeded, leading to
-  //         blinky device availability.
-  // setTimeout(no, PING_INTERVAL);
-  bot.ping().then(ok, no);
+  bot.ping().then(() => markActive(id), () => markStale(id));
 }
 
 export function startPinging(bot: Farmbot) {

@@ -16,6 +16,9 @@ interface KeyValProps {
 }
 
 const NA = "---";
+const MS = "ms";
+const PCT = "%";
+const NONE = "";
 
 function Row({ k, v }: KeyValProps) {
   return <p>
@@ -25,6 +28,13 @@ function Row({ k, v }: KeyValProps) {
 
 }
 
+const pct = (n: string | number, unit: string): string => {
+  if (n) {
+    return `${n} ${unit}`;
+  } else {
+    return NA;
+  }
+};
 export class QosPanel extends React.Component<Props, {}> {
   get pingState(): PingDictionary {
     return this.props.pings;
@@ -40,19 +50,18 @@ export class QosPanel extends React.Component<Props, {}> {
 
   render() {
     const r = { ...this.latencyReport, ...this.qualityReport };
-    const errorRate = ((r.complete) / r.total);
-    const avg = r.average ? (r.average).toFixed(0) : NA;
-    const pct = Math.round(100 * errorRate).toFixed(0);
+    const errorRateDecimal = ((r.complete) / r.total);
+    const errorRate = Math.round(100 * errorRateDecimal).toFixed(0);
 
     return <div className="fbos-info">
       <label>{t("Network Quality")}</label>
       <div className="chip-temp-display">
-        <Row k="Pings sent" v={r.total} />
-        <Row k="Pings received" v={r.complete} />
-        <Row k="Percent OK" v={`${pct}%`} />
-        <Row k="Best time (ms)" v={r.best || NA} />
-        <Row k="Worst time (ms)" v={r.worst || NA} />
-        <Row k="Average time (ms)" v={avg || NA} />
+        <Row k="Percent OK" v={pct(errorRate, PCT)} />
+        <Row k="Pings sent" v={pct(r.total, NONE)} />
+        <Row k="Pings received" v={pct(r.complete, PCT)} />
+        <Row k="Best time" v={pct(r.best, MS)} />
+        <Row k="Worst time" v={pct(r.worst, MS)} />
+        <Row k="Average time" v={pct(r.average, MS)} />
       </div>
     </div>;
 
