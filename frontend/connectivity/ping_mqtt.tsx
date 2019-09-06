@@ -10,7 +10,7 @@ import { API } from "../api/index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { now } from "../devices/connectivity/qos";
 
-export const PING_INTERVAL = 3000;
+export const PING_INTERVAL = 4000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
@@ -40,7 +40,10 @@ export function sendOutboundPing(bot: Farmbot) {
   const ok = () => markActive(id);
   const no = () => markStale(id);
   dispatchQosStart(id);
-  setTimeout(no, PING_INTERVAL);
+  // THEORY: The code below is not checking if the
+  //         ping already succeeded, leading to
+  //         blinky device availability.
+  // setTimeout(no, PING_INTERVAL);
   bot.ping().then(ok, no);
 }
 

@@ -1,4 +1,5 @@
 import { TaggedResource } from "farmbot";
+import { PingDictionary } from "../devices/connectivity/qos";
 
 export type NetworkState = "up" | "down";
 
@@ -27,7 +28,7 @@ type ConnectionRecord = Record<Edge, ConnectionStatus | undefined>;
  * An `undefined` value means we don't know. */
 export type ConnectionState = {
   uptime: ConnectionRecord;
-  pings: {}
+  pings: PingDictionary;
 };
 
 export interface UpdateMqttData<T extends TaggedResource> {

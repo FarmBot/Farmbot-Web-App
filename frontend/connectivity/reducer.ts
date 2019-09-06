@@ -26,7 +26,6 @@ export let connectivityReducer =
       };
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
-      s.uptime[payload.name] = payload.status;
       const { qosPingId, status } = payload;
       if (qosPingId) {
         if (status.state == "up") {
@@ -35,6 +34,8 @@ export let connectivityReducer =
           s.pings = failPing(s.pings, qosPingId);
         }
       }
+
+      s.uptime[payload.name] = payload.status;
       return s;
     })
     .add<SyncBodyContents<TaggedDevice>>(Actions.RESOURCE_READY, (s, a) => {
