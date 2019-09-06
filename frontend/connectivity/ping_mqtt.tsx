@@ -37,8 +37,11 @@ export function isInactive(last: number, now_: number): boolean {
 
 export function sendOutboundPing(bot: Farmbot) {
   const id = uuid();
+  const ok = () => markActive(id);
+  const no = () => markStale(id);
   dispatchQosStart(id);
-  bot.ping().then(() => markActive(id), () => markStale(id));
+  bot.ping().then(ok, no);
+  setTimeout(no, PING_INTERVAL);
 }
 
 export function startPinging(bot: Farmbot) {

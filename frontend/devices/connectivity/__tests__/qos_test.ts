@@ -1,18 +1,20 @@
-import { calculateLatency, calculatePingLoss, completePing } from "../qos";
+import { calculateLatency, calculatePingLoss, completePing, startPing, failPing } from "../qos";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
-import { set } from "lodash";
 
 describe("QoS helpers", () => {
   it("calculateLatency", () => {
-    const fakes = fakePings();
-    Object // Make all pings "complete", otherwise they won't be counted.
-      .values(fakes)
-      .map(p => { p && set(p, "kind", "complete"); });
-    const report = calculateLatency(fakes);
-    expect(report.average).toEqual(313);
-    expect(report.best).toEqual(312);
-    expect(report.worst).toEqual(316);
-    expect(report.total).toEqual(3);
+    const report = calculateLatency({
+      "a": { kind: "timeout", start: 111, end: 423 },
+      "b": { kind: "pending", start: 213 },
+      "c": { kind: "complete", start: 319, end: 631 },
+      "d": { kind: "complete", start: 111, end: 423 },
+      "e": { kind: "complete", start: 136, end: 213 },
+      "f": { kind: "complete", start: 319, end: 631 },
+    });
+    expect(report.best).toEqual(77);
+    expect(report.worst).toEqual(312);
+    expect(report.average).toEqual(253);
+    expect(report.total).toEqual(4);
   });
 
   it("calculatePingLoss", () => {
@@ -25,7 +27,7 @@ describe("QoS helpers", () => {
 
   it("completePing", () => {
     const KEY = "b";
-    const state = fakePings()
+    const state = fakePings();
     const before = state[KEY];
     const nextState = completePing(state, KEY);
     const after = nextState[KEY];
@@ -34,9 +36,20 @@ describe("QoS helpers", () => {
     expect(after && after.kind).toEqual("complete");
   });
 
-  // it("failPing", () => {
-  // });
+  it("starts a ping", () => {
+    const state = fakePings();
+    const nextState = startPing(state, "x");
 
-  // it("startPing", () => {
-  // });
+    expect(state["x"]).toBeFalsy();
+    expect(nextState["x"]).toBeTruthy();
+  });
+
+  it("fails a ping", () => {
+    const state = fakePings();
+    state["x"] = { kind: "pending", start: 1 };
+    const nextState = failPing(state, "x");
+    const after = nextState["x"];
+    expect(after && after.kind).toEqual("timeout");
+  });
+
 });
