@@ -1,8 +1,17 @@
-import { calculateLatency, calculatePingLoss, completePing, startPing, failPing } from "../qos";
-import { fakePings } from "../../../__test_support__/fake_state/pings";
+import {
+  calculateLatency,
+  calculatePingLoss,
+  completePing,
+  startPing,
+  failPing,
+  PingDictionary
+} from "../qos";
+import {
+  fakePings
+} from "../../../__test_support__/fake_state/pings";
 
 describe("QoS helpers", () => {
-  it("calculateLatency", () => {
+  it("calculates latency", () => {
     const report = calculateLatency({
       "a": { kind: "timeout", start: 111, end: 423 },
       "b": { kind: "pending", start: 213 },
@@ -17,7 +26,15 @@ describe("QoS helpers", () => {
     expect(report.total).toEqual(4);
   });
 
-  it("calculatePingLoss", () => {
+  it("returns 0 when latency can't be calculated", () => {
+    const report = calculateLatency({});
+    expect(report.best).toEqual(0);
+    expect(report.worst).toEqual(0);
+    expect(report.average).toEqual(0);
+    expect(report.total).toEqual(1);
+  });
+
+  it("calculates ping loss", () => {
     const report = calculatePingLoss(fakePings());
     expect(report.total).toEqual(3);
     expect(report.complete).toEqual(1);
@@ -25,7 +42,7 @@ describe("QoS helpers", () => {
     expect(report.complete).toEqual(1);
   });
 
-  it("completePing", () => {
+  it("marks a ping as complete", () => {
     const KEY = "b";
     const state = fakePings();
     const before = state[KEY];
@@ -34,6 +51,14 @@ describe("QoS helpers", () => {
 
     expect(before && before.kind).toEqual("pending");
     expect(after && after.kind).toEqual("complete");
+  });
+
+  it("does not mark pings as complete twice", () => {
+    const state: PingDictionary = {
+      "x": { kind: "complete", start: 319, end: 631 },
+    };
+    const nextState = completePing(state, "x");
+    expect(nextState).toBe(state); // No, not "toEqual"
   });
 
   it("starts a ping", () => {
@@ -52,4 +77,11 @@ describe("QoS helpers", () => {
     expect(after && after.kind).toEqual("timeout");
   });
 
+  it("skips pings that don't need to be failed", () => {
+    const state: PingDictionary = {
+      "x": { kind: "complete", start: 319, end: 631 },
+    };
+    const nextState = failPing(state, "x");
+    expect(nextState).toBe(state); // No, not "toEqual"
+  });
 });
