@@ -25,12 +25,14 @@ import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   state: MoveAbsState = {
-    more: !!this.props.expandStepOptions || this.hasOffset };
+    more: !!this.props.expandStepOptions || this.hasOffset
+  };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
   get hasOffset(): boolean {
-    const {x, y, z} = this.args.offset.args;
-    return !!(x || y || z); }
+    const { x, y, z } = this.args.offset.args;
+    return !!(x || y || z);
+  }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
@@ -77,22 +79,34 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   }
 
   LocationForm = () =>
-    <LocationForm
-      variable={{
-        celeryNode: this.celeryNode,
-        dropdown: determineDropdown(this.celeryNode, this.props.resources,
-          this.props.currentSequence.uuid),
-        vector: this.vector,
-      }}
-      sequenceUuid={this.props.currentSequence.uuid}
-      resources={this.props.resources}
-      onChange={this.updateLocation}
-      shouldDisplay={this.props.shouldDisplay || (() => false)}
-      hideVariableLabel={true}
-      locationDropdownKey={JSON.stringify(this.props.currentSequence)}
-      allowedVariableNodes={AllowedVariableNodes.identifier}
-      disallowGroups={true}
-      width={3} />
+    <Row>
+      <Col xs={10}>
+        <LocationForm
+          variable={{
+            celeryNode: this.celeryNode,
+            dropdown: determineDropdown(this.celeryNode, this.props.resources,
+              this.props.currentSequence.uuid),
+            vector: this.vector,
+          }}
+          sequenceUuid={this.props.currentSequence.uuid}
+          resources={this.props.resources}
+          onChange={this.updateLocation}
+          shouldDisplay={this.props.shouldDisplay || (() => false)}
+          hideVariableLabel={true}
+          hideTypeLabel={true}
+          locationDropdownKey={JSON.stringify(this.props.currentSequence)}
+          allowedVariableNodes={AllowedVariableNodes.identifier}
+          disallowGroups={true}
+          width={3} />
+      </Col>
+      <Col xs={2}>
+        <ExpandableHeader
+          expanded={this.state.more}
+          title={t("Options")}
+          onClick={() =>
+            this.setState({ more: !this.state.more })} />
+      </Col>
+    </Row>
 
   SpeedForm = () =>
     <Col xs={3}>
@@ -145,11 +159,6 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       </StepHeader>
       <StepContent className={className}>
         <this.LocationForm />
-        <ExpandableHeader
-          expanded={this.state.more}
-          title={t("More")}
-          onClick={() =>
-            this.setState({ more: !this.state.more })} />
         <Collapse isOpen={this.state.more}>
           <this.OffsetForm />
         </Collapse>

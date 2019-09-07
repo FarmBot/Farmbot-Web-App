@@ -129,7 +129,7 @@ describe("renderCeleryNode()", () => {
           speed: 100,
           offset: { kind: "coordinate", args: { x: 4, y: 5, z: 6 } }
         }
-      } as MoveAbsolute, expected: "Location"
+      } as MoveAbsolute, expected: "x-Offsety-Offsetz-OffsetSpeed (%)"
     },
     {
       node: {
