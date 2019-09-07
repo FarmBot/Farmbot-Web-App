@@ -87,25 +87,37 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
   return <div className={`panel-nav ${TAB_COLOR[tab]}-panel ${hidden}`}>
     <div className="panel-tabs">
       <NavTab panel={Panel.Map}
-        linkTo={"/app/designer"} title={t("Map")} />
-      <NavTab panel={Panel.Plants}
-        linkTo={"/app/designer/plants"} title={t("Plants")} />
-      <NavTab panel={Panel.FarmEvents}
-        linkTo={"/app/designer/events"} title={t("Events")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab panel={Panel.SavedGardens}
-          linkTo={"/app/designer/saved_gardens"} title={t("Gardens")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab panel={Panel.Points}
-          linkTo={"/app/designer/points"} title={t("Points")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab panel={Panel.Groups}
-          linkTo={"/app/designer/groups"} title={t("Groups")} />}
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab panel={Panel.Tools}
-          linkTo={"/app/designer/tools"} title={t("Tools")} />}
-      <NavTab panel={Panel.Settings} icon={"fa fa-gear"}
-        linkTo={"/app/designer/settings"} title={t("Settings")} />
+        linkTo={"/app/designer"}
+        title={t("Map")} />
+      <NavTab
+        panel={Panel.Plants}
+        linkTo={"/app/designer/plants"}
+        title={t("Plants")} />
+      {DevSettings.futureFeaturesEnabled() && <NavTab
+        panel={Panel.Groups}
+        linkTo={"/app/designer/groups"}
+        title={t("Groups")} />}
+      {DevSettings.futureFeaturesEnabled() && <NavTab
+        panel={Panel.SavedGardens}
+        linkTo={"/app/designer/saved_gardens"}
+        title={t("Gardens")} />}
+      <NavTab
+        panel={Panel.FarmEvents}
+        linkTo={"/app/designer/events"}
+        title={t("Events")} />
+      {DevSettings.futureFeaturesEnabled() && <NavTab
+        panel={Panel.Points}
+        linkTo={"/app/designer/points"}
+        title={t("Points")} />}
+      {DevSettings.futureFeaturesEnabled() && <NavTab
+        panel={Panel.Tools}
+        linkTo={"/app/designer/tools"}
+        title={t("Tools")} />}
+      <NavTab
+        panel={Panel.Settings}
+        icon={"fa fa-gear"}
+        linkTo={"/app/designer/settings"}
+        title={t("Settings")} />
     </div>
   </div>;
 }
