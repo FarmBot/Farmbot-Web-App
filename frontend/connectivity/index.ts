@@ -11,18 +11,20 @@ unavoidable. */
 /** throttle calls to these functions to avoid unnecessary re-paints. */
 const SLOWDOWN_TIME = 1500;
 
-const lastCalledAt: Record<Edge, number> = {
-  "user.api": 0, "user.mqtt": 0, "bot.mqtt": 0
+export const networkUptimeThrottleStats: Record<Edge, number> = {
+  "user.api": 0,
+  "user.mqtt": 0,
+  "bot.mqtt": 0
 };
 
 function shouldThrottle(edge: Edge, now: number): boolean {
-  const then = lastCalledAt[edge];
+  const then = networkUptimeThrottleStats[edge];
   const diff = now - then;
   return diff < SLOWDOWN_TIME;
 }
 
 function bumpThrottle(edge: Edge, now: number) {
-  lastCalledAt[edge] = now;
+  networkUptimeThrottleStats[edge] = now;
 }
 
 export const dispatchQosStart = (id: string) => {
@@ -56,7 +58,7 @@ export let dispatchNetworkDown = (edge: Edge, at: number, qosPingId?: string) =>
   // so we need to add a means of cancelling the
   // "network down" action if the request completed
   // before the timeout.
-  if (qosPingId && pingAlreadyComplete(qosPingId)) { return; }
+  if (pingAlreadyComplete(qosPingId)) { return; }
   store.dispatch(networkDown(edge, at, qosPingId));
   bumpThrottle(edge, at);
 };

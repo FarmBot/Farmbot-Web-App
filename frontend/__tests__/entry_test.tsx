@@ -17,13 +17,10 @@ import I from "i18next";
 
 describe("entry file", () => {
   it("Calls the expected callbacks", async () => {
-    console.log = jest.fn();
-
     await import("../entry");
 
     expect(stopIE).toHaveBeenCalled();
     expect(detectLanguage).toHaveBeenCalled();
     expect(I.init).toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith("ABCD");
   });
 });
