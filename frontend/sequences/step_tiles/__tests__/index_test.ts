@@ -114,7 +114,7 @@ describe("renderCeleryNode()", () => {
     },
     {
       node: { kind: "execute", args: { sequence_id: 0 } } as Execute,
-      expected: "Sequence"
+      expected: "Select a sequence"
     },
     {
       node: {
