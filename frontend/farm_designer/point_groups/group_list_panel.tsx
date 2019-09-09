@@ -22,7 +22,7 @@ interface State {
   searchTerm: string;
 }
 
-function mapStateToProps(props: Everything): GroupListPanelProps {
+export function mapStateToProps(props: Everything): GroupListPanelProps {
   const groups =
     findAll<TaggedPointGroup>(props.resources.index, "PointGroup");
   return { groups, dispatch: props.dispatch };
