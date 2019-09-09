@@ -25,13 +25,16 @@ import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   state: MoveAbsState = {
-    more: !!this.props.expandStepOptions || this.hasOffset
+    more: !!this.props.expandStepOptions || this.hasOffset || this.hasSpeed
   };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
   get hasOffset(): boolean {
     const { x, y, z } = this.args.offset.args;
     return !!(x || y || z);
+  }
+  get hasSpeed(): boolean {
+    return this.args.speed === 100 ? false : true;
   }
 
   /** Merge step args update into step args. */

@@ -84,6 +84,7 @@ describe("<TileMoveAbsolute/>", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
     (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
+    (p.currentStep as MoveAbsolute).args.speed = 100;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(false);
     wrapper.find("h4").simulate("click");
@@ -101,6 +102,24 @@ describe("<TileMoveAbsolute/>", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
     (p.currentStep as MoveAbsolute).args.offset.args.z = 100;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(true);
+  });
+
+  it("not expanding form when speed is 100", () => {
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
+    (p.currentStep as MoveAbsolute).args.speed = 100;
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.state().more).toEqual(false);
+  });
+
+  it("expands form when speed is not 100", () => {
+    const p = fakeProps();
+    p.expandStepOptions = false;
+    (p.currentStep as MoveAbsolute).args.offset.args = { x: 0, y: 0, z: 0 };
+    (p.currentStep as MoveAbsolute).args.speed = 50;
     const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
     expect(wrapper.state().more).toEqual(true);
   });
