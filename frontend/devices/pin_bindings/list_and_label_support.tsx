@@ -66,8 +66,10 @@ enum SystemPins {
   reset = 19,
 }
 
-const sysLedBindings = Object.values(LEDPin);
-const otherSysBindings = Object.values(SystemPins);
+const toPinNum = (n: string) => parseInt(n);
+
+const sysLedBindings: number[] = Object.values(LEDPin).map(toPinNum);
+const otherSysBindings: number[] = Object.values(SystemPins).map(toPinNum);
 /** All pin numbers used by FarmBot OS that cannot be used in pin bindings. */
 export const sysBindings = sysLedBindings.concat(sysBtnBindings, otherSysBindings);
 

@@ -4,6 +4,7 @@ import { Assertion } from "farmbot/dist/corpus";
 import React from "react";
 import { SequenceSelectBox } from "../../sequence_select_box";
 import { AssertionStepProps } from "../tile_assertion";
+import { t } from "../../../i18next_wrapper";
 
 export function SequencePart(props: AssertionStepProps) {
   const onChange = (ddi: DropDownItem) => props.dispatch(editStep({
@@ -23,8 +24,8 @@ export function SequencePart(props: AssertionStepProps) {
   if (_then.kind == "execute") {
     sequenceId = _then.args.sequence_id;
   }
-  return <span>
-    <label>Recovery Sequence</label>
+  return <span className="assertion-sequence">
+    <label>{t("Recovery Sequence")}</label>
     <SequenceSelectBox
       key={JSON.stringify(props.currentStep)}
       onChange={onChange}

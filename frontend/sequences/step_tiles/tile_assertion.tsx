@@ -12,8 +12,7 @@ export interface AssertionStepProps extends StepParams {
   currentStep: Assertion;
 }
 
-const CLASS_NAME = "if-step";
-const MOVE_THIS_CSS_PLZ = { marginTop: "10px" };
+const CLASS_NAME = "assertion-step";
 
 export function TileAssertion(props: StepParams) {
   const step = props.currentStep;
@@ -37,9 +36,13 @@ export function TileAssertion(props: StepParams) {
           <LuaPart {...p} />
         </Col>
       </Row>
-      <Row >
-        <Col xs={6}><div style={MOVE_THIS_CSS_PLZ}> <TypePart {...p} /></div> </Col>
-        <Col xs={6}><div style={MOVE_THIS_CSS_PLZ}> <SequencePart {...p} /></div> </Col>
+      <Row>
+        <Col xs={6}>
+          <TypePart {...p} />
+        </Col>
+        <Col xs={6}>
+          <SequencePart {...p} />
+        </Col>
       </Row>
     </StepContent>
   </StepWrapper>;

@@ -169,7 +169,7 @@ export function namedPin2DropDown(ri: ResourceIndex, input: NamedPin | Nothing):
 export const dropDown2CeleryArg =
   (ri: ResourceIndex, item: DropDownItem): number | NamedPin => {
     if (isString(item.value)) { // str means "Named Pin". num means "Raw Pin"
-      if (Object.values(BoxLed).includes(item.value)) {
+      if (Object.values(BoxLed).map((x: string) => x).includes(item.value)) {
         return {
           kind: "named_pin",
           args: { pin_type: item.value as AllowedPinTypes, pin_id: -1 }
