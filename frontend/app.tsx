@@ -29,6 +29,7 @@ import { ResourceIndex } from "./resources/interfaces";
 import { isBotOnline } from "./devices/must_be_online";
 import { getStatus } from "./connectivity/reducer_support";
 import { getAllAlerts } from "./messages/state_to_props";
+import { PingDictionary } from "./devices/connectivity/qos";
 
 /** For the logger module */
 init();
@@ -50,6 +51,7 @@ export interface AppProps {
   resources: ResourceIndex;
   autoSync: boolean;
   alertCount: number;
+  pings: PingDictionary;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
@@ -76,6 +78,7 @@ export function mapStateToProps(props: Everything): AppProps {
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
     alertCount: getAllAlerts(props.resources).length,
+    pings: props.bot.connectivity.pings
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -133,7 +136,8 @@ export class App extends React.Component<AppProps, {}> {
         tour={this.props.tour}
         autoSync={this.props.autoSync}
         alertCount={this.props.alertCount}
-        device={getDeviceAccountSettings(this.props.resources)} />}
+        device={getDeviceAccountSettings(this.props.resources)}
+        pings={this.props.pings} />}
       {syncLoaded && this.props.children}
       {!(["controls", "account", "regimens"].includes(currentPage)) &&
         <ControlsPopup

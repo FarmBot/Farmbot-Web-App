@@ -63,7 +63,7 @@ export function WiFiStrengthDisplay(
   const percentString = `${wifiStrengthPercent || percent}%`;
   return <div className="wifi-strength-display">
     <p>
-      <b>{t("WiFi Strength")}: </b>
+      <b>{t("WiFi strength")}: </b>
       {wifiStrength ? dbString : "N/A"}
     </p>
     {wifiStrength &&

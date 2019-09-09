@@ -1,8 +1,9 @@
 jest.mock("../index", () => ({
   dispatchNetworkDown: jest.fn(),
-  dispatchNetworkUp: jest.fn()
+  dispatchNetworkUp: jest.fn(),
+  dispatchQosStart: jest.fn()
 }));
-
+const ANY_NUMBER = expect.any(Number);
 const mockTimestamp = 0;
 jest.mock("../../util", () => ({ timestamp: () => mockTimestamp }));
 
@@ -49,14 +50,14 @@ function fakeBot(): Farmbot {
 
 function expectStale() {
   expect(dispatchNetworkDown)
-    .toHaveBeenCalledWith("bot.mqtt", undefined, expect.any(String));
+    .toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER, "TESTS");
 }
 
 function expectActive() {
   expect(dispatchNetworkUp)
-    .toHaveBeenCalledWith("bot.mqtt", undefined, expect.any(String));
+    .toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER, "TESTS");
   expect(dispatchNetworkUp)
-    .toHaveBeenCalledWith("user.mqtt", undefined, expect.any(String));
+    .toHaveBeenCalledWith("user.mqtt", ANY_NUMBER, "TESTS");
 }
 
 describe("ping util", () => {
@@ -67,12 +68,12 @@ describe("ping util", () => {
   });
 
   it("marks the bot's connection to MQTT as 'stale'", () => {
-    markStale();
+    markStale("TESTS");
     expectStale();
   });
 
   it("marks the bot's connection to MQTT as 'active'", () => {
-    markActive();
+    markActive("TESTS");
     expectActive();
   });
 

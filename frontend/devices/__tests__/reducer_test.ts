@@ -111,17 +111,17 @@ describe("botReducer", () => {
     step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
 
-    const step2 = botReducer(step1, networkDown("bot.mqtt", undefined, "tests"));
+    const step2 = botReducer(step1, networkDown("bot.mqtt"));
     expect(step2.statusStash)
       .toBe(step1.hardware.informational_settings.sync_status);
     expect(step2.hardware.informational_settings.sync_status).toBeUndefined();
 
-    const step3 = botReducer(step1, networkDown("bot.mqtt", undefined, "tests"));
+    const step3 = botReducer(step1, networkDown("bot.mqtt"));
     expect(step3.statusStash)
       .toBe(step1.hardware.informational_settings.sync_status);
     expect(step3.hardware.informational_settings.sync_status).toBeUndefined();
 
-    const step4 = botReducer(step3, networkUp("bot.mqtt", undefined, "tests"));
+    const step4 = botReducer(step3, networkUp("bot.mqtt"));
     expect(step4.hardware.informational_settings.sync_status)
       .toBe(step3.statusStash);
   });

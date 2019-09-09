@@ -2,6 +2,7 @@ import { BotState } from "../devices/interfaces";
 import { TaggedUser, TaggedLog, TaggedDevice } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
+import { PingDictionary } from "../devices/connectivity/qos";
 
 export interface SyncButtonProps {
   dispatch: Function;
@@ -23,6 +24,7 @@ export interface NavBarProps {
   device: TaggedDevice;
   autoSync: boolean;
   alertCount: number;
+  pings: PingDictionary;
 }
 
 export interface NavBarState {

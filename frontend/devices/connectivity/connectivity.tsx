@@ -8,11 +8,14 @@ import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay
 } from "../components/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
+import { QosPanel } from "./qos_panel";
+import { PingDictionary } from "./qos";
 
 export interface ConnectivityProps {
   bot: BotState;
   rowData: StatusRowProps[];
   flags: DiagnosisProps;
+  pings: PingDictionary;
 }
 
 interface ConnectivityState {
@@ -42,6 +45,7 @@ export class Connectivity
             <WiFiStrengthDisplay wifiStrength={wifi_level} />
             <VoltageDisplay throttled={throttled} />
           </div>
+          <QosPanel pings={this.props.pings} />
         </Col>
         <Col md={12} lg={8}>
           <ConnectivityRow from={t("from")} to={t("to")} header={true} />
