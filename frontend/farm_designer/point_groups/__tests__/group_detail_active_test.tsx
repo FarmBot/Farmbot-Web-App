@@ -1,6 +1,7 @@
 jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
-  overwrite: jest.fn()
+  overwrite: jest.fn(),
+  edit: jest.fn(),
 }));
 
 jest.mock("../../actions", () => ({
@@ -13,7 +14,7 @@ import { mount, shallow } from "enzyme";
 import {
   fakePointGroup, fakePlant
 } from "../../../__test_support__/fake_state/resources";
-import { save, overwrite } from "../../../api/crud";
+import { save, overwrite, edit } from "../../../api/crud";
 import { toggleHoveredPlant } from "../../actions";
 
 describe("<GroupDetailActive/>", () => {
@@ -27,6 +28,7 @@ describe("<GroupDetailActive/>", () => {
     return { dispatch: jest.fn(), group, plants };
   }
   const icon = "doge.jpg";
+
   it("removes points onClick", () => {
     const { plants, dispatch, group } = fakeProps();
     const el = shallow(<LittleIcon
@@ -80,5 +82,14 @@ describe("<GroupDetailActive/>", () => {
     const props = fakeProps();
     const el = mount(<GroupDetailActive {...props} />);
     expect(el.find("input").prop("defaultValue")).toContain("XYZ");
+  });
+
+  it("changes group name", () => {
+    const NEW_NAME = "new group name";
+    const wrapper = shallow(<GroupDetailActive {...fakeProps()} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { value: NEW_NAME }
+    });
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: NEW_NAME });
   });
 });

@@ -88,6 +88,9 @@
   &.if-step {
     background: $purple;
   }
+  &.assertion-step {
+    background: $purple;
+  }
   &.execute-step {
     background: $gray;
   }
@@ -180,18 +183,21 @@
   }
   &.if-step {
     background: $light_purple;
-    h4 {
-      margin: 0 0 0.4rem;
-      font-style: italic;
-      &:not(.top) {
-        margin: 1.4rem 0 0.4rem;
-      }
-    }
     input {
       height: 3rem;
     }
-    .execute-row{
-      margin-top:1rem;
+    .execute-row {
+      margin-top: 1rem;
+    }
+  }
+  &.assertion-step {
+    background: $light_purple;
+    input {
+      height: 3rem;
+    }
+    .assertion-sequence,
+    .assertion-type {
+      margin-top: 10px;
     }
   }
   &.execute-step {

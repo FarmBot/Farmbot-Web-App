@@ -53,15 +53,15 @@ export class QosPanel extends React.Component<Props, {}> {
     const errorRateDecimal = ((r.complete) / r.total);
     const errorRate = Math.round(100 * errorRateDecimal).toFixed(0);
 
-    return <div className="fbos-info">
+    return <div className="network-info">
       <label>{t("Network Quality")}</label>
-      <div className="chip-temp-display">
-        <Row k="Percent OK" v={pct(errorRate, PCT)} />
-        <Row k="Pings sent" v={pct(r.total, NONE)} />
-        <Row k="Pings received" v={pct(r.complete, NONE)} />
-        <Row k="Best time" v={pct(r.best, MS)} />
-        <Row k="Worst time" v={pct(r.worst, MS)} />
-        <Row k="Average time" v={pct(r.average, MS)} />
+      <div className="qos-display">
+        <Row k={t("Percent OK")} v={pct(errorRate, PCT)} />
+        <Row k={t("Pings sent")} v={pct(r.total, NONE)} />
+        <Row k={t("Pings received")} v={pct(r.complete, NONE)} />
+        <Row k={t("Best time")} v={pct(r.best, MS)} />
+        <Row k={t("Worst time")} v={pct(r.worst, MS)} />
+        <Row k={t("Average time")} v={pct(r.average, MS)} />
       </div>
     </div>;
 

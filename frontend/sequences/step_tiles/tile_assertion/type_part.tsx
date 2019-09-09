@@ -3,6 +3,7 @@ import { ALLOWED_ASSERTION_TYPES, Assertion } from "farmbot";
 import { DropDownItem, FBSelect } from "../../../ui";
 import { editStep } from "../../../api/crud";
 import { AssertionStepProps } from "../tile_assertion";
+import { t } from "../../../i18next_wrapper";
 
 const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
   "continue": { label: "Continue", value: "continue" },
@@ -13,8 +14,8 @@ const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
 
 export function TypePart(props: AssertionStepProps) {
   const { assertion_type } = props.currentStep.args;
-  return <span>
-    <label>If Test Fails</label>
+  return <span className="assertion-type">
+    <label>{t("If Test Fails")}</label>
     <FBSelect
       key={JSON.stringify(props.currentStep)}
       selectedItem={ASSERTION_TYPES[assertion_type]}

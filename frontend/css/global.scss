@@ -146,6 +146,7 @@ fieldset {
       .connectivity-diagram svg {
         max-height: 200px !important;
       }
+      .network-info,
       .fbos-info {
         @media (max-width:767px) {
           display: none;
@@ -219,6 +220,7 @@ fieldset {
   }
 }
 
+.network-info,
 .fbos-info {
   margin: auto;
   margin-bottom: 2rem;
@@ -855,9 +857,6 @@ ul {
     a {
       color: $panel_yellow;
     }
-    .empty-state-graphic {
-      filter: sepia(1) contrast(1.2) saturate(1.2);
-    }
   }
   &.points {
     p,
@@ -882,9 +881,6 @@ ul {
     a {
       color: $panel_blue;
     }
-    // .empty-state-graphic {
-    //   filter: hue-rotate(60deg) saturate(0.6);
-    // }
   }
 }
 
