@@ -47,8 +47,13 @@ class User < ApplicationRecord
   def self.refresh_everyones_ui
     Rollbar.error("Global UI refresh triggered")
 
+    msg = {
+      "type" => "reload",
+      "commit" => (ENV["HEROKU_SLUG_COMMIT"] || "NONE").first(8)
+    }
+
     Transport
       .current
-      .raw_amqp_send({}.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
+      .raw_amqp_send(msg.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
   end
 end
