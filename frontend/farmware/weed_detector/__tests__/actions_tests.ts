@@ -66,6 +66,7 @@ describe("deletePoints()", () => {
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
+    await expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: [1, 2, 3],
       type: Actions.DELETE_POINT_OK
@@ -73,7 +74,6 @@ describe("deletePoints()", () => {
     expect(mockInc).toHaveBeenCalledTimes(2);
     expect(mockFinish).toHaveBeenCalledTimes(1);
     expect(success).toHaveBeenCalledWith("Deleted 3 weeds");
-    expect(error).not.toHaveBeenCalled();
   });
 
   it("can't delete points", async () => {
@@ -85,7 +85,7 @@ describe("deletePoints()", () => {
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
     await expect(dispatch).not.toHaveBeenCalled();
-    expect(mockInc).toHaveBeenCalledTimes(1);
+    await expect(mockInc).toHaveBeenCalledTimes(1);
     expect(mockFinish).toHaveBeenCalledTimes(1);
     expect(success).not.toHaveBeenCalledWith();
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
@@ -103,6 +103,7 @@ describe("deletePoints()", () => {
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith(
       expect.stringContaining("http://localhost/api/points/1,"));
+    await expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: expect.arrayContaining([1]),
       type: Actions.DELETE_POINT_OK
@@ -110,6 +111,5 @@ describe("deletePoints()", () => {
     expect(mockInc).toHaveBeenCalledTimes(3);
     expect(mockFinish).toHaveBeenCalledTimes(1);
     expect(success).toHaveBeenCalledWith("Deleted 200 weeds");
-    expect(error).not.toHaveBeenCalled();
   });
 });
