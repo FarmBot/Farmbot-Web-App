@@ -56,7 +56,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
           title={t("No groups yet.")}
           text={t(Content.NO_GROUPS)}
           colorScheme="groups"
-          graphic={EmptyStateGraphic.plants}>
+          graphic={EmptyStateGraphic.no_groups}>
           {this.props.groups
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))

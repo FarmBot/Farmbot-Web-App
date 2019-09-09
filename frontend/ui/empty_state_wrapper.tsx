@@ -8,6 +8,7 @@ export enum EmptyStateGraphic {
   sequences = "sequences",
   regimens = "regimens",
   no_farm_events = "no_farm_events",
+  no_groups = "no_groups"
 }
 
 interface EmptyStateWrapperProps {
