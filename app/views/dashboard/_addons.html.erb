@@ -18,7 +18,7 @@
     });
 
     DD_LOGS.addLoggerGlobalContext("FRONTEND_LOG", "true");
-    logStore.log = DD_LOGS.logger.info;
+    logStore.log = (x,y,z) => DD_LOGS.logger.info(x,y,z);
   </script>
 
 <% end %>
