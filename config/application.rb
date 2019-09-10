@@ -107,6 +107,7 @@ module FarmBot
           "chrome-extension:",
           "localhost:3808",
           PARCELJS_URL,
+          "www.datadoghq-browser-agent.com",
         ],
         style_src: %w(
           'self'

@@ -1,4 +1,28 @@
 <script>
+  window.logStore = {
+    log: function (x,y,z) {
+      var fn = console[z] || console.log;
+      fn(x)
+      y && console.dir(y);
+    }
+  };
+</script>
+<% if ENV["DATADOG_CLIENT_TOKEN"] %>
+  <script type="text/javascript" src="https://www.datadoghq-browser-agent.com/datadog-logs-us.js">
+  </script>
+
+  <script>
+    DD_LOGS.init({
+      clientToken: "<%= ENV["DATADOG_CLIENT_TOKEN"] %>",
+      forwardErrorsToLogs: false,
+    });
+
+    DD_LOGS.addLoggerGlobalContext("FRONTEND_LOG", "true");
+    logStore.log = DD_LOGS.logger.info;
+  </script>
+
+<% end %>
+<script>
 var hasInclude = !!Array.prototype.includes
 var user;
 try {

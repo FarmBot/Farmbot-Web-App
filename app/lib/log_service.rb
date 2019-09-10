@@ -12,7 +12,10 @@ class LogService < AbstractServiceRunner
   def process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
     m = AmqpLogParser.run!(params)
-    puts LOG_TPL % [m.device_id, m.payload["message"]] if Rails.env.production?
+    binding.pry
+    if Rails.env.production?
+      puts LOG_TPL % [m.device_id, m.payload["message"]]
+    end
     THROTTLE_POLICY.track(m.device_id)
     maybe_deliver(m)
   end
