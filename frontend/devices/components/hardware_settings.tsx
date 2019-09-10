@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
-import { Widget, WidgetHeader, WidgetBody, SaveBtn } from "../../ui/index";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips } from "../../constants";
@@ -12,7 +12,6 @@ import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
   HomingAndCalibration
 } from "./hardware_settings/homing_and_calibration";
-import { SpecialStatus } from "farmbot";
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";
 import { t } from "../../i18next_wrapper";
@@ -36,12 +35,6 @@ export class HardwareSettings extends
           syncStatus={sync_status}
           networkState={this.props.botToMqttStatus}
           lockOpen={process.env.NODE_ENV !== "production"}>
-          <SaveBtn
-            status={bot.isUpdating ? SpecialStatus.SAVING : SpecialStatus.SAVED}
-            dirtyText={" "}
-            savingText={t("Updating...")}
-            savedText={t("saved")}
-            hidden={false} />
         </MustBeOnline>
       </WidgetHeader>
       <WidgetBody>

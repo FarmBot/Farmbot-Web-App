@@ -5,7 +5,7 @@ import {
   MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
-import { getMapSize, getMode, getGardenCoordinates } from "./util";
+import { getMapSize, getGardenCoordinates, getMode } from "./util";
 import {
   Grid, MapBackground,
   TargetCoordinate,
@@ -126,6 +126,7 @@ export class GardenMap extends
     switch (getMode()) {
       case Mode.boxSelect:
       case Mode.moveTo:
+      case Mode.points:
       case Mode.createPoint:
         return undefined; // For modes without plant interaction
       default:

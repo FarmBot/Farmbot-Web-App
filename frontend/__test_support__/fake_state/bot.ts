@@ -56,8 +56,11 @@ export let bot: Everything["bot"] = {
   "dirty": false,
   "currentOSVersion": "3.1.6",
   "connectivity": {
-    "bot.mqtt": undefined,
-    "user.mqtt": undefined,
-    "user.api": undefined,
+    uptime: {
+      "bot.mqtt": undefined,
+      "user.mqtt": undefined,
+      "user.api": undefined,
+    },
+    pings: {}
   }
 };

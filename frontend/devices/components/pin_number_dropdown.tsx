@@ -67,7 +67,7 @@ const peripheralItems = (resources: ResourceIndex): DropDownItem[] => {
       value: "" + peripheral.body.pin,
       headingId: PinGroupName.Peripheral
     }));
-  return list.length ? [PERIPHERAL_HEADING, ...list] : [];
+  return list.length ? [PERIPHERAL_HEADING(), ...list] : [];
 };
 
 interface OnChangeProps {

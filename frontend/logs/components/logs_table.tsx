@@ -1,14 +1,16 @@
 import * as React from "react";
-import { TaggedLog } from "farmbot";
+import { TaggedLog, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";
 import { isNumber, startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { UUID } from "../../resources/interfaces";
 
 interface LogsRowProps {
   tlog: TaggedLog;
+  dispatch: Function;
   timeSettings: TimeSettings;
 }
 
@@ -18,18 +20,31 @@ export const xyzTableEntry =
       ? `${x}, ${y}, ${z}`
       : t("Unknown");
 
+interface LogVerbositySaucerProps {
+  uuid: UUID;
+  verbosity: number | undefined;
+  type: ALLOWED_MESSAGE_TYPES;
+  dispatch: Function;
+}
+
+const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
+  <div className="log-verbosity-saucer">
+    <div className={`saucer ${props.type}`}>
+      <p>
+        {props.verbosity}
+      </p>
+    </div>
+  </div>;
+
 /** A log is displayed in a single row of the logs table. */
-const LogsRow = ({ tlog, timeSettings }: LogsRowProps) => {
+const LogsRow = ({ tlog, timeSettings, dispatch }: LogsRowProps) => {
   const { uuid } = tlog;
-  const { x, y, z, verbosity, type, created_at, message } = tlog.body;
+  const { x, y, z, verbosity, type, created_at, message, id } = tlog.body;
   const time = formatLogTime(created_at || NaN, timeSettings);
-  return <tr key={uuid}>
+  return <tr key={uuid} id={"" + id}>
     <td>
-      <div className={`saucer ${type}`}>
-        <p>
-          {verbosity}
-        </p>
-      </div>
+      <LogVerbositySaucer
+        uuid={uuid} dispatch={dispatch} verbosity={verbosity} type={type} />
       {t(startCase(type))}
     </td>
     <td>
@@ -63,12 +78,12 @@ export const LogsTable = (props: LogsTableProps) => {
     </thead>
     <tbody>
       {filterByVerbosity(getFilterLevel(props.state), props.logs)
-        .map((log: TaggedLog) => {
-          return <LogsRow
+        .map((log: TaggedLog) =>
+          <LogsRow
             key={log.uuid}
             tlog={log}
-            timeSettings={props.timeSettings} />;
-        })}
+            dispatch={props.dispatch}
+            timeSettings={props.timeSettings} />)}
     </tbody>
   </table>;
 };

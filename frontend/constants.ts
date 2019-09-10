@@ -538,6 +538,10 @@ export namespace Content {
   export const EMERGENCY_UNLOCK_CONFIRM_CONFIG =
     trim(`Confirm when unlocking FarmBot after an emergency stop.`);
 
+  export const USER_INTERFACE_READ_ONLY_MODE =
+    trim(`Disallow account data changes. This does
+    not prevent Farmwares or FarmBot OS from changing settings.`);
+
   export const CONFIRM_EMERGENCY_UNLOCK_CONFIRM_DISABLE =
     trim(`Warning! When disabled, clicking the UNLOCK button will immediately
     unlock FarmBot instead of confirming that it is safe to do so.
@@ -743,6 +747,15 @@ export namespace Content {
   export const NO_PLANTS =
     trim(`Press "+" to add a plant to your garden.`);
 
+  export const NO_GARDENS =
+    trim(`Press "CREATE NEW GARDEN" to add a garden.`);
+
+  export const NO_POINTS =
+    trim(`Press "+" to add a point to your garden.`);
+
+  export const NO_GROUPS =
+    trim(`Press "+" to add a group.`);
+
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
 
@@ -751,6 +764,9 @@ export namespace Content {
 
   export const CROP_NOT_FOUND_LINK =
     trim(`add this crop on OpenFarm?`);
+
+  export const NO_TOOLS =
+    trim(`Press "+" to add a new tool.`);
 
   // Farm Events
   export const NOTHING_SCHEDULED =
@@ -889,6 +905,7 @@ export namespace DiagnosticMessages {
 export enum Actions {
 
   // Resources
+  DESTROY_RESOURCE_START = "DESTROY_RESOURCE_START",
   DESTROY_RESOURCE_OK = "DESTROY_RESOURCE_OK",
   INIT_RESOURCE = "INIT_RESOURCE",
   BATCH_INIT = "BATCH_INIT",
@@ -940,6 +957,7 @@ export enum Actions {
   SEARCH_QUERY_CHANGE = "SEARCH_QUERY_CHANGE",
   SELECT_PLANT = "SELECT_PLANT",
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
+  TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
@@ -976,5 +994,6 @@ export enum Actions {
   // Network
   NETWORK_EDGE_CHANGE = "NETWORK_EDGE_CHANGE",
   RESET_NETWORK = "RESET_NETWORK",
-  SET_CONSISTENCY = "SET_CONSISTENCY"
+  SET_CONSISTENCY = "SET_CONSISTENCY",
+  START_QOS_PING = "START_QOS_PING"
 }

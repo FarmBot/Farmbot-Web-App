@@ -38,13 +38,14 @@
     opacity: 0;
     pointer-events: none;
   }
-  &.yellow {
+  &.yellow,
+  &.blue,
+  &.orange {
     .toast-title,
     .toast-message {
       color: $dark_gray;
     }
   }
-  &.blue,
   &.green,
   &.red {
     .toast-title,

@@ -31,7 +31,7 @@ import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity";
 import { Session } from "../session";
 import { error } from "../toast/toast";
 
-const A_STRING = expect.any(String);
+const ANY_NUMBER = expect.any(Number);
 
 interface FakeProps {
   uuid: string;
@@ -67,7 +67,7 @@ describe("responseRejected", () => {
   it("undefined error", async () => {
     await expect(responseRejected(undefined)).rejects.toEqual(undefined);
     expect(dispatchNetworkUp).not.toHaveBeenCalled();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api", undefined, A_STRING);
+    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api", ANY_NUMBER);
   });
 
   it("safe error", async () => {
@@ -77,7 +77,7 @@ describe("responseRejected", () => {
     };
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
     expect(dispatchNetworkDown).not.toHaveBeenCalled();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", undefined, A_STRING);
+    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", ANY_NUMBER);
   });
 
   it("handles 500", async () => {

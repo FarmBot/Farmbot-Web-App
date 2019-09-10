@@ -10,23 +10,30 @@ const logTypes = MESSAGE_TYPES;
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
     autoscroll: true, success: 1, busy: 1, warn: 1,
-    error: 1, info: 1, fun: 1, debug: 1
+    error: 1, info: 1, fun: 1, debug: 1, assertion: 1,
   };
 
-  const fakeProps = (): LogsFilterMenuProps => {
-    return {
-      toggle: jest.fn(),
-      setFilterLevel: jest.fn(),
-      state: fakeState,
-    };
-  };
+  const fakeProps = (): LogsFilterMenuProps => ({
+    toggle: jest.fn(),
+    setFilterLevel: jest.fn(),
+    state: fakeState,
+    shouldDisplay: () => false,
+  });
 
   it("renders", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
+    logTypes.filter(x => x !== "assertion").map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
+  });
+
+  it("renders new types", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = mount(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
-      expect(wrapper.text().toLowerCase())
-        .toContain(string.toLowerCase()));
-    expect(wrapper.text()).not.toContain("autscroll");
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
   });
 
   it("filters logs", () => {

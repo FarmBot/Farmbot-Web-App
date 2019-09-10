@@ -25,6 +25,7 @@ import {
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
   TaggedAlert,
+  TaggedPointGroup,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
@@ -270,6 +271,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     device_id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
+    assertion_log: 1,
     confirm_plant_deletion: true,
     confirm_step_deletion: false,
     confirm_sequence_deletion: true,
@@ -318,6 +320,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,
+    user_interface_read_only_mode: false
   });
 }
 
@@ -449,5 +452,11 @@ export function fakeAlert(): TaggedAlert {
     created_at: 123,
     problem_tag: "api.noun.verb",
     priority: 100,
+  });
+}
+export function fakePointGroup(): TaggedPointGroup {
+  return fakeResource("PointGroup", {
+    name: "Fake",
+    point_ids: []
   });
 }

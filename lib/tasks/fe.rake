@@ -1,5 +1,6 @@
 PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
+DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE           = []
 
 # Load package.json as JSON.
@@ -50,10 +51,15 @@ namespace :fe do
       puts "=" * 40
       puts "#{PACKAGE_JSON_FILE} AVAILABLE UPDATES:"
       available_upgrades.each do |dep, new_version|
-        current_version = package_json[DEPS_KEY][dep]
+        deps_key = DEPS_KEY
+        current_version = package_json[deps_key][dep]
+        if current_version.nil?
+          deps_key = DEV_DEPS_KEY
+          current_version = package_json[deps_key][dep]
+        end
         padding         = ' ' * (max_key_length - dep.length)
         puts "  #{dep} #{padding} #{current_version} -> #{new_version}"
-        package_json[DEPS_KEY][dep] = new_version
+        package_json[deps_key][dep] = new_version
       end
       puts "=" * 40
 

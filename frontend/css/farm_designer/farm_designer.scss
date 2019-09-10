@@ -195,18 +195,67 @@
       width: 4rem;
     }
   }
-  .plant-search-item-age {
+  %panel-item-base {
     text-align: right;
     font-size: 1rem;
     padding-top: 1.4rem;
     padding-right: 1rem;
     float: right;
   }
+  .plant-search-item-age {
+    @extend %panel-item-base;
+  }
+  .group-item-count {
+    @extend %panel-item-base;
+    padding-top: 0.6rem;
+  }
+  .groups-panel-content {
+    padding: 0px;
+  }
+  .groups-list-wrapper {
+    padding: 0.5em 0em;
+  }
+  .groups-delete-btn {
+    float: left;
+    margin-top: 1em;
+  }
   .plant-search-item-name {
     display: inline-block;
     vertical-align: middle;
     white-space: nowrap;
     width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 1rem;
+  }
+  .point-search-item {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    &:hover,
+    &.hovered {
+      background: darken($light_brown, 10%);
+      transition: background 0.2s ease;
+    }
+    .saucer {
+      display: inline-block;
+      margin: 0 1rem 0 0;
+      height: 2rem;
+      width: 2rem;
+      vertical-align: middle;
+    }
+  }
+  .point-search-item-info {
+    text-align: right;
+    font-size: 1rem;
+    padding-top: 0.6rem;
+    padding-right: 1rem;
+    float: right;
+  }
+  .point-search-item-name {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 40%;
     overflow: hidden;
     text-overflow: ellipsis;
     margin-left: 1rem;
@@ -241,7 +290,9 @@
 }
 
 .plant-indicator.is-chosen-true {
-  animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  &.animate {
+    animation: plant-selection-pop 0.2s 1 cubic-bezier(0, 0, 0, 0.9), pulse-and-rotate 4s 0.2s infinite linear;
+  }
   transform-origin: center;
   transform-box: fill-box;
 }

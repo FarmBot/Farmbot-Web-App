@@ -40,4 +40,16 @@ describe("<Link/>", () => {
     expect(el.html()).toContain("Hey!");
     el.unmount();
   });
+
+  it("navigates", () => {
+    const wrapper = shallow(<Link to="/tools" />);
+    wrapper.simulate("click", { preventDefault: jest.fn() });
+    expect(navigate).toHaveBeenCalledWith("/tools");
+  });
+
+  it("doesn't navigate when disabled", () => {
+    const wrapper = shallow(<Link to="/tools" disabled={true} />);
+    wrapper.simulate("click", { preventDefault: jest.fn() });
+    expect(navigate).not.toHaveBeenCalledWith();
+  });
 });

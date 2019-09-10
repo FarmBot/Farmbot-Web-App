@@ -9,7 +9,8 @@ import {
   fakeSavedGarden,
   fakePoint,
   fakeWebAppConfig,
-  fakeFarmwareEnv
+  fakeFarmwareEnv,
+  fakeSensorReading
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
@@ -81,6 +82,21 @@ describe("mapStateToProps()", () => {
     point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
     expect(mapStateToProps(state).points.length).toEqual(1);
+  });
+
+  it("returns sensor readings", () => {
+    const state = fakeState();
+    const sr1 = fakeSensorReading();
+    sr1.body.created_at = "2018-01-14T20:20:38.362Z";
+    const sr2 = fakeSensorReading();
+    sr2.body.created_at = "2018-01-11T20:20:38.362Z";
+    state.resources = buildResourceIndex([sr1, sr2]);
+    const uuid1 = Object.keys(state.resources.index.byKind["SensorReading"])[0];
+    const uuid2 = Object.keys(state.resources.index.byKind["SensorReading"])[1];
+    expect(mapStateToProps(state).sensorReadings).toEqual([
+      expect.objectContaining({ uuid: uuid2 }),
+      expect.objectContaining({ uuid: uuid1 }),
+    ]);
   });
 });
 

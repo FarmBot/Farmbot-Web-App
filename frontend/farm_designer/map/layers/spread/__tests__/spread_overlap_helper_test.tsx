@@ -113,8 +113,12 @@ describe("<SpreadOverlapHelper/>", () => {
 describe("SpreadOverlapHelper functions", () => {
 
   it("getDiscreteColor()", () => {
+    expect(getDiscreteColor(0, 100)).toEqual("none");
     expect(getDiscreteColor(10, 100)).toEqual("green");
     expect(getDiscreteColor(20, 100)).toEqual("green");
+    expect(getDiscreteColor(40, 100)).toEqual("yellow");
+    expect(getDiscreteColor(70, 100)).toEqual("orange");
+    expect(getDiscreteColor(100, 100)).toEqual("red");
   });
 
   it("getContinuousColor()", () => {

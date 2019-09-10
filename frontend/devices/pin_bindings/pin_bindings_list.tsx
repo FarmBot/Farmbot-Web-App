@@ -45,7 +45,8 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
           </Col>
           <Col xs={PinBindingColWidth.button}>
             <button
-              className={`fb-button ${delBtnColor(pin_number)}`}
+              className={`fb-button ${delBtnColor(pin_number)} del-button`}
+              title={t("Delete")}
               onClick={() => deleteBinding(pin_number, x.uuid)}>
               <i className="fa fa-times" />
             </button>

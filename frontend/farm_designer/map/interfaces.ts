@@ -72,6 +72,9 @@ export interface GardenPointProps {
   point: TaggedGenericPointer;
 }
 
+export interface GardenPointState {
+}
+
 interface DragHelpersBaseProps {
   dragging: boolean;
   mapTransformProps: MapTransformProps;
@@ -140,6 +143,8 @@ export enum Mode {
   editPlant = "editPlant",
   addPlant = "addPlant",
   moveTo = "moveTo",
+  points = "points",
   createPoint = "createPoint",
   templateView = "templateView",
+  addPointToGroup = "addPointToGroup",
 }

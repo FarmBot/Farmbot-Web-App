@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../../interfaces";
 import { initSave } from "../../api/crud";
@@ -30,6 +29,7 @@ export interface CreatePointsProps {
 }
 
 interface CreatePointsState {
+  name: string;
   cx: number;
   cy: number;
   r: number;
@@ -44,13 +44,14 @@ export class CreatePoints
     this.state = {};
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.getPointData();
   }
 
   getPointData = () => {
     const point = this.props.currentPoint;
     this.setState({
+      name: point ? point.name : "Created Point",
       cx: point ? point.cx : 0,
       cy: point ? point.cy : 0,
       r: point ? point.r : 1,
@@ -63,7 +64,9 @@ export class CreatePoints
       type: Actions.SET_CURRENT_POINT_DATA,
       payload: undefined
     });
-    this.setState({ cx: undefined, cy: undefined, r: undefined, color: undefined });
+    this.setState({
+      cx: undefined, cy: undefined, r: undefined, color: undefined
+    });
   }
 
   componentWillUnmount() {
@@ -77,14 +80,21 @@ export class CreatePoints
     });
   }
 
-  /** Update number fields. */
-  updateNumberValue = (key: keyof Omit<CreatePointsState, "color">) => {
+  /** Update fields. */
+  updateValue = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const value = parseIntInput(e.currentTarget.value);
+      const { value } = e.currentTarget;
       this.setState({ [key]: value });
       if (this.props.currentPoint) {
         const point = clone(this.props.currentPoint);
-        point[key] = value;
+        switch (key) {
+          case "name":
+          case "color":
+            point[key] = value;
+            break;
+          default:
+            point[key] = parseIntInput(value);
+        }
         this.props.dispatch({
           type: Actions.SET_CURRENT_POINT_DATA,
           payload: point
@@ -96,29 +106,41 @@ export class CreatePoints
   changeColor = (color: ResourceColor) => {
     this.setState({ color });
     if (this.props.currentPoint) {
-      const { cx, cy, r } = this.props.currentPoint;
+      const { cx, cy, r, name } = this.props.currentPoint;
       this.props.dispatch({
         type: Actions.SET_CURRENT_POINT_DATA,
-        payload: { cx, cy, r, color }
+        payload: { cx, cy, r, color, name }
       });
     }
     this.forceUpdate();
   }
 
   createPoint = () => {
-    const { cx, cy, r, color } = this.state;
+    const { cx, cy, r, color, name } = this.state;
     const body: GenericPointer = {
       pointer_type: "GenericPointer",
-      name: "Created Point",
+      name: name || "Created Point",
       meta: { color, created_by: "farm-designer" },
-      x: (cx || 0),
-      y: (cy || 0),
+      x: cx || 0,
+      y: cy || 0,
       z: 0,
-      radius: (r || 1),
+      radius: r || 1,
     };
     this.props.dispatch(initSave("Point", body));
     this.cancel();
   }
+
+  PointName = () =>
+    <Row>
+      <Col xs={12}>
+        <label>{t("Name")}</label>
+        <BlurableInput
+          name="name"
+          type="text"
+          onCommit={this.updateValue("name")}
+          value={this.state.name || "Created Point"} />
+      </Col>
+    </Row>;
 
   PointProperties = () => {
     const { cx, cy, r, color } = this.state;
@@ -128,7 +150,7 @@ export class CreatePoints
         <BlurableInput
           name="cx"
           type="number"
-          onCommit={this.updateNumberValue("cx")}
+          onCommit={this.updateValue("cx")}
           value={cx || 0} />
       </Col>
       <Col xs={3}>
@@ -136,7 +158,7 @@ export class CreatePoints
         <BlurableInput
           name="cy"
           type="number"
-          onCommit={this.updateNumberValue("cy")}
+          onCommit={this.updateValue("cy")}
           value={cy || 0} />
       </Col>
       <Col xs={3}>
@@ -144,7 +166,7 @@ export class CreatePoints
         <BlurableInput
           name="r"
           type="number"
-          onCommit={this.updateNumberValue("r")}
+          onCommit={this.updateValue("r")}
           value={r || 0}
           min={0} />
       </Col>
@@ -196,8 +218,10 @@ export class CreatePoints
         panelName={"point-creation"}
         panelColor={"brown"}
         title={t("Create point")}
+        backTo={"/app/designer/points"}
         description={Content.CREATE_POINTS_DESCRIPTION} />
       <DesignerPanelContent panelName={"point-creation"}>
+        <this.PointName />
         <this.PointProperties />
         <this.PointActions />
         <this.DeleteAllPoints />

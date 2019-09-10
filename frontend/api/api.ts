@@ -117,6 +117,8 @@ export class API {
   get imagesPath() { return `${this.baseUrl}/api/images/`; }
   /** /api/points/ */
   get pointsPath() { return `${this.baseUrl}/api/points/`; }
+  /** /api/point_groups/ */
+  get pointGroupsPath() { return `${this.baseUrl}/api/point_groups/`; }
   /** /api/points/?filter=all */
   get allPointsPath() { return `${this.pointsPath}?filter=all`; }
   /** /api/points/search */
@@ -124,6 +126,8 @@ export class API {
   /** Rather than returning ALL logs, returns a filtered subset.
    * /api/logs/search */
   get filteredLogsPath() { return `${this.baseUrl}/api/logs/search`; }
+  /** /api/logs/ */
+  get logsPath() { return `${this.baseUrl}/api/logs/`; }
   /** /api/webcam_feed */
   get webcamFeedPath() { return `${this.baseUrl}/api/webcam_feeds/`; }
   /** /api/web_app_config */
@@ -160,5 +164,5 @@ export class API {
   get alertPath() { return `${this.baseUrl}/api/alerts/`; }
   /** /api/global_bulletins/:id */
   get globalBulletinPath() { return `${this.baseUrl}/api/global_bulletins/`; }
-  get syncPatch() { return `${this.baseUrl}/api/device/sync/`; }
+  // get syncPath() { return `${this.baseUrl}/api/device/sync/`; }
 }

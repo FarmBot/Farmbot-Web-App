@@ -100,4 +100,22 @@ describe("FBToast", () => {
     i.doPolling();
     expect(i.detach).toHaveBeenCalled();
   });
+
+  it("does polling: large timeout value", () => {
+    const [i] = newToast();
+    i.isHovered = false;
+    i.timeout = 8;
+    i.detach = jest.fn();
+    i.doPolling();
+    expect(i.detach).not.toHaveBeenCalled();
+  });
+
+  it("does polling: hovered", () => {
+    const [i] = newToast();
+    i.isHovered = true;
+    i.timeout = 0;
+    i.detach = jest.fn();
+    i.doPolling();
+    expect(i.detach).not.toHaveBeenCalled();
+  });
 });

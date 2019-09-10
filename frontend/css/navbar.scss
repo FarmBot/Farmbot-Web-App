@@ -28,6 +28,11 @@ nav {
   &.auto-sync {
     background: none !important;
     box-shadow: none;
+    text-transform: none;
+  }
+  &.auto-sync-busy {
+    background: none !important;
+    box-shadow: none;
     font-style: italic;
     text-transform: none;
   }

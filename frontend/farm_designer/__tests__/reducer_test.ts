@@ -2,28 +2,14 @@ import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
 import {
-  DesignerState, HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
+  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import { fakeCropLiveSearchResult } from "../../__test_support__/fake_crop_search_result";
+import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 
 describe("designer reducer", () => {
-  const oldState = (): DesignerState => {
-    return {
-      selectedPlants: undefined,
-      hoveredPlant: {
-        plantUUID: undefined,
-        icon: ""
-      },
-      hoveredPlantListItem: undefined,
-      cropSearchQuery: "",
-      cropSearchResults: [],
-      cropSearchInProgress: false,
-      chosenLocation: { x: undefined, y: undefined, z: undefined },
-      currentPoint: undefined,
-      openedSavedGarden: undefined,
-    };
-  };
+  const oldState = fakeDesignerState;
 
   it("sets search query", () => {
     const action: ReduxAction<string> = {

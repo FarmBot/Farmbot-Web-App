@@ -20,18 +20,19 @@ module CeleryScriptSettingsBag
                   "BoxLed3" => BoxLed,
                   "BoxLed4" => BoxLed }
   ALLOWED_AXIS = %w(x y z all)
+  ALLOWED_ASSERTION_TYPES = %w(abort recover abort_recover continue)
   ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
   ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
   ALLOWED_LHS_TYPES = [String, :named_pin]
-  ALLOWED_MESSAGE_TYPES = %w(success busy warn error info fun debug)
+  ALLOWED_MESSAGE_TYPES = %w(assertion busy debug error fun info success warn)
   ALLOWED_OPS = %w(< > is not is_undefined)
   ALLOWED_PACKAGES = %w(farmbot_os arduino_firmware)
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
   ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
   ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot GenericPointer)
-  ALLOWED_RPC_NODES = %w(calibrate change_ownership
+  ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
                          check_updates dump_info emergency_lock
                          emergency_unlock execute execute_script
                          factory_reset find_home flash_firmware home
@@ -45,6 +46,7 @@ module CeleryScriptSettingsBag
                            read_status reboot sync take_photo)
   ANY_VARIABLE = %i(tool coordinate point identifier)
   BAD_ALLOWED_PIN_MODES = '"%s" is not a valid pin_mode. Allowed values: %s'
+  BAD_ASSERTION_TYPE = '"%s" is not a valid assertion type. Try these instead: %s'
   BAD_AXIS = '"%s" is not a valid axis. Allowed values: %s'
   BAD_CHANNEL_NAME = '"%s" is not a valid channel_name. Allowed values: %s'
   BAD_LHS = 'Can not put "%s" into a left hand side (LHS)' \
@@ -94,6 +96,7 @@ module CeleryScriptSettingsBag
     ALLOWED_OPS: [ALLOWED_OPS, BAD_OP],
     ALLOWED_PACKAGES: [ALLOWED_PACKAGES, BAD_PACKAGE],
     ALLOWED_PIN_MODES: [ALLOWED_PIN_MODES, BAD_ALLOWED_PIN_MODES],
+    ALLOWED_ASSERTION_TYPES: [ALLOWED_ASSERTION_TYPES, BAD_ASSERTION_TYPE],
     AllowedPinTypes: [ALLOWED_PIN_TYPES, BAD_PIN_TYPE],
     Color: [Sequence::COLORS, MISC_ENUM_ERR],
     DataChangeType: [ALLOWED_CHANGES, MISC_ENUM_ERR],
@@ -261,6 +264,12 @@ module CeleryScriptSettingsBag
     resource_type: {
       defn: [e(:resource_type)],
     },
+    assertion_type: {
+      defn: [e(:ALLOWED_ASSERTION_TYPES)],
+    },
+    lua: {
+      defn: [v(:string)],
+    },
   }.map do |(name, conf)|
     blk = conf[:blk]
     defn = conf.fetch(:defn)
@@ -268,6 +277,10 @@ module CeleryScriptSettingsBag
   end
 
   CORPUS_NODES = {
+    assertion: {
+      args: [:assertion_type, :_then, :lua],
+      tags: [:*],
+    },
     _if: {
       args: [:lhs, :op, :rhs, :_then, :_else],
       body: [:pair],

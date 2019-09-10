@@ -40,10 +40,11 @@ export const PointsSubMenu = ({ toggle, getConfigValue }: {
   getConfigValue: GetWebAppConfigValue
 }) =>
   <div className="map-points-submenu">
-    <button className={"fb-button green"}
-      onClick={() => history.push("/app/designer/plants/create_point")}>
-      {t("Point Creator")}
-    </button>
+    {!DevSettings.futureFeaturesEnabled() &&
+      <button className={"fb-button green"}
+        onClick={() => history.push("/app/designer/points/add")}>
+        {t("Point Creator")}
+      </button>}
     <LayerToggle
       value={!!getConfigValue(BooleanSetting.show_historic_points)}
       label={t("Historic Points?")}

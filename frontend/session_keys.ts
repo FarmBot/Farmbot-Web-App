@@ -44,6 +44,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
   discard_unsaved: "discard_unsaved",
   time_format_24_hour: "time_format_24_hour",
   disable_emergency_unlock_confirmation: "disable_emergency_unlock_confirmation",
+  user_interface_read_only_mode: "user_interface_read_only_mode",
 
   /** Farmware settings */
   show_first_party_farmware: "show_first_party_farmware",
@@ -54,6 +55,7 @@ export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {
 
 export const NumericSetting: Record<NumberConfigKey, NumberConfigKey> = {
   /** Logs settings */
+  assertion_log: "assertion_log",
   success_log: "success_log",
   busy_log: "busy_log",
   warn_log: "warn_log",

@@ -7,16 +7,18 @@ FarmBot::Application.routes.draw do
 
     # Standard API Resources:
     {
-      diagnostic_dumps: [:create, :destroy, :index],
       alerts: [:create, :destroy, :index],
+      diagnostic_dumps: [:create, :destroy, :index],
       farm_events: [:create, :destroy, :index, :show, :update],
       farmware_envs: [:create, :destroy, :index, :show, :update],
+      first_party_farmwares: [:show, :index],
       global_bulletins: [:show],
       images: [:create, :destroy, :index, :show],
       password_resets: [:create, :update],
       peripherals: [:create, :destroy, :index, :show, :update],
       pin_bindings: [:create, :destroy, :index, :show, :update],
       plant_templates: [:create, :destroy, :index, :update],
+      point_groups: [:index, :create, :update, :destroy],
       regimens: [:create, :destroy, :index, :show, :update],
       sensor_readings: [:create, :destroy, :index, :show],
       sensors: [:create, :destroy, :index, :show, :update],

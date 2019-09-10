@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
-import { Widget, WidgetHeader, WidgetBody, Row, Col, SaveBtn } from "../../ui";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { Content } from "../../constants";
@@ -51,7 +51,7 @@ export class FarmbotOsSettings
         this.setState({ osReleaseNotes: "Could not get release notes." }));
   }
 
-  changeBot = (e: React.ChangeEvent<HTMLInputElement>) => {
+  changeBot = (e: React.FormEvent<HTMLInputElement>) => {
     const { deviceAccount, dispatch } = this.props;
     dispatch(edit(deviceAccount, { name: e.currentTarget.value }));
   }
@@ -77,15 +77,12 @@ export class FarmbotOsSettings
   }
 
   render() {
-    const { bot, deviceAccount, sourceFbosConfig, botToMqttStatus } = this.props;
+    const { bot, sourceFbosConfig, botToMqttStatus } = this.props;
     const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device">
-          <SaveBtn
-            status={deviceAccount.specialStatus}
-            onClick={this.updateBot} />
         </WidgetHeader>
         <WidgetBody>
           <Row>
@@ -97,6 +94,7 @@ export class FarmbotOsSettings
             <Col xs={9}>
               <input name="name"
                 onChange={this.changeBot}
+                onBlur={this.updateBot}
                 value={this.props.deviceAccount.body.name} />
             </Col>
           </Row>
@@ -130,7 +128,7 @@ export class FarmbotOsSettings
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline}
-              botToMqttLastSeen={this.props.botToMqttLastSeen}
+              botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
               timeSettings={this.props.timeSettings}
               deviceAccount={this.props.deviceAccount} />
             <AutoUpdateRow

@@ -39,9 +39,6 @@ export function If_(props: IfParams) {
   const lhsOptions = LHSOptions(resources, !!props.showPins);
 
   return <Row>
-    <Col xs={12}>
-      <h4 className="top">{t("IF...")}</h4>
-    </Col>
     <Col xs={4}>
       <label>{t("Variable")}</label>
       <FBSelect

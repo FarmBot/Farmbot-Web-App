@@ -16,8 +16,7 @@ import { fakeResource } from "../../../__test_support__/fake_resource";
 import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { SaveBtn } from "../../../ui";
-import { save, edit } from "../../../api/crud";
+import { edit } from "../../../api/crud";
 
 describe("<FarmbotOsSettings/>", () => {
   beforeEach(() => {
@@ -30,7 +29,7 @@ describe("<FarmbotOsSettings/>", () => {
     dispatch: jest.fn(),
     bot,
     alerts: [],
-    botToMqttLastSeen: "",
+    botToMqttLastSeen: 0,
     botToMqttStatus: "up",
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
@@ -44,7 +43,7 @@ describe("<FarmbotOsSettings/>", () => {
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
-    expect(osSettings.find("button").length).toBe(7);
+    expect(osSettings.find("button").length).toBe(6);
     ["NAME", "TIME ZONE", "FARMBOT OS", "CAMERA", "FIRMWARE"]
       .map(string => expect(osSettings.text()).toContain(string));
   });
@@ -80,10 +79,4 @@ describe("<FarmbotOsSettings/>", () => {
     expect(edit).toHaveBeenCalledWith(p.deviceAccount, { name: newName });
   });
 
-  it("saves device", () => {
-    const p = fakeProps();
-    const wrapper = shallow<FarmbotOsSettings>(<FarmbotOsSettings {...p} />);
-    wrapper.find(SaveBtn).simulate("click");
-    expect(save).toHaveBeenCalledWith(p.deviceAccount.uuid);
-  });
 });

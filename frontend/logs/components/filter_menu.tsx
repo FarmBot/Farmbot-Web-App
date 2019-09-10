@@ -1,11 +1,36 @@
 import * as React from "react";
-import { LogsFilterMenuProps } from "../interfaces";
+import { LogsFilterMenuProps, LogsState } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
-
 import { Filters } from "../interfaces";
 import { startCase } from "lodash";
-import { MESSAGE_TYPES } from "../../sequences/interfaces";
+import { MESSAGE_TYPES, MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
+import { Feature, ShouldDisplay } from "../../devices/interfaces";
+
+const MENU_ORDER: string[] = [
+  MessageType.success,
+  MessageType.busy,
+  MessageType.warn,
+  MessageType.error,
+  MessageType.info,
+  MessageType.fun,
+  MessageType.debug,
+  MessageType.assertion,
+];
+
+const REVERSE_MENU_ORDER = MENU_ORDER.slice().reverse();
+
+/** Order the log filter sort menu, adding unknown types last. */
+const menuSort = (a: string, b: string) =>
+  REVERSE_MENU_ORDER.indexOf(b) - REVERSE_MENU_ORDER.indexOf(a);
+
+/** Get log filter keys from LogsState. */
+export const filterStateKeys =
+  (state: LogsState, shouldDisplay: ShouldDisplay) =>
+    Object.keys(state)
+      .filter(key => key !== "autoscroll")
+      .filter(key => shouldDisplay(Feature.assertion_block)
+        || key !== "assertion");
 
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Filter level 0: logs hidden. */
@@ -27,10 +52,9 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         {t("normal")}
       </button>
     </fieldset>
-    {Object.keys(props.state)
-      .filter(x => { if (!(x == "autoscroll")) { return x; } })
-      .map((logType: keyof Filters) => {
-        return <fieldset key={logType}>
+    {filterStateKeys(props.state, props.shouldDisplay).sort(menuSort)
+      .map((logType: keyof Filters) =>
+        <fieldset key={logType}>
           <label>
             <div className={`saucer ${logType}`} />
             {t(startCase(logType))}
@@ -41,7 +65,6 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
           <Slider min={0} max={3} stepSize={1}
             onChange={props.setFilterLevel(logType)}
             value={props.state[logType] as number} />
-        </fieldset>;
-      })}
+        </fieldset>)}
   </div>;
 };

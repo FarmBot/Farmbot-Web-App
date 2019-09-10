@@ -146,6 +146,7 @@ fieldset {
       .connectivity-diagram svg {
         max-height: 200px !important;
       }
+      .network-info,
       .fbos-info {
         @media (max-width:767px) {
           display: none;
@@ -219,6 +220,7 @@ fieldset {
   }
 }
 
+.network-info,
 .fbos-info {
   margin: auto;
   margin-bottom: 2rem;
@@ -344,9 +346,20 @@ a {
     float: right;
     color: $dark_gray !important;
   }
-  .bp3-collapse {
-    overflow: hidden;
+  .bp3-collapse::-webkit-scrollbar {
+    display:none !important;
+    width: 0px !important;
+    background-color: transparent !important;
   }
+  .disable_scrollbar::-webkit-scrollbar{
+    width: 0px;
+    background: transparent;
+  }
+  .bp3-collapse-body::-webkit-scrollbar{
+    display: none !important;
+    width: 0px !important;
+    background-color: transparent !important;
+    }
 }
 
 .firmware-setting-export-menu {
@@ -385,7 +398,9 @@ a {
     margin-left: 0.5rem;
   }
   .fb-button {
-    margin-top: 0.5rem;
+    &.green {
+      margin-top: 0.5rem;
+    }
   }
   .bindings-list {
     margin-bottom: 1rem;
@@ -393,7 +408,7 @@ a {
   }
   .stock-pin-bindings-button {
     button {
-      margin: 0;
+      margin: 0 !important;
     }
     i {
       margin-right: 0.5rem;
@@ -797,7 +812,7 @@ ul {
 }
 
 .controls-popup-menu-outer {
-  transition: all 0.1 s ease-in-out;
+  transition: all 0.1s ease-in-out;
   transition-delay: 0.2s !important;
 }
 
@@ -829,14 +844,42 @@ ul {
       color: $panel_green;
     }
   }
+  &.gardens {
+    p,
+    h5,
+    a {
+      color: $panel_green;
+    }
+  }
   &.events {
     p,
     h5,
     a {
       color: $panel_yellow;
     }
+  }
+  &.points {
+    p,
+    h5,
+    a {
+      color: $panel_gray;
+    }
     .empty-state-graphic {
-      filter: sepia(1) contrast(1.2) saturate(1.2);
+      filter: saturate(0);
+    }
+  }
+  &.tools {
+    p,
+    h5,
+    a {
+      color: $panel_gray;
+    }
+  }
+  &.groups {
+    p,
+    h5,
+    a {
+      color: $panel_blue;
     }
   }
 }
@@ -967,9 +1010,12 @@ ul {
 
 .logs-table {
   background: $white;
-  div {
+  .log-verbosity-saucer, .saucer {
     float: left;
-    margin-right: 10px;
+    margin-right: 5px;
+  }
+  button {
+    float: none;
   }
   thead {
     background: $gray;
@@ -1051,9 +1097,6 @@ ul {
     color: $dark_gray;
     margin-top: 0.5rem;
   }
-  .del-button {
-    margin-top: 0.5rem;
-  }
   .fb-button {
     margin-left: 1rem;
   }
@@ -1105,6 +1148,16 @@ ul {
         top: 0.15rem;
       }
     }
+  }
+}
+
+.sensors-widget,
+.webcam-widget,
+.peripherals-widget,
+.tools-widget,
+.toolbay-widget {
+  .del-button {
+    margin-top: 0.5rem;
   }
 }
 
@@ -1350,4 +1403,16 @@ ul {
     background: $light_gray;
     color: $dark_gray;
   }
+}
+
+textarea {
+  border: 0;
+  padding: 6px 8px;
+  box-shadow: 0 0 10px #ddd;
+  outline: none!important;
+  resize: vertical;
+}
+
+textarea:focus {
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
 }

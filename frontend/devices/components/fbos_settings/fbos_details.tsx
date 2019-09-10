@@ -63,7 +63,7 @@ export function WiFiStrengthDisplay(
   const percentString = `${wifiStrengthPercent || percent}%`;
   return <div className="wifi-strength-display">
     <p>
-      <b>{t("WiFi Strength")}: </b>
+      <b>{t("WiFi strength")}: </b>
       {wifiStrength ? dbString : "N/A"}
     </p>
     {wifiStrength &&
@@ -114,7 +114,7 @@ export const colorFromThrottle =
 const THROTTLE_COLOR_KEY = () => ({
   red: t("active"),
   yellow: t("occurred"),
-  green: t("clear")
+  green: t("ok")
 });
 
 interface ThrottleIndicatorProps {

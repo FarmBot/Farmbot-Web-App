@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Row, Col } from "../ui/index";
 import { KeyValRowProps } from "./key_val_show_row";
+import { t } from "../i18next_wrapper";
 
 interface Props extends KeyValRowProps {
   onLabelChange(e: React.ChangeEvent<HTMLInputElement>): void;
@@ -26,9 +27,10 @@ export function KeyValEditRow(p: Props) {
     </Col>
     <Col xs={2}>
       <button
-        className="red fb-button"
+        className="red fb-button del-button"
+        title={t("Delete")}
         onClick={p.onClick}>
-        <i className="fa fa-minus" />
+        <i className="fa fa-times" />
       </button>
     </Col>
   </Row>;

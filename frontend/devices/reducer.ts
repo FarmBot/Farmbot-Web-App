@@ -73,13 +73,17 @@ export let initialState = (): BotState => ({
   currentBetaOSVersion: undefined,
   minOsFeatureData: undefined,
   connectivity: {
-    "bot.mqtt": undefined,
-    "user.mqtt": undefined,
-    "user.api": undefined
+    uptime: {
+      "bot.mqtt": undefined,
+      "user.mqtt": undefined,
+      "user.api": undefined
+    },
+    pings: {}
   }
 });
 
-export let botReducer = generateReducer<BotState>(initialState(), afterEach)
+export let botReducer = generateReducer<BotState>(initialState())
+  .afterEach(afterEach)
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;
     s.hardware.informational_settings.sync_status = maybeNegateStatus({
@@ -151,7 +155,7 @@ export let botReducer = generateReducer<BotState>(initialState(), afterEach)
         s.hardware.informational_settings.sync_status = undefined;
         break;
       case "up":
-        const currentState = s.connectivity["bot.mqtt"];
+        const currentState = s.connectivity.uptime["bot.mqtt"];
         // Going from "down" to "up"
         const backOnline = currentState && currentState.state === "down";
         backOnline && unstash(s);

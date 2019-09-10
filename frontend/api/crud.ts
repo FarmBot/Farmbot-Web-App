@@ -23,6 +23,7 @@ import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
 import { assign, noop } from "lodash";
 import { t } from "../i18next_wrapper";
+import { appIsReadonly } from "../read_only_mode/app_is_read_only";
 
 export function edit(tr: TaggedResource, changes: Partial<typeof tr.body>):
   ReduxAction<EditResourceParams> {
@@ -193,8 +194,19 @@ export const destroyCatch = (p: DestroyNoProps) => (err: UnsafeError) => {
   return Promise.reject(err);
 };
 
+/** We need this to detect read-only deletion attempts */
+function destroyStart() {
+  return { type: Actions.DESTROY_RESOURCE_START, payload: {} };
+}
+
 export function destroy(uuid: string, force = false) {
   return function (dispatch: Function, getState: GetState) {
+    dispatch(destroyStart());
+    /** Stop user from deleting resources if app is read only. */
+    if (appIsReadonly(getState().resources.index)) {
+      return Promise.reject("Application is in read-only mode.");
+    }
+
     const resource = findByUuid(getState().resources.index, uuid);
     const maybeProceed = confirmationChecker(resource.kind, force);
     return maybeProceed(() => {
@@ -240,28 +252,29 @@ export function saveAll(input: TaggedResource[],
 
 export function urlFor(tag: ResourceName) {
   const OPTIONS: Partial<Record<ResourceName, string>> = {
-    Sequence: API.current.sequencesPath,
-    Tool: API.current.toolsPath,
-    FarmEvent: API.current.farmEventsPath,
-    Regimen: API.current.regimensPath,
-    Peripheral: API.current.peripheralsPath,
-    Sensor: API.current.sensorPath,
-    PinBinding: API.current.pinBindingPath,
-    Point: API.current.pointsPath,
-    User: API.current.usersPath,
+    Alert: API.current.alertPath,
     Device: API.current.devicePath,
-    Image: API.current.imagesPath,
-    Log: API.current.filteredLogsPath,
-    WebcamFeed: API.current.webcamFeedPath,
-    FbosConfig: API.current.fbosConfigPath,
-    WebAppConfig: API.current.webAppConfigPath,
-    FirmwareConfig: API.current.firmwareConfigPath,
     DiagnosticDump: API.current.diagnosticDumpsPath,
-    SavedGarden: API.current.savedGardensPath,
-    PlantTemplate: API.current.plantTemplatePath,
+    FarmEvent: API.current.farmEventsPath,
     FarmwareEnv: API.current.farmwareEnvPath,
     FarmwareInstallation: API.current.farmwareInstallationPath,
-    Alert: API.current.alertPath,
+    FbosConfig: API.current.fbosConfigPath,
+    FirmwareConfig: API.current.firmwareConfigPath,
+    Image: API.current.imagesPath,
+    Log: API.current.logsPath,
+    Peripheral: API.current.peripheralsPath,
+    PinBinding: API.current.pinBindingPath,
+    PlantTemplate: API.current.plantTemplatePath,
+    Point: API.current.pointsPath,
+    PointGroup: API.current.pointGroupsPath,
+    Regimen: API.current.regimensPath,
+    SavedGarden: API.current.savedGardensPath,
+    Sensor: API.current.sensorPath,
+    Sequence: API.current.sequencesPath,
+    Tool: API.current.toolsPath,
+    User: API.current.usersPath,
+    WebAppConfig: API.current.webAppConfigPath,
+    WebcamFeed: API.current.webcamFeedPath,
   };
   const url = OPTIONS[tag];
   if (url) {

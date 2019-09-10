@@ -13,7 +13,7 @@ export interface Props {
 export class DiagnosticDumpRow extends React.Component<Props, {}> {
   get ticket() { return this.props.diag.body.ticket_identifier; }
 
-  get age() { return ago(this.props.diag.body.created_at); }
+  get age() { return ago(new Date(this.props.diag.body.created_at).getTime()); }
 
   destroy = () => this.props.dispatch(destroy(this.props.diag.uuid));
 
@@ -25,6 +25,7 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
       <Col xs={1}>
         <button
           className="red fb-button del-button"
+          title={t("Delete")}
           onClick={this.destroy}>
           <i className="fa fa-times" />
         </button>

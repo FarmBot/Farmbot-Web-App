@@ -7,7 +7,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { LogsState, LogsProps, Filters } from "./interfaces";
 import { ToolTips } from "../constants";
 import { LogsSettingsMenu } from "./components/settings_menu";
-import { LogsFilterMenu } from "./components/filter_menu";
+import { LogsFilterMenu, filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
 import { safeNumericSetting } from "../session";
 import { isUndefined } from "lodash";
@@ -49,6 +49,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     info: this.initialize(NumericSetting.info_log, 1),
     fun: this.initialize(NumericSetting.fun_log, 1),
     debug: this.initialize(NumericSetting.debug_log, 1),
+    assertion: this.initialize(NumericSetting.assertion_log, 1),
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
@@ -73,8 +74,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Determine if log type filters are active. */
   get filterActive() {
-    const filterKeys = Object.keys(this.state)
-      .filter(x => !(x === "autoscroll"));
+    const filterKeys = filterStateKeys(this.state, this.props.shouldDisplay);
     const filterValues = filterKeys
       .map((key: keyof Filters) => this.state[key]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
@@ -109,6 +109,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
               </button>
               <LogsFilterMenu
                 toggle={this.toggle} state={this.state}
+                shouldDisplay={this.props.shouldDisplay}
                 setFilterLevel={this.setFilterLevel} />
             </Popover>
           </div>
@@ -116,6 +117,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
       </Row>
       <Row>
         <LogsTable logs={this.props.logs}
+          dispatch={this.props.dispatch}
           state={this.state}
           timeSettings={this.props.timeSettings} />
       </Row>

@@ -34,7 +34,7 @@ export class ImageFilterMenu
     this.state = {};
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { newestDate, toOldest } = this.props.imageAgeInfo;
     const beginDatetime = this.props.getConfigValue("photo_filter_begin");
     this.setState({
@@ -45,7 +45,7 @@ export class ImageFilterMenu
     this.updateState();
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.updateState();
   }
 
