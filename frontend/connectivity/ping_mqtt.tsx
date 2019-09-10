@@ -10,7 +10,7 @@ import { API } from "../api/index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { now } from "../devices/connectivity/qos";
 
-export const PING_INTERVAL = 4000;
+export const PING_INTERVAL = 2000;
 export const ACTIVE_THRESHOLD = PING_INTERVAL * 2;
 
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
