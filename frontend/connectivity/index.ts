@@ -42,9 +42,9 @@ export let dispatchNetworkUp = (edge: Edge, at: number, qosPingId?: string) => {
 
 const pingAlreadyComplete = (qosPingId?: string) => {
   if (qosPingId) {
-    const ping =
-      store.getState().bot.connectivity.pings[qosPingId];
-    return (ping && ping.kind == "complete");
+    const allPings = store.getState().bot.connectivity.pings;
+    const thePing = allPings[qosPingId];
+    return (thePing && thePing.kind == "complete");
   }
   return false;
 };

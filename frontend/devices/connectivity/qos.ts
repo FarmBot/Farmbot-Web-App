@@ -96,10 +96,17 @@ export const calculateLatency =
     // offline:
     if (latency.length == 0) { latency = [0]; }
     const average = Math.round(latency.reduce((a, b) => a + b, 0) / latency.length);
-    return {
+
+    const report = {
       best: Math.min(...latency),
       worst: Math.max(...latency),
       average,
       total: latency.length
     };
+
+    /** SIDE EFFECT WARNING: We do analytics on every 100th ping to gauge
+     * overall system health. This is the least invasive place to put it. */
+    const doReport = !!report.total && !(report.total % 100);
+    doReport && window.logStore.log("FBOS Ping QoS Message", report, "info");
+    return report;
   };
