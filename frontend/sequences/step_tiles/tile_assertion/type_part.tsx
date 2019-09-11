@@ -6,10 +6,10 @@ import { AssertionStepProps } from "../tile_assertion";
 import { t } from "../../../i18next_wrapper";
 
 const ASSERTION_TYPES: Record<ALLOWED_ASSERTION_TYPES, DropDownItem> = {
-  "continue": { label: "Continue", value: "continue" },
-  "recover": { label: "Recover and continue", value: "recover" },
-  "abort_recover": { label: "Abort and recover", value: "abort_recover" },
-  "abort": { label: "Abort", value: "abort" },
+  "continue": { label: t("Continue"), value: "continue" },
+  "recover": { label: t("Recover and continue"), value: "recover" },
+  "abort_recover": { label: t("Abort and recover"), value: "abort_recover" },
+  "abort": { label: t("Abort"), value: "abort" },
 };
 
 export function TypePart(props: AssertionStepProps) {

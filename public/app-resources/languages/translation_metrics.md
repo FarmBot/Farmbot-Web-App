@@ -18,19 +18,19 @@ npm run translation-check
 
 See the [README](https://github.com/FarmBot/Farmbot-Web-App#translating-the-web-app-into-your-language) for contribution instructions.
 
-Total number of phrases identified by the language helper for translation: __1025__
+Total number of phrases identified by the language helper for translation: __1086__
 
 |Language|Percent translated|Translated|Untranslated|Other Translations|
 |:---:|---:|---:|---:|---:|
-|da|11%|111|914|22|
-|de|41%|425|600|122|
-|es|100%|1023|2|152|
-|fr|75%|766|259|180|
-|it|9%|88|937|174|
-|nl|8%|80|945|142|
-|pt|7%|72|953|161|
-|ru|59%|606|419|205|
-|zh|8%|87|938|142|
+|da|10%|110|976|27|
+|de|39%|421|665|125|
+|es|94%|1019|67|156|
+|fr|70%|765|321|182|
+|it|8%|89|997|175|
+|nl|7%|79|1007|145|
+|pt|7%|71|1015|164|
+|ru|56%|606|480|205|
+|zh|8%|86|1000|145|
 
 **Percent translated** refers to the percent of phrases identified by the
 language helper that have been translated. Additional phrases not identified

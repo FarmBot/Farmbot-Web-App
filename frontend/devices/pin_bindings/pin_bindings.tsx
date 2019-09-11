@@ -86,7 +86,7 @@ export const PinBindings = (props: PinBindingsProps) => {
         popoverClassName={"help"} >
         <i className="fa fa-exclamation-triangle" />
         <div>
-          {ToolTips.PIN_BINDING_WARNING}
+          {t(ToolTips.PIN_BINDING_WARNING)}
         </div>
       </Popover>
       <StockPinBindingsButton dispatch={dispatch} />
