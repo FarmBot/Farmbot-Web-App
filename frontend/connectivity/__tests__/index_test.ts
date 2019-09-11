@@ -71,10 +71,10 @@ describe("dispatchNetworkDown", () => {
   it("does not falsely mark network of being down", () => {
     // This test uses mocked state.
     // Please see `jest.mock` calls above.
-    dispatchNetworkDown("bot.mqtt", now(), "already_complete");
+    dispatchNetworkDown("bot.mqtt", now());
     expect(store.dispatch).not.toHaveBeenCalled();
     resetStats();
-    dispatchNetworkDown("bot.mqtt", now(), "not_complete");
+    dispatchNetworkDown("bot.mqtt", now());
     expect(store.dispatch).toHaveBeenCalled();
   });
 });

@@ -2,7 +2,9 @@ import { Farmbot, uuid } from "farmbot";
 import {
   dispatchNetworkDown,
   dispatchNetworkUp,
-  dispatchQosStart
+  dispatchQosStart,
+  pingOK,
+  pingNO
 } from "./index";
 import { isNumber } from "lodash";
 import axios from "axios";
@@ -22,13 +24,13 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
   return isNumber(val) ? val : undefined;
 }
 
-export function markStale(qosPingId: string) {
-  dispatchNetworkDown("bot.mqtt", now(), qosPingId);
+export function markStale() {
+  dispatchNetworkDown("bot.mqtt", now());
 }
 
-export function markActive(qosPingId: string) {
-  dispatchNetworkUp("user.mqtt", now(), qosPingId);
-  dispatchNetworkUp("bot.mqtt", now(), qosPingId);
+export function markActive() {
+  dispatchNetworkUp("user.mqtt", now());
+  dispatchNetworkUp("bot.mqtt", now());
 }
 
 export function isInactive(last: number, now_: number): boolean {
@@ -37,8 +39,8 @@ export function isInactive(last: number, now_: number): boolean {
 
 export function sendOutboundPing(bot: Farmbot) {
   const id = uuid();
-  const ok = () => markActive(id);
-  const no = () => markStale(id);
+  const ok = () => pingOK(id, now()); markActive();
+  const no = () => pingNO(id); markStale();
   dispatchQosStart(id);
   bot.ping().then(ok, no);
 }
