@@ -1,6 +1,5 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-
 import { ToolTips } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
@@ -27,7 +26,7 @@ export function TileExecuteScript(props: StepParams) {
           ? { value: name, label: t("Weed Detector") }
           : { value: name, label: name };
       }
-      return { label: "Manual Input", value: "" };
+      return { label: t("Manual Input"), value: "" };
     };
 
     /** dispatch editStep for current ExecuteScript step */
@@ -78,7 +77,7 @@ export function TileExecuteScript(props: StepParams) {
               selectedItem={selectedFarmwareDDI(farmwareName)}
               onChange={updateStepFarmwareSelection}
               allowEmpty={true}
-              customNullLabel={"Manual Input"} />
+              customNullLabel={t("Manual Input")} />
             {!isInstalled(farmwareName) &&
               <div className="farmware-name-manual-input">
                 <label>{t("Manual input")}</label>

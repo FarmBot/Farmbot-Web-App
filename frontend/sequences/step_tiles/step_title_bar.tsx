@@ -1,6 +1,5 @@
 import * as React from "react";
 import { SequenceBodyItem as Step, SequenceBodyItem } from "farmbot";
-
 import { StepTitleBarProps } from "../interfaces";
 import { BlurableInput } from "../../ui/index";
 import { updateStepTitle } from "./index";
@@ -21,6 +20,7 @@ function translate(input: Step): string {
     "send_message": t("Send Message"),
     "take_photo": t("Take a Photo"),
     "resource_update": t("Mark As"),
+    "assertion": t("Assertion"),
     "set_servo_angle": t("Set Servo Angle"),
     "wait": t("Wait"),
     "write_pin": t("Control Peripheral"),
