@@ -8,16 +8,18 @@ class LogService < AbstractServiceRunner
                                        T.new(1.day) => 0.5 * 100_000
 
   LOG_TPL = "FBOS LOG (device_%s): %s"
+  ERR_TPL = "LOG ERROR: %s"
 
   def process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
     m = AmqpLogParser.run!(params)
-    binding.pry
     if Rails.env.production?
       puts LOG_TPL % [m.device_id, m.payload["message"]]
     end
     THROTTLE_POLICY.track(m.device_id)
     maybe_deliver(m)
+  rescue Mutations::ValidationException => e
+    puts ERR_TPL % [params.merge({ e: e }).to_json]
   end
 
   def maybe_deliver(data)
