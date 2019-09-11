@@ -273,12 +273,12 @@ export function FbosDetails(props: FbosDetailsProps) {
       botToMqttLastSeen={props.botToMqttLastSeen}
       timeSettings={props.timeSettings}
       device={props.deviceAccount} />
-    <p><b>Environment: </b>{env}</p>
-    <CommitDisplay title={"Commit"} repo={"farmbot_os"} commit={commit} />
-    <p><b>Target: </b>{target}</p>
-    <p><b>Node name: </b>{last((node_name || "").split("@"))}</p>
-    <p><b>Firmware: </b>{firmware_version}</p>
-    <CommitDisplay title={"Firmware commit"}
+    <p><b>{t("Environment")}: </b>{env}</p>
+    <CommitDisplay title={t("Commit")} repo={"farmbot_os"} commit={commit} />
+    <p><b>{t("Target")}: </b>{target}</p>
+    <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
+    <p><b>{t("Firmware")}: </b>{firmware_version}</p>
+    <CommitDisplay title={t("Firmware commit")}
       repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
     {isNumber(memory_usage) &&
