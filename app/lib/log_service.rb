@@ -8,18 +8,17 @@ class LogService < AbstractServiceRunner
                                        T.new(1.day) => 0.5 * 100_000
 
   LOG_TPL = "FBOS LOG (device_%s): %s"
-  ERR_TPL = "LOG ERROR: %s"
+  ERR_TPL = "MALFORMED LOG CAPTURE: %s"
 
   def process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
     m = AmqpLogParser.run!(params)
-    if Rails.env.production?
-      puts LOG_TPL % [m.device_id, m.payload["message"]]
-    end
     THROTTLE_POLICY.track(m.device_id)
     maybe_deliver(m)
   rescue Mutations::ValidationException => e
-    puts ERR_TPL % [params.merge({ e: e }).to_json]
+    msg = ERR_TPL % [params.merge({ e: e }).to_json]
+    puts msg unless Rails.env.test?
+    raise e
   end
 
   def maybe_deliver(data)
@@ -35,6 +34,7 @@ class LogService < AbstractServiceRunner
     dev, log = [data.device, data.payload]
     dev.maybe_unthrottle
     Log.deliver(dev, Logs::Create.run!(log, device: dev))
+    puts LOG_TPL % [m.device_id, m.payload["message"]]
   rescue => x
     Rollbar.error(x)
   end
