@@ -70,6 +70,7 @@ module FarmBot
         ENV["FORCE_SSL"] ? "wss:" : "ws:",
         "localhost:3000",
         "localhost:3808",
+        "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:3000",
         "#{ENV.fetch("API_HOST")}:3808",
       ]
@@ -107,6 +108,7 @@ module FarmBot
           "chrome-extension:",
           "localhost:3808",
           PARCELJS_URL,
+          "www.datadoghq-browser-agent.com",
         ],
         style_src: %w(
           'self'

@@ -29,7 +29,7 @@ import { handleInbound } from "../auto_sync_handle_inbound";
 import { store } from "../../redux/store";
 import { DeepPartial } from "redux";
 import { Everything } from "../../interfaces";
-import { now } from "../../devices/connectivity/qos";
+import { Actions } from "../../constants";
 
 const NOW = new Date();
 const SHORT_TIME_LATER = new Date(NOW.getTime() + 500).getTime();
@@ -67,16 +67,6 @@ describe("dispatchNetworkDown", () => {
     dispatchNetworkDown("user.api", LONGER_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(LATER_DOWN);
   });
-
-  it("does not falsely mark network of being down", () => {
-    // This test uses mocked state.
-    // Please see `jest.mock` calls above.
-    dispatchNetworkDown("bot.mqtt", now(), "already_complete");
-    expect(store.dispatch).not.toHaveBeenCalled();
-    resetStats();
-    dispatchNetworkDown("bot.mqtt", now(), "not_complete");
-    expect(store.dispatch).toHaveBeenCalled();
-  });
 });
 
 describe("autoSync", () => {
@@ -96,6 +86,6 @@ describe("dispatchQosStart", () => {
     const id = "hello";
     dispatchQosStart(id);
     expect(store.dispatch)
-      .toHaveBeenCalledWith({ type: "START_QOS_PING", payload: { id } });
+      .toHaveBeenCalledWith({ type: Actions.PING_START, payload: { id } });
   });
 });

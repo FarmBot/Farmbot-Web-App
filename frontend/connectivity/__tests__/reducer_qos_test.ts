@@ -1,10 +1,20 @@
+jest.mock("../../redux/store", () => {
+  return {
+    store: {
+      dispatch: jest.fn(),
+      getState: jest.fn(() => ({ NO: "NO" }))
+    }
+  };
+});
+
 import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
-import { networkUp, networkDown } from "../actions";
+import { pingOK, pingNO } from "..";
+import { store } from "../../redux/store";
 
 describe("connectivity reducer", () => {
   const newState = () => {
-    const action = { type: Actions.START_QOS_PING, payload: { id: "yep" } };
+    const action = { type: Actions.PING_START, payload: { id: "yep" } };
     return connectivityReducer(DEFAULT_STATE, action);
   };
 
@@ -18,8 +28,9 @@ describe("connectivity reducer", () => {
 
   });
 
-  it("handles an `up` QoS ping", () => {
-    const state = connectivityReducer(newState(), networkUp("bot.mqtt", 1234, "yep"));
+  it("handles the PING_OK action", () => {
+    const action = { type: Actions.PING_OK, payload: { id: "yep", at: 123 } };
+    const state = connectivityReducer(newState(), action);
     const { yep } = state.pings;
     expect(yep).toBeTruthy();
     if (yep) {
@@ -27,8 +38,25 @@ describe("connectivity reducer", () => {
     }
   });
 
-  it("handles a `down` QoS ping", () => {
-    const state = connectivityReducer(newState(), networkDown("bot.mqtt", 1234, "yep"));
+  it("broadcasts PING_OK", () => {
+    pingOK("yep", 123);
+    expect(store.dispatch).toHaveBeenCalledWith({
+      payload: { at: 123, id: "yep", },
+      type: "PING_OK",
+    });
+  });
+
+  it("broadcasts PING_NO", () => {
+    pingNO("yep");
+    expect(store.dispatch).toHaveBeenCalledWith({
+      payload: { id: "yep", },
+      type: "PING_NO"
+    });
+  });
+
+  it("marks pings as failed when PING_NO is dispatched", () => {
+    const action = { type: Actions.PING_NO, payload: { id: "yep", at: 123 } };
+    const state = connectivityReducer(newState(), action);
     const { yep } = state.pings;
     expect(yep).toBeTruthy();
     if (yep) {

@@ -63,8 +63,6 @@ GEM
       amq-protocol (~> 2.3, >= 2.3.0)
     case_transform (0.2)
       activesupport
-    childprocess (1.0.1)
-      rake (< 13.0)
     climate_control (0.2.0)
     codecov (0.1.14)
       json
@@ -81,7 +79,7 @@ GEM
     delayed_job_active_record (4.1.4)
       activerecord (>= 3.0, < 6.1)
       delayed_job (>= 3.0, < 5)
-    devise (4.7.0)
+    devise (4.7.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
       railties (>= 4.1.0)
@@ -98,8 +96,8 @@ GEM
     factory_bot_rails (5.0.2)
       factory_bot (~> 5.0.2)
       railties (>= 4.2.0)
-    faker (2.1.2)
-      i18n (>= 0.8)
+    faker (2.3.0)
+      i18n (~> 1.6.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.13.1)
@@ -226,7 +224,7 @@ GEM
       actionpack (>= 5.0)
       railties (>= 5.0)
     retriable (3.1.2)
-    rollbar (2.21.0)
+    rollbar (2.22.1)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -248,14 +246,10 @@ GEM
       rspec-mocks (~> 3.8.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
-    rubyzip (1.2.3)
     scenic (1.5.1)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
     secure_headers (6.1.1)
-    selenium-webdriver (3.142.3)
-      childprocess (>= 0.5, < 2.0)
-      rubyzip (~> 1.2, >= 1.2.2)
     signet (0.11.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -326,7 +320,6 @@ DEPENDENCIES
   rspec-rails
   scenic
   secure_headers
-  selenium-webdriver
   simplecov
   smarf_doc!
   tzinfo

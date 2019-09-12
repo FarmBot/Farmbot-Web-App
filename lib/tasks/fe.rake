@@ -25,7 +25,8 @@ def fetch_available_upgrades()
   end
   latest_versions = {}
   latest_json.each do |dep, data|
-    unless EXCLUDE.include?(dep) || data["latest"].nil?
+    unless EXCLUDE.include?(dep) || data["latest"].nil? ||
+      data["latest"].include?("beta")
       latest_versions[dep] = data["latest"]
     end
   end
