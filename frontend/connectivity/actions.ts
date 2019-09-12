@@ -5,10 +5,10 @@ import { ReduxAction } from "../redux/interfaces";
 type NetChange = ReduxAction<EdgeStatus>;
 
 const change = (state: "up" | "down") =>
-  (name: Edge, at = (new Date()).getTime(), qosPingId?: string): NetChange => {
+  (name: Edge, at = (new Date()).getTime()): NetChange => {
     return {
       type: Actions.NETWORK_EDGE_CHANGE,
-      payload: { name, status: { state, at }, qosPingId }
+      payload: { name, status: { state, at } }
     };
   };
 

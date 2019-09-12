@@ -19,22 +19,23 @@ export const DEFAULT_STATE: ConnectionState = {
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
-    .add<{ id: string }>(Actions.START_QOS_PING, (s, { payload }) => {
+    .add<{ id: string }>(Actions.PING_START, (s, { payload }) => {
       return {
         ...s,
         pings: startPing(s.pings, payload.id)
       };
     })
-    .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
-      const { qosPingId, status } = payload;
-      if (qosPingId) {
-        if (status.state == "up") {
-          s.pings = completePing(s.pings, qosPingId, status.at);
-        } else {
-          s.pings = failPing(s.pings, qosPingId);
-        }
-      }
+    .add<{ id: string, at: number }>(Actions.PING_OK, (s, { payload }) => {
+      s.pings = completePing(s.pings, payload.id, payload.at);
 
+      return s;
+    })
+    .add<{ id: string }>(Actions.PING_NO, (s, { payload }) => {
+      s.pings = failPing(s.pings, payload.id);
+
+      return s;
+    })
+    .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
       s.uptime[payload.name] = payload.status;
       return s;
     })

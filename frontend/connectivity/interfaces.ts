@@ -12,7 +12,6 @@ export interface ConnectionStatus {
 export interface EdgeStatus {
   name: Edge;
   status: ConnectionStatus;
-  qosPingId?: string;
 }
 
 /** Name of a connection between two points. "." can be read as "to".

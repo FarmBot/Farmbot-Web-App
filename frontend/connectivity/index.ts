@@ -29,36 +29,29 @@ function bumpThrottle(edge: Edge, now: number) {
 
 export const dispatchQosStart = (id: string) => {
   store.dispatch({
-    type: Actions.START_QOS_PING,
+    type: Actions.PING_START,
     payload: { id }
   });
 };
 
-export let dispatchNetworkUp = (edge: Edge, at: number, qosPingId?: string) => {
+export let dispatchNetworkUp = (edge: Edge, at: number) => {
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkUp(edge, at, qosPingId));
+  store.dispatch(networkUp(edge, at));
   bumpThrottle(edge, at);
 };
 
-const pingAlreadyComplete = (qosPingId?: string) => {
-  if (qosPingId) {
-    const ping =
-      store.getState().bot.connectivity.pings[qosPingId];
-    return (ping && ping.kind == "complete");
-  }
-  return false;
+export let dispatchNetworkDown = (edge: Edge, at: number) => {
+  if (shouldThrottle(edge, at)) { return; }
+  store.dispatch(networkDown(edge, at));
+  bumpThrottle(edge, at);
 };
 
-export let dispatchNetworkDown = (edge: Edge, at: number, qosPingId?: string) => {
-  if (shouldThrottle(edge, at)) { return; }
-  // If a ping is marked as "completed", then there
-  // is no way that the network is down. A common
-  // use case for this is the timeout callback
-  // in the QoS tester. The timeout always triggers,
-  // so we need to add a means of cancelling the
-  // "network down" action if the request completed
-  // before the timeout.
-  if (pingAlreadyComplete(qosPingId)) { return; }
-  store.dispatch(networkDown(edge, at, qosPingId));
-  bumpThrottle(edge, at);
+export const pingOK = (id: string, at: number) => {
+  const action = { type: Actions.PING_OK, payload: { id, at } };
+  store.dispatch(action);
+};
+
+export const pingNO = (id: string) => {
+  const action = { type: Actions.PING_NO, payload: { id } };
+  store.dispatch(action);
 };
