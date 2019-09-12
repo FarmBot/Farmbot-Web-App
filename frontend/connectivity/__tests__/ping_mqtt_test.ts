@@ -1,7 +1,8 @@
 jest.mock("../index", () => ({
   dispatchNetworkDown: jest.fn(),
   dispatchNetworkUp: jest.fn(),
-  dispatchQosStart: jest.fn()
+  dispatchQosStart: jest.fn(),
+  pingOK: jest.fn()
 }));
 const ANY_NUMBER = expect.any(Number);
 const mockTimestamp = 0;

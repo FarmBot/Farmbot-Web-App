@@ -1,6 +1,5 @@
 import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
-import { networkUp, networkDown } from "../actions";
 
 describe("connectivity reducer", () => {
   const newState = () => {
@@ -19,7 +18,8 @@ describe("connectivity reducer", () => {
   });
 
   it("handles an `up` QoS ping", () => {
-    const state = connectivityReducer(newState(), networkUp("bot.mqtt", 1234));
+    const action = { type: Actions.PING_OK, payload: { id: "yep", at: 123 } };
+    const state = connectivityReducer(newState(), action);
     const { yep } = state.pings;
     expect(yep).toBeTruthy();
     if (yep) {
@@ -28,11 +28,12 @@ describe("connectivity reducer", () => {
   });
 
   it("handles a `down` QoS ping", () => {
-    const state = connectivityReducer(newState(), networkDown("bot.mqtt", 1234));
+    const action = { type: Actions.PING_OK, payload: { id: "yep" } };
+    const state = connectivityReducer(newState(), action);
     const { yep } = state.pings;
     expect(yep).toBeTruthy();
     if (yep) {
-      expect(yep.kind).toEqual("timeout");
+      expect(yep.kind).toEqual("complete");
     }
   });
 });
