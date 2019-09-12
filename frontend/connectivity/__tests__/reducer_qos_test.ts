@@ -53,4 +53,14 @@ describe("connectivity reducer", () => {
       type: "PING_NO"
     });
   });
+
+  it("marks pings as failed when PING_NO is dispatched", () => {
+    const action = { type: Actions.PING_NO, payload: { id: "yep", at: 123 } };
+    const state = connectivityReducer(newState(), action);
+    const { yep } = state.pings;
+    expect(yep).toBeTruthy();
+    if (yep) {
+      expect(yep.kind).toEqual("timeout");
+    }
+  });
 });
