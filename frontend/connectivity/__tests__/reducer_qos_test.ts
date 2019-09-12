@@ -1,5 +1,16 @@
+jest.mock("../../redux/store", () => {
+  return {
+    store: {
+      dispatch: jest.fn(),
+      getState: jest.fn(() => ({ NO: "NO" }))
+    }
+  };
+});
+
 import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
+import { pingOK, pingNO } from "..";
+import { store } from "../../redux/store";
 
 describe("connectivity reducer", () => {
   const newState = () => {
@@ -17,7 +28,7 @@ describe("connectivity reducer", () => {
 
   });
 
-  it("handles an `up` QoS ping", () => {
+  it("handles the PING_OK action", () => {
     const action = { type: Actions.PING_OK, payload: { id: "yep", at: 123 } };
     const state = connectivityReducer(newState(), action);
     const { yep } = state.pings;
@@ -27,13 +38,19 @@ describe("connectivity reducer", () => {
     }
   });
 
-  it("handles a `down` QoS ping", () => {
-    const action = { type: Actions.PING_OK, payload: { id: "yep" } };
-    const state = connectivityReducer(newState(), action);
-    const { yep } = state.pings;
-    expect(yep).toBeTruthy();
-    if (yep) {
-      expect(yep.kind).toEqual("complete");
-    }
+  it("broadcasts PING_OK", () => {
+    pingOK("yep", 123);
+    expect(store.dispatch).toHaveBeenCalledWith({
+      payload: { at: 123, id: "yep", },
+      type: "PING_OK",
+    });
+  });
+
+  it("broadcasts PING_NO", () => {
+    pingNO("yep");
+    expect(store.dispatch).toHaveBeenCalledWith({
+      payload: { id: "yep", },
+      type: "PING_NO"
+    });
   });
 });
