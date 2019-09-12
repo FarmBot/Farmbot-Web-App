@@ -9,7 +9,8 @@ import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
-  FirmwareHardware
+  FirmwareHardware,
+  RpcError
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -151,9 +152,17 @@ export function execSequence(
   const noun = t("Sequence execution");
   if (sequenceId) {
     commandOK(noun)();
-    return bodyVariables
-      ? getDevice().execSequence(sequenceId, bodyVariables).catch(commandErr(noun))
-      : getDevice().execSequence(sequenceId).catch(commandErr(noun));
+    return getDevice()
+      .execSequence(sequenceId, bodyVariables)
+      .catch((x: RpcError) => {
+        if (x && (typeof x == "object") && x.kind == "rpc_error") {
+          const messages = (x.body || []).map(y => y.args.message);
+          messages.unshift("A problem occurred during sequence execution");
+          return messages.join(". ");
+        } else {
+          commandErr(noun);
+        }
+      });
   } else {
     throw new Error(t("Can't execute unsaved sequences"));
   }
