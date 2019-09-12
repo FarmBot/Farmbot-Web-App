@@ -9,9 +9,7 @@ import { Thunk, ReduxAction } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
-  FirmwareHardware,
-  RpcError,
-  RpcOk
+  FirmwareHardware
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
