@@ -10,7 +10,8 @@ import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
   FirmwareHardware,
-  RpcError
+  RpcError,
+  RpcOk
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -154,11 +155,9 @@ export function execSequence(
     commandOK(noun)();
     return getDevice()
       .execSequence(sequenceId, bodyVariables)
-      .catch((x: RpcError) => {
-        if (x && (typeof x == "object") && x.kind == "rpc_error") {
-          const messages = (x.body || []).map(y => y.args.message);
-          messages.unshift("A problem occurred during sequence execution");
-          return messages.join(". ");
+      .catch((x: Error) => {
+        if (x && (typeof x == "object") && (typeof x.message == "string")) {
+          error(x.message);
         } else {
           commandErr(noun);
         }
