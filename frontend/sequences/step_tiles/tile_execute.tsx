@@ -17,7 +17,6 @@ import {
 } from "../locals_list/variable_support";
 import { AllowedVariableNodes } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";
-import { t } from "../../i18next_wrapper";
 
 /** Replaces the execute step body with a new array of variables. */
 const assignVariable = (props: ExecBlockParams) =>
@@ -102,8 +101,7 @@ export class RefactoredExecuteBlock
         confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
-          <Col xs={12}>
-            <label>{t("Sequence")}</label>
+          <Col xs={6}>
             <SequenceSelectBox
               onChange={this.changeSelection}
               resources={resources}
@@ -112,7 +110,7 @@ export class RefactoredExecuteBlock
         </Row>
         <Row>
           {!!calledSequenceVariableData &&
-            <Col xs={12}>
+            <Col xs={6}>
               <LocalsList
                 bodyVariables={currentStep.body}
                 variableData={calledSequenceVariableData}

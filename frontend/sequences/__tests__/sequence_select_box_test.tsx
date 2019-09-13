@@ -25,7 +25,7 @@ describe("<SequenceSelectBox />", () => {
 
   it("renders", () => {
     const wrapper = mount(<SequenceSelectBox {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("None");
+    expect(wrapper.text()).toEqual("Select a sequence");
   });
 
   it("returns list: none selected", () => {

@@ -3,6 +3,7 @@ import { isNumber } from "lodash";
 import { ResourceIndex } from "../resources/interfaces";
 import { selectAllSequences, findSequenceById } from "../resources/selectors";
 import { FBSelect, DropDownItem } from "../ui/index";
+import { t } from "../i18next_wrapper";
 
 export interface SequenceSelectBoxProps {
   onChange(selection: DropDownItem): void;
@@ -40,5 +41,6 @@ export function SequenceSelectBox(props: SequenceSelectBoxProps) {
   return <FBSelect
     onChange={props.onChange}
     selectedItem={selectedSequence()}
-    list={sequenceDropDownList()} />;
+    list={sequenceDropDownList()}
+    customNullLabel={t("Select a sequence")} />;
 }
