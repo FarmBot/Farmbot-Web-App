@@ -73,18 +73,6 @@ DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
 
 RSpec.configure do |config|
-  if DO_INTEGRATION
-    # Do I need to run `env RAILS_ENV=production npm run build`?
-    require "capybara/rails"
-    require "capybara/rspec"
-    require "selenium/webdriver"
-    # Be sure to run the server in a separate window!
-    Capybara.run_server = false
-    Capybara.app_host = "http://localhost:3000"
-    Capybara.server_host = "localhost"
-    Capybara.server_port = "3000"
-  end
-
   config.color = true
   # config.fail_fast = 10
   config.backtrace_exclusion_patterns = [/gems/]

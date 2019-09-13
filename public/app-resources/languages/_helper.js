@@ -56,7 +56,10 @@ var HelperNamespace = (function () {
     "Map Points", "Spread", "Row Spacing", "Height", "Taxon",
     "Growing Degree Days", "Svg Icon", "Invalid date", "yes", "Tools",
     "Messages", "Sequence Editor", "Commands", "Regimen Editor", "Scheduler",
-    "Farmware List", "SYNC NOW", "Test", "SYNCING", "SYNCED",
+    "Farmware List", "SYNC NOW", "Test", "SYNCING", "SYNCED", "UNKNOWN",
+    "Else Execute", "Connecting FarmBot to the Internet", "move to home",
+    "emergency stop", "SYNC ERROR", "inactive", "error", "No messages.",
+    "back to regimens", "back to sequences", "back to farmware list",
   ];
 
   /**

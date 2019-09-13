@@ -28,7 +28,7 @@ export class BatchQueue {
       store.dispatch(batchInitResources(this.queue));
     }
     this.clear();
-    bothUp("Inside BatchQueue instance");
+    bothUp();
   }
 
   push = (resource: TaggedLog) => {

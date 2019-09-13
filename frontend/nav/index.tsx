@@ -129,7 +129,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                         <Connectivity
                           bot={this.props.bot}
                           rowData={this.connectivityData.rowData}
-                          flags={this.connectivityData.flags} />
+                          flags={this.connectivityData.flags}
+                          pings={this.props.pings} />
                       </Popover>
                     </div>
                     <RunTour currentTour={this.props.tour} />

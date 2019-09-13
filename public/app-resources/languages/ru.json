@@ -589,7 +589,7 @@
     "Welcome to the": "Добро пожаловать в",
     "When enabled, FarmBot OS will periodically check for, download, and install updates automatically.": "Если опция включена, FarmBot OS будет периодически проверять, скачивать и устанавливать обновления.",
     "When enabled, device resources such as sequences and regimens will be sent to the device automatically. This removes the need to push \"SYNC\" after making changes in the web app. Changes to running sequences and regimens while auto sync is enabled will result in instantaneous change.": "Если включено, настройки, такие как список Функций и Режимов будут автоматически отправляться роботу. Это убирает необходимость нажимать кнопку \"СИНХРОНИЗИРОВАТЬ\" после внесения изменений в Web-приложении. Изменения, сделанные в Режимах и Функциях, отправляются роботу мгновенно.",
-    "WiFi Strength": "Сигнал WiFi",
+    "WiFi strength": "Сигнал WiFi",
     "Widget load failed.": "Не удалось загрузить окно.",
     "Write Pin": "Записать пин",
     "X (mm)": "X (мм)",

@@ -14,14 +14,55 @@ import {
 } from "./pin_and_peripheral_support";
 import { t } from "../../i18next_wrapper";
 import { PinMode } from "./tile_read_pin";
+import { WritePin, TaggedSequence } from "farmbot";
+import { ResourceIndex } from "../../resources/interfaces";
+import { ShouldDisplay } from "../../devices/interfaces";
 
-export function TileWritePin(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence } = props;
-  /** Make sure the generic `currentStep` provided is a WritePin step. */
-  if (currentStep.kind !== "write_pin") { throw new Error("never"); }
+export function TileWritePin(p: StepParams) {
+  if (p.currentStep.kind === "write_pin") {
+    return <WritePinStep currentStep={p.currentStep}
+      currentSequence={p.currentSequence}
+      index={p.index}
+      dispatch={p.dispatch}
+      resources={p.resources}
+      shouldDisplay={p.shouldDisplay}
+      confirmStepDeletion={p.confirmStepDeletion}
+      showPins={!!p.showPins} />;
+  } else {
+    throw new Error("Not a write_pin block.");
+  }
+}
 
-  const PinValueField = (): JSX.Element =>
-    (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1)
+export interface WritePinStepParams {
+  currentStep: WritePin;
+  currentSequence: TaggedSequence;
+  dispatch: Function;
+  index: number;
+  resources: ResourceIndex;
+  shouldDisplay: ShouldDisplay | undefined;
+  confirmStepDeletion: boolean;
+  showPins: boolean;
+}
+
+export class WritePinStep extends React.Component<WritePinStepParams> {
+
+  PinSelect = (): JSX.Element => {
+    const { currentSequence, resources, showPins } = this.props;
+    const { pin_number } = this.props.currentStep.args;
+    return <Col xs={6} md={6}>
+      <label>{t("Peripheral")}</label>
+      <FBSelect
+        key={JSON.stringify(currentSequence)}
+        selectedItem={celery2DropDown(pin_number, resources)}
+        customNullLabel={t("Select a peripheral")}
+        onChange={setArgsDotPinNumber(this.props)}
+        list={pinsAsDropDownsWritePin(resources, !!showPins)} />
+    </Col>;
+  }
+
+  PinValueField = (): JSX.Element => {
+    const { dispatch, currentStep, index, currentSequence } = this.props;
+    return (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1)
       /** Analog pin mode: display number input for pin value. */
       ? <StepInputBox dispatch={dispatch}
         step={currentStep}
@@ -30,40 +71,33 @@ export function TileWritePin(props: StepParams) {
         field="pin_value" />
       /** Digital mode: replace pin value input with an ON/OFF dropdown. */
       : <FBSelect
-        key={JSON.stringify(props.currentSequence)}
-        onChange={x => setPinValue(x, props)}
+        key={JSON.stringify(currentSequence)}
+        onChange={x => setPinValue(x, this.props)}
         selectedItem={currentValueSelection(currentStep)}
         list={PIN_VALUES()} />;
+  }
 
-  const className = "write-pin-step";
-  const { pin_number } = currentStep.args;
-
-  return <StepWrapper>
-    <StepHeader
-      className={className}
-      helpText={ToolTips.WRITE_PIN}
-      currentSequence={currentSequence}
-      currentStep={currentStep}
-      dispatch={dispatch}
-      index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
-    <StepContent className={className}>
-      <Row>
-        <Col xs={6} md={6}>
-          <label>{t("Peripheral")}</label>
-          <FBSelect
-            key={JSON.stringify(props.currentSequence)}
-            selectedItem={celery2DropDown(pin_number, props.resources)}
-            customNullLabel={t("Select a peripheral")}
-            onChange={setArgsDotPinNumber(props)}
-            list={pinsAsDropDownsWritePin(props.resources, !!props.showPins)} />
-        </Col>
-        <PinMode {...props} />
-        <Col xs={6} md={3}>
-          <label>{t("set to")}</label>
-          <PinValueField />
-        </Col>
-      </Row>
-    </StepContent>
-  </StepWrapper>;
+  render() {
+    const className = "write-pin-step";
+    return <StepWrapper>
+      <StepHeader
+        className={className}
+        helpText={ToolTips.WRITE_PIN}
+        currentSequence={this.props.currentSequence}
+        currentStep={this.props.currentStep}
+        dispatch={this.props.dispatch}
+        index={this.props.index}
+        confirmStepDeletion={this.props.confirmStepDeletion} />
+      <StepContent className={className}>
+        <Row>
+          <this.PinSelect />
+          <PinMode {...this.props} />
+          <Col xs={6} md={3}>
+            <label>{t("set to")}</label>
+            <this.PinValueField />
+          </Col>
+        </Row>
+      </StepContent>
+    </StepWrapper>;
+  }
 }

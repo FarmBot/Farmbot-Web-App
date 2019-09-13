@@ -1,6 +1,7 @@
 import * as React from "react";
 import { CowardlyDictionary } from "../../util";
 import { Row, Col } from "../../ui/index";
+import { t } from "../../i18next_wrapper";
 
 /** Data model for a single row within the <ConnectivityPanel /> */
 export interface StatusRowProps {
@@ -33,16 +34,16 @@ export function ConnectivityRow(props: StatusRowProps) {
 
   const getTitle = () => {
     switch (connectionStatus) {
-      case undefined: return "Unknown";
-      case true: return "Ok";
-      default: return "Error";
+      case undefined: return t("Unknown");
+      case true: return t("Ok");
+      default: return t("Error");
     }
   };
 
   return <Row>
     <Col xs={1}>
       <div className={className}
-        title={props.header ? "Status" : getTitle()}
+        title={props.header ? t("Status") : getTitle()}
         onMouseEnter={hoverOver(connectionName)}
         onMouseLeave={hoverOver(undefined)} />
       {!props.header &&

@@ -39,10 +39,8 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
     </div>
     <div className="app-version">
       <label>{t("VERSION")}</label>:&nbsp;
-      <a
-        href="https://github.com/FarmBot/Farmbot-Web-App"
-        target="_blank">
-        {shortRevision().slice(0, 7)}<p>{shortRevision().slice(7, 8)}</p>
+      <a href="https://github.com/FarmBot/Farmbot-Web-App" target="_blank">
+        {shortRevision().slice(0, 8)}
       </a>
     </div>
   </div>;

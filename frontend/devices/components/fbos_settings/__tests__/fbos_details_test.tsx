@@ -55,7 +55,7 @@ describe("<FbosDetails/>", () => {
       "Firmware", "fakeFirmware",
       "Firmware commit", "fakeFwCo",
       "FAKETARGET CPU temperature", "48.3", "C",
-      "WiFi Strength", "-49dBm",
+      "WiFi strength", "-49dBm",
       "Beta release Opt-In",
       "Uptime", "0 seconds",
       "Memory usage", "0MB",
@@ -117,7 +117,7 @@ describe("<FbosDetails/>", () => {
     const p = fakeProps();
     p.botInfoSettings.wifi_level = undefined;
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.text()).toContain("WiFi Strength: N/A");
+    expect(wrapper.text()).toContain("WiFi strength: N/A");
     expect(wrapper.text()).not.toContain("dBm");
   });
 
