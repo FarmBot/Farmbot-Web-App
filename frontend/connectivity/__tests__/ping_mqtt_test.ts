@@ -12,17 +12,12 @@ import {
   readPing,
   markStale,
   markActive,
-  isInactive,
   startPinging,
-  ACTIVE_THRESHOLD,
   PING_INTERVAL
 } from "../ping_mqtt";
 import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
 import { dispatchNetworkDown, dispatchNetworkUp } from "../index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
-
-const TOO_LATE_TIME_DIFF = ACTIVE_THRESHOLD + 1;
-const ACCEPTABLE_TIME_DIFF = ACTIVE_THRESHOLD - 1;
 
 const state: Partial<FarmBotInternalConfig> = {
   LAST_PING_IN: 123,
@@ -76,12 +71,6 @@ describe("ping util", () => {
   it("marks the bot's connection to MQTT as 'active'", () => {
     markActive();
     expectActive();
-  });
-
-  it("checks if the bot isInactive()", () => {
-    expect(isInactive(1, 1 + TOO_LATE_TIME_DIFF)).toBeTruthy();
-    expect(isInactive(1, 1)).toBeFalsy();
-    expect(isInactive(1, 1 + ACCEPTABLE_TIME_DIFF)).toBeFalsy();
   });
 
   it("binds event handlers with startPinging()", (done) => {

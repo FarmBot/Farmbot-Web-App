@@ -51,7 +51,7 @@ export const pingOK = (id: string, at: number) => {
   store.dispatch(action);
 };
 
-export const pingNO = (id: string) => {
-  const action = { type: Actions.PING_NO, payload: { id } };
+export const pingNO = (id: string, at: number) => {
+  const action = { type: Actions.PING_NO, payload: { id, at } };
   store.dispatch(action);
 };

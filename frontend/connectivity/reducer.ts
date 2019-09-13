@@ -14,7 +14,7 @@ export const DEFAULT_STATE: ConnectionState = {
     "user.api": undefined
   },
   pings: {
-  }
+  },
 };
 
 export let connectivityReducer =
@@ -30,9 +30,9 @@ export let connectivityReducer =
 
       return s;
     })
-    .add<{ id: string }>(Actions.PING_NO, (s, { payload }) => {
+    .add<{ id: string, at: number }>(Actions.PING_NO, (s, { payload }) => {
       s.pings = failPing(s.pings, payload.id);
-
+      s.uptime["bot.mqtt"] = { at: payload.at, state: "down" };
       return s;
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
