@@ -70,6 +70,8 @@ export function showLogOnScreen(log: Log) {
         return fun;
       case MessageType.busy:
         return busy;
+      case MessageType.debug:
+        return (msg: string, title: string) => info(msg, title, "gray");
       case MessageType.info:
       default:
         return info;
