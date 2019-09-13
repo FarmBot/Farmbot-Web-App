@@ -68,12 +68,13 @@ export const LocationForm =
       props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
     const formTitle = props.hideTypeLabel ? label : formTitleWithType;
     return <div className="location-form">
-      <div className="location-form-header">
-        <label>{formTitle}</label>
-        {props.collapsible &&
-          <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
-            onClick={props.toggleVarShow} />}
-      </div>
+      {!props.hideTypeLabel &&
+        <div className="location-form-header">
+          <label>{formTitle}</label>
+          {props.collapsible &&
+            <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
+              onClick={props.toggleVarShow} />}
+        </div>}
       {!props.collapsed &&
         <div className="location-form-content">
           <Row>
