@@ -16,16 +16,21 @@ import {
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 
-export function mapStateToProps(props: Everything) {
+export function mapStateToProps(props: Everything): CreatePointsProps {
+  const { position } = props.bot.hardware.location_data;
   return {
     dispatch: props.dispatch,
-    currentPoint: props.resources.consumers.farm_designer.currentPoint
+    currentPoint: props.resources.consumers.farm_designer.currentPoint,
+    deviceX: position.x || 0,
+    deviceY: position.y || 0,
   };
 }
 
 export interface CreatePointsProps {
   dispatch: Function;
   currentPoint: CurrentPointPayl | undefined;
+  deviceX: number;
+  deviceY: number;
 }
 
 interface CreatePointsState {
@@ -151,7 +156,7 @@ export class CreatePoints
           name="cx"
           type="number"
           onCommit={this.updateValue("cx")}
-          value={cx || 0} />
+          value={cx || this.props.deviceX} />
       </Col>
       <Col xs={3}>
         <label>{t("Y")}</label>
@@ -159,7 +164,7 @@ export class CreatePoints
           name="cy"
           type="number"
           onCommit={this.updateValue("cy")}
-          value={cy || 0} />
+          value={cy || this.props.deviceY} />
       </Col>
       <Col xs={3}>
         <label>{t("radius")}</label>
@@ -167,7 +172,7 @@ export class CreatePoints
           name="r"
           type="number"
           onCommit={this.updateValue("r")}
-          value={r || 0}
+          value={(typeof r == "number") ? r : 20}
           min={0} />
       </Col>
       <Col xs={3}>

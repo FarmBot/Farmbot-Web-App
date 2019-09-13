@@ -22,7 +22,9 @@ describe("<CreatePoints />", () => {
   const fakeProps = (): CreatePointsProps => {
     return {
       dispatch: jest.fn(),
-      currentPoint: undefined
+      currentPoint: undefined,
+      deviceY: 1.23,
+      deviceX: 3.21
     };
   };
 
