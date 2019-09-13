@@ -72,6 +72,8 @@ export interface LocationFormProps extends CommonProps {
   hideVariableLabel?: boolean;
   /** Set to true to hide the variable node type label. */
   hideTypeLabel?: boolean;
+  /** Set to true to hide the form header and label. */
+  hideHeader?: boolean;
 }
 
 export const PARENT = (label: string) =>
