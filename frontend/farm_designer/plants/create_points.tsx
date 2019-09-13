@@ -41,6 +41,8 @@ interface CreatePointsState {
   color: string;
 }
 
+const DEFAULT_R = 15;
+
 @connect(mapStateToProps)
 export class CreatePoints
   extends React.Component<CreatePointsProps, Partial<CreatePointsState>> {
@@ -57,9 +59,9 @@ export class CreatePoints
     const point = this.props.currentPoint;
     this.setState({
       name: point ? point.name : "Created Point",
-      cx: point ? point.cx : 0,
-      cy: point ? point.cy : 0,
-      r: point ? point.r : 1,
+      cx: point ? point.cx : this.props.deviceX,
+      cy: point ? point.cy : this.props.deviceY,
+      r: point ? point.r : DEFAULT_R,
       color: point ? point.color : "green"
     });
   }
@@ -70,7 +72,10 @@ export class CreatePoints
       payload: undefined
     });
     this.setState({
-      cx: undefined, cy: undefined, r: undefined, color: undefined
+      cx: this.props.deviceX,
+      cy: this.props.deviceY,
+      r: DEFAULT_R,
+      color: undefined
     });
   }
 
@@ -126,10 +131,10 @@ export class CreatePoints
       pointer_type: "GenericPointer",
       name: name || "Created Point",
       meta: { color, created_by: "farm-designer" },
-      x: cx || 0,
-      y: cy || 0,
+      x: cx || this.props.deviceX,
+      y: cy || this.props.deviceY,
       z: 0,
-      radius: r || 1,
+      radius: r || DEFAULT_R,
     };
     this.props.dispatch(initSave("Point", body));
     this.cancel();
@@ -172,7 +177,7 @@ export class CreatePoints
           name="r"
           type="number"
           onCommit={this.updateValue("r")}
-          value={(typeof r == "number") ? r : 20}
+          value={(typeof r == "number") ? r : DEFAULT_R}
           min={0} />
       </Col>
       <Col xs={3}>
