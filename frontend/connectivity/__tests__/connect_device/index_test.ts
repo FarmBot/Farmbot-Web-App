@@ -121,6 +121,12 @@ describe("showLogOnScreen", () => {
   it("routes `success` to toastr.success()", () => {
     assertToastr([MessageType.success], success);
   });
+
+  it("routes `debug` to toastr.info()", () => {
+    const log = fakeLog(MessageType.debug, ["toast"]);
+    showLogOnScreen(log);
+    expect(info).toHaveBeenCalledWith(log.message, TITLE(), "gray");
+  });
 });
 
 describe("speakLogAloud", () => {

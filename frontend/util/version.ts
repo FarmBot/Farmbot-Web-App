@@ -26,6 +26,8 @@ export function semverCompare(left: string, right: string): SemverResult {
   const rightSemVer = right.split("-")[0];
   const leftHasSuffix = left.includes("-");
   const rightHasSuffix = right.includes("-");
+  const leftRc = parseInt(left.toLowerCase().split("rc")[1]);
+  const rightRc = parseInt(right.toLowerCase().split("rc")[1]);
   const pa: Array<string | undefined> = leftSemVer.split(".");
   const pb: Array<string | undefined> = rightSemVer.split(".");
   for (let i = 0; i < 3; i++) {
@@ -56,6 +58,14 @@ export function semverCompare(left: string, right: string): SemverResult {
   }
 
   if (leftHasSuffix && !rightHasSuffix) {
+    return SemverResult.RIGHT_IS_GREATER;
+  }
+
+  if (leftRc > rightRc) {
+    return SemverResult.LEFT_IS_GREATER;
+  }
+
+  if (rightRc > leftRc) {
     return SemverResult.RIGHT_IS_GREATER;
   }
 

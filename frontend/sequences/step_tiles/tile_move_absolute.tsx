@@ -82,36 +82,24 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   }
 
   LocationForm = () =>
-    <Row>
-      <Col xs={10}>
-        <LocationForm
-          variable={{
-            celeryNode: this.celeryNode,
-            dropdown: determineDropdown(this.celeryNode, this.props.resources,
-              this.props.currentSequence.uuid),
-            vector: this.vector,
-          }}
-          sequenceUuid={this.props.currentSequence.uuid}
-          resources={this.props.resources}
-          onChange={this.updateLocation}
-          shouldDisplay={this.props.shouldDisplay || (() => false)}
-          hideVariableLabel={true}
-          hideTypeLabel={true}
-          locationDropdownKey={JSON.stringify(this.props.currentSequence)}
-          allowedVariableNodes={AllowedVariableNodes.identifier}
-          disallowGroups={true}
-          width={3} />
-      </Col>
-      <Col xs={2}>
-        <ExpandableHeader
-          expanded={this.state.more}
-          title={t("Options")}
-          onClick={() =>
-            this.setState({ more: !this.state.more })} />
-      </Col>
-    </Row>
+    <LocationForm
+      variable={{
+        celeryNode: this.celeryNode,
+        dropdown: determineDropdown(this.celeryNode, this.props.resources,
+          this.props.currentSequence.uuid),
+        vector: this.vector,
+      }}
+      sequenceUuid={this.props.currentSequence.uuid}
+      resources={this.props.resources}
+      onChange={this.updateLocation}
+      shouldDisplay={this.props.shouldDisplay || (() => false)}
+      hideHeader={true}
+      locationDropdownKey={JSON.stringify(this.props.currentSequence)}
+      allowedVariableNodes={AllowedVariableNodes.identifier}
+      disallowGroups={true}
+      width={3} />
 
-  SpeedForm = () =>
+  SpeedInput = () =>
     <Col xs={3}>
       <label>
         {t("Speed (%)")}
@@ -124,19 +112,21 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         sequence={this.props.currentSequence} />
     </Col>
 
-  OffsetForm = () =>
+  OffsetInput = (axis: Xyz) =>
+    <Col xs={3} key={axis}>
+      <label>
+        {t("{{axis}}-Offset", { axis })}
+      </label>
+      <BlurableInput type="number"
+        onCommit={this.updateInputValue(axis, "offset")}
+        name={`offset-${axis}`}
+        value={(this.args.offset.args[axis] || 0).toString()} />
+    </Col>
+
+  OptionsForm = () =>
     <Row>
-      {["x", "y", "z"].map((axis: Xyz) =>
-        <Col xs={3} key={axis}>
-          <label>
-            {t("{{axis}}-Offset", { axis })}
-          </label>
-          <BlurableInput type="number"
-            onCommit={this.updateInputValue(axis, "offset")}
-            name={`offset-${axis}`}
-            value={(this.args.offset.args[axis] || 0).toString()} />
-        </Col>)}
-      <this.SpeedForm />
+      {["x", "y", "z"].map(this.OffsetInput)}
+      <this.SpeedInput />
     </Row>
 
   render() {
@@ -161,9 +151,19 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
           hardwareFlags={this.props.hardwareFlags} />
       </StepHeader>
       <StepContent className={className}>
-        <this.LocationForm />
+        <Row>
+          <Col xs={10}>
+            <this.LocationForm />
+          </Col>
+          <Col xs={2}>
+            <ExpandableHeader
+              expanded={this.state.more}
+              title={t("Options")}
+              onClick={() => this.setState({ more: !this.state.more })} />
+          </Col>
+        </Row>
         <Collapse isOpen={this.state.more}>
-          <this.OffsetForm />
+          <this.OptionsForm />
         </Collapse>
       </StepContent>
     </StepWrapper>;
