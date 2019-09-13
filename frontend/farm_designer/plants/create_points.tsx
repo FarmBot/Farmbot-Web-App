@@ -72,8 +72,8 @@ export class CreatePoints
       payload: undefined
     });
     this.setState({
-      cx: this.props.deviceX,
-      cy: this.props.deviceY,
+      cx: undefined,
+      cy: undefined,
       r: DEFAULT_R,
       color: undefined
     });

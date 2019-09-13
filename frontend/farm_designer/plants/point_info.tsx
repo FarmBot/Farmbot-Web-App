@@ -9,6 +9,7 @@ import { Everything } from "../../interfaces";
 import { TaggedPoint } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
 import { DeleteButton } from "../../controls/pin_form_fields";
+import { getDevice } from "../../device";
 
 export interface EditPointProps {
   dispatch: Function;
@@ -47,6 +48,12 @@ export class EditPoint extends React.Component<EditPointProps, {}> {
           })
         }
       </ul>
+      <button
+        className="green fb-button"
+        type="button"
+        onClick={() => getDevice().moveAbsolute(body)}>
+        {t("Move Device to Point")}
+      </button>
       <DeleteButton
         dispatch={this.props.dispatch}
         uuid={p.uuid}
