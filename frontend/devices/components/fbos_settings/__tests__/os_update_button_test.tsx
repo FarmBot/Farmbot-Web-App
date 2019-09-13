@@ -1,10 +1,8 @@
 const mockDevice = {
-  checkUpdates: jest.fn(() => { return Promise.resolve(); }),
-  updateConfig: jest.fn(() => { return Promise.resolve(); }),
+  checkUpdates: jest.fn(() => Promise.resolve()),
+  updateConfig: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount } from "enzyme";
@@ -17,6 +15,7 @@ import { Content } from "../../../../constants";
 describe("<OsUpdateButton/>", () => {
   beforeEach(() => {
     bot.currentOSVersion = "6.1.6";
+    bot.hardware.informational_settings.controller_version = "6.1.6";
     bot.hardware.configuration.beta_opt_in = false;
   });
 
@@ -250,6 +249,15 @@ describe("<OsUpdateButton/>", () => {
     testButtonState(testProps, expectedResults);
   });
 
+  it("on latest beta update: already has beta suffix", () => {
+    const testProps = defaultTestProps();
+    testProps.installedVersion = "6.1.7-beta";
+    testProps.availableBetaVersion = "6.1.7-beta";
+    testProps.betaOptIn = true;
+    const expectedResults = upToDate("6.1.7-beta");
+    testButtonState(testProps, expectedResults);
+  });
+
   it("beta update has same numeric version: newer commit", () => {
     const testProps = defaultTestProps();
     testProps.installedVersion = "7.0.0";
@@ -307,6 +315,28 @@ describe("<OsUpdateButton/>", () => {
     testProps.update_channel = "beta";
     testProps.availableBetaVersion = "6.1.7-beta";
     const expectedResults = upToDate("6.1.6");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("compares release candidates: newer", () => {
+    const testProps = defaultTestProps();
+    testProps.availableVersion = "6.1.5";
+    testProps.installedVersion = "6.1.6-rc1";
+    testProps.shouldDisplay = () => true;
+    testProps.update_channel = "beta";
+    testProps.availableBetaVersion = "6.1.6-rc2";
+    const expectedResults = updateNeeded("6.1.6-rc2");
+    testButtonState(testProps, expectedResults);
+  });
+
+  it("compares release candidates: older", () => {
+    const testProps = defaultTestProps();
+    testProps.availableVersion = "6.1.5";
+    testProps.installedVersion = "6.1.6-rc2";
+    testProps.shouldDisplay = () => true;
+    testProps.update_channel = "beta";
+    testProps.availableBetaVersion = "6.1.6-rc1";
+    const expectedResults = upToDate("6.1.6-rc1");
     testButtonState(testProps, expectedResults);
   });
 

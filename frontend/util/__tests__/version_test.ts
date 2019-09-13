@@ -39,6 +39,15 @@ describe("semver compare", () => {
 
     expect(semverCompare("1.1.1-beta", "1.1.1"))
       .toBe(SemverResult.RIGHT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-rc2", "1.1.1-rc11"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-rc1", "1.1.1"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-rc2", "1.1.2-rc1"))
+      .toBe(SemverResult.RIGHT_IS_GREATER);
   });
 
   it("knows when LEFT_IS_GREATER: numeric", () => {
@@ -69,6 +78,15 @@ describe("semver compare", () => {
 
     expect(semverCompare("1.1.1", "1.1.1-beta"))
       .toBe(SemverResult.LEFT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-RC99", "1.1.1-rc10"))
+      .toBe(SemverResult.LEFT_IS_GREATER);
+
+    expect(semverCompare("1.1.1", "1.1.1-rc1"))
+      .toBe(SemverResult.LEFT_IS_GREATER);
+
+    expect(semverCompare("1.1.1-rc2-", "1.1.1-rc1"))
+      .toBe(SemverResult.LEFT_IS_GREATER);
   });
 
   it("knows when EQUAL", () => {
@@ -79,6 +97,9 @@ describe("semver compare", () => {
       .toBe(SemverResult.EQUAL);
 
     expect(semverCompare("1.1.1-beta", "1.1.1-beta"))
+      .toBe(SemverResult.EQUAL);
+
+    expect(semverCompare("1.1.1-rc100", "1.1.1-rc100"))
       .toBe(SemverResult.EQUAL);
   });
 });
