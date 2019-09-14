@@ -19,10 +19,10 @@ describe("createRefreshTrigger", () => {
 
   it("calls the bot when going from down => up", () => {
     const go = createRefreshTrigger();
-    go({ at: "?", state: "down" });
-    go({ at: "?", state: "down" });
+    go({ at: 0, state: "down" });
+    go({ at: 0, state: "down" });
     expect(changeLastClientConnected).not.toHaveBeenCalled();
-    go({ at: "?", state: "up" });
+    go({ at: 0, state: "up" });
     expect(changeLastClientConnected).toHaveBeenCalled();
     expect(maybeGetDevice).toHaveBeenCalled();
   });

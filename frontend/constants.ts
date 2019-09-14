@@ -754,7 +754,7 @@ export namespace Content {
     trim(`Press "+" to add a point to your garden.`);
 
   export const NO_GROUPS =
-    trim(`Press "+" to add a point group.`);
+    trim(`Press "+" to add a group.`);
 
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
@@ -994,5 +994,8 @@ export enum Actions {
   // Network
   NETWORK_EDGE_CHANGE = "NETWORK_EDGE_CHANGE",
   RESET_NETWORK = "RESET_NETWORK",
-  SET_CONSISTENCY = "SET_CONSISTENCY"
+  SET_CONSISTENCY = "SET_CONSISTENCY",
+  PING_START = "PING_START",
+  PING_OK = "PING_OK",
+  PING_NO = "PING_NO"
 }

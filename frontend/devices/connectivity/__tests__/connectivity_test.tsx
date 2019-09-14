@@ -4,6 +4,7 @@ import { Connectivity, ConnectivityProps } from "../connectivity";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
 import { fill } from "lodash";
+import { fakePings } from "../../../__test_support__/fake_state/pings";
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -26,6 +27,7 @@ describe("<Connectivity />", () => {
     bot,
     rowData,
     flags,
+    pings: fakePings()
   });
 
   it("sets hovered connection", () => {

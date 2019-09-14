@@ -11,6 +11,7 @@ import { NavBarProps } from "../interfaces";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { fakePings } from "../../__test_support__/fake_state/pings";
 
 describe("NavBar", () => {
   const fakeProps = (): NavBarProps => ({
@@ -25,6 +26,7 @@ describe("NavBar", () => {
     device: fakeDevice(),
     autoSync: false,
     alertCount: 0,
+    pings: fakePings()
   });
 
   it("has correct parent classname", () => {

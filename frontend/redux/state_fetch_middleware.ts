@@ -9,7 +9,7 @@ const stateFetchMiddleware: Middleware =
   (store) => (next) => (action: any) => {
     // tslint:disable-next-line:no-any
     const s: Everything = store.getState() as any;
-    maybeRefresh(s.bot.connectivity["bot.mqtt"]);
+    maybeRefresh(s.bot.connectivity.uptime["bot.mqtt"]);
     next(action);
   };
 

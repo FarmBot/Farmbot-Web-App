@@ -20,7 +20,7 @@ describe("botToAPI()", () => {
   });
 
   it("handles unknown connectivity", () => {
-    const result = botToAPI(undefined, moment());
+    const result = botToAPI(undefined, (new Date()).getTime());
     expect(result.connectionStatus).toBeFalsy();
     expect(result.children).toContain("No messages seen yet.");
   });
@@ -28,7 +28,7 @@ describe("botToAPI()", () => {
 
 describe("botToMQTT()", () => {
   const DEFAULT_STATE: ConnectionStatus = {
-    at: "2017-09-27T07:52:37.003-05:00",
+    at: new Date("2017-09-27T07:52:37.003-05:00").getTime(),
     state: "up"
   };
   function stat(input: Partial<ConnectionStatus> = {}): ConnectionStatus {
@@ -48,7 +48,7 @@ describe("botToMQTT()", () => {
     expect(result.children).toContain("No recent messages.");
   });
 });
-const NOW = moment().toJSON();
+const NOW = (new Date()).getTime();
 describe("browserToMQTT()", () => {
   it("handles connectivity", () => {
     const output = browserToMQTT({ state: "up", at: NOW });
@@ -100,7 +100,7 @@ describe("browserToAPI()", () => {
   it("handles connectivity", () => {
     const result = browserToAPI({
       state: "up",
-      at: moment().toISOString()
+      at: (new Date).getTime()
     });
     expect(result.connectionStatus).toBeTruthy();
     expect(result.children).toContain("Last message seen a few seconds ago.");
@@ -109,7 +109,7 @@ describe("browserToAPI()", () => {
   it("handles loss of connectivity", () => {
     const result = browserToAPI({
       state: "down",
-      at: moment().toISOString()
+      at: (new Date).getTime()
     });
     expect(result.connectionStatus).toBeFalsy();
     expect(result.children).toContain("Last message seen a few seconds ago");

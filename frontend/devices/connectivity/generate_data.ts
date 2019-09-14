@@ -17,9 +17,9 @@ export const connectivityData = (props: ConnectivityDataProps) => {
 
   /** A record of all the things we know about connectivity right now. */
   const data: Record<DiagnosisName, StatusRowProps> = {
-    userMQTT: browserToMQTT(props.bot.connectivity["user.mqtt"]),
-    userAPI: browserToAPI(props.bot.connectivity["user.api"]),
-    botMQTT: botToMQTT(props.bot.connectivity["bot.mqtt"]),
+    userMQTT: browserToMQTT(props.bot.connectivity.uptime["user.mqtt"]),
+    userAPI: browserToAPI(props.bot.connectivity.uptime["user.api"]),
+    botMQTT: botToMQTT(props.bot.connectivity.uptime["bot.mqtt"]),
     botAPI: botToAPI(props.device.body.last_saw_api),
     botFirmware: botToFirmware(fwVersion),
   };

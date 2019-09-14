@@ -107,7 +107,7 @@ export function mapStateToProps(props: Everything): FarmwareProps {
       .reverse()
       .value();
 
-  const botToMqttStatus = getStatus(props.bot.connectivity["bot.mqtt"]);
+  const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
   const syncStatus = props.bot.hardware.informational_settings.sync_status;
 
   return {

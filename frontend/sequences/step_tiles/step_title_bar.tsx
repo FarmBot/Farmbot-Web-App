@@ -1,6 +1,5 @@
 import * as React from "react";
 import { SequenceBodyItem as Step, SequenceBodyItem } from "farmbot";
-
 import { StepTitleBarProps } from "../interfaces";
 import { BlurableInput } from "../../ui/index";
 import { updateStepTitle } from "./index";
@@ -11,7 +10,7 @@ function translate(input: Step): string {
   // i18next might not have the correct translation loaded. To get around this,
   // I had to put the translations in the function.
   const TRANSLATIONS: Partial<Record<SequenceBodyItem["kind"], string>> = {
-    "_if": t("If Statement"),
+    "_if": t("If ..."),
     "execute_script": t("Run Farmware"),
     "execute": t("Execute Sequence"),
     "find_home": t("Find Home"),
@@ -21,6 +20,7 @@ function translate(input: Step): string {
     "send_message": t("Send Message"),
     "take_photo": t("Take a Photo"),
     "resource_update": t("Mark As"),
+    "assertion": t("Assertion"),
     "set_servo_angle": t("Set Servo Angle"),
     "wait": t("Wait"),
     "write_pin": t("Control Peripheral"),

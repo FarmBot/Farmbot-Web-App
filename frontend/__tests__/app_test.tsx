@@ -20,6 +20,7 @@ import {
 import { ResourceName } from "farmbot";
 import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error } from "../toast/toast";
+import { fakePings } from "../__test_support__/fake_state/pings";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -42,6 +43,7 @@ const fakeProps = (): AppProps => {
     resources: buildResourceIndex().index,
     autoSync: false,
     alertCount: 0,
+    pings: fakePings()
   };
 };
 

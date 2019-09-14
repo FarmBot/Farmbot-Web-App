@@ -33,9 +33,9 @@ export function mapStateToProps(props: Everything): Props {
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
   return {
-    userToApi: props.bot.connectivity["user.api"],
-    userToMqtt: props.bot.connectivity["user.mqtt"],
-    botToMqtt: props.bot.connectivity["bot.mqtt"],
+    userToApi: props.bot.connectivity.uptime["user.api"],
+    userToMqtt: props.bot.connectivity.uptime["user.mqtt"],
+    botToMqtt: props.bot.connectivity.uptime["bot.mqtt"],
     deviceAccount: getDeviceAccountSettings(props.resources.index),
     auth: props.auth,
     bot: props.bot,

@@ -141,7 +141,7 @@ export class PureFarmEvents
             title={t("No events scheduled.")}
             text={t(Content.NOTHING_SCHEDULED)}
             colorScheme="events"
-            graphic={EmptyStateGraphic.no_farm_events}>
+            graphic={EmptyStateGraphic.farm_events}>
             {this.renderCalendarRows()}
           </EmptyStateWrapper>
         </div>

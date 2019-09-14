@@ -77,6 +77,7 @@ const getInstalledVersion = (
   currentlyOnBeta: boolean,
 ): string | undefined => {
   if (!isString(controllerVersion)) { return undefined; }
+  if (controllerVersion.includes("beta")) { return controllerVersion; }
   return currentlyOnBeta ? controllerVersion + "-beta" : controllerVersion;
 };
 

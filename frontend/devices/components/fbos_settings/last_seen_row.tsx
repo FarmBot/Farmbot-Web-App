@@ -9,7 +9,7 @@ import { refresh } from "../../../api/crud";
 
 export interface LastSeenProps {
   dispatch: Function;
-  botToMqttLastSeen: string;
+  botToMqttLastSeen: number;
   device: TaggedDevice;
   timeSettings: TimeSettings;
 }

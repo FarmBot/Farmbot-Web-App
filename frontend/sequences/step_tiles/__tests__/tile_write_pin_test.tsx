@@ -1,9 +1,13 @@
+const mockEditStep = jest.fn();
+jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
+
 import * as React from "react";
-import { TileWritePin } from "../tile_write_pin";
-import { mount } from "enzyme";
+import { TileWritePin, WritePinStep } from "../tile_write_pin";
+import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
+import { FBSelect } from "../../../ui";
 
 describe("<TileWritePin/>", () => {
   function fakeProps() {
@@ -22,6 +26,8 @@ describe("<TileWritePin/>", () => {
       index: 0,
       resources: emptyState().index,
       confirmStepDeletion: false,
+      shouldDisplay: () => false,
+      showPins: false,
     };
   }
 
@@ -59,5 +65,29 @@ describe("<TileWritePin/>", () => {
     expect(buttons.at(1).text()).toEqual("Digital");
     expect(labels.at(2).text()).toEqual("set to");
     expect(buttons.at(2).text()).toEqual("ON");
+  });
+
+  it("changes pin value", () => {
+    const p = fakeProps();
+    p.currentStep.args.pin_mode = 0;
+    p.currentStep.args.pin_value = 1;
+    const wrapper = mount<WritePinStep>(<WritePinStep {...p} />);
+    const pinValueSelect = shallow(
+      <div>{wrapper.instance().PinValueField()}</div>);
+    pinValueSelect.find(FBSelect).last().simulate("change", {
+      label: "123", value: 123
+    });
+    const step = p.currentStep;
+    mockEditStep.mock.calls[0][0].executor(step);
+    expect(step.args.pin_value).toEqual(123);
+  });
+
+  it("throws when not a WritePin step", () => {
+    console.error = jest.fn();
+    const p = fakeProps();
+    // tslint:disable-next-line:no-any
+    p.currentStep.kind = "wrong_step" as any;
+    expect(() => mount(<TileWritePin {...p} />))
+      .toThrow("Not a write_pin block.");
   });
 });

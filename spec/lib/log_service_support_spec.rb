@@ -13,11 +13,12 @@ describe LogService do
     channels: [],
   }.to_json
 
-  FakeDeliveryInfo = Struct.new(:routing_key)
+  FakeDeliveryInfo = Struct.new(:routing_key, :device)
 
-  let!(:device_id) { FactoryBot.create(:device).id }
+  let!(:device) { FactoryBot.create(:device) }
+  let!(:device_id) { device.id }
   let!(:fake_delivery_info) do
-    FakeDeliveryInfo.new("bot.device_#{device_id}.logs")
+    FakeDeliveryInfo.new("bot.device_#{device_id}.logs", device)
   end
 
   it "Sends errors to rollbar" do
@@ -51,5 +52,11 @@ describe LogService do
     time = Time.now
     expect_any_instance_of(Device).to receive(:maybe_throttle).with(time)
     LogService.new.warn_user(data, time)
+  end
+
+  it "handles bad params" do
+    expect do
+      LogService.new.process(fake_delivery_info, {})
+    end.to raise_error(Mutations::ValidationException)
   end
 end

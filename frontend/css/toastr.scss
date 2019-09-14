@@ -40,6 +40,7 @@
   }
   &.yellow,
   &.blue,
+  &.gray,
   &.orange {
     .toast-title,
     .toast-message {
@@ -47,6 +48,10 @@
     }
   }
   &.green,
+  &.dark-blue,
+  &.dark-gray,
+  &.dark-red,
+  &.dark-orange,
   &.red {
     .toast-title,
     .toast-message {

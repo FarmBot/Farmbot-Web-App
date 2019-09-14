@@ -1,5 +1,5 @@
 import { detectLanguage } from "../i18n";
-import { shortRevision, attachToRoot } from "../util";
+import { attachToRoot } from "../util";
 import { stopIE } from "../util/stop_ie";
 import I from "i18next";
 import { DemoIframe } from "./demo_iframe";
@@ -8,7 +8,6 @@ import { DemoIframe } from "./demo_iframe";
 
 stopIE();
 
-console.log(shortRevision());
 const doAttach = () => attachToRoot(DemoIframe);
 const loadDemo =
   (config: I.InitOptions) => I.init(config, doAttach);
