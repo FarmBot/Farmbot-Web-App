@@ -90,7 +90,8 @@ describe("<TestButton/>", () => {
     btn.simulate("click");
     expect(btn.hasClass("orange")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(props.sequence.body.id);
+    expect(mockDevice.execSequence)
+      .toHaveBeenCalledWith(props.sequence.body.id, undefined);
   });
 
   it("opens parameter assignment menu", () => {

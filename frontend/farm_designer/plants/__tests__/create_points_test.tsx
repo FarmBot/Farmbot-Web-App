@@ -104,9 +104,14 @@ describe("<CreatePoints />", () => {
   it("fills the state with default data", () => {
     const wrapper = shallow<CreatePoints>(<CreatePoints {...fakeProps()} />);
     wrapper.instance().getPointData();
-    expect(wrapper.instance().state).toEqual({
-      color: "green", cx: 0, cy: 0, r: 1, name: "Created Point"
-    });
+    const props = {
+      color: "green",
+      cx: 3.21,
+      cy: 1.23,
+      r: 15,
+      name: "Created Point"
+    };
+    expect(wrapper.instance().state).toEqual(props);
   });
 
   it("unmounts", () => {
