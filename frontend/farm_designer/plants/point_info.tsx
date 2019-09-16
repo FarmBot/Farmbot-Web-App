@@ -6,10 +6,13 @@ import {
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
-import { TaggedPoint } from "farmbot";
+import { TaggedPoint, Vector3 } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { getDevice } from "../../device";
+
+export const moveToPoint =
+  (body: Vector3) => () => getDevice().moveAbsolute(body);
 
 export interface EditPointProps {
   dispatch: Function;
@@ -51,7 +54,7 @@ export class EditPoint extends React.Component<EditPointProps, {}> {
       <button
         className="green fb-button"
         type="button"
-        onClick={() => getDevice().moveAbsolute(body)}>
+        onClick={moveToPoint(body)}>
         {t("Move Device to Point")}
       </button>
       <DeleteButton
