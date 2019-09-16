@@ -88,7 +88,7 @@ export class CreatePoints
     this.setState({
       cx: undefined,
       cy: undefined,
-      r: DEFAULTS.r,
+      r: undefined,
       color: undefined
     });
   }
