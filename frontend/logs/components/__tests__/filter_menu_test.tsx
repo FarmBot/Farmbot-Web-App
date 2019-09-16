@@ -9,7 +9,7 @@ const logTypes = MESSAGE_TYPES;
 
 describe("<LogsFilterMenu />", () => {
   const fakeState: LogsState = {
-    autoscroll: true, success: 1, busy: 1, warn: 1,
+    autoscroll: true, markdown: false, success: 1, busy: 1, warn: 1,
     error: 1, info: 1, fun: 1, debug: 1, assertion: 1,
   };
 
@@ -24,7 +24,8 @@ describe("<LogsFilterMenu />", () => {
     const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
     logTypes.filter(x => x !== "assertion").map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
+    ["autoscroll", "markdown"].map(string =>
+      expect(wrapper.text().toLowerCase()).not.toContain(string));
   });
 
   it("renders new types", () => {
@@ -33,7 +34,8 @@ describe("<LogsFilterMenu />", () => {
     const wrapper = mount(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    expect(wrapper.text().toLowerCase()).not.toContain("autoscroll");
+    ["autoscroll", "markdown"].map(string =>
+      expect(wrapper.text().toLowerCase()).not.toContain(string));
   });
 
   it("filters logs", () => {
