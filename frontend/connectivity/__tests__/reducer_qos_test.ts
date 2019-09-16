@@ -47,9 +47,9 @@ describe("connectivity reducer", () => {
   });
 
   it("broadcasts PING_NO", () => {
-    pingNO("yep");
+    pingNO("yep", 123);
     expect(store.dispatch).toHaveBeenCalledWith({
-      payload: { id: "yep", },
+      payload: { id: "yep", at: 123 },
       type: "PING_NO"
     });
   });

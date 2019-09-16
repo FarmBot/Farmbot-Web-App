@@ -151,9 +151,15 @@ export function execSequence(
   const noun = t("Sequence execution");
   if (sequenceId) {
     commandOK(noun)();
-    return bodyVariables
-      ? getDevice().execSequence(sequenceId, bodyVariables).catch(commandErr(noun))
-      : getDevice().execSequence(sequenceId).catch(commandErr(noun));
+    return getDevice()
+      .execSequence(sequenceId, bodyVariables)
+      .catch((x: Error) => {
+        if (x && (typeof x == "object") && (typeof x.message == "string")) {
+          error(x.message);
+        } else {
+          commandErr(noun);
+        }
+      });
   } else {
     throw new Error(t("Can't execute unsaved sequences"));
   }

@@ -6,12 +6,19 @@ jest.mock("../../../history", () => ({
   history: { push: jest.fn() }
 }));
 
+const mockMoveAbs = jest.fn();
+
+jest.mock("../../../device", () => {
+  return { getDevice: () => ({ moveAbsolute: mockMoveAbs }) };
+});
+
 import * as React from "react";
 import { mount } from "enzyme";
-import { EditPoint, EditPointProps, mapStateToProps } from "../point_info";
+import { EditPoint, EditPointProps, mapStateToProps, moveToPoint } from "../point_info";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import { getDevice } from "../../../device";
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -40,5 +47,14 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([point]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(point);
+  });
+});
+
+describe("moveToPoint()", () => {
+  it("moves the device to a particular point", () => {
+    const coords = { x: 1, y: -2, z: 3 };
+    const mover = moveToPoint(coords);
+    mover();
+    expect(getDevice().moveAbsolute).toHaveBeenCalledWith(coords);
   });
 });

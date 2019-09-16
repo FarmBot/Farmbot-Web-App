@@ -14,8 +14,9 @@ export const DEFAULT_STATE: ConnectionState = {
     "user.api": undefined
   },
   pings: {
-  }
+  },
 };
+type PingResultPayload = { id: string, at: number };
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
@@ -25,12 +26,12 @@ export let connectivityReducer =
         pings: startPing(s.pings, payload.id)
       };
     })
-    .add<{ id: string, at: number }>(Actions.PING_OK, (s, { payload }) => {
+    .add<PingResultPayload>(Actions.PING_OK, (s, { payload }) => {
       s.pings = completePing(s.pings, payload.id, payload.at);
 
       return s;
     })
-    .add<{ id: string }>(Actions.PING_NO, (s, { payload }) => {
+    .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
       s.pings = failPing(s.pings, payload.id);
 
       return s;

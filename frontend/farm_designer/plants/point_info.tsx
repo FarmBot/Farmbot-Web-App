@@ -6,8 +6,13 @@ import {
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
-import { TaggedPoint } from "farmbot";
+import { TaggedPoint, Vector3 } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
+import { DeleteButton } from "../../controls/pin_form_fields";
+import { getDevice } from "../../device";
+
+export const moveToPoint =
+  (body: Vector3) => () => getDevice().moveAbsolute(body);
 
 export interface EditPointProps {
   dispatch: Function;
@@ -33,6 +38,34 @@ export class EditPoint extends React.Component<EditPointProps, {}> {
     return <span>{t("Redirecting...")}</span>;
   }
 
+  temporaryMenu = (p: TaggedPoint) => {
+    const { body } = p;
+    return <div>
+      <h3>
+        Point {body.name || body.id || ""} @ ({body.x}, {body.y}, {body.z})
+      </h3>
+      <ul>
+        {
+          Object.entries(body.meta).map(([k, v]) => {
+            return <li>{k}: {v}</li>;
+          })
+        }
+      </ul>
+      <button
+        className="green fb-button"
+        type="button"
+        onClick={moveToPoint(body)}>
+        {t("Move Device to Point")}
+      </button>
+      <DeleteButton
+        dispatch={this.props.dispatch}
+        uuid={p.uuid}
+        onDestroy={this.fallback}>
+        {t("Delete Point")}
+      </DeleteButton>
+    </div>;
+  };
+
   default = (point: TaggedPoint) => {
     return <DesignerPanel panelName={"plant-info"} panelColor={"green"}>
       <DesignerPanelHeader
@@ -42,6 +75,7 @@ export class EditPoint extends React.Component<EditPointProps, {}> {
         backTo={"/app/designer/points"}>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"plants"}>
+        {this.point && this.temporaryMenu(this.point)}
       </DesignerPanelContent>
     </DesignerPanel>;
   }
