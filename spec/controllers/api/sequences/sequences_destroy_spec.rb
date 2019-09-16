@@ -64,7 +64,7 @@ describe Api::SequencesController do
       sign_in user
       pb = PinBindings::Create.run!(device: user.device,
                                     sequence_id: sequence.id,
-                                    pin_num: 10)
+                                    pin_num: 4)
       delete :destroy, params: { id: sequence.id }
       expect(response.status).to eq(422)
       expect(json[:sequence]).to include("in use")

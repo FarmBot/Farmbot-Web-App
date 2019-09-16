@@ -4,13 +4,11 @@ import { RpiGpioDiagram, RpiGpioDiagramProps } from "../rpi_gpio_diagram";
 import { Color } from "../../../ui/index";
 
 describe("<RpiGpioDiagram />", () => {
-  function fakeProps(): RpiGpioDiagramProps {
-    return {
-      boundPins: [27],
-      setSelectedPin: jest.fn(),
-      selectedPin: undefined
-    };
-  }
+  const fakeProps = (): RpiGpioDiagramProps => ({
+    boundPins: [27],
+    setSelectedPin: jest.fn(),
+    selectedPin: undefined
+  });
 
   it("renders", () => {
     const wrapper = mount(<RpiGpioDiagram {...fakeProps()} />);
