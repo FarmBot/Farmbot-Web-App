@@ -48,6 +48,9 @@ export let connectivityReducer =
       return s;
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
+      if (payload.name === "bot.mqtt") { // Let the QoS reducer handle this one.
+        return s;
+      }
       s.uptime[payload.name] = payload.status;
       return s;
     })
