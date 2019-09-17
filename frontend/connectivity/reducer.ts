@@ -1,10 +1,6 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { ConnectionState, EdgeStatus } from "./interfaces";
-import { computeBestTime } from "./reducer_support";
-import { TaggedDevice } from "farmbot";
-import { SyncBodyContents } from "../sync/actions";
-import { arrayUnwrap } from "../resources/util";
 import { startPing, completePing, failPing } from "../devices/connectivity/qos";
 
 export const DEFAULT_STATE: ConnectionState = {
@@ -37,6 +33,7 @@ export let connectivityReducer =
     .add<PingResultPayload>(Actions.PING_OK, (s, { payload }) => {
       s.pings = completePing(s.pings, payload.id, payload.at);
       maybeTransition(s, "up", payload.at);
+      console.log("TODO: Mark `user.mqtt` as up");
       return s;
     })
     .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
@@ -49,12 +46,5 @@ export let connectivityReducer =
         return s;
       }
       s.uptime[payload.name] = payload.status;
-      return s;
-    })
-    .add<SyncBodyContents<TaggedDevice>>(Actions.RESOURCE_READY, (s, a) => {
-      const d = arrayUnwrap(a.payload.body);
-      if (d && d.kind === "Device") {
-        s.uptime["bot.mqtt"] = computeBestTime(s.uptime["bot.mqtt"], d && d.body.last_saw_mq);
-      }
       return s;
     });

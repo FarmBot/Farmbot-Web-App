@@ -107,6 +107,7 @@ describe("botReducer", () => {
   });
 
   it("stashes/unstashes sync status based on connectivity", () => {
+    pending("Might not be required anymore with new ping system");
     const step1 = initialState();
     step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";

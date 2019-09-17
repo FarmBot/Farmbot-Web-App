@@ -41,15 +41,15 @@ const resetStats = () => {
 };
 
 describe("dispatchNetworkUp", () => {
-  const NOW_UP = networkUp("bot.mqtt", NOW.getTime());
-  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER);
+  const NOW_UP = networkUp("user.mqtt", NOW.getTime());
+  const LATER_UP = networkUp("user.mqtt", LONGER_TIME_LATER);
 
   it("calls redux directly", () => {
-    dispatchNetworkUp("bot.mqtt", NOW.getTime());
+    dispatchNetworkUp("user.mqtt", NOW.getTime());
     expect(store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER);
+    dispatchNetworkUp("user.mqtt", SHORT_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", LONGER_TIME_LATER);
+    dispatchNetworkUp("user.mqtt", LONGER_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(LATER_UP);
   });
 });

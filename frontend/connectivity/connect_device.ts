@@ -100,7 +100,8 @@ export const batchInitResources =
 
 export const bothUp = () => {
   dispatchNetworkUp("user.mqtt", now());
-  dispatchNetworkUp("bot.mqtt", now());
+  // WHO IS USING THIS? Best if we let the ping util handle it now.
+  // dispatchNetworkUp(" bot.mqtt", now());
 };
 
 export function readStatus() {

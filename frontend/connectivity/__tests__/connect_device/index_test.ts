@@ -29,15 +29,12 @@ import {
   onPublicBroadcast,
   onReconnect,
 } from "../../connect_device";
-import { onLogs } from "../../log_handlers";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
 import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
 import { getDevice } from "../../../device";
-import { fakeState } from "../../../__test_support__/fake_state";
 import { talk } from "browser-speech";
-import { globalQueue } from "../../batch_queue";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { info, error, success, warning, fun, busy } from "../../../toast/toast";
@@ -169,7 +166,6 @@ describe("bothUp()", () => {
   it("marks MQTT and API as up", () => {
     bothUp();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER);
   });
 });
 
@@ -233,28 +229,6 @@ describe("onMalformed()", () => {
     expect(warning) // Only fire once.
       .not
       .toHaveBeenCalledWith(Content.MALFORMED_MESSAGE_REC_UPGRADE);
-  });
-});
-
-describe("onLogs", () => {
-  it("Calls `networkUp` when good logs come in", () => {
-    const fn = onLogs(jest.fn(), fakeState);
-    const log = fakeLog(MessageType.error, []);
-    log.message = "bot xyz is offline";
-    fn(log);
-    globalQueue.maybeWork();
-    expect(dispatchNetworkDown)
-      .toHaveBeenCalledWith("bot.mqtt", ANY_NUMBER);
-  });
-
-  it("handles log fields correctly", () => {
-    const fn = onLogs(jest.fn(), fakeState);
-    const log = fakeLog(MessageType.info, []);
-    log.message = "online";
-    // tslint:disable-next-line:no-any
-    (log as any).meta = { y: 200 };
-    fn(log);
-    expect(log).toEqual(expect.objectContaining({ message: "online", y: 200 }));
   });
 });
 
