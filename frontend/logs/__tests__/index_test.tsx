@@ -47,6 +47,7 @@ describe("<Logs />", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
     const wrapper = mount(<Logs {...p} />);
+    wrapper.setState({ markdown: false });
     expect(wrapper.text().toLowerCase()).toContain("loading");
   });
 
