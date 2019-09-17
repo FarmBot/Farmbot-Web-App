@@ -37,7 +37,7 @@ export let connectivityReducer =
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
       if (payload.name == "bot.mqtt") {
-        return s;
+        return s; // <= Let PING_OK / PING_NO handle it.
       } else {
         s.uptime[payload.name] = payload.status;
         return s;

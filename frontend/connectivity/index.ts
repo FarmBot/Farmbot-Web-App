@@ -19,7 +19,7 @@ export const networkUptimeThrottleStats: Record<Edge, number> = {
 
 function shouldThrottle(edge: Edge, now: number): boolean {
   if (edge === "bot.mqtt") {
-    return true;
+    return true; // Let PING_OK / PING_NO handle bot.mqtt stuff.
   }
   const then = networkUptimeThrottleStats[edge];
   const diff = now - then;
