@@ -50,6 +50,7 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     fun: this.initialize(NumericSetting.fun_log, 1),
     debug: this.initialize(NumericSetting.debug_log, 1),
     assertion: this.initialize(NumericSetting.assertion_log, 1),
+    markdown: false,
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
@@ -112,6 +113,12 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
                 shouldDisplay={this.props.shouldDisplay}
                 setFilterLevel={this.setFilterLevel} />
             </Popover>
+          </div>
+          <div className="fa-stack fa-2x"
+            title={this.state.markdown ? t("display raw") : t("display markdown")}
+            onClick={() => this.setState({ markdown: !this.state.markdown })}>
+            <i className="fa fa-font fa-stack-1x" />
+            {this.state.markdown && <i className="fa fa-ban fa-stack-2x" />}
           </div>
         </Col>
       </Row>

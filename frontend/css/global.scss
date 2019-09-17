@@ -991,6 +991,14 @@ ul {
   @media screen and (max-width: 974px) {
     padding-left: 0 !important;
   }
+  .fa-2x {
+    float: right;
+    font-size: 1rem;
+    color: $dark_gray;
+  }
+  .fa-ban {
+    color: $medium_gray;
+  }
 }
 
 .logs-settings-menu {
@@ -1024,6 +1032,18 @@ ul {
     box-shadow: inset 1px 0 0 0 $gray !important;
     color: $dark_gray !important;
     word-break: break-word;
+    .markdown {
+      p {
+        display: block;
+        color: $dark_gray;
+        font: inherit;
+        font-size: inherit;
+        text-overflow: inherit;
+        overflow: inherit;
+        width: inherit;
+        white-space: inherit;
+      }
+    }
   }
   td:nth-child(1),
   td:nth-child(4) {
