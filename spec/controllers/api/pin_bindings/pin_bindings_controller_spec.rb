@@ -36,7 +36,7 @@ describe Api::PinBindingsController do
     it 'creates a pin binding' do
       sign_in user
       s     = FakeSequence.create( device: device)
-      input = { pin_num: 10, sequence_id: s.id}
+      input = { pin_num: 4, sequence_id: s.id}
       b4    = PinBinding.count
       post :create, body: input.to_json, params: { format: :json}
       expect(response.status).to eq(200)
