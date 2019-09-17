@@ -147,9 +147,9 @@ export let botReducer = generateReducer<BotState>(initialState())
     unstash(s);
     return s;
   })
-  .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, _a) => {
+  .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
     // const { name, status } = a.payload;
-    console.log("Possible bug culprit here");
+    console.log("Possible bug culprit here: " + JSON.stringify(a.payload));
     // switch ((name === "bot.mqtt") && status.state) {
     //   case "down":
     //     stash(s);
