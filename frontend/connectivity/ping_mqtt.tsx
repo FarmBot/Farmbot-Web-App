@@ -25,9 +25,25 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
 
 export function sendOutboundPing(bot: Farmbot) {
   const id = uuid();
-  const ok = () => pingOK(id, now());
-  const no = () => pingNO(id, now());
+
+  const x = { done: false };
+
+  const ok = () => {
+    if (!x.done) {
+      x.done = true;
+      pingOK(id, now());
+    }
+  };
+
+  const no = () => {
+    if (!x.done) {
+      x.done = true;
+      pingNO(id, now());
+    }
+  };
+
   dispatchQosStart(id);
+  setTimeout(no, PING_INTERVAL + 150);
   bot.ping().then(ok, no);
 }
 

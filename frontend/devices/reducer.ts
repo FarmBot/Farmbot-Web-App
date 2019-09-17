@@ -148,19 +148,18 @@ export let botReducer = generateReducer<BotState>(initialState())
     return s;
   })
   .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
-    // const { name, status } = a.payload;
-    console.log("Possible bug culprit here: " + JSON.stringify(a.payload));
-    // switch ((name === "bot.mqtt") && status.state) {
-    //   case "down":
-    //     stash(s);
-    //     s.hardware.informational_settings.sync_status = undefined;
-    //     break;
-    //   case "up":
-    //     const currentState = s.connectivity.uptime["bot.mqtt"];
-    //     // Going from "down" to "up"
-    //     const backOnline = currentState && currentState.state === "down";
-    //     backOnline && unstash(s);
-    // }
+    const { name, status } = a.payload;
+    switch ((name === "bot.mqtt") && status.state) {
+      case "down":
+        stash(s);
+        s.hardware.informational_settings.sync_status = undefined;
+        break;
+      case "up":
+        const currentState = s.connectivity.uptime["bot.mqtt"];
+        // Going from "down" to "up"
+        const backOnline = currentState && currentState.state === "down";
+        backOnline && unstash(s);
+    }
     return s;
   });
 

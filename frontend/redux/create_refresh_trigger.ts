@@ -20,7 +20,6 @@ export function createRefreshTrigger() {
       const device = maybeGetDevice();
       that.lastStatus = state;
       if (device && isUp && wasDown) {
-        console.log("SEE: createRefreshTrigger()");
         changeLastClientConnected(device)();
       }
     }
