@@ -159,18 +159,18 @@ describe("<Logs />", () => {
 
   it("toggles raw text display", () => {
     const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.state().markdown).toBeFalsy();
-    wrapper.find(".fa-stack").simulate("click");
     expect(wrapper.state().markdown).toBeTruthy();
+    wrapper.find(".fa-stack").simulate("click");
+    expect(wrapper.state().markdown).toBeFalsy();
   });
 
   it("renders formatted messages", () => {
     const p = fakeProps();
     p.logs[0].body.message = "`message`";
     const wrapper = mount<Logs>(<Logs {...p} />);
-    expect(wrapper.state().markdown).toBeFalsy();
-    expect(wrapper.html()).not.toContain("<code>message</code>");
-    wrapper.setState({ markdown: true });
+    expect(wrapper.state().markdown).toBeTruthy();
     expect(wrapper.html()).toContain("<code>message</code>");
+    wrapper.setState({ markdown: false });
+    expect(wrapper.html()).not.toContain("<code>message</code>");
   });
 });
