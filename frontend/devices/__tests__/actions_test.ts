@@ -33,11 +33,10 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  changeStepSize, resetNetwork, resetConnectionInfo, commandErr
+  changeStepSize, commandErr
 } from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { API } from "../../api/index";
 import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
@@ -292,25 +291,6 @@ describe("changeStepSize()", () => {
     const result = changeStepSize(payload);
     expect(result.type).toBe(Actions.CHANGE_STEP_SIZE);
     expect(result.payload).toBe(payload);
-  });
-});
-
-describe("resetNetwork()", () => {
-  it("renders correct info", () => {
-    const result = resetNetwork();
-    expect(result.payload).toEqual({});
-    expect(result.type).toEqual(Actions.RESET_NETWORK);
-  });
-});
-
-describe("resetConnectionInfo()", () => {
-  it("dispatches the right actions", () => {
-    const mock1 = jest.fn();
-    API.setBaseUrl("http://localhost:300");
-    resetConnectionInfo()(mock1);
-    expect(mock1).toHaveBeenCalledWith(resetNetwork());
-    expect(mock1).toHaveBeenCalledTimes(1);
-    expect(mockDevice.readStatus).toHaveBeenCalled();
   });
 });
 

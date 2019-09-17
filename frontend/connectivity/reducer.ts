@@ -32,10 +32,7 @@ function maybeTransition(s: ConnectionState, state: "up" | "down", at: number) {
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<{ id: string }>(Actions.PING_START, (s, { payload }) => {
-      return {
-        ...s,
-        pings: startPing(s.pings, payload.id)
-      };
+      return { ...s, pings: startPing(s.pings, payload.id) };
     })
     .add<PingResultPayload>(Actions.PING_OK, (s, { payload }) => {
       s.pings = completePing(s.pings, payload.id, payload.at);
@@ -59,13 +56,5 @@ export let connectivityReducer =
       if (d && d.kind === "Device") {
         s.uptime["bot.mqtt"] = computeBestTime(s.uptime["bot.mqtt"], d && d.body.last_saw_mq);
       }
-      return s;
-    })
-    .add<Actions.RESET_NETWORK>(Actions.RESET_NETWORK, (s, _) => {
-      type Keys = (keyof ConnectionState["uptime"])[];
-      const keys: Keys = ["bot.mqtt", "user.mqtt", "user.api"];
-      keys.map(x => (s.uptime[x] = undefined));
-      s.pings = {};
-
       return s;
     });

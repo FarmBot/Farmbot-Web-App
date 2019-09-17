@@ -5,7 +5,7 @@ import { Everything } from "../interfaces";
 import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
 } from "./interfaces";
-import { Thunk, ReduxAction } from "../redux/interfaces";
+import { Thunk } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
@@ -15,7 +15,6 @@ import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
-import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Log } from "farmbot/dist/resources/api_resources";
@@ -401,18 +400,4 @@ export function changeStepSize(integer: number) {
 
 export function badVersion() {
   info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
-}
-
-/** Change all device statuses to "unknown" */
-export function resetNetwork(): ReduxAction<{}> {
-  return { type: Actions.RESET_NETWORK, payload: {} };
-}
-
-/** for connectivity panel */
-export function resetConnectionInfo() {
-  return function (dispatch: Function) {
-    dispatch(resetNetwork());
-    pingAPI();
-    getDevice().readStatus();
-  };
 }
