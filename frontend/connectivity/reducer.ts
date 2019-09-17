@@ -28,12 +28,12 @@ export let connectivityReducer =
     })
     .add<PingResultPayload>(Actions.PING_OK, (s, { payload }) => {
       s.pings = completePing(s.pings, payload.id, payload.at);
-
+      s.uptime["bot.mqtt"] = { state: "up", at: payload.at };
       return s;
     })
     .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
       s.pings = failPing(s.pings, payload.id);
-
+      s.uptime["bot.mqtt"] = { state: "down", at: payload.at };
       return s;
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
