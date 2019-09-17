@@ -147,7 +147,7 @@ describe("sync()", function () {
 describe("execSequence()", function () {
   it("calls execSequence", async () => {
     await actions.execSequence(1);
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(1);
+    expect(mockDevice.execSequence).toHaveBeenCalledWith(1, undefined);
     expect(success).toHaveBeenCalled();
   });
 

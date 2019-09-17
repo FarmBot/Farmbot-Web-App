@@ -104,9 +104,9 @@ export const calculateLatency =
       total: latency.length
     };
 
-    /** SIDE EFFECT WARNING: We do analytics on every 100th ping to gauge
+    /** SIDE EFFECT WARNING: We do analytics on every nth ping to gauge
      * overall system health. This is the least invasive place to put it. */
-    const doReport = !!report.total && !(report.total % 10);
+    const doReport = !!report.total && !(report.total % 100);
     doReport && window.logStore.log("FBOS Ping QoS Message", report, "info");
     return report;
   };

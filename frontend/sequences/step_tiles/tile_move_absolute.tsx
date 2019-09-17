@@ -25,12 +25,17 @@ import { ExpandableHeader } from "../../ui/expandable_header";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   state: MoveAbsState = {
-    more: !!this.props.expandStepOptions || this.hasOffset };
+    more: !!this.props.expandStepOptions || this.hasOffset || this.hasSpeed
+  };
   get step() { return this.props.currentStep as MoveAbsolute; }
   get args() { return this.step.args; }
   get hasOffset(): boolean {
-    const {x, y, z} = this.args.offset.args;
-    return !!(x || y || z); }
+    const { x, y, z } = this.args.offset.args;
+    return !!(x || y || z);
+  }
+  get hasSpeed(): boolean {
+    return this.args.speed === 100 ? false : true;
+  }
 
   /** Merge step args update into step args. */
   updateArgs = (update: Partial<MoveAbsolute["args"]>) => {
@@ -88,13 +93,13 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       resources={this.props.resources}
       onChange={this.updateLocation}
       shouldDisplay={this.props.shouldDisplay || (() => false)}
-      hideVariableLabel={true}
+      hideHeader={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
       disallowGroups={true}
       width={3} />
 
-  SpeedForm = () =>
+  SpeedInput = () =>
     <Col xs={3}>
       <label>
         {t("Speed (%)")}
@@ -107,19 +112,21 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         sequence={this.props.currentSequence} />
     </Col>
 
-  OffsetForm = () =>
+  OffsetInput = (axis: Xyz) =>
+    <Col xs={3} key={axis}>
+      <label>
+        {t("{{axis}}-Offset", { axis })}
+      </label>
+      <BlurableInput type="number"
+        onCommit={this.updateInputValue(axis, "offset")}
+        name={`offset-${axis}`}
+        value={(this.args.offset.args[axis] || 0).toString()} />
+    </Col>
+
+  OptionsForm = () =>
     <Row>
-      {["x", "y", "z"].map((axis: Xyz) =>
-        <Col xs={3} key={axis}>
-          <label>
-            {t("{{axis}}-Offset", { axis })}
-          </label>
-          <BlurableInput type="number"
-            onCommit={this.updateInputValue(axis, "offset")}
-            name={`offset-${axis}`}
-            value={(this.args.offset.args[axis] || 0).toString()} />
-        </Col>)}
-      <this.SpeedForm />
+      {["x", "y", "z"].map(this.OffsetInput)}
+      <this.SpeedInput />
     </Row>
 
   render() {
@@ -144,14 +151,19 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
           hardwareFlags={this.props.hardwareFlags} />
       </StepHeader>
       <StepContent className={className}>
-        <this.LocationForm />
-        <ExpandableHeader
-          expanded={this.state.more}
-          title={t("More")}
-          onClick={() =>
-            this.setState({ more: !this.state.more })} />
+        <Row>
+          <Col xs={10}>
+            <this.LocationForm />
+          </Col>
+          <Col xs={2}>
+            <ExpandableHeader
+              expanded={this.state.more}
+              title={t("Options")}
+              onClick={() => this.setState({ more: !this.state.more })} />
+          </Col>
+        </Row>
         <Collapse isOpen={this.state.more}>
-          <this.OffsetForm />
+          <this.OptionsForm />
         </Collapse>
       </StepContent>
     </StepWrapper>;
