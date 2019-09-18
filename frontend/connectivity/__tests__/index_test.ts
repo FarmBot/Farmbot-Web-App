@@ -52,12 +52,21 @@ describe("dispatchNetworkUp", () => {
     dispatchNetworkUp("user.mqtt", LONGER_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(LATER_UP);
   });
+
+  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+    dispatchNetworkUp("bot.mqtt", 123);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
 });
 
 describe("dispatchNetworkDown", () => {
   const NOW_DOWN = networkDown("user.api", NOW.getTime());
   const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER);
   beforeEach(resetStats);
+  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+    dispatchNetworkDown("bot.mqtt", 123);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
 
   it("calls redux directly", () => {
     dispatchNetworkDown("user.api", NOW.getTime());
