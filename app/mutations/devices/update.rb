@@ -7,10 +7,11 @@ module Devices
     end
 
     optional do
-      string  :name
-      string  :timezone#, in: Device::TIMEZONES
-      time    :last_saw_mq
+      string :name
+      string :timezone
+      time :last_saw_mq
       integer :mounted_tool_id, nils: true
+      integer :turnkey_sequence_id, nils: true
     end
 
     def validate
@@ -23,7 +24,7 @@ module Devices
       device
     end
 
-  private
+    private
 
     def bad_tool_id
       add_error :mounted_tool_id, :mounted_tool_id, BAD_TOOL_ID % better_tool_id
@@ -38,7 +39,7 @@ module Devices
     end
 
     def mounted_tool_data
-      mounted_tool_id_present? ? {mounted_tool_id: better_tool_id} : {}
+      mounted_tool_id_present? ? { mounted_tool_id: better_tool_id } : {}
     end
   end
 end

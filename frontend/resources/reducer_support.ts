@@ -28,6 +28,7 @@ import { ReduxAction } from "../redux/interfaces";
 import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
+import { maybeGetDevice } from "./selectors";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -195,6 +196,19 @@ const BEFORE_HOOKS: IndexerHook = {
 };
 
 const AFTER_HOOKS: IndexerHook = {
+  Device: (i) => {
+    console.log("Hmmm");
+    const dev = maybeGetDevice(i);
+    if (dev && dev.body.turnkey_sequence_id) {
+      const tracker = i.inUse["Sequence.Device"];
+      const sequence =
+        findByKindAndId(i, "Sequence", dev.body.turnkey_sequence_id);
+      tracker[sequence.uuid] = tracker[sequence.uuid] || {};
+      tracker[sequence.uuid][dev.uuid] = true;
+    } else {
+      i.inUse["Sequence.Device"] = {};
+    }
+  },
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
   Regimen: (i) => {
