@@ -34,9 +34,10 @@ export const FEATURE_MIN_VERSIONS_URL =
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
+const MESSAGE: keyof Log = "message";
 
 export function isLog(x: unknown): x is Log {
-  const msg = get(x, "message" as keyof Log);
+  const msg = get(x, MESSAGE);
   const yup = isObject(x) && isString(msg);
   if (yup) {
     if (oneOf(BAD_WORDS, msg.toUpperCase())) { // SECURITY CRITICAL CODE.

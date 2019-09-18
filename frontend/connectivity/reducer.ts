@@ -15,7 +15,7 @@ export const DEFAULT_STATE: ConnectionState = {
   pings: {
   },
 };
-type PingResultPayload = { id: string, at: number };
+export type PingResultPayload = { id: string, at: number };
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
