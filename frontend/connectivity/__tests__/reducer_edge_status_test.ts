@@ -2,6 +2,11 @@ import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { networkUp, networkDown } from "../actions";
 
 describe("connectivityReducer", () => {
+  it("ignores `bot.mqtt` because that is handled by PING_OK/PING_NO", () => {
+    const state = connectivityReducer(DEFAULT_STATE, networkUp("bot.mqtt"));
+    expect(state).toEqual(DEFAULT_STATE);
+  });
+
   it("goes up", () => {
     const state = connectivityReducer(DEFAULT_STATE,
       networkUp("user.mqtt"));
