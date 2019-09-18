@@ -157,7 +157,7 @@ export function execSequence(
         if (x && (typeof x == "object") && (typeof x.message == "string")) {
           error(x.message);
         } else {
-          commandErr(noun);
+          commandErr(noun)();
         }
       });
   } else {

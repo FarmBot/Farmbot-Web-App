@@ -1,11 +1,10 @@
-const mockDevice = {
+const mockDeviceDefault: DeepPartial<Farmbot> = {
   checkUpdates: jest.fn(() => Promise.resolve()),
   powerOff: jest.fn(() => Promise.resolve()),
   resetOS: jest.fn(),
   reboot: jest.fn(() => Promise.resolve()),
   rebootFirmware: jest.fn(() => Promise.resolve()),
   flashFirmware: jest.fn(() => Promise.resolve()),
-  checkArduinoUpdates: jest.fn(() => Promise.resolve()),
   emergencyLock: jest.fn(() => Promise.resolve()),
   emergencyUnlock: jest.fn(() => Promise.resolve()),
   execSequence: jest.fn(() => Promise.resolve()),
@@ -17,7 +16,10 @@ const mockDevice = {
   readStatus: jest.fn(() => Promise.resolve()),
   dumpInfo: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
+
+const mockDevice = { current: mockDeviceDefault };
+
+jest.mock("../../device", () => ({ getDevice: () => mockDevice.current }));
 
 jest.mock("../../api/crud", () => ({
   edit: jest.fn(),
@@ -40,11 +42,20 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
+import { DeepPartial } from "redux";
+import { Farmbot } from "farmbot";
+
+const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
+  jest.clearAllMocks();
+  mockDevice.current = { ...mockDeviceDefault, ...d };
+  await cb();
+  mockDevice.current = mockDeviceDefault;
+};
 
 describe("checkControllerUpdates()", function () {
   it("calls checkUpdates", async () => {
     await actions.checkControllerUpdates();
-    expect(mockDevice.checkUpdates).toHaveBeenCalled();
+    expect(mockDevice.current.checkUpdates).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -52,7 +63,7 @@ describe("checkControllerUpdates()", function () {
 describe("powerOff()", function () {
   it("calls powerOff", async () => {
     await actions.powerOff();
-    expect(mockDevice.powerOff).toHaveBeenCalled();
+    expect(mockDevice.current.powerOff).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -61,20 +72,20 @@ describe("factoryReset()", () => {
   it("doesn't call factoryReset", async () => {
     window.confirm = () => false;
     await actions.factoryReset();
-    expect(mockDevice.resetOS).not.toHaveBeenCalled();
+    expect(mockDevice.current.resetOS).not.toHaveBeenCalled();
   });
 
   it("calls factoryReset", async () => {
     window.confirm = () => true;
     await actions.factoryReset();
-    expect(mockDevice.resetOS).toHaveBeenCalled();
+    expect(mockDevice.current.resetOS).toHaveBeenCalled();
   });
 });
 
 describe("reboot()", function () {
   it("calls reboot", async () => {
     await actions.reboot();
-    expect(mockDevice.reboot).toHaveBeenCalled();
+    expect(mockDevice.current.reboot).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -82,7 +93,7 @@ describe("reboot()", function () {
 describe("restartFirmware()", function () {
   it("calls restartFirmware", async () => {
     await actions.restartFirmware();
-    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
+    expect(mockDevice.current.rebootFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -90,7 +101,7 @@ describe("restartFirmware()", function () {
 describe("flashFirmware()", function () {
   it("calls flashFirmware", async () => {
     await actions.flashFirmware("arduino");
-    expect(mockDevice.flashFirmware).toHaveBeenCalled();
+    expect(mockDevice.current.flashFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
 });
@@ -98,19 +109,19 @@ describe("flashFirmware()", function () {
 describe("emergencyLock() / emergencyUnlock", function () {
   it("calls emergencyLock", () => {
     actions.emergencyLock();
-    expect(mockDevice.emergencyLock).toHaveBeenCalled();
+    expect(mockDevice.current.emergencyLock).toHaveBeenCalled();
   });
 
   it("calls emergencyUnlock", () => {
     window.confirm = () => true;
     actions.emergencyUnlock();
-    expect(mockDevice.emergencyUnlock).toHaveBeenCalled();
+    expect(mockDevice.current.emergencyUnlock).toHaveBeenCalled();
   });
 
   it("doesn't call emergencyUnlock", () => {
     window.confirm = () => false;
     actions.emergencyUnlock();
-    expect(mockDevice.emergencyUnlock).not.toHaveBeenCalled();
+    expect(mockDevice.current.emergencyUnlock).not.toHaveBeenCalled();
   });
 });
 
@@ -119,14 +130,14 @@ describe("sync()", function () {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = "999.0.0";
     actions.sync()(jest.fn(), () => state);
-    expect(mockDevice.sync).toHaveBeenCalled();
+    expect(mockDevice.current.sync).toHaveBeenCalled();
   });
 
   it("calls badVersion", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = "1.0.0";
     actions.sync()(jest.fn(), () => state);
-    expect(mockDevice.sync).not.toHaveBeenCalled();
+    expect(mockDevice.current.sync).not.toHaveBeenCalled();
     expect(info).toBeCalledWith(
       expect.stringContaining("old version"),
       expect.stringContaining("Please Update"),
@@ -137,28 +148,52 @@ describe("sync()", function () {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = undefined;
     actions.sync()(jest.fn(), () => state);
-    expect(mockDevice.sync).not.toHaveBeenCalled();
+    expect(mockDevice.current.sync).not.toHaveBeenCalled();
     const expectedMessage = ["FarmBot is not connected.", "Disconnected", "red"];
     expect(info).toBeCalledWith(...expectedMessage);
   });
 });
 
 describe("execSequence()", function () {
+  it("handles normal errors", () => {
+    const errorThrower: DeepPartial<Farmbot> = {
+      execSequence: jest.fn(() => Promise.reject(new Error("yolo")))
+    };
+
+    replaceDeviceWith(errorThrower, async () => {
+      await actions.execSequence(1, []);
+      expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, []);
+      expect(error).toHaveBeenCalledWith("yolo");
+    });
+  });
+
+  it("handles unexpected errors", async () => {
+    const errorThrower: DeepPartial<Farmbot> = {
+      execSequence: jest.fn(() => Promise.reject("unexpected"))
+    };
+
+    await replaceDeviceWith(errorThrower, async () => {
+      await actions.execSequence(22, []);
+      expect(mockDevice.current.execSequence).toHaveBeenCalledWith(22, []);
+      expect(error).toHaveBeenCalledWith("Sequence execution failed");
+    });
+  });
+
   it("calls execSequence", async () => {
     await actions.execSequence(1);
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(1, undefined);
+    expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, undefined);
     expect(success).toHaveBeenCalled();
   });
 
   it("calls execSequence with variables", async () => {
     await actions.execSequence(1, []);
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(1, []);
+    expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, []);
     expect(success).toHaveBeenCalled();
   });
 
   it("implodes when executing unsaved sequences", () => {
     expect(() => actions.execSequence(undefined)).toThrow();
-    expect(mockDevice.execSequence).not.toHaveBeenCalled();
+    expect(mockDevice.current.execSequence).not.toHaveBeenCalled();
   });
 });
 
@@ -166,20 +201,20 @@ describe("MCUFactoryReset()", function () {
   it("doesn't call resetMCU", () => {
     window.confirm = () => false;
     actions.MCUFactoryReset();
-    expect(mockDevice.resetMCU).not.toHaveBeenCalled();
+    expect(mockDevice.current.resetMCU).not.toHaveBeenCalled();
   });
 
   it("calls resetMCU", () => {
     window.confirm = () => true;
     actions.MCUFactoryReset();
-    expect(mockDevice.resetMCU).toHaveBeenCalled();
+    expect(mockDevice.current.resetMCU).toHaveBeenCalled();
   });
 });
 
 describe("requestDiagnostic", () => {
   it("requests that FBOS build a diagnostic report", () => {
     actions.requestDiagnostic();
-    expect(mockDevice.dumpInfo).toHaveBeenCalled();
+    expect(mockDevice.current.dumpInfo).toHaveBeenCalled();
   });
 });
 
@@ -231,7 +266,7 @@ describe("updateMCU()", () => {
 describe("pinToggle()", function () {
   it("calls togglePin", async () => {
     await actions.pinToggle(5);
-    expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
+    expect(mockDevice.current.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
     expect(success).not.toHaveBeenCalled();
   });
 });
@@ -239,7 +274,7 @@ describe("pinToggle()", function () {
 describe("readPin()", function () {
   it("calls readPin", async () => {
     await actions.readPin(1, "label", 0);
-    expect(mockDevice.readPin).toHaveBeenCalledWith({
+    expect(mockDevice.current.readPin).toHaveBeenCalledWith({
       pin_number: 1, label: "label", pin_mode: 0,
     });
     expect(success).not.toHaveBeenCalled();
@@ -249,7 +284,7 @@ describe("readPin()", function () {
 describe("homeAll()", function () {
   it("calls home", async () => {
     await actions.homeAll(100);
-    expect(mockDevice.home)
+    expect(mockDevice.current.home)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
     expect(success).not.toHaveBeenCalled();
   });
