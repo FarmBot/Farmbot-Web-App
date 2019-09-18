@@ -15,6 +15,9 @@ export const onLogs =
       actOnChannelName(msg, "toast", showLogOnScreen);
       actOnChannelName(msg, "espeak", speakLogAloud(getState));
       const log = initLog(msg).payload;
-      log.kind == "Log" && globalQueue.push(log);
+      if (log.kind == "Log") {
+        globalQueue.push(log);
+        return log;
+      }
     }
   };

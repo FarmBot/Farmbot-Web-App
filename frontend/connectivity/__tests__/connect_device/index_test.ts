@@ -38,6 +38,9 @@ import { talk } from "browser-speech";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { info, error, success, warning, fun, busy } from "../../../toast/toast";
+import { onLogs } from "../../log_handlers";
+import { fakeState } from "../../../__test_support__/fake_state";
+import { globalQueue } from "../../batch_queue";
 
 const ANY_NUMBER = expect.any(Number);
 
@@ -236,6 +239,18 @@ describe("onPublicBroadcast", () => {
   const expectBroadcastLog = () =>
     expect(console.log).toHaveBeenCalledWith(
       FbjsEventName.publicBroadcast, expect.any(Object));
+
+  describe("onLogs", () => {
+    it("Calls `networkUp` when good logs come in", () => {
+      const dispatch = jest.fn();
+      const fn = onLogs(dispatch, fakeState);
+      const log = fakeLog(MessageType.error, []);
+      log.message = "bot xyz is offline";
+      const taggedLog = fn(log);
+      globalQueue.maybeWork();
+      expect(taggedLog && taggedLog.kind).toEqual("Log");
+    });
+  });
 
   it("triggers when appropriate", () => {
     location.assign = jest.fn();
