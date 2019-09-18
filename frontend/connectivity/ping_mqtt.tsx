@@ -24,27 +24,31 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
 }
 
 export function sendOutboundPing(bot: Farmbot) {
-  const id = uuid();
+  return new Promise((resolve, reject) => {
+    const id = uuid();
 
-  const x = { done: false };
+    const x = { done: false };
 
-  const ok = () => {
-    if (!x.done) {
-      x.done = true;
-      pingOK(id, now());
-    }
-  };
+    const ok = () => {
+      if (!x.done) {
+        x.done = true;
+        pingOK(id, now());
+        resolve();
+      }
+    };
 
-  const no = () => {
-    if (!x.done) {
-      x.done = true;
-      pingNO(id, now());
-    }
-  };
+    const no = () => {
+      if (!x.done) {
+        x.done = true;
+        pingNO(id, now());
+        reject();
+      }
+    };
 
-  dispatchQosStart(id);
-  setTimeout(no, PING_INTERVAL + 150);
-  bot.ping().then(ok, no);
+    dispatchQosStart(id);
+    setTimeout(no, PING_INTERVAL + 150);
+    bot.ping().then(ok, no);
+  });
 }
 
 export function startPinging(bot: Farmbot) {
