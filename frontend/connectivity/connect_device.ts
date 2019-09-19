@@ -98,10 +98,7 @@ export const batchInitResources =
     return { type: Actions.BATCH_INIT, payload };
   };
 
-export const bothUp = () => {
-  dispatchNetworkUp("user.mqtt", now());
-  dispatchNetworkUp("bot.mqtt", now());
-};
+export const bothUp = () => dispatchNetworkUp("user.mqtt", now());
 
 export function readStatus() {
   const noun = "'Read Status' command";

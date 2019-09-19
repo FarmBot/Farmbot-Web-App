@@ -1,12 +1,16 @@
 import { botReducer, initialState } from "../reducer";
 import { Actions } from "../../constants";
-import { ControlPanelState } from "../interfaces";
+import { ControlPanelState, BotState } from "../interfaces";
 import { defensiveClone } from "../../util";
-import { networkUp, networkDown } from "../../connectivity/actions";
 import { stash } from "../../connectivity/data_consistency";
 import { incomingStatus } from "../../connectivity/connect_device";
-import { Vector3 } from "farmbot";
+import { Vector3, uuid } from "farmbot";
 import { values, omit } from "lodash";
+import { now } from "../connectivity/qos";
+
+const statusOf = (state: BotState) => {
+  return state.hardware.informational_settings.sync_status;
+};
 
 describe("botReducer", () => {
   it("Starts / stops an update", () => {
@@ -111,19 +115,26 @@ describe("botReducer", () => {
     step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
 
-    const step2 = botReducer(step1, networkDown("bot.mqtt"));
-    expect(step2.statusStash)
-      .toBe(step1.hardware.informational_settings.sync_status);
-    expect(step2.hardware.informational_settings.sync_status).toBeUndefined();
+    const go = (direction: "up" | "down", one: BotState) => {
+      const id = uuid();
+      const action1 = { type: Actions.PING_START, payload: { id } };
+      const two = botReducer(one, action1);
+      const type_ = (direction == "up") ? Actions.PING_OK : Actions.PING_NO;
+      const action2 = { type: type_, payload: { id, at: now() } };
 
-    const step3 = botReducer(step1, networkDown("bot.mqtt"));
-    expect(step3.statusStash)
-      .toBe(step1.hardware.informational_settings.sync_status);
-    expect(step3.hardware.informational_settings.sync_status).toBeUndefined();
+      return botReducer(two, action2);
+    };
 
-    const step4 = botReducer(step3, networkUp("bot.mqtt"));
-    expect(step4.hardware.informational_settings.sync_status)
-      .toBe(step3.statusStash);
+    const step2 = go("down", step1);
+    expect(step2.statusStash).toBe(statusOf(step1));
+    expect(statusOf(step2)).toBeUndefined();
+
+    const step3 = go("down", step2);
+    expect(step3.statusStash).toBe(statusOf(step1));
+    expect(statusOf(step3)).toBeUndefined();
+
+    const step4 = go("up", step3);
+    expect(statusOf(step4)).toBe(step3.statusStash);
   });
 
   it("handles STASH_STATUS / _RESOURCE_NO", () => {
@@ -131,11 +142,9 @@ describe("botReducer", () => {
     step1.statusStash = "booting";
     step1.hardware.informational_settings.sync_status = "synced";
     const step2 = botReducer(step1, stash());
-    expect(step2.statusStash)
-      .toBe(step1.hardware.informational_settings.sync_status);
+    expect(step2.statusStash).toBe(statusOf(step1));
     const no = { type: Actions._RESOURCE_NO, payload: undefined };
     const step3 = botReducer(step2, no);
-    expect(step3.hardware.informational_settings.sync_status)
-      .toBe(step3.statusStash);
+    expect(statusOf(step3)).toBe(step3.statusStash);
   });
 });

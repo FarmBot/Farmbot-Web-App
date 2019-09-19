@@ -1,40 +1,54 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Everything, ResourceColor } from "../../interfaces";
+import {
+  Everything,
+  ResourceColor
+} from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
-  Row, Col, BlurableInput, ColorPicker
+  Row,
+  Col,
+  BlurableInput,
+  ColorPicker
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
 import { deletePoints } from "../../farmware/weed_detector/actions";
-import { clone } from "lodash";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel,
+  DesignerPanelHeader,
+  DesignerPanelContent
 } from "./designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 
-export function mapStateToProps(props: Everything) {
+export function mapStateToProps(props: Everything): CreatePointsProps {
+  const { position } = props.bot.hardware.location_data;
   return {
     dispatch: props.dispatch,
-    currentPoint: props.resources.consumers.farm_designer.currentPoint
+    currentPoint: props.resources.consumers.farm_designer.currentPoint,
+    deviceX: position.x || 0,
+    deviceY: position.y || 0,
   };
 }
 
 export interface CreatePointsProps {
   dispatch: Function;
   currentPoint: CurrentPointPayl | undefined;
+  deviceX: number;
+  deviceY: number;
 }
 
-interface CreatePointsState {
-  name: string;
-  cx: number;
-  cy: number;
-  r: number;
-  color: string;
-}
+type CreatePointsState = Partial<CurrentPointPayl>;
+
+const DEFAULTS: CurrentPointPayl = {
+  name: "Created Point",
+  cx: 1,
+  cy: 1,
+  r: 15,
+  color: "red"
+};
 
 @connect(mapStateToProps)
 export class CreatePoints
@@ -44,19 +58,26 @@ export class CreatePoints
     this.state = {};
   }
 
-  UNSAFE_componentWillReceiveProps() {
-    this.getPointData();
-  }
+  attr = <T extends (keyof CurrentPointPayl & keyof CreatePointsState)>(key: T,
+    fallback = DEFAULTS[key]): CurrentPointPayl[T] => {
+    const p = this.props.currentPoint;
+    const userValue = this.state[key] as CurrentPointPayl[T] | undefined;
+    const propValue = p ? p[key] : fallback;
+    if (typeof userValue === "undefined") {
+      return propValue;
+    } else {
+      return userValue;
+    }
+  };
 
-  getPointData = () => {
-    const point = this.props.currentPoint;
-    this.setState({
-      name: point ? point.name : "Created Point",
-      cx: point ? point.cx : 0,
-      cy: point ? point.cy : 0,
-      r: point ? point.r : 1,
-      color: point ? point.color : "green"
-    });
+  getPointData = (): CurrentPointPayl => {
+    return {
+      name: this.attr("name"),
+      cx: this.attr("cx"),
+      cy: this.attr("cy"),
+      r: this.attr("r"),
+      color: this.attr("color"),
+    };
   }
 
   cancel = () => {
@@ -65,7 +86,10 @@ export class CreatePoints
       payload: undefined
     });
     this.setState({
-      cx: undefined, cy: undefined, r: undefined, color: undefined
+      cx: undefined,
+      cy: undefined,
+      r: undefined,
+      color: undefined
     });
   }
 
@@ -76,7 +100,7 @@ export class CreatePoints
   updateCurrentPoint = () => {
     this.props.dispatch({
       type: Actions.SET_CURRENT_POINT_DATA,
-      payload: this.state
+      payload: this.getPointData()
     });
   }
 
@@ -86,7 +110,7 @@ export class CreatePoints
       const { value } = e.currentTarget;
       this.setState({ [key]: value });
       if (this.props.currentPoint) {
-        const point = clone(this.props.currentPoint);
+        const point = this.getPointData();
         switch (key) {
           case "name":
           case "color":
@@ -105,26 +129,24 @@ export class CreatePoints
 
   changeColor = (color: ResourceColor) => {
     this.setState({ color });
-    if (this.props.currentPoint) {
-      const { cx, cy, r, name } = this.props.currentPoint;
-      this.props.dispatch({
-        type: Actions.SET_CURRENT_POINT_DATA,
-        payload: { cx, cy, r, color, name }
-      });
-    }
-    this.forceUpdate();
+    this.props.dispatch({
+      type: Actions.SET_CURRENT_POINT_DATA,
+      payload: this.getPointData()
+    });
   }
 
   createPoint = () => {
-    const { cx, cy, r, color, name } = this.state;
     const body: GenericPointer = {
       pointer_type: "GenericPointer",
-      name: name || "Created Point",
-      meta: { color, created_by: "farm-designer" },
-      x: cx || 0,
-      y: cy || 0,
+      name: this.attr("name") || "Created Point",
+      meta: {
+        color: this.attr("color"),
+        created_by: "farm-designer"
+      },
+      x: this.attr("cx"),
+      y: this.attr("cy"),
       z: 0,
-      radius: r || 1,
+      radius: this.attr("r"),
     };
     this.props.dispatch(initSave("Point", body));
     this.cancel();
@@ -138,12 +160,11 @@ export class CreatePoints
           name="name"
           type="text"
           onCommit={this.updateValue("name")}
-          value={this.state.name || "Created Point"} />
+          value={this.attr("name") || ""} />
       </Col>
     </Row>;
 
   PointProperties = () => {
-    const { cx, cy, r, color } = this.state;
     return <Row>
       <Col xs={3}>
         <label>{t("X")}</label>
@@ -151,7 +172,7 @@ export class CreatePoints
           name="cx"
           type="number"
           onCommit={this.updateValue("cx")}
-          value={cx || 0} />
+          value={this.attr("cx", this.props.deviceX)} />
       </Col>
       <Col xs={3}>
         <label>{t("Y")}</label>
@@ -159,7 +180,7 @@ export class CreatePoints
           name="cy"
           type="number"
           onCommit={this.updateValue("cy")}
-          value={cy || 0} />
+          value={this.attr("cy", this.props.deviceY)} />
       </Col>
       <Col xs={3}>
         <label>{t("radius")}</label>
@@ -167,13 +188,13 @@ export class CreatePoints
           name="r"
           type="number"
           onCommit={this.updateValue("r")}
-          value={r || 0}
+          value={this.attr("r", DEFAULTS.r)}
           min={0} />
       </Col>
       <Col xs={3}>
         <label>{t("color")}</label>
         <ColorPicker
-          current={color as ResourceColor || "green"}
+          current={this.attr("color") as ResourceColor}
           onChange={this.changeColor} />
       </Col>
     </Row>;

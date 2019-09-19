@@ -1,18 +1,14 @@
+const mockDevice = {
+  registerGpio: jest.fn(() => Promise.resolve()),
+  unregisterGpio: jest.fn(() => Promise.resolve()),
+};
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+
+jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
+
 import {
   PinBindingType, PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
-const mockDevice = {
-  registerGpio: jest.fn(() => { return Promise.resolve(); }),
-  unregisterGpio: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
-
-jest.mock("../../../api/crud", () => ({
-  destroy: jest.fn()
-}));
-
 const mockData = [{
   pin_number: 1, sequence_id: undefined,
   special_action: PinBindingSpecialAction.sync,

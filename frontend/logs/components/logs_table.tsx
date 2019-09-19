@@ -7,10 +7,12 @@ import { isNumber, startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
+import { Markdown } from "../../ui";
 
 interface LogsRowProps {
   tlog: TaggedLog;
   dispatch: Function;
+  markdown: boolean;
   timeSettings: TimeSettings;
 }
 
@@ -37,7 +39,7 @@ const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
   </div>;
 
 /** A log is displayed in a single row of the logs table. */
-const LogsRow = ({ tlog, timeSettings, dispatch }: LogsRowProps) => {
+const LogsRow = ({ tlog, timeSettings, dispatch, markdown }: LogsRowProps) => {
   const { uuid } = tlog;
   const { x, y, z, verbosity, type, created_at, message, id } = tlog.body;
   const time = formatLogTime(created_at || NaN, timeSettings);
@@ -48,7 +50,7 @@ const LogsRow = ({ tlog, timeSettings, dispatch }: LogsRowProps) => {
       {t(startCase(type))}
     </td>
     <td>
-      {message || t("Loading")}
+      {markdown ? <Markdown>{message}</Markdown> : message || t("Loading")}
     </td>
     <td>
       {xyzTableEntry(x, y, z)}
@@ -83,6 +85,7 @@ export const LogsTable = (props: LogsTableProps) => {
             key={log.uuid}
             tlog={log}
             dispatch={props.dispatch}
+            markdown={props.state.markdown}
             timeSettings={props.timeSettings} />)}
     </tbody>
   </table>;

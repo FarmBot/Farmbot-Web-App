@@ -1,14 +1,10 @@
 const mockDevice = {
-  registerGpio: jest.fn(() => { return Promise.resolve(); }),
-  unregisterGpio: jest.fn(() => { return Promise.resolve(); }),
+  registerGpio: jest.fn(() => Promise.resolve()),
+  unregisterGpio: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
-}));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn()
-}));
+jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -33,6 +29,8 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { error, warning } from "../../../toast/toast";
 
+const AVAILABLE_PIN = 18;
+
 describe("<PinBindingInputGroup/>", () => {
   function fakeProps(): PinBindingInputGroupProps {
     const fakeResources: TaggedSequence[] = [fakeSequence(), fakeSequence()];
@@ -43,8 +41,8 @@ describe("<PinBindingInputGroup/>", () => {
     const resources = buildResourceIndex(fakeResources).index;
     return {
       pinBindings: [
-        { pin_number: 10, sequence_id: 1 },
-        { pin_number: 11, sequence_id: 2 },
+        { pin_number: 4, sequence_id: 1 },
+        { pin_number: 5, sequence_id: 2 },
       ],
       dispatch: jest.fn(),
       resources: resources,
@@ -69,7 +67,7 @@ describe("<PinBindingInputGroup/>", () => {
     const wrapper = mount(<PinBindingInputGroup {...fakeProps()} />);
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
-    wrapper.setState({ pinNumberInput: 7 });
+    wrapper.setState({ pinNumberInput: AVAILABLE_PIN });
     buttons.last().simulate("click");
     expect(error).toHaveBeenCalledWith("Please select a sequence or action.");
   });
@@ -98,7 +96,7 @@ describe("<PinBindingInputGroup/>", () => {
     const buttons = wrapper.find("button");
     expect(buttons.last().text()).toEqual("BIND");
     wrapper.setState({
-      pinNumberInput: 2,
+      pinNumberInput: 0,
       bindingType: PinBindingType.special,
       sequenceIdInput: undefined,
       specialActionInput: PinBindingSpecialAction.emergency_lock
@@ -107,7 +105,7 @@ describe("<PinBindingInputGroup/>", () => {
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
     expect(initSave).toHaveBeenCalledWith("PinBinding",
       {
-        pin_num: 2,
+        pin_num: 0,
         binding_type: PinBindingType.special,
         special_action: PinBindingSpecialAction.emergency_lock
       });
@@ -125,15 +123,16 @@ describe("<PinBindingInputGroup/>", () => {
   });
 
   it("sets pin", () => {
-    const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup
-      {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount<PinBindingInputGroup>(<PinBindingInputGroup {...p} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.instance().setSelectedPin(10); // pin already bound
+    const { pin_number } = p.pinBindings[0];
+    wrapper.instance().setSelectedPin(pin_number); // pin already bound
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
     wrapper.instance().setSelectedPin(99); // invalid pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.instance().setSelectedPin(5); // available pin
-    expect(wrapper.instance().state.pinNumberInput).toEqual(5);
+    wrapper.instance().setSelectedPin(AVAILABLE_PIN); // available pin
+    expect(wrapper.instance().state.pinNumberInput).toEqual(AVAILABLE_PIN);
     wrapper.instance().setSelectedPin(1); // reserved pin
     expect(wrapper.instance().state.pinNumberInput).toEqual(1);
     expect(warning).toHaveBeenCalledWith(
@@ -144,8 +143,8 @@ describe("<PinBindingInputGroup/>", () => {
     const wrapper = shallow<PinBindingInputGroup>(<PinBindingInputGroup
       {...fakeProps()} />);
     expect(wrapper.instance().state.pinNumberInput).toEqual(undefined);
-    wrapper.instance().setSelectedPin(7);
-    expect(wrapper.instance().state.pinNumberInput).toEqual(7);
+    wrapper.instance().setSelectedPin(AVAILABLE_PIN);
+    expect(wrapper.instance().state.pinNumberInput).toEqual(AVAILABLE_PIN);
   });
 
   it("changes binding type", () => {
@@ -177,8 +176,10 @@ describe("<PinNumberInputGroup />", () => {
       pinNumberInput={undefined}
       boundPins={[]}
       setSelectedPin={setSelectedPin} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: 7 });
-    expect(setSelectedPin).toHaveBeenCalledWith(7);
+    wrapper.find("FBSelect").simulate("change", {
+      label: "", value: AVAILABLE_PIN
+    });
+    expect(setSelectedPin).toHaveBeenCalledWith(AVAILABLE_PIN);
   });
 });
 
@@ -207,7 +208,7 @@ describe("<ActionTargetDropDown />", () => {
 });
 
 describe("<SequenceTargetDropDown />", () => {
-  it("sets action", () => {
+  it("sets sequence ID", () => {
     const setSequenceIdInput = jest.fn();
     const wrapper = shallow(<SequenceTargetDropDown
       sequenceIdInput={undefined}

@@ -47,6 +47,7 @@ describe("<Logs />", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
     const wrapper = mount(<Logs {...p} />);
+    wrapper.setState({ markdown: false });
     expect(wrapper.text().toLowerCase()).toContain("loading");
   });
 
@@ -155,5 +156,22 @@ describe("<Logs />", () => {
     expect(wrapper.instance().state.warn).toEqual(3);
     wrapper.instance().setFilterLevel(MessageType.warn)(2);
     expect(wrapper.instance().state.warn).toEqual(2);
+  });
+
+  it("toggles raw text display", () => {
+    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
+    expect(wrapper.state().markdown).toBeTruthy();
+    wrapper.find(".fa-stack").simulate("click");
+    expect(wrapper.state().markdown).toBeFalsy();
+  });
+
+  it("renders formatted messages", () => {
+    const p = fakeProps();
+    p.logs[0].body.message = "`message`";
+    const wrapper = mount<Logs>(<Logs {...p} />);
+    expect(wrapper.state().markdown).toBeTruthy();
+    expect(wrapper.html()).toContain("<code>message</code>");
+    wrapper.setState({ markdown: false });
+    expect(wrapper.html()).not.toContain("<code>message</code>");
   });
 });

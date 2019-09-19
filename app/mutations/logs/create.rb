@@ -30,10 +30,6 @@ module Logs
     def validate
       add_error :log, :private, BAD_WORDS if has_bad_words
 
-      # I think this was here for legacy reasons and can be removed.
-      # Delete this comment if no log issues are noted after 25 MAR 19. - RC
-      # add_error :device, :no_id, "ID of device can't be nil" unless device.id
-
       @log = Log.new(clean_inputs)
       @log.validate!
     end

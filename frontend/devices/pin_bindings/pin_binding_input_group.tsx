@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col, FBSelect, NULL_CHOICE, DropDownItem } from "../../ui";
 import { PinBindingColWidth } from "./pin_bindings";
 import { Popover, Position } from "@blueprintjs/core";

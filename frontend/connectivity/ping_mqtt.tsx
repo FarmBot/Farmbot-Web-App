@@ -12,8 +12,7 @@ import { API } from "../api/index";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { now } from "../devices/connectivity/qos";
 
-export const PING_INTERVAL = 1800;
-export const ACTIVE_THRESHOLD = PING_INTERVAL * 3;
+export const PING_INTERVAL = 2000;
 
 export const LAST_IN: keyof FarmBotInternalConfig = "LAST_PING_IN";
 export const LAST_OUT: keyof FarmBotInternalConfig = "LAST_PING_OUT";
@@ -24,24 +23,27 @@ export function readPing(bot: Farmbot, direction: Direction): number | undefined
   return isNumber(val) ? val : undefined;
 }
 
-export function markStale() {
-  dispatchNetworkDown("bot.mqtt", now());
-}
-
-export function markActive() {
-  dispatchNetworkUp("user.mqtt", now());
-  dispatchNetworkUp("bot.mqtt", now());
-}
-
-export function isInactive(last: number, now_: number): boolean {
-  return last ? (now_ - last) > ACTIVE_THRESHOLD : true;
-}
-
 export function sendOutboundPing(bot: Farmbot) {
   const id = uuid();
-  const ok = () => pingOK(id, now()); markActive();
-  const no = () => pingNO(id); markStale();
+
+  const x = { done: false };
+
+  const ok = () => {
+    if (!x.done) {
+      x.done = true;
+      pingOK(id, now());
+    }
+  };
+
+  const no = () => {
+    if (!x.done) {
+      x.done = true;
+      pingNO(id, now());
+    }
+  };
+
   dispatchQosStart(id);
+  setTimeout(no, PING_INTERVAL + 150);
   bot.ping().then(ok, no);
 }
 

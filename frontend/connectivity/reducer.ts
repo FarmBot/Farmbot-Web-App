@@ -1,10 +1,9 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
-import { ConnectionState, EdgeStatus } from "./interfaces";
-import { computeBestTime } from "./reducer_support";
-import { TaggedDevice } from "farmbot";
-import { SyncBodyContents } from "../sync/actions";
-import { arrayUnwrap } from "../resources/util";
+import {
+  ConnectionState,
+  EdgeStatus
+} from "./interfaces";
 import { startPing, completePing, failPing } from "../devices/connectivity/qos";
 
 export const DEFAULT_STATE: ConnectionState = {
@@ -14,43 +13,33 @@ export const DEFAULT_STATE: ConnectionState = {
     "user.api": undefined
   },
   pings: {
-  }
+  },
 };
+export type PingResultPayload = { id: string, at: number };
 
 export let connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<{ id: string }>(Actions.PING_START, (s, { payload }) => {
-      return {
-        ...s,
-        pings: startPing(s.pings, payload.id)
-      };
+      return { ...s, pings: startPing(s.pings, payload.id) };
     })
-    .add<{ id: string, at: number }>(Actions.PING_OK, (s, { payload }) => {
+    .add<PingResultPayload>(Actions.PING_OK, (s, { payload }) => {
       s.pings = completePing(s.pings, payload.id, payload.at);
+      s.uptime["bot.mqtt"] = { state: "up", at: payload.at };
+      s.uptime["user.mqtt"] = { state: "up", at: payload.at };
 
       return s;
     })
-    .add<{ id: string }>(Actions.PING_NO, (s, { payload }) => {
+    .add<PingResultPayload>(Actions.PING_NO, (s, { payload }) => {
       s.pings = failPing(s.pings, payload.id);
+      s.uptime["bot.mqtt"] = { state: "down", at: payload.at };
 
       return s;
     })
     .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, { payload }) => {
-      s.uptime[payload.name] = payload.status;
-      return s;
-    })
-    .add<SyncBodyContents<TaggedDevice>>(Actions.RESOURCE_READY, (s, a) => {
-      const d = arrayUnwrap(a.payload.body);
-      if (d && d.kind === "Device") {
-        s.uptime["bot.mqtt"] = computeBestTime(s.uptime["bot.mqtt"], d && d.body.last_saw_mq);
+      if (payload.name == "bot.mqtt") {
+        return s; // <= Let PING_OK / PING_NO handle it.
+      } else {
+        s.uptime[payload.name] = payload.status;
+        return s;
       }
-      return s;
-    })
-    .add<Actions.RESET_NETWORK>(Actions.RESET_NETWORK, (s, _) => {
-      type Keys = (keyof ConnectionState["uptime"])[];
-      const keys: Keys = ["bot.mqtt", "user.mqtt", "user.api"];
-      keys.map(x => (s.uptime[x] = undefined));
-      s.pings = {};
-
-      return s;
     });

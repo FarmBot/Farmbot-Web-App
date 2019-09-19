@@ -41,16 +41,21 @@ const resetStats = () => {
 };
 
 describe("dispatchNetworkUp", () => {
-  const NOW_UP = networkUp("bot.mqtt", NOW.getTime());
-  const LATER_UP = networkUp("bot.mqtt", LONGER_TIME_LATER);
+  const NOW_UP = networkUp("user.mqtt", NOW.getTime());
+  const LATER_UP = networkUp("user.mqtt", LONGER_TIME_LATER);
 
   it("calls redux directly", () => {
-    dispatchNetworkUp("bot.mqtt", NOW.getTime());
+    dispatchNetworkUp("user.mqtt", NOW.getTime());
     expect(store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", SHORT_TIME_LATER);
+    dispatchNetworkUp("user.mqtt", SHORT_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(NOW_UP);
-    dispatchNetworkUp("bot.mqtt", LONGER_TIME_LATER);
+    dispatchNetworkUp("user.mqtt", LONGER_TIME_LATER);
     expect(store.dispatch).toHaveBeenLastCalledWith(LATER_UP);
+  });
+
+  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+    dispatchNetworkUp("bot.mqtt", 123);
+    expect(store.dispatch).not.toHaveBeenCalled();
   });
 });
 
@@ -58,6 +63,10 @@ describe("dispatchNetworkDown", () => {
   const NOW_DOWN = networkDown("user.api", NOW.getTime());
   const LATER_DOWN = networkDown("user.api", LONGER_TIME_LATER);
   beforeEach(resetStats);
+  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+    dispatchNetworkDown("bot.mqtt", 123);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
 
   it("calls redux directly", () => {
     dispatchNetworkDown("user.api", NOW.getTime());

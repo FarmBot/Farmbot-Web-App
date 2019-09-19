@@ -5,9 +5,8 @@ import {
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
-import { EdgeStatus } from "../connectivity/interfaces";
 import { ReduxAction } from "../redux/interfaces";
-import { connectivityReducer } from "../connectivity/reducer";
+import { connectivityReducer, PingResultPayload } from "../connectivity/reducer";
 import { versionOK } from "../util";
 import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
@@ -147,19 +146,16 @@ export let botReducer = generateReducer<BotState>(initialState())
     unstash(s);
     return s;
   })
-  .add<EdgeStatus>(Actions.NETWORK_EDGE_CHANGE, (s, a) => {
-    const { name, status } = a.payload;
-    switch ((name === "bot.mqtt") && status.state) {
-      case "down":
-        stash(s);
-        s.hardware.informational_settings.sync_status = undefined;
-        break;
-      case "up":
-        const currentState = s.connectivity.uptime["bot.mqtt"];
-        // Going from "down" to "up"
-        const backOnline = currentState && currentState.state === "down";
-        backOnline && unstash(s);
-    }
+  .add<PingResultPayload>(Actions.PING_OK, (s) => {
+    // Going from "down" to "up"
+    const currentState = s.connectivity.uptime["bot.mqtt"];
+    const backOnline = currentState && currentState.state === "down";
+    backOnline && unstash(s);
+    return s;
+  })
+  .add<PingResultPayload>(Actions.PING_NO, (s) => {
+    stash(s);
+    s.hardware.informational_settings.sync_status = undefined;
     return s;
   });
 

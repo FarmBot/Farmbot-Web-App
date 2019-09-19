@@ -1,4 +1,3 @@
-
 import {
   PinBindingType,
   PinBindingSpecialAction
@@ -61,9 +60,16 @@ enum LEDPin {
 
 /** Other pins used by FarmBot OS that cannot be used in pin bindings. */
 enum SystemPins {
-  sda = 2,
-  scl = 3,
-  reset = 19,
+  i2c1_sda = 2,
+  i2c1_scl = 3,
+  spi0_ce1 = 7,
+  spi0_ce0 = 8,
+  spi0_miso = 9,
+  spi0_mosi = 10,
+  spi0_sclk = 11,
+  uart_tx = 14,
+  uart_rx = 15,
+  reset_2560 = 19,
 }
 
 const toPinNum = (n: string) => parseInt(n);
@@ -73,9 +79,11 @@ const otherSysBindings: number[] = Object.values(SystemPins).map(toPinNum);
 /** All pin numbers used by FarmBot OS that cannot be used in pin bindings. */
 export const sysBindings = sysLedBindings.concat(sysBtnBindings, otherSysBindings);
 
-const piI2cPins = [0, 1];
+const piI2c0Pins = [0, 1];
+export const piSpi0Pins = [7, 8, 9, 10, 11];
+export const piSpi1Pins = [16, 17, 18, 19, 20, 21];
 /** Pin numbers used for special purposes by the RPi. (internal pullup, etc.) */
-export const reservedPiGPIO = piI2cPins;
+export const reservedPiGPIO = piI2c0Pins;
 
 const LabeledGpioPins: { [x: number]: string } = {
   [ButtonPin.estop]: "Button 1: E-STOP",
