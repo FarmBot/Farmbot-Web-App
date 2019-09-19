@@ -342,6 +342,14 @@ a {
     text-align: center;
     padding: 0.25rem;
   }
+  .widget-body-tooltips {
+    .bp3-popover-wrapper {
+      display: inline;
+      float: none;
+      margin-right: 1rem;
+      margin-left: 1rem;
+    }
+  }
   .fa-download {
     float: right;
     color: $dark_gray !important;

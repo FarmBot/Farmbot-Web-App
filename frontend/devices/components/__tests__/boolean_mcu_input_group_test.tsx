@@ -14,6 +14,7 @@ describe("BooleanMCUInputGroup", () => {
         return { value: bot.hardware.mcu_params[x], consistent: true };
       }}
       dispatch={dispatch}
+      tooltip={"Tooltip"}
       name={"Name"}
       x={"encoder_invert_x"}
       y={"encoder_invert_y"}
