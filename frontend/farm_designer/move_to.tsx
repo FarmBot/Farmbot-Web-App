@@ -99,8 +99,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
   }
 }
 
-@connect(mapStateToProps)
-export class MoveTo extends React.Component<MoveToProps, {}> {
+export class RawMoveTo extends React.Component<MoveToProps, {}> {
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
@@ -153,3 +152,5 @@ export const chooseLocation = (props: {
     });
   }
 };
+
+export const MoveTo = connect(mapStateToProps)(RawMoveTo);

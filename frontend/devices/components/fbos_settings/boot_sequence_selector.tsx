@@ -11,7 +11,7 @@ interface Props {
   dispatch: Function;
 }
 
-function mapStateToProps(p: Everything) {
+function mapStateToProps(p: Everything): Props {
   const { index } = p.resources;
   const fbosConfig = getFbosConfig(index);
   if (fbosConfig) {
@@ -25,10 +25,11 @@ function mapStateToProps(p: Everything) {
   }
 }
 
-@connect(mapStateToProps)
-export class BootSequenceSelector extends React.Component<Props, {}> {
-
+export class DisconnectedBootSequenceSelector extends React.Component<Props, {}> {
   render() {
     return <div> Ey... </div>;
   }
 }
+
+export const BootSequenceSelector =
+  connect(mapStateToProps)(DisconnectedBootSequenceSelector);

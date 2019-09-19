@@ -41,7 +41,7 @@ export function sendOutboundPing(bot: Farmbot) {
       if (!x.done) {
         x.done = true;
         pingNO(id, now());
-        reject();
+        reject(new Error("sendOutboundPing failed: " + id));
       }
     };
 
@@ -51,9 +51,12 @@ export function sendOutboundPing(bot: Farmbot) {
   });
 }
 
+const beep = (bot: Farmbot) => sendOutboundPing(bot)
+  .then(() => { }, () => { }); // Silence errors;
+
 export function startPinging(bot: Farmbot) {
-  sendOutboundPing(bot);
-  setInterval(() => sendOutboundPing(bot), PING_INTERVAL);
+  beep(bot);
+  setInterval(() => beep(bot), PING_INTERVAL);
 }
 
 export function pingAPI() {

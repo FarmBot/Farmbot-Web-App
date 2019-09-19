@@ -10,7 +10,7 @@ import { DeepPartial } from "redux";
 import { AuthState } from "../../../auth/interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 
-describe("connectDevice()", async () => {
+describe("connectDevice()", () => {
   it("connects a FarmBot to the network", async () => {
     const auth: DeepPartial<AuthState> = { token: {} };
     const dispatch = jest.fn();

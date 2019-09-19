@@ -8,16 +8,13 @@ jest.mock("../../../device", () => ({
     return mockDevice;
   }
 }));
-
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { WeedDetector, namespace } from "../index";
+import { RawWeedDetector as WeedDetector, namespace } from "../index";
 import { FarmwareProps } from "../../../devices/interfaces";
 import { API } from "../../../api";
 import { selectImage } from "../../images/actions";

@@ -106,7 +106,7 @@ export class FarmbotOsSettings
               </label>
             </Col>
             <Col xs={9}>
-              <BootSequenceSelector {...({} as BootSequenceSelector["props"])} />
+              <BootSequenceSelector />
             </Col>
           </Row>
           <Row>

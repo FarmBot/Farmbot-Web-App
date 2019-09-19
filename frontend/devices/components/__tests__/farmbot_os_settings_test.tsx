@@ -1,3 +1,5 @@
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
+
 let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
   get: jest.fn(() => Promise.resolve(mockReleaseNoteData))

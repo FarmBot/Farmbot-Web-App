@@ -7,8 +7,7 @@ import { TaggedFarmEvent } from "farmbot";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "../../i18next_wrapper";
 
-@connect(mapStateToPropsAddEdit)
-export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
+export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   redirect() {
     history.push("/app/designer/events");
     return <div>{t("Loading")}...</div>;
@@ -34,3 +33,5 @@ export class EditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
     return fe ? this.renderForm(fe) : this.redirect();
   }
 }
+
+export const EditFarmEvent = connect(mapStateToPropsAddEdit)(RawEditFarmEvent);

@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 jest.mock("../labs/labs_features", () => ({ LabsFeatures: () => <div /> }));
 
 import * as React from "react";

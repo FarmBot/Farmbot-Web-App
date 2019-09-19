@@ -53,8 +53,7 @@ function mapStateToProps(props: Everything): GroupDetailProps {
   return { plants, group, dispatch: props.dispatch };
 }
 
-@connect(mapStateToProps)
-export class GroupDetail extends React.Component<GroupDetailProps, {}> {
+export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
 
   render() {
     const { group } = this.props;
@@ -66,3 +65,4 @@ export class GroupDetail extends React.Component<GroupDetailProps, {}> {
     }
   }
 }
+export const GroupDetail = connect(mapStateToProps)(RawGroupDetail);

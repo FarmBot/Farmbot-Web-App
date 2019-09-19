@@ -29,10 +29,7 @@ export interface SelectPlantsProps {
   selected: string[];
 }
 
-@connect(mapStateToProps)
-export class SelectPlants
-  extends React.Component<SelectPlantsProps, {}> {
-
+export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
   componentDidMount() {
     const { dispatch, selected } = this.props;
     if (selected && selected.length == 1) {
@@ -116,3 +113,5 @@ export class SelectPlants
     </DesignerPanel>;
   }
 }
+
+export const SelectPlants = connect(mapStateToProps)(RawSelectPlants);

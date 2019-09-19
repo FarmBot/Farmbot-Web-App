@@ -28,7 +28,6 @@ import { ReduxAction } from "../redux/interfaces";
 import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
-import { getFbosConfig } from "./getters";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];

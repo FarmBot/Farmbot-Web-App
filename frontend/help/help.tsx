@@ -11,8 +11,7 @@ export function mapStateToProps(props: Everything): { dispatch: Function } {
   return { dispatch };
 }
 
-@connect(mapStateToProps)
-export class Help extends React.Component<{ dispatch: Function }, {}> {
+export class RawHelp extends React.Component<{ dispatch: Function }, {}> {
 
   componentDidMount() {
     this.props.dispatch({ type: Actions.START_TOUR, payload: undefined });
@@ -27,3 +26,5 @@ export class Help extends React.Component<{ dispatch: Function }, {}> {
     </Page>;
   }
 }
+
+export const Help = connect(mapStateToProps)(RawHelp);

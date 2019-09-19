@@ -97,8 +97,7 @@ const MUST_LOAD: ResourceName[] = [
   "Tool" // Sequence editor needs this for rendering.
 ];
 
-@connect(mapStateToProps)
-export class App extends React.Component<AppProps, {}> {
+export class RawApp extends React.Component<AppProps, {}> {
   private get isLoaded() {
     return (MUST_LOAD.length ===
       intersection(this.props.loaded, MUST_LOAD).length);
@@ -152,3 +151,5 @@ export class App extends React.Component<AppProps, {}> {
     </div>;
   }
 }
+
+export const App = connect(mapStateToProps)(RawApp);

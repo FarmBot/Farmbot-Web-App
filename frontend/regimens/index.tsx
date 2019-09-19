@@ -27,8 +27,7 @@ export const RegimenBackButton = (props: RegimenBackButtonProps) => {
     title={schedulerOpen ? t("back to regimen") : t("back to regimens")} />;
 };
 
-@connect(mapStateToProps)
-export class Regimens extends React.Component<Props, {}> {
+export class RawRegimens extends React.Component<Props, {}> {
   UNSAFE_componentWillMount() {
     if (!this.props.current) { setActiveRegimenByName(); }
   }
@@ -87,3 +86,4 @@ export class Regimens extends React.Component<Props, {}> {
     </Page>;
   }
 }
+export const Regimens = connect(mapStateToProps)(RawRegimens);

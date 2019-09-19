@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 jest.mock("../../history", () => ({
   push: jest.fn(),

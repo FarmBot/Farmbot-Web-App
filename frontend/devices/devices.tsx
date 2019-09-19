@@ -10,8 +10,7 @@ import { selectAllDiagnosticDumps } from "../resources/selectors";
 import { getStatus } from "../connectivity/reducer_support";
 import { isFwHardwareValue } from "./components/firmware_hardware_support";
 
-@connect(mapStateToProps)
-export class Devices extends React.Component<Props, {}> {
+export class RawDevices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
       const { botToMqtt } = this.props;
@@ -61,3 +60,5 @@ export class Devices extends React.Component<Props, {}> {
     }
   }
 }
+
+export const Devices = connect(mapStateToProps)(RawDevices);
