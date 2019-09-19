@@ -79,6 +79,18 @@ describe Device do
     expect(device.throttled_until).to eq(violation.ends_at)
   end
 
+  it "increases a device throttle time period" do
+    expect(device).to receive(:tell).and_return(Log.new)
+    previous_throttle = Time.now - 1.minute
+    device.update_attributes!(throttled_until: previous_throttle)
+    expect(device.throttled_until).to eq(previous_throttle)
+    five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
+    rule = ThrottlePolicy::Rule.new(five_minutes, 500)
+    violation = ThrottlePolicy::Violation.new(rule)
+    device.maybe_throttle(violation)
+    expect(device.throttled_until).to eq(violation.ends_at)
+  end
+
   it "unthrottles a runaway device" do
     expect(device).to receive(:tell).and_return(Log.new)
     example = Time.now - 1.minute
