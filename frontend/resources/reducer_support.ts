@@ -28,7 +28,7 @@ import { ReduxAction } from "../redux/interfaces";
 import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
-import { maybeGetDevice } from "./selectors";
+import { getFbosConfig } from "./getters";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -197,16 +197,16 @@ const BEFORE_HOOKS: IndexerHook = {
 
 const AFTER_HOOKS: IndexerHook = {
   Device: (i) => {
-    console.log("Hmmm");
-    const dev = maybeGetDevice(i);
-    if (dev && dev.body.turnkey_sequence_id) {
-      const tracker = i.inUse["Sequence.Device"];
+    const conf = getFbosConfig(i);
+
+    if (conf && conf.body.boot_sequence_id) {
+      const tracker = i.inUse["Sequence.FbosConfig"];
       const sequence =
-        findByKindAndId(i, "Sequence", dev.body.turnkey_sequence_id);
+        findByKindAndId(i, "Sequence", conf.body.boot_sequence_id);
       tracker[sequence.uuid] = tracker[sequence.uuid] || {};
-      tracker[sequence.uuid][dev.uuid] = true;
+      tracker[sequence.uuid][conf.uuid] = true;
     } else {
-      i.inUse["Sequence.Device"] = {};
+      i.inUse["Sequence.FbosConfig"] = {};
     }
   },
   FarmEvent: reindexAllFarmEventUsage,

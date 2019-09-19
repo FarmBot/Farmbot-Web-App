@@ -16,6 +16,7 @@ import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
 import axios from "axios";
 import { t } from "../../i18next_wrapper";
+import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 
 export enum ColWidth {
   label = 3,
@@ -96,6 +97,22 @@ export class FarmbotOsSettings
                 onChange={this.changeBot}
                 onBlur={this.updateBot}
                 value={this.props.deviceAccount.body.name} />
+            </Col>
+          </Row>
+          <Row>
+            {console.log("Move this under 'FIRMWARE' dropdown tomorrow.")}
+            <Col xs={ColWidth.label}>
+              <label>
+                {t("BOOT SEQUENCE")}
+              </label>
+            </Col>
+            <Col xs={9}>
+              <SequenceSelectBox
+                onChange={(ddi) => {
+                  this.updateFbosConfig(ddi.value);
+                }}
+                resources={this.props.resources}
+                sequenceId={this.props.boot_sequence_id} />
             </Col>
           </Row>
           <Row>

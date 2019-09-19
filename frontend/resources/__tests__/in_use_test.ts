@@ -26,7 +26,7 @@ describe("resourceUsageList", () => {
       "Sequence.Sequence": {
         "Regimen.9.9": { "Sequence.10.10": true, "Sequence.11.11": true }
       },
-      "Sequence.Device": { "Device.99.99": { "Sequence.12.12": true } }
+      "Sequence.FbosConfig": { "Device.99.99": { "Sequence.12.12": true } }
     };
     const actual = Object.keys(resourceUsageList(x)).sort();
     const expected =

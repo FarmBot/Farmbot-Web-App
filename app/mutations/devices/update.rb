@@ -11,7 +11,6 @@ module Devices
       string :timezone
       time :last_saw_mq
       integer :mounted_tool_id, nils: true
-      integer :turnkey_sequence_id, nils: true
     end
 
     def validate

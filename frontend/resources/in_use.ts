@@ -22,7 +22,7 @@ export type UsageKind =
   | "Sequence.Regimen"
   | "Sequence.FarmEvent"
   | "Sequence.Sequence"
-  | "Sequence.Device";
+  | "Sequence.FbosConfig";
 
 /** This variable ensures that `EVERY_USAGE_KIND` does not have typos and is
  * up-to-date all `UsageKind`s */
@@ -31,7 +31,7 @@ const values: Record<UsageKind, UsageKind> = {
   "Sequence.Regimen": "Sequence.Regimen",
   "Sequence.FarmEvent": "Sequence.FarmEvent",
   "Sequence.Sequence": "Sequence.Sequence",
-  "Sequence.Device": "Sequence.Device"
+  "Sequence.FbosConfig": "Sequence.FbosConfig"
 };
 
 /** Array that contains every `UsageKind` token for easy runtime iteration. */
