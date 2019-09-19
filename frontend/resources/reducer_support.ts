@@ -196,18 +196,18 @@ const BEFORE_HOOKS: IndexerHook = {
 };
 
 const AFTER_HOOKS: IndexerHook = {
-  Device: (i) => {
-    const conf = getFbosConfig(i);
+  FbosConfig: (_i) => {
+    // const conf = getFbosConfig(i);
 
-    if (conf && conf.body.boot_sequence_id) {
-      const tracker = i.inUse["Sequence.FbosConfig"];
-      const sequence =
-        findByKindAndId(i, "Sequence", conf.body.boot_sequence_id);
-      tracker[sequence.uuid] = tracker[sequence.uuid] || {};
-      tracker[sequence.uuid][conf.uuid] = true;
-    } else {
-      i.inUse["Sequence.FbosConfig"] = {};
-    }
+    // if (conf && conf.body.boot_sequence_id) {
+    //   const tracker = i.inUse["Sequence.FbosConfig"];
+    //   const sequence =
+    //     findByKindAndId(i, "Sequence", conf.body.boot_sequence_id);
+    //   tracker[sequence.uuid] = tracker[sequence.uuid] || {};
+    //   tracker[sequence.uuid][conf.uuid] = true;
+    // } else {
+    //   i.inUse["Sequence.FbosConfig"] = {};
+    // }
   },
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
