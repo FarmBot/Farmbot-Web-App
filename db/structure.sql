@@ -275,7 +275,9 @@ CREATE TABLE public.devices (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     serial_number character varying(32),
-    mqtt_rate_limit_email_sent_at timestamp without time zone
+    mqtt_rate_limit_email_sent_at timestamp without time zone,
+    last_ota timestamp without time zone,
+    last_ota_check timestamp without time zone
 );
 
 
@@ -505,7 +507,8 @@ CREATE TABLE public.fbos_configs (
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
     firmware_debug_log boolean DEFAULT false,
-    update_channel character varying(7) DEFAULT 'stable'::character varying
+    update_channel character varying(7) DEFAULT 'stable'::character varying,
+    boot_sequence_id bigint
 );
 
 
@@ -2558,6 +2561,13 @@ CREATE INDEX index_farmware_installations_on_device_id ON public.farmware_instal
 
 
 --
+-- Name: index_fbos_configs_on_boot_sequence_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fbos_configs_on_boot_sequence_id ON public.fbos_configs USING btree (boot_sequence_id);
+
+
+--
 -- Name: index_fbos_configs_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3127,6 +3137,14 @@ ALTER TABLE ONLY public.peripherals
 
 
 --
+-- Name: fbos_configs fk_rails_fecd163013; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fbos_configs
+    ADD CONSTRAINT fk_rails_fecd163013 FOREIGN KEY (boot_sequence_id) REFERENCES public.sequences(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -3270,6 +3288,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190729134954'),
 ('20190804194135'),
 ('20190804194154'),
-('20190823164837');
+('20190823164837'),
+('20190918185359');
 
 
