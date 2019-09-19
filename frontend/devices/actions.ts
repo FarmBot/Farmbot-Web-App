@@ -5,7 +5,7 @@ import { Everything } from "../interfaces";
 import {
   GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
 } from "./interfaces";
-import { Thunk, ReduxAction } from "../redux/interfaces";
+import { Thunk } from "../redux/interfaces";
 import {
   McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
@@ -15,7 +15,6 @@ import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
-import { pingAPI } from "../connectivity/ping_mqtt";
 import { edit, save as apiSave } from "../api/crud";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Log } from "farmbot/dist/resources/api_resources";
@@ -35,9 +34,10 @@ export const FEATURE_MIN_VERSIONS_URL =
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
+const MESSAGE: keyof Log = "message";
 
 export function isLog(x: unknown): x is Log {
-  const msg = get(x, "message" as keyof Log);
+  const msg = get(x, MESSAGE);
   const yup = isObject(x) && isString(msg);
   if (yup) {
     if (oneOf(BAD_WORDS, msg.toUpperCase())) { // SECURITY CRITICAL CODE.
@@ -157,7 +157,7 @@ export function execSequence(
         if (x && (typeof x == "object") && (typeof x.message == "string")) {
           error(x.message);
         } else {
-          commandErr(noun);
+          commandErr(noun)();
         }
       });
   } else {
@@ -401,18 +401,4 @@ export function changeStepSize(integer: number) {
 
 export function badVersion() {
   info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
-}
-
-/** Change all device statuses to "unknown" */
-export function resetNetwork(): ReduxAction<{}> {
-  return { type: Actions.RESET_NETWORK, payload: {} };
-}
-
-/** for connectivity panel */
-export function resetConnectionInfo() {
-  return function (dispatch: Function) {
-    dispatch(resetNetwork());
-    pingAPI();
-    getDevice().readStatus();
-  };
 }
