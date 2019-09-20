@@ -55,6 +55,7 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
   render() {
     return <div>
       <FBSelect
+        allowEmpty={true}
         list={this.props.list}
         selectedItem={this.props.selectedItem}
         onChange={this.onChange} />

@@ -1,11 +1,11 @@
 module Sequences
   class Destroy < Mutations::Command
-    IN_USE        = "Sequence is still in use by"
+    IN_USE = "Sequence is still in use by"
     THE_FOLLOWING = " the following %{resource}: %{items}"
-    AND           = " and"
+    AND = " and"
     # Override `THE_FOLLOWING` here.
     SPECIAL_CASES = {
-      FarmEvent => " %{resource} on the following dates: %{items}"
+      FarmEvent => " %{resource} on the following dates: %{items}",
     }
 
     required do
@@ -22,7 +22,7 @@ module Sequences
       return ""
     end
 
-  private
+    private
 
     def pin_bindings
       @pin_bindings ||= PinBinding
@@ -45,7 +45,7 @@ module Sequences
     def regimens
       @regimens ||= Regimen
         .includes(:regimen_items)
-        .where(regimen_items: {sequence_id: sequence.id})
+        .where(regimen_items: { sequence_id: sequence.id })
         .to_a
     end
 
@@ -57,23 +57,43 @@ module Sequences
         .to_a
     end
 
+    class FancyName
+      attr_reader :fancy_name
+
+      def self.table_name
+        "items"
+      end
+
+      def initialize(name)
+        @fancy_name = name
+      end
+    end
+
+    def fbos_config
+      @fbos_config ||= FbosConfig
+        .where(device_id: device.id,
+               boot_sequence_id: sequence.id)
+        .any? ? [FancyName.new("boot sequence")] : []
+    end
+
     def format_dep_list(klass, items)
       (SPECIAL_CASES[klass] || THE_FOLLOWING) % {
-        resource: klass.table_name.humanize,
-        items: items.map(&:fancy_name).uniq.join(", ")
+        resource: klass.table_name.humanize.downcase,
+        items: items.map(&:fancy_name).uniq.join(", "),
       } unless items.empty?
     end
 
     def all_deps
       @all_deps ||= []
-        .concat(farm_events)       # FarmEvent
-        .concat(pin_bindings)      # PinBinding
-        .concat(regimens)          # Regimen
+        .concat(farm_events) # FarmEvent
+        .concat(pin_bindings) # PinBinding
+        .concat(regimens) # Regimen
         .concat(sibling_sequences) # Sequence
+        .concat(fbos_config)
         .compact
         .group_by { |x| x.class }
         .to_a
-        .map  { |(klass, items)| format_dep_list(klass, items) }
+        .map { |(klass, items)| format_dep_list(klass, items) }
         .compact
         .join(AND)
     end

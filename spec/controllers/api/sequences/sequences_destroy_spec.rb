@@ -1,18 +1,18 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Api::SequencesController do
   before :each do
-    request.headers["accept"] = 'application/json'
+    request.headers["accept"] = "application/json"
   end
 
   include Devise::Test::ControllerHelpers
 
-  describe '#destroy' do
+  describe "#destroy" do
     let(:user) { FactoryBot.create(:user) }
     let(:device) { user.device }
-    let(:sequence) { FakeSequence.create( device: device) }
+    let(:sequence) { FakeSequence.create(device: device) }
 
-    it 'destroys a sequence' do
+    it "destroys a sequence" do
       sign_in user
       input = { id: sequence.id }
       delete :destroy, params: input
@@ -21,7 +21,7 @@ describe Api::SequencesController do
         .to(raise_error(ActiveRecord::RecordNotFound))
     end
 
-    it 'doesnt destroy other peoples sequence' do
+    it "doesnt destroy other peoples sequence" do
       sign_in user
       other_persons = FakeSequence.create()
       input = { id: other_persons.id }
@@ -29,9 +29,9 @@ describe Api::SequencesController do
       expect(response.status).to eq(404)
     end
 
-    it 'allows deletion of recursive sequences' do
+    it "allows deletion of recursive sequences" do
       sign_in user
-      s = Sequences::Create.run!({device: user.device,
+      s = Sequences::Create.run!({ device: user.device,
                                   name: "Rick-cursion",
                                   body: [] })
       body = {
@@ -39,10 +39,10 @@ describe Api::SequencesController do
           body: [
             {
               kind: "execute",
-              args: { sequence_id: s[:id] }
-            }
-          ]
-        }
+              args: { sequence_id: s[:id] },
+            },
+          ],
+        },
       }.to_json
 
       patch :update,
@@ -54,13 +54,24 @@ describe Api::SequencesController do
       input = { id: sequence.id }
       before = Sequence.count
       delete :destroy, params: input
-      after  = Sequence.count
+      after = Sequence.count
       expect(response.status).to eq(200)
       expect(after).to be < before
       expect { Sequence.find(s[:id]) }.to(raise_error(ActiveRecord::RecordNotFound))
     end
 
-    it 'prevents deletion of sequences that are in use by pin bindings' do
+    it "prevents deletion of the boot sequence" do
+      msg = "Sequence is still in use by the following items: boot sequence"
+      sign_in user
+      conf = user.device.fbos_config
+      conf.boot_sequence_id = sequence.id
+      conf.save!
+      delete :destroy, params: { id: sequence.id }
+      expect(response.status).to eq(422)
+      expect(json[:sequence]).to eq(msg)
+    end
+
+    it "prevents deletion of sequences that are in use by pin bindings" do
       sign_in user
       pb = PinBindings::Create.run!(device: user.device,
                                     sequence_id: sequence.id,
@@ -71,28 +82,28 @@ describe Api::SequencesController do
       expect(json[:sequence]).to include(pb.fancy_name)
     end
 
-    it 'does not destroy a sequence when in use by a sequence' do
+    it "does not destroy a sequence when in use by a sequence" do
       program = [
         {
           kind: "_if",
           args: {
-            lhs:"x",
-            op:"is",
-            rhs:0,
+            lhs: "x",
+            op: "is",
+            rhs: 0,
             _then: {
               kind: "execute",
-              args: { sequence_id: sequence.id }
+              args: { sequence_id: sequence.id },
             },
             _else: {
               kind: "execute",
-              args: { sequence_id: sequence.id }
+              args: { sequence_id: sequence.id },
             },
-          }
-        }
+          },
+        },
       ]
-      Sequences::Create.run!(name:   "Dep. tracking",
+      Sequences::Create.run!(name: "Dep. tracking",
                              device: user.device,
-                             body:   program)
+                             body: program)
       newest = Sequence.last
       before = EdgeNode.where(kind: "sequence_id").count
       sign_in user

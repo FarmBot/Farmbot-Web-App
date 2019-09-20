@@ -63,7 +63,6 @@ export async function fetchSyncData(dispatch: Function) {
     0: () => Promise.all<{}>([
       get("User", API.current.usersPath),
       get("Device", API.current.devicePath),
-      get("FbosConfig", API.current.fbosConfigPath),
       get("FirmwareConfig", API.current.firmwareConfigPath),
       get("FarmwareEnv", API.current.farmwareEnvPath),
       get("FarmwareInstallation", API.current.farmwareInstallationPath),
@@ -84,6 +83,7 @@ export async function fetchSyncData(dispatch: Function) {
       get("PointGroup", API.current.pointGroupsPath)
     ]),
     3: () => Promise.all<{}>([
+      get("FbosConfig", API.current.fbosConfigPath),
       get("Regimen", API.current.regimensPath),
       get("PinBinding", API.current.pinBindingPath),
     ]),

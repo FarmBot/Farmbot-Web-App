@@ -17,7 +17,7 @@ import {
   selectAllFarmEvents,
   findByKindAndId,
   selectAllLogs,
-  selectAllRegimens
+  selectAllRegimens,
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
@@ -28,6 +28,7 @@ import { ReduxAction } from "../redux/interfaces";
 import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
+import { getFbosConfig } from "./getters";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -195,18 +196,22 @@ const BEFORE_HOOKS: IndexerHook = {
 };
 
 const AFTER_HOOKS: IndexerHook = {
-  FbosConfig: (_i) => {
-    // const conf = getFbosConfig(i);
+  FbosConfig: (i) => {
+    const conf = getFbosConfig(i);
 
-    // if (conf && conf.body.boot_sequence_id) {
-    //   const tracker = i.inUse["Sequence.FbosConfig"];
-    //   const sequence =
-    //     findByKindAndId(i, "Sequence", conf.body.boot_sequence_id);
-    //   tracker[sequence.uuid] = tracker[sequence.uuid] || {};
-    //   tracker[sequence.uuid][conf.uuid] = true;
-    // } else {
-    //   i.inUse["Sequence.FbosConfig"] = {};
-    // }
+    if (conf && conf.body.boot_sequence_id) {
+      const { boot_sequence_id } = conf.body;
+      const tracker = i.inUse["Sequence.FbosConfig"];
+      const uuid = i.byKindAndId[joinKindAndId("Sequence", boot_sequence_id)];
+      if (uuid) {
+        console.log("Hmmm");
+        console.log("DING !");
+        tracker[uuid] = tracker[uuid] || {};
+        tracker[uuid][conf.uuid] = true;
+      }
+    } else {
+      i.inUse["Sequence.FbosConfig"] = {};
+    }
   },
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
