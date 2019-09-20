@@ -15,9 +15,14 @@ interface Props {
   dispatch: Function;
 }
 
-const sequence2ddi = (x: TaggedSequence) => {
+const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
   const { body } = x;
-  return body.id ? { label: body.name, value: body.id } : undefined;
+  const emptyScope = (body.args.locals.body || []).length == 0;
+  if (emptyScope && body.id) {
+    return { label: body.name, value: body.id };
+  }
+
+  return undefined;
 };
 
 function mapStateToProps(p: Everything): Props {

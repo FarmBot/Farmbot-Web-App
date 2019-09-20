@@ -508,7 +508,7 @@ CREATE TABLE public.fbos_configs (
     firmware_path character varying,
     firmware_debug_log boolean DEFAULT false,
     update_channel character varying(7) DEFAULT 'stable'::character varying,
-    boot_sequence_id bigint
+    boot_sequence_id integer
 );
 
 
@@ -2561,13 +2561,6 @@ CREATE INDEX index_farmware_installations_on_device_id ON public.farmware_instal
 
 
 --
--- Name: index_fbos_configs_on_boot_sequence_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_fbos_configs_on_boot_sequence_id ON public.fbos_configs USING btree (boot_sequence_id);
-
-
---
 -- Name: index_fbos_configs_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3134,14 +3127,6 @@ ALTER TABLE ONLY public.pin_bindings
 
 ALTER TABLE ONLY public.peripherals
     ADD CONSTRAINT fk_rails_fdaad0007f FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
--- Name: fbos_configs fk_rails_fecd163013; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.fbos_configs
-    ADD CONSTRAINT fk_rails_fecd163013 FOREIGN KEY (boot_sequence_id) REFERENCES public.sequences(id);
 
 
 --
