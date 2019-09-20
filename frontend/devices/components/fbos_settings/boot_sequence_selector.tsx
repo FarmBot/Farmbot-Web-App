@@ -15,7 +15,7 @@ interface Props {
   dispatch: Function;
 }
 
-const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
+export const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
   const { body } = x;
   const emptyScope = (body.args.locals.body || []).length == 0;
   if (emptyScope && body.id) {
@@ -25,7 +25,7 @@ const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
   return undefined;
 };
 
-function mapStateToProps(p: Everything): Props {
+export function mapStateToProps(p: Everything): Props {
   const { index } = p.resources;
   const fbosConfig = getFbosConfig(index);
   if (fbosConfig) {
