@@ -45,7 +45,7 @@ function mapStateToProps(p: Everything): Props {
   }
 }
 
-export class DisconnectedBootSequenceSelector extends React.Component<Props, {}> {
+export class RawBootSequenceSelector extends React.Component<Props, {}> {
   onChange = (_selected: DropDownItem) => {
     const payload = { boot_sequence_id: _selected.value as number | undefined };
     this.props.dispatch(edit(this.props.config, payload));
@@ -63,4 +63,4 @@ export class DisconnectedBootSequenceSelector extends React.Component<Props, {}>
 }
 
 export const BootSequenceSelector =
-  connect(mapStateToProps)(DisconnectedBootSequenceSelector);
+  connect(mapStateToProps)(RawBootSequenceSelector);
