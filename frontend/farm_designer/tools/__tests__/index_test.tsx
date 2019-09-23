@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
@@ -7,7 +7,7 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { Tools, ToolsProps, mapStateToProps } from "../index";
+import { RawTools as Tools, ToolsProps, mapStateToProps } from "../index";
 import {
   fakeTool, fakeToolSlot
 } from "../../../__test_support__/fake_state/resources";

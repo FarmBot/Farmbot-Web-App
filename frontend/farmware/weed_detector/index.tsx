@@ -23,8 +23,7 @@ export const namespace = (prefix: string) => (key: string): WDENVKey => {
   }
 };
 
-@connect(mapStateToProps)
-export class WeedDetector
+export class RawWeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
 
   constructor(props: FarmwareProps) {
@@ -103,3 +102,5 @@ export class WeedDetector
     </div>;
   }
 }
+
+export const WeedDetector = connect(mapStateToProps)(RawWeedDetector);

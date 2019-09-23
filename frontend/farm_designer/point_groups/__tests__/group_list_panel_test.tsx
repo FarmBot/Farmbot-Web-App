@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => ["L", "O", "L"]),
@@ -7,7 +7,7 @@ jest.mock("../../../history", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { GroupListPanel, GroupListPanelProps, mapStateToProps } from "../group_list_panel";
+import { RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps } from "../group_list_panel";
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";

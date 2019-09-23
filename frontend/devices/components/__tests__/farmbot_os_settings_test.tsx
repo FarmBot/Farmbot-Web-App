@@ -1,3 +1,4 @@
+
 let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
   get: jest.fn(() => Promise.resolve(mockReleaseNoteData))
@@ -18,7 +19,15 @@ import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
 
-describe("<FarmbotOsSettings/>", () => {
+jest.mock("react-redux", () => ({
+  connect: jest.fn(() => {
+    return () => {
+      return () => "";
+    };
+  })
+}));
+
+describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
     window.alert = jest.fn();
   });

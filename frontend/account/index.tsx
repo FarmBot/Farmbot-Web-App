@@ -27,8 +27,7 @@ interface State {
   warnThem: boolean;
 }
 
-@connect(mapStateToProps)
-export class Account extends React.Component<Props, State> {
+export class RawAccount extends React.Component<Props, State> {
   state: State = { warnThem: false };
 
   /** WHAT WE NEED: The ability to tell users to check their email if they try
@@ -113,3 +112,5 @@ export class Account extends React.Component<Props, State> {
     </Page>;
   }
 }
+
+export const Account = connect(mapStateToProps)(RawAccount);

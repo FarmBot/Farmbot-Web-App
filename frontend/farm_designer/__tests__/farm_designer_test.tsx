@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 let mockPath = "/app/designer/plants";
 jest.mock("../../history", () => ({
@@ -12,7 +12,7 @@ jest.mock("../../api/crud", () => ({
 }));
 
 import * as React from "react";
-import { FarmDesigner } from "../index";
+import { RawFarmDesigner } from "../index";
 import { mount } from "enzyme";
 import { Props } from "../interfaces";
 import { GardenMapLegendProps } from "../map/interfaces";
@@ -27,7 +27,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 
-describe("<FarmDesigner/>", () => {
+describe("<RawFarmDesigner/>", () => {
   function fakeProps(): Props {
 
     return {
@@ -63,7 +63,7 @@ describe("<FarmDesigner/>", () => {
   }
 
   it("loads default map settings", () => {
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<RawFarmDesigner {...fakeProps()} />);
     const legendProps =
       wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.legendMenuOpen).toBeFalsy();
@@ -86,7 +86,7 @@ describe("<FarmDesigner/>", () => {
     image1.body.created_at = "2001-01-03T00:00:00.000Z";
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
-    const wrapper = mount(<FarmDesigner {...p} />);
+    const wrapper = mount(<RawFarmDesigner {...p} />);
     const legendProps =
       wrapper.find("GardenMapLegend").props() as GardenMapLegendProps;
     expect(legendProps.imageAgeInfo)
@@ -95,7 +95,7 @@ describe("<FarmDesigner/>", () => {
 
   it("renders nav titles", () => {
     mockPath = "/app/designer/plants";
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<RawFarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeTruthy();
@@ -105,7 +105,7 @@ describe("<FarmDesigner/>", () => {
 
   it("hides panel", () => {
     mockPath = "/app/designer";
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    const wrapper = mount(<RawFarmDesigner {...fakeProps()} />);
     ["Map", "Plants", "Events"].map(string =>
       expect(wrapper.text()).toContain(string));
     expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeFalsy();
@@ -116,7 +116,7 @@ describe("<FarmDesigner/>", () => {
   it("renders saved garden indicator", () => {
     const p = fakeProps();
     p.designer.openedSavedGarden = "SavedGardenUuid";
-    const wrapper = mount(<FarmDesigner {...p} />);
+    const wrapper = mount(<RawFarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
   });
 
@@ -126,7 +126,7 @@ describe("<FarmDesigner/>", () => {
     const dispatch = jest.fn();
     state.resources = buildResourceIndex([fakeWebAppConfig()]);
     p.dispatch = jest.fn(x => x(dispatch, () => state));
-    const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
+    const wrapper = mount<RawFarmDesigner>(<RawFarmDesigner {...p} />);
     wrapper.instance().toggle(BooleanSetting.show_plants)();
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { bot_origin_quadrant: 2 });
   });

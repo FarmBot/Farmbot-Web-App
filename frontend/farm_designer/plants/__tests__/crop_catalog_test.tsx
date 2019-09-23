@@ -1,5 +1,5 @@
 jest.mock("react-redux", () => ({
-  connect: jest.fn()
+  connect: jest.fn(() => (x: {}) => x)
 }));
 
 jest.mock("lodash", () => ({

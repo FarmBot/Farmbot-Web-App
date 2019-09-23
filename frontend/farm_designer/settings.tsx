@@ -26,8 +26,7 @@ export interface DesignerSettingsProps {
   getConfigValue: GetWebAppConfigValue;
 }
 
-@connect(mapStateToProps)
-export class DesignerSettings
+export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
 
   render() {
@@ -142,3 +141,5 @@ const OriginSelector = (props: DesignerSettingsProps) => {
     </div>
   </div>;
 };
+
+export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);

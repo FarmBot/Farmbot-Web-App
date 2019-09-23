@@ -5,8 +5,7 @@ import { Col, Row, Page } from "../ui";
 import { ToolBayList, ToolBayForm, ToolList, ToolForm } from "./components";
 import { mapStateToProps } from "./state_to_props";
 
-@connect(mapStateToProps)
-export class Tools extends React.Component<Props, Partial<ToolsState>> {
+export class RawTools extends React.Component<Props, Partial<ToolsState>> {
   state: ToolsState = { editingBays: false, editingTools: false };
 
   toggle = (name: keyof ToolsState) =>
@@ -48,3 +47,5 @@ export class Tools extends React.Component<Props, Partial<ToolsState>> {
     </Page>;
   }
 }
+
+export const Tools = connect(mapStateToProps)(RawTools);

@@ -115,8 +115,7 @@ export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
     </p>
   </div>;
 
-@connect(mapStateToProps)
-export class FarmwarePage extends React.Component<FarmwareProps, {}> {
+export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
   get current() { return this.props.currentFarmware; }
 
   get botOnline() {
@@ -264,3 +263,5 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
     </Page>;
   }
 }
+
+export const FarmwarePage = connect(mapStateToProps)(RawFarmwarePage);

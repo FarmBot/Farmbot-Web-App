@@ -22,8 +22,7 @@ interface State {
   uuid: string;
 }
 
-@connect(mapStateToPropsAddEdit)
-export class AddFarmEvent
+export class RawAddFarmEvent
   extends React.Component<AddEditFarmEventProps, Partial<State>> {
 
   constructor(props: AddEditFarmEventProps) {
@@ -122,3 +121,5 @@ export class AddFarmEvent
     }
   }
 }
+
+export const AddFarmEvent = connect(mapStateToPropsAddEdit)(RawAddFarmEvent);

@@ -1,5 +1,5 @@
 jest.mock("react-redux", () => ({
-  connect: jest.fn()
+  connect: jest.fn(() => (x: {}) => x)
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -13,7 +13,7 @@ jest.mock("../../../farmware/weed_detector/actions", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  CreatePoints,
+  RawCreatePoints as CreatePoints,
   CreatePointsProps,
   mapStateToProps
 } from "../create_points";

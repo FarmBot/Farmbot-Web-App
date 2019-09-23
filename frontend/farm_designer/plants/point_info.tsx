@@ -24,8 +24,7 @@ export const mapStateToProps = (props: Everything): EditPointProps => ({
   findPoint: id => maybeFindPointById(props.resources.index, id),
 });
 
-@connect(mapStateToProps)
-export class EditPoint extends React.Component<EditPointProps, {}> {
+export class RawEditPoint extends React.Component<EditPointProps, {}> {
   get stringyID() { return getPathArray()[4] || ""; }
   get point() {
     if (this.stringyID) {
@@ -84,3 +83,5 @@ export class EditPoint extends React.Component<EditPointProps, {}> {
     return this.point ? this.default(this.point) : this.fallback();
   }
 }
+
+export const EditPoint = connect(mapStateToProps)(RawEditPoint);

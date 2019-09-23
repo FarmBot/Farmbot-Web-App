@@ -275,7 +275,9 @@ CREATE TABLE public.devices (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     serial_number character varying(32),
-    mqtt_rate_limit_email_sent_at timestamp without time zone
+    mqtt_rate_limit_email_sent_at timestamp without time zone,
+    last_ota timestamp without time zone,
+    last_ota_check timestamp without time zone
 );
 
 
@@ -505,7 +507,8 @@ CREATE TABLE public.fbos_configs (
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
     firmware_debug_log boolean DEFAULT false,
-    update_channel character varying(7) DEFAULT 'stable'::character varying
+    update_channel character varying(7) DEFAULT 'stable'::character varying,
+    boot_sequence_id integer
 );
 
 
@@ -3270,6 +3273,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190729134954'),
 ('20190804194135'),
 ('20190804194154'),
-('20190823164837');
+('20190823164837'),
+('20190918185359');
 
 

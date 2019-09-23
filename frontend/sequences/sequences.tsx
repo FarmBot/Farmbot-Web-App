@@ -29,8 +29,7 @@ export const SequenceBackButton = (props: SequenceBackButtonProps) => {
     title={insertingStep ? t("back to sequence") : t("back to sequences")} />;
 };
 
-@connect(mapStateToProps)
-export class Sequences extends React.Component<Props, {}> {
+export class RawSequences extends React.Component<Props, {}> {
   UNSAFE_componentWillMount() {
     if (!this.props.sequence) { setActiveSequenceByName(); }
   }
@@ -90,3 +89,5 @@ export class Sequences extends React.Component<Props, {}> {
     </Page>;
   }
 }
+
+export const Sequences = connect(mapStateToProps)(RawSequences);

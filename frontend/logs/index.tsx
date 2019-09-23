@@ -25,8 +25,7 @@ export const formatLogTime =
       .utcOffset(timeSettings.utcOffset)
       .format(`MMM D, ${timeFormatString(timeSettings)}`);
 
-@connect(mapStateToProps)
-export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
+export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Initialize log type verbosity level to the configured or default value. */
   initialize = (name: NumberConfigKey, defaultValue: number): number => {
@@ -131,3 +130,5 @@ export class Logs extends React.Component<LogsProps, Partial<LogsState>> {
     </Page>;
   }
 }
+
+export const Logs = connect(mapStateToProps)(RawLogs);

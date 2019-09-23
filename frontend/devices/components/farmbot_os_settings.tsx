@@ -16,6 +16,7 @@ import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
 import axios from "axios";
 import { t } from "../../i18next_wrapper";
+import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
 
 export enum ColWidth {
   label = 3,
@@ -96,6 +97,16 @@ export class FarmbotOsSettings
                 onChange={this.changeBot}
                 onBlur={this.updateBot}
                 value={this.props.deviceAccount.body.name} />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={ColWidth.label}>
+              <label>
+                {t("BOOT SEQUENCE")}
+              </label>
+            </Col>
+            <Col xs={9}>
+              <BootSequenceSelector />
             </Col>
           </Row>
           <Row>

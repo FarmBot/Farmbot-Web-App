@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));

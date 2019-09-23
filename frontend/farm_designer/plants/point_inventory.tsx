@@ -31,9 +31,7 @@ export function mapStateToProps(props: Everything): PointsProps {
   };
 }
 
-@connect(mapStateToProps)
-export class Points extends React.Component<PointsProps, PointsState> {
-
+export class RawPoints extends React.Component<PointsProps, PointsState> {
   state: PointsState = { searchTerm: "" };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
@@ -71,3 +69,5 @@ export class Points extends React.Component<PointsProps, PointsState> {
     </DesignerPanel>;
   }
 }
+
+export const Points = connect(mapStateToProps)(RawPoints);
