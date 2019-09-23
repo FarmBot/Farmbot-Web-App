@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col } from "../../ui";
 import { BotLocationData } from "../../devices/interfaces";
 import { moveAbs } from "../../devices/actions";

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { ImageFlipperProps, ImageFlipperState } from "./interfaces";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { SyncStatus, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
@@ -88,7 +87,7 @@ const Test = (props: TestProps) => {
   const normalColor = props.canTest ? "orange" : "pseudo-disabled";
   return <button
     className={`fb-button ${props.menuOpen ? "gray" : normalColor}`}
-    onClick={props.onClick} >
+    onClick={props.onClick}>
     {props.menuOpen ? t("Close") : t("Test")}
   </button>;
 };

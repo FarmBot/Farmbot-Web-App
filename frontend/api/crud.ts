@@ -17,7 +17,6 @@ import { ResourceIndex } from "../resources/interfaces";
 import { SequenceBodyItem } from "farmbot/dist";
 import { Actions } from "../constants";
 import { maybeStartTracking } from "./maybe_start_tracking";
-
 import { newTaggedResource } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";

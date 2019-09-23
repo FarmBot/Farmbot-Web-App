@@ -3,9 +3,9 @@ import { UUID } from "./interfaces";
 /** Used for fast lookups of unique UUIDs. */
 type UUIDSet = Record<UUID, boolean>;
 
-/** The key side of the Record<UUID, > represents the resource that cannot be deleted (hence forward
- * the "in use resource".
- * The value represents a set of resource that make it unsafe to delete the
+/** The key side of the Record<UUID, >
+ * represents the resource that cannot be deleted (the "in use resource").
+ * The value represents a set of resources that make it unsafe to delete the
  * "in use resource". */
 export type UsageMap = Record<UUID, UUIDSet>;
 

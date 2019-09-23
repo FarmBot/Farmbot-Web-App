@@ -2,19 +2,13 @@ const mockDevice = {
   execScript: jest.fn(() => Promise.resolve()),
   setUserEnv: jest.fn(() => Promise.resolve()),
 };
-
-jest.mock("../../../device", () => ({
-  getDevice: () => {
-    return mockDevice;
-  }
-}));
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { RawWeedDetector as WeedDetector, namespace } from "../index";
+import { WeedDetector, namespace } from "../index";
 import { FarmwareProps } from "../../../devices/interfaces";
 import { API } from "../../../api";
 import { selectImage } from "../../images/actions";

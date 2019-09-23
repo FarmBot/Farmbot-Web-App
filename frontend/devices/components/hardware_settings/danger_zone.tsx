@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { DangerZoneProps } from "../interfaces";
 import { Row, Col } from "../../../ui/index";
 import { Header } from "./header";

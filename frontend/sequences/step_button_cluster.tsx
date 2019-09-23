@@ -123,7 +123,7 @@ export function StepButtonCluster(props: StepButtonProps) {
     <StepButton
       {...commonStepProps}
       color="brown"
-      step={{ kind: "take_photo", args: {} }} >
+      step={{ kind: "take_photo", args: {} }}>
       {t("TAKE PHOTO")}
     </StepButton>,
   ];

@@ -5,7 +5,9 @@ import { Wait } from "farmbot";
 import { StepWrapper } from "../../step_ui/step_wrapper";
 import { DeepPartial } from "redux";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 import { renderCeleryNode } from "..";
 
 const EMPTY: DeepPartial<AssertionStepProps> = {};

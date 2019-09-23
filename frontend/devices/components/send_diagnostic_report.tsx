@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Row, Col } from "../../ui";
 import { ColWidth } from "./farmbot_os_settings";
-
 import { Collapse } from "@blueprintjs/core";
 import { Header } from "./hardware_settings/header";
 import { ShouldDisplay, Feature } from "../interfaces";

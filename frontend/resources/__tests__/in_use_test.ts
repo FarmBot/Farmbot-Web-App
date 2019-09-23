@@ -1,6 +1,8 @@
 import { TaggedResource, TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../interfaces";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
 import { DeepPartial } from "redux";
 import {
@@ -29,8 +31,11 @@ describe("resourceUsageList", () => {
       "Sequence.FbosConfig": { "Device.99.99": { "Sequence.12.12": true } }
     };
     const actual = Object.keys(resourceUsageList(x)).sort();
-    const expected =
-      ["FarmEvent.0.0", "FarmEvent.3.3", "Regimen.6.6", "Regimen.9.9", "Device.99.99"].sort();
+    const expected = [
+      "FarmEvent.0.0", "FarmEvent.3.3",
+      "Regimen.6.6", "Regimen.9.9",
+      "Device.99.99",
+    ].sort();
     expect(actual.length).toEqual(expected.length);
     expected.map(y => expect(actual).toContain(y));
   });
@@ -44,7 +49,8 @@ describe("in_use tracking at reducer level", () => {
 
   const assertShape =
     (inUse: UsageIndex, expected: DeepPartial<UsageIndex>) => {
-      EVERY_USAGE_KIND.map(kind => expect(inUse[kind]).toEqual(expected[kind] || {}));
+      EVERY_USAGE_KIND.map(kind =>
+        expect(inUse[kind]).toEqual(expected[kind] || {}));
     };
 
   it("loads defaults", () => assertShape(testCase([]).inUse, {}));

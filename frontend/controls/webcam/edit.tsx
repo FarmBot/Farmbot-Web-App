@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
-
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { KeyValEditRow } from "../key_val_edit_row";

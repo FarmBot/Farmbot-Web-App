@@ -10,7 +10,9 @@ import {
   maybeGetTimeSettings,
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
-import { FarmEventWithRegimen, FarmEventWithSequence } from "./calendar/interfaces";
+import {
+  FarmEventWithRegimen, FarmEventWithSequence
+} from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { last } from "lodash";
 import { RegimenItem } from "../../regimens/interfaces";
@@ -63,7 +65,8 @@ export const nextRegItemTimes =
       && time.isSameOrAfter(moment(startTime)));
   };
 
-export let regimenCalendarAdder = (index: ResourceIndex, timeSettings: TimeSettings) =>
+export let regimenCalendarAdder = (
+  index: ResourceIndex, timeSettings: TimeSettings) =>
   (f: FarmEventWithRegimen, c: Calendar, now = moment()) => {
     const { regimen_items } = f.executable;
     const gracePeriod = itemGracePeriod(now);

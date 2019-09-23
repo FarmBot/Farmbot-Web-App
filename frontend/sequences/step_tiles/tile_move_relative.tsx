@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";

@@ -1,4 +1,6 @@
 import * as React from "react";
+import axios from "axios";
+import { t } from "../../i18next_wrapper";
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
@@ -14,8 +16,6 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
-import axios from "axios";
-import { t } from "../../i18next_wrapper";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
 
 export enum ColWidth {
@@ -70,11 +70,7 @@ export class FarmbotOsSettings
 
   maybeWarnTz = () => {
     const wrongTZ = timezoneMismatch(this.props.deviceAccount.body.timezone);
-    if (wrongTZ) {
-      return t(Content.DIFFERENT_TZ_WARNING);
-    } else {
-      return "";
-    }
+    return wrongTZ ? t(Content.DIFFERENT_TZ_WARNING) : "";
   }
 
   render() {

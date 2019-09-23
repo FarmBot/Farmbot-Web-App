@@ -1,6 +1,5 @@
 import * as React from "react";
 import { FarmwareInfo } from "../interfaces";
-
 import { DropDownItem, BlurableInput, Help } from "../../ui/index";
 import { without, isNumber } from "lodash";
 import { ExecuteScript, Pair, FarmwareConfig } from "farmbot";

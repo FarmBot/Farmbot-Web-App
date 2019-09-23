@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-
 import { ColWidth } from "../farmbot_os_settings";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";

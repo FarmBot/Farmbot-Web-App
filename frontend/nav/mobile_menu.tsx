@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Overlay, Classes } from "@blueprintjs/core";
-
 import { NavLinks } from "./nav_links";
 import { MobileMenuProps } from "./interfaces";
 

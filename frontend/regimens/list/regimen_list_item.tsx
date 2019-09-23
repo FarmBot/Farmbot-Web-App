@@ -2,7 +2,6 @@ import * as React from "react";
 import { RegimenListItemProps } from "../interfaces";
 import { lastUrlChunk, urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
-
 import { Content } from "../../constants";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";

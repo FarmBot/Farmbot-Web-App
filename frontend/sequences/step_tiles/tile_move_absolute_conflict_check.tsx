@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { CheckConflictCaseProps, MoveAbsoluteWarningProps } from "../interfaces";
 import { Xyz } from "../../devices/interfaces";
 import { StepWarning, conflictsString } from "../step_ui/index";
