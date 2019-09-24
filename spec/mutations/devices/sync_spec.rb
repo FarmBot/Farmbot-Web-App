@@ -20,6 +20,7 @@ describe Devices::Sync do
     :sensors,
     :sequences,
     :tools,
+    :point_groups,
   ])
 
   it "is different this time!" do

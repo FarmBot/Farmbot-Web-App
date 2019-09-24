@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :point_group do
-    point_group_items
+    name { Faker::Games::Pokemon.name }
+    # point_group_items # TODO: Broke - RC 23 Sept 19
   end
 end

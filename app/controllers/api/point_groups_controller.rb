@@ -6,6 +6,10 @@ module Api
       render json: your_point_groups
     end
 
+    def show
+      render json: the_point_group
+    end
+
     def create
       mutate PointGroups::Create.run(raw_json, point_group_params)
     end
