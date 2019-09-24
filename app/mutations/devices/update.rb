@@ -10,6 +10,8 @@ module Devices
       string :name
       string :timezone
       time :last_saw_mq
+      time :last_ota
+      time :last_ota_checkup
       integer :mounted_tool_id, nils: true
     end
 
