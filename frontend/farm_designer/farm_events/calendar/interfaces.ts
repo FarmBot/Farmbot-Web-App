@@ -2,12 +2,13 @@ import { Regimen } from "../../../regimens/interfaces";
 import { Sequence } from "../../../sequences/interfaces";
 import { FarmEvent } from "farmbot/dist/resources/api_resources";
 
-/** Would it be better to make a fully formed farm event? Join regimen, sequence, etc. */
+/** Make a fully formed farm event: join regimen, sequence, etc. */
 
 /** STEP 1: Extract querying of data and formatting of data into two
  * sep. function. This function will join `executable` on `farm_event`. */
 
-export type FarmEventWithExecutable = FarmEventWithRegimen | FarmEventWithSequence;
+export type FarmEventWithExecutable =
+  FarmEventWithRegimen | FarmEventWithSequence;
 
 /** Takes a farm event and merges it with its sequence object. */
 export interface FarmEventWithSequence extends FarmEvent {

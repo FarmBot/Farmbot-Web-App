@@ -24,7 +24,8 @@ interface RootComponentState {
   ChildRoute?: React.ComponentType;
 }
 
-export class RootComponent extends React.Component<RootComponentProps, RootComponentState> {
+export class RootComponent
+  extends React.Component<RootComponentProps, RootComponentState> {
   state: RootComponentState = { Route: () => <div>Loading...</div> };
 
   UNSAFE_componentWillMount() {

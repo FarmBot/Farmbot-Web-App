@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col } from "../../../ui/index";
 import { t } from "../../../i18next_wrapper";
 

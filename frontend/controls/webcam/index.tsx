@@ -5,7 +5,6 @@ import { WebcamPanelProps } from "./interfaces";
 import { TaggedWebcamFeed, SpecialStatus } from "farmbot";
 import { edit, save, destroy, init } from "../../api/crud";
 import { error } from "../../toast/toast";
-
 import { WebcamFeed } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 

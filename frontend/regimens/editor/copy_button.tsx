@@ -1,6 +1,5 @@
 import * as React from "react";
 import { CopyButtonProps } from "./interfaces";
-
 import { init } from "../../api/crud";
 import { TaggedRegimen } from "farmbot";
 import { defensiveClone, urlFriendly } from "../../util";

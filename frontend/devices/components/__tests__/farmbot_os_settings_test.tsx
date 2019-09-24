@@ -1,4 +1,3 @@
-
 let mockReleaseNoteData = {};
 jest.mock("axios", () => ({
   get: jest.fn(() => Promise.resolve(mockReleaseNoteData))
@@ -7,6 +6,10 @@ jest.mock("axios", () => ({
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
+}));
+
+jest.mock("../fbos_settings/boot_sequence_selector", () => ({
+  BootSequenceSelector: () => <div />
 }));
 
 import * as React from "react";
@@ -18,14 +21,6 @@ import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
-
-jest.mock("react-redux", () => ({
-  connect: jest.fn(() => {
-    return () => {
-      return () => "";
-    };
-  })
-}));
 
 describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
@@ -87,5 +82,4 @@ describe("<FarmbotOsSettings />", () => {
       .simulate("change", { currentTarget: { value: newName } });
     expect(edit).toHaveBeenCalledWith(p.deviceAccount, { name: newName });
   });
-
 });

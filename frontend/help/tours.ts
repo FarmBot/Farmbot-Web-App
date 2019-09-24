@@ -1,6 +1,5 @@
 import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
-
 import { TourContent } from "../constants";
 import { t } from "../i18next_wrapper";
 

@@ -1,7 +1,3 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn(() => (x: {}) => x)
-}));
-
 jest.mock("lodash", () => ({
   debounce: jest.fn(x => x),
   trim: jest.fn(x => x),
@@ -14,7 +10,7 @@ jest.mock("lodash", () => ({
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
-import { CropCatalog } from "../crop_catalog";
+import { RawCropCatalog as CropCatalog } from "../crop_catalog";
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../interfaces";
 import { Actions } from "../../../constants";

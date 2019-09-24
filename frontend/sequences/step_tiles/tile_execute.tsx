@@ -1,6 +1,5 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-
 import { Row, Col, DropDownItem } from "../../ui/index";
 import { Execute, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";

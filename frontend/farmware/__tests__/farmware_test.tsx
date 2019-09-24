@@ -1,11 +1,9 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 const mockDevice = { execScript: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { FarmwarePage, BasicFarmwarePage } from "../index";
+import { RawFarmwarePage as FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
 import {
   fakeFarmware, fakeFarmwares

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import {
   Widget, WidgetBody, WidgetHeader, docLink, DOC_SLUGS, DocSlug
 } from "../ui";

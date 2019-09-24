@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
-
 import { ToolListAndFormProps } from "../interfaces";
 import { TaggedTool } from "farmbot";
 import { ToolTips } from "../../constants";

@@ -28,7 +28,9 @@ import {
   TaggedPointGroup,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
-import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
+import {
+  ExecutableType, PinBindingType
+} from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
 

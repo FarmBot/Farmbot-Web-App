@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { FindHome, Xyz, TaggedSequence } from "farmbot";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";

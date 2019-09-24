@@ -1,7 +1,5 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 import * as React from "react";
-import { RawPlants, PlantInventoryProps } from "../plant_inventory";
+import { RawPlants as Plants, PlantInventoryProps } from "../plant_inventory";
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
@@ -13,7 +11,7 @@ describe("<PlantInventory />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<RawPlants {...fakeProps()} />);
+    const wrapper = mount(<Plants {...fakeProps()} />);
     ["Map",
       "Plants",
       "Events",
@@ -25,13 +23,13 @@ describe("<PlantInventory />", () => {
   });
 
   it("has link to crops", () => {
-    const wrapper = mount(<RawPlants {...fakeProps()} />);
+    const wrapper = mount(<Plants {...fakeProps()} />);
     expect(wrapper.html()).toContain("fa-plus");
     expect(wrapper.html()).toContain("/app/designer/plants/crop_search");
   });
 
   it("updates search term", () => {
-    const wrapper = shallow<RawPlants>(<RawPlants {...fakeProps()} />);
+    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
     expect(wrapper.state().searchTerm).toEqual("");
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "mint" } });

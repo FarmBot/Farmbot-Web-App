@@ -47,7 +47,10 @@ export type Operator = "lhs"
 export const LHSOptions =
   (resources: ResourceIndex, showPins: boolean
   ): DropDownItem[] => [
-      { heading: true, label: t("Positions"), value: 0, headingId: PinGroupName.Position },
+      {
+        heading: true, headingId: PinGroupName.Position,
+        label: t("Positions"), value: 0,
+      },
       { value: "x", label: t("X position"), headingId: "Position" },
       { value: "y", label: t("Y position"), headingId: "Position" },
       { value: "z", label: t("Z position"), headingId: "Position" },

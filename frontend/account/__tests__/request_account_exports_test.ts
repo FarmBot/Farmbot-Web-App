@@ -4,12 +4,15 @@ const mock = {
   }
 };
 
-jest.mock("axios",
-  () => ({ post: jest.fn(() => Promise.resolve(mock.response)) }));
+jest.mock("axios", () => ({
+  post: jest.fn(() => Promise.resolve(mock.response))
+}));
 
 import { API } from "../../api";
 import { Content } from "../../constants";
-import { requestAccountExport, generateFilename } from "../request_account_export";
+import {
+  requestAccountExport, generateFilename
+} from "../request_account_export";
 import { success } from "../../toast/toast";
 import axios from "axios";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
@@ -32,7 +35,8 @@ describe("requestAccountExport", () => {
     expect(success).toHaveBeenCalledWith(Content.EXPORT_SENT);
   });
 
-  it("downloads the data synchronously (when API has no email support)", async () => {
+  it("downloads the data synchronously (when API has no email support)", async (
+  ) => {
     mock.response.data = {};
     window.URL = window.URL || ({} as typeof window.URL);
     window.URL.createObjectURL = jest.fn();

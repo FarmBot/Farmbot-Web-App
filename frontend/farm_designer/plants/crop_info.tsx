@@ -170,7 +170,7 @@ const EditOnOpenFarm = ({ slug }: { slug: string }) =>
   <div className="edit-on-openfarm">
     <span>{t("Edit on")}&nbsp;</span>
     <a href={OpenFarm.browsingCropUrl + slug} target="_blank"
-      title={t("Open OpenFarm.cc in a new tab")} >
+      title={t("Open OpenFarm.cc in a new tab")}>
       {"OpenFarm"}
     </a>
   </div>;

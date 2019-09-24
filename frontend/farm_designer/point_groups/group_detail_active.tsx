@@ -53,8 +53,8 @@ export const LittleIcon =
     </span>;
   };
 
-export class GroupDetailActive extends React.Component<GroupDetailActiveProps, State> {
-
+export class GroupDetailActive
+  extends React.Component<GroupDetailActiveProps, State> {
   state: State = { icons: {} };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
@@ -126,7 +126,9 @@ export class GroupDetailActive extends React.Component<GroupDetailActiveProps, S
         <input
           defaultValue={this.name}
           onChange={this.update} />
-        <label>{t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}</label>
+        <label>
+          {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
+        </label>
         <p>
           {t("Click plants in map to add or remove.")}
         </p>

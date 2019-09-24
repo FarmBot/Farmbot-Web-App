@@ -1,7 +1,6 @@
 import { API } from "../api";
 import { Content } from "../constants";
 import { success } from "../toast/toast";
-
 import axios, { AxiosResponse } from "axios";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { t } from "../i18next_wrapper";

@@ -157,7 +157,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
             title="Scan this image"
             onClick={this.maybeProcessPhoto}
             disabled={!this.props.botOnline}
-            hidden={!this.props.images.length} >
+            hidden={!this.props.images.length}>
             {t("Scan image")}
           </button>
         </Col>

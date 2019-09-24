@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 let mockPath = "";
 jest.mock("../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
@@ -7,7 +5,7 @@ jest.mock("../history", () => ({
 }));
 
 import * as React from "react";
-import { App, AppProps, mapStateToProps } from "../app";
+import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
@@ -25,27 +23,25 @@ import { fakePings } from "../__test_support__/fake_state/pings";
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
 
-const fakeProps = (): AppProps => {
-  return {
-    timeSettings: fakeTimeSettings(),
-    dispatch: jest.fn(),
-    loaded: [],
-    logs: [],
-    user: fakeUser(),
-    bot: bot,
-    consistent: true,
-    axisInversion: { x: false, y: false, z: false },
-    firmwareConfig: undefined,
-    xySwap: false,
-    animate: false,
-    getConfigValue: jest.fn(),
-    tour: undefined,
-    resources: buildResourceIndex().index,
-    autoSync: false,
-    alertCount: 0,
-    pings: fakePings()
-  };
-};
+const fakeProps = (): AppProps => ({
+  timeSettings: fakeTimeSettings(),
+  dispatch: jest.fn(),
+  loaded: [],
+  logs: [],
+  user: fakeUser(),
+  bot: bot,
+  consistent: true,
+  axisInversion: { x: false, y: false, z: false },
+  firmwareConfig: undefined,
+  xySwap: false,
+  animate: false,
+  getConfigValue: jest.fn(),
+  tour: undefined,
+  resources: buildResourceIndex().index,
+  autoSync: false,
+  alertCount: 0,
+  pings: fakePings()
+});
 
 describe("<App />: Controls Pop-Up", () => {
   function controlsPopUp(page: string, exists: boolean) {

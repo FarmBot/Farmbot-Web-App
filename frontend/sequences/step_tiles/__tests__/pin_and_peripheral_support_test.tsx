@@ -279,8 +279,8 @@ describe("Pin and Peripheral support files", () => {
     it("Sets step.args.pin_number", () => {
       const resources = newIndex();
       const dispatch = jest.fn();
-      const currentSequence =
-        resources.references[Object.keys(resources.byKind.Sequence)[0]] as TaggedSequence;
+      const currentSequence = resources.references[
+        Object.keys(resources.byKind.Sequence)[0]] as TaggedSequence;
       const index = 0;
       const currentStep = (currentSequence.body.body || [])[index];
       const stepParams: StepParams = {

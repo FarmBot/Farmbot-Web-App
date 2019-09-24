@@ -26,7 +26,8 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
       <BlurableInput type="number"
         id={conf}
         value={"" + envGet(conf, this.props.values)}
-        onCommit={e => this.props.onChange(conf, parseFloat(e.currentTarget.value))}
+        onCommit={e =>
+          this.props.onChange(conf, parseFloat(e.currentTarget.value))}
         placeholder={label} />
     </div>;
   };
@@ -54,10 +55,12 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
         <input
           type="checkbox"
           id="invert_hue_selection"
-          checked={!!envGet("CAMERA_CALIBRATION_invert_hue_selection", this.props.values)}
-          onChange={e => this.props.onChange("CAMERA_CALIBRATION_invert_hue_selection",
-            e.currentTarget.checked ?
-              SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
+          checked={!!envGet("CAMERA_CALIBRATION_invert_hue_selection",
+            this.props.values)}
+          onChange={e =>
+            this.props.onChange("CAMERA_CALIBRATION_invert_hue_selection",
+              e.currentTarget.checked ?
+                SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
       </div>
       <this.NumberBox
         conf={"CAMERA_CALIBRATION_calibration_object_separation"}

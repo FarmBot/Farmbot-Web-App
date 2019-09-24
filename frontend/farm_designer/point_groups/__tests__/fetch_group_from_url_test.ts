@@ -1,14 +1,13 @@
 const mockId = 123;
-
-jest.mock("../../../history", () => {
-  return {
-    getPathArray: jest.fn(() => [mockId])
-  };
-});
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => [mockId])
+}));
 
 import { fetchGroupFromUrl } from "../group_detail";
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("fetchGroupFromUrl", () => {
   it("fetches a group from URL", () => {

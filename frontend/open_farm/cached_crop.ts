@@ -42,14 +42,10 @@ const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
 function HTTPIconFetch(slug: string) {
   const url = OpenFarmAPI.OFBaseURL + slug;
-  if (promiseCache[url]) {
-    return promiseCache[url];
-  } else {
-    promiseCache[url] = axios
-      .get<OFCropResponse>(url)
-      .then(cacheTheIcon(slug), cacheTheIcon(slug));
-    return promiseCache[url];
-  }
+  promiseCache[url] = axios
+    .get<OFCropResponse>(url)
+    .then(cacheTheIcon(slug), cacheTheIcon(slug));
+  return promiseCache[url];
 }
 
 /** PROBLEM: You have 100 lettuce plants. You don't want to download an SVG icon
