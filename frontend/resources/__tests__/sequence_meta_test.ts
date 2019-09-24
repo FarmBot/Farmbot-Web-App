@@ -70,15 +70,7 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: {
         label: "x",
-<<<<<<< HEAD
         data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
-=======
-        data_value: {
-          kind: "every_point",
-          args: { every_point_type: "Plant" }
-          // tslint:disable-next-line:no-any
-        } as any
->>>>>>> a3d73b35c6816f37dd0ad295d5fb9462ee24ed02
       }
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("All plants");
