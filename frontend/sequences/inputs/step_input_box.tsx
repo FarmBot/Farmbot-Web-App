@@ -6,13 +6,22 @@ import { StepInputProps } from "../interfaces";
 export function StepInputBox(props: StepInputProps) {
   if (props.fieldOverride) { return <InputDefault {...props} />; }
   switch (props.field) {
-    case "label": case "lhs": case "message": case "milliseconds": case "op":
-    case "pin_mode": case "pin_number": case "pin_value": case "rhs":
+    case "label":
+    case "lhs":
+    case "message":
+    case "milliseconds":
+    case "op":
+    case "pin_mode":
+    case "pin_number":
+    case "pin_value":
+    case "rhs":
     case "sequence_id":
-    case "x": case "y": case "z":
     case "speed":
+    case "x":
+    case "y":
+    case "z":
       return <InputDefault {...props} />;
     default:
-      return <InputUnknown {...props} />;
+      return InputUnknown(props);
   }
 }

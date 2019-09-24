@@ -38,10 +38,6 @@ export function groupRegimenItemsByWeek(weeks: Week[], OFFSET: number,
     })
     // Transform the sorted array of values into a regimenItem[] array.
     .map<RegimenItem>(time_offset => {
-      if (seq.id) {
-        return { time_offset, sequence_id: seq.id };
-      } else {
-        throw new Error("Impossible???");
-      }
+      return { time_offset, sequence_id: seq.id || -1 };
     });
 }

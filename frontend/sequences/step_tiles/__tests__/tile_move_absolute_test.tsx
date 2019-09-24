@@ -5,7 +5,7 @@ import {
   fakeSequence, fakePoint, fakeTool
 } from "../../../__test_support__/fake_state/resources";
 import {
-  MoveAbsolute, Point, Coordinate, Tool, ParameterApplication
+  MoveAbsolute, Point, Coordinate, Tool, ParameterApplication, EveryPoint
 } from "farmbot";
 import {
   fakeHardwareFlags
@@ -180,11 +180,10 @@ describe("<TileMoveAbsolute/>", () => {
     it("does not handle every_point nodes", () => {
       const p = fakeProps();
       const block = ordinaryMoveAbs(p);
-      const data_value = {
+      const data_value: EveryPoint = {
         kind: "every_point",
         args: { every_point_type: "Plant" }
-        // tslint:disable-next-line:no-any
-      } as any;
+      };
       const boom = () => block.updateLocation({
         kind: "parameter_application",
         args: { label: "parent", data_value }

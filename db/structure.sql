@@ -277,7 +277,7 @@ CREATE TABLE public.devices (
     serial_number character varying(32),
     mqtt_rate_limit_email_sent_at timestamp without time zone,
     last_ota timestamp without time zone,
-    last_ota_check timestamp without time zone
+    last_ota_checkup timestamp without time zone
 );
 
 
@@ -3274,6 +3274,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190804194135'),
 ('20190804194154'),
 ('20190823164837'),
-('20190918185359');
+('20190918185359'),
+('20190924190539');
 
 
