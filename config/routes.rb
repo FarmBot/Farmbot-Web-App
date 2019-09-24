@@ -18,7 +18,7 @@ FarmBot::Application.routes.draw do
       peripherals: [:create, :destroy, :index, :show, :update],
       pin_bindings: [:create, :destroy, :index, :show, :update],
       plant_templates: [:create, :destroy, :index, :update],
-      point_groups: [:index, :create, :update, :destroy],
+      point_groups: [:index, :show, :create, :update, :destroy],
       regimens: [:create, :destroy, :index, :show, :update],
       sensor_readings: [:create, :destroy, :index, :show],
       sensors: [:create, :destroy, :index, :show, :update],
