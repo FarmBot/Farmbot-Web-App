@@ -13,7 +13,6 @@ import {
   COORDINATE_DDI
 } from "../sequences/locals_list/location_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
-import { EveryPointShape } from "../sequences/locals_list/handle_select";
 import { t } from "../i18next_wrapper";
 
 export interface SequenceMeta {
@@ -104,9 +103,8 @@ export const determineDropdown =
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });
         return { label: varName, value: "?" };
-      // tslint:disable-next-line:no-any
-      case "every_point" as any:
-        const { every_point_type } = (data_value as unknown as EveryPointShape).args;
+      case "every_point":
+        const { every_point_type } = data_value.args;
         return everyPointDDI(safeEveryPointType(every_point_type));
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
@@ -117,8 +115,9 @@ export const determineDropdown =
         const { tool_id } = data_value.args;
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
-      // tslint:disable-next-line:no-any // Empty, user must make a selection.
-      case "nothing" as any:
+      case "point_group":
+        throw new Error("Not yet implemented");
+      case "nothing" as unknown:
         return NO_VALUE_SELECTED_DDI();
     }
     throw new Error("WARNING: Unknown, possibly new data_value.kind?");
