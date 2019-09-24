@@ -7,7 +7,10 @@ jest.mock("../../api/crud", () => {
 });
 
 jest.mock("../../resources/getters", () => {
-  return { getWebAppConfig: jest.fn(() => (undefined)) };
+  return {
+    getWebAppConfig: jest.fn(() => (undefined)),
+    getFbosConfig: jest.fn(() => (undefined)),
+  };
 });
 
 describe("toggleWebAppBool", () => {

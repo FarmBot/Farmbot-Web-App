@@ -7,8 +7,7 @@ import { mapStateToProps } from "./state_to_props";
 import { MessagesProps } from "./interfaces";
 import { Link } from "../link";
 
-@connect(mapStateToProps)
-export class Messages extends React.Component<MessagesProps, {}> {
+export class RawMessages extends React.Component<MessagesProps, {}> {
   render() {
     return <Page className="messages-page">
       <Row>
@@ -35,3 +34,5 @@ export class Messages extends React.Component<MessagesProps, {}> {
     </Page>;
   }
 }
+
+export const Messages = connect(mapStateToProps)(RawMessages);

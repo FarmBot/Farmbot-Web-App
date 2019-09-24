@@ -12,8 +12,7 @@ import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
 
 /** Controls page. */
-@connect(mapStateToProps)
-export class Controls extends React.Component<Props, {}> {
+export class RawControls extends React.Component<Props, {}> {
   get arduinoBusy() {
     return !!this.props.bot.hardware.informational_settings.busy;
   }
@@ -92,3 +91,5 @@ export class Controls extends React.Component<Props, {}> {
     </Page>;
   }
 }
+
+export const Controls = connect(mapStateToProps)(RawControls);

@@ -28,8 +28,7 @@ export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
 });
 
-@connect(mapStateToProps)
-export class SavedGardens extends React.Component<SavedGardensProps, {}> {
+export class RawSavedGardens extends React.Component<SavedGardensProps, {}> {
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
@@ -104,3 +103,5 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
       {t("Exit")}
     </button>
   </div>;
+
+export const SavedGardens = connect(mapStateToProps)(RawSavedGardens);

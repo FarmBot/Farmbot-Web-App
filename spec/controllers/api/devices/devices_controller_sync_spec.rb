@@ -28,6 +28,7 @@ describe Api::DevicesController do
       FactoryBot.create(:sensor, device: device)
       FactoryBot.create(:tool_slot, device: device)
       FactoryBot.create(:tool, device: device)
+      FactoryBot.create(:point_group, device: device)
       FakeSequence.create(device: device)
 
       get :sync, params: {}, session: { format: :json }

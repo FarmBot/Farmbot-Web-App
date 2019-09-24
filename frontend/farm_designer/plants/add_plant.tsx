@@ -42,8 +42,7 @@ export interface AddPlantProps {
   openfarmSearch: OpenfarmSearch;
 }
 
-@connect(mapStateToProps)
-export class AddPlant extends React.Component<AddPlantProps, {}> {
+export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 
   componentDidMount() {
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmSearch));
@@ -72,3 +71,5 @@ export class AddPlant extends React.Component<AddPlantProps, {}> {
     </DesignerPanel>;
   }
 }
+
+export const AddPlant = connect(mapStateToProps)(RawAddPlant);

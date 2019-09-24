@@ -1,10 +1,10 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 const mockStorj: Dictionary<number | boolean> = {};
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { Logs } from "../index";
+import { RawLogs as Logs } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";

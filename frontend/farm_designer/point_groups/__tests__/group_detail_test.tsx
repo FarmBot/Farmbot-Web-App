@@ -45,7 +45,7 @@ describe("<GroupDetail />", () => {
     mockId = -23;
     const store = fakeStore();
     const el = mount(<Provider store={store}>
-      <GroupDetail {...({} as GroupDetail["props"])} />
+      <GroupDetail />
     </Provider>);
     const result = el.find(GroupDetailActive);
     expect(result.length).toEqual(0);
@@ -56,7 +56,7 @@ describe("<GroupDetail />", () => {
     mockId = GOOD_ID;
     const store = fakeStore();
     const el = mount(<Provider store={store}>
-      <GroupDetail {...({} as GroupDetail["props"])} />
+      <GroupDetail />
     </Provider>);
     const result = el.find(GroupDetailActive);
     expect(result.length).toEqual(1);

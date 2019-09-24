@@ -16,6 +16,7 @@ class Sequence < ApplicationRecord
   include CeleryScriptSettingsBag
 
   belongs_to :device
+  belongs_to :fbos_config, foreign_key: :boot_sequence_id
   has_one :sequence_usage_report
   has_many :farm_events, as: :executable
   has_many :regimen_items

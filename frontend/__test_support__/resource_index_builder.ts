@@ -354,7 +354,6 @@ type ResourceLookupTable = Record<TaggedResource["kind"], ResourceGroupNumber>;
 const KIND_PRIORITY: ResourceLookupTable = {
   User: 0,
   Device: 0,
-  FbosConfig: 0,
   FirmwareConfig: 0,
   FarmwareEnv: 0,
   FarmwareInstallation: 0,
@@ -369,6 +368,7 @@ const KIND_PRIORITY: ResourceLookupTable = {
   PointGroup: 2,
   SensorReading: 2,
   Sequence: 2,
+  FbosConfig: 3,
   Regimen: 3,
   PinBinding: 3,
   FarmEvent: 4,

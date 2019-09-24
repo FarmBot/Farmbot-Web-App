@@ -51,7 +51,7 @@ export class RootComponent extends React.Component<RootComponentProps, RootCompo
     try {
       return <ErrorBoundary>
         <Provider store={_store}>
-          <App {...{} as App["props"]}>
+          <App>
             <Route {...props} />
           </App>
         </Provider>

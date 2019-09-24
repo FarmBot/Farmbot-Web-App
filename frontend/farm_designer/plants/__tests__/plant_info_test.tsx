@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 let mockPath = "/app/designer/plants/1";
 jest.mock("../../../history", () => ({
@@ -13,7 +13,7 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import * as React from "react";
-import { PlantInfo } from "../plant_info";
+import { RawPlantInfo as PlantInfo } from "../plant_info";
 import { mount } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../interfaces";

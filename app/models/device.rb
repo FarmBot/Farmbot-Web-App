@@ -111,18 +111,18 @@ class Device < ApplicationRecord
     Rails.cache.write(CACHE_KEY % self.id, Device.new(self.as_json))
   end
 
-  # Sets the `throttled_at` field, but only if it is unpopulated.
-  # Performs no-op if `throttled_at` was already set.
+  # Sets the `throttled_until` and `throttled_at` fields if unpopulated or
+  # the throttle time period increases. Notifies user of cooldown period.
   def maybe_throttle(violation)
+    end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
-    if (violation && throttled_until.nil?)
-      et = violation.ends_at
-      reload.update_attributes!(throttled_until: et,
+    if (violation && (throttled_until.nil? || end_t > throttled_until))
+      reload.update_attributes!(throttled_until: end_t,
                                 throttled_at: Time.now)
       refresh_cache
-      cooldown = et.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
+      cooldown = end_t.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
-      cooldown_notice(THROTTLE_ON % info, et, "warn")
+      cooldown_notice(THROTTLE_ON % info, end_t, "warn")
     end
   end
 

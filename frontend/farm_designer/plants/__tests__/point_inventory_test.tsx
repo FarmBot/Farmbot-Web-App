@@ -1,4 +1,4 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
+jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 
 jest.mock("../../../history", () => ({
   push: jest.fn(),
@@ -7,7 +7,7 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { Points, PointsProps } from "../point_inventory";
+import { RawPoints, PointsProps } from "../point_inventory";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { push } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -16,21 +16,21 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { mapStateToProps } from "../point_inventory";
 
-describe("<Points />", () => {
+describe("<RawPoints> />", () => {
   const fakeProps = (): PointsProps => ({
     points: [],
     dispatch: jest.fn(),
   });
 
   it("renders no points", () => {
-    const wrapper = mount(<Points {...fakeProps()} />);
+    const wrapper = mount(<RawPoints {...fakeProps()} />);
     expect(wrapper.text()).toContain("No points yet.");
   });
 
   it("renders points", () => {
     const p = fakeProps();
     p.points = [fakePoint()];
-    const wrapper = mount(<Points {...p} />);
+    const wrapper = mount(<RawPoints {...p} />);
     expect(wrapper.text()).toContain("Point 1");
   });
 
@@ -38,7 +38,7 @@ describe("<Points />", () => {
     const p = fakeProps();
     p.points = [fakePoint()];
     p.points[0].body.id = 1;
-    const wrapper = mount(<Points {...p} />);
+    const wrapper = mount(<RawPoints {...p} />);
     wrapper.find(".point-search-item").first().simulate("click");
     expect(push).toHaveBeenCalledWith("/app/designer/points/1");
   });
@@ -48,7 +48,7 @@ describe("<Points />", () => {
     p.points = [fakePoint(), fakePoint()];
     p.points[0].body.name = "point 0";
     p.points[1].body.name = "point 1";
-    const wrapper = shallow<Points>(<Points {...p} />);
+    const wrapper = shallow<RawPoints>(<RawPoints {...p} />);
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "0" } });
     expect(wrapper.state().searchTerm).toEqual("0");
@@ -59,7 +59,7 @@ describe("<Points />", () => {
     p.points = [fakePoint(), fakePoint()];
     p.points[0].body.name = "point 0";
     p.points[1].body.name = "point 1";
-    const wrapper = mount(<Points {...p} />);
+    const wrapper = mount(<RawPoints {...p} />);
     wrapper.setState({ searchTerm: "0" });
     expect(wrapper.text()).not.toContain("point 1");
   });
