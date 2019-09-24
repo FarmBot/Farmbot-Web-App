@@ -1,8 +1,6 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 import * as React from "react";
 import { mount } from "enzyme";
-import { Help, mapStateToProps } from "../help";
+import { RawHelp as Help, mapStateToProps } from "../help";
 import { fakeState } from "../../__test_support__/fake_state";
 import { clickButton } from "../../__test_support__/helpers";
 import { tourNames } from "../tours";

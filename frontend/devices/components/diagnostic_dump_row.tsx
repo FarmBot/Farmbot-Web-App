@@ -20,7 +20,9 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
   render() {
     return <Row>
       <Col xsOffset={3} xs={8}>
-        {t("Report {{ticket}} (Saved {{age}})", { ticket: this.ticket, age: this.age })}
+        {t("Report {{ticket}} (Saved {{age}})", {
+          ticket: this.ticket, age: this.age
+        })}
       </Col>
       <Col xs={1}>
         <button
@@ -30,6 +32,6 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
           <i className="fa fa-times" />
         </button>
       </Col>
-    </Row >;
+    </Row>;
   }
 }

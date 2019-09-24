@@ -1,7 +1,9 @@
 import { AuthState } from "./auth/interfaces";
 import { box } from "boxed_value";
 import { BooleanSetting, NumericSetting } from "./session_keys";
-import { BooleanConfigKey, NumberConfigKey } from "farmbot/dist/resources/configs/web_app";
+import {
+  BooleanConfigKey, NumberConfigKey
+} from "farmbot/dist/resources/configs/web_app";
 
 /** The `Session` namespace is a wrapper for `localStorage`.
  * Use this to avoid direct access of `localStorage` where possible.

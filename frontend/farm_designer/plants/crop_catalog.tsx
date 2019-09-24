@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-
 import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";

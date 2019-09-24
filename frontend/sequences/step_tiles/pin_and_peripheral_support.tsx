@@ -35,17 +35,25 @@ const BOX_LED_LABELS = (): { [x: string]: string } => ({
   [BoxLed.BoxLed4]: t("Box LED 4"),
 });
 
-export const PERIPHERAL_HEADING = (): DropDownItem =>
-  ({ heading: true, label: t("Peripherals"), value: 0, headingId: PinGroupName.Peripheral });
+export const PERIPHERAL_HEADING = (): DropDownItem => ({
+  heading: true, headingId: PinGroupName.Peripheral,
+  label: t("Peripherals"), value: 0,
+});
 
-export const SENSOR_HEADING = (): DropDownItem =>
-  ({ heading: true, label: t("Sensors"), value: 0, headingId: PinGroupName.Sensor });
+export const SENSOR_HEADING = (): DropDownItem => ({
+  heading: true, headingId: PinGroupName.Sensor,
+  label: t("Sensors"), value: 0,
+});
 
-export const BOX_LED_HEADING = (): DropDownItem =>
-  ({ heading: true, label: t("Box LEDs"), value: 0, headingId: PinGroupName.BoxLed });
+export const BOX_LED_HEADING = (): DropDownItem => ({
+  heading: true, headingId: PinGroupName.BoxLed,
+  label: t("Box LEDs"), value: 0,
+});
 
-export const PIN_HEADING = (): DropDownItem =>
-  ({ heading: true, label: t("Pins"), value: 0, headingId: PinGroupName.Pin });
+export const PIN_HEADING = (): DropDownItem => ({
+  heading: true, headingId: PinGroupName.Pin,
+  label: t("Pins"), value: 0,
+});
 
 /** Pass it the number X and it will generate a DropDownItem for `pin x`. */
 export const pinNumber2DropDown =

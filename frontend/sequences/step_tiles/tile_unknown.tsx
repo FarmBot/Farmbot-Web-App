@@ -3,7 +3,6 @@ import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { Col, Row } from "../../ui/index";
-
 import { StepInputBox } from "../inputs/step_input_box";
 import { LegalArgString } from "farmbot";
 import { t } from "../../i18next_wrapper";

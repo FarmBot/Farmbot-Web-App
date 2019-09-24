@@ -1,4 +1,3 @@
-
 import { editStep } from "../../api/crud";
 import { WritePin, SequenceBodyItem, ALLOWED_PIN_MODES } from "farmbot";
 import { DropDownItem } from "../../ui/index";

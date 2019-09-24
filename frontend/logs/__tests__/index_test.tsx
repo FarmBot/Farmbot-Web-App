@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 const mockStorj: Dictionary<number | boolean> = {};
 
 import * as React from "react";

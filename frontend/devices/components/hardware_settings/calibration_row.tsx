@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { getDevice } from "../../../device";
 import { Axis } from "../../interfaces";
 import { LockableButton } from "../lockable_button";

@@ -21,7 +21,10 @@ jest.mock("../../redux/store", () => {
 
 jest.mock("../auto_sync_handle_inbound", () => ({ handleInbound: jest.fn() }));
 
-import { dispatchNetworkUp, dispatchNetworkDown, dispatchQosStart, networkUptimeThrottleStats } from "../index";
+import {
+  dispatchNetworkUp, dispatchNetworkDown, dispatchQosStart,
+  networkUptimeThrottleStats,
+} from "../index";
 import { networkUp, networkDown } from "../actions";
 import { GetState } from "../../redux/interfaces";
 import { autoSync, routeMqttData } from "../auto_sync";

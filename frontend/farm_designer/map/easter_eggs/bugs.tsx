@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { transformXY } from "../util";
 import { MapTransformProps, BotSize } from "../interfaces";
 import { random, range, some, clamp, sample } from "lodash";

@@ -160,7 +160,8 @@ export const addOrEditBodyVariables = (
   return Object.values(items);
 };
 
-/** Add a new declaration or replace an existing one with the same label. (sequences) */
+/** Add a new declaration or replace an existing one with the same label.
+ * (sequences) */
 export const addOrEditDeclarationLocals = (
   declarations: ScopeDeclarationBodyItem[],
   updatedItem: ScopeDeclarationBodyItem

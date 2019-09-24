@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { SpecialStatus } from "farmbot";
 import { t } from "../i18next_wrapper";
 
@@ -38,7 +37,7 @@ export function SaveBtn(props: SaveBtnProps) {
   const spinnerEl = (props.status === SpecialStatus.SAVING) ?
     spinner : "";
 
-  return <button onClick={onClick} hidden={!!hidden} className={klass} >
+  return <button onClick={onClick} hidden={!!hidden} className={klass}>
     {CAPTIONS[props.status] || (savedText || t("Saved") + " ✔")} {spinnerEl}
   </button>;
 }

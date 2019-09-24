@@ -43,8 +43,9 @@ export const HACKY_FLAGS = {
 export const incomingLegacyStatus = (statusMessage: HardwareState) =>
   ({ type: Actions.LEGACY_BOT_CHANGE, payload: statusMessage });
 
-export const incomingStatus =
-  (payload: DeepPartial<HardwareState>) => ({ type: Actions.STATUS_UPDATE, payload });
+export const incomingStatus = (payload: DeepPartial<HardwareState>) => ({
+  type: Actions.STATUS_UPDATE, payload
+});
 
 /** Determine if an incoming log has a certain channel. If it is, execute the
  * supplied callback. */

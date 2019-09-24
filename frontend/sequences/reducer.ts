@@ -26,7 +26,8 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     s.menuOpen = payload;
     return s;
   })
-  .add<number | undefined>(Actions.SET_SEQUENCE_STEP_POSITION, function (s, { payload }) {
-    s.stepIndex = payload;
-    return s;
-  });
+  .add<number | undefined>(Actions.SET_SEQUENCE_STEP_POSITION,
+    function (s, { payload }) {
+      s.stepIndex = payload;
+      return s;
+    });

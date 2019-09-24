@@ -72,7 +72,8 @@ const BY_KIND_AND_ID: Indexer = {
   },
 };
 
-export function updateSequenceUsageIndex(myUuid: string, ids: number[], i: ResourceIndex) {
+export function updateSequenceUsageIndex(
+  myUuid: string, ids: number[], i: ResourceIndex) {
   ids.map(id => {
     const uuid = i.byKindAndId[joinKindAndId("Sequence", id)];
     if (uuid) { // `undefined` usually means "not ready".

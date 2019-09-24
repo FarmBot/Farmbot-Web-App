@@ -157,7 +157,7 @@ const DeleteButtons = (props: DeleteButtonsProps) =>
     <button
       className="fb-button gray no-float"
       style={{ marginRight: "10px" }}
-      onClick={() => history.push("/app/designer/plants/select")} >
+      onClick={() => history.push("/app/designer/plants/select")}>
       {t("Delete multiple")}
     </button>
   </div>;

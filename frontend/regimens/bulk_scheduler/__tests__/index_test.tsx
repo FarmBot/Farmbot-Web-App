@@ -2,7 +2,9 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BulkScheduler } from "../index";
 import { BulkEditorProps } from "../interfaces";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 

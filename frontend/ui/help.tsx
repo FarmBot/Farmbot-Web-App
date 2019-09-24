@@ -12,7 +12,7 @@ export function Help(props: HelpProps) {
     position={Position.LEFT_TOP}
     interactionKind={props.requireClick
       ? PopoverInteractionKind.CLICK : PopoverInteractionKind.HOVER}
-    popoverClassName={"help"} >
+    popoverClassName={"help"}>
     <i className="fa fa-question-circle help-icon"></i>
     <div>{t(props.text)}</div>
   </Popover>;

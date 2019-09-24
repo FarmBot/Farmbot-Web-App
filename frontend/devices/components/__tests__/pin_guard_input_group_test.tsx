@@ -1,6 +1,4 @@
-jest.mock("../../actions", () => ({
-  settingToggle: jest.fn()
-}));
+jest.mock("../../actions", () => ({ settingToggle: jest.fn() }));
 
 import * as React from "react";
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
@@ -8,7 +6,9 @@ import { mount } from "enzyme";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { settingToggle } from "../../actions";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<PinGuardMCUInputGroup/>", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => {

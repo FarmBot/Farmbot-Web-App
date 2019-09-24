@@ -19,7 +19,8 @@ export interface Props {
   getToolSlots(): TaggedToolSlotPointer[];
   dispatch: Function;
   isActive: (tool: TaggedTool) => boolean;
-  changeToolSlot(t: TaggedToolSlotPointer, dispatch: Function): (d: DropDownItem) => void;
+  changeToolSlot(t: TaggedToolSlotPointer, dispatch: Function):
+    (d: DropDownItem) => void;
   botPosition: BotPosition;
 }
 
@@ -43,7 +44,8 @@ export interface ToolBayFormProps {
   getToolOptions(): DropDownItem[];
   getChosenToolOption(uuid: string | undefined): DropDownItem;
   getToolSlots(): TaggedToolSlotPointer[];
-  changeToolSlot(t: TaggedToolSlotPointer, dispatch: Function): (d: DropDownItem) => void;
+  changeToolSlot(t: TaggedToolSlotPointer, dispatch: Function):
+    (d: DropDownItem) => void;
 }
 
 export interface ToolListAndFormProps {
