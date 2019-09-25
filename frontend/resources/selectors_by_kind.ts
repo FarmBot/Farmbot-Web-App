@@ -21,6 +21,7 @@ import {
   TaggedFarmwareEnv,
   TaggedFarmwareInstallation,
   TaggedAlert,
+  TaggedPointGroup,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -73,6 +74,8 @@ export const selectAllPeripherals =
   (i: ResourceIndex) => findAll<TaggedPeripheral>(i, "Peripheral");
 export const selectAllPoints =
   (i: ResourceIndex) => findAll<TaggedPoint>(i, "Point");
+export const selectAllPointGroups =
+  (i: ResourceIndex) => findAll<TaggedPointGroup>(i, "PointGroup");
 export const selectAllActivePoints = (input: ResourceIndex) =>
   selectAllPoints(input).filter(x => !x.body.discarded_at);
 
