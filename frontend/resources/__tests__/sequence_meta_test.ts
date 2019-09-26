@@ -9,7 +9,8 @@ import {
   fakeSequence,
   fakePoint,
   fakeTool,
-  fakeToolSlot
+  fakeToolSlot,
+  fakePointGroup
 } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex
@@ -25,6 +26,39 @@ import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
+  it("crashes oon unknown DDIs", () => {
+    // tslint:disable-next-line:no-any
+    const baddata: any = {
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: {
+          kind: "other",
+          args: { resource_id: 12 }
+        }
+      }
+    };
+    const r = () => determineDropdown(baddata, buildResourceIndex([]).index);
+    expect(r).toThrowError("WARNING: Unknown, possibly new data_value.kind?");
+
+  });
+
+  it("returns a label for `PointGroup`", () => {
+    const pg = fakePointGroup();
+    pg.body.id = 12;
+    const r = determineDropdown({
+      kind: "parameter_application",
+      args: {
+        label: "x",
+        data_value: {
+          kind: "point_group", args: { resource_id: 12 }
+        }
+      }
+    }, buildResourceIndex([pg]).index);
+    expect(r.label).toEqual(pg.body.name);
+    expect(r.value).toEqual(pg.body.id);
+  });
+
   it("Returns a label for `parameter_declarations`", () => {
     const r = determineDropdown({
       kind: "parameter_declaration",

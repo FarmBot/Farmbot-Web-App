@@ -60,7 +60,7 @@ const maybeGroup = (display: boolean) =>
   (groupDDI: DropDownItem): DropDownItem[] =>
     display ? [groupDDI] : [];
 
-const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
+export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
   return groups
     .filter(x => x.body.id)
     .map(x => {
