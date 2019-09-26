@@ -5,8 +5,8 @@ import {
   ScopeDeclarationBodyItem,
 } from "farmbot";
 import { DropDownItem } from "../ui";
-import { findPointerByTypeAndId } from "./selectors";
-import { findSlotByToolId, findToolById } from "./selectors_by_id";
+import { findPointerByTypeAndId, findPointGroup } from "./selectors";
+import { findSlotByToolId, findToolById, findResourceById } from "./selectors_by_id";
 import {
   formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI,
   formatTool,
@@ -116,8 +116,13 @@ export const determineDropdown =
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
       case "point_group":
-        const { resource_id } = data_value.args;
-        return { label: "--- WIP ---", value: "" + resource_id };
+        const value = data_value.args.resource_id;
+        const uuid2 = findResourceById(resources, "PointGroup", value);
+        const group = findPointGroup(resources, uuid2);
+        return {
+          label: group.body.name,
+          value
+        };
       case "nothing" as unknown:
         return NO_VALUE_SELECTED_DDI();
     }
