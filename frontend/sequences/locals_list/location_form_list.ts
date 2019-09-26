@@ -64,7 +64,7 @@ const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
   return groups
     .filter(x => x.body.id)
     .map(x => {
-      return { label: x.body.name, value: x.uuid, headingId: "PointGroup" };
+      return { label: x.body.name, value: "" + x.body.id, headingId: "PointGroup" };
     });
 };
 

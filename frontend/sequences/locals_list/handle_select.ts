@@ -132,7 +132,18 @@ const newVariableCreator = (ddi: DropDownItem): VariableCreator => {
     case "parameter": return newParameter; // Caller decides X/Y/Z
     case "every_point": return everyPointVar(ddi.value);
     case "Coordinate": return manualEntry(ddi.value);
-    case "PointGroup": throw new Error("TODO");
+    case "PointGroup":
+      const resource_id = parseInt("" + ddi.value, 10);
+      return (p): VariableWithAValue => ({
+        kind: "parameter_application",
+        args: {
+          label: p.label,
+          data_value: {
+            kind: "point_group",
+            args: { resource_id }
+          }
+        }
+      });
   }
   console.warn("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
   return () => undefined;

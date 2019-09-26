@@ -116,7 +116,8 @@ export const determineDropdown =
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
       case "point_group":
-        throw new Error("Not yet implemented");
+        const { resource_id } = data_value.args;
+        return { label: "--- WIP ---", value: "" + resource_id };
       case "nothing" as unknown:
         return NO_VALUE_SELECTED_DDI();
     }
