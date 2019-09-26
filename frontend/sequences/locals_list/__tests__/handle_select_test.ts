@@ -114,8 +114,7 @@ describe("convertDDItoDeclaration()", () => {
         label: "label",
         data_value: {
           kind: "every_point", args: { every_point_type: "Plant" }
-          // tslint:disable-next-line:no-any
-        } as any
+        }
       }
     };
     expect(variable).toEqual(expected);

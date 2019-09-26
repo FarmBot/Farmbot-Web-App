@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { FBSelect, DropDownItem } from "../../ui";
 import { TaggedToolSlotPointer } from "farmbot";
 import { edit } from "../../api/crud";

@@ -3,17 +3,25 @@ import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show, IndexIndicator } from "../show";
 import { props } from "../test_helpers";
+import { PLACEHOLDER_FARMBOT } from "../../../farmware/images/image_flipper";
 
 describe("<Show/>", () => {
+  const feed1 = fakeWebcamFeed();
+  const feed2 = fakeWebcamFeed();
+  const p = props([feed1, feed2]);
+
   it("Renders feed title", () => {
-    const feed1 = fakeWebcamFeed();
-    const feed2 = fakeWebcamFeed();
-    const p = props([feed1, feed2]);
     const el = mount(<Show {...p} />);
     expect(el.text()).toContain(feed1.body.name);
     el.find(".image-flipper-right").first().simulate("click");
     el.render();
     expect(el.text()).toContain(feed2.body.name);
+  });
+
+  it("returns a PLACEHOLDER_FEED", () => {
+    const comp = new Show(p);
+    const result = comp.getMessage("http://geocities.com/" + PLACEHOLDER_FARMBOT);
+    expect(result).toEqual("Click the edit button to add or edit a feed URL.");
   });
 });
 

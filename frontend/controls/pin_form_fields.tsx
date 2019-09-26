@@ -89,4 +89,4 @@ export const DeleteButton = (props: DeleteButtonProps) =>
       props.dispatch(destroy(props.uuid))
         .then(props.onDestroy || (() => { }))}>
     {props.children || <i className="fa fa-times" />}
-  </button >;
+  </button>;

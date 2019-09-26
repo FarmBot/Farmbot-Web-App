@@ -11,7 +11,7 @@ export function LockableButton({ onClick, disabled, children }: Props) {
   return <button
     className={"fb-button " + className}
     disabled={disabled}
-    onClick={() => disabled ? "" : onClick()} >
+    onClick={() => disabled ? "" : onClick()}>
     {children}
   </button>;
 }

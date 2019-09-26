@@ -18,7 +18,8 @@ export function ExportAccountPanel(props: { onClick: () => void }) {
             </label>
           </Col>
           <Col xs={4}>
-            <button onClick={props.onClick} className="green fb-button" type="button" >
+            <button className="green fb-button" type="button"
+              onClick={props.onClick}>
               {t("Export")}
             </button>
           </Col>

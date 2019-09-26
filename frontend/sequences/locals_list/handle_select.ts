@@ -12,6 +12,8 @@ import {
   ScopeDeclarationBodyItem,
   VariableDeclaration,
   PointType,
+  EveryPoint,
+  PointGroup,
 } from "farmbot";
 import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
 import { betterCompact } from "../../util";
@@ -24,13 +26,13 @@ import { betterCompact } from "../../util";
 // tslint:disable-next-line:no-any
 export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
-export interface EveryPointShape {
-  kind: "every_point";
-  args: { every_point_type: PointType; }
-}
-// tslint:disable-next-line:no-any
-type EveryPoint = any;
-type DataValue = Coordinate | Identifier | Point | Tool | EveryPoint;
+type DataValue =
+  | Coordinate
+  | EveryPoint
+  | Identifier
+  | Point
+  | PointGroup
+  | Tool;
 
 type CreateVariableDeclaration =
   (label: string, data_value: DataValue) => VariableDeclaration;
@@ -130,6 +132,7 @@ const newVariableCreator = (ddi: DropDownItem):
     case "parameter": return newParameter; // Caller decides X/Y/Z
     case "every_point": return everyPointVar(ddi.value);
     case "Coordinate": return manualEntry(ddi.value);
+    case "point_group": throw new Error("TODO");
   }
   return () => undefined;
 };
@@ -160,7 +163,8 @@ export const addOrEditBodyVariables = (
   return Object.values(items);
 };
 
-/** Add a new declaration or replace an existing one with the same label. (sequences) */
+/** Add a new declaration or replace an existing one with the same label.
+ * (sequences) */
 export const addOrEditDeclarationLocals = (
   declarations: ScopeDeclarationBodyItem[],
   updatedItem: ScopeDeclarationBodyItem

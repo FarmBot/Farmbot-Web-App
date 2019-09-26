@@ -2,7 +2,6 @@ import * as React from "react";
 import { WeekRow } from "./week_row";
 import { WeekGridProps } from "./interfaces";
 import { pushWeek, popWeek, deselectDays, selectDays } from "./actions";
-
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 
@@ -49,5 +48,5 @@ export function WeekGrid({ weeks, dispatch }: WeekGridProps) {
         </div>
       </Col>
     </Row>
-  </div >;
+  </div>;
 }

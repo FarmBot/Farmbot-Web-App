@@ -1,11 +1,10 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
 jest.mock("../labs/labs_features", () => ({ LabsFeatures: () => <div /> }));
 
 import * as React from "react";
 import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
 import { shallow, mount } from "enzyme";
-import { Account } from "../index";
+import { RawAccount as Account } from "../index";
 import { edit } from "../../api/crud";
 
 describe("<Account />", () => {

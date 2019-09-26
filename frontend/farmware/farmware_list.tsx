@@ -37,7 +37,7 @@ const farmwareListItem = (dispatch: Function, current: string | undefined) =>
       to={`/app/farmware/${urlFriendly(farmwareName)}`}
       key={farmwareName}
       onClick={click}>
-      <div className={`farmware-list-items ${selected}`} >
+      <div className={`farmware-list-items ${selected}`}>
         <p>{displayName}</p>
       </div>
     </Link>;

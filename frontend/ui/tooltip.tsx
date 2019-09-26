@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { DocSlug, docLink } from ".";
 import { t } from "../i18next_wrapper";
 
