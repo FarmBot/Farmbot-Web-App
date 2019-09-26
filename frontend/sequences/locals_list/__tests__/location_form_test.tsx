@@ -49,13 +49,14 @@ describe("<LocationForm/>", () => {
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
     expect(diff).toEqual([]);
-    const choice = choices[1];
-    select.onChange(choice);
+    const dropdown = choices[1];
+    select.onChange(dropdown);
     expect(p.onChange)
       .toHaveBeenCalledWith(convertDDItoVariable({
         label: "label",
-        allowedVariableNodes: p.allowedVariableNodes
-      }, choice));
+        allowedVariableNodes: p.allowedVariableNodes,
+        dropdown
+      }));
     expect(inputs.length).toBe(0);
   });
 

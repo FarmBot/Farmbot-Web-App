@@ -65,6 +65,8 @@ const createVariableDeclaration =
 interface NewVarProps {
   label: string;
   allowedVariableNodes: AllowedVariableNodes;
+  dropdown: DropDownItem;
+  newVarLabel?: string;
 }
 
 const nothingVar =
@@ -101,61 +103,68 @@ const manualEntry = (value: string | number) =>
       args: value ? JSON.parse("" + value) : { x: 0, y: 0, z: 0 }
     });
 
-interface NewVariableProps extends NewVarProps {
-  newVarLabel?: string;
-}
-
 /**
  * Create a parameter declaration or a parameter application containing an
  *    identifier.
  */
-export const newParameter =
-  ({ label, newVarLabel, allowedVariableNodes }: NewVariableProps):
-    VariableNode =>
-    (allowedVariableNodes === AllowedVariableNodes.identifier && newVarLabel)
-      // Create a new variable (reassignment)
-      ? createParameterApplication(label,
-        { kind: "identifier", args: { label: newVarLabel } })
-      : { // Unassign variable (will not create a new variable name)
-        kind: "parameter_declaration",
-        args: { label, default_value: NOTHING_SELECTED }
-      };
-
-type VariableCreator = (props: NewVariableProps) => VariableNode | undefined;
-/** Create a variable based on the dropdown heading ID. */
-const newVariableCreator = (ddi: DropDownItem): VariableCreator => {
-  if (ddi.isNull) { return nothingVar; } // Empty form. Nothing selected yet.
-  switch (ddi.headingId) {
-    case "Plant":
-    case "GenericPointer": return pointVar(ddi.headingId, ddi.value);
-    case "Tool": return toolVar(ddi.value);
-    case "parameter": return newParameter; // Caller decides X/Y/Z
-    case "every_point": return everyPointVar(ddi.value);
-    case "Coordinate": return manualEntry(ddi.value);
-    case "PointGroup":
-      const resource_id = parseInt("" + ddi.value, 10);
-      return (p): VariableWithAValue => ({
-        kind: "parameter_application",
-        args: {
-          label: p.label,
-          data_value: {
-            kind: "point_group",
-            args: { resource_id }
-          }
-        }
-      });
+export const newParameter = (p: NewVarProps): VariableNode => {
+  const { label, newVarLabel, allowedVariableNodes } = p;
+  if (allowedVariableNodes === AllowedVariableNodes.identifier && newVarLabel) {
+    return createParameterApplication(label, {
+      kind: "identifier",
+      args: {
+        label: newVarLabel
+      }
+    });
+  } else {
+    return {
+      kind: "parameter_declaration",
+      args: {
+        label,
+        default_value: NOTHING_SELECTED
+      }
+    };
   }
-  console.warn("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
-  return () => undefined;
 };
 
+/** Create a variable based on the dropdown heading ID. */
+const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
+  const ddi = props.dropdown;
+  if (ddi.isNull) { return nothingVar(props); } // Empty form. Nothing selected yet.
+  switch (ddi.headingId) {
+    case "Plant":
+    case "GenericPointer": return pointVar(ddi.headingId, ddi.value)(props);
+    case "Tool": return toolVar(ddi.value)(props);
+    case "parameter": return newParameter(props);
+    case "every_point": return everyPointVar(ddi.value)(props);
+    case "Coordinate": return manualEntry(ddi.value)(props);
+    case "PointGroup":
+      const resource_id = parseInt("" + ddi.value, 10);
+      return {
+        kind: "parameter_application",
+        args: {
+          label: props.label,
+          data_value: { kind: "point_group", args: { resource_id } }
+        }
+      };
+  }
+  console.warn("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
+  return undefined;
+};
 /** Convert a drop down selection to a variable. */
 export const convertDDItoVariable =
-  (p: NewVarProps, ddi: DropDownItem): VariableNode | undefined => {
-    const { label, allowedVariableNodes } = p;
-    const newVarLabel =
-      ddi.headingId === "parameter" ? "" + ddi.value : undefined;
-    return newVariableCreator(ddi)({ label, newVarLabel, allowedVariableNodes });
+  (p: NewVarProps) => {
+    if (p.dropdown.headingId === "parameter") {
+      return createNewVariable({
+        ...p,
+        newVarLabel: "" + p.dropdown.value
+      });
+    } else {
+      return createNewVariable({
+        ...p,
+        newVarLabel: undefined
+      });
+    };
   };
 
 export const isScopeDeclarationBodyItem =
