@@ -273,8 +273,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
     wifi_level_percent, cpu_usage, private_ip,
-    // tslint:disable-next-line:no-any
-  } = props.botInfoSettings as any;
+  } = props.botInfoSettings;
   const { last_ota, last_ota_checkup } = props.deviceAccount.body;
 
   return <div>
