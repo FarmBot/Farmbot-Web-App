@@ -12,7 +12,7 @@ describe("convertDDItoDeclaration()", () => {
   it("returns location data: point", () => {
     const ddi =
       ({ headingId: "GenericPointer", label: "Point 1 (10, 20, 30)", value: 2 });
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes }, ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "point",
       args: {
@@ -24,7 +24,7 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: tool", () => {
     const ddi = { headingId: "Tool", label: "Generic Tool", value: 1 };
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes }, ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "tool", args: { tool_id: 1 }
     }));
@@ -32,7 +32,7 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: Plant", () => {
     const ddi = { headingId: "Plant", label: "Mint", value: 1 };
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const variable = convertDDItoVariable({ label, allowedVariableNodes }, ddi);
     expect(variable).toEqual(expectedVariable({
       kind: "point", args: { pointer_id: 1, pointer_type: "Plant" }
     }));
@@ -41,7 +41,7 @@ describe("convertDDItoDeclaration()", () => {
   it("returns location data: default", () => {
     const variable = convertDDItoVariable({
       label, allowedVariableNodes
-    })(NO_VALUE_SELECTED_DDI());
+    }, NO_VALUE_SELECTED_DDI());
     expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
   });
 
@@ -50,14 +50,14 @@ describe("convertDDItoDeclaration()", () => {
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
       label, allowedVariableNodes: AllowedVariableNodes.parameter
-    })(NO_VALUE_SELECTED_DDI());
+    }, NO_VALUE_SELECTED_DDI());
     expect(variable).toEqual(expected);
   });
 
   it("returns location data: coordinate", () => {
     const variable = convertDDItoVariable({
       label, allowedVariableNodes
-    })(COORDINATE_DDI({ x: 1, y: 2, z: 3 }));
+    }, COORDINATE_DDI({ x: 1, y: 2, z: 3 }));
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 1, y: 2, z: 3 }
     }));
@@ -66,7 +66,7 @@ describe("convertDDItoDeclaration()", () => {
   it("returns location data: new coordinate", () => {
     const variable = convertDDItoVariable({
       label, allowedVariableNodes
-    })(COORDINATE_DDI());
+    }, COORDINATE_DDI());
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 0, y: 0, z: 0 }
     }));
@@ -76,7 +76,7 @@ describe("convertDDItoDeclaration()", () => {
     const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
     const variable = convertDDItoVariable({
       label: "parent", allowedVariableNodes
-    })(ddi);
+    }, ddi);
     const expected: VariableNode = {
       kind: "parameter_declaration",
       args: {
@@ -90,7 +90,7 @@ describe("convertDDItoDeclaration()", () => {
     const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
     const variable = convertDDItoVariable({
       label: "parent", allowedVariableNodes: AllowedVariableNodes.identifier
-    })(ddi);
+    }, ddi);
     const expected: VariableNode = {
       kind: "parameter_application",
       args: {
@@ -107,7 +107,7 @@ describe("convertDDItoDeclaration()", () => {
     const ddi = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
     const variable = convertDDItoVariable({
       label: "label", allowedVariableNodes
-    })(ddi);
+    }, ddi);
     const expected: VariableNode = {
       kind: "parameter_application",
       args: {

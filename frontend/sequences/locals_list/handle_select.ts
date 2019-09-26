@@ -121,9 +121,9 @@ export const newParameter =
         args: { label, default_value: NOTHING_SELECTED }
       };
 
+type VariableCreator = (props: NewVariableProps) => VariableNode | undefined;
 /** Create a variable based on the dropdown heading ID. */
-const newVariableCreator = (ddi: DropDownItem):
-  (props: NewVariableProps) => VariableNode | undefined => {
+const newVariableCreator = (ddi: DropDownItem): VariableCreator => {
   if (ddi.isNull) { return nothingVar; } // Empty form. Nothing selected yet.
   switch (ddi.headingId) {
     case "Plant":
@@ -132,19 +132,20 @@ const newVariableCreator = (ddi: DropDownItem):
     case "parameter": return newParameter; // Caller decides X/Y/Z
     case "every_point": return everyPointVar(ddi.value);
     case "Coordinate": return manualEntry(ddi.value);
-    case "point_group": throw new Error("TODO");
+    case "PointGroup": throw new Error("TODO");
   }
+  console.warn("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
   return () => undefined;
 };
 
 /** Convert a drop down selection to a variable. */
 export const convertDDItoVariable =
-  ({ label, allowedVariableNodes }: NewVarProps) =>
-    (ddi: DropDownItem): VariableNode | undefined => {
-      const newVarLabel =
-        ddi.headingId === "parameter" ? "" + ddi.value : undefined;
-      return newVariableCreator(ddi)({ label, newVarLabel, allowedVariableNodes });
-    };
+  (p: NewVarProps, ddi: DropDownItem): VariableNode | undefined => {
+    const { label, allowedVariableNodes } = p;
+    const newVarLabel =
+      ddi.headingId === "parameter" ? "" + ddi.value : undefined;
+    return newVariableCreator(ddi)({ label, newVarLabel, allowedVariableNodes });
+  };
 
 export const isScopeDeclarationBodyItem =
   (x: VariableNode): x is ScopeDeclarationBodyItem =>

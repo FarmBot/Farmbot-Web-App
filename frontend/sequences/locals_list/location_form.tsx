@@ -84,9 +84,10 @@ export const LocationForm =
                 list={list}
                 selectedItem={dropdown}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => props.onChange(convertDDItoVariable({
-                  label, allowedVariableNodes
-                })(ddi))} />
+                onChange={ddi => {
+                  const newVarProps = { label, allowedVariableNodes };
+                  props.onChange(convertDDItoVariable(newVarProps, ddi));
+                }} />
             </Col>
           </Row>
           <CoordinateInputBoxes

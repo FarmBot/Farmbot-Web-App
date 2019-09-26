@@ -55,7 +55,7 @@ describe("<LocationForm/>", () => {
       .toHaveBeenCalledWith(convertDDItoVariable({
         label: "label",
         allowedVariableNodes: p.allowedVariableNodes
-      })(choice));
+      }, choice));
     expect(inputs.length).toBe(0);
   });
 
