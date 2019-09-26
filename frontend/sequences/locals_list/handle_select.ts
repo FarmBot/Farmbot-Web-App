@@ -164,7 +164,7 @@ export const convertDDItoVariable =
         ...p,
         newVarLabel: undefined
       });
-    };
+    }
   };
 
 export const isScopeDeclarationBodyItem =

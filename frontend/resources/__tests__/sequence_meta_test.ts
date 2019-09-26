@@ -26,7 +26,7 @@ import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { NOTHING_SELECTED } from "../../sequences/locals_list/handle_select";
 
 describe("determineDropdown", () => {
-  it("crashes oon unknown DDIs", () => {
+  it("crashes on unknown DDIs", () => {
     // tslint:disable-next-line:no-any
     const baddata: any = {
       kind: "parameter_application",
