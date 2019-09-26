@@ -26,18 +26,17 @@ export class ToolTip extends React.Component<ToolTipProps, Partial<State>> {
     const { helpText } = this.props;
     const cn = className ? className += " title-help" : "title-help";
     return <div className={cn}>
-      <div className={`fa fa-question-circle title-help-icon ${isOpen}`}
-        onClick={this.toggle("isOpen")} >
-        <div className="title-help-text">
-          <i>{t(helpText)}</i>
-          {this.props.docPage &&
-            <a
-              href={docLink(this.props.docPage)}
-              target="_blank">
-              {" " + t("Documentation")}
-              <i className="fa fa-external-link" />
-            </a>}
-        </div>
+      <i className={`fa fa-question-circle title-help-icon`}
+        onClick={this.toggle("isOpen")} />
+      <div className={`title-help-text ${isOpen}`}>
+        <i>{t(helpText)}</i>
+        {this.props.docPage &&
+          <a
+            href={docLink(this.props.docPage)}
+            target="_blank">
+            {" " + t("Documentation")}
+            <i className="fa fa-external-link" />
+          </a>}
       </div>
     </div>;
   }
