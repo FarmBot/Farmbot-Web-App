@@ -86,7 +86,7 @@ export const LocationForm =
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
                 onChange={ddi => {
                   props.onChange(convertDDItoVariable({
-                    label,
+                    identifierLabel: label,
                     allowedVariableNodes,
                     dropdown: ddi
                   }));

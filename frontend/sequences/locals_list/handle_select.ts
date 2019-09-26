@@ -63,18 +63,18 @@ const createVariableDeclaration =
     });
 
 interface NewVarProps {
-  label: string;
+  identifierLabel: string;
   allowedVariableNodes: AllowedVariableNodes;
   dropdown: DropDownItem;
   newVarLabel?: string;
 }
 
 const nothingVar =
-  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, NOTHING_SELECTED);
 
 const toolVar = (value: string | number) =>
-  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "tool",
       args: { tool_id: parseInt("" + value) }
@@ -83,21 +83,21 @@ const toolVar = (value: string | number) =>
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer",
   value: string | number
-) => ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+) => ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "point",
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
 
 const everyPointVar = (value: string | number) =>
-  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "every_point",
       args: { every_point_type: "" + value as PointType }
     });
 
 const manualEntry = (value: string | number) =>
-  ({ label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
+  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "coordinate",
       args: value ? JSON.parse("" + value) : { x: 0, y: 0, z: 0 }
@@ -108,7 +108,7 @@ const manualEntry = (value: string | number) =>
  *    identifier.
  */
 export const newParameter = (p: NewVarProps): VariableNode => {
-  const { label, newVarLabel, allowedVariableNodes } = p;
+  const { identifierLabel: label, newVarLabel, allowedVariableNodes } = p;
   if (allowedVariableNodes === AllowedVariableNodes.identifier && newVarLabel) {
     return createParameterApplication(label, {
       kind: "identifier",
@@ -143,12 +143,12 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
       return {
         kind: "parameter_application",
         args: {
-          label: props.label,
+          label: props.identifierLabel,
           data_value: { kind: "point_group", args: { resource_id } }
         }
       };
   }
-  console.warn("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
+  console.error("WARNING: Don't know how to handle " + (ddi.headingId || "NA"));
   return undefined;
 };
 /** Convert a drop down selection to a variable. */

@@ -53,7 +53,7 @@ describe("<LocationForm/>", () => {
     select.onChange(dropdown);
     expect(p.onChange)
       .toHaveBeenCalledWith(convertDDItoVariable({
-        label: "label",
+        identifierLabel: "label",
         allowedVariableNodes: p.allowedVariableNodes,
         dropdown
       }));
