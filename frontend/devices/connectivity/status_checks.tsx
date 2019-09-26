@@ -34,7 +34,9 @@ export function botToAPI(stat: string | undefined,
     from: "FarmBot",
     to: "Web App",
     connectionStatus,
-    children: stat ? t("Last message seen ") + `${ago(new Date(stat).getTime())}.` : NOT_SEEN
+    children: stat
+      ? t("Last message seen ") + `${ago(new Date(stat).getTime())}.`
+      : NOT_SEEN
   };
 }
 

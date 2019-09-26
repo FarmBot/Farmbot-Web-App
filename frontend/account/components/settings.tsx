@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import {
   BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn
 } from "../../ui/index";

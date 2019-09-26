@@ -4,7 +4,6 @@ import { Collapse, Popover, Position } from "@blueprintjs/core";
 import { FactoryResetRow } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
-
 import { Feature } from "../../interfaces";
 import { FbosButtonRow } from "./fbos_button_row";
 import { Content } from "../../../constants";

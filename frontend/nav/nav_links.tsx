@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {

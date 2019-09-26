@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 let mockPath = "";
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
@@ -17,7 +15,9 @@ jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { SelectPlants, SelectPlantsProps } from "../select_plants";
+import {
+  RawSelectPlants as SelectPlants, SelectPlantsProps
+} from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";

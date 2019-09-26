@@ -1,8 +1,6 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 import * as React from "react";
 import { shallow, render } from "enzyme";
-import { Devices } from "../devices";
+import { RawDevices as Devices } from "../devices";
 import { Props } from "../interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { bot } from "../../__test_support__/fake_state/bot";

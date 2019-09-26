@@ -1,36 +1,24 @@
-
-jest.mock("../../api/crud", () => {
-  return { overwrite: jest.fn() };
-});
-
-jest.mock("../point_groups/group_detail", () => {
-  return {
-    fetchGroupFromUrl: jest.fn(() => mockGroup)
-  };
-});
+jest.mock("../point_groups/group_detail", () => ({
+  fetchGroupFromUrl: jest.fn(() => mockGroup)
+}));
 
 jest.mock("../../api/crud", () => ({
   overwrite: jest.fn(),
-  edit: jest.fn()
+  edit: jest.fn(),
 }));
 
 let mockMode = "none";
+jest.mock("../map/util", () => ({ getMode: jest.fn(() => mockMode) }));
 
-jest.mock("../map/util", () => {
-  return {
-    getMode: jest.fn(() => mockMode)
-  };
-});
-
-import { fakePlant, fakePointGroup } from "../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakePointGroup
+} from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
+import { clickMapPlant, selectPlant, toggleHoveredPlant } from "../actions";
 import {
-  clickMapPlant,
-  selectPlant,
-  toggleHoveredPlant
-} from "../actions";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { overwrite } from "../../api/crud";
 
 const mockGroup = fakePointGroup();

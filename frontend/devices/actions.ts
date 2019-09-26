@@ -400,5 +400,6 @@ export function changeStepSize(integer: number) {
 }
 
 export function badVersion() {
-  info(t("You are running an old version of FarmBot OS."), t("Please Update"), "red");
+  info(t("You are running an old version of FarmBot OS."),
+    t("Please Update"), "red");
 }

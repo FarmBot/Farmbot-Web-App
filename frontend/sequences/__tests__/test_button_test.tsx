@@ -17,7 +17,8 @@ jest.mock("@blueprintjs/core", () => ({
 import * as React from "react";
 import { TestButton, TestBtnProps, setMenuOpen } from "../test_button";
 import {
-  TaggedSequence, SpecialStatus, ParameterApplication, ParameterDeclaration, Coordinate
+  TaggedSequence, SpecialStatus, ParameterApplication, ParameterDeclaration,
+  Coordinate,
 } from "farmbot";
 import { mount } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -135,7 +136,9 @@ describe("<TestButton/>", () => {
     expect(wrapper.state().bodyVariables).toEqual([variable]);
   });
 
-  const COORDINATE: Coordinate = { kind: "coordinate", args: { x: 0, y: 0, z: 0 } };
+  const COORDINATE: Coordinate = {
+    kind: "coordinate", args: { x: 0, y: 0, z: 0 }
+  };
 
   it("calls sequence with bodyVariables when synced", () => {
     const declaration: ParameterDeclaration = {
@@ -153,11 +156,12 @@ describe("<TestButton/>", () => {
     props.resources.sequenceMetas[props.sequence.uuid] = varData;
     const wrapper = mount<TestButton>(<TestButton {...props} />);
     clickButton(wrapper, 1, "test");
-    expect(mockDevice.execSequence).toHaveBeenCalledWith(props.sequence.body.id, [{
-      kind: "parameter_application",
-      args: { label: "label", data_value: COORDINATE }
-    }
-    ]);
+    expect(mockDevice.execSequence)
+      .toHaveBeenCalledWith(props.sequence.body.id, [{
+        kind: "parameter_application",
+        args: { label: "label", data_value: COORDINATE }
+      }
+      ]);
   });
 
   it("doesn't call sequence with bodyVariables when not synced", () => {

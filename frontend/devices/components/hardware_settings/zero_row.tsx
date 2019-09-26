@@ -17,7 +17,7 @@ export function ZeroButton(props: { axis: Axis; disabled: boolean; }) {
   return <button
     className="fb-button yellow"
     disabled={disabled}
-    onClick={() => zero(axis)} >
+    onClick={() => zero(axis)}>
     {t("zero {{axis}}", { axis })}
   </button>;
 }

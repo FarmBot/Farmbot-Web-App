@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn(() => (x: {}) => x) }));
-
 let mockPath = "";
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
@@ -8,7 +6,7 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { AddPlant, AddPlantProps } from "../add_plant";
+import { RawAddPlant as AddPlant, AddPlantProps } from "../add_plant";
 import { history } from "../../../history";
 import {
   fakeCropLiveSearchResult

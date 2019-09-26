@@ -11,7 +11,9 @@ import {
   fakeTool,
   fakeToolSlot
 } from "../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import {
   sanitizeNodes
 } from "../../sequences/locals_list/sanitize_nodes";
@@ -68,8 +70,7 @@ describe("determineDropdown", () => {
       kind: "parameter_application",
       args: {
         label: "x",
-        // tslint:disable-next-line:no-any
-        data_value: { kind: "every_point", args: { every_point_type: "Plant" } } as any
+        data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
       }
     }, buildResourceIndex([]).index);
     expect(r.label).toBe("All plants");

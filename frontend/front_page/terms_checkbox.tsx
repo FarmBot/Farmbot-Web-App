@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { PartialFormEvent } from "./front_page";
 import { t } from "../i18next_wrapper";
 

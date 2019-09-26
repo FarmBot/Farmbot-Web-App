@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col } from "../ui/index";
 import { AxisDisplayGroupProps } from "./interfaces";
 import { isNumber } from "lodash";

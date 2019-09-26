@@ -1,6 +1,5 @@
 import * as React from "react";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui/index";
-
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage, TaggedSequence } from "farmbot";
 import { StepParams, ChannelName, isMessageType } from "../interfaces";

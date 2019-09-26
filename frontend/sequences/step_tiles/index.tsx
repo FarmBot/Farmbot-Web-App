@@ -18,7 +18,6 @@ import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import { overwrite } from "../../api/crud";
 import { TileFindHome } from "./tile_find_home";
-
 import { MarkAs } from "./mark_as";
 import { TileUnknown } from "./tile_unknown";
 import { forceSetStepTag } from "../../resources/sequence_tagging";
@@ -164,10 +163,11 @@ export function renderCeleryNode(props: StepParams) {
   }
 }
 
-const checkBranch = (branch: Execute | Nothing, _step: If, sequence: TaggedSequence) => {
-  return (branch.kind === "execute")
-    && (branch.args.sequence_id === sequence.body.id);
-};
+const checkBranch =
+  (branch: Execute | Nothing, _step: If, sequence: TaggedSequence) => {
+    return (branch.kind === "execute")
+      && (branch.args.sequence_id === sequence.body.id);
+  };
 
 export function isRecursive(step: If, sequence: TaggedSequence) {
   return checkBranch(step.args._else, step, sequence)

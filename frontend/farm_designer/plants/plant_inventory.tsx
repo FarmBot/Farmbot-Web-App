@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../../interfaces";
 import { Panel, DesignerNavTabs } from "../panel_header";

@@ -14,7 +14,7 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
  * Example usage:
  *
  * <button draggable={true}
- *         onDragStart={stepDragEventHandler(dispatch, step, "optnl-stuff")} >
+ *         onDragStart={stepDragEventHandler(dispatch, step, "optnl-stuff")}>
  *   Drag this!
  * </button>
  * */
@@ -36,7 +36,7 @@ export function StepDragger({ dispatch,
     onDragStart={stepDragEventHandler(dispatch,
       step,
       intent,
-      draggerId)} >
+      draggerId)}>
     {children}
   </div>;
 }

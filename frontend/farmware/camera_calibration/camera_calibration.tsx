@@ -36,7 +36,7 @@ export class CameraCalibration extends
           lockOpen={process.env.NODE_ENV !== "production"}>
           <button
             onClick={this.props.dispatch(calibrate)}
-            className="fb-button green" >
+            className="fb-button green">
             {t("Calibrate")}
           </button>
         </MustBeOnline>

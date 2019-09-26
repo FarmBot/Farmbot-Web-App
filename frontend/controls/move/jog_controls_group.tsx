@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { McuParams } from "farmbot";
 import { BotPosition } from "../../devices/interfaces";
 import { changeStepSize } from "../../devices/actions";

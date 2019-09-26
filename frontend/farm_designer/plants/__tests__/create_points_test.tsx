@@ -1,10 +1,4 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn(() => (x: {}) => x)
-}));
-
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn()
-}));
+jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 jest.mock("../../../farmware/weed_detector/actions", () => ({
   deletePoints: jest.fn()
@@ -49,14 +43,12 @@ describe("mapStateToProps", () => {
 });
 
 describe("<CreatePoints />", () => {
-  const fakeProps = (): CreatePointsProps => {
-    return {
-      dispatch: jest.fn(),
-      currentPoint: undefined,
-      deviceY: 1.23,
-      deviceX: 3.21
-    };
-  };
+  const fakeProps = (): CreatePointsProps => ({
+    dispatch: jest.fn(),
+    currentPoint: undefined,
+    deviceY: 1.23,
+    deviceX: 3.21
+  });
 
   const fakeInstance = () => {
     const props = fakeProps();

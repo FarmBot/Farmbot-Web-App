@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { ToggleButtonProps } from "./interfaces";
 import { t } from "../i18next_wrapper";
 

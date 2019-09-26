@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { AddRegimenProps } from "../interfaces";
 import { push } from "../../history";
 import { TaggedRegimen } from "farmbot";

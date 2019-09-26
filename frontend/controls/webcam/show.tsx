@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Widget, WidgetHeader, FallbackImg, WidgetBody } from "../../ui/index";
-
 import { ToolTips } from "../../constants";
 import { WebcamPanelProps } from "./interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../farmware/images/image_flipper";
