@@ -31,14 +31,14 @@
   }
   .title-help{
     display: inline;
-      .title-help-text {
-        &.open{
+    .title-help-text {
+      &.open{
+        display: block;
         opacity: 100;
         padding: 0.5rem 0.3rem;
         max-height: 200px;
         transition: 0.5s;
         color: $white;
-        display: block;
         margin-bottom: 0%;
       }
     }
@@ -56,6 +56,7 @@
     color: $white;
   }
   .title-help-text {
+    display: table-column-group;
     font-style: italic;
     color: $off_white;
     line-height: 2rem;
@@ -65,7 +66,6 @@
     max-height: 0px;
     transition: all 0.5s ease;
     transition-delay: 0.2s;
-    display: table-column-group;
     a {
       pointer-events: all;
     }

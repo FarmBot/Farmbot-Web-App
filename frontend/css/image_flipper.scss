@@ -1,7 +1,7 @@
 .image-flipper {
+  display: inline-block;
   position: relative;
   margin-top: 1rem;
-  display: inline-block;
 }
 
 .image-flipper-image {
@@ -92,8 +92,8 @@
 .photos{
   .farmware-button{
     position: relative!important;
-    height: 0px;
     bottom: 2rem;
+    height: 0px;
     float: right!important;
   }
 }
@@ -101,8 +101,8 @@
 .weed-detector{
   .farmware-button{
     position: relative;
-    height: 0px;
     top: 0rem;
+    height: 0px;
     float: right;
   }
 }
