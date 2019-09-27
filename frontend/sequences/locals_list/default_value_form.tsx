@@ -9,6 +9,7 @@ import {
 import { Help } from "../../ui";
 import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
+import { Position } from "@blueprintjs/core";
 
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
@@ -20,7 +21,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) =>
   props.variableNode.kind === "parameter_declaration"
     ? <div className="default-value-form">
       <div className="default-value-tooltip">
-        <Help text={ToolTips.DEFAULT_VALUE} />
+        <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />
       </div>
       <LocationForm
         key={props.variableNode.args.label + "default_value"}

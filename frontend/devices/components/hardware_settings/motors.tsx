@@ -1,14 +1,13 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
-import { SpacePanelToolTip } from "../space_panel_tool_tip";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { MotorsProps } from "../interfaces";
-import { Row, Col } from "../../../ui/index";
+import { Row, Col, Help } from "../../../ui/index";
 import { Header } from "./header";
-import { Collapse } from "@blueprintjs/core";
+import { Collapse, Position } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
 import { minFwVersionCheck } from "../../../util";
 import { t } from "../../../i18next_wrapper";
@@ -24,9 +23,9 @@ const SingleSettingRow =
     settingType: "button" | "input",
   }) =>
     <Row>
-      <Col xs={6}>
+      <Col xs={6} className={"widget-body-tooltips"}>
         <label>{label}</label>
-        <SpacePanelToolTip tooltip={tooltip} />
+        <Help text={tooltip} requireClick={true} position={Position.RIGHT}/>
       </Col>
       {settingType === "button"
         ? <Col xs={2} className={"centered-button-div"}>{children}</Col>

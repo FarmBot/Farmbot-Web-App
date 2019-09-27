@@ -2,28 +2,41 @@ import * as React from "react";
 import { DocSlug, docLink } from ".";
 import { t } from "../i18next_wrapper";
 
-interface ToolTipProps {
+export interface ToolTipProps {
   children?: React.ReactNode;
   className?: string;
   helpText: string;
   docPage?: DocSlug;
 }
 
-export function ToolTip(props: ToolTipProps) {
-  let { className } = props;
-  const { helpText } = props;
-  const cn = className ? className += " title-help" : "title-help";
-  return <div className={cn}>
-    <i className="fa fa-question-circle title-help-icon" />
-    <div className="title-help-text">
-      <i>{t(helpText)}</i>
-      {props.docPage &&
-        <a
-          href={docLink(props.docPage)}
-          target="_blank">
-          {" " + t("Documentation")}
-          <i className="fa fa-external-link" />
-        </a>}
-    </div>
-  </div>;
+interface State {
+  isOpen: boolean;
+}
+
+export class ToolTip extends React.Component<ToolTipProps, Partial<State>> {
+  state: State = { isOpen: false };
+
+  private toggle = (property: keyof State) => () =>
+    this.setState({ [property]: !this.state[property] });
+
+  public render() {
+    const isOpen = this.state.isOpen ? "open" : "";
+    let { className } = this.props;
+    const { helpText } = this.props;
+    const cn = className ? className += " title-help" : "title-help";
+    return <div className={cn}>
+      <i className={`fa fa-question-circle title-help-icon`}
+        onClick={this.toggle("isOpen")} />
+      <div className={`title-help-text ${isOpen}`}>
+        <i>{t(helpText)}</i>
+        {this.props.docPage &&
+          <a
+            href={docLink(this.props.docPage)}
+            target="_blank">
+            {" " + t("Documentation")}
+            <i className="fa fa-external-link" />
+          </a>}
+      </div>
+    </div>;
+  }
 }

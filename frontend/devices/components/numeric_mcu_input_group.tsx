@@ -1,8 +1,8 @@
 import * as React from "react";
 import { McuInputBox } from "./mcu_input_box";
-import { SpacePanelToolTip } from "./space_panel_tool_tip";
 import { NumericMCUInputGroupProps } from "./interfaces";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, Help } from "../../ui/index";
+import { Position } from "@blueprintjs/core";
 
 export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
 
@@ -10,11 +10,11 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
     sourceFwConfig, dispatch, tooltip, name, x, y, z, intSize, gray, float,
   } = props;
   return <Row>
-    <Col xs={6}>
+    <Col xs={6} className={"widget-body-tooltips"}>
       <label>
         {name}
       </label>
-      <SpacePanelToolTip tooltip={tooltip} />
+      <Help text={tooltip} requireClick={true} position={Position.RIGHT}/>
     </Col>
     <Col xs={2}>
       <McuInputBox

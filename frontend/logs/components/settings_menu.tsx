@@ -8,6 +8,7 @@ import { safeNumericSetting } from "../../session";
 import { ConfigurationName } from "farmbot";
 import { MessageType } from "../../sequences/interfaces";
 import { t } from "../../i18next_wrapper";
+import { Position } from "@blueprintjs/core";
 
 interface LogSettingRecord {
   label: string;
@@ -64,7 +65,7 @@ const LogSetting = (props: LogSettingProps) => {
     <label>
       {t(label)}
     </label>
-    <Help text={t(toolTip)} />
+    <Help text={t(toolTip)} position={Position.LEFT_TOP}/>
     <ToggleButton
       toggleValue={config.value}
       dim={!config.consistent}

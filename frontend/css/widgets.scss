@@ -26,22 +26,37 @@
   background: $dark_gray;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
-  >*:not(h5):not(.help-icon) {
+  >*:not(h5):not(.title-help-icon):not(.title-help) {
     margin-left: 1rem;
   }
-  i.help-icon {
+  .title-help{
     display: inline;
-    padding: 1rem 0;
-    color: $medium_gray;
-    &:hover {
-      color: $gray;
-      transition-delay: 0.1s;
+    .title-help-text {
+      &.open{
+        display: block;
+        opacity: 100;
+        padding: 0.5rem 0.3rem;
+        max-height: 200px;
+        transition: 0.5s;
+        color: $white;
+        margin-bottom: 0%;
+      }
     }
+    .title-help-icon {
+      display: inline;
+      padding: 1rem 0;
+      color: $medium_gray;
+      &:hover {
+        color: $gray;
+        transition-delay: 0.1s;
+      }
+  }
   }
   i.fa-cog {
     color: $white;
   }
-  .help-text {
+  .title-help-text {
+    display: table-column-group;
     font-style: italic;
     color: $off_white;
     line-height: 2rem;
@@ -51,7 +66,6 @@
     max-height: 0px;
     transition: all 0.5s ease;
     transition-delay: 0.2s;
-    pointer-events: none;
     a {
       pointer-events: all;
     }
@@ -72,7 +86,6 @@
     color: $gray;
     font-size: 1.2rem;
     text-transform: uppercase;
-    margin-right: 1rem;
   }
 }
 

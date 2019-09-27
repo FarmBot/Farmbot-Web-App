@@ -27,7 +27,7 @@ export interface HomingAndCalibrationProps {
 export interface BooleanMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
-  tooltip?: string | undefined;
+  tooltip: string;
   name: string;
   x: McuParamName;
   y: McuParamName;
@@ -46,7 +46,7 @@ export interface CalibrationRowProps {
 export interface NumericMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
-  tooltip?: string | undefined;
+  tooltip: string;
   name: string;
   x: McuParamName;
   xScale?: number;
