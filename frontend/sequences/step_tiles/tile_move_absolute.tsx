@@ -93,7 +93,9 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       }}
       sequenceUuid={this.props.currentSequence.uuid}
       resources={this.props.resources}
-      onChange={this.updateLocation}
+      onChange={(x) => x &&
+        x.kind == "parameter_application" &&
+        this.updateLocation(x)}
       shouldDisplay={this.props.shouldDisplay || (() => false)}
       hideHeader={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}

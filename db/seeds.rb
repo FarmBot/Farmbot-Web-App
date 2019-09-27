@@ -62,7 +62,7 @@ if Rails.env == "development"
                                z: rand(1...300) })
   end
 
-  VEGGIES.each do |veggie|
+  VEGGIES.shuffle.first(PLANT_COUNT).each do |veggie|
     Plant.create(device: u.device,
                  x: rand(40...1500),
                  y: rand(40...800),
