@@ -205,8 +205,6 @@ const AFTER_HOOKS: IndexerHook = {
       const tracker = i.inUse["Sequence.FbosConfig"];
       const uuid = i.byKindAndId[joinKindAndId("Sequence", boot_sequence_id)];
       if (uuid) {
-        console.log("Hmmm");
-        console.log("DING !");
         tracker[uuid] = tracker[uuid] || {};
         tracker[uuid][conf.uuid] = true;
       }

@@ -18,8 +18,8 @@ describe("<FallbackWidget/>", function () {
     const wrapper = shallow(<FallbackWidget
       title="FakeWidget" helpText={helpText} />);
     expect(wrapper.html()).toContain(
-      "<i class=\"fa fa-question-circle help-icon\">" +
-      "<div class=\"help-text\">This is a fake widget.</div></i>");
+      "<i class=\"fa fa-question-circle title-help-icon\">" +
+      "</i><div class=\"title-help-text \"><i>This is a fake widget.</i></div>");
   });
 
 });

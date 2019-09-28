@@ -1,9 +1,9 @@
 import * as React from "react";
 import { ToggleButton } from "../../controls/toggle_button";
-import { SpacePanelToolTip } from "./space_panel_tool_tip";
 import { settingToggle } from "../actions";
-import { Row, Col } from "../../ui/index";
+import { Row, Col, Help } from "../../ui/index";
 import { BooleanMCUInputGroupProps } from "./interfaces";
+import { Position } from "@blueprintjs/core";
 
 export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
 
@@ -26,13 +26,13 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
   const zParam = sourceFwConfig(z);
 
   return <Row>
-    <Col xs={6}>
+    <Col xs={6} className={"widget-body-tooltips"}>
       <label>
         {name}
         {caution &&
           <i className="fa fa-exclamation-triangle caution-icon" />}
       </label>
-      <SpacePanelToolTip tooltip={tooltip} />
+      <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton

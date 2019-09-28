@@ -2,9 +2,8 @@ import * as React from "react";
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
 import { PinGuardProps } from "../interfaces";
 import { Header } from "./header";
-import { Collapse } from "@blueprintjs/core";
-import { Row, Col } from "../../../ui/index";
-import { SpacePanelToolTip } from "../space_panel_tool_tip";
+import { Collapse, Position } from "@blueprintjs/core";
+import { Row, Col, Help } from "../../../ui/index";
 import { ToolTips } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
 
@@ -21,11 +20,11 @@ export function PinGuard(props: PinGuardProps) {
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_guard}>
       <Row>
-        <Col xs={3} xsOffset={3}>
+        <Col xs={3} xsOffset={3} className={"widget-body-tooltips"}>
           <label>
             {t("Pin Number")}
           </label>
-          <SpacePanelToolTip tooltip={ToolTips.PIN_GUARD_PIN_NUMBER} />
+          <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} requireClick={true} position={Position.RIGHT}/>
         </Col>
         <Col xs={4}>
           <label>
