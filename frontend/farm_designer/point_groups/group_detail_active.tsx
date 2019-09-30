@@ -11,7 +11,7 @@ import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save, edit } from "../../api/crud";
 import { Dictionary } from "lodash";
-import { cachedCrop } from "../../open_farm/cached_crop";
+import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
 import { TaggedPlant } from "../map/interfaces";
 
@@ -21,9 +21,7 @@ interface GroupDetailActiveProps {
   plants: TaggedPlant[];
 }
 
-interface State {
-  icons: Dictionary<string | undefined>
-}
+type State = Dictionary<OFIcon | undefined>;
 const removePoint = (group: TaggedPointGroup, pointId: number) => {
   type Body = (typeof group)["body"];
   const nextGroup: Body = { ...group.body };
@@ -55,7 +53,7 @@ export const LittleIcon =
 
 export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, State> {
-  state: State = { icons: {} };
+  state: State = {};
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     this
@@ -63,22 +61,26 @@ export class GroupDetailActive
       .dispatch(edit(this.props.group, { name: currentTarget.value }));
   };
 
+  handleIcon =
+    (uuid: string) =>
+      (icon: Readonly<OFIcon>) =>
+        this.setState({ [uuid]: icon });
+
   performLookup = (plant: TaggedPlant) => {
-    cachedCrop(plant.body.openfarm_slug)
-      .then(x => {
-        this.setState({
-          icons: {
-            ...this.state.icons,
-            [plant.uuid]: x.svg_icon
-          }
-        });
-      });
+    cachedCrop(plant.body.openfarm_slug).then(this.handleIcon(plant.uuid));
     return DEFAULT_ICON;
   }
 
   findIcon = (plant: TaggedPlant) => {
-    const svg = this.state.icons[plant.uuid];
-    return svg ? svgToUrl(svg) : this.performLookup(plant);
+    const svg = this.state[plant.uuid];
+    if (svg) {
+      if (svg.svg_icon) {
+        return svgToUrl(svg.svg_icon);
+      }
+      return DEFAULT_ICON;
+    }
+    return this.performLookup(plant);
+
   }
 
   get name() {

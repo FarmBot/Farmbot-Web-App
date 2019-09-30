@@ -3,7 +3,7 @@ import { Dictionary } from "farmbot";
 import { isObject } from "lodash";
 import { OFCropAttrs, OFCropResponse, OpenFarmAPI } from "./icons";
 
-type OFIcon = Readonly<OFCropAttrs>;
+export type OFIcon = Readonly<OFCropAttrs>;
 const STORAGE_KEY = "openfarm_icons_with_spread";
 
 function initLocalStorage() {
