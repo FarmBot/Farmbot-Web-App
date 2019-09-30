@@ -72,10 +72,9 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
       </button>
       {DevSettings.futureFeaturesEnabled() &&
         <button className="fb-button blue"
-          onClick={() => createGroup({
-            points: this.props.selected,
-            dispatch: this.props.dispatch
-          })}>
+          onClick={() => this.props.dispatch(createGroup({
+            points: this.props.selected
+          }))}>
           {t("Create group")}
         </button>}
       {DevSettings.futureFeaturesEnabled() &&
