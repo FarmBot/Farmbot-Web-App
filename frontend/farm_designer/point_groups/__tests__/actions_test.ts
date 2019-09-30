@@ -11,20 +11,27 @@ jest.mock("../../../history", () => {
 import { createGroup } from "../actions";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
-import { fakeState } from "../../../__test_support__/fake_state";
+import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import { fakePoint, fakePlant, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
+import { DeepPartial } from "redux";
+import { Everything } from "../../../interfaces";
 
 describe("group action creators and thunks", () => {
   it("creates groups", async () => {
-    const points: string[] =
-      ["Point.4.5", "Point.6.7", "Point.8.9"];
-    const dispatch = jest.fn();
+    const fakePoints = [fakePoint(), fakePlant(), fakeToolSlot()];
+    const resources = buildResourceIndex(fakePoints);
+    const points = fakePoints.map(x => x.uuid);
+    const fakeS: DeepPartial<Everything> = { resources };
+    const dispatch = jest.fn(() => Promise.resolve());
 
     const thunk = createGroup({ points, name: "Name123" });
-    thunk(dispatch, fakeState);
-    expect(initSave).toHaveBeenCalledWith("PointGroup", {
+    await thunk(dispatch, () => fakeS as Everything);
+    const expected = ["PointGroup", {
       name: "Name123",
-      point_ids: [4, 6, 8]
-    });
+      point_ids: [0, 1].map(x => fakePoints[x].body.id)
+    }];
+    const xz = initSave;
+    expect(xz).toHaveBeenCalledWith(...expected);
     expect(history.push).toHaveBeenCalledWith("/app/designer/groups");
   });
 });

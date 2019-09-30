@@ -70,13 +70,12 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         onClick={() => this.props.dispatch(selectPlant(undefined))}>
         {t("Select none")}
       </button>
-      {DevSettings.futureFeaturesEnabled() &&
-        <button className="fb-button blue"
-          onClick={() => this.props.dispatch(createGroup({
-            points: this.props.selected
-          }))}>
-          {t("Create group")}
-        </button>}
+      <button className="fb-button blue"
+        onClick={() => this.props.dispatch(createGroup({
+          points: this.props.selected
+        }))}>
+        {t("Create group")}
+      </button>
       {DevSettings.futureFeaturesEnabled() &&
         <button className="fb-button green"
           onClick={() => { throw new Error("WIP"); }}>
