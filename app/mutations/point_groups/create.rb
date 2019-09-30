@@ -8,8 +8,13 @@ module PointGroups
       array :point_ids, class: Integer
     end
 
+    optional do
+      string :sort_type
+    end
+
     def validate
       validate_point_ids
+      validate_sort_type
     end
 
     def execute
