@@ -10,10 +10,12 @@ module PointGroups
     optional do
       string :name
       array :point_ids, class: Integer
+      string :sort_type
     end
 
     def validate
       validate_point_ids if point_ids.any?
+      validate_sort_type
     end
 
     def execute
