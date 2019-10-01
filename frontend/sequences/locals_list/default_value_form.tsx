@@ -41,7 +41,6 @@ const change =
     (formResponse: ParameterApplication) => {
       const { data_value } = formResponse.args;
       switch (data_value.kind) {
-        case "every_point":
         case "point_group":
           return;
         default:

@@ -5,7 +5,11 @@ import {
   fakeSequence, fakePoint, fakeTool
 } from "../../../__test_support__/fake_state/resources";
 import {
-  MoveAbsolute, Point, Coordinate, Tool, ParameterApplication, EveryPoint
+  Coordinate,
+  MoveAbsolute,
+  ParameterApplication,
+  Point,
+  Tool,
 } from "farmbot";
 import {
   fakeHardwareFlags
@@ -175,20 +179,6 @@ describe("<TileMoveAbsolute/>", () => {
         tma.updateLocation(variable);
         expect(tma.updateArgs).toHaveBeenCalledWith({ location: data_value() });
       });
-    });
-
-    it("does not handle every_point nodes", () => {
-      const p = fakeProps();
-      const block = ordinaryMoveAbs(p);
-      const data_value: EveryPoint = {
-        kind: "every_point",
-        args: { every_point_type: "Plant" }
-      };
-      const boom = () => block.updateLocation({
-        kind: "parameter_application",
-        args: { label: "parent", data_value }
-      });
-      expect(boom).toThrowError("Can't put `every_point` into `move_abs");
     });
 
     it("handles variables", () => {

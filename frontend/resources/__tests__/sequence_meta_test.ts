@@ -99,18 +99,6 @@ describe("determineDropdown", () => {
     expect(r.value).toBe("?");
   });
 
-  it("Returns a label for `every_point`", () => {
-    const r = determineDropdown({
-      kind: "parameter_application",
-      args: {
-        label: "x",
-        data_value: { kind: "every_point", args: { every_point_type: "Plant" } }
-      }
-    }, buildResourceIndex([]).index);
-    expect(r.label).toBe("All plants");
-    expect(r.value).toBe("Plant");
-  });
-
   it("Returns a label for `point`", () => {
     const point = fakePoint();
     const pointNode: Point = {

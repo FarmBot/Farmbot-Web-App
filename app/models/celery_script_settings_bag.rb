@@ -130,7 +130,7 @@ module CeleryScriptSettingsBag
       defn: [n(:execute), n(:nothing)],
     },
     data_value: {
-      defn: ANY_VAR_TOKENIZED + [n(:point_group), n(:every_point)],
+      defn: ANY_VAR_TOKENIZED + [n(:point_group)],
     },
     default_value: {
       defn: ANY_VAR_TOKENIZED,
@@ -269,9 +269,6 @@ module CeleryScriptSettingsBag
     },
     lua: {
       defn: [v(:string)],
-    },
-    every_point_type: {
-      defn: [e(:PointType)],
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
@@ -524,10 +521,6 @@ module CeleryScriptSettingsBag
         resource_id = n.args.fetch(:resource_id).value
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
-    },
-    every_point: {
-      args: [:every_point_type],
-      tags: [:data, :list_like],
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
 

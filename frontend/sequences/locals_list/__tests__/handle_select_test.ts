@@ -152,23 +152,4 @@ describe("convertDDItoDeclaration()", () => {
     };
     expect(variable).toEqual(expected);
   });
-
-  it("returns location data: every_point", () => {
-    const dropdown = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
-    const variable = convertDDItoVariable({
-      identifierLabel: "label",
-      allowedVariableNodes,
-      dropdown
-    });
-    const expected: VariableNode = {
-      kind: "parameter_application",
-      args: {
-        label: "label",
-        data_value: {
-          kind: "every_point", args: { every_point_type: "Plant" }
-        }
-      }
-    };
-    expect(variable).toEqual(expected);
-  });
 });
