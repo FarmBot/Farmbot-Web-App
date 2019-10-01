@@ -15,7 +15,7 @@ interface Props {
 }
 
 const optionsTable: Record<PointGroupSortType, string> = {
-  "random": "Randomly",
+  "random": "Random Order",
   "xy_ascending": "X/Y, Ascending",
   "xy_decending": "X/Y, Descending",
   "yx_ascending": "Y/X, Ascending",
@@ -73,7 +73,7 @@ export function PointGroupSortSelector(p: Props) {
       selectedItem={selected(p.value as PointGroupSortType)}
       onChange={onChange(p.onChange)} />
     <p>
-      {t(SORT_DESC)}
+      {(p.value == "random") ? t(SORT_DESC) : ""}
     </p>
   </div>;
 }

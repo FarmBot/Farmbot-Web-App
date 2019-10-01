@@ -32,7 +32,7 @@ module PointGroups
 
     def update_attributes
       @update_attributes ||= inputs
-        .except(:device, :point_ids)
+        .except(:device, :point_ids, :point_group)
         .merge(updated_at: Time.now)
     end
 
