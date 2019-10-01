@@ -7,7 +7,8 @@ import {
 } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { trim } from "../../util/util";
-// import { trim } from "../../util/util";
+import { TaggedPlant } from "../map/interfaces";
+import { shuffle, sortBy } from "lodash";
 
 interface Props {
   onChange(value: PointGroupSortType): void;
@@ -33,14 +34,6 @@ const optionList =
 const isSortType = (x: unknown): x is PointGroupSortType => {
   return optionList.includes(x as PointGroupSortType);
 };
-
-// const HELP_TEXT = trim(`
-// When executing a sequence over a Group of locations,
-// FarmBot will travel to each group member in the order
-// of the chosen sort method. If the random option is
-// chosen, FarmBot will travel in a random order every
-// time, so the ordering shown below will only be representative."
-// `);
 
 const selected = (value: PointGroupSortType) => ({
   label: t(optionsTable[value] || value),
@@ -77,3 +70,26 @@ export function PointGroupSortSelector(p: Props) {
     </p>
   </div>;
 }
+
+type Sorter = (p: TaggedPlant[]) => TaggedPlant[];
+type SortDictionary = Record<PointGroupSortType, Sorter>;
+
+const SORT_OPTIONS: SortDictionary = {
+  random(plants) {
+    return shuffle(plants);
+  },
+  xy_ascending(plants) {
+    return sortBy(plants, ["body.x", "body.y"]);
+  },
+  xy_decending(plants) {
+    return sortBy(plants, ["body.x", "body.y"]).reverse();
+  },
+  yx_ascending(plants) {
+    return sortBy(plants, ["body.y", "body.x"]);
+  },
+  yx_decending(plants) {
+    return sortBy(plants, ["body.y", "body.x"]).reverse();
+  }
+};
+export const sortGroupBy =
+  (st: PointGroupSortType, p: TaggedPlant[]) => SORT_OPTIONS[st](p);

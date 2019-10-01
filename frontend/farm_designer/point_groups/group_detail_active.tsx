@@ -14,7 +14,7 @@ import { Dictionary } from "lodash";
 import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
 import { TaggedPlant } from "../map/interfaces";
-import { PointGroupSortSelector } from "./point_group_sort_selector";
+import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 interface GroupDetailActiveProps {
@@ -91,17 +91,17 @@ export class GroupDetailActive
   }
 
   get icons() {
-    return this
-      .props
-      .plants
-      .map(point => {
-        return <LittleIcon
-          key={point.uuid}
-          icon={this.findIcon(point)}
-          group={this.props.group}
-          plant={point}
-          dispatch={this.props.dispatch} />;
-      });
+    const plants = sortGroupBy(this.props.group.body.sort_type,
+      this.props.plants);
+
+    return plants.map(point => {
+      return <LittleIcon
+        key={point.uuid}
+        icon={this.findIcon(point)}
+        group={this.props.group}
+        plant={point}
+        dispatch={this.props.dispatch} />;
+    });
   }
 
   saveGroup = () => {
