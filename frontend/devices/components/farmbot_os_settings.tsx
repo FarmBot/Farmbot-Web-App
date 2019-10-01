@@ -98,16 +98,6 @@ export class FarmbotOsSettings
           <Row>
             <Col xs={ColWidth.label}>
               <label>
-                {t("BOOT SEQUENCE")}
-              </label>
-            </Col>
-            <Col xs={9}>
-              <BootSequenceSelector />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={ColWidth.label}>
-              <label>
                 {t("TIME ZONE")}
               </label>
             </Col>
@@ -160,6 +150,16 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
+            <Row>
+              <Col xs={ColWidth.label}>
+                <label>
+                  {t("BOOT SEQUENCE")}
+                </label>
+              </Col>
+              <Col xs={7}>
+                <BootSequenceSelector />
+              </Col>
+            </Row>
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
