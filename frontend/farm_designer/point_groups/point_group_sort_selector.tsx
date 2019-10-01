@@ -52,17 +52,19 @@ const onChange = (cb: Function) => (ddi: DropDownItem) => {
   isSortType(value) && cb(value);
 };
 
-const SO_RANDOM = trim(`The order shown below is a simulation.
-The order will always be different.`);
+const SORT_DESC = trim(`When executing a sequence
+over a Group of locations, FarmBot will travel to
+each group member in the order of the chosen sort
+method. If the random option is chosen, FarmBot will
+travel in a random order every time, so the
+ordering shown below will only be representative.`);
 
 export function PointGroupSortSelector(p: Props) {
-  const text = (p.value === "random") ? t(SO_RANDOM) : "";
-  const desc = <p>{text}</p>;
+
   return <div>
     <div className="default-value-tooltip">
       <label>
-        {/* CSS IS HARD - RC
-        <ToolTip helpText={t(HELP_TEXT)} /> */}
+        {/* CSS IS HARD - RC <ToolTip helpText={t(HELP_TEXT)} /> */}
         {t("SORT BY")}
       </label>
     </div>
@@ -70,6 +72,8 @@ export function PointGroupSortSelector(p: Props) {
       list={optionPlusDescriptions}
       selectedItem={selected(p.value as PointGroupSortType)}
       onChange={onChange(p.onChange)} />
-    {desc}
+    <p>
+      {t(SORT_DESC)}
+    </p>
   </div>;
 }

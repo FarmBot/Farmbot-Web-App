@@ -114,7 +114,6 @@ export class GroupDetailActive
   }
 
   render() {
-    console.log("Hey");
     const { group } = this.props;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
