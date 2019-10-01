@@ -14,6 +14,8 @@ import { Dictionary } from "lodash";
 import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
 import { TaggedPlant } from "../map/interfaces";
+import { PointGroupSortSelector } from "./point_group_sort_selector";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 interface GroupDetailActiveProps {
   dispatch: Function;
@@ -106,7 +108,13 @@ export class GroupDetailActive
     this.props.dispatch(save(this.props.group.uuid));
   }
 
+  changeSortType = (sort_type: PointGroupSortType) => {
+    const { dispatch, group } = this.props;
+    dispatch(edit(group, { sort_type }));
+  }
+
   render() {
+    console.log("Hey");
     const { group } = this.props;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
@@ -131,6 +139,9 @@ export class GroupDetailActive
         <label>
           {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
         </label>
+        <PointGroupSortSelector
+          value={this.props.group.body.sort_type}
+          onChange={this.changeSortType} />
         <p>
           {t("Click plants in map to add or remove.")}
         </p>

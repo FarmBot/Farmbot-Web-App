@@ -23,7 +23,10 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
       .map(x => references[x])
       .map(x => x ? x.body.id : undefined);
     const point_ids = betterCompact(possiblyNil);
-    const group: PointGroup = ({ name: name || UNTITLED, point_ids });
+    const group: PointGroup = ({
+      name: name || UNTITLED, point_ids,
+      sort_type: "random"
+    });
     const thunk = initSave("PointGroup", group);
     return thunk(dispatch).then(() => history.push("/app/designer/groups"));
   };
