@@ -136,12 +136,12 @@ export class GroupDetailActive
         <input
           defaultValue={this.name}
           onChange={this.update} />
-        <label>
-          {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
-        </label>
         <PointGroupSortSelector
           value={this.props.group.body.sort_type}
           onChange={this.changeSortType} />
+        <label>
+          {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
+        </label>
         <p>
           {t("Click plants in map to add or remove.")}
         </p>
