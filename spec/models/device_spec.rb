@@ -5,10 +5,8 @@ describe Device do
   let(:user) { device.users.first }
 
   it "creates a token" do
-    jwt = device.create_token
+    jwt = device.help_customer
     expect(jwt).to be_kind_of(String)
-    d2 = Auth::FromJWT.run!(jwt: jwt).device
-    expect(d2.id).to eq(device.id)
   end
 
   it "is associated with a user" do

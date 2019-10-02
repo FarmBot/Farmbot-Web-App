@@ -185,14 +185,10 @@ class Device < ApplicationRecord
 
   # Helper method to create an auth token.
   # Used by sys admins to debug problems without performing a password reset.
-  def create_token
-    # If something manages to call this method, I'd like to be alerted of it.
+  def help_customer
     Rollbar.error("Someone is creating a debug user token", { device: self.id })
-    fbos_version = Api::AbstractController::EXPECTED_VER
-    SessionToken
-      .as_json(users.first, "SUPER", fbos_version)
-      .fetch(:token)
-      .encoded
+    token = SessionToken.as_json(users.first, "staff", fbos_version).to_json
+    return "localStorage['session'] = JSON.stringify(#{token});"
   end
 
   TOO_MANY_CONNECTIONS =
