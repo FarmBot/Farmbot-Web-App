@@ -10,7 +10,7 @@ module Points
     end
 
     optional do
-      boolean :hard_delete, default: false
+      boolean :hard_delete, default: true
       array :point_ids, class: Integer
       model :point, class: Point
     end

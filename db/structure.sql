@@ -1371,7 +1371,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -3003,30 +3003,6 @@ CREATE INDEX index_webcam_feeds_on_device_id ON public.webcam_feeds USING btree 
 
 
 --
--- Name: arg_sets arg_sets_fragment_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arg_sets
-    ADD CONSTRAINT arg_sets_fragment_id_fk FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
--- Name: arg_sets arg_sets_node_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.arg_sets
-    ADD CONSTRAINT arg_sets_node_id_fk FOREIGN KEY (node_id) REFERENCES public.nodes(id);
-
-
---
--- Name: edge_nodes edge_nodes_primary_node_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.edge_nodes
-    ADD CONSTRAINT edge_nodes_primary_node_id_fk FOREIGN KEY (primary_node_id) REFERENCES public.primary_nodes(id);
-
-
---
 -- Name: farm_events farm_events_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3179,46 +3155,6 @@ ALTER TABLE ONLY public.logs
 
 
 --
--- Name: nodes nodes_body_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT nodes_body_id_fk FOREIGN KEY (body_id) REFERENCES public.nodes(id);
-
-
---
--- Name: nodes nodes_fragment_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT nodes_fragment_id_fk FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
--- Name: nodes nodes_kind_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT nodes_kind_id_fk FOREIGN KEY (kind_id) REFERENCES public.kinds(id);
-
-
---
--- Name: nodes nodes_next_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT nodes_next_id_fk FOREIGN KEY (next_id) REFERENCES public.nodes(id);
-
-
---
--- Name: nodes nodes_parent_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.nodes
-    ADD CONSTRAINT nodes_parent_id_fk FOREIGN KEY (parent_id) REFERENCES public.nodes(id);
-
-
---
 -- Name: plant_templates plant_templates_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3259,99 +3195,11 @@ ALTER TABLE ONLY public.point_groups
 
 
 --
--- Name: primitive_pairs primitive_pairs_arg_name_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.primitive_pairs
-    ADD CONSTRAINT primitive_pairs_arg_name_id_fk FOREIGN KEY (arg_name_id) REFERENCES public.arg_names(id);
-
-
---
--- Name: primitive_pairs primitive_pairs_arg_set_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.primitive_pairs
-    ADD CONSTRAINT primitive_pairs_arg_set_id_fk FOREIGN KEY (arg_set_id) REFERENCES public.arg_sets(id);
-
-
---
--- Name: primitive_pairs primitive_pairs_fragment_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.primitive_pairs
-    ADD CONSTRAINT primitive_pairs_fragment_id_fk FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
--- Name: primitive_pairs primitive_pairs_primitive_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.primitive_pairs
-    ADD CONSTRAINT primitive_pairs_primitive_id_fk FOREIGN KEY (primitive_id) REFERENCES public.primitives(id);
-
-
---
--- Name: primitives primitives_fragment_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.primitives
-    ADD CONSTRAINT primitives_fragment_id_fk FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
--- Name: regimen_items regimen_items_regimen_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.regimen_items
-    ADD CONSTRAINT regimen_items_regimen_id_fk FOREIGN KEY (regimen_id) REFERENCES public.regimens(id);
-
-
---
--- Name: regimen_items regimen_items_sequence_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.regimen_items
-    ADD CONSTRAINT regimen_items_sequence_id_fk FOREIGN KEY (sequence_id) REFERENCES public.sequences(id);
-
-
---
 -- Name: saved_gardens saved_gardens_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.saved_gardens
     ADD CONSTRAINT saved_gardens_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
--- Name: standard_pairs standard_pairs_arg_name_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.standard_pairs
-    ADD CONSTRAINT standard_pairs_arg_name_id_fk FOREIGN KEY (arg_name_id) REFERENCES public.arg_names(id);
-
-
---
--- Name: standard_pairs standard_pairs_arg_set_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.standard_pairs
-    ADD CONSTRAINT standard_pairs_arg_set_id_fk FOREIGN KEY (arg_set_id) REFERENCES public.arg_sets(id);
-
-
---
--- Name: standard_pairs standard_pairs_fragment_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.standard_pairs
-    ADD CONSTRAINT standard_pairs_fragment_id_fk FOREIGN KEY (fragment_id) REFERENCES public.fragments(id);
-
-
---
--- Name: standard_pairs standard_pairs_node_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.standard_pairs
-    ADD CONSTRAINT standard_pairs_node_id_fk FOREIGN KEY (node_id) REFERENCES public.nodes(id);
 
 
 --
