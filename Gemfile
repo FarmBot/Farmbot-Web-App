@@ -39,6 +39,7 @@ group :development, :test do
   gem "rspec"
   gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
+  gem "immigrant"
 end
 
 group :production do

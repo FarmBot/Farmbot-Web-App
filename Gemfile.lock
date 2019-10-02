@@ -137,6 +137,8 @@ GEM
     httpclient (2.8.3)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
+    immigrant (0.3.6)
+      activerecord (>= 3.0)
     json (2.2.0)
     jsonapi-renderer (0.2.2)
     jwt (2.2.1)
@@ -302,6 +304,7 @@ DEPENDENCIES
   font-awesome-rails
   google-cloud-storage (~> 1.11)
   hashdiff
+  immigrant
   jwt
   mutations
   passenger
