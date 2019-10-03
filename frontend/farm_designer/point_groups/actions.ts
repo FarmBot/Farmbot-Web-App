@@ -25,9 +25,12 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
     const point_ids = betterCompact(possiblyNil);
     const group: PointGroup = ({
       name: name || UNTITLED, point_ids,
-      sort_type: "random"
+      sort_type: "xy_ascending"
     });
     const thunk = initSave("PointGroup", group);
-    return thunk(dispatch).then(() => history.push("/app/designer/groups"));
+    return thunk(dispatch).then((x: unknown) => {
+      console.dir(x);
+      history.push("/app/designer/groups");
+    });
   };
 };
