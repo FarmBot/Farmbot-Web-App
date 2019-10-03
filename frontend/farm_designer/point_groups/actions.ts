@@ -1,8 +1,9 @@
 import { betterCompact } from "../../util";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
-import { initSave } from "../../api/crud";
+import { init, save } from "../../api/crud";
 import { history } from "../../history";
 import { GetState } from "../../redux/interfaces";
+import { findPointGroup } from "../../resources/selectors";
 
 const UNTITLED = "Untitled Group";
 
@@ -27,10 +28,13 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
       name: name || UNTITLED, point_ids,
       sort_type: "xy_ascending"
     });
-    const thunk = initSave("PointGroup", group);
-    return thunk(dispatch).then((x: unknown) => {
-      console.dir(x);
-      history.push("/app/designer/groups");
+    const action = init("PointGroup", group);
+    dispatch(action);
+    return dispatch(save(action.payload.uuid)).then(() => {
+      console.log("==");
+      const pg = findPointGroup(getState().resources.index, action.payload.uuid);
+      const { id } = pg.body;
+      history.push("/app/designer/groups/" + (id ? id : ""));
     });
   };
 };
