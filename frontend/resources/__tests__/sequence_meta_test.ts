@@ -51,7 +51,7 @@ describe("determineDropdown", () => {
       args: {
         label: "x",
         data_value: {
-          kind: "point_group", args: { resource_id: 12 }
+          kind: "point_group", args: { point_group_id: 12 }
         }
       }
     }, buildResourceIndex([pg]).index);

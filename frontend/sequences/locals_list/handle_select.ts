@@ -128,12 +128,12 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "parameter": return newParameter(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup":
-      const resource_id = parseInt("" + ddi.value, 10);
+      const point_group_id = parseInt("" + ddi.value, 10);
       return {
         kind: "parameter_application",
         args: {
           label: props.identifierLabel,
-          data_value: { kind: "point_group", args: { resource_id } }
+          data_value: { kind: "point_group", args: { point_group_id } }
         }
       };
   }

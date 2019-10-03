@@ -118,7 +118,7 @@ export const determineDropdown =
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
       case "point_group":
-        const value = data_value.args.resource_id;
+        const value = data_value.args.point_group_id;
         const uuid2 = findResourceById(resources, "PointGroup", value);
         const group = findPointGroup(resources, uuid2);
         return {
