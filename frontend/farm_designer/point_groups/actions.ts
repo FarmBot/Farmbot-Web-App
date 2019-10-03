@@ -31,7 +31,6 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
     const action = init("PointGroup", group);
     dispatch(action);
     return dispatch(save(action.payload.uuid)).then(() => {
-      console.log("==");
       const pg = findPointGroup(getState().resources.index, action.payload.uuid);
       const { id } = pg.body;
       history.push("/app/designer/groups/" + (id ? id : ""));

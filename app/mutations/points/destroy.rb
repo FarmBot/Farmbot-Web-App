@@ -46,8 +46,11 @@ module Points
         points.destroy_all
       else
         Point.transaction do
-          archive_points
-          destroy_all_others
+          PointGroupItem.transaction do
+            PointGroupItem.where(point_id: point_ids || point.id).destroy_all
+            archive_points
+            destroy_all_others
+          end
         end
       end
     end
