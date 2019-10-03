@@ -10,7 +10,6 @@ module Points
     end
 
     optional do
-      boolean :hard_delete, default: true
       array :point_ids, class: Integer
       model :point, class: Point
     end
@@ -42,33 +41,15 @@ module Points
     end
 
     def execute
-      if hard_delete
-        points.destroy_all
-      else
-        Point.transaction do
-          PointGroupItem.transaction do
-            PointGroupItem.where(point_id: point_ids || point.id).destroy_all
-            archive_points
-            destroy_all_others
-          end
+      Point.transaction do
+        PointGroupItem.transaction do
+          PointGroupItem.where(point_id: point_ids || point.id).destroy_all
+          points.destroy_all
         end
       end
     end
 
     private
-
-    def archive_points
-      points
-        .where(pointer_type: "GenericPointer")
-        .discard_all
-    end
-
-    def destroy_all_others
-      points
-        .where
-        .not(pointer_type: "GenericPointer")
-        .destroy_all
-    end
 
     def points
       @points ||= Point.where(id: point_ids)
