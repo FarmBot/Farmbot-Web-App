@@ -113,6 +113,14 @@ nav {
     div {
       display: inline;
       vertical-align: middle;
+      &:after{
+        content: attr(data-title);
+        display: block;
+        font-weight: bold;
+        height: 0;
+        overflow: hidden;
+        visibility: hidden;
+      }
     }
   }
 }
@@ -136,6 +144,14 @@ nav {
     i {
       margin-right: 0.8rem;
     }
+  }
+  .nav-name:after{
+    content: attr(data-title);
+    display: block;
+    font-weight: bold;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 }
 
