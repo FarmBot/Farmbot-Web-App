@@ -18,9 +18,9 @@ interface Props {
 const optionsTable: Record<PointGroupSortType, string> = {
   "random": "Random Order",
   "xy_ascending": "X/Y, Ascending",
-  "xy_decending": "X/Y, Descending",
+  "xy_descending": "X/Y, Descending",
   "yx_ascending": "Y/X, Ascending",
-  "yx_decending": "Y/X Descending",
+  "yx_descending": "Y/X Descending",
 }; // Typechecker will remind us when this needs an update. Don't simplify - RC
 
 const optionPlusDescriptions =
@@ -81,13 +81,13 @@ const SORT_OPTIONS: SortDictionary = {
   xy_ascending(plants) {
     return sortBy(plants, ["body.x", "body.y"]);
   },
-  xy_decending(plants) {
+  xy_descending(plants) {
     return sortBy(plants, ["body.x", "body.y"]).reverse();
   },
   yx_ascending(plants) {
     return sortBy(plants, ["body.y", "body.x"]);
   },
-  yx_decending(plants) {
+  yx_descending(plants) {
     return sortBy(plants, ["body.y", "body.x"]).reverse();
   }
 };
