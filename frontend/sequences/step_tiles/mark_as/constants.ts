@@ -15,6 +15,7 @@ export const POINT_OPTIONS: DropDownItem[] = [
 export const PLANT_OPTIONS: DropDownItem[] = [
   { label: t("Planned"), value: "planned" },
   { label: t("Planted"), value: "planted" },
+  { label: t("Sprouted"), value: "sprouted" },
   { label: t("Harvested"), value: "harvested" },
 ];
 
