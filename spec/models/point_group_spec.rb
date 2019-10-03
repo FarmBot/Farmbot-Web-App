@@ -14,6 +14,46 @@ describe PointGroup do
                              point_ids: [point.id])
   end
 
+  let(:s1) do
+    Sequences::Create.run!(kind: "sequence",
+                           device: device,
+                           name: "has parameters",
+                           args: {
+                             locals: {
+                               kind: "scope_declaration",
+                               args: {},
+                               body: [
+                                 {
+                                   kind: "parameter_declaration",
+                                   args: {
+                                     label: "parent",
+                                     default_value: {
+                                       kind: "coordinate",
+                                       args: { x: 9, y: 9, z: 9 },
+                                     },
+                                   },
+                                 },
+                               ],
+                             },
+                           },
+                           body: [
+                             {
+                               kind: "move_absolute",
+                               args: {
+                                 speed: 100,
+                                 location: {
+                                   kind: "identifier",
+                                   args: { label: "parent" },
+                                 },
+                                 offset: {
+                                   kind: "coordinate",
+                                   args: { x: 0, y: 0, z: 0 },
+                                 },
+                               },
+                             },
+                           ])
+  end
+
   it "maintains referential integrity" do
     PointGroupItem.destroy_all
     Point.destroy_all
@@ -25,45 +65,7 @@ describe PointGroup do
   end
 
   it "refuses to delete groups in-use by sequences" do
-    # Create a group (done)
-    # Use it in a sequence
-    s1 = Sequences::Create.run!(kind: "sequence",
-                                device: device,
-                                name: "has parameters",
-                                args: {
-                                  locals: {
-                                    kind: "scope_declaration",
-                                    args: {},
-                                    body: [
-                                      {
-                                        kind: "parameter_declaration",
-                                        args: {
-                                          label: "parent",
-                                          default_value: {
-                                            kind: "coordinate",
-                                            args: { x: 9, y: 9, z: 9 },
-                                          },
-                                        },
-                                      },
-                                    ],
-                                  },
-                                },
-                                body: [
-                                  {
-                                    kind: "move_absolute",
-                                    args: {
-                                      speed: 100,
-                                      location: {
-                                        kind: "identifier",
-                                        args: { label: "parent" },
-                                      },
-                                      offset: {
-                                        kind: "coordinate",
-                                        args: { x: 0, y: 0, z: 0 },
-                                      },
-                                    },
-                                  },
-                                ])
+    # Create a group and use it in a sequence
     Sequences::Create.run!(name: "Wrapper",
                            device: device,
                            body: [
@@ -90,14 +92,35 @@ describe PointGroup do
 
                              },
                            ])
-    boom = ->() do
-      PointGroups::Destroy.run!(point_group: point_group, device: device)
-    end
-
-    expect(boom).to raise_error(Mutations::ValidationException)
-    # expect it to fail
+    result = PointGroups::Destroy.run(point_group: point_group, device: device)
+    error = result.errors.fetch("in_use").message
+    expect(error).to eq("Can't delete group because it is in use by sequence 'Wrapper'")
   end
 
-  it "refuses to delete groups in-use by regimens"
+  it "refuses to delete groups in-use by regimens" do
+    puts "TODO: Clear Redis cache??? Don't cache ARG_NAME_ID?? Hmm..."
+    Regimens::Create.run!(name: "Wrapper",
+                          device: device,
+                          color: "red",
+                          regimen_items: [],
+                          body: [
+                            {
+                              kind: "parameter_application",
+                              args: {
+                                label: "parent",
+                                data_value: {
+                                  kind: "point_group",
+                                  args: {
+                                    point_group_id: point_group.id,
+                                  },
+                                },
+                              },
+                            },
+                          ])
+    result = PointGroups::Destroy.run(point_group: point_group, device: device)
+    error = result.errors.fetch("in_use").message
+    expect(error).to eq("Can't delete group because it is in use by Regimen 'Wrapper'")
+  end
+
   it "refuses to delete groups in-use by farm events"
 end
