@@ -87,4 +87,8 @@ class Fragment < ApplicationRecord
   def broadcast?
     false
   end
+
+  def self.remove_old_fragments_for_device(dev)
+    dev.fragments.select { |x| x.owner == nil }.map { |x| x.destroy! }
+  end
 end

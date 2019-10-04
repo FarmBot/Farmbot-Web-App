@@ -9,6 +9,7 @@ module PointGroups
     end
 
     def validate
+      Fragment.remove_old_fragments_for_device(device)
       add_error "in_use", :in_use, human_readable_error if in_use?
     end
 
@@ -53,6 +54,7 @@ module PointGroups
         @fragment_users = Fragment
           .find(relevant_fragments)
           .map(&:owner)
+          .compact # Referential integrity issues??? - RC 4 oct 19
           .map { |x| "#{x.class} '#{x.fancy_name}'" }
       end
     end
