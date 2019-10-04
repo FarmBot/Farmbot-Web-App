@@ -185,9 +185,6 @@ export namespace ToolTips {
   export const FARMWARE_LIST =
     trim(`View, select, and install new Farmware.`);
 
-  export const FARMWARE_INFO =
-    trim(`Farmware (plugin) details and management.`);
-
   export const PHOTOS =
     trim(`Take and view photos with your FarmBot's camera.`);
 

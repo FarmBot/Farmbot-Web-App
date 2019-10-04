@@ -1432,6 +1432,16 @@ ul {
   }
 }
 
+.dynamic-column{
+  display: flex;
+  .location-form, .expandable-header{
+    padding-left: 15px;
+  }
+  .expandable-header{
+    padding-right: 15px;
+  }
+}
+
 textarea {
   border: 0;
   padding: 6px 8px;
