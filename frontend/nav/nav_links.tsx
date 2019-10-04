@@ -62,7 +62,7 @@ export const NavLinks = (props: NavLinksProps) => {
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
-          <div>
+          <div data-title={t(link.name)}>
             {t(link.name)}
             {link.slug === "messages" && props.alertCount > 0 &&
               <div className={"saucer fun"}>

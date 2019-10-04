@@ -1149,7 +1149,8 @@ CREATE TABLE public.point_groups (
     name character varying(80) NOT NULL,
     device_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    sort_type character varying(20) DEFAULT 'xy_ascending'::character varying
 );
 
 
@@ -3275,6 +3276,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190804194154'),
 ('20190823164837'),
 ('20190918185359'),
-('20190924190539');
+('20190924190539'),
+('20190930202839');
 
 

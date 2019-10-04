@@ -32,14 +32,15 @@ git clone https://github.com/FarmBot/Farmbot-Web-App --depth=5 --branch=master
 
 cd Farmbot-Web-App
 
+snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
+cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
+
 # == This is a very important step!!! ==
 #
 # Open `.env` in a text editor and change all the values.
 #
 # == Nothing will work if you skip this step!!! ==
 
-snap install micro --classic # Don't like `micro`? vim, nano, etc are fine, too.
-cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
 micro .env          # ⚠ SKIP THIS STEP IF UPGRADING!
 # ^ This is the most important step
 # READ NOTE ABOVE. Very important!
