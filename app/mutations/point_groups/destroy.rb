@@ -1,7 +1,6 @@
 module PointGroups
   class Destroy < Mutations::Command
     STILL_IN_USE = "Can't delete group because it is in use by %{data_users}"
-    ARG_NAME_ID = ArgName.find_or_create_by!(value: "point_group_id").id
 
     required do
       model :device, class: Device
@@ -47,7 +46,7 @@ module PointGroups
           .where(fragment_id: my_fragment_ids)
           .where(value: point_group.id)
         relevant_fragments = PrimitivePair
-          .where(arg_name_id: ARG_NAME_ID)
+          .where(arg_name_id: ArgName.find_or_create_by!(value: "point_group_id").id)
           .where(primitive_id: primitives.pluck(:id))
           .pluck(:fragment_id)
           .uniq

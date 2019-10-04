@@ -97,9 +97,9 @@ describe PointGroup do
     expect(error).to eq("Can't delete group because it is in use by sequence 'Wrapper'")
   end
 
-  it "refuses to delete groups in-use by regimens" do
-    puts "TODO: Clear Redis cache??? Don't cache ARG_NAME_ID?? Hmm..."
-    Regimens::Create.run!(name: "Wrapper",
+  fit "refuses to delete groups in-use by regimens" do
+    point_group.update_attributes!(name: "@@@")
+    Regimens::Create.run!(name: "Wrapper 26",
                           device: device,
                           color: "red",
                           regimen_items: [],
@@ -119,7 +119,7 @@ describe PointGroup do
                           ])
     result = PointGroups::Destroy.run(point_group: point_group, device: device)
     error = result.errors.fetch("in_use").message
-    expect(error).to eq("Can't delete group because it is in use by Regimen 'Wrapper'")
+    expect(error).to eq("Can't delete group because it is in use by Regimen 'Wrapper 26'")
   end
 
   it "refuses to delete groups in-use by farm events"
