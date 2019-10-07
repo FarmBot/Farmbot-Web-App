@@ -65,10 +65,7 @@ module Points
       # Cache relations *before* deleting PGIs.
       pgs = point_groups
       point_group_items.destroy_all
-      pgs.map do |pg|
-        puts "Manually syncing #{pg.name}"
-        pg.manually_sync!
-      end
+      pgs.map(&:manually_sync!)
     end
 
     def points
