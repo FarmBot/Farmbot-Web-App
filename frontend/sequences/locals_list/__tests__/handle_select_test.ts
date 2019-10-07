@@ -36,7 +36,7 @@ describe("convertDDItoDeclaration()", () => {
       kind: "parameter_application",
       args: {
         label: "Y",
-        data_value: { kind: "point_group", args: { resource_id: 23 } }
+        data_value: { kind: "point_group", args: { point_group_id: 23 } }
       }
     });
   });
