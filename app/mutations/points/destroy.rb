@@ -43,13 +43,33 @@ module Points
     def execute
       Point.transaction do
         PointGroupItem.transaction do
-          PointGroupItem.where(point_id: point_ids || point.id).destroy_all
+          clean_up_groups
           points.destroy_all
         end
       end
     end
 
     private
+
+    def point_groups
+      @point_groups ||=
+        PointGroup.find(point_group_items.pluck(:point_group_id).uniq)
+    end
+
+    def point_group_items
+      @point_group_items ||=
+        PointGroupItem.where(point_id: point_ids || point.id)
+    end
+
+    def clean_up_groups
+      # Cache relations *before* deleting PGIs.
+      pgs = point_groups
+      point_group_items.destroy_all
+      pgs.map do |pg|
+        puts "Manually syncing #{pg.name}"
+        pg.manually_sync!
+      end
+    end
 
     def points
       @points ||= Point.where(id: point_ids)

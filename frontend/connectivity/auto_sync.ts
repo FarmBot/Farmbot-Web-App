@@ -31,8 +31,10 @@ export function routeMqttData(chan: string, payload: Buffer):
   const { body, args } = decodeBinary(payload);
 
   if (body) {
+    console.log("@UPDATE@ " + (kind || "?"));
     return { status: "UPDATE", body, kind: kind, id, sessionId: args.label };
   } else {
+    console.log("@DELETE@ " + (kind || "?"));
     return { status: "DELETE", kind: kind, id }; // 'null' body means delete.
   }
 }
@@ -83,6 +85,7 @@ export function handleCreateOrUpdate(dispatch: Function,
 export const autoSync =
   (dispatch: Function, getState: GetState) => {
     return (chan: string, payload: Buffer) => {
+      console.log("Hmmm " + chan);
       handleInbound(dispatch, getState, routeMqttData(chan, payload));
     };
   };
