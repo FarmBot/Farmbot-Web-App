@@ -5,7 +5,8 @@ import React from "react";
 describe("<ToolTip />", () => {
   const fakeProps = (): ToolTipProps => {
     return {
-      helpText: "such help"
+      helpText: "such help",
+      docPage: "weed-detection"
     };
   };
   const p = fakeProps();
@@ -31,4 +32,9 @@ describe("<ToolTip />", () => {
     expect(wrapper.find(".title-help-text.open").length).toEqual(1);
   });
 
+  it("renders doc link", () => {
+    expect(wrapper.text()).toContain("Documentation");
+    expect(wrapper.find("i").at(2).html()).toContain("fa-external-link");
+    expect(wrapper.find("a").html()).toContain("https://software.farm.bot/docs/weed-detection");
+  });
 });
