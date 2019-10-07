@@ -65,7 +65,16 @@ module Points
       # Cache relations *before* deleting PGIs.
       pgs = point_groups
       point_group_items.destroy_all
-      pgs.map(&:manually_sync!)
+      pgs.map do |x|
+        # WOW, THIS IS COMPLICATED.
+        # Why are you calling `SecureRandom.uuid`, Rick?
+        # """
+        # If you don't give the auto_sync message
+        # a fresh session_id, the frontend will
+        # think it is an "echo" and cancel it out.
+        # """ - Rick
+        x.broadcast!(SecureRandom.uuid)
+      end
     end
 
     def points

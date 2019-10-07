@@ -38,6 +38,9 @@ export function getMiddleware(env: EnvName) {
   const dtCompose = wow && wow({
     actionsBlacklist: [
       Actions.NETWORK_EDGE_CHANGE,
+      Actions.PING_NO,
+      Actions.PING_OK,
+      Actions.PING_START,
       Actions.RESOURCE_READY
     ]
   });
