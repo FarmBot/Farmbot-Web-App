@@ -118,7 +118,6 @@ export class GroupDetailActive
   }
 
   render() {
-    const { group } = this.props;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
         onBack={this.saveGroup}
@@ -149,7 +148,7 @@ export class GroupDetailActive
         <DeleteButton
           className="groups-delete-btn"
           dispatch={this.props.dispatch}
-          uuid={group.uuid}
+          uuid={this.props.group.uuid}
           onDestroy={history.back}>
           {t("DELETE GROUP")}
         </DeleteButton>

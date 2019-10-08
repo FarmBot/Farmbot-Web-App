@@ -108,4 +108,23 @@ describe("<GroupDetailActive/>", () => {
     });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: NEW_NAME });
   });
+
+  it("changes the sort type", () => {
+    const p = fakeProps();
+    const { dispatch } = p;
+    const el = new GroupDetailActive(p);
+    el.changeSortType("random");
+    expect(dispatch).toHaveBeenCalled();
+    expect(edit).toHaveBeenCalledWith({
+      body: {
+        name: "XYZ",
+        point_ids: [1],
+        sort_type: "xy_ascending",
+      },
+      kind: "PointGroup",
+      specialStatus: "DIRTY",
+      uuid: "PointGroup.0.16",
+    },
+      { sort_type: "random" });
+  });
 });

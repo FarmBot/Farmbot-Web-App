@@ -30,7 +30,7 @@ const optionPlusDescriptions =
 const optionList =
   optionPlusDescriptions.map(x => x.value);
 
-const isSortType = (x: unknown): x is PointGroupSortType => {
+export const isSortType = (x: unknown): x is PointGroupSortType => {
   return optionList.includes(x as PointGroupSortType);
 };
 
@@ -39,7 +39,7 @@ const selected = (value: PointGroupSortType) => ({
   value: value
 });
 
-const onChange = (cb: Function) => (ddi: DropDownItem) => {
+export const sortTypeChange = (cb: Function) => (ddi: DropDownItem) => {
   const { value } = ddi;
   isSortType(value) && cb(value);
 };
@@ -62,7 +62,7 @@ export function PointGroupSortSelector(p: Props) {
     <FBSelect
       list={optionPlusDescriptions}
       selectedItem={selected(p.value as PointGroupSortType)}
-      onChange={onChange(p.onChange)} />
+      onChange={sortTypeChange(p.onChange)} />
     <p>
       {(p.value == "random") ? t(SORT_DESC) : ""}
     </p>
@@ -72,7 +72,7 @@ export function PointGroupSortSelector(p: Props) {
 type Sorter = (p: TaggedPlant[]) => TaggedPlant[];
 type SortDictionary = Record<PointGroupSortType, Sorter>;
 
-const SORT_OPTIONS: SortDictionary = {
+export const SORT_OPTIONS: SortDictionary = {
   random(plants) {
     return shuffle(plants);
   },
