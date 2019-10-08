@@ -157,7 +157,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       <StepContent className={className}>
         <Row>
           <div className={"dynamic-column"}>
-            <Col>
+            <Col className="input-line">
               <this.LocationForm />
             </Col>
             <Col>

@@ -1268,7 +1268,7 @@ ul {
   }
 }
 
-.documentation-widget {
+.input-line-widget {
   .fa-external-link {
     margin-left: 1rem;
   }
@@ -1439,6 +1439,9 @@ ul {
   }
   .expandable-header{
     padding-right: 15px;
+  }
+  .input-line{
+    width: -webkit-fill-available;
   }
 }
 
