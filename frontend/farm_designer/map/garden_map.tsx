@@ -27,6 +27,7 @@ import {
   dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
+import { GroupOrder } from "../point_groups/group_order_visual";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -343,6 +344,9 @@ export class GardenMap extends
     data={this.props.designer.currentPoint}
     key={"currentPoint"}
     mapTransformProps={this.mapTransformProps} />
+  GroupOrder = () => <GroupOrder
+    plants={this.props.plants}
+    mapTransformProps={this.mapTransformProps} />
   Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
     botSize={this.props.botSize} /> : <g />
 
@@ -365,6 +369,7 @@ export class GardenMap extends
           <this.SelectionBox />
           <this.TargetCoordinate />
           <this.DrawnPoint />
+          <this.GroupOrder />
           <this.Bugs />
         </svg>
       </svg>
