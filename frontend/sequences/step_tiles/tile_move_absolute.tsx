@@ -57,11 +57,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
     const location = variable.args.data_value;
-    switch (location.kind) {
-      case "point_group":
-        throw new Error("Can't put `point_group` into `move_abs");
-      default:
-        this.updateArgs({ location });
+    if (location.kind !== "point_group") {
+      return this.updateArgs({ location });
     }
   }
 

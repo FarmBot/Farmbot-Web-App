@@ -40,17 +40,14 @@ const change =
   (onChange: (v: ParameterDeclaration) => void, variable: VariableNode) =>
     (formResponse: ParameterApplication) => {
       const { data_value } = formResponse.args;
-      switch (data_value.kind) {
-        case "point_group":
-          return;
-        default:
-          onChange({
-            kind: "parameter_declaration",
-            args: {
-              label: variable.args.label,
-              default_value: data_value
-            }
-          });
+      if (data_value.kind !== "point_group") {
+        onChange({
+          kind: "parameter_declaration",
+          args: {
+            label: variable.args.label,
+            default_value: data_value
+          }
+        });
       }
     };
 

@@ -136,17 +136,6 @@ export const ALL_POINT_LABELS = {
 
 export type EveryPointType = keyof typeof ALL_POINT_LABELS;
 
-const isEveryPointType = (x: string): x is EveryPointType =>
-  Object.keys(ALL_POINT_LABELS).includes(x);
-
-export const safeEveryPointType = (x: string): EveryPointType => {
-  if (isEveryPointType(x)) {
-    return x;
-  } else {
-    throw new Error(`'${x}' is not of type EveryPointType`);
-  }
-};
-
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   label: vector
     ? `${t("Coordinate")} (${vector.x}, ${vector.y}, ${vector.z})`

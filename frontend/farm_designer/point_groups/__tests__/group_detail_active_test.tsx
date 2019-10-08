@@ -17,6 +17,7 @@ import {
 import { save, overwrite, edit } from "../../../api/crud";
 import { toggleHoveredPlant } from "../../actions";
 import { DEFAULT_ICON } from "../../../open_farm/icons";
+import { SpecialStatus } from "farmbot";
 
 describe("<GroupDetailActive/>", () => {
   function fakeProps() {
@@ -24,6 +25,7 @@ describe("<GroupDetailActive/>", () => {
     plant.body.id = 1;
     const plants = [plant];
     const group = fakePointGroup();
+    group.specialStatus = SpecialStatus.DIRTY;
     group.body.name = "XYZ";
     group.body.point_ids = [plant.body.id];
     return { dispatch: jest.fn(), group, plants };

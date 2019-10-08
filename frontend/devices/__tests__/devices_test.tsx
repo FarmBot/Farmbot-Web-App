@@ -1,3 +1,5 @@
+jest.mock("../../api/crud", () => ({ save: jest.fn() }));
+
 import * as React from "react";
 import { shallow, render } from "enzyme";
 import { RawDevices as Devices } from "../devices";
@@ -10,6 +12,8 @@ import {
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { HardwareSettings } from "../components/hardware_settings";
+import { DeepPartial } from "redux";
+import { save } from "../../api/crud";
 
 describe("<Devices/>", () => {
   const fakeProps = (): Props => ({
@@ -58,5 +62,18 @@ describe("<Devices/>", () => {
     const wrapper = shallow(<Devices {...p} />);
     expect(wrapper.find(HardwareSettings).props().firmwareHardware)
       .toEqual("arduino");
+  });
+
+  it("triggers a save", () => {
+    type P = FarmbotOsSettings["props"];
+    type DPP = DeepPartial<P>;
+    const props: DPP = {
+      deviceAccount: { uuid: "a.b.c" },
+      dispatch: jest.fn()
+    };
+    const el = new FarmbotOsSettings(props as P);
+    el.updateBot();
+    expect(save)
+      .toHaveBeenCalledWith(props.deviceAccount && props.deviceAccount.uuid);
   });
 });
