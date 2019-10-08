@@ -6,7 +6,7 @@ interface CenterProps {
   children?: React.ReactNode;
   className: string;
   title: string;
-  helpText: string;
+  helpText?: string;
   width?: number;
   docPage?: DocSlug;
   backButton?: React.ReactNode;
@@ -19,7 +19,9 @@ export function CenterPanel(props: CenterProps) {
       <h3>
         <i>{t(props.title)}</i>
       </h3>
-      <ToolTip helpText={t(props.helpText)} docPage={props.docPage} />
+      {props.helpText &&
+        <ToolTip helpText={t(props.helpText)} docPage={props.docPage} />
+      }
       {props.children}
     </div>
   </Col>;

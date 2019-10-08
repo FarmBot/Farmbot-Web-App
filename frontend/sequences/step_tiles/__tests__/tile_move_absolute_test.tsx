@@ -80,6 +80,26 @@ describe("<TileMoveAbsolute/>", () => {
     expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
   });
 
+  it("Options visible on greater screen width", () => {
+    const p = fakeProps();
+    Object.defineProperty(window, "innerWidth", {
+      value: 800,
+      configurable: true
+    });
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.find("h4").text()).toEqual("Options  []");
+  });
+
+  it("Options not visible on small screen width like mobile", () => {
+    const p = fakeProps();
+    Object.defineProperty(window, "innerWidth", {
+      value: 360,
+      configurable: true
+    });
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.find("h4").text()).toEqual("[]");
+  });
+
   it("expands form", () => {
     const p = fakeProps();
     p.expandStepOptions = false;

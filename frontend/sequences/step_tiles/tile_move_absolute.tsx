@@ -138,7 +138,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     if (currentSequence && !isTaggedSequence(currentSequence)) {
       throw new Error("WHOOPS!");
     }
-
+    const isMobile = window.innerWidth < 660;
     const className = "move-absolute-step";
     return <StepWrapper>
       <StepHeader
@@ -156,15 +156,17 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       </StepHeader>
       <StepContent className={className}>
         <Row>
-          <Col xs={10}>
-            <this.LocationForm />
-          </Col>
-          <Col xs={2}>
-            <ExpandableHeader
-              expanded={this.state.more}
-              title={t("Options")}
-              onClick={() => this.setState({ more: !this.state.more })} />
-          </Col>
+          <div className={"dynamic-column"}>
+            <Col className="input-line">
+              <this.LocationForm />
+            </Col>
+            <Col>
+              <ExpandableHeader
+                expanded={this.state.more}
+                title={isMobile ? "" : t("Options")}
+                onClick={() => this.setState({ more: !this.state.more })} />
+            </Col>
+          </div>
         </Row>
         <Collapse isOpen={this.state.more}>
           <this.OptionsForm />

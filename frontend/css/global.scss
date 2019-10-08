@@ -1268,7 +1268,7 @@ ul {
   }
 }
 
-.documentation-widget {
+.input-line-widget {
   .fa-external-link {
     margin-left: 1rem;
   }
@@ -1429,6 +1429,19 @@ ul {
   code {
     background: $light_gray;
     color: $dark_gray;
+  }
+}
+
+.dynamic-column{
+  display: flex;
+  .location-form, .expandable-header{
+    padding-left: 15px;
+  }
+  .expandable-header{
+    padding-right: 15px;
+  }
+  .input-line{
+    width: -webkit-fill-available;
   }
 }
 
