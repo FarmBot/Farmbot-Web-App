@@ -38,7 +38,7 @@ module PointGroups
     def fragment_users
       if @fragment_users
         @fragment_users
-      else
+      else # TODO: Create SQL view to increase performance. - RC 8 OCT 19
         my_fragment_ids = Fragment
           .where(device_id: device.id)
           .pluck(:id)

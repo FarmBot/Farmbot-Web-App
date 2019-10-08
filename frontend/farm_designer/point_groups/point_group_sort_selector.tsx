@@ -2,8 +2,7 @@ import * as React from "react";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import {
   FBSelect,
-  DropDownItem,
-  // ToolTip
+  DropDownItem
 } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { trim } from "../../util/util";
@@ -57,7 +56,6 @@ export function PointGroupSortSelector(p: Props) {
   return <div>
     <div className="default-value-tooltip">
       <label>
-        {/* CSS IS HARD - RC <ToolTip helpText={t(HELP_TEXT)} /> */}
         {t("SORT BY")}
       </label>
     </div>
