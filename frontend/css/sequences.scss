@@ -107,7 +107,7 @@
   >.location-form {
     margin: auto;
     margin-top: 1rem;
-    width: 80%;
+    width: 100%;
     max-width: 40rem;
     background: $off_white;
     label {
@@ -126,6 +126,15 @@
     >.location-form-content {
       padding: 1rem;
     }
+  }
+}
+
+.execute-sequence{
+  position:relative;
+  padding: 0 15px 0 15px;
+  width: 50%;
+  @media screen and (max-width: 1075px){
+    width: 100%;
   }
 }
 
