@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { DocSlug } from "./doc_link";
 import { t } from "../i18next_wrapper";
 import { ToolTip } from "./tooltip";
@@ -16,7 +15,6 @@ export function WidgetHeader(props: WidgetHeaderProps) {
     {props.children}
     <h5>{t(props.title)}</h5>
     {props.helpText &&
-      <ToolTip helpText={props.helpText} docPage={props.docPage} />
-    }
+      <ToolTip helpText={props.helpText} docPage={props.docPage} />}
   </div>;
 }
