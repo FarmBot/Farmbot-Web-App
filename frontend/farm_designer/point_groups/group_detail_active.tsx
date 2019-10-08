@@ -6,7 +6,7 @@ import {
   DesignerPanelContent,
   DesignerPanelHeader
 } from "../plants/designer_panel";
-import { TaggedPointGroup, SpecialStatus } from "farmbot";
+import { TaggedPointGroup } from "farmbot";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save, edit } from "../../api/crud";
