@@ -12,7 +12,7 @@ import {
   LocationFormProps, PARENT, AllowedVariableNodes
 } from "../locals_list_support";
 import { difference } from "lodash";
-import { locationFormList, everyPointDDI } from "../location_form_list";
+import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -118,8 +118,11 @@ describe("<LocationForm/>", () => {
     p.shouldDisplay = () => true;
     p.disallowGroups = false;
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list)
-      .toContainEqual(everyPointDDI("Tool"));
+    expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
+      headingId: "Coordinate",
+      label: "Custom Coordinates",
+      value: ""
+    });
   });
 
   it("renders collapse icon: open", () => {

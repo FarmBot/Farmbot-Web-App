@@ -31,7 +31,9 @@ module PointGroups
     private
 
     def update_attributes
-      @update_attributes ||= inputs.slice(:name).merge(updated_at: Time.now)
+      @update_attributes ||= inputs
+        .except(:device, :point_ids, :point_group)
+        .merge(updated_at: Time.now)
     end
 
     def maybe_reconcile_points

@@ -4,6 +4,31 @@ require_relative "scenario"
 describe Points::Destroy do
   let(:device) { FactoryBot.create(:device) }
 
+  it "cleans up point groups" do
+    previous_count = PointGroupItem.count
+    # Create point
+    point = Points::Create.run!(device: device,
+                                name: "ref integrity",
+                                x: 0,
+                                y: 0,
+                                z: 0,
+                                pointer_type: "GenericPointer")
+
+    # add it to a group
+    pg = PointGroups::Create.run!(device: device,
+                                  point_ids: [point.id],
+                                  name: "ref integrity")
+    expect(pg.point_group_items.count).to eq(1)
+    old_ts = pg.updated_at
+    # Destroy the point
+    Points::Destroy.run!(device: device, point: point)
+
+    # Ensure `point_id` is gone from group
+    expect(pg.reload.point_group_items.count).to eq(0)
+    expect(pg.updated_at).to be > old_ts
+    expect(PointGroupItem.count).to eq(previous_count)
+  end
+
   it "prevents deletion of points that are in use" do
     # create many points
     points = FactoryBot.create_list(:generic_pointer, 3, device: device)

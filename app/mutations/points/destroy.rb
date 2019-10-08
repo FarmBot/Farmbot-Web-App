@@ -10,7 +10,6 @@ module Points
     end
 
     optional do
-      boolean :hard_delete, default: false
       array :point_ids, class: Integer
       model :point, class: Point
     end
@@ -42,29 +41,41 @@ module Points
     end
 
     def execute
-      if hard_delete
-        points.destroy_all
-      else
-        Point.transaction do
-          archive_points
-          destroy_all_others
+      Point.transaction do
+        PointGroupItem.transaction do
+          clean_up_groups
+          points.destroy_all
         end
       end
     end
 
     private
 
-    def archive_points
-      points
-        .where(pointer_type: "GenericPointer")
-        .discard_all
+    def point_groups
+      @point_groups ||=
+        PointGroup.find(point_group_items.pluck(:point_group_id).uniq)
     end
 
-    def destroy_all_others
-      points
-        .where
-        .not(pointer_type: "GenericPointer")
-        .destroy_all
+    def point_group_items
+      @point_group_items ||=
+        PointGroupItem.where(point_id: point_ids || point.id)
+    end
+
+    def clean_up_groups
+      # Cache relations *before* deleting PGIs.
+      pgs = point_groups
+      point_group_items.destroy_all
+      pgs.map do |x|
+        # WOW, THIS IS COMPLICATED.
+        # Why are you calling `SecureRandom.uuid`, Rick?
+        # """
+        # If you don't give the auto_sync message
+        # a fresh session_id, the frontend will
+        # think it is an "echo" and cancel it out.
+        # """ - Rick
+        x.update_attributes!(updated_at: Time.now)
+        x.broadcast!(SecureRandom.uuid)
+      end
     end
 
     def points

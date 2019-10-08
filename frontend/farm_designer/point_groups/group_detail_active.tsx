@@ -6,7 +6,7 @@ import {
   DesignerPanelContent,
   DesignerPanelHeader
 } from "../plants/designer_panel";
-import { TaggedPointGroup, SpecialStatus } from "farmbot";
+import { TaggedPointGroup } from "farmbot";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { overwrite, save, edit } from "../../api/crud";
@@ -14,6 +14,8 @@ import { Dictionary } from "lodash";
 import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
 import { TaggedPlant } from "../map/interfaces";
+import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 interface GroupDetailActiveProps {
   dispatch: Function;
@@ -56,9 +58,7 @@ export class GroupDetailActive
   state: State = {};
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this
-      .props
-      .dispatch(edit(this.props.group, { name: currentTarget.value }));
+    this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
   };
 
   handleIcon =
@@ -89,25 +89,35 @@ export class GroupDetailActive
   }
 
   get icons() {
-    return this
-      .props
-      .plants
-      .map(point => {
-        return <LittleIcon
-          key={point.uuid}
-          icon={this.findIcon(point)}
-          group={this.props.group}
-          plant={point}
-          dispatch={this.props.dispatch} />;
-      });
+    const plants = sortGroupBy(this.props.group.body.sort_type,
+      this.props.plants);
+
+    return plants.map(point => {
+      return <LittleIcon
+        key={point.uuid}
+        icon={this.findIcon(point)}
+        group={this.props.group}
+        plant={point}
+        dispatch={this.props.dispatch} />;
+    });
+  }
+
+  get saved(): boolean {
+    return !this.props.group.specialStatus;
   }
 
   saveGroup = () => {
-    this.props.dispatch(save(this.props.group.uuid));
+    if (!this.saved) {
+      this.props.dispatch(save(this.props.group.uuid));
+    }
+  }
+
+  changeSortType = (sort_type: PointGroupSortType) => {
+    const { dispatch, group } = this.props;
+    dispatch(edit(group, { sort_type }));
   }
 
   render() {
-    const { group } = this.props;
     return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
       <DesignerPanelHeader
         onBack={this.saveGroup}
@@ -115,19 +125,17 @@ export class GroupDetailActive
         panelColor={"blue"}
         title={t("Edit Group")}
         backTo={"/app/designer/groups"}>
-        <a
-          className="right-button"
-          title={t("Save Changes to Group")}
-          onClick={this.saveGroup}>
-          {t("Save")}{group.specialStatus === SpecialStatus.SAVED ? "" : "*"}
-        </a>
       </DesignerPanelHeader>
       <DesignerPanelContent
         panelName={"groups"}>
-        <label>{t("GROUP NAME")}</label>
+        <label>{t("GROUP NAME")}{this.saved ? "" : "*"}</label>
         <input
           defaultValue={this.name}
-          onChange={this.update} />
+          onChange={this.update}
+          onBlur={this.saveGroup} />
+        <PointGroupSortSelector
+          value={this.props.group.body.sort_type}
+          onChange={this.changeSortType} />
         <label>
           {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
         </label>
@@ -140,7 +148,7 @@ export class GroupDetailActive
         <DeleteButton
           className="groups-delete-btn"
           dispatch={this.props.dispatch}
-          uuid={group.uuid}
+          uuid={this.props.group.uuid}
           onDestroy={history.back}>
           {t("DELETE GROUP")}
         </DeleteButton>

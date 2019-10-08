@@ -83,6 +83,11 @@ module Api
 
     def clean_expired_farm_events
       FarmEvents::CleanExpired.run!(device: current_device)
+      # TODO: The app is leaking `Fragment` records, creating
+      #       orphaned DB entries. This should be fixable via
+      #       ActiveRecord config. Most likely a misconfiguration.
+      #         - RC 4 OCT 19
+      Fragment.remove_old_fragments_for_device(current_device)
     end
 
     # Rails 5 params are no longer simple hashes. This was for security reasons.

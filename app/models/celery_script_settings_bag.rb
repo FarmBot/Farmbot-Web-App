@@ -60,6 +60,7 @@ module CeleryScriptSettingsBag
   BAD_PIN_TYPE = '"%s" is not a type of pin. Allowed values: %s'
   BAD_POINTER_ID = "Bad point ID: %s"
   BAD_POINTER_TYPE = '"%s" is not a type of point. Allowed values: %s'
+  BAD_POINT_GROUP_ID = "Can't find PointGroup with id of %s"
   BAD_REGIMEN = "Regimen #%s does not exist."
   BAD_RESOURCE_ID = "Can't find %s with id of %s"
   BAD_RESOURCE_TYPE = '"%s" is not a valid resource_type. Allowed values: %s'
@@ -130,7 +131,7 @@ module CeleryScriptSettingsBag
       defn: [n(:execute), n(:nothing)],
     },
     data_value: {
-      defn: ANY_VAR_TOKENIZED + [n(:point_group), n(:every_point)],
+      defn: ANY_VAR_TOKENIZED + [n(:point_group)],
     },
     default_value: {
       defn: ANY_VAR_TOKENIZED,
@@ -192,6 +193,13 @@ module CeleryScriptSettingsBag
       blk: ->(node, device) do
         bad_node = !Point.where(id: node.value, device_id: device.id).exists?
         node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
+      end,
+    },
+    point_group_id: {
+      defn: [v(:integer)],
+      blk: ->(node, device) do
+        bad_node = !PointGroup.where(id: node.value, device_id: device.id).exists?
+        node.invalidate!(BAD_POINT_GROUP_ID % node.value) if bad_node
       end,
     },
     pointer_type: {
@@ -269,9 +277,6 @@ module CeleryScriptSettingsBag
     },
     lua: {
       defn: [v(:string)],
-    },
-    every_point_type: {
-      defn: [e(:PointType)],
     },
   }.map do |(name, conf)|
     blk = conf[:blk]
@@ -518,16 +523,12 @@ module CeleryScriptSettingsBag
       end,
     },
     point_group: {
-      args: [:resource_id],
+      args: [:point_group_id],
       tags: [:data, :list_like],
       blk: ->(n) do
-        resource_id = n.args.fetch(:resource_id).value
+        resource_id = n.args.fetch(:point_group_id).value
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
-    },
-    every_point: {
-      args: [:every_point_type],
-      tags: [:data, :list_like],
     },
   }.map { |(name, list)| Corpus.node(name, **list) }
 

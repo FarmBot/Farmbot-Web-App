@@ -17,6 +17,7 @@ import {
 import { save, overwrite, edit } from "../../../api/crud";
 import { toggleHoveredPlant } from "../../actions";
 import { DEFAULT_ICON } from "../../../open_farm/icons";
+import { SpecialStatus } from "farmbot";
 
 describe("<GroupDetailActive/>", () => {
   function fakeProps() {
@@ -24,6 +25,7 @@ describe("<GroupDetailActive/>", () => {
     plant.body.id = 1;
     const plants = [plant];
     const group = fakePointGroup();
+    group.specialStatus = SpecialStatus.DIRTY;
     group.body.name = "XYZ";
     group.body.point_ids = [plant.body.id];
     return { dispatch: jest.fn(), group, plants };
@@ -105,5 +107,24 @@ describe("<GroupDetailActive/>", () => {
       currentTarget: { value: NEW_NAME }
     });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: NEW_NAME });
+  });
+
+  it("changes the sort type", () => {
+    const p = fakeProps();
+    const { dispatch } = p;
+    const el = new GroupDetailActive(p);
+    el.changeSortType("random");
+    expect(dispatch).toHaveBeenCalled();
+    expect(edit).toHaveBeenCalledWith({
+      body: {
+        name: "XYZ",
+        point_ids: [1],
+        sort_type: "xy_ascending",
+      },
+      kind: "PointGroup",
+      specialStatus: "DIRTY",
+      uuid: "PointGroup.0.16",
+    },
+      { sort_type: "random" });
   });
 });
