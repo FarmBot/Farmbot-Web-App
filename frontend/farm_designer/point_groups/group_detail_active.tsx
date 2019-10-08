@@ -58,9 +58,7 @@ export class GroupDetailActive
   state: State = {};
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
-    this
-      .props
-      .dispatch(edit(this.props.group, { name: currentTarget.value }));
+    this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
   };
 
   handleIcon =
@@ -104,8 +102,14 @@ export class GroupDetailActive
     });
   }
 
+  get saved(): boolean {
+    return !this.props.group.specialStatus;
+  }
+
   saveGroup = () => {
-    this.props.dispatch(save(this.props.group.uuid));
+    if (!this.saved) {
+      this.props.dispatch(save(this.props.group.uuid));
+    }
   }
 
   changeSortType = (sort_type: PointGroupSortType) => {
@@ -122,19 +126,14 @@ export class GroupDetailActive
         panelColor={"blue"}
         title={t("Edit Group")}
         backTo={"/app/designer/groups"}>
-        <a
-          className="right-button"
-          title={t("Save Changes to Group")}
-          onClick={this.saveGroup}>
-          {t("Save")}{group.specialStatus === SpecialStatus.SAVED ? "" : "*"}
-        </a>
       </DesignerPanelHeader>
       <DesignerPanelContent
         panelName={"groups"}>
-        <label>{t("GROUP NAME")}</label>
+        <label>{t("GROUP NAME")}{this.saved ? "" : "*"}</label>
         <input
           defaultValue={this.name}
-          onChange={this.update} />
+          onChange={this.update}
+          onBlur={this.saveGroup} />
         <PointGroupSortSelector
           value={this.props.group.body.sort_type}
           onChange={this.changeSortType} />
