@@ -71,7 +71,7 @@ describe("", () => {
 
   it("sorts by yx_ascending", () => {
     const results = sort("yx_ascending");
-    expect(results).toEqual(["A", "B", "D", "C",]);
+    expect(results).toEqual(["A", "B", "D", "C"]);
   });
 
   it("sorts by yx_descending", () => {
