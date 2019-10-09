@@ -81,7 +81,7 @@ describe("<GroupDetailActive/>", () => {
       },
       kind: "PointGroup",
       specialStatus: "DIRTY",
-      uuid: "PointGroup.0.16",
+      uuid: p.group.uuid,
     },
       { sort_type: "random" });
   });
