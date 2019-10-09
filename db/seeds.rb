@@ -27,8 +27,9 @@ if Rails.env == "development"
     SavedGarden,
     SensorReading,
     FarmwareInstallation,
-    Device,
+    PointGroup,
     Tool,
+    Device,
     Delayed::Job,
     Delayed::Backend::ActiveRecord::Job,
   ].map(&:delete_all)
