@@ -12,7 +12,6 @@ import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { save, edit } from "../../api/crud";
 import { Dictionary } from "lodash";
 import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
-// import { toggleHoveredPlant } from "../actions";
 import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -25,28 +24,6 @@ interface GroupDetailActiveProps {
 }
 
 type State = Dictionary<OFIcon | undefined>;
-
-// interface LittleIconProps {
-//   /** URL (or even a data-url) to the icon image. */
-//   icon: string;
-//   group: TaggedPointGroup;
-//   plant: TaggedPlant;
-//   dispatch: Function;
-// }
-
-// export const LittleIcon =
-//   ({ group, plant: point, icon, dispatch }: LittleIconProps) => {
-//     const { body } = point;
-//     const p = point;
-//     const plantUUID = point.uuid;
-//     return <span
-//       key={plantUUID}
-//       onMouseEnter={() => dispatch(toggleHoveredPlant(plantUUID, icon))}
-//       onMouseLeave={() => dispatch(toggleHoveredPlant(undefined, icon))}
-//       onClick={() => dispatch(removePoint(group, body.id || 0))}>
-//       <img src={icon} alt={p.body.name} width={32} height={32} />
-//     </span>;
-//   };
 
 export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, State> {
@@ -90,7 +67,6 @@ export class GroupDetailActive
     return plants.map(point => {
       return <PointGroupItem
         key={point.uuid}
-        // icon={this.findIcon(point)}
         hovered={false}
         group={this.props.group}
         plant={point}

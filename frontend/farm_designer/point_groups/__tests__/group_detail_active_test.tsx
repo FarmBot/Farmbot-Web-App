@@ -9,13 +9,12 @@ jest.mock("../../actions", () => ({
 }));
 
 import React from "react";
-import { GroupDetailActive/*, LittleIcon*/ } from "../group_detail_active";
+import { GroupDetailActive } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
   fakePointGroup, fakePlant
 } from "../../../__test_support__/fake_state/resources";
-import { save, /*overwrite,*/ edit } from "../../../api/crud";
-// import { toggleHoveredPlant } from "../../actions";
+import { save, edit } from "../../../api/crud";
 import { DEFAULT_ICON } from "../../../open_farm/icons";
 import { SpecialStatus } from "farmbot";
 
@@ -30,47 +29,6 @@ describe("<GroupDetailActive/>", () => {
     group.body.point_ids = [plant.body.id];
     return { dispatch: jest.fn(), group, plants };
   }
-  // const icon = "doge.jpg";
-
-  // it("removes points onClick", () => {
-  //   const { plants, dispatch, group } = fakeProps();
-  //   const el = shallow(<LittleIcon
-  //     plant={plants[0]}
-  //     group={group}
-  //     dispatch={dispatch}
-  //     icon="doge.jpg" />);
-  //   el.simulate("click");
-  //   const emptyGroup = expect.objectContaining({
-  //     name: "XYZ",
-  //     point_ids: []
-  //   });
-  //   expect(overwrite).toHaveBeenCalledWith(group, emptyGroup);
-  //   expect(dispatch).toHaveBeenCalled();
-  // });
-
-  // it("toggles onMouseEnter", () => {
-  //   const { plants, dispatch, group } = fakeProps();
-  //   const plant = plants[0];
-  //   const el = shallow(<LittleIcon
-  //     plant={plant}
-  //     group={group}
-  //     dispatch={dispatch}
-  //     icon={icon} />);
-  //   el.simulate("mouseEnter");
-  //   expect(toggleHoveredPlant).toHaveBeenCalledWith(plant.uuid, icon);
-  // });
-
-  // it("toggled onMouseLeave", () => {
-  //   const { plants, dispatch, group } = fakeProps();
-  //   const plant = plants[0];
-  //   const el = shallow(<LittleIcon
-  //     plant={plant}
-  //     group={group}
-  //     dispatch={dispatch}
-  //     icon={icon} />);
-  //   el.simulate("mouseLeave");
-  //   expect(toggleHoveredPlant).toHaveBeenCalledWith(undefined, icon);
-  // });
 
   it("saves", () => {
     const p = fakeProps();
