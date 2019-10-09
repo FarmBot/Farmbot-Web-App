@@ -181,7 +181,7 @@
       transition: all 0.2s ease;
     }
   }
-  .plant-search-item {
+  %search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
     &:hover,
@@ -195,6 +195,19 @@
       width: 4rem;
     }
   }
+
+  .plant-search-item {
+    @extend %search-item;
+  }
+
+  .group-search-item {
+    @extend %search-item;
+    &:hover,
+    &.hovered {
+      background: #d7eaea;
+    }
+  }
+
   %panel-item-base {
     text-align: right;
     font-size: 1rem;
