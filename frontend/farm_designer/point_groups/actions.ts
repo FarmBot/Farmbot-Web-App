@@ -4,8 +4,9 @@ import { init, save } from "../../api/crud";
 import { history } from "../../history";
 import { GetState } from "../../redux/interfaces";
 import { findPointGroup } from "../../resources/selectors";
+import { t } from "../../i18next_wrapper";
 
-const UNTITLED = "Untitled Group";
+const UNTITLED = () => t("Untitled Group");
 
 interface CreateGroupProps {
   /** TaggedPoint UUIDs */
@@ -21,7 +22,7 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
       .map(x => x ? x.body.id : undefined);
     const point_ids = betterCompact(possiblyNil);
     const group: PointGroup =
-      ({ name: name || UNTITLED, point_ids, sort_type: "xy_ascending" });
+      ({ name: name || UNTITLED(), point_ids, sort_type: "xy_ascending" });
     const action = init("PointGroup", group);
     dispatch(action);
     return dispatch(save(action.payload.uuid)).then(() => {

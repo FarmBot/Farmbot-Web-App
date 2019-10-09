@@ -9,7 +9,6 @@ describe("botToAPI()", () => {
   it("handles connectivity", () => {
     const result = botToAPI(moment().subtract(4, "minutes").toJSON());
     expect(result.connectionStatus).toBeTruthy();
-
     expect(result.children).toContain("Last message seen 4 minutes ago.");
   });
 
@@ -59,13 +58,13 @@ describe("browserToMQTT()", () => {
   it("handles unknown connectivity", () => {
     const output = browserToMQTT(undefined);
     expect(output.connectionStatus).toBe(undefined);
-    expect(output.children).toContain("No messages seen yet.");
+    expect(output.children).toContain("No recent messages.");
   });
 
   it("handles lack of connectivity", () => {
     const output = browserToMQTT({ state: "down", at: NOW });
     expect(output.connectionStatus).toBe(false);
-    expect(output.children).toContain("Last message seen a few seconds ago.");
+    expect(output.children).toContain("No recent messages.");
   });
 });
 
