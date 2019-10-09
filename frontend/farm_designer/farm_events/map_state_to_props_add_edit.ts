@@ -24,7 +24,7 @@ import {
 import { DropDownItem } from "../../ui/index";
 import {
   validFbosConfig,
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   determineInstalledOsVersion
 } from "../../util";
 import {

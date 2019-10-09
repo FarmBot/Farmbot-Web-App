@@ -6,7 +6,7 @@ import {
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
 import {
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   determineInstalledOsVersion, validFwConfig
 } from "../util";
 import { BooleanSetting } from "../session_keys";

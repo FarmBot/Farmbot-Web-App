@@ -1,7 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import { t } from "../../i18next_wrapper";
-import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
+import { FarmbotOsProps, FarmbotOsState, Feature } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
@@ -157,7 +157,7 @@ export class FarmbotOsSettings
                 </label>
               </Col>
               <Col xs={7}>
-                <BootSequenceSelector />
+                {this.props.shouldDisplay(Feature.boot_sequence) && <BootSequenceSelector />}
               </Col>
             </Row>
             <PowerAndReset
