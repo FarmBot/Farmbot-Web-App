@@ -15,7 +15,6 @@ import {
   fakePointGroup, fakePlant
 } from "../../../__test_support__/fake_state/resources";
 import { save, edit } from "../../../api/crud";
-import { DEFAULT_ICON } from "../../../open_farm/icons";
 import { SpecialStatus } from "farmbot";
 
 describe("<GroupDetailActive/>", () => {
@@ -43,19 +42,6 @@ describe("<GroupDetailActive/>", () => {
     const props = fakeProps();
     const el = mount(<GroupDetailActive {...props} />);
     expect(el.find("input").prop("defaultValue")).toContain("XYZ");
-  });
-
-  it("provides the DEFAULT_ICON when OF has no icon to provide", () => {
-    const plant = fakePlant();
-    const comp = new GroupDetailActive(fakeProps());
-    comp.state = {
-      [plant.uuid]: {
-        slug: plant.uuid,
-        svg_icon: undefined
-      }
-    };
-    const result = comp.findIcon(plant);
-    expect(result).toEqual(DEFAULT_ICON);
   });
 
   it("changes group name", () => {

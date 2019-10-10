@@ -144,8 +144,6 @@ export function determineInstalledOsVersion(
       return fromBotState === "" ? undefined : fromBotState;
     case SemverResult.RIGHT_IS_GREATER:
       return fromAPI === "" ? undefined : fromAPI;
-    default:
-      return undefined;
   }
 }
 

@@ -8,10 +8,9 @@ import {
 } from "../plants/designer_panel";
 import { TaggedPointGroup } from "farmbot";
 import { DeleteButton } from "../../controls/pin_form_fields";
-import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { save, edit } from "../../api/crud";
 import { Dictionary } from "lodash";
-import { cachedCrop, OFIcon } from "../../open_farm/cached_crop";
+import { OFIcon } from "../../open_farm/cached_crop";
 import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -32,33 +31,6 @@ export class GroupDetailActive
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
   };
-
-  handleIcon =
-    (uuid: string) =>
-      (icon: Readonly<OFIcon>) =>
-        this.setState({ [uuid]: icon });
-
-  performLookup = (plant: TaggedPlant) => {
-    cachedCrop(plant.body.openfarm_slug).then(this.handleIcon(plant.uuid));
-    return DEFAULT_ICON;
-  }
-
-  findIcon = (plant: TaggedPlant) => {
-    const svg = this.state[plant.uuid];
-    if (svg) {
-      if (svg.svg_icon) {
-        return svgToUrl(svg.svg_icon);
-      }
-      return DEFAULT_ICON;
-    }
-    return this.performLookup(plant);
-
-  }
-
-  get name() {
-    const { group } = this.props;
-    return group ? group.body.name : "Group Not found";
-  }
 
   get icons() {
     const plants = sortGroupBy(this.props.group.body.sort_type,
@@ -102,7 +74,7 @@ export class GroupDetailActive
         panelName={"groups"}>
         <label>{t("GROUP NAME")}{this.saved ? "" : "*"}</label>
         <input
-          defaultValue={this.name}
+          defaultValue={this.props.group.body.name}
           onChange={this.update}
           onBlur={this.saveGroup} />
         <PointGroupSortSelector
