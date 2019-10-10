@@ -67,7 +67,7 @@ class ParameterAssignmentMenu
         sequenceUuid={this.props.sequence.uuid}
         resources={this.props.resources}
         onChange={this.props.editBodyVariables}
-        allowedVariableNodes={AllowedVariableNodes.parameter}
+        allowedVariableNodes={AllowedVariableNodes.variable}
         shouldDisplay={this.props.shouldDisplay} />
     </div>;
   }
