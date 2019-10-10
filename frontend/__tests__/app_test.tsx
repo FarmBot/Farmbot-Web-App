@@ -117,8 +117,16 @@ describe("<App />: NavBar", () => {
     const p = fakeProps();
     p.loaded = FULLY_LOADED;
     const wrapper = mount(<App {...p} />);
-    expect(wrapper.text())
-      .toContain("Farm DesignerControlsDeviceSequencesRegimensToolsFarmware");
+    const t = wrapper.text();
+    const strings = [
+      "Farm Designer",
+      "Controls",
+      "Device",
+      "Sequences",
+      "Regimens",
+      "Farmware"
+    ];
+    strings.map(string => expect(t).toContain(string));
     wrapper.unmount();
   });
 
