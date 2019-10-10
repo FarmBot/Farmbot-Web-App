@@ -49,8 +49,9 @@ interface CommonProps {
    * chooses between reassignment vs. creation for new variables,
    * and determines which variables to display in the form. */
   allowedVariableNodes: AllowedVariableNodes;
-  /** Don't display group dropdown items. */
-  disallowGroups?: boolean;
+  /** Do not show `groups` as an option. Eg: Don't allow the user to pick
+   * "group123" in the sequence editor header. */
+  hideGroups?: boolean;
   /** Add ability to collapse the form content. */
   collapsible?: boolean;
   collapsed?: boolean;
@@ -74,9 +75,6 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
   /** Set to true to hide the form header and label. */
   hideHeader?: boolean;
-  /** Do not show `groups` as an option. Eg: Don't allow the user to pick
-   * "group123" in the sequence editor header. */
-  hideGroups?: boolean;
 }
 
 export const PARENT = (label: string) =>
