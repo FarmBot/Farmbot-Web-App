@@ -55,7 +55,7 @@ export const LocationForm =
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
+    const displayGroups = props.shouldDisplay(Feature.groups) && !disallowGroups;
     const list = locationFormList(resources, variableListItems, displayGroups);
     /** Variable name. */
     const { label } = celeryNode.args;

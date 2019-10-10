@@ -18,7 +18,7 @@ import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import {
   randomColor, determineInstalledOsVersion,
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   timeFormatString
 } from "../util";
 import { resourceUsageList } from "../resources/in_use";

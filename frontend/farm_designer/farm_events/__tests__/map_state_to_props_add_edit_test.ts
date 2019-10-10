@@ -21,7 +21,7 @@ describe("mapStateToPropsAddEdit()", () => {
   describe("handleTime()", () => {
     const { handleTime } = mapStateToPropsAddEdit(fakeState());
 
-    it("start_time", () => {
+    it("handles an element with name `start_time`", () => {
       const e = {
         currentTarget: { value: "10:54", name: "start_time" }
       } as React.SyntheticEvent<HTMLInputElement>;
@@ -29,12 +29,20 @@ describe("mapStateToPropsAddEdit()", () => {
       expect(result).toContain("54");
     });
 
-    it("end_time", () => {
+    it("handles an element with name `end_time`", () => {
       const e = {
         currentTarget: { value: "10:53", name: "end_time" }
       } as React.SyntheticEvent<HTMLInputElement>;
       const result = handleTime(e, "2017-05-21T22:00:00.000");
       expect(result).toContain("53");
+    });
+
+    it("crashes on other names", () => {
+      const e = {
+        currentTarget: { value: "10:52", name: "other" }
+      } as React.SyntheticEvent<HTMLInputElement>;
+      const boom = () => handleTime(e, "2017-05-21T22:00:00.000");
+      expect(boom).toThrowError("Expected a name attribute from time field.");
     });
   });
 

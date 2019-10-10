@@ -2,7 +2,7 @@ import {
   semverCompare,
   SemverResult,
   minFwVersionCheck,
-  shouldDisplay,
+  createShouldDisplayFn,
   determineInstalledOsVersion,
   versionOK,
 } from "../version";
@@ -121,34 +121,34 @@ describe("shouldDisplay()", () => {
   const fakeMinOsData = { jest_feature: "1.0.0" };
 
   it("should display", () => {
-    expect(shouldDisplay("1.0.0", fakeMinOsData, undefined)(
+    expect(createShouldDisplayFn("1.0.0", fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeTruthy();
-    expect(shouldDisplay("10.0.0", fakeMinOsData, undefined)(
+    expect(createShouldDisplayFn("10.0.0", fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeTruthy();
-    expect(shouldDisplay("10.0.0",
+    expect(createShouldDisplayFn("10.0.0",
       { jest_feature: "1.0.0" }, undefined)(
         Feature.jest_feature)).toBeTruthy();
   });
 
   it("shouldn't display", () => {
-    expect(shouldDisplay("0.9.0", fakeMinOsData, undefined)(
+    expect(createShouldDisplayFn("0.9.0", fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeFalsy();
-    expect(shouldDisplay(undefined, fakeMinOsData, undefined)(
+    expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
       Feature.jest_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
     const unknown_feature = "unknown_feature" as any;
-    expect(shouldDisplay("1.0.0", fakeMinOsData, undefined)(
+    expect(createShouldDisplayFn("1.0.0", fakeMinOsData, undefined)(
       unknown_feature)).toBeFalsy();
-    expect(shouldDisplay("1.0.0", undefined, undefined)(
-      unknown_feature)).toBeFalsy();
-    // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", undefined, undefined)(
       unknown_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "{}" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", "" as any, undefined)(
       unknown_feature)).toBeFalsy();
     // tslint:disable-next-line:no-any
-    expect(shouldDisplay("1.0.0", "bad" as any, undefined)(
+    expect(createShouldDisplayFn("1.0.0", "{}" as any, undefined)(
+      unknown_feature)).toBeFalsy();
+    // tslint:disable-next-line:no-any
+    expect(createShouldDisplayFn("1.0.0", "bad" as any, undefined)(
       unknown_feature)).toBeFalsy();
   });
 });

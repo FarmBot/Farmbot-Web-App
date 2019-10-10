@@ -9,14 +9,12 @@ jest.mock("../../actions", () => ({
 }));
 
 import React from "react";
-import { GroupDetailActive, LittleIcon } from "../group_detail_active";
+import { GroupDetailActive } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
   fakePointGroup, fakePlant
 } from "../../../__test_support__/fake_state/resources";
-import { save, overwrite, edit } from "../../../api/crud";
-import { toggleHoveredPlant } from "../../actions";
-import { DEFAULT_ICON } from "../../../open_farm/icons";
+import { save, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 
 describe("<GroupDetailActive/>", () => {
@@ -30,47 +28,6 @@ describe("<GroupDetailActive/>", () => {
     group.body.point_ids = [plant.body.id];
     return { dispatch: jest.fn(), group, plants };
   }
-  const icon = "doge.jpg";
-
-  it("removes points onClick", () => {
-    const { plants, dispatch, group } = fakeProps();
-    const el = shallow(<LittleIcon
-      plant={plants[0]}
-      group={group}
-      dispatch={dispatch}
-      icon="doge.jpg" />);
-    el.simulate("click");
-    const emptyGroup = expect.objectContaining({
-      name: "XYZ",
-      point_ids: []
-    });
-    expect(overwrite).toHaveBeenCalledWith(group, emptyGroup);
-    expect(dispatch).toHaveBeenCalled();
-  });
-
-  it("toggles onMouseEnter", () => {
-    const { plants, dispatch, group } = fakeProps();
-    const plant = plants[0];
-    const el = shallow(<LittleIcon
-      plant={plant}
-      group={group}
-      dispatch={dispatch}
-      icon={icon} />);
-    el.simulate("mouseEnter");
-    expect(toggleHoveredPlant).toHaveBeenCalledWith(plant.uuid, icon);
-  });
-
-  it("toggled onMouseLeave", () => {
-    const { plants, dispatch, group } = fakeProps();
-    const plant = plants[0];
-    const el = shallow(<LittleIcon
-      plant={plant}
-      group={group}
-      dispatch={dispatch}
-      icon={icon} />);
-    el.simulate("mouseLeave");
-    expect(toggleHoveredPlant).toHaveBeenCalledWith(undefined, icon);
-  });
 
   it("saves", () => {
     const p = fakeProps();
@@ -85,19 +42,6 @@ describe("<GroupDetailActive/>", () => {
     const props = fakeProps();
     const el = mount(<GroupDetailActive {...props} />);
     expect(el.find("input").prop("defaultValue")).toContain("XYZ");
-  });
-
-  it("provides the DEFAULT_ICON when OF has no icon to provide", () => {
-    const plant = fakePlant();
-    const comp = new GroupDetailActive(fakeProps());
-    comp.state = {
-      [plant.uuid]: {
-        slug: plant.uuid,
-        svg_icon: undefined
-      }
-    };
-    const result = comp.findIcon(plant);
-    expect(result).toEqual(DEFAULT_ICON);
   });
 
   it("changes group name", () => {
@@ -123,7 +67,7 @@ describe("<GroupDetailActive/>", () => {
       },
       kind: "PointGroup",
       specialStatus: "DIRTY",
-      uuid: "PointGroup.0.16",
+      uuid: p.group.uuid,
     },
       { sort_type: "random" });
   });

@@ -11,7 +11,7 @@ import {
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";

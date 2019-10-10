@@ -39,7 +39,7 @@ describe("<GroupListPanel />", () => {
   it("renders relevant group data as a list", () => {
     const p = fakeProps();
     const wrapper = mount(<GroupListPanel {...p} />);
-    wrapper.find(".plant-search-item").first().simulate("click");
+    wrapper.find(".group-search-item").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/groups/9");
 
     ["3 items",

@@ -109,14 +109,15 @@ export enum MinVersionOverride {
  * @param current installed OS version string to compare against data ("0.0.0")
  * @param lookupData min req versions data, for example {"feature": "1.0.0"}
  */
-export function shouldDisplay(
+export function createShouldDisplayFn(
   current: string | undefined,
   lookupData: MinOsFeatureLookup | undefined,
   override: string | undefined) {
   return function (feature: Feature): boolean {
     const target = override || current;
     if (isString(target)) {
-      const min = (lookupData || {})[feature] || MinVersionOverride.NEVER;
+      const table = lookupData || {};
+      const min = table[feature] || MinVersionOverride.NEVER;
       switch (semverCompare(target, min)) {
         case SemverResult.LEFT_IS_GREATER:
         case SemverResult.EQUAL:
@@ -143,8 +144,6 @@ export function determineInstalledOsVersion(
       return fromBotState === "" ? undefined : fromBotState;
     case SemverResult.RIGHT_IS_GREATER:
       return fromAPI === "" ? undefined : fromAPI;
-    default:
-      return undefined;
   }
 }
 

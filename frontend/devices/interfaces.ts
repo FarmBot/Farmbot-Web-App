@@ -65,29 +65,31 @@ export type SourceFwConfig = (config: McuParamName) =>
 export type ShouldDisplay = (x: Feature) => boolean;
 /** Names of features that use minimum FBOS version checking. */
 export enum Feature {
-  assertion_block = "assertion_block",
-  named_pins = "named_pins",
-  sensors = "sensors",
-  change_ownership = "change_ownership",
-  variables = "variables",
-  loops = "loops",
-  api_pin_bindings = "api_pin_bindings",
-  farmduino_k14 = "farmduino_k14",
-  jest_feature = "jest_feature", // for tests
-  backscheduled_regimens = "backscheduled_regimens",
-  endstop_invert = "endstop_invert",
-  diagnostic_dumps = "diagnostic_dumps",
-  rpi_led_control = "rpi_led_control",
-  mark_as_step = "mark_as_step",
-  firmware_restart = "firmware_restart",
-  api_farmware_installations = "api_farmware_installations",
   api_farmware_env = "api_farmware_env",
-  use_update_channel = "use_update_channel",
-  long_scaling_factor = "long_scaling_factor",
-  flash_firmware = "flash_firmware",
+  api_farmware_installations = "api_farmware_installations",
+  api_pin_bindings = "api_pin_bindings",
+  assertion_block = "assertion_block",
+  backscheduled_regimens = "backscheduled_regimens",
+  boot_sequence = "boot_sequence",
+  change_ownership = "change_ownership",
+  diagnostic_dumps = "diagnostic_dumps",
+  endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
+  farmduino_k14 = "farmduino_k14",
+  firmware_restart = "firmware_restart",
+  flash_firmware = "flash_firmware",
+  groups = "groups",
+  jest_feature = "jest_feature",
+  long_scaling_factor = "long_scaling_factor",
+  mark_as_step = "mark_as_step",
+  named_pins = "named_pins",
   none_firmware = "none_firmware",
+  rpi_led_control = "rpi_led_control",
+  sensors = "sensors",
+  use_update_channel = "use_update_channel",
+  variables = "variables"
 }
+
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
