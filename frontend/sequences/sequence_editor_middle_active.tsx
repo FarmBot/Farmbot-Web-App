@@ -75,7 +75,7 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
     <label>
       {t(props.label)}
     </label>
-    <Help text={t(props.description)} requireClick={true}/>
+    <Help text={t(props.description)} requireClick={true} />
     <ToggleButton
       toggleValue={value}
       toggleAction={() => proceed() &&
@@ -123,7 +123,12 @@ interface SequenceBtnGroupProps {
 }
 
 const SequenceBtnGroup = ({
-  dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen,
+  dispatch,
+  sequence,
+  syncStatus,
+  resources,
+  shouldDisplay,
+  menuOpen,
   getWebAppConfigValue
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
