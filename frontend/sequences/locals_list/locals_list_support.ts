@@ -74,6 +74,9 @@ export interface LocationFormProps extends CommonProps {
   hideTypeLabel?: boolean;
   /** Set to true to hide the form header and label. */
   hideHeader?: boolean;
+  /** Do not show `groups` as an option. Eg: Don't allow the user to pick
+   * "group123" in the sequence editor header. */
+  hideGroups?: boolean;
 }
 
 export const PARENT = (label: string) =>
