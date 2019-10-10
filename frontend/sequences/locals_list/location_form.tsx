@@ -45,7 +45,7 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
 export const LocationForm =
   (props: LocationFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable,
-      allowedVariableNodes, disallowGroups } = props;
+      allowedVariableNodes } = props;
     const { celeryNode, dropdown, vector } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
@@ -55,8 +55,7 @@ export const LocationForm =
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const displayGroups = props.shouldDisplay(Feature.groups) && !disallowGroups;
-    const list = locationFormList(resources, variableListItems, displayGroups);
+    const list = locationFormList(resources, variableListItems, false);
     /** Variable name. */
     const { label } = celeryNode.args;
     if (variable.default) {
