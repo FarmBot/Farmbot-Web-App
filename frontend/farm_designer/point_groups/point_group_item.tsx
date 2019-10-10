@@ -3,7 +3,7 @@ import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
 import { toggleHoveredPlant } from "../actions";
-import { TaggedPointGroup } from "farmbot";
+import { TaggedPointGroup, uuid } from "farmbot";
 import { overwrite } from "../../api/crud";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
@@ -29,38 +29,39 @@ export class PointGroupItem extends React.Component<PointGroupItemProps, PointGr
 
   state: PointGroupItemState = { icon: "" };
 
+  key = uuid();
+
+  enter = () => this
+    .props
+    .dispatch(toggleHoveredPlant(this.props.plant.uuid, this.state.icon));
+
+  leave = () => this
+    .props
+    .dispatch(toggleHoveredPlant(undefined, ""));
+
+  click = () => this
+    .props
+    .dispatch(removePoint(this.props.group, this.props.plant.body.id || 0));
+
+  maybeGetCachedIcon = ({ currentTarget }: IMGEvent) => {
+    return cachedCrop(this.props.plant.body.openfarm_slug).then((crop) => {
+      const i = svgToUrl(crop.svg_icon);
+      if (i !== currentTarget.getAttribute("src")) {
+        currentTarget.setAttribute("src", i);
+      }
+      this.setState({ icon: i });
+    });
+  };
+
   render() {
-    const plant = this.props.plant.body;
-    const { plant: tpp, dispatch } = this.props;
-    const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
-
-    const enter = () => dispatch(toggleHoveredPlant(tpp.uuid, this.state.icon));
-    const leave = () => dispatch(toggleHoveredPlant(undefined, ""));
-
-    const click = () => {
-      dispatch(removePoint(this.props.group, this.props.plant.body.id || 0));
-    };
-
-    // See `cachedIcon` for more details on this.
-    const maybeGetCachedIcon = (e: IMGEvent) => {
-      const ofs = tpp.body.openfarm_slug;
-      const img = e.currentTarget;
-      ofs && cachedCrop(ofs)
-        .then((crop) => {
-          const i = svgToUrl(crop.svg_icon);
-          i !== img.getAttribute("src") && img.setAttribute("src", i);
-          this.setState({ icon: i });
-        });
-    };
-
     return <span
-      key={plantId}
-      onMouseEnter={enter}
-      onMouseLeave={leave}
-      onClick={click}>
+      key={this.key}
+      onMouseEnter={this.enter}
+      onMouseLeave={this.leave}
+      onClick={this.click}>
       <img
         src={DEFAULT_ICON}
-        onLoad={maybeGetCachedIcon}
+        onLoad={this.maybeGetCachedIcon}
         width={32}
         height={32} />
     </span>;
