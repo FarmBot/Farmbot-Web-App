@@ -1,7 +1,6 @@
 import * as React from "react";
 import { getPathArray } from "../history";
 import { Link } from "../link";
-import { DevSettings } from "../account/dev/dev_support";
 import { t } from "../i18next_wrapper";
 
 export enum Panel {
@@ -72,13 +71,10 @@ interface NavTabProps {
 }
 
 const NavTab = (props: NavTabProps) =>
-  <Link to={props.linkTo} style={(props.icon
-    && !DevSettings.futureFeaturesEnabled()) ? { flex: 0.3 } : {}}
+  <Link to={props.linkTo} style={{ flex: 0.3 }}
     className={getCurrentTab() === props.panel ? "active" : ""}>
-    {DevSettings.futureFeaturesEnabled()
-      ? <img {...common}
-        src={TAB_ICON[props.panel]} title={props.title} />
-      : props.icon ? <i className={props.icon} /> : props.title}
+    <img {...common}
+      src={TAB_ICON[props.panel]} title={props.title} />
   </Link>;
 
 export function DesignerNavTabs(props: { hidden?: boolean }) {
@@ -93,26 +89,26 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Plants}
         linkTo={"/app/designer/plants"}
         title={t("Plants")} />
-      {DevSettings.futureFeaturesEnabled() && <NavTab
+      <NavTab
         panel={Panel.Groups}
         linkTo={"/app/designer/groups"}
-        title={t("Groups")} />}
-      {DevSettings.futureFeaturesEnabled() && <NavTab
+        title={t("Groups")} />
+      <NavTab
         panel={Panel.SavedGardens}
         linkTo={"/app/designer/saved_gardens"}
-        title={t("Gardens")} />}
+        title={t("Gardens")} />
       <NavTab
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events"}
         title={t("Events")} />
-      {DevSettings.futureFeaturesEnabled() && <NavTab
+      <NavTab
         panel={Panel.Points}
         linkTo={"/app/designer/points"}
-        title={t("Points")} />}
-      {DevSettings.futureFeaturesEnabled() && <NavTab
+        title={t("Points")} />
+      <NavTab
         panel={Panel.Tools}
         linkTo={"/app/designer/tools"}
-        title={t("Tools")} />}
+        title={t("Tools")} />
       <NavTab
         panel={Panel.Settings}
         icon={"fa fa-gear"}
