@@ -25,9 +25,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/core": "7.6.4",
-    "@blueprintjs/core": "3.18.1",
-    "@blueprintjs/datetime": "3.13.0",
-    "@blueprintjs/select": "3.10.0",
+    "@blueprintjs/core": "3.19.1",
+    "@blueprintjs/datetime": "3.14.0",
+    "@blueprintjs/select": "3.11.1",
     "@types/enzyme": "3.10.3",
     "@types/jest": "24.0.18",
     "@types/lodash": "4.14.144",
