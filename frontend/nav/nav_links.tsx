@@ -36,6 +36,7 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
+  { name: "Tools", icon: "wrench", slug: "tools" },
   {
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState

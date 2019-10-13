@@ -2,6 +2,7 @@ import * as React from "react";
 import { getPathArray } from "../history";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
+import { DevSettings } from "../account/dev/dev_support";
 
 export enum Panel {
   Map = "Map",
@@ -101,14 +102,14 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events"}
         title={t("Events")} />
-      <NavTab
+      {DevSettings.futureFeaturesEnabled() && <NavTab
         panel={Panel.Points}
         linkTo={"/app/designer/points"}
-        title={t("Points")} />
-      <NavTab
+        title={t("Points")} />}
+      {DevSettings.futureFeaturesEnabled() && <NavTab
         panel={Panel.Tools}
         linkTo={"/app/designer/tools"}
-        title={t("Tools")} />
+        title={t("Tools")} />}
       <NavTab
         panel={Panel.Settings}
         icon={"fa fa-gear"}
