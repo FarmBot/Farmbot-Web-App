@@ -231,9 +231,6 @@
     overflow-x: hidden;
     .plant-search-item,
     .group-search-item { pointer-events: none; }
-    img {
-      filter: grayscale(100%);
-    }
   }
 }
 

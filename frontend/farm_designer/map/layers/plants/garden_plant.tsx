@@ -7,6 +7,7 @@ import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { clickMapPlant } from "../../../actions";
+import { Circle } from "./circle";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
@@ -42,7 +43,7 @@ export class GardenPlant extends
   }
 
   render() {
-    const { selected, dragging, plant, grayscale, mapTransformProps,
+    const { selected, dragging, plant, multiselected, mapTransformProps,
       activeDragXY, zoomLvl, animate } = this.props;
     const { id, radius, x, y } = plant.body;
     const { icon } = this.state;
@@ -55,10 +56,6 @@ export class GardenPlant extends
 
     return <g id={"plant-" + id}>
 
-      <filter id="grayscale">
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-
       {animate &&
         <circle
           className="soil-cloud"
@@ -68,13 +65,23 @@ export class GardenPlant extends
           fill={Color.soilCloud}
           fillOpacity={0} />}
 
+      {multiselected &&
+        <g id="selected-plant-indicator">
+          <Circle
+            className={`plant-indicator ${animate ? "animate" : ""}`}
+            x={qx}
+            y={qy}
+            r={radius}
+            selected={true} />
+        </g>
+      }
+
       <g id="plant-icon">
         <image
           onMouseEnter={() => this.iconHover("start")}
           onMouseLeave={() => this.iconHover("end")}
           visibility={dragging ? "hidden" : "visible"}
           className={className}
-          filter={(grayscale && !selected) ? "url(#grayscale)" : ""}
           opacity={alpha}
           xlinkHref={icon}
           onClick={this.click}

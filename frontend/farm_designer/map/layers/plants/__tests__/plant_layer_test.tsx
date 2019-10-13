@@ -104,7 +104,7 @@ describe("<PlantLayer/>", () => {
     p.plants = [plant];
     p.selectedForDel = [plant.uuid];
     const wrapper = svgMount(<PlantLayer {...p} />);
-    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).grayscale)
+    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).multiselected)
       .toEqual(true);
   });
 

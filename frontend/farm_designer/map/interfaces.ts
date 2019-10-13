@@ -58,7 +58,7 @@ export interface GardenPlantProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   uuid: string;
-  grayscale: boolean;
+  multiselected: boolean;
   animate: boolean;
 }
 
