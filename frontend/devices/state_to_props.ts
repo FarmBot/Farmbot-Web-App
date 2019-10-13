@@ -11,7 +11,7 @@ import {
 } from "./components/source_config_value";
 import {
   determineInstalledOsVersion, validFwConfig, validFbosConfig,
-  shouldDisplay as shouldDisplayFunc
+  createShouldDisplayFn as shouldDisplayFunc
 } from "../util";
 import {
   saveOrEditFarmwareEnv, reduceFarmwareEnv
@@ -27,8 +27,9 @@ export function mapStateToProps(props: Everything): Props {
   const installedOsVersion = determineInstalledOsVersion(
     props.bot, maybeGetDevice(props.resources.index));
   const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
+  const shouldDisplay = shouldDisplayFunc(installedOsVersion,
+    props.bot.minOsFeatureData,
+    fbosVersionOverride);
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;

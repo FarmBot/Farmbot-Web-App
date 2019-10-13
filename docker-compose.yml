@@ -39,6 +39,7 @@ services:
     env_file: ".env"
     image: postgres:10
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
+    # ports: ["5432:5432"]
 
   web:
     env_file: ".env"

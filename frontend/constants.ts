@@ -562,6 +562,12 @@ export namespace Content {
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
+  export const SORT_DESCRIPTION =
+    trim(`When executing a sequence over a Group of locations, FarmBot will
+    travel to each group member in the order of the chosen sort method.
+    If the random option is chosen, FarmBot will travel in a random order
+    every time, so the ordering shown below will only be representative.`);
+
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);

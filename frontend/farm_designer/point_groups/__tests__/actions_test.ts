@@ -1,5 +1,8 @@
 jest.mock("../../../api/crud", () => {
-  return { initSave: jest.fn(() => () => Promise.resolve({})) };
+  return {
+    init: jest.fn(() => ({ payload: { uuid: "???" } })),
+    save: jest.fn()
+  };
 });
 
 jest.mock("../../../history", () => {
@@ -8,8 +11,13 @@ jest.mock("../../../history", () => {
   };
 });
 
+jest.mock("../../../resources/selectors", () => ({
+  findPointGroup: jest.fn(() => ({ body: { id: 323232332 } })),
+  selectAllRegimens: jest.fn()
+}));
+
 import { createGroup } from "../actions";
-import { initSave } from "../../../api/crud";
+import { init, save } from "../../../api/crud";
 import { history } from "../../../history";
 import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 import { fakePoint, fakePlant, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
@@ -26,12 +34,13 @@ describe("group action creators and thunks", () => {
 
     const thunk = createGroup({ points, name: "Name123" });
     await thunk(dispatch, () => fakeS as Everything);
-    const expected = ["PointGroup", {
+    expect(init).toHaveBeenCalledWith("PointGroup", {
       name: "Name123",
-      point_ids: [0, 1].map(x => fakePoints[x].body.id)
-    }];
-    const xz = initSave;
-    expect(xz).toHaveBeenCalledWith(...expected);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/groups");
+      point_ids: [1, 2],
+      sort_type: "xy_ascending"
+    });
+    expect(save).toHaveBeenCalledWith("???");
+    expect(history.push)
+      .toHaveBeenCalledWith("/app/designer/groups/323232332");
   });
 });

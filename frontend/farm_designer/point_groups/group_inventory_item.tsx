@@ -12,8 +12,8 @@ interface GroupInventoryItemProps {
 export function GroupInventoryItem(props: GroupInventoryItemProps) {
   return <div
     onClick={props.onClick}
-    className={`plant-search-item ${props.hovered ? "hovered" : ""}`}>
-    <span className="plant-search-item-name">
+    className={`group-search-item ${props.hovered ? "hovered" : ""}`}>
+    <span className="group-search-item-name">
       {props.group.body.name}
     </span>
     <i className="group-item-count">

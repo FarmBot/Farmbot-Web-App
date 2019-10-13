@@ -9,7 +9,7 @@ class Point < ApplicationRecord
 
   belongs_to :device
   validates_presence_of :device
-  has_many :point_group_items
+  has_many :point_group_items, dependent: :destroy
 
   after_discard :maybe_broadcast
 

@@ -71,6 +71,7 @@ require "database_cleaner"
 DatabaseCleaner.strategy = :truncation
 # then, whenever you need to clean the DB
 DatabaseCleaner.clean
+Rails.cache.redis.flushdb
 
 RSpec.configure do |config|
   config.color = true

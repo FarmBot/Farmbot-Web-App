@@ -36,7 +36,7 @@ describe("convertDDItoDeclaration()", () => {
       kind: "parameter_application",
       args: {
         label: "Y",
-        data_value: { kind: "point_group", args: { resource_id: 23 } }
+        data_value: { kind: "point_group", args: { point_group_id: 23 } }
       }
     });
   });
@@ -147,25 +147,6 @@ describe("convertDDItoDeclaration()", () => {
           args: {
             label: "parent0"
           }
-        }
-      }
-    };
-    expect(variable).toEqual(expected);
-  });
-
-  it("returns location data: every_point", () => {
-    const dropdown = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
-    const variable = convertDDItoVariable({
-      identifierLabel: "label",
-      allowedVariableNodes,
-      dropdown
-    });
-    const expected: VariableNode = {
-      kind: "parameter_application",
-      args: {
-        label: "label",
-        data_value: {
-          kind: "every_point", args: { every_point_type: "Plant" }
         }
       }
     };

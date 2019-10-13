@@ -56,10 +56,6 @@ const points2ddi = (points: TaggedPoint[], pointerType: PointerTypeName) => poin
   .map(formatPoint)
   .filter(x => parseInt("" + x.value) > 0);
 
-const maybeGroup = (display: boolean) =>
-  (groupDDI: DropDownItem): DropDownItem[] =>
-    display ? [groupDDI] : [];
-
 export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
   return groups
     .filter(x => x.body.id)
@@ -76,18 +72,13 @@ export function locationFormList(resources: ResourceIndex,
   const plantDDI = points2ddi(points, "Plant");
   const genericPointerDDI = points2ddi(points, "GenericPointer");
   const toolDDI = activeToolDDIs(resources);
-  const clump = maybeGroup(!!displayGroups);
   const output = [COORDINATE_DDI()]
     .concat(additionalItems)
     .concat(heading("Tool"))
-    .concat(clump(everyPointDDI("Tool")))
-    .concat(clump(everyPointDDI("ToolSlot")))
     .concat(toolDDI)
     .concat(heading("Plant"))
-    .concat(clump(everyPointDDI("Plant")))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))
-    .concat(clump(everyPointDDI("GenericPointer")))
     .concat(genericPointerDDI);
   if (displayGroups) {
     return output
@@ -136,28 +127,14 @@ export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) 
   return capitalize(label);
 }
 
-export const EVERY_POINT_LABEL = {
+export const ALL_POINT_LABELS = {
   "Plant": "All plants",
   "GenericPointer": "All map points",
   "Tool": "All tools",
   "ToolSlot": "All tool slots",
 };
 
-export type EveryPointType = keyof typeof EVERY_POINT_LABEL;
-
-const isEveryPointType = (x: string): x is EveryPointType =>
-  Object.keys(EVERY_POINT_LABEL).includes(x);
-
-export const safeEveryPointType = (x: string): EveryPointType => {
-  if (isEveryPointType(x)) {
-    return x;
-  } else {
-    throw new Error(`'${x}' is not of type EveryPointType`);
-  }
-};
-
-export const everyPointDDI = (value: EveryPointType): DropDownItem =>
-  ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
+export type EveryPointType = keyof typeof ALL_POINT_LABELS;
 
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   label: vector

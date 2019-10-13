@@ -229,9 +229,8 @@
     max-height: calc(100vh - 10rem);
     overflow-y: auto;
     overflow-x: hidden;
-    .plant-search-item {
-      pointer-events: none;
-    }
+    .plant-search-item,
+    .group-search-item { pointer-events: none; }
     img {
       filter: grayscale(100%);
     }

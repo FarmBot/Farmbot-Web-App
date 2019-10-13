@@ -24,7 +24,7 @@ import {
 import { DropDownItem } from "../../ui/index";
 import {
   validFbosConfig,
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   determineInstalledOsVersion
 } from "../../util";
 import {
@@ -134,7 +134,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     switch (kind) {
       case "Sequence": return findSequenceById(props.resources.index, id);
       case "Regimen": return findRegimenById(props.resources.index, id);
-      default: throw new Error("GOT A BAD `KIND` STRING");
     }
   };
   const dev = getDeviceAccountSettings(props.resources.index);

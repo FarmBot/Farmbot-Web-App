@@ -6,9 +6,14 @@ import {
 } from "farmbot";
 import { DropDownItem } from "../ui";
 import { findPointerByTypeAndId, findPointGroup } from "./selectors";
-import { findSlotByToolId, findToolById, findResourceById } from "./selectors_by_id";
 import {
-  formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI,
+  findSlotByToolId,
+  findToolById,
+  findResourceById
+} from "./selectors_by_id";
+import {
+  formatPoint,
+  NO_VALUE_SELECTED_DDI,
   formatTool,
   COORDINATE_DDI
 } from "../sequences/locals_list/location_form_list";
@@ -103,9 +108,6 @@ export const determineDropdown =
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });
         return { label: varName, value: "?" };
-      case "every_point":
-        const { every_point_type } = data_value.args;
-        return everyPointDDI(safeEveryPointType(every_point_type));
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
         const pointer =
@@ -116,7 +118,7 @@ export const determineDropdown =
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
       case "point_group":
-        const value = data_value.args.resource_id;
+        const value = data_value.args.point_group_id;
         const uuid2 = findResourceById(resources, "PointGroup", value);
         const group = findPointGroup(resources, uuid2);
         return {

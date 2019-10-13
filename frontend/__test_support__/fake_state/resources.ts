@@ -459,6 +459,7 @@ export function fakeAlert(): TaggedAlert {
 export function fakePointGroup(): TaggedPointGroup {
   return fakeResource("PointGroup", {
     name: "Fake",
+    sort_type: "xy_ascending",
     point_ids: []
   });
 }

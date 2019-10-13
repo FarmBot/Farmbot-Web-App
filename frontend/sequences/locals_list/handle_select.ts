@@ -11,8 +11,6 @@ import {
   Tool,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
-  PointType,
-  EveryPoint,
   PointGroup,
 } from "farmbot";
 import { VariableNode, AllowedVariableNodes } from "./locals_list_support";
@@ -28,7 +26,6 @@ export const NOTHING_SELECTED: any = { kind: "nothing", args: {} };
 
 type DataValue =
   | Coordinate
-  | EveryPoint
   | Identifier
   | Point
   | PointGroup
@@ -89,13 +86,6 @@ const pointVar = (
       args: { pointer_type, pointer_id: parseInt("" + value) }
     });
 
-const everyPointVar = (value: string | number) =>
-  ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
-    createVariableNode(allowedVariableNodes)(label, {
-      kind: "every_point",
-      args: { every_point_type: "" + value as PointType }
-    });
-
 const manualEntry = (value: string | number) =>
   ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
@@ -136,15 +126,14 @@ const createNewVariable = (props: NewVarProps): VariableNode | undefined => {
     case "GenericPointer": return pointVar(ddi.headingId, ddi.value)(props);
     case "Tool": return toolVar(ddi.value)(props);
     case "parameter": return newParameter(props);
-    case "every_point": return everyPointVar(ddi.value)(props);
     case "Coordinate": return manualEntry(ddi.value)(props);
     case "PointGroup":
-      const resource_id = parseInt("" + ddi.value, 10);
+      const point_group_id = parseInt("" + ddi.value, 10);
       return {
         kind: "parameter_application",
         args: {
           label: props.identifierLabel,
-          data_value: { kind: "point_group", args: { resource_id } }
+          data_value: { kind: "point_group", args: { point_group_id } }
         }
       };
   }

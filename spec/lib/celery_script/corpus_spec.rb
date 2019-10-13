@@ -238,7 +238,7 @@ describe CeleryScript::Corpus do
                                     point_ids: [])
       bad = CeleryScript::AstNode.new({
         kind: "point_group",
-        args: { resource_id: pg.id },
+        args: { point_group_id: pg.id },
       })
       check = CeleryScript::Checker.new(bad, corpus, device)
       expect(check.valid?).to be true
@@ -249,7 +249,7 @@ describe CeleryScript::Corpus do
     device.auto_sync_transaction do
       bad = CeleryScript::AstNode.new({
         kind: "point_group",
-        args: { resource_id: -1 },
+        args: { point_group_id: -1 },
       })
       check = CeleryScript::Checker.new(bad, corpus, device)
       expect(check.valid?).to be false

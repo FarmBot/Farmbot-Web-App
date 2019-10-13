@@ -176,8 +176,7 @@ describe("<FbosDetails/>", () => {
 
   it("displays cpu usage", () => {
     const p = fakeProps();
-    // tslint:disable-next-line:no-any
-    (p.botInfoSettings as any).cpu_usage = 10;
+    p.botInfoSettings.cpu_usage = 10;
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("cpu usage: 10%");
   });
