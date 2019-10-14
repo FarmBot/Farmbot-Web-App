@@ -96,7 +96,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       hideHeader={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      disallowGroups={true}
+      hideGroups={true}
       width={3} />
 
   SpeedInput = () =>

@@ -15,12 +15,6 @@ describe("<PureFarmEvents/>", () => {
     calendarRows,
   });
 
-  it("renders nav", () => {
-    const wrapper = render(<PureFarmEvents {...fakeProps()} />);
-    ["Map", "Plants", "Events"].map(string =>
-      expect(wrapper.text()).toContain(string));
-  });
-
   it("sorts items correctly", () => {
     const results = render(<PureFarmEvents {...fakeProps()} />);
     const rows = results

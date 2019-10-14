@@ -17,9 +17,9 @@ export interface DefaultValueFormProps {
   onChange: (v: ParameterDeclaration) => void;
 }
 
-export const DefaultValueForm = (props: DefaultValueFormProps) =>
-  props.variableNode.kind === "parameter_declaration"
-    ? <div className="default-value-form">
+export const DefaultValueForm = (props: DefaultValueFormProps) => {
+  if (props.variableNode.kind === "parameter_declaration") {
+    return <div className="default-value-form">
       <div className="default-value-tooltip">
         <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />
       </div>
@@ -32,9 +32,13 @@ export const DefaultValueForm = (props: DefaultValueFormProps) =>
         shouldDisplay={() => true}
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideTypeLabel={true}
+        hideGroups={true}
         onChange={change(props.onChange, props.variableNode)} />
-    </div>
-    : <div />;
+    </div>;
+  } else {
+    return <div />;
+  }
+};
 
 const change =
   (onChange: (v: ParameterDeclaration) => void, variable: VariableNode) =>
