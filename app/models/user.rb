@@ -45,7 +45,6 @@ class User < ApplicationRecord
   end
 
   def self.refresh_everyones_ui
-    Rollbar.error("Global UI refresh triggered")
 
     msg = {
       "type" => "reload",

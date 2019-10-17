@@ -6,7 +6,6 @@ module Api
     end
 
     def create
-      Rollbar.info("Device #{current_device.id} created a diagnostic")
       mutate DiagnosticDumps::Create.run(raw_json, device: current_device)
     end
 
