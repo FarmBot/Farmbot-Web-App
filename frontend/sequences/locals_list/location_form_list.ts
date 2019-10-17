@@ -66,8 +66,9 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
 
 /** Location selection menu items. */
 export function locationFormList(resources: ResourceIndex,
-  additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
-  const points = selectAllActivePoints(resources)
+  additionalItems: DropDownItem[], displayGroups: boolean): DropDownItem[] {
+  const points =
+    selectAllActivePoints(resources)
     .filter(x => x.body.pointer_type !== "ToolSlot");
   const plantDDI = points2ddi(points, "Plant");
   const genericPointerDDI = points2ddi(points, "GenericPointer");

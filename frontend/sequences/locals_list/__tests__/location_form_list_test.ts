@@ -5,10 +5,16 @@ import { fakeResourceIndex } from "../test_helpers";
 import {
   fakeToolSlot, fakeTool, fakePointGroup
 } from "../../../__test_support__/fake_state/resources";
+import { selectAllPointGroups } from "../../../resources/selectors";
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
-    const items = locationFormList(fakeResourceIndex(), []);
+    const r = fakeResourceIndex();
+    const items = locationFormList(r, [], true);
+    const pgs = selectAllPointGroups(r);
+    expect(items.filter(x => x.headingId == "PointGroup").length).toEqual(pgs.length + 1);
+    const fewerItems = locationFormList(r, [], false);
+    expect(fewerItems.filter(x => x.headingId == "PointGroup").length).toEqual(0);
     const coordinate = items[0];
     expect(coordinate).toEqual({
       headingId: "Coordinate",

@@ -87,8 +87,9 @@ export const LocationForm = (p: LocationFormProps) => {
   });
 
   const filter = p.hideGroups ? hideGroups : allowAll;
+
   const list =
-    locationFormList(p.resources, generateDropdownList(p)).filter(filter);
+    locationFormList(p.resources, generateDropdownList(p), !p.hideGroups).filter(filter);
   /** Variable name. */
   const { label } = meta.celeryNode.args;
   const formTitleWithType =
