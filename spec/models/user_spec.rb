@@ -15,9 +15,7 @@ describe User do
 
   describe ".refresh_everyones_ui" do
     it "Sends a message over AMQP" do
-      expect(Rollbar).to receive(:error).with("Global UI refresh triggered")
-      get_msg = receive(:raw_amqp_send)
-        .with({
+      get_msg = receive(:raw_amqp_send).with({
           "type" => "reload", "commit" => "NONE",
         }.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
       expect(Transport.current).to get_msg

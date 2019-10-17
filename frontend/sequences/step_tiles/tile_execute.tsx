@@ -17,6 +17,8 @@ import {
 import { AllowedVariableNodes } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";
 
+const CLASS_NAME = "execute-step";
+
 /** Replaces the execute step body with a new array of variables. */
 const assignVariable = (props: ExecBlockParams) =>
   (variables: ParameterApplication[]) =>
@@ -81,46 +83,46 @@ export class RefactoredExecuteBlock
   }
 
   render() {
-    const { dispatch, currentStep, index, currentSequence, resources
-    } = this.props;
-    const className = "execute-step";
-    const { sequence_id } = currentStep.args;
-    const calleeUuid = sequence_id ?
-      findSequenceById(resources, sequence_id).uuid : undefined;
-    const calledSequenceVariableData = calleeUuid ?
-      resources.sequenceMetas[calleeUuid] : undefined;
+    const { sequence_id } = this.props.currentStep.args;
+    let TheStuff: JSX.Element | undefined;
+    if (sequence_id) {
+      const x = findSequenceById(this.props.resources, sequence_id).uuid;
+      const variableData =
+        this.props.resources.sequenceMetas[x];
+      TheStuff = <Col className="execute-sequence">
+        <LocalsList
+          bodyVariables={this.props.currentStep.body}
+          variableData={variableData}
+          sequenceUuid={this.props.currentSequence.uuid}
+          resources={this.props.resources}
+          onChange={assignVariable(this.props)(this.props.currentStep.body || [])}
+          locationDropdownKey={JSON.stringify(this.props.currentSequence)}
+          allowedVariableNodes={AllowedVariableNodes.identifier}
+          shouldDisplay={this.props.shouldDisplay}
+          hideGroups={true} />
+      </Col>;
+    }
+
     return <StepWrapper>
       <StepHeader
-        className={className}
+        className={CLASS_NAME}
         helpText={ToolTips.EXECUTE_SEQUENCE}
-        currentSequence={currentSequence}
-        currentStep={currentStep}
-        dispatch={dispatch}
-        index={index}
+        currentSequence={this.props.currentSequence}
+        currentStep={this.props.currentStep}
+        dispatch={this.props.dispatch}
+        index={this.props.index}
         confirmStepDeletion={this.props.confirmStepDeletion} />
-      <StepContent className={className}>
+      <StepContent className={CLASS_NAME}>
         <Row>
           <Col className="execute-sequence">
             <SequenceSelectBox
               onChange={this.changeSelection}
-              resources={resources}
-              sequenceId={currentStep.args.sequence_id} />
+              resources={this.props.resources}
+              sequenceId={this.props.currentStep.args.sequence_id} />
           </Col>
         </Row>
         <Row>
-          {!!calledSequenceVariableData &&
-            <Col className="execute-sequence">
-              <LocalsList
-                bodyVariables={currentStep.body}
-                variableData={calledSequenceVariableData}
-                sequenceUuid={currentSequence.uuid}
-                resources={resources}
-                onChange={assignVariable(this.props)(currentStep.body || [])}
-                locationDropdownKey={JSON.stringify(currentSequence)}
-                allowedVariableNodes={AllowedVariableNodes.identifier}
-                shouldDisplay={this.props.shouldDisplay}
-                hideGroups={false} />
-            </Col>}
+          {TheStuff}
         </Row>
       </StepContent>
     </StepWrapper>;

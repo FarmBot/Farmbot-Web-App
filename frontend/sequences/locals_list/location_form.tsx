@@ -40,70 +40,94 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
 
 const hideGroups = (x: DropDownItem) => x.headingId !== "PointGroup";
 const allowAll = (_: unknown) => true;
+
+type DropdownKeys =
+  | "allowedVariableNodes"
+  | "shouldDisplay"
+  | "resources"
+  | "sequenceUuid"
+  | "variable";
+
+type DropdownGenerationProps = Pick<LocationFormProps, DropdownKeys>;
+
+function generateDropdownList(p: DropdownGenerationProps): DropDownItem[] {
+  const displayVariables = p.shouldDisplay(Feature.variables) &&
+    p.allowedVariableNodes !== AllowedVariableNodes.variable;
+  const list: DropDownItem[] = [];
+
+  if (p.variable.default) {
+    const defaultDDI = determineDropdown(p.variable.celeryNode, p.resources);
+    defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
+    list.push(defaultDDI);
+  }
+
+  if (displayVariables) {
+    list.push(PARENT(determineVarDDILabel({
+      label: "parent",
+      resources: p.resources,
+      uuid: p.sequenceUuid,
+      forceExternal: p.allowedVariableNodes ===
+        AllowedVariableNodes.parameter
+    })));
+  }
+
+  return list;
+}
+
 /**
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
  */
-export const LocationForm =
-  (props: LocationFormProps) => {
-    const { sequenceUuid, resources, bodyVariables, variable,
-      allowedVariableNodes } = props;
-    const { celeryNode, dropdown, vector } = maybeUseStepData({
-      resources, bodyVariables, variable, uuid: sequenceUuid
-    });
-    const displayVariables = props.shouldDisplay(Feature.variables) &&
-      allowedVariableNodes !== AllowedVariableNodes.variable;
-    const headerForm = allowedVariableNodes === AllowedVariableNodes.parameter;
-    const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
-      label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
-    }))] : [];
-    const list = locationFormList(resources, variableListItems)
-      .filter(props.hideGroups ? hideGroups : allowAll);
-    /** Variable name. */
-    const { label } = celeryNode.args;
-    if (variable.default) {
-      const defaultDDI = determineDropdown(variable.celeryNode, resources);
-      defaultDDI.label = `${t("Default value")} - ${defaultDDI.label}`;
-      list.unshift(defaultDDI);
-    }
-    const formTitleWithType =
-      props.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
-    const formTitle = props.hideTypeLabel ? label : formTitleWithType;
-    return <div className="location-form">
-      {!props.hideHeader &&
-        <div className="location-form-header">
-          <label>{formTitle}</label>
-          {props.collapsible &&
-            <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`}
-              onClick={props.toggleVarShow} />}
-        </div>}
-      {!props.collapsed &&
-        <div className="location-form-content">
-          <Row>
-            <Col xs={12}>
-              <FBSelect
-                key={props.locationDropdownKey}
-                list={list}
-                selectedItem={dropdown}
-                customNullLabel={NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => {
-                  props.onChange(convertDDItoVariable({
-                    identifierLabel: label,
-                    allowedVariableNodes,
-                    dropdown: ddi
-                  }));
-                }} />
-            </Col>
-          </Row>
-          <CoordinateInputBoxes
-            variableNode={celeryNode}
-            vector={vector}
-            width={props.width}
-            onChange={props.onChange} />
-          <DefaultValueForm
-            variableNode={celeryNode}
-            resources={resources}
-            onChange={props.onChange} />
-        </div>}
-    </div>;
-  };
+export const LocationForm = (p: LocationFormProps) => {
+  const meta = maybeUseStepData({
+    resources: p.resources,
+    bodyVariables: p.bodyVariables,
+    variable: p.variable,
+    uuid: p.sequenceUuid
+  });
+
+  const filter = p.hideGroups ? hideGroups : allowAll;
+  const list =
+    locationFormList(p.resources, generateDropdownList(p)).filter(filter);
+  /** Variable name. */
+  const { label } = meta.celeryNode.args;
+  const formTitleWithType =
+    p.hideVariableLabel ? t("Location") : `${label} (${t("Location")})`;
+  const formTitle = p.hideTypeLabel ? label : formTitleWithType;
+  return <div className="location-form">
+    {!p.hideHeader &&
+      <div className="location-form-header">
+        <label>{formTitle}</label>
+        {p.collapsible &&
+          <i className={`fa fa-caret-${p.collapsed ? "down" : "up"}`}
+            onClick={p.toggleVarShow} />}
+      </div>}
+    {!p.collapsed && <div className="location-form-content">
+      <Row>
+        <Col xs={12}>
+          <FBSelect
+            key={p.locationDropdownKey}
+            list={list}
+            selectedItem={meta.dropdown}
+            customNullLabel={NO_VALUE_SELECTED_DDI().label}
+            onChange={ddi => {
+              p.onChange(convertDDItoVariable({
+                identifierLabel: label,
+                allowedVariableNodes: p.allowedVariableNodes,
+                dropdown: ddi
+              }));
+            }} />
+        </Col>
+      </Row>
+      <CoordinateInputBoxes
+        variableNode={meta.celeryNode}
+        vector={meta.vector}
+        width={p.width}
+        onChange={p.onChange} />
+      <DefaultValueForm
+        variableNode={meta.celeryNode}
+        resources={p.resources}
+        onChange={p.onChange} />
+    </div>}
+  </div>;
+};
