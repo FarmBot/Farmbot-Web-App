@@ -12,7 +12,7 @@ import { save, edit, destroy } from "../api/crud";
 import { TestButton } from "./test_button";
 import { AllSteps } from "./all_steps";
 import { LocalsList, localListCallback } from "./locals_list/locals_list";
-import { betterCompact } from "../util";
+import { betterCompact, trim } from "../util";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import { ResourceIndex } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
@@ -29,6 +29,7 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { isUndefined } from "lodash";
+import { error } from "../toast/toast";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -184,6 +185,9 @@ export const SequenceNameAndColor = ({ dispatch, sequence }: {
           editCurrentSequence(dispatch, sequence, { color })} />
     </Col>
   </Row>;
+const CANT_USE_GROUPS =
+  trim(`You can't assign a group to a variable inside of a seuqence. Instead,
+  pass it down to the sequence from an event, regimen or execute block.`);
 
 const SequenceHeader = (props: SequenceHeaderProps) => {
   const { sequence, dispatch } = props;
@@ -204,7 +208,16 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       variableData={variableData}
       sequenceUuid={sequence.uuid}
       resources={props.resources}
-      onChange={localListCallback(props)(declarations)}
+      onChange={(x) => {
+        if (x &&
+          x.kind === "parameter_application" &&
+          x.args.data_value.kind == "point_group") {
+
+          return error(t(CANT_USE_GROUPS));
+        } else {
+          localListCallback(props)(declarations);
+        }
+      }}
       locationDropdownKey={JSON.stringify(sequence)}
       allowedVariableNodes={AllowedVariableNodes.parameter}
       collapsible={true}
