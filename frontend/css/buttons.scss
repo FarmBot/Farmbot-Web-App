@@ -63,12 +63,21 @@
     }
   }
   &.blue {
-    background-color: $dark_blue !important;
-    box-shadow: 0 2px 0px 0px darken($dark_blue, 12%);
+    background-color: $blue;
+    box-shadow: 0 2px 0px 0px darken($blue, 12%);
     &:focus,
     &:hover,
     &.active {
-      background-color: darken($dark_blue, 5%) !important;
+      background-color: darken($blue, 5%) !important;
+    }
+  }
+  &.dark-blue {
+    background-color: $dark-blue;
+    box-shadow: 0 2px 0px 0px darken($dark-blue, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($dark-blue, 5%) !important;
     }
   }
   &.red {

@@ -72,7 +72,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           onClick={() => this.destroySelected(this.props.selected)}>
           {t("Delete")}
         </button>
-        <button className="fb-button blue"
+        <button className="fb-button dark-blue"
           onClick={() => this.props.dispatch(createGroup({
             points: this.props.selected
           }))}>

@@ -120,7 +120,7 @@ describe("<SelectPlants />", () => {
 
   it("creates group", () => {
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
-    wrapper.find(".blue").simulate("click");
+    wrapper.find(".dark-blue").simulate("click");
     expect(createGroup).toHaveBeenCalled();
   });
 });
