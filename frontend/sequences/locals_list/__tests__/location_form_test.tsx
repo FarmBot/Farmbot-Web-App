@@ -116,7 +116,7 @@ describe("<LocationForm/>", () => {
   it("shows groups in dropdown", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    p.disallowGroups = false;
+    p.hideGroups = false;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",

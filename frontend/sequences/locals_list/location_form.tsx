@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col, FBSelect } from "../../ui";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -38,6 +38,8 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   return variable;
 };
 
+const hideGroups = (x: DropDownItem) => x.headingId !== "PointGroup";
+const allowAll = (_: unknown) => true;
 /**
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
@@ -45,7 +47,7 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
 export const LocationForm =
   (props: LocationFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable,
-      allowedVariableNodes, disallowGroups } = props;
+      allowedVariableNodes } = props;
     const { celeryNode, dropdown, vector } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
@@ -55,8 +57,8 @@ export const LocationForm =
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const displayGroups = props.shouldDisplay(Feature.groups) && !disallowGroups;
-    const list = locationFormList(resources, variableListItems, displayGroups);
+    const list = locationFormList(resources, variableListItems)
+      .filter(props.hideGroups ? hideGroups : allowAll);
     /** Variable name. */
     const { label } = celeryNode.args;
     if (variable.default) {

@@ -118,7 +118,8 @@ export class RefactoredExecuteBlock
                 onChange={assignVariable(this.props)(currentStep.body || [])}
                 locationDropdownKey={JSON.stringify(currentSequence)}
                 allowedVariableNodes={AllowedVariableNodes.identifier}
-                shouldDisplay={this.props.shouldDisplay} />
+                shouldDisplay={this.props.shouldDisplay}
+                hideGroups={false} />
             </Col>}
         </Row>
       </StepContent>
