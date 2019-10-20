@@ -56,47 +56,52 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
 
   ActionButtons = () =>
     <div className="panel-action-buttons">
-      <button className="fb-button red"
-        onClick={() => this.destroySelected(this.props.selected)}>
-        {t("Delete selected")}
-      </button>
-      <button className="fb-button gray"
-        onClick={() => this
-          .props
-          .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
-        {t("Select all")}
-      </button>
-      <button className="fb-button gray"
-        onClick={() => this.props.dispatch(selectPlant(undefined))}>
-        {t("Select none")}
-      </button>
-      <button className="fb-button blue"
-        onClick={() => this.props.dispatch(createGroup({
-          points: this.props.selected
-        }))}>
-        {t("Create group")}
-      </button>
-      {DevSettings.futureFeaturesEnabled() &&
-        <button className="fb-button green"
-          onClick={() => { throw new Error("WIP"); }}>
-          {t("Create garden")}
-        </button>}
+      <div className="buttonrow">
+        <button className="fb-button gray"
+          onClick={() => this.props.dispatch(selectPlant(undefined))}>
+          {t("Select none")}
+        </button>
+        <button className="fb-button gray"
+          onClick={() => this.props
+            .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
+          {t("Select all")}
+        </button>
+      </div>
+      <label>{t("SELECTION ACTIONS")}</label>
+      <div className="buttonrow">
+        <button className="fb-button red"
+          onClick={() => this.destroySelected(this.props.selected)}>
+          {t("Delete")}
+        </button>
+        {DevSettings.futureFeaturesEnabled() &&
+          <button className="fb-button green"
+            onClick={() => { throw new Error("WIP"); }}>
+            {t("Create garden")}
+          </button>}
+        <button className="fb-button blue"
+          onClick={() => this.props.dispatch(createGroup({
+            points: this.props.selected
+          }))}>
+          {t("Create group")}
+        </button>
+      </div>
     </div>;
 
   render() {
     const { selected, plants, dispatch } = this.props;
+    const selectedPlantNumber = selected ? this.props.selected.length : 0;
     const selectedPlantData = selected ? selected.map(uuid => {
       return plants.filter(p => { return p.uuid == uuid; })[0];
     }) : undefined;
 
-    return <DesignerPanel panelName={"plant-selection"} panelColor={"green"}>
+    return <DesignerPanel panelName={"plant-selection"} panelColor={"gray"}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
-        panelColor={"green"}
-        title={t("Select plants")}
+        panelColor={"gray"}
+        blackText={true}
+        title={t("{{length}} plants selected", { length: selectedPlantNumber })}
         backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
-
       <this.ActionButtons />
 
       <DesignerPanelContent panelName={"plant-selection"}>

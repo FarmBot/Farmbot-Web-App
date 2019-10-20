@@ -54,7 +54,7 @@ export class ActiveEditor
 
   render() {
     return <div className="regimen-editor-content">
-      <div className="regimen-editor-tools">
+      <div id="regimen-editor-tools" className="regimen-editor-tools">
         <RegimenButtonGroup {...this.regimenProps} />
         <RegimenNameInput {...this.regimenProps} />
         <this.LocalsList />

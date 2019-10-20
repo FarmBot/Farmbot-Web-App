@@ -1055,6 +1055,7 @@ ul {
   td:nth-child(1),
   td:nth-child(4) {
     min-width: 116px;
+    white-space: nowrap;
   }
   td:nth-child(2),
   td:nth-child(3) {

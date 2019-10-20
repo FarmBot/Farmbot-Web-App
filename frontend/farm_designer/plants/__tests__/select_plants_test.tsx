@@ -84,7 +84,7 @@ describe("<SelectPlants />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
     const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, 2, "select none");
+    clickButton(wrapper, 0, "select none");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: undefined, type: Actions.SELECT_PLANT });
   });
@@ -95,7 +95,7 @@ describe("<SelectPlants />", () => {
     const wrapper = mount(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");
     window.confirm = jest.fn();
-    wrapper.find("button").first().simulate("click");
+    wrapper.find("button").at(2).simulate("click");
     expect(window.confirm).toHaveBeenCalledWith(
       "Are you sure you want to delete 2 plants?");
   });
@@ -107,7 +107,7 @@ describe("<SelectPlants />", () => {
     const wrapper = mount(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");
     window.confirm = () => true;
-    wrapper.find("button").first().simulate("click");
+    wrapper.find("button").at(2).simulate("click");
     expect(destroy).toHaveBeenCalledWith("plant.1", true);
     expect(destroy).toHaveBeenCalledWith("plant.2", true);
   });
