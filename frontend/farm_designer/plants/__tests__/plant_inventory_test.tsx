@@ -12,12 +12,8 @@ describe("<PlantInventory />", () => {
 
   it("renders", () => {
     const wrapper = mount(<Plants {...fakeProps()} />);
-    ["Map",
-      "Plants",
-      "Events",
-      "Strawberry Plant",
-      "11 days old"
-    ].map(string => expect(wrapper.text()).toContain(string));
+    ["Strawberry Plant",
+      "11 days old"].map(string => expect(wrapper.text()).toContain(string));
     expect(wrapper.find("input").props().placeholder)
       .toEqual("Search your plants...");
   });

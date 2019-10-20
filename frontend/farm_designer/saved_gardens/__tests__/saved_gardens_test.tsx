@@ -80,12 +80,6 @@ describe("<SavedGardens />", () => {
     expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGardens[0].uuid);
   });
 
-  it("goes back", () => {
-    const wrapper = mount(<SavedGardens {...fakeProps()} />);
-    wrapper.find("i").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
-  });
-
   it("has no saved gardens yet", () => {
     const p = fakeProps();
     p.savedGardens = [];

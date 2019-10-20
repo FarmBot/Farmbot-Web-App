@@ -13,7 +13,6 @@ import {
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -73,11 +72,6 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           onClick={() => this.destroySelected(this.props.selected)}>
           {t("Delete")}
         </button>
-        {DevSettings.futureFeaturesEnabled() &&
-          <button className="fb-button green"
-            onClick={() => { throw new Error("WIP"); }}>
-            {t("Create garden")}
-          </button>}
         <button className="fb-button blue"
           onClick={() => this.props.dispatch(createGroup({
             points: this.props.selected

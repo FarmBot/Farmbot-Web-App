@@ -1442,7 +1442,7 @@ ul {
     padding-right: 15px;
   }
   .input-line{
-    width: -webkit-fill-available;
+    flex: auto;
   }
 }
 
