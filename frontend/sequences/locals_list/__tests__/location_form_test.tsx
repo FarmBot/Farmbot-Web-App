@@ -34,6 +34,7 @@ describe("<LocationForm/>", () => {
     onChange: jest.fn(),
     shouldDisplay: jest.fn(),
     allowedVariableNodes: AllowedVariableNodes.parameter,
+    customFilterRule: undefined
   });
 
   it("renders correct UI components", () => {
@@ -44,7 +45,7 @@ describe("<LocationForm/>", () => {
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT("")], true);
+    const choices = locationFormList(p.resources, [PARENT("")]);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
@@ -116,7 +117,6 @@ describe("<LocationForm/>", () => {
   it("shows groups in dropdown", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    p.hideGroups = false;
     const wrapper = shallow(<LocationForm {...p} />);
     expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
       headingId: "Coordinate",

@@ -63,14 +63,24 @@ if Rails.env == "development"
                                z: rand(1...300) })
   end
 
-  VEGGIES.shuffle.first(PLANT_COUNT).each do |veggie|
-    Plant.create(device: u.device,
-                 x: rand(40...1500),
-                 y: rand(40...800),
-                 radius: rand(30...60),
-                 name: veggie,
-                 openfarm_slug: veggie.downcase.gsub(" ", "-"))
+  all_of_em = []
+  1.upto(8) do |n1|
+    1.upto(8) do |n2|
+      veggie = VEGGIES.sample
+      p = Plant.create(device: u.device,
+                       x: n1 * 80,
+                       y: n2 * 80,
+                       radius: rand(20...70),
+                       name: veggie,
+                       openfarm_slug: veggie.downcase.gsub(" ", "-"))
+      all_of_em.push(p.id)
+    end
   end
+
+  PointGroups::Create.run!(device: u.device,
+                           name: "TEST GROUP I",
+                           point_ids: all_of_em.sample(8),
+                           sort_type: "random")
 
   Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }
 

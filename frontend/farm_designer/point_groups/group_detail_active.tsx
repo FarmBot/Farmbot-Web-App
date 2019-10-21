@@ -9,8 +9,6 @@ import {
 import { TaggedPointGroup } from "farmbot";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { save, edit } from "../../api/crud";
-import { Dictionary } from "lodash";
-import { OFIcon } from "../../open_farm/cached_crop";
 import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -22,7 +20,7 @@ interface GroupDetailActiveProps {
   plants: TaggedPlant[];
 }
 
-type State = Dictionary<OFIcon | undefined>;
+type State = { timerId?: ReturnType<typeof setInterval> };
 
 export class GroupDetailActive
   extends React.Component<GroupDetailActiveProps, State> {
@@ -59,6 +57,16 @@ export class GroupDetailActive
   changeSortType = (sort_type: PointGroupSortType) => {
     const { dispatch, group } = this.props;
     dispatch(edit(group, { sort_type }));
+  }
+
+  componentDidMount() {
+    // There are better ways to do this.
+    this.setState({ timerId: setInterval(this.saveGroup, 900) });
+  }
+
+  componentWillUnmount() {
+    const { timerId } = this.state;
+    (typeof timerId == "number") && clearInterval(timerId);
   }
 
   render() {
