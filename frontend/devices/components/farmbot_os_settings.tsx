@@ -77,6 +77,16 @@ export class FarmbotOsSettings
     const { bot, sourceFbosConfig, botToMqttStatus } = this.props;
     const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
+    const bootRow = <Row>
+      <Col xs={ColWidth.label}>
+        <label>
+          {t("BOOT SEQUENCE")}
+        </label>
+      </Col>
+      <Col xs={7}>
+        <BootSequenceSelector />
+      </Col>
+    </Row>;
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device">
@@ -150,16 +160,7 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
-            <Row>
-              <Col xs={ColWidth.label}>
-                <label>
-                  {t("BOOT SEQUENCE")}
-                </label>
-              </Col>
-              <Col xs={7}>
-                {this.props.shouldDisplay(Feature.boot_sequence) && <BootSequenceSelector />}
-              </Col>
-            </Row>
+            {this.props.shouldDisplay(Feature.boot_sequence) && bootRow}
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
