@@ -66,27 +66,22 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
 
 /** Location selection menu items. */
 export function locationFormList(resources: ResourceIndex,
-  additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
+  additionalItems: DropDownItem[]): DropDownItem[] {
   const points = selectAllActivePoints(resources)
     .filter(x => x.body.pointer_type !== "ToolSlot");
   const plantDDI = points2ddi(points, "Plant");
   const genericPointerDDI = points2ddi(points, "GenericPointer");
   const toolDDI = activeToolDDIs(resources);
-  const output = [COORDINATE_DDI()]
+  return [COORDINATE_DDI()]
     .concat(additionalItems)
     .concat(heading("Tool"))
     .concat(toolDDI)
     .concat(heading("Plant"))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))
-    .concat(genericPointerDDI);
-  if (displayGroups) {
-    return output
-      .concat(heading("PointGroup"))
-      .concat(groups2Ddi(selectAllPointGroups(resources)));
-  } else {
-    return output;
-  }
+    .concat(genericPointerDDI)
+    .concat(heading("PointGroup"))
+    .concat(groups2Ddi(selectAllPointGroups(resources)));
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */

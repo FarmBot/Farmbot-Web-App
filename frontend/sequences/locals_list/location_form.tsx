@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui";
+import { Row, Col, FBSelect } from "../../ui";
 import { locationFormList, NO_VALUE_SELECTED_DDI } from "./location_form_list";
 import { convertDDItoVariable } from "../locals_list/handle_select";
 import {
@@ -38,8 +38,6 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
   return variable;
 };
 
-const hideGroups = (x: DropDownItem) => x.headingId !== "PointGroup";
-const allowAll = (_: unknown) => true;
 /**
  * Form with an "import from" dropdown and coordinate input boxes.
  * Can be used to set a specific value, import a value, or declare a variable.
@@ -57,8 +55,9 @@ export const LocationForm =
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const list = locationFormList(resources, variableListItems)
-      .filter(props.hideGroups ? hideGroups : allowAll);
+    const unfiltered = locationFormList(resources, variableListItems);
+    const list = props.customFilterRule ?
+      unfiltered.filter(props.customFilterRule) : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
     if (variable.default) {
