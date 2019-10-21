@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AddButtonProps } from "./interfaces";
 
-export function AddButton({ active, click }: AddButtonProps) {
+export function AddButton({ active, onClick: click }: AddButtonProps) {
   if (!active) { return <div />; }
   return <button
     className="fb-button green add"

@@ -70,7 +70,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
     return <div className="bulk-scheduler-content">
       <AddButton
         active={active}
-        click={() => dispatch(commitBulkEditor())} />
+        onClick={() => dispatch(commitBulkEditor())} />
       <Row>
         <this.SequenceSelectBox />
         <this.TimeSelection />

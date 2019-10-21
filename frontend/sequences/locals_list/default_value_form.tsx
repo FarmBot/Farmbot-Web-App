@@ -17,14 +17,9 @@ export interface DefaultValueFormProps {
   onChange: (v: ParameterDeclaration) => void;
 }
 
-export const NO_GROUPS = (d: DropDownItem) => {
-  console.log("QA THIS");
-  if (d.headingId == "PointGroup") {
-    return false;
-  } else {
-    return true;
-  }
-};
+export const NO_GROUPS =
+  (d: DropDownItem) => (d.headingId != "PointGroup");
+
 export const DefaultValueForm = (props: DefaultValueFormProps) => {
   if (props.variableNode.kind === "parameter_declaration") {
     return <div className="default-value-form">

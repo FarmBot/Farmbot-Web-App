@@ -71,4 +71,13 @@ describe("<GroupDetailActive/>", () => {
     },
       { sort_type: "random" });
   });
+
+  it("unmounts", () => {
+    window.clearInterval = jest.fn();
+    const p = fakeProps();
+    const el = new GroupDetailActive(p);
+    el.state.timerId = 123 as any;
+    el.componentWillUnmount();
+    expect(clearInterval).toHaveBeenCalledWith(123);
+  });
 });

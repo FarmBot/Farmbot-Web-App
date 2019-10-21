@@ -89,6 +89,7 @@ class ApplicationRecord < ActiveRecord::Base
                               current_device.id,
                               chan_name,
                               Time.now.utc.to_i) if current_device
+    self
   end
 
   def manually_sync!
