@@ -13,6 +13,9 @@ $darker_gray: #182026;
 $black: #000;
 $light_blue: #cdf;
 $blue: #a4c2f4;
+$blue2: #026365;
+$blue2medium: #025758;
+$blue2dark: #013738;
 $dark_blue: #37d;
 $light_cyan: #d0e0e3;
 $cyan: #45818e;
@@ -124,6 +127,12 @@ $panel_light_red: #fff7f6;
 .info,
 .saucer-info {
   background: $blue !important;
+}
+
+.blue2,
+.info,
+.saucer-info {
+  background: #026365 !important;
 }
 
 .dark-blue,
