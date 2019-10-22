@@ -95,6 +95,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         this.updateLocation(x)}
       shouldDisplay={this.props.shouldDisplay || (() => false)}
       hideHeader={true}
+      hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
       width={3}

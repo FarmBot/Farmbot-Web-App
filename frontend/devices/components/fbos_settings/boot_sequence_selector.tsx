@@ -2,11 +2,13 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../../interfaces";
 import { getFbosConfig } from "../../../resources/getters";
-import { FBSelect, DropDownItem } from "../../../ui";
+import { FBSelect, DropDownItem, Row, Col } from "../../../ui";
 import { edit, save } from "../../../api/crud";
 import { TaggedFbosConfig, TaggedSequence } from "farmbot";
 import { selectAllSequences, findSequenceById } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
+import { ColWidth } from "../farmbot_os_settings";
+import { t } from "../../../i18next_wrapper";
 
 interface Props {
   list: DropDownItem[];
@@ -53,13 +55,20 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
   }
 
   render() {
-    return <div>
-      <FBSelect
-        allowEmpty={true}
-        list={this.props.list}
-        selectedItem={this.props.selectedItem}
-        onChange={this.onChange} />
-    </div>;
+    return <Row>
+      <Col xs={ColWidth.label}>
+        <label>
+          {t("BOOT SEQUENCE")}
+        </label>
+      </Col>
+      <Col xs={7}>
+        <FBSelect
+          allowEmpty={true}
+          list={this.props.list}
+          selectedItem={this.props.selectedItem}
+          onChange={this.onChange} />
+      </Col>
+    </Row>;
   }
 }
 
