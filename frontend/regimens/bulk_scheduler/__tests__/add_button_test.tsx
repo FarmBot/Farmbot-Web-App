@@ -5,7 +5,7 @@ import { AddButton } from "../add_button";
 
 describe("<AddButton />", () => {
   it("renders an add button when active", () => {
-    const props: AddButtonProps = { active: true, click: jest.fn() };
+    const props: AddButtonProps = { active: true, onClick: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
     const button = wrapper.find("button");
     ["green", "add"].map(klass => {
@@ -13,11 +13,11 @@ describe("<AddButton />", () => {
     });
     expect(wrapper.find("i").hasClass("fa-plus")).toBeTruthy();
     button.simulate("click");
-    expect(props.click).toHaveBeenCalled();
+    expect(props.onClick).toHaveBeenCalled();
   });
 
   it("renders a <div> when inactive", () => {
-    const props: AddButtonProps = { active: false, click: jest.fn() };
+    const props: AddButtonProps = { active: false, onClick: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
     expect(wrapper.html()).toEqual("<div></div>");
   });

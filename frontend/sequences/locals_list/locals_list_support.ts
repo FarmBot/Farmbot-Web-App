@@ -8,6 +8,7 @@ import {
 } from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { ShouldDisplay } from "../../devices/interfaces";
+import { DropDownItem } from "../../ui";
 
 export type VariableNode =
   ParameterDeclaration | VariableDeclaration | ParameterApplication;
@@ -49,13 +50,13 @@ interface CommonProps {
    * chooses between reassignment vs. creation for new variables,
    * and determines which variables to display in the form. */
   allowedVariableNodes: AllowedVariableNodes;
-  /** Do not show `groups` as an option. Eg: Don't allow the user to pick
-   * "group123" in the sequence editor header. */
-  hideGroups?: boolean;
   /** Add ability to collapse the form content. */
   collapsible?: boolean;
   collapsed?: boolean;
   toggleVarShow?: () => void;
+  /** Optional filter to allow removal of arbitrary dropdown items.
+   * Return `false` to omit an item from display. */
+  customFilterRule?: (ddi: DropDownItem) => boolean;
 }
 
 export interface LocalsListProps extends CommonProps {

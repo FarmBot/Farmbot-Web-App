@@ -39,6 +39,7 @@ describe("<LocalsList/>", () => {
       onChange: jest.fn(),
       shouldDisplay: jest.fn(),
       allowedVariableNodes: AllowedVariableNodes.parameter,
+      customFilterRule: undefined
     };
   };
 

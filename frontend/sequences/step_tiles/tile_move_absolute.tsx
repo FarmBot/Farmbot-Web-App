@@ -22,6 +22,7 @@ import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
 import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
+import { NO_GROUPS } from "../locals_list/default_value_form";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   state: MoveAbsState = {
@@ -96,8 +97,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       hideHeader={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      hideGroups={true}
-      width={3} />
+      width={3}
+      customFilterRule={NO_GROUPS} />
 
   SpeedInput = () =>
     <Col xs={3}>

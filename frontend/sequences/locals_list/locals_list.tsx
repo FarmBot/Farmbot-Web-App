@@ -46,21 +46,21 @@ export const LocalsList = (props: LocalsListProps) => {
       // Show default values for parameters as a fallback if not in Sequence header
       .map(v => v && props.bodyVariables && isParameterDeclaration(v.celeryNode)
         ? convertFormVariable(v, props.resources) : v))
-      .map(variable =>
-        <LocationForm
-          key={variable.celeryNode.args.label}
-          locationDropdownKey={props.locationDropdownKey}
-          bodyVariables={props.bodyVariables}
-          variable={variable}
-          sequenceUuid={props.sequenceUuid}
-          resources={props.resources}
-          shouldDisplay={props.shouldDisplay}
-          hideVariableLabel={Object.values(props.variableData || {}).length < 2}
-          allowedVariableNodes={props.allowedVariableNodes}
-          collapsible={props.collapsible}
-          collapsed={props.collapsed}
-          toggleVarShow={props.toggleVarShow}
-          onChange={props.onChange} />)}
+      .map(variable => <LocationForm
+        key={variable.celeryNode.args.label}
+        locationDropdownKey={props.locationDropdownKey}
+        bodyVariables={props.bodyVariables}
+        variable={variable}
+        sequenceUuid={props.sequenceUuid}
+        resources={props.resources}
+        shouldDisplay={props.shouldDisplay}
+        hideVariableLabel={Object.values(props.variableData || {}).length < 2}
+        allowedVariableNodes={props.allowedVariableNodes}
+        collapsible={props.collapsible}
+        collapsed={props.collapsed}
+        toggleVarShow={props.toggleVarShow}
+        onChange={props.onChange}
+        customFilterRule={props.customFilterRule} />)}
   </div>;
 };
 

@@ -1,6 +1,7 @@
 module PointGroups
   class Update < Mutations::Command
     include PointGroups::Helpers
+    BLACKLISTED_FIELDS = [:device, :point_ids, :point_group]
 
     required do
       model :device, class: Device
@@ -19,11 +20,13 @@ module PointGroups
     end
 
     def execute
-      PointGroup.transaction do
+      PointGroup.auto_sync_debounce do
         PointGroup.transaction do
-          maybe_reconcile_points
-          point_group.update_attributes!(update_attributes)
-          point_group.reload
+          PointGroupItem.transaction do
+            maybe_reconcile_points
+            point_group.update_attributes!(update_attributes)
+            point_group.reload # <= Because PointGroupItem caching?
+          end
         end
       end
     end
@@ -31,9 +34,7 @@ module PointGroups
     private
 
     def update_attributes
-      @update_attributes ||= inputs
-        .except(:device, :point_ids, :point_group)
-        .merge(updated_at: Time.now)
+      @update_attributes ||= inputs.except(*BLACKLISTED_FIELDS)
     end
 
     def maybe_reconcile_points
