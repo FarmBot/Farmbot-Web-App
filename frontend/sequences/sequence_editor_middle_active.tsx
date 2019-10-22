@@ -212,6 +212,7 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       collapsed={props.variablesCollapsed}
       toggleVarShow={props.toggleVarShow}
       shouldDisplay={props.shouldDisplay}
+      hideGroups={true}
       customFilterRule={NO_GROUPS} />
   </div>;
 };

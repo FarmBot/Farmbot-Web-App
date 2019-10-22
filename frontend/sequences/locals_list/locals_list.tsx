@@ -60,6 +60,7 @@ export const LocalsList = (props: LocalsListProps) => {
         collapsed={props.collapsed}
         toggleVarShow={props.toggleVarShow}
         onChange={props.onChange}
+        hideGroups={props.hideGroups}
         customFilterRule={props.customFilterRule} />)}
   </div>;
 };

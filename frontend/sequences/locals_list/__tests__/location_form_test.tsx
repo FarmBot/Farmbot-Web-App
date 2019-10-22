@@ -34,18 +34,19 @@ describe("<LocationForm/>", () => {
     onChange: jest.fn(),
     shouldDisplay: jest.fn(),
     allowedVariableNodes: AllowedVariableNodes.parameter,
-    customFilterRule: undefined
   });
 
   it("renders correct UI components", () => {
     const p = fakeProps();
+    p.shouldDisplay = () => true;
     const el = shallow(<LocationForm {...p} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(BlurableInput);
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT("")]);
+    const choices = locationFormList(
+      p.resources, [PARENT("Externally defined")], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);

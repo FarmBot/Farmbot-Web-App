@@ -4,12 +4,12 @@ mockGroup.body.point_ids = [1, 2, 3];
 jest.mock("../group_detail", () => ({ fetchGroupFromUrl: () => mockGroup }));
 
 import * as React from "react";
-import { mount } from "enzyme";
 import { GroupOrder, GroupOrderProps } from "../group_order_visual";
 import {
   fakeMapTransformProps
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { svgMount } from "../../../__test_support__/svg_mount";
 
 describe("<GroupOrder />", () => {
   const fakeProps = (): GroupOrderProps => {
@@ -30,7 +30,7 @@ describe("<GroupOrder />", () => {
   };
 
   it("renders group order", () => {
-    const wrapper = mount(<GroupOrder {...fakeProps()} />);
+    const wrapper = svgMount(<GroupOrder {...fakeProps()} />);
     expect(wrapper.find("line").length).toEqual(3);
   });
 });

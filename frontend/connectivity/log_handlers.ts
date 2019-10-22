@@ -12,6 +12,7 @@ import { globalQueue } from "./batch_queue";
 export const onLogs =
   (_dispatch: Function, getState: GetState) => (msg: Log) => {
     if (isLog(msg)) {
+      !msg.type && (msg.type = "info");
       actOnChannelName(msg, "toast", showLogOnScreen);
       actOnChannelName(msg, "espeak", speakLogAloud(getState));
       const log = initLog(msg).payload;
