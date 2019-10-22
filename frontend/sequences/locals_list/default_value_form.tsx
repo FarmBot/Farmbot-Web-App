@@ -35,6 +35,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         shouldDisplay={() => true}
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideTypeLabel={true}
+        hideGroups={true}
         onChange={change(props.onChange, props.variableNode)}
         customFilterRule={NO_GROUPS} />
     </div>;

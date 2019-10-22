@@ -157,8 +157,8 @@ export function fakeDiagnosticDump(): TaggedDiagnosticDump {
     firmware_state: string,
     network_interface: string,
     fbos_dmesg_dump: string,
-    created_at: string,
-    updated_at: string,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-11T20:20:38.362Z",
   });
 }
 
