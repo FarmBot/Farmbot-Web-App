@@ -14,7 +14,6 @@ describe("AdditionalMenu", () => {
       close={jest.fn()} />);
     const text = wrapper.text();
     expect(text).toContain("Account Settings");
-    expect(text).toContain("Documentation");
     expect(text).toContain("Logout");
     expect(text).toContain("VERSION");
   });
@@ -33,7 +32,7 @@ describe("AdditionalMenu", () => {
     const wrapper = shallow(<AdditionalMenu
       logout={logout}
       close={jest.fn()} />);
-    wrapper.find("a").at(1).simulate("click");
+    wrapper.find("a").at(0).simulate("click");
     expect(logout).toHaveBeenCalled();
   });
 

@@ -7,6 +7,7 @@ import {
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { betterCompact } from "../util";
+import { DevSettings } from "../account/dev/dev_support";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -36,7 +37,8 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  { name: "Tools", icon: "wrench", slug: "tools" },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    { name: "Tools", icon: "wrench", slug: "tools" },
   {
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState

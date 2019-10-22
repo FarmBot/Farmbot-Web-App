@@ -46,7 +46,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
       <ul>
         {
           Object.entries(body.meta).map(([k, v]) => {
-            return <li>{k}: {v}</li>;
+            return <li key={k}>{k}: {v}</li>;
           })
         }
       </ul>

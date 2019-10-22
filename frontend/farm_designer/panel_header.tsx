@@ -94,22 +94,25 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Groups}
         linkTo={"/app/designer/groups"}
         title={t("Groups")} />
-      <NavTab
-        panel={Panel.SavedGardens}
-        linkTo={"/app/designer/saved_gardens"}
-        title={t("Gardens")} />
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.SavedGardens}
+          linkTo={"/app/designer/saved_gardens"}
+          title={t("Gardens")} />}
       <NavTab
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events"}
         title={t("Events")} />
-      {DevSettings.futureFeaturesEnabled() && <NavTab
-        panel={Panel.Points}
-        linkTo={"/app/designer/points"}
-        title={t("Points")} />}
-      {DevSettings.futureFeaturesEnabled() && <NavTab
-        panel={Panel.Tools}
-        linkTo={"/app/designer/tools"}
-        title={t("Tools")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Points}
+          linkTo={"/app/designer/points"}
+          title={t("Points")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Tools}
+          linkTo={"/app/designer/tools"}
+          title={t("Tools")} />}
       <NavTab
         panel={Panel.Settings}
         icon={"fa fa-gear"}

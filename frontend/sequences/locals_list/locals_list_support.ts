@@ -54,6 +54,8 @@ interface CommonProps {
   collapsible?: boolean;
   collapsed?: boolean;
   toggleVarShow?: () => void;
+  /** Don't show groups in dropdown. */
+  hideGroups?: boolean;
   /** Optional filter to allow removal of arbitrary dropdown items.
    * Return `false` to omit an item from display. */
   customFilterRule?: (ddi: DropDownItem) => boolean;

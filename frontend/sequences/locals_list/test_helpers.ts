@@ -3,7 +3,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { TaggedResource } from "farmbot";
 import { newTaggedResource } from "../../sync/actions";
 
-export function fakeResourceIndex(): ResourceIndex {
+export function fakeResourceIndex(extra: TaggedResource[] = []): ResourceIndex {
   const fakeResources: TaggedResource[] = [
     ...newTaggedResource("Point", {
       "id": 1,
@@ -56,7 +56,8 @@ export function fakeResourceIndex(): ResourceIndex {
       "id": 1,
       "name": "Generic Tool",
       "status": "active"
-    })
+    }),
+    ...extra,
   ];
   return buildResourceIndex(fakeResources).index;
 }

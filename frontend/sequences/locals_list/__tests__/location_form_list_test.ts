@@ -8,7 +8,9 @@ import {
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
-    const items = locationFormList(fakeResourceIndex(), []);
+    const pg = fakePointGroup();
+    pg.body.id = 1;
+    const items = locationFormList(fakeResourceIndex([pg]), [], true);
     const coordinate = items[0];
     expect(coordinate).toEqual({
       headingId: "Coordinate",
@@ -53,6 +55,19 @@ describe("locationFormList()", () => {
       headingId: "GenericPointer",
       label: "Point 1 (10, 20, 30)",
       value: "2"
+    });
+    const groupHeading = items[8];
+    expect(groupHeading).toEqual({
+      headingId: "PointGroup",
+      label: "Groups",
+      value: 0,
+      heading: true,
+    });
+    const group = items[9];
+    expect(group).toEqual({
+      headingId: "PointGroup",
+      label: "Fake",
+      value: "1"
     });
   });
 });
