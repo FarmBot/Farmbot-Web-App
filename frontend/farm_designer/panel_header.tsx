@@ -25,7 +25,7 @@ export const TAB_COLOR: { [key in Panel]: string } = {
   [Panel.Tools]: "gray",
   [Panel.Settings]: "gray",
   [Panel.Points]: "gray",
-  [Panel.Groups]: "blue",
+  [Panel.Groups]: "blue2",
 };
 
 const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;
