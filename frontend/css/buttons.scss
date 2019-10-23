@@ -80,6 +80,16 @@
       background-color: darken($dark-blue, 5%) !important;
     }
   }
+  &.blue2 {
+    background-color: $blue2;
+    box-shadow: 0 2px 0px 0px $blue2dark;
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: $blue2medium !important;
+
+    }
+  }
   &.red {
     background-color: $red;
     box-shadow: 0 2px 0px 0px darken($red, 12%);
