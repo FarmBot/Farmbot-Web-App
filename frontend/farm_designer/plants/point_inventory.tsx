@@ -39,7 +39,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
   }
 
   render() {
-    return <DesignerPanel panelName={"point-inventory"} panelColor={"brown"}>
+    return <DesignerPanel panelName={"point-inventory"} panelColor={"teal"}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Points}
@@ -51,7 +51,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       <DesignerPanelContent panelName={"point"}>
         <EmptyStateWrapper
           notEmpty={this.props.points.length > 0}
-          graphic={EmptyStateGraphic.no_crop_results}
+          graphic={EmptyStateGraphic.points}
           title={t("No points yet.")}
           text={Content.NO_POINTS}
           colorScheme={"points"}>

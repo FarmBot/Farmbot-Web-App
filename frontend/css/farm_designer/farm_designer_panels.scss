@@ -65,9 +65,6 @@
   &.blue-panel {
     background-color: $panel_light_blue;
   }
-  &.blue2-panel {
-    background-color: $panel_light_blue;
-  }
   &.teal-panel {
     background-color: $panel_light_teal;
   }
@@ -92,15 +89,12 @@
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $gray;
+    background-color: $panel_gray;
   }
   &.yellow-panel {
     background-color: $panel_yellow;
   }
   &.blue-panel {
-    background-color: $panel_blue;
-  }
-  &.blue2-panel {
     background-color: $panel_blue;
   }
   &.teal-panel {
@@ -477,5 +471,25 @@
   }
   input {
     min-width: 7rem;
+  }
+}
+
+.weeds-inventory-panel,
+.zones-inventory-panel,
+.group-detail-panel,
+.groups-panel {
+  .panel-content {
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+  }
+}
+
+.weeds-inventory-panel,
+.zones-inventory-panel,
+.groups-panel {
+  .panel-content {
+    padding: 0;
   }
 }
