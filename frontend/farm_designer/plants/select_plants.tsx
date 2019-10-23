@@ -25,7 +25,7 @@ export function mapStateToProps(props: Everything) {
 export interface SelectPlantsProps {
   plants: TaggedPlant[];
   dispatch: Function;
-  selected: string[];
+  selected: string[] | undefined;
 }
 
 export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
@@ -39,8 +39,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
-  destroySelected = (plantUUIDs: string[]) => {
-    if (plantUUIDs &&
+  destroySelected = (plantUUIDs: string[] | undefined) => {
+    if (plantUUIDs && plantUUIDs.length > 0 &&
       confirm(t("Are you sure you want to delete {{length}} plants?",
         { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
@@ -50,6 +50,14 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           .then(() => { }, () => { });
       });
       history.push("/app/designer/plants");
+    }
+  }
+
+  SelectedNotUndef = (input?: string[] | undefined) => {
+    if (input !== undefined) {
+      return input;
+    } else {
+      return [];
     }
   }
 
@@ -74,7 +82,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         </button>
         <button className="fb-button dark-blue"
           onClick={() => this.props.dispatch(createGroup({
-            points: this.props.selected
+            points: this.SelectedNotUndef(this.props.selected)
           }))}>
           {t("Create group")}
         </button>
@@ -83,7 +91,6 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
 
   render() {
     const { selected, plants, dispatch } = this.props;
-    const selectedPlantNumber = selected ? this.props.selected.length : 0;
     const selectedPlantData = selected ? selected.map(uuid => {
       return plants.filter(p => { return p.uuid == uuid; })[0];
     }) : undefined;
@@ -93,7 +100,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         panelName={"plant-selection"}
         panelColor={"gray"}
         blackText={true}
-        title={t("{{length}} plants selected", { length: selectedPlantNumber })}
+        title={t("{{length}} plants selected",
+          { length: this.SelectedNotUndef(selected).length })}
         backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />

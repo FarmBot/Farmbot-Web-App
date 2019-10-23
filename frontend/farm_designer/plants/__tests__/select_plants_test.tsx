@@ -57,6 +57,20 @@ describe("<SelectPlants />", () => {
       expect(wrapper.text()).toContain(string));
   });
 
+  it("displays selected plant count", () => {
+    const p = fakeProps();
+    p.selected = ["plant.1", "plant.2"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("2 plants selected");
+  });
+
+  it("displays selected plant count: none", () => {
+    const p = fakeProps();
+    p.selected = undefined;
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("0 plants selected");
+  });
+
   it("displays no selected plants: selection empty", () => {
     const p = fakeProps();
     p.selected = [];
@@ -110,6 +124,16 @@ describe("<SelectPlants />", () => {
     wrapper.find("button").at(2).simulate("click");
     expect(destroy).toHaveBeenCalledWith("plant.1", true);
     expect(destroy).toHaveBeenCalledWith("plant.2", true);
+  });
+
+  it("does not delete if selection is empty", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.resolve());
+    p.selected = undefined;
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("Delete");
+    wrapper.find("button").at(2).simulate("click");
+    expect(destroy).not.toHaveBeenCalled();
   });
 
   it("shows other buttons", () => {
