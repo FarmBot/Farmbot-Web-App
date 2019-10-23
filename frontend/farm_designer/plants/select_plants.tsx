@@ -53,7 +53,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
-  SelectedNotUndef = (input?: string[] | undefined) => {
+  selectedNotUndef = (input?: string[] | undefined) => {
     if (input !== undefined) {
       return input;
     } else {
@@ -82,7 +82,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         </button>
         <button className="fb-button dark-blue"
           onClick={() => this.props.dispatch(createGroup({
-            points: this.SelectedNotUndef(this.props.selected)
+            points: this.selectedNotUndef(this.props.selected)
           }))}>
           {t("Create group")}
         </button>
@@ -101,7 +101,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         panelColor={"gray"}
         blackText={true}
         title={t("{{length}} plants selected",
-          { length: this.SelectedNotUndef(selected).length })}
+          { length: this.selectedNotUndef(selected).length })}
         backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
