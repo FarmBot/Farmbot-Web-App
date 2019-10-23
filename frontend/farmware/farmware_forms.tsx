@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Col, BlurableInput } from "../ui/index";
-
 import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
 import {
@@ -25,7 +24,8 @@ export function getConfigEnvName(farmwareName: string, configName: string) {
 }
 
 /** Farmware description and version info for help text contents. */
-export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined): string {
+export function farmwareHelpText(farmware: FarmwareManifestInfo | undefined):
+  string {
   if (farmware) {
     const description = farmware.meta.description;
     const versionString = " (version: " + farmware.meta.version + ")";

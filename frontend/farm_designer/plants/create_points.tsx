@@ -50,8 +50,7 @@ const DEFAULTS: CurrentPointPayl = {
   color: "red"
 };
 
-@connect(mapStateToProps)
-export class CreatePoints
+export class RawCreatePoints
   extends React.Component<CreatePointsProps, Partial<CreatePointsState>> {
   constructor(props: CreatePointsProps) {
     super(props);
@@ -250,3 +249,5 @@ export class CreatePoints
     </DesignerPanel>;
   }
 }
+
+export const CreatePoints = connect(mapStateToProps)(RawCreatePoints);

@@ -28,8 +28,7 @@ export function mapStateToProps(props: Everything): GroupListPanelProps {
   return { groups, dispatch: props.dispatch };
 }
 
-@connect(mapStateToProps)
-export class GroupListPanel extends React.Component<GroupListPanelProps, State> {
+export class RawGroupListPanel extends React.Component<GroupListPanelProps, State> {
 
   state: State = { searchTerm: "" };
 
@@ -40,7 +39,7 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
   navigate = (id: number) => history.push(`/app/designer/groups/${id}`);
 
   render() {
-    return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
+    return <DesignerPanel panelName={"groups"} panelColor={"blue2"}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Groups}
@@ -72,3 +71,5 @@ export class GroupListPanel extends React.Component<GroupListPanelProps, State> 
     </DesignerPanel>;
   }
 }
+
+export const GroupListPanel = connect(mapStateToProps)(RawGroupListPanel);

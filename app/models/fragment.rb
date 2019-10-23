@@ -54,9 +54,7 @@ class Fragment < ApplicationRecord
   # Avoid N+1s: Fragment.includes(Fragment::EVERYTHING)
   EVERYTHING = { nodes: Node::EVERYTHING }
   belongs_to :device
-  belongs_to :owner,
-    polymorphic: true,
-    inverse_of: :fragment
+  belongs_to :owner, polymorphic: true, inverse_of: :fragment
   has_many :primitives, dependent: :destroy
   has_many :nodes
   has_many :primitive_pairs
@@ -88,5 +86,9 @@ class Fragment < ApplicationRecord
 
   def broadcast?
     false
+  end
+
+  def self.remove_old_fragments_for_device(dev)
+    dev.fragments.select { |x| x.owner == nil }.map { |x| x.destroy! }
   end
 end

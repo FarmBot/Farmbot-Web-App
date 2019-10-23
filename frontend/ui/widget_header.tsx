@@ -1,7 +1,7 @@
 import * as React from "react";
-
-import { docLink, DocSlug } from "./doc_link";
+import { DocSlug } from "./doc_link";
 import { t } from "../i18next_wrapper";
+import { ToolTip } from "./tooltip";
 
 interface WidgetHeaderProps {
   children?: React.ReactNode;
@@ -15,18 +15,6 @@ export function WidgetHeader(props: WidgetHeaderProps) {
     {props.children}
     <h5>{t(props.title)}</h5>
     {props.helpText &&
-      <i className="fa fa-question-circle help-icon">
-        <div className="help-text">
-          {t(props.helpText)}
-          {props.docPage &&
-            <a
-              href={docLink(props.docPage)}
-              target="_blank">
-              {" " + t("Documentation")}
-              <i className="fa fa-external-link" />
-            </a>}
-        </div>
-      </i>
-    }
+      <ToolTip helpText={props.helpText} docPage={props.docPage} />}
   </div>;
 }

@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../actions", () => ({
   snapshotGarden: jest.fn(),
   applyGarden: jest.fn(),
@@ -25,7 +23,8 @@ jest.mock("../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  SavedGardens, mapStateToProps, SavedGardensLink, SavedGardenHUD, savedGardenOpen
+  RawSavedGardens as SavedGardens, mapStateToProps, SavedGardensLink,
+  SavedGardenHUD, savedGardenOpen,
 } from "../saved_gardens";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
@@ -79,12 +78,6 @@ describe("<SavedGardens />", () => {
     const wrapper = mount(<SavedGardens {...p} />);
     clickButton(wrapper, 2, "");
     expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGardens[0].uuid);
-  });
-
-  it("goes back", () => {
-    const wrapper = mount(<SavedGardens {...fakeProps()} />);
-    wrapper.find("i").first().simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
   });
 
   it("has no saved gardens yet", () => {

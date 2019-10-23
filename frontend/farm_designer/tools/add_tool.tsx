@@ -21,8 +21,7 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
 });
 
-@connect(mapStateToProps)
-export class AddTool extends React.Component<AddToolProps, AddToolState> {
+export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   state: AddToolState = { toolName: "" };
   render() {
     return <DesignerPanel panelName={"tool"} panelColor={"gray"}>
@@ -43,3 +42,5 @@ export class AddTool extends React.Component<AddToolProps, AddToolState> {
     </DesignerPanel>;
   }
 }
+
+export const AddTool = connect(mapStateToProps)(RawAddTool);

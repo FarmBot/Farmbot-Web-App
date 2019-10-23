@@ -28,7 +28,9 @@ import {
   TaggedPointGroup,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
-import { ExecutableType, PinBindingType } from "farmbot/dist/resources/api_resources";
+import {
+  ExecutableType, PinBindingType
+} from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
 
@@ -155,8 +157,8 @@ export function fakeDiagnosticDump(): TaggedDiagnosticDump {
     firmware_state: string,
     network_interface: string,
     fbos_dmesg_dump: string,
-    created_at: string,
-    updated_at: string,
+    created_at: "2018-01-11T20:20:38.362Z",
+    updated_at: "2018-01-11T20:20:38.362Z",
   });
 }
 
@@ -457,6 +459,7 @@ export function fakeAlert(): TaggedAlert {
 export function fakePointGroup(): TaggedPointGroup {
   return fakeResource("PointGroup", {
     name: "Fake",
+    sort_type: "xy_ascending",
     point_ids: []
   });
 }

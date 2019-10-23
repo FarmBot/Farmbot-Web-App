@@ -1,5 +1,4 @@
 import { CropLiveSearchResult } from "./interfaces";
-
 import { DEFAULT_ICON } from "../open_farm/icons";
 import { startCase, find } from "lodash";
 import { t } from "../i18next_wrapper";

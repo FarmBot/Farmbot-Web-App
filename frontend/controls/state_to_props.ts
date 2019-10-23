@@ -9,7 +9,8 @@ import {
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import {
-  validFwConfig, shouldDisplay as shouldDisplayFunc,
+  validFwConfig,
+  createShouldDisplayFn as shouldDisplayFunc,
   determineInstalledOsVersion
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";

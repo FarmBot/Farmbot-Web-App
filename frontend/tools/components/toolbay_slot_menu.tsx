@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { isNumber } from "lodash";
 import { BotPosition } from "../../devices/interfaces";
 import { TaggedToolSlotPointer } from "farmbot";

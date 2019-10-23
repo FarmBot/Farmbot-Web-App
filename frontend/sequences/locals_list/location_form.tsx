@@ -45,7 +45,7 @@ const maybeUseStepData = ({ resources, bodyVariables, variable, uuid }: {
 export const LocationForm =
   (props: LocationFormProps) => {
     const { sequenceUuid, resources, bodyVariables, variable,
-      allowedVariableNodes, disallowGroups } = props;
+      allowedVariableNodes, hideGroups } = props;
     const { celeryNode, dropdown, vector } = maybeUseStepData({
       resources, bodyVariables, variable, uuid: sequenceUuid
     });
@@ -55,8 +55,10 @@ export const LocationForm =
     const variableListItems = displayVariables ? [PARENT(determineVarDDILabel({
       label: "parent", resources, uuid: sequenceUuid, forceExternal: headerForm
     }))] : [];
-    const displayGroups = props.shouldDisplay(Feature.loops) && !disallowGroups;
-    const list = locationFormList(resources, variableListItems, displayGroups);
+    const displayGroups = props.shouldDisplay(Feature.groups) && !hideGroups;
+    const unfiltered = locationFormList(resources, variableListItems, displayGroups);
+    const list = props.customFilterRule ?
+      unfiltered.filter(props.customFilterRule) : unfiltered;
     /** Variable name. */
     const { label } = celeryNode.args;
     if (variable.default) {
@@ -84,9 +86,13 @@ export const LocationForm =
                 list={list}
                 selectedItem={dropdown}
                 customNullLabel={NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => props.onChange(convertDDItoVariable({
-                  label, allowedVariableNodes
-                })(ddi))} />
+                onChange={ddi => {
+                  props.onChange(convertDDItoVariable({
+                    identifierLabel: label,
+                    allowedVariableNodes,
+                    dropdown: ddi
+                  }));
+                }} />
             </Col>
           </Row>
           <CoordinateInputBoxes

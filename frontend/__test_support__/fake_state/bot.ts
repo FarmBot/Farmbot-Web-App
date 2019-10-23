@@ -43,6 +43,7 @@ export let bot: Everything["bot"] = {
       busy: false,
       locked: false,
       commit: "---",
+      controller_uuid: "123",
       target: "---",
       env: "---",
       node_name: "---",

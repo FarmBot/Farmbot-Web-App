@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Row, Col } from "../../ui/index";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";

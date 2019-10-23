@@ -88,6 +88,24 @@
   }
 }
 
+.photos{
+  .farmware-button{
+    position: relative!important;
+    bottom: 3rem;
+    height: 0px;
+    float: right!important;
+  }
+}
+
+.weed-detector{
+  .farmware-button{
+    position: relative;
+    top: 0rem;
+    height: 0px;
+    float: right;
+  }
+}
+
 .farmware-button {
   div {
     float: right;

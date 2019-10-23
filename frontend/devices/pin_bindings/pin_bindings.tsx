@@ -83,7 +83,7 @@ export const PinBindings = (props: PinBindingsProps) => {
       <Popover
         position={Position.RIGHT_TOP}
         interactionKind={PopoverInteractionKind.HOVER}
-        popoverClassName={"help"} >
+        popoverClassName={"help"}>
         <i className="fa fa-exclamation-triangle" />
         <div>
           {t(ToolTips.PIN_BINDING_WARNING)}

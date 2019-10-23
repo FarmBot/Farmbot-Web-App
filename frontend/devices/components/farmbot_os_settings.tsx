@@ -1,5 +1,7 @@
 import * as React from "react";
-import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
+import axios from "axios";
+import { t } from "../../i18next_wrapper";
+import { FarmbotOsProps, FarmbotOsState, Feature } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
 import { MustBeOnline, isBotOnline } from "../must_be_online";
@@ -14,8 +16,7 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
-import axios from "axios";
-import { t } from "../../i18next_wrapper";
+import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
 
 export enum ColWidth {
   label = 3,
@@ -69,11 +70,7 @@ export class FarmbotOsSettings
 
   maybeWarnTz = () => {
     const wrongTZ = timezoneMismatch(this.props.deviceAccount.body.timezone);
-    if (wrongTZ) {
-      return t(Content.DIFFERENT_TZ_WARNING);
-    } else {
-      return "";
-    }
+    return wrongTZ ? t(Content.DIFFERENT_TZ_WARNING) : "";
   }
 
   render() {
@@ -153,6 +150,8 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
+            {this.props.shouldDisplay(Feature.boot_sequence) &&
+              <BootSequenceSelector />}
             <PowerAndReset
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}

@@ -1,14 +1,10 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 let mockPath = "";
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => { return mockPath.split("/"); }),
   history: { push: jest.fn() }
 }));
 
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn()
-}));
+jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 jest.mock("../../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
@@ -16,7 +12,7 @@ jest.mock("../../actions", () => ({
 }));
 
 import * as React from "react";
-import { CropInfo, searchForCurrentCrop } from "../crop_info";
+import { RawCropInfo as CropInfo, searchForCurrentCrop } from "../crop_info";
 import { mount } from "enzyme";
 import { CropInfoProps } from "../../interfaces";
 import { initSave } from "../../../api/crud";

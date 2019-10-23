@@ -9,10 +9,46 @@ const expectedVariable = (data_value: Point | Tool | Coordinate) =>
   ({ kind: "parameter_application", args: { label, data_value } });
 
 describe("convertDDItoDeclaration()", () => {
+  it("handles malformed items", () => {
+    const result = convertDDItoVariable({
+      identifierLabel: "Y",
+      allowedVariableNodes,
+      dropdown: {
+        headingId: "something_else",
+        label: "X",
+        value: 23
+      }
+    });
+    expect(result).toEqual(undefined);
+  });
+
+  it("handles point groups", () => {
+    const result = convertDDItoVariable({
+      identifierLabel: "Y",
+      allowedVariableNodes,
+      dropdown: {
+        headingId: "PointGroup",
+        label: "X",
+        value: 23
+      }
+    });
+    expect(result).toEqual({
+      kind: "parameter_application",
+      args: {
+        label: "Y",
+        data_value: { kind: "point_group", args: { point_group_id: 23 } }
+      }
+    });
+  });
+
   it("returns location data: point", () => {
-    const ddi =
+    const dropdown =
       ({ headingId: "GenericPointer", label: "Point 1 (10, 20, 30)", value: 2 });
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const variable = convertDDItoVariable({
+      identifierLabel: label,
+      allowedVariableNodes,
+      dropdown
+    });
     expect(variable).toEqual(expectedVariable({
       kind: "point",
       args: {
@@ -23,16 +59,18 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: tool", () => {
-    const ddi = { headingId: "Tool", label: "Generic Tool", value: 1 };
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const dropdown = { headingId: "Tool", label: "Generic Tool", value: 1 };
+    const variable =
+      convertDDItoVariable({ identifierLabel: label, allowedVariableNodes, dropdown });
     expect(variable).toEqual(expectedVariable({
       kind: "tool", args: { tool_id: 1 }
     }));
   });
 
   it("returns location data: Plant", () => {
-    const ddi = { headingId: "Plant", label: "Mint", value: 1 };
-    const variable = convertDDItoVariable({ label, allowedVariableNodes })(ddi);
+    const dropdown = { headingId: "Plant", label: "Mint", value: 1 };
+    const variable =
+      convertDDItoVariable({ identifierLabel: label, allowedVariableNodes, dropdown });
     expect(variable).toEqual(expectedVariable({
       kind: "point", args: { pointer_id: 1, pointer_type: "Plant" }
     }));
@@ -40,8 +78,10 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: default", () => {
     const variable = convertDDItoVariable({
-      label, allowedVariableNodes
-    })(NO_VALUE_SELECTED_DDI());
+      identifierLabel: label,
+      allowedVariableNodes,
+      dropdown: NO_VALUE_SELECTED_DDI()
+    });
     expect(variable).toEqual(expectedVariable(NOTHING_SELECTED));
   });
 
@@ -49,15 +89,17 @@ describe("convertDDItoDeclaration()", () => {
     const expected = expectedVariable(NOTHING_SELECTED);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
-      label, allowedVariableNodes: AllowedVariableNodes.parameter
-    })(NO_VALUE_SELECTED_DDI());
+      identifierLabel: label, allowedVariableNodes: AllowedVariableNodes.parameter,
+      dropdown: NO_VALUE_SELECTED_DDI()
+    });
     expect(variable).toEqual(expected);
   });
 
   it("returns location data: coordinate", () => {
     const variable = convertDDItoVariable({
-      label, allowedVariableNodes
-    })(COORDINATE_DDI({ x: 1, y: 2, z: 3 }));
+      identifierLabel: label, allowedVariableNodes,
+      dropdown: COORDINATE_DDI({ x: 1, y: 2, z: 3 })
+    });
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 1, y: 2, z: 3 }
     }));
@@ -65,18 +107,21 @@ describe("convertDDItoDeclaration()", () => {
 
   it("returns location data: new coordinate", () => {
     const variable = convertDDItoVariable({
-      label, allowedVariableNodes
-    })(COORDINATE_DDI());
+      identifierLabel: label, allowedVariableNodes,
+      dropdown: COORDINATE_DDI()
+    });
     expect(variable).toEqual(expectedVariable({
       kind: "coordinate", args: { x: 0, y: 0, z: 0 }
     }));
   });
 
   it("returns location data: parameter_declaration", () => {
-    const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
+    const dropdown = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
     const variable = convertDDItoVariable({
-      label: "parent", allowedVariableNodes
-    })(ddi);
+      identifierLabel: "parent",
+      allowedVariableNodes,
+      dropdown
+    });
     const expected: VariableNode = {
       kind: "parameter_declaration",
       args: {
@@ -87,35 +132,22 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: identifier", () => {
-    const ddi = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
+    const dropdown = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
     const variable = convertDDItoVariable({
-      label: "parent", allowedVariableNodes: AllowedVariableNodes.identifier
-    })(ddi);
+      identifierLabel: "parent",
+      allowedVariableNodes: AllowedVariableNodes.identifier,
+      dropdown
+    });
     const expected: VariableNode = {
       kind: "parameter_application",
       args: {
         label: "parent",
         data_value: {
-          kind: "identifier", args: { label: "parent0" }
+          kind: "identifier",
+          args: {
+            label: "parent0"
+          }
         }
-      }
-    };
-    expect(variable).toEqual(expected);
-  });
-
-  it("returns location data: every_point", () => {
-    const ddi = ({ headingId: "every_point", label: "All Plants", value: "Plant" });
-    const variable = convertDDItoVariable({
-      label: "label", allowedVariableNodes
-    })(ddi);
-    const expected: VariableNode = {
-      kind: "parameter_application",
-      args: {
-        label: "label",
-        data_value: {
-          kind: "every_point", args: { every_point_type: "Plant" }
-          // tslint:disable-next-line:no-any
-        } as any
       }
     };
     expect(variable).toEqual(expected);

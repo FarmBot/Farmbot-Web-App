@@ -1,5 +1,4 @@
 import { Dictionary } from "farmbot";
-
 import { Content } from "../constants";
 import { capitalize, map } from "lodash";
 import { t } from "../i18next_wrapper";

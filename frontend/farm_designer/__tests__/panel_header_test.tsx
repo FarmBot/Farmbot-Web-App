@@ -56,7 +56,7 @@ describe("<DesignerNavTabs />", () => {
     mockPath = "/app/designer/groups";
     mockDev = true;
     const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("blue-panel")).toBeTruthy();
+    expect(wrapper.hasClass("blue2-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
 

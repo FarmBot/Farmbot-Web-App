@@ -1,4 +1,3 @@
-
 import { Channel } from "farmbot/dist";
 import { ChannelName, MessageType } from "../interfaces";
 import { t } from "../../i18next_wrapper";

@@ -13,7 +13,6 @@ import {
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
-import { DevSettings } from "../../account/dev/dev_support";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -29,10 +28,7 @@ export interface SelectPlantsProps {
   selected: string[];
 }
 
-@connect(mapStateToProps)
-export class SelectPlants
-  extends React.Component<SelectPlantsProps, {}> {
-
+export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
   componentDidMount() {
     const { dispatch, selected } = this.props;
     if (selected && selected.length == 1) {
@@ -73,19 +69,12 @@ export class SelectPlants
         onClick={() => this.props.dispatch(selectPlant(undefined))}>
         {t("Select none")}
       </button>
-      {DevSettings.futureFeaturesEnabled() &&
-        <button className="fb-button blue"
-          onClick={() => createGroup({
-            points: this.props.selected,
-            dispatch: this.props.dispatch
-          })}>
-          {t("Create group")}
-        </button>}
-      {DevSettings.futureFeaturesEnabled() &&
-        <button className="fb-button green"
-          onClick={() => { throw new Error("WIP"); }}>
-          {t("Create garden")}
-        </button>}
+      <button className="fb-button blue"
+        onClick={() => this.props.dispatch(createGroup({
+          points: this.props.selected
+        }))}>
+        {t("Create group")}
+      </button>
     </div>;
 
   render() {
@@ -116,3 +105,5 @@ export class SelectPlants
     </DesignerPanel>;
   }
 }
+
+export const SelectPlants = connect(mapStateToProps)(RawSelectPlants);

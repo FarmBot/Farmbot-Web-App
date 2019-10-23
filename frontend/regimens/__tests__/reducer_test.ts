@@ -1,4 +1,3 @@
-
 import { regimensReducer, RegimenState } from "../reducer";
 import { Actions } from "../../constants";
 import { popWeek, pushWeek, selectDays, deselectDays } from "../bulk_scheduler/actions";

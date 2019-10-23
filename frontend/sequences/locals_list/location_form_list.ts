@@ -3,10 +3,11 @@ import {
   selectAllToolSlotPointers,
   selectAllActivePoints,
   maybeFindToolById,
+  selectAllPointGroups,
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber } from "lodash";
@@ -27,7 +28,11 @@ export function activeToolDDIs(resources: ResourceIndex): DropDownItem[] {
 }
 
 type PointerTypeName = Point["pointer_type"];
-type DropdownHeadingId = PointerTypeName | typeof TOOL | "Other";
+type DropdownHeadingId =
+  | PointerTypeName
+  | typeof TOOL
+  | "PointGroup"
+  | "Other";
 
 /** Location selection menu section names. */
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
@@ -35,6 +40,7 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Plant": "Plants",
   "ToolSlot": "Tool Slots",
   "Tool": "Tools and Seed Containers",
+  "PointGroup": "Groups",
   "Other": "Other",
 };
 
@@ -45,36 +51,37 @@ const heading = (name: DropdownHeadingId): DropDownItem[] => ([{
   headingId: name
 }]);
 
-const ddiFrom = (points: TaggedPoint[], pointerType: PointerTypeName) => points
+const points2ddi = (points: TaggedPoint[], pointerType: PointerTypeName) => points
   .filter(x => x.body.pointer_type === pointerType)
   .map(formatPoint)
   .filter(x => parseInt("" + x.value) > 0);
 
-const maybeGroup = (display: boolean) =>
-  (groupDDI: DropDownItem): DropDownItem[] =>
-    display ? [groupDDI] : [];
+export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
+  return groups
+    .filter(x => x.body.id)
+    .map(x => {
+      return { label: x.body.name, value: "" + x.body.id, headingId: "PointGroup" };
+    });
+};
 
 /** Location selection menu items. */
 export function locationFormList(resources: ResourceIndex,
   additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
   const points = selectAllActivePoints(resources)
     .filter(x => x.body.pointer_type !== "ToolSlot");
-  const plantDDI = ddiFrom(points, "Plant");
-  const genericPointerDDI = ddiFrom(points, "GenericPointer");
+  const plantDDI = points2ddi(points, "Plant");
+  const genericPointerDDI = points2ddi(points, "GenericPointer");
   const toolDDI = activeToolDDIs(resources);
-  const group = maybeGroup(!!displayGroups);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
     .concat(heading("Tool"))
-    .concat(group(everyPointDDI("Tool")))
-    .concat(group(everyPointDDI("ToolSlot")))
     .concat(toolDDI)
     .concat(heading("Plant"))
-    .concat(group(everyPointDDI("Plant")))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))
-    .concat(group(everyPointDDI("GenericPointer")))
-    .concat(genericPointerDDI);
+    .concat(genericPointerDDI)
+    .concat(displayGroups ? heading("PointGroup") : [])
+    .concat(displayGroups ? groups2Ddi(selectAllPointGroups(resources)) : []);
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */
@@ -115,28 +122,14 @@ export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) 
   return capitalize(label);
 }
 
-export const EVERY_POINT_LABEL = {
+export const ALL_POINT_LABELS = {
   "Plant": "All plants",
   "GenericPointer": "All map points",
   "Tool": "All tools",
   "ToolSlot": "All tool slots",
 };
 
-export type EveryPointType = keyof typeof EVERY_POINT_LABEL;
-
-const isEveryPointType = (x: string): x is EveryPointType =>
-  Object.keys(EVERY_POINT_LABEL).includes(x);
-
-export const safeEveryPointType = (x: string): EveryPointType => {
-  if (isEveryPointType(x)) {
-    return x;
-  } else {
-    throw new Error(`'${x}' is not of type EveryPointType`);
-  }
-};
-
-export const everyPointDDI = (value: EveryPointType): DropDownItem =>
-  ({ value, label: t(EVERY_POINT_LABEL[value]), headingId: "every_point" });
+export type EveryPointType = keyof typeof ALL_POINT_LABELS;
 
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   label: vector

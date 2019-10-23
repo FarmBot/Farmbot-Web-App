@@ -45,8 +45,7 @@ export const getGridSize =
 
 export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 
-@connect(mapStateToProps)
-export class FarmDesigner extends React.Component<Props, Partial<State>> {
+export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
   initializeSetting =
     (name: keyof State, defaultValue: boolean): boolean => {
@@ -201,3 +200,5 @@ export class FarmDesigner extends React.Component<Props, Partial<State>> {
     </div>;
   }
 }
+
+export const FarmDesigner = connect(mapStateToProps)(RawFarmDesigner);

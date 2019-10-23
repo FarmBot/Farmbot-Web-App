@@ -5,7 +5,11 @@ import {
   fakeSequence, fakePoint, fakeTool
 } from "../../../__test_support__/fake_state/resources";
 import {
-  MoveAbsolute, Point, Coordinate, Tool, ParameterApplication
+  Coordinate,
+  MoveAbsolute,
+  ParameterApplication,
+  Point,
+  Tool,
 } from "farmbot";
 import {
   fakeHardwareFlags
@@ -78,6 +82,26 @@ describe("<TileMoveAbsolute/>", () => {
     const cb = tma.updateInputValue("x", "location");
     cb(inputEvent("23.456"));
     expect(mock.mock.calls[0][0].location.args.x).toBe(23.456);
+  });
+
+  it("Options visible on greater screen width", () => {
+    const p = fakeProps();
+    Object.defineProperty(window, "innerWidth", {
+      value: 800,
+      configurable: true
+    });
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.find("h4").text()).toEqual("Options  []");
+  });
+
+  it("Options not visible on small screen width like mobile", () => {
+    const p = fakeProps();
+    Object.defineProperty(window, "innerWidth", {
+      value: 360,
+      configurable: true
+    });
+    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
+    expect(wrapper.find("h4").text()).toEqual("[]");
   });
 
   it("expands form", () => {
@@ -175,21 +199,6 @@ describe("<TileMoveAbsolute/>", () => {
         tma.updateLocation(variable);
         expect(tma.updateArgs).toHaveBeenCalledWith({ location: data_value() });
       });
-    });
-
-    it("does not handle every_point nodes", () => {
-      const p = fakeProps();
-      const block = ordinaryMoveAbs(p);
-      const data_value = {
-        kind: "every_point",
-        args: { every_point_type: "Plant" }
-        // tslint:disable-next-line:no-any
-      } as any;
-      const boom = () => block.updateLocation({
-        kind: "parameter_application",
-        args: { label: "parent", data_value }
-      });
-      expect(boom).toThrowError("Can't put `every_point` into `move_abs");
     });
 
     it("handles variables", () => {

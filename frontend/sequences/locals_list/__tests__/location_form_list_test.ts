@@ -1,14 +1,16 @@
 import {
-  locationFormList, dropDownName, formatTool
+  locationFormList, dropDownName, formatTool, groups2Ddi
 } from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
-  fakeToolSlot, fakeTool
+  fakeToolSlot, fakeTool, fakePointGroup
 } from "../../../__test_support__/fake_state/resources";
 
 describe("locationFormList()", () => {
   it("returns dropdown list", () => {
-    const items = locationFormList(fakeResourceIndex(), []);
+    const pg = fakePointGroup();
+    pg.body.id = 1;
+    const items = locationFormList(fakeResourceIndex([pg]), [], true);
     const coordinate = items[0];
     expect(coordinate).toEqual({
       headingId: "Coordinate",
@@ -54,6 +56,19 @@ describe("locationFormList()", () => {
       label: "Point 1 (10, 20, 30)",
       value: "2"
     });
+    const groupHeading = items[8];
+    expect(groupHeading).toEqual({
+      headingId: "PointGroup",
+      label: "Groups",
+      value: 0,
+      heading: true,
+    });
+    const group = items[9];
+    expect(group).toEqual({
+      headingId: "PointGroup",
+      label: "Fake",
+      value: "1"
+    });
   });
 });
 
@@ -86,5 +101,17 @@ describe("dropDownName()", () => {
     const label = dropDownName("Plant 1",
       { x: undefined, y: undefined, z: undefined });
     expect(label).toEqual("Plant 1 (---, ---, ---)");
+  });
+});
+
+describe("groups2Ddi", () => {
+  it("excludes unsaved groups", () => {
+    const fakes = [fakePointGroup(), fakePointGroup()];
+    fakes[0].body.id = 1;
+    fakes[1].body.id = undefined;
+    const result = groups2Ddi(fakes);
+    expect(result.length).toEqual(1);
+    expect(result[0].label).toEqual(fakes[0].body.name);
+    expect(result[0].value).toEqual("1");
   });
 });

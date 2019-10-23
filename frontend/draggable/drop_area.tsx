@@ -36,7 +36,7 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
       }}
       onDragOver={this.dragOver}
       onDrop={this.drop}
-      style={{ minHeight: "2rem" }} >
+      style={{ minHeight: "2rem" }}>
       {this.props.children}
     </div>;
   }

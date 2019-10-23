@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 let mockPath = "";
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
@@ -17,12 +15,15 @@ jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { SelectPlants, SelectPlantsProps } from "../select_plants";
+import {
+  RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps
+} from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
 import { createGroup } from "../../point_groups/actions";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -121,5 +122,16 @@ describe("<SelectPlants />", () => {
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
     wrapper.find(".blue").simulate("click");
     expect(createGroup).toHaveBeenCalled();
+  });
+});
+
+describe("mapStateToProps", () => {
+  it("selects correct props", () => {
+    const state = fakeState();
+    const result = mapStateToProps(state);
+    expect(result).toBeTruthy();
+    expect(result.selected).toBeUndefined();
+    expect(result.plants.length).toBe(2);
+    expect(result.dispatch).toBe(state.dispatch);
   });
 });

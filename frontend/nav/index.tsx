@@ -109,7 +109,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                         position={Position.BOTTOM_RIGHT}
                         isOpen={accountMenuOpen}
                         onClose={this.close("accountMenuOpen")}>
-                        <div className="nav-name"
+                        <div className="nav-name" data-title={firstName}
                           onClick={this.toggle("accountMenuOpen")}>
                           {firstName}
                         </div>

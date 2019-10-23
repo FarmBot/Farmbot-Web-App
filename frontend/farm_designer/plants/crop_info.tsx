@@ -170,7 +170,7 @@ const EditOnOpenFarm = ({ slug }: { slug: string }) =>
   <div className="edit-on-openfarm">
     <span>{t("Edit on")}&nbsp;</span>
     <a href={OpenFarm.browsingCropUrl + slug} target="_blank"
-      title={t("Open OpenFarm.cc in a new tab")} >
+      title={t("Open OpenFarm.cc in a new tab")}>
       {"OpenFarm"}
     </a>
   </div>;
@@ -219,8 +219,7 @@ export const searchForCurrentCrop = (openfarmSearch: OpenfarmSearch) =>
     unselectPlant(dispatch)();
   };
 
-@connect(mapStateToProps)
-export class CropInfo extends React.Component<CropInfoProps, {}> {
+export class RawCropInfo extends React.Component<CropInfoProps, {}> {
 
   componentDidMount() {
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmSearch));
@@ -270,3 +269,5 @@ export class CropInfo extends React.Component<CropInfoProps, {}> {
     </DesignerPanel>;
   }
 }
+
+export const CropInfo = connect(mapStateToProps)(RawCropInfo);

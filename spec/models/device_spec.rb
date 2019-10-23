@@ -5,10 +5,8 @@ describe Device do
   let(:user) { device.users.first }
 
   it "creates a token" do
-    jwt = device.create_token
+    jwt = device.help_customer
     expect(jwt).to be_kind_of(String)
-    d2 = Auth::FromJWT.run!(jwt: jwt).device
-    expect(d2.id).to eq(device.id)
   end
 
   it "is associated with a user" do
@@ -72,6 +70,18 @@ describe Device do
     expect(device).to receive(:tell).and_return(Log.new)
     device.update_attributes!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
+    five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
+    rule = ThrottlePolicy::Rule.new(five_minutes, 500)
+    violation = ThrottlePolicy::Violation.new(rule)
+    device.maybe_throttle(violation)
+    expect(device.throttled_until).to eq(violation.ends_at)
+  end
+
+  it "increases a device throttle time period" do
+    expect(device).to receive(:tell).and_return(Log.new)
+    previous_throttle = Time.now - 1.minute
+    device.update_attributes!(throttled_until: previous_throttle)
+    expect(device.throttled_until).to eq(previous_throttle)
     five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
     rule = ThrottlePolicy::Rule.new(five_minutes, 500)
     violation = ThrottlePolicy::Violation.new(rule)

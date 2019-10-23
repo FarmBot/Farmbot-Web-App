@@ -1,6 +1,5 @@
 import * as React from "react";
 import { RegimenProps } from "../interfaces";
-
 import { Row, Col, ColorPicker } from "../../ui/index";
 import { editRegimen } from "../actions";
 import { t } from "../../i18next_wrapper";

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { equals, parseIntInput } from "../util";
 import { isNumber } from "lodash";
-
 import { InputError } from "./input_error";
 import { t } from "../i18next_wrapper";
 import { error } from "../toast/toast";

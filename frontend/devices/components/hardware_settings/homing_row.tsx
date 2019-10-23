@@ -3,13 +3,13 @@ import { HomingRowProps } from "../interfaces";
 import { LockableButton } from "../lockable_button";
 import { axisTrackingStatus } from "../axis_tracking_status";
 import { ToolTips } from "../../../constants";
-import { SpacePanelToolTip } from "../space_panel_tool_tip";
-import { Row, Col } from "../../../ui/index";
+import { Row, Col, Help } from "../../../ui/index";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { commandErr } from "../../actions";
 import { Axis } from "../../interfaces";
 import { getDevice } from "../../../device";
 import { t } from "../../../i18next_wrapper";
+import { Position } from "@blueprintjs/core";
 
 const speed = CONFIG_DEFAULTS.speed;
 const findHome = (axis: Axis) => getDevice()
@@ -20,11 +20,11 @@ export function HomingRow(props: HomingRowProps) {
   const { hardware, botDisconnected } = props;
 
   return <Row>
-    <Col xs={6}>
+    <Col xs={6} className={"widget-body-tooltips"}>
       <label>
         {t("HOMING")}
       </label>
-      <SpacePanelToolTip tooltip={ToolTips.HOMING} />
+      <Help text={ToolTips.HOMING} requireClick={true} position={Position.RIGHT}/>
     </Col>
     {axisTrackingStatus(hardware)
       .map((row) => {

@@ -14,7 +14,7 @@ import {
 } from "../resources/selectors";
 import {
   validBotLocationData, validFwConfig, unpackUUID,
-  shouldDisplay as shouldDisplayFunc,
+  createShouldDisplayFn as shouldDisplayFunc,
   determineInstalledOsVersion
 } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";

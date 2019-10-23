@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { JobProgress, ConfigurationName } from "farmbot/dist";
 import { SemverResult, semverCompare } from "../../../util";
 import { OsUpdateButtonProps } from "./interfaces";

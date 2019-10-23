@@ -65,6 +65,9 @@
   &.blue-panel {
     background-color: $panel_light_blue;
   }
+  &.blue2-panel {
+    background-color: $panel_light_blue;
+  }
   &.teal-panel {
     background-color: $panel_light_teal;
   }
@@ -95,6 +98,9 @@
     background-color: $panel_yellow;
   }
   &.blue-panel {
+    background-color: $panel_blue;
+  }
+  &.blue2-panel {
     background-color: $panel_blue;
   }
   &.teal-panel {
@@ -229,9 +235,8 @@
     max-height: calc(100vh - 10rem);
     overflow-y: auto;
     overflow-x: hidden;
-    .plant-search-item {
-      pointer-events: none;
-    }
+    .plant-search-item,
+    .group-search-item { pointer-events: none; }
     img {
       filter: grayscale(100%);
     }

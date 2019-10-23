@@ -15,9 +15,10 @@ interface AxisStatus {
  * If neither of these are enabled, FarmBot can do some pretty dangerous things,
  * such as smashing tools and ramming into tool bays.
  *
- * This function returns a 2 dimensional array describing whether or not a particular
- * axis has at least one of the precautions in place. Useful for checking if it is safe
- * to proceed with certain actions that could damage the bot.
+ * This function returns a 2 dimensional array describing whether or not
+ * a particular axis has at least one of the precautions in place.
+ * Useful for checking if it is safe to proceed with certain actions that
+ * could damage the bot.
  */
 export function axisTrackingStatus(h: McuParams): AxisStatus[] {
   const stats = enabledAxisMap(h);

@@ -275,7 +275,9 @@ CREATE TABLE public.devices (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     serial_number character varying(32),
-    mqtt_rate_limit_email_sent_at timestamp without time zone
+    mqtt_rate_limit_email_sent_at timestamp without time zone,
+    last_ota timestamp without time zone,
+    last_ota_checkup timestamp without time zone
 );
 
 
@@ -505,7 +507,8 @@ CREATE TABLE public.fbos_configs (
     arduino_debug_messages boolean DEFAULT false,
     firmware_path character varying,
     firmware_debug_log boolean DEFAULT false,
-    update_channel character varying(7) DEFAULT 'stable'::character varying
+    update_channel character varying(7) DEFAULT 'stable'::character varying,
+    boot_sequence_id integer
 );
 
 
@@ -1146,7 +1149,8 @@ CREATE TABLE public.point_groups (
     name character varying(80) NOT NULL,
     device_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    sort_type character varying(20) DEFAULT 'xy_ascending'::character varying
 );
 
 
@@ -1367,7 +1371,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -2999,6 +3003,14 @@ CREATE INDEX index_webcam_feeds_on_device_id ON public.webcam_feeds USING btree 
 
 
 --
+-- Name: farm_events farm_events_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.farm_events
+    ADD CONSTRAINT farm_events_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
 -- Name: sensor_readings fk_rails_04297fb1ff; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3124,6 +3136,86 @@ ALTER TABLE ONLY public.pin_bindings
 
 ALTER TABLE ONLY public.peripherals
     ADD CONSTRAINT fk_rails_fdaad0007f FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: fragments fragments_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fragments
+    ADD CONSTRAINT fragments_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: logs logs_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.logs
+    ADD CONSTRAINT logs_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: plant_templates plant_templates_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plant_templates
+    ADD CONSTRAINT plant_templates_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: plant_templates plant_templates_saved_garden_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plant_templates
+    ADD CONSTRAINT plant_templates_saved_garden_id_fk FOREIGN KEY (saved_garden_id) REFERENCES public.saved_gardens(id);
+
+
+--
+-- Name: point_group_items point_group_items_point_group_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_group_items
+    ADD CONSTRAINT point_group_items_point_group_id_fk FOREIGN KEY (point_group_id) REFERENCES public.point_groups(id);
+
+
+--
+-- Name: point_group_items point_group_items_point_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_group_items
+    ADD CONSTRAINT point_group_items_point_id_fk FOREIGN KEY (point_id) REFERENCES public.points(id);
+
+
+--
+-- Name: point_groups point_groups_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.point_groups
+    ADD CONSTRAINT point_groups_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: saved_gardens saved_gardens_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.saved_gardens
+    ADD CONSTRAINT saved_gardens_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: tools tools_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tools
+    ADD CONSTRAINT tools_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: users users_device_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_device_id_fk FOREIGN KEY (device_id) REFERENCES public.devices(id);
 
 
 --
@@ -3270,6 +3362,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190729134954'),
 ('20190804194135'),
 ('20190804194154'),
-('20190823164837');
+('20190823164837'),
+('20190918185359'),
+('20190924190539'),
+('20190930202839'),
+('20191002125625');
 
 

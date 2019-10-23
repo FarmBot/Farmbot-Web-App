@@ -115,8 +115,7 @@ export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
     </p>
   </div>;
 
-@connect(mapStateToProps)
-export class FarmwarePage extends React.Component<FarmwareProps, {}> {
+export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
   get current() { return this.props.currentFarmware; }
 
   get botOnline() {
@@ -237,10 +236,7 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
         <CenterPanel
           className={`farmware-input-panel ${activeClasses}`}
           backButton={<this.FarmwareBackButton className={activeClasses} />}
-          title={getFormattedFarmwareName(this.current || "Photos")}
-          helpText={getToolTipByFarmware(this.props.farmwares, this.current)
-            || ToolTips.PHOTOS}
-          docPage={getDocLinkByFarmware(this.current)}>
+          title={getFormattedFarmwareName(this.current || "Photos")}>
           {<div className="farmware-input-panel-contents">
             <this.FarmwareInfoButton className={activeClasses} online={online} />
             {this.getPanelByFarmware(this.current ? this.current : "photos")}
@@ -250,7 +246,9 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
           className={`farmware-info-panel ${activeClasses}`}
           backButton={<this.FarmwareBackButton className={activeClasses} />}
           title={t("Information")}
-          helpText={ToolTips.FARMWARE_INFO}
+          helpText={getToolTipByFarmware(this.props.farmwares, this.current)
+            || ToolTips.PHOTOS}
+          docPage={getDocLinkByFarmware(this.current)}
           show={!!farmware}>
           <FarmwareInfo
             dispatch={this.props.dispatch}
@@ -264,3 +262,5 @@ export class FarmwarePage extends React.Component<FarmwareProps, {}> {
     </Page>;
   }
 }
+
+export const FarmwarePage = connect(mapStateToProps)(RawFarmwarePage);

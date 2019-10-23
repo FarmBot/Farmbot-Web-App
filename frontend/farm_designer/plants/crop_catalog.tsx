@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-
 import { OpenFarmResults } from "./openfarm_search_results";
 import { CropCatalogProps } from "../interfaces";
 import { OFSearch } from "../util";
@@ -28,8 +27,7 @@ export function mapStateToProps(props: Everything): CropCatalogProps {
   };
 }
 
-@connect(mapStateToProps)
-export class CropCatalog extends React.Component<CropCatalogProps, {}> {
+export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
 
   debouncedOFSearch = debounce((searchTerm: string) => {
     this.props.openfarmSearch(searchTerm)(this.props.dispatch);
@@ -99,3 +97,5 @@ export class CropCatalog extends React.Component<CropCatalogProps, {}> {
     </DesignerPanel>;
   }
 }
+
+export const CropCatalog = connect(mapStateToProps)(RawCropCatalog);

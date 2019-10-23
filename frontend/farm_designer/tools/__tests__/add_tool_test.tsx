@@ -1,10 +1,10 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { AddTool, AddToolProps, mapStateToProps } from "../add_tool";
+import {
+  RawAddTool as AddTool, AddToolProps, mapStateToProps
+} from "../add_tool";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
 import { initSave } from "../../../api/crud";

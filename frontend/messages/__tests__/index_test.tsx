@@ -1,8 +1,6 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 import * as React from "react";
 import { mount } from "enzyme";
-import { Messages } from "../index";
+import { RawMessages as Messages } from "../index";
 import { MessagesProps } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 

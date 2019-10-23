@@ -2,7 +2,7 @@ import * as React from "react";
 import { Saucer } from "../../../ui/index";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { last, isNumber } from "lodash";
+import { last, isNumber, isString } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
 import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
@@ -10,6 +10,9 @@ import { ConfigurationName } from "farmbot";
 import { t } from "../../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
 import { Popover } from "@blueprintjs/core";
+import moment from "moment";
+import { timeFormatString } from "../../../util";
+import { TimeSettings } from "../../../interfaces";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -258,14 +261,20 @@ const BetaReleaseOptInButton = (
   </fieldset>;
 };
 
+/** Format datetime string for display. */
+const reformatDatetime = (datetime: string, timeSettings: TimeSettings) =>
+  moment(datetime)
+    .utcOffset(timeSettings.utcOffset)
+    .format(`MMMM D, ${timeFormatString(timeSettings)}`);
+
 /** Current technical information about FarmBot OS running on the device. */
 export function FbosDetails(props: FbosDetailsProps) {
   const {
     env, commit, target, node_name, firmware_version, firmware_commit,
     soc_temp, wifi_level, uptime, memory_usage, disk_usage, throttled,
-    wifi_level_percent,
-    // tslint:disable-next-line:no-any
-  } = props.botInfoSettings as any;
+    wifi_level_percent, cpu_usage, private_ip,
+  } = props.botInfoSettings;
+  const { last_ota, last_ota_checkup } = props.deviceAccount.body;
 
   return <div>
     <LastSeen
@@ -277,6 +286,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     <CommitDisplay title={t("Commit")} repo={"farmbot_os"} commit={commit} />
     <p><b>{t("Target")}: </b>{target}</p>
     <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
+    <p><b>{t("Device ID")}: </b>{props.deviceAccount.body.id}</p>
+    {isString(private_ip) && <p><b>{t("Local IP address")}: </b>{private_ip}</p>}
     <p><b>{t("Firmware")}: </b>{firmware_version}</p>
     <CommitDisplay title={t("Firmware commit")}
       repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
@@ -284,6 +295,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     {isNumber(memory_usage) &&
       <p><b>{t("Memory usage")}: </b>{memory_usage}MB</p>}
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
+    {isNumber(cpu_usage) && <p><b>{t("CPU usage")}: </b>{cpu_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
     <WiFiStrengthDisplay
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
@@ -292,5 +304,9 @@ export function FbosDetails(props: FbosDetailsProps) {
       dispatch={props.dispatch}
       shouldDisplay={props.shouldDisplay}
       sourceFbosConfig={props.sourceFbosConfig} />
+    {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>
+      {reformatDatetime(last_ota_checkup, props.timeSettings)}</p>}
+    {last_ota && <p><b>{t("Last updated")}: </b>
+      {reformatDatetime(last_ota, props.timeSettings)}</p>}
   </div>;
 }

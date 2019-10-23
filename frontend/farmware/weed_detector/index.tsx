@@ -1,12 +1,10 @@
 import * as React from "react";
-import { connect } from "react-redux";
 import { DetectorState } from "./interfaces";
 import { Row, Col } from "../../ui/index";
 import { deletePoints, scanImage, test } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
 import { FarmwareProps, Feature } from "../../devices/interfaces";
-import { mapStateToProps } from "../../farmware/state_to_props";
 import { ImageWorkspace } from "./image_workspace";
 import { WDENVKey, isWDENVKey } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
@@ -23,7 +21,6 @@ export const namespace = (prefix: string) => (key: string): WDENVKey => {
   }
 };
 
-@connect(mapStateToProps)
 export class WeedDetector
   extends React.Component<FarmwareProps, Partial<DetectorState>> {
 

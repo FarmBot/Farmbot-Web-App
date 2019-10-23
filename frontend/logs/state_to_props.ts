@@ -8,7 +8,7 @@ import {
 } from "../devices/components/source_config_value";
 import {
   validFbosConfig, determineInstalledOsVersion,
-  shouldDisplay as shouldDisplayFunc
+  createShouldDisplayFn as shouldDisplayFunc
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedLog } from "farmbot";

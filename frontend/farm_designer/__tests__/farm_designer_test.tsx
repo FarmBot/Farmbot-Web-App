@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 let mockPath = "/app/designer/plants";
 jest.mock("../../history", () => ({
   history: { getCurrentLocation: jest.fn(() => ({ pathname: mockPath })) },
@@ -11,8 +9,10 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+jest.mock("../plants/plant_inventory", () => ({ Plants: () => <div /> }));
+
 import * as React from "react";
-import { FarmDesigner } from "../index";
+import { RawFarmDesigner as FarmDesigner } from "../index";
 import { mount } from "enzyme";
 import { Props } from "../interfaces";
 import { GardenMapLegendProps } from "../map/interfaces";
@@ -22,45 +22,44 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 
 describe("<FarmDesigner/>", () => {
-  function fakeProps(): Props {
-
-    return {
-      dispatch: jest.fn(),
-      selectedPlant: undefined,
-      designer: fakeDesignerState(),
-      hoveredPlant: undefined,
-      points: [],
-      plants: [],
-      toolSlots: [],
-      crops: [],
-      botLocationData: {
-        position: { x: undefined, y: undefined, z: undefined },
-        scaled_encoders: { x: undefined, y: undefined, z: undefined },
-        raw_encoders: { x: undefined, y: undefined, z: undefined },
-      },
-      botMcuParams: bot.hardware.mcu_params,
-      stepsPerMmXY: { x: undefined, y: undefined },
-      peripherals: [],
-      eStopStatus: false,
-      latestImages: [],
-      cameraCalibrationData: {
-        scale: undefined, rotation: undefined,
-        offset: { x: undefined, y: undefined },
-        origin: undefined,
-        calibrationZ: undefined
-      },
-      timeSettings: fakeTimeSettings(),
-      getConfigValue: jest.fn(),
-      sensorReadings: [],
-      sensors: [],
-    };
-  }
+  const fakeProps = (): Props => ({
+    dispatch: jest.fn(),
+    selectedPlant: undefined,
+    designer: fakeDesignerState(),
+    hoveredPlant: undefined,
+    points: [],
+    plants: [],
+    toolSlots: [],
+    crops: [],
+    botLocationData: {
+      position: { x: undefined, y: undefined, z: undefined },
+      scaled_encoders: { x: undefined, y: undefined, z: undefined },
+      raw_encoders: { x: undefined, y: undefined, z: undefined },
+    },
+    botMcuParams: bot.hardware.mcu_params,
+    stepsPerMmXY: { x: undefined, y: undefined },
+    peripherals: [],
+    eStopStatus: false,
+    latestImages: [],
+    cameraCalibrationData: {
+      scale: undefined, rotation: undefined,
+      offset: { x: undefined, y: undefined },
+      origin: undefined,
+      calibrationZ: undefined
+    },
+    timeSettings: fakeTimeSettings(),
+    getConfigValue: jest.fn(),
+    sensorReadings: [],
+    sensors: [],
+  });
 
   it("loads default map settings", () => {
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
@@ -96,21 +95,23 @@ describe("<FarmDesigner/>", () => {
   it("renders nav titles", () => {
     mockPath = "/app/designer/plants";
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    ["Map", "Plants", "Events"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeTruthy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open")).toBeTruthy();
-    expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeTruthy();
+    expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
+      .toBeTruthy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))
+      .toBeTruthy();
+    expect(wrapper.find(".farm-designer-map").hasClass("panel-open"))
+      .toBeTruthy();
   });
 
   it("hides panel", () => {
     mockPath = "/app/designer";
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    ["Map", "Plants", "Events"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    expect(wrapper.find(".panel-nav").first().hasClass("hidden")).toBeFalsy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open")).toBeFalsy();
-    expect(wrapper.find(".farm-designer-map").hasClass("panel-open")).toBeFalsy();
+    expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
+      .toBeFalsy();
+    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))
+      .toBeFalsy();
+    expect(wrapper.find(".farm-designer-map").hasClass("panel-open"))
+      .toBeFalsy();
   });
 
   it("renders saved garden indicator", () => {
@@ -128,6 +129,8 @@ describe("<FarmDesigner/>", () => {
     p.dispatch = jest.fn(x => x(dispatch, () => state));
     const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
     wrapper.instance().toggle(BooleanSetting.show_plants)();
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { bot_origin_quadrant: 2 });
+    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+      bot_origin_quadrant: 2
+    });
   });
 });

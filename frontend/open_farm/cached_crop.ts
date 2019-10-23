@@ -3,15 +3,15 @@ import { Dictionary } from "farmbot";
 import { isObject } from "lodash";
 import { OFCropAttrs, OFCropResponse, OpenFarmAPI } from "./icons";
 
-type OFIcon = Readonly<OFCropAttrs>;
+export type OFIcon = Readonly<OFCropAttrs>;
+type IconDictionary = Dictionary<OFIcon | undefined>;
+
 const STORAGE_KEY = "openfarm_icons_with_spread";
 
 function initLocalStorage() {
   localStorage.setItem(STORAGE_KEY, "{}");
   return {};
 }
-
-type IconDictionary = Dictionary<OFIcon | undefined>;
 
 function getAllIconsFromCache(): IconDictionary {
   try {
@@ -40,25 +40,6 @@ function localStorageIconSet(icon: OFIcon): void {
  * efficient */
 const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
-function HTTPIconFetch(slug: string) {
-  const url = OpenFarmAPI.OFBaseURL + slug;
-  if (promiseCache[url]) {
-    return promiseCache[url];
-  } else {
-    promiseCache[url] = axios
-      .get<OFCropResponse>(url)
-      .then(cacheTheIcon(slug), cacheTheIcon(slug));
-    return promiseCache[url];
-  }
-}
-
-/** PROBLEM: You have 100 lettuce plants. You don't want to download an SVG icon
- * 100 times.
- * SOLUTION: Cache stuff. */
-export function cachedCrop(slug: string): Promise<OFIcon> {
-  return localStorageIconFetch(slug) || HTTPIconFetch(slug);
-}
-
 const cacheTheIcon = (slug: string) =>
   (resp: AxiosResponse<OFCropResponse>): OFIcon => {
     if (resp
@@ -76,3 +57,18 @@ const cacheTheIcon = (slug: string) =>
       return { slug, spread: undefined, svg_icon: undefined };
     }
   };
+
+function HTTPIconFetch(slug: string) {
+  const url = OpenFarmAPI.OFBaseURL + slug;
+  promiseCache[url] = axios
+    .get<OFCropResponse>(url)
+    .then(cacheTheIcon(slug), cacheTheIcon(slug));
+  return promiseCache[url];
+}
+
+/** PROBLEM: You have 100 lettuce plants. You don't want to download an SVG icon
+ * 100 times.
+ * SOLUTION: Cache stuff. */
+export function cachedCrop(slug: string): Promise<OFIcon> {
+  return localStorageIconFetch(slug) || HTTPIconFetch(slug);
+}

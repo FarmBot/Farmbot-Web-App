@@ -22,6 +22,7 @@ import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
 import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
+import { NO_GROUPS } from "../locals_list/default_value_form";
 
 export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> {
   state: MoveAbsState = {
@@ -57,10 +58,8 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
   /** Handle changes to step.args.location. */
   updateLocation = (variable: ParameterApplication) => {
     const location = variable.args.data_value;
-    if (location.kind === "every_point" as unknown) {
-      throw new Error("Can't put `every_point` into `move_abs");
-    } else {
-      this.updateArgs({ location });
+    if (location.kind !== "point_group") {
+      return this.updateArgs({ location });
     }
   }
 
@@ -91,13 +90,16 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       }}
       sequenceUuid={this.props.currentSequence.uuid}
       resources={this.props.resources}
-      onChange={this.updateLocation}
+      onChange={(x) => x &&
+        x.kind == "parameter_application" &&
+        this.updateLocation(x)}
       shouldDisplay={this.props.shouldDisplay || (() => false)}
       hideHeader={true}
+      hideGroups={true}
       locationDropdownKey={JSON.stringify(this.props.currentSequence)}
       allowedVariableNodes={AllowedVariableNodes.identifier}
-      disallowGroups={true}
-      width={3} />
+      width={3}
+      customFilterRule={NO_GROUPS} />
 
   SpeedInput = () =>
     <Col xs={3}>
@@ -134,7 +136,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     if (currentSequence && !isTaggedSequence(currentSequence)) {
       throw new Error("WHOOPS!");
     }
-
+    const isMobile = window.innerWidth < 660;
     const className = "move-absolute-step";
     return <StepWrapper>
       <StepHeader
@@ -152,15 +154,17 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
       </StepHeader>
       <StepContent className={className}>
         <Row>
-          <Col xs={10}>
-            <this.LocationForm />
-          </Col>
-          <Col xs={2}>
-            <ExpandableHeader
-              expanded={this.state.more}
-              title={t("Options")}
-              onClick={() => this.setState({ more: !this.state.more })} />
-          </Col>
+          <div className={"dynamic-column"}>
+            <Col className="input-line">
+              <this.LocationForm />
+            </Col>
+            <Col>
+              <ExpandableHeader
+                expanded={this.state.more}
+                title={isMobile ? "" : t("Options")}
+                onClick={() => this.setState({ more: !this.state.more })} />
+            </Col>
+          </div>
         </Row>
         <Collapse isOpen={this.state.more}>
           <this.OptionsForm />

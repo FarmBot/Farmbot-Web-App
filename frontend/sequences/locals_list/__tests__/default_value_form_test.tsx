@@ -1,7 +1,9 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import { DefaultValueFormProps, DefaultValueForm } from "../default_value_form";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 import { Coordinate } from "farmbot";
 
 describe("<DefaultValueForm />", () => {

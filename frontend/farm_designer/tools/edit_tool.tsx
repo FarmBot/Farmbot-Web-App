@@ -27,8 +27,7 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
   dispatch: props.dispatch,
 });
 
-@connect(mapStateToProps)
-export class EditTool extends React.Component<EditToolProps, EditToolState> {
+export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   state: EditToolState = { toolName: this.tool ? this.tool.body.name || "" : "" };
 
   get stringyID() { return getPathArray()[4] || ""; }
@@ -65,3 +64,5 @@ export class EditTool extends React.Component<EditToolProps, EditToolState> {
     return this.tool ? this.default(this.tool) : this.fallback();
   }
 }
+
+export const EditTool = connect(mapStateToProps)(RawEditTool);

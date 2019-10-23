@@ -8,6 +8,10 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+jest.mock("../fbos_settings/boot_sequence_selector", () => ({
+  BootSequenceSelector: () => <div />
+}));
+
 import * as React from "react";
 import { FarmbotOsSettings } from "../farmbot_os_settings";
 import { mount, shallow } from "enzyme";
@@ -18,7 +22,7 @@ import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
 
-describe("<FarmbotOsSettings/>", () => {
+describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
     window.alert = jest.fn();
   });
@@ -78,5 +82,4 @@ describe("<FarmbotOsSettings/>", () => {
       .simulate("change", { currentTarget: { value: newName } });
     expect(edit).toHaveBeenCalledWith(p.deviceAccount, { name: newName });
   });
-
 });

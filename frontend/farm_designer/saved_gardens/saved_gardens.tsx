@@ -13,9 +13,9 @@ import { closeSavedGarden } from "./actions";
 import { TaggedSavedGarden } from "farmbot";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel,
+  DesignerPanelContent
 } from "../plants/designer_panel";
-import { DevSettings } from "../../account/dev/dev_support";
 import { DesignerNavTabs } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
@@ -28,8 +28,7 @@ export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
 });
 
-@connect(mapStateToProps)
-export class SavedGardens extends React.Component<SavedGardensProps, {}> {
+export class RawSavedGardens extends React.Component<SavedGardensProps, {}> {
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
@@ -41,18 +40,11 @@ export class SavedGardens extends React.Component<SavedGardensProps, {}> {
   }
 
   render() {
-    const alt = DevSettings.futureFeaturesEnabled();
     return <DesignerPanel panelName={"saved-garden"} panelColor={"green"}>
-      {alt ? <DesignerNavTabs /> :
-        <DesignerPanelHeader
-          panelName={"saved-garden"}
-          panelColor={"green"}
-          title={t("Saved Gardens")}
-          description={Content.SAVED_GARDENS}
-          backTo={"/app/designer/plants"} />}
+      <DesignerNavTabs />
       <DesignerPanelContent panelName={"saved-garden"}
-        className={`${alt ? "with-nav" : ""}`}>
-        {alt && <p>{t(Content.SAVED_GARDENS)}</p>}
+        className={"with-nav"}>
+        <p>{t(Content.SAVED_GARDENS)}</p>
         <GardenSnapshot
           currentSavedGarden={this.currentSavedGarden}
           plantTemplates={this.props.plantTemplates}
@@ -104,3 +96,5 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
       {t("Exit")}
     </button>
   </div>;
+
+export const SavedGardens = connect(mapStateToProps)(RawSavedGardens);

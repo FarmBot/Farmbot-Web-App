@@ -2,9 +2,12 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { BulkScheduler } from "../index";
 import { BulkEditorProps } from "../interfaces";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import { AddButton } from "../add_button";
 
 describe("<BulkScheduler />", () => {
   const weeks = [{
@@ -99,5 +102,13 @@ describe("<BulkScheduler />", () => {
     const change = () => sequenceInput.simulate("change", { value: 4 });
     expect(change).toThrowError("WARNING: Not a sequence UUID.");
     expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("commits bulk editor", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn();
+    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
+    panel.find(AddButton).first().simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

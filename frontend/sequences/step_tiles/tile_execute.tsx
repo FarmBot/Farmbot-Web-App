@@ -1,6 +1,5 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-
 import { Row, Col, DropDownItem } from "../../ui/index";
 import { Execute, ParameterApplication } from "farmbot/dist";
 import { TaggedSequence } from "farmbot";
@@ -101,7 +100,7 @@ export class RefactoredExecuteBlock
         confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
-          <Col xs={6}>
+          <Col className="execute-sequence">
             <SequenceSelectBox
               onChange={this.changeSelection}
               resources={resources}
@@ -110,7 +109,7 @@ export class RefactoredExecuteBlock
         </Row>
         <Row>
           {!!calledSequenceVariableData &&
-            <Col xs={6}>
+            <Col className="execute-sequence">
               <LocalsList
                 bodyVariables={currentStep.body}
                 variableData={calledSequenceVariableData}

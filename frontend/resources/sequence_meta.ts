@@ -5,15 +5,19 @@ import {
   ScopeDeclarationBodyItem,
 } from "farmbot";
 import { DropDownItem } from "../ui";
-import { findPointerByTypeAndId } from "./selectors";
-import { findSlotByToolId, findToolById } from "./selectors_by_id";
+import { findPointerByTypeAndId, findPointGroup } from "./selectors";
 import {
-  formatPoint, safeEveryPointType, everyPointDDI, NO_VALUE_SELECTED_DDI,
+  findSlotByToolId,
+  findToolById,
+  findResourceById
+} from "./selectors_by_id";
+import {
+  formatPoint,
+  NO_VALUE_SELECTED_DDI,
   formatTool,
   COORDINATE_DDI
 } from "../sequences/locals_list/location_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
-import { EveryPointShape } from "../sequences/locals_list/handle_select";
 import { t } from "../i18next_wrapper";
 
 export interface SequenceMeta {
@@ -104,10 +108,6 @@ export const determineDropdown =
         const { label } = data_value.args;
         const varName = determineVarDDILabel({ label, resources, uuid });
         return { label: varName, value: "?" };
-      // tslint:disable-next-line:no-any
-      case "every_point" as any:
-        const { every_point_type } = (data_value as unknown as EveryPointShape).args;
-        return everyPointDDI(safeEveryPointType(every_point_type));
       case "point":
         const { pointer_id, pointer_type } = data_value.args;
         const pointer =
@@ -117,8 +117,15 @@ export const determineDropdown =
         const { tool_id } = data_value.args;
         const toolSlot = findSlotByToolId(resources, tool_id);
         return formatTool(findToolById(resources, tool_id), toolSlot);
-      // tslint:disable-next-line:no-any // Empty, user must make a selection.
-      case "nothing" as any:
+      case "point_group":
+        const value = data_value.args.point_group_id;
+        const uuid2 = findResourceById(resources, "PointGroup", value);
+        const group = findPointGroup(resources, uuid2);
+        return {
+          label: group.body.name,
+          value
+        };
+      case "nothing" as unknown:
         return NO_VALUE_SELECTED_DDI();
     }
     throw new Error("WARNING: Unknown, possibly new data_value.kind?");

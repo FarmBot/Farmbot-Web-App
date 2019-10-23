@@ -173,6 +173,35 @@ describe("<FbosDetails/>", () => {
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("voltage");
   });
+
+  it("displays cpu usage", () => {
+    const p = fakeProps();
+    p.botInfoSettings.cpu_usage = 10;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("cpu usage: 10%");
+  });
+
+  it("displays ip address", () => {
+    const p = fakeProps();
+    p.botInfoSettings.private_ip = "192.168.0.100";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("ip address");
+  });
+
+  it("displays last OTA check date", () => {
+    const p = fakeProps();
+    p.deviceAccount.body.last_ota_checkup = "2018-01-11T20:20:38.362Z";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase())
+      .toContain("last checked for updates: january");
+  });
+
+  it("displays last OTA date", () => {
+    const p = fakeProps();
+    p.deviceAccount.body.last_ota = "2018-02-11T20:20:38.362Z";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("last updated: february");
+  });
 });
 
 describe("betaReleaseOptIn()", () => {

@@ -27,9 +27,8 @@ export function joinFarmEventsToExecutable(
               executable_type: body.executable_type,
               executable: executable1.body
             };
-          } else {
-            throw new Error("Bad executable ID (sequence): " + id);
           }
+          break;
         case "Regimen":
           const executable2 = regimenById[id];
           if (executable2) {
@@ -38,12 +37,9 @@ export function joinFarmEventsToExecutable(
               executable_type: body.executable_type,
               executable: executable2.body
             };
-          } else {
-            throw new Error("Bad executable ID (regimen): " + id);
           }
       }
-    } else {
-      throw new Error("Farmevent had no ID");
     }
+    throw new Error("Impossible?");
   }));
 }

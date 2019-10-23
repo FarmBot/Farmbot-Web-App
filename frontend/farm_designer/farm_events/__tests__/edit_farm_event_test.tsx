@@ -1,16 +1,10 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
-
 jest.mock("../../../history", () => ({
-  history: {
-    push: jest.fn()
-  }
+  history: { push: jest.fn() }
 }));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { EditFarmEvent } from "../edit_farm_event";
+import { RawEditFarmEvent as EditFarmEvent } from "../edit_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import {
   fakeFarmEvent, fakeSequence

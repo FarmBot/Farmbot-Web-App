@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
 jest.mock("../../../history", () => ({
@@ -9,7 +7,9 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { EditTool, EditToolProps, mapStateToProps } from "../edit_tool";
+import {
+  RawEditTool as EditTool, EditToolProps, mapStateToProps
+} from "../edit_tool";
 import { fakeTool } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {

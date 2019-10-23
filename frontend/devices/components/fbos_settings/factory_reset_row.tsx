@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Row, Col } from "../../../ui/index";
-
 import { Content } from "../../../constants";
 import { factoryReset, updateConfig } from "../../actions";
 import { ToggleButton } from "../../../controls/toggle_button";
@@ -75,6 +74,6 @@ export function FactoryResetRow(props: FactoryResetRowProps) {
           disabled={!!disableFactoryReset.value}
           sourceFbosConfig={sourceFbosConfig} />
       </Col>
-    </Row >
-  </div >;
+    </Row>
+  </div>;
 }

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
@@ -38,9 +37,8 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  DevSettings.futureFeaturesEnabled()
-    ? undefined
-    : { name: "Tools", icon: "wrench", slug: "tools" },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    { name: "Tools", icon: "wrench", slug: "tools" },
   {
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState
@@ -63,7 +61,7 @@ export const NavLinks = (props: NavLinksProps) => {
           draggable={false}
           onClick={props.close("mobileMenuOpen")}>
           <i className={`fa fa-${link.icon}`} />
-          <div>
+          <div data-title={t(link.name)}>
             {t(link.name)}
             {link.slug === "messages" && props.alertCount > 0 &&
               <div className={"saucer fun"}>

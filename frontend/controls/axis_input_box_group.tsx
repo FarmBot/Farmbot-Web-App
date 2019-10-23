@@ -1,6 +1,5 @@
 import * as React from "react";
 import { AxisInputBox } from "./axis_input_box";
-
 import { Row, Col } from "../ui/index";
 import { AxisInputBoxGroupProps, AxisInputBoxGroupState } from "./interfaces";
 import { isNumber } from "lodash";
@@ -59,7 +58,7 @@ export class AxisInputBoxGroup extends
           onClick={this.clicked}
           disabled={this.props.disabled || false}
           title={t("Move to chosen location")}
-          className="full-width green go fb-button" >
+          className="full-width green go fb-button">
           {t("GO")}
         </button>
       </Col>

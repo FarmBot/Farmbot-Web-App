@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { BooleanSetting } from "../../session_keys";
 import { ToggleButton } from "../toggle_button";
 import { ToggleWebAppBool, GetWebAppBool } from "./interfaces";
@@ -7,16 +6,17 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevSettings } from "../../account/dev/dev_support";
 import { t } from "../../i18next_wrapper";
 
-export const moveWidgetSetting = (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
-  ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
-    <fieldset>
-      <label>
-        {t(label)}
-      </label>
-      <ToggleButton
-        toggleAction={toggle(BooleanSetting[setting])}
-        toggleValue={getValue(setting)} />
-    </fieldset>;
+export const moveWidgetSetting =
+  (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
+    ({ label, setting }: { label: string, setting: BooleanConfigKey }) =>
+      <fieldset>
+        <label>
+          {t(label)}
+        </label>
+        <ToggleButton
+          toggleAction={toggle(BooleanSetting[setting])}
+          toggleValue={getValue(setting)} />
+      </fieldset>;
 
 export const MoveWidgetSettingsMenu = ({ toggle, getValue }: {
   toggle: ToggleWebAppBool,

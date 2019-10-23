@@ -1,12 +1,12 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../history", () => ({
   push: jest.fn(),
   history: { getCurrentLocation: () => "" },
 }));
 
 import * as React from "react";
-import { Sequences, SequenceBackButtonProps, SequenceBackButton } from "../sequences";
+import {
+  RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton
+} from "../sequences";
 import { shallow, mount } from "enzyme";
 import { Props } from "../interfaces";
 import {

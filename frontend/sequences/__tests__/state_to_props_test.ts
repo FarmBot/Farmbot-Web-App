@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Feature } from "../../devices/interfaces";
@@ -7,7 +5,9 @@ import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
   fakeSequence, fakeWebAppConfig
 } from "../../__test_support__/fake_state/resources";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "farmbot";
 
 describe("mapStateToProps()", () => {

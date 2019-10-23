@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../config_storage/actions", () => ({
   getWebAppConfigValue: jest.fn(x => { x(); return jest.fn(() => true); }),
   setWebAppConfigValue: jest.fn(),
@@ -8,7 +6,8 @@ jest.mock("../../config_storage/actions", () => ({
 import * as React from "react";
 import { mount, ReactWrapper } from "enzyme";
 import {
-  DesignerSettings, DesignerSettingsProps, mapStateToProps
+  RawDesignerSettings as DesignerSettings, DesignerSettingsProps,
+  mapStateToProps,
 } from "../settings";
 import { fakeState } from "../../__test_support__/fake_state";
 import { BooleanSetting, NumericSetting } from "../../session_keys";

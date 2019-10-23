@@ -126,7 +126,8 @@ describe("updateLhs", () => {
 
 describe("displayLhs", () => {
   it("Finds peripherals to display", () => {
-    const p = resources.index.references[Object.keys(resources.index.byKind.Peripheral)[0]];
+    const p = resources.index.references[
+      Object.keys(resources.index.byKind.Peripheral)[0]];
     if (!p) {
       throw new Error("Never");
     }

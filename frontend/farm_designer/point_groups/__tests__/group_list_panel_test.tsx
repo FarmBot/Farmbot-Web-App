@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => ["L", "O", "L"]),
   history: { push: jest.fn() }
@@ -7,11 +5,15 @@ jest.mock("../../../history", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { GroupListPanel, GroupListPanelProps, mapStateToProps } from "../group_list_panel";
+import {
+  RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps
+} from "../group_list_panel";
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../../__test_support__/resource_index_builder";
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
@@ -37,7 +39,7 @@ describe("<GroupListPanel />", () => {
   it("renders relevant group data as a list", () => {
     const p = fakeProps();
     const wrapper = mount(<GroupListPanel {...p} />);
-    wrapper.find(".plant-search-item").first().simulate("click");
+    wrapper.find(".group-search-item").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/groups/9");
 
     ["3 items",

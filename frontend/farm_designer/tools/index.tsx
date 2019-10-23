@@ -34,8 +34,7 @@ export const mapStateToProps = (props: Everything): ToolsProps => ({
   dispatch: props.dispatch,
 });
 
-@connect(mapStateToProps)
-export class Tools extends React.Component<ToolsProps, ToolsState> {
+export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "" };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
@@ -125,3 +124,5 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) =>
       </p>
     </Col>
   </Row>;
+
+export const Tools = connect(mapStateToProps)(RawTools);

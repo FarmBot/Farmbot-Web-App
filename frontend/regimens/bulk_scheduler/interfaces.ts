@@ -46,7 +46,7 @@ export interface ToggleDayParams {
 
 export interface AddButtonProps {
   active: boolean;
-  click: React.EventHandler<React.FormEvent<{}>>;
+  onClick: React.EventHandler<React.FormEvent<{}>>;
 }
 
 export interface SequenceListProps {

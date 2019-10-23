@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything } from "../../interfaces";
 import { Panel, DesignerNavTabs } from "../panel_header";
@@ -34,8 +33,7 @@ function mapStateToProps(props: Everything): PlantInventoryProps {
   };
 }
 
-@connect(mapStateToProps)
-export class Plants extends React.Component<PlantInventoryProps, State> {
+export class RawPlants extends React.Component<PlantInventoryProps, State> {
 
   state: State = { searchTerm: "" };
 
@@ -72,3 +70,5 @@ export class Plants extends React.Component<PlantInventoryProps, State> {
     </DesignerPanel>;
   }
 }
+
+export const Plants = connect(mapStateToProps)(RawPlants);

@@ -29,6 +29,7 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { isUndefined } from "lodash";
+import { NO_GROUPS } from "./locals_list/default_value_form";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -123,7 +124,12 @@ interface SequenceBtnGroupProps {
 }
 
 const SequenceBtnGroup = ({
-  dispatch, sequence, syncStatus, resources, shouldDisplay, menuOpen,
+  dispatch,
+  sequence,
+  syncStatus,
+  resources,
+  shouldDisplay,
+  menuOpen,
   getWebAppConfigValue
 }: SequenceBtnGroupProps) =>
   <div className="button-group">
@@ -205,7 +211,9 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       collapsible={true}
       collapsed={props.variablesCollapsed}
       toggleVarShow={props.toggleVarShow}
-      shouldDisplay={props.shouldDisplay} />
+      shouldDisplay={props.shouldDisplay}
+      hideGroups={true}
+      customFilterRule={NO_GROUPS} />
   </div>;
 };
 

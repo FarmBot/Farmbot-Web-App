@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Col, ToolTip } from ".";
+import { Col, ToolTip, DocSlug } from ".";
 import { t } from "../i18next_wrapper";
 
 interface RightPanelProps {
@@ -7,6 +7,7 @@ interface RightPanelProps {
   className: string;
   title: string;
   helpText: string;
+  docPage?: DocSlug;
   show: Boolean | undefined;
   width?: number;
   backButton?: React.ReactNode;
@@ -20,7 +21,7 @@ export function RightPanel(props: RightPanelProps) {
         <h3>
           <i>{t(props.title)}</i>
         </h3>
-        <ToolTip helpText={props.helpText} />
+        <ToolTip helpText={props.helpText} docPage={props.docPage} />
         {props.children}
       </div>}
   </Col>;

@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 jest.mock("../../history", () => ({
   push: () => jest.fn(),
   history: { getCurrentLocation: () => ({ pathname: "" }) }
@@ -7,34 +5,36 @@ jest.mock("../../history", () => ({
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { Regimens, RegimenBackButtonProps, RegimenBackButton } from "../index";
+import {
+  RawRegimens as Regimens, RegimenBackButtonProps, RegimenBackButton
+} from "../index";
 import { Props } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { auth } from "../../__test_support__/fake_state/token";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import {
+  buildResourceIndex
+} from "../../__test_support__/resource_index_builder";
 import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 
 describe("<Regimens />", () => {
-  function fakeProps(): Props {
-    return {
-      dispatch: jest.fn(),
-      sequences: [],
-      resources: buildResourceIndex([]).index,
-      auth,
-      current: fakeRegimen(),
-      regimens: [],
-      selectedSequence: undefined,
-      dailyOffsetMs: 1000,
-      weeks: [],
-      bot,
-      calendar: [],
-      regimenUsageStats: {},
-      shouldDisplay: () => false,
-      variableData: {},
-      schedulerOpen: false,
-    };
-  }
+  const fakeProps = (): Props => ({
+    dispatch: jest.fn(),
+    sequences: [],
+    resources: buildResourceIndex([]).index,
+    auth,
+    current: fakeRegimen(),
+    regimens: [],
+    selectedSequence: undefined,
+    dailyOffsetMs: 1000,
+    weeks: [],
+    bot,
+    calendar: [],
+    regimenUsageStats: {},
+    shouldDisplay: () => false,
+    variableData: {},
+    schedulerOpen: false,
+  });
 
   it("renders", () => {
     const wrapper = mount(<Regimens {...fakeProps()} />);

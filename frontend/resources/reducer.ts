@@ -72,6 +72,7 @@ export const emptyState = (): RestResources => {
         "Sequence.FarmEvent": {},
         "Sequence.Regimen": {},
         "Sequence.Sequence": {},
+        "Sequence.FbosConfig": {}
       }
     }
   };
@@ -107,11 +108,12 @@ export let resourceReducer =
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
-    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
-      !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-      indexUpsert(s.index, payload.body, "initial");
-      return s;
-    })
+    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY,
+      (s, { payload }) => {
+        !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+        indexUpsert(s.index, payload.body, "initial");
+        return s;
+      })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index);

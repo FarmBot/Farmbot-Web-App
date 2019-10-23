@@ -6,9 +6,10 @@ import { LocationForm } from "./location_form";
 import {
   SequenceMeta, determineVector, determineDropdown
 } from "../../resources/sequence_meta";
-import { Help } from "../../ui";
+import { Help, DropDownItem } from "../../ui";
 import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
+import { Position } from "@blueprintjs/core";
 
 export interface DefaultValueFormProps {
   variableNode: VariableNode;
@@ -16,11 +17,14 @@ export interface DefaultValueFormProps {
   onChange: (v: ParameterDeclaration) => void;
 }
 
-export const DefaultValueForm = (props: DefaultValueFormProps) =>
-  props.variableNode.kind === "parameter_declaration"
-    ? <div className="default-value-form">
+export const NO_GROUPS =
+  (d: DropDownItem) => (d.headingId != "PointGroup");
+
+export const DefaultValueForm = (props: DefaultValueFormProps) => {
+  if (props.variableNode.kind === "parameter_declaration") {
+    return <div className="default-value-form">
       <div className="default-value-tooltip">
-        <Help text={ToolTips.DEFAULT_VALUE} />
+        <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />
       </div>
       <LocationForm
         key={props.variableNode.args.label + "default_value"}
@@ -31,20 +35,29 @@ export const DefaultValueForm = (props: DefaultValueFormProps) =>
         shouldDisplay={() => true}
         allowedVariableNodes={AllowedVariableNodes.variable}
         hideTypeLabel={true}
-        onChange={change(props.onChange, props.variableNode)} />
-    </div>
-    : <div />;
+        hideGroups={true}
+        onChange={change(props.onChange, props.variableNode)}
+        customFilterRule={NO_GROUPS} />
+    </div>;
+  } else {
+    return <div />;
+  }
+};
 
 const change =
   (onChange: (v: ParameterDeclaration) => void, variable: VariableNode) =>
-    (formResponse: ParameterApplication) =>
-      onChange({
-        kind: "parameter_declaration",
-        args: {
-          label: variable.args.label,
-          default_value: formResponse.args.data_value
-        }
-      });
+    (formResponse: ParameterApplication) => {
+      const { data_value } = formResponse.args;
+      if (data_value.kind !== "point_group") {
+        onChange({
+          kind: "parameter_declaration",
+          args: {
+            label: variable.args.label,
+            default_value: data_value
+          }
+        });
+      }
+    };
 
 const defaultValueVariableData = (
   resources: ResourceIndex,

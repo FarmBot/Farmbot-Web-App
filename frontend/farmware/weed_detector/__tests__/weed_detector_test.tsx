@@ -2,16 +2,7 @@ const mockDevice = {
   execScript: jest.fn(() => Promise.resolve()),
   setUserEnv: jest.fn(() => Promise.resolve()),
 };
-
-jest.mock("../../../device", () => ({
-  getDevice: () => {
-    return mockDevice;
-  }
-}));
-
-jest.mock("react-redux", () => ({
-  connect: jest.fn()
-}));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 

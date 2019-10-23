@@ -1,12 +1,11 @@
 import { GetState } from "../redux/interfaces";
 import { maybeDetermineUuid } from "../resources/selectors";
-import {
-  TaggedResource,
-  SpecialStatus
-} from "farmbot";
+import { TaggedResource, SpecialStatus } from "farmbot";
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
-import { SyncPayload, MqttDataResult, Reason, UpdateMqttData } from "./interfaces";
+import {
+  SyncPayload, MqttDataResult, Reason, UpdateMqttData
+} from "./interfaces";
 import { outstandingRequests } from "./data_consistency";
 import { newTaggedResource } from "../sync/actions";
 
@@ -16,7 +15,8 @@ export function decodeBinary(payload: Buffer): SyncPayload {
 
 const SKIP_THESE = ["DeviceSerialNumber"]; // Only FBOS Cares about this one.
 
-export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<TaggedResource> {
+export function routeMqttData(chan: string, payload: Buffer):
+  MqttDataResult<TaggedResource> {
   /** Skip irrelevant messages: only resource auto-sync messages are desired.
    *  eg, `bot/device_#/sync/Resource/#` */
   if (!(chan.split("/")[2] == "sync")) { return { status: "SKIP" }; }
@@ -37,7 +37,8 @@ export function routeMqttData(chan: string, payload: Buffer): MqttDataResult<Tag
   }
 }
 
-export function asTaggedResource(data: UpdateMqttData<TaggedResource>): TaggedResource {
+export function asTaggedResource(data: UpdateMqttData<TaggedResource>):
+  TaggedResource {
   return newTaggedResource(data.kind, data.body)[0];
 }
 

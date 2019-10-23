@@ -61,5 +61,5 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
         shouldDisplay={props.shouldDisplay}
         botOnline={botOnline} />
     </Col>
-  </Row >;
+  </Row>;
 }

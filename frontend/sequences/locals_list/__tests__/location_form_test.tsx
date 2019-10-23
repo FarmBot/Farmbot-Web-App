@@ -12,7 +12,7 @@ import {
   LocationFormProps, PARENT, AllowedVariableNodes
 } from "../locals_list_support";
 import { difference } from "lodash";
-import { locationFormList, everyPointDDI } from "../location_form_list";
+import { locationFormList } from "../location_form_list";
 import { convertDDItoVariable } from "../handle_select";
 
 describe("<LocationForm/>", () => {
@@ -38,24 +38,27 @@ describe("<LocationForm/>", () => {
 
   it("renders correct UI components", () => {
     const p = fakeProps();
+    p.shouldDisplay = () => true;
     const el = shallow(<LocationForm {...p} />);
     const selects = el.find(FBSelect);
     const inputs = el.find(BlurableInput);
 
     expect(selects.length).toBe(1);
     const select = selects.first().props();
-    const choices = locationFormList(p.resources, [PARENT("")], true);
+    const choices = locationFormList(
+      p.resources, [PARENT("Externally defined")], true);
     const actualLabels = select.list.map(x => x.label).sort();
     const expectedLabels = choices.map(x => x.label).sort();
     const diff = difference(actualLabels, expectedLabels);
     expect(diff).toEqual([]);
-    const choice = choices[1];
-    select.onChange(choice);
+    const dropdown = choices[1];
+    select.onChange(dropdown);
     expect(p.onChange)
       .toHaveBeenCalledWith(convertDDItoVariable({
-        label: "label",
-        allowedVariableNodes: p.allowedVariableNodes
-      })(choice));
+        identifierLabel: "label",
+        allowedVariableNodes: p.allowedVariableNodes,
+        dropdown
+      }));
     expect(inputs.length).toBe(0);
   });
 
@@ -115,10 +118,12 @@ describe("<LocationForm/>", () => {
   it("shows groups in dropdown", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    p.disallowGroups = false;
     const wrapper = shallow(<LocationForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list)
-      .toContainEqual(everyPointDDI("Tool"));
+    expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
+      headingId: "Coordinate",
+      label: "Custom Coordinates",
+      value: ""
+    });
   });
 
   it("renders collapse icon: open", () => {

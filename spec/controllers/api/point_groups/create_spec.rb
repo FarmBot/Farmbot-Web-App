@@ -25,6 +25,7 @@ describe Api::PointGroupsController do
     point_ids.map do |this_id|
       expect(json[:point_ids]).to include(this_id)
     end
+    expect(json[:sort_type]).to eq("xy_ascending")
   end
 
   it "alerts the user about bad point_ids" do
@@ -36,5 +37,14 @@ describe Api::PointGroupsController do
     expect(response.status).to eq(422)
     expect(before).to eq(PointGroup.count)
     expect(json.fetch(:points)).to include(PointGroups::Create::BAD_POINT_IDS)
+  end
+
+  it "disallows malformed sort_types" do
+    sign_in user
+    payload = { name: "_", point_ids: [], sort_type: "q" }
+    before = PointGroup.count
+    post :create, body: payload.to_json, format: :json
+    expect(response.status).to eq(422)
+    expect(json[:sort_type]).to include(PointGroup::BAD_SORT.split("}").last)
   end
 end

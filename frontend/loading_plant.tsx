@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Color } from "./ui";
 import { t } from "./i18next_wrapper";
 

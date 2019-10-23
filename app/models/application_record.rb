@@ -44,9 +44,10 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   def broadcast?
-    !self.class.auto_sync_paused &&
-      current_device &&
-      (gone? || notable_changes?)
+    return false if self.class.auto_sync_paused
+    return false unless current_device
+    return false unless (gone? || notable_changes?)
+    return true
   end
 
   def maybe_broadcast
@@ -88,12 +89,13 @@ class ApplicationRecord < ActiveRecord::Base
                               current_device.id,
                               chan_name,
                               Time.now.utc.to_i) if current_device
+    self
   end
 
   def manually_sync!
-    device.auto_sync_transaction do
+    device && (device.auto_sync_transaction do
       update_attributes!(updated_at: Time.now)
-    end if device
+    end)
     self
   end
 end

@@ -23,35 +23,12 @@ class Log < ApplicationRecord
 
   validates :device, presence: true
   validates :type, presence: true
-  serialize :meta
-  validates :meta, presence: true
   # http://stackoverflow.com/a/5127684/1064917
   before_validation :set_defaults
 
   def set_defaults
     self.channels ||= []
   end
-
-  # Legacy shims ===============================================================
-  #  TODO: Remove these once FBOS stops using the `meta` field (FBOS < v6.4.0).
-  def meta
-    {
-      type: self.type,
-      major_version: self.major_version,
-      minor_version: self.minor_version,
-      verbosity: self.verbosity,
-      x: self.x,
-      y: self.y,
-      z: self.z,
-    }
-  end
-
-  def meta=(hash)
-    hash.map { |(key, value)| self.send("#{key}=", value) }
-    self.meta
-  end
-
-  # End Legacy shims ===========================================================
 
   def broadcast? # Logs get their own special channel. Don't echo twice!
     false

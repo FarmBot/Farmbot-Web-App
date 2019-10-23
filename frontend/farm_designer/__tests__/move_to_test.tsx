@@ -1,5 +1,3 @@
-jest.mock("react-redux", () => ({ connect: jest.fn() }));
-
 const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
@@ -12,8 +10,8 @@ jest.mock("../../history", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  MoveTo, MoveToProps, MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
-  mapStateToProps
+  RawMoveTo as MoveTo, MoveToProps, MoveToForm, MoveToFormProps,
+  MoveModeLink, chooseLocation, mapStateToProps,
 } from "../move_to";
 import { history } from "../../history";
 import { Actions } from "../../constants";

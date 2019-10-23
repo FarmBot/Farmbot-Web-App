@@ -12,8 +12,7 @@ import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 
-@connect(mapStateToProps)
-export class PlantInfo extends React.Component<EditPlantInfoProps, {}> {
+export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
   get stringyID() { return getPathArray()[this.templates ? 5 : 4] || ""; }
   get plant() { return this.props.findPlant(this.stringyID); }
@@ -64,3 +63,5 @@ export class PlantInfo extends React.Component<EditPlantInfoProps, {}> {
     return plant_info ? this.default(plant_info) : this.fallback();
   }
 }
+
+export const PlantInfo = connect(mapStateToProps)(RawPlantInfo);

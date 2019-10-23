@@ -13,14 +13,16 @@ export interface Props {
 export class DiagnosticDumpRow extends React.Component<Props, {}> {
   get ticket() { return this.props.diag.body.ticket_identifier; }
 
-  get age() { return ago(new Date(this.props.diag.body.created_at).getTime()); }
+  get age() { return ago(this.props.diag.body.created_at); }
 
   destroy = () => this.props.dispatch(destroy(this.props.diag.uuid));
 
   render() {
     return <Row>
       <Col xsOffset={3} xs={8}>
-        {t("Report {{ticket}} (Saved {{age}})", { ticket: this.ticket, age: this.age })}
+        {t("Report {{ticket}} (Saved {{age}})", {
+          ticket: this.ticket, age: this.age
+        })}
       </Col>
       <Col xs={1}>
         <button
@@ -30,6 +32,6 @@ export class DiagnosticDumpRow extends React.Component<Props, {}> {
           <i className="fa fa-times" />
         </button>
       </Col>
-    </Row >;
+    </Row>;
   }
 }
