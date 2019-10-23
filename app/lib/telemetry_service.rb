@@ -10,6 +10,9 @@ class TelemetryService < AbstractServiceRunner
   def process(delivery_info, payload)
     device_key = delivery_info.routing_key.split(".")[1]
     json = JSON.parse(payload)
-    puts json.merge(device: device_key, is_telemetry: true).to_json
+    other_stuff = { device: device_key,
+                    is_telemetry: true,
+                    message: "TELEMETRY MESSAGE FROM #{device_key}" }
+    puts json.merge(other_stuff).to_json
   end
 end
