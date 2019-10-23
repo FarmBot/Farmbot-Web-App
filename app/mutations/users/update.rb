@@ -21,7 +21,7 @@ module Users
 
     def execute
       maybe_perform_password_reset
-      user.update_attributes!(calculated_update)
+      user.update!(calculated_update)
       user.reload
     end
 

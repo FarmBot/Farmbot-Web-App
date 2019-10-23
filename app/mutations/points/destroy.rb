@@ -73,7 +73,7 @@ module Points
         # a fresh session_id, the frontend will
         # think it is an "echo" and cancel it out.
         # """ - Rick
-        x.update_attributes!(updated_at: Time.now)
+        x.update!(updated_at: Time.now)
         x.broadcast!(SecureRandom.uuid)
       end
     end

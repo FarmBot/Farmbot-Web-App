@@ -27,7 +27,7 @@ module Points
     end
 
     def execute
-      Point.transaction { point.update_attributes!(inputs.except(:point)) && point }
+      Point.transaction { point.update!(inputs.except(:point)) && point }
     end
 
   private

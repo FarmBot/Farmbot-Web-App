@@ -55,10 +55,10 @@ module Devices
           .map { |p| p.merge(device: device) }
           .map { |p| Alerts::Create.run!(p) }
         device
-          .update_attributes!(fbos_version: READ_COMMENT_ABOVE)
+          .update!(fbos_version: READ_COMMENT_ABOVE)
         device
           .web_app_config
-          .update_attributes!(discard_unsaved: true)
+          .update!(discard_unsaved: true)
       end
     end
   end

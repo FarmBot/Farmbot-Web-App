@@ -38,7 +38,7 @@ describe SessionToken do
   end
 
   it "doesn't honor expired tokens" do
-    user.update_attributes!(confirmed_at: Time.now)
+    user.update!(confirmed_at: Time.now)
     token = SessionToken.issue_to(user, iat: 000,
                                         exp: 1,
                                         iss: "//lycos.com:9867",
@@ -50,7 +50,7 @@ describe SessionToken do
 
   unless ENV["NO_EMAILS"]
     it "doesn't mint tokens for unverified users" do
-      user.update_attributes!(confirmed_at: nil)
+      user.update!(confirmed_at: nil)
       expect {
         SessionToken.issue_to(user, iat: 000,
                                     exp: 1,

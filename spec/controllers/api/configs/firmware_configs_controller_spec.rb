@@ -138,7 +138,7 @@ describe Api::FirmwareConfigsController do
     it 'resets everything to the defaults' do
       sign_in user
       old_conf = device.firmware_config
-      old_conf.update_attributes(pin_guard_5_pin_nr: 23)
+      old_conf.update(pin_guard_5_pin_nr: 23)
       delete :destroy, params: {}
       expect(response.status).to eq(200)
       new_conf = device.reload.firmware_config

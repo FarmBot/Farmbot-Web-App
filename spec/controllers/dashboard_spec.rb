@@ -43,7 +43,7 @@ describe DashboardController do
 
     it "verifies email changes" do
       email = "foo@bar.com"
-      user.update_attributes!(unconfirmed_email: "foo@bar.com")
+      user.update!(unconfirmed_email: "foo@bar.com")
       params = { token: user.confirmation_token }
       get :confirmation_page, params: params
       expect(user.reload.unconfirmed_email).to be nil

@@ -90,7 +90,7 @@ describe Api::WebAppConfigsController do
     it "resets everything to the defaults" do
       sign_in user
       old_conf = device.web_app_config
-      old_conf.update_attributes(zoom_level: 23)
+      old_conf.update(zoom_level: 23)
       delete :destroy, params: {}
       expect(response.status).to eq(200)
       new_conf = device.reload.web_app_config

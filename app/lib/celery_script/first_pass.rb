@@ -68,7 +68,7 @@ module CeleryScript
               end
               node[:instance]
           end
-          .tap { |x| sequence.update_attributes(migrated_nodes: true) unless sequence.migrated_nodes }
+          .tap { |x| sequence.update(migrated_nodes: true) unless sequence.migrated_nodes }
           .map { |x|
             x.save! if x.changed?
             x

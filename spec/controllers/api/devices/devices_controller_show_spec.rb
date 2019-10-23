@@ -8,7 +8,7 @@ describe Api::DevicesController do
 
   describe '#show' do
     it 'handles deviceless requests' do
-      user.update_attributes(device: nil)
+      user.update(device: nil)
       sign_in user
       get :show, params: {}, session: { format: :json }
       expect(response.status).to eq(422)
@@ -27,7 +27,7 @@ describe Api::DevicesController do
     it 'reminds users to agree to TOS' do
       b4 = User::ENFORCE_TOS
       const_reassign(User, :ENFORCE_TOS, "http://farm.bot/tos")
-      user.update_attributes!(agreed_to_terms_at: nil)
+      user.update!(agreed_to_terms_at: nil)
       sign_in user
       get :show, params: {}, session: { format: :json }
       const_reassign(User, :ENFORCE_TOS, b4)

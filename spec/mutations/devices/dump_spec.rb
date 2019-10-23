@@ -17,7 +17,7 @@ describe Devices::Dump do
       .points
       .where(pointer_type: "ToolSlot")
       .last
-      .update_attributes(tool_id: tools.last.id)
+      .update(tool_id: tools.last.id)
     plant = device
       .points
       .where(pointer_type: "Plant")

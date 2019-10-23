@@ -15,7 +15,7 @@ describe Api::GlobalConfigController do
 
     it 'changes configs dynamically' do
       value = SecureRandom.hex
-      conf.update_attributes!(value: value)
+      conf.update!(value: value)
       GlobalConfig.reload_
       get :show
       expect(json[:PING]).to eq(value)

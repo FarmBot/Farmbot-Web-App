@@ -98,7 +98,7 @@ describe PointGroup do
   end
 
   fit "refuses to delete groups in-use by regimens" do
-    point_group.update_attributes!(name: "@@@")
+    point_group.update!(name: "@@@")
     Regimens::Create.run!(name: "Wrapper 26",
                           device: device,
                           color: "red",
