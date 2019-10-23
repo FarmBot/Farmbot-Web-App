@@ -92,7 +92,7 @@
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $panel_gray;
+    background-color: $gray;
   }
   &.yellow-panel {
     background-color: $panel_yellow;
@@ -151,7 +151,6 @@
   height: 50px;
   .back-arrow {
     float: left;
-    color: $off_white;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
@@ -162,7 +161,6 @@
   }
   .title {
     float: left;
-    color: $off_white;
     font-size: 1.8rem;
     white-space: nowrap;
     width: 50%;
@@ -193,6 +191,13 @@
   }
 }
 
+.white-text{
+  color: $off_white;
+}
+.black-text{
+  color: $black;
+}
+
 .point-inventory-panel,
 .plant-inventory-panel {
   .panel-content {
@@ -221,14 +226,17 @@
     position: absolute;
     z-index: 9;
     width: 100%;
-    background: $dark_green;
+    background: $gray;
     padding: 0.5rem;
     button {
       margin: 0.5rem;
     }
+    .buttonrow{
+      float:left;
+    }
   }
   .panel-content {
-    padding-top: 5rem;
+    padding-top: 10rem;
     padding-right: 0;
     padding-left: 0;
     padding-bottom: 5rem;
@@ -237,9 +245,6 @@
     overflow-x: hidden;
     .plant-search-item,
     .group-search-item { pointer-events: none; }
-    img {
-      filter: grayscale(100%);
-    }
   }
 }
 

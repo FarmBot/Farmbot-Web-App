@@ -13,6 +13,7 @@ import {
 } from "@blueprintjs/core";
 import { findIndex } from "lodash";
 import { t } from "./i18next_wrapper";
+import { unselectPlant } from "./farm_designer/actions";
 
 interface Props {
   dispatch: Function;
@@ -92,7 +93,10 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
       {
         combo: "esc",
         label: "Back to plant overview",
-        onKeyDown: () => push("/app/designer/plants")
+        onKeyDown: () => {
+          push("/app/designer/plants");
+          dispatch(unselectPlant(dispatch));
+        }
       },
       {
         combo: "ctrl + shift + /",

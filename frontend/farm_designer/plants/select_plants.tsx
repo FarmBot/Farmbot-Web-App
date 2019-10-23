@@ -25,7 +25,7 @@ export function mapStateToProps(props: Everything) {
 export interface SelectPlantsProps {
   plants: TaggedPlant[];
   dispatch: Function;
-  selected: string[];
+  selected: string[] | undefined;
 }
 
 export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
@@ -39,8 +39,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
-  destroySelected = (plantUUIDs: string[]) => {
-    if (plantUUIDs &&
+  destroySelected = (plantUUIDs: string[] | undefined) => {
+    if (plantUUIDs && plantUUIDs.length > 0 &&
       confirm(t("Are you sure you want to delete {{length}} plants?",
         { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
@@ -53,28 +53,40 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
+  SelectedNotUndef = (input?: string[] | undefined) => {
+    if (input !== undefined) {
+      return input;
+    } else {
+      return [];
+    }
+  }
+
   ActionButtons = () =>
     <div className="panel-action-buttons">
-      <button className="fb-button red"
-        onClick={() => this.destroySelected(this.props.selected)}>
-        {t("Delete selected")}
-      </button>
-      <button className="fb-button gray"
-        onClick={() => this
-          .props
-          .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
-        {t("Select all")}
-      </button>
-      <button className="fb-button gray"
-        onClick={() => this.props.dispatch(selectPlant(undefined))}>
-        {t("Select none")}
-      </button>
-      <button className="fb-button blue"
-        onClick={() => this.props.dispatch(createGroup({
-          points: this.props.selected
-        }))}>
-        {t("Create group")}
-      </button>
+      <div className="buttonrow">
+        <button className="fb-button gray"
+          onClick={() => this.props.dispatch(selectPlant(undefined))}>
+          {t("Select none")}
+        </button>
+        <button className="fb-button gray"
+          onClick={() => this.props
+            .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
+          {t("Select all")}
+        </button>
+      </div>
+      <label>{t("SELECTION ACTIONS")}</label>
+      <div className="buttonrow">
+        <button className="fb-button red"
+          onClick={() => this.destroySelected(this.props.selected)}>
+          {t("Delete")}
+        </button>
+        <button className="fb-button dark-blue"
+          onClick={() => this.props.dispatch(createGroup({
+            points: this.SelectedNotUndef(this.props.selected)
+          }))}>
+          {t("Create group")}
+        </button>
+      </div>
     </div>;
 
   render() {
@@ -83,14 +95,15 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
       return plants.filter(p => { return p.uuid == uuid; })[0];
     }) : undefined;
 
-    return <DesignerPanel panelName={"plant-selection"} panelColor={"green"}>
+    return <DesignerPanel panelName={"plant-selection"} panelColor={"gray"}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
-        panelColor={"green"}
-        title={t("Select plants")}
+        panelColor={"gray"}
+        blackText={true}
+        title={t("{{length}} plants selected",
+          { length: this.SelectedNotUndef(selected).length })}
         backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
-
       <this.ActionButtons />
 
       <DesignerPanelContent panelName={"plant-selection"}>

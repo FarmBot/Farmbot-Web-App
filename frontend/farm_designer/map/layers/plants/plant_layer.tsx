@@ -23,7 +23,7 @@ export function PlantLayer(props: PlantLayerProps) {
   return <g id="plant-layer">
     {visible && plants.map(p => {
       const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
-      const grayscale = !!(selectedForDel && (selectedForDel.includes(p.uuid)));
+      const multiselected = !!(selectedForDel && (selectedForDel.includes(p.uuid)));
       const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
         ? "saved_gardens/templates"
         : "plants";
@@ -32,7 +32,7 @@ export function PlantLayer(props: PlantLayerProps) {
         mapTransformProps={mapTransformProps}
         plant={p}
         selected={selected}
-        grayscale={grayscale}
+        multiselected={multiselected}
         dragging={selected && dragging && editing}
         dispatch={dispatch}
         zoomLvl={zoomLvl}

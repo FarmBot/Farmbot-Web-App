@@ -14,7 +14,7 @@ describe("<GardenPlant/>", () => {
       mapTransformProps: fakeMapTransformProps(),
       plant: fakePlant(),
       selected: false,
-      grayscale: false,
+      multiselected: false,
       dragging: false,
       dispatch: jest.fn(),
       zoomLvl: 1.8,
@@ -26,6 +26,7 @@ describe("<GardenPlant/>", () => {
 
   it("renders plant", () => {
     const p = fakeProps();
+    p.multiselected = true;
     p.animate = false;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").length).toEqual(1);
@@ -34,14 +35,17 @@ describe("<GardenPlant/>", () => {
     expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
     expect(wrapper.find("use").length).toEqual(0);
     expect(wrapper.find(".soil-cloud").length).toEqual(0);
+    expect(wrapper.find("Circle").props().className).not.toContain("animate");
   });
 
   it("renders plant animations", () => {
     const p = fakeProps();
     p.animate = true;
+    p.multiselected = true;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
-    expect(wrapper.find(".animate").length).toEqual(1);
+    expect(wrapper.find(".animate").length).toEqual(2);
+    expect(wrapper.find("Circle").props().className).toContain("animate");
   });
 
   it("Calls the onClick callback", () => {
@@ -71,16 +75,17 @@ describe("<GardenPlant/>", () => {
     });
   });
 
-  it("has color", () => {
+  it("indicator circle not rendered", () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find("image").props().filter).toEqual("");
+    expect(wrapper.find(".plant-indicator").length).toEqual(0);
   });
 
-  it("has no color", () => {
+  it("indicator cirlce is there", () => {
     const p = fakeProps();
-    p.grayscale = true;
+    p.multiselected = true;
     const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
+    expect(wrapper.find(".plant-indicator").length).toEqual(1);
+    expect(wrapper.find("Circle").length).toEqual(1);
   });
 });
