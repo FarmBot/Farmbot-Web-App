@@ -59,4 +59,10 @@ describe LogService do
       LogService.new.process(fake_delivery_info, {})
     end.to raise_error(Mutations::ValidationException)
   end
+
+  it "handles malformed params" do
+    expect do
+      LogService.new.process(fake_delivery_info, "}}{{")
+    end.to raise_error(Mutations::ValidationException)
+  end
 end
