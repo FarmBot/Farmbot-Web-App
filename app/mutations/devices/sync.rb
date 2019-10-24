@@ -2,7 +2,6 @@ module Devices
   class Sync < Mutations::Command
     SEL = "SELECT id, updated_at FROM"
     WHERE = "WHERE device_id = "
-    #        "2019-08-14 18:33:08.428306"
     FORMAT = "%Y-%m-%d %H:%M:%S.%5N"
 
     def self.basic_query(plural_resource, where = WHERE)
@@ -38,7 +37,6 @@ module Devices
       real_stuff = QUERIES.reduce({}) do |acc, (key, value)|
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
-      binding.pry
       real_stuff.merge({ first_party_farmwares: STUB_FARMWARES })
     end
   end
