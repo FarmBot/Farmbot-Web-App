@@ -36,7 +36,7 @@ group :development, :test do
   gem "hashdiff"
   gem "pry-rails"
   gem "pry"
-  gem "rspec-rails"
+  gem "rspec-rails", "4.0.0.beta3"
   gem "rspec"
   gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
