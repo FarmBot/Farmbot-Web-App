@@ -29,6 +29,12 @@ describe LogService do
     expect(calls).to include(["amq.topic", { routing_key: "bot.*.logs" }])
   end
 
+  it "has a telemetry_channel" do
+    calls = Transport.current.telemetry_channel.calls[:bind]
+    call = ["amq.topic", { :routing_key => "bot.*.telemetry" }]
+    expect(calls).to include(call)
+  end
+
   it "has a resource_channel" do
     calls = Transport.current.resource_channel.calls[:bind]
     expect(calls).to include([
