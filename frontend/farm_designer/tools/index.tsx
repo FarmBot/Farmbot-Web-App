@@ -62,7 +62,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <DesignerPanelContent panelName={"tools"}>
         <EmptyStateWrapper
           notEmpty={this.props.tools.length > 0}
-          graphic={EmptyStateGraphic.sequences}
+          graphic={EmptyStateGraphic.tools}
           title={t("Add a tool")}
           text={Content.NO_TOOLS}
           colorScheme={"tools"}>

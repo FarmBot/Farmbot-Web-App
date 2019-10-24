@@ -70,7 +70,7 @@ export class GroupDetailActive
   }
 
   render() {
-    return <DesignerPanel panelName={"groups"} panelColor={"blue"}>
+    return <DesignerPanel panelName={"group-detail"} panelColor={"blue"}>
       <DesignerPanelHeader
         onBack={this.saveGroup}
         panelName={Panel.Groups}
