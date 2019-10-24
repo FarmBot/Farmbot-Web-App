@@ -39,6 +39,8 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     }
   }
 
+  get selected() { return this.props.selected || []; }
+
   destroySelected = (plantUUIDs: string[] | undefined) => {
     if (plantUUIDs && plantUUIDs.length > 0 &&
       confirm(t("Are you sure you want to delete {{length}} plants?",
@@ -50,14 +52,6 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           .then(() => { }, () => { });
       });
       history.push("/app/designer/plants");
-    }
-  }
-
-  selectedNotUndef = (input?: string[] | undefined) => {
-    if (input !== undefined) {
-      return input;
-    } else {
-      return [];
     }
   }
 
@@ -82,7 +76,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         </button>
         <button className="fb-button dark-blue"
           onClick={() => this.props.dispatch(createGroup({
-            points: this.selectedNotUndef(this.props.selected)
+            points: this.selected
           }))}>
           {t("Create group")}
         </button>
@@ -101,7 +95,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         panelColor={"gray"}
         blackText={true}
         title={t("{{length}} plants selected",
-          { length: this.selectedNotUndef(selected).length })}
+          { length: this.selected.length })}
         backTo={"/app/designer/plants"}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />

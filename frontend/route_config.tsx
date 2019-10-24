@@ -353,4 +353,52 @@ export const UNBOUND_ROUTES = [
     getChild: () => import("./farm_designer/point_groups/group_detail"),
     childKey: "GroupDetail"
   }),
+  route({
+    children: true,
+    $: "/designer/weeds",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/weeds_inventory"),
+    childKey: "Weeds"
+  }),
+  route({
+    children: true,
+    $: "/designer/weeds/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/weeds_add"),
+    childKey: "AddWeed"
+  }),
+  route({
+    children: true,
+    $: "/designer/weeds/:point_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/plants/weeds_edit"),
+    childKey: "EditWeed"
+  }),
+  route({
+    children: true,
+    $: "/designer/zones",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/zones/zones_inventory"),
+    childKey: "Zones"
+  }),
+  route({
+    children: true,
+    $: "/designer/zones/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/zones/add_zone"),
+    childKey: "AddZone"
+  }),
+  route({
+    children: true,
+    $: "/designer/zones/:zone_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/zones/edit_zone"),
+    childKey: "EditZone"
+  }),
 ].concat([NOT_FOUND_ROUTE]);

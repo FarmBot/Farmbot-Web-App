@@ -13,6 +13,8 @@ export enum Panel {
   Settings = "Settings",
   Points = "Points",
   Groups = "Groups",
+  Weeds = "Weeds",
+  Zones = "Zones",
 }
 
 type Tabs = keyof typeof Panel;
@@ -24,8 +26,10 @@ export const TAB_COLOR: { [key in Panel]: string } = {
   [Panel.SavedGardens]: "green",
   [Panel.Tools]: "gray",
   [Panel.Settings]: "gray",
-  [Panel.Points]: "gray",
-  [Panel.Groups]: "blue2",
+  [Panel.Points]: "teal",
+  [Panel.Groups]: "blue",
+  [Panel.Weeds]: "red",
+  [Panel.Zones]: "brown",
 };
 
 const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;
@@ -39,6 +43,8 @@ export const TAB_ICON: { [key in Panel]: string } = {
   [Panel.Settings]: iconFile("settings"),
   [Panel.Points]: iconFile("point"),
   [Panel.Groups]: iconFile("groups"),
+  [Panel.Weeds]: iconFile("weeds"),
+  [Panel.Zones]: iconFile("zones"),
 };
 
 const getCurrentTab = (): Tabs => {
@@ -57,6 +63,10 @@ const getCurrentTab = (): Tabs => {
     return Panel.Points;
   } else if (pathArray.includes("groups")) {
     return Panel.Groups;
+  } else if (pathArray.includes("weeds")) {
+    return Panel.Weeds;
+  } else if (pathArray.includes("zones")) {
+    return Panel.Zones;
   } else {
     return Panel.Plants;
   }
@@ -105,9 +115,19 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         title={t("Events")} />
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
+          panel={Panel.Zones}
+          linkTo={"/app/designer/zones"}
+          title={t("Zones")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
           panel={Panel.Points}
           linkTo={"/app/designer/points"}
           title={t("Points")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <NavTab
+          panel={Panel.Weeds}
+          linkTo={"/app/designer/weeds"}
+          title={t("Weeds")} />}
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
           panel={Panel.Tools}
