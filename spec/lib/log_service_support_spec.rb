@@ -13,8 +13,6 @@ describe LogService do
     channels: [],
   }.to_json
 
-  FakeDeliveryInfo = Struct.new(:routing_key, :device)
-
   let!(:device) { FactoryBot.create(:device) }
   let!(:device_id) { device.id }
   let!(:fake_delivery_info) do
