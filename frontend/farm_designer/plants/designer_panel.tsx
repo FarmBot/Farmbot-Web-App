@@ -82,7 +82,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     </div>
     {props.linkTo &&
       <Link to={props.linkTo}>
-        <div className={`fb-button ${TAB_COLOR[props.panel || Panel.Plants]}`}>
+        <div className={`fb-button panel-${TAB_COLOR[props.panel || Panel.Plants]}`}>
           <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}
