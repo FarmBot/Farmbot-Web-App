@@ -48,7 +48,7 @@ describe("<DesignerNavTabs />", () => {
     mockPath = "/app/designer/points";
     mockDev = true;
     const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.hasClass("teal-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
 
@@ -56,7 +56,23 @@ describe("<DesignerNavTabs />", () => {
     mockPath = "/app/designer/groups";
     mockDev = true;
     const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("blue2-panel")).toBeTruthy();
+    expect(wrapper.hasClass("blue-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for weeds", () => {
+    mockPath = "/app/designer/weeds";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("red-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
+  it("renders for zones", () => {
+    mockPath = "/app/designer/zones";
+    mockDev = true;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("brown-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
 

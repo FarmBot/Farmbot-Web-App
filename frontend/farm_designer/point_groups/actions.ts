@@ -16,19 +16,21 @@ interface CreateGroupProps {
 
 export const createGroup = ({ points, name }: CreateGroupProps) => {
   return function (dispatch: Function, getState: GetState) {
-    const { references } = getState().resources.index;
-    const possiblyNil = points
-      .map(x => references[x])
-      .map(x => x ? x.body.id : undefined);
-    const point_ids = betterCompact(possiblyNil);
-    const group: PointGroup =
-      ({ name: name || UNTITLED(), point_ids, sort_type: "xy_ascending" });
-    const action = init("PointGroup", group);
-    dispatch(action);
-    return dispatch(save(action.payload.uuid)).then(() => {
-      const pg = findPointGroup(getState().resources.index, action.payload.uuid);
-      const { id } = pg.body;
-      history.push("/app/designer/groups/" + (id ? id : ""));
-    });
+    if (points.length > 0) {
+      const { references } = getState().resources.index;
+      const possiblyNil = points
+        .map(x => references[x])
+        .map(x => x ? x.body.id : undefined);
+      const point_ids = betterCompact(possiblyNil);
+      const group: PointGroup =
+        ({ name: name || UNTITLED(), point_ids, sort_type: "xy_ascending" });
+      const action = init("PointGroup", group);
+      dispatch(action);
+      return dispatch(save(action.payload.uuid)).then(() => {
+        const pg = findPointGroup(getState().resources.index, action.payload.uuid);
+        const { id } = pg.body;
+        history.push("/app/designer/groups/" + (id ? id : ""));
+      });
+    }
   };
 };

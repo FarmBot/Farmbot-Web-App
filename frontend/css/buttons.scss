@@ -71,13 +71,13 @@
       background-color: darken($blue, 5%) !important;
     }
   }
-  &.blue2 {
-    background-color: $blue2;
-    box-shadow: 0 2px 0px 0px $blue2dark;
+  &.dark-blue {
+    background-color: $dark-blue;
+    box-shadow: 0 2px 0px 0px darken($dark-blue, 12%);
     &:focus,
     &:hover,
     &.active {
-      background-color: $blue2medium !important;
+      background-color: darken($dark-blue, 5%) !important;
     }
   }
   &.red {
@@ -165,6 +165,69 @@
     &:hover,
     &.active {
       background-color: darken($pink, 5%) !important;
+    }
+  }
+  &.panel-green {
+    background-color: $panel_green;
+    box-shadow: 0 2px 0px 0px darken($panel_green, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_green, 5%) !important;
+    }
+  }
+  &.panel-yellow {
+    background-color: $panel_yellow;
+    box-shadow: 0 2px 0px 0px darken($panel_yellow, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_yellow, 5%) !important;
+    }
+  }
+  &.panel-gray {
+    background-color: $panel_gray;
+    box-shadow: 0 2px 0px 0px darken($panel_gray, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_gray, 5%) !important;
+    }
+  }
+  &.panel-blue {
+    background-color: $panel_blue;
+    box-shadow: 0 2px 0px 0px darken($panel_blue, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_blue, 5%) !important;
+    }
+  }
+  &.panel-brown {
+    background-color: $panel_brown;
+    box-shadow: 0 2px 0px 0px darken($panel_brown, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_brown, 5%) !important;
+    }
+  }
+  &.panel-teal {
+    background-color: $panel_teal;
+    box-shadow: 0 2px 0px 0px darken($panel_teal, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_teal, 5%) !important;
+    }
+  }
+  &.panel-red {
+    background-color: $panel_red;
+    box-shadow: 0 2px 0px 0px darken($panel_red, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_red, 5%) !important;
     }
   }
   &.zoom {

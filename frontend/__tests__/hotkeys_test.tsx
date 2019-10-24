@@ -3,11 +3,14 @@ jest.mock("../history",
 const mockSyncThunk = jest.fn();
 jest.mock("../devices/actions",
   () => ({ sync: () => mockSyncThunk }));
+jest.mock("../farm_designer/actions",
+  () => ({ unselectPlant: jest.fn() }));
 
 import { HotKeys } from "../hotkeys";
 import { betterCompact } from "../util";
 import { push } from "../history";
 import { sync } from "../devices/actions";
+import { unselectPlant } from "../farm_designer/actions";
 
 describe("hotkeys", () => {
   it("has key bindings", () => {
@@ -35,6 +38,7 @@ describe("hotkeys", () => {
 
     fns[5](e);
     expect(push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(dispatch).toHaveBeenCalledWith(unselectPlant(dispatch));
 
     comp.toggle = jest.fn(() => () => { });
     fns[6](e);

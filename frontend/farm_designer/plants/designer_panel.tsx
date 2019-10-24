@@ -24,6 +24,7 @@ interface DesignerPanelHeaderProps {
   panelName: string;
   panelColor: string;
   title?: string;
+  blackText?: boolean;
   description?: string;
   descriptionElement?: JSX.Element;
   backTo?: string;
@@ -42,19 +43,21 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) =>
   <div className={`panel-header ${props.panelColor}-panel`}
     style={props.style || {}}>
     <p className="panel-title">
-      <i className="fa fa-arrow-left back-arrow"
+      <i className={`fa fa-arrow-left back-arrow ${props.blackText ? "black" : "white"}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? routeHistory.push(props.backTo) : history.back();
           props.onBack && props.onBack();
         }} />
-      {props.title && <span className="title">{t(props.title)}</span>}
+      {props.title &&
+        <span className={`title ${props.blackText ? "black" : "white"}-text`}
+        >{t(props.title)}</span>}
       {props.children}
     </p>
 
     {(props.description || props.descriptionElement) &&
       <div
-        className={`panel-header-description ${props.panelName}-description`}>
+        className={`panel-header-description ${props.panelName}-description ${props.blackText ? "black" : "white"}-text`}>
         {props.description && t(props.description)}
         {props.descriptionElement}
       </div>}
@@ -79,7 +82,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     </div>
     {props.linkTo &&
       <Link to={props.linkTo}>
-        <div className={`fb-button ${TAB_COLOR[props.panel || Panel.Plants]}`}>
+        <div className={`fb-button panel-${TAB_COLOR[props.panel || Panel.Plants]}`}>
           <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}

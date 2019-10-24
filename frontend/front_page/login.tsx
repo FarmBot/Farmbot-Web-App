@@ -67,6 +67,7 @@ export class Login extends React.Component<LoginProps, {}> {
               value={email || ""}
               name="login_email"
               autoFocus={true}
+              allowEmpty={true}
               onCommit={onEmailChange} />
             <label>
               {t("Password")}

@@ -870,10 +870,7 @@ ul {
     p,
     h5,
     a {
-      color: $panel_gray;
-    }
-    .empty-state-graphic {
-      filter: saturate(0);
+      color: $panel_teal;
     }
   }
   &.tools {
@@ -888,6 +885,20 @@ ul {
     h5,
     a {
       color: $panel_blue;
+    }
+  }
+  &.weeds {
+    p,
+    h5,
+    a {
+      color: $panel_red;
+    }
+  }
+  &.zones {
+    p,
+    h5,
+    a {
+      color: $panel_brown;
     }
   }
 }
@@ -1054,7 +1065,8 @@ ul {
   }
   td:nth-child(1),
   td:nth-child(4) {
-    min-width: 106px;
+    min-width: 116px;
+    white-space: nowrap;
   }
   td:nth-child(2),
   td:nth-child(3) {
