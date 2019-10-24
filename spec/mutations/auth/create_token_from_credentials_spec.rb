@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Auth::FromJWT do
+describe Auth::FromJwt do
   let(:user) { FactoryBot.create(:user) }
 
   def fake_credentials(email, password)

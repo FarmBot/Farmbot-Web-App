@@ -43,7 +43,7 @@ describe SessionToken do
                                         exp: 1,
                                         iss: "//lycos.com:9867",
                                         fbos_version: Gem::Version.new("9.9.9"))
-    result = Auth::FromJWT.run(jwt: token.encoded)
+    result = Auth::FromJwt.run(jwt: token.encoded)
     expect(result.success?).to be(false)
     expect(result.errors.values.first.message).to eq(Auth::ReloadToken::BAD_SUB)
   end

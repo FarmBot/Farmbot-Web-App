@@ -11,10 +11,10 @@ describe CeleryScript::FirstPass do
     CeleryScript::FlatIrHelpers.fake_first_pass.primary_nodes
   end
 
-  kind   = CeleryScript::CSHeap::KIND
-  parent = CeleryScript::CSHeap::PARENT
-  next_  = CeleryScript::CSHeap::NEXT
-  body   = CeleryScript::CSHeap::BODY
+  kind   = CeleryScript::CsHeap::KIND
+  parent = CeleryScript::CsHeap::PARENT
+  next_  = CeleryScript::CsHeap::NEXT
+  body   = CeleryScript::CsHeap::BODY
 
   EXPECTATIONS = { # Came from the JS implementation which is known good.
     0 => { kind => "nothing",           parent => 0, next_ => 0 },
