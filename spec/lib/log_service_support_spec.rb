@@ -13,8 +13,6 @@ describe LogService do
     channels: [],
   }.to_json
 
-  FakeDeliveryInfo = Struct.new(:routing_key, :device)
-
   let!(:device) { FactoryBot.create(:device) }
   let!(:device_id) { device.id }
   let!(:fake_delivery_info) do
@@ -29,6 +27,12 @@ describe LogService do
   it "has a log_channel" do
     calls = Transport.current.log_channel.calls[:bind]
     expect(calls).to include(["amq.topic", { routing_key: "bot.*.logs" }])
+  end
+
+  it "has a telemetry_channel" do
+    calls = Transport.current.telemetry_channel.calls[:bind]
+    call = ["amq.topic", { :routing_key => "bot.*.telemetry" }]
+    expect(calls).to include(call)
   end
 
   it "has a resource_channel" do
@@ -54,9 +58,29 @@ describe LogService do
     LogService.new.warn_user(data, time)
   end
 
+  it "triggers a throttle" do
+    tp = LogService::THROTTLE_POLICY
+    ls = LogService.new
+    data = AmqpLogParser::DeliveryInfo.new
+    data.device_id = FactoryBot.create(:device).id
+    violation = ThrottlePolicy::Violation.new(Object.new)
+    allow(ls).to receive(:deliver)
+    expect(ls).to receive(:warn_user)
+    expect(tp).to receive(:is_throttled)
+                    .with(data.device_id)
+                    .and_return(violation)
+    ls.maybe_deliver(data)
+  end
+
   it "handles bad params" do
     expect do
       LogService.new.process(fake_delivery_info, {})
+    end.to raise_error(Mutations::ValidationException)
+  end
+
+  it "handles malformed params" do
+    expect do
+      LogService.new.process(fake_delivery_info, "}}{{")
     end.to raise_error(Mutations::ValidationException)
   end
 end

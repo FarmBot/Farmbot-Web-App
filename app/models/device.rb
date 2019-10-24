@@ -114,9 +114,10 @@ class Device < ApplicationRecord
   # Sets the `throttled_until` and `throttled_at` fields if unpopulated or
   # the throttle time period increases. Notifies user of cooldown period.
   def maybe_throttle(violation)
+    return unless violation
     end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
-    if (violation && (throttled_until.nil? || end_t > throttled_until))
+    if (throttled_until.nil? || end_t > throttled_until)
       reload.update_attributes!(throttled_until: end_t,
                                 throttled_at: Time.now)
       refresh_cache

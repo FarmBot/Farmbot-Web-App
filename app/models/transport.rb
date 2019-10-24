@@ -42,6 +42,14 @@ class Transport
                          .bind("amq.topic", routing_key: "bot.*.logs")
   end
 
+  def telemetry_channel
+    @telemetry_channel ||= self
+      .connection
+      .create_channel
+      .queue("api_telemetry_workers")
+      .bind("amq.topic", routing_key: "bot.*.telemetry")
+  end
+
   def resource_channel
     @resource_channel ||= self
       .connection
