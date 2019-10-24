@@ -7,7 +7,7 @@ class AmqpLogParser < Mutations::Command
   TOO_OLD = "fbos version is out of date"
   DISCARD = "message type field is not the kind that gets saved in the DB"
   NOT_HASH = "logs must be a hash"
-
+  NOT_JSON = "Invalid JSON. Use a JSON validator."
   # I keep a Ruby copy of the JSON here for reference.
   # This is what a log will look like after JSON.parse()
   EXAMPLE_JSON = {
@@ -75,6 +75,8 @@ class AmqpLogParser < Mutations::Command
   def set_payload!
     # Parse from string to a Ruby hash (JSON)
     @output.payload = JSON.parse(payload)
+  rescue JSON::ParserError
+    add_error :json, :not_json, NOT_JSON
   end
 
   def log
