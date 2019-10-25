@@ -23,7 +23,10 @@ class LogService < AbstractServiceRunner
   end
 
   def maybe_deliver(data)
+    return unless data.valid?
+
     violation = THROTTLE_POLICY.is_throttled(data.device_id)
+
     if violation
       return warn_user(data, violation)
     end
