@@ -5,6 +5,7 @@ import {
 } from "../plants/designer_panel";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 export interface AddWeedProps {
   dispatch: Function;
@@ -20,12 +21,12 @@ export const mapStateToProps = (props: Everything): AddWeedProps => ({
 export class RawAddWeed extends React.Component<AddWeedProps, AddWeedState> {
   state: AddWeedState = {};
   render() {
-    return <DesignerPanel panelName={"add-weed"} panelColor={"red"}>
+    return <DesignerPanel panelName={"add-weed"} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={"weeds"}
         title={t("Add new weed")}
         backTo={"/app/designer/weeds"}
-        panelColor={"red"} />
+        panel={Panel.Weeds} />
       <DesignerPanelContent panelName={"add-weed"}>
       </DesignerPanelContent>
     </DesignerPanel>;

@@ -205,6 +205,8 @@ describe Api::RmqUtilsController do
      ".status.*",
      ".status",
      ".sync.*",
+     ".telemetry.*",
+     ".telemetry",
      ".sync",
      ".status_v8.*",
      ".status_v8"].map { |x| expect(random_channel(x).match(r)).to be }

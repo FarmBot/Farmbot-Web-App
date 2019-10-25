@@ -8,6 +8,7 @@ import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave } from "../../api/crud";
+import { Panel } from "../panel_header";
 
 export interface AddToolProps {
   dispatch: Function;
@@ -24,12 +25,12 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   state: AddToolState = { toolName: "" };
   render() {
-    return <DesignerPanel panelName={"tool"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"tool"} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={"tool"}
         title={t("Add new tool")}
         backTo={"/app/designer/tools"}
-        panelColor={"gray"} />
+        panel={Panel.Tools} />
       <DesignerPanelContent panelName={"tools"}>
         <label>{t("Tool Name")}</label>
         <input

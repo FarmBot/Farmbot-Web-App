@@ -101,6 +101,7 @@ export const LocationForm =
             width={props.width}
             onChange={props.onChange} />
           <DefaultValueForm
+            key={props.locationDropdownKey}
             variableNode={celeryNode}
             resources={resources}
             onChange={props.onChange} />

@@ -11,6 +11,7 @@ import { isString, isUndefined } from "lodash";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
+import { Panel } from "../panel_header";
 
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get templates() { return isString(this.props.openedSavedGarden); }
@@ -40,10 +41,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 
   default = (plant_info: TaggedPlant) => {
     const info = formatPlantInfo(plant_info);
-    return <DesignerPanel panelName={"plant-info"} panelColor={"green"}>
+    return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"plant-info"}
-        panelColor={"green"}
+        panel={Panel.Plants}
         title={`${t("Edit")} ${info.name}`}
         backTo={"/app/designer/plants"}
         onBack={unselectPlant(this.props.dispatch)}>

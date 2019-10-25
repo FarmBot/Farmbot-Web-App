@@ -17,6 +17,7 @@ import {
 } from "../plants/designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 interface State {
   uuid: string;
@@ -85,10 +86,10 @@ export class RawAddFarmEvent
   }
 
   placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
-    return <DesignerPanel panelName={"add-farm-event"} panelColor={"yellow"}>
+    return <DesignerPanel panelName={"add-farm-event"} panel={Panel.FarmEvents}>
       <DesignerPanelHeader
         panelName={"add-farm-event"}
-        panelColor={"yellow"}
+        panel={Panel.FarmEvents}
         title={t("No Executables")} />
       <DesignerPanelContent panelName={"add-farm-event"}>
         <label>

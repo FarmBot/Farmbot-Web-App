@@ -22,6 +22,7 @@ import {
 } from "./designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -233,10 +234,10 @@ export class RawCreatePoints
     </Row>
 
   render() {
-    return <DesignerPanel panelName={"point-creation"} panelColor={"teal"}>
+    return <DesignerPanel panelName={"point-creation"} panel={Panel.Points}>
       <DesignerPanelHeader
         panelName={"point-creation"}
-        panelColor={"teal"}
+        panel={Panel.Points}
         title={t("Create point")}
         backTo={"/app/designer/points"}
         description={Content.CREATE_POINTS_DESCRIPTION} />

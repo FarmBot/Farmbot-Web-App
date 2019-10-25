@@ -150,7 +150,7 @@ export class PureFarmEvents
   };
 
   render() {
-    return <DesignerPanel panelName={"farm-event"} panelColor={"yellow"}>
+    return <DesignerPanel panelName={"farm-event"} panel={Panel.FarmEvents}>
       <DesignerNavTabs />
       {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
     </DesignerPanel>;
