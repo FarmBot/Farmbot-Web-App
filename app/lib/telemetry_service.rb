@@ -4,7 +4,7 @@
 class TelemetryService < AbstractServiceRunner
   MESSAGE = "TELEMETRY MESSAGE FROM %s"
   FAILURE = "FAILED TELEMETRY MESSAGE FROM %s"
-  THROTTLE_POLICY = ThrottlePolicy.new({
+  THROTTLE_POLICY = ThrottlePolicy.new(name, {
     ThrottlePolicy::TimePeriod.new(1.minute) => 25,
     ThrottlePolicy::TimePeriod.new(1.hour) => 250,
     ThrottlePolicy::TimePeriod.new(1.day) => 1500,

@@ -3,9 +3,11 @@
 # Also handles throttling.
 class LogService < AbstractServiceRunner
   T = ThrottlePolicy::TimePeriod
-  THROTTLE_POLICY = ThrottlePolicy.new T.new(1.minute) => 0.5 * 1_000,
-                                       T.new(1.hour) => 0.5 * 10_000,
-                                       T.new(1.day) => 0.5 * 100_000
+  THROTTLE_POLICY =
+    ThrottlePolicy.new(name,
+                       T.new(1.minute) => 0.5 * 1_000,
+                       T.new(1.hour) => 0.5 * 10_000,
+                       T.new(1.day) => 0.5 * 100_000)
 
   LOG_TPL = Rails.env.test? ?
     "\e[32m.\e[0m" : "FBOS LOG (device_%s): %s\n"
