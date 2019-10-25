@@ -181,30 +181,15 @@
       transition: all 0.2s ease;
     }
   }
-  %search-item {
+
+  .plant-search-item,
+  .group-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
-    &:hover,
-    &.hovered {
-      background: darken($light_green, 10%);
-      transition: background 0.2s ease;
-    }
     img {
       margin: 0 1rem 0 0;
       height: 4rem;
       width: 4rem;
-    }
-  }
-
-  .plant-search-item {
-    @extend %search-item;
-  }
-
-  .group-search-item {
-    @extend %search-item;
-    &:hover,
-    &.hovered {
-      background: #d7eaea;
     }
   }
 
@@ -244,11 +229,6 @@
   .point-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
-    &:hover,
-    &.hovered {
-      background: darken($light_brown, 10%);
-      transition: background 0.2s ease;
-    }
     .saucer {
       display: inline-block;
       margin: 0 1rem 0 0;

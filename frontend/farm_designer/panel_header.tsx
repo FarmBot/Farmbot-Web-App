@@ -19,17 +19,30 @@ export enum Panel {
 
 type Tabs = keyof typeof Panel;
 
-export const TAB_COLOR: { [key in Panel]: string } = {
-  [Panel.Map]: "gray",
-  [Panel.Plants]: "green",
-  [Panel.FarmEvents]: "yellow",
-  [Panel.SavedGardens]: "green",
-  [Panel.Tools]: "gray",
-  [Panel.Settings]: "gray",
-  [Panel.Points]: "teal",
-  [Panel.Groups]: "blue",
-  [Panel.Weeds]: "red",
-  [Panel.Zones]: "brown",
+export enum PanelColor {
+  green = "green",
+  cyan = "cyan",
+  brown = "brown",
+  magenta = "magenta",
+  gray = "gray",
+  lightGray = "light-gray",
+  yellow = "yellow",
+  blue = "blue",
+  teal = "teal",
+  red = "red",
+}
+
+export const TAB_COLOR: { [key in Panel]: PanelColor } = {
+  [Panel.Map]: PanelColor.gray,
+  [Panel.Plants]: PanelColor.green,
+  [Panel.FarmEvents]: PanelColor.yellow,
+  [Panel.SavedGardens]: PanelColor.green,
+  [Panel.Tools]: PanelColor.gray,
+  [Panel.Settings]: PanelColor.gray,
+  [Panel.Points]: PanelColor.teal,
+  [Panel.Groups]: PanelColor.blue,
+  [Panel.Weeds]: PanelColor.red,
+  [Panel.Zones]: PanelColor.brown,
 };
 
 const iconFile = (icon: string) => `/app-resources/img/icons/${icon}.svg`;

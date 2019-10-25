@@ -17,6 +17,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
 import { getStatus } from "../connectivity/reducer_support";
+import { PanelColor } from "./panel_header";
 
 export function mapStateToProps(props: Everything): MoveToProps {
   const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
@@ -113,10 +114,10 @@ export class RawMoveTo extends React.Component<MoveToProps, {}> {
   }
 
   render() {
-    return <DesignerPanel panelName={"move-to"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"move-to"} panelColor={PanelColor.gray}>
       <DesignerPanelHeader
         panelName={"move-to"}
-        panelColor={"gray"}
+        panelColor={PanelColor.gray}
         title={t("Move to location")}
         backTo={"/app/designer/plants"}
         description={Content.MOVE_MODE_DESCRIPTION} />

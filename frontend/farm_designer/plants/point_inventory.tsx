@@ -26,7 +26,8 @@ interface PointsState {
 export function mapStateToProps(props: Everything): PointsProps {
   return {
     points: selectAllGenericPointers(props.resources.index)
-      .filter(x => !x.body.discarded_at),
+      .filter(x => !x.body.discarded_at)
+      .filter(x => !x.body.name.toLowerCase().includes("weed")),
     dispatch: props.dispatch,
   };
 }
@@ -39,7 +40,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
   }
 
   render() {
-    return <DesignerPanel panelName={"point-inventory"} panelColor={"teal"}>
+    return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Points}

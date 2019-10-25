@@ -13,7 +13,7 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "./map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "./map_size_setting";
-import { DesignerNavTabs } from "./panel_header";
+import { DesignerNavTabs, Panel } from "./panel_header";
 import { isUndefined } from "lodash";
 
 export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
@@ -32,7 +32,7 @@ export class RawDesignerSettings
   render() {
     const { getConfigValue, dispatch } = this.props;
     const settingsProps = { getConfigValue, dispatch };
-    return <DesignerPanel panelName={"settings"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"settings"}>
         {DESIGNER_SETTINGS(settingsProps).map(setting =>

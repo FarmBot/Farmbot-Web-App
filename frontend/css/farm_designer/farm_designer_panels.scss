@@ -44,32 +44,93 @@
 
 .panel-container {
   overflow: hidden;
+  div[class*="search-item"] {
+    &:hover,
+    &.hovered {
+      transition: background 0.2s ease;
+    }
+  }
   &.green-panel {
     background-color: $panel_light_green;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_green, 10%);
+      }
+    }
   }
   &.cyan-panel {
     background-color: $light_cyan;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($light_cyan, 10%);
+      }
+    }
   }
   &.brown-panel {
     background-color: $panel_light_brown;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_brown, 10%);
+      }
+    }
   }
   &.magenta-panel {
     background-color: $light_magenta;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($light_magenta, 10%);
+      }
+    }
   }
+  &.light-gray-panel,
   &.gray-panel {
     background-color: $panel_light_gray;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_gray, 10%);
+      }
+    }
   }
   &.yellow-panel {
     background-color: $panel_light_yellow;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_yellow, 10%);
+      }
+    }
   }
   &.blue-panel {
     background-color: $panel_light_blue;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_blue, 10%);
+      }
+    }
   }
   &.teal-panel {
     background-color: $panel_light_teal;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_teal, 10%);
+      }
+    }
   }
   &.red-panel {
     background-color: $panel_light_red;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_red, 10%);
+      }
+    }
   }
 }
 

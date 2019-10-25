@@ -48,9 +48,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   render() {
     const panelName = "tools";
-    return <DesignerPanel
-      panelName={panelName}
-      panelColor={"gray"}>
+    return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Tools}

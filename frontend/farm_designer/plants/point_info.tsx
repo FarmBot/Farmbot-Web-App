@@ -10,6 +10,7 @@ import { TaggedPoint, Vector3 } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
 import { DeleteButton } from "../../controls/pin_form_fields";
 import { getDevice } from "../../device";
+import { Panel } from "../panel_header";
 
 export const moveToPoint =
   (body: Vector3) => () => getDevice().moveAbsolute(body);
@@ -66,10 +67,10 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
   };
 
   default = (point: TaggedPoint) => {
-    return <DesignerPanel panelName={"plant-info"} panelColor={"teal"}>
+    return <DesignerPanel panelName={"plant-info"} panel={Panel.Points}>
       <DesignerPanelHeader
         panelName={"plant-info"}
-        panelColor={"teal"}
+        panel={Panel.Points}
         title={`${t("Edit")} ${point.body.name}`}
         backTo={"/app/designer/points"}>
       </DesignerPanelHeader>
