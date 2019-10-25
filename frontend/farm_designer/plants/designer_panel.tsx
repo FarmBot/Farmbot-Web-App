@@ -39,25 +39,30 @@ const backToText = (to: string | undefined): string => {
   return s ? ` ${t("to")} ${s}` : "";
 };
 
+const textcolor = (color: boolean | undefined) => {
+  const coloring = color ? "black" : "white";
+  return coloring;
+};
+
 export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) =>
   <div className={`panel-header ${props.panelColor}-panel`}
     style={props.style || {}}>
     <p className="panel-title">
-      <i className={`fa fa-arrow-left back-arrow ${props.blackText ? "black" : "white"}-text`}
+      <i className={`fa fa-arrow-left back-arrow ${textcolor(props.blackText)}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? routeHistory.push(props.backTo) : history.back();
           props.onBack && props.onBack();
         }} />
       {props.title &&
-        <span className={`title ${props.blackText ? "black" : "white"}-text`}
+        <span className={`title ${textcolor(props.blackText)}-text`}
         >{t(props.title)}</span>}
       {props.children}
     </p>
 
     {(props.description || props.descriptionElement) &&
       <div
-        className={`panel-header-description ${props.panelName}-description ${props.blackText ? "black" : "white"}-text`}>
+        className={`panel-header-description ${props.panelName}-description ${textcolor(props.blackText)}-text`}>
         {props.description && t(props.description)}
         {props.descriptionElement}
       </div>}

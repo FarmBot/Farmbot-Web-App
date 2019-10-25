@@ -89,7 +89,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
       return plants.filter(p => { return p.uuid == uuid; })[0];
     }) : undefined;
 
-    return <DesignerPanel panelName={"plant-selection"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"plant-selection"} panelColor={"light-gray"}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
         panelColor={"gray"}
