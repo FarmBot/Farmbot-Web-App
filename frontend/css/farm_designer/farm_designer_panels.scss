@@ -92,7 +92,7 @@
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $gray;
+    background-color: $panel_medium_light_gray;
   }
   &.yellow-panel {
     background-color: $panel_yellow;
@@ -150,13 +150,21 @@
 .panel-title {
   height: 50px;
   .back-arrow {
+    &.black-text{
+      color: $medium_gray;
+    }
     float: left;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
     &:hover {
-      color: $white;
+      &.black-text{
+        color: $darker_gray !important;
+      }
+      &.white-text{
+        color: $white;
+      }
     }
   }
   .title {
@@ -226,12 +234,18 @@
     position: absolute;
     z-index: 9;
     width: 100%;
-    background: $gray;
+    background: $panel_medium_light_gray;
     padding: 0.5rem;
     button {
       margin: 0.5rem;
+      float: left;
     }
-    .buttonrow{
+    label {
+      min-width: -webkit-fill-available;
+      margin-bottom: 0px;
+      margin-left: .5rem;
+    }
+    .buttonrow {
       float:left;
     }
   }
@@ -240,7 +254,7 @@
     padding-right: 0;
     padding-left: 0;
     padding-bottom: 5rem;
-    max-height: calc(100vh - 10rem);
+    max-height: calc(100vh - 13rem);
     overflow-y: auto;
     overflow-x: hidden;
     .plant-search-item,
