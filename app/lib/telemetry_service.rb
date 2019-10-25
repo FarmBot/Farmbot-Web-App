@@ -4,6 +4,11 @@
 class TelemetryService < AbstractServiceRunner
   MESSAGE = "TELEMETRY MESSAGE FROM %s"
   FAILURE = "FAILED TELEMETRY MESSAGE FROM %s"
+  THROTTLE_POLICY = ThrottlePolicy.new({
+    ThrottlePolicy::TimePeriod.new(1.minute) => 25,
+    ThrottlePolicy::TimePeriod.new(1.hour) => 250,
+    ThrottlePolicy::TimePeriod.new(1.day) => 1500,
+  })
 
   def process(delivery_info, payload)
     device_key = delivery_info
@@ -13,7 +18,11 @@ class TelemetryService < AbstractServiceRunner
     other_stuff = { device: device_key,
                    is_telemetry: true,
                    message: MESSAGE % device_key }
-    puts json.merge(other_stuff).to_json
+    THROTTLE_POLICY.track(device_key)
+    violation = THROTTLE_POLICY.is_throttled(device_key)
+    unless violation
+      puts json.merge(other_stuff).to_json
+    end
   rescue JSON::ParserError
     puts ({ device: device_key,
            is_telemetry: true,
