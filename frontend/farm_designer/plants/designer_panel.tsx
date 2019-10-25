@@ -2,27 +2,31 @@ import * as React from "react";
 import { history as routeHistory } from "../../history";
 import { last, trim } from "lodash";
 import { Link } from "../../link";
-import { Panel, TAB_COLOR } from "../panel_header";
+import { Panel, TAB_COLOR, PanelColor } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 
 interface DesignerPanelProps {
   panelName: string;
-  panelColor: string;
+  panel?: Panel;
+  panelColor?: PanelColor;
   children?: React.ReactNode;
 }
 
-export const DesignerPanel = (props: DesignerPanelProps) =>
-  <div
+export const DesignerPanel = (props: DesignerPanelProps) => {
+  const color = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
+  return <div
     className={[
       "panel-container",
-      `${props.panelColor}-panel`,
+      `${color || PanelColor.gray}-panel`,
       `${props.panelName}-panel`].join(" ")}>
     {props.children}
   </div>;
+};
 
 interface DesignerPanelHeaderProps {
   panelName: string;
-  panelColor: string;
+  panel?: Panel;
+  panelColor?: PanelColor;
   title?: string;
   blackText?: boolean;
   description?: string;
@@ -39,37 +43,37 @@ const backToText = (to: string | undefined): string => {
   return s ? ` ${t("to")} ${s}` : "";
 };
 
-const textcolor = (color: boolean | undefined) => {
-  const coloring = color ? "black" : "white";
-  return coloring;
-};
-
-export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) =>
-  <div className={`panel-header ${props.panelColor}-panel`}
+export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
+  const color = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
+  const textColor = props.blackText ? "black" : "white";
+  return <div className={`panel-header ${color || PanelColor.gray}-panel`}
     style={props.style || {}}>
     <p className="panel-title">
-      <i className={`fa fa-arrow-left back-arrow ${textcolor(props.blackText)}-text`}
+      <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? routeHistory.push(props.backTo) : history.back();
           props.onBack && props.onBack();
         }} />
       {props.title &&
-        <span className={`title ${textcolor(props.blackText)}-text`}
-        >{t(props.title)}</span>}
+        <span className={`title ${textColor}-text`}>
+          {t(props.title)}
+        </span>}
       {props.children}
     </p>
 
     {(props.description || props.descriptionElement) &&
       <div
-        className={`panel-header-description ${props.panelName}-description ${textcolor(props.blackText)}-text`}>
+        className={trim(`panel-header-description ${props.panelName}-description
+          ${textColor}-text`)}>
         {props.description && t(props.description)}
         {props.descriptionElement}
       </div>}
   </div>;
+};
 
 interface DesignerPanelTopProps {
-  panel?: Panel;
+  panel: Panel;
   linkTo?: string;
   title?: string;
   children?: React.ReactNode;
@@ -87,7 +91,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     </div>
     {props.linkTo &&
       <Link to={props.linkTo}>
-        <div className={`fb-button panel-${TAB_COLOR[props.panel || Panel.Plants]}`}>
+        <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}>
           <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}

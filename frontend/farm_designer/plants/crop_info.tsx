@@ -23,6 +23,7 @@ import {
 } from "../../ui/empty_state_wrapper";
 import { startCase, isArray, chain, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 interface InfoFieldProps {
   title: string;
@@ -239,10 +240,10 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
     const { crop, result, basePath, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "crop-info";
-    return <DesignerPanel panelName={panelName} panelColor={"green"}>
+    return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={panelName}
-        panelColor={"green"}
+        panel={Panel.Plants}
         title={result.crop.name}
         backTo={basePath}
         onBack={this.clearCropSearchResults(crop)}

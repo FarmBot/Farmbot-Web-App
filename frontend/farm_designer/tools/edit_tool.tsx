@@ -11,6 +11,7 @@ import { maybeFindToolById } from "../../resources/selectors";
 import { SaveBtn } from "../../ui";
 import { edit } from "../../api/crud";
 import { history } from "../../history";
+import { Panel } from "../panel_header";
 
 export interface EditToolProps {
   findTool(id: string): TaggedTool | undefined;
@@ -40,12 +41,12 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   }
 
   default = (tool: TaggedTool) =>
-    <DesignerPanel panelName={"tool"} panelColor={"gray"}>
+    <DesignerPanel panelName={"tool"} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={"tool"}
         title={`${t("Edit")} ${tool.body.name}`}
         backTo={"/app/designer/tools"}
-        panelColor={"gray"} />
+        panel={Panel.Tools} />
       <DesignerPanelContent panelName={"tools"}>
         <label>{t("Tool Name")}</label>
         <input
