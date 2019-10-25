@@ -194,6 +194,15 @@
       background-color: darken($panel_gray, 5%) !important;
     }
   }
+  &.panel-light-gray {
+    background-color: $panel_medium_light_gray;
+    box-shadow: 0 2px 0px 0px darken($panel_medium_light_gray, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_medium_light_gray, 5%) !important;
+    }
+  }
   &.panel-blue {
     background-color: $panel_blue;
     box-shadow: 0 2px 0px 0px darken($panel_blue, 12%);
@@ -228,6 +237,24 @@
     &:hover,
     &.active {
       background-color: darken($panel_red, 5%) !important;
+    }
+  }
+  &.panel-magenta {
+    background-color: $magenta;
+    box-shadow: 0 2px 0px 0px darken($magenta, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($magenta, 5%) !important;
+    }
+  }
+  &.panel-cyan {
+    background-color: $cyan;
+    box-shadow: 0 2px 0px 0px darken($cyan, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($cyan, 5%) !important;
     }
   }
   &.zoom {

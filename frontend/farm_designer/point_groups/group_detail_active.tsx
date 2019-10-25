@@ -70,11 +70,11 @@ export class GroupDetailActive
   }
 
   render() {
-    return <DesignerPanel panelName={"group-detail"} panelColor={"blue"}>
+    return <DesignerPanel panelName={"group-detail"} panel={Panel.Groups}>
       <DesignerPanelHeader
         onBack={this.saveGroup}
         panelName={Panel.Groups}
-        panelColor={"blue"}
+        panel={Panel.Groups}
         title={t("Edit Group")}
         backTo={"/app/designer/groups"}>
       </DesignerPanelHeader>

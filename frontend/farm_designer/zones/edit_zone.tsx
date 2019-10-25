@@ -6,6 +6,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
+import { Panel } from "../panel_header";
 
 export interface EditZoneProps {
   dispatch: Function;
@@ -31,10 +32,10 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
   }
 
   default = () => {
-    return <DesignerPanel panelName={"zone-info"} panelColor={"brown"}>
+    return <DesignerPanel panelName={"zone-info"} panel={Panel.Zones}>
       <DesignerPanelHeader
         panelName={"zone-info"}
-        panelColor={"brown"}
+        panel={Panel.Zones}
         title={`${t("Edit")} zone`}
         backTo={"/app/designer/zones"}>
       </DesignerPanelHeader>

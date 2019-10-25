@@ -8,6 +8,7 @@ import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
 import { TaggedPoint } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
+import { Panel } from "../panel_header";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -33,10 +34,10 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
   }
 
   default = (point: TaggedPoint) => {
-    return <DesignerPanel panelName={"weed-info"} panelColor={"red"}>
+    return <DesignerPanel panelName={"weed-info"} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={"weed-info"}
-        panelColor={"red"}
+        panel={Panel.Weeds}
         title={`${t("Edit")} ${point.body.name}`}
         backTo={"/app/designer/points"}>
       </DesignerPanelHeader>

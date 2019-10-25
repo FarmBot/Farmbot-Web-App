@@ -14,6 +14,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent, DesignerPanelTop
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 export function mapStateToProps(props: Everything): CropCatalogProps {
   const { cropSearchQuery, cropSearchInProgress, cropSearchResults
@@ -59,13 +60,13 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
   }
 
   render() {
-    return <DesignerPanel panelName={"crop-catalog"} panelColor={"green"}>
+    return <DesignerPanel panelName={"crop-catalog"} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={"crop-catalog"}
-        panelColor={"green"}
+        panel={Panel.Plants}
         title={t("Choose a crop")}
         backTo={"/app/designer/plants"} />
-      <DesignerPanelTop>
+      <DesignerPanelTop panel={Panel.Plants}>
         <div className="thin-search">
           <input
             autoFocus={true}

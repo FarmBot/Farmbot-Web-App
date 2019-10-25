@@ -16,7 +16,7 @@ import {
   DesignerPanel,
   DesignerPanelContent
 } from "../plants/designer_panel";
-import { DesignerNavTabs } from "../panel_header";
+import { DesignerNavTabs, Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
 
@@ -40,7 +40,7 @@ export class RawSavedGardens extends React.Component<SavedGardensProps, {}> {
   }
 
   render() {
-    return <DesignerPanel panelName={"saved-garden"} panelColor={"green"}>
+    return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"saved-garden"}
         className={"with-nav"}>

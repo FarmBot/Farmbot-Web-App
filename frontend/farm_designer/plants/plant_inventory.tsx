@@ -41,7 +41,7 @@ export class RawPlants extends React.Component<PlantInventoryProps, State> {
     this.setState({ searchTerm: currentTarget.value })
 
   render() {
-    return <DesignerPanel panelName={"plant-inventory"} panelColor={"green"}>
+    return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Plants}
