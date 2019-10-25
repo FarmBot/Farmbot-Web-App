@@ -4,9 +4,9 @@ NOW = Time.new("2018-05-18T09:38:02.259-05:00")
 klass = ThrottlePolicy::TimePeriod
 describe klass do
   let(:policy) do
-    ThrottlePolicy.new("rspec", klass.new(1.minute, NOW) => 1,
-                                klass.new(1.hour, NOW) => 10,
-                                klass.new(1.day, NOW) => 100)
+    ThrottlePolicy.new("rspec", { 1.minute => 1,
+                                 1.hour => 10,
+                                 1.day => 100 }, NOW)
   end
 
   it "initializes" do
