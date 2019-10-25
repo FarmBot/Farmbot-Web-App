@@ -17,7 +17,7 @@ export function Apology(_: {}) {
       <h1>Page Error</h1>
       <span>
         We can't render this part of the page due to an unrecoverable error.
-        Here are some thing you can try:
+        Here are some things you can try:
       </span>
       <ol>
         <li>
