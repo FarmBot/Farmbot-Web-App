@@ -36,6 +36,7 @@ input:not([role="combobox"]) {
     background-color: $white !important;
     color: $red;
   }
+  -moz-appearance: textfield;
 }
 
 .input-error-wrapper {

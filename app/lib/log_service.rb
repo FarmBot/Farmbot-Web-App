@@ -24,10 +24,12 @@ class LogService < AbstractServiceRunner
 
   def maybe_deliver(data)
     violation = THROTTLE_POLICY.is_throttled(data.device_id)
-    ok = data.valid? && !violation
+    if violation
+      return warn_user(data, violation)
+    end
 
     data.device.auto_sync_transaction do
-      ok ? deliver(data) : warn_user(data, violation)
+      deliver(data)
     end
   end
 
@@ -41,6 +43,6 @@ class LogService < AbstractServiceRunner
   end
 
   def warn_user(data, violation)
-    data.device.maybe_throttle(violation)
+    violation && data.device.maybe_throttle(violation)
   end
 end

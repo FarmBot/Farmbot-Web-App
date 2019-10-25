@@ -759,6 +759,12 @@ export namespace Content {
   export const NO_GROUPS =
     trim(`Press "+" to add a group.`);
 
+  export const NO_WEEDS =
+    trim(`Press "+" to add a weed.`);
+
+  export const NO_ZONES =
+    trim(`Press "+" to add a zone.`);
+
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
 

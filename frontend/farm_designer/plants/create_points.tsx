@@ -233,10 +233,10 @@ export class RawCreatePoints
     </Row>
 
   render() {
-    return <DesignerPanel panelName={"point-creation"} panelColor={"brown"}>
+    return <DesignerPanel panelName={"point-creation"} panelColor={"teal"}>
       <DesignerPanelHeader
         panelName={"point-creation"}
-        panelColor={"brown"}
+        panelColor={"teal"}
         title={t("Create point")}
         backTo={"/app/designer/points"}
         description={Content.CREATE_POINTS_DESCRIPTION} />

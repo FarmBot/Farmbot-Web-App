@@ -171,3 +171,5 @@ class NiceResponse
     end
   end
 end
+
+FakeDeliveryInfo = Struct.new(:routing_key, :device)

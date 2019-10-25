@@ -66,10 +66,10 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
   };
 
   default = (point: TaggedPoint) => {
-    return <DesignerPanel panelName={"plant-info"} panelColor={"green"}>
+    return <DesignerPanel panelName={"plant-info"} panelColor={"teal"}>
       <DesignerPanelHeader
         panelName={"plant-info"}
-        panelColor={"gray"}
+        panelColor={"teal"}
         title={`${t("Edit")} ${point.body.name}`}
         backTo={"/app/designer/points"}>
       </DesignerPanelHeader>
