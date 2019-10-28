@@ -1,8 +1,7 @@
 source "https://rubygems.org"
 ruby "~> 2.6.5"
 
-gem "rails", "6.0.0" # TODO: Upgrade to Rails 6
-
+gem "rails"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
