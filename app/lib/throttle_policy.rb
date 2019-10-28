@@ -19,9 +19,7 @@ class ThrottlePolicy
   # returns nil if not throttled
   def is_throttled(unique_id)
     rules
-      .map do |rule|
-      rule.violation?(unique_id) ? Violation.new(rule) : nil
-    end
+      .map { |rule| rule.violation?(unique_id) }
       .compact
       .max
   end

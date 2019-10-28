@@ -9,8 +9,12 @@ class ThrottlePolicy
       @limit = limit
     end
 
+    # returns the timeperiod when device will be
+    # unthrottled. returns `nil` if not throttled
     def violation?(unique_id)
-      time_period.usage_count_for(unique_id) > limit
+      if (time_period.usage_count_for(unique_id) > limit)
+        Violation.new(self)
+      end
     end
 
     def record_event(unique_id, now)
