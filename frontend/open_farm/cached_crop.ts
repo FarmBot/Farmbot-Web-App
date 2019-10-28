@@ -37,7 +37,8 @@ function localStorageIconSet(icon: OFIcon): void {
  * and the garlic icon is not cached locally, and you try to render 10 garlic
  * icons in the first 100ms, and HTTP requests take more than 100ms, you will
  * end up performing 10 HTTP requests at application start time. Not very
- * efficient */
+ * efficient.
+ * SOLUTION: Keep a record of open requests to avoid duplicate requests. */
 const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
 const cacheTheIcon = (slug: string) =>
@@ -60,6 +61,8 @@ const cacheTheIcon = (slug: string) =>
 
 function HTTPIconFetch(slug: string) {
   const url = OpenFarmAPI.OFBaseURL + slug;
+  // Avoid duplicate requests.
+  if (promiseCache[url]) { return promiseCache[url]; }
   promiseCache[url] = axios
     .get<OFCropResponse>(url)
     .then(cacheTheIcon(slug), cacheTheIcon(slug));
