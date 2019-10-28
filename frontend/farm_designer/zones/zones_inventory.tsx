@@ -31,7 +31,7 @@ export class RawZones extends React.Component<ZonesProps, ZonesState> {
   }
 
   render() {
-    return <DesignerPanel panelName={"zones-inventory"} panelColor={"red"}>
+    return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Zones}

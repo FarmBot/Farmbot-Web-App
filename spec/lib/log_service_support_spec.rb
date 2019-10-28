@@ -2,18 +2,20 @@ require "spec_helper"
 # require_relative "../../lib/log_service"
 
 describe LogService do
-  normal_payl = {
-    z: 0,
-    y: 0,
-    x: 0,
-    type: "info",
-    major_version: 6,
-    message: "HQ FarmBot TEST 123 Pin 13 is 0",
-    created_at: 1512585641,
-    channels: [],
-  }.to_json
+  normal_hash = ->() do
+    return {
+             z: 0,
+             y: 0,
+             x: 0,
+             type: "info",
+             major_version: 8,
+             message: "HQ FarmBot TEST 123 Pin 13 is 0",
+             created_at: 1512585641,
+             channels: [],
+           }
+  end
 
-  FakeDeliveryInfo = Struct.new(:routing_key, :device)
+  normal_payl = normal_hash[].to_json
 
   let!(:device) { FactoryBot.create(:device) }
   let!(:device_id) { device.id }
@@ -29,6 +31,12 @@ describe LogService do
   it "has a log_channel" do
     calls = Transport.current.log_channel.calls[:bind]
     expect(calls).to include(["amq.topic", { routing_key: "bot.*.logs" }])
+  end
+
+  it "has a telemetry_channel" do
+    calls = Transport.current.telemetry_channel.calls[:bind]
+    call = ["amq.topic", { :routing_key => "bot.*.telemetry" }]
+    expect(calls).to include(call)
   end
 
   it "has a resource_channel" do
@@ -54,9 +62,43 @@ describe LogService do
     LogService.new.warn_user(data, time)
   end
 
+  it "triggers a throttle" do
+    tp = LogService::THROTTLE_POLICY
+    ls = LogService.new
+    data = AmqpLogParser::DeliveryInfo.new
+    data.device_id = FactoryBot.create(:device).id
+    violation = ThrottlePolicy::Violation.new(Object.new)
+    allow(ls).to receive(:deliver)
+    expect(ls).to receive(:warn_user)
+    expect(tp).to receive(:is_throttled)
+                    .with(data.device_id)
+                    .and_return(violation)
+    ls.maybe_deliver(data)
+  end
+
   it "handles bad params" do
     expect do
       LogService.new.process(fake_delivery_info, {})
     end.to raise_error(Mutations::ValidationException)
+  end
+
+  it "handles malformed params" do
+    expect do
+      LogService.new.process(fake_delivery_info, "}}{{")
+    end.to raise_error(Mutations::ValidationException)
+  end
+
+  it "does not save `fun`, `debug` or `nil` logs" do
+    ["fun", "debug", nil].map do |type|
+      Log.destroy_all
+      j = normal_hash[].merge(type: type).to_json
+      LogService.new.process(fake_delivery_info, j)
+      if Log.count != 0
+        opps = "Expected there to be no #{type.inspect} logs. " \
+        "There are, though. -RC"
+        fail(opps)
+      end
+      expect(Log.count).to be 0
+    end
   end
 end

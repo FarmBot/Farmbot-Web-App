@@ -9,6 +9,7 @@ import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
@@ -52,12 +53,10 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
     const { crop, result, basePath, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
-    return <DesignerPanel
-      panelName={panelName}
-      panelColor={"green"}>
+    return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={panelName}
-        panelColor={"green"}
+        panel={Panel.Plants}
         title={result.crop.name}
         style={{ background: backgroundURL }}
         descriptionElement={

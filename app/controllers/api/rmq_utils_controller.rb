@@ -57,6 +57,7 @@ module Api
       status
       status_v8
       sync
+      telemetry
       \\#
       \\*
     ).map { |x| x + "(\\.|\\z)" }.join("|")

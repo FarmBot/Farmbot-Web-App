@@ -4,9 +4,11 @@ import {
   RawWeeds as Weeds, WeedsProps, mapStateToProps
 } from "../weeds_inventory";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { fakePoint } from "../../../__test_support__/fake_state/resources";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
+    points: [],
     dispatch: jest.fn(),
   });
 
@@ -20,6 +22,17 @@ describe("<Weeds> />", () => {
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "0" } });
     expect(wrapper.state().searchTerm).toEqual("0");
+  });
+
+  it("filters points", () => {
+    const p = fakeProps();
+    p.points = [fakePoint(), fakePoint()];
+    p.points[0].body.name = "weed 0";
+    p.points[1].body.name = "weed 1";
+    const wrapper = mount(<Weeds {...p} />);
+    wrapper.setState({ searchTerm: "0" });
+    expect(wrapper.text()).toContain("weed 0");
+    expect(wrapper.text()).not.toContain("weed 1");
   });
 });
 

@@ -19,9 +19,9 @@ class ThrottlePolicy
   def is_throttled(unique_id)
     rules
       .map do |rule|
-        is_violation = rule.time_period.usage_count_for(unique_id) > rule.limit
-        is_violation ? Violation.new(rule) : nil
-      end
+      is_violation = rule.time_period.usage_count_for(unique_id) > rule.limit
+      is_violation ? Violation.new(rule) : nil
+    end
       .compact
       .max
   end

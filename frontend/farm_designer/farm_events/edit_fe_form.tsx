@@ -45,6 +45,7 @@ import {
 } from "../../sequences/locals_list/locals_list_support";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { Panel } from "../panel_header";
 
 type FormEvent = React.SyntheticEvent<HTMLInputElement>;
 export const NEVER: TimeUnit = "never";
@@ -467,10 +468,10 @@ export class EditFEForm extends React.Component<EditFEProps, State> {
 
   render() {
     const { farmEvent } = this.props;
-    return <DesignerPanel panelName={"add-farm-event"} panelColor={"yellow"}>
+    return <DesignerPanel panelName={"add-farm-event"} panel={Panel.FarmEvents}>
       <DesignerPanelHeader
         panelName={"add-farm-event"}
-        panelColor={"yellow"}
+        panel={Panel.FarmEvents}
         title={this.props.title}
         onBack={!farmEvent.body.id ? () =>
           // Throw out unsaved farmevents.

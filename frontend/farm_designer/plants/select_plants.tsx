@@ -13,6 +13,7 @@ import {
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
+import { PanelColor } from "../panel_header";
 
 export function mapStateToProps(props: Everything) {
   return {
@@ -46,9 +47,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
       confirm(t("Are you sure you want to delete {{length}} plants?",
         { length: plantUUIDs.length }))) {
       plantUUIDs.map(uuid => {
-        this
-          .props
-          .dispatch(destroy(uuid, true))
+        this.props.dispatch(destroy(uuid, true))
           .then(() => { }, () => { });
       });
       history.push("/app/designer/plants");
@@ -84,15 +83,15 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     </div>;
 
   render() {
-    const { selected, plants, dispatch } = this.props;
-    const selectedPlantData = selected ? selected.map(uuid => {
-      return plants.filter(p => { return p.uuid == uuid; })[0];
-    }) : undefined;
+    const { plants, dispatch } = this.props;
+    const selectedPlantData =
+      this.selected.map(uuid => plants.filter(p => p.uuid == uuid)[0]);
 
-    return <DesignerPanel panelName={"plant-selection"} panelColor={"gray"}>
+    return <DesignerPanel panelName={"plant-selection"}
+      panelColor={PanelColor.lightGray}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
-        panelColor={"gray"}
+        panelColor={PanelColor.lightGray}
         blackText={true}
         title={t("{{length}} plants selected",
           { length: this.selected.length })}
