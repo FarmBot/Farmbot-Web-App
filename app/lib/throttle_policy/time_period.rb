@@ -30,7 +30,7 @@ class ThrottlePolicy
     end
 
     def usage_count_for(unique_id)
-      @entries[unique_id] || 0
+      init_fetch(unique_id)
     end
 
     def when_does_next_period_start?
@@ -41,17 +41,33 @@ class ThrottlePolicy
 
     def reset_everything(now)
       @current_period = calculate_period(now)
-      @entries = {}
+      reset_cache
     end
 
     def increment_count_for(unique_id)
-      @entries[unique_id] ||= 0
-      @entries[unique_id] += 1
+      init_fetch(unique_id)
+      incr(unique_id)
     end
 
     # Returns integer representation of current clock period
     def calculate_period(time)
       (time.to_i / @time_unit)
+    end
+
+    def cache_key(unique_id)
+      [@namespace, current_period.to_i, unique_id].join(":")
+    end
+
+    def incr(unique_id)
+      @entries[cache_key(unique_id)] += 1
+    end
+
+    def init_fetch(unique_id)
+      @entries[cache_key(unique_id)] ||= 0
+    end
+
+    def reset_cache
+      @entries = {}
     end
   end
 end
