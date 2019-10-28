@@ -40,7 +40,7 @@ class FarmwareInstallation < ApplicationRecord
     known_error = KNOWN_PROBLEMS[error.class]
     description = \
        known_error || (OTHER_PROBLEM % error.class)
-    update_attributes!(package_error: description,
+    update!(package_error: description,
                        package:       nil)
     unless known_error.present?
       raise error
@@ -54,7 +54,7 @@ class FarmwareInstallation < ApplicationRecord
     string    = string_io.read(MAX_JSON_SIZE)
     json      = JSON.parse(string)
     pkg_name  = json.fetch("package")
-    update_attributes!(package: pkg_name, package_error: nil)
+    update!(package: pkg_name, package_error: nil)
   rescue => error
     maybe_recover_from_fetch_error(error)
   end

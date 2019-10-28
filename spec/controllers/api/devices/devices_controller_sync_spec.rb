@@ -36,7 +36,8 @@ describe Api::DevicesController do
       pair = json[:devices].first
       expect(pair.first).to eq(device.id)
       real_time = device.updated_at.strftime(FORMAT).sub(/0+$/, "")
-      expect(pair.last).to include(real_time)
+      diff = (device.updated_at - DateTime.parse(pair.last))
+      expect(diff).to be < 1
       expect(pair.last.first(8)).to eq(device.updated_at.as_json.first(8))
       json.keys.without(*EDGE_CASES).map do |key|
         array = json[key]
@@ -56,7 +57,10 @@ describe Api::DevicesController do
           json[key].each_with_index do |item, index|
             comparison = expected[index]
             expect(item.first).to eq(comparison.first)
-            expect(Time.parse(item.last)).to eq(comparison.last.to_time)
+            left = Time.parse(item.last)
+            right = comparison.last.to_time.utc
+            expect((right - left).seconds).to be < 1
+            expect((right - left).seconds).to be >= 0
           end
         end
       end

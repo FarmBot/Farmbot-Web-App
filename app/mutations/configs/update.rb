@@ -5,7 +5,7 @@ module Configs
     GOOD = 5556
 
     required do
-      duck :target, methods: [:update_attributes!]
+      duck :target, methods: [:update!]
       duck :update_attrs, methods: [:deep_symbolize_keys]
     end
 

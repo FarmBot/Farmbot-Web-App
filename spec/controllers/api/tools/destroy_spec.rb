@@ -14,7 +14,7 @@ describe Api::ToolsController do
     it 'destroy a tool' do
       sign_in user
       before = Tool.count
-      tool.tool_slot.update_attributes(tool: nil)
+      tool.tool_slot.update(tool: nil)
       delete :destroy, params: { id: tool.id }
       after = Tool.count
       expect(response.status).to eq(200)
@@ -44,7 +44,7 @@ describe Api::ToolsController do
       sign_in user
       # If we dont do this, it will trigger the wrong error.
       # We test this elsewhere - RC
-      tool.tool_slot.update_attributes(tool: nil)
+      tool.tool_slot.update(tool: nil)
 
       before = Tool.count
       delete :destroy, params: { id: tool.id }

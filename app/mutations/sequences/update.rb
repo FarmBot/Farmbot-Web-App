@@ -40,7 +40,7 @@ module Sequences
       Sequence.auto_sync_debounce do
         ActiveRecord::Base.transaction do
           sequence.migrated_nodes = true
-          sequence.update_attributes!(inputs.except(*BLACKLIST))
+          sequence.update!(inputs.except(*BLACKLIST))
           CeleryScript::StoreCelery.run!(sequence: sequence,
                                          args: args,
                                          body: body)

@@ -44,7 +44,7 @@ module Api
       end
 
       def update_fields
-        user.update_attributes!(confirmed_at: Time.now)
+        user.update!(confirmed_at: Time.now)
       end
 
       def seed_user

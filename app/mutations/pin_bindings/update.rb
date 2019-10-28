@@ -21,7 +21,7 @@ module PinBindings
 
     def execute
       x = inputs.except(:pin_binding, :device)
-      pin_binding.update_attributes!(x) && pin_binding
+      pin_binding.update!(x) && pin_binding
     end
   end
 end

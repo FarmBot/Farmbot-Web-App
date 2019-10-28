@@ -20,7 +20,7 @@ module Devices
 
     def run_it
       ActiveRecord::Base.transaction do
-        device.update_attributes!(name: "FarmBot")
+        device.update!(name: "FarmBot")
         Device::SINGULAR_RESOURCES.keys.map do |resource|
           device.send(resource).destroy!
         end

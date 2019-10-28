@@ -39,7 +39,7 @@ describe Api::ImagesController do
       sign_in user
       device = user.device
       # Using the *real* value (10) was super slow (~30 seconds)
-      device.update_attributes!(max_images_count: 1)
+      device.update!(max_images_count: 1)
       FactoryBot.create_list(:image, 2, device: user.device)
       get :index
       expect(response.status).to eq(200)

@@ -141,7 +141,7 @@ namespace :api do
       puts "Setting new support target to #{data.to_s}"
       GlobalConfig # Set the new oldest support version.
         .find_by(key: "FBOS_END_OF_LIFE_VERSION")
-        .update_attributes!(value: data.to_s)
+        .update!(value: data.to_s)
     end
   end
 end

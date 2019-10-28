@@ -27,7 +27,7 @@ module Regimens
             RegimenItem.new(ri).tap { |r| r.validate! }
           end
           handle_body_field
-          regimen.update_attributes!(inputs.slice(:name, :color, :regimen_items))
+          regimen.update!(inputs.slice(:name, :color, :regimen_items))
           regimen
         end
       end

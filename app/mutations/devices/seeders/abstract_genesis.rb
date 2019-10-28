@@ -18,11 +18,11 @@ module Devices
       end
 
       def settings_device_name
-        device.update_attributes!(name: "FarmBot Genesis")
+        device.update!(name: "FarmBot Genesis")
       end
 
       def settings_enable_encoders
-        device.firmware_config.update_attributes!(encoder_enabled_x: 1,
+        device.firmware_config.update!(encoder_enabled_x: 1,
                                                   encoder_enabled_y: 1,
                                                   encoder_enabled_z: 1)
       end
@@ -146,15 +146,15 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::FARMDUINO)
+          .update!(firmware_hardware: FbosConfig::FARMDUINO)
       end
 
       def settings_default_map_size_x
-        device.web_app_config.update_attributes!(map_size_x: 2_900)
+        device.web_app_config.update!(map_size_x: 2_900)
       end
 
       def settings_default_map_size_y
-        device.web_app_config.update_attributes!(map_size_y: 1_400)
+        device.web_app_config.update!(map_size_y: 1_400)
       end
 
       def pin_bindings_button_1

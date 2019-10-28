@@ -1,24 +1,24 @@
-require_relative "../../lib/hstore_filter"
+# require_relative "../../lib/hstore_filter"
 
 module Points
   class Update < Mutations::Command
     required do
       model :device, class: Device
-      model :point,  class: Point
+      model :point, class: Point
     end
 
     optional do
       integer :tool_id, nils: true, empty_is_nil: true
-      float   :x
-      float   :y
-      float   :z
-      float   :radius
-      string  :name
-      string  :openfarm_slug
+      float :x
+      float :y
+      float :z
+      float :radius
+      string :name
+      string :openfarm_slug
       integer :pullout_direction, in: ToolSlot::PULLOUT_DIRECTIONS
-      string  :plant_stage,       in: CeleryScriptSettingsBag::PLANT_STAGES
-      time    :planted_at
-      hstore  :meta
+      string :plant_stage, in: CeleryScriptSettingsBag::PLANT_STAGES
+      time :planted_at
+      hstore :meta
       boolean :gantry_mounted
     end
 
@@ -27,10 +27,10 @@ module Points
     end
 
     def execute
-      Point.transaction { point.update_attributes!(inputs.except(:point)) && point }
+      Point.transaction { point.update!(inputs.except(:point)) && point }
     end
 
-  private
+    private
 
     def new_tool_id?
       raw_inputs.key?("tool_id")

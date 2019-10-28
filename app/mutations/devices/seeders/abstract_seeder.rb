@@ -72,7 +72,7 @@ module Devices
       end
 
       def settings_hide_sensors
-        device.web_app_config.update_attributes!(hide_sensors: false)
+        device.web_app_config.update!(hide_sensors: false)
       end
 
       def plants

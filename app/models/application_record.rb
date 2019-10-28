@@ -1,6 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
-  after_save :maybe_broadcast, on: [:create, :update]
+  after_create  :maybe_broadcast
+  after_update  :maybe_broadcast
   after_destroy :maybe_broadcast
 
   class << self
@@ -37,7 +38,7 @@ class ApplicationRecord < ActiveRecord::Base
   def self.auto_sync_debounce
     @auto_sync_paused = true
     result = yield
-    result.update_attributes!(updated_at: Time.now)
+    result.update!(updated_at: Time.now)
     @auto_sync_paused = false
     result.broadcast!
     result
@@ -94,7 +95,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   def manually_sync!
     device && (device.auto_sync_transaction do
-      update_attributes!(updated_at: Time.now)
+      update!(updated_at: Time.now)
     end)
     self
   end

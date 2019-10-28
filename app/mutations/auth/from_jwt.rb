@@ -1,7 +1,7 @@
 module Auth
   # The API supports a number of authentication strategies (Cookies, Bot token,
   # JWT). This service helps determine which auth strategy to use.
-  class FromJWT < Mutations::Command
+  class FromJwt < Mutations::Command
     required { string :jwt }
 
     def execute

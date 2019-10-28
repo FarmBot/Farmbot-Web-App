@@ -1,6 +1,6 @@
 require_relative "../app/models/transport.rb"
 require File.expand_path("../boot", __FILE__)
-require_relative "../app/lib/celery_script/csheap"
+require_relative "../app/lib/celery_script/cs_heap"
 require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
@@ -14,11 +14,13 @@ module FarmBot
     REDIS_URL = ENV.fetch(REDIS_ENV_KEY, "redis://redis:6379/0")
     gcs_enabled =
       %w[ GOOGLE_CLOUD_KEYFILE_JSON GCS_PROJECT GCS_BUCKET ].all? { |s| ENV.key? s }
+    config.load_defaults 6.0
     config.active_storage.service = gcs_enabled ?
       :google : :local
     config.cache_store = :redis_cache_store, { url: REDIS_URL }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
+    config.active_record.belongs_to_required_by_default = false
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false

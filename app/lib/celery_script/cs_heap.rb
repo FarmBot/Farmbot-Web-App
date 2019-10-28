@@ -9,8 +9,8 @@
 #   * You need to create "traces" of where you are in a sequence (using numbers)
 # MORE INFO: https://github.com/FarmBot-Labs/Celery-Slicer
 module CeleryScript
-  # Supporting class for CSHeap (below this class)
-  # PROBLEM:  CSHeap uses numbers to address sibling/parent nodes.
+  # Supporting class for CsHeap (below this class)
+  # PROBLEM:  CsHeap uses numbers to address sibling/parent nodes.
   # PROBLEM:  Numbers are very easy to mix up. Is it an array index? A SQL
   #           primary key? A primitive value? It's not always easy to say.
   # SOLUTION: Create a `HeapAddress` value type to remove ambiguity.
@@ -60,21 +60,22 @@ module CeleryScript
     end
   end
 
-  class CSHeap
-    class BadAddress < Exception; end;
+  class CsHeap
+    class BadAddress < Exception; end
+
     BAD_ADDR = "Bad node address: "
     # Nodes that point to other nodes rather than primitive data types (eg:
     # `locals` and friends) will be prepended with a LINK.
-    LINK    = "__"
+    LINK = "__"
     # Points to the originator (parent) of an `arg` or `body` node.
-    PARENT  = (LINK + "parent").to_sym
+    PARENT = (LINK + "parent").to_sym
     # Points to the first element in the `body``
-    BODY    = (LINK + "body").to_sym
+    BODY = (LINK + "body").to_sym
     # Points to the next node in the body chain. Pointing to NOTHING indicates
     # the end of the body linked list.
-    NEXT    = (LINK + "next").to_sym
+    NEXT = (LINK + "next").to_sym
     # Unique key name. See `celery_script_settings_bag.rb`
-    KIND    = :__KIND__
+    KIND = :__KIND__
     COMMENT = :__COMMENT__
 
     # Keys that primary nodes must have
@@ -82,16 +83,15 @@ module CeleryScript
 
     # Index 0 of the heap represents a null pointer of sorts.
     # If a field points to this address, it is considered empty.
-    NULL    = HeapAddress[0]
+    NULL = HeapAddress[0]
 
     # What you will find at index 0 of the heap:
     NOTHING = {
-      KIND   => "nothing",
+      KIND => "nothing",
       PARENT => NULL,
-      BODY   => NULL,
-      NEXT   => NULL
+      BODY => NULL,
+      NEXT => NULL,
     }
-
 
     # A dictionary of nodes in the CeleryScript tree, as stored in the heap.
     # Nodes will have:
@@ -113,7 +113,7 @@ module CeleryScript
 
     # Set "here" to "null". Prepopulates "here" with an empty entry.
     def initialize
-      @here    = NULL
+      @here = NULL
       @entries = { @here => NOTHING }
     end
 

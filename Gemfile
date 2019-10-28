@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 ruby "~> 2.6.5"
 
+gem "rails"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record" # TODO: Get off of SQL backed jobs. Use Redis
@@ -16,7 +17,6 @@ gem "rabbitmq_http_api_client"
 gem "rack-attack"
 gem "rack-cors"
 gem "rails_12factor"
-gem "rails", "5.2.3" # TODO: Upgrade to Rails 6
 gem "redis", "~> 4.0"
 gem "request_store"
 gem "rollbar"
@@ -35,7 +35,7 @@ group :development, :test do
   gem "hashdiff"
   gem "pry-rails"
   gem "pry"
-  gem "rspec-rails"
+  gem "rspec-rails", "4.0.0.beta3"
   gem "rspec"
   gem "simplecov"
   gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
