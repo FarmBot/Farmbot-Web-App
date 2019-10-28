@@ -15,17 +15,17 @@ class ThrottlePolicy
                 :entries
 
     def initialize(active_support_duration, now = Time.now)
+      raise "Backtrace this" unless active_support_duration.is_a?(ActiveSupport::Duration)
       @time_unit = active_support_duration
       reset_everything now
     end
-
 
     def record_event(unique_id, now = Time.now)
       period = calculate_period(now)
       case period <=> current_period
       when -1 then return                         # Out of date- don't record.
-      when  0 then increment_count_for(unique_id) # Right on schedule.
-      when  1 then reset_everything(now)          # Clear out old data.
+      when 0 then increment_count_for(unique_id) # Right on schedule.
+      when 1 then reset_everything(now)          # Clear out old data.
       end
     end
 
@@ -37,16 +37,16 @@ class ThrottlePolicy
       Time.at(current_period * time_unit.to_i) + time_unit
     end
 
-  private
+    private
 
     def reset_everything(now)
       @current_period = calculate_period(now)
-      @entries        = {}
+      @entries = {}
     end
 
     def increment_count_for(unique_id)
       @entries[unique_id] ||= 0
-      @entries[unique_id]  += 1
+      @entries[unique_id] += 1
     end
 
     # Returns integer representation of current clock period
