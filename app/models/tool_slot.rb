@@ -11,7 +11,9 @@ class ToolSlot < Point
   MIN_PULLOUT = PULLOUT_DIRECTIONS.min
   PULLOUT_ERR = "must be a value between #{MIN_PULLOUT} and #{MAX_PULLOUT}. "\
                 "%{value} is not valid."
-  IN_USE      = "already in use by another tool slot"
+  IN_USE      = "already in use by another tool slot. "\
+                "Please un-assign the tool from its current slot"\
+                " before reassigning."
 
   belongs_to :tool
   validates_uniqueness_of :tool,
