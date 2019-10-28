@@ -118,8 +118,8 @@ class Device < ApplicationRecord
     end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
     if (throttled_until.nil? || end_t > throttled_until)
-      reload.update_attributes!(throttled_until: end_t,
-                                throttled_at: Time.now)
+      reload.update!(throttled_until: end_t,
+                     throttled_at: Time.now)
       refresh_cache
       cooldown = end_t.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
