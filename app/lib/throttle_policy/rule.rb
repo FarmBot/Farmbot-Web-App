@@ -3,9 +3,10 @@ class ThrottlePolicy
   class Rule
     attr_reader :time_period, :limit
 
-    def initialize(namespace, time_period, limit)
+    def initialize(namespace, time_period, limit, now = Time.now)
       @namespace = namespace
-      @time_period, @limit = time_period, limit
+      @time_period = ThrottlePolicy::TimePeriod.new(time_period, now)
+      @limit = limit
     end
 
     def violation?(unique_id)

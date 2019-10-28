@@ -6,11 +6,9 @@ class ThrottlePolicy
   attr_reader :rules
 
   # Dictionary<TimePeriod, Integer>
-  def initialize(namespace, policy_rules, now = Time.now)
-    @rules = policy_rules.map do |(time_period, limit)|
-      tp = ThrottlePolicy::TimePeriod.new(time_period, now)
-      Rule.new(namespace, tp, limit)
-    end
+  def initialize(namespace, rule_map, now = Time.now)
+    @rules = rule_map
+      .map { |(period, limit)| Rule.new(namespace, period, limit, now) }
   end
 
   def track(unique_id, now = Time.now)
