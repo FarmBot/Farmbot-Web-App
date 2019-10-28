@@ -14,7 +14,7 @@ class ThrottlePolicy
   end
 
   def track(unique_id, now = Time.now)
-    rules.each { |r| r.time_period.record_event(unique_id, now) }
+    rules.each { |r| r.record_event(unique_id, now) }
   end
 
   # If throttled, returns the timeperiod when device will be unthrottled
@@ -22,8 +22,7 @@ class ThrottlePolicy
   def is_throttled(unique_id)
     rules
       .map do |rule|
-      is_violation = rule.time_period.usage_count_for(unique_id) > rule.limit
-      is_violation ? Violation.new(rule) : nil
+      rule.violation?(unique_id) ? Violation.new(rule) : nil
     end
       .compact
       .max
