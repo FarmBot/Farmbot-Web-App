@@ -2,16 +2,20 @@ require "spec_helper"
 # require_relative "../../lib/log_service"
 
 describe LogService do
-  normal_payl = {
-    z: 0,
-    y: 0,
-    x: 0,
-    type: "info",
-    major_version: 6,
-    message: "HQ FarmBot TEST 123 Pin 13 is 0",
-    created_at: 1512585641,
-    channels: [],
-  }.to_json
+  normal_hash = ->() do
+    return {
+             z: 0,
+             y: 0,
+             x: 0,
+             type: "info",
+             major_version: 8,
+             message: "HQ FarmBot TEST 123 Pin 13 is 0",
+             created_at: 1512585641,
+             channels: [],
+           }
+  end
+
+  normal_payl = normal_hash[].to_json
 
   let!(:device) { FactoryBot.create(:device) }
   let!(:device_id) { device.id }
@@ -82,5 +86,19 @@ describe LogService do
     expect do
       LogService.new.process(fake_delivery_info, "}}{{")
     end.to raise_error(Mutations::ValidationException)
+  end
+
+  it "does not save `fun`, `debug` or `nil` logs" do
+    ["fun", "debug", nil].map do |type|
+      Log.destroy_all
+      j = normal_hash[].merge(type: type).to_json
+      LogService.new.process(fake_delivery_info, j)
+      if Log.count != 0
+        opps = "Expected there to be no #{type.inspect} logs. " \
+        "There are, though. -RC"
+        fail(opps)
+      end
+      expect(Log.count).to be 0
+    end
   end
 end

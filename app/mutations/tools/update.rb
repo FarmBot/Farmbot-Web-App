@@ -9,7 +9,7 @@ module Tools
     end
 
     def execute
-      tool.update_attributes!(inputs.except(:tool)) && tool
+      tool.update!(inputs.except(:tool)) && tool
     end
   end
 end

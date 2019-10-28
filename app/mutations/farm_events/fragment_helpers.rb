@@ -56,7 +56,7 @@ module FarmEvents
         FarmEvents => ->() { farm_event },
         Regimens => ->() { regimen },
       }
-      options.fetch(self.class.parent).call()
+      options.fetch(self.class.module_parent).call()
     end
   end
 end

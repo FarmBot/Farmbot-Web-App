@@ -24,7 +24,7 @@ module PointGroups
         PointGroup.transaction do
           PointGroupItem.transaction do
             maybe_reconcile_points
-            point_group.update_attributes!(update_attributes)
+            point_group.update!(update_attributes)
             point_group.reload # <= Because PointGroupItem caching?
           end
         end

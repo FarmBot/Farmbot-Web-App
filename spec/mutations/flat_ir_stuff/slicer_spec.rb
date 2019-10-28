@@ -2,11 +2,11 @@ require "spec_helper"
 require_relative "./flat_ir_helpers"
 
 describe CeleryScript::Slicer do
-  kind    = CeleryScript::CSHeap::KIND
-  parent  = CeleryScript::CSHeap::PARENT
-  next_   = CeleryScript::CSHeap::NEXT
-  body    = CeleryScript::CSHeap::BODY
-  comment = CeleryScript::CSHeap::COMMENT
+  kind    = CeleryScript::CsHeap::KIND
+  parent  = CeleryScript::CsHeap::PARENT
+  next_   = CeleryScript::CsHeap::NEXT
+  body    = CeleryScript::CsHeap::BODY
+  comment = CeleryScript::CsHeap::COMMENT
 
   n = "nothing"
 

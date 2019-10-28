@@ -9,7 +9,7 @@ module SavedGardens
     end
 
     def execute
-      saved_garden.update_attributes!(inputs.except(:saved_garden))
+      saved_garden.update!(inputs.except(:saved_garden))
       saved_garden
     end
   end

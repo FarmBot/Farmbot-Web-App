@@ -2,6 +2,7 @@ module Devices
   class Sync < Mutations::Command
     SEL = "SELECT id, updated_at FROM"
     WHERE = "WHERE device_id = "
+    FORMAT = "%Y-%m-%d %H:%M:%S.%5N"
 
     def self.basic_query(plural_resource, where = WHERE)
       [SEL, plural_resource, where].join(" ")

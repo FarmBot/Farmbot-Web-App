@@ -75,7 +75,7 @@ describe Api::DevicesController do
 
     it "dismounts a tool" do
       sign_in user
-      device.update_attributes!(mounted_tool_id: tool.id)
+      device.update!(mounted_tool_id: tool.id)
       expect(device.mounted_tool_id).to be
       put :update,
         body: { id: user.device.id, mounted_tool_id: 0 }.to_json,

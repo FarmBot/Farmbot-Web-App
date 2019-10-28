@@ -4,7 +4,7 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::FARMDUINO_K14)
+          .update!(firmware_hardware: FbosConfig::FARMDUINO_K14)
       end
     end
   end

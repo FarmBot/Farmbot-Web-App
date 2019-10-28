@@ -68,7 +68,7 @@ describe Device do
 
   it "throttles a device that sends too many logs" do
     expect(device).to receive(:tell).and_return(Log.new)
-    device.update_attributes!(throttled_until: nil)
+    device.update!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
     five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
     rule = ThrottlePolicy::Rule.new("X", five_minutes, 500)
@@ -80,7 +80,7 @@ describe Device do
   it "increases a device throttle time period" do
     expect(device).to receive(:tell).and_return(Log.new)
     previous_throttle = Time.now - 1.minute
-    device.update_attributes!(throttled_until: previous_throttle)
+    device.update!(throttled_until: previous_throttle)
     expect(device.throttled_until).to eq(previous_throttle)
     five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
     rule = ThrottlePolicy::Rule.new("X", five_minutes, 500)
@@ -92,7 +92,7 @@ describe Device do
   it "unthrottles a runaway device" do
     expect(device).to receive(:tell).and_return(Log.new)
     example = Time.now - 1.minute
-    device.update_attributes!(throttled_until: example)
+    device.update!(throttled_until: example)
     expect(device.throttled_until).to eq(example)
     device.maybe_unthrottle
     expect(device.throttled_until).to eq(nil)
@@ -114,7 +114,7 @@ describe Device do
   end
 
   it "throttled emails about MQTT rate limiting" do
-    device.update_attributes!(mqtt_rate_limit_email_sent_at: 2.days.ago)
+    device.update!(mqtt_rate_limit_email_sent_at: 2.days.ago)
     Device.connection_warning("device_#{device.id.to_s}")
     time = device.reload.mqtt_rate_limit_email_sent_at
     expect(time).to be > 1.minute.ago

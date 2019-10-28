@@ -273,7 +273,7 @@ module Api
     end
 
     def current_device
-      @current_device ||= Auth::FromJWT.run!(jwt: password_param).device
+      @current_device ||= Auth::FromJwt.run!(jwt: password_param).device
     rescue Mutations::ValidationException => e
       raise JWT::VerificationError, "RMQ Provided bad token"
     end

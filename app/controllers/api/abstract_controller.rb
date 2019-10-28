@@ -136,7 +136,7 @@ module Api
       strategy = Auth::DetermineAuthStrategy.run!(context)
       case strategy
       when :jwt
-        sign_in(Auth::FromJWT.run!(context).require_consent!)
+        sign_in(Auth::FromJwt.run!(context).require_consent!)
       when :already_connected
         # Probably provided a cookie.
         # 9 times out of 10, it's a unit test.

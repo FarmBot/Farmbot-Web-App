@@ -4,7 +4,7 @@ describe DashboardController do
   render_views
 
   it 'can not re-verify' do
-    user.update_attributes(confirmed_at: Time.now)
+    user.update(confirmed_at: Time.now)
     sign_in user
     get :confirmation_page, params: { token: user.confirmation_token }
     expect(response.status).to eq(409)

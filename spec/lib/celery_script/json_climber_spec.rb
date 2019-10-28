@@ -4,15 +4,15 @@ fixture = {
   body: [
     {
       kind: "child",
-      args: { grandchild: { kind: "grandchild", args: {} } }
-    }
-  ]
+      args: { grandchild: { kind: "grandchild", args: {} } },
+    },
+  ],
 }
 
-describe "JSONClimber" do
-  it 'Climbs JSON' do
+describe "JsonClimber" do
+  it "Climbs JSON" do
     results = []
-    CeleryScript::JSONClimber.climb(fixture) do |hmm|
+    CeleryScript::JsonClimber.climb(fixture) do |hmm|
       results.push(hmm[:kind])
     end
     expect(results).to eq(["parent", "child", "grandchild"])
