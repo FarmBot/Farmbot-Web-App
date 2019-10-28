@@ -1,7 +1,12 @@
 # Handles devices that spin out of control and send too many logs to the server.
 # Class Hierarchy:
-# ThrottlePolicy has => Rules creates => Violation
-# Violation has => Rule has => TimePeriod
+# ThrottlePolicy
+#  \
+#   +----> Rule --> TimePeriod
+#   |\
+#   | `--> Rule --> TimePeriod
+#    \_
+#      `-> Rule --> TimePeriod
 class ThrottlePolicy
   attr_reader :rules
 
