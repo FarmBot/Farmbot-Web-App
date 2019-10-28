@@ -10,9 +10,7 @@
 #     the initiator ID.
 class ThrottlePolicy
   class TimePeriod
-    attr_reader :time_unit,
-                :current_period, # Slice time into fixed size windows
-                :entries
+    attr_reader :time_unit, :current_period
 
     def initialize(namespace, duration, now = Time.now)
       @time_unit = duration
@@ -30,7 +28,7 @@ class ThrottlePolicy
     end
 
     def usage_count_for(unique_id)
-      init_fetch(unique_id)
+      fetch(unique_id)
     end
 
     def when_does_next_period_start?
@@ -45,7 +43,6 @@ class ThrottlePolicy
     end
 
     def increment_count_for(unique_id)
-      init_fetch(unique_id)
       incr(unique_id)
     end
 
@@ -54,20 +51,25 @@ class ThrottlePolicy
       (time.to_i / @time_unit)
     end
 
+    def redis
+      Rails.cache.redis
+    end
+
     def cache_key(unique_id)
       [@namespace, current_period.to_i, unique_id].join(":")
     end
 
     def incr(unique_id)
-      @entries[cache_key(unique_id)] += 1
+      redis.incr(cache_key(unique_id))
     end
 
-    def init_fetch(unique_id)
-      @entries[cache_key(unique_id)] ||= 0
+    def fetch(unique_id)
+      (redis.get(cache_key(unique_id)) || "0").to_i
     end
 
     def reset_cache
-      @entries = {}
+      keys = redis.keys([@namespace, "*"].join(":"))
+      redis.del(*keys) unless keys.empty?
     end
   end
 end
