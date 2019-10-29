@@ -70,8 +70,8 @@ describe Device do
     expect(device).to receive(:tell).and_return(Log.new)
     device.update!(throttled_until: nil)
     expect(device.throttled_until).to be(nil)
-    five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
-    rule = ThrottlePolicy::Rule.new(five_minutes, 500)
+    now = Time.now + 1.minute
+    rule = ThrottlePolicy::Rule.new("X", 5.minutes, 500, now)
     violation = ThrottlePolicy::Violation.new(rule)
     device.maybe_throttle(violation)
     expect(device.throttled_until).to eq(violation.ends_at)
@@ -82,8 +82,7 @@ describe Device do
     previous_throttle = Time.now - 1.minute
     device.update!(throttled_until: previous_throttle)
     expect(device.throttled_until).to eq(previous_throttle)
-    five_minutes = ThrottlePolicy::TimePeriod.new(5.minutes, Time.now + 1.minute)
-    rule = ThrottlePolicy::Rule.new(five_minutes, 500)
+    rule = ThrottlePolicy::Rule.new("X", 5.minutes, 500, Time.now + 1.minute)
     violation = ThrottlePolicy::Violation.new(rule)
     device.maybe_throttle(violation)
     expect(device.throttled_until).to eq(violation.ends_at)

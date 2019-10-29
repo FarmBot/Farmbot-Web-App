@@ -11,16 +11,18 @@ class AmqpLogParser < Mutations::Command
   # I keep a Ruby copy of the JSON here for reference.
   # This is what a log will look like after JSON.parse()
   EXAMPLE_JSON = {
-    "meta" => {
-      "x" => 0,
-      "y" => 0,
-      "z" => 0,
-      "type" => "info",
-    },
-    "major_version" => 6,        # <=  up-to-date bots do this
-    "message" => "HQ FarmBot TEST 123 Pin 13 is 0",
-    "created_at" => 1512585641,
     "channels" => [],
+    "created_at" => 1572015955,
+    "major_version" => 8,
+    "message" => "Syncing",
+    "meta" => {},
+    "minor_version" => 1,
+    "patch_version" => 1,
+    "type" => "info",
+    "verbosity" => 3,
+    "x" => 0.0,
+    "y" => 0.0,
+    "z" => 0.0,
   }
 
   required do
@@ -102,8 +104,19 @@ class AmqpLogParser < Mutations::Command
   end
 
   def find_problems!
-    @output.problems.push(NOT_HASH) and return if not_hash?
-    @output.problems.push(TOO_OLD) and return if major_version < 6
-    @output.problems.push(DISCARD) and return if discard?
+    if not_hash?
+      @output.problems.push(NOT_HASH)
+      return
+    end
+
+    if (major_version || 0) < 7
+      @output.problems.push(TOO_OLD)
+      return
+    end
+
+    if discard?
+      @output.problems.push(DISCARD)
+      return
+    end
   end
 end
