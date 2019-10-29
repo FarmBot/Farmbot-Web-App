@@ -54,6 +54,7 @@ export interface GardenPlantProps {
   dispatch: Function;
   plant: Readonly<TaggedPlant>;
   selected: boolean;
+  editing: boolean;
   dragging: boolean;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
