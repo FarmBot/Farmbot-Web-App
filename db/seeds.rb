@@ -29,9 +29,10 @@ if Rails.env == "development"
     SensorReading,
     FarmwareInstallation,
     Tool,
-    Device,
     Delayed::Job,
     Delayed::Backend::ActiveRecord::Job,
+    Fragment,
+    Device,
   ].map(&:delete_all)
   Users::Create.run!(name: "Test",
                      email: "test@test.com",
