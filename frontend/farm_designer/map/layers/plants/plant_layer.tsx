@@ -32,6 +32,7 @@ export function PlantLayer(props: PlantLayerProps) {
         mapTransformProps={mapTransformProps}
         plant={p}
         selected={selected}
+        editing={editing}
         multiselected={multiselected}
         dragging={selected && dragging && editing}
         dispatch={dispatch}
