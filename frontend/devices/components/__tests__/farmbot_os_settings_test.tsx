@@ -1,6 +1,6 @@
-let mockReleaseNoteData = {};
+let mockReleaseNoteResponse = Promise.resolve({ data: "" });
 jest.mock("axios", () => ({
-  get: jest.fn(() => Promise.resolve(mockReleaseNoteData))
+  get: jest.fn(() => mockReleaseNoteResponse)
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -53,24 +53,44 @@ describe("<FarmbotOsSettings />", () => {
   });
 
   it("fetches OS release notes", async () => {
-    mockReleaseNoteData = { data: "intro\n\n# v6\n\n* note" };
+    mockReleaseNoteResponse = Promise.resolve({
+      data: "intro\n\n# v6\n\n* note"
+    });
     const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings
       {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    expect(osSettings.instance().state.osReleaseNotesHeading)
+    expect(osSettings.instance().osReleaseNotes.heading)
       .toEqual("FarmBot OS v6");
-    expect(osSettings.instance().state.osReleaseNotes)
+    expect(osSettings.instance().osReleaseNotes.notes)
       .toEqual("* note");
   });
 
   it("doesn't fetch OS release notes", async () => {
-    mockReleaseNoteData = { data: "empty notes" };
+    mockReleaseNoteResponse = Promise.resolve({ data: "" });
     const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings
       {...fakeProps()} />);
     await expect(axios.get).toHaveBeenCalledWith(
       expect.stringContaining("RELEASE_NOTES.md"));
-    expect(osSettings.instance().state.osReleaseNotes)
+    expect(osSettings.instance().state.allOsReleaseNotes)
+      .toEqual("");
+    expect(osSettings.instance().osReleaseNotes.heading)
+      .toEqual("FarmBot OS v6");
+    expect(osSettings.instance().osReleaseNotes.notes)
+      .toEqual("Could not get release notes.");
+  });
+
+  it("errors while fetching OS release notes", async () => {
+    mockReleaseNoteResponse = Promise.reject({ error: "" });
+    const osSettings = await mount<FarmbotOsSettings>(<FarmbotOsSettings
+      {...fakeProps()} />);
+    await expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining("RELEASE_NOTES.md"));
+    expect(osSettings.instance().state.allOsReleaseNotes)
+      .toEqual("");
+    expect(osSettings.instance().osReleaseNotes.heading)
+      .toEqual("FarmBot OS v6");
+    expect(osSettings.instance().osReleaseNotes.notes)
       .toEqual("Could not get release notes.");
   });
 
@@ -81,5 +101,12 @@ describe("<FarmbotOsSettings />", () => {
     osSettings.find("input")
       .simulate("change", { currentTarget: { value: newName } });
     expect(edit).toHaveBeenCalledWith(p.deviceAccount, { name: newName });
+  });
+
+  it("displays boot sequence selector", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const osSettings = shallow(<FarmbotOsSettings {...p} />);
+    expect(osSettings.find("BootSequenceSelector").length).toEqual(1);
   });
 });
