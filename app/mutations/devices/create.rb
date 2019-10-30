@@ -24,7 +24,7 @@ module Devices
         # when we were using MongoDB. This can be
         # safely removed now. - RC 11-APR-19
         old_device = user.device
-        user.update_attributes!(device_id: device.id) # Detach from old one.
+        user.update!(device_id: device.id) # Detach from old one.
         # Remove userless devices.
         old_device.destroy! if old_device && device.users.count < 1
       end

@@ -14,7 +14,7 @@ module PasswordResets
     end
 
     def execute
-      user.update_attributes!(password: password,
+      user.update!(password: password,
                               password_confirmation: password_confirmation)
       Auth::CreateToken.run!(email: user.email,
                              password: password,

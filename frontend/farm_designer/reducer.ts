@@ -5,6 +5,7 @@ import { cloneDeep } from "lodash";
 import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 export let initialState: DesignerState = {
   selectedPlants: undefined,
@@ -19,6 +20,7 @@ export let initialState: DesignerState = {
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   currentPoint: undefined,
   openedSavedGarden: undefined,
+  tryGroupSortType: undefined,
 };
 
 export let designer = generateReducer<DesignerState>(initialState)
@@ -68,5 +70,9 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {
     s.openedSavedGarden = payload;
+    return s;
+  })
+  .add<PointGroupSortType | undefined>(Actions.TRY_SORT_TYPE, (s, { payload }) => {
+    s.tryGroupSortType = payload;
     return s;
   });

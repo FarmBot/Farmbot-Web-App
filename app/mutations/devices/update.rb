@@ -21,7 +21,7 @@ module Devices
 
     def execute
       p = inputs.except(:device).merge(mounted_tool_data)
-      device.update_attributes!(p)
+      device.update!(p)
       device
     end
 

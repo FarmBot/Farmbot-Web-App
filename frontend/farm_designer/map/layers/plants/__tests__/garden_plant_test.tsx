@@ -14,6 +14,7 @@ describe("<GardenPlant/>", () => {
       mapTransformProps: fakeMapTransformProps(),
       plant: fakePlant(),
       selected: false,
+      editing: false,
       multiselected: false,
       dragging: false,
       dispatch: jest.fn(),

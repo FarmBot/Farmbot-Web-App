@@ -2,18 +2,18 @@ module CeleryScript
   # THIS IS A MORE MINIMAL VERSION OF CeleryScript::TreeClimber.
   # It is a NON-VALIDATING tree climber.
   # Don't use this on unverified data structures.
-  class JSONClimber
+  class JsonClimber
     HASH_ONLY = "Expected a Hash."
-    NOT_NODE  = "Expected hash with at least a `kind` and `args` prop."
+    NOT_NODE = "Expected hash with at least a `kind` and `args` prop."
 
     def self.climb(thing, &callable)
       raise HASH_ONLY unless thing.is_a?(Hash)
-      raise NOT_NODE  unless is_node?(thing)
+      raise NOT_NODE unless is_node?(thing)
       go(thing, callable)
       thing
     end
 
-  private
+    private
 
     def self.is_node?(maybe)
       maybe.is_a?(Hash) &&

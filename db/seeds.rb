@@ -29,9 +29,10 @@ if Rails.env == "development"
     SensorReading,
     FarmwareInstallation,
     Tool,
-    Device,
     Delayed::Job,
     Delayed::Backend::ActiveRecord::Job,
+    Fragment,
+    Device,
   ].map(&:delete_all)
   Users::Create.run!(name: "Test",
                      email: "test@test.com",
@@ -43,7 +44,7 @@ if Rails.env == "development"
   User.update_all(confirmed_at: Time.now,
                   agreed_to_terms_at: Time.now)
   u = User.last
-  u.update_attributes(device: Devices::Create.run!(user: u))
+  u.update(device: Devices::Create.run!(user: u))
   # === Parameterized Sequence stuff
   json = JSON.parse(File.read("spec/lib/celery_script/ast_fixture5.json"), symbolize_names: true)
   Sequences::Create.run!(json, device: u.device)

@@ -209,7 +209,7 @@
 }
 
 .farmware-list-items,
-.sequence-list-items,
+.sequence-list-item,
 .regimen-list {
   button {
     text-align: left;
@@ -220,6 +220,7 @@
       text-overflow: ellipsis;
       margin-top: 0.5rem;
       float: left;
+      cursor: pointer;
     }
   }
   i {
@@ -228,7 +229,7 @@
   }
 }
 
-.sequence-list-items {
+.sequence-list-item {
   margin-right: 15px;
 }
 

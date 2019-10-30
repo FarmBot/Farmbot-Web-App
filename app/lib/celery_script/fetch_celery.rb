@@ -1,4 +1,4 @@
-require_relative "./csheap"
+require_relative "./cs_heap"
 
 # Service object that:
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
@@ -8,7 +8,7 @@ require_relative "./csheap"
 # DEFAULT.
 module CeleryScript
   class FetchCelery < Mutations::Command
-  private  # = = = = = = =
+    private  # = = = = = = =
     # This class is too CPU intensive to make multiple SQL requests.
     # To speed up querying, we create an in-memory index for frequently
     # looked up attributes such as :id, :kind, :parent_id, :primary_node_id
@@ -60,7 +60,7 @@ module CeleryScript
     # that node's children (or an empty array, since body is always optional).
     def get_body_elements(origin)
       next_node = find_by_id_in_memory(origin.body_id)
-      results   = []
+      results = []
       until next_node.kind == "nothing"
         results.push(next_node)
         next_node = find_by_id_in_memory(next_node[:next_id])
@@ -71,7 +71,7 @@ module CeleryScript
     # Top level function call for converting a single EdgeNode into a JSON
     # document. Returns Ruby hash that conforms to CeleryScript semantics.
     def recurse_into_node(node)
-      out  = { kind: node.kind, args: recurse_into_args(node) }
+      out = { kind: node.kind, args: recurse_into_args(node) }
       body = get_body_elements(node)
       if body.empty?
         # Legacy sequences *must* have body on sequence. Others are fine.
@@ -87,16 +87,17 @@ module CeleryScript
     # Eg: color, id, etc.
     def misc_fields
       return {
-        id:         sequence.id,
-        created_at: sequence.created_at,
-        updated_at: sequence.updated_at,
-        args:       Sequence::DEFAULT_ARGS,
-        color:      sequence.color,
-        name:       sequence.name
-      }
+               id: sequence.id,
+               created_at: sequence.created_at,
+               updated_at: sequence.updated_at,
+               args: Sequence::DEFAULT_ARGS,
+               color: sequence.color,
+               name: sequence.name,
+             }
     end
 
-  public # = = = = = = =
+    public # = = = = = = =
+
     NO_SEQUENCE = "You must have a root node `sequence` at a minimum."
 
     required do

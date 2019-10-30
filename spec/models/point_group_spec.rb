@@ -97,8 +97,8 @@ describe PointGroup do
     expect(error).to eq("Can't delete group because it is in use by sequence 'Wrapper'")
   end
 
-  fit "refuses to delete groups in-use by regimens" do
-    point_group.update_attributes!(name: "@@@")
+  it "refuses to delete groups in-use by regimens" do
+    point_group.update!(name: "@@@")
     Regimens::Create.run!(name: "Wrapper 26",
                           device: device,
                           color: "red",

@@ -28,7 +28,7 @@ class GlobalConfig < ApplicationRecord
     # Remove it if the demo tour does not require it.
     "MQTT_WS" => SessionToken::MQTT_WS,
   }.map do |(key, value)|
-    self.find_or_create_by(key: key).update_attributes(key: key, value: value)
+    self.find_or_create_by(key: key).update(key: key, value: value)
   end
 
   # Memoized version of every GlobalConfig, with key/values layed out in a hash.

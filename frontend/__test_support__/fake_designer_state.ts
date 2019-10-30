@@ -13,4 +13,5 @@ export const fakeDesignerState = (): DesignerState => ({
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   currentPoint: undefined,
   openedSavedGarden: undefined,
+  tryGroupSortType: undefined,
 });

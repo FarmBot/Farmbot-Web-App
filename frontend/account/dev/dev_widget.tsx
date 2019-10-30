@@ -47,6 +47,22 @@ export const DevWidgetFBOSRow = () => {
   </Row>;
 };
 
+export const DevWidgetDelModeRow = () =>
+  <Row>
+    <Col xs={8}>
+      <label>
+        {"Enable quick delete mode"}
+      </label>
+    </Col>
+    <Col xs={4}>
+      <ToggleButton
+        toggleValue={DevSettings.quickDeleteEnabled()}
+        toggleAction={DevSettings.quickDeleteEnabled()
+          ? DevSettings.disableQuickDelete
+          : DevSettings.enableQuickDelete} />
+    </Col>
+  </Row>;
+
 export const DevWidget = ({ dispatch }: { dispatch: Function }) =>
   <Widget>
     <WidgetHeader title={"Dev options"}>
@@ -62,6 +78,7 @@ export const DevWidget = ({ dispatch }: { dispatch: Function }) =>
     </WidgetHeader>
     <WidgetBody>
       <DevWidgetFERow />
+      <DevWidgetDelModeRow />
       <DevWidgetFBOSRow />
     </WidgetBody>
   </Widget>;

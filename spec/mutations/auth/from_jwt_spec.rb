@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Auth::FromJWT do
+describe Auth::FromJwt do
   FAKE_VERS = Gem::Version.new("99.9.9")
   let(:user)  { FactoryBot.create(:user) }
   let(:token) do
@@ -19,7 +19,7 @@ describe Auth::FromJWT do
   }
 
   it "gets user from jwt" do
-    result = Auth::FromJWT.run!(jwt: token)
+    result = Auth::FromJwt.run!(jwt: token)
     expect(result).to eq(user)
   end
 end

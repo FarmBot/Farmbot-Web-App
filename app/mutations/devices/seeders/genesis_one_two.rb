@@ -12,7 +12,7 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::ARDUINO)
+          .update!(firmware_hardware: FbosConfig::ARDUINO)
       end
 
       def peripherals_lighting; end

@@ -40,16 +40,9 @@ class Image < ApplicationRecord
   # Worst case scenario for 1280x1280 BMP.
   GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
 
-  # ========= DEPRECATED PAPERCLIP STUFF =========
-  # has_attached_file :attachment, CONFIG
-  # validates_attachment_content_type :attachment,
-  #   content_type: CONTENT_TYPES
-  # ========= /DEPRECATED PAPERCLIP STUFF ========
   has_one_attached :attachment
 
   def set_attachment_by_url(url)
-    # File
-    # URI::HTTPS
     attachment.attach(io: open(url), filename: "image_#{self.id}")
     self.attachment_processed_at = Time.now
     self

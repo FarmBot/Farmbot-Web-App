@@ -2,14 +2,14 @@ module Devices
   module Seeders
     class AbstractExpress < AbstractGenesis
       def settings_device_name
-        device.update_attributes!(name: "FarmBot Express")
+        device.update!(name: "FarmBot Express")
       end
 
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
 
       def settings_enable_encoders
-        device.firmware_config.update_attributes!(encoder_enabled_x: 0,
+        device.firmware_config.update!(encoder_enabled_x: 0,
                                                   encoder_enabled_y: 0,
                                                   encoder_enabled_z: 0)
       end
@@ -17,7 +17,7 @@ module Devices
       def settings_firmware
         device
           .fbos_config
-          .update_attributes!(firmware_hardware: FbosConfig::EXPRESS_K10)
+          .update!(firmware_hardware: FbosConfig::EXPRESS_K10)
       end
 
       def tool_slots_slot_1
@@ -91,11 +91,11 @@ module Devices
       def sequences_unmount_tool; end
 
       def settings_default_map_size_y
-        device.web_app_config.update_attributes!(map_size_y: 1_200)
+        device.web_app_config.update!(map_size_y: 1_200)
       end
 
       def settings_hide_sensors
-        device.web_app_config.update_attributes!(hide_sensors: true)
+        device.web_app_config.update!(hide_sensors: true)
       end
 
       private

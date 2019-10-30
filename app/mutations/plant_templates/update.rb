@@ -16,7 +16,7 @@ module PlantTemplates
     end
 
     def execute
-      plant_template.update_attributes!(update_params)
+      plant_template.update!(update_params)
       plant_template
     end
 

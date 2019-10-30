@@ -8,6 +8,13 @@ jest.mock("../../actions", () => ({
   toggleHoveredPlant: jest.fn()
 }));
 
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import React from "react";
 import { GroupDetailActive } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
@@ -80,5 +87,20 @@ describe("<GroupDetailActive/>", () => {
     el.state.timerId = 123 as any;
     el.componentWillUnmount && el.componentWillUnmount();
     expect(clearInterval).toHaveBeenCalledWith(123);
+  });
+
+  it("shows paths", () => {
+    mockDev = true;
+    const p = fakeProps();
+    p.plants = [fakePlant(), fakePlant()];
+    const wrapper = mount(<GroupDetailActive {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("optimized");
+  });
+
+  it("doesn't show paths", () => {
+    mockDev = false;
+    const p = fakeProps();
+    const wrapper = mount(<GroupDetailActive {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("optimized");
   });
 });

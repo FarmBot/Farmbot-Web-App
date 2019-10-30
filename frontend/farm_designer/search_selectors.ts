@@ -9,7 +9,7 @@ export function findBySlug(
   return crop || {
     crop: {
       name: startCase((slug || t("Name")).split("-").join(" ")),
-      slug: "slug",
+      slug: slug || "slug",
       binomial_name: t("Binomial Name"),
       common_names: [t("Common Names")],
       description: t("Description"),

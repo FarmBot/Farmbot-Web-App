@@ -3,7 +3,8 @@ class FbosConfig < ApplicationRecord
   class MissingSerial < StandardError; end
 
   belongs_to :device
-  after_save :maybe_sync_nerves, on: [:create, :update]
+  after_create :maybe_sync_nerves
+  after_update :maybe_sync_nerves
 
   FIRMWARE_HARDWARE = [
     NOT_SET = nil,

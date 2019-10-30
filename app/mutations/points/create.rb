@@ -1,5 +1,5 @@
-require_relative "../../lib/hstore_filter"
-# WHY??? ^
+require_relative "../../lib/mutations/hstore_filter.rb"
+
 module Points
   class Create < Mutations::Command
     # WHY 1000?:

@@ -118,8 +118,8 @@ class Device < ApplicationRecord
     end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
     if (throttled_until.nil? || end_t > throttled_until)
-      reload.update_attributes!(throttled_until: end_t,
-                                throttled_at: Time.now)
+      reload.update!(throttled_until: end_t,
+                     throttled_at: Time.now)
       refresh_cache
       cooldown = end_t.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
@@ -131,7 +131,7 @@ class Device < ApplicationRecord
     if throttled_until.present?
       old_time = throttled_until
       reload # <= WHY!?! TODO: Find out why it crashes without this.
-        .update_attributes!(throttled_until: nil, throttled_at: nil)
+        .update!(throttled_until: nil, throttled_at: nil)
       refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
@@ -203,7 +203,7 @@ class Device < ApplicationRecord
 
     last_sent_at = device.mqtt_rate_limit_email_sent_at || 4.years.ago
     if last_sent_at < 1.day.ago
-      device.update_attributes!(mqtt_rate_limit_email_sent_at: Time.now)
+      device.update!(mqtt_rate_limit_email_sent_at: Time.now)
       device.tell(TOO_MANY_CONNECTIONS, ["fatal_email"])
     end
   end

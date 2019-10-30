@@ -44,7 +44,7 @@ export class GardenPlant extends
 
   render() {
     const { selected, dragging, plant, multiselected, mapTransformProps,
-      activeDragXY, zoomLvl, animate } = this.props;
+      activeDragXY, zoomLvl, animate, editing } = this.props;
     const { id, radius, x, y } = plant.body;
     const { icon } = this.state;
 
@@ -65,7 +65,7 @@ export class GardenPlant extends
           fill={Color.soilCloud}
           fillOpacity={0} />}
 
-      {multiselected &&
+      {multiselected && !editing &&
         <g id="selected-plant-indicator">
           <Circle
             className={`plant-indicator ${animate ? "animate" : ""}`}

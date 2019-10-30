@@ -303,6 +303,20 @@
       opacity: 1;
     }
   }
+  &.quick-del {
+    &:hover {
+      background: lighten($red, 10%) !important;
+      border: none;
+      box-shadow: inset 0px 0px 0px 4px $darkest_red !important;
+      &:after {
+        content: "x";
+        position: absolute;
+        right: 1rem;
+        color: $darkest_red;
+        font-size: 2rem;
+      }
+    }
+  }
 }
 
 .block-control {

@@ -10,7 +10,7 @@ module FarmwareEnvs
     end
 
     def execute
-      farmware_env.update_attributes!(inputs.except(:farmware_env)) && farmware_env
+      farmware_env.update!(inputs.except(:farmware_env)) && farmware_env
     end
   end
 end

@@ -8,7 +8,7 @@ module WebcamFeeds
     end
 
     def execute
-      webcam_feed.update_attributes!(inputs.except(:webcam_feed)) && webcam_feed
+      webcam_feed.update!(inputs.except(:webcam_feed)) && webcam_feed
     end
   end
 end

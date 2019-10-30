@@ -20,7 +20,7 @@ import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
-  ExecutableType, PlantPointer
+  ExecutableType, PlantPointer, PointGroupSortType
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { TimeSettings } from "../interfaces";
@@ -108,6 +108,7 @@ export interface DesignerState {
   chosenLocation: BotPosition;
   currentPoint: CurrentPointPayl | undefined;
   openedSavedGarden: string | undefined;
+  tryGroupSortType: PointGroupSortType | "nn" | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

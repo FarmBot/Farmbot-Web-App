@@ -170,8 +170,7 @@ export interface FarmbotOsProps {
 }
 
 export interface FarmbotOsState {
-  osReleaseNotesHeading: string;
-  osReleaseNotes: string;
+  allOsReleaseNotes: string;
 }
 
 export interface McuInputBoxProps {

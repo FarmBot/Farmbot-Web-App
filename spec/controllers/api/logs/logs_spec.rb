@@ -109,7 +109,7 @@ describe Api::LogsController do
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
       sign_in user
-      user.device.update_attributes!(max_log_count: 15)
+      user.device.update!(max_log_count: 15)
       get :index, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
@@ -187,7 +187,7 @@ describe Api::LogsController do
                                 verbosity: verbosity,
                                 type: type)
       end
-      conf.update_attributes(success_log: 3,
+      conf.update(success_log: 3,
                              busy_log: 3,
                              warn_log: 3,
                              error_log: 3,
@@ -208,7 +208,7 @@ describe Api::LogsController do
                                 verbosity: verbosity,
                                 type: type)
       end
-      conf.update_attributes(success_log: 0,
+      conf.update(success_log: 0,
                              busy_log: 0,
                              warn_log: 0,
                              error_log: 0,

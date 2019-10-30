@@ -16,7 +16,7 @@ describe FbosConfig do
 
     it "notifies us of broken production data" do
       # Remove this test by May 2019.
-      config.device.update_attributes!(serial_number: nil)
+      config.device.update!(serial_number: nil)
       conn = fake_conn("Report broke data")
       NervesHub.set_conn(conn)
       problem = "Device #{device.id} missing serial"
@@ -37,7 +37,7 @@ describe FbosConfig do
       expect(NervesHub.conn).to(receive(:put).with(*params).and_return(resp2))
 
       run_jobs_now do
-        config.update_attributes!(update_channel: "beta")
+        config.update!(update_channel: "beta")
       end
     end
 

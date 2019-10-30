@@ -9,7 +9,7 @@ module Sensors
     end
 
     def execute
-      sensor.update_attributes!(inputs.except(:sensor))
+      sensor.update!(inputs.except(:sensor))
       sensor
     end
   end

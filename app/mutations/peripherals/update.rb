@@ -11,7 +11,7 @@ module Peripherals
     end
 
     def execute
-      peripheral.update_attributes!(inputs.except(:peripheral, :device))
+      peripheral.update!(inputs.except(:peripheral, :device))
       peripheral
     end
   end

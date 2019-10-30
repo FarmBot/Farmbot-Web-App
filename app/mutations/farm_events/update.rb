@@ -33,7 +33,7 @@ module FarmEvents
       FarmEvent.auto_sync_debounce do
         FarmEvent.transaction do
           handle_body_field
-          farm_event.update_attributes!(p)
+          farm_event.update!(p)
           farm_event
         end
       end
