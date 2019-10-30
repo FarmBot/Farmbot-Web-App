@@ -96,13 +96,25 @@ var HelperNamespace = (function () {
     console.dir(getAllTags());
   }
 
+  /** For debugging. Replace all characters except whitespace and {{ words }} */
+  function repl(string, character) {
+    var parts = string.split("{{");
+    if (parts.length < 2) { return string.replace(/\S/g, character); }
+    var insideAndAfter = parts[1].split("}}");
+    var before = parts[0].replace(/\S/g, character);
+    var inside = insideAndAfter[0];
+    var after = insideAndAfter[1].replace(/\S/g, character);
+    var firstPart = [before, inside].join("{{");
+    return [firstPart, after].join("}}");
+  }
+
   /** For debugging. Replace all translations with a debug string. */
   function replaceWithDebugString(key, debugString, debugStringOption) {
     var debugChar = debugString[0];
     switch (debugStringOption) {
       case 'r': return debugString; // replace with: string as provided
       case 's': return debugChar; // single character
-      case 'n': return key.replace(/\S/g, debugChar); // maintain whitespace
+      case 'n': return repl(key, debugChar); // maintain whitespace
       case 'l': return debugChar.repeat(key.length); // replace whitespace
       default: return key;
     }
