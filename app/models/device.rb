@@ -10,7 +10,6 @@ class Device < ApplicationRecord
                 "Suspending log storage and display until %s."
   THROTTLE_OFF = "Cooldown period has ended. " \
                  "Resuming log storage."
-  CACHE_KEY = "devices:%s"
 
   PLURAL_RESOURCES = %i(alerts farmware_envs farm_events farmware_installations
                         images logs peripherals pin_bindings plant_templates
@@ -91,26 +90,6 @@ class Device < ApplicationRecord
     points.where(pointer_type: "GenericPointer")
   end
 
-  TIMEOUT = 150.seconds
-
-  # Like Device.find, but with 150 seconds of caching to avoid DB calls.
-  def self.cached_find(id)
-    Rails
-      .cache
-      .fetch(CACHE_KEY % id, expires_in: TIMEOUT) { Device.find(id) }
-  end
-
-  def refresh_cache
-    # Why? Device.new(self.as_json)???
-    #
-    # "Some objects cannot be dumped: if the objects to be dumped include
-    # bindings, procedure or method objects, instances of class IO, or singleton
-    # objects, a TypeError will be raised."
-    # https://ruby-doc.org/core-2.3.1/Marshal.html
-    # TODO: Someone plz send help! - RC
-    Rails.cache.write(CACHE_KEY % self.id, Device.new(self.as_json))
-  end
-
   # Sets the `throttled_until` and `throttled_at` fields if unpopulated or
   # the throttle time period increases. Notifies user of cooldown period.
   def maybe_throttle(violation)
@@ -118,9 +97,7 @@ class Device < ApplicationRecord
     end_t = violation.ends_at
     # Some log validation errors will result in until_time being `nil`.
     if (throttled_until.nil? || end_t > throttled_until)
-      reload.update!(throttled_until: end_t,
-                     throttled_at: Time.now)
-      refresh_cache
+      reload.update!(throttled_until: end_t, throttled_at: Time.now)
       cooldown = end_t.in_time_zone(self.timezone || "UTC").strftime("%I:%M%p")
       info = [violation.explanation, cooldown]
       cooldown_notice(THROTTLE_ON % info, end_t, "warn")
@@ -128,14 +105,11 @@ class Device < ApplicationRecord
   end
 
   def maybe_unthrottle
-    unless self.id
-      raise "NO ID???: #{self.as_json}"
-    end
+    raise "NO ID???: #{self.as_json}" unless self.id
 
     if throttled_until.present?
       old_time = throttled_until
       update!(throttled_until: nil, throttled_at: nil)
-      refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
   end

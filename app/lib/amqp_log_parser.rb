@@ -50,7 +50,7 @@ class AmqpLogParser < Mutations::Command
     # Prevents "runaway" bots from flooding the server with frivolous database
     # hits by using in memory cache of results for 150 seconds.
     def device
-      Device.cached_find(device_id)
+      Device.find(device_id)
     end
   end
 
