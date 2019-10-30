@@ -105,8 +105,6 @@ class Device < ApplicationRecord
   end
 
   def maybe_unthrottle
-    raise "NO ID???: #{self.as_json}" unless self.id
-
     if throttled_until.present?
       old_time = throttled_until
       update!(throttled_until: nil, throttled_at: nil)
