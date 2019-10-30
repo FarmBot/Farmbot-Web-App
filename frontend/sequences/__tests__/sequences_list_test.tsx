@@ -8,7 +8,13 @@ jest.mock("../set_active_sequence_by_name", () => ({
 }));
 
 jest.mock("../../api/crud", () => ({
-  init: jest.fn()
+  init: jest.fn(),
+  destroy: jest.fn(),
+}));
+
+let mockDev = false;
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: { quickDeleteEnabled: () => mockDev, }
 }));
 
 import * as React from "react";
@@ -17,7 +23,7 @@ import { SequencesList } from "../sequences_list";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SequencesListProps } from "../interfaces";
 import { Actions } from "../../constants";
-import { init } from "../../api/crud";
+import { init, destroy } from "../../api/crud";
 import { push } from "../../history";
 import { resourceUsageList } from "../../resources/in_use";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -25,6 +31,7 @@ import { resourceReducer } from "../../resources/reducer";
 import { resourceReady } from "../../sync/actions";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { inputEvent } from "../../__test_support__/fake_input_event";
+import { Link } from "../../link";
 
 describe("<SequencesList />", () => {
   const fakeSequences = () => {
@@ -113,8 +120,28 @@ describe("<SequencesList />", () => {
 
   it("opens sequence", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SequencesList {...p} />);
-    wrapper.find("Link").first().simulate("click");
+    const wrapper = mount(<SequencesList {...p} />);
+    wrapper.find(Link).first().simulate("click");
     expect(setActiveSequenceByName).toHaveBeenCalled();
+  });
+
+  it("doesn't delete sequence", () => {
+    mockDev = false;
+    const p = fakeProps([fakeSequence()]);
+    const wrapper = mount(<SequencesList {...p} />);
+    const button = wrapper.find("button").last();
+    expect(button.hasClass("quick-del")).toBeFalsy();
+    button.simulate("click");
+    expect(destroy).not.toHaveBeenCalled();
+  });
+
+  it("deletes sequence", () => {
+    mockDev = true;
+    const p = fakeProps([fakeSequence()]);
+    const wrapper = mount(<SequencesList {...p} />);
+    const button = wrapper.find("button").last();
+    expect(button.hasClass("quick-del")).toBeTruthy();
+    button.simulate("click");
+    expect(destroy).toHaveBeenCalledWith(p.sequences[0].uuid);
   });
 });

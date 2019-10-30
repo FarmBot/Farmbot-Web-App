@@ -10,6 +10,7 @@ namespace devStorage {
   export enum Key {
     FUTURE_FE_FEATURES = "FUTURE_FE_FEATURES",
     FBOS_VERSION_OVERRIDE = "FBOS_VERSION_OVERRIDE",
+    QUICK_DELETE_MODE = "QUICK_DELETE_MODE",
   }
   type Storage = { [K in Key]: string };
 
@@ -64,4 +65,11 @@ export namespace DevSettings {
   export const setMaxFbosVersionOverride = () =>
     devStorage.setItem(FBOS_VERSION_OVERRIDE, MAX_FBOS_VERSION_OVERRIDE);
 
+  export const QUICK_DELETE_MODE = devStorage.Key.QUICK_DELETE_MODE;
+  export const quickDeleteEnabled = () =>
+    !!devStorage.getItem(QUICK_DELETE_MODE);
+  export const enableQuickDelete = () =>
+    devStorage.setItem(QUICK_DELETE_MODE, "true");
+  export const disableQuickDelete = () =>
+    devStorage.removeItem(QUICK_DELETE_MODE);
 }
