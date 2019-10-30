@@ -128,10 +128,13 @@ class Device < ApplicationRecord
   end
 
   def maybe_unthrottle
+    unless self.id
+      raise "NO ID???: #{self.as_json}"
+    end
+
     if throttled_until.present?
       old_time = throttled_until
-      reload # <= WHY!?! TODO: Find out why it crashes without this.
-        .update!(throttled_until: nil, throttled_at: nil)
+      update!(throttled_until: nil, throttled_at: nil)
       refresh_cache
       cooldown_notice(THROTTLE_OFF, old_time, "info")
     end
