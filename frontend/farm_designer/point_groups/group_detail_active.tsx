@@ -13,6 +13,8 @@ import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PointGroupItem } from "./point_group_item";
+import { Paths } from "./paths";
+import { DevSettings } from "../../account/dev/dev_support";
 
 interface GroupDetailActiveProps {
   dispatch: Function;
@@ -97,6 +99,11 @@ export class GroupDetailActive
         <div className="groups-list-wrapper">
           {this.icons}
         </div>
+        {DevSettings.futureFeaturesEnabled() &&
+          <Paths
+            points={this.props.plants}
+            dispatch={this.props.dispatch}
+            group={this.props.group} />}
         <DeleteButton
           className="groups-delete-btn"
           dispatch={this.props.dispatch}

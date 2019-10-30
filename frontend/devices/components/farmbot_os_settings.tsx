@@ -29,27 +29,31 @@ const OS_RELEASE_NOTES_URL =
 
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
-  state = { osReleaseNotesHeading: "", osReleaseNotes: "" };
+  state: FarmbotOsState = { allOsReleaseNotes: "" };
 
   componentDidMount() {
-    this.fetchReleaseNotes(OS_RELEASE_NOTES_URL,
-      (this.props.bot.hardware.informational_settings
-        .controller_version || "6").split(".")[0]);
+    this.fetchReleaseNotes(OS_RELEASE_NOTES_URL);
   }
 
-  fetchReleaseNotes = (url: string, osMajorVersion: string) => {
+  get osMajorVersion() {
+    return (this.props.bot.hardware.informational_settings
+      .controller_version || "6").split(".")[0];
+  }
+
+  fetchReleaseNotes = (url: string) => {
     axios
       .get<string>(url)
-      .then(resp => {
-        const osReleaseNotes = resp.data
-          .split("# v")
-          .filter(x => x.startsWith(osMajorVersion))[0]
-          .split("\n\n").slice(1).join("\n");
-        const osReleaseNotesHeading = "FarmBot OS v" + osMajorVersion;
-        this.setState({ osReleaseNotesHeading, osReleaseNotes });
-      })
-      .catch(() =>
-        this.setState({ osReleaseNotes: "Could not get release notes." }));
+      .then(resp => this.setState({ allOsReleaseNotes: resp.data }))
+      .catch(() => this.setState({ allOsReleaseNotes: "" }));
+  }
+
+  get osReleaseNotes() {
+    const notes = (this.state.allOsReleaseNotes
+      .split("# v")
+      .filter(x => x.startsWith(this.osMajorVersion))[0] || "")
+      .split("\n\n").slice(1).join("\n") || t("Could not get release notes.");
+    const heading = "FarmBot OS v" + this.osMajorVersion;
+    return { heading, notes };
   }
 
   changeBot = (e: React.FormEvent<HTMLInputElement>) => {
@@ -119,8 +123,8 @@ export class FarmbotOsSettings
               || this.props.isValidFbosConfig}>
             <FarmbotOsRow
               bot={this.props.bot}
-              osReleaseNotesHeading={this.state.osReleaseNotesHeading}
-              osReleaseNotes={this.state.osReleaseNotes}
+              osReleaseNotesHeading={this.osReleaseNotes.heading}
+              osReleaseNotes={this.osReleaseNotes.notes}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}

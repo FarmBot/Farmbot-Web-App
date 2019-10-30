@@ -14,7 +14,7 @@ FRACTION_DELIM = "/"
 def open_json(url)
   begin
     JSON.parse(open(url).read)
-  rescue OpenURI::HTTPError => exception
+  rescue *[OpenURI::HTTPError, SocketError] => exception
     puts exception.message
     return {}
   end
@@ -80,7 +80,7 @@ end
 
 # Fetch a page of build coverage report results.
 def fetch_builds_for_page(page_number)
-  open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"]
+  open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"] || []
 end
 
 # Number of coverage build data pages required to fetch the desired build count.

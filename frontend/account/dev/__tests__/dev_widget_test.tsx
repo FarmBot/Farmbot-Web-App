@@ -6,7 +6,9 @@ jest.mock("../../../config_storage/actions", () => ({
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { DevWidget, DevWidgetFERow, DevWidgetFBOSRow } from "../dev_widget";
+import {
+  DevWidget, DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow
+} from "../dev_widget";
 import { DevSettings } from "../dev_support";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
 
@@ -49,6 +51,14 @@ describe("<DevWidget />", () => {
   it("disables unstable FE features", () => {
     mockDevSettings[DevSettings.FUTURE_FE_FEATURES] = "true";
     const wrapper = mount(<DevWidgetFERow />);
+    wrapper.find("button").simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use", "{}");
+  });
+
+  it("disables delete mode", () => {
+    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
+    mockDevSettings[DevSettings.QUICK_DELETE_MODE] = "true";
+    const wrapper = mount(<DevWidgetDelModeRow />);
     wrapper.find("button").simulate("click");
     expect(setWebAppConfigValue).toHaveBeenCalledWith("internal_use", "{}");
   });

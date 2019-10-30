@@ -28,6 +28,7 @@ import {
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";
+import { NNPath } from "../point_groups/paths";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -347,6 +348,8 @@ export class GardenMap extends
   GroupOrder = () => <GroupOrder
     plants={this.props.plants}
     mapTransformProps={this.mapTransformProps} />
+  NNPath = () => <NNPath plants={this.props.plants}
+    mapTransformProps={this.mapTransformProps} />
   Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
     botSize={this.props.botSize} /> : <g />
 
@@ -370,6 +373,7 @@ export class GardenMap extends
           <this.TargetCoordinate />
           <this.DrawnPoint />
           <this.GroupOrder />
+          <this.NNPath />
           <this.Bugs />
         </svg>
       </svg>
