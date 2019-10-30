@@ -1469,3 +1469,16 @@ textarea {
 textarea:focus {
   box-shadow: 0 0 10px rgba(0,0,0,.2);
 }
+
+.sort-path-info-bar {
+  background: lightgray;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  line-height: 1.75rem;
+  &:hover {
+    background: darken(lightgray, 10%);
+  }
+}

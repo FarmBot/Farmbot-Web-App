@@ -11,7 +11,7 @@ interface Props {
   value: PointGroupSortType;
 }
 
-const optionsTable = (): Record<PointGroupSortType, string> => ({
+export const sortOptionsTable = (): Record<PointGroupSortType, string> => ({
   "random": t("Random Order"),
   "xy_ascending": t("X/Y, Ascending"),
   "xy_descending": t("X/Y, Descending"),
@@ -21,7 +21,7 @@ const optionsTable = (): Record<PointGroupSortType, string> => ({
 
 const optionPlusDescriptions = () =>
   (Object
-    .entries(optionsTable()) as [PointGroupSortType, string][])
+    .entries(sortOptionsTable()) as [PointGroupSortType, string][])
     .map(x => ({ label: x[1], value: x[0] }));
 
 const optionList =
@@ -32,7 +32,7 @@ export const isSortType = (x: unknown): x is PointGroupSortType => {
 };
 
 const selected = (value: PointGroupSortType) => ({
-  label: t(optionsTable()[value] || value),
+  label: t(sortOptionsTable()[value] || value),
   value: value
 });
 
@@ -50,6 +50,7 @@ export function PointGroupSortSelector(p: Props) {
       </label>
     </div>
     <FBSelect
+      key={p.value}
       list={optionPlusDescriptions()}
       selectedItem={selected(p.value as PointGroupSortType)}
       onChange={sortTypeChange(p.onChange)} />

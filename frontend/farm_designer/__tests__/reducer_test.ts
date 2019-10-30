@@ -7,6 +7,7 @@ import {
 import { BotPosition } from "../../devices/interfaces";
 import { fakeCropLiveSearchResult } from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
@@ -111,5 +112,15 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.cropSearchInProgress).toEqual(false);
+  });
+
+  it("starts group sort type trial", () => {
+    const state = oldState();
+    state.tryGroupSortType = undefined;
+    const action: ReduxAction<PointGroupSortType | undefined> = {
+      type: Actions.TRY_SORT_TYPE, payload: "random"
+    };
+    const newState = designer(state, action);
+    expect(newState.tryGroupSortType).toEqual("random");
   });
 });
