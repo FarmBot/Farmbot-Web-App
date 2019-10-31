@@ -42,30 +42,6 @@ describe Device do
     expect(json["message"]).to eq(hello)
   end
 
-  it "allows for caching" do
-    id = device.id
-    cache_key = Device::CACHE_KEY % id
-    Rails.cache.delete(cache_key)
-    expect(Rails.cache.exist?(cache_key)).to be false
-    expect(Rails.cache.fetch(cache_key)).to eq(nil)
-    Device.cached_find(id)
-    expect(Rails.cache.exist?(cache_key)).to be true
-    expect(Rails.cache.fetch(cache_key).id).to eq(device.id)
-    Rails.cache.delete(cache_key)
-  end
-
-  it "refreshes the cache" do
-    id = device.id
-    cache_key = Device::CACHE_KEY % id
-    Rails.cache.delete(cache_key)
-    b4 = device.name
-    expect(Device.cached_find(id).name).to eq(b4)
-    device.name = "blah"
-    expect(Device.cached_find(id).name).to eq(b4)
-    device.refresh_cache
-    expect(Device.cached_find(id).name).to eq("blah")
-  end
-
   it "throttles a device that sends too many logs" do
     expect(device).to receive(:tell).and_return(Log.new)
     device.update!(throttled_until: nil)
