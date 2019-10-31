@@ -74,6 +74,14 @@ describe LogService do
     end.to raise_error(Mutations::ValidationException)
   end
 
+  it "throttles a device that sends too many logs" do
+    violation = ThrottlePolicy::Violation.new(Time.now, "whatever")
+    return_error = receive(:violation_for).with(any_args).and_return(violation)
+    expect(LogService::THROTTLE_POLICY).to(return_error)
+    j = normal_hash[].to_json
+    LogService.new.process(fake_delivery_info, j)
+  end
+
   it "does not save `fun`, `debug` or `nil` logs" do
     ["fun", "debug", nil].map do |type|
       Log.destroy_all

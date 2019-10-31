@@ -3,6 +3,9 @@ class ThrottlePolicy
   TTL = { min: 60,
          hour: 60 * 60,
          day: 60 * 60 * 24 }
+  ROUNDING_HELPERS = { min: :beginning_of_minute,
+                       hour: :beginning_of_hour,
+                       day: :beginning_of_day }
 
   TIME_UNITS = TTL.keys
   VIOLATION_TPL = "more than %{limit} / %{period}"
@@ -55,10 +58,6 @@ class ThrottlePolicy
   def get(id, period)
     (redis.get(cache_key(id, period)) || "0").to_i
   end
-
-  ROUNDING_HELPERS = { min: :beginning_of_minute,
-                       hour: :beginning_of_hour,
-                       day: :beginning_of_day }
 
   def next_window(period, now = Time.now)
     helper = ROUNDING_HELPERS.fetch(period)
