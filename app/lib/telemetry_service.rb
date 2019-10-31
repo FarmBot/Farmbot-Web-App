@@ -17,7 +17,7 @@ class TelemetryService < AbstractServiceRunner
                    is_telemetry: true,
                    message: MESSAGE % device_key }
     THROTTLE_POLICY.track(device_key)
-    violation = THROTTLE_POLICY.is_throttled(device_key)
+    violation = THROTTLE_POLICY.violation_for(device_key)
     unless violation
       puts json.merge(other_stuff).to_json
     end

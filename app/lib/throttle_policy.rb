@@ -3,7 +3,10 @@ class ThrottlePolicy
   TTL = { min: 60,
          hour: 60 * 60,
          day: 60 * 60 * 24 }
+
   TIME_UNITS = TTL.keys
+  VIOLATION_TPL = "more than %{limit} / %{period}"
+  Violation = Struct.new(:ends_at, :explanation)
   attr_reader :rule_map, :namespace
 
   def initialize(namespace, rule_map)
@@ -16,8 +19,15 @@ class ThrottlePolicy
     each_rule { |unit| incr(id, unit) }
   end
 
-  def is_throttled(id)
-    violations(id).count > 0
+  def violation_for(id)
+    v = all_violations(id)
+    if v.empty?
+      return nil
+    else
+      period, limit = v.max_by { |(unit)| TTL.fetch(unit) }
+      message = VIOLATION_TPL % { period: period, limit: limit }
+      return Violation.new(next_window(period), message)
+    end
   end
 
   private
@@ -35,7 +45,7 @@ class ThrottlePolicy
   end
 
   def the_time_part(period, now = Time.now)
-    [period, now.send(period)].map(&:to_s).join()
+    [period, next_window(period).to_i].map(&:to_s).join()
   end
 
   def cache_key(id, period)
@@ -46,15 +56,26 @@ class ThrottlePolicy
     (redis.get(cache_key(id, period)) || "0").to_i
   end
 
-  def incr(id, period)
-    key = cache_key(id, period)
-    result = redis.incr(key)
-    needs_ttl = redis.ttl(key) < 1
-    redis.expire(key, TTL.fetch(period)) if needs_ttl
-    result
+  ROUNDING_HELPERS = { min: :beginning_of_minute,
+                       hour: :beginning_of_hour,
+                       day: :beginning_of_day }
+
+  def next_window(period, now = Time.now)
+    helper = ROUNDING_HELPERS.fetch(period)
+    offset = TTL.fetch(period).seconds
+    (now + offset).send(helper)
   end
 
-  def violations(id)
-    each_rule { |k, v| (get(id, k) > v) ? k : nil }.compact
+  def incr(id, period)
+    key = cache_key(id, period)
+    if (redis.ttl(key) < 0)
+      ttl = (next_window(period) - Time.now).seconds.to_i
+      redis.expire(key, ttl)
+    end
+    redis.incr(key)
+  end
+
+  def all_violations(id)
+    each_rule { |k, v| (get(id, k) > v) ? [k, v] : nil }.compact
   end
 end

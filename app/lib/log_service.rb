@@ -24,7 +24,7 @@ class LogService < AbstractServiceRunner
   def maybe_deliver(data)
     return unless data.valid?
 
-    violation = THROTTLE_POLICY.is_throttled(data.device_id)
+    violation = THROTTLE_POLICY.violation_for(data.device_id)
 
     if violation
       return warn_user(data, violation)
@@ -45,6 +45,6 @@ class LogService < AbstractServiceRunner
   end
 
   def warn_user(data, violation)
-    violation && data.device.maybe_throttle(violation)
+    data.device.maybe_throttle(violation)
   end
 end
