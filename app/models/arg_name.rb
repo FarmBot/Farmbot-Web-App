@@ -10,11 +10,15 @@ class ArgName < ApplicationRecord
 
   def self.cached_by_value(v)
     key = KEY % v
-    Rails.cache.fetch(key, expires_in: EXPIRY) { find_or_create_by(value: v) }
+    Rails.cache.fetch(key, expires_in: EXPIRY) do
+      find_or_create_by!(value: v)
+    end
   end
 
   def self.cached_by_id(id)
-    Rails.cache.fetch(KEY % id, expires_in: EXPIRY) { find(id) }
+    Rails.cache.fetch(KEY % id, expires_in: EXPIRY) do
+      find(id)
+    end
   end
 
   def broadcast?
