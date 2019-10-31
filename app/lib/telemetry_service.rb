@@ -4,11 +4,9 @@
 class TelemetryService < AbstractServiceRunner
   MESSAGE = "TELEMETRY MESSAGE FROM %s"
   FAILURE = "FAILED TELEMETRY MESSAGE FROM %s"
-  THROTTLE_POLICY = ThrottlePolicy.new(name, {
-    1.minute => 25,
-    1.hour => 250,
-    1.day => 1500,
-  })
+  THROTTLE_POLICY = ThrottlePolicy.new(name, min: 25,
+                                             hour: 250,
+                                             day: 1500)
 
   def process(delivery_info, payload)
     device_key = delivery_info
