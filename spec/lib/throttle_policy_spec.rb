@@ -1,37 +1,17 @@
 require "spec_helper"
-NOW = Time.new("2018-05-18T09:38:02.259-05:00")
 
-klass = ThrottlePolicy::TimePeriod
-describe klass do
-  let(:policy) do
-    ThrottlePolicy.new("rspec", { 1.minute => 1,
-                                 1.hour => 10,
-                                 1.day => 100 }, NOW)
-  end
+describe ThrottlePolicy do
+  it "detects throttle conditions" do
+    t = ThrottlePolicy.new("rspec_xyz", min: 64, hour: 32, day: 1)
 
-  it "initializes" do
-    expect(policy.rules).to be
-    expect(policy.rules.map(&:limit).sort).to eq([1, 10, 100])
-    actual = policy.rules.map(&:time_period).map(&:time_unit).sort
-    expected = [1.minute, 1.hour, 1.day]
-    expect(actual).to eq(expected)
-  end
+    t.track("x")
+    expect(t.violation_for("x")).to eq(nil)
 
-  it "tracks things" do
-    count1 = policy.rules.map(&:time_period).map { |t| t.usage_count_for(123) }
-    expect(count1).to eq([0, 0, 0])
-    5.times { policy.track(123, NOW + 1) }
-    count2 = policy.rules.map(&:time_period).map { |t| t.usage_count_for(123) }
-    expect(count2).to eq([5, 5, 5])
-  end
-
-  it "returns the cool down end time when the ID is throttled" do
-    5.times { policy.track(123, NOW + 1) }
-    result = policy.is_throttled(123)
-    expect(result).to be_kind_of(ThrottlePolicy::Violation)
-  end
-
-  it "ignores the block when it's over the limit" do
-    expect(policy.is_throttled 123).to be nil
+    t.track("x")
+    violation = t.violation_for("x")
+    expect(violation).to be
+    expected = (Time.now + 1.day).day
+    expect(expected).to eq(violation.ends_at.day)
+    expect(violation.explanation).to eq("more than 1 / day")
   end
 end
