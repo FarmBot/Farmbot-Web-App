@@ -4,8 +4,9 @@ jest.mock("../../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
+let mockGardenOpen = true;
 jest.mock("../../saved_gardens/saved_gardens", () => ({
-  savedGardenOpen: () => true,
+  savedGardenOpen: () => mockGardenOpen,
 }));
 
 import {
@@ -337,12 +338,18 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.addPlant);
     mockPath = "/app/designer/move_to";
     expect(getMode()).toEqual(Mode.moveTo);
+    mockPath = "/app/designer/points";
+    expect(getMode()).toEqual(Mode.points);
     mockPath = "/app/designer/points/add";
     expect(getMode()).toEqual(Mode.createPoint);
     mockPath = "/app/designer/saved_gardens";
+    mockGardenOpen = true;
     expect(getMode()).toEqual(Mode.templateView);
     mockPath = "/app/designer/groups/1";
     expect(getMode()).toEqual(Mode.addPointToGroup);
+    mockPath = "";
+    mockGardenOpen = false;
+    expect(getMode()).toEqual(Mode.none);
   });
 });
 

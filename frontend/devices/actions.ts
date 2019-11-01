@@ -7,7 +7,7 @@ import {
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
-  McuParams, Configuration, TaggedFirmwareConfig, ParameterApplication,
+  McuParams, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
   FirmwareHardware
 } from "farmbot";
@@ -381,11 +381,11 @@ export function updateMCU(key: ConfigKey, val: string) {
 }
 
 /** Update FBOS setting. */
-export function updateConfig(config: Configuration) {
+export function updateConfig(config: Partial<FbosConfig>) {
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig) {
-      dispatch(edit(fbosConfig, config as Partial<FbosConfig>));
+      dispatch(edit(fbosConfig, config));
       dispatch(apiSave(fbosConfig.uuid));
     }
   };

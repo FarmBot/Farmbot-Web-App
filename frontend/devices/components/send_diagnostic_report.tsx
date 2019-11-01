@@ -3,7 +3,7 @@ import { Row, Col } from "../../ui";
 import { ColWidth } from "./farmbot_os_settings";
 import { Collapse } from "@blueprintjs/core";
 import { Header } from "./hardware_settings/header";
-import { ShouldDisplay, Feature } from "../interfaces";
+import { Feature } from "../interfaces";
 import { TaggedDiagnosticDump } from "farmbot";
 import { DiagnosticDumpRow } from "./diagnostic_dump_row";
 import { requestDiagnostic } from "../actions";
@@ -13,13 +13,12 @@ import { t } from "../../i18next_wrapper";
 export interface DiagReportProps {
   dispatch: Function;
   expanded: boolean;
-  shouldDisplay: ShouldDisplay;
   diagnostics: TaggedDiagnosticDump[];
   botOnline: boolean;
 }
 
 export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
-  show = () => {
+  render() {
     return <section>
       <div style={{ fontSize: "1px" }}>
         <Header
@@ -56,12 +55,5 @@ export class SendDiagnosticReport extends React.Component<DiagReportProps, {}> {
         })}
       </Collapse>
     </section>;
-  }
-
-  noShow = () => <div />;
-
-  render() {
-    const show = this.props.shouldDisplay(Feature.diagnostic_dumps);
-    return (show ? this.show : this.noShow)();
   }
 }

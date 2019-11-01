@@ -34,7 +34,7 @@ describe("<AutoUpdateRow/>", () => {
     p.sourceFbosConfig = () => ({ value: 0, consistent: true });
     const wrapper = mount(<AutoUpdateRow {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 1 });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
@@ -43,7 +43,7 @@ describe("<AutoUpdateRow/>", () => {
     p.sourceFbosConfig = () => ({ value: 1, consistent: true });
     const wrapper = mount(<AutoUpdateRow {...p} />);
     wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 0 });
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: false });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });
