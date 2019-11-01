@@ -67,11 +67,12 @@ class ThrottlePolicy
 
   def incr(id, period)
     key = cache_key(id, period)
+    redis.incr(key)
+
     if (redis.ttl(key) < 0)
       ttl = (next_window(period) - Time.now).seconds.to_i
       redis.expire(key, ttl)
     end
-    redis.incr(key)
   end
 
   def all_violations(id)
