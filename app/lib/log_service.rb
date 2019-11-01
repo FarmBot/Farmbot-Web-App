@@ -2,11 +2,7 @@
 # Listens to *ALL* incoming logs and stores them to the DB.
 # Also handles throttling.
 class LogService < AbstractServiceRunner
-  THROTTLE_POLICY = ThrottlePolicy.new(name, {
-    1.minute => 0.5 * 1_000,
-    1.hour => 0.5 * 10_000,
-    1.day => 0.5 * 100_000,
-  })
+  THROTTLE_POLICY = ThrottlePolicy.new(name, min: 250, hour: 5_000, day: 25_000)
 
   LOG_TPL = Rails.env.test? ?
     "\e[32m.\e[0m" : "FBOS LOG (device_%s): %s\n"
@@ -26,7 +22,7 @@ class LogService < AbstractServiceRunner
   def maybe_deliver(data)
     return unless data.valid?
 
-    violation = THROTTLE_POLICY.is_throttled(data.device_id)
+    violation = THROTTLE_POLICY.violation_for(data.device_id)
 
     if violation
       return warn_user(data, violation)
@@ -47,6 +43,6 @@ class LogService < AbstractServiceRunner
   end
 
   def warn_user(data, violation)
-    violation && data.device.maybe_throttle(violation)
+    data.device.maybe_throttle(violation)
   end
 end

@@ -22,7 +22,7 @@ describe Api::LogsController do
       before_count = Log.count
       body = {
         channels: [],
-        major_version: 6,
+        major_version: 8,
         message: "HELLO",
         minor_version: 4,
         type: "assertion",
@@ -62,7 +62,7 @@ describe Api::LogsController do
       before_count = Log.count
       body = {
         channels: [],
-        major_version: 6,
+        major_version: 8,
         message: "HELLO",
         minor_version: 4,
         type: "success",

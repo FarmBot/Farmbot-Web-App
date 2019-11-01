@@ -42,28 +42,6 @@ describe Device do
     expect(json["message"]).to eq(hello)
   end
 
-  it "throttles a device that sends too many logs" do
-    expect(device).to receive(:tell).and_return(Log.new)
-    device.update!(throttled_until: nil)
-    expect(device.throttled_until).to be(nil)
-    now = Time.now + 1.minute
-    rule = ThrottlePolicy::Rule.new("X", 5.minutes, 500, now)
-    violation = ThrottlePolicy::Violation.new(rule)
-    device.maybe_throttle(violation)
-    expect(device.throttled_until).to eq(violation.ends_at)
-  end
-
-  it "increases a device throttle time period" do
-    expect(device).to receive(:tell).and_return(Log.new)
-    previous_throttle = Time.now - 1.minute
-    device.update!(throttled_until: previous_throttle)
-    expect(device.throttled_until).to eq(previous_throttle)
-    rule = ThrottlePolicy::Rule.new("X", 5.minutes, 500, Time.now + 1.minute)
-    violation = ThrottlePolicy::Violation.new(rule)
-    device.maybe_throttle(violation)
-    expect(device.throttled_until).to eq(violation.ends_at)
-  end
-
   it "unthrottles a runaway device" do
     expect(device).to receive(:tell).and_return(Log.new)
     example = Time.now - 1.minute
