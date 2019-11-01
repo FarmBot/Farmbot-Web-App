@@ -19,7 +19,7 @@ interface Window {
 }
 
 declare namespace jest {
-  export interface Matchers<R> {
+  export interface Matchers<R, T> {
     toBeSameTimeAs: jest.Expect;
   }
 }

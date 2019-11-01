@@ -1,5 +1,5 @@
 import axios from "axios";
-import I from "i18next";
+import { InitOptions } from "i18next";
 import { merge } from "lodash";
 
 const translationFilePath = (lang: string): string =>
@@ -26,7 +26,7 @@ type Translations = { [key: string]: string };
 const parseTranslationData = (data: TranslationFile): Translations =>
   merge(data["translated"], data["untranslated"], data["other_translations"]);
 
-export function generateI18nConfig(lang: string): Promise<I.InitOptions> {
+export function generateI18nConfig(lang: string): Promise<InitOptions> {
   return axios
     .get<TranslationFile>(translationFilePath(lang))
     .then(response => {
