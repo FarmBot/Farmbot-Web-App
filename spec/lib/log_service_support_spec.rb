@@ -62,20 +62,6 @@ describe LogService do
     LogService.new.warn_user(data, time)
   end
 
-  it "triggers a throttle" do
-    tp = LogService::THROTTLE_POLICY
-    ls = LogService.new
-    data = AmqpLogParser::DeliveryInfo.new
-    data.device_id = FactoryBot.create(:device).id
-    violation = ThrottlePolicy::Violation.new(Object.new)
-    allow(ls).to receive(:deliver)
-    expect(ls).to receive(:warn_user)
-    expect(tp).to receive(:is_throttled)
-                    .with(data.device_id)
-                    .and_return(violation)
-    ls.maybe_deliver(data)
-  end
-
   it "handles bad params" do
     expect do
       LogService.new.process(fake_delivery_info, {})
@@ -86,6 +72,14 @@ describe LogService do
     expect do
       LogService.new.process(fake_delivery_info, "}}{{")
     end.to raise_error(Mutations::ValidationException)
+  end
+
+  it "throttles a device that sends too many logs" do
+    violation = ThrottlePolicy::Violation.new(Time.now, "whatever")
+    return_error = receive(:violation_for).with(any_args).and_return(violation)
+    expect(LogService::THROTTLE_POLICY).to(return_error)
+    j = normal_hash[].to_json
+    LogService.new.process(fake_delivery_info, j)
   end
 
   it "does not save `fun`, `debug` or `nil` logs" do
