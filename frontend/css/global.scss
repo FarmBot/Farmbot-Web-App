@@ -237,6 +237,25 @@ fieldset {
   }
 }
 
+.os-release-channel {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  label {
+    vertical-align: bottom;
+    margin-bottom: 0.75rem;
+    margin-right: 1rem;
+  }
+  .filter-search {
+    display: inline;
+    span {
+      width: 40%;
+    }
+    .bp3-popover-wrapper {
+      display: inline;
+    }
+  }
+}
+
 .all-content-wrapper {
   margin: 0 auto;
   padding: 11rem 3rem 0;
