@@ -1,11 +1,9 @@
-jest.mock("../../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
+jest.mock("../../../actions", () => ({ updateConfig: jest.fn() }));
 
 import * as React from "react";
 import {
-  FbosDetails, colorFromTemp, betaReleaseOptIn, colorFromThrottle, ThrottleType
+  FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
+  BetaReleaseOptInButtonProps, BetaReleaseOptIn,
 } from "../fbos_details";
 import { shallow, mount } from "enzyme";
 import { bot } from "../../../../__test_support__/fake_state/bot";
@@ -15,8 +13,8 @@ import { fakeState } from "../../../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice
 } from "../../../../__test_support__/resource_index_builder";
-import { edit, save } from "../../../../api/crud";
 import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
+import { updateConfig } from "../../../actions";
 
 describe("<FbosDetails/>", () => {
   const fakeConfig = fakeFbosConfig();
@@ -56,7 +54,7 @@ describe("<FbosDetails/>", () => {
       "Firmware commit", "fakeFwCo",
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi strength", "-49dBm",
-      "Beta release Opt-In",
+      "OS release channel",
       "Uptime", "0 seconds",
       "Memory usage", "0MB",
       "Disk usage", "0%",
@@ -86,31 +84,6 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.firmware_commit = "---";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").length).toEqual(0);
-  });
-
-  it("toggles os beta opt in setting on", () => {
-    const p = fakeProps();
-    p.sourceFbosConfig = () => ({ value: false, consistent: true });
-    const wrapper = mount(<FbosDetails {...p} />);
-    window.confirm = jest.fn();
-    wrapper.find("button").simulate("click");
-    expect(window.confirm).toHaveBeenCalledWith(
-      expect.stringContaining("you sure?"));
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
-    window.confirm = () => true;
-    wrapper.find("button").simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { beta_opt_in: true });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
-  });
-
-  it("toggles os beta opt in setting off", () => {
-    bot.hardware.configuration.beta_opt_in = true;
-    const wrapper = mount(<FbosDetails {...fakeProps()} />);
-    window.confirm = () => false;
-    wrapper.find("button").simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { beta_opt_in: false });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("displays N/A when wifi strength value is undefined", () => {
@@ -204,53 +177,33 @@ describe("<FbosDetails/>", () => {
   });
 });
 
-describe("betaReleaseOptIn()", () => {
-  it("uses `beta_opt_in`: beta enabled", () => {
-    const result = betaReleaseOptIn({
-      sourceFbosConfig: () => ({ value: true, consistent: true }),
-      shouldDisplay: () => false
-    });
-    expect(result).toEqual({
-      betaOptIn: { consistent: true, value: true },
-      betaOptInValue: true,
-      update: { beta_opt_in: false }
-    });
+describe("<BetaReleaseOptIn />", () => {
+  const fakeProps = (): BetaReleaseOptInButtonProps => ({
+    dispatch: jest.fn(),
+    sourceFbosConfig: () => ({ value: true, consistent: true }),
   });
 
-  it("uses `beta_opt_in`: beta disabled", () => {
-    const result = betaReleaseOptIn({
-      sourceFbosConfig: () => ({ value: false, consistent: true }),
-      shouldDisplay: () => false
-    });
-    expect(result).toEqual({
-      betaOptIn: { consistent: true, value: false },
-      betaOptInValue: false,
-      update: { beta_opt_in: true }
-    });
+  it("changes to beta channel", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: "stable", consistent: true });
+    const wrapper = shallow(<BetaReleaseOptIn {...p} />);
+    window.confirm = jest.fn();
+    wrapper.find("FBSelect").simulate("change", { label: "", value: "" });
+    expect(window.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("you sure?"));
+    expect(updateConfig).not.toHaveBeenCalled();
+    window.confirm = () => true;
+    wrapper.find("FBSelect").simulate("change", { label: "", value: "beta" });
+    expect(updateConfig).toHaveBeenCalledWith({ update_channel: "beta" });
   });
 
-  it("uses `update_channel`: beta enabled", () => {
-    const result = betaReleaseOptIn({
-      sourceFbosConfig: () => ({ value: "beta", consistent: true }),
-      shouldDisplay: () => true
-    });
-    expect(result).toEqual({
-      betaOptIn: { consistent: true, value: true },
-      betaOptInValue: true,
-      update: { update_channel: "stable" }
-    });
-  });
-
-  it("uses `update_channel`: beta disabled", () => {
-    const result = betaReleaseOptIn({
-      sourceFbosConfig: () => ({ value: "stable", consistent: true }),
-      shouldDisplay: () => true
-    });
-    expect(result).toEqual({
-      betaOptIn: { consistent: true, value: false },
-      betaOptInValue: false,
-      update: { update_channel: "beta" }
-    });
+  it("changes to stable channel", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: "beta", consistent: true });
+    const wrapper = shallow(<BetaReleaseOptIn {...p} />);
+    window.confirm = () => false;
+    wrapper.find("FBSelect").simulate("change", { label: "", value: "stable" });
+    expect(updateConfig).toHaveBeenCalledWith({ update_channel: "stable" });
   });
 });
 
