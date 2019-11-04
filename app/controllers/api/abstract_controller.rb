@@ -33,6 +33,7 @@ module Api
     rescue_from(JWT::VerificationError) { |e| auth_err }
 
     rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON }
+    rescue_from(JSON::ParserError) { sorry NOT_JSON }
 
     rescue_from(ActiveRecord::ValueTooLong) do
       sorry "Please use reasonable lengths on string inputs"
