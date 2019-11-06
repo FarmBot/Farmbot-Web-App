@@ -6,19 +6,18 @@ import { unselectPlant } from "../actions";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers
 } from "../../resources/selectors";
-import { GardenSnapshot } from "./garden_snapshot";
 import { SavedGardenList } from "./garden_list";
-import { SavedGardensProps } from "./interfaces";
+import { SavedGardensProps, SavedGardensState } from "./interfaces";
 import { closeSavedGarden } from "./actions";
-import { TaggedSavedGarden } from "farmbot";
-import { Content } from "../../constants";
 import {
-  DesignerPanel,
-  DesignerPanelContent
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop
 } from "../plants/designer_panel";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
-import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
+import {
+  EmptyStateWrapper, EmptyStateGraphic
+} from "../../ui/empty_state_wrapper";
+import { Content } from "../../constants";
 
 export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   savedGardens: selectAllSavedGardens(props.resources.index),
@@ -28,35 +27,35 @@ export const mapStateToProps = (props: Everything): SavedGardensProps => ({
   openedSavedGarden: props.resources.consumers.farm_designer.openedSavedGarden,
 });
 
-export class RawSavedGardens extends React.Component<SavedGardensProps, {}> {
+export class RawSavedGardens
+  extends React.Component<SavedGardensProps, SavedGardensState> {
+  state: SavedGardensState = { searchTerm: "" };
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();
   }
 
-  get currentSavedGarden(): TaggedSavedGarden | undefined {
-    return this.props.savedGardens
-      .filter(x => x.uuid === this.props.openedSavedGarden)[0];
-  }
+  onChange = (e: React.SyntheticEvent<HTMLInputElement>) =>
+    this.setState({ searchTerm: e.currentTarget.value });
 
   render() {
     return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
       <DesignerNavTabs />
-      <DesignerPanelContent panelName={"saved-garden"}
-        className={"with-nav"}>
-        <p>{t(Content.SAVED_GARDENS)}</p>
-        <GardenSnapshot
-          currentSavedGarden={this.currentSavedGarden}
-          plantTemplates={this.props.plantTemplates}
-          dispatch={this.props.dispatch} />
-        <hr />
+      <DesignerPanelContent panelName={"saved-garden"}>
+        <DesignerPanelTop
+          panel={Panel.SavedGardens}
+          linkTo={"/app/designer/gardens/add"}
+          title={t("Add garden")}>
+          <input type="text" onChange={this.onChange}
+            placeholder={t("Search your gardens...")} />
+        </DesignerPanelTop>
         <EmptyStateWrapper
           notEmpty={this.props.savedGardens.length > 0}
           title={t("No saved gardens yet.")}
-          // text={t(Content.NO_GARDENS)}
+          text={t(Content.NO_GARDENS)}
           colorScheme="gardens"
           graphic={EmptyStateGraphic.plants}>
-          <SavedGardenList {...this.props} />
+          <SavedGardenList {...this.props} searchTerm={this.state.searchTerm} />
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;
@@ -67,13 +66,13 @@ export class RawSavedGardens extends React.Component<SavedGardensProps, {}> {
 export const SavedGardensLink = () =>
   <button className="fb-button green"
     hidden={true}
-    onClick={() => history.push("/app/designer/saved_gardens")}>
+    onClick={() => history.push("/app/designer/gardens")}>
     {t("Saved Gardens")}
   </button>;
 
 /** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
-  pathArray[3] === "saved_gardens" && parseInt(pathArray[4]) > 0
+  pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
     ? parseInt(pathArray[4]) : false;
 
 /** Sticky an indicator and actions menu when a SavedGarden is open. */
@@ -81,7 +80,7 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
     <button className="fb-button gray"
-      onClick={() => history.push("/app/designer/saved_gardens")}>
+      onClick={() => history.push("/app/designer/gardens")}>
       {t("Menu")}
     </button>
     <button className="fb-button green"

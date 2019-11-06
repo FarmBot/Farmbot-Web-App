@@ -85,7 +85,7 @@ describe("<PlantInventoryItem />", () => {
       type: Actions.SELECT_PLANT
     });
     expect(push).toHaveBeenCalledWith(
-      "/app/designer/saved_gardens/templates/" + p.tpp.body.id);
+      "/app/designer/gardens/templates/" + p.tpp.body.id);
   });
 
   it("gets cached icon", async () => {

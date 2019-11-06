@@ -36,6 +36,20 @@ describe("<LogsSettingsMenu />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
+  it("doesn't update", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: false, consistent: true });
+    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
+    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
+  });
+
+  it("updates", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: true, consistent: true });
+    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
+    expect(wrapper.instance().shouldComponentUpdate(fakeProps())).toBeTruthy();
+  });
+
   function testSettingToggle(setting: ConfigurationName, position: number) {
     it("toggles setting", () => {
       const p = fakeProps();
@@ -63,6 +77,17 @@ describe("<LogsSettingsMenu />", () => {
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
     mockStorj[NumericSetting.busy_log] = 3;
+    wrapper.find("button").at(0).simulate("click");
+    expect(setFilterLevel).not.toHaveBeenCalled();
+  });
+
+  it("doesn't change filter levels", () => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: true, consistent: true });
+    const setFilterLevel = jest.fn();
+    p.setFilterLevel = () => setFilterLevel;
+    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    mockStorj[NumericSetting.busy_log] = 0;
     wrapper.find("button").at(0).simulate("click");
     expect(setFilterLevel).not.toHaveBeenCalled();
   });

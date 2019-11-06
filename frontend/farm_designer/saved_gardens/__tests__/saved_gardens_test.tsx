@@ -36,9 +36,8 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { SavedGardensProps } from "../interfaces";
-import { applyGarden, destroySavedGarden, closeSavedGarden } from "../actions";
+import { closeSavedGarden } from "../actions";
 import { Actions } from "../../../constants";
-import { error } from "../../../toast/toast";
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -50,34 +49,12 @@ describe("<SavedGardens />", () => {
   });
 
   it("renders saved gardens", () => {
-    const wrapper = mount(<SavedGardens {...fakeProps()} />);
-    ["saved garden 1", "2", "apply"].map(string =>
+    const p = fakeProps();
+    p.plantTemplates[0].body.saved_garden_id = p.savedGardens[0].body.id || 0;
+    p.plantTemplates[1].body.saved_garden_id = p.savedGardens[0].body.id || 0;
+    const wrapper = mount(<SavedGardens {...p} />);
+    ["saved garden 1", "2 plants"].map(string =>
       expect(wrapper.html().toLowerCase()).toContain(string));
-  });
-
-  it("applies garden", () => {
-    const p = fakeProps();
-    p.savedGardens[0].uuid = "SavedGarden.1.0";
-    p.savedGardens[0].body.id = 1;
-    p.plantPointerCount = 0;
-    const wrapper = mount(<SavedGardens {...p} />);
-    clickButton(wrapper, 3, "apply");
-    expect(applyGarden).toHaveBeenCalledWith(1);
-  });
-
-  it("plants still in garden", () => {
-    const wrapper = mount(<SavedGardens {...fakeProps()} />);
-    wrapper.find("button").first().simulate("click");
-    clickButton(wrapper, 3, "apply");
-    expect(error).toHaveBeenCalledWith(expect.stringContaining(
-      "Please clear current garden first"));
-  });
-
-  it("destroys garden", () => {
-    const p = fakeProps();
-    const wrapper = mount(<SavedGardens {...p} />);
-    clickButton(wrapper, 2, "");
-    expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGardens[0].uuid);
   });
 
   it("has no saved gardens yet", () => {
@@ -87,11 +64,31 @@ describe("<SavedGardens />", () => {
     expect(wrapper.text().toLowerCase()).toContain("no saved gardens yet");
   });
 
-  it("shows alt display", () => {
-    mockDev = true;
-    const wrapper = mount(<SavedGardens {...fakeProps()} />);
-    expect(wrapper.html()).toContain("-nav");
-    mockDev = false;
+  it("changes search term", () => {
+    const wrapper = shallow<SavedGardens>(<SavedGardens {...fakeProps()} />);
+    expect(wrapper.state().searchTerm).toEqual("");
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "spring" } });
+    expect(wrapper.state().searchTerm).toEqual("spring");
+  });
+
+  it("shows filtered gardens", () => {
+    const p = fakeProps();
+    p.savedGardens = [fakeSavedGarden(), fakeSavedGarden()];
+    p.savedGardens[0].body.name = "winter";
+    p.savedGardens[1].body.name = "spring";
+    const wrapper = mount(<SavedGardens {...p} />);
+    wrapper.setState({ searchTerm: "winter" });
+    expect(wrapper.text()).toContain("winter");
+    expect(wrapper.text()).not.toContain("spring");
+  });
+
+  it("shows when garden is open", () => {
+    const p = fakeProps();
+    p.savedGardens = [fakeSavedGarden(), fakeSavedGarden()];
+    p.openedSavedGarden = p.savedGardens[0].uuid;
+    const wrapper = mount(<SavedGardens {...p} />);
+    expect(wrapper.html()).toContain("selected");
   });
 });
 
@@ -115,7 +112,7 @@ describe("<SavedGardensLink />", () => {
     const wrapper = shallow(<SavedGardensLink />);
     clickButton(wrapper, 0, "saved gardens");
     expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/saved_gardens");
+      "/app/designer/gardens");
     mockDev = false;
   });
 
@@ -130,7 +127,7 @@ describe("<SavedGardensLink />", () => {
 
 describe("savedGardenOpen", () => {
   it("is open", () => {
-    const result = savedGardenOpen(["", "", "", "saved_gardens", "4", ""]);
+    const result = savedGardenOpen(["", "", "", "gardens", "4", ""]);
     expect(result).toEqual(4);
   });
 });
@@ -145,7 +142,7 @@ describe("<SavedGardenHUD />", () => {
   it("opens menu", () => {
     const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
     clickButton(wrapper, 0, "menu");
-    expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
   });
 
   it("navigates to plants", () => {

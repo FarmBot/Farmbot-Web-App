@@ -38,7 +38,7 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
 
 export function syncFail(e: Error) {
   console.error("DATA SYNC ERROR!");
-  Session.clear();
+  Session.clear() as never;
   throw e;
 }
 
