@@ -743,15 +743,18 @@ export namespace Content {
     Press the back arrow to exit.`);
 
   export const SAVED_GARDENS =
-    trim(`Create new gardens from scratch or by copying plants from the
-    current garden. View and edit saved gardens, and, when ready, apply them
-    to the main garden.`);
+    trim(`Create a new garden from scratch or by copying plants from the
+    current garden.`);
+
+  export const ERROR_PLANT_TEMPLATE_GROUP =
+    trim(`Cannot create a group with these plants.
+    Try leaving the saved garden first.`);
 
   export const NO_PLANTS =
     trim(`Press "+" to add a plant to your garden.`);
 
   export const NO_GARDENS =
-    trim(`Press "CREATE NEW GARDEN" to add a garden.`);
+    trim(`Press "+" to add a garden.`);
 
   export const NO_POINTS =
     trim(`Press "+" to add a point to your garden.`);

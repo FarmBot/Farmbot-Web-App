@@ -84,7 +84,7 @@ describe("<PlantLayer/>", () => {
     p.plants[0].body.id = 5;
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
-      .toEqual("/app/designer/saved_gardens/templates/5");
+      .toEqual("/app/designer/gardens/templates/5");
   });
 
   it("has selected plant", () => {

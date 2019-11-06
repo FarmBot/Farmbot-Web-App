@@ -472,9 +472,7 @@
 }
 
 .move-to-panel-content {
-  &.with-nav {
-    margin-top: 6rem;
-  }
+  margin-top: 6rem;
   margin-left: 1rem;
   margin-right: 1rem;
   button {
@@ -526,11 +524,7 @@
 }
 
 .saved-garden-panel-content {
-  &.with-nav {
-    margin-top: 6rem;
-  }
-  margin-left: 1rem;
-  margin-right: 1rem;
+  padding: 0;
   .row {
     margin-top: 1rem;
   }
@@ -569,5 +563,19 @@
 .groups-panel {
   .panel-content {
     padding: 0;
+  }
+}
+
+.saved-garden-edit-panel-content {
+  margin-left: 3rem;
+  margin-right: 3rem;
+  button {
+    margin-left: 0.5rem;
+    margin-top: 1rem;
+  }
+  p {
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 3rem;
   }
 }

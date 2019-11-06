@@ -63,7 +63,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("gets template id", () => {
-    mockPath = "/app/designer/saved_gardens/templates/2";
+    mockPath = "/app/designer/gardens/templates/2";
     const p = fakeProps();
     p.openedSavedGarden = "uuid";
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);

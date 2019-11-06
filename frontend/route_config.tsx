@@ -203,7 +203,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/plants/saved_gardens",
+    $: "/designer/plants/gardens",
     getModule,
     key,
     getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
@@ -275,7 +275,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/saved_gardens",
+    $: "/designer/gardens",
     getModule,
     key,
     getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
@@ -283,7 +283,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/saved_gardens/templates",
+    $: "/designer/gardens/templates",
     getModule,
     key,
     getChild: () => import("./farm_designer/plants/plant_inventory"),
@@ -291,7 +291,7 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/saved_gardens/templates/:plant_template_id",
+    $: "/designer/gardens/templates/:plant_template_id",
     getModule,
     key,
     getChild: () => import("./farm_designer/plants/plant_info"),
@@ -299,11 +299,19 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
-    $: "/designer/saved_gardens/:saved_garden_id",
+    $: "/designer/gardens/add",
     getModule,
     key,
-    getChild: () => import("./farm_designer/saved_gardens/saved_gardens"),
-    childKey: "SavedGardens"
+    getChild: () => import("./farm_designer/saved_gardens/garden_add"),
+    childKey: "AddGarden"
+  }),
+  route({
+    children: true,
+    $: "/designer/gardens/:saved_garden_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/saved_gardens/garden_edit"),
+    childKey: "EditGarden"
   }),
   route({
     children: true,

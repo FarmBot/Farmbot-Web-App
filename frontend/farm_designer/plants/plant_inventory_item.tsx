@@ -42,7 +42,7 @@ export class PlantInventoryItem extends
     const click = () => {
       const plantCategory =
         unpackUUID(this.props.tpp.uuid).kind === "PlantTemplate"
-          ? "saved_gardens/templates"
+          ? "gardens/templates"
           : "plants";
       push(`/app/designer/${plantCategory}/${plantId}`);
       dispatch(selectPlant([tpp.uuid]));
