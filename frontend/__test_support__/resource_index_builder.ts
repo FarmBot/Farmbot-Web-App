@@ -17,7 +17,8 @@ import { MessageType } from "../sequences/interfaces";
 const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   "id": 415,
   "name": "wispy-firefly-846",
-  "tz_offset_hrs": 0
+  "tz_offset_hrs": 0,
+  "ota_hour": 3
 };
 
 export function fakeDevice(body: Partial<TaggedDevice["body"]> = {}):

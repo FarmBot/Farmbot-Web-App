@@ -33,7 +33,8 @@ describe("refresh()", () => {
         "name": "summer-pond-726",
         "timezone": "America/Chicago",
         "last_saw_api": "2017-08-30T20:42:35.854Z",
-        "tz_offset_hrs": 0
+        "tz_offset_hrs": 0,
+        "ota_hour": 3
       },
     };
 
