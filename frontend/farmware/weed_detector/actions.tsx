@@ -10,11 +10,13 @@ import { Actions } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
 export function deletePoints(
-  pointName: string, createdBy: string, cb?: ProgressCallback): Thunk {
+  pointName: string,
+  metaQuery: { [key: string]: string },
+  cb?: ProgressCallback): Thunk {
   // TODO: Generalize and add to api/crud.ts
   return async function (dispatch) {
     const URL = API.current.pointSearchPath;
-    const QUERY = { meta: { created_by: createdBy } };
+    const QUERY = { meta: metaQuery };
     try {
       const resp = await axios.post<GenericPointer[]>(URL, QUERY);
       const ids = resp.data.map(x => x.id);

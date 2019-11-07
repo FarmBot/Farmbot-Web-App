@@ -138,6 +138,18 @@ describe("<SelectPlants />", () => {
     expect(destroy).not.toHaveBeenCalled();
   });
 
+  it("errors when deleting selected plants", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.reject());
+    p.selected = ["plant.1", "plant.2"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("Delete");
+    window.confirm = () => true;
+    wrapper.find("button").at(2).simulate("click");
+    expect(destroy).toHaveBeenCalledWith("plant.1", true);
+    expect(destroy).toHaveBeenCalledWith("plant.2", true);
+  });
+
   it("shows other buttons", () => {
     mockDev = true;
     const wrapper = mount(<SelectPlants {...fakeProps()} />);

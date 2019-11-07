@@ -374,8 +374,8 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds/add",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/weeds_add"),
-    childKey: "AddWeed"
+    getChild: () => import("./farm_designer/plants/create_points"),
+    childKey: "CreatePoints"
   }),
   route({
     children: true,

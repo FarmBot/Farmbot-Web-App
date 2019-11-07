@@ -35,7 +35,8 @@ export class WeedDetector
       const percentage = `${Math.round((p.completed / p.total) * 100)} %`;
       this.setState({ deletionProgress: p.isDone ? "" : percentage });
     };
-    this.props.dispatch(deletePoints(t("weeds"), "plant-detection", progress));
+    this.props.dispatch(deletePoints(t("weeds"),
+      { created_by: "plant-detection" }, progress));
     this.setState({ deletionProgress: t("Deleting...") });
   }
 

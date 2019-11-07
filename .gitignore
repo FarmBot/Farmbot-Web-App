@@ -18,7 +18,6 @@ api_docs.md
 erd_diagram.png
 erd.pdf
 *scratchpad*
-scratchpad.rb
 /config/master.key
 config/credentials.yml.enc
 # ActiveStorage blobs:

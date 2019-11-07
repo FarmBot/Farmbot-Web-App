@@ -735,8 +735,10 @@ export namespace Content {
     Press the back arrow to exit.`);
 
   export const CREATE_POINTS_DESCRIPTION =
-    trim(`Click and drag to draw a point or use the inputs and press
-    update. Press CREATE POINT to save, or the back arrow to exit.`);
+    trim(`Click and drag or use the inputs to draw a point.`);
+
+  export const CREATE_WEEDS_DESCRIPTION =
+    trim(`Click and drag or use the inputs to draw a weed.`);
 
   export const BOX_SELECT_DESCRIPTION =
     trim(`Drag a box around the plants you would like to select.
