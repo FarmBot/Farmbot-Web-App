@@ -5,19 +5,18 @@ import {
 } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
-import { Everything } from "../../interfaces";
-import { TaggedPoint, Vector3 } from "farmbot";
-import { maybeFindPointById } from "../../resources/selectors";
-import { DeleteButton } from "../../controls/pin_form_fields";
-import { getDevice } from "../../device";
 import { Panel } from "../panel_header";
-
-export const moveToPoint =
-  (body: Vector3) => () => getDevice().moveAbsolute(body);
+import { Everything } from "../../interfaces";
+import { TaggedGenericPointer } from "farmbot";
+import { maybeFindPointById } from "../../resources/selectors";
+import { Actions } from "../../constants";
+import {
+  EditPointProperties, updatePoint, PointActions
+} from "./point_edit_actions";
 
 export interface EditPointProps {
   dispatch: Function;
-  findPoint(id: number): TaggedPoint | undefined;
+  findPoint(id: number): TaggedGenericPointer | undefined;
 }
 
 export const mapStateToProps = (props: Everything): EditPointProps => ({
@@ -32,50 +31,31 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
       return this.props.findPoint(parseInt(this.stringyID));
     }
   }
+  get panelName() { return "point-info"; }
+  get backTo() { return "/app/designer/points"; }
 
   fallback = () => {
-    history.push("/app/designer/points");
+    history.push(this.backTo);
     return <span>{t("Redirecting...")}</span>;
   }
 
-  temporaryMenu = (p: TaggedPoint) => {
-    const { body } = p;
-    return <div>
-      <h3>
-        Point {body.name || body.id || ""} @ ({body.x}, {body.y}, {body.z})
-      </h3>
-      <ul>
-        {
-          Object.entries(body.meta).map(([k, v]) => {
-            return <li key={k}>{k}: {v}</li>;
-          })
-        }
-      </ul>
-      <button
-        className="green fb-button"
-        type="button"
-        onClick={moveToPoint(body)}>
-        {t("Move Device to Point")}
-      </button>
-      <DeleteButton
-        dispatch={this.props.dispatch}
-        uuid={p.uuid}
-        onDestroy={this.fallback}>
-        {t("Delete Point")}
-      </DeleteButton>
-    </div>;
-  };
-
-  default = (point: TaggedPoint) => {
-    return <DesignerPanel panelName={"plant-info"} panel={Panel.Points}>
+  default = (point: TaggedGenericPointer) => {
+    const { x, y, z } = point.body;
+    return <DesignerPanel panelName={this.panelName} panel={Panel.Points}>
       <DesignerPanelHeader
-        panelName={"plant-info"}
+        panelName={this.panelName}
         panel={Panel.Points}
         title={`${t("Edit")} ${point.body.name}`}
-        backTo={"/app/designer/points"}>
+        backTo={this.backTo}
+        onBack={() => this.props.dispatch({
+          type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
+        })}>
       </DesignerPanelHeader>
-      <DesignerPanelContent panelName={"plants"}>
-        {this.point && this.temporaryMenu(this.point)}
+      <DesignerPanelContent panelName={this.panelName}>
+        <EditPointProperties point={point}
+          updatePoint={updatePoint(point, this.props.dispatch)} />
+        <PointActions x={x} y={y} z={z} uuid={point.uuid}
+          dispatch={this.props.dispatch} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

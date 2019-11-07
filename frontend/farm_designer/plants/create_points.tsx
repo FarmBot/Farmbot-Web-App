@@ -23,6 +23,7 @@ import {
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { getPathArray } from "../../history";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -44,11 +45,11 @@ export interface CreatePointsProps {
 type CreatePointsState = Partial<CurrentPointPayl>;
 
 const DEFAULTS: CurrentPointPayl = {
-  name: "Created Point",
+  name: undefined,
   cx: 1,
   cy: 1,
   r: 15,
-  color: "red"
+  color: undefined,
 };
 
 export class RawCreatePoints
@@ -70,13 +71,21 @@ export class RawCreatePoints
     }
   };
 
+  get defaultName() {
+    return this.panel == "weeds"
+      ? t("Created Weed")
+      : t("Created Point");
+  }
+
+  get defaultColor() { return this.panel == "weeds" ? "red" : "green"; }
+
   getPointData = (): CurrentPointPayl => {
     return {
       name: this.attr("name"),
       cx: this.attr("cx"),
       cy: this.attr("cy"),
       r: this.attr("r"),
-      color: this.attr("color"),
+      color: this.attr("color") || this.defaultColor,
     };
   }
 
@@ -93,31 +102,43 @@ export class RawCreatePoints
     });
   }
 
-  componentWillUnmount() {
-    this.cancel();
-  }
-
-  updateCurrentPoint = () => {
+  loadDefaultPoint = () => {
     this.props.dispatch({
       type: Actions.SET_CURRENT_POINT_DATA,
-      payload: this.getPointData()
+      payload: {
+        name: this.defaultName,
+        cx: DEFAULTS.cx,
+        cy: DEFAULTS.cy,
+        r: DEFAULTS.r,
+        color: this.defaultColor,
+      } as CurrentPointPayl
     });
+  }
+
+  UNSAFE_componentWillMount() {
+    this.loadDefaultPoint();
+  }
+
+  componentWillUnmount() {
+    this.cancel();
   }
 
   /** Update fields. */
   updateValue = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
-      this.setState({ [key]: value });
       if (this.props.currentPoint) {
         const point = this.getPointData();
         switch (key) {
           case "name":
           case "color":
+            this.setState({ [key]: value });
             point[key] = value;
             break;
           default:
-            point[key] = parseIntInput(value);
+            const intValue = parseIntInput(value);
+            this.setState({ [key]: intValue });
+            point[key] = intValue;
         }
         this.props.dispatch({
           type: Actions.SET_CURRENT_POINT_DATA,
@@ -129,19 +150,24 @@ export class RawCreatePoints
 
   changeColor = (color: ResourceColor) => {
     this.setState({ color });
+    const point = this.getPointData();
+    point.color = color;
     this.props.dispatch({
       type: Actions.SET_CURRENT_POINT_DATA,
-      payload: this.getPointData()
+      payload: point
     });
   }
+
+  get panel() { return getPathArray()[3] || "points"; }
 
   createPoint = () => {
     const body: GenericPointer = {
       pointer_type: "GenericPointer",
-      name: this.attr("name") || "Created Point",
+      name: this.attr("name") || this.defaultName,
       meta: {
-        color: this.attr("color"),
-        created_by: "farm-designer"
+        color: this.attr("color") || this.defaultColor,
+        created_by: "farm-designer",
+        type: this.panel == "weeds" ? "weed" : "point",
       },
       x: this.attr("cx"),
       y: this.attr("cy"),
@@ -150,6 +176,7 @@ export class RawCreatePoints
     };
     this.props.dispatch(initSave("Point", body));
     this.cancel();
+    this.loadDefaultPoint();
   }
 
   PointName = () =>
@@ -160,7 +187,7 @@ export class RawCreatePoints
           name="name"
           type="text"
           onCommit={this.updateValue("name")}
-          value={this.attr("name") || ""} />
+          value={this.attr("name") || this.defaultName} />
       </Col>
     </Row>;
 
@@ -188,13 +215,13 @@ export class RawCreatePoints
           name="r"
           type="number"
           onCommit={this.updateValue("r")}
-          value={this.attr("r", DEFAULTS.r)}
+          value={this.attr("r")}
           min={0} />
       </Col>
       <Col xs={3}>
         <label>{t("color")}</label>
         <ColorPicker
-          current={this.attr("color") as ResourceColor}
+          current={(this.attr("color") || this.defaultColor) as ResourceColor}
           onChange={this.changeColor} />
       </Col>
     </Row>;
@@ -204,48 +231,51 @@ export class RawCreatePoints
     <Row>
       <button className="fb-button green"
         onClick={this.createPoint}>
-        {t("Create point")}
-      </button>
-      <button className="fb-button yellow"
-        onClick={this.updateCurrentPoint}>
-        {t("Update")}
-      </button>
-      <button className="fb-button gray"
-        onClick={this.cancel}>
-        {t("Cancel")}
+        {t("Save")}
       </button>
     </Row>
 
-  DeleteAllPoints = () =>
+  DeleteAllPoints = (type: "point" | "weed") =>
     <Row>
       <div className="delete-row">
         <label>{t("delete")}</label>
-        <p>{t("Delete all of the points created through this panel.")}</p>
+        <p>{type === "weed"
+          ? t("Delete all of the weeds created through this panel.")
+          : t("Delete all of the points created through this panel.")}</p>
         <button className="fb-button red delete"
           onClick={() => {
-            if (confirm(t("Delete all the points you have created?"))) {
-              this.props.dispatch(deletePoints("points", "farm-designer"));
+            if (confirm(type === "weed"
+              ? t("Delete all the weeds you have created?")
+              : t("Delete all the points you have created?"))) {
+              this.props.dispatch(deletePoints("points", {
+                created_by: "farm-designer", type,
+              }));
               this.cancel();
             }
           }}>
-          {t("Delete all created points")}
+          {type === "weed"
+            ? t("Delete all created weeds")
+            : t("Delete all created points")}
         </button>
       </div>
     </Row>
 
   render() {
-    return <DesignerPanel panelName={"point-creation"} panel={Panel.Points}>
+    const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
+    const panelDescription = this.panel == "weeds" ?
+      Content.CREATE_WEEDS_DESCRIPTION : Content.CREATE_POINTS_DESCRIPTION;
+    return <DesignerPanel panelName={"point-creation"} panel={panelType}>
       <DesignerPanelHeader
         panelName={"point-creation"}
-        panel={Panel.Points}
-        title={t("Create point")}
-        backTo={"/app/designer/points"}
-        description={Content.CREATE_POINTS_DESCRIPTION} />
+        panel={panelType}
+        title={this.panel == "weeds" ? t("Create weed") : t("Create point")}
+        backTo={`/app/designer/${this.panel}`}
+        description={panelDescription} />
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointName />
         <this.PointProperties />
         <this.PointActions />
-        <this.DeleteAllPoints />
+        {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
       </DesignerPanelContent>
     </DesignerPanel>;
   }
