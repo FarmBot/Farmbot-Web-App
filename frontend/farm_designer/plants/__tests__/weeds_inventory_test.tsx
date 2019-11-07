@@ -10,6 +10,7 @@ describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
     points: [],
     dispatch: jest.fn(),
+    hoveredPoint: undefined,
   });
 
   it("renders no points", () => {

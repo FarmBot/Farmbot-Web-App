@@ -290,6 +290,12 @@
   transform-box: fill-box;
 }
 
+.map-point {
+  stroke-width: 2;
+  stroke-opacity: 0.3;
+  fill-opacity: 0.1;
+}
+
 .plant-image {
   transform-origin: bottom;
   transform-box: fill-box;

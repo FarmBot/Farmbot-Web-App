@@ -286,6 +286,7 @@ export const transformForQuadrant =
   };
 
 /** Determine the current map mode based on path. */
+// tslint:disable-next-line:cyclomatic-complexity
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
@@ -299,7 +300,7 @@ export const getMode = (): Mode => {
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[3] === "move_to") { return Mode.moveTo; }
-    if (pathArray[3] === "points") {
+    if (pathArray[3] === "points" || pathArray[3] === "weeds") {
       if (pathArray[4] === "add") { return Mode.createPoint; }
       return Mode.points;
     }

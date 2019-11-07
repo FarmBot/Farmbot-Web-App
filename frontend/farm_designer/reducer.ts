@@ -13,6 +13,7 @@ export let initialState: DesignerState = {
     plantUUID: undefined,
     icon: ""
   },
+  hoveredPoint: undefined,
   hoveredPlantListItem: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
@@ -50,8 +51,15 @@ export let designer = generateReducer<DesignerState>(initialState)
     s.hoveredPlantListItem = payload;
     return s;
   })
-  .add<CurrentPointPayl>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
+  .add<string | undefined>(Actions.TOGGLE_HOVERED_POINT, (s, { payload }) => {
+    s.hoveredPoint = payload;
+    return s;
+  })
+  .add<CurrentPointPayl | undefined>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
+    const { color } =
+      (!payload || !payload.color) ? (s.currentPoint || { color: "green" }) : payload;
     s.currentPoint = payload;
+    s.currentPoint && (s.currentPoint.color = color);
     return s;
   })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
