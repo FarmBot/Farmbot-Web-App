@@ -13,6 +13,7 @@ module Devices
       time :last_ota
       time :last_ota_checkup
       integer :mounted_tool_id, nils: true
+      integer :ota_hour
     end
 
     def validate

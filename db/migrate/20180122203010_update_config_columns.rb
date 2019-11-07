@@ -1,5 +1,5 @@
 class UpdateConfigColumns < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     # arduino_debug_messages
     add_column    :fbos_configs, :api_migrated,           :boolean, default: false

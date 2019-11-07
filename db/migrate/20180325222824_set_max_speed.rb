@@ -1,5 +1,5 @@
 class SetMaxSpeed < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     # There were still some sequences found on 25 MAR 18 that had a speed
     # value > 100. -RC

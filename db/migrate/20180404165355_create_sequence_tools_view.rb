@@ -1,5 +1,5 @@
 class CreateSequenceToolsView < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     # I goofed up on this migration and deployed to staging before I could fix.
     # See later migration that creates a new view using the `scenic` gem.

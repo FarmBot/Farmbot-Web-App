@@ -6,6 +6,7 @@ class Device < ApplicationRecord
 
   TIMEZONES = TZInfo::Timezone.all_identifiers
   BAD_TZ = "%{value} is not a valid timezone"
+  BAD_OTA_HOUR = "OTA Hour must be a value from 0 to 23."
   THROTTLE_ON = "Device is sending too many logs (%s). " \
                 "Suspending log storage and display until %s."
   THROTTLE_OFF = "Cooldown period has ended. " \
@@ -40,6 +41,8 @@ class Device < ApplicationRecord
                          message: BAD_TZ,
                          allow_nil: true,
                        }
+  validates :ota_hour,
+    inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: false, }
 
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list

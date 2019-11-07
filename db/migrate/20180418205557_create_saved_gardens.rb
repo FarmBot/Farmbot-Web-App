@@ -1,5 +1,5 @@
 class CreateSavedGardens < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     create_table :saved_gardens do |t|
       t.string     :name,   null: false

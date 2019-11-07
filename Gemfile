@@ -24,7 +24,6 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
-gem "zero_downtime_migrations"
 
 group :development, :test do
   gem "climate_control"

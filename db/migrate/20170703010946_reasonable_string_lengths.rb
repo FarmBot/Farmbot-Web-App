@@ -1,5 +1,4 @@
 class ReasonableStringLengths < ActiveRecord::Migration[5.1]
-  safety_assured
   TWEETx2 = 280
   def change
     { devices:     "name",
