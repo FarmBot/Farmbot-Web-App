@@ -4,38 +4,41 @@ import { t } from "../../../../i18next_wrapper";
 import { TaggedDevice } from "farmbot";
 import { edit, save } from "../../../../api/crud";
 
+const IMMEDIATELY = -1;
+
 const OTA_TIMES: Record<number, DropDownItem> = {
-  0: { label: "Midnight", value: 0 },
-  1: { label: "1 AM", value: 1 },
-  2: { label: "2 AM", value: 2 },
-  3: { label: "3 AM", value: 3 },
-  4: { label: "4 AM", value: 4 },
-  5: { label: "5 AM", value: 5 },
-  6: { label: "6 AM", value: 6 },
-  7: { label: "7 AM", value: 7 },
-  8: { label: "8 AM", value: 8 },
-  9: { label: "9 AM", value: 9 },
-  10: { label: "10 AM", value: 10 },
-  11: { label: "11 AM", value: 11 },
-  12: { label: "Noon", value: 12 },
-  13: { label: "1 PM", value: 13 },
-  14: { label: "2 PM", value: 14 },
-  15: { label: "3 PM", value: 15 },
-  16: { label: "4 PM", value: 16 },
-  17: { label: "5 PM", value: 17 },
-  18: { label: "6 PM", value: 18 },
-  19: { label: "7 PM", value: 19 },
-  20: { label: "8 PM", value: 20 },
-  21: { label: "9 PM", value: 21 },
-  22: { label: "10 PM", value: 22 },
-  23: { label: "11 PM", value: 23 },
+  0: { label: "at Midnight", value: 0 },
+  1: { label: "at 1 AM", value: 1 },
+  2: { label: "at 2 AM", value: 2 },
+  3: { label: "at 3 AM", value: 3 },
+  4: { label: "at 4 AM", value: 4 },
+  5: { label: "at 5 AM", value: 5 },
+  6: { label: "at 6 AM", value: 6 },
+  7: { label: "at 7 AM", value: 7 },
+  8: { label: "at 8 AM", value: 8 },
+  9: { label: "at 9 AM", value: 9 },
+  10: { label: "at 10 AM", value: 10 },
+  11: { label: "at 11 AM", value: 11 },
+  12: { label: "at Noon", value: 12 },
+  13: { label: "at 1 PM", value: 13 },
+  14: { label: "at 2 PM", value: 14 },
+  15: { label: "at 3 PM", value: 15 },
+  16: { label: "at 4 PM", value: 16 },
+  17: { label: "at 5 PM", value: 17 },
+  18: { label: "at 6 PM", value: 18 },
+  19: { label: "at 7 PM", value: 19 },
+  20: { label: "at 8 PM", value: 20 },
+  21: { label: "at 9 PM", value: 21 },
+  22: { label: "at 10 PM", value: 22 },
+  23: { label: "at 11 PM", value: 23 },
+  [IMMEDIATELY]: { label: "as soon as possible", value: IMMEDIATELY },
 };
 
-const DEFAULT_HOUR = OTA_TIMES[3];
+const DEFAULT_HOUR = OTA_TIMES[IMMEDIATELY];
 
 interface OtaTimeSelectorProps {
-  onChange(hour24: number): void;
-  value: number;
+  onChange(hour24: number | undefined): void;
+  value: number | undefined;
 }
 
 export const changeOtaHour =
@@ -46,13 +49,24 @@ export const changeOtaHour =
     };
 /** Label and toggle button for opting in to FBOS beta releases. */
 export const OtaTimeSelector = ({ onChange, value }: OtaTimeSelectorProps): JSX.Element => {
+  const cb = (ddi: DropDownItem) => {
+    const v = parseInt("" + ddi.value, 10);
+
+    onChange((v == IMMEDIATELY) ? null : v);
+  };
+
+  const list = Object
+    .values(OTA_TIMES)
+    .reverse()
+    .map(x => ({ ...x, label: t(x.label) }));
+
   return <fieldset className={"os-release-channel"}>
     <label>
-      {t("Perform Software Updates At: ")}
+      {t("Apply Software Updates ")}
     </label>
     <FBSelect
-      selectedItem={OTA_TIMES[value] || DEFAULT_HOUR}
-      onChange={ddi => onChange(ddi.value as number)}
-      list={Object.values(OTA_TIMES)} />
+      selectedItem={value ? OTA_TIMES[value] : DEFAULT_HOUR}
+      onChange={cb}
+      list={list} />
   </fieldset>;
 };
