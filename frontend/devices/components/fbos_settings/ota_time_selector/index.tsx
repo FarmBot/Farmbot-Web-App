@@ -54,8 +54,11 @@ export const changeOtaHour =
 export const OtaTimeSelector = ({ onChange, value }: OtaTimeSelectorProps): JSX.Element => {
   const cb = (ddi: DropDownItem) => {
     const v = parseInt("" + ddi.value, 10);
-
-    onChange((v == IMMEDIATELY) ? UNDEFINED : v);
+    if ((v == IMMEDIATELY)) {
+      onChange(UNDEFINED);
+    } else {
+      onChange(v);
+    }
   };
 
   const list = Object
