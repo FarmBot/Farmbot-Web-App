@@ -19,11 +19,12 @@ import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps
 } from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { Actions } from "../../../constants";
+import { Actions, Content } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
 import { createGroup } from "../../point_groups/actions";
 import { fakeState } from "../../../__test_support__/fake_state";
+import { error } from "../../../toast/toast";
 
 describe("<SelectPlants />", () => {
   beforeEach(function () {
@@ -41,6 +42,7 @@ describe("<SelectPlants />", () => {
       selected: ["plant.1"],
       plants: [plant1, plant2],
       dispatch: jest.fn(),
+      gardenOpen: undefined,
     };
   }
 
@@ -136,6 +138,18 @@ describe("<SelectPlants />", () => {
     expect(destroy).not.toHaveBeenCalled();
   });
 
+  it("errors when deleting selected plants", () => {
+    const p = fakeProps();
+    p.dispatch = jest.fn(() => Promise.reject());
+    p.selected = ["plant.1", "plant.2"];
+    const wrapper = mount(<SelectPlants {...p} />);
+    expect(wrapper.text()).toContain("Delete");
+    window.confirm = () => true;
+    wrapper.find("button").at(2).simulate("click");
+    expect(destroy).toHaveBeenCalledWith("plant.1", true);
+    expect(destroy).toHaveBeenCalledWith("plant.2", true);
+  });
+
   it("shows other buttons", () => {
     mockDev = true;
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
@@ -146,6 +160,15 @@ describe("<SelectPlants />", () => {
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
     wrapper.find(".dark-blue").simulate("click");
     expect(createGroup).toHaveBeenCalled();
+  });
+
+  it("doesn't create group", () => {
+    const p = fakeProps();
+    p.gardenOpen = "uuid";
+    const wrapper = mount(<SelectPlants {...p} />);
+    wrapper.find(".dark-blue").simulate("click");
+    expect(createGroup).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(Content.ERROR_PLANT_TEMPLATE_GROUP);
   });
 });
 

@@ -288,6 +288,8 @@ export class GardenMap extends
     animate={this.animate} />
   PointLayer = () => <PointLayer
     mapTransformProps={this.mapTransformProps}
+    dispatch={this.props.dispatch}
+    hoveredPoint={this.props.designer.hoveredPoint}
     visible={!!this.props.showPoints}
     points={this.props.points} />
   PlantLayer = () => <PlantLayer

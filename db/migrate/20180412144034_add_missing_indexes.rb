@@ -1,5 +1,5 @@
 class AddMissingIndexes < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     add_index :edge_nodes,      [:kind, :value]
     add_index :farm_events,     :end_time

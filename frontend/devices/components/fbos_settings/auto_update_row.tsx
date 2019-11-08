@@ -23,10 +23,9 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
     <Col xs={ColWidth.button}>
       <ToggleButton toggleValue={osAutoUpdate.value}
         dim={!osAutoUpdate.consistent}
-        toggleAction={() => {
-          const newOsAutoUpdateNum = !osAutoUpdate.value ? 1 : 0;
-          props.dispatch(updateConfig({ os_auto_update: newOsAutoUpdateNum }));
-        }} />
+        toggleAction={() => props.dispatch(updateConfig({
+          os_auto_update: !osAutoUpdate.value
+        }))} />
     </Col>
   </Row>;
 }

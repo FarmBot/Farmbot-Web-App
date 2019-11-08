@@ -52,6 +52,9 @@ const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [
   },
 ];
 
+const LOG_SETTING_NAMES = SEQUENCE_LOG_SETTINGS().map(s => s.setting)
+  .concat(FIRMWARE_LOG_SETTINGS().map(s => s.setting));
+
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, setFilterLevel, sourceFbosConfig } = props;
   /** Update the current filter level to a minimum needed for log display. */
@@ -65,7 +68,7 @@ const LogSetting = (props: LogSettingProps) => {
     <label>
       {t(label)}
     </label>
-    <Help text={t(toolTip)} position={Position.LEFT_TOP}/>
+    <Help text={t(toolTip)} position={Position.LEFT_TOP} requireClick={true} />
     <ToggleButton
       toggleValue={config.value}
       dim={!config.consistent}
@@ -93,23 +96,32 @@ const LogSetting = (props: LogSettingProps) => {
   </fieldset>;
 };
 
-export const LogsSettingsMenu = (props: LogsSettingsMenuProps) => {
-  const { setFilterLevel, sourceFbosConfig, getConfigValue } = props;
-  const LogSettingRow = (settingProps: LogSettingRecord) => {
-    const { label, setting, tooltip } = settingProps;
-    return <LogSetting
-      label={label}
-      setting={setting}
-      toolTip={tooltip}
-      setFilterLevel={setFilterLevel}
-      dispatch={props.dispatch}
-      sourceFbosConfig={sourceFbosConfig}
-      getConfigValue={getConfigValue} />;
-  };
-  return <div className={"logs-settings-menu"}>
-    {t("Sequence logs:")}
-    {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
-    {t("Firmware logs:")}
-    {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
-  </div>;
-};
+export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
+
+  shouldComponentUpdate(nextProps: LogsSettingsMenuProps) {
+    const data = (props: LogsSettingsMenuProps) =>
+      JSON.stringify(LOG_SETTING_NAMES.map(s => props.sourceFbosConfig(s)));
+    return data(nextProps) !== data(this.props);
+  }
+
+  render() {
+    const { setFilterLevel, sourceFbosConfig, getConfigValue } = this.props;
+    const LogSettingRow = (settingProps: LogSettingRecord) => {
+      const { label, setting, tooltip } = settingProps;
+      return <LogSetting
+        label={label}
+        setting={setting}
+        toolTip={tooltip}
+        setFilterLevel={setFilterLevel}
+        dispatch={this.props.dispatch}
+        sourceFbosConfig={sourceFbosConfig}
+        getConfigValue={getConfigValue} />;
+    };
+    return <div className={"logs-settings-menu"}>
+      {t("Sequence logs:")}
+      {SEQUENCE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
+      {t("Firmware logs:")}
+      {FIRMWARE_LOG_SETTINGS().map(p => <LogSettingRow key={p.setting} {...p} />)}
+    </div>;
+  }
+}

@@ -40,10 +40,10 @@ describe("<PowerAndReset/>", () => {
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
     ["Power and Reset", "Restart", "Shutdown", "Factory Reset",
-      "Automatic Factory Reset", "Connection Attempt Period"]
+      "Automatic Factory Reset", "Connection Attempt Period", "Change Ownership"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
-    ["Restart Firmware", "Change Ownership"]
+    ["Restart Firmware"]
       .map(string => expect(wrapper.text().toLowerCase())
         .not.toContain(string.toLowerCase()));
   });
@@ -92,7 +92,6 @@ describe("<PowerAndReset/>", () => {
   it("shows change ownership button", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
-    p.shouldDisplay = () => true;
     const wrapper = mount(<PowerAndReset {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Change Ownership".toLowerCase());

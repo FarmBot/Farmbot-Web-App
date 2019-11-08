@@ -25,7 +25,7 @@
 #             +--------+ +------------+
 # ================================================
 
-version: '3.4'
+version: "3"
 services:
   redis:
     env_file: ".env"
@@ -57,9 +57,7 @@ services:
 
   mqtt:
     env_file: ".env"
-    build:
-      context: "./docker_configs"
-      dockerfile: rabbitmq.Dockerfile
+    image: rickcarlino/experimental-docker-rmq:latest
     ports: ["5672:5672", "1883:1883", "8883:8883", "3002:15675", "15672:15672"]
     depends_on: ["web"]
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]

@@ -165,7 +165,6 @@ export class FarmbotOsSettings
             <SendDiagnosticReport
               diagnostics={this.props.diagnostics}
               expanded={this.props.bot.controlPanelState.diagnostic_dumps}
-              shouldDisplay={this.props.shouldDisplay}
               botOnline={isBotOnline(sync_status, botToMqttStatus)}
               dispatch={this.props.dispatch} />
           </MustBeOnline>

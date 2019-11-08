@@ -54,6 +54,15 @@ describe("designer reducer", () => {
     expect(newState.hoveredPlantListItem).toEqual("plantUuid");
   });
 
+  it("sets hovered point", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: "uuid"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredPoint).toEqual("uuid");
+  });
+
   it("sets chosen location", () => {
     const action: ReduxAction<BotPosition> = {
       type: Actions.CHOOSE_LOCATION,

@@ -1,8 +1,8 @@
 import { Everything } from "../interfaces";
-import { Store } from "redux";
+import { Store as ReduxStore } from "redux";
 import { Actions } from "../constants";
 
-export type Store = Store<Everything>;
+export type Store = ReduxStore<Everything>;
 
 export interface ReduxAction<T> {
   readonly type: Actions;

@@ -13,10 +13,12 @@ import {
 import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";
 import { t } from "../../i18next_wrapper";
+import { isAWeed } from "./weeds_inventory";
 
 export interface PointsProps {
   points: TaggedGenericPointer[];
   dispatch: Function;
+  hoveredPoint: string | undefined;
 }
 
 interface PointsState {
@@ -24,11 +26,13 @@ interface PointsState {
 }
 
 export function mapStateToProps(props: Everything): PointsProps {
+  const { hoveredPoint } = props.resources.consumers.farm_designer;
   return {
     points: selectAllGenericPointers(props.resources.index)
       .filter(x => !x.body.discarded_at)
-      .filter(x => !x.body.name.toLowerCase().includes("weed")),
+      .filter(x => !isAWeed(x.body.name, x.body.meta.type)),
     dispatch: props.dispatch,
+    hoveredPoint,
   };
 }
 
@@ -49,7 +53,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         <input type="text" onChange={this.update}
           placeholder={t("Search your points...")} />
       </DesignerPanelTop>
-      <DesignerPanelContent panelName={"point"}>
+      <DesignerPanelContent panelName={"points"}>
         <EmptyStateWrapper
           notEmpty={this.props.points.length > 0}
           graphic={EmptyStateGraphic.points}
@@ -59,12 +63,12 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           {this.props.points
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => {
-              return <PointInventoryItem
-                key={p.uuid}
-                tpp={p}
-                dispatch={this.props.dispatch} />;
-            })}
+            .map(p => <PointInventoryItem
+              key={p.uuid}
+              navName={"points"}
+              tpp={p}
+              hovered={this.props.hoveredPoint === p.uuid}
+              dispatch={this.props.dispatch} />)}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

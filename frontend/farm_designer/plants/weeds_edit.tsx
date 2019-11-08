@@ -6,13 +6,16 @@ import {
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
-import { TaggedPoint } from "farmbot";
+import { TaggedGenericPointer } from "farmbot";
 import { maybeFindPointById } from "../../resources/selectors";
 import { Panel } from "../panel_header";
+import {
+  EditPointProperties, PointActions, updatePoint
+} from "./point_edit_actions";
 
 export interface EditWeedProps {
   dispatch: Function;
-  findPoint(id: number): TaggedPoint | undefined;
+  findPoint(id: number): TaggedGenericPointer | undefined;
 }
 
 export const mapStateToProps = (props: Everything): EditWeedProps => ({
@@ -27,21 +30,28 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
       return this.props.findPoint(parseInt(this.stringyID));
     }
   }
+  get panelName() { return "weed-info"; }
+  get backTo() { return "/app/designer/weeds"; }
 
   fallback = () => {
-    history.push("/app/designer/weeds");
+    history.push(this.backTo);
     return <span>{t("Redirecting...")}</span>;
   }
 
-  default = (point: TaggedPoint) => {
-    return <DesignerPanel panelName={"weed-info"} panel={Panel.Weeds}>
+  default = (point: TaggedGenericPointer) => {
+    const { x, y, z } = point.body;
+    return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
-        panelName={"weed-info"}
+        panelName={this.panelName}
         panel={Panel.Weeds}
         title={`${t("Edit")} ${point.body.name}`}
-        backTo={"/app/designer/points"}>
+        backTo={this.backTo}>
       </DesignerPanelHeader>
-      <DesignerPanelContent panelName={"weed-info"}>
+      <DesignerPanelContent panelName={this.panelName}>
+        <EditPointProperties point={point}
+          updatePoint={updatePoint(point, this.props.dispatch)} />
+        <PointActions x={x} y={y} z={z} uuid={point.uuid}
+          dispatch={this.props.dispatch} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

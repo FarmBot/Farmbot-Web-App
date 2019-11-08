@@ -1,5 +1,5 @@
 class CreateDiagnosticDumps < ActiveRecord::Migration[5.2]
-  safety_assured
+
   def change
     create_table :diagnostic_dumps do |t|
       t.references :device, foreign_key: true, null: false
