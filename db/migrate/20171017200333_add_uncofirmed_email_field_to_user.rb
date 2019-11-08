@@ -1,5 +1,5 @@
 class AddUncofirmedEmailFieldToUser < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     rename_column :users, :verification_token,   :confirmation_token
     rename_column :users, :verified_at,          :confirmed_at

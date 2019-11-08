@@ -41,8 +41,6 @@ CREATE TYPE public.special_action AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
 -- Name: active_storage_attachments; Type: TABLE; Schema: public; Owner: -
 --
@@ -277,7 +275,8 @@ CREATE TABLE public.devices (
     serial_number character varying(32),
     mqtt_rate_limit_email_sent_at timestamp without time zone,
     last_ota timestamp without time zone,
-    last_ota_checkup timestamp without time zone
+    last_ota_checkup timestamp without time zone,
+    ota_hour integer DEFAULT 3
 );
 
 
@@ -1371,7 +1370,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -3366,6 +3365,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190918185359'),
 ('20190924190539'),
 ('20190930202839'),
-('20191002125625');
+('20191002125625'),
+('20191107170431');
 
 

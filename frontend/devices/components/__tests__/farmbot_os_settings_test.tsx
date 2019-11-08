@@ -28,7 +28,12 @@ describe("<FarmbotOsSettings />", () => {
   });
 
   const fakeProps = (): FarmbotOsProps => ({
-    deviceAccount: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
+    deviceAccount: fakeResource("Device", {
+      id: 0,
+      name: "",
+      ota_hour: 3,
+      tz_offset_hrs: 0
+    }),
     diagnostics: [],
     dispatch: jest.fn(),
     bot,

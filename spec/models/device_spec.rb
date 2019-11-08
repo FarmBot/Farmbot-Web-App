@@ -75,4 +75,11 @@ describe Device do
     time2 = device.reload.mqtt_rate_limit_email_sent_at
     expect(time).to eq(time2)
   end
+
+  it "enforces correct OTA hours" do
+    expect { device.update!(ota_hour: -1) }.to raise_error(ActiveRecord::RecordInvalid)
+    expect { device.update!(ota_hour: 24) }.to raise_error(ActiveRecord::RecordInvalid)
+    device.update!(ota_hour: 4)
+    expect(device.ota_hour).to eq(4)
+  end
 end

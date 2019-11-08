@@ -1,5 +1,5 @@
 class FirmwareConfigFloatConversion < ActiveRecord::Migration[5.2]
-  safety_assured
+
   def up
     change_column :firmware_configs, :movement_step_per_mm_x, :float
     change_column :firmware_configs, :movement_step_per_mm_y, :float

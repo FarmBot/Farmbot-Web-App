@@ -83,5 +83,27 @@ describe Api::DevicesController do
       expect(device.reload.mounted_tool_id).not_to be
       expect(json[:mounted_tool_id]).to be(nil)
     end
+
+    def set_ota_hour(value)
+      sign_in user
+      body = { id: user.device.id, ota_hour: value }.to_json
+      put :update, body: body, session: { format: :json }
+    end
+
+    it "sets `ota_hour`" do
+      set_ota_hour(12)
+      expect(device.reload.ota_hour).to eq(12)
+    end
+
+    it "unsets `ota_hour`" do
+      set_ota_hour(nil)
+      expect(device.reload.ota_hour).to eq(nil)
+    end
+
+    it "validates ota_hour" do
+      set_ota_hour(27)
+      expect(json[:error]).to eq("Validation failed: Ota hour must be a value from 0 to 23.")
+      expect(response.status).to eq(422)
+    end
   end
 end

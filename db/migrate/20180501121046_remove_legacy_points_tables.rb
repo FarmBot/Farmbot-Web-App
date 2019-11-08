@@ -2,7 +2,7 @@ class RemoveLegacyPointsTables < ActiveRecord::Migration[5.1]
   BIG_WARNING = \
   "It appears that your database contains records which still require "\
   "migration. Please migrate data before proceeding."
-  safety_assured
+
   def safe_to_proceed?
     any_plants = \
       Plant.where(migrated_at: nil).where.not(pointer_id: 0).count > 0

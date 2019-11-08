@@ -8,5 +8,5 @@ class DropTokenExpirations < ActiveRecord::Migration[5.1]
       t.datetime :updated_at, null: false
     end
   end
-  safety_assured
+
 end

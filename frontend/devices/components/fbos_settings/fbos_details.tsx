@@ -13,6 +13,7 @@ import moment from "moment";
 import { timeFormatString } from "../../../util";
 import { TimeSettings } from "../../../interfaces";
 import { StringConfigKey } from "farmbot/dist/resources/configs/fbos";
+import { OtaTimeSelector, changeOtaHour } from "./ota_time_selector";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -279,6 +280,9 @@ export function FbosDetails(props: FbosDetailsProps) {
     <VoltageDisplay chip={target} throttled={throttled} />
     <BetaReleaseOptIn
       dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
+    <OtaTimeSelector
+      onChange={changeOtaHour(props.dispatch, props.deviceAccount)}
+      value={props.deviceAccount.body.ota_hour} />
     {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>
       {reformatDatetime(last_ota_checkup, props.timeSettings)}</p>}
     {last_ota && <p><b>{t("Last updated")}: </b>

@@ -13,7 +13,8 @@ describe("<LastSeen />", () => {
     id: 1,
     name: "foo",
     last_saw_api: "",
-    tz_offset_hrs: 0
+    tz_offset_hrs: 0,
+    ota_hour: 3
   });
 
   const props = (): LastSeenProps => ({

@@ -3,7 +3,7 @@ class AprilParameterAdditions < ActiveRecord::Migration[5.1]
                 movement_invert_2_endpoints_y: 0,
                 movement_invert_2_endpoints_z: 0 }
 
-  safety_assured
+
   def change
     NEW_STUFF.map do |(name, default)|
       add_column :firmware_configs, name, :integer, default: default
