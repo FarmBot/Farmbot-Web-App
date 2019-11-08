@@ -6,6 +6,9 @@ import { edit, save } from "../../../../api/crud";
 
 const IMMEDIATELY = -1;
 
+// tslint:disable-next-line:no-null-keyword
+const UNDEFINED = null as unknown as undefined;
+
 const OTA_TIMES: Record<number, DropDownItem> = {
   0: { label: "at Midnight", value: 0 },
   1: { label: "at 1 AM", value: 1 },
@@ -52,7 +55,7 @@ export const OtaTimeSelector = ({ onChange, value }: OtaTimeSelectorProps): JSX.
   const cb = (ddi: DropDownItem) => {
     const v = parseInt("" + ddi.value, 10);
 
-    onChange((v == IMMEDIATELY) ? null : v);
+    onChange((v == IMMEDIATELY) ? UNDEFINED : v);
   };
 
   const list = Object
