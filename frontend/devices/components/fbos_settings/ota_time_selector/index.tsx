@@ -1,8 +1,9 @@
-import { DropDownItem, FBSelect } from "../../../../ui";
+import { DropDownItem, FBSelect, Row, Col } from "../../../../ui";
 import React from "react";
 import { t } from "../../../../i18next_wrapper";
 import { TaggedDevice } from "farmbot";
 import { edit, save } from "../../../../api/crud";
+import { ColWidth } from "../../farmbot_os_settings";
 
 const IMMEDIATELY = -1;
 
@@ -40,6 +41,7 @@ const OTA_TIMES: Record<number, DropDownItem> = {
 const DEFAULT_HOUR = OTA_TIMES[IMMEDIATELY];
 
 interface OtaTimeSelectorProps {
+  disabled: boolean;
   onChange(hour24: number | undefined): void;
   value: number | undefined;
 }
@@ -51,7 +53,8 @@ export const changeOtaHour =
       dispatch(save(device.uuid));
     };
 /** Label and toggle button for opting in to FBOS beta releases. */
-export const OtaTimeSelector = ({ onChange, value }: OtaTimeSelectorProps): JSX.Element => {
+export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
+  const { onChange, value, disabled } = props;
   const cb = (ddi: DropDownItem) => {
     const v = parseInt("" + ddi.value, 10);
     if ((v == IMMEDIATELY)) {
@@ -63,16 +66,20 @@ export const OtaTimeSelector = ({ onChange, value }: OtaTimeSelectorProps): JSX.
 
   const list = Object
     .values(OTA_TIMES)
-    .reverse()
     .map(x => ({ ...x, label: t(x.label) }));
 
-  return <fieldset className={"os-release-channel"}>
-    <label>
-      {t("Apply Software Updates ")}
-    </label>
-    <FBSelect
-      selectedItem={value ? OTA_TIMES[value] : DEFAULT_HOUR}
-      onChange={cb}
-      list={list} />
-  </fieldset>;
+  return <Row>
+    <Col xs={ColWidth.label}>
+      <label>
+        {t("Apply Software Updates ")}
+      </label>
+    </Col>
+    <Col xs={ColWidth.description}>
+      <FBSelect
+        selectedItem={value ? OTA_TIMES[value] : DEFAULT_HOUR}
+        onChange={cb}
+        list={list}
+        extraClass={disabled ? "disabled" : ""} />
+    </Col>
+  </Row>;
 };
