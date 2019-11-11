@@ -7,14 +7,20 @@ import { fakeDevice } from "../../../../../__test_support__/resource_index_build
 describe("OTA time selector", () => {
   it("selects an OTA update time", () => {
     const onUpdate = jest.fn();
-    const el = shallow(<OtaTimeSelector onChange={onUpdate} value={3} />);
+    const el = shallow(<OtaTimeSelector
+      disabled={false}
+      onChange={onUpdate}
+      value={3} />);
     el.find(FBSelect).simulate("change", { label: "at 5 PM", value: 17 });
     expect(onUpdate).toHaveBeenCalledWith(17);
   });
 
   it("unselects an OTA update time", () => {
     const onUpdate = jest.fn();
-    const el = shallow(<OtaTimeSelector onChange={onUpdate} value={3} />);
+    const el = shallow(<OtaTimeSelector
+      disabled={false}
+      onChange={onUpdate}
+      value={3} />);
     el.find(FBSelect).simulate("change", { label: "no", value: -1 });
     // tslint:disable-next-line:no-null-keyword
     expect(onUpdate).toHaveBeenCalledWith(null);

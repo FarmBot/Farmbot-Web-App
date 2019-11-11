@@ -52,7 +52,7 @@ describe("<FarmbotOsSettings />", () => {
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
-    expect(osSettings.find("button").length).toBe(6);
+    expect(osSettings.find("button").length).toBe(7);
     ["NAME", "TIME ZONE", "FARMBOT OS", "CAMERA", "FIRMWARE"]
       .map(string => expect(osSettings.text()).toContain(string));
   });
