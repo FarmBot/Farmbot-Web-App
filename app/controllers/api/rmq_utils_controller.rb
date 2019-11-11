@@ -79,7 +79,7 @@ module Api
     class PasswordFailure < Exception; end
 
     rescue_from PasswordFailure, with: :report_suspicious_behavior
-    rescue_from BrokerConnectionLimiter::RateLimit, with: :deny
+    rescue_from BrokerConnectionLimiter::RateLimit, with: :do_rate_limit
 
     skip_before_action :check_fbos_version, except: []
     skip_before_action :authenticate_user!, except: []
@@ -97,13 +97,13 @@ module Api
       #       "farmbot_demo". We intentionally
       #       differentiate to avoid accidental
       #       security issues. -RC
-      when "guest" then deny
+      when "guest" then deny("Can't use guest account on this server.")
       when "admin" then authenticate_admin
       when FARMBOT_DEMO_USER
         with_rate_limit { allow }
       else
         is_ok = device_id_in_username == current_device.id
-        is_ok ? (with_rate_limit { allow }) : deny
+        is_ok ? (with_rate_limit { allow }) : deny("Guests are rate limited")
       end
     end
 
@@ -112,7 +112,7 @@ module Api
       #   "username" => "admin",
       #   "vhost"    => "/",
       #   "ip"       => "::ffff:172.23.0.1",
-      vhost_param == VHOST ? allow : deny
+      vhost_param == VHOST ? allow : deny("Bad vhost")
     end
 
     def resource_action
@@ -123,7 +123,7 @@ module Api
       #   "name"       => "mqtt-subscription-MQTT_FX_Clientqos0",
       #   "permission" => "configure",
       ok = RESOURCES.include?(resource_param) && PERMISSIONS.include?(permission_param)
-      ok ? allow : deny
+      ok ? allow : deny("Bad resource action")
     end
 
     def topic_action # Called during subscribe
@@ -136,10 +136,14 @@ module Api
       #   "vhost"       => "/",
       case routing_key_param
       when *PUBLIC_CHANNELS
-        permission_param == "read" ? allow : deny
+        permission_param == "read" ? allow : deny("Topic is read only")
       else
         if_topic_is_safe do
-          device_id_in_topic == device_id_in_username ? allow : deny
+          if device_id_in_topic == device_id_in_username
+            allow
+          else
+            deny("Unsafe topic")
+          end
         end
       end
     end
@@ -177,10 +181,15 @@ module Api
 
     def report_suspicious_behavior
       Rollbar.error("Failed password attempt on  RMQ: " + password_param)
-      deny
+      deny("Failed password attempt")
     end
 
-    def deny
+    def do_rate_limit
+      deny("Device is rate limited")
+    end
+
+    def deny(reason)
+      maybe_alert_user(reason)
       render json: "deny", status: 403
     end
 
@@ -217,32 +226,32 @@ module Api
         a, b, c = (routing_key_param || "").split(".")
 
         if !(permission_param == "read")
-          deny
+          deny("!(permission_param == read)")
           return
         end
 
         if !(a == DEMO_REGISTRY_ROOT)
-          deny
+          deny("!(a == DEMO_REGISTRY_ROOT)")
           return
         end
 
         if b.nil?
-          deny
+          deny("b.nil?")
           return
         end
 
         if b.include?("*")
-          deny
+          deny("b.include?(*)")
           return
         end
 
         if b.include?("#")
-          deny
+          deny("b.include?(#)")
           return
         end
 
         if c.present?
-          deny
+          deny("c.present?")
           return
         end
 
@@ -254,6 +263,9 @@ module Api
         yield
         return
       end
+
+      msg = "Subscribed to illegal topic #{routing_key_param || ""}"
+      maybe_alert_user(msg)
 
       render json: MALFORMED_TOPIC, status: 422
     end
@@ -267,6 +279,7 @@ module Api
     end
 
     def with_rate_limit
+      # TODO: Replace this with `ThrottlePolicy`.
       BrokerConnectionLimiter
         .current
         .maybe_continue(username_param) { yield }
@@ -280,6 +293,14 @@ module Api
 
     def device_id_in_username
       @device_id ||= username_param.gsub("device_", "").to_i
+    end
+
+    def maybe_alert_user(reason)
+      msg = "MQTT ACCESS DENIED #{reason}"
+      puts msg unless Rails.env.test?
+      if device_id_in_username > 0
+        Device.find(device_id_in_username).delay.tell(msg)
+      end
     end
   end
 end
