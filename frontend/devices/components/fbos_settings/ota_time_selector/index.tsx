@@ -112,7 +112,7 @@ export const changeOtaHour =
       dispatch(save(device.uuid));
     };
 
-function assertIsHour(val: number | undefined): asserts val is (HOUR | undefined) {
+export function assertIsHour(val: number | undefined): asserts val is (HOUR | undefined) {
   if ((val === null) || (val === undefined)) {
     return;
   }
