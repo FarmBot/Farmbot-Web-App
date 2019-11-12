@@ -94,9 +94,9 @@ const TIME_TABLE_24H: TimeTable = {
 
 const DEFAULT_HOUR: keyof TimeTable = IMMEDIATELY;
 const TIME_FORMATS: EveryTimeTable = {
-  "12h": TIME_TABLE_24H,
-  "24h": TIME_TABLE_12H
-}
+  "12h": TIME_TABLE_12H,
+  "24h": TIME_TABLE_24H
+};
 
 interface OtaTimeSelectorProps {
   disabled: boolean;
@@ -112,10 +112,21 @@ export const changeOtaHour =
       dispatch(save(device.uuid));
     };
 
+function assertIsHour(val: number | undefined): asserts val is (HOUR | undefined) {
+  if ((val === null) || (val === undefined)) {
+    return;
+  }
+
+  if (((val > 23) || (val < IMMEDIATELY))) {
+    throw new Error("Not an hour!");
+  }
+}
+
 /** Label and toggle button for opting in to FBOS beta releases. */
 export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
   const { onChange, value, disabled } = props;
-  console.log("Upgrade to TSC 3.7 so I can use type assertions");
+  assertIsHour(value);
+
   const cb = (ddi: DropDownItem) => {
     const v = parseInt("" + ddi.value, 10);
     if ((v == IMMEDIATELY)) {

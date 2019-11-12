@@ -14,6 +14,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { HardwareSettings } from "../components/hardware_settings";
 import { DeepPartial } from "redux";
 import { save } from "../../api/crud";
+import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
 
 describe("<Devices/>", () => {
   const fakeProps = (): Props => ({
@@ -35,6 +36,7 @@ describe("<Devices/>", () => {
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
     alerts: [],
+    webAppConfig: fakeWebAppConfig()
   });
 
   it("renders relevant panels", () => {
