@@ -13,6 +13,7 @@ export interface AutoSyncRowProps {
 export interface AutoUpdateRowProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
+  device: TaggedDevice;
 }
 
 export interface CameraSelectionProps {
