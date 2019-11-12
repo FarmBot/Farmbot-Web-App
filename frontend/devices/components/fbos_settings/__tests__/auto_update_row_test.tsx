@@ -20,6 +20,7 @@ describe("<AutoUpdateRow/>", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): AutoUpdateRowProps => ({
+    timeFormat: "12h",
     device: fakeDevice(),
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: 1, consistent: true })

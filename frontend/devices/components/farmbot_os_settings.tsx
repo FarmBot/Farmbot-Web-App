@@ -135,7 +135,9 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
+            {console.log("FIXME")}
             <AutoUpdateRow
+              timeFormat={"24h"}
               device={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig} />

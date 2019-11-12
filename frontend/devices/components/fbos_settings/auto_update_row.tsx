@@ -12,6 +12,7 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
   return <div>
     <OtaTimeSelector
+      timeFormat={props.timeFormat}
       disabled={!osAutoUpdate.value}
       value={props.device.body.ota_hour}
       onChange={changeOtaHour(props.dispatch, props.device)} />
