@@ -1,9 +1,10 @@
 import {
-  fakeFbosConfig, fakeImage, fakeFarmwareEnv
+  fakeFbosConfig, fakeImage, fakeFarmwareEnv, fakeWebAppConfig
 } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
 const mockImages: TaggedImage | undefined = fakeImage();
+const mockWebAppConf = fakeWebAppConfig();
 
 jest.mock("../../resources/selectors_by_kind", () => ({
   selectAllAlerts: () => [],
@@ -17,7 +18,7 @@ jest.mock("../../resources/selectors_by_kind", () => ({
 jest.mock("../../resources/getters", () => ({
   getFbosConfig: () => mockFbosConfig,
   getFirmwareConfig: () => undefined,
-  getWebAppConfig: jest.fn(),
+  getWebAppConfig: jest.fn(() => mockWebAppConf),
 }));
 
 import { mapStateToProps } from "../state_to_props";

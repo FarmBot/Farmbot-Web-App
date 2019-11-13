@@ -3,6 +3,31 @@ import { times } from "lodash";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
 describe("util", () => {
+  describe("scrollToBottom", () => {
+    it("returns early if element is not found", () => {
+      document.body.innerHTML =
+        "<div>" +
+        "  <button id=\"button\" />" +
+        "</div>";
+      jest.useFakeTimers();
+      Util.scrollToBottom("wow");
+      jest.runAllTimers();
+      expect(setTimeout).toHaveBeenCalledTimes(0);
+    });
+
+    it("scrolls to bottom when an element is found", () => {
+      document.body.innerHTML =
+        "<div>" +
+        "  <span id=\"wow\" />" +
+        "  <button id=\"button\" />" +
+        "</div>";
+      jest.useFakeTimers();
+      Util.scrollToBottom("wow");
+      jest.runAllTimers();
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("safeStringFetch", () => {
     const data = {
       // tslint:disable-next-line:no-null-keyword

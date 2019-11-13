@@ -21,6 +21,7 @@ import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
+import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
@@ -47,6 +48,7 @@ describe("<FarmbotOsSettings />", () => {
     env: {},
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
+    webAppConfig: fakeWebAppConfig()
   });
 
   it("renders settings", () => {
