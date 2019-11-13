@@ -23,7 +23,12 @@ export const mapStateToProps = (props: Everything): AddPlantProps =>
     openfarmSearch: OFSearch,
   });
 
-const AddPlantDescription = ({ svgIcon }: { svgIcon: string | undefined }) =>
+interface APDProps {
+  svgIcon: string | undefined;
+  children?: React.ReactChild;
+}
+
+const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
   <div>
     <img className="crop-drag-info-image"
       src={svgToUrl(svgIcon)}
@@ -35,7 +40,7 @@ const AddPlantDescription = ({ svgIcon }: { svgIcon: string | undefined }) =>
     <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
   to the map. You can add the plant as many times as you need to
   before pressing DONE to finish.`)}
-    <PlantGrid />
+    {children}
   </div>;
 
 export interface AddPlantProps {
@@ -55,13 +60,16 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
     const { crop, result, basePath, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
+    const descElem = <AddPlantDescription svgIcon={result.crop.svg_icon}>
+      <PlantGrid dispatch={this.props.dispatch} />
+    </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Plants}
         title={result.crop.name}
         style={{ background: backgroundURL }}
-        descriptionElement={<AddPlantDescription svgIcon={result.crop.svg_icon} />}>
+        descriptionElement={descElem}>
         <a className="right-button"
           onClick={() => history.push(basePath + crop)}>
           {t("Done")}
