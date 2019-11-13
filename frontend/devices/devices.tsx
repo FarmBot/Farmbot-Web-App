@@ -36,7 +36,8 @@ export class RawDevices extends React.Component<Props, {}> {
               shouldDisplay={this.props.shouldDisplay}
               isValidFbosConfig={this.props.isValidFbosConfig}
               env={this.props.env}
-              saveFarmwareEnv={this.props.saveFarmwareEnv} />
+              saveFarmwareEnv={this.props.saveFarmwareEnv}
+              webAppConfig={this.props.webAppConfig} />
           </Col>
           <Col xs={12} sm={6}>
             <HardwareSettings
