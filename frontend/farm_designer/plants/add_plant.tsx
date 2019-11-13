@@ -10,7 +10,7 @@ import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
-import { PlantGrid } from "./plant_grid";
+import { PlantGrid } from "./grid/plant_grid";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
