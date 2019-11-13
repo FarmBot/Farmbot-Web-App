@@ -10,6 +10,7 @@ import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { PlantGrid } from "./plant_grid";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
@@ -34,6 +35,7 @@ const AddPlantDescription = ({ svgIcon }: { svgIcon: string | undefined }) =>
     <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
   to the map. You can add the plant as many times as you need to
   before pressing DONE to finish.`)}
+    <PlantGrid />
   </div>;
 
 export interface AddPlantProps {
@@ -59,8 +61,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         panel={Panel.Plants}
         title={result.crop.name}
         style={{ background: backgroundURL }}
-        descriptionElement={
-          <AddPlantDescription svgIcon={result.crop.svg_icon} />}>
+        descriptionElement={<AddPlantDescription svgIcon={result.crop.svg_icon} />}>
         <a className="right-button"
           onClick={() => history.push(basePath + crop)}>
           {t("Done")}
