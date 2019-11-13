@@ -139,7 +139,8 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
   const theTimeTable = TIME_FORMATS[props.timeFormat];
   const list = Object
     .values(theTimeTable)
-    .map(x => ({ ...x, label: t(x.label) }));
+    .map(x => ({ ...x, label: t(x.label) }))
+    .sort((_x, _y) => (_x.value > _y.value) ? 1 : -1);
   const selectedItem = (typeof value == "number") ?
     theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
   return <Row>
