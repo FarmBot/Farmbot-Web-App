@@ -11,6 +11,7 @@ import {
   JobProgress,
   FirmwareHardware,
   Alert,
+  TaggedWebAppConfig,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
@@ -42,6 +43,7 @@ export interface Props {
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   alerts: Alert[];
+  webAppConfig: TaggedWebAppConfig;
 }
 
 /** Function to save a Farmware env variable to the API. */
@@ -167,6 +169,7 @@ export interface FarmbotOsProps {
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
+  webAppConfig: TaggedWebAppConfig;
 }
 
 export interface FarmbotOsState {

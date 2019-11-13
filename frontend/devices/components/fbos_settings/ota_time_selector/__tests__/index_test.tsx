@@ -1,13 +1,23 @@
 import React from "react";
-import { OtaTimeSelector, changeOtaHour } from "..";
+import { OtaTimeSelector, changeOtaHour, assertIsHour } from "..";
 import { shallow } from "enzyme";
 import { FBSelect } from "../../../../../ui";
 import { fakeDevice } from "../../../../../__test_support__/resource_index_builder";
 
 describe("OTA time selector", () => {
+  it("asserts that a variable is an HOUR", () => {
+    expect(assertIsHour(undefined)).toBe(undefined);
+    // tslint:disable-next-line:no-null-keyword
+    expect(assertIsHour(null as unknown as undefined)).toBe(undefined);
+    const crashOn = (x: number) => () => assertIsHour(x);
+    expect(assertIsHour(undefined)).toBe(undefined);
+    expect(crashOn(-2)).toThrowError("Not an hour!");
+    expect(crashOn(24)).toThrowError("Not an hour!");
+  });
   it("selects an OTA update time", () => {
     const onUpdate = jest.fn();
     const el = shallow(<OtaTimeSelector
+      timeFormat={"12h"}
       disabled={false}
       onChange={onUpdate}
       value={3} />);
@@ -18,6 +28,7 @@ describe("OTA time selector", () => {
   it("unselects an OTA update time", () => {
     const onUpdate = jest.fn();
     const el = shallow(<OtaTimeSelector
+      timeFormat={"12h"}
       disabled={false}
       onChange={onUpdate}
       value={3} />);

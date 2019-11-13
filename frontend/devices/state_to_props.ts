@@ -16,7 +16,7 @@ import {
 import {
   saveOrEditFarmwareEnv, reduceFarmwareEnv
 } from "../farmware/state_to_props";
-import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
+import { getFbosConfig, getFirmwareConfig, getWebAppConfig } from "../resources/getters";
 import { DevSettings } from "../account/dev/dev_support";
 import { getAllAlerts } from "../messages/state_to_props";
 
@@ -33,6 +33,10 @@ export function mapStateToProps(props: Everything): Props {
   const env = shouldDisplay(Feature.api_farmware_env)
     ? reduceFarmwareEnv(props.resources.index)
     : props.bot.hardware.user_env;
+  const webAppConfig = getWebAppConfig(props.resources.index);
+  if (!webAppConfig) {
+    throw new Error("Missing web app config");
+  }
   return {
     userToApi: props.bot.connectivity.uptime["user.api"],
     userToMqtt: props.bot.connectivity.uptime["user.mqtt"],
@@ -52,5 +56,6 @@ export function mapStateToProps(props: Everything): Props {
     saveFarmwareEnv: saveOrEditFarmwareEnv(props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
     alerts: getAllAlerts(props.resources),
+    webAppConfig
   };
 }

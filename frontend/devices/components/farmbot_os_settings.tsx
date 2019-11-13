@@ -81,6 +81,8 @@ export class FarmbotOsSettings
     const { bot, sourceFbosConfig, botToMqttStatus } = this.props;
     const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
+    const timeFormat = this.props.webAppConfig.body.time_format_24_hour ?
+      "24h" : "12h";
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device">
@@ -136,6 +138,7 @@ export class FarmbotOsSettings
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
             <AutoUpdateRow
+              timeFormat={timeFormat}
               device={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig} />
