@@ -1,9 +1,11 @@
 export type PlantGridKey =
   "startX" | "startY" | "spacingH" | "spacingV" | "numPlantsH" | "numPlantsV";
 
+export type PlantGridData = Record<PlantGridKey, number>;
+
 export interface PlantGridState {
   status: "clean" | "dirty",
-  grid: Record<PlantGridKey, number>;
+  grid: PlantGridData;
 }
 
 export interface PlantGridProps {
