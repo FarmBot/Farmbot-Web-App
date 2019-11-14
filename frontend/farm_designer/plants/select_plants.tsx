@@ -14,19 +14,20 @@ import {
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../panel_header";
+import { error } from "../../toast/toast";
 
-export function mapStateToProps(props: Everything) {
-  return {
-    selected: props.resources.consumers.farm_designer.selectedPlants,
-    plants: getPlants(props.resources),
-    dispatch: props.dispatch,
-  };
-}
+export const mapStateToProps = (props: Everything): SelectPlantsProps => ({
+  selected: props.resources.consumers.farm_designer.selectedPlants,
+  plants: getPlants(props.resources),
+  dispatch: props.dispatch,
+  gardenOpen: props.resources.consumers.farm_designer.openedSavedGarden,
+});
 
 export interface SelectPlantsProps {
   plants: TaggedPlant[];
   dispatch: Function;
   selected: string[] | undefined;
+  gardenOpen: string | undefined;
 }
 
 export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
@@ -74,9 +75,9 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           {t("Delete")}
         </button>
         <button className="fb-button dark-blue"
-          onClick={() => this.props.dispatch(createGroup({
-            points: this.selected
-          }))}>
+          onClick={() => !this.props.gardenOpen
+            ? this.props.dispatch(createGroup({ points: this.selected }))
+            : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
       </div>

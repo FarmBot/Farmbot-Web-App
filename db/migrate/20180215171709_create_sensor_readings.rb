@@ -1,5 +1,5 @@
 class CreateSensorReadings < ActiveRecord::Migration[5.1]
-  safety_assured
+
   def change
     create_table :sensor_readings do |t|
       t.references :device, foreign_key: true

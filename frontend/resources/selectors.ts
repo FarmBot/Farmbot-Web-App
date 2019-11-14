@@ -1,4 +1,4 @@
-import { ResourceIndex } from "./interfaces";
+import { ResourceIndex, UUID } from "./interfaces";
 import {
   ResourceName,
   TaggedGenericPointer,
@@ -50,7 +50,7 @@ export let maybeDetermineUuid =
     }
   };
 
-export let findId = (index: ResourceIndex, kind: ResourceName, id: number) => {
+export let findId = (index: ResourceIndex, kind: ResourceName, id: number): UUID => {
   const uuid = maybeDetermineUuid(index, kind, id);
   if (uuid) {
     return uuid;

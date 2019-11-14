@@ -71,9 +71,8 @@ export interface GardenPlantState {
 export interface GardenPointProps {
   mapTransformProps: MapTransformProps;
   point: TaggedGenericPointer;
-}
-
-export interface GardenPointState {
+  hovered: boolean;
+  dispatch: Function;
 }
 
 interface DragHelpersBaseProps {

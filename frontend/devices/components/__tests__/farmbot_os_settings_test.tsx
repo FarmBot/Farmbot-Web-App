@@ -21,6 +21,7 @@ import { FarmbotOsProps } from "../../interfaces";
 import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
+import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
@@ -28,7 +29,12 @@ describe("<FarmbotOsSettings />", () => {
   });
 
   const fakeProps = (): FarmbotOsProps => ({
-    deviceAccount: fakeResource("Device", { id: 0, name: "", tz_offset_hrs: 0 }),
+    deviceAccount: fakeResource("Device", {
+      id: 0,
+      name: "",
+      ota_hour: 3,
+      tz_offset_hrs: 0
+    }),
     diagnostics: [],
     dispatch: jest.fn(),
     bot,
@@ -37,17 +43,18 @@ describe("<FarmbotOsSettings />", () => {
     botToMqttStatus: "up",
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
-    shouldDisplay: jest.fn(),
+    shouldDisplay: jest.fn(() => true),
     isValidFbosConfig: false,
     env: {},
     saveFarmwareEnv: jest.fn(),
     timeSettings: fakeTimeSettings(),
+    webAppConfig: fakeWebAppConfig()
   });
 
   it("renders settings", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
-    expect(osSettings.find("button").length).toBe(6);
+    expect(osSettings.find("button").length).toBe(7);
     ["NAME", "TIME ZONE", "FARMBOT OS", "CAMERA", "FIRMWARE"]
       .map(string => expect(osSettings.text()).toContain(string));
   });

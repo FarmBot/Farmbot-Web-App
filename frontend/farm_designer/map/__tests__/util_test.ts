@@ -4,8 +4,9 @@ jest.mock("../../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
+let mockGardenOpen = true;
 jest.mock("../../saved_gardens/saved_gardens", () => ({
-  savedGardenOpen: () => true,
+  savedGardenOpen: () => mockGardenOpen,
 }));
 
 import {
@@ -325,11 +326,11 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.clickToAdd);
     mockPath = "/app/designer/plants/1/edit";
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/saved_gardens/templates/1/edit";
+    mockPath = "/app/designer/gardens/templates/1/edit";
     expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/plants/1";
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = "/app/designer/saved_gardens/templates/1";
+    mockPath = "/app/designer/gardens/templates/1";
     expect(getMode()).toEqual(Mode.editPlant);
     mockPath = "/app/designer/plants/select";
     expect(getMode()).toEqual(Mode.boxSelect);
@@ -337,12 +338,18 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.addPlant);
     mockPath = "/app/designer/move_to";
     expect(getMode()).toEqual(Mode.moveTo);
+    mockPath = "/app/designer/points";
+    expect(getMode()).toEqual(Mode.points);
     mockPath = "/app/designer/points/add";
     expect(getMode()).toEqual(Mode.createPoint);
-    mockPath = "/app/designer/saved_gardens";
+    mockPath = "/app/designer/gardens";
+    mockGardenOpen = true;
     expect(getMode()).toEqual(Mode.templateView);
     mockPath = "/app/designer/groups/1";
     expect(getMode()).toEqual(Mode.addPointToGroup);
+    mockPath = "";
+    mockGardenOpen = false;
+    expect(getMode()).toEqual(Mode.none);
   });
 });
 

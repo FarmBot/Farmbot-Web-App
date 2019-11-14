@@ -6,6 +6,7 @@ export const fakeDesignerState = (): DesignerState => ({
     plantUUID: undefined,
     icon: ""
   },
+  hoveredPoint: undefined,
   hoveredPlantListItem: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],

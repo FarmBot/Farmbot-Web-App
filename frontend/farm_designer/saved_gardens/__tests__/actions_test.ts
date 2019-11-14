@@ -56,8 +56,9 @@ describe("destroySavedGarden", () => {
   it("deletes garden", () => {
     const dispatch = jest.fn(() => Promise.resolve());
     destroySavedGarden("SavedGardenUuid")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
     expect(destroy).toHaveBeenCalledWith("SavedGardenUuid");
-    expect(dispatch).toHaveBeenLastCalledWith(unselectSavedGarden);
   });
 });
 
@@ -65,7 +66,7 @@ describe("closeSavedGarden", () => {
   it("closes garden", () => {
     const dispatch = jest.fn();
     closeSavedGarden()(dispatch);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
   });
 });
@@ -75,7 +76,7 @@ describe("openSavedGarden", () => {
     const dispatch = jest.fn();
     const uuid = "SavedGardenUuid.1.0";
     openSavedGarden(uuid)(dispatch);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens/1");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens/1");
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_SAVED_GARDEN,
       payload: uuid
@@ -91,7 +92,7 @@ describe("openOrCloseGarden", () => {
       gardenIsOpen: false,
     };
     openOrCloseGarden(props)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens/1");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens/1");
   });
 
   it("closes garden", () => {
@@ -101,19 +102,19 @@ describe("openOrCloseGarden", () => {
       gardenIsOpen: true,
     };
     openOrCloseGarden(props)();
-    expect(history.push).toHaveBeenCalledWith("/app/designer/saved_gardens");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/gardens");
   });
 });
 
 describe("newSavedGarden", () => {
   it("creates a new saved garden", () => {
-    newSavedGarden("my saved garden")(jest.fn());
+    newSavedGarden("my saved garden")(jest.fn(() => Promise.resolve()));
     expect(initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "my saved garden" });
   });
 
   it("creates a new saved garden with default name", () => {
-    newSavedGarden("")(jest.fn());
+    newSavedGarden("")(jest.fn(() => Promise.resolve()));
     expect(initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "Untitled Garden" });
   });

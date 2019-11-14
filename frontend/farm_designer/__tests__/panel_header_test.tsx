@@ -37,7 +37,7 @@ describe("<DesignerNavTabs />", () => {
   });
 
   it("renders for saved gardens", () => {
-    mockPath = "/app/designer/saved_gardens";
+    mockPath = "/app/designer/gardens";
     mockDev = true;
     const wrapper = shallow(<DesignerNavTabs />);
     expect(wrapper.hasClass("green-panel")).toBeTruthy();

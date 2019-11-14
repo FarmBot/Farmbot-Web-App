@@ -81,6 +81,8 @@ export class FarmbotOsSettings
     const { bot, sourceFbosConfig, botToMqttStatus } = this.props;
     const { sync_status } = bot.hardware.informational_settings;
     const botOnline = isBotOnline(sync_status, botToMqttStatus);
+    const timeFormat = this.props.webAppConfig.body.time_format_24_hour ?
+      "24h" : "12h";
     return <Widget className="device-widget">
       <form onSubmit={(e) => e.preventDefault()}>
         <WidgetHeader title="Device">
@@ -121,25 +123,6 @@ export class FarmbotOsSettings
             networkState={this.props.botToMqttStatus}
             lockOpen={process.env.NODE_ENV !== "production"
               || this.props.isValidFbosConfig}>
-            <FarmbotOsRow
-              bot={this.props.bot}
-              osReleaseNotesHeading={this.osReleaseNotes.heading}
-              osReleaseNotes={this.osReleaseNotes.notes}
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig}
-              shouldDisplay={this.props.shouldDisplay}
-              botOnline={botOnline}
-              botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
-              timeSettings={this.props.timeSettings}
-              deviceAccount={this.props.deviceAccount} />
-            <AutoUpdateRow
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
-            {(location.host.includes("localhost")
-              || !isUndefined(sourceFbosConfig("auto_sync").value)) &&
-              <AutoSyncRow
-                dispatch={this.props.dispatch}
-                sourceFbosConfig={sourceFbosConfig} />}
             <CameraSelection
               env={this.props.env}
               botOnline={botOnline}
@@ -154,6 +137,28 @@ export class FarmbotOsSettings
               shouldDisplay={this.props.shouldDisplay}
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
+            <AutoUpdateRow
+              shouldDisplay={this.props.shouldDisplay}
+              timeFormat={timeFormat}
+              device={this.props.deviceAccount}
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig} />
+            <FarmbotOsRow
+              bot={this.props.bot}
+              osReleaseNotesHeading={this.osReleaseNotes.heading}
+              osReleaseNotes={this.osReleaseNotes.notes}
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig}
+              shouldDisplay={this.props.shouldDisplay}
+              botOnline={botOnline}
+              botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
+              timeSettings={this.props.timeSettings}
+              deviceAccount={this.props.deviceAccount} />
+            {(location.host.includes("localhost")
+              || !isUndefined(sourceFbosConfig("auto_sync").value)) &&
+              <AutoSyncRow
+                dispatch={this.props.dispatch}
+                sourceFbosConfig={sourceFbosConfig} />}
             {this.props.shouldDisplay(Feature.boot_sequence) &&
               <BootSequenceSelector />}
             <PowerAndReset
@@ -165,7 +170,6 @@ export class FarmbotOsSettings
             <SendDiagnosticReport
               diagnostics={this.props.diagnostics}
               expanded={this.props.bot.controlPanelState.diagnostic_dumps}
-              shouldDisplay={this.props.shouldDisplay}
               botOnline={isBotOnline(sync_status, botToMqttStatus)}
               dispatch={this.props.dispatch} />
           </MustBeOnline>

@@ -25,7 +25,7 @@ export function PlantLayer(props: PlantLayerProps) {
       const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
       const multiselected = !!(selectedForDel && (selectedForDel.includes(p.uuid)));
       const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
-        ? "saved_gardens/templates"
+        ? "gardens/templates"
         : "plants";
       const plant = <GardenPlant
         uuid={p.uuid}

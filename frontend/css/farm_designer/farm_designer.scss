@@ -290,6 +290,12 @@
   transform-box: fill-box;
 }
 
+.map-point {
+  stroke-width: 2;
+  stroke-opacity: 0.3;
+  fill-opacity: 0.1;
+}
+
 .plant-image {
   transform-origin: bottom;
   transform-box: fill-box;
@@ -406,6 +412,8 @@
 }
 
 .garden-snapshot {
+  margin-left: 2rem;
+  margin-right: 2rem;
   button {
     &.pseudo-disabled {
       cursor: not-allowed;
@@ -414,22 +422,26 @@
 }
 
 .saved-garden-list {
-  margin: -15px;
   .saved-garden-row {
     padding: 0.25rem;
     button {
       margin-bottom: 1rem;
     }
     .saved-garden-info div {
+      height: 3rem;
+      line-height: 3rem;
       cursor: pointer;
       padding-right: 0;
-      input {
-        background: none;
-        box-shadow: none;
-        padding: 0;
+      label {
+        margin: 0;
+        pointer-events: none;
+        margin-left: 1rem;
       }
       p {
-        margin-top: 0.25rem;
+        float: right;
+        line-height: 3rem;
+        text-align: center;
+        margin-right: 1rem;
       }
     }
     &:hover {

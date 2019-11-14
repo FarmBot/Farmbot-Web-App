@@ -18,6 +18,7 @@ describe("<Points> />", () => {
   const fakeProps = (): PointsProps => ({
     points: [],
     dispatch: jest.fn(),
+    hoveredPoint: undefined,
   });
 
   it("renders no points", () => {

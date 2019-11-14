@@ -1,9 +1,18 @@
 import {
-  SourceFbosConfig, BotState, ControlPanelState, ShouldDisplay,
-  SaveFarmwareEnv, UserEnv
+  BotState,
+  ControlPanelState,
+  SaveFarmwareEnv,
+  ShouldDisplay,
+  SourceFbosConfig,
+  UserEnv
 } from "../../interfaces";
-import { InformationalSettings, TaggedDevice, Alert } from "farmbot";
+import {
+  Alert,
+  InformationalSettings,
+  TaggedDevice,
+} from "farmbot";
 import { TimeSettings } from "../../../interfaces";
+import { PreferredHourFormat } from "./ota_time_selector";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -12,7 +21,10 @@ export interface AutoSyncRowProps {
 
 export interface AutoUpdateRowProps {
   dispatch: Function;
+  timeFormat: PreferredHourFormat;
   sourceFbosConfig: SourceFbosConfig;
+  device: TaggedDevice;
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface CameraSelectionProps {

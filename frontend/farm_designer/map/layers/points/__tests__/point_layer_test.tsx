@@ -1,10 +1,11 @@
 import * as React from "react";
 import { PointLayer, PointLayerProps } from "../point_layer";
-import { shallow } from "enzyme";
+import { mount } from "enzyme";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import { GardenPoint } from "../garden_point";
 
 describe("<PointLayer/>", () => {
   function fakeProps(): PointLayerProps {
@@ -12,21 +13,23 @@ describe("<PointLayer/>", () => {
       visible: true,
       points: [fakePoint()],
       mapTransformProps: fakeMapTransformProps(),
+      hoveredPoint: undefined,
+      dispatch: jest.fn(),
     };
   }
 
   it("shows points", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointLayer {...p} />);
+    const wrapper = mount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find("GardenPoint").html()).toContain("r=\"100\"");
+    expect(layer.find(GardenPoint).html()).toContain("r=\"100\"");
   });
 
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const wrapper = shallow(<PointLayer {...p} />);
+    const wrapper = mount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find("GardenPoint").length).toEqual(0);
+    expect(layer.find(GardenPoint).length).toEqual(0);
   });
 });

@@ -172,7 +172,6 @@ export const timestamp = (date = new Date()) => Math.round(date.getTime());
 export function scrollToBottom(elementId: string) {
   const elToScroll = document.getElementById(elementId);
   if (!elToScroll) { return; }
-
   // Wait for the new element height and scroll to the bottom.
   setTimeout(() => elToScroll.scrollTop = elToScroll.scrollHeight, 1);
 }

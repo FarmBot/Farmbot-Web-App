@@ -66,7 +66,7 @@ const getCurrentTab = (): Tabs => {
     return Panel.Map;
   } else if (pathArray.includes("events")) {
     return Panel.FarmEvents;
-  } else if (pathArray.includes("saved_gardens")) {
+  } else if (pathArray.includes("gardens")) {
     return Panel.SavedGardens;
   } else if (pathArray.includes("tools")) {
     return Panel.Tools;
@@ -120,7 +120,7 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
       {DevSettings.futureFeaturesEnabled() &&
         <NavTab
           panel={Panel.SavedGardens}
-          linkTo={"/app/designer/saved_gardens"}
+          linkTo={"/app/designer/gardens"}
           title={t("Gardens")} />}
       <NavTab
         panel={Panel.FarmEvents}

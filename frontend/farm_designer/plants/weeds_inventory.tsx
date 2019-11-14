@@ -17,17 +17,22 @@ import { PointInventoryItem } from "./point_inventory_item";
 export interface WeedsProps {
   points: TaggedGenericPointer[];
   dispatch: Function;
+  hoveredPoint: string | undefined;
 }
 
 interface WeedsState {
   searchTerm: string;
 }
 
+export const isAWeed = (pointName: string, type?: string) =>
+  type == "weed" || pointName.toLowerCase().includes("weed");
+
 export const mapStateToProps = (props: Everything): WeedsProps => ({
   points: selectAllGenericPointers(props.resources.index)
     .filter(x => !x.body.discarded_at)
-    .filter(x => x.body.name.toLowerCase().includes("weed")),
+    .filter(x => isAWeed(x.body.name, x.body.meta.type)),
   dispatch: props.dispatch,
+  hoveredPoint: props.resources.consumers.farm_designer.hoveredPoint,
 });
 
 export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
@@ -57,12 +62,12 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           {this.props.points
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
-            .map(p => {
-              return <PointInventoryItem
-                key={p.uuid}
-                tpp={p}
-                dispatch={this.props.dispatch} />;
-            })}
+            .map(p => <PointInventoryItem
+              key={p.uuid}
+              navName={"weeds"}
+              tpp={p}
+              hovered={this.props.hoveredPoint === p.uuid}
+              dispatch={this.props.dispatch} />)}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

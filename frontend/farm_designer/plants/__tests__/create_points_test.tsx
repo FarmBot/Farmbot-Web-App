@@ -4,6 +4,12 @@ jest.mock("../../../farmware/weed_detector/actions", () => ({
   deletePoints: jest.fn()
 }));
 
+let mockPath = "/app/designer/points/add";
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  getPathArray: () => mockPath.split("/"),
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -16,8 +22,9 @@ import { deletePoints } from "../../../farmware/weed_detector/actions";
 import { Actions } from "../../../constants";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { DeepPartial } from "redux";
 import { CurrentPointPayl } from "../../interfaces";
+import { inputEvent } from "../../../__test_support__/fake_input_event";
+import { cloneDeep } from "lodash";
 
 const FAKE_POINT: CurrentPointPayl =
   ({ name: "My Point", cx: 13, cy: 22, r: 345, color: "red" });
@@ -43,6 +50,10 @@ describe("mapStateToProps", () => {
 });
 
 describe("<CreatePoints />", () => {
+  beforeEach(() => {
+    mockPath = "/app/designer/points/add";
+  });
+
   const fakeProps = (): CreatePointsProps => ({
     dispatch: jest.fn(),
     currentPoint: undefined,
@@ -56,54 +67,89 @@ describe("<CreatePoints />", () => {
     return new CreatePoints(props);
   };
 
-  it("renders", () => {
+  it("renders for points", () => {
+    mockPath = "/app/designer";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["create point", "cancel", "delete", "x", "y", "radius", "color"]
+    ["create point", "delete", "x", "y", "radius", "color"]
+      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
+  it("renders for weeds", () => {
+    mockPath = "/app/designer/weeds/add";
+    const wrapper = mount(<CreatePoints {...fakeProps()} />);
+    ["create weed", "delete", "x", "y", "radius", "color"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("updates specific fields", () => {
     const i = fakeInstance();
-    const updater = i.updateValue("color");
-    type Event = React.SyntheticEvent<HTMLInputElement>;
-    const e: DeepPartial<Event> = {
-      currentTarget: {
-        value: "cheerful hue"
-      }
-    };
-    updater(e as Event);
+    i.updateValue("color")(inputEvent("cheerful hue"));
     expect(i.props.currentPoint).toBeTruthy();
+    const expected = cloneDeep(FAKE_POINT);
+    expected.color = "cheerful hue";
     expect(i.props.dispatch).toHaveBeenCalledWith({
-      payload: {
-        color: "cheerful hue",
-        cx: 13,
-        cy: 22,
-        name: "My Point",
-        r: 345,
-      },
       type: "SET_CURRENT_POINT_DATA",
+      payload: expected,
     });
   });
 
-  it("updates current point", () => {
-    const p = fakeInstance();
-    p.updateCurrentPoint();
-    expect(p.props.dispatch).toHaveBeenCalledWith({
+  it("doesn't update fields without current point", () => {
+    const p = fakeProps();
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    jest.clearAllMocks();
+    wrapper.instance().updateValue("r")(inputEvent("1"));
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("loads default point data", () => {
+    const i = fakeInstance();
+    i.loadDefaultPoint();
+    expect(i.props.dispatch).toHaveBeenCalledWith({
       type: "SET_CURRENT_POINT_DATA",
-      payload: { cx: 13, cy: 22, name: "My Point", r: 345, color: "red" },
+      payload: { name: "Created Point", color: "green", cx: 1, cy: 1, r: 15 },
     });
   });
+
+  it("updates point name", () => {
+    mockPath = "/app/designer/weeds/add";
+    const p = fakeProps();
+    p.currentPoint = { cx: 0, cy: 0, r: 100 };
+    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
+    const wrapper = shallow(panel.instance().PointName());
+    wrapper.find("BlurableInput").simulate("commit", {
+      currentTarget: { value: "new name" }
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CURRENT_POINT_DATA, payload: {
+        cx: 0, cy: 0, r: 100, name: "new name", color: "red",
+      }
+    });
+  });
+
   it("creates point", () => {
+    mockPath = "/app/designer/points/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    wrapper.setState({ cx: 10, cy: 20, r: 30, color: "red" });
-    clickButton(wrapper, 0, "create point");
-    expect(initSave).toHaveBeenCalledWith("Point",
-      {
-        meta: { color: "red", created_by: "farm-designer" },
-        name: "Created Point",
-        pointer_type: "GenericPointer",
-        radius: 30, x: 10, y: 20, z: 0
-      });
+    wrapper.setState({ cx: 10, cy: 20, r: 30 });
+    clickButton(wrapper, 0, "save");
+    expect(initSave).toHaveBeenCalledWith("Point", {
+      meta: { color: "green", created_by: "farm-designer", type: "point" },
+      name: "Created Point",
+      pointer_type: "GenericPointer",
+      radius: 30, x: 10, y: 20, z: 0,
+    });
+  });
+
+  it("creates weed", () => {
+    mockPath = "/app/designer/weeds/add";
+    const wrapper = mount(<CreatePoints {...fakeProps()} />);
+    wrapper.setState({ cx: 10, cy: 20, r: 30 });
+    clickButton(wrapper, 0, "save");
+    expect(initSave).toHaveBeenCalledWith("Point", {
+      meta: { color: "red", created_by: "farm-designer", type: "weed" },
+      name: "Created Weed",
+      pointer_type: "GenericPointer",
+      radius: 30, x: 10, y: 20, z: 0,
+    });
   });
 
   it("deletes all points", () => {
@@ -115,11 +161,32 @@ describe("<CreatePoints />", () => {
     button.simulate("click");
     expect(window.confirm).toHaveBeenCalledWith(
       expect.stringContaining("all the points"));
-    expect(p.dispatch).not.toHaveBeenCalled();
+    expect(deletePoints).not.toHaveBeenCalled();
     window.confirm = () => true;
     p.dispatch = jest.fn(x => x());
     button.simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("points", "farm-designer");
+    expect(deletePoints).toHaveBeenCalledWith("points", {
+      created_by: "farm-designer", type: "point"
+    });
+  });
+
+  it("deletes all weeds", () => {
+    mockPath = "/app/designer/weeds/add";
+    const p = fakeProps();
+    const wrapper = mount(<CreatePoints {...p} />);
+    const button = wrapper.find("button").last();
+    expect(button.text()).toEqual("Delete all created weeds");
+    window.confirm = jest.fn();
+    button.simulate("click");
+    expect(window.confirm).toHaveBeenCalledWith(
+      expect.stringContaining("all the weeds"));
+    expect(deletePoints).not.toHaveBeenCalled();
+    window.confirm = () => true;
+    p.dispatch = jest.fn(x => x());
+    button.simulate("click");
+    expect(deletePoints).toHaveBeenCalledWith("points", {
+      created_by: "farm-designer", type: "weed"
+    });
   });
 
   it("changes color", () => {
@@ -145,7 +212,7 @@ describe("<CreatePoints />", () => {
       currentTarget: { value: "10" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { cx: 10, cy: 0, r: 0 },
+      payload: { cx: 10, cy: 0, r: 0, color: "green" },
       type: Actions.SET_CURRENT_POINT_DATA
     });
   });

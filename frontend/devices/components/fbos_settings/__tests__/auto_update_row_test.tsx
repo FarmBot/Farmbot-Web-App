@@ -11,7 +11,7 @@ import { fakeState } from "../../../../__test_support__/fake_state";
 import { edit, save } from "../../../../api/crud";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex, fakeDevice
 } from "../../../../__test_support__/resource_index_builder";
 
 describe("<AutoUpdateRow/>", () => {
@@ -20,6 +20,9 @@ describe("<AutoUpdateRow/>", () => {
   state.resources = buildResourceIndex([fakeConfig]);
 
   const fakeProps = (): AutoUpdateRowProps => ({
+    timeFormat: "12h",
+    shouldDisplay: jest.fn(() => true),
+    device: fakeDevice(),
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: 1, consistent: true })
   });
@@ -33,8 +36,8 @@ describe("<AutoUpdateRow/>", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 0, consistent: true });
     const wrapper = mount(<AutoUpdateRow {...p} />);
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 1 });
+    wrapper.find("button").at(1).simulate("click");
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
@@ -42,8 +45,8 @@ describe("<AutoUpdateRow/>", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 1, consistent: true });
     const wrapper = mount(<AutoUpdateRow {...p} />);
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: 0 });
+    wrapper.find("button").at(1).simulate("click");
+    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: false });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 });

@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Saucer } from "../../../ui/index";
-import { ToggleButton } from "../../../controls/toggle_button";
+import { Saucer, FBSelect } from "../../../ui";
 import { updateConfig } from "../../actions";
 import { last, isNumber, isString } from "lodash";
 import { Content } from "../../../constants";
 import { FbosDetailsProps } from "./interfaces";
-import { SourceFbosConfig, ShouldDisplay, Feature } from "../../interfaces";
+import { SourceFbosConfig } from "../../interfaces";
 import { ConfigurationName } from "farmbot";
 import { t } from "../../../i18next_wrapper";
 import { LastSeen } from "./last_seen_row";
@@ -13,6 +12,7 @@ import { Popover } from "@blueprintjs/core";
 import moment from "moment";
 import { timeFormatString } from "../../../util";
 import { TimeSettings } from "../../../interfaces";
+import { StringConfigKey } from "farmbot/dist/resources/configs/fbos";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -210,54 +210,31 @@ const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
-interface BetaReleaseOptInParams {
-  sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
-}
-
-/** Generate params for BetaReleaseOptInButton. */
-export const betaReleaseOptIn = (
-  { sourceFbosConfig, shouldDisplay }: BetaReleaseOptInParams
-) => {
-  if (shouldDisplay(Feature.use_update_channel)) {
-    const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName);
-    const betaOptInValue = betaOptIn.value !== "stable";
-    return {
-      betaOptIn: { value: betaOptInValue, consistent: true }, betaOptInValue,
-      update: { update_channel: betaOptInValue ? "stable" : "beta" }
-    };
-  } else {
-    const betaOptIn = sourceFbosConfig("beta_opt_in");
-    const betaOptInValue = betaOptIn.value;
-    return {
-      betaOptIn, betaOptInValue,
-      update: { beta_opt_in: !betaOptInValue }
-    };
-  }
-};
-
-interface BetaReleaseOptInButtonProps {
+export interface BetaReleaseOptInButtonProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
 }
 
 /** Label and toggle button for opting in to FBOS beta releases. */
-const BetaReleaseOptInButton = (
-  { dispatch, sourceFbosConfig, shouldDisplay }: BetaReleaseOptInButtonProps
+export const BetaReleaseOptIn = (
+  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps
 ): JSX.Element => {
-  const { betaOptIn, betaOptInValue, update } =
-    betaReleaseOptIn({ sourceFbosConfig, shouldDisplay });
-  return <fieldset>
-    <label style={{ marginTop: "0.75rem" }}>
-      {t("Beta release Opt-In")}
+  const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName).value;
+  return <fieldset className={"os-release-channel"}>
+    <label>
+      {t("OS release channel")}
     </label>
-    <ToggleButton
-      toggleValue={betaOptInValue}
-      dim={!betaOptIn.consistent}
-      toggleAction={() =>
-        (betaOptInValue || confirm(Content.OS_BETA_RELEASES)) &&
-        dispatch(updateConfig(update))} />
+    <FBSelect
+      selectedItem={{ label: t("" + betaOptIn), value: "" + betaOptIn }}
+      onChange={ddi =>
+        (ddi.value == "stable" || confirm(Content.OS_BETA_RELEASES)) &&
+        dispatch(updateConfig({ ["update_channel" as StringConfigKey]: ddi.value }))}
+      list={[
+        { label: t("stable"), value: "stable" },
+        { label: t("beta"), value: "beta" },
+        { label: t("staging"), value: "staging" },
+        { label: t("qa"), value: "qa" },
+      ]} />
   </fieldset>;
 };
 
@@ -300,10 +277,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     <WiFiStrengthDisplay
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
     <VoltageDisplay chip={target} throttled={throttled} />
-    <BetaReleaseOptInButton
-      dispatch={props.dispatch}
-      shouldDisplay={props.shouldDisplay}
-      sourceFbosConfig={props.sourceFbosConfig} />
+    <BetaReleaseOptIn
+      dispatch={props.dispatch} sourceFbosConfig={props.sourceFbosConfig} />
     {last_ota_checkup && <p><b>{t("Last checked for updates")}: </b>
       {reformatDatetime(last_ota_checkup, props.timeSettings)}</p>}
     {last_ota && <p><b>{t("Last updated")}: </b>

@@ -13,7 +13,10 @@ import { stopTracking } from "../../connectivity/data_consistency";
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (name?: string | undefined) =>
   axios.post<void>(API.current.snapshotPath, name ? { name } : {})
-    .then(() => success(t("Garden Saved.")));
+    .then(() => {
+      success(t("Garden Saved."));
+      history.push("/app/designer/gardens");
+    });
 
 export const unselectSavedGarden = {
   type: Actions.CHOOSE_SAVED_GARDEN,
@@ -32,19 +35,19 @@ export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
   });
 
 export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
-  dispatch(destroy(uuid))
-    .then(dispatch(unselectSavedGarden))
-    .catch(() => { });
+  dispatch(unselectSavedGarden);
+  history.push("/app/designer/gardens");
+  dispatch(destroy(uuid));
 };
 
 export const closeSavedGarden = () => {
-  history.push("/app/designer/saved_gardens");
+  history.push("/app/designer/gardens");
   return (dispatch: Function) =>
     dispatch(unselectSavedGarden);
 };
 
 export const openSavedGarden = (savedGarden: string) => {
-  history.push("/app/designer/saved_gardens/" + unpackUUID(savedGarden).remoteId);
+  history.push("/app/designer/gardens/" + unpackUUID(savedGarden).remoteId);
   return (dispatch: Function) =>
     dispatch({ type: Actions.CHOOSE_SAVED_GARDEN, payload: savedGarden });
 };
@@ -62,7 +65,11 @@ export const openOrCloseGarden = (props: {
 /** Create a new SavedGarden with the chosen name. */
 export const newSavedGarden = (name: string) =>
   (dispatch: Function) => {
-    dispatch(initSave("SavedGarden", { name: name || "Untitled Garden" }));
+    dispatch(initSave("SavedGarden", { name: name || "Untitled Garden" }))
+      .then(() => {
+        success(t("Garden Saved."));
+        history.push("/app/designer/gardens");
+      });
   };
 
 /** Create a copy of a PlantTemplate body and assign it a new SavedGarden. */

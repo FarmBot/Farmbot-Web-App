@@ -31,6 +31,7 @@ describe("successful refresh()", () => {
       "body": {
         "id": 6,
         "name": "summer-pond-726",
+        "ota_hour": 3,
         "timezone": "America/Chicago",
         "last_saw_api": "2017-08-30T20:42:35.854Z",
         "tz_offset_hrs": 0

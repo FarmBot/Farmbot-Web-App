@@ -48,7 +48,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline} />
-      {shouldDisplay(Feature.change_ownership) && botOnline &&
+      {botOnline &&
         <Popover position={Position.BOTTOM_LEFT}>
           <p className={"release-notes-button"}>
             {t("Change Ownership")}&nbsp;
