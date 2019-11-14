@@ -86,6 +86,7 @@ export enum Feature {
   mark_as_step = "mark_as_step",
   named_pins = "named_pins",
   none_firmware = "none_firmware",
+  ota_update_hour = "ota_update_hour",
   rpi_led_control = "rpi_led_control",
   sensors = "sensors",
   use_update_channel = "use_update_channel",

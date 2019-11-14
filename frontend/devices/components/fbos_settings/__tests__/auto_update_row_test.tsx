@@ -21,6 +21,7 @@ describe("<AutoUpdateRow/>", () => {
 
   const fakeProps = (): AutoUpdateRowProps => ({
     timeFormat: "12h",
+    shouldDisplay: jest.fn(() => true),
     device: fakeDevice(),
     dispatch: jest.fn(x => x(jest.fn(), () => state)),
     sourceFbosConfig: () => ({ value: 1, consistent: true })
