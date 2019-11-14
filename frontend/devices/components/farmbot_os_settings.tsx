@@ -138,6 +138,7 @@ export class FarmbotOsSettings
               timeSettings={this.props.timeSettings}
               sourceFbosConfig={sourceFbosConfig} />
             <AutoUpdateRow
+              shouldDisplay={this.props.shouldDisplay}
               timeFormat={timeFormat}
               device={this.props.deviceAccount}
               dispatch={this.props.dispatch}

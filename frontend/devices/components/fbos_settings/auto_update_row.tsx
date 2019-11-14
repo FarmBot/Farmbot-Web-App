@@ -7,15 +7,17 @@ import { Content } from "../../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { OtaTimeSelector, changeOtaHour } from "./ota_time_selector";
+import { Feature } from "../../interfaces";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
+
   return <div>
-    <OtaTimeSelector
+    {props.shouldDisplay(Feature.ota_update_hour) && <OtaTimeSelector
       timeFormat={props.timeFormat}
       disabled={!osAutoUpdate.value}
       value={props.device.body.ota_hour}
-      onChange={changeOtaHour(props.dispatch, props.device)} />
+      onChange={changeOtaHour(props.dispatch, props.device)} />}
     <Row>
       <Col xs={ColWidth.label}>
         <label>

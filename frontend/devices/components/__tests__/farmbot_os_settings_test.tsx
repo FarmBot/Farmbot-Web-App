@@ -43,7 +43,7 @@ describe("<FarmbotOsSettings />", () => {
     botToMqttStatus: "up",
     sourceFbosConfig: x =>
       ({ value: bot.hardware.configuration[x], consistent: true }),
-    shouldDisplay: jest.fn(),
+    shouldDisplay: jest.fn(() => true),
     isValidFbosConfig: false,
     env: {},
     saveFarmwareEnv: jest.fn(),
