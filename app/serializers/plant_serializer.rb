@@ -1,5 +1,5 @@
 class PlantSerializer < BasePointSerializer
-  attributes :openfarm_slug, :plant_stage, :planted_at, :radius
+  attributes :openfarm_slug, :plant_stage, :planted_at, :radius, :meta
 
   def x
     object.x.round

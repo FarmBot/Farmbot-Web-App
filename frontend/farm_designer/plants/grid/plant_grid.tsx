@@ -9,32 +9,39 @@ import {
 } from "./constants";
 import { initPlantGrid } from "./generate_grid";
 import { init } from "../../../api/crud";
+import { uuid } from "farmbot";
+import { saveGrid, stashGrid } from "./thunks";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
-  state: PlantGridState = EMPTY_PLANT_GRID;
+  state: PlantGridState = {
+    ...EMPTY_PLANT_GRID,
+    gridId: uuid()
+  };
 
   onchange = (key: PlantGridKey) =>
     (x: React.ChangeEvent<HTMLInputElement>) => this.setState({
       ...this.state,
-      grid: {
-        ...this.state.grid,
-        [key]: parseInt(x.currentTarget.value, 10)
-      }
+      grid: { ...this.state.grid, [key]: parseInt(x.currentTarget.value, 10) }
     });
 
   performPreview = () => {
-    const plants = initPlantGrid(this.state.grid, this.props.openfarm_slug);
+    const plants = initPlantGrid({
+      grid: this.state.grid,
+      openfarm_slug: this.props.openfarm_slug,
+      gridId: this.state.gridId
+    });
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
   }
 
   revertPreview = () => {
-    this.setState(EMPTY_PLANT_GRID);
+    const p: Promise<{}> = this.props.dispatch(stashGrid(this.state.gridId));
+    p.then(() => this.setState(EMPTY_PLANT_GRID));
   }
 
   saveGrid = () => {
-    alert("TODO");
-    this.revertPreview();
+    const p: Promise<{}> = this.props.dispatch(saveGrid(this.state.gridId));
+    p.then(() => this.setState(EMPTY_PLANT_GRID));
   }
 
   inputs = () => {

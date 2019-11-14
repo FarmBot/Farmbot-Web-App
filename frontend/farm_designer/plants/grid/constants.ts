@@ -6,6 +6,7 @@ export type PlantGridData = Record<PlantGridKey, number>;
 export interface PlantGridState {
   status: "clean" | "dirty",
   grid: PlantGridData;
+  gridId: string
 }
 
 export interface PlantGridProps {
@@ -16,14 +17,14 @@ export interface PlantGridProps {
 export const plantGridKeys: PlantGridKey[] =
   ["numPlantsH", "numPlantsV", "spacingH", "spacingV", "startX", "startY"];
 
-export const EMPTY_PLANT_GRID: PlantGridState = {
+export const EMPTY_PLANT_GRID: Omit<PlantGridState, "gridId"> = {
   status: "clean",
   grid: {
-    startX: 0,
-    startY: 0,
-    spacingH: 0,
-    spacingV: 0,
-    numPlantsH: 0,
-    numPlantsV: 0,
+    startX: 5,
+    startY: 5,
+    spacingH: 5,
+    spacingV: 5,
+    numPlantsH: 5,
+    numPlantsV: 5,
   }
 };

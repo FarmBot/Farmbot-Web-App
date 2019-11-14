@@ -1,6 +1,5 @@
 import { PlantGridData } from "./constants";
 import { range } from "lodash";
-import { uuid } from "farmbot";
 import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 export function vectorGrid(params: PlantGridData): [number, number][] {
@@ -19,7 +18,7 @@ export function vectorGrid(params: PlantGridData): [number, number][] {
   return results;
 }
 
-const createPlant = (p: PlantGridData, openfarm_slug: string, gridId: string) =>
+const createPlant = (openfarm_slug: string, gridId: string) =>
   (vec: [number, number]): PlantPointer => {
     const [x, y] = vec;
     return {
@@ -35,8 +34,14 @@ const createPlant = (p: PlantGridData, openfarm_slug: string, gridId: string) =>
     };
   };
 
-export function initPlantGrid(p: PlantGridData, openfarm_slug: string): PlantPointer[] {
-  const gridId = uuid();
-  const mapper = createPlant(p, openfarm_slug, gridId);
-  return vectorGrid(p).map(mapper);
+interface PlantGridInitOption {
+  grid: PlantGridData;
+  openfarm_slug: string;
+  gridId: string;
 }
+
+export const initPlantGrid =
+  ({ grid, openfarm_slug, gridId }: PlantGridInitOption): PlantPointer[] => {
+    const mapper = createPlant(openfarm_slug, gridId);
+    return vectorGrid(grid).map(mapper);
+  };
