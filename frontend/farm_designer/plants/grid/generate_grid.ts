@@ -23,8 +23,8 @@ const createPlant = (p: PlantGridData, openfarm_slug: string, gridId: string) =>
   (vec: [number, number]): PlantPointer => {
     const [x, y] = vec;
     return {
-      name: `${openfarm_slug} ${p.numPlantsH}x${p.numPlantsV}`,
-      radius: 0,
+      name: `openfarm_slug`,
+      radius: 25,
       z: 0,
       x,
       y,

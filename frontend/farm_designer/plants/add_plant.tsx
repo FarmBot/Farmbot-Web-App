@@ -61,7 +61,9 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
     const descElem = <AddPlantDescription svgIcon={result.crop.svg_icon}>
-      <PlantGrid dispatch={this.props.dispatch} />
+      <PlantGrid
+        dispatch={this.props.dispatch}
+        openfarm_slug={result.crop.slug} />
     </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader

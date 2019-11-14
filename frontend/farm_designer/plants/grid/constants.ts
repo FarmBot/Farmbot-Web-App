@@ -9,6 +9,7 @@ export interface PlantGridState {
 }
 
 export interface PlantGridProps {
+  openfarm_slug: string;
   dispatch: Function;
 }
 

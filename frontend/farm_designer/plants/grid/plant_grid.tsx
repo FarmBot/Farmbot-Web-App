@@ -7,6 +7,8 @@ import {
   PlantGridProps,
   PlantGridState
 } from "./constants";
+import { initPlantGrid } from "./generate_grid";
+import { init } from "../../../api/crud";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = EMPTY_PLANT_GRID;
@@ -21,6 +23,8 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     });
 
   performPreview = () => {
+    const plants = initPlantGrid(this.state.grid, this.props.openfarm_slug);
+    plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
   }
 
@@ -38,6 +42,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       return <div key={key}>
         {key}
         <BlurableInput
+          disabled={this.state.status === "dirty"}
           value={this.state.grid[key]}
           onCommit={this.onchange(key)} />
       </div>;
