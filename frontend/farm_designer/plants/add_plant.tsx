@@ -65,7 +65,8 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
       <PlantGrid
         xy_swap={this.props.xy_swap}
         dispatch={this.props.dispatch}
-        openfarm_slug={result.crop.slug} />
+        openfarm_slug={result.crop.slug}
+        cropName={result.crop.name} />
     </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader

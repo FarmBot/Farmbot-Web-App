@@ -43,6 +43,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     const plants = initPlantGrid({
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,
+      cropName: this.props.cropName,
       gridId: this.state.gridId
     });
     plants.map(p => this.props.dispatch(init("Point", p)));

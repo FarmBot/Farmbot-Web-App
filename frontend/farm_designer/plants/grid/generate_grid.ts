@@ -18,11 +18,11 @@ export function vectorGrid(params: PlantGridData): [number, number][] {
   return results;
 }
 
-const createPlant = (openfarm_slug: string, gridId: string) =>
+const createPlant = (openfarm_slug: string, name: string, gridId: string) =>
   (vec: [number, number]): PlantPointer => {
     const [x, y] = vec;
     return {
-      name: openfarm_slug,
+      name: name,
       radius: 25,
       z: 0,
       x,
@@ -37,11 +37,11 @@ const createPlant = (openfarm_slug: string, gridId: string) =>
 interface PlantGridInitOption {
   grid: PlantGridData;
   openfarm_slug: string;
+  cropName: string;
   gridId: string;
 }
 
-export const initPlantGrid =
-  ({ grid, openfarm_slug, gridId }: PlantGridInitOption): PlantPointer[] => {
-    const mapper = createPlant(openfarm_slug, gridId);
-    return vectorGrid(grid).map(mapper);
-  };
+export const initPlantGrid = (p: PlantGridInitOption): PlantPointer[] => {
+  const mapper = createPlant(p.openfarm_slug, p.cropName, p.gridId);
+  return vectorGrid(p.grid).map(mapper);
+};
