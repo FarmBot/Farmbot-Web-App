@@ -47,7 +47,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   revertPreview = () => {
     const p: Promise<{}> = this.props.dispatch(stashGrid(this.state.gridId));
-    p.then(() => this.setState(EMPTY_PLANT_GRID));
+    p.then(() => this.setState({ status: "clean" }));
   }
 
   saveGrid = () => {
