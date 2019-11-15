@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { history } from "../../history";
 import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult, OpenfarmSearch } from "../interfaces";
 import { setDragIcon } from "../actions";
