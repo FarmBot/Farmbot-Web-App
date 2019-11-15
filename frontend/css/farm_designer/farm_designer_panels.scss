@@ -584,3 +584,16 @@
     padding: 3rem;
   }
 }
+.clear-button {
+  text-transform: uppercase;
+  font-size: 1rem;
+  border: 1px solid;
+  padding: 0.4rem 1.2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  color: $off_white;
+  margin-top: 1.25rem;
+  margin-right: 1.5rem;
+  &:hover { color: $white; }
+}

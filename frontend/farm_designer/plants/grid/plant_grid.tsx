@@ -66,26 +66,26 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     switch (this.state.status) {
       case "clean":
         return <div>
-          <button onClick={this.performPreview}>
+          <a className={"clear-button"} onClick={this.performPreview}>
             Preview
-          </button>
+          </a>
         </div>;
       case "dirty":
         return <div>
-          <button onClick={this.saveGrid}>
+          <a className={"clear-button"} onClick={this.saveGrid}>
             Save
-          </button>
-          <button onClick={this.revertPreview}>
+          </a>
+          <a className={"clear-button"} onClick={this.revertPreview}>
             Clear
-          </button>
+          </a>
         </div>;
     }
   }
 
   render() {
     return <div>
-      <hr />
       {this.inputs()}
+      <br />
       {this.buttons()}
     </div>;
   }
