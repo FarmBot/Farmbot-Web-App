@@ -30,8 +30,8 @@ interface LabelData {
 
 const pairs: [PlantGridKey, PlantGridKey][] = [
   ["startX", "startY"],
-  ["numPlantsH", "spacingH"],
-  ["numPlantsV", "spacingV"],
+  ["numPlantsH", "numPlantsV"],
+  ["spacingH", "spacingV"],
 ];
 
 const LABELS: Record<PlantGridKey, LabelData> = {
