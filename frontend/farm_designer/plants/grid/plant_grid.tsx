@@ -84,6 +84,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   render() {
     return <div>
+      <hr />
+      <h3>
+        {t("Grid and Row Planting")}
+      </h3>
       {this.inputs()}
       <br />
       {this.buttons()}
