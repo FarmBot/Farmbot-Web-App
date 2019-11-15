@@ -11,6 +11,8 @@ import { initPlantGrid } from "./generate_grid";
 import { init } from "../../../api/crud";
 import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
+import { error } from "../../../toast/toast";
+import { t } from "../../../i18next_wrapper";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
@@ -25,6 +27,13 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     });
 
   performPreview = () => {
+    const { numPlantsH, numPlantsV } = this.state.grid;
+    const total = numPlantsH * numPlantsV;
+    if (total > 100) {
+      error(t("Please make a grid with less than 100 plants"));
+      return;
+    }
+
     const plants = initPlantGrid({
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,

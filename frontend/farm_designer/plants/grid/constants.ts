@@ -20,11 +20,11 @@ export const plantGridKeys: PlantGridKey[] =
 export const EMPTY_PLANT_GRID: Omit<PlantGridState, "gridId"> = {
   status: "clean",
   grid: {
-    startX: 5,
-    startY: 5,
-    spacingH: 5,
-    spacingV: 5,
-    numPlantsH: 5,
-    numPlantsV: 5,
+    startX: 100,
+    startY: 100,
+    spacingH: 50,
+    spacingV: 50,
+    numPlantsH: 7,
+    numPlantsV: 7,
   }
 };
