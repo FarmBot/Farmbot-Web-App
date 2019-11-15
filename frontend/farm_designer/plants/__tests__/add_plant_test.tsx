@@ -20,6 +20,7 @@ describe("<AddPlant />", () => {
     return {
       cropSearchResults: [cropSearchResult],
       dispatch: jest.fn(),
+      xy_swap: false,
       openfarmSearch: jest.fn(),
     };
   };

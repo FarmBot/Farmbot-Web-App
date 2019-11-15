@@ -11,6 +11,7 @@ import { OFSearch } from "../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 import { PlantGrid } from "./grid/plant_grid";
+import { getWebAppConfig } from "../../resources/getters";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
@@ -19,6 +20,7 @@ export const mapStateToProps = (props: Everything): AddPlantProps =>
       .consumers
       .farm_designer
       .cropSearchResults,
+    xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
     dispatch: props.dispatch,
     openfarmSearch: OFSearch,
   });
@@ -47,6 +49,7 @@ export interface AddPlantProps {
   cropSearchResults: CropLiveSearchResult[];
   dispatch: Function;
   openfarmSearch: OpenfarmSearch;
+  xy_swap: boolean;
 }
 
 export class RawAddPlant extends React.Component<AddPlantProps, {}> {
@@ -62,6 +65,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
     const panelName = "add-plant";
     const descElem = <AddPlantDescription svgIcon={result.crop.svg_icon}>
       <PlantGrid
+        xy_swap={this.props.xy_swap}
         dispatch={this.props.dispatch}
         openfarm_slug={result.crop.slug} />
     </AddPlantDescription>;

@@ -57,6 +57,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   inputs = () => {
     return <GridInput
+      xy_swap={this.props.xy_swap}
       disabled={this.state.status === "dirty"}
       grid={this.state.grid}
       onChange={this.onchange} />;

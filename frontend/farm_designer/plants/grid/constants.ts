@@ -10,6 +10,7 @@ export interface PlantGridState {
 }
 
 export interface PlantGridProps {
+  xy_swap: boolean;
   openfarm_slug: string;
   dispatch: Function;
 }
