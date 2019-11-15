@@ -49,7 +49,6 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     this.setState({ status: "dirty" });
   }
 
-
   revertPreview = () => {
     const p: Promise<{}> = this.props.dispatch(stashGrid(this.state.gridId));
     p.then(() => this.setState({ status: "clean" }));
