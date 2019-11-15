@@ -1,9 +1,7 @@
 import React from "react";
-import { BlurableInput } from "../../../ui";
 import {
   EMPTY_PLANT_GRID,
   PlantGridKey,
-  plantGridKeys,
   PlantGridProps,
   PlantGridState
 } from "./constants";
@@ -13,6 +11,7 @@ import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
 import { error } from "../../../toast/toast";
 import { t } from "../../../i18next_wrapper";
+import { GridInput } from "./grid_inputs";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
@@ -20,11 +19,14 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     gridId: uuid()
   };
 
-  onchange = (key: PlantGridKey) =>
-    (x: React.ChangeEvent<HTMLInputElement>) => this.setState({
-      ...this.state,
-      grid: { ...this.state.grid, [key]: parseInt(x.currentTarget.value, 10) }
-    });
+  onchange = (key: PlantGridKey, val: number) => {
+    const grid = { ...this.state.grid, [key]: val };
+    this.setState({ grid });
+  };
+
+  componentWillUnmount() {
+    if (this.state.status === "dirty") { this.revertPreview(); }
+  }
 
   performPreview = () => {
     const { numPlantsH, numPlantsV } = this.state.grid;
@@ -54,15 +56,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   }
 
   inputs = () => {
-    return plantGridKeys.map(key => {
-      return <div key={key}>
-        {key}
-        <BlurableInput
-          disabled={this.state.status === "dirty"}
-          value={this.state.grid[key]}
-          onCommit={this.onchange(key)} />
-      </div>;
-    });
+    return <GridInput
+      disabled={this.state.status === "dirty"}
+      grid={this.state.grid}
+      onChange={this.onchange} />;
   }
 
   buttons = () => {
