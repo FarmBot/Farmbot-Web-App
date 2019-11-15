@@ -90,7 +90,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   render() {
     return <div>
-      <hr />
+      <hr style={{ borderTop: "1.5px solid rgba(255, 255, 255 ,0.7);" }} />
       <h3>
         {t("Grid and Row Planting")}
       </h3>
