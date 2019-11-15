@@ -14,10 +14,7 @@ import { t } from "../../../i18next_wrapper";
 import { GridInput } from "./grid_inputs";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
-  state: PlantGridState = {
-    ...EMPTY_PLANT_GRID,
-    gridId: uuid()
-  };
+  state: PlantGridState = { ...EMPTY_PLANT_GRID, gridId: uuid() };
 
   onchange = (key: PlantGridKey, val: number) => {
     const grid = { ...this.state.grid, [key]: val };

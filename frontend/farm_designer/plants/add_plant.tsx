@@ -40,8 +40,7 @@ const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
       onDragStart={setDragIcon(svgIcon)} />
     <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
     <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
-  to the map. You can add the plant as many times as you need to
-  before pressing DONE to finish.`)}
+  to the map. Alternatively, you can plant a grid using the form below.`)}
     {children}
   </div>;
 
@@ -60,7 +59,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 
   render() {
     const { cropSearchResults } = this.props;
-    const { crop, result, basePath, backgroundURL } =
+    const { result, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
     const descElem = <AddPlantDescription svgIcon={result.crop.svg_icon}>
@@ -75,12 +74,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         panel={Panel.Plants}
         title={result.crop.name}
         style={{ background: backgroundURL }}
-        descriptionElement={descElem}>
-        <a className="right-button"
-          onClick={() => history.push(basePath + crop)}>
-          {t("Done")}
-        </a>
-      </DesignerPanelHeader>
+        descriptionElement={descElem} />
     </DesignerPanel>;
   }
 }
