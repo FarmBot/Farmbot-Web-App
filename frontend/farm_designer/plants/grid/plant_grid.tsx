@@ -72,11 +72,11 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
         </div>;
       case "dirty":
         return <div>
+          <a className={"clear-button"} onClick={this.revertPreview}>
+            Cancel
+          </a>
           <a className={"clear-button"} onClick={this.saveGrid}>
             Save
-          </a>
-          <a className={"clear-button"} onClick={this.revertPreview}>
-            Clear
           </a>
         </div>;
     }
