@@ -21,8 +21,15 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     this.setState({ grid });
   };
 
+  confirmUnsaved = () => {
+    const prompt = t("You have unsaved changes. Would you like to save them?");
+    const action = confirm(prompt) ?
+      saveGrid(this.state.gridId) : stashGrid(this.state.gridId);
+    this.props.dispatch(action);
+  }
+
   componentWillUnmount() {
-    if (this.state.status === "dirty") { this.revertPreview(); }
+    (this.state.status === "dirty") && this.confirmUnsaved();
   }
 
   performPreview = () => {
@@ -41,6 +48,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     plants.map(p => this.props.dispatch(init("Point", p)));
     this.setState({ status: "dirty" });
   }
+
 
   revertPreview = () => {
     const p: Promise<{}> = this.props.dispatch(stashGrid(this.state.gridId));
