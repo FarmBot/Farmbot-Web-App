@@ -73,7 +73,7 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
         panelName={panelName}
         panel={Panel.Plants}
         title={result.crop.name}
-        style={{ background: backgroundURL, overflow: "scroll" }}
+        style={{ background: backgroundURL, overflowY: "scroll" }}
         descriptionElement={descElem} />
     </DesignerPanel>;
   }
