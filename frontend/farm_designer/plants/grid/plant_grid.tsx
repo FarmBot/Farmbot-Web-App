@@ -11,7 +11,7 @@ import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
 import { error } from "../../../toast/toast";
 import { t } from "../../../i18next_wrapper";
-import { GridInput } from "./grid_inputs";
+import { GridInput } from "./grid_input";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = { ...EMPTY_PLANT_GRID, gridId: uuid() };

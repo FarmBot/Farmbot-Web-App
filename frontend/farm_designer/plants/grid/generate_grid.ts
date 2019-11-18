@@ -1,6 +1,13 @@
-import { PlantGridData } from "./constants";
-import { range } from "lodash";
 import { PlantPointer } from "farmbot/dist/resources/api_resources";
+import { range } from "lodash";
+import { PlantGridData } from "./constants";
+
+interface PlantGridInitOption {
+  grid: PlantGridData;
+  openfarm_slug: string;
+  cropName: string;
+  gridId: string;
+}
 
 export function vectorGrid(params: PlantGridData): [number, number][] {
   const rows = range(params.startX,
@@ -18,30 +25,24 @@ export function vectorGrid(params: PlantGridData): [number, number][] {
   return results;
 }
 
-const createPlant = (openfarm_slug: string, name: string, gridId: string) =>
-  (vec: [number, number]): PlantPointer => {
-    const [x, y] = vec;
-    return {
-      name: name,
-      radius: 25,
-      z: 0,
-      x,
-      y,
-      openfarm_slug,
-      pointer_type: "Plant",
-      plant_stage: "planted",
-      meta: { gridId }
+const createPlantGridMapper =
+  (openfarm_slug: string, name: string, gridId: string) =>
+    (vec: [number, number]): PlantPointer => {
+      const [x, y] = vec;
+      return {
+        name,
+        radius: 25,
+        z: 0,
+        x,
+        y,
+        openfarm_slug,
+        pointer_type: "Plant",
+        plant_stage: "planted",
+        meta: { gridId }
+      };
     };
-  };
-
-interface PlantGridInitOption {
-  grid: PlantGridData;
-  openfarm_slug: string;
-  cropName: string;
-  gridId: string;
-}
 
 export const initPlantGrid = (p: PlantGridInitOption): PlantPointer[] => {
-  const mapper = createPlant(p.openfarm_slug, p.cropName, p.gridId);
+  const mapper = createPlantGridMapper(p.openfarm_slug, p.cropName, p.gridId);
   return vectorGrid(p.grid).map(mapper);
 };
