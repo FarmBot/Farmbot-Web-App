@@ -1,5 +1,5 @@
 import { vectorGrid, initPlantGrid } from "../generate_grid";
-const testGrid = { // Prime numbers yeah
+export const testGrid = { // Prime numbers yeah
   startX: 11,
   startY: 31,
   spacingH: 5,

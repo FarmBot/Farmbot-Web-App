@@ -13,7 +13,7 @@ interface GridInputProps {
   onChange(key: PlantGridKey, value: number): void;
 }
 
-interface InputCellProps {
+export interface InputCellProps {
   gridKey: PlantGridKey;
   xy_swap: boolean;
   onChange: GridInputProps["onChange"];
@@ -73,7 +73,7 @@ const createCB = (key: PlantGridKey, cb: GridInputProps["onChange"]) =>
     (!isNaN(number)) && cb(key, number);
   };
 
-function InputCell({ gridKey, onChange, grid, xy_swap }: InputCellProps) {
+export function InputCell({ gridKey, onChange, grid, xy_swap }: InputCellProps) {
   const data = LABELS[gridKey];
   const icon = xy_swap ? data.swapped_icon : data.icon;
   return <Col xs={6}>
