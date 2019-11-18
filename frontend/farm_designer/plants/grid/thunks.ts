@@ -12,18 +12,17 @@ function findPlantByGridId(index: ResourceIndex, gridId: string) {
   return myPlants;
 }
 
-export function saveGrid(_gridId: string) {
-  return function (dispatch: Function, _getState: GetState) {
-    const plants = findPlantByGridId(_getState().resources.index, _gridId);
+export function saveGrid(gridId: string) {
+  return function (dispatch: Function, getState: GetState) {
+    const plants = findPlantByGridId(getState().resources.index, gridId);
     const p = saveAll(plants);
-    console.log("Saving the grid");
     return dispatch(p) as Promise<{}>;
   };
 }
 
-export function stashGrid(_gridId: string) {
-  return function (dispatch: Function, _getState: GetState) {
-    const plants = findPlantByGridId(_getState().resources.index, _gridId);
+export function stashGrid(gridId: string) {
+  return function (dispatch: Function, getState: GetState) {
+    const plants = findPlantByGridId(getState().resources.index, gridId);
     const all = plants.map((x): Promise<{}> => dispatch(destroy(x.uuid, true)));
     return Promise.all(all);
   };
