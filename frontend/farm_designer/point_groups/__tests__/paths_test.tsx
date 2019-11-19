@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import { PathInfoBar, nn, NNPath, PathInfoBarProps } from "../paths";
 import {
   fakePlant, fakePointGroup
@@ -12,6 +12,7 @@ import {
 import { Actions } from "../../../constants";
 import { edit } from "../../../api/crud";
 import { error } from "../../../toast/toast";
+import { svgMount } from "../../../__test_support__/svg_mount";
 
 describe("<PathInfoBar />", () => {
   const fakeProps = (): PathInfoBarProps => ({
@@ -82,13 +83,13 @@ describe("<NNPath />", () => {
   });
 
   it("doesn't render optimized path", () => {
-    const wrapper = mount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).toEqual("<g></g>");
+    const wrapper = svgMount(<NNPath {...fakeProps()} />);
+    expect(wrapper.html()).toEqual("<svg><g></g></svg>");
   });
 
   it("renders optimized path", () => {
     localStorage.setItem("try_it", "ok");
-    const wrapper = mount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).not.toEqual("<g></g>");
+    const wrapper = svgMount(<NNPath {...fakeProps()} />);
+    expect(wrapper.html()).not.toEqual("<svg><g></g></svg>");
   });
 });
