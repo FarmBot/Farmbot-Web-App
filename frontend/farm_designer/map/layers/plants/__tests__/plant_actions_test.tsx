@@ -109,11 +109,11 @@ describe("dropPlant", () => {
 describe("dragPlant", () => {
   beforeEach(function () {
     Object.defineProperty(document, "querySelector", {
-      value: () => { return { scrollLeft: 1, scrollTop: 2 }; },
+      value: () => ({ scrollLeft: 1, scrollTop: 2 }),
       configurable: true
     });
     Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: 1 }; }, configurable: true
+      value: () => ({ transform: "scale(1)" }), configurable: true
     });
   });
 
@@ -147,7 +147,7 @@ describe("dragPlant", () => {
 
   it("moves plant while swapped in odd quadrant", () => {
     Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: 0.5 }; }, configurable: true
+      value: () => ({ transform: "scale(0.5)" }), configurable: true
     });
     const p = fakeProps();
     p.mapTransformProps.quadrant = 3;
@@ -167,7 +167,7 @@ describe("dragPlant", () => {
 
   it("moves plant: zoom unknown", () => {
     Object.defineProperty(window, "getComputedStyle", {
-      value: () => { return { zoom: undefined }; }, configurable: true
+      value: () => ({ transform: undefined }), configurable: true
     });
     const p = fakeProps();
     dragPlant(p);

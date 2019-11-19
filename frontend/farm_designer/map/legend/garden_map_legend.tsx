@@ -94,11 +94,8 @@ const LayerToggles = (props: GardenMapLegendProps) => {
 
 export function GardenMapLegend(props: GardenMapLegendProps) {
   const menuClass = props.legendMenuOpen ? "active" : "";
-  return <div
-    className={`garden-map-legend ${menuClass} ${props.className}`}
-    style={{ zoom: 1 }}>
-    <div
-      className={"menu-pullout " + menuClass}
+  return <div className={`garden-map-legend ${menuClass} ${props.className}`}>
+    <div className={"menu-pullout " + menuClass}
       onClick={props.toggle(BooleanSetting.legend_menu_open)}>
       <span>
         {t("Menu")}
