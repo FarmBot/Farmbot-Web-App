@@ -1,6 +1,6 @@
 jest.mock("../thunks", () => ({
-  saveGrid: jest.fn(),
-  stashGrid: jest.fn()
+  saveGrid: jest.fn(() => "SAVE_GRID_MOCK"),
+  stashGrid: jest.fn(() => "STASH_GRID_MOCK")
 }));
 
 import * as React from "react";
@@ -63,5 +63,30 @@ describe("PlantGrid", () => {
     });
     pg.performPreview();
     expect(error).toHaveBeenCalledWith("Please make a grid with less than 100 plants");
+  });
+
+  it("discards unsaved changes", async () => {
+    window.confirm = jest.fn(() => false);
+    const props = fakeProps();
+    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    pg.setState({ ...pg.state, status: "dirty" });
+    pg.componentWillUnmount();
+    expect(pg.props.dispatch).toHaveBeenCalledWith("STASH_GRID_MOCK");
+  });
+
+  it("keeps unsaved changes", () => {
+    window.confirm = jest.fn(() => true);
+    const props = fakeProps();
+    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    pg.setState({ ...pg.state, status: "dirty" });
+    pg.componentWillUnmount();
+    expect(pg.props.dispatch).toHaveBeenCalledWith("SAVE_GRID_MOCK");
+  });
+
+  it("handles data changes", () => {
+    const props = fakeProps();
+    const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    pg.onchange("numPlantsH", 6);
+    expect(pg.state.grid.numPlantsH).toEqual(6);
   });
 });
