@@ -5,9 +5,8 @@ jest.mock("../../../history", () => ({
 }));
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { render } from "enzyme";
 import { RawAddPlant as AddPlant, AddPlantProps, mapStateToProps } from "../add_plant";
-import { history } from "../../../history";
 import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
@@ -29,20 +28,12 @@ describe("<AddPlant />", () => {
 
   it("renders", () => {
     mockPath = "/app/designer/plants/crop_search/mint/add";
-    const wrapper = mount(<AddPlant {...fakeProps()} />);
+    const wrapper = render(<AddPlant {...fakeProps()} />);
     expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.text()).toContain("Done");
-    expect(wrapper.find("img").props().src)
-      .toEqual(svgToUrl("fake_mint_svg"));
-  });
-
-  it("goes back", () => {
-    const wrapper = mount(<AddPlant {...fakeProps()} />);
-    const doneBtn = wrapper.find("a").first();
-    expect(doneBtn.text()).toEqual("Done");
-    doneBtn.simulate("click");
-    expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/plants/crop_search/mint");
+    expect(wrapper.text()).toContain("Preview");
+    const img = wrapper.find("img");
+    expect(img).toBeDefined();
+    expect(img.attr("src")).toEqual(svgToUrl("fake_mint_svg"));
   });
 });
 
