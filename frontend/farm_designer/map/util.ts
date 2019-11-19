@@ -82,7 +82,7 @@ export const mapPanelClassName = () => {
 };
 
 /** Controlled by .farm-designer-map padding x10 */
-const getMapPadding =
+export const getMapPadding =
   (panelStatus: MapPanelStatus): { left: number, top: number } => {
     switch (panelStatus) {
       case MapPanelStatus.short: return { left: 20, top: 350 };
@@ -309,6 +309,9 @@ export const getMode = (): Mode => {
   return Mode.none;
 };
 
+export const getZoomLevelFromMap = (map: Element) =>
+  parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);
+
 /** Get the garden map coordinate of a cursor or screen interaction. */
 export const getGardenCoordinates = (props: {
   mapTransformProps: MapTransformProps,
@@ -320,7 +323,7 @@ export const getGardenCoordinates = (props: {
   const map = document.querySelector(".farm-designer-map");
   const page = document.querySelector(".farm-designer");
   if (el && map && page) {
-    const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
+    const zoomLvl = getZoomLevelFromMap(map);
     const params: ScreenToGardenParams = {
       page: { x: props.pageX, y: props.pageY },
       scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },

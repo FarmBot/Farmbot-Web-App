@@ -10,6 +10,7 @@ const expectedVariable = (data_value: Point | Tool | Coordinate) =>
 
 describe("convertDDItoDeclaration()", () => {
   it("handles malformed items", () => {
+    console.error = jest.fn();
     const result = convertDDItoVariable({
       identifierLabel: "Y",
       allowedVariableNodes,
@@ -20,6 +21,8 @@ describe("convertDDItoDeclaration()", () => {
       }
     });
     expect(result).toEqual(undefined);
+    expect(console.error).toHaveBeenCalledWith(
+      "WARNING: Don't know how to handle something_else");
   });
 
   it("handles point groups", () => {
@@ -61,7 +64,9 @@ describe("convertDDItoDeclaration()", () => {
   it("returns location data: tool", () => {
     const dropdown = { headingId: "Tool", label: "Generic Tool", value: 1 };
     const variable =
-      convertDDItoVariable({ identifierLabel: label, allowedVariableNodes, dropdown });
+      convertDDItoVariable({
+        identifierLabel: label, allowedVariableNodes, dropdown
+      });
     expect(variable).toEqual(expectedVariable({
       kind: "tool", args: { tool_id: 1 }
     }));
@@ -70,7 +75,9 @@ describe("convertDDItoDeclaration()", () => {
   it("returns location data: Plant", () => {
     const dropdown = { headingId: "Plant", label: "Mint", value: 1 };
     const variable =
-      convertDDItoVariable({ identifierLabel: label, allowedVariableNodes, dropdown });
+      convertDDItoVariable({
+        identifierLabel: label, allowedVariableNodes, dropdown
+      });
     expect(variable).toEqual(expectedVariable({
       kind: "point", args: { pointer_id: 1, pointer_type: "Plant" }
     }));
@@ -89,7 +96,8 @@ describe("convertDDItoDeclaration()", () => {
     const expected = expectedVariable(NOTHING_SELECTED);
     expected.kind = "variable_declaration";
     const variable = convertDDItoVariable({
-      identifierLabel: label, allowedVariableNodes: AllowedVariableNodes.parameter,
+      identifierLabel: label,
+      allowedVariableNodes: AllowedVariableNodes.parameter,
       dropdown: NO_VALUE_SELECTED_DDI()
     });
     expect(variable).toEqual(expected);
@@ -116,7 +124,9 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: parameter_declaration", () => {
-    const dropdown = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
+    const dropdown = ({
+      headingId: "parameter", label: "Parent0", value: "parent0"
+    });
     const variable = convertDDItoVariable({
       identifierLabel: "parent",
       allowedVariableNodes,
@@ -132,7 +142,9 @@ describe("convertDDItoDeclaration()", () => {
   });
 
   it("returns location data: identifier", () => {
-    const dropdown = ({ headingId: "parameter", label: "Parent0", value: "parent0" });
+    const dropdown = ({
+      headingId: "parameter", label: "Parent0", value: "parent0"
+    });
     const variable = convertDDItoVariable({
       identifierLabel: "parent",
       allowedVariableNodes: AllowedVariableNodes.identifier,

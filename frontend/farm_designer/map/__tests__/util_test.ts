@@ -360,7 +360,7 @@ describe("getGardenCoordinates()", () => {
       configurable: true
     });
     Object.defineProperty(window, "getComputedStyle", {
-      value: () => ({ zoom: 1 }), configurable: true
+      value: () => ({ transform: "scale(1)" }), configurable: true
     });
   });
 
@@ -378,7 +378,7 @@ describe("getGardenCoordinates()", () => {
 
   it("falls back to zoom level", () => {
     Object.defineProperty(window, "getComputedStyle", {
-      value: () => ({ zoom: undefined }), configurable: true
+      value: () => ({ transform: undefined }), configurable: true
     });
     const result = getGardenCoordinates(fakeProps());
     expect(result).toEqual({ x: 170, y: 70 });

@@ -10,7 +10,7 @@ import { isNumber, isString } from "lodash";
 import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
-import { transformXY, round } from "../../util";
+import { transformXY, round, getZoomLevelFromMap } from "../../util";
 import { movePlant } from "../../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
@@ -125,7 +125,7 @@ export const dragPlant = (props: {
   const { isDragging, gridSize, pageX, pageY, qPageX, qPageY } = props;
   const { quadrant, xySwap } = props.mapTransformProps;
   if (isDragging && plant && map) {
-    const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
+    const zoomLvl = getZoomLevelFromMap(map);
     const { qx, qy } = transformXY(pageX, pageY, props.mapTransformProps);
     const deltaX = Math.round((qx - (qPageX || qx)) / zoomLvl);
     const deltaY = Math.round((qy - (qPageY || qy)) / zoomLvl);
