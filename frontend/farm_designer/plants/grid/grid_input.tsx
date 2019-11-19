@@ -67,11 +67,12 @@ const LABELS: Record<PlantGridKey, LabelData> = {
   },
 };
 
-const createCB = (key: PlantGridKey, cb: GridInputProps["onChange"]) =>
-  (x: React.ChangeEvent<HTMLInputElement>) => {
-    const number = parseInt(x.currentTarget.value, 10);
-    (!isNaN(number)) && cb(key, number);
-  };
+export const createCB =
+  (key: PlantGridKey, cb: GridInputProps["onChange"]) =>
+    (x: React.ChangeEvent<HTMLInputElement>) => {
+      const number = parseInt(x.currentTarget.value, 10);
+      (!isNaN(number)) && cb(key, number);
+    };
 
 export function InputCell({ gridKey, onChange, grid, xy_swap }: InputCellProps) {
   const data = LABELS[gridKey];
