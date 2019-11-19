@@ -1,4 +1,4 @@
-import { GetState } from "../../../redux/interfaces"
+import { GetState } from "../../../redux/interfaces";
 import { ResourceIndex } from "../../../resources/interfaces";
 import { selectAllPlantPointers } from "../../../resources/selectors";
 import { TaggedPlantPointer } from "farmbot";

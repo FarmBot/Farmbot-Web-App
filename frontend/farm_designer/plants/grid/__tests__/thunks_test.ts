@@ -22,7 +22,7 @@ const fakeResourceIndex = () => {
   const state = fakeState();
   state.resources = buildResourceIndex([PLANT]);
   return state;
-}
+};
 
 describe("saveGrid", () => {
   it("saves a particular grid", () => {
