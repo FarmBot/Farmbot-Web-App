@@ -13,7 +13,7 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
   return <div className="saved-garden-info"
     onClick={() => dispatch(openSavedGarden(savedGarden.uuid))}>
     <Col>
-      <label>{savedGarden.body.name}</label>
+      <span>{savedGarden.body.name}</span>
       <p>{props.plantTemplateCount} {t("plants")}</p>
     </Col>
   </div>;
@@ -21,8 +21,8 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
 
 /** Info and actions for a single SavedGarden. */
 const SavedGardenItem = (props: SavedGardenItemProps) => {
-  return <div
-    className={`saved-garden-row ${props.gardenIsOpen ? "selected" : ""}`}>
+  return <div className={
+    `saved-garden-search-item ${props.gardenIsOpen ? "selected" : ""}`}>
     <GardenInfo
       savedGarden={props.savedGarden}
       plantTemplateCount={props.plantTemplateCount}

@@ -114,6 +114,15 @@
       }
     }
   }
+  &.navy-panel {
+    background-color: $panel_light_navy;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: darken($panel_light_navy, 10%);
+      }
+    }
+  }
   &.teal-panel {
     background-color: $panel_light_teal;
     div[class*="search-item"] {
@@ -160,6 +169,9 @@
   }
   &.blue-panel {
     background-color: $panel_blue;
+  }
+  &.navy-panel {
+    background-color: $panel_navy;
   }
   &.teal-panel {
     background-color: $panel_teal;
@@ -531,7 +543,10 @@
 .saved-garden-panel-content {
   padding: 0;
   .row {
+    margin: 0;
     margin-top: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
   hr {
     width: 100%;
@@ -572,8 +587,6 @@
 }
 
 .saved-garden-edit-panel-content {
-  margin-left: 3rem;
-  margin-right: 3rem;
   button {
     margin-left: 0.5rem;
     margin-top: 1rem;
@@ -582,6 +595,9 @@
     font-size: 1.2rem;
     text-align: center;
     padding: 3rem;
+  }
+  .row {
+    margin: 0;
   }
 }
 .clear-button {
