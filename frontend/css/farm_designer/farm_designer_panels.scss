@@ -333,25 +333,31 @@
 
 .point-creation-panel {
   .panel-content {
-    .row {
-      margin-left: 0;
-      margin-right: 0;
+    ul {
+      margin-bottom: 0;
     }
-    padding: 0 3rem;
-    padding-right: 0;
-    padding-left: 0;
+    margin-top: 1rem;
+    label {
+      margin-top: 0;
+    }
+    p {
+      margin-top: 1rem;
+    }
     .fb-button {
-      margin: 1rem;
+      &.green {
+        margin-right: 1.5rem;
+      }
       &.delete {
         float: left;
+        margin-top: 1rem;
       }
     }
     .saucer {
-      margin-top: 0.25rem;
-      margin-left: 1rem;
+      margin: 1rem;
+      margin-left: 2rem;
     }
     .delete-row {
-      padding-left: 1rem;
+      margin: 1.5rem;
     }
   }
 }
@@ -362,7 +368,7 @@
     margin: 1rem;
     margin-left: 2rem;
   }
-  .red {
+  .fb-button & .red {
     display: block;
     margin-top: 3rem;
   }

@@ -24,6 +24,7 @@ import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 import { getPathArray } from "../../history";
+import { ListItem } from "./plant_panel";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -178,54 +179,59 @@ export class RawCreatePoints
     this.cancel();
     this.loadDefaultPoint();
   }
-
-  PointName = () =>
-    <Row>
-      <Col xs={12}>
-        <label>{t("Name")}</label>
-        <BlurableInput
-          name="name"
-          type="text"
-          onCommit={this.updateValue("name")}
-          value={this.attr("name") || this.defaultName} />
-      </Col>
-    </Row>;
-
-  PointProperties = () => {
-    return <Row>
-      <Col xs={3}>
-        <label>{t("X")}</label>
-        <BlurableInput
-          name="cx"
-          type="number"
-          onCommit={this.updateValue("cx")}
-          value={this.attr("cx", this.props.deviceX)} />
-      </Col>
-      <Col xs={3}>
-        <label>{t("Y")}</label>
-        <BlurableInput
-          name="cy"
-          type="number"
-          onCommit={this.updateValue("cy")}
-          value={this.attr("cy", this.props.deviceY)} />
-      </Col>
-      <Col xs={3}>
-        <label>{t("radius")}</label>
-        <BlurableInput
-          name="r"
-          type="number"
-          onCommit={this.updateValue("r")}
-          value={this.attr("r")}
-          min={0} />
-      </Col>
-      <Col xs={3}>
-        <label>{t("color")}</label>
-        <ColorPicker
-          current={(this.attr("color") || this.defaultColor) as ResourceColor}
-          onChange={this.changeColor} />
-      </Col>
-    </Row>;
-  }
+  PointProperties = () =>
+    <ul>
+      <li>
+        <div>
+          <label>{t("Name")}</label>
+          <BlurableInput
+            name="name"
+            type="text"
+            onCommit={this.updateValue("name")}
+            value={this.attr("name") || this.defaultName} />
+        </div>
+      </li>
+      <ListItem name={t("Location")}>
+        <Row>
+          <Col xs={6}>
+            <label>{t("X (mm)")}</label>
+            <BlurableInput
+              name="cx"
+              type="number"
+              onCommit={this.updateValue("cx")}
+              value={this.attr("cx", this.props.deviceX)} />
+          </Col>
+          <Col xs={6}>
+            <label>{t("Y (mm)")}</label>
+            <BlurableInput
+              name="cy"
+              type="number"
+              onCommit={this.updateValue("cy")}
+              value={this.attr("cy", this.props.deviceY)} />
+          </Col>
+        </Row>
+      </ListItem>
+      <ListItem name={t("Size")}>
+        <Row>
+          <Col xs={6}>
+            <label>{t("radius")}</label>
+            <BlurableInput
+              name="r"
+              type="number"
+              onCommit={this.updateValue("r")}
+              value={this.attr("r")}
+              min={0} />
+          </Col>
+        </Row>
+      </ListItem>
+      <ListItem name={t("Color")}>
+        <Row>
+          <ColorPicker
+            current={(this.attr("color") || this.defaultColor) as ResourceColor}
+            onChange={this.changeColor} />
+        </Row>
+      </ListItem>
+    </ul>
 
   PointActions = () =>
     <Row>
@@ -272,7 +278,6 @@ export class RawCreatePoints
         backTo={`/app/designer/${this.panel}`}
         description={panelDescription} />
       <DesignerPanelContent panelName={"point-creation"}>
-        <this.PointName />
         <this.PointProperties />
         <this.PointActions />
         {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}

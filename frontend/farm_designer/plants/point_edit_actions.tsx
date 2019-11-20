@@ -26,6 +26,13 @@ export interface EditPointPropertiesProps {
 
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
   <ul>
+    <li>
+      <div>
+        <EditPointName
+          name={props.point.body.name}
+          updatePoint={props.updatePoint} />
+      </div>
+    </li>
     <ListItem name={t("Location")}>
       <EditPointLocation
         location={{ x: props.point.body.x, y: props.point.body.y }}
@@ -65,6 +72,22 @@ export const PointActions = ({ x, y, z, uuid, dispatch }: PointActionsProps) =>
       {t("Delete")}
     </button>
   </div>;
+
+export interface EditPointNameProps {
+  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  name: string;
+}
+
+export const EditPointName = (props: EditPointNameProps) =>
+  <Row>
+    <Col xs={12}>
+      <label>{t("Name")}</label>
+      <BlurableInput
+        type="text"
+        value={props.name}
+        onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
+    </Col>
+  </Row>;
 
 export interface EditPointLocationProps {
   updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
