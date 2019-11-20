@@ -54,4 +54,26 @@ class User < ApplicationRecord
       .current
       .raw_amqp_send(msg.to_json, Api::RmqUtilsController::PUBLIC_BROADCAST)
   end
+
+  # The web app deletes account that go inactive for long periods.
+  # It is called when the user logs in to the app.
+  def reset_inactivity_tracking!
+    update!(inactivity_warning_sent_at: nil)
+  end
+
+  def send_inactivity_warning
+    User.transaction do
+      update!(inactivity_warning_sent_at: Time.now)
+      InactivityMailer.send_warning(self).deliver_later
+    end
+  end
+
+  def deactivate_account
+    User.transaction do
+      raise "HALTING ERRONEOUS DELETION" if last_sign_in_at > 3.months.ago
+      # Prevent double deletion / race conditions.
+      u.update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
+      u.delay.destroy!
+    end
+  end
 end
