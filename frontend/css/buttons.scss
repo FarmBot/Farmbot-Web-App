@@ -212,6 +212,15 @@
       background-color: darken($panel_blue, 5%) !important;
     }
   }
+  &.panel-navy {
+    background-color: $panel_navy;
+    box-shadow: 0 2px 0px 0px darken($panel_navy, 12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: darken($panel_navy, 5%) !important;
+    }
+  }
   &.panel-brown {
     background-color: $panel_brown;
     box-shadow: 0 2px 0px 0px darken($panel_brown, 12%);

@@ -28,6 +28,7 @@ export enum PanelColor {
   lightGray = "light-gray",
   yellow = "yellow",
   blue = "blue",
+  navy = "navy",
   teal = "teal",
   red = "red",
 }
@@ -36,7 +37,7 @@ export const TAB_COLOR: { [key in Panel]: PanelColor } = {
   [Panel.Map]: PanelColor.gray,
   [Panel.Plants]: PanelColor.green,
   [Panel.FarmEvents]: PanelColor.yellow,
-  [Panel.SavedGardens]: PanelColor.green,
+  [Panel.SavedGardens]: PanelColor.navy,
   [Panel.Tools]: PanelColor.gray,
   [Panel.Settings]: PanelColor.gray,
   [Panel.Points]: PanelColor.teal,

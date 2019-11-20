@@ -40,7 +40,7 @@ describe("<DesignerNavTabs />", () => {
     mockPath = "/app/designer/gardens";
     mockDev = true;
     const wrapper = shallow(<DesignerNavTabs />);
-    expect(wrapper.hasClass("green-panel")).toBeTruthy();
+    expect(wrapper.hasClass("navy-panel")).toBeTruthy();
     expect(wrapper.html()).toContain("active");
   });
 

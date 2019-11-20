@@ -103,6 +103,7 @@ namespace :api do
     end
   end
 
+  RELEASES_URL = "https://api.github.com/repos/farmbot/farmbot_os/releases"
   VERSION = "tag_name"
   TIMESTAMP = "created_at"
   PRERELEASE = "prerelease"
@@ -116,10 +117,9 @@ namespace :api do
     # 60 days is the current policy.
     cutoff = 60.days.ago
     # Download release data from github
-    stringio = open("https://api.github.com/repos/farmbot/farmbot_os/releases")
-    string = stringio.read
-    data = JSON
-      .parse(string)
+    string_page_1 = open("#{RELEASES_URL}?per_page=100&page=1").read
+    string_page_2 = open("#{RELEASES_URL}?per_page=100&page=2").read
+    data = JSON.parse(string_page_1).push(*JSON.parse(string_page_2))
       .map { |x| x.slice(VERSION, TIMESTAMP, PRERELEASE) } # Only grab keys that matter
       .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
       .reject { |x| x.fetch(PRERELEASE) } # Remove pre-releases

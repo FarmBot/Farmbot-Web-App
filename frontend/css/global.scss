@@ -875,7 +875,11 @@ ul {
     p,
     h5,
     a {
-      color: $panel_green;
+      color: $panel_navy;
+    }
+    .empty-state-graphic {
+      filter: hue-rotate(135deg) brightness(0.5);
+      color: $panel_navy;
     }
   }
   &.events {
