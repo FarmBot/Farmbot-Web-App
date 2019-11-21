@@ -4,6 +4,7 @@ class TokenIssuance < ApplicationRecord
   belongs_to :device
   # Number of ms Rails will wait for the API.
   API_TIMEOUT = Rails.env.test? ? 0.01 : 2.5
+  after_create :reset_inactivity_timer
 
   def broadcast?
     false
@@ -39,5 +40,9 @@ class TokenIssuance < ApplicationRecord
 
   def self.clean_old_tokens
     expired.destroy_all
+  end
+
+  def reset_inactivity_timer
+    device.users.map(&:reset_inactivity_tracking!)
   end
 end

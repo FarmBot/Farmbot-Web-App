@@ -213,7 +213,6 @@ module Api
     # Devices have a `last_saw_api` field to assist users with debugging.
     # We update this column every time an FBOS device talks to the API.
     def mark_as_seen(bot = (current_user && current_user.device))
-      current_user && current_user.reset_inactivity_tracking!
       when_farmbot_os do
         if bot
           v = fbos_version

@@ -19,7 +19,8 @@ describe InactiveAccountJob do
     expect(no.reload.inactivity_warning_sent_at).to be(nil)
     expect(mail).to be_kind_of(Mail::Message)
     expect(mail.to).to include(yes.email)
-    expect(mail.subject).to eq("Your FarmBot Account Will Be Deleted Due to Inactivity")
+    subject = "Your FarmBot account will be deleted due to inactivity"
+    expect(mail.subject).to include(subject)
     expect(mail.body.encoded).to include("You have not logged in about 3 years.")
 
     # === Wind back the clock to simulate inactivty.
