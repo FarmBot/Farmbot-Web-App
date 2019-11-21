@@ -108,8 +108,7 @@ namespace :api do
   TIMESTAMP = "created_at"
   PRERELEASE = "prerelease"
 
-  desc "Update GlobalConfig to deprecate old FBOS versions"
-  task deprecate: :environment do
+  def deprecate!
     # Get current version
     version_str = GlobalConfig.dump.fetch("FBOS_END_OF_LIFE_VERSION")
     # Convert it to Gem::Version for easy comparisons (>, <, ==, etc)
@@ -143,6 +142,12 @@ namespace :api do
         .find_by(key: "FBOS_END_OF_LIFE_VERSION")
         .update!(value: data.to_s)
     end
+  end
+
+  desc "Deprecate old FBOS version, delete inactive accounts, etc.."
+  task tidy: :environment do
+    deprecate!
+    InactiveAccountJob.perform_later
   end
 end
 Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]
