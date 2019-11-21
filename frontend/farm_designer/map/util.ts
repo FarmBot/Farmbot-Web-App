@@ -2,7 +2,8 @@ import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import {
-  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode
+  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode,
+  TaggedPlant,
 } from "./interfaces";
 import { trim } from "../../util";
 import { history, getPathArray } from "../../history";
@@ -351,3 +352,12 @@ export const maybeNoPointer =
         return defaultStyle;
     }
   };
+
+/** Check if the cursor is within the selected plant indicator area. */
+export const cursorAtPlant =
+  (plant: TaggedPlant | undefined, cursor: AxisNumberProperty | undefined) =>
+    plant && cursor
+    && (cursor.x > plant.body.x - plant.body.radius * 1.2)
+    && (cursor.y > plant.body.y - plant.body.radius * 1.2)
+    && (cursor.x < plant.body.x + plant.body.radius * 1.2)
+    && (cursor.y < plant.body.y + plant.body.radius * 1.2);

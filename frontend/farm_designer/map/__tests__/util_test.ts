@@ -20,6 +20,7 @@ import {
   MapPanelStatus,
   mapPanelClassName,
   getMode,
+  cursorAtPlant,
 } from "../util";
 import { McuParams } from "farmbot";
 import {
@@ -29,6 +30,7 @@ import { StepsPerMmXY } from "../../../devices/interfaces";
 import {
   fakeMapTransformProps
 } from "../../../__test_support__/map_transform_props";
+import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
 describe("Utils", () => {
   it("rounds a number", () => {
@@ -415,5 +417,32 @@ describe("mapPanelClassName()", () => {
     expect(mapPanelClassName()).toEqual("panel-open");
     mockPath = "/app/designer/plants/crop_search/mint/add";
     expect(mapPanelClassName()).toEqual("panel-open");
+  });
+});
+
+describe("cursorAtPlant()", () => {
+  const plant = fakePlant();
+  plant.body.radius = 25;
+  plant.body.x = 100;
+  plant.body.y = 200;
+
+  const isAwayFromPlant = (cursor: { x: number, y: number } | undefined) =>
+    expect(cursorAtPlant(plant, cursor)).toBeFalsy();
+
+  const isAtPlant = (cursor: { x: number, y: number } | undefined) =>
+    expect(cursorAtPlant(plant, cursor)).toBeTruthy();
+
+  it("cursor is at the plant", () => {
+    isAtPlant({ x: 100, y: 200 });
+    isAtPlant({ x: 75, y: 175 });
+    isAtPlant({ x: 125, y: 225 });
+  });
+
+  it("cursor is away from the plant", () => {
+    isAwayFromPlant({ x: 140, y: 200 });
+    isAwayFromPlant({ x: 60, y: 200 });
+    isAwayFromPlant({ x: 100, y: 240 });
+    isAwayFromPlant({ x: 100, y: 160 });
+    isAwayFromPlant(undefined);
   });
 });
