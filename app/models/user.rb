@@ -70,10 +70,12 @@ class User < ApplicationRecord
 
   def deactivate_account
     User.transaction do
-      raise "HALTING ERRONEOUS DELETION" if last_sign_in_at > 3.months.ago
+      if reload.last_sign_in_at > 3.months.ago
+        raise "HALTING ERRONEOUS DELETION"
+      end
       # Prevent double deletion / race conditions.
-      u.update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
-      u.delay.destroy!
+      update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
+      delay.destroy!
     end
   end
 end
