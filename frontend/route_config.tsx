@@ -97,6 +97,12 @@ const key = "FarmDesigner";
 export const UNBOUND_ROUTES = [
   route({
     children: false,
+    $: "/scratchpad",
+    getModule: () => import("./scratch/index"),
+    key: "ScratchPad",
+  }),
+  route({
+    children: false,
     $: "/account",
     getModule: () => import("./account"),
     key: "Account",
