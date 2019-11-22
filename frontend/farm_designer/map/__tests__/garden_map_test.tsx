@@ -5,6 +5,7 @@ jest.mock("../../actions", () => ({
 
 import { Mode } from "../interfaces";
 let mockMode = Mode.none;
+let mockAtPlant = true;
 jest.mock("../util", () => ({
   getMode: () => mockMode,
   getMapSize: () => ({ h: 100, w: 100 }),
@@ -13,6 +14,7 @@ jest.mock("../util", () => ({
   transformForQuadrant: jest.fn(),
   maybeNoPointer: jest.fn(),
   round: jest.fn(),
+  cursorAtPlant: () => mockAtPlant,
 }));
 
 jest.mock("../layers/plants/plant_actions", () => ({
@@ -109,11 +111,22 @@ describe("<GardenMap/>", () => {
     expect(dropPlant).toHaveBeenCalled();
   });
 
-  it("starts drag", () => {
+  it("starts drag: move plant", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     mockMode = Mode.editPlant;
+    mockAtPlant = true;
     wrapper.find(".drop-area-svg").simulate("mouseDown", DEFAULT_EVENT);
     expect(beginPlantDrag).toHaveBeenCalled();
+    expect(startNewSelectionBox).not.toHaveBeenCalled();
+  });
+
+  it("starts drag: draw box", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.editPlant;
+    mockAtPlant = false;
+    wrapper.find(".drop-area-svg").simulate("mouseDown", DEFAULT_EVENT);
+    expect(beginPlantDrag).not.toHaveBeenCalled();
+    expect(startNewSelectionBox).toHaveBeenCalled();
   });
 
   it("ends drag", () => {

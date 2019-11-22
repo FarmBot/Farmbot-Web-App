@@ -29,6 +29,7 @@
   &.short-panel {
     padding: 35rem 2rem 2rem 2rem; // at zoom = 1.0: 350px 20px 20px 20px
   }
+  transition: 0.2s ease;
 }
 
 .drop-area {
