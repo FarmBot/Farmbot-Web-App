@@ -1,3 +1,1 @@
-You have not logged in <%= time_ago_in_words(@user.last_sign_in_at) %>. Your account will be automatically deleted after 14 days of inactivity.
-
-To halt the deletion process, please <%= link_to "login", front_page_url %> to your account in the next 14 days.
+You have not logged into your <%= link_to "FarmBot Web App", front_page_url %> account in <%= time_ago_in_words(@user.last_sign_in_at) %>. If you do not login within the next 14 days, your account will be automatically deleted. If you wish to keep your account, please <%= link_to "login now", front_page_url %>.
