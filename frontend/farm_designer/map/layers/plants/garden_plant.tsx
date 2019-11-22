@@ -6,7 +6,7 @@ import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui/index";
 import { Actions } from "../../../../constants";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
-import { clickMapPlant } from "../../../actions";
+import { clickMapPlant } from "../../actions";
 import { Circle } from "./circle";
 
 export class GardenPlant extends

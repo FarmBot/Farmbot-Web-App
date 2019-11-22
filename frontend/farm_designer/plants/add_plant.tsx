@@ -3,7 +3,7 @@ import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult, OpenfarmSearch } from "../interfaces";
-import { setDragIcon } from "../actions";
+import { setDragIcon } from "../map/actions";
 import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";

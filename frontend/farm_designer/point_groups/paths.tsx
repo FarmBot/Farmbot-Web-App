@@ -40,6 +40,7 @@ export const nn = (points: TaggedPlant[]) => {
   const ordered: TaggedPlant[] = [];
   let from = { x: 0, y: 0 };
   points.map(() => {
+    if (available.length < 1) { return; }
     const nearest = findNearest(from, available);
     ordered.push(nearest);
     from = { x: nearest.body.x, y: nearest.body.y };

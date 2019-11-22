@@ -1,4 +1,4 @@
-jest.mock("../../actions", () => ({
+jest.mock("../actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
   closePlantInfo: jest.fn(() => jest.fn()),
 }));
@@ -41,7 +41,7 @@ import { GardenMap } from "../garden_map";
 import { shallow, mount } from "enzyme";
 import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
-import { unselectPlant, closePlantInfo } from "../../actions";
+import { unselectPlant, closePlantInfo } from "../actions";
 import {
   dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
 } from "../layers/plants/plant_actions";
