@@ -21,7 +21,8 @@ describe InactiveAccountJob do
     expect(mail.to).to include(yes.email)
     subject = "Your FarmBot account will be deleted due to inactivity"
     expect(mail.subject).to include(subject)
-    expect(mail.body.encoded).to include("You have not logged in about 3 years.")
+    expect(mail.body.encoded).to include("in about 3 years.")
+    expect(mail.body.encoded).to include(yes.email)
 
     # === Wind back the clock to simulate inactivty.
     yes.update!(inactivity_warning_sent_at: 15.days.ago)

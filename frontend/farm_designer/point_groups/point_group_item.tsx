@@ -2,7 +2,7 @@ import * as React from "react";
 import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
 import { TaggedPlant } from "../map/interfaces";
 import { cachedCrop } from "../../open_farm/cached_crop";
-import { toggleHoveredPlant } from "../actions";
+import { setHoveredPlant } from "../map/actions";
 import { TaggedPointGroup, uuid } from "farmbot";
 import { overwrite } from "../../api/crud";
 
@@ -25,23 +25,23 @@ const removePoint = (group: TaggedPointGroup, pointId: number) => {
 };
 
 // The individual plants in the point group detail page.
-export class PointGroupItem extends React.Component<PointGroupItemProps, PointGroupItemState> {
+export class PointGroupItem
+  extends React.Component<PointGroupItemProps, PointGroupItemState> {
 
   state: PointGroupItemState = { icon: "" };
 
   key = uuid();
 
-  enter = () => this
-    .props
-    .dispatch(toggleHoveredPlant(this.props.plant.uuid, this.state.icon));
+  enter = () => this.props.dispatch(
+    setHoveredPlant(this.props.plant.uuid, this.state.icon));
 
-  leave = () => this
-    .props
-    .dispatch(toggleHoveredPlant(undefined, ""));
+  leave = () => this.props.dispatch(setHoveredPlant(undefined));
 
-  click = () => this
-    .props
-    .dispatch(removePoint(this.props.group, this.props.plant.body.id || 0));
+  click = () => {
+    this.props.dispatch(
+      removePoint(this.props.group, this.props.plant.body.id || 0));
+    this.leave();
+  }
 
   maybeGetCachedIcon = ({ currentTarget }: IMGEvent) => {
     return cachedCrop(this.props.plant.body.openfarm_slug).then((crop) => {

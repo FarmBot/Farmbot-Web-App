@@ -1,11 +1,13 @@
 import * as React from "react";
 import { BooleanSetting } from "../../session_keys";
-import { closePlantInfo, unselectPlant } from "../actions";
+import { closePlantInfo, unselectPlant } from "./actions";
 import {
   MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
-import { getMapSize, getGardenCoordinates, getMode } from "./util";
+import {
+  getMapSize, getGardenCoordinates, getMode, cursorAtPlant
+} from "./util";
 import {
   Grid, MapBackground,
   TargetCoordinate,
@@ -97,11 +99,22 @@ export class GardenMap extends
   startDrag = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
       case Mode.editPlant:
-        beginPlantDrag({
-          plant: this.getPlant(),
-          setMapState: this.setMapState,
-          selectedPlant: this.props.selectedPlant,
-        });
+        const gardenCoords = this.getGardenCoordinates(e);
+        const plant = this.getPlant();
+        if (cursorAtPlant(plant, gardenCoords)) {
+          beginPlantDrag({
+            plant,
+            setMapState: this.setMapState,
+            selectedPlant: this.props.selectedPlant,
+          });
+        } else { // Actions away from plant exit plant edit mode.
+          closePlantInfo(this.props.dispatch)();
+          startNewSelectionBox({
+            gardenCoords,
+            setMapState: this.setMapState,
+            dispatch: this.props.dispatch,
+          });
+        }
         break;
       case Mode.createPoint:
         startNewPoint({

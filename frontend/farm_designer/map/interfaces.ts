@@ -146,5 +146,5 @@ export enum Mode {
   points = "points",
   createPoint = "createPoint",
   templateView = "templateView",
-  addPointToGroup = "addPointToGroup",
+  editGroup = "editGroup",
 }

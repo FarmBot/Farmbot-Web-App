@@ -1,8 +1,6 @@
 import * as React from "react";
 import { shallow } from "enzyme";
-import {
-  NameInputBox, PinDropdown, ModeDropdown, DeleteButton,
-} from "../pin_form_fields";
+import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { FBSelect } from "../../ui";
@@ -62,19 +60,5 @@ describe("<ModeDropdown />", () => {
     wrapper.find(FBSelect).simulate("change", { value: 0 });
     expect(p.dispatch).toHaveBeenCalledWith(
       expectedPayload({ mode: 0 }));
-  });
-});
-
-describe("<DeleteButton />", () => {
-  const fakeProps = () => ({
-    dispatch: jest.fn(() => Promise.resolve()),
-    uuid: "resource uuid",
-  });
-
-  it("deletes resource", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<DeleteButton {...p} />);
-    wrapper.find("button").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });
