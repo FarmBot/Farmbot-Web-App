@@ -1,20 +1,47 @@
 import React from "react";
 
-type Level = 1 | 2 | 3;
-
 interface SFile { uuid: string; }
 
 interface SFolder {
-  color: "red" | "blue"; // Stub for now.
   name: string;
-  open: boolean;
-  child: SFolder;
   content: SFile[];
+  color?: "red" | "blue"; // Stub for now.
+  open?: true;
 }
 
-export interface SFolderGroup {
-  levels: Record<Level, SFolder>;
+/** A top-level directory */
+interface SFolderInitial extends SFolder {
+  kind: "initial";
+  children: (SFolderMedial | SFolderTerminal)[];
 }
+
+/** A mid-level directory. */
+interface SFolderMedial extends SFolder {
+  kind: "medial";
+  children: SFolderTerminal;
+}
+
+/** A leaf node on the directory tree.
+ * Never has a child */
+interface SFolderTerminal extends SFolder {
+  kind: "terminal";
+  children?: never[];
+}
+
+export interface SFolderGroup { folders: SFolderInitial[]; }
+
+export const JUST_LIKE_RORYS_MOCKUP: SFolderGroup = {
+  folders: [
+    {
+      kind: "initial",
+      name: "foo",
+      content: [],
+      children: [
+        { kind: "terminal", name: "bar", content: [] }
+      ]
+    }
+  ]
+};
 
 // Search function should also search folder names
 // Folders without any matching items should not be shown in search results
@@ -26,9 +53,6 @@ export interface SFolderGroup {
 // New folders and new sequences are added to the bottom of the list
 
 export class ScratchPad extends React.Component<{}, {}> {
-  componentDidMount() {
-    alert("Hello?");
-  }
 
   render() {
     return <div>
