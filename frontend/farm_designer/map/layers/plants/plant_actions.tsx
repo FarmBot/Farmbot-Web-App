@@ -11,7 +11,7 @@ import { CropLiveSearchResult, GardenMapState } from "../../../interfaces";
 import { getPathArray } from "../../../../history";
 import { findBySlug } from "../../../search_selectors";
 import { transformXY, round, getZoomLevelFromMap } from "../../util";
-import { movePlant } from "../../../actions";
+import { movePlant } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";

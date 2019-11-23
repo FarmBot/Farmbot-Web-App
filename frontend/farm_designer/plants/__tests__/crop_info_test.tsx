@@ -6,7 +6,7 @@ jest.mock("../../../history", () => ({
 
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
-jest.mock("../../actions", () => ({
+jest.mock("../../map/actions", () => ({
   unselectPlant: jest.fn(() => jest.fn()),
   setDragIcon: jest.fn(),
 }));
@@ -20,7 +20,7 @@ import { history } from "../../../history";
 import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
-import { unselectPlant } from "../../actions";
+import { unselectPlant } from "../../map/actions";
 import { svgToUrl } from "../../../open_farm/icons";
 
 describe("<CropInfo />", () => {

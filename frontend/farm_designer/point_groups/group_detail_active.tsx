@@ -7,7 +7,7 @@ import {
   DesignerPanelHeader
 } from "../plants/designer_panel";
 import { TaggedPointGroup } from "farmbot";
-import { DeleteButton } from "../../controls/pin_form_fields";
+import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";
 import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";

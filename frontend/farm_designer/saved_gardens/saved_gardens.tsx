@@ -2,7 +2,7 @@ import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { history } from "../../history";
-import { unselectPlant } from "../actions";
+import { unselectPlant } from "../map/actions";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers
 } from "../../resources/selectors";

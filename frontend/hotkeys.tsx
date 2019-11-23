@@ -13,7 +13,7 @@ import {
 } from "@blueprintjs/core";
 import { findIndex } from "lodash";
 import { t } from "./i18next_wrapper";
-import { unselectPlant } from "./farm_designer/actions";
+import { unselectPlant } from "./farm_designer/map/actions";
 
 interface Props {
   dispatch: Function;

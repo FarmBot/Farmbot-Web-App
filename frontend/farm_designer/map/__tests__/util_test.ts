@@ -348,7 +348,7 @@ describe("getMode()", () => {
     mockGardenOpen = true;
     expect(getMode()).toEqual(Mode.templateView);
     mockPath = "/app/designer/groups/1";
-    expect(getMode()).toEqual(Mode.addPointToGroup);
+    expect(getMode()).toEqual(Mode.editGroup);
     mockPath = "";
     mockGardenOpen = false;
     expect(getMode()).toEqual(Mode.none);
