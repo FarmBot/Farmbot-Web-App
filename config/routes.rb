@@ -106,6 +106,7 @@ FarmBot::Application.routes.draw do
   # NON-API (USER FACING) URLS:
   # =======================================================================
   get "/" => "dashboard#front_page", as: :front_page
+  get "/logout" => "dashboard#logout", as: :logout
 
   get "/app" => "dashboard#main_app", as: :dashboard
   get "/app/controls" => "dashboard#main_app", as: :app_landing_page

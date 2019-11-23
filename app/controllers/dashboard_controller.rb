@@ -107,6 +107,9 @@ class DashboardController < ApplicationController
     render json: ""
   end
 
+  def logout
+  end
+
   private
 
   def load_css_assets
