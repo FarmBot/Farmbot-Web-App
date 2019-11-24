@@ -7,11 +7,15 @@ class LogService < AbstractServiceRunner
   LOG_TPL = Rails.env.test? ?
     "\e[32m.\e[0m" : "FBOS LOG (device_%s): %s\n"
   ERR_TPL = "MALFORMED LOG CAPTURE: %s"
+  # Clean up excess logs in a non-deterministic manner.
+  # Performs the slow DB query every nth request.
+  TIDY_RATE = Rails.env.test? ? 0 : 10
 
   def process(delivery_info, payload)
     params = { routing_key: delivery_info.routing_key, payload: payload }
     m = AmqpLogParser.run!(params)
     THROTTLE_POLICY.track(m.device_id)
+    m.device.excess_logs.delete_all if rand(0..TIDY_RATE) == TIDY_RATE
     maybe_deliver(m)
   rescue Mutations::ValidationException => e
     msg = ERR_TPL % [params.merge({ e: e }).to_json]
