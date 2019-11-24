@@ -71,7 +71,7 @@ describe("nearest neighbor algorithm", () => {
     const p4 = fakePlant();
     p4.body.x = 1000;
     p4.body.y = 150;
-    const points = nn([p4, p2, p3, p1]);
+    const points = nn([p4, p2, p3, p1, p1]);
     expect(points).toEqual([p1, p2, p3, p4]);
   });
 });

@@ -1,13 +1,13 @@
-jest.mock("../../i18n", () => {
-  return { detectLanguage: jest.fn(() => Promise.resolve()) };
-});
+jest.mock("../../i18n", () => ({
+  detectLanguage: jest.fn(() => Promise.resolve())
+}));
 
-jest.mock("../../util/stop_ie", () => {
-  return { stopIE: jest.fn() };
-});
+jest.mock("../../util/stop_ie", () => ({ stopIE: jest.fn() }));
 
-jest.mock("../../util",
-  () => ({ attachToRoot: jest.fn(), trim: (s: string) => s }));
+jest.mock("../../util", () => ({
+  attachToRoot: jest.fn(),
+  trim: (s: string) => s,
+}));
 
 import { detectLanguage } from "../../i18n";
 import { stopIE } from "../../util/stop_ie";

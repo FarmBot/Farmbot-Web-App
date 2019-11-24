@@ -9,7 +9,7 @@ jest.mock("../../../../../open_farm/cached_crop", () => ({
   cachedCrop: jest.fn(p => Promise.resolve({ spread: mockSpreads[p] })),
 }));
 
-jest.mock("../../../../actions", () => ({
+jest.mock("../../../actions", () => ({
   movePlant: jest.fn(),
 }));
 
@@ -28,7 +28,7 @@ import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
-import { movePlant } from "../../../../actions";
+import { movePlant } from "../../../actions";
 import {
   fakeCropLiveSearchResult
 } from "../../../../../__test_support__/fake_crop_search_result";

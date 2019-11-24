@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BooleanSetting } from "../../session_keys";
-import { closePlantInfo, unselectPlant } from "../actions";
+import { closePlantInfo, unselectPlant } from "./actions";
 import {
   MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
 } from "./interfaces";

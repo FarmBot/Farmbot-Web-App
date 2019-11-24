@@ -4,9 +4,7 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
-jest.mock("../../actions", () => ({
-  toggleHoveredPlant: jest.fn()
-}));
+jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
 let mockDev = false;
 jest.mock("../../../account/dev/dev_support", () => ({

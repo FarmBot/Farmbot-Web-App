@@ -9,7 +9,7 @@ import { findBySlug } from "../search_selectors";
 import { Everything } from "../../interfaces";
 import { OpenFarm } from "../openfarm";
 import { OFSearch } from "../util";
-import { unselectPlant, setDragIcon } from "../actions";
+import { unselectPlant, setDragIcon } from "../map/actions";
 import { validBotLocationData } from "../../util";
 import { createPlant } from "../map/layers/plants/plant_actions";
 import { round } from "../map/util";
