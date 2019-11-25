@@ -65,6 +65,7 @@ class User < ApplicationRecord
     User.transaction do
       update!(inactivity_warning_sent_at: Time.now)
       InactivityMailer.send_warning(self).deliver_later
+      puts "INACTIVITY WARNING FOR #{email}" unless Rails.env.test?
     end
   end
 
