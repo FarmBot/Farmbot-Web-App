@@ -65,6 +65,7 @@ class User < ApplicationRecord
     User.transaction do
       update!(inactivity_warning_sent_at: Time.now)
       InactivityMailer.send_warning(self).deliver_later
+      puts "INACTIVITY WARNING FOR #{email}" unless Rails.env.test?
     end
   end
 
@@ -75,7 +76,9 @@ class User < ApplicationRecord
       end
       # Prevent double deletion / race conditions.
       update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
+      email = self.email
       delay.destroy!
+      puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
     end
   end
 end
