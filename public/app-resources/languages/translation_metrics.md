@@ -28,7 +28,7 @@ Total number of phrases identified by the language helper for translation: __113
 |da|10%|109|1028|44|
 |de|36%|413|724|141|
 |es|88%|1002|135|173|
-|fr|79%|899|238|198|
+|fr|83%|940|197|198|
 |it|8%|91|1046|189|
 |nl|7%|79|1058|161|
 |pt|6%|71|1066|180|
