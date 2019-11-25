@@ -33,7 +33,7 @@ export interface RootFolderNode {
 }
 
 /** === THIS WILL LIVE ON THE API === */
-interface FlatNode {
+export interface FlatNode {
   id: number;
   name_id: number;
   color: Color;
@@ -41,10 +41,10 @@ interface FlatNode {
 }
 
 /** === THIS WILL LIVE ON THE API === */
-interface FlatNodeName {
+export interface FlatNodeName {
   id: number;
   value: string;
-  parent_id: undefined | number;
+  parent_id?: number;
 }
 
 export const MOCKUP_SEQUENCES: Record<number, string> = {
