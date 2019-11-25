@@ -56,7 +56,16 @@ class InactiveAccountJob < ApplicationJob
       .map(&:deactivate_account)
   end
 
+  # EDGE CASE: Accounts that register but never sign in.
+  def cleanup_nils
+    User
+      .where(last_sign_in_at: nil)
+      .limit(LIMIT)
+      .map { |x| x.update!(last_sign_in_at: x.created_at) }
+  end
+
   def perform
+    cleanup_nils
     notify_old_accounts
     delete_old_accounts
   end
