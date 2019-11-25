@@ -7,25 +7,6 @@ class InactiveAccountJob < ApplicationJob
   INACTIVE_NO_DEVICE = 2.months + 15.days
   WARNING_TIME = 14.days
 
-  def perform
-    notify_old_accounts
-    delete_old_accounts
-  end
-
-  def notify_old_accounts
-    all_inactive
-      .where(inactivity_warning_sent_at: nil)
-      .map(&:send_inactivity_warning)
-  end
-
-  def delete_old_accounts
-    all_inactive
-      .where
-      .not(inactivity_warning_sent_at: nil)
-      .where("inactivity_warning_sent_at < ?", WARNING_TIME.ago)
-      .map(&:deactivate_account)
-  end
-
   def users
     User.includes(:device)
   end
@@ -46,16 +27,37 @@ class InactiveAccountJob < ApplicationJob
   end
 
   def inactive_3mo
-    no_device.where("last_sign_in_at < ?", INACTIVE_NO_DEVICE.ago)
+    no_device
+      .where("last_sign_in_at < ?", INACTIVE_NO_DEVICE.ago)
   end
 
   def inactive_11mo
-    ok_device.where("last_sign_in_at < ?", INACTIVE_WITH_DEVICE.ago)
+    ok_device
+      .where("last_sign_in_at < ?", INACTIVE_WITH_DEVICE.ago)
   end
 
   # Returns a Map. Key is the number of warnings sent, value is a User object
   # (not a device, but device is preloaded)
   def all_inactive
     @all_inactive ||= inactive_11mo.or(inactive_3mo).order(ORDER).limit(LIMIT)
+  end
+
+  def notify_old_accounts
+    all_inactive
+      .where(inactivity_warning_sent_at: nil)
+      .map(&:send_inactivity_warning)
+  end
+
+  def delete_old_accounts
+    all_inactive
+      .where
+      .not(inactivity_warning_sent_at: nil)
+      .where("inactivity_warning_sent_at < ?", WARNING_TIME.ago)
+      .map(&:deactivate_account)
+  end
+
+  def perform
+    notify_old_accounts
+    delete_old_accounts
   end
 end
