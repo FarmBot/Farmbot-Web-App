@@ -48,9 +48,7 @@ export function mapStateToProps(props: Everything): Props {
   const findPlant = plantFinder(plants);
 
   const { selectedPlants } = props.resources.consumers.farm_designer;
-  const selectedPlant = selectedPlants
-    ? findPlant(selectedPlants[0])
-    : undefined;
+  const selectedPlant = selectedPlants ? findPlant(selectedPlants[0]) : undefined;
   const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
 
   const hoveredPlant = findPlant(plantUUID);

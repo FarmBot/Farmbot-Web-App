@@ -2,7 +2,8 @@ import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
 import { McuParams } from "farmbot";
 import { StepsPerMmXY } from "../../devices/interfaces";
 import {
-  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode
+  CheckedAxisLength, AxisNumberProperty, BotSize, MapTransformProps, Mode,
+  TaggedPlant,
 } from "./interfaces";
 import { trim } from "../../util";
 import { history, getPathArray } from "../../history";
@@ -82,7 +83,7 @@ export const mapPanelClassName = () => {
 };
 
 /** Controlled by .farm-designer-map padding x10 */
-const getMapPadding =
+export const getMapPadding =
   (panelStatus: MapPanelStatus): { left: number, top: number } => {
     switch (panelStatus) {
       case MapPanelStatus.short: return { left: 20, top: 350 };
@@ -290,9 +291,7 @@ export const transformForQuadrant =
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
-    if ((pathArray[3] === "groups") && pathArray[4]) {
-      return Mode.addPointToGroup;
-    }
+    if ((pathArray[3] === "groups") && pathArray[4]) { return Mode.editGroup; }
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
     if (!isNaN(parseInt(pathArray.slice(-1)[0]))) { return Mode.editPlant; }
     if (pathArray[5] === "edit") { return Mode.editPlant; }
@@ -309,6 +308,9 @@ export const getMode = (): Mode => {
   return Mode.none;
 };
 
+export const getZoomLevelFromMap = (map: Element) =>
+  parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);
+
 /** Get the garden map coordinate of a cursor or screen interaction. */
 export const getGardenCoordinates = (props: {
   mapTransformProps: MapTransformProps,
@@ -320,7 +322,7 @@ export const getGardenCoordinates = (props: {
   const map = document.querySelector(".farm-designer-map");
   const page = document.querySelector(".farm-designer");
   if (el && map && page) {
-    const zoomLvl = parseFloat(window.getComputedStyle(map).zoom || "1");
+    const zoomLvl = getZoomLevelFromMap(map);
     const params: ScreenToGardenParams = {
       page: { x: props.pageX, y: props.pageY },
       scroll: { left: page.scrollLeft, top: map.scrollTop * zoomLvl },
@@ -348,3 +350,12 @@ export const maybeNoPointer =
         return defaultStyle;
     }
   };
+
+/** Check if the cursor is within the selected plant indicator area. */
+export const cursorAtPlant =
+  (plant: TaggedPlant | undefined, cursor: AxisNumberProperty | undefined) =>
+    plant && cursor
+    && (cursor.x > plant.body.x - plant.body.radius * 1.2)
+    && (cursor.y > plant.body.y - plant.body.radius * 1.2)
+    && (cursor.x < plant.body.x + plant.body.radius * 1.2)
+    && (cursor.y < plant.body.y + plant.body.radius * 1.2);

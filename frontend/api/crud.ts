@@ -245,7 +245,7 @@ export function saveAll(input: TaggedResource[],
         maybeStartTracking(uuid);
         return dispatch(save(uuid));
       });
-    Promise.all(p).then(callback, errBack);
+    return Promise.all(p).then(callback, errBack);
   };
 }
 

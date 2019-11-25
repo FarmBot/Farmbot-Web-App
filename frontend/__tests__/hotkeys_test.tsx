@@ -1,16 +1,13 @@
-jest.mock("../history",
-  () => ({ push: jest.fn() }));
+jest.mock("../history", () => ({ push: jest.fn() }));
 const mockSyncThunk = jest.fn();
-jest.mock("../devices/actions",
-  () => ({ sync: () => mockSyncThunk }));
-jest.mock("../farm_designer/actions",
-  () => ({ unselectPlant: jest.fn() }));
+jest.mock("../devices/actions", () => ({ sync: () => mockSyncThunk }));
+jest.mock("../farm_designer/map/actions", () => ({ unselectPlant: jest.fn() }));
 
 import { HotKeys } from "../hotkeys";
 import { betterCompact } from "../util";
 import { push } from "../history";
 import { sync } from "../devices/actions";
-import { unselectPlant } from "../farm_designer/actions";
+import { unselectPlant } from "../farm_designer/map/actions";
 
 describe("hotkeys", () => {
   it("has key bindings", () => {

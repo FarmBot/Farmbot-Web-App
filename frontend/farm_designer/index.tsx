@@ -11,7 +11,8 @@ import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, last, isFinite } from "lodash";
 import { AxisNumberProperty, BotSize } from "./map/interfaces";
 import {
-  getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName
+  getBotSize, round, getPanelStatus, MapPanelStatus, mapPanelClassName,
+  getMapPadding,
 } from "./map/util";
 import {
   calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex
@@ -136,6 +137,9 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       : 1;
     const imageAgeInfo = { newestDate, toOldest };
 
+    const mapPadding = getMapPadding(getPanelStatus());
+    const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
+
     return <div className="farm-designer">
 
       <GardenMapLegend
@@ -162,7 +166,11 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
       <div
         className={`farm-designer-map ${this.mapPanelClassName}`}
-        style={{ zoom: zoom_level }}>
+        style={{
+          transform: `scale(${zoom_level})`,
+          transformOrigin: `${mapPadding.left}px ${mapPadding.top}px`,
+          height: `calc(${100 / zoom_level}% + ${padHeightOffset}px)`
+        }}>
         <GardenMap
           showPoints={show_points}
           showPlants={show_plants}

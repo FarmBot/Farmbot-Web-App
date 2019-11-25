@@ -46,7 +46,7 @@ describe("<EditPoint />", () => {
   it("renders with points", () => {
     mockPath = "/app/designer/points/1";
     const wrapper = mount(<EditPoint {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Edit Point 1");
+    expect(wrapper.text()).toContain("Edit point");
   });
 
   it("moves the device to a particular point", () => {

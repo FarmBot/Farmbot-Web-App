@@ -1,5 +1,5 @@
 import * as React from "react";
-import { destroy, edit } from "../api/crud";
+import { edit } from "../api/crud";
 import { FBSelect } from "../ui";
 import {
   pinDropdowns
@@ -7,9 +7,8 @@ import {
 import { PIN_MODES } from "../sequences/step_tiles/tile_pin_support";
 import { t } from "../i18next_wrapper";
 import { TaggedPeripheral, TaggedSensor } from "farmbot";
-import { UUID } from "../resources/interfaces";
 import { isNumber } from "lodash";
-import { omit } from "lodash";
+
 const MODES = (): { [s: string]: string } => ({
   0: t("Digital"),
   1: t("Analog")
@@ -58,35 +57,3 @@ export const ModeDropdown = (props: ModeDropdownProps) =>
     }))}
     selectedItem={{ label: MODES()[props.value], value: props.value }}
     list={PIN_MODES()} />;
-
-interface ButtonCustomProps {
-  dispatch: Function;
-  uuid: UUID;
-  children?: React.ReactChild
-  onDestroy?: Function;
-}
-
-type ButtonHtmlProps =
-  React.ButtonHTMLAttributes<HTMLButtonElement>;
-
-type DeleteButtonProps =
-  ButtonCustomProps & ButtonHtmlProps;
-
-/** Unfortunately, React will trigger a runtime
- * warning if we pass extra props to HTML elements */
-const OMIT_THESE: Record<keyof ButtonCustomProps, true> = {
-  "dispatch": true,
-  "uuid": true,
-  "children": true,
-  "onDestroy": true,
-};
-export const DeleteButton = (props: DeleteButtonProps) =>
-  <button
-    {...omit(props, Object.keys(OMIT_THESE))}
-    className="red fb-button del-button"
-    title={t("Delete")}
-    onClick={() =>
-      props.dispatch(destroy(props.uuid))
-        .then(props.onDestroy || (() => { }))}>
-    {props.children || <i className="fa fa-times" />}
-  </button>;

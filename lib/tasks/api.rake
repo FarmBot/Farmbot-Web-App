@@ -103,12 +103,12 @@ namespace :api do
     end
   end
 
+  RELEASES_URL = "https://api.github.com/repos/farmbot/farmbot_os/releases"
   VERSION = "tag_name"
   TIMESTAMP = "created_at"
   PRERELEASE = "prerelease"
 
-  desc "Update GlobalConfig to deprecate old FBOS versions"
-  task deprecate: :environment do
+  def deprecate!
     # Get current version
     version_str = GlobalConfig.dump.fetch("FBOS_END_OF_LIFE_VERSION")
     # Convert it to Gem::Version for easy comparisons (>, <, ==, etc)
@@ -116,10 +116,9 @@ namespace :api do
     # 60 days is the current policy.
     cutoff = 60.days.ago
     # Download release data from github
-    stringio = open("https://api.github.com/repos/farmbot/farmbot_os/releases")
-    string = stringio.read
-    data = JSON
-      .parse(string)
+    string_page_1 = open("#{RELEASES_URL}?per_page=100&page=1").read
+    string_page_2 = open("#{RELEASES_URL}?per_page=100&page=2").read
+    data = JSON.parse(string_page_1).push(*JSON.parse(string_page_2))
       .map { |x| x.slice(VERSION, TIMESTAMP, PRERELEASE) } # Only grab keys that matter
       .reject { |x| x.fetch(VERSION).include?("-") } # Remove RC/Beta releases
       .reject { |x| x.fetch(PRERELEASE) } # Remove pre-releases
@@ -143,6 +142,12 @@ namespace :api do
         .find_by(key: "FBOS_END_OF_LIFE_VERSION")
         .update!(value: data.to_s)
     end
+  end
+
+  desc "Deprecate old FBOS version, delete inactive accounts, etc.."
+  task tidy: :environment do
+    deprecate!
+    InactiveAccountJob.perform_later
   end
 end
 Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]

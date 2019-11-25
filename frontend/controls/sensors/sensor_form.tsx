@@ -2,9 +2,8 @@ import * as React from "react";
 import { SensorFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row, Col } from "../../ui";
-import {
-  NameInputBox, PinDropdown, ModeDropdown, DeleteButton
-} from "../pin_form_fields";
+import { DeleteButton } from "../../ui/delete_button";
+import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 
 export const SensorForm = (props: SensorFormProps) =>
   <div className="sensor-form">

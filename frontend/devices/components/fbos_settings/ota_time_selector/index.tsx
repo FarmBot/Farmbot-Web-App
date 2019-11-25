@@ -38,7 +38,7 @@ type HOUR =
 type TimeTable = Record<HOUR, DropDownItem>;
 type EveryTimeTable = Record<PreferredHourFormat, TimeTable>;
 const TIME_TABLE_12H: TimeTable = {
-  0: { label: "Midnight", value: 0 },
+  0: { label: t("Midnight"), value: 0 },
   1: { label: "1:00 AM", value: 1 },
   2: { label: "2:00 AM", value: 2 },
   3: { label: "3:00 AM", value: 3 },
@@ -50,7 +50,7 @@ const TIME_TABLE_12H: TimeTable = {
   9: { label: "9:00 AM", value: 9 },
   10: { label: "10:00 AM", value: 10 },
   11: { label: "11:00 AM", value: 11 },
-  12: { label: "Noon", value: 12 },
+  12: { label: t("Noon"), value: 12 },
   13: { label: "1:00 PM", value: 13 },
   14: { label: "2:00 PM", value: 14 },
   15: { label: "3:00 PM", value: 15 },
@@ -62,7 +62,7 @@ const TIME_TABLE_12H: TimeTable = {
   21: { label: "9:00 PM", value: 21 },
   22: { label: "10:00 PM", value: 22 },
   23: { label: "11:00 PM", value: 23 },
-  [IMMEDIATELY]: { label: "as soon as possible", value: IMMEDIATELY },
+  [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
 };
 const TIME_TABLE_24H: TimeTable = {
   0: { label: "00:00", value: 0 },
@@ -89,7 +89,7 @@ const TIME_TABLE_24H: TimeTable = {
   21: { label: "21:00", value: 21 },
   22: { label: "22:00", value: 22 },
   23: { label: "23:00", value: 23 },
-  [IMMEDIATELY]: { label: "as soon as possible", value: IMMEDIATELY },
+  [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
 };
 
 const DEFAULT_HOUR: keyof TimeTable = IMMEDIATELY;

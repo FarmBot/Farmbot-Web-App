@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
 import * as React from "react";
-import { mount, shallow } from "enzyme";
+import { shallow } from "enzyme";
 import { PathInfoBar, nn, NNPath, PathInfoBarProps } from "../paths";
 import {
   fakePlant, fakePointGroup
@@ -12,6 +12,7 @@ import {
 import { Actions } from "../../../constants";
 import { edit } from "../../../api/crud";
 import { error } from "../../../toast/toast";
+import { svgMount } from "../../../__test_support__/svg_mount";
 
 describe("<PathInfoBar />", () => {
   const fakeProps = (): PathInfoBarProps => ({
@@ -70,7 +71,7 @@ describe("nearest neighbor algorithm", () => {
     const p4 = fakePlant();
     p4.body.x = 1000;
     p4.body.y = 150;
-    const points = nn([p4, p2, p3, p1]);
+    const points = nn([p4, p2, p3, p1, p1]);
     expect(points).toEqual([p1, p2, p3, p4]);
   });
 });
@@ -82,13 +83,13 @@ describe("<NNPath />", () => {
   });
 
   it("doesn't render optimized path", () => {
-    const wrapper = mount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).toEqual("<g></g>");
+    const wrapper = svgMount(<NNPath {...fakeProps()} />);
+    expect(wrapper.html()).toEqual("<svg><g></g></svg>");
   });
 
   it("renders optimized path", () => {
     localStorage.setItem("try_it", "ok");
-    const wrapper = mount(<NNPath {...fakeProps()} />);
-    expect(wrapper.html()).not.toEqual("<g></g>");
+    const wrapper = svgMount(<NNPath {...fakeProps()} />);
+    expect(wrapper.html()).not.toEqual("<svg><g></g></svg>");
   });
 });

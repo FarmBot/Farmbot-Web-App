@@ -115,8 +115,8 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.currentPoint = { cx: 0, cy: 0, r: 100 };
     const panel = mount<CreatePoints>(<CreatePoints {...p} />);
-    const wrapper = shallow(panel.instance().PointName());
-    wrapper.find("BlurableInput").simulate("commit", {
+    const wrapper = shallow(panel.instance().PointProperties());
+    wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: "new name" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -208,7 +208,7 @@ describe("<CreatePoints />", () => {
     const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
     const component = shallow(<PP />);
-    component.find("BlurableInput").first().simulate("commit", {
+    component.find("BlurableInput").at(1).simulate("commit", {
       currentTarget: { value: "10" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { destroy } from "../../api/crud";
-import { unselectPlant, selectPlant, toggleHoveredPlant } from "../actions";
+import { unselectPlant, selectPlant, setHoveredPlant } from "../map/actions";
 import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
@@ -36,7 +36,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     if (selected && selected.length == 1) {
       unselectPlant(dispatch)();
     } else {
-      dispatch(toggleHoveredPlant(undefined, ""));
+      dispatch(setHoveredPlant(undefined));
       dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
     }
   }

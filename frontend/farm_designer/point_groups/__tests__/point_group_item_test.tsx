@@ -1,13 +1,15 @@
-jest.mock("../../actions", () => ({ toggleHoveredPlant: jest.fn() }));
+jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import React from "react";
 import { PointGroupItem } from "../point_group_item";
 import { shallow } from "enzyme";
-import { fakePlant, fakePointGroup } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakePointGroup
+} from "../../../__test_support__/fake_state/resources";
 import { DeepPartial } from "redux";
 import { cachedCrop } from "../../../open_farm/cached_crop";
-import { toggleHoveredPlant } from "../../actions";
+import { setHoveredPlant } from "../../map/actions";
 import { overwrite } from "../../../api/crud";
 
 describe("<PointGroupItem/>", () => {
@@ -51,8 +53,7 @@ describe("<PointGroupItem/>", () => {
     i.state.icon = "X";
     i.enter();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
-    expect(toggleHoveredPlant)
-      .toHaveBeenCalledWith(i.props.plant.uuid, "X");
+    expect(setHoveredPlant).toHaveBeenCalledWith(i.props.plant.uuid, "X");
   });
 
   it("handles mouse exit", () => {
@@ -60,13 +61,13 @@ describe("<PointGroupItem/>", () => {
     i.state.icon = "X";
     i.leave();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
-    expect(toggleHoveredPlant).toHaveBeenCalledWith(undefined, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("handles clicks", () => {
     const i = new PointGroupItem(newProps());
     i.click();
-    expect(i.props.dispatch).toHaveBeenCalledTimes(1);
+    expect(i.props.dispatch).toHaveBeenCalledTimes(2);
     expect(overwrite).toHaveBeenCalledWith({
       body: { name: "Fake", point_ids: [], sort_type: "xy_ascending" },
       kind: "PointGroup",
@@ -77,5 +78,6 @@ describe("<PointGroupItem/>", () => {
       point_ids: [],
       sort_type: "xy_ascending",
     });
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 });

@@ -9,7 +9,7 @@ import { AxisInputBox } from "../controls/axis_input_box";
 import { isNumber } from "lodash";
 import { Actions, Content } from "../constants";
 import { validBotLocationData } from "../util/util";
-import { unselectPlant } from "./actions";
+import { unselectPlant } from "./map/actions";
 import { AxisNumberProperty } from "./map/interfaces";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader

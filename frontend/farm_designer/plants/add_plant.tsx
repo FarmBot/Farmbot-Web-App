@@ -1,15 +1,16 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
-import { history } from "../../history";
 import { svgToUrl } from "../../open_farm/icons";
 import { CropLiveSearchResult, OpenfarmSearch } from "../interfaces";
-import { setDragIcon } from "../actions";
+import { setDragIcon } from "../map/actions";
 import { getCropHeaderProps, searchForCurrentCrop } from "./crop_info";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { OFSearch } from "../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { PlantGrid } from "./grid/plant_grid";
+import { getWebAppConfig } from "../../resources/getters";
 
 export const mapStateToProps = (props: Everything): AddPlantProps =>
   ({
@@ -18,11 +19,17 @@ export const mapStateToProps = (props: Everything): AddPlantProps =>
       .consumers
       .farm_designer
       .cropSearchResults,
+    xy_swap: !!getWebAppConfig(props.resources.index)?.body.xy_swap,
     dispatch: props.dispatch,
     openfarmSearch: OFSearch,
   });
 
-const AddPlantDescription = ({ svgIcon }: { svgIcon: string | undefined }) =>
+interface APDProps {
+  svgIcon: string | undefined;
+  children?: React.ReactChild;
+}
+
+const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
   <div>
     <img className="crop-drag-info-image"
       src={svgToUrl(svgIcon)}
@@ -32,14 +39,15 @@ const AddPlantDescription = ({ svgIcon }: { svgIcon: string | undefined }) =>
       onDragStart={setDragIcon(svgIcon)} />
     <b>{t("Drag and drop")}</b> {t("the icon onto the map or ")}
     <b>{t("CLICK anywhere within the grid")}</b> {t(`to add the plant
-  to the map. You can add the plant as many times as you need to
-  before pressing DONE to finish.`)}
+  to the map. Alternatively, you can plant a grid using the form below.`)}
+    {children}
   </div>;
 
 export interface AddPlantProps {
   cropSearchResults: CropLiveSearchResult[];
   dispatch: Function;
   openfarmSearch: OpenfarmSearch;
+  xy_swap: boolean;
 }
 
 export class RawAddPlant extends React.Component<AddPlantProps, {}> {
@@ -50,22 +58,27 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 
   render() {
     const { cropSearchResults } = this.props;
-    const { crop, result, basePath, backgroundURL } =
+    const { result, backgroundURL } =
       getCropHeaderProps({ cropSearchResults });
     const panelName = "add-plant";
+    const descElem = <AddPlantDescription svgIcon={result.crop.svg_icon}>
+      <PlantGrid
+        xy_swap={this.props.xy_swap}
+        dispatch={this.props.dispatch}
+        openfarm_slug={result.crop.slug}
+        cropName={result.crop.name} />
+    </AddPlantDescription>;
     return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.Plants}
         title={result.crop.name}
-        style={{ background: backgroundURL }}
-        descriptionElement={
-          <AddPlantDescription svgIcon={result.crop.svg_icon} />}>
-        <a className="right-button"
-          onClick={() => history.push(basePath + crop)}>
-          {t("Done")}
-        </a>
-      </DesignerPanelHeader>
+        style={{
+          background: backgroundURL,
+          overflowY: "scroll",
+          overflowX: "hidden"
+        }}
+        descriptionElement={descElem} />
     </DesignerPanel>;
   }
 }

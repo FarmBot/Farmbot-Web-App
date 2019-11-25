@@ -87,7 +87,7 @@ export class RawEditGarden extends React.Component<EditGardenProps, {}> {
         {savedGarden
           ? <div>
             <Row>
-              <label>{t("Garden name")}</label>
+              <label>{t("name")}</label>
               <BlurableInput
                 value={savedGarden.body.name || ""}
                 onCommit={e => {

@@ -29,6 +29,7 @@
   &.short-panel {
     padding: 35rem 2rem 2rem 2rem; // at zoom = 1.0: 350px 20px 20px 20px
   }
+  transition: 0.2s ease;
 }
 
 .drop-area {
@@ -57,7 +58,6 @@
 
 .crop-drag-info-image {
   width: 100% !important;
-  background-color: $translucent;
 }
 
 .plant-catalog-image {
@@ -412,8 +412,6 @@
 }
 
 .garden-snapshot {
-  margin-left: 2rem;
-  margin-right: 2rem;
   button {
     &.pseudo-disabled {
       cursor: not-allowed;
@@ -422,7 +420,7 @@
 }
 
 .saved-garden-list {
-  .saved-garden-row {
+  .saved-garden-search-item {
     padding: 0.25rem;
     button {
       margin-bottom: 1rem;
@@ -432,7 +430,7 @@
       line-height: 3rem;
       cursor: pointer;
       padding-right: 0;
-      label {
+      span {
         margin: 0;
         pointer-events: none;
         margin-left: 1rem;
@@ -442,16 +440,6 @@
         line-height: 3rem;
         text-align: center;
         margin-right: 1rem;
-      }
-    }
-    &:hover {
-      background: $light_gray;
-    }
-    &.selected {
-      background: $gray;
-      p,
-      input {
-        font-weight: bold;
       }
     }
   }

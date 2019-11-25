@@ -1,10 +1,7 @@
-jest.mock("../../../../../history", () => ({
-  history: { push: jest.fn() },
-}));
+jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
 import { GardenPoint } from "../garden_point";
-import { shallow, mount } from "enzyme";
 import { GardenPointProps } from "../../../interfaces";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
 import {
@@ -12,6 +9,7 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
 import { history } from "../../../../../history";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -22,7 +20,7 @@ describe("<GardenPoint/>", () => {
   });
 
   it("renders point", () => {
-    const wrapper = shallow(<GardenPoint {...fakeProps()} />);
+    const wrapper = svgMount(<GardenPoint {...fakeProps()} />);
     expect(wrapper.find("#point-radius").props().r).toEqual(100);
     expect(wrapper.find("#point-center").props().r).toEqual(2);
     expect(wrapper.find("#point-radius").props().fill).toEqual("transparent");
@@ -30,7 +28,7 @@ describe("<GardenPoint/>", () => {
 
   it("hovers point", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPoint {...p} />);
+    const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
@@ -41,13 +39,13 @@ describe("<GardenPoint/>", () => {
   it("is hovered", () => {
     const p = fakeProps();
     p.hovered = true;
-    const wrapper = mount(<GardenPoint {...p} />);
+    const wrapper = svgMount(<GardenPoint {...p} />);
     expect(wrapper.find("#point-radius").props().fill).toEqual("green");
   });
 
   it("un-hovers point", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPoint {...p} />);
+    const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("mouseLeave");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
@@ -58,7 +56,7 @@ describe("<GardenPoint/>", () => {
   it("opens point info", () => {
     const p = fakeProps();
     p.point.body.name = "weed";
-    const wrapper = shallow(<GardenPoint {...p} />);
+    const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("click");
     expect(history.push).toHaveBeenCalledWith(
       `/app/designer/weeds/${p.point.body.id}`);

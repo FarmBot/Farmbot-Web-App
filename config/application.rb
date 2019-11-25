@@ -46,8 +46,9 @@ module FarmBot
                  max_age: 0
       end
     end
+    API_PORT = ENV["API_PORT"]
     Rails.application.routes.default_url_options[:host] = LOCAL_API_HOST
-    Rails.application.routes.default_url_options[:port] = ENV["API_PORT"] || 3000
+    Rails.application.routes.default_url_options[:port] = API_PORT || 3000
     # ¯\_(ツ)_/¯
     $API_URL = "//#{Rails.application.routes.default_url_options[:host]}:#{Rails.application.routes.default_url_options[:port]}"
     ALL_LOCAL_URIS = ([ENV["API_HOST"]] + (ENV["EXTRA_DOMAINS"] || "").split(","))
@@ -70,10 +71,10 @@ module FarmBot
         "api.rollbar.com",
         PARCELJS_URL,
         ENV["FORCE_SSL"] ? "wss:" : "ws:",
-        "localhost:3000",
+        "localhost:#{API_PORT}",
         "localhost:3808",
         "browser-http-intake.logs.datadoghq.com",
-        "#{ENV.fetch("API_HOST")}:3000",
+        "#{ENV.fetch("API_HOST")}:#{API_PORT}",
         "#{ENV.fetch("API_HOST")}:3808",
       ]
       config.csp = {

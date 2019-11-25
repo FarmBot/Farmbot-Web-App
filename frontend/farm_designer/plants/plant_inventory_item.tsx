@@ -7,7 +7,7 @@ import { get } from "lodash";
 import { unpackUUID } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { cachedCrop } from "../../open_farm/cached_crop";
-import { selectPlant, toggleHoveredPlant } from "../actions";
+import { selectPlant, setHoveredPlant } from "../map/actions";
 
 type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
 
@@ -36,7 +36,7 @@ export class PlantInventoryItem extends
       const isEnter = action === "enter";
       const plantUUID = isEnter ? tpp.uuid : undefined;
       const icon = isEnter ? this.state.icon : "";
-      dispatch(toggleHoveredPlant(plantUUID, icon));
+      dispatch(setHoveredPlant(plantUUID, icon));
     };
 
     const click = () => {

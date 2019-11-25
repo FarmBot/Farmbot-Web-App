@@ -8,7 +8,7 @@ import { shallow } from "enzyme";
 import {
   EditPointLocation, EditPointLocationProps,
   EditPointRadius, EditPointRadiusProps,
-  EditPointColor, EditPointColorProps, updatePoint,
+  EditPointColor, EditPointColorProps, updatePoint, EditPointName, EditPointNameProps,
 } from "../point_edit_actions";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { edit, save } from "../../../api/crud";
@@ -25,6 +25,22 @@ describe("updatePoint()", () => {
     updatePoint(undefined, jest.fn())({ radius: 100 });
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
+  });
+});
+
+describe("<EditPointName />", () => {
+  const fakeProps = (): EditPointNameProps => ({
+    updatePoint: jest.fn(),
+    name: "point name",
+  });
+
+  it("edits name", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EditPointName {...p} />);
+    wrapper.find("BlurableInput").first().simulate("commit", {
+      currentTarget: { value: "new point name" }
+    });
+    expect(p.updatePoint).toHaveBeenCalledWith({ name: "new point name" });
   });
 });
 

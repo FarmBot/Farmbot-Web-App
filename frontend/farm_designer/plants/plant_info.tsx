@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantPanel } from "./plant_panel";
-import { unselectPlant } from "../actions";
+import { unselectPlant } from "../map/actions";
 import { TaggedPlant } from "../map/interfaces";
 import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
 import { t } from "../../i18next_wrapper";
