@@ -19,8 +19,15 @@ describe("climb()", () => {
     expect(results.sort()).toEqual(FOLDERS.map(x => x.color).sort());
   });
 
-  // it("halts a tree climb", () => {
-  // });
+  it("halts a tree climb", () => {
+    let count = 0;
+    climb(TREE, (node, halt) => {
+      count += 1;
+      console.log(node.name);
+      if (count == 3) { halt(); }
+    });
+    expect(count).toEqual(3);
+  });
 });
 
 describe("data transfer", () => {
