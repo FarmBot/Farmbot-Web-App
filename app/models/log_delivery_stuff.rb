@@ -6,8 +6,9 @@ module LogDeliveryStuff
 
   module ClassMethods
     # If this method grows, create a mutation.
-    def deliver(device, log)
-      send_fatal_emails(log, device)
+    def deliver(log_id)
+      log = Log.find_by(id: log_id)
+      send_fatal_emails(log, log.device) if log
     end
 
     def send_fatal_emails(log, device)
