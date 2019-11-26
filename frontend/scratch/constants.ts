@@ -25,7 +25,7 @@ export interface FolderNodeMedial extends FolderUI {
  * Never has a child */
 export interface FolderNodeTerminal extends FolderUI {
   kind: "terminal";
-  children?: never[];
+  children: never[];
 }
 
 export interface RootFolderNode {

@@ -4,9 +4,9 @@ import {
   FolderNodeTerminal,
   RootFolderNode,
 } from "./constants";
+import { sortBy } from "lodash";
 
 type FoldersIndexedByParentId = Record<number, FolderNode[]>;
-type Descendant = FolderNodeMedial | FolderNodeTerminal;
 
 /** Set empty `parent_id` to -1 to increase index simplicity. */
 const setDefaultParentId = (input: FolderNode): Required<FolderNode> => {
@@ -26,35 +26,31 @@ const emptyIndex: FoldersIndexedByParentId = {};
 export function ingest(input: FolderNode[]): RootFolderNode {
   const output: RootFolderNode = { folders: [] };
   const index = input.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
+  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
 
-  (index[-1] || []).map((level1) => {
-    const level2 = index[level1.id] || [];
+  const terminal = (x: FolderNode): FolderNodeTerminal => ({
+    ...x,
+    kind: "terminal",
+    content: [],
+    children: []
+  });
 
+  const medial = (x: FolderNode): FolderNodeMedial => ({
+    ...x,
+    kind: "medial",
+    children: childrenOf(x.id).map(terminal),
+    content: []
+  });
+
+  const initial = (x: FolderNode) => (index[x.id].length) ?
+    medial(x) : terminal(x);
+
+  childrenOf(-1).map((root) => {
+    const children = childrenOf(root.id).map(initial);
     return output.folders.push({
-      ...level1,
+      ...root,
       kind: "initial",
-      children: level2.map((x): Descendant => {
-        // Do an if branch to determin if kind is `medial` or `terminal`.
-        if (index[x.id].length) { // medial node
-          return {
-            ...x,
-            kind: "medial",
-            children: (index[x.id] || []).map((z): FolderNodeTerminal => {
-              return { // You stopped here.
-                kind: "terminal"
-              };
-            }),
-            content: []
-          };
-        } else { // terminal node
-          return {
-            ...x,
-            kind: "terminal",
-            children: [],
-            content: []
-          };
-        }
-      }),
+      children,
       content: []
     });
   });

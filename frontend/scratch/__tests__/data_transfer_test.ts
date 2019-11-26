@@ -1,14 +1,6 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
 
-// const MOCKUP_SEQUENCES: Record<number, string> = {
-//   1: "Another sequence",
-//   2: "Some random sequence",
-//   3: "Planting seeds",
-//   4: "Purple rain",
-//   5: "Make it rain",
-// };
-
 const FOLDERS: FolderNode[] = [
   { id: 1, color: "blue", name: "Water stuff", parent_id: undefined },
   { id: 2, color: "green", name: "Folder for growing things", parent_id: undefined },
@@ -22,10 +14,39 @@ describe("data transfer", () => {
     const x = ingest(FOLDERS);
     const { folders } = x;
     expect(folders.length).toEqual(3);
-    const names = folders.map(x => x.name);
-    ["Water stuff", "Folder for growing things", "tests"].map(name => {
-      expect(names).toContain(name);
-    });
-    fail("Next task: Populate `medial` and `terminal` nodes.");
+    // ├─ FOLDER FOR GROWING THINGS
+    // │  └─ SUBFOLDER
+    // │     └─ DEEPLY NESTED DIRECTORY
+    // ├─ TESTS
+    // └─ WATER STUFF
+
+    const l0 = folders[0];
+
+    // Level 0, first folder
+    expect(l0.name).toEqual(FOLDERS[1].name);
+    expect(l0.color).toEqual(FOLDERS[1].color);
+    expect(l0.children.length).toEqual(1);
+
+    // Level 0, second folder
+    const l0_2 = l0.children[0];
+    expect(l0_2.name).toEqual(FOLDERS[2].name);
+    expect(l0_2.color).toEqual(FOLDERS[2].color);
+    expect((l0_2.children || []).length).toEqual(1);
+
+    // Level 0, third folder
+    const l0_3 = (l0_2.children || [])[0];
+    expect(l0_3.name).toEqual(FOLDERS[4].name);
+    expect(l0_3.color).toEqual(FOLDERS[4].color);
+    expect((l0_3.children || []).length).toEqual(0);
+
+    // Level 1, first folder
+    expect(folders[1].name).toEqual(FOLDERS[3].name);
+    expect(folders[1].color).toEqual(FOLDERS[3].color);
+    expect(folders[1].children.length).toEqual(0);
+
+    // Level 2, first folder
+    expect(folders[2].name).toEqual(FOLDERS[0].name);
+    expect(folders[2].color).toEqual(FOLDERS[0].color);
+    expect(folders[2].children.length).toEqual(0);
   });
 });
