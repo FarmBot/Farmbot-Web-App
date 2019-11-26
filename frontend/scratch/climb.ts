@@ -28,7 +28,6 @@ function visit(p: VisitorProps) {
       p.state.active && callback(nextNode, p.halt);
     }
   });
-
 }
 
 export const climb = (t: RootFolderNode, callback: TreeClimber) => {

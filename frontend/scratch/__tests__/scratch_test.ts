@@ -11,12 +11,16 @@ const FOLDERS: FolderNode[] = [
 ];
 const TREE = ingest(FOLDERS);
 
-fdescribe("climb()", () => {
-  fit("traverses through the nodes", () => {
-    climb(TREE, (node, _halt) => {
-      console.log(node.color);
-    });
+describe("climb()", () => {
+  it("traverses through the nodes", () => {
+    const results: string[] = [];
+    climb(TREE, (node) => results.push(node.color));
+    expect(results.length).toBe(FOLDERS.length);
+    expect(results.sort()).toEqual(FOLDERS.map(x => x.color).sort());
   });
+
+  // it("halts a tree climb", () => {
+  // });
 });
 
 describe("data transfer", () => {
