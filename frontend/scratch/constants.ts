@@ -3,14 +3,15 @@ import { Color } from "farmbot/dist/corpus";
 interface SFile { uuid: string; }
 
 interface FolderUI {
+  id: number;
   name: string;
   content: SFile[];
-  color?: Color;
+  color: Color;
   open?: boolean;
 }
 
 /** A top-level directory */
-interface FolderNodeInitial extends FolderUI {
+export interface FolderNodeInitial extends FolderUI {
   kind: "initial";
   children: (FolderNodeMedial | FolderNodeTerminal)[];
 }
@@ -25,8 +26,13 @@ export interface FolderNodeMedial extends FolderUI {
  * Never has a child */
 export interface FolderNodeTerminal extends FolderUI {
   kind: "terminal";
-  children: never[];
+  children: [];
 }
+
+export type FolderUnion =
+  | FolderNodeInitial
+  | FolderNodeMedial
+  | FolderNodeTerminal;
 
 export interface RootFolderNode {
   folders: FolderNodeInitial[];

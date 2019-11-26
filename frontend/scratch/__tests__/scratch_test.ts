@@ -1,5 +1,6 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
+import { climb } from "../climb";
 
 const FOLDERS: FolderNode[] = [
   { id: 1, color: "blue", name: "Water stuff", parent_id: undefined },
@@ -8,11 +9,19 @@ const FOLDERS: FolderNode[] = [
   { id: 4, color: "gray", name: "tests", parent_id: undefined },
   { id: 5, color: "pink", name: "deeply nested directory", parent_id: 3 }
 ];
+const TREE = ingest(FOLDERS);
+
+fdescribe("climb()", () => {
+  fit("traverses through the nodes", () => {
+    climb(TREE, (node, _halt) => {
+      console.log(node.color);
+    });
+  });
+});
 
 describe("data transfer", () => {
   it("converts flat data into hierarchical data", () => {
-    const x = ingest(FOLDERS);
-    const { folders } = x;
+    const { folders } = TREE;
     expect(folders.length).toEqual(3);
     // ├─ FOLDER FOR GROWING THINGS
     // │  └─ SUBFOLDER
@@ -24,6 +33,7 @@ describe("data transfer", () => {
 
     // Level 0, first folder
     expect(l0.name).toEqual(FOLDERS[1].name);
+    expect(l0.id).toEqual(FOLDERS[1].id);
     expect(l0.color).toEqual(FOLDERS[1].color);
     expect(l0.children.length).toEqual(1);
 
@@ -34,7 +44,7 @@ describe("data transfer", () => {
     expect((l0_2.children || []).length).toEqual(1);
 
     // Level 0, third folder
-    const l0_3 = (l0_2.children || [])[0];
+    const l0_3 = l0_2.children[0];
     expect(l0_3.name).toEqual(FOLDERS[4].name);
     expect(l0_3.color).toEqual(FOLDERS[4].color);
     expect((l0_3.children || []).length).toEqual(0);
