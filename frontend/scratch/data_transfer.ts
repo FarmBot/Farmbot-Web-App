@@ -1,30 +1,30 @@
-import {
-  FlatNode,
-  FlatNodeName,
-  RootFolderNode
-} from "./constants";
+import { RootFolderNode, FolderNode } from "./constants";
 
-type NodeName = Required<FlatNodeName>;
-type NodeNameIndex = Record<number, NodeName[]>;
+type FoldersIndexedByParentId = Record<number, FolderNode[]>;
 
-const z: Readonly<NodeNameIndex> = {};
-
-const mapper =
-  (x: FlatNodeName): NodeName => ({ ...x, parent_id: x.parent_id || -1 });
-
-const reducer = (accum: NodeNameIndex, item: NodeName): NodeNameIndex => {
-  const { parent_id } = item;
-  const list = (accum[parent_id] || []);
-
-  return { ...accum, [parent_id]: [...list, item] };
+/** Set empty `parent_id` to -1 to increase index simplicity. */
+const setDefaultParentId = (input: FolderNode): Required<FolderNode> => {
+  return { ...input, parent_id: input.parent_id || -1 };
 };
 
-export function ingest(_folders: FlatNode[], names: FlatNodeName[]): RootFolderNode {
-  const output = { folders: [] };
-  // const nameIndex =
-  names.map(mapper).reduce(reducer, z);
-  // const keys: keyof typeof nameIndex =
-  //   Object.keys(nameIndex).map(x => parseInt(x, 10)).sort();
-  // keys.
+const addToIndex =
+  (accumulator: FoldersIndexedByParentId, item: Required<FolderNode>) => {
+    const key = item.parent_id;
+    const value = accumulator[key] || [];
+
+    return { ...accumulator, [key]: [...value, item] };
+  };
+
+const emptyIndex: FoldersIndexedByParentId = {};
+
+export function ingest(input: FolderNode[]): RootFolderNode {
+  const output: RootFolderNode = { folders: [] };
+  const index = input.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
+  (index[-1] || []).map(y => output.folders.push({
+    ...y,
+    kind: "initial",
+    children: [],
+    content: []
+  }));
   return output;
 }
