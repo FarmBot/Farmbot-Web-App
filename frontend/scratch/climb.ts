@@ -20,19 +20,15 @@ function visit(p: VisitorProps) {
   if (!p.state.active) { return; }
 
   callback(node, halt);
+  const children: FolderUnion[] = (node.children);
+  return p.state.active && children.map(nextNode => {
+    if (nextNode.kind != "terminal") {
+      p.state.active && visit({ ...p, node: nextNode });
+    } else {
+      p.state.active && callback(nextNode, p.halt);
+    }
+  });
 
-  switch (node.kind) {
-    case "initial":
-    case "medial":
-      const children: FolderUnion[] = (node.children);
-      return p.state.active && children.map(nextNode => {
-        if (nextNode.kind == "medial") {
-          visit({ ...p, node: nextNode });
-        }
-      });
-    default:
-      return;
-  }
 }
 
 export const climb = (t: RootFolderNode, callback: TreeClimber) => {
