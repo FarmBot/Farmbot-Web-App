@@ -16,14 +16,14 @@ interface FolderNodeInitial extends FolderUI {
 }
 
 /** A mid-level directory. */
-interface FolderNodeMedial extends FolderUI {
+export interface FolderNodeMedial extends FolderUI {
   kind: "medial";
-  children: FolderNodeTerminal;
+  children: FolderNodeTerminal[];
 }
 
 /** A leaf node on the directory tree.
  * Never has a child */
-interface FolderNodeTerminal extends FolderUI {
+export interface FolderNodeTerminal extends FolderUI {
   kind: "terminal";
   children?: never[];
 }
