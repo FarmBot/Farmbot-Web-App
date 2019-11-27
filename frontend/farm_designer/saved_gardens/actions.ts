@@ -95,7 +95,11 @@ export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
     const sourceSavedGardenId = savedGarden.body.id;
     const name = newSGName || `${savedGarden.body.name} (${t("copy")})`;
     dispatch(initSaveGetId(savedGarden.kind, { name }))
-      .then((newSGId: number) => plantTemplates
-        .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
-        .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId)))));
+      .then((newSGId: number) => {
+        plantTemplates
+          .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
+          .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId))));
+        success(t("Garden Saved."));
+        history.push("/app/designer/gardens");
+      });
   };
