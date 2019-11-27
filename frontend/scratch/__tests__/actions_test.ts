@@ -1,7 +1,8 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { findFolder, toggleFolderOpenState } from "../actions";
+import { findFolder, toggleFolderOpenState, expandAll, collapseAll } from "../actions";
 import { times, sample } from "lodash";
+import { cloneAndClimb, climb } from "../climb";
 // Folder structure used in tests:
 // ├─ One
 // ├─ Two
@@ -43,10 +44,29 @@ const FOLDERS: FolderNode[] = [
 ];
 
 const GRAPH = ingest(FOLDERS);
+describe("expand/collapse all", () => {
+  const halfOpen = cloneAndClimb(GRAPH, (node) => {
+    node.open = !sample([true, false]);
+  });
+
+  it("expands all folders", async () => {
+    const open = await expandAll(halfOpen);
+    climb(open, (node) => {
+      expect(node.open).toBe(true);
+    });
+  });
+
+  it("collapses all folders", async () => {
+    const closed = await collapseAll(halfOpen);
+    climb(closed, (node) => {
+      expect(node.open).toBe(false);
+    });
+  });
+});
 
 describe("toggleFolderOpenState", () => {
   it("toggles the `open` value of a folder", () => {
-    times(10, async () => {
+    times(3, async () => {
       const node = sample(FOLDERS);
       if (!node) {
         throw new Error("Impossible");
