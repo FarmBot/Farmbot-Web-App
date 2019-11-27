@@ -1,8 +1,16 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { findFolder, toggleFolderOpenState, expandAll, collapseAll } from "../actions";
+import {
+  collapseAll,
+  expandAll,
+  findFolder,
+  setFolderColor,
+  setFolderName,
+  toggleFolderOpenState,
+} from "../actions";
 import { times, sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
+
 // Folder structure used in tests:
 // ├─ One
 // ├─ Two
@@ -44,6 +52,29 @@ const FOLDERS: FolderNode[] = [
 ];
 
 const GRAPH = ingest(FOLDERS);
+
+const randomNode = () => {
+  const node = sample(FOLDERS);
+  if (!node) {
+    throw new Error("Never");
+  }
+  return node;
+};
+
+describe("setting of color, name", () => {
+  it("sets the color", async () => {
+    const node = randomNode();
+    const nextFolder = await setFolderColor(GRAPH, node.id, "green");
+    expect(findFolder(nextFolder, node.id)?.color).toEqual("green");
+  });
+
+  it("sets the name of a folder", async () => {
+    const node = randomNode();
+    const nextFolder = await setFolderName(GRAPH, node.id, "blah");
+    expect(findFolder(nextFolder, node.id)?.name).toEqual("blah");
+  });
+});
+
 describe("expand/collapse all", () => {
   const halfOpen = cloneAndClimb(GRAPH, (node) => {
     node.open = !sample([true, false]);
@@ -67,7 +98,7 @@ describe("expand/collapse all", () => {
 describe("toggleFolderOpenState", () => {
   it("toggles the `open` value of a folder", () => {
     times(3, async () => {
-      const node = sample(FOLDERS);
+      const node = randomNode();
       if (!node) {
         throw new Error("Impossible");
       }

@@ -3,6 +3,7 @@ import {
   FolderUnion
 } from "./constants";
 import { cloneAndClimb } from "./climb";
+import { Color } from "farmbot";
 
 export const findFolder = (tree: Tree, id: number) => {
   let result: FolderUnion | undefined;
@@ -36,9 +37,25 @@ export const collapseAll = (tree: Tree) => {
   }));
 };
 
-export const setFolderColor = (_: Tree, _id: number) => Promise.reject("WIP");
-export const setFolderName =
-  (_: Tree, _id: number, _name: string) => Promise.reject("WIP");
+export const setFolderColor = (tree: Tree, id: number, color: Color) => {
+  // In the real version, I will probably just do
+  // an HTTP POST and re-draw the graph at response
+  // time.
+  return Promise.resolve(cloneAndClimb(tree, (node) => {
+    if (node.id == id) {
+      node.color = color;
+    }
+  }));
+};
+
+export const setFolderName = (tree: Tree, id: number, name: string) => {
+  return Promise.resolve(cloneAndClimb(tree, (node) => {
+    if (node.id == id) {
+      node.name = name;
+    }
+  }));
+};
+
 export const createFolder = (_: Tree) => Promise.reject("WIP");
 export const deleteFolder = (_: Tree) => Promise.reject("WIP");
 export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
