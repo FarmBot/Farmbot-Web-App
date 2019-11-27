@@ -408,8 +408,8 @@ describe Api::DevicesController do
       start_tests "express_1.0"
 
       expect(peripherals_lighting?(device).pin).to eq(7)
-      expect(peripherals_peripheral_4?(device).pin).to eq(10)
-      expect(peripherals_peripheral_5?(device).pin).to eq(12)
+      expect(peripherals_peripheral_4?(device)).to_not be
+      expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
@@ -455,8 +455,8 @@ describe Api::DevicesController do
       start_tests "express_xl_1.0"
 
       expect(peripherals_lighting?(device).pin).to eq(7)
-      expect(peripherals_peripheral_4?(device).pin).to eq(10)
-      expect(peripherals_peripheral_5?(device).pin).to eq(12)
+      expect(peripherals_peripheral_4?(device)).to_not be
+      expect(peripherals_peripheral_5?(device)).to_not be
       expect(peripherals_vacuum?(device).pin).to be(9)
       expect(peripherals_water?(device).pin).to be(8)
       expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
