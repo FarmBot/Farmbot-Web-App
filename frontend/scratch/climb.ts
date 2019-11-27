@@ -1,18 +1,21 @@
-import { RootFolderNode, FolderUnion } from "./constants";
+import { RootFolderNode, FolderUnion, FolderNodeMedial, FolderNodeInitial } from "./constants";
+import { defensiveClone } from "../util";
 
 interface TreeClimberState {
   active: boolean;
 }
 
 interface VisitorProps {
-  node: FolderUnion;
+  node: FolderNodeInitial | FolderNodeMedial;
   callback: TreeClimber;
   halt: Halt;
   state: TreeClimberState;
 }
 
 type Halt = () => void;
-type TreeClimber = (t: FolderUnion, halt: Function) => void;
+type TreeClimber = (t: FolderUnion,
+  /** Calling this function stops tree climb from continuing. */
+  halt: Function) => void;
 
 function visit(p: VisitorProps) {
   const { node, callback, halt } = p;
@@ -30,6 +33,7 @@ function visit(p: VisitorProps) {
   });
 }
 
+/** Recursively climb a directory structure. */
 export const climb = (t: RootFolderNode, callback: TreeClimber) => {
   const state: TreeClimberState = { active: true };
   const halt = () => { state.active = false; };
@@ -37,5 +41,11 @@ export const climb = (t: RootFolderNode, callback: TreeClimber) => {
     const props = { node, callback, halt, state };
     state.active && visit(props);
   });
-  return [];
+  return t;
+};
+
+/** TODO: Create strategies for non-destructively
+ * transforming a RootFolderNode. */
+export const cloneAndClimb = (t: RootFolderNode, callback: TreeClimber) => {
+  return climb(defensiveClone(t), callback);
 };

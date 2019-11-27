@@ -13,13 +13,14 @@ const setDefaultParentId = (input: FolderNode): Required<FolderNode> => {
   return { ...input, parent_id: input.parent_id || -1 };
 };
 
-const addToIndex =
-  (accumulator: FoldersIndexedByParentId, item: Required<FolderNode>) => {
-    const key = item.parent_id;
-    const value = accumulator[key] || [];
-
-    return { ...accumulator, [key]: [...value, item] };
-  };
+type AddToIndex = (a: FoldersIndexedByParentId, i: Required<FolderNode>) =>
+  Record<number, FolderNode[] | undefined>;
+const addToIndex: AddToIndex = (accumulator, item) => {
+  const key = item.parent_id;
+  const lastValue: FolderNode[] = accumulator[key] || [];
+  const nextValue: FolderNode[] = [...lastValue, item];
+  return { ...accumulator, [key]: nextValue };
+};
 
 const emptyIndex: FoldersIndexedByParentId = {};
 
@@ -42,7 +43,7 @@ export function ingest(input: FolderNode[]): RootFolderNode {
     content: []
   });
 
-  const initial = (x: FolderNode) => (index[x.id].length) ?
+  const initial = (x: FolderNode) => (index[x.id] || []).length ?
     medial(x) : terminal(x);
 
   childrenOf(-1).map((root) => {
