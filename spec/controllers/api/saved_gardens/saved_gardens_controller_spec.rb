@@ -62,7 +62,7 @@ describe Api::SavedGardensController do
       gardens_b4 = user.device.saved_gardens.count
       templates_b4 = user.device.plant_templates.count
       plants = FactoryBot.create_list(:plant, 3, device: user.device)
-      post :snapshot
+      post :snapshot, body: {}.to_json
       expect(response.status).to eq(200)
       expect(user.device.plant_templates.count).to eq(plants.length)
       expect(user.device.saved_gardens.count).to be > gardens_b4
