@@ -8,6 +8,8 @@ import {
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
 
+type TreePromise = Promise<Tree>;
+
 const DEFAULT_NAME = "New Folder";
 
 const initial = (name: string): FolderNodeInitial => ({
@@ -94,7 +96,7 @@ const FIX_THIS_ASAP = () => Math.round(Math.random() * -10000000);
 
 export const deleteFolder = (tree: Tree, _id: number) => {
   // Step one: Find parent ID. Crash if the folder is not empty.
-  // Step two: Unsplice node from parent.
+  // Step two: Un-splice node from parent.
 
   return Promise.resolve(cloneAndClimb(tree, (_node, _halt) => {
     throw new Error("Work in progress.");
@@ -102,14 +104,17 @@ export const deleteFolder = (tree: Tree, _id: number) => {
 };
 
 export const createFolder =
-  (tree: Tree, parent_id?: number, name = DEFAULT_NAME) => {
+  (tree: Tree, parent_id?: number, name = DEFAULT_NAME): TreePromise => {
     console.error("This function has problems: " +
       "ID's are not real. Can't control folder order.");
+    if (!parent_id) {
+      return Promise.resolve({
+        ...tree,
+        folders: [...tree.folders, initial(name)]
+      });
+    }
+
     return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-      if (!parent_id) {
-        tree.folders.push(initial(name));
-        return halt();
-      }
 
       if (node.id == parent_id) {
         switch (node.kind) {

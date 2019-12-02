@@ -12,10 +12,10 @@ interface VisitorProps {
   state: TreeClimberState;
 }
 
-type Halt = () => void;
+type Halt = () => RootFolderNode;
 type TreeClimber = (t: FolderUnion,
   /** Calling this function stops tree climb from continuing. */
-  halt: Function) => void;
+  halt: Halt) => void;
 
 function visit(p: VisitorProps) {
   const { node, callback, halt } = p;
@@ -36,7 +36,10 @@ function visit(p: VisitorProps) {
 /** Recursively climb a directory structure. */
 export const climb = (t: RootFolderNode, callback: TreeClimber) => {
   const state: TreeClimberState = { active: true };
-  const halt = () => { state.active = false; };
+  const halt = () => {
+    state.active = false;
+    return t;
+  };
   t.folders.map((node) => {
     const props = { node, callback, halt, state };
     state.active && visit(props);

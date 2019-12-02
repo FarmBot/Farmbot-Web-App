@@ -7,6 +7,7 @@ import {
   setFolderColor,
   setFolderName,
   toggleFolderOpenState,
+  createFolder,
 } from "../actions";
 import { times, sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
@@ -60,6 +61,17 @@ const randomNode = () => {
   }
   return node;
 };
+
+describe("creation of folders", () => {
+  it("adds a folder to level 0", async () => {
+    const name = "~ Folder Name ~";
+    const nextGraph = await createFolder(GRAPH, undefined, name);
+    expect(nextGraph.folders.map(x => x.name)).toContain(name);
+  });
+
+  test.todo("adds a folder to level 1");
+  test.todo("adds a folder to level 2");
+});
 
 describe("setting of color, name", () => {
   it("sets the color", async () => {
