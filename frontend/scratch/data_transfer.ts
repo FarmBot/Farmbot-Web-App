@@ -43,11 +43,11 @@ export function ingest(input: FolderNode[]): RootFolderNode {
     content: []
   });
 
-  const initial = (x: FolderNode) => (index[x.id] || []).length ?
+  const mapper = (x: FolderNode) => (index[x.id] || []).length ?
     medial(x) : terminal(x);
 
   childrenOf(-1).map((root) => {
-    const children = childrenOf(root.id).map(initial);
+    const children = childrenOf(root.id).map(mapper);
     return output.folders.push({
       ...root,
       kind: "initial",

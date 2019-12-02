@@ -1,9 +1,41 @@
 import {
   RootFolderNode as Tree,
-  FolderUnion
+  FolderUnion,
+  FolderNodeInitial,
+  FolderNodeMedial,
+  FolderNodeTerminal
 } from "./constants";
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
+
+const DEFAULT_NAME = "New Folder";
+
+const initial = (name: string): FolderNodeInitial => ({
+  kind: "initial",
+  name,
+  color: "gray",
+  children: [],
+  content: [],
+  id: FIX_THIS_ASAP()
+});
+
+const medial = (name: string): FolderNodeMedial => ({
+  kind: "medial",
+  name,
+  color: "gray",
+  children: [],
+  content: [],
+  id: FIX_THIS_ASAP()
+});
+
+const terminal = (name: string): FolderNodeTerminal => ({
+  kind: "terminal",
+  name,
+  color: "gray",
+  children: [],
+  content: [],
+  id: FIX_THIS_ASAP()
+});
 
 export const findFolder = (tree: Tree, id: number) => {
   let result: FolderUnion | undefined;
@@ -41,23 +73,55 @@ export const setFolderColor = (tree: Tree, id: number, color: Color) => {
   // In the real version, I will probably just do
   // an HTTP POST and re-draw the graph at response
   // time.
-  return Promise.resolve(cloneAndClimb(tree, (node) => {
+  return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
     if (node.id == id) {
       node.color = color;
+      halt();
     }
   }));
 };
 
 export const setFolderName = (tree: Tree, id: number, name: string) => {
-  return Promise.resolve(cloneAndClimb(tree, (node) => {
+  return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
     if (node.id == id) {
       node.name = name;
+      halt();
     }
   }));
 };
 
-export const createFolder = (_: Tree) => Promise.reject("WIP");
-export const deleteFolder = (_: Tree) => Promise.reject("WIP");
+const FIX_THIS_ASAP = () => Math.round(Math.random() * -10000000);
+
+export const deleteFolder = (tree: Tree, _id: number) => {
+  // Step one: Find parent ID. Crash if the folder is not empty.
+  // Step two: Unsplice node from parent.
+
+  return Promise.resolve(cloneAndClimb(tree, (_node, _halt) => {
+    throw new Error("Work in progress.");
+  }));
+};
+
+export const createFolder =
+  (tree: Tree, parent_id?: number, name = DEFAULT_NAME) => {
+    console.error("This function has problems: " +
+      "ID's are not real. Can't control folder order.");
+    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
+      if (!parent_id) {
+        tree.folders.push(initial(name));
+        return halt();
+      }
+
+      if (node.id == parent_id) {
+        switch (node.kind) {
+          case "initial": node.children.push(medial(name)); break;
+          case "medial": node.children.push(terminal(name)); break;
+          case "terminal": throw new Error("Can't attach folders more than 3 levels deep");
+        }
+        return halt();
+      }
+    }));
+  };
+
 export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
 export const moveFolder = (_: Tree) => Promise.reject("WIP");
 export const searchSequencesAndFolders = (_: Tree) => Promise.reject("WIP");
