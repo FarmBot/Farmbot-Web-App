@@ -20,8 +20,6 @@ type TreeClimber = (t: FolderUnion,
 function visit(p: VisitorProps) {
   const { node, callback, halt } = p;
 
-  if (!p.state.active) { return; }
-
   callback(node, halt);
   const children: FolderUnion[] = (node.children);
   return p.state.active && children.map(nextNode => {

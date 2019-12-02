@@ -50,57 +50,69 @@ export const findFolder = (tree: Tree, id: number) => {
   return result;
 };
 
-export const toggleFolderOpenState = (tree: Tree, id: number) => {
-  return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-    if (node.id === id) {
-      node.open = !node.open;
-      halt();
-    }
-  }));
-};
+export const toggleFolderOpenState =
+  (tree: Tree, id: number): TreePromise => {
+    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
+      if (node.id === id) {
+        node.open = !node.open;
+        halt();
+      }
+    }));
+  };
 
-export const expandAll = (tree: Tree) => {
-  return Promise.resolve(cloneAndClimb(tree, (node) => {
-    node.open = true;
-  }));
-};
+export const expandAll =
+  (tree: Tree): TreePromise => {
+    return Promise.resolve(cloneAndClimb(tree, (node) => {
+      node.open = true;
+    }));
+  };
 
-export const collapseAll = (tree: Tree) => {
+export const collapseAll = (tree: Tree): TreePromise => {
   return Promise.resolve(cloneAndClimb(tree, (node) => {
     node.open = false;
   }));
 };
 
-export const setFolderColor = (tree: Tree, id: number, color: Color) => {
-  // In the real version, I will probably just do
-  // an HTTP POST and re-draw the graph at response
-  // time.
-  return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-    if (node.id == id) {
-      node.color = color;
-      halt();
-    }
-  }));
-};
+export const setFolderColor =
+  (tree: Tree, id: number, color: Color): TreePromise => {
+    // In the real version, I will probably just do
+    // an HTTP POST and re-draw the graph at response
+    // time.
+    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
+      if (node.id == id) {
+        node.color = color;
+        halt();
+      }
+    }));
+  };
 
-export const setFolderName = (tree: Tree, id: number, name: string) => {
-  return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-    if (node.id == id) {
-      node.name = name;
-      halt();
-    }
-  }));
-};
+export const setFolderName =
+  (tree: Tree, id: number, name: string): TreePromise => {
+    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
+      if (node.id == id) {
+        node.name = name;
+        halt();
+      }
+    }));
+  };
 
 const FIX_THIS_ASAP = () => Math.round(Math.random() * -10000000);
 
-export const deleteFolder = (tree: Tree, _id: number) => {
+export const deleteFolder = (tree: Tree, id: number): TreePromise => {
   // Step one: Find parent ID. Crash if the folder is not empty.
   // Step two: Un-splice node from parent.
-
-  return Promise.resolve(cloneAndClimb(tree, (_node, _halt) => {
-    throw new Error("Work in progress.");
-  }));
+  return new Promise((resolve, reject) => {
+    cloneAndClimb(tree, (node, halt) => {
+      if (node.id == id) {
+        if (node.children) {
+          reject(new Error("Folder must be empty prior to deletion."));
+        } else {
+          halt();
+          throw new Error("Work in progress.");
+        }
+      }
+    });
+  });
 };
 
 export const createFolder =
