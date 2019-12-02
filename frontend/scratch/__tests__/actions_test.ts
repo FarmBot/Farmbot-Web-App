@@ -1,4 +1,4 @@
-import { FolderNode } from "../constants";
+import { FolderNode, FolderUnion } from "../constants";
 import { ingest } from "../data_transfer";
 import {
   collapseAll,
@@ -63,14 +63,34 @@ const randomNode = () => {
 };
 
 describe("creation of folders", () => {
-  it("adds a folder to level 0", async () => {
+  it("adds a folder to folder root", async () => {
     const name = "~ Folder Name ~";
     const nextGraph = await createFolder(GRAPH, undefined, name);
     expect(nextGraph.folders.map(x => x.name)).toContain(name);
   });
 
-  test.todo("adds a folder to level 1");
-  test.todo("adds a folder to level 2");
+  it("adds a folder to an initial node", async () => {
+    const name = "~ Folder Name ~";
+    const nextGraph = await createFolder(GRAPH, 6, name);
+    let target: FolderUnion | undefined;
+    climb(nextGraph, (node) => {
+      if (node.id == 6) { target = node; }
+    });
+
+    if (target && target.kind === "initial") {
+      const folders = target.children;
+      const names = folders.map((x) => { return x.name; });
+      expect(names).toContain(name);
+    } else {
+      fail("Wrong target?");
+    }
+  });
+
+  it("adds a folder to a medial node", () => {
+    pending();
+  });
+
+  test.todo("does not add a folder to terminal node");
 });
 
 describe("setting of color, name", () => {
