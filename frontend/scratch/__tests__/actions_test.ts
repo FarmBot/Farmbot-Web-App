@@ -31,6 +31,7 @@ import { cloneAndClimb, climb } from "../climb";
 //    └─ Sixteen
 //       ├─ Seventeen
 //       └─ Eighteen
+
 const FOLDERS: FolderNode[] = [
   { id: 1, parent_id: undefined, color: "blue", name: "One" },
   { id: 2, parent_id: undefined, color: "blue", name: "Two" },
@@ -71,7 +72,10 @@ describe("creation of folders", () => {
 
   it("adds a folder to an initial node", async () => {
     const name = "~ Folder Name ~";
-    const id = 6;
+    const id = sample([1, 2, 4, 6, 10, 14]);
+    if (!id) {
+      throw new Error("Never");
+    }
     const nextGraph = await createFolder(GRAPH, id, name);
     let target: FolderUnion | undefined;
     climb(nextGraph, (node) => {
@@ -89,7 +93,10 @@ describe("creation of folders", () => {
 
   it("adds a folder to a medial node", async () => {
     const name = "~ Folder Name ~";
-    const id = 11;
+    const id = sample([3, 5, 7, 12]);
+    if (!id) {
+      throw new Error("Never");
+    }
     const nextGraph = await createFolder(GRAPH, id, name);
     let target: FolderUnion | undefined;
 
@@ -104,7 +111,15 @@ describe("creation of folders", () => {
     }
   });
 
-  test.todo("does not add a folder to terminal node");
+  it("does not add a folder to terminal node", async () => {
+    const name = "~ Folder Name ~";
+    const id = sample([9, 13, 18, 8, 17]);
+    if (!id) {
+      throw new Error("Never");
+    }
+    const err = "Can't attach folders more than 3 levels deep";
+    expect(() => createFolder(GRAPH, id, name)).toThrowError(err);
+  });
 });
 
 describe("setting of color, name", () => {
