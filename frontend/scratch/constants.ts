@@ -13,7 +13,7 @@ interface FolderUI {
 /** A top-level directory */
 export interface FolderNodeInitial extends FolderUI {
   kind: "initial";
-  children: (FolderNodeMedial | FolderNodeTerminal)[];
+  children: FolderNodeMedial[];
 }
 
 /** A mid-level directory. */

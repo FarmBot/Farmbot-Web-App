@@ -118,11 +118,15 @@ export const createFolder =
 
       if (node.id == parent_id) {
         switch (node.kind) {
-          case "initial": node.children.push(medial(name)); break;
-          case "medial": node.children.push(terminal(name)); break;
-          case "terminal": throw new Error("Can't attach folders more than 3 levels deep");
+          case "initial":
+            node.children.push(medial(name));
+            return halt();
+          case "medial":
+            node.children.push(terminal(name));
+            return halt();
+          case "terminal":
+            throw new Error("Can't attach folders more than 3 levels deep");
         }
-        return halt();
       }
     }));
   };

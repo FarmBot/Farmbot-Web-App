@@ -71,10 +71,11 @@ describe("creation of folders", () => {
 
   it("adds a folder to an initial node", async () => {
     const name = "~ Folder Name ~";
-    const nextGraph = await createFolder(GRAPH, 6, name);
+    const id = 6;
+    const nextGraph = await createFolder(GRAPH, id, name);
     let target: FolderUnion | undefined;
     climb(nextGraph, (node) => {
-      if (node.id == 6) { target = node; }
+      if (node.id == id) { target = node; }
     });
 
     if (target && target.kind === "initial") {
@@ -86,8 +87,21 @@ describe("creation of folders", () => {
     }
   });
 
-  it("adds a folder to a medial node", () => {
-    pending();
+  it("adds a folder to a medial node", async () => {
+    const name = "~ Folder Name ~";
+    const id = 11;
+    const nextGraph = await createFolder(GRAPH, id, name);
+    let target: FolderUnion | undefined;
+
+    climb(nextGraph, (node) => {
+      if (node.id == id) { target = node; }
+    });
+
+    if (target && target.kind === "medial") {
+      expect(target.children.map(x => x.name)).toContain(name);
+    } else {
+      fail("Wrong target?");
+    }
   });
 
   test.todo("does not add a folder to terminal node");
