@@ -669,11 +669,11 @@ ALTER SEQUENCE public.firmware_configs_id_seq OWNED BY public.firmware_configs.i
 
 CREATE TABLE public.folders (
     id bigint NOT NULL,
-    device_id bigint,
+    device_id bigint NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    color character varying(20),
-    name character varying(40),
+    color character varying(20) NOT NULL,
+    name character varying(40) NOT NULL,
     parent_id integer
 );
 
