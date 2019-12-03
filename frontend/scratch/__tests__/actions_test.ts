@@ -8,6 +8,7 @@ import {
   setFolderName,
   toggleFolderOpenState,
   createFolder,
+  deleteFolder,
 } from "../actions";
 import { times, sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
@@ -62,6 +63,27 @@ const randomNode = () => {
   }
   return node;
 };
+
+describe("deletion of folders", () => {
+  it("deletes empty folders", async () => {
+    const id = sample([1, 3, 5, 8, 9, 11, 13, 17, 18]);
+    if (!id) {
+      throw new Error("Never");
+    }
+    const nextGraph = await deleteFolder(GRAPH, id);
+    const names: string[] = [];
+    climb(nextGraph, (node) => {
+      if (node.id === id) {
+        fail(`Failed to delete Node #${id} (${node.name})`);
+      } else {
+        names.push(node.name);
+      }
+    });
+    expect(names.length).toEqual(FOLDERS.length - 1);
+  });
+
+  test.todo("can't delete populated folders");
+});
 
 describe("creation of folders", () => {
   it("adds a folder to folder root", async () => {

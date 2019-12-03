@@ -98,23 +98,6 @@ export const setFolderName =
 
 const FIX_THIS_ASAP = () => Math.round(Math.random() * -10000000);
 
-export const deleteFolder = (tree: Tree, id: number): TreePromise => {
-  // Step one: Find parent ID. Crash if the folder is not empty.
-  // Step two: Un-splice node from parent.
-  return new Promise((resolve, reject) => {
-    cloneAndClimb(tree, (node, halt) => {
-      if (node.id == id) {
-        if (node.children) {
-          reject(new Error("Folder must be empty prior to deletion."));
-        } else {
-          halt();
-          throw new Error("Work in progress.");
-        }
-      }
-    });
-  });
-};
-
 export const createFolder =
   (tree: Tree, parent_id?: number, name = DEFAULT_NAME): TreePromise => {
     console.error("This function has problems: " +
@@ -142,6 +125,25 @@ export const createFolder =
       }
     }));
   };
+
+export const deleteFolder = (tree: Tree, id: number): TreePromise => {
+  return Promise.resolve(cloneAndClimb(tree, (parent) => {
+    switch (parent.kind) {
+      case "initial":
+        const index: Record<number, FolderNodeMedial> = {};
+        parent.children.map(x => {
+          index[x.id] = x;
+        });
+        return;
+      case "medial":
+        parent.children.map(x => {
+        });
+        return;
+      case "terminal":
+        return;
+    }
+  }));
+};
 
 export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
 export const moveFolder = (_: Tree) => Promise.reject("WIP");
