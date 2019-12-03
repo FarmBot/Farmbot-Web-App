@@ -27,7 +27,7 @@ const emptyIndex: FoldersIndexedByParentId = {};
 export function ingest(input: FolderNode[]): RootFolderNode {
   const output: RootFolderNode = { folders: [] };
   const index = input.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
-  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
+  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.id/*x.name.toLowerCase()*/);
 
   const terminal = (x: FolderNode): FolderNodeTerminal => ({
     ...x,

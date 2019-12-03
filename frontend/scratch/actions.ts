@@ -126,7 +126,7 @@ export const createFolder =
     }));
   };
 
-export const deleteFolder = (tree: Tree, id: number): TreePromise => {
+export const deleteFolder = (tree: Tree, _id: number): TreePromise => {
   return Promise.resolve(cloneAndClimb(tree, (parent) => {
     switch (parent.kind) {
       case "initial":
@@ -136,9 +136,8 @@ export const deleteFolder = (tree: Tree, id: number): TreePromise => {
         });
         return;
       case "medial":
-        parent.children.map(x => {
-        });
-        return;
+        // parent.children.map(x => { });
+        throw new Error("WIP");
       case "terminal":
         return;
     }
