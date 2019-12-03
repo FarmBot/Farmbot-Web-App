@@ -4,7 +4,31 @@ describe Api::FoldersController do
   let(:user) { FactoryBot.create(:user) }
   include Devise::Test::ControllerHelpers
 
-  it "creates a webcam feed" do
+  it "shows a folder" do
+    sign_in user
+    parent = Folder.create!(name: "parent", color: "red", device: user.device)
+    get :show, params: {id: parent.id}
+    expect(response.status).to eq(200)
+    [:id, :parent_id, :color, :name].map do |key|
+      expect(json.key?(key)).to be(true)
+      expect(json[key]).to eq(parent.send(key))
+    end
+  end
+
+  it "lists folders" do
+    sign_in user
+    parent = Folder.create!(name: "parent", color: "red", device: user.device)
+    get :index, params: {id: parent.id}
+    expect(response.status).to eq(200)
+    expect(json.count).to eq(user.device.folders.count)
+    item = json[0]
+    [:id, :parent_id, :color, :name].map do |key|
+      expect(item.key?(key)).to be(true)
+      expect(item[key]).to eq(parent.send(key))
+    end
+  end
+
+  it "creates a folder" do
     sign_in user
     parent = Folder.create!(name: "parent", color: "red", device: user.device)
     input = {
