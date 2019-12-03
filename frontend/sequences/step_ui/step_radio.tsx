@@ -19,14 +19,18 @@ const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
 
 export function StepRadio(props: StepRadioProps) {
   const isSelected = (choice: ALLOWED_AXIS) => {
-    if (props.currentStep.kind === "find_home") {
+    if (props.currentStep.kind === "find_home"
+      || props.currentStep.kind === "calibrate"
+      || props.currentStep.kind === "zero") {
       return props.currentStep.args.axis === choice;
     }
   };
 
   const handleUpdate = (choice: ALLOWED_AXIS) => {
     const update = defensiveClone(props.currentStep);
-    if (update.kind === "find_home") {
+    if (update.kind === "find_home"
+      || update.kind === "calibrate"
+      || update.kind === "zero") {
       const nextSequence = defensiveClone(props.currentSequence).body;
       update.args.axis = choice;
       (nextSequence.body || [])[props.index] = update;

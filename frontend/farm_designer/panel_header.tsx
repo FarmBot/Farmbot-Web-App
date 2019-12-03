@@ -118,11 +118,10 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Groups}
         linkTo={"/app/designer/groups"}
         title={t("Groups")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.SavedGardens}
-          linkTo={"/app/designer/gardens"}
-          title={t("Gardens")} />}
+      <NavTab
+        panel={Panel.SavedGardens}
+        linkTo={"/app/designer/gardens"}
+        title={t("Gardens")} />
       <NavTab
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events"}

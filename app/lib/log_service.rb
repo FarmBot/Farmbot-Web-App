@@ -40,7 +40,7 @@ class LogService < AbstractServiceRunner
   def deliver(data)
     dev, log = [data.device, data.payload]
     dev.maybe_unthrottle
-    Log.deliver(dev, Logs::Create.run!(log, device: dev))
+    Log.deliver(Logs::Create.run!(log, device: dev).id)
     print LOG_TPL % [data.device_id, data.payload["message"] || "??"]
   rescue => x
     Rollbar.error(x)

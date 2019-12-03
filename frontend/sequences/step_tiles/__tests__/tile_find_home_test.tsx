@@ -2,7 +2,6 @@ import * as React from "react";
 import { TileFindHome, FindHomeParams } from "../tile_find_home";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { FindHome } from "farmbot/dist";
 import {
   fakeHardwareFlags
 } from "../../../__test_support__/sequence_hardware_settings";
@@ -10,24 +9,24 @@ import { HardwareFlags } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";
 
 describe("<TileFindHome/>", () => {
-  const fakeProps = (): FindHomeParams => {
-    const currentStep: FindHome = {
-      kind: "find_home",
-      args: {
-        speed: 100,
-        axis: "all"
-      }
-    };
-    return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
-      hardwareFlags: fakeHardwareFlags(),
-      confirmStepDeletion: false,
-    };
-  };
+  const fakeProps = (): FindHomeParams => ({
+    currentSequence: fakeSequence(),
+    currentStep: { kind: "find_home", args: { speed: 100, axis: "all" } },
+    dispatch: jest.fn(),
+    index: 0,
+    resources: emptyState().index,
+    hardwareFlags: fakeHardwareFlags(),
+    confirmStepDeletion: false,
+  });
+
+  it("errors with incorrect kind", () => {
+    console.error = jest.fn();
+    const p = fakeProps();
+    // tslint:disable-next-line:no-any
+    p.currentStep.kind = "wrong" as any;
+    expect(() => mount(<TileFindHome {...p} />))
+      .toThrowError("TileFindHome expects find_home");
+  });
 
   it("renders inputs", () => {
     const wrapper = mount(<TileFindHome {...fakeProps()} />);

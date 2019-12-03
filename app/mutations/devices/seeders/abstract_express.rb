@@ -5,6 +5,9 @@ module Devices
         device.update!(name: "FarmBot Express")
       end
 
+      def peripherals_peripheral_4; end
+      def peripherals_peripheral_5; end
+
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
 

@@ -53,7 +53,7 @@ module Logs
     end
 
     def maybe_deliver
-      Log.delay.deliver(device, @log)
+      Log.delay.deliver(@log.id)
     end
 
     def has_bad_words
