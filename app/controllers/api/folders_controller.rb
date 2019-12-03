@@ -13,7 +13,9 @@ module Api
     end
 
     def update
-      mutate Folders::Update.run(raw_json, folder: folder)
+      mutate Folders::Update.run(raw_json,
+                                 folder: folder,
+                                 device: current_device)
     end
 
     def destroy

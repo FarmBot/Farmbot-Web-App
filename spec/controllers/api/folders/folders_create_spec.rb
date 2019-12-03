@@ -19,7 +19,6 @@ describe Api::FoldersController do
     expect(Folder.count).to be > b4
     expect(user.device.folders.count).to eq(2)
     input.keys.map do |key|
-      binding.pry if json[key] != input[key]
       expect(input[key]).to eq(json[key])
     end
   end
