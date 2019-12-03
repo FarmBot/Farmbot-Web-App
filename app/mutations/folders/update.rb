@@ -1,7 +1,5 @@
 module Folders
   class Update < Mutations::Command
-    required { model :folder, class: Folder }
-
     required do
       model :device
       model :folder

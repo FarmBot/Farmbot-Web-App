@@ -47,9 +47,6 @@ describe Api::FoldersController do
     end
   end
 
-  it "lists all folders" do
-  end
-
   it "updates a folder" do
     # Create a folder first....
     sign_in user
@@ -72,4 +69,22 @@ describe Api::FoldersController do
     expect(json[:color]).to eq("red")
     expect(json[:name]).to eq("C")
   end
+
+  it "deletes a folder" do
+    sign_in user
+    parent = Folder.create!(name: "parent", color: "red", device: user.device)
+    delete :destroy, params: {id: parent.id}
+    expect(response.status).to eq(200)
+  end
+
+  it "prevents deletion of folders in use by a sequence" do
+    sign_in user
+    parent = Folder.create!(name: "parent", color: "red", device: user.device)
+    s = FakeSequence.create
+    s.update!(folder: parent)
+    delete :destroy, params: {id: parent.id}
+    expect(response.status).to eq(422)
+  end
+
+  it "prevents deletion of folders in use by a folder"
 end

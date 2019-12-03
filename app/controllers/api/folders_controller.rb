@@ -19,8 +19,7 @@ module Api
     end
 
     def destroy
-      raise "Ensure no sequences are using this folder"
-      render json: folder.destroy! && ""
+      mutate Folders::Destroy.run(folder: folder, device: current_device)
     end
 
     private
