@@ -90,6 +90,7 @@ module CeleryScript
                id: sequence.id,
                created_at: sequence.created_at,
                updated_at: sequence.updated_at,
+               folder_id: sequence.folder_id,
                args: Sequence::DEFAULT_ARGS,
                color: sequence.color,
                name: sequence.name,

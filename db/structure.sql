@@ -664,6 +664,40 @@ ALTER SEQUENCE public.firmware_configs_id_seq OWNED BY public.firmware_configs.i
 
 
 --
+-- Name: folders; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.folders (
+    id bigint NOT NULL,
+    device_id bigint,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    color character varying(20),
+    name character varying(40),
+    parent_id integer
+);
+
+
+--
+-- Name: folders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.folders_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: folders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.folders_id_seq OWNED BY public.folders.id;
+
+
+--
 -- Name: fragments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -841,7 +875,8 @@ CREATE TABLE public.sequences (
     kind character varying(280) DEFAULT 'sequence'::character varying,
     updated_at timestamp without time zone,
     created_at timestamp without time zone,
-    migrated_nodes boolean DEFAULT false
+    migrated_nodes boolean DEFAULT false,
+    folder_id bigint
 );
 
 
@@ -1370,7 +1405,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1649,7 +1684,8 @@ CREATE TABLE public.users (
     agreed_to_terms_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    inactivity_warning_sent_at timestamp without time zone
+    inactivity_warning_sent_at timestamp without time zone,
+    inactivity_warning_count integer
 );
 
 
@@ -1885,6 +1921,13 @@ ALTER TABLE ONLY public.fbos_configs ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.firmware_configs ALTER COLUMN id SET DEFAULT nextval('public.firmware_configs_id_seq'::regclass);
+
+
+--
+-- Name: folders id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.folders ALTER COLUMN id SET DEFAULT nextval('public.folders_id_seq'::regclass);
 
 
 --
@@ -2201,6 +2244,14 @@ ALTER TABLE ONLY public.fbos_configs
 
 ALTER TABLE ONLY public.firmware_configs
     ADD CONSTRAINT firmware_configs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: folders folders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.folders
+    ADD CONSTRAINT folders_pkey PRIMARY KEY (id);
 
 
 --
@@ -2576,6 +2627,13 @@ CREATE INDEX index_firmware_configs_on_device_id ON public.firmware_configs USIN
 
 
 --
+-- Name: index_folders_on_device_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_folders_on_device_id ON public.folders USING btree (device_id);
+
+
+--
 -- Name: index_fragments_on_device_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -2905,6 +2963,13 @@ CREATE INDEX index_sequences_on_device_id ON public.sequences USING btree (devic
 
 
 --
+-- Name: index_sequences_on_folder_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_sequences_on_folder_id ON public.sequences USING btree (folder_id);
+
+
+--
 -- Name: index_standard_pairs_on_arg_name_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3024,6 +3089,14 @@ ALTER TABLE ONLY public.sensor_readings
 
 ALTER TABLE ONLY public.pin_bindings
     ADD CONSTRAINT fk_rails_1f1c3b6979 FOREIGN KEY (device_id) REFERENCES public.devices(id);
+
+
+--
+-- Name: folders fk_rails_58e285f76e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.folders
+    ADD CONSTRAINT fk_rails_58e285f76e FOREIGN KEY (parent_id) REFERENCES public.folders(id);
 
 
 --
@@ -3368,6 +3441,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190930202839'),
 ('20191002125625'),
 ('20191107170431'),
-('20191119204916');
+('20191119204916'),
+('20191203163621');
 
 
