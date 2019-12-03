@@ -7,7 +7,7 @@ describe Api::FoldersController do
   it "shows a folder" do
     sign_in user
     parent = Folder.create!(name: "parent", color: "red", device: user.device)
-    get :show, params: {id: parent.id}
+    get :show, params: { id: parent.id }
     expect(response.status).to eq(200)
     [:id, :parent_id, :color, :name].map do |key|
       expect(json.key?(key)).to be(true)
@@ -18,7 +18,7 @@ describe Api::FoldersController do
   it "lists folders" do
     sign_in user
     parent = Folder.create!(name: "parent", color: "red", device: user.device)
-    get :index, params: {id: parent.id}
+    get :index, params: { id: parent.id }
     expect(response.status).to eq(200)
     expect(json.count).to eq(user.device.folders.count)
     item = json[0]
@@ -34,7 +34,7 @@ describe Api::FoldersController do
     input = {
       parent_id: parent.id,
       color: "blue",
-      name: "child"
+      name: "child",
     }
     b4 = Folder.count
     expect(user.device.folders.count).to eq(1)
@@ -47,14 +47,25 @@ describe Api::FoldersController do
     end
   end
 
+  it "validates parent_id at creation time" do
+    sign_in user
+    input = {
+      parent_id: 9999999,
+      color: "blue",
+      name: "child",
+    }
+    post :create, body: input.to_json
+    expect(response.status).to eq(422)
+    expect(json[:folder_id]).to include("ID is not valid")
+  end
+
   it "updates a folder" do
-    # Create a folder first....
     sign_in user
     old_parent = Folder.create!(name: "B", device: user.device, color: "blue")
     old_params = { name: "B",
                    device: user.device,
                    color: "blue",
-                  parent: old_parent }
+                   parent: old_parent }
     folder = Folder.create!(old_params)
     new_params = { name: "C", color: "red", parent_id: nil }
     patch :update,
@@ -73,7 +84,7 @@ describe Api::FoldersController do
   it "deletes a folder" do
     sign_in user
     parent = Folder.create!(name: "parent", color: "red", device: user.device)
-    delete :destroy, params: {id: parent.id}
+    delete :destroy, params: { id: parent.id }
     expect(response.status).to eq(200)
   end
 
@@ -82,9 +93,20 @@ describe Api::FoldersController do
     parent = Folder.create!(name: "parent", color: "red", device: user.device)
     s = FakeSequence.create
     s.update!(folder: parent)
-    delete :destroy, params: {id: parent.id}
+    delete :destroy, params: { id: parent.id }
     expect(response.status).to eq(422)
+    expect(json[:in_use]).to include("still contains 1 sequence")
   end
 
-  it "prevents deletion of folders in use by a folder"
+  it "prevents deletion of folders in use by a folder" do
+    sign_in user
+    parent = Folder.create!(name: "parent", color: "red", device: user.device)
+    child = Folder.create!(name: "child",
+                           color: "red",
+                           device: user.device,
+                           parent: parent)
+    delete :destroy, params: { id: parent.id }
+    expect(response.status).to eq(422)
+    expect(json[:in_use]).to include("folder still contains 1 subfolder")
+  end
 end

@@ -25,7 +25,7 @@ module Folders
     end
 
     def parent
-      @parent ||= device.folders.find(parent_id)
+      @parent ||= device.folders.find_by(id: parent_id)
     end
 
     def validate_parent_id
