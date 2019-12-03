@@ -36,7 +36,9 @@ input:not([role="combobox"]) {
     background-color: $white !important;
     color: $red;
   }
-  -moz-appearance: textfield;
+  &:not([type="checkbox"]):not([type="radio"]) {
+    -moz-appearance: textfield;
+  }
 }
 
 .input-error-wrapper {

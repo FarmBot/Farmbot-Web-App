@@ -86,6 +86,15 @@ describe("<EditGarden />", () => {
     const wrapper = mount(<EditGarden {...p} />);
     expect(wrapper.text()).toContain("exit");
   });
+
+  it("renders with missing data", () => {
+    const p = fakeProps();
+    p.savedGarden = fakeSavedGarden();
+    p.savedGarden.body.id = undefined;
+    p.savedGarden.body.name = undefined;
+    const wrapper = mount(<EditGarden {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("edit garden");
+  });
 });
 
 describe("mapStateToProps()", () => {
@@ -99,5 +108,17 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.gardenIsOpen).toEqual(true);
     expect(props.savedGarden).toEqual(sg);
+  });
+
+  it("doesn't find saved garden", () => {
+    const sg = fakeSavedGarden();
+    sg.body.id = 1;
+    mockPath = "/app/designer/gardens/";
+    const state = fakeState();
+    state.resources = buildResourceIndex([sg]);
+    state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
+    const props = mapStateToProps(state);
+    expect(props.gardenIsOpen).toEqual(false);
+    expect(props.savedGarden).toEqual(undefined);
   });
 });

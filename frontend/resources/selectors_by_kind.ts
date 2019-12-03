@@ -59,6 +59,7 @@ export let findRegimen = uuidFinder<TaggedRegimen>("Regimen");
 export let findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
 export let findPoints = uuidFinder<TaggedPoint>("Point");
 export let findPointGroup = uuidFinder<TaggedPoint>("Point");
+export let findSavedGarden = uuidFinder<TaggedSavedGarden>("SavedGarden");
 
 export const selectAllCrops =
   (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");

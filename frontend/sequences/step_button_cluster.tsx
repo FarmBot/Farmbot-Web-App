@@ -90,6 +90,22 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="blue">
       {t("Find Home")}
     </StepButton>,
+    <StepButton{...commonStepProps}
+      step={{
+        kind: "zero",
+        args: { axis: "all" }
+      }}
+      color="blue">
+      {t("Set Zero")}
+    </StepButton>,
+    <StepButton{...commonStepProps}
+      step={{
+        kind: "calibrate",
+        args: { axis: "all" }
+      }}
+      color="blue">
+      {t("Calibrate")}
+    </StepButton>,
     <StepButton {...commonStepProps}
       step={{
         kind: "_if",

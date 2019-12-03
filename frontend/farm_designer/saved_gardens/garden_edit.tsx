@@ -7,7 +7,7 @@ import { BlurableInput, Row } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { connect } from "react-redux";
 import {
-  selectAllSavedGardens, selectAllPlantPointers, findResourceById
+  selectAllPlantPointers, maybeFindSavedGardenById
 } from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
@@ -53,18 +53,17 @@ const DestroyGardenButton =
       {t("delete")}
     </button>;
 
-export const findSavedGarden = (ri: ResourceIndex) => {
+export const findSavedGardenByUrl = (ri: ResourceIndex) => {
   const id = getPathArray()[4];
   const num = parseInt(id || "NOPE", 10);
   if (isNumber(num) && !isNaN(num)) {
-    const uuid = findResourceById(ri, "SavedGarden", num);
-    return selectAllSavedGardens(ri).filter(x => x.uuid === uuid)[0];
+    return maybeFindSavedGardenById(ri, num);
   }
 };
 
 export const mapStateToProps = (props: Everything): EditGardenProps => {
   const { openedSavedGarden } = props.resources.consumers.farm_designer;
-  const savedGarden = findSavedGarden(props.resources.index);
+  const savedGarden = findSavedGardenByUrl(props.resources.index);
   return {
     savedGarden,
     gardenIsOpen: !!(savedGarden && savedGarden.uuid === openedSavedGarden),

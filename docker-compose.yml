@@ -52,8 +52,8 @@ services:
       context: "."
       dockerfile: docker_configs/api.Dockerfile
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -e development
-      -p 3000 -b 0.0.0.0"
-    ports: ["3000:3000"]
+      -p ${API_PORT} -b 0.0.0.0"
+    ports: ["${API_PORT}:${API_PORT}"]
 
   mqtt:
     env_file: ".env"
