@@ -46,6 +46,7 @@ export const emptyState = (): RestResources => {
         FarmwareInstallation: {},
         FbosConfig: {},
         FirmwareConfig: {},
+        Folder: {},
         Image: {},
         Log: {},
         Peripheral: {},
