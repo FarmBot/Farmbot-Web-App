@@ -1,35 +1,34 @@
-# Api::WebcamFeedController is the RESTful endpoint for managing webcam URLs
-# and settings. Most notably seen in the "webcam" panel of the frontend app.
 module Api
-  class WebcamFeedsController < Api::AbstractController
+  class FoldersController < Api::AbstractController
     def create
-      mutate WebcamFeeds::Create.run(raw_json, device: current_device)
+      mutate Folders::Create.run(raw_json, device: current_device)
     end
 
     def index
-      render json: webcams
+      render json: folders
     end
 
     def show
-      render json: webcam
+      render json: folder
     end
 
     def update
-      mutate WebcamFeeds::Update.run(raw_json, webcam_feed: webcam)
+      mutate Folders::Update.run(raw_json, folder: folder)
     end
 
     def destroy
-      render json: webcam.destroy! && ""
+      raise "Ensure no sequences are using this folder"
+      render json: folder.destroy! && ""
     end
 
     private
 
-    def webcam
-      webcams.find(params[:id])
+    def folder
+      folders.find(params[:id])
     end
 
-    def webcams
-      current_device.webcam_feeds
+    def folders
+      current_device.folders
     end
   end
 end
