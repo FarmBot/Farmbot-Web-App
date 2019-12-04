@@ -10,6 +10,7 @@ import {
   isTaggedPlantTemplate,
   isTaggedGenericPointer,
   isTaggedSavedGarden,
+  isTaggedFolder,
 } from "./tagged_resources";
 import {
   ResourceName,
@@ -127,6 +128,15 @@ export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {
     return regimen;
   } else {
     throw new Error("Bad regimen id: " + regimen_id);
+  }
+};
+
+export const findFolderById = (ri: ResourceIndex, folder_id: number) => {
+  const folder = byId("Folder")(ri, folder_id);
+  if (folder && isTaggedFolder(folder) && sanityCheck(folder)) {
+    return folder;
+  } else {
+    throw new Error("Bad folder id: " + folder_id);
   }
 };
 

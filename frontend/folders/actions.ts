@@ -6,9 +6,10 @@ import {
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
 import { store } from "../redux/store";
-import { initSave } from "../api/crud";
+import { initSave, destroy } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
 import { DeepPartial } from "redux";
+import { findFolderById } from "../resources/selectors_by_id";
 
 type TreePromise = Promise<Tree>;
 
@@ -84,22 +85,12 @@ export const createFolder = (config: DeepPartial<Folder> = {}) => {
   return p;
 };
 
-export const deleteFolder = (tree: Tree, _id: number): TreePromise => {
-  return Promise.resolve(cloneAndClimb(tree, (parent) => {
-    switch (parent.kind) {
-      case "initial":
-        const index: Record<number, FolderNodeMedial> = {};
-        parent.children.map(x => {
-          index[x.id] = x;
-        });
-        return;
-      case "medial":
-        // parent.children.map(x => { });
-        throw new Error("WIP");
-      case "terminal":
-        return;
-    }
-  }));
+export const deleteFolder = (id: number) => {
+  const { index } = store.getState().resources;
+  const folder = findFolderById(index, id)
+  const action = destroy(folder.uuid);
+  // tslint:disable-next-line:no-any
+  return store.dispatch(action as any) as ReturnType<typeof action>;
 };
 
 export const moveFolderItem = (_: Tree) => Promise.reject("WIP");

@@ -81,6 +81,8 @@ function isTaggedPoint(x: {}): x is PointerType {
 
 export let isTaggedRegimen =
   (x: object): x is TaggedRegimen => is("Regimen")(x);
+export let isTaggedFolder =
+  (x: object): x is TaggedRegimen => is("Folder")(x);
 export let isTaggedSequence =
   (x: object): x is TaggedSequence => is("Sequence")(x);
 export let isTaggedTool =
