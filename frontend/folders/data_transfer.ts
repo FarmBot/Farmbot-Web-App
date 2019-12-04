@@ -24,15 +24,23 @@ const addToIndex: AddToIndex = (accumulator, item) => {
 
 const emptyIndex: FoldersIndexedByParentId = {};
 
-export function ingest(input: FolderNode[]): RootFolderNode {
-  const output: RootFolderNode = { folders: [] };
+export type SequenceIndexedByParentId = Record<number, string[] | undefined>;
+const PARENTLESS = -1;
+type IngestFn =
+  (input: FolderNode[], map: SequenceIndexedByParentId) => RootFolderNode;
+
+export const ingest: IngestFn = (input, parentIdMapping) => {
+  const output: RootFolderNode = {
+    folders: [],
+    folderless: parentIdMapping[PARENTLESS] || []
+  };
   const index = input.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
-  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.id/*x.name.toLowerCase()*/);
+  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
 
   const terminal = (x: FolderNode): FolderNodeTerminal => ({
     ...x,
     kind: "terminal",
-    content: [],
+    content: parentIdMapping[x.id] || [],
     children: []
   });
 
@@ -40,7 +48,7 @@ export function ingest(input: FolderNode[]): RootFolderNode {
     ...x,
     kind: "medial",
     children: childrenOf(x.id).map(terminal),
-    content: []
+    content: parentIdMapping[x.id] || []
   });
 
   childrenOf(-1).map((root) => {
@@ -49,7 +57,7 @@ export function ingest(input: FolderNode[]): RootFolderNode {
       ...root,
       kind: "initial",
       children,
-      content: []
+      content: parentIdMapping[root.id] || []
     });
   });
 

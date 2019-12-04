@@ -77,7 +77,8 @@ export const emptyState = (): RestResources => {
         "Sequence.FbosConfig": {}
       },
       sequenceFolders: {
-        folders: []
+        folders: [],
+        folderless: []
       }
     }
   };

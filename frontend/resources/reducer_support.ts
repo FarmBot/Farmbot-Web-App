@@ -19,6 +19,7 @@ import {
   selectAllLogs,
   selectAllRegimens,
   selectAllFolders,
+  selectAllSequences,
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
@@ -30,7 +31,7 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
-import { ingest } from "../folders/data_transfer";
+import { ingest, SequenceIndexedByParentId } from "../folders/data_transfer";
 import { FolderNode } from "../folders/constants";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
@@ -58,7 +59,16 @@ export const folderIndexer: IndexerCallback = (r, i) => {
           return fn;
         }
       }));
-    i.sequenceFolders = ingest(folders);
+
+    const map = selectAllSequences(i)
+      .reduce((a, s) => {
+        if (!a[s.body.folder_id || -1]) {
+          a[s.body.folder_id || -1] = [];
+        }
+        a[s.body.folder_id || -1]?.push(s.uuid);
+        return a;
+      }, {} as SequenceIndexedByParentId);
+    i.sequenceFolders = ingest(folders, map);
   }
 };
 

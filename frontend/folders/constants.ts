@@ -1,11 +1,11 @@
 import { Color } from "farmbot/dist/corpus";
 
-interface SFile { uuid: string; }
-
 interface FolderUI {
   id: number;
   name: string;
-  content: SFile[];
+  /** We can change this to `TaggedResource` later.
+   * Not going to optimize prematurely -RC */
+  content: string[];
   color: Color;
   open?: boolean;
 }
@@ -36,6 +36,7 @@ export type FolderUnion =
 
 export interface RootFolderNode {
   folders: FolderNodeInitial[];
+  folderless: string[];
 }
 
 /** === THIS WILL LIVE ON THE API === */
