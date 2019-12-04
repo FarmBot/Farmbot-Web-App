@@ -37,6 +37,7 @@ const seedSequence: TaggedSequence = {
   body: {
     id: 1,
     color: "red",
+    folder_id: undefined,
     name: "test",
     kind: "sequence",
     args: {

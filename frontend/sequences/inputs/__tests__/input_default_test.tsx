@@ -39,6 +39,7 @@ describe("<InputDefault/>", () => {
         "id": 74,
         "name": "Goto 0, 0, 0",
         "color": "gray",
+        "folder_id": undefined,
         "body": [step],
         "args": {
           "version": 4,

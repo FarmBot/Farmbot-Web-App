@@ -45,6 +45,7 @@ export function fakeSequence(): TaggedSequence {
     },
     id: idCounter++,
     color: "red",
+    folder_id: undefined,
     name: "fake",
     kind: "sequence",
     body: []

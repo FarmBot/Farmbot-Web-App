@@ -39,6 +39,7 @@ describe("commitBulkEditor()", () => {
       id: sequence_id,
       name: "Test Sequence",
       color: "gray",
+      folder_id: undefined,
       body: [{ kind: "wait", args: { milliseconds: 100 } }],
       args: { "locals": { kind: "scope_declaration", args: {} }, "version": 4 },
       kind: "sequence"

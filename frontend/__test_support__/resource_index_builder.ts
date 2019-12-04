@@ -39,6 +39,7 @@ const tr0: TaggedResource = {
     "id": 23,
     "name": "Goto 0, 0, 0",
     "color": "gray",
+    "folder_id": undefined,
     "body": [
       {
         "kind": "move_absolute",
@@ -402,6 +403,7 @@ const blankSeq: TaggedSequence = {
     "id": undefined,
     "name": "Repair sequence",
     "color": "gray",
+    "folder_id": undefined,
     "body": [],
     "args": {
       "version": 4,

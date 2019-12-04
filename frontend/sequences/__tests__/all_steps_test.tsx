@@ -16,6 +16,7 @@ describe("<AllSteps/>", () => {
       "id": 8,
       "name": "Goto 0, 0, 0",
       "color": "gray",
+      "folder_id": undefined,
       "body": [
         {
           "kind": "move_relative",

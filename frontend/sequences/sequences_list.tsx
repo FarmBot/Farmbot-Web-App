@@ -96,6 +96,7 @@ const emptySequenceBody = (seqCount: number): TaggedSequence["body"] => ({
     locals: { kind: "scope_declaration", args: {} },
   },
   color: "gray",
+  folder_id: undefined,
   kind: "sequence",
   body: []
 });

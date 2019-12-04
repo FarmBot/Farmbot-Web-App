@@ -35,6 +35,7 @@ describe("<TestButton/>", () => {
       "body": {
         "name": "Goto 0, 0, 0",
         "color": "gray",
+        "folder_id": undefined,
         "body": [],
         "args": {
           "version": 4,
