@@ -22,6 +22,7 @@ import {
   TaggedFarmwareInstallation,
   TaggedAlert,
   TaggedPointGroup,
+  TaggedFolder,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -107,6 +108,8 @@ export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
 export const selectAllAlerts =
   (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
+export const selectAllFolders =
+  (i: ResourceIndex) => findAll<TaggedFolder>(i, "Folder");
 
 export const findByKindAndId = <T extends TaggedResource>(
   i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {

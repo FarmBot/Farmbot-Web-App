@@ -18,6 +18,7 @@ import {
   findByKindAndId,
   selectAllLogs,
   selectAllRegimens,
+  selectAllFolders,
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
@@ -29,6 +30,7 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
+import { ingest } from "../scratch/data_transfer";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -44,6 +46,17 @@ type IndexDirection =
   | /** Resources leaving index */ "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
+
+let id = -1;
+const folderIndexer: IndexerCallback = (r, _i) => {
+  if (r.kind === "Folder" || r.kind === "Sequence") {
+    const folders = selectAllFolders(_i)
+      .map(x => ({ id: id--, ...x.body }));
+    _i.sequenceFolders = ingest(folders);
+  }
+};
+
+const SEQUENCE_FOLDERS: Indexer = { up: folderIndexer, down: folderIndexer };
 
 const REFERENCES: Indexer = {
   up: (r, i) => i.references[r.uuid] = r,
@@ -137,6 +150,7 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
+  SEQUENCE_FOLDERS
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
