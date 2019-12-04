@@ -29,10 +29,12 @@ export function StepButton({ children, step, color, dispatch, current, index }:
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>
         <button draggable={true}
-          className={`fb-button full-width block ${color}`}
+          className={`fb-button full-width block step-block ${color}`}
           onClick={stepClick(dispatch, step, current, index)}>
-          {children}
-          <i className="fa fa-arrows block-control" />
+          <div className="step-block-drag">
+            {children}
+            <i className="fa fa-arrows block-control" />
+          </div>
         </button>
       </StepDragger>
     </div>
