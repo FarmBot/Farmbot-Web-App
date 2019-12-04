@@ -33,43 +33,39 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
     }} />;
   const names = node
     .content
-    .map(x => <li>*{sequences[x].body.name}</li>);
+    .map(x => <li key={"Z" + node.id}>*{sequences[x].body.name}</li>);
 
   const children = <ul> {names} </ul>;
+  const stuff: { jsx: JSX.Element[], margin: number } =
+    ({ jsx: [], margin: 0 });
 
   switch (node.kind) {
     case "initial":
-      return <div>
-        {toggleBtn}
-        {subfolderBtn}
-        {deleteBtn}
-        {inputBox}
-        {children}
-        {node.children.map((n2: FolderUnion) => <FolderNode
-          node={n2}
-          key={n2.id}
-          sequences={sequences} />)}
-      </div>;
+      stuff.jsx = node.children.map((n2: FolderUnion) => <FolderNode
+        node={n2}
+        key={"X" + n2.id}
+        sequences={sequences} />);
+      break;
     case "medial":
-      return <div style={{ marginLeft: "30px" }} >
-        {toggleBtn}
-        {subfolderBtn}
-        {deleteBtn}
-        {inputBox}
-        {children}
-        {node.children.map((n2: FolderUnion) => <FolderNode
-          node={n2}
-          key={n2.id}
-          sequences={sequences} />)}
-      </div>;
+      stuff.margin = 40;
+      stuff.jsx = node.children.map((n2: FolderUnion) => <FolderNode
+        node={n2}
+        key={"Y" + n2.id}
+        sequences={sequences} />);
+      break;
     case "terminal":
-      return <div style={{ marginLeft: "40px" }} >
-        {toggleBtn}
-        {deleteBtn}
-        {inputBox}
-        {children}
-      </div>;
+      stuff.margin = 60;
+      break;
   }
+  return <div style={{ marginLeft: `${stuff.margin}px` }}>
+    {toggleBtn}
+    {subfolderBtn}
+    {deleteBtn}
+    {inputBox}
+    {children}
+    {stuff.jsx}
+  </div>;
+
 };
 
 export class RawFolders extends React.Component<Props, State> {
