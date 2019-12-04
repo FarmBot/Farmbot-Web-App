@@ -48,16 +48,13 @@ type IndexDirection =
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
-const folderIndexer: IndexerCallback = (r, i) => {
+export const folderIndexer: IndexerCallback = (r, i) => {
   if (r.kind === "Folder" || r.kind === "Sequence") {
     const folders = betterCompact(selectAllFolders(i)
       .map((x): FolderNode | undefined => {
         const { body } = x;
         if (typeof body.id === "number") {
-          const fn: FolderNode = {
-            id: body.id,
-            ...body
-          }
+          const fn: FolderNode = { id: body.id, ...body };
           return fn;
         }
       }));
@@ -65,7 +62,7 @@ const folderIndexer: IndexerCallback = (r, i) => {
   }
 };
 
-const SEQUENCE_FOLDERS: Indexer = { up: folderIndexer, down: folderIndexer };
+const SEQUENCE_FOLDERS: Indexer = { up: folderIndexer, down: () => { } };
 
 const REFERENCES: Indexer = {
   up: (r, i) => i.references[r.uuid] = r,

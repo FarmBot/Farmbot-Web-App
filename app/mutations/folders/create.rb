@@ -4,6 +4,9 @@ module Folders
       model :device
       string :color
       string :name
+    end
+
+    optional do
       integer :parent_id
     end
 

@@ -1,9 +1,9 @@
 import React from "react";
-import { Page, Col, Row } from "../ui";
+import { Page, Col, Row, BlurableInput } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { createFolder, deleteFolder } from "./actions";
+import { createFolder, deleteFolder, setFolderName } from "./actions";
 
 type Props = RootFolderNode;
 type State = {};
@@ -12,39 +12,47 @@ export class RawFolders extends React.Component<Props, State> {
   Node = ({ node }: { node: FolderUnion }) => {
     const style: React.CSSProperties =
       { color: node.color, background: "black" };
-    const creator = () => createFolder({ parent_id: node.id });
+    const creates = () => createFolder({ parent_id: node.id });
+    const deletes = () => deleteFolder(node.id);
     const subfolderBtn = <span>
-      <button onClick={creator}>
+      <button onClick={creates}>
         Subfolder
       </button>
     </span>;
+
     const deleteBtn = <span>
-      <button onClick={() => deleteFolder(node.id)}>
+      <button onClick={deletes}>
         Delete
       </button>
     </span>;
+
+    const inputBox = <span>
+      <BlurableInput
+        value={node.name}
+        onCommit={({ currentTarget }) => {
+          return setFolderName(node.id, currentTarget.value);
+        }} />
+    </span>;
+
     switch (node.kind) {
       case "initial":
         return <div style={style} >
           {subfolderBtn}
-          <span><button>Edit</button></span>
           {deleteBtn}
-          <span><input style={style} value={"folder " + node.name} onChange={() => { }} /></span>
+          {inputBox}
           {node.children.map((n2: FolderUnion) => <this.Node node={n2} key={n2.id} />)}
         </div>;
       case "medial":
         return <div style={{ ...style, marginLeft: "30px" }} >
           {subfolderBtn}
-          <span><button>Edit</button></span>
           {deleteBtn}
-          <span><input style={style} value={"folder " + node.name} onChange={() => { }} /></span>
+          {inputBox}
           {node.children.map((n2: FolderUnion) => <this.Node node={n2} key={n2.id} />)}
         </ div>;
       case "terminal":
         return <div style={{ ...style, marginLeft: "40px" }} >
-          <span><button>Edit</button></span>
           {deleteBtn}
-          <span><input style={style} value={"folder " + node.name} onChange={() => { }} /></span>
+          {inputBox}
         </div>;
     }
   }

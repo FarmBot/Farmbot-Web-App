@@ -5,9 +5,7 @@ import {
   expandAll,
   findFolder,
   setFolderColor,
-  setFolderName,
-  toggleFolderOpenState,
-  deleteFolder,
+  toggleFolderOpenState
 } from "../actions";
 import { times, sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
@@ -64,23 +62,6 @@ const randomNode = () => {
 };
 
 describe("deletion of folders", () => {
-  it("deletes empty folders", async () => {
-    const id = sample([1, 3, 5, 8, 9, 11, 13, 17, 18]);
-    if (!id) {
-      throw new Error("Never");
-    }
-    const nextGraph = await deleteFolder(GRAPH, id);
-    const names: string[] = [];
-    climb(nextGraph, (node) => {
-      if (node.id === id) {
-        fail(`Failed to delete Node #${id} (${node.name})`);
-      } else {
-        names.push(node.name);
-      }
-    });
-    expect(names.length).toEqual(FOLDERS.length - 1);
-  });
-
   test.todo("can't delete populated folders");
 });
 
@@ -89,12 +70,6 @@ describe("setting of color, name", () => {
     const node = randomNode();
     const nextFolder = await setFolderColor(GRAPH, node.id, "green");
     expect(findFolder(nextFolder, node.id)?.color).toEqual("green");
-  });
-
-  it("sets the name of a folder", async () => {
-    const node = randomNode();
-    const nextFolder = await setFolderName(GRAPH, node.id, "blah");
-    expect(findFolder(nextFolder, node.id)?.name).toEqual("blah");
   });
 });
 

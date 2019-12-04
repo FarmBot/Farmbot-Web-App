@@ -1,12 +1,11 @@
 import {
   RootFolderNode as Tree,
-  FolderUnion,
-  FolderNodeMedial
+  FolderUnion
 } from "./constants";
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
 import { store } from "../redux/store";
-import { initSave, destroy } from "../api/crud";
+import { initSave, destroy, edit, save } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
 import { DeepPartial } from "redux";
 import { findFolderById } from "../resources/selectors_by_id";
@@ -61,13 +60,13 @@ export const setFolderColor =
   };
 
 export const setFolderName =
-  (tree: Tree, id: number, name: string): TreePromise => {
-    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-      if (node.id == id) {
-        node.name = name;
-        halt();
-      }
-    }));
+  (id: number, name: string) => {
+    const { index } = store.getState().resources;
+    const folder = findFolderById(index, id);
+    const action = edit(folder, { name });
+    store.dispatch(action);
+    // tslint:disable-next-line:no-any
+    return store.dispatch(save(folder.uuid) as any) as Promise<{}>;
   };
 
 const DEFAULTS: Folder = {
