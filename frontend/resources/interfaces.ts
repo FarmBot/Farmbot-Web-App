@@ -14,7 +14,7 @@ import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
 import { AlertReducerState } from "../messages/interfaces";
-import { RootFolderNode } from "../scratch/constants";
+import { RootFolderNode } from "../folders/constants";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;

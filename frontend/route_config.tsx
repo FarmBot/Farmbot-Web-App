@@ -98,8 +98,8 @@ export const UNBOUND_ROUTES = [
   route({
     children: false,
     $: "/scratchpad",
-    getModule: () => import("./scratch/index"),
-    key: "ScratchPad",
+    getModule: () => import("./folders/index"),
+    key: "Folders",
   }),
   route({
     children: false,

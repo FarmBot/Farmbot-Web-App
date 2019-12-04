@@ -1,53 +1,14 @@
 import React from "react";
 import { Page, Col, Row } from "../ui";
-import { ingest } from "./data_transfer";
-import { sample } from "lodash";
-import { Color } from "farmbot/dist/corpus";
-import { FolderUnion } from "./constants";
+import { FolderUnion, RootFolderNode } from "./constants";
+import { Everything } from "../interfaces";
+import { connect } from "react-redux";
+import { createFolder } from "./actions";
 
-interface Props {
+type Props = RootFolderNode;
+type State = {};
 
-}
-
-interface State {
-
-}
-
-const list: Color[] = [
-  "blue",
-  "gray",
-  "green",
-  "orange",
-  "pink",
-  "purple",
-  "red",
-  "yellow"
-];
-
-const color = (): Color => sample(list) || "blue";
-
-const TEST_GRAPH = ingest([
-  { id: 1, parent_id: undefined, color: color(), name: "One" },
-  { id: 2, parent_id: undefined, color: color(), name: "Two" },
-  { id: 3, parent_id: 2, color: color(), name: "Three" },
-  { id: 4, parent_id: undefined, color: color(), name: "Four" },
-  { id: 5, parent_id: 4, color: color(), name: "Five" },
-  { id: 6, parent_id: undefined, color: color(), name: "Six" },
-  { id: 7, parent_id: 6, color: color(), name: "Seven" },
-  { id: 8, parent_id: 7, color: color(), name: "Eight" },
-  { id: 9, parent_id: 7, color: color(), name: "Nine" },
-  { id: 10, parent_id: undefined, color: color(), name: "Ten" },
-  { id: 11, parent_id: 10, color: color(), name: "Eleven" },
-  { id: 12, parent_id: 10, color: color(), name: "Twelve" },
-  { id: 13, parent_id: 12, color: color(), name: "Thirteen" },
-  { id: 14, parent_id: undefined, color: color(), name: "Fourteen" },
-  { id: 15, parent_id: 14, color: color(), name: "Fifteen" },
-  { id: 16, parent_id: 14, color: color(), name: "Sixteen" },
-  { id: 17, parent_id: 16, color: color(), name: "Seventeen" },
-  { id: 18, parent_id: 16, color: color(), name: "Eighteen" }
-]);
-
-export class ScratchPad extends React.Component<Props, State> {
+export class RawFolders extends React.Component<Props, State> {
   Node = ({ node }: { node: FolderUnion }) => {
     const style: React.CSSProperties = {
       color: node.color,
@@ -79,7 +40,7 @@ export class ScratchPad extends React.Component<Props, State> {
 
   Graph = (_props: {}) => {
     return <div>
-      {TEST_GRAPH.folders.map(grandparent => {
+      {this.props.folders.map(grandparent => {
         return <this.Node node={grandparent} key={grandparent.id} />;
       })}
     </div>;
@@ -89,8 +50,13 @@ export class ScratchPad extends React.Component<Props, State> {
     return <Page>
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
+          <pre>
+            {JSON.stringify(this.props.folders, undefined, "  ")}
+          </pre>
+        </Row>
+        <Row>
           <input placeholder={"Search"} disabled={true} />
-          <button>
+          <button onClick={() => console.dir(createFolder())}>
             Add Folder
           </button>
           <button>
@@ -104,3 +70,9 @@ export class ScratchPad extends React.Component<Props, State> {
     </Page>;
   }
 }
+
+export function mapStateToProps(props: Everything): Props {
+  return props.resources.index.sequenceFolders;
+}
+
+export const Folders = connect(mapStateToProps)(RawFolders);

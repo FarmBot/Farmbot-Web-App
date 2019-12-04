@@ -30,7 +30,7 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
-import { ingest } from "../scratch/data_transfer";
+import { ingest } from "../folders/data_transfer";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];

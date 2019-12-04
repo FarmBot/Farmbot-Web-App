@@ -1,4 +1,4 @@
-import { FolderNode, FolderUnion } from "../constants";
+import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
 import {
   collapseAll,
@@ -7,7 +7,6 @@ import {
   setFolderColor,
   setFolderName,
   toggleFolderOpenState,
-  createFolder,
   deleteFolder,
 } from "../actions";
 import { times, sample } from "lodash";
@@ -83,65 +82,6 @@ describe("deletion of folders", () => {
   });
 
   test.todo("can't delete populated folders");
-});
-
-describe("creation of folders", () => {
-  it("adds a folder to folder root", async () => {
-    const name = "~ Folder Name ~";
-    const nextGraph = await createFolder(GRAPH, undefined, name);
-    expect(nextGraph.folders.map(x => x.name)).toContain(name);
-  });
-
-  it("adds a folder to an initial node", async () => {
-    const name = "~ Folder Name ~";
-    const id = sample([1, 2, 4, 6, 10, 14]);
-    if (!id) {
-      throw new Error("Never");
-    }
-    const nextGraph = await createFolder(GRAPH, id, name);
-    let target: FolderUnion | undefined;
-    climb(nextGraph, (node) => {
-      if (node.id == id) { target = node; }
-    });
-
-    if (target && target.kind === "initial") {
-      const folders = target.children;
-      const names = folders.map((x) => { return x.name; });
-      expect(names).toContain(name);
-    } else {
-      fail("Wrong target?");
-    }
-  });
-
-  it("adds a folder to a medial node", async () => {
-    const name = "~ Folder Name ~";
-    const id = sample([3, 5, 7, 12]);
-    if (!id) {
-      throw new Error("Never");
-    }
-    const nextGraph = await createFolder(GRAPH, id, name);
-    let target: FolderUnion | undefined;
-
-    climb(nextGraph, (node) => {
-      if (node.id == id) { target = node; }
-    });
-
-    if (target && target.kind === "medial") {
-      expect(target.children.map(x => x.name)).toContain(name);
-    } else {
-      fail("Wrong target?");
-    }
-  });
-
-  it("does not add a folder to terminal node", async () => {
-    const name = "~ Folder Name ~";
-    const id = sample([9, 13, 18, 8, 17]);
-    if (!id) {
-      throw new Error("Never");
-    }
-    const err = "Can't attach folders more than 3 levels deep";
-    expect(() => createFolder(GRAPH, id, name)).toThrowError(err);
-  });
 });
 
 describe("setting of color, name", () => {

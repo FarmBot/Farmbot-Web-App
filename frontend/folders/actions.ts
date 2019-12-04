@@ -1,43 +1,16 @@
 import {
   RootFolderNode as Tree,
   FolderUnion,
-  FolderNodeInitial,
-  FolderNodeMedial,
-  FolderNodeTerminal
+  FolderNodeMedial
 } from "./constants";
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
+import { store } from "../redux/store";
+import { initSave } from "../api/crud";
+import { Folder } from "farmbot/dist/resources/api_resources";
+import { DeepPartial } from "redux";
 
 type TreePromise = Promise<Tree>;
-
-const DEFAULT_NAME = "New Folder";
-
-const initial = (name: string): FolderNodeInitial => ({
-  kind: "initial",
-  name,
-  color: "gray",
-  children: [],
-  content: [],
-  id: FIX_THIS_ASAP()
-});
-
-const medial = (name: string): FolderNodeMedial => ({
-  kind: "medial",
-  name,
-  color: "gray",
-  children: [],
-  content: [],
-  id: FIX_THIS_ASAP()
-});
-
-const terminal = (name: string): FolderNodeTerminal => ({
-  kind: "terminal",
-  name,
-  color: "gray",
-  children: [],
-  content: [],
-  id: FIX_THIS_ASAP()
-});
 
 export const findFolder = (tree: Tree, id: number) => {
   let result: FolderUnion | undefined;
@@ -96,35 +69,18 @@ export const setFolderName =
     }));
   };
 
-const FIX_THIS_ASAP = () => Math.round(Math.random() * -10000000);
+const DEFAULTS: Folder = {
+  name: "New Folder",
+  color: "gray",
+  parent_id: undefined,
+};
 
-export const createFolder =
-  (tree: Tree, parent_id?: number, name = DEFAULT_NAME): TreePromise => {
-    console.error("This function has problems: " +
-      "ID's are not real. Can't control folder order.");
-    if (!parent_id) {
-      return Promise.resolve({
-        ...tree,
-        folders: [...tree.folders, initial(name)]
-      });
-    }
-
-    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-
-      if (node.id == parent_id) {
-        switch (node.kind) {
-          case "initial":
-            node.children.push(medial(name));
-            return halt();
-          case "medial":
-            node.children.push(terminal(name));
-            return halt();
-          case "terminal":
-            throw new Error("Can't attach folders more than 3 levels deep");
-        }
-      }
-    }));
-  };
+export const createFolder = (config: DeepPartial<Folder> = {}) => {
+  const folder: Folder = { ...DEFAULTS, ...config };
+  const action = initSave("Folder", folder);
+  const p: Promise<{}> = store.dispatch(action as any);
+  return p;
+};
 
 export const deleteFolder = (tree: Tree, _id: number): TreePromise => {
   return Promise.resolve(cloneAndClimb(tree, (parent) => {
