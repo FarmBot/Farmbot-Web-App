@@ -31,6 +31,7 @@ import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest } from "../folders/data_transfer";
+import { FolderNode } from "../folders/constants";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -47,12 +48,20 @@ type IndexDirection =
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
-let id = -1;
-const folderIndexer: IndexerCallback = (r, _i) => {
+const folderIndexer: IndexerCallback = (r, i) => {
   if (r.kind === "Folder" || r.kind === "Sequence") {
-    const folders = selectAllFolders(_i)
-      .map(x => ({ id: id--, ...x.body }));
-    _i.sequenceFolders = ingest(folders);
+    const folders = betterCompact(selectAllFolders(i)
+      .map((x): FolderNode | undefined => {
+        const { body } = x;
+        if (typeof body.id === "number") {
+          const fn: FolderNode = {
+            id: body.id,
+            ...body
+          }
+          return fn;
+        }
+      }));
+    i.sequenceFolders = ingest(folders);
   }
 };
 

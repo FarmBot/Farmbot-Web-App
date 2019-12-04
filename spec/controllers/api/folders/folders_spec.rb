@@ -47,18 +47,6 @@ describe Api::FoldersController do
     end
   end
 
-  it "validates parent_id at creation time" do
-    sign_in user
-    input = {
-      parent_id: 9999999,
-      color: "blue",
-      name: "child",
-    }
-    post :create, body: input.to_json
-    expect(response.status).to eq(422)
-    expect(json[:folder_id]).to include("ID is not valid")
-  end
-
   it "updates a folder" do
     sign_in user
     old_parent = Folder.create!(name: "B", device: user.device, color: "blue")

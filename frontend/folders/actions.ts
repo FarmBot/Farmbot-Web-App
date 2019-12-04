@@ -72,12 +72,14 @@ export const setFolderName =
 const DEFAULTS: Folder = {
   name: "New Folder",
   color: "gray",
-  parent_id: undefined,
+  // tslint:disable-next-line:no-null-keyword
+  parent_id: null as unknown as undefined,
 };
 
 export const createFolder = (config: DeepPartial<Folder> = {}) => {
   const folder: Folder = { ...DEFAULTS, ...config };
   const action = initSave("Folder", folder);
+  // tslint:disable-next-line:no-any
   const p: Promise<{}> = store.dispatch(action as any);
   return p;
 };
