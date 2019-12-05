@@ -8,7 +8,8 @@ import {
   initResourceReducer,
   afterEach,
   beforeEach,
-  folderIndexer
+  folderIndexer,
+  reindexFolders
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -23,6 +24,7 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
+import { climb } from "../folders/climb";
 
 export const emptyState = (): RestResources => {
   return {
@@ -157,4 +159,40 @@ export let resourceReducer =
           payload: resource
         });
       }, s);
-    });
+    })
+    .add<{ id: number }>(Actions.FOLDER_TOGGLE, (s, { payload }) => {
+      console.log("WOOSH X 1");
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      const record = localMetaAttributes[parseInt("" + payload.id)];
+      record.open = !record.open;
+
+      climb(s.index.sequenceFolders.folders, (node, halt) => {
+        if (node.id == payload.id) {
+          node.open = !node.open;
+          halt();
+        }
+      });
+
+      reindexFolders(s.index);
+
+      return s;
+    })
+  // .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
+  //   const { localMetaAttributes } = s.index.sequenceFolders;
+  //   Object.keys(localMetaAttributes).map((x) => {
+  //     localMetaAttributes[parseInt("" + x)].open = payload;
+  //   });
+  //   reindexFolders(s.index);
+  //   return s;
+  // })
+  // .add<{ id: number }>(Actions.FOLDER_TOGGLE_EDIT, (s, { payload }) => {
+  //   const { localMetaAttributes } = s.index.sequenceFolders;
+  //   Object.keys(localMetaAttributes).map((x) => {
+  //     if (x == ("" + payload.id)) {
+  //       const record = localMetaAttributes[parseInt("" + x)];
+  //       record.editing = !record.editing;
+  //     }
+  //   });
+  //   return s;
+  // })
+  ;

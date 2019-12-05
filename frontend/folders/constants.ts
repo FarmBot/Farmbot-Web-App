@@ -13,8 +13,8 @@ interface FolderUI {
    * Not going to optimize prematurely -RC */
   content: string[];
   color: Color;
-  open?: boolean;
-  editing?: boolean;
+  open: boolean;
+  editing: boolean;
 }
 
 /** A top-level directory */

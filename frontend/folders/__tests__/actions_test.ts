@@ -2,12 +2,10 @@ import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
 import {
   collapseAll,
-  expandAll,
   findFolder,
   setFolderColor,
-  toggleFolderOpenState
 } from "../actions";
-import { times, sample } from "lodash";
+import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 
 // Folder structure used in tests:
@@ -81,37 +79,10 @@ describe("expand/collapse all", () => {
     node.open = !sample([true, false]);
   });
 
-  it("expands all folders", async () => {
-    const open = await expandAll(halfOpen);
-    climb(open, (node) => {
-      expect(node.open).toBe(true);
-    });
-  });
-
   it("collapses all folders", async () => {
     const closed = await collapseAll(halfOpen);
     climb(closed, (node) => {
       expect(node.open).toBe(false);
-    });
-  });
-});
-
-describe("toggleFolderOpenState", () => {
-  it("toggles the `open` value of a folder", () => {
-    times(3, async () => {
-      const node = randomNode();
-      if (!node) {
-        throw new Error("Impossible");
-      }
-      const { id } = node;
-      const before = findFolder(GRAPH, id);
-      const nextGraph = await toggleFolderOpenState(GRAPH, id);
-      const after = findFolder(nextGraph, id);
-      if (before && after) {
-        expect(after.open).toEqual(!before.open);
-      } else {
-        fail("Could not find ID.");
-      }
     });
   });
 });

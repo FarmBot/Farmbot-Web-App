@@ -49,39 +49,42 @@ type IndexDirection =
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
 
+export const reindexFolders = (i: ResourceIndex) => {
+  const folders = betterCompact(selectAllFolders(i)
+    .map((x): FolderNode | undefined => {
+      const { body } = x;
+      if (typeof body.id === "number") {
+        const fn: FolderNode = { id: body.id, ...body };
+        return fn;
+      }
+    }));
+
+  const oldMeta = i.sequenceFolders.localMetaAttributes;
+  const localMetaAttributes: Record<number, FolderMeta> = {};
+  folders.map(x => {
+    localMetaAttributes[x.id] = {
+      ...(oldMeta[x.id] || {}),
+      sequences: [], // Clobber and re-init
+    };
+  });
+
+  selectAllSequences(i).map((s) => {
+    const { folder_id } = s.body;
+    if (folder_id) {
+      (localMetaAttributes[folder_id]?.sequences || []).push(s.uuid);
+    }
+  });
+
+  i.sequenceFolders = {
+    folders: ingest({ folders, localMetaAttributes }),
+    localMetaAttributes
+  };
+
+};
+
 export const folderIndexer: IndexerCallback = (r, i) => {
   if (r.kind === "Folder" || r.kind === "Sequence") {
-    const folders = betterCompact(selectAllFolders(i)
-      .map((x): FolderNode | undefined => {
-        const { body } = x;
-        if (typeof body.id === "number") {
-          const fn: FolderNode = { id: body.id, ...body };
-          return fn;
-        }
-      }));
-
-    const oldMeta = i.sequenceFolders.localMetaAttributes;
-    const localMetaAttributes: Record<number, FolderMeta> = {};
-    folders.map(x => {
-      localMetaAttributes[x.id] = {
-        editing: false,
-        open: false,
-        ...(oldMeta[x.id] || {}),
-        sequences: [], // Clobber and re-init
-      };
-    });
-
-    selectAllSequences(i).map((s) => {
-      const { folder_id } = s.body;
-      if (folder_id) {
-        (localMetaAttributes[folder_id]?.sequences || []).push(s.uuid);
-      }
-    });
-
-    i.sequenceFolders = {
-      folders: ingest({ folders, localMetaAttributes }),
-      localMetaAttributes
-    };
+    reindexFolders(i);
   }
 };
 

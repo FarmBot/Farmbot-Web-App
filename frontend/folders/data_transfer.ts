@@ -46,14 +46,20 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     ...x,
     kind: "terminal",
     content: (localMetaAttributes[x.id] || {}).sequences || [],
-    children: []
+    open: true,
+    editing: false,
+    children: [],
+    ...(localMetaAttributes[x.id] || {})
   });
 
   const medial = (x: FolderNode): FolderNodeMedial => ({
     ...x,
     kind: "medial",
+    open: true,
+    editing: false,
     children: childrenOf(x.id).map(terminal),
-    content: (localMetaAttributes[x.id] || {}).sequences || []
+    content: (localMetaAttributes[x.id] || {}).sequences || [],
+    ...(localMetaAttributes[x.id] || {})
   });
 
   childrenOf(-1).map((root) => {
@@ -61,8 +67,11 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     return output.folders.push({
       ...root,
       kind: "initial",
+      open: true,
+      editing: false,
       children,
-      content: (localMetaAttributes[root.id] || {}).sequences || []
+      content: (localMetaAttributes[root.id] || {}).sequences || [],
+      ...(localMetaAttributes[root.id] || {})
     });
   });
 

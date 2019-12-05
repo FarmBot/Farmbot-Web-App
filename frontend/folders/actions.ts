@@ -9,6 +9,7 @@ import { initSave, destroy, edit, save } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
 import { DeepPartial } from "redux";
 import { findFolderById } from "../resources/selectors_by_id";
+import { Actions } from "../constants";
 
 type TreePromise = Promise<Tree>;
 
@@ -22,23 +23,6 @@ export const findFolder = (tree: Tree, id: number) => {
   });
   return result;
 };
-
-export const toggleFolderOpenState =
-  (tree: Tree, id: number): TreePromise => {
-    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-      if (node.id === id) {
-        node.open = !node.open;
-        halt();
-      }
-    }));
-  };
-
-export const expandAll =
-  (tree: Tree): TreePromise => {
-    return Promise.resolve(cloneAndClimb(tree, (node) => {
-      node.open = true;
-    }));
-  };
 
 export const collapseAll = (tree: Tree): TreePromise => {
   return Promise.resolve(cloneAndClimb(tree, (node) => {
@@ -86,7 +70,7 @@ export const createFolder = (config: DeepPartial<Folder> = {}) => {
 
 export const deleteFolder = (id: number) => {
   const { index } = store.getState().resources;
-  const folder = findFolderById(index, id)
+  const folder = findFolderById(index, id);
   const action = destroy(folder.uuid);
   // tslint:disable-next-line:no-any
   return store.dispatch(action as any) as ReturnType<typeof action>;
@@ -96,3 +80,15 @@ export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
 export const moveFolder = (_: Tree) => Promise.reject("WIP");
 export const searchSequencesAndFolders = (_: Tree) => Promise.reject("WIP");
 export const searchByNameOrFolder = (_: Tree) => Promise.reject("WIP");
+
+export const toggleFolderOpenState = (id: number) => Promise
+  .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE, payload: { id } }));
+
+export const toggleFolderEditState = (id: number) => Promise
+  .resolve(store.dispatch({
+    type: Actions.FOLDER_TOGGLE_EDIT,
+    payload: { id }
+  }));
+
+export const toggleAll = (payload: boolean) => Promise
+  .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE_ALL, payload }));
