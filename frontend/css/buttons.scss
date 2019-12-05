@@ -312,6 +312,15 @@
       opacity: 1;
     }
   }
+  .step-block {
+    display: flex;
+    padding: 0;
+    .step-block-drag {
+      width: 100%;
+      padding: 0.2rem 0.8rem;
+      line-height: 3rem;
+    }
+  }
   &.quick-del {
     &:hover {
       background: lighten($red, 10%) !important;
@@ -334,6 +343,8 @@
   float: right;
   font-size: 1.4rem !important;
   padding-left: 1rem;
+  line-height: 3rem;
+  pointer-events: none;
 }
 
 .fb-toggle-button {

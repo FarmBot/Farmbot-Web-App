@@ -38,11 +38,17 @@ const SensorReadingDisplay =
   ({ label, value, mode }: SensorReadingDisplayProps) => {
     const moistureSensor = label.toLowerCase().includes("moisture") ?
       "moisture-sensor" : "";
-    return <div className={`sensor-reading-display ${moistureSensor}`}>
+    const toolSensor = label.toLowerCase().includes("verification") ?
+      "tool-verification-sensor" : "";
+    const valueLabel = toolSensor
+      ? `${value} (${value ? t("NO TOOL") : t("TOOL ON")})`
+      : value;
+    return <div
+      className={`sensor-reading-display ${moistureSensor} ${toolSensor}`}>
       {isNumber(value) && value >= 0 &&
         <div className="indicator" style={calcIndicatorStyle({ value, mode })}>
           <span style={calcValueStyle({ value, mode })}>
-            {value}
+            {valueLabel}
           </span>
         </div>}
     </div>;

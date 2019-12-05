@@ -64,18 +64,22 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     return isBotOriginQuadrant(value) ? value : 2;
   }
 
-  state: State = {
-    legend_menu_open: this.initializeSetting(BooleanSetting.legend_menu_open, false),
-    show_plants: this.initializeSetting(BooleanSetting.show_plants, true),
-    show_points: this.initializeSetting(BooleanSetting.show_points, true),
-    show_spread: this.initializeSetting(BooleanSetting.show_spread, false),
-    show_farmbot: this.initializeSetting(BooleanSetting.show_farmbot, true),
-    show_images: this.initializeSetting(BooleanSetting.show_images, false),
-    show_sensor_readings: this.initializeSetting(
-      BooleanSetting.show_sensor_readings, false),
-    bot_origin_quadrant: this.getBotOriginQuadrant(),
-    zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue))
-  };
+  getState(): State {
+    const init = this.initializeSetting;
+    return {
+      legend_menu_open: init(BooleanSetting.legend_menu_open, false),
+      show_plants: init(BooleanSetting.show_plants, true),
+      show_points: init(BooleanSetting.show_points, true),
+      show_spread: init(BooleanSetting.show_spread, false),
+      show_farmbot: init(BooleanSetting.show_farmbot, true),
+      show_images: init(BooleanSetting.show_images, false),
+      show_sensor_readings: init(BooleanSetting.show_sensor_readings, false),
+      bot_origin_quadrant: this.getBotOriginQuadrant(),
+      zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue)),
+    };
+  }
+
+  state: State = this.getState();
 
   componentDidMount() {
     this.updateBotOriginQuadrant(this.state.bot_origin_quadrant)();

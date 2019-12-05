@@ -1,8 +1,8 @@
 import React from "react";
-import { OtaTimeSelector, changeOtaHour, assertIsHour } from "..";
+import { OtaTimeSelector, changeOtaHour, assertIsHour } from "../ota_time_selector";
 import { shallow } from "enzyme";
-import { FBSelect } from "../../../../../ui";
-import { fakeDevice } from "../../../../../__test_support__/resource_index_builder";
+import { FBSelect } from "../../../../ui";
+import { fakeDevice } from "../../../../__test_support__/resource_index_builder";
 
 describe("OTA time selector", () => {
   it("asserts that a variable is an HOUR", () => {
