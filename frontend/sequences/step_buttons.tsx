@@ -1,11 +1,11 @@
 import * as React from "react";
 import { SequenceBodyItem as Step, TaggedSequence } from "farmbot";
-import { error } from "../../toast/toast";
-import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
-import { pushStep, closeCommandMenu } from "../actions";
-import { StepButtonParams } from "../interfaces";
-import { Col } from "../../ui/index";
-import { t } from "../../i18next_wrapper";
+import { error } from "../toast/toast";
+import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
+import { pushStep, closeCommandMenu } from "./actions";
+import { StepButtonParams } from "./interfaces";
+import { Col } from "../ui/index";
+import { t } from "../i18next_wrapper";
 
 export const stepClick =
   (dispatch: Function,
