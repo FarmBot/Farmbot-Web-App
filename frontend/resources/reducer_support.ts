@@ -66,8 +66,8 @@ export const folderIndexer: IndexerCallback = (r, i) => {
       localMetaAttributes[x.id] = {
         editing: false,
         open: false,
-        sequences: [],
-        ...(oldMeta[x.id] || {})
+        ...(oldMeta[x.id] || {}),
+        sequences: [], // Clobber and re-init
       };
     });
 

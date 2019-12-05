@@ -25,7 +25,7 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
   const subfolderBtn = <a onClick={creates}>📁</a>;
   const deleteBtn = <a onClick={deletes}>🗑️</a>;
   const toggleBtn = <a onClick={() => { }}> {node.open ? "➕" : "➖"} </a>;
-
+  const editBtn = <a onClick={() => alert("TODO")}>✎</a>;
   const inputBox = <BlurableInput
     value={node.name}
     onCommit={({ currentTarget }) => {
@@ -61,6 +61,7 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
     {toggleBtn}
     {subfolderBtn}
     {deleteBtn}
+    {editBtn}
     {inputBox}
     {children}
     {stuff.jsx}
