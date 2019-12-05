@@ -24,7 +24,6 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
-import { climb } from "../folders/climb";
 
 export const emptyState = (): RestResources => {
   return {
@@ -164,19 +163,17 @@ export let resourceReducer =
       const { localMetaAttributes } = s.index.sequenceFolders;
       const record = localMetaAttributes[parseInt("" + payload.id)];
       record.open = !record.open;
-
       reindexFolders(s.index);
-
       return s;
     })
-    // .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
-    //   const { localMetaAttributes } = s.index.sequenceFolders;
-    //   Object.keys(localMetaAttributes).map((x) => {
-    //     localMetaAttributes[parseInt("" + x)].open = payload;
-    //   });
-    //   reindexFolders(s.index);
-    //   return s;
-    // })
+    .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      Object.keys(localMetaAttributes).map((x) => {
+        localMetaAttributes[parseInt("" + x)].open = payload;
+      });
+      reindexFolders(s.index);
+      return s;
+    })
     .add<{ id: number }>(Actions.FOLDER_TOGGLE_EDIT, (s, { payload }) => {
       const { localMetaAttributes } = s.index.sequenceFolders;
       const record = localMetaAttributes[parseInt("" + payload.id)];

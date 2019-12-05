@@ -3,7 +3,14 @@ import { Page, Col, Row, BlurableInput } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { createFolder, deleteFolder, setFolderName, toggleFolderOpenState, toggleFolderEditState } from "./actions";
+import {
+  createFolder,
+  deleteFolder,
+  setFolderName,
+  toggleFolderOpenState,
+  toggleFolderEditState,
+  toggleAll
+} from "./actions";
 import { TaggedSequence } from "farmbot";
 import { selectAllSequences } from "../resources/selectors";
 
@@ -11,7 +18,9 @@ interface Props extends RootFolderNode {
   sequences: Record<string, TaggedSequence>;
 }
 
-type State = {};
+type State = {
+  toggleDirection: boolean;
+};
 
 interface FolderNodeProps {
   node: FolderUnion;
@@ -25,7 +34,7 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
   const subfolderBtn = <button onClick={creates}>📁</button>;
   const deleteBtn = <button onClick={deletes}>🗑️</button>;
   const toggleBtn = <button onClick={() => toggleFolderOpenState(node.id)}>
-    {node.open ? "➕" : "➖"}
+    {node.open ? "⬇️" : "➡️"}
   </button>;
   const editBtn = <button onClick={() => toggleFolderEditState(node.id)}>✎</button>;
 
@@ -79,6 +88,8 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
 };
 
 export class RawFolders extends React.Component<Props, State> {
+  state: State = { toggleDirection: true };
+
   Graph = (_props: {}) => {
     return <div>
       {this.props.folders.map(grandparent => {
@@ -90,12 +101,18 @@ export class RawFolders extends React.Component<Props, State> {
     </div>;
   }
 
+  toggleAll = () => {
+    toggleAll(this.state.toggleDirection);
+    this.setState({ toggleDirection: !this.state.toggleDirection });
+  }
+
   render() {
     return <Page>
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
           <input placeholder={"Search"} disabled={true} />
-          <button onClick={() => createFolder()}>➕Folder</button>
+          <button onClick={() => createFolder()}>📁</button>
+          <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
           <button>➕Sequence</button>
         </Row>
       </Col>
