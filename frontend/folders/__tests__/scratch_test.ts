@@ -11,7 +11,6 @@ const FOLDERS: FolderNode[] = [
 ];
 const TREE = ingest({
   folders: FOLDERS,
-  parentIndex: {},
   localMetaAttributes: {}
 });
 

@@ -31,8 +31,8 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
-import { ingest, SequenceIndexedByParentId } from "../folders/data_transfer";
-import { FolderNode } from "../folders/constants";
+import { ingest } from "../folders/data_transfer";
+import { FolderNode, FolderMeta } from "../folders/constants";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -60,17 +60,26 @@ export const folderIndexer: IndexerCallback = (r, i) => {
         }
       }));
 
-    const parentIndex = selectAllSequences(i)
-      .reduce((a, s) => {
-        if (!a[s.body.folder_id || -1]) {
-          a[s.body.folder_id || -1] = [];
-        }
-        a[s.body.folder_id || -1]?.push(s.uuid);
-        return a;
-      }, {} as SequenceIndexedByParentId);
-    const { localMetaAttributes } = i.sequenceFolders;
+    const oldMeta = i.sequenceFolders.localMetaAttributes;
+    const localMetaAttributes: Record<number, FolderMeta> = {};
+    folders.map(x => {
+      localMetaAttributes[x.id] = {
+        editing: false,
+        open: false,
+        sequences: [],
+        ...(oldMeta[x.id] || {})
+      };
+    });
+
+    selectAllSequences(i).map((s) => {
+      const { folder_id } = s.body;
+      if (folder_id) {
+        (localMetaAttributes[folder_id]?.sequences || []).push(s.uuid);
+      }
+    });
+
     i.sequenceFolders = {
-      folders: ingest({ folders, parentIndex, localMetaAttributes }),
+      folders: ingest({ folders, localMetaAttributes }),
       localMetaAttributes
     };
   }

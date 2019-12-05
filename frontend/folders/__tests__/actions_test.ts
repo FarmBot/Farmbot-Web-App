@@ -53,7 +53,6 @@ const FOLDERS: FolderNode[] = [
 
 const GRAPH = ingest({
   folders: FOLDERS,
-  parentIndex: {},
   localMetaAttributes: {}
 });
 

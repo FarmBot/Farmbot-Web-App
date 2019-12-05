@@ -25,26 +25,19 @@ const addToIndex: AddToIndex = (accumulator, item) => {
 
 const emptyIndex: FoldersIndexedByParentId = {};
 
-export type SequenceIndexedByParentId = Record<number, string[] | undefined>;
 const PARENTLESS = -1;
 type IngestFn =
   (props: IngestFnProps) => RootFolderNode;
 
 interface IngestFnProps {
   folders: FolderNode[];
-  /** "Which sequences are using this folder as their parent?"
-   * Key is a number, representing a folder ID.
-   * Value is a string, representing sequence UUIDs
-   * (sequences that are embedded in the folders)
-   * TODO: Maybe this can be merged into `localMetaAttributes`?*/
-  parentIndex: Record<number, string[] | undefined>;
   localMetaAttributes: Record<number, FolderMeta>;
 }
 
-export const ingest: IngestFn = ({ folders, parentIndex }) => {
+export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
   const output: RootFolderNode = {
     folders: [],
-    noFolder: parentIndex[PARENTLESS] || []
+    noFolder: (localMetaAttributes[PARENTLESS] || {}).sequences || []
   };
   const index = folders.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
   const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
@@ -52,7 +45,7 @@ export const ingest: IngestFn = ({ folders, parentIndex }) => {
   const terminal = (x: FolderNode): FolderNodeTerminal => ({
     ...x,
     kind: "terminal",
-    content: parentIndex[x.id] || [],
+    content: (localMetaAttributes[x.id] || {}).sequences || [],
     children: []
   });
 
@@ -60,7 +53,7 @@ export const ingest: IngestFn = ({ folders, parentIndex }) => {
     ...x,
     kind: "medial",
     children: childrenOf(x.id).map(terminal),
-    content: parentIndex[x.id] || []
+    content: (localMetaAttributes[x.id] || {}).sequences || []
   });
 
   childrenOf(-1).map((root) => {
@@ -69,7 +62,7 @@ export const ingest: IngestFn = ({ folders, parentIndex }) => {
       ...root,
       kind: "initial",
       children,
-      content: parentIndex[root.id] || []
+      content: (localMetaAttributes[root.id] || {}).sequences || []
     });
   });
 
