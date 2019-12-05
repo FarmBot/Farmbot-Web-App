@@ -33,16 +33,15 @@ interface IngestFnProps {
   folders: FolderNode[];
   /** "Which sequences are using this folder as their parent?"
    * Key is a number, representing a folder ID.
-   * Value is a string, representing sequence UUIDS
-   * (sequences that are embedded in the folders)
-   */
+   * Value is a string, representing sequence UUIDs
+   * (sequences that are embedded in the folders) */
   parentIndex: Record<number, string[] | undefined>;
 }
 
 export const ingest: IngestFn = ({ folders, parentIndex }) => {
   const output: RootFolderNode = {
     folders: [],
-    folderless: parentIndex[PARENTLESS] || []
+    noFolder: parentIndex[PARENTLESS] || []
   };
   const index = folders.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
   const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
@@ -72,4 +71,4 @@ export const ingest: IngestFn = ({ folders, parentIndex }) => {
   });
 
   return output;
-}
+};

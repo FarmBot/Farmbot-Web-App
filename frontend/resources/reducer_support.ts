@@ -68,7 +68,10 @@ export const folderIndexer: IndexerCallback = (r, i) => {
         a[s.body.folder_id || -1]?.push(s.uuid);
         return a;
       }, {} as SequenceIndexedByParentId);
-    i.sequenceFolders = ingest({ folders, parentIndex });
+    i.sequenceFolders = {
+      folders: ingest({ folders, parentIndex }),
+      localMetaAttributes: i.sequenceFolders.localMetaAttributes
+    };
   }
 };
 

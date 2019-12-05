@@ -13,6 +13,7 @@ interface FolderUI {
   content: string[];
   color: Color;
   open?: boolean;
+  editing?: boolean;
 }
 
 /** A top-level directory */
@@ -41,7 +42,7 @@ export type FolderUnion =
 
 export interface RootFolderNode {
   folders: FolderNodeInitial[];
-  folderless: string[];
+  noFolder: string[];
 }
 
 /** === THIS WILL LIVE ON THE API === */

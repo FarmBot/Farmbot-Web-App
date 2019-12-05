@@ -14,7 +14,7 @@ import { HelpState } from "../help/reducer";
 import { UsageIndex } from "./in_use";
 import { SequenceMeta } from "./sequence_meta";
 import { AlertReducerState } from "../messages/interfaces";
-import { RootFolderNode } from "../folders/constants";
+import { RootFolderNode, FolderMeta } from "../folders/constants";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;
@@ -73,7 +73,12 @@ export interface ResourceIndex {
    * }
    */
   inUse: UsageIndex;
-  sequenceFolders: RootFolderNode;
+  sequenceFolders: {
+    folders: RootFolderNode;
+    /** Local data about a `Folder` that is stored
+     * out-of-band rather than in the API. */
+    localMetaAttributes: Record<number, FolderMeta>;
+  }
 }
 
 export interface RestResources {
