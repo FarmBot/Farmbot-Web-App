@@ -1,10 +1,10 @@
 import * as React from "react";
-import { StepButtonParams } from "../../interfaces";
-import { StepButton, stepClick } from "../index";
+import { StepButtonParams } from "../interfaces";
+import { StepButton, stepClick } from "../step_buttons";
 import { shallow } from "enzyme";
-import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Actions } from "../../../constants";
-import { error } from "../../../toast/toast";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { Actions } from "../../constants";
+import { error } from "../../toast/toast";
 
 function props(): StepButtonParams {
   return {
