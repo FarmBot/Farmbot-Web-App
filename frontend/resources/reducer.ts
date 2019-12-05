@@ -169,22 +169,20 @@ export let resourceReducer =
 
       return s;
     })
-  // .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
-  //   const { localMetaAttributes } = s.index.sequenceFolders;
-  //   Object.keys(localMetaAttributes).map((x) => {
-  //     localMetaAttributes[parseInt("" + x)].open = payload;
-  //   });
-  //   reindexFolders(s.index);
-  //   return s;
-  // })
-  // .add<{ id: number }>(Actions.FOLDER_TOGGLE_EDIT, (s, { payload }) => {
-  //   const { localMetaAttributes } = s.index.sequenceFolders;
-  //   Object.keys(localMetaAttributes).map((x) => {
-  //     if (x == ("" + payload.id)) {
-  //       const record = localMetaAttributes[parseInt("" + x)];
-  //       record.editing = !record.editing;
-  //     }
-  //   });
-  //   return s;
-  // })
-  ;
+    // .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
+    //   const { localMetaAttributes } = s.index.sequenceFolders;
+    //   Object.keys(localMetaAttributes).map((x) => {
+    //     localMetaAttributes[parseInt("" + x)].open = payload;
+    //   });
+    //   reindexFolders(s.index);
+    //   return s;
+    // })
+    .add<{ id: number }>(Actions.FOLDER_TOGGLE_EDIT, (s, { payload }) => {
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      const record = localMetaAttributes[parseInt("" + payload.id)];
+      record.editing = !record.editing;
+
+      reindexFolders(s.index);
+
+      return s;
+    });

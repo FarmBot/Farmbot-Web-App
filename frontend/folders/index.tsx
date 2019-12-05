@@ -3,7 +3,7 @@ import { Page, Col, Row, BlurableInput } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { createFolder, deleteFolder, setFolderName, toggleFolderOpenState } from "./actions";
+import { createFolder, deleteFolder, setFolderName, toggleFolderOpenState, toggleFolderEditState } from "./actions";
 import { TaggedSequence } from "farmbot";
 import { selectAllSequences } from "../resources/selectors";
 
@@ -22,18 +22,24 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
   const creates = () => createFolder({ parent_id: node.id });
   const deletes = () => deleteFolder(node.id);
 
-  const subfolderBtn = <a onClick={creates}>📁</a>;
-  const deleteBtn = <a onClick={deletes}>🗑️</a>;
-  const toggleBtn = <a onClick={() => toggleFolderOpenState(node.id)}>
+  const subfolderBtn = <button onClick={creates}>📁</button>;
+  const deleteBtn = <button onClick={deletes}>🗑️</button>;
+  const toggleBtn = <button onClick={() => toggleFolderOpenState(node.id)}>
     {node.open ? "➕" : "➖"}
-  </a>;
-  const editBtn = <a onClick={() => alert("TODO")}>✎</a>;
+  </button>;
+  const editBtn = <button onClick={() => toggleFolderEditState(node.id)}>✎</button>;
 
-  const inputBox = <BlurableInput
-    value={node.name}
-    onCommit={({ currentTarget }) => {
-      return setFolderName(node.id, currentTarget.value);
-    }} />;
+  let inputBox: JSX.Element;
+  if (node.editing) {
+    inputBox = <BlurableInput
+      value={node.name}
+      onCommit={({ currentTarget }) => {
+        return setFolderName(node.id, currentTarget.value)
+          .then(() => toggleFolderEditState(node.id));
+      }} />;
+  } else {
+    inputBox = <span>{node.name}</span>;
+  }
   const names = node
     .content
     .map(x => <li key={"Z" + node.id + sequences[x].uuid}>*{sequences[x].body.name}</li>);
@@ -50,14 +56,14 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
         sequences={sequences} />);
       break;
     case "medial":
-      stuff.margin = 40;
+      stuff.margin = 45;
       stuff.jsx = node.children.map((n2: FolderUnion) => <FolderNode
         node={n2}
         key={"Y" + n2.id}
         sequences={sequences} />);
       break;
     case "terminal":
-      stuff.margin = 60;
+      stuff.margin = 46;
       break;
   }
   return <div style={{ marginLeft: `${stuff.margin}px` }}>
