@@ -161,17 +161,9 @@ export let resourceReducer =
       }, s);
     })
     .add<{ id: number }>(Actions.FOLDER_TOGGLE, (s, { payload }) => {
-      console.log("WOOSH X 1");
       const { localMetaAttributes } = s.index.sequenceFolders;
       const record = localMetaAttributes[parseInt("" + payload.id)];
       record.open = !record.open;
-
-      climb(s.index.sequenceFolders.folders, (node, halt) => {
-        if (node.id == payload.id) {
-          node.open = !node.open;
-          halt();
-        }
-      });
 
       reindexFolders(s.index);
 

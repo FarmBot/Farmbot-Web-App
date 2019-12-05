@@ -104,14 +104,15 @@ export class RawFolders extends React.Component<Props, State> {
 
 export function mapStateToProps(props: Everything): Props {
   const x = props.resources.index.sequenceFolders;
+  const reduce =
+    (a: Props["sequences"], b: TaggedSequence): Record<string, TaggedSequence> => {
+      a[b.uuid] = b;
+      return a;
+    };
   return {
     folders: x.folders.folders,
     noFolder: x.folders.noFolder,
-    sequences: selectAllSequences(props.resources.index)
-      .reduce((a: Props["sequences"], b) => {
-        a[b.uuid] = b;
-        return a;
-      }, {})
+    sequences: selectAllSequences(props.resources.index).reduce(reduce, {})
   };
 }
 export const Folders = connect(mapStateToProps)(RawFolders);
