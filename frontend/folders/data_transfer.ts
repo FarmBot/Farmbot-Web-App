@@ -27,20 +27,30 @@ const emptyIndex: FoldersIndexedByParentId = {};
 export type SequenceIndexedByParentId = Record<number, string[] | undefined>;
 const PARENTLESS = -1;
 type IngestFn =
-  (input: FolderNode[], map: SequenceIndexedByParentId) => RootFolderNode;
+  (props: IngestFnProps) => RootFolderNode;
 
-export const ingest: IngestFn = (input, parentIdMapping) => {
+interface IngestFnProps {
+  folders: FolderNode[];
+  /** "Which sequences are using this folder as their parent?"
+   * Key is a number, representing a folder ID.
+   * Value is a string, representing sequence UUIDS
+   * (sequences that are embedded in the folders)
+   */
+  parentIndex: Record<number, string[] | undefined>;
+}
+
+export const ingest: IngestFn = ({ folders, parentIndex }) => {
   const output: RootFolderNode = {
     folders: [],
-    folderless: parentIdMapping[PARENTLESS] || []
+    folderless: parentIndex[PARENTLESS] || []
   };
-  const index = input.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
+  const index = folders.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
   const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
 
   const terminal = (x: FolderNode): FolderNodeTerminal => ({
     ...x,
     kind: "terminal",
-    content: parentIdMapping[x.id] || [],
+    content: parentIndex[x.id] || [],
     children: []
   });
 
@@ -48,7 +58,7 @@ export const ingest: IngestFn = (input, parentIdMapping) => {
     ...x,
     kind: "medial",
     children: childrenOf(x.id).map(terminal),
-    content: parentIdMapping[x.id] || []
+    content: parentIndex[x.id] || []
   });
 
   childrenOf(-1).map((root) => {
@@ -57,7 +67,7 @@ export const ingest: IngestFn = (input, parentIdMapping) => {
       ...root,
       kind: "initial",
       children,
-      content: parentIdMapping[root.id] || []
+      content: parentIndex[root.id] || []
     });
   });
 

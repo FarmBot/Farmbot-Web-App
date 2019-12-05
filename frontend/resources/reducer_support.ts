@@ -60,7 +60,7 @@ export const folderIndexer: IndexerCallback = (r, i) => {
         }
       }));
 
-    const map = selectAllSequences(i)
+    const parentIndex = selectAllSequences(i)
       .reduce((a, s) => {
         if (!a[s.body.folder_id || -1]) {
           a[s.body.folder_id || -1] = [];
@@ -68,7 +68,7 @@ export const folderIndexer: IndexerCallback = (r, i) => {
         a[s.body.folder_id || -1]?.push(s.uuid);
         return a;
       }, {} as SequenceIndexedByParentId);
-    i.sequenceFolders = ingest(folders, map);
+    i.sequenceFolders = ingest({ folders, parentIndex });
   }
 };
 

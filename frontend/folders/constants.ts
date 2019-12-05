@@ -1,5 +1,10 @@
 import { Color } from "farmbot/dist/corpus";
 
+export interface FolderMeta {
+  open?: boolean;
+  editing?: boolean;
+}
+
 interface FolderUI {
   id: number;
   name: string;
