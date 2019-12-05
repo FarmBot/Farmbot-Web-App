@@ -3,6 +3,7 @@ import {
   FolderNodeMedial,
   FolderNodeTerminal,
   RootFolderNode,
+  FolderMeta,
 } from "./constants";
 import { sortBy } from "lodash";
 
@@ -34,8 +35,10 @@ interface IngestFnProps {
   /** "Which sequences are using this folder as their parent?"
    * Key is a number, representing a folder ID.
    * Value is a string, representing sequence UUIDs
-   * (sequences that are embedded in the folders) */
+   * (sequences that are embedded in the folders)
+   * TODO: Maybe this can be merged into `localMetaAttributes`?*/
   parentIndex: Record<number, string[] | undefined>;
+  localMetaAttributes: Record<number, FolderMeta>;
 }
 
 export const ingest: IngestFn = ({ folders, parentIndex }) => {

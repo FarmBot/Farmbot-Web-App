@@ -51,7 +51,11 @@ const FOLDERS: FolderNode[] = [
   { id: 18, parent_id: 16, color: "blue", name: "Eighteen" }
 ];
 
-const GRAPH = ingest({ folders: FOLDERS, parentIndex: {} });
+const GRAPH = ingest({
+  folders: FOLDERS,
+  parentIndex: {},
+  localMetaAttributes: {}
+});
 
 const randomNode = () => {
   const node = sample(FOLDERS);

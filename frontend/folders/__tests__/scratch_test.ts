@@ -9,7 +9,11 @@ const FOLDERS: FolderNode[] = [
   { id: 4, color: "gray", name: "tests", parent_id: undefined },
   { id: 5, color: "pink", name: "deeply nested directory", parent_id: 3 }
 ];
-const TREE = ingest({ folders: FOLDERS, parentIndex: {} });
+const TREE = ingest({
+  folders: FOLDERS,
+  parentIndex: {},
+  localMetaAttributes: {}
+});
 
 describe("climb()", () => {
   it("traverses through the nodes", () => {
