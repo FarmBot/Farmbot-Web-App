@@ -48,7 +48,7 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     content: (localMetaAttributes[x.id] || {}).sequences || [],
     open: true,
     editing: false,
-    children: [],
+    // children: [],
     ...(localMetaAttributes[x.id] || {})
   });
 

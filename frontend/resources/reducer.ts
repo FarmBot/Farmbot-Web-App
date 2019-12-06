@@ -185,5 +185,6 @@ export let resourceReducer =
     })
     .add<string | undefined>(Actions.FOLDER_SEARCH, (s, { payload }) => {
       s.index.sequenceFolders.searchTerm = payload;
+      reindexFolders(s.index);
       return s;
     });

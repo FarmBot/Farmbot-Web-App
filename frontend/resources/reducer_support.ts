@@ -33,6 +33,7 @@ import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest } from "../folders/data_transfer";
 import { FolderNode, FolderMeta } from "../folders/constants";
+import { climb } from "../folders/climb";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -58,6 +59,7 @@ export const reindexFolders = (i: ResourceIndex) => {
         return fn;
       }
     }));
+  const allSequences = selectAllSequences(i);
 
   const oldMeta = i.sequenceFolders.localMetaAttributes;
   const localMetaAttributes: Record<number, FolderMeta> = {};
@@ -68,18 +70,44 @@ export const reindexFolders = (i: ResourceIndex) => {
     };
   });
 
-  selectAllSequences(i).map((s) => {
+  allSequences.map((s) => {
     const { folder_id } = s.body;
     if (folder_id) {
       (localMetaAttributes[folder_id]?.sequences || []).push(s.uuid);
     }
   });
 
+  const { searchTerm } = i.sequenceFolders;
+
+  /** Perform tree search for search term O(n)
+   * complexity plz send help. */
+  if (searchTerm) {
+    const sequenceHits = new Set<string>();
+    const folderHits = new Set<number>();
+
+    climb(i.sequenceFolders.folders, (node) => {
+      node.content.map(x => {
+        const s = i.references[x];
+        if (s &&
+          s.kind == "Sequence" &&
+          s.body.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          sequenceHits.add(s.uuid);
+          folderHits.add(node.id);
+        }
+      });
+
+      (node.children || []).forEach((_x) => {
+
+      });
+    });
+  }
+
   i.sequenceFolders = {
     folders: ingest({ folders, localMetaAttributes }),
     localMetaAttributes,
-    searchTerm: i.sequenceFolders.searchTerm,
-    filteredFolders: i.sequenceFolders.filteredFolders
+    searchTerm: searchTerm,
+    filteredFolders: searchTerm ?
+      i.sequenceFolders.filteredFolders : undefined
   };
 
 };
