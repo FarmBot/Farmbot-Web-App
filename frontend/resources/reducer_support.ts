@@ -78,7 +78,8 @@ export const reindexFolders = (i: ResourceIndex) => {
   i.sequenceFolders = {
     folders: ingest({ folders, localMetaAttributes }),
     localMetaAttributes,
-    searchTerm: i.sequenceFolders.searchTerm
+    searchTerm: i.sequenceFolders.searchTerm,
+    filteredFolders: i.sequenceFolders.filteredFolders
   };
 
 };
