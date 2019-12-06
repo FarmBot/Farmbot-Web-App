@@ -12,6 +12,7 @@ import { WeedDetectorConfig } from "../weed_detector/config";
 import { Feature } from "../../devices/interfaces";
 import { namespace } from "../weed_detector";
 import { t } from "../../i18next_wrapper";
+import { formatEnvKey } from "../weed_detector/remote_env/translators";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -23,7 +24,8 @@ export class CameraCalibration extends
 
   saveEnvVar = (key: WDENVKey, value: number) =>
     this.props.shouldDisplay(Feature.api_farmware_env)
-      ? this.props.dispatch(this.props.saveFarmwareEnv(key, "" + value))
+      ? this.props.dispatch(this.props.saveFarmwareEnv(
+        key, JSON.stringify(formatEnvKey(key, value))))
       : envSave(key, value)
 
   render() {
