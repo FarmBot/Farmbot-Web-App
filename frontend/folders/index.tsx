@@ -9,13 +9,15 @@ import {
   setFolderName,
   toggleFolderOpenState,
   toggleFolderEditState,
-  toggleAll
+  toggleAll,
+  updateSearchTerm
 } from "./actions";
 import { TaggedSequence } from "farmbot";
 import { selectAllSequences } from "../resources/selectors";
 
 interface Props extends RootFolderNode {
   sequences: Record<string, TaggedSequence>;
+  searchTerm: string | undefined;
 }
 
 type State = {
@@ -110,7 +112,11 @@ export class RawFolders extends React.Component<Props, State> {
     return <Page>
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
-          <input placeholder={"Search"} disabled={true} />
+          <input
+            value={this.props.searchTerm || ""}
+            onChange={({ currentTarget }) => {
+              updateSearchTerm(currentTarget.value);
+            }} />
           <button onClick={() => createFolder()}>📁</button>
           <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
           <button>➕Sequence</button>
@@ -126,16 +132,22 @@ export class RawFolders extends React.Component<Props, State> {
 }
 
 export function mapStateToProps(props: Everything): Props {
+  type Reducer = (a: Props["sequences"], b: TaggedSequence) =>
+    Record<string, TaggedSequence>;
+
+  const reduce: Reducer = (a, b) => {
+    a[b.uuid] = b;
+    return a;
+  };
+
   const x = props.resources.index.sequenceFolders;
-  const reduce =
-    (a: Props["sequences"], b: TaggedSequence): Record<string, TaggedSequence> => {
-      a[b.uuid] = b;
-      return a;
-    };
+
   return {
-    folders: x.folders.folders,
+    folders: x.filteredFolders ? x.filteredFolders.folders : x.folders.folders,
     noFolder: x.folders.noFolder,
-    sequences: selectAllSequences(props.resources.index).reduce(reduce, {})
+    sequences: selectAllSequences(props.resources.index).reduce(reduce, {}),
+    searchTerm: x.searchTerm
   };
 }
+
 export const Folders = connect(mapStateToProps)(RawFolders);

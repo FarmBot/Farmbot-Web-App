@@ -78,8 +78,13 @@ export const deleteFolder = (id: number) => {
 
 export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
 export const moveFolder = (_: Tree) => Promise.reject("WIP");
-export const searchSequencesAndFolders = (_: Tree) => Promise.reject("WIP");
-export const searchByNameOrFolder = (_: Tree) => Promise.reject("WIP");
+
+export const updateSearchTerm = (payload: string | undefined) => {
+  store.dispatch({
+    type: Actions.FOLDER_SEARCH,
+    payload
+  });
+};
 
 export const toggleFolderOpenState = (id: number) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE, payload: { id } }));
@@ -92,3 +97,4 @@ export const toggleFolderEditState = (id: number) => Promise
 
 export const toggleAll = (payload: boolean) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE_ALL, payload }));
+

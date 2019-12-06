@@ -78,6 +78,8 @@ export interface ResourceIndex {
     /** Local data about a `Folder` that is stored
      * out-of-band rather than in the API. */
     localMetaAttributes: Record<number, FolderMeta>;
+    searchTerm?: string;
+    filteredFolders?: RootFolderNode | undefined;
   }
 }
 
