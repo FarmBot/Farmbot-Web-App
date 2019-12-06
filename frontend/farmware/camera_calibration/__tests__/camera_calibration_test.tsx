@@ -1,10 +1,5 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve({})) };
-
-jest.mock("../../../device", () => ({
-  getDevice: () => {
-    return mockDevice;
-  }
-}));
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../actions", () => ({ scanImage: jest.fn() }));
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
@@ -89,5 +84,15 @@ describe("<CameraCalibration/>", () => {
       .simulate("change", "CAMERA_CALIBRATION_camera_offset_x", 10);
     expect(p.saveFarmwareEnv)
       .toHaveBeenCalledWith("CAMERA_CALIBRATION_camera_offset_x", "10");
+  });
+
+  it("saves string WeedDetectorConfig changes: API", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => true;
+    const wrapper = shallow(<CameraCalibration {...p} />);
+    wrapper.find("WeedDetectorConfig")
+      .simulate("change", "CAMERA_CALIBRATION_image_bot_origin_location", 4);
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
+      "CAMERA_CALIBRATION_image_bot_origin_location", "\"BOTTOM_LEFT\"");
   });
 });
