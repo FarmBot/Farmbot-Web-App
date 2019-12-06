@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StepButton } from "./step_buttons/index";
+import { StepButton } from "./step_buttons";
 import { scrollToBottom } from "../util";
 import { Row } from "../ui/index";
 import { TaggedSequence } from "farmbot";

@@ -1,9 +1,9 @@
-import { DropDownItem, FBSelect, Row, Col } from "../../../../ui";
+import { DropDownItem, FBSelect, Row, Col } from "../../../ui";
 import React from "react";
-import { t } from "../../../../i18next_wrapper";
+import { t } from "../../../i18next_wrapper";
 import { TaggedDevice } from "farmbot";
-import { edit, save } from "../../../../api/crud";
-import { ColWidth } from "../../farmbot_os_settings";
+import { edit, save } from "../../../api/crud";
+import { ColWidth } from "../farmbot_os_settings";
 
 // tslint:disable-next-line:no-null-keyword
 const UNDEFINED = null as unknown as undefined;

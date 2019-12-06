@@ -1,11 +1,11 @@
 import * as React from "react";
 import { SequenceBodyItem as Step, TaggedSequence } from "farmbot";
-import { error } from "../../toast/toast";
-import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
-import { pushStep, closeCommandMenu } from "../actions";
-import { StepButtonParams } from "../interfaces";
-import { Col } from "../../ui/index";
-import { t } from "../../i18next_wrapper";
+import { error } from "../toast/toast";
+import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
+import { pushStep, closeCommandMenu } from "./actions";
+import { StepButtonParams } from "./interfaces";
+import { Col } from "../ui/index";
+import { t } from "../i18next_wrapper";
 
 export const stepClick =
   (dispatch: Function,
@@ -29,10 +29,12 @@ export function StepButton({ children, step, color, dispatch, current, index }:
         intent="step_splice"
         draggerId={NULL_DRAGGER_ID}>
         <button draggable={true}
-          className={`fb-button full-width block ${color}`}
+          className={`fb-button full-width block step-block ${color}`}
           onClick={stepClick(dispatch, step, current, index)}>
-          {children}
-          <i className="fa fa-arrows block-control" />
+          <div className="step-block-drag">
+            {children}
+            <i className="fa fa-arrows block-control" />
+          </div>
         </button>
       </StepDragger>
     </div>
