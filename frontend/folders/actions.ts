@@ -1,9 +1,12 @@
 import {
   RootFolderNode as Tree,
-  FolderUnion
+  FolderUnion,
+  FolderNodeMedial,
+  FolderNodeTerminal,
+  RootFolderNode
 } from "./constants";
-import { cloneAndClimb } from "./climb";
-import { Color } from "farmbot";
+import { cloneAndClimb, climb } from "./climb";
+import { Color, TaggedResource, TaggedSequence } from "farmbot";
 import { store } from "../redux/store";
 import { initSave, destroy, edit, save } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
@@ -86,6 +89,57 @@ export const updateSearchTerm = (payload: string | undefined) => {
   });
 };
 
+interface FolderSearchProps {
+  references: Record<string, TaggedResource | undefined>;
+  input: string;
+  folders: RootFolderNode;
+}
+
+const isSearchMatch =
+  (searchTerm: string, s?: TaggedResource): s is TaggedSequence => {
+    if (s && s.kind == "Sequence") {
+      const name = s.body.name.toLowerCase();
+      return name.includes(searchTerm);
+    } else {
+      return false;
+    }
+  };
+
+/** Given an input search term, returns folder IDs (number) and Sequence UUIDs
+ * that match
+ */
+export function searchFoldersAndSequencesForTerm(props: FolderSearchProps) {
+  type MappableFolder = FolderNodeMedial | FolderNodeTerminal;
+  const searchTerm = props.input.toLowerCase();
+  const sequenceSet = new Set<string>();
+  const folderSet = new Set<FolderUnion>();
+
+  const sequenceMaper = (node: FolderUnion) => (x: string) => {
+    const s = props.references[x];
+    if (isSearchMatch(searchTerm, s)) {
+      sequenceSet.add(s.uuid);
+      folderSet.add(node);
+    }
+  };
+
+  const nodeMapper = (node: FolderUnion) => {
+    if (node.name.toLowerCase().includes(searchTerm)) {
+      folderSet.add(node);
+    }
+  };
+
+  climb(props.folders, (node: FolderUnion) => {
+    node.content.map(sequenceMaper(node));
+    const nodes: MappableFolder[] = node.children || [];
+    nodes.map(nodeMapper);
+  });
+
+  return {
+    folders: Array.from(folderSet),
+    sequences: Array.from(sequenceSet)
+  };
+}
+
 export const toggleFolderOpenState = (id: number) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE, payload: { id } }));
 
@@ -97,4 +151,3 @@ export const toggleFolderEditState = (id: number) => Promise
 
 export const toggleAll = (payload: boolean) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE_ALL, payload }));
-

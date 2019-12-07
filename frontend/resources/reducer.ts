@@ -24,6 +24,8 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
+import { searchFoldersAndSequencesForTerm } from "../folders/actions";
+import { ingest } from "../folders/data_transfer";
 
 export const emptyState = (): RestResources => {
   return {
@@ -185,6 +187,21 @@ export let resourceReducer =
     })
     .add<string | undefined>(Actions.FOLDER_SEARCH, (s, { payload }) => {
       s.index.sequenceFolders.searchTerm = payload;
+      if (payload && payload.length > 3) {
+        const { folders } = searchFoldersAndSequencesForTerm({
+          references: s.index.references,
+          input: payload,
+          folders: s.index.sequenceFolders.folders
+        });
+        const nextFolder = ingest({
+          localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
+          folders
+        });
+        console.log("TODO: Filter sequences.");
+        s.index.sequenceFolders.filteredFolders = nextFolder;
+      } else {
+        s.index.sequenceFolders.filteredFolders = undefined;
+      }
       reindexFolders(s.index);
       return s;
     });

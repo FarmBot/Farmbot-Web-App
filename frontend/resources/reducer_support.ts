@@ -32,7 +32,7 @@ import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest } from "../folders/data_transfer";
-import { FolderNode, FolderMeta } from "../folders/constants";
+import { FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial } from "../folders/constants";
 import { climb } from "../folders/climb";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
@@ -95,10 +95,9 @@ export const reindexFolders = (i: ResourceIndex) => {
           folderHits.add(node.id);
         }
       });
-
-      (node.children || []).forEach((_x) => {
-
-      });
+      const nodes: (FolderNodeMedial | FolderNodeTerminal)[] =
+        node.children || [];
+      nodes.map(_x => { });
     });
   }
 
