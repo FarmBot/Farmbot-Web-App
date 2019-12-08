@@ -187,11 +187,11 @@ export let resourceReducer =
     })
     .add<string | undefined>(Actions.FOLDER_SEARCH, (s, { payload }) => {
       s.index.sequenceFolders.searchTerm = payload;
-      if (payload) {
+      if (payload && payload.length > 2) {
         const folders = searchFoldersAndSequencesForTerm({
           references: s.index.references,
           input: payload,
-          folders: s.index.sequenceFolders.folders
+          root: s.index.sequenceFolders.folders
         });
         const nextFolder = ingest({
           localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
