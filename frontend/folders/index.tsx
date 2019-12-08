@@ -126,6 +126,11 @@ export class RawFolders extends React.Component<Props, State> {
         <Row>
           <this.Graph />
         </Row>
+        <Row>
+          <pre>
+            {JSON.stringify(this.props.folders, undefined, "  ")}
+          </pre>
+        </Row>
       </Col>
     </Page>;
   }

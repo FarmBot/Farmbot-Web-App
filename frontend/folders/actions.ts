@@ -106,9 +106,8 @@ const isSearchMatch =
   };
 
 /** Given an input search term, returns folder IDs (number) and Sequence UUIDs
- * that match
- */
-export function searchFoldersAndSequencesForTerm(props: FolderSearchProps) {
+ * that match */
+export const searchFoldersAndSequencesForTerm = (props: FolderSearchProps) => {
   type MappableFolder = FolderNodeMedial | FolderNodeTerminal;
   const searchTerm = props.input.toLowerCase();
   const sequenceSet = new Set<string>();
@@ -128,17 +127,21 @@ export function searchFoldersAndSequencesForTerm(props: FolderSearchProps) {
     }
   };
 
+  const filter = (finalNode: FolderUnion): FolderUnion => {
+    return {
+      ...finalNode,
+      content: finalNode.content.filter(seqUUID => sequenceSet.has(seqUUID))
+    };
+  };
+
   climb(props.folders, (node: FolderUnion) => {
     node.content.map(sequenceMaper(node));
     const nodes: MappableFolder[] = node.children || [];
     nodes.map(nodeMapper);
   });
 
-  return {
-    folders: Array.from(folderSet),
-    sequences: Array.from(sequenceSet)
-  };
-}
+  return Array.from(folderSet).map(filter);
+};
 
 export const toggleFolderOpenState = (id: number) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE, payload: { id } }));
