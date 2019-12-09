@@ -31,7 +31,7 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
-import { ingest } from "../folders/data_transfer";
+import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
 import { FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial } from "../folders/constants";
 import { climb } from "../folders/climb";
 
@@ -72,9 +72,16 @@ export const reindexFolders = (i: ResourceIndex) => {
 
   allSequences.map((s) => {
     const { folder_id } = s.body;
-    if (folder_id) {
-      (localMetaAttributes[folder_id]?.sequences || []).push(s.uuid);
+    const parentId = folder_id || NO_PARENT;
+
+    if (!localMetaAttributes[parentId]) {
+      localMetaAttributes[parentId] = {
+        sequences: [],
+        open: true,
+        editing: false
+      };
     }
+    localMetaAttributes[parentId].sequences.push(s.uuid);
   });
 
   const { searchTerm } = i.sequenceFolders;

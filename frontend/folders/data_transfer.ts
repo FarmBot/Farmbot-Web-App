@@ -25,7 +25,7 @@ const addToIndex: AddToIndex = (accumulator, item) => {
 
 const emptyIndex: FoldersIndexedByParentId = {};
 
-const PARENTLESS = -1;
+export const PARENTLESS = -1;
 type IngestFn =
   (props: IngestFnProps) => RootFolderNode;
 

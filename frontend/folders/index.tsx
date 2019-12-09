@@ -120,6 +120,7 @@ export class RawFolders extends React.Component<Props, State> {
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
           <this.Graph />
+          <hr />
           <ul> {rootSequences} </ul>
         </Row>
       </Col>
