@@ -102,7 +102,7 @@ export class RawFolders extends React.Component<Props, State> {
     const rootSequences = this
       .props
       .noFolder
-      .map(x => <FolderItem sequence={this.props.sequences[x]} />);
+      .map(x => <FolderItem key={x} sequence={this.props.sequences[x]} />);
 
     return <Page>
       <Col xs={12} sm={6} smOffset={3}>
