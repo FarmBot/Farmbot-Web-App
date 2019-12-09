@@ -29,16 +29,22 @@ interface FolderNodeProps {
   sequences: Record<string, TaggedSequence>;
 }
 
-const FolderNode = ({ node, sequences }: FolderNodeProps) => {
-  const creates = () => createFolder({ parent_id: node.id });
-  const deletes = () => deleteFolder(node.id);
+const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
+  "initial": 0,
+  "medial": 45,
+  "terminal": 46
+};
 
-  const subfolderBtn = <button onClick={creates}>📁</button>;
-  const deleteBtn = <button onClick={deletes}>🗑️</button>;
-  const toggleBtn = <button onClick={() => toggleFolderOpenState(node.id)}>
-    {node.open ? "⬇️" : "➡️"}
-  </button>;
-  const editBtn = <button onClick={() => toggleFolderEditState(node.id)}>✎</button>;
+interface FolderItemProps {
+  sequence: TaggedSequence;
+}
+
+const FolderItem = ({ sequence }: FolderItemProps) => {
+  return <li>*{sequence.body.name}</li>;
+};
+
+const FolderNode = ({ node, sequences }: FolderNodeProps) => {
+  const subfolderBtn = <button onClick={() => createFolder({ parent_id: node.id })}>📁</button>;
 
   let inputBox: JSX.Element;
   if (node.editing) {
@@ -51,37 +57,21 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
   } else {
     inputBox = <span>{node.name}</span>;
   }
-  const names = node
-    .content
-    .map(x => <li key={"Z" + node.id + sequences[x].uuid}>*{sequences[x].body.name}</li>);
+
+  const names = node.content.map(x => <FolderItem sequence={sequences[x]} key={"F" + x} />);
 
   const children = <ul> {names} </ul>;
+  const mapper = (n2: FolderUnion) => <FolderNode node={n2} key={n2.id} sequences={sequences} />;
+  const array: FolderUnion[] = node.children || [];
   const stuff: { jsx: JSX.Element[], margin: number } =
-    ({ jsx: [], margin: 0 });
-
-  switch (node.kind) {
-    case "initial":
-      stuff.jsx = node.children.map((n2: FolderUnion) => <FolderNode
-        node={n2}
-        key={"X" + n2.id}
-        sequences={sequences} />);
-      break;
-    case "medial":
-      stuff.margin = 45;
-      stuff.jsx = node.children.map((n2: FolderUnion) => <FolderNode
-        node={n2}
-        key={"Y" + n2.id}
-        sequences={sequences} />);
-      break;
-    case "terminal":
-      stuff.margin = 46;
-      break;
-  }
+    ({ jsx: array.map(mapper), margin: CSS_MARGINS[node.kind] });
   return <div style={{ marginLeft: `${stuff.margin}px` }}>
-    {toggleBtn}
+    <button onClick={() => toggleFolderOpenState(node.id)}>
+      {node.open ? "⬇️" : "➡️"}
+    </button>
     {node.kind !== "terminal" && subfolderBtn}
-    {deleteBtn}
-    {editBtn}
+    <button onClick={() => deleteFolder(node.id)}>🗑️</button>
+    <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
     {inputBox}
     {!!node.open && children}
     {!!node.open && stuff.jsx}
@@ -109,6 +99,11 @@ export class RawFolders extends React.Component<Props, State> {
   }
 
   render() {
+    const rootSequences = this
+      .props
+      .noFolder
+      .map(x => <FolderItem sequence={this.props.sequences[x]} />);
+
     return <Page>
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
@@ -125,11 +120,7 @@ export class RawFolders extends React.Component<Props, State> {
       <Col xs={12} sm={6} smOffset={3}>
         <Row>
           <this.Graph />
-        </Row>
-        <Row>
-          <pre>
-            {JSON.stringify(this.props.folders, undefined, "  ")}
-          </pre>
+          <ul> {rootSequences} </ul>
         </Row>
       </Col>
     </Page>;
