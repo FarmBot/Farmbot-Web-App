@@ -1,5 +1,5 @@
 import React from "react";
-import { Page, Col, Row, BlurableInput } from "../ui";
+import { BlurableInput } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";

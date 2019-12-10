@@ -195,8 +195,18 @@ export const resourceReducer =
           input: payload,
           root: s.index.sequenceFolders.folders
         });
+        const { localMetaAttributes } = s.index.sequenceFolders;
+        Object /** Expand all folders when searching. */
+          .keys(localMetaAttributes)
+          .map(x => {
+            s
+              .index
+              .sequenceFolders
+              .localMetaAttributes[x as unknown as number]
+              .open = true;
+          });
         const nextFolder = ingest({
-          localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
+          localMetaAttributes,
           folders
         });
         s.index.sequenceFolders.filteredFolders = nextFolder;
