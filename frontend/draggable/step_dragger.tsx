@@ -18,7 +18,7 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
  *   Drag this!
  * </button>
  * */
-export let stepDragEventHandler = (dispatch: Function,
+export const stepDragEventHandler = (dispatch: Function,
   step: Step,
   intent: DataXferIntent,
   draggerId: number) => {

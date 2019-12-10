@@ -10,7 +10,7 @@ const initialState: ConfigState = {
   port: API.inferPort()
 };
 
-export let configReducer = generateReducer<ConfigState>(initialState)
+export const configReducer = generateReducer<ConfigState>(initialState)
   .add<ChangeApiPort>(Actions.CHANGE_API_PORT, (s, { payload }) => {
     s.port = payload.port.replace(/\D/g, "");
     return s;

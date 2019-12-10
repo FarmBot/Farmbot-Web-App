@@ -79,29 +79,29 @@ function isTaggedPoint(x: {}): x is PointerType {
   return (is("Point")(x)) && (x.kind === "Point");
 }
 
-export let isTaggedRegimen =
+export const isTaggedRegimen =
   (x: object): x is TaggedRegimen => is("Regimen")(x);
-export let isTaggedFolder =
+export const isTaggedFolder =
   (x: object): x is TaggedRegimen => is("Folder")(x);
-export let isTaggedSequence =
+export const isTaggedSequence =
   (x: object): x is TaggedSequence => is("Sequence")(x);
-export let isTaggedTool =
+export const isTaggedTool =
   (x: object): x is TaggedTool => is("Tool")(x);
-export let isTaggedFarmEvent =
+export const isTaggedFarmEvent =
   (x: object): x is TaggedFarmEvent => is("FarmEvent")(x);
-export let isTaggedToolSlotPointer =
+export const isTaggedToolSlotPointer =
   (x: object): x is TaggedToolSlotPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "ToolSlot");
   };
-export let isTaggedPlantPointer =
+export const isTaggedPlantPointer =
   (x: object): x is TaggedPlantPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "Plant");
   };
-export let isTaggedGenericPointer =
+export const isTaggedGenericPointer =
   (x: object): x is TaggedGenericPointer => {
     return isTaggedPoint(x) && (x.body.pointer_type === "GenericPointer");
   };
-export let isTaggedSavedGarden =
+export const isTaggedSavedGarden =
   (x: object): x is TaggedSavedGarden => is("SavedGarden")(x);
-export let isTaggedPlantTemplate =
+export const isTaggedPlantTemplate =
   (x: object): x is TaggedPlantTemplate => is("PlantTemplate")(x);

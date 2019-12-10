@@ -10,7 +10,7 @@ interface Props {
   expanded: boolean;
 }
 
-export let Header = (props: Props) => {
+export const Header = (props: Props) => {
   const { dispatch, name, title, expanded } = props;
   return <ExpandableHeader
     expanded={expanded}

@@ -17,7 +17,7 @@ const reducerRecord = {
   resources: resourceReducer,
 };
 
-export let reducers = combineReducers(reducerRecord);
+export const reducers = combineReducers(reducerRecord);
 
 Object.keys(reducerRecord).map((x: keyof typeof reducerRecord) => {
   if (!reducerRecord[x]) {

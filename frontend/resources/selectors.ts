@@ -40,7 +40,7 @@ export * from "./selectors_for_indexing";
  * unless there is actually a reason for the resource to not have a UUID.
  * `findId()` is more appropriate 99% of the time because it can spot
  * referential integrity issues. */
-export let maybeDetermineUuid =
+export const maybeDetermineUuid =
   (index: ResourceIndex, kind: ResourceName, id: number) => {
     const kni = joinKindAndId(kind, id);
     const uuid = index.byKindAndId[kni];
@@ -50,7 +50,7 @@ export let maybeDetermineUuid =
     }
   };
 
-export let findId = (index: ResourceIndex, kind: ResourceName, id: number): UUID => {
+export const findId = (index: ResourceIndex, kind: ResourceName, id: number): UUID => {
   const uuid = maybeDetermineUuid(index, kind, id);
   if (uuid) {
     return uuid;
@@ -59,7 +59,7 @@ export let findId = (index: ResourceIndex, kind: ResourceName, id: number): UUID
   }
 };
 
-export let isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
+export const isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
 
 export function groupPointsByType(index: ResourceIndex) {
   return chain(selectAllActivePoints(index))
@@ -151,7 +151,7 @@ export function getSequenceByUUID(index: ResourceIndex,
 
 /** GIVEN: a slot UUID.
  *  FINDS: Tool in that slot (if any) */
-export let currentToolInSlot = (index: ResourceIndex) =>
+export const currentToolInSlot = (index: ResourceIndex) =>
   (toolSlotUUID: string): TaggedTool | undefined => {
     const currentSlot = selectCurrentToolSlot(index, toolSlotUUID);
     if (currentSlot

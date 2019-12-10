@@ -34,7 +34,7 @@ import {
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
 
-export let resources: Everything["resources"] = buildResourceIndex();
+export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
 
 export function fakeSequence(): TaggedSequence {

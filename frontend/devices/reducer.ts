@@ -18,7 +18,7 @@ const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   return state;
 };
 
-export let initialState = (): BotState => ({
+export const initialState = (): BotState => ({
   consistent: true,
   stepSize: 100,
   controlPanelState: {
@@ -81,7 +81,7 @@ export let initialState = (): BotState => ({
   }
 });
 
-export let botReducer = generateReducer<BotState>(initialState())
+export const botReducer = generateReducer<BotState>(initialState())
   .afterEach(afterEach)
   .add<boolean>(Actions.SET_CONSISTENCY, (s, a) => {
     s.consistent = a.payload;

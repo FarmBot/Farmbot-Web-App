@@ -328,7 +328,7 @@ const log: TaggedLog = {
   uuid: "Log.1091396.70"
 };
 
-export let FAKE_RESOURCES: TaggedResource[] = [
+export const FAKE_RESOURCES: TaggedResource[] = [
   tr1,
   fakeDevice(),
   tr2,
