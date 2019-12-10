@@ -2,8 +2,15 @@ require "spec_helper"
 
 describe User do
   it "prevents accidental deactivation" do
-    u = FactoryBot.create(:user, last_sign_in_at: Time.now)
-    expect { u.deactivate_account }.to raise_error("HALTING ERRONEOUS DELETION")
+    time = Time.now
+    u = FactoryBot.create(:user,
+                          last_sign_in_at: time,
+                          inactivity_warning_sent_at: time)
+    expect(u.inactivity_warning_sent_at).to_not be(nil)
+    expect(u.last_sign_in_at).to_not be(time)
+    u.deactivate_account
+    expect(u.inactivity_warning_sent_at).to be(nil)
+    expect(u.last_sign_in_at).to_not be(time)
   end
 
   describe "#new" do
