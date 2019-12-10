@@ -1,5 +1,8 @@
 import {
-  fakeFbosConfig, fakeImage, fakeFarmwareEnv, fakeWebAppConfig
+  fakeFbosConfig,
+  fakeImage,
+  fakeFarmwareEnv,
+  fakeWebAppConfig
 } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
@@ -12,6 +15,8 @@ jest.mock("../../resources/selectors_by_kind", () => ({
   selectAllRegimens: () => [],
   selectAllLogs: () => [],
   selectAllImages: () => [mockImages],
+  selectAllFolders: () => [],
+  selectAllSequences: () => [],
   selectAllFarmwareEnvs: () => [fakeFarmwareEnv()]
 }));
 
@@ -48,7 +53,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  it("uses the bot as the source of FBOS settings: ignore API defaults", () => {
+  fit("uses the bot as the source of FBOS settings: ignore API defaults", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     const fakeApiConfig = fakeFbosConfig();
