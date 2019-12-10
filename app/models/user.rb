@@ -71,14 +71,17 @@ class User < ApplicationRecord
 
   def deactivate_account
     User.transaction do
-      if reload.last_sign_in_at > 3.months.ago
-        raise "HALTING ERRONEOUS DELETION"
-      end
-      # Prevent double deletion / race conditions.
-      update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
       email = self.email
-      delay.destroy!
-      puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
+      if reload.last_sign_in_at > 3.months.ago
+        puts "CANCEL DEACTIVATION FOR #{email}" unless Rails.env.test?
+        update!(inactivity_warning_sent_at: nil)
+        return # <== DON'T DELETE THIS LINE!!!
+      else
+        # Prevent double deletion / race conditions.
+        update!(last_sign_in_at: Time.now, inactivity_warning_sent_at: nil)
+        delay.destroy!
+        puts "INACTIVITY DELETION FOR #{email}" unless Rails.env.test?
+      end
     end
   end
 end
