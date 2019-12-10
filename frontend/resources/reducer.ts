@@ -24,8 +24,10 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
-// import { searchFoldersAndSequencesForTerm } from "../folders/actions";
-// import { ingest } from "../folders/data_transfer";
+import {
+  ingest,
+  searchFoldersAndSequencesForTerm
+} from "../folders/data_transfer";
 
 export const emptyState = (): RestResources => {
   return {
@@ -185,22 +187,22 @@ export const resourceReducer =
 
       return s;
     })
-    .add<string | undefined>(Actions.FOLDER_SEARCH, (s/*, { payload }*/) => {
-      // s.index.sequenceFolders.searchTerm = payload;
-      // if (payload && payload.length > 2) {
-      //   const folders = searchFoldersAndSequencesForTerm({
-      //     references: s.index.references,
-      //     input: payload,
-      //     root: s.index.sequenceFolders.folders
-      //   });
-      //   const nextFolder = ingest({
-      //     localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
-      //     folders
-      //   });
-      //   s.index.sequenceFolders.filteredFolders = nextFolder;
-      // } else {
-      //   s.index.sequenceFolders.filteredFolders = undefined;
-      // }
-      // reindexFolders(s.index);
+    .add<string | undefined>(Actions.FOLDER_SEARCH, (s, { payload }) => {
+      s.index.sequenceFolders.searchTerm = payload;
+      if (payload && payload.length > 2) {
+        const folders = searchFoldersAndSequencesForTerm({
+          references: s.index.references,
+          input: payload,
+          root: s.index.sequenceFolders.folders
+        });
+        const nextFolder = ingest({
+          localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
+          folders
+        });
+        s.index.sequenceFolders.filteredFolders = nextFolder;
+      } else {
+        s.index.sequenceFolders.filteredFolders = undefined;
+      }
+      reindexFolders(s.index);
       return s;
     });
