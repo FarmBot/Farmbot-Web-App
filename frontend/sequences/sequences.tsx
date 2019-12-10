@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { SequencesList } from "./sequences_list";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { Page, Row } from "../ui/index";
@@ -10,7 +9,6 @@ import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { LeftPanel, CenterPanel, RightPanel } from "../ui";
-import { resourceUsageList } from "../resources/in_use";
 import { t } from "../i18next_wrapper";
 import { unselectSequence, closeCommandMenu } from "./actions";
 import { isNumber } from "lodash";
@@ -46,12 +44,7 @@ export class RawSequences extends React.Component<Props, {}> {
           className={`sequence-list-panel ${activeClasses}`}
           title={t("Sequences")}
           helpText={t(ToolTips.SEQUENCE_LIST)}>
-          <SequencesList
-            resourceUsage={resourceUsageList(this.props.resources.inUse)}
-            sequenceMetas={this.props.resources.sequenceMetas}
-            dispatch={this.props.dispatch}
-            sequence={this.props.sequence}
-            sequences={this.props.sequences} />
+          <p>Work in progress...</p>
         </LeftPanel>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}

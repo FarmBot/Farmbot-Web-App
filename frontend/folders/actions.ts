@@ -6,11 +6,15 @@ import {
 import { cloneAndClimb } from "./climb";
 import { Color, TaggedResource, TaggedSequence } from "farmbot";
 import { store } from "../redux/store";
-import { initSave, destroy, edit, save } from "../api/crud";
+import { initSave, destroy, edit, save, init } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
 import { DeepPartial } from "redux";
 import { findFolderById } from "../resources/selectors_by_id";
 import { Actions } from "../constants";
+import { t } from "../i18next_wrapper";
+import { push } from "../history";
+import { urlFriendly } from "../util";
+import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 
 type TreePromise = Promise<Tree>;
 
@@ -59,6 +63,25 @@ const DEFAULTS: Folder = {
   color: "gray",
   // tslint:disable-next-line:no-null-keyword
   parent_id: null as unknown as undefined,
+};
+
+export const addNewSequenceToFolder = (folder_id?: number) => {
+  const uuidMap = store.getState().resources.index.byKind["Sequence"];
+  const seqCount = Object.keys(uuidMap).length;
+  const newSequence = {
+    name: t("new sequence {{ num }}", { num: seqCount }),
+    args: {
+      version: -999,
+      locals: { kind: "scope_declaration", args: {} },
+    },
+    color: "gray",
+    folder_id,
+    kind: "sequence",
+    body: []
+  };
+  store.dispatch(init("Sequence", newSequence));
+  push("/app/sequences/" + urlFriendly(newSequence.name));
+  setActiveSequenceByName();
 };
 
 export const createFolder = (config: DeepPartial<Folder> = {}) => {

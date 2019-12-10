@@ -197,7 +197,6 @@ export let resourceReducer =
           localMetaAttributes: s.index.sequenceFolders.localMetaAttributes,
           folders
         });
-        console.log("TODO: Filter sequences.");
         s.index.sequenceFolders.filteredFolders = nextFolder;
       } else {
         s.index.sequenceFolders.filteredFolders = undefined;
