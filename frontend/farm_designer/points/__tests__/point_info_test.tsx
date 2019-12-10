@@ -28,7 +28,7 @@ import { getDevice } from "../../../device";
 import { Xyz } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy } from "../../../api/crud";
-import { DesignerPanelHeader } from "../designer_panel";
+import { DesignerPanelHeader } from "../../designer_panel";
 import { Actions } from "../../../constants";
 
 describe("<EditPoint />", () => {

@@ -10,7 +10,7 @@ import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "./designer_panel";
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../panel_header";

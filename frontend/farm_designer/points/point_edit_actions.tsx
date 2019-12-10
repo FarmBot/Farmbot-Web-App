@@ -4,7 +4,7 @@ import { getDevice } from "../../device";
 import { destroy, edit, save } from "../../api/crud";
 import { ResourceColor } from "../../interfaces";
 import { TaggedGenericPointer } from "farmbot";
-import { ListItem } from "./plant_panel";
+import { ListItem } from "../plants/plant_panel";
 import { round } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
 import { parseIntInput } from "../../util";

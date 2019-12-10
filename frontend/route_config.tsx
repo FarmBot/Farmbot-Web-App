@@ -222,7 +222,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/points",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/point_inventory"),
+    getChild: () => import("./farm_designer/points/point_inventory"),
     childKey: "Points"
   }),
   route({
@@ -230,7 +230,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/points/add",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/create_points"),
+    getChild: () => import("./farm_designer/points/create_points"),
     childKey: "CreatePoints"
   }),
   route({
@@ -238,7 +238,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/points/:point_id",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/point_info"),
+    getChild: () => import("./farm_designer/points/point_info"),
     childKey: "EditPoint"
   }),
   route({
@@ -366,7 +366,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/weeds_inventory"),
+    getChild: () => import("./farm_designer/points/weeds_inventory"),
     childKey: "Weeds"
   }),
   route({
@@ -374,7 +374,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds/add",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/create_points"),
+    getChild: () => import("./farm_designer/points/create_points"),
     childKey: "CreatePoints"
   }),
   route({
@@ -382,7 +382,7 @@ export const UNBOUND_ROUTES = [
     $: "/designer/weeds/:point_id",
     getModule,
     key,
-    getChild: () => import("./farm_designer/plants/weeds_edit"),
+    getChild: () => import("./farm_designer/points/weeds_edit"),
     childKey: "EditWeed"
   }),
   route({

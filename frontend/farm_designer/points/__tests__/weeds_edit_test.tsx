@@ -15,7 +15,7 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
-import { DesignerPanelHeader } from "../designer_panel";
+import { DesignerPanelHeader } from "../../designer_panel";
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
+import { DesignerPanel, DesignerPanelHeader } from "../../designer_panel";
 
 describe("<DesignerPanel />", () => {
   it("renders default panel", () => {

@@ -12,7 +12,7 @@ import {
 import { Everything } from "../../interfaces";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { getPathArray } from "../../history";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../../resources/interfaces";

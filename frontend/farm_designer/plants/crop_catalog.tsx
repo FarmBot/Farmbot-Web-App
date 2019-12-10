@@ -12,7 +12,7 @@ import {
 import { Spinner } from "../../extras/spinner";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent, DesignerPanelTop
-} from "./designer_panel";
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 

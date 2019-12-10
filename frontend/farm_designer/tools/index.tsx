@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {

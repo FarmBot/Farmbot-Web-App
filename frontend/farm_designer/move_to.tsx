@@ -13,7 +13,7 @@ import { unselectPlant } from "./map/actions";
 import { AxisNumberProperty } from "./map/interfaces";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader
-} from "./plants/designer_panel";
+} from "./designer_panel";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
 import { getStatus } from "../connectivity/reducer_support";
