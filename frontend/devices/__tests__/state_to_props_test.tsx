@@ -53,7 +53,7 @@ describe("mapStateToProps()", () => {
     });
   });
 
-  fit("uses the bot as the source of FBOS settings: ignore API defaults", () => {
+  it("uses the bot as the source of FBOS settings: ignore API defaults", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     const fakeApiConfig = fakeFbosConfig();

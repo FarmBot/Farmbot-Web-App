@@ -1,6 +1,9 @@
 import {
-  BotState, HardwareState, ControlPanelState, OsUpdateInfo,
-  MinOsFeatureLookup
+  BotState,
+  ControlPanelState,
+  HardwareState,
+  MinOsFeatureLookup,
+  OsUpdateInfo
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
