@@ -26,14 +26,16 @@ export const getSelected = (
   return arraySelected.length > 0 ? arraySelected : undefined;
 };
 
+export interface ResizeSelectionBoxProps {
+  selectionBox: SelectionBoxData | undefined;
+  plants: TaggedPlant[];
+  gardenCoords: AxisNumberProperty | undefined;
+  setMapState: (x: Partial<GardenMapState>) => void;
+  dispatch: Function;
+}
+
 /** Resize a selection box. */
-export const resizeBox = (props: {
-  selectionBox: SelectionBoxData | undefined,
-  plants: TaggedPlant[],
-  gardenCoords: AxisNumberProperty | undefined,
-  setMapState: (x: Partial<GardenMapState>) => void,
-  dispatch: Function,
-}) => {
+export const resizeBox = (props: ResizeSelectionBoxProps) => {
   if (props.selectionBox) {
     const current = props.gardenCoords;
     if (current) {

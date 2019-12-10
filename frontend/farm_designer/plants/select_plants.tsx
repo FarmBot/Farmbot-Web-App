@@ -97,6 +97,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         title={t("{{length}} plants selected",
           { length: this.selected.length })}
         backTo={"/app/designer/plants"}
+        onBack={unselectPlant(dispatch)}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
 

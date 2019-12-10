@@ -118,9 +118,9 @@ describe("clickMapPlant", () => {
     const state = fakeState();
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant("foo", "bar")(dispatch, getState);
-    expect(dispatch).toHaveBeenCalledWith(selectPlant(["foo"]));
-    expect(dispatch).toHaveBeenCalledWith(setHoveredPlant("foo", "bar"));
+    clickMapPlant("fakeUuid", "fakeIcon")(dispatch, getState);
+    expect(dispatch).toHaveBeenCalledWith(selectPlant(["fakeUuid"]));
+    expect(dispatch).toHaveBeenCalledWith(setHoveredPlant("fakeUuid", "fakeIcon"));
     expect(dispatch).toHaveBeenCalledTimes(2);
   });
 
@@ -133,7 +133,7 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([plant]);
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "bar")(dispatch, getState);
+    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
     expect(overwrite).toHaveBeenCalledWith(mockGroup, expect.objectContaining({
       name: "Fake", point_ids: [1, 23]
     }));
@@ -149,10 +149,41 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([plant]);
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "bar")(dispatch, getState);
+    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
     expect(overwrite).toHaveBeenCalledWith(mockGroup, expect.objectContaining({
       name: "Fake", point_ids: [1]
     }));
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("adds a plant to the current selection if plant select is active", () => {
+    mockPath = "/app/designer/plants/select";
+    const state = fakeState();
+    const plant = fakePlant();
+    plant.uuid = "fakePlantUuid";
+    state.resources = buildResourceIndex([plant]);
+    const dispatch = jest.fn();
+    const getState: GetState = jest.fn(() => state);
+    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT, payload: [plant.uuid]
+    });
+    expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes a plant to the current selection if plant select is active", () => {
+    mockPath = "/app/designer/plants/select";
+    const state = fakeState();
+    const plant = fakePlant();
+    plant.uuid = "fakePlantUuid";
+    state.resources = buildResourceIndex([plant]);
+    state.resources.consumers.farm_designer.selectedPlants = [plant.uuid];
+    const dispatch = jest.fn();
+    const getState: GetState = jest.fn(() => state);
+    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT, payload: []
+    });
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 });
