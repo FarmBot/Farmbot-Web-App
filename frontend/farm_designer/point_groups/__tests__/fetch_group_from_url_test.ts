@@ -1,6 +1,6 @@
 const mockId = 123;
 jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => [mockId])
+  getPathArray: jest.fn(() => ["groups", mockId])
 }));
 
 import { fetchGroupFromUrl } from "../group_detail";

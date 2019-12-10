@@ -31,6 +31,7 @@ import {
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";
 import { NNPath } from "../point_groups/paths";
+import { history } from "../../history";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -95,7 +96,7 @@ export class GardenMap extends
 
   setMapState = (x: Partial<GardenMapState>) => this.setState(x);
 
-  /** Map drag start actions. */
+  /** Map (anywhere) drag start actions. */
   startDrag = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
       case Mode.editPlant:
@@ -108,7 +109,7 @@ export class GardenMap extends
             selectedPlant: this.props.selectedPlant,
           });
         } else { // Actions away from plant exit plant edit mode.
-          closePlantInfo(this.props.dispatch)();
+          this.closePanel()();
           startNewSelectionBox({
             gardenCoords,
             setMapState: this.setMapState,
@@ -125,8 +126,25 @@ export class GardenMap extends
         break;
       case Mode.clickToAdd:
         break;
+    }
+  }
+
+  /** Map background drag start actions. */
+  startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
+    switch (getMode()) {
+      case Mode.createPoint:
+      case Mode.clickToAdd:
+      case Mode.editPlant:
+        break;
       case Mode.boxSelect:
+        startNewSelectionBox({
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
+        });
+        break;
       default:
+        history.push("/app/designer/plants");
         startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
@@ -281,6 +299,7 @@ export class GardenMap extends
       (this.props.getConfigValue("photo_filter_end") || "").toString()} />
   Grid = () => <Grid
     onClick={this.closePanel()}
+    onMouseDown={this.startDragOnBackground}
     mapTransformProps={this.mapTransformProps} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}

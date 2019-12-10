@@ -33,7 +33,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ShouldDisplay } from "../../devices/interfaces";

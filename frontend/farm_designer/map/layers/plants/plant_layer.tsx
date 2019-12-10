@@ -44,7 +44,7 @@ export function PlantLayer(props: PlantLayerProps) {
         style: maybeNoPointer(p.body.id ? {} : { pointerEvents: "none" }),
         key: p.uuid,
       };
-      return getMode() === Mode.editGroup
+      return (getMode() === Mode.editGroup || getMode() === Mode.boxSelect)
         ? <g {...wrapperProps}>{plant}</g>
         : <Link {...wrapperProps}
           to={`/app/designer/${plantCategory}/${"" + p.body.id}`}>

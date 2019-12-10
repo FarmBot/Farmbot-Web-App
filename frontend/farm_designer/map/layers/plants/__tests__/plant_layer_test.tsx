@@ -60,7 +60,7 @@ describe("<PlantLayer/>", () => {
   });
 
   it("is in non-clickable mode", () => {
-    mockPath = "/app/designer/plants/select";
+    mockPath = "/app/designer/plants/crop_search/mint/add";
     const p = fakeProps();
 
     const wrapper = svgMount(<PlantLayer {...p} />);

@@ -4,7 +4,7 @@ import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantPanel } from "./plant_panel";
 import { unselectPlant } from "../map/actions";
 import { TaggedPlant } from "../map/interfaces";
-import { DesignerPanel, DesignerPanelHeader } from "./designer_panel";
+import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { isString, isUndefined } from "lodash";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
 import { Content } from "../constants";
-import { DesignerPanel, DesignerPanelContent } from "./plants/designer_panel";
+import { DesignerPanel, DesignerPanelContent } from "./designer_panel";
 import { t } from "../i18next_wrapper";
 import {
   GetWebAppConfigValue, getWebAppConfigValue, setWebAppConfigValue

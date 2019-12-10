@@ -11,6 +11,7 @@ describe("<Grid/>", () => {
     return {
       mapTransformProps: fakeMapTransformProps(),
       onClick: jest.fn(),
+      onMouseDown: jest.fn(),
     };
   }
 

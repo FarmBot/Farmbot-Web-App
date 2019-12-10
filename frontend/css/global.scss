@@ -1195,9 +1195,9 @@ ul {
     &.moisture-sensor {
       background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
     }
-    &.tool-verification-sensor {
-      span {
-        margin-left: 3.5rem !important;
+    &.digital {
+      .indicator {
+        text-align: center;
       }
     }
     border-style: solid;

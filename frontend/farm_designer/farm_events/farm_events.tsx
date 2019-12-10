@@ -11,7 +11,7 @@ import { Panel, DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import {
   EmptyStateWrapper, EmptyStateGraphic
 } from "../../ui/empty_state_wrapper";

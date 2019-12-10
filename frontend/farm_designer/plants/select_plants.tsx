@@ -10,7 +10,7 @@ import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "./designer_panel";
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../panel_header";
@@ -97,6 +97,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         title={t("{{length}} plants selected",
           { length: this.selected.length })}
         backTo={"/app/designer/plants"}
+        onBack={unselectPlant(dispatch)}
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
 

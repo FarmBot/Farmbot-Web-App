@@ -13,7 +13,8 @@ export function Grid(props: GridProps) {
   const arrowEnd = transformXY(25, 25, mapTransformProps);
   const xLabel = transformXY(15, -10, mapTransformProps);
   const yLabel = transformXY(-11, 18, mapTransformProps);
-  return <g className="drop-area-background" onClick={props.onClick}>
+  return <g className="drop-area-background" onClick={props.onClick}
+    onMouseDown={props.onMouseDown}>
     <defs>
       <pattern id="minor_grid"
         width={10} height={10} patternUnits="userSpaceOnUse">

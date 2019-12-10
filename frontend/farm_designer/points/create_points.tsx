@@ -19,12 +19,12 @@ import {
   DesignerPanel,
   DesignerPanelHeader,
   DesignerPanelContent
-} from "./designer_panel";
+} from "../designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 import { getPathArray } from "../../history";
-import { ListItem } from "./plant_panel";
+import { ListItem } from "../plants/plant_panel";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;

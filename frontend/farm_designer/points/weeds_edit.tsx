@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "./designer_panel";
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";

@@ -6,7 +6,9 @@ jest.mock("../../../history", () => ({
 
 import * as React from "react";
 import { render } from "enzyme";
-import { RawAddPlant as AddPlant, AddPlantProps, mapStateToProps } from "../add_plant";
+import {
+  RawAddPlant as AddPlant, AddPlantProps, mapStateToProps
+} from "../add_plant";
 import {
   fakeCropLiveSearchResult
 } from "../../../__test_support__/fake_crop_search_result";
