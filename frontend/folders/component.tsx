@@ -104,28 +104,18 @@ export class RawFolders extends React.Component<Props, State> {
       .noFolder
       .map(x => <FolderItem key={x} sequence={this.props.sequences[x]} />);
 
-    return <Page>
-      <Col xs={12} sm={6} smOffset={3}>
-        <Row>
-          <input
-            value={this.props.searchTerm || ""}
-            onChange={({ currentTarget }) => {
-              updateSearchTerm(currentTarget.value);
-            }} />
-          <button onClick={() => createFolder()}>📁</button>
-          <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
-          <button>➕Sequence</button>
-        </Row>
-      </Col>
-      <Col xs={12} sm={6} smOffset={3}>
-        <Row>
-          <this.Graph />
-          <ul>
-            {rootSequences}
-          </ul>
-        </Row>
-      </Col>
-    </Page>;
+    return <div>
+      <input
+        value={this.props.searchTerm || ""}
+        onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
+      <button onClick={() => createFolder()}>📁</button>
+      <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
+      <button>➕Sequence</button>
+      <this.Graph />
+      <ul>
+        {rootSequences}
+      </ul>
+    </div>;
   }
 }
 

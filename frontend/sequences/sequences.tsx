@@ -2,16 +2,17 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
-import { Page, Row } from "../ui/index";
+import { Page, Row, Col } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
-import { LeftPanel, CenterPanel, RightPanel } from "../ui";
+import { CenterPanel, RightPanel } from "../ui";
 import { t } from "../i18next_wrapper";
 import { unselectSequence, closeCommandMenu } from "./actions";
 import { isNumber } from "lodash";
+import { Folders } from "../folders/component";
 
 export interface SequenceBackButtonProps {
   dispatch: Function;
@@ -40,12 +41,9 @@ export class RawSequences extends React.Component<Props, {}> {
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
     return <Page className="sequence-page">
       <Row>
-        <LeftPanel
-          className={`sequence-list-panel ${activeClasses}`}
-          title={t("Sequences")}
-          helpText={t(ToolTips.SEQUENCE_LIST)}>
-          <p>Work in progress...</p>
-        </LeftPanel>
+        <Col sm={3}>
+          <Folders />
+        </Col>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}
           backButton={<SequenceBackButton
