@@ -4,27 +4,28 @@ import { collapseAll } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 
-// Folder structure used in tests:
-// ├─ One
-// ├─ Two
-// │  └─ Three
-// ├─ Four
-// │  └─ Five
-// ├─ Six
-// │  └─ Seven
-// │     ├─ Eight
-// │     └─ Nine
-// ├─ Ten
-// │  ├─ Eleven
-// │  └─ Twelve
-// │     └─ Thirteen
-// └─ Fourteen
-//    ├─ Fifteen
-//    └─ Sixteen
-//       ├─ Seventeen
-//       └─ Eighteen
-
-const FOLDERS: FolderNode[] = [
+/** A set of fake Folder resources used exclusively for testing purposes.
+ ```
+   ├─ One
+   ├─ Two
+   │  └─ Three
+   ├─ Four
+   │  └─ Five
+   ├─ Six
+   │  └─ Seven
+   │     ├─ Eight
+   │     └─ Nine
+   ├─ Ten
+   │  ├─ Eleven
+   │  └─ Twelve
+   │     └─ Thirteen
+   └─ Fourteen
+      ├─ Fifteen
+      └─ Sixteen
+         ├─ Seventeen
+         └─ Eighteen
+  ``` */
+const TEST_FOLDERS: FolderNode[] = [
   { id: 1, parent_id: undefined, color: "blue", name: "One" },
   { id: 2, parent_id: undefined, color: "blue", name: "Two" },
   { id: 3, parent_id: 2, color: "blue", name: "Three" },
@@ -45,8 +46,30 @@ const FOLDERS: FolderNode[] = [
   { id: 18, parent_id: 16, color: "blue", name: "Eighteen" }
 ];
 
-const GRAPH = ingest({
-  folders: FOLDERS,
+/**
+  ```
+   ├─ One
+   ├─ Two
+   │  └─ Three
+   ├─ Four
+   │  └─ Five
+   ├─ Six
+   │  └─ Seven
+   │     ├─ Eight
+   │     └─ Nine
+   ├─ Ten
+   │  ├─ Eleven
+   │  └─ Twelve
+   │     └─ Thirteen
+   └─ Fourteen
+      ├─ Fifteen
+      └─ Sixteen
+         ├─ Seventeen
+         └─ Eighteen
+  ```
+ */
+export const TEST_GRAPH = ingest({
+  folders: TEST_FOLDERS,
   localMetaAttributes: {}
 });
 
@@ -55,7 +78,7 @@ describe("deletion of folders", () => {
 });
 
 describe("expand/collapse all", () => {
-  const halfOpen = cloneAndClimb(GRAPH, (node) => {
+  const halfOpen = cloneAndClimb(TEST_GRAPH, (node) => {
     node.open = !sample([true, false]);
   });
 
