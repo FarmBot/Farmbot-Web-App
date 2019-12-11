@@ -55,16 +55,12 @@ const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
 const FolderItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   return <li style={{ border: "1px dashed " + sequence.body.color }}>
-    <span
-      onClick={() => onClick(sequence.uuid)}
-      style={{ border: "1px solid black" }}>
-      ⮀
-    </span>
+    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
     <Link
       to={`/app/sequences/${urlFriendly(sequence.body.name) || ""}`}
       key={sequence.uuid}
       onClick={setActiveSequenceByName}>
-      {props.isMoveTarget ? "****" : ""}{sequence.body.name}
+      {props.isMoveTarget ? "=>" : ""}{sequence.body.name}
     </Link>
   </li>;
 };
@@ -96,12 +92,13 @@ const FolderNode = (props: FolderNodeProps) => {
         current={node.color} />
     </Col>
     <Col xs={11}>
-      <BlurableInput
+      {!node.editing && node.name}
+      {node.editing && <BlurableInput
         value={node.name}
         onCommit={({ currentTarget }) => {
           return setFolderName(node.id, currentTarget.value)
             .then(() => toggleFolderEditState(node.id));
-        }} />
+        }} />}
     </Col>
   </Row>;
 
@@ -134,10 +131,7 @@ const FolderNode = (props: FolderNodeProps) => {
     </button>
     {node.kind !== "terminal" && subfolderBtn}
     <button onClick={() => deleteFolder(node.id)}>🗑️</button>
-    <button onClick={() => {
-      alert("The current UI is locked in edit mode. This button is a stub.");
-      toggleFolderEditState(node.id);
-    }}>✎</button>
+    <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
     <button onClick={() => addNewSequenceToFolder(node.id)}>+</button>
   </div>;
   return <div
