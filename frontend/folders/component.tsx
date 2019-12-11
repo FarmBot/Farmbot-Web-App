@@ -165,7 +165,8 @@ export class RawFolders extends React.Component<Props, State> {
 
   endSequenceMove = (folderId: number) => {
     moveSequence(this.state.movedSequenceUuid || "", folderId);
-    setTimeout(() => this.setState({ movedSequenceUuid: undefined }), 500);
+    this.setState({ movedSequenceUuid: undefined });
+    // this.forceUpdate(); // Why tho?
   }
 
   render() {
