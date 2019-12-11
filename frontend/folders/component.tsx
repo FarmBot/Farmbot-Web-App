@@ -191,7 +191,7 @@ export class RawFolders extends React.Component<Props, State> {
         onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
       <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
       <button onClick={() => createFolder()}>+📁</button>
-      <button title="+Sequence">+</button>
+      <button onClick={() => addNewSequenceToFolder(0)}>+</button>
       <this.Graph />
       {this.state.movedSequenceUuid && <FolderDropButton onClick={() => this.endSequenceMove(0)} />}
       <ul>

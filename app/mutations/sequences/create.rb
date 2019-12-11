@@ -12,6 +12,7 @@ module Sequences
     optional do
       color
       args
+      integer :folder_id
     end
 
     def validate
@@ -25,6 +26,7 @@ module Sequences
           p = inputs
             .merge(migrated_nodes: true)
             .without(:body, :args, "body", "args")
+            .merge(folder: device.folders.find_by(id: folder_id))
           seq = Sequence.create!(p)
           x = CeleryScript::FirstPass.run!(sequence: seq,
                                            args: args || {},
