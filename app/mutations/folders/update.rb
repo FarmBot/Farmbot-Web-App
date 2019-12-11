@@ -18,13 +18,11 @@ module Folders
     private
 
     def update_params
-      inputs
-        .except(:device, :folder)
-        .merge({ parent: parent })
+      inputs.except(:device, :folder).merge({ parent: parent })
     end
 
     def parent
-      @parent ||= device.folders.find_by(id: parent_id)
+      @parent ||= device.folders.find_by(parent_id)
     end
   end
 end

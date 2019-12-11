@@ -49,12 +49,12 @@ export const setFolderColor =
 
 export const setFolderName =
   (id: number, name: string) => {
+    const d = store.dispatch as Function;
     const { index } = store.getState().resources;
     const folder = findFolderById(index, id);
     const action = edit(folder, { name });
-    store.dispatch(action);
-    // tslint:disable-next-line:no-any
-    return store.dispatch(save(folder.uuid) as any) as Promise<{}>;
+    d(action);
+    return d(save(folder.uuid)) as Promise<{}>;
   };
 
 const DEFAULTS: Folder = {
@@ -120,3 +120,14 @@ export const toggleFolderEditState = (id: number) => Promise
 
 export const toggleAll = (payload: boolean) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE_ALL, payload }));
+
+export function moveSequence(sequenceUuid: string, folder_id: number) {
+  const d = store.dispatch as Function;
+  const s = store.getState().resources.index.references[sequenceUuid];
+  if (s && s.kind === "Sequence") {
+    d(edit(s, { folder_id }));
+    d(save(sequenceUuid));
+  } else {
+    throw new Error("Blooper");
+  }
+}

@@ -10,10 +10,15 @@ import {
   toggleFolderOpenState,
   toggleFolderEditState,
   toggleAll,
-  updateSearchTerm
+  updateSearchTerm,
+  addNewSequenceToFolder,
+  moveSequence
 } from "./actions";
 import { TaggedSequence } from "farmbot";
 import { selectAllSequences } from "../resources/selectors";
+import { Link } from "../link";
+import { urlFriendly } from "../util";
+import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 
 interface Props extends RootFolderNode {
   sequences: Record<string, TaggedSequence>;
@@ -22,47 +27,64 @@ interface Props extends RootFolderNode {
 
 type State = {
   toggleDirection: boolean;
+  movedSequenceUuid?: string;
 };
 
 interface FolderNodeProps {
   node: FolderUnion;
   sequences: Record<string, TaggedSequence>;
+  movedSequenceUuid: string | undefined;
+  onMoveStart(sequenceUuid: string): void;
+  onMoveEnd(folderId: number): void;
 }
 
 interface FolderItemProps {
+  onClick(sequenceUuid: string): void;
   sequence: TaggedSequence;
+  isMoveTarget: boolean;
 }
 
 const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
   "initial": 0,
-  "medial": 20,
-  "terminal": 23
+  "medial": 10,
+  "terminal": 10
 };
 
-// // TODO: Get this working again!
-// const SequenceListItem = (props: SequenceListItemProps) =>
-//   (ts: TaggedSequence) => {
-//     const inUse = !!props.resourceUsage[ts.uuid];
-//     const variableData = props.sequenceMetas[ts.uuid];
-//     const deleteSeq = () => props.dispatch(destroy(ts.uuid));
-
-//     return <div className="sequence-list-item" key={ts.uuid}>
-//       {DevSettings.quickDeleteEnabled()
-//         ? <SequenceButton ts={ts} inUse={inUse} deleteFunc={deleteSeq} />
-//         : <SequenceButtonWrapper
-//           ts={ts} dispatch={props.dispatch} variableData={variableData}>
-//           <SequenceButton ts={ts} inUse={inUse} />
-//         </SequenceButtonWrapper>}
-//     </div>;
-//   };
-
-const FolderItem = ({ sequence }: FolderItemProps) => {
-  return <li style={{ border: "1px dashed " + sequence.body.color }}>*{sequence.body.name}</li>;
+const FolderItem = (props: FolderItemProps) => {
+  const { sequence, onClick } = props;
+  return <li style={{ border: "1px dashed " + sequence.body.color }}>
+    <span
+      onClick={() => onClick(sequence.uuid)}
+      style={{ border: "1px solid black" }}>
+      ⮀
+    </span>
+    <Link
+      to={`/app/sequences/${urlFriendly(sequence.body.name) || ""}`}
+      key={sequence.uuid}
+      onClick={setActiveSequenceByName}>
+      {props.isMoveTarget ? "****" : ""}{sequence.body.name}
+    </Link>
+  </li>;
 };
 
-const FolderNode = ({ node, sequences }: FolderNodeProps) => {
+interface FolderDropButtonProps {
+  onClick(): void;
+}
+
+const FolderDropButton = (props: FolderDropButtonProps) => <div>
+  <button onClick={props.onClick}>
+    MOVE SEQUENCE TO FOLDER
+</button>
+</div>;
+
+const FolderNode = (props: FolderNodeProps) => {
+  const { node, sequences } = props;
   const subfolderBtn =
-    <button onClick={() => createFolder({ parent_id: node.id })}>📁</button>;
+    <button
+      title={"Create Subfolder"}
+      onClick={() => createFolder({ parent_id: node.id })}>
+      +📁
+    </button>;
 
   const inputBox = <BlurableInput
     value={node.name}
@@ -73,22 +95,42 @@ const FolderNode = ({ node, sequences }: FolderNodeProps) => {
 
   const names = node
     .content
-    .map(x => <FolderItem sequence={sequences[x]} key={"F" + x} />);
+    .map(x => <FolderItem
+      sequence={sequences[x]}
+      key={"F" + x}
+      onClick={props.onMoveStart}
+      isMoveTarget={props.movedSequenceUuid === x} />);
 
   const children = <ul> {names} </ul>;
-  const mapper = (n2: FolderUnion) => <FolderNode node={n2} key={n2.id} sequences={sequences} />;
+  const mapper = (n2: FolderUnion) => <FolderNode
+    node={n2}
+    key={n2.id}
+    sequences={sequences}
+    movedSequenceUuid={props.movedSequenceUuid}
+    onMoveStart={props.onMoveStart}
+    onMoveEnd={props.onMoveEnd}
+  />;
   const array: FolderUnion[] = node.children || [];
   const stuff: { jsx: JSX.Element[], margin: number } =
     ({ jsx: array.map(mapper), margin: CSS_MARGINS[node.kind] });
-  return <div style={{ marginLeft: `${stuff.margin}px`, border: "1px dashed " + node.color }}>
-    <div>
-      <button onClick={() => toggleFolderOpenState(node.id)}>
-        {node.open ? "⬇️" : "➡️"}
-      </button>
-      {node.kind !== "terminal" && subfolderBtn}
-      <button onClick={() => deleteFolder(node.id)}>🗑️</button>
-      <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
-    </div>
+  const moverBtn = <FolderDropButton onClick={() => props.onMoveEnd(node.id)} />;
+  const normalButtons = <div>
+    <button
+      title={"Open/Close Folder"}
+      onClick={() => toggleFolderOpenState(node.id)}>
+      {node.open ? "⬇️" : "➡️"}
+    </button>
+    {node.kind !== "terminal" && subfolderBtn}
+    <button onClick={() => deleteFolder(node.id)}>🗑️</button>
+    <button onClick={() => {
+      alert("The current UI is locked in edit mode. This button is a stub.");
+      toggleFolderEditState(node.id);
+    }}>✎</button>
+    <button onClick={() => addNewSequenceToFolder(node.id)}>+</button>
+  </div>;
+  return <div
+    style={{ marginLeft: `${stuff.margin}px`, border: "1px solid " + node.color }}>
+    {props.movedSequenceUuid ? moverBtn : normalButtons}
     {inputBox}
     {!!node.open && children}
     {!!node.open && stuff.jsx}
@@ -104,6 +146,9 @@ export class RawFolders extends React.Component<Props, State> {
         return <FolderNode
           node={grandparent}
           key={grandparent.id}
+          movedSequenceUuid={this.state.movedSequenceUuid}
+          onMoveStart={this.startSequenceMove}
+          onMoveEnd={this.endSequenceMove}
           sequences={this.props.sequences} />;
       })}
     </div>;
@@ -114,20 +159,35 @@ export class RawFolders extends React.Component<Props, State> {
     this.setState({ toggleDirection: !this.state.toggleDirection });
   }
 
+  startSequenceMove = (seqUuid: string) => {
+    this.setState({ movedSequenceUuid: seqUuid });
+  }
+
+  endSequenceMove = (folderId: number) => {
+    moveSequence(this.state.movedSequenceUuid || "", folderId);
+    setTimeout(() => this.setState({ movedSequenceUuid: undefined }), 500);
+  }
+
   render() {
     const rootSequences = this
       .props
       .noFolder
-      .map(x => <FolderItem key={x} sequence={this.props.sequences[x]} />);
+      .map(x => <FolderItem
+        key={x}
+        sequence={this.props.sequences[x]}
+        onClick={this.startSequenceMove}
+        isMoveTarget={this.state.movedSequenceUuid === x} />);
 
     return <div>
       <input
+        placeholder={"Search sequences and subfolders..."}
         value={this.props.searchTerm || ""}
         onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
       <button onClick={() => createFolder()}>📁</button>
       <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
-      <button>➕Sequence</button>
+      <button title="Add a sequence">+</button>
       <this.Graph />
+      {this.state.movedSequenceUuid && <FolderDropButton onClick={() => this.endSequenceMove(0)} />}
       <ul>
         {rootSequences}
       </ul>
