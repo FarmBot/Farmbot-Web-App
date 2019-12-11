@@ -30,7 +30,7 @@ const calcIndicatorStyle = ({ value, mode }: CalcStyleProps) => ({
 const calcValueStyle = ({ value, mode }: CalcStyleProps) => ({
   marginLeft: `${mode
     ? `${value > 500 ? -3.5 : 1.5}rem` // analog
-    : "7rem"}`, // digital
+    : "0"}`, // digital
   color: `${mode ? "" : "white"}`
 });
 
@@ -43,8 +43,12 @@ const SensorReadingDisplay =
     const valueLabel = toolSensor
       ? `${value} (${value ? t("NO TOOL") : t("TOOL ON")})`
       : value;
-    return <div
-      className={`sensor-reading-display ${moistureSensor} ${toolSensor}`}>
+    const classNames = [
+      "sensor-reading-display",
+      moistureSensor, toolSensor,
+      mode ? "analog" : "digital"
+    ];
+    return <div className={classNames.join(" ")}>
       {isNumber(value) && value >= 0 &&
         <div className="indicator" style={calcIndicatorStyle({ value, mode })}>
           <span style={calcValueStyle({ value, mode })}>

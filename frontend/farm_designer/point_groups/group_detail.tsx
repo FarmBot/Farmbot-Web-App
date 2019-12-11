@@ -16,12 +16,12 @@ interface GroupDetailProps {
 }
 
 export function fetchGroupFromUrl(index: ResourceIndex) {
+  if (!getPathArray().includes("groups")) { return; }
   /** TODO: Write better selectors. */
   const groupId = parseInt(getPathArray().pop() || "?", 10);
   let group: TaggedPointGroup | undefined;
   try {
-    group =
-      findByKindAndId<TaggedPointGroup>(index, "PointGroup", groupId);
+    group = findByKindAndId<TaggedPointGroup>(index, "PointGroup", groupId);
   } catch (error) {
     group = undefined;
   }

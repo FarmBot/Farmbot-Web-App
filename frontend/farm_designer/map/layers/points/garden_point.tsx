@@ -3,7 +3,7 @@ import { GardenPointProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { Actions } from "../../../../constants";
 import { history } from "../../../../history";
-import { isAWeed } from "../../../plants/weeds_inventory";
+import { isAWeed } from "../../../points/weeds_inventory";
 
 export const GardenPoint = (props: GardenPointProps) => {
 

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { PointInventoryItem } from "./point_inventory_item";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
@@ -8,63 +9,63 @@ import {
 import { Content } from "../../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
-} from "./designer_panel";
-import { t } from "../../i18next_wrapper";
-import { TaggedGenericPointer } from "farmbot";
+} from "../designer_panel";
 import { selectAllGenericPointers } from "../../resources/selectors";
-import { PointInventoryItem } from "./point_inventory_item";
+import { TaggedGenericPointer } from "farmbot";
+import { t } from "../../i18next_wrapper";
+import { isAWeed } from "./weeds_inventory";
 
-export interface WeedsProps {
+export interface PointsProps {
   points: TaggedGenericPointer[];
   dispatch: Function;
   hoveredPoint: string | undefined;
 }
 
-interface WeedsState {
+interface PointsState {
   searchTerm: string;
 }
 
-export const isAWeed = (pointName: string, type?: string) =>
-  type == "weed" || pointName.toLowerCase().includes("weed");
+export function mapStateToProps(props: Everything): PointsProps {
+  const { hoveredPoint } = props.resources.consumers.farm_designer;
+  return {
+    points: selectAllGenericPointers(props.resources.index)
+      .filter(x => !x.body.discarded_at)
+      .filter(x => !isAWeed(x.body.name, x.body.meta.type)),
+    dispatch: props.dispatch,
+    hoveredPoint,
+  };
+}
 
-export const mapStateToProps = (props: Everything): WeedsProps => ({
-  points: selectAllGenericPointers(props.resources.index)
-    .filter(x => !x.body.discarded_at)
-    .filter(x => isAWeed(x.body.name, x.body.meta.type)),
-  dispatch: props.dispatch,
-  hoveredPoint: props.resources.consumers.farm_designer.hoveredPoint,
-});
-
-export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
-  state: WeedsState = { searchTerm: "" };
+export class RawPoints extends React.Component<PointsProps, PointsState> {
+  state: PointsState = { searchTerm: "" };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     this.setState({ searchTerm: currentTarget.value });
   }
 
   render() {
-    return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
+    return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
       <DesignerNavTabs />
       <DesignerPanelTop
-        panel={Panel.Weeds}
-        linkTo={"/app/designer/weeds/add"}
-        title={t("Add weed")}>
+        panel={Panel.Points}
+        linkTo={"/app/designer/points/add"}
+        title={t("Add point")}>
         <input type="text" onChange={this.update}
-          placeholder={t("Search your weeds...")} />
+          placeholder={t("Search your points...")} />
       </DesignerPanelTop>
-      <DesignerPanelContent panelName={"weeds-inventory"}>
+      <DesignerPanelContent panelName={"points"}>
         <EmptyStateWrapper
           notEmpty={this.props.points.length > 0}
-          graphic={EmptyStateGraphic.weeds}
-          title={t("No weeds yet.")}
-          text={Content.NO_WEEDS}
-          colorScheme={"weeds"}>
+          graphic={EmptyStateGraphic.points}
+          title={t("No points yet.")}
+          text={Content.NO_POINTS}
+          colorScheme={"points"}>
           {this.props.points
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PointInventoryItem
               key={p.uuid}
-              navName={"weeds"}
+              navName={"points"}
               tpp={p}
               hovered={this.props.hoveredPoint === p.uuid}
               dispatch={this.props.dispatch} />)}
@@ -74,4 +75,4 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
   }
 }
 
-export const Weeds = connect(mapStateToProps)(RawWeeds);
+export const Points = connect(mapStateToProps)(RawPoints);

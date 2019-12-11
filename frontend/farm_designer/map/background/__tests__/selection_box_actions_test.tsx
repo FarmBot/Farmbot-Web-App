@@ -1,8 +1,15 @@
+import { Mode } from "../../interfaces";
+let mockMode = Mode.none;
+jest.mock("../../util", () => ({ getMode: () => mockMode }));
+
+jest.mock("../../../../history", () => ({ history: { push: jest.fn() } }));
+
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import {
-  getSelected, resizeBox, startNewSelectionBox
+  getSelected, resizeBox, startNewSelectionBox, ResizeSelectionBoxProps
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
+import { history } from "../../../../history";
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -24,7 +31,11 @@ describe("getSelected", () => {
 });
 
 describe("resizeBox", () => {
-  const fakeProps = () => ({
+  beforeEach(() => {
+    mockMode = Mode.boxSelect;
+  });
+
+  const fakeProps = (): ResizeSelectionBoxProps => ({
     selectionBox: { x0: 0, y0: 0, x1: undefined, y1: undefined },
     plants: [],
     gardenCoords: { x: 100, y: 200 },
@@ -60,6 +71,24 @@ describe("resizeBox", () => {
     resizeBox(p);
     expect(p.setMapState).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("resizes selection box", () => {
+    mockMode = Mode.none;
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.x = 50;
+    plant.body.y = 50;
+    p.plants = [plant];
+    resizeBox(p);
+    expect(p.setMapState).toHaveBeenCalledWith({
+      selectionBox: { x0: 0, y0: 0, x1: 100, y1: 200 }
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_PLANT,
+      payload: [plant.uuid]
+    });
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants/select");
   });
 });
 

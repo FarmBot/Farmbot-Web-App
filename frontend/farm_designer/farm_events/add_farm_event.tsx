@@ -14,7 +14,7 @@ import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Link } from "../../link";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";

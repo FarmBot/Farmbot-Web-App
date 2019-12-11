@@ -9,7 +9,7 @@ import { Moment } from "moment";
 import moment from "moment";
 import { Actions } from "../../constants";
 import { Link } from "../../link";
-import { DesignerPanelContent } from "./designer_panel";
+import { DesignerPanelContent } from "../designer_panel";
 import { parseIntInput } from "../../util";
 import { startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
