@@ -34,18 +34,13 @@ export const collapseAll = (tree: Tree): TreePromise => {
   }));
 };
 
-export const setFolderColor =
-  (tree: Tree, id: number, color: Color): TreePromise => {
-    // In the real version, I will probably just do
-    // an HTTP POST and re-draw the graph at response
-    // time.
-    return Promise.resolve(cloneAndClimb(tree, (node, halt) => {
-      if (node.id == id) {
-        node.color = color;
-        halt();
-      }
-    }));
-  };
+export const setFolderColor = (id: number, color: Color) => {
+  const d = store.dispatch as Function;
+  const f = findFolderById(store.getState().resources.index, id);
+
+  d(edit(f, { color }));
+  d(save(f.uuid));
+};
 
 export const setFolderName =
   (id: number, name: string) => {

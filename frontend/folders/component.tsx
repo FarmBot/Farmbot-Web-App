@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput } from "../ui";
+import { BlurableInput, ColorPicker, Row, Col } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
@@ -12,13 +12,15 @@ import {
   toggleAll,
   updateSearchTerm,
   addNewSequenceToFolder,
-  moveSequence
+  moveSequence,
+  setFolderColor
 } from "./actions";
 import { TaggedSequence } from "farmbot";
 import { selectAllSequences } from "../resources/selectors";
 import { Link } from "../link";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
+import { Position } from "@blueprintjs/core";
 
 interface Props extends RootFolderNode {
   sequences: Record<string, TaggedSequence>;
@@ -86,12 +88,22 @@ const FolderNode = (props: FolderNodeProps) => {
       +📁
     </button>;
 
-  const inputBox = <BlurableInput
-    value={node.name}
-    onCommit={({ currentTarget }) => {
-      return setFolderName(node.id, currentTarget.value)
-        .then(() => toggleFolderEditState(node.id));
-    }} />;
+  const inputBox = <Row>
+    <Col xs={1} className="color-picker-col">
+      <ColorPicker
+        position={Position.LEFT}
+        onChange={(color) => setFolderColor(node.id, color)}
+        current={node.color} />
+    </Col>
+    <Col xs={11}>
+      <BlurableInput
+        value={node.name}
+        onCommit={({ currentTarget }) => {
+          return setFolderName(node.id, currentTarget.value)
+            .then(() => toggleFolderEditState(node.id));
+        }} />
+    </Col>
+  </Row>;
 
   const names = node
     .content
@@ -129,7 +141,7 @@ const FolderNode = (props: FolderNodeProps) => {
     <button onClick={() => addNewSequenceToFolder(node.id)}>+</button>
   </div>;
   return <div
-    style={{ marginLeft: `${stuff.margin}px`, border: "1px solid " + node.color }}>
+    style={{ marginLeft: `${stuff.margin}px`, border: "2px solid " + node.color }}>
     {props.movedSequenceUuid ? moverBtn : normalButtons}
     {inputBox}
     {!!node.open && children}

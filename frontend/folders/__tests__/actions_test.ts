@@ -1,10 +1,6 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import {
-  collapseAll,
-  findFolder,
-  setFolderColor,
-} from "../actions";
+import { collapseAll } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 
@@ -54,24 +50,8 @@ const GRAPH = ingest({
   localMetaAttributes: {}
 });
 
-const randomNode = () => {
-  const node = sample(FOLDERS);
-  if (!node) {
-    throw new Error("Never");
-  }
-  return node;
-};
-
 describe("deletion of folders", () => {
   test.todo("can't delete populated folders");
-});
-
-describe("setting of color, name", () => {
-  it("sets the color", async () => {
-    const node = randomNode();
-    const nextFolder = await setFolderColor(GRAPH, node.id, "green");
-    expect(findFolder(nextFolder, node.id)?.color).toEqual("green");
-  });
 });
 
 describe("expand/collapse all", () => {

@@ -5,6 +5,7 @@ import { ResourceColor } from "../interfaces";
 import { colors } from "../util";
 
 interface PickerProps {
+  position?: Position;
   current: ResourceColor;
   onChange?: (color: ResourceColor) => void;
 }
@@ -21,7 +22,7 @@ export class ColorPicker extends React.Component<PickerProps, {}> {
 
   public render() {
     return <Popover
-      position={Position.BOTTOM}
+      position={this.props.position || Position.BOTTOM}
       popoverClassName="colorpicker-menu gray">
       <Saucer color={this.props.current} />
       <div>
