@@ -29,54 +29,70 @@ interface FolderNodeProps {
   sequences: Record<string, TaggedSequence>;
 }
 
-const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
-  "initial": 0,
-  "medial": 45,
-  "terminal": 46
-};
-
 interface FolderItemProps {
   sequence: TaggedSequence;
 }
 
+const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
+  "initial": 0,
+  "medial": 20,
+  "terminal": 23
+};
+
+// // TODO: Get this working again!
+// const SequenceListItem = (props: SequenceListItemProps) =>
+//   (ts: TaggedSequence) => {
+//     const inUse = !!props.resourceUsage[ts.uuid];
+//     const variableData = props.sequenceMetas[ts.uuid];
+//     const deleteSeq = () => props.dispatch(destroy(ts.uuid));
+
+//     return <div className="sequence-list-item" key={ts.uuid}>
+//       {DevSettings.quickDeleteEnabled()
+//         ? <SequenceButton ts={ts} inUse={inUse} deleteFunc={deleteSeq} />
+//         : <SequenceButtonWrapper
+//           ts={ts} dispatch={props.dispatch} variableData={variableData}>
+//           <SequenceButton ts={ts} inUse={inUse} />
+//         </SequenceButtonWrapper>}
+//     </div>;
+//   };
+
 const FolderItem = ({ sequence }: FolderItemProps) => {
-  return <li>*{sequence.body.name}</li>;
+  return <li style={{ border: "1px dashed " + sequence.body.color }}>*{sequence.body.name}</li>;
 };
 
 const FolderNode = ({ node, sequences }: FolderNodeProps) => {
-  const subfolderBtn = <button onClick={() => createFolder({ parent_id: node.id })}>📁</button>;
+  const subfolderBtn =
+    <button onClick={() => createFolder({ parent_id: node.id })}>📁</button>;
 
-  let inputBox: JSX.Element;
-  if (node.editing) {
-    inputBox = <BlurableInput
-      value={node.name}
-      onCommit={({ currentTarget }) => {
-        return setFolderName(node.id, currentTarget.value)
-          .then(() => toggleFolderEditState(node.id));
-      }} />;
-  } else {
-    inputBox = <span>{node.name}</span>;
-  }
+  const inputBox = <BlurableInput
+    value={node.name}
+    onCommit={({ currentTarget }) => {
+      return setFolderName(node.id, currentTarget.value)
+        .then(() => toggleFolderEditState(node.id));
+    }} />;
 
-  const names = node.content.map(x => <FolderItem sequence={sequences[x]} key={"F" + x} />);
+  const names = node
+    .content
+    .map(x => <FolderItem sequence={sequences[x]} key={"F" + x} />);
 
   const children = <ul> {names} </ul>;
   const mapper = (n2: FolderUnion) => <FolderNode node={n2} key={n2.id} sequences={sequences} />;
   const array: FolderUnion[] = node.children || [];
   const stuff: { jsx: JSX.Element[], margin: number } =
     ({ jsx: array.map(mapper), margin: CSS_MARGINS[node.kind] });
-  return <div style={{ marginLeft: `${stuff.margin}px` }}>
-    <button onClick={() => toggleFolderOpenState(node.id)}>
-      {node.open ? "⬇️" : "➡️"}
-    </button>
-    {node.kind !== "terminal" && subfolderBtn}
-    <button onClick={() => deleteFolder(node.id)}>🗑️</button>
-    <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
+  return <div style={{ marginLeft: `${stuff.margin}px`, border: "1px dashed " + node.color }}>
+    <div>
+      <button onClick={() => toggleFolderOpenState(node.id)}>
+        {node.open ? "⬇️" : "➡️"}
+      </button>
+      {node.kind !== "terminal" && subfolderBtn}
+      <button onClick={() => deleteFolder(node.id)}>🗑️</button>
+      <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
+    </div>
     {inputBox}
     {!!node.open && children}
     {!!node.open && stuff.jsx}
   </div>;
-
 };
 
 export class RawFolders extends React.Component<Props, State> {
