@@ -22,7 +22,7 @@ module Folders
     end
 
     def parent
-      @parent ||= device.folders.find_by(parent_id)
+      @parent ||= parent_id && device.folders.find_by(id: parent_id)
     end
   end
 end

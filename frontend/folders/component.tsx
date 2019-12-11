@@ -166,7 +166,6 @@ export class RawFolders extends React.Component<Props, State> {
   endSequenceMove = (folderId: number) => {
     moveSequence(this.state.movedSequenceUuid || "", folderId);
     this.setState({ movedSequenceUuid: undefined });
-    // this.forceUpdate(); // Why tho?
   }
 
   render() {
@@ -184,9 +183,9 @@ export class RawFolders extends React.Component<Props, State> {
         placeholder={"Search sequences and subfolders..."}
         value={this.props.searchTerm || ""}
         onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
-      <button onClick={() => createFolder()}>📁</button>
       <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
-      <button title="Add a sequence">+</button>
+      <button onClick={() => createFolder()}>+📁</button>
+      <button title="+Sequence">+</button>
       <this.Graph />
       {this.state.movedSequenceUuid && <FolderDropButton onClick={() => this.endSequenceMove(0)} />}
       <ul>
