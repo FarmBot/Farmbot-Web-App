@@ -1,7 +1,4 @@
-import {
-  RootFolderNode as Tree,
-  FolderUnion
-} from "./constants";
+import { RootFolderNode as Tree } from "./constants";
 import { cloneAndClimb } from "./climb";
 import { Color } from "farmbot";
 import { store } from "../redux/store";
@@ -17,17 +14,6 @@ import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_nam
 
 type TreePromise = Promise<Tree>;
 
-export const findFolder = (tree: Tree, id: number) => {
-  let result: FolderUnion | undefined;
-  cloneAndClimb(tree, (node, halt) => {
-    if (node.id === id) {
-      result = node;
-      halt();
-    }
-  });
-  return result;
-};
-
 export const collapseAll = (tree: Tree): TreePromise => {
   return Promise.resolve(cloneAndClimb(tree, (node) => {
     node.open = false;
@@ -42,21 +28,19 @@ export const setFolderColor = (id: number, color: Color) => {
   d(save(f.uuid));
 };
 
-export const setFolderName =
-  (id: number, name: string) => {
-    const d = store.dispatch as Function;
-    const { index } = store.getState().resources;
-    const folder = findFolderById(index, id);
-    const action = edit(folder, { name });
-    d(action);
-    return d(save(folder.uuid)) as Promise<{}>;
-  };
+export const setFolderName = (id: number, name: string) => {
+  const d = store.dispatch as Function;
+  const { index } = store.getState().resources;
+  const folder = findFolderById(index, id);
+  const action = edit(folder, { name });
+  d(action);
+  return d(save(folder.uuid)) as Promise<{}>;
+};
 
 const DEFAULTS: Folder = {
   name: "New Folder",
   color: "gray",
-  // tslint:disable-next-line:no-null-keyword
-  parent_id: null as unknown as undefined,
+  parent_id: 0,
 };
 
 export const addNewSequenceToFolder = (folder_id?: number) => {
@@ -94,9 +78,6 @@ export const deleteFolder = (id: number) => {
   return store.dispatch(action as any) as ReturnType<typeof action>;
 };
 
-export const moveFolderItem = (_: Tree) => Promise.reject("WIP");
-export const moveFolder = (_: Tree) => Promise.reject("WIP");
-
 export const updateSearchTerm = (payload: string | undefined) => {
   store.dispatch({
     type: Actions.FOLDER_SEARCH,
@@ -107,8 +88,8 @@ export const updateSearchTerm = (payload: string | undefined) => {
 export const toggleFolderOpenState = (id: number) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE, payload: { id } }));
 
-export const toggleFolderEditState = (id: number) => Promise
-  .resolve(store.dispatch({
+export const toggleFolderEditState =
+  (id: number) => Promise.resolve(store.dispatch({
     type: Actions.FOLDER_TOGGLE_EDIT,
     payload: { id }
   }));
