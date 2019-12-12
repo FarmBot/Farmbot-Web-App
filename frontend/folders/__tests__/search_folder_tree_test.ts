@@ -50,7 +50,7 @@ describe("searchFolderTree", () => {
     ["Eighteen", "Sixteen", "Fourteen"].map(x => expect(results).toContain(x));
   });
 
-  it("finds sequences in an `initial` folder node", () => {
+  it("finds sequences in an `terminal` folder node", () => {
     const byName: Record<string, FolderUnion> = {};
     const results = searchFolderTree(fakeSearchProps("level three"));
     results.map(x => byName[x.name] = x);
@@ -65,6 +65,23 @@ describe("searchFolderTree", () => {
     expect(folder3.content.length).toBe(1);
     expect(folder3seq).toBeTruthy();
     expect(folder2.content.length).toBe(0);
+    expect(folder1.content.length).toBe(0);
+  });
+
+  it("finds sequences in an `medial` folder node", () => {
+    const byName: Record<string, FolderUnion> = {};
+    const results = searchFolderTree(fakeSearchProps("level two"));
+    results.map(x => byName[x.name] = x);
+    const folder1 = byName["First Folder"];
+    const folder2 = byName["Second Folder"];
+    const folder3 = byName["Third Folder"];
+    const folder2seq = TEST_REFERENCES[folder2.content[0]];
+    expect(results.length).toEqual(2);
+    expect(folder3).toBeUndefined();
+    expect(folder2).toBeTruthy();
+    expect(folder1).toBeTruthy();
+    expect(folder2.content.length).toBe(1);
+    expect(folder2seq).toBeTruthy();
     expect(folder1.content.length).toBe(0);
   });
 });
