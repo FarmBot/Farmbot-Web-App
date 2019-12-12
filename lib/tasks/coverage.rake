@@ -3,9 +3,10 @@ THRESHOLD = 0.001
 REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
 COV_API_BUILDS_PER_PAGE = 5
-COV_BUILDS_TO_FETCH = 15
+COV_BUILDS_TO_FETCH = 20
 PULL_REQUEST = ENV.fetch("CIRCLE_PULL_REQUEST", "/0")
 CURRENT_BRANCH = ENV.fetch("CIRCLE_BRANCH", "staging") # "staging" or "pull/11"
+BASE_BRANCHES = ["master", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
@@ -39,8 +40,10 @@ def fetch_pull_data()
 end
 
 # Determine the base branch of the current build.
-def get_current_branch(pull_data)
-  pull_data.dig("base", "ref") || CURRENT_BRANCH
+def get_base_branch(pull_data)
+  current_branch = BASE_BRANCHES.empty? ||
+    BASE_BRANCHES.include?(CURRENT_BRANCH) ? CURRENT_BRANCH : "staging"
+  pull_data.dig("base", "ref") || current_branch
 end
 
 # Gather relevant coverage data.
@@ -177,23 +180,23 @@ namespace :coverage do
     coverage_history_data = fetch_build_data()
 
     # Use fetched data.
-    current_branch = get_current_branch(pull_request_data)
-    remote = latest_build_data(coverage_history_data, current_branch)
+    base_branch = get_base_branch(pull_request_data)
+    remote = latest_build_data(coverage_history_data, base_branch)
 
     if remote[:percent].nil?
-      puts "Coveralls data for '#{current_branch}' not found within history."
+      puts "Coveralls data for '#{base_branch}' not found within history."
       puts "Attempting to get coveralls build data for latest commit."
-      remote = fetch_latest_branch_build(current_branch)
+      remote = fetch_latest_branch_build(base_branch)
     end
 
     if remote[:percent].nil?
-      puts "Coverage data for latest '#{current_branch}' commit not available."
+      puts "Coverage data for latest '#{base_branch}' commit not available."
       puts "Attempting to use data from the previous commit (latest PR base)."
-      remote = fetch_latest_pr_base_branch_build(current_branch)
+      remote = fetch_latest_pr_base_branch_build(base_branch)
     end
 
-    if remote[:percent].nil? && current_branch != "staging"
-      puts "Error getting coveralls data for '#{current_branch}'."
+    if remote[:percent].nil? && base_branch != "staging"
+      puts "Error getting coveralls data for '#{base_branch}'."
       puts "Attempting to use staging build coveralls data from history."
       remote = latest_build_data(coverage_history_data, "staging")
     end
