@@ -104,6 +104,12 @@ export const searchFolderTree = (props: FolderSearchProps): FolderUnion[] => {
       });
     });
   });
-
-  return Array.from(folderSet);
+  return Array
+    .from(folderSet)
+    .map(f => {
+      return {
+        ...f,
+        content: f.content.filter(c => sequenceSet.has(c))
+      };
+    });
 };

@@ -64,9 +64,8 @@ describe("searchFolderTree", () => {
     expect(folder1).toBeTruthy();
     expect(folder3.content.length).toBe(1);
     expect(folder3seq).toBeTruthy();
-    expect(folder2.content.length).toBe(0); // <= TODO: Fix this
-    expect(folder1.content.length).toBe(0); // <= TODO: Fix this
-
+    expect(folder2.content.length).toBe(0);
+    expect(folder1.content.length).toBe(0);
   });
 });
 
