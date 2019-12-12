@@ -24,7 +24,7 @@ describe("climb()", () => {
 
   it("halts a tree climb", () => {
     let count = 0;
-    climb(TREE, (node, halt) => {
+    climb(TREE, (_node, halt) => {
       count += 1;
       if (count == 3) { halt(); }
     });
