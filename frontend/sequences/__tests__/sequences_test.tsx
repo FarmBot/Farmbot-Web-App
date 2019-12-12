@@ -18,6 +18,8 @@ import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
 import { push } from "../../history";
+import { mapStateToFolderProps } from "../../folders/component";
+import { fakeState } from "../../__test_support__/fake_state";
 
 describe("<Sequences/>", () => {
   const fakeProps = (): Props => ({
@@ -37,10 +39,12 @@ describe("<Sequences/>", () => {
     getWebAppConfigValue: jest.fn(),
     menuOpen: false,
     stepIndex: undefined,
+    folderData: mapStateToFolderProps(fakeState())
   });
 
   it("renders", () => {
     const wrapper = shallow(<Sequences {...fakeProps()} />);
+    debugger;
     expect(wrapper.html()).toContain("Sequences");
     expect(wrapper.html()).toContain("Edit Sequence");
     expect(wrapper.html()).toContain(ToolTips.SEQUENCE_EDITOR);

@@ -42,7 +42,7 @@ export class RawSequences extends React.Component<Props, {}> {
     return <Page className="sequence-page">
       <Row>
         <Col sm={3}>
-          <Folders />
+          <Folders {...this.props.folderData} />
         </Col>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}

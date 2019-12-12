@@ -16,6 +16,7 @@ import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
 import { DevSettings } from "../account/dev/dev_support";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
+import { mapStateToFolderProps } from "../folders/component";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -88,5 +89,6 @@ export function mapStateToProps(props: Everything): Props {
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
+    folderData: mapStateToFolderProps(props)
   };
 }

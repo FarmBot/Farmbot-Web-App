@@ -26,7 +26,6 @@ describe("climb()", () => {
     let count = 0;
     climb(TREE, (node, halt) => {
       count += 1;
-      console.log(node.name);
       if (count == 3) { halt(); }
     });
     expect(count).toEqual(3);

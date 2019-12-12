@@ -2,7 +2,6 @@ import React from "react";
 import { BlurableInput, ColorPicker, Row, Col } from "../ui";
 import { FolderUnion, RootFolderNode } from "./constants";
 import { Everything } from "../interfaces";
-import { connect } from "react-redux";
 import {
   createFolder,
   deleteFolder,
@@ -21,8 +20,10 @@ import { Link } from "../link";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { Position } from "@blueprintjs/core";
+import { t } from "../i18next_wrapper";
 
-interface Props extends RootFolderNode {
+interface Props {
+  rootFolder: RootFolderNode;
   sequences: Record<string, TaggedSequence>;
   searchTerm: string | undefined;
 }
@@ -143,12 +144,13 @@ const FolderNode = (props: FolderNodeProps) => {
   </div>;
 };
 
-export class RawFolders extends React.Component<Props, State> {
+export class Folders extends React.Component<Props, State> {
   state: State = { toggleDirection: true };
 
   Graph = (_props: {}) => {
+
     return <div>
-      {this.props.folders.map(grandparent => {
+      {this.props.rootFolder.folders.map(grandparent => {
         return <FolderNode
           node={grandparent}
           key={grandparent.id}
@@ -177,6 +179,7 @@ export class RawFolders extends React.Component<Props, State> {
   render() {
     const rootSequences = this
       .props
+      .rootFolder
       .noFolder
       .map(x => <FolderItem
         key={x}
@@ -185,6 +188,7 @@ export class RawFolders extends React.Component<Props, State> {
         isMoveTarget={this.state.movedSequenceUuid === x} />);
 
     return <div>
+      <h1>{t("Sequences")}</h1>
       <input
         placeholder={"Search sequences and subfolders..."}
         value={this.props.searchTerm || ""}
@@ -201,9 +205,10 @@ export class RawFolders extends React.Component<Props, State> {
   }
 }
 
-export function mapStateToProps(props: Everything): Props {
-  type Reducer = (a: Props["sequences"], b: TaggedSequence) =>
-    Record<string, TaggedSequence>;
+type Reducer =
+  (a: Props["sequences"], b: TaggedSequence) => Record<string, TaggedSequence>;
+
+export function mapStateToFolderProps(props: Everything): Props {
 
   const reduce: Reducer = (a, b) => {
     a[b.uuid] = b;
@@ -211,18 +216,10 @@ export function mapStateToProps(props: Everything): Props {
   };
 
   const x = props.resources.index.sequenceFolders;
-  let noFolder: string[];
-  if (x.filteredFolders) {
-    noFolder = x.filteredFolders.noFolder;
-  } else {
-    noFolder = x.folders.noFolder;
-  }
+
   return {
-    folders: x.filteredFolders ? x.filteredFolders.folders : x.folders.folders,
-    noFolder,
+    rootFolder: x.filteredFolders ? x.filteredFolders : x.folders,
     sequences: selectAllSequences(props.resources.index).reduce(reduce, {}),
     searchTerm: x.searchTerm
   };
 }
-
-export const Folders = connect(mapStateToProps)(RawFolders);
