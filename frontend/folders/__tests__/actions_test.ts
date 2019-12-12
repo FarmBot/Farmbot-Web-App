@@ -70,7 +70,26 @@ const TEST_FOLDERS: FolderNode[] = [
  */
 export const TEST_GRAPH = ingest({
   folders: TEST_FOLDERS,
-  localMetaAttributes: {}
+  localMetaAttributes: {
+    [1]: { editing: false, open: true, sequences: ["childOfFolder1"] },
+    [2]: { editing: false, open: true, sequences: ["childOfFolder2"] },
+    [3]: { editing: false, open: true, sequences: ["childOfFolder3"] },
+    [4]: { editing: false, open: true, sequences: ["childOfFolder4"] },
+    [5]: { editing: false, open: true, sequences: ["childOfFolder5"] },
+    [6]: { editing: false, open: true, sequences: ["childOfFolder6"] },
+    [7]: { editing: false, open: true, sequences: ["childOfFolder7"] },
+    [8]: { editing: false, open: true, sequences: ["childOfFolder8"] },
+    [9]: { editing: false, open: true, sequences: ["childOfFolder9"] },
+    [10]: { editing: false, open: true, sequences: ["childOfFolder10"] },
+    [11]: { editing: false, open: true, sequences: ["childOfFolder11"] },
+    [12]: { editing: false, open: true, sequences: ["childOfFolder12"] },
+    [13]: { editing: false, open: true, sequences: ["childOfFolder13"] },
+    [14]: { editing: false, open: true, sequences: ["childOfFolder14"] },
+    [15]: { editing: false, open: true, sequences: ["childOfFolder15"] },
+    [16]: { editing: false, open: true, sequences: ["childOfFolder16"] },
+    [17]: { editing: false, open: true, sequences: ["childOfFolder17"] },
+    [18]: { editing: false, open: true, sequences: ["childOfFolder18"] },
+  }
 });
 
 describe("deletion of folders", () => {
