@@ -211,10 +211,15 @@ export function mapStateToProps(props: Everything): Props {
   };
 
   const x = props.resources.index.sequenceFolders;
-
+  let noFolder: string[];
+  if (x.filteredFolders) {
+    noFolder = x.filteredFolders.noFolder;
+  } else {
+    noFolder = x.folders.noFolder;
+  }
   return {
     folders: x.filteredFolders ? x.filteredFolders.folders : x.folders.folders,
-    noFolder: x.folders.noFolder,
+    noFolder,
     sequences: selectAllSequences(props.resources.index).reduce(reduce, {}),
     searchTerm: x.searchTerm
   };
