@@ -63,10 +63,11 @@ export const addNewSequenceToFolder = (folder_id?: number) => {
 };
 
 export const createFolder = (config: DeepPartial<Folder> = {}) => {
+  const d: Function = store.dispatch;
   const folder: Folder = { ...DEFAULTS, ...config };
   const action = initSave("Folder", folder);
   // tslint:disable-next-line:no-any
-  const p: Promise<{}> = store.dispatch(action as any);
+  const p: Promise<{}> = d(action);
   return p;
 };
 

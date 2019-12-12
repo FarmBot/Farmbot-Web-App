@@ -1,6 +1,6 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { collapseAll, setFolderColor, setFolderName } from "../actions";
+import { collapseAll, setFolderColor, setFolderName, addNewSequenceToFolder, createFolder } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 import { store } from "../../redux/store";
@@ -8,7 +8,9 @@ import { DeepPartial } from "redux";
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";
-import { save, edit } from "../../api/crud";
+import { save, edit, init, initSave } from "../../api/crud";
+import { setActiveSequenceByName } from "../../sequences/set_active_sequence_by_name";
+import { push } from "../../history";
 
 /** A set of fake Folder resources used exclusively for testing purposes.
  ```
@@ -66,7 +68,20 @@ jest.mock("../../redux/store", () => {
 });
 
 jest.mock("../../api/crud", () => {
-  return { edit: jest.fn(), save: jest.fn() };
+  return {
+    edit: jest.fn(),
+    save: jest.fn(),
+    init: jest.fn(),
+    initSave: jest.fn()
+  };
+});
+
+jest.mock("../../sequences/set_active_sequence_by_name", () => {
+  return { setActiveSequenceByName: jest.fn() };
+});
+
+jest.mock("../../history", () => {
+  return { push: jest.fn() };
 });
 
 /**
@@ -145,7 +160,7 @@ describe("setFolderColor", () => {
 });
 
 describe("setFolderName", () => {
-  fit("updates a folder's name", () => {
+  it("updates a folder's name", () => {
     setFolderName(11, "Harold");
     const uuid = expect.stringContaining("Folder.11.");
     const body = expect.objectContaining({ name: "Harold" });
@@ -154,5 +169,28 @@ describe("setFolderName", () => {
     expect(store.dispatch).toHaveBeenCalled();
     expect(edit).toHaveBeenCalledWith(resource, body);
     expect(save).toHaveBeenCalledWith(uuid);
+  });
+});
+
+describe("addNewSequenceToFolder", () => {
+  it("Adds a new sequence to a folder", () => {
+    addNewSequenceToFolder(11);
+    expect(setActiveSequenceByName).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
+      name: "new sequence 0"
+    }));
+    expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_0");
+  });
+});
+
+describe("createFolder", () => {
+  it("saves a new folder", () => {
+    createFolder({ name: "test case 1" });
+    expect(store.dispatch).toHaveReturnedTimes(1);
+    expect(initSave).toHaveBeenCalledWith("Folder", {
+      color: "gray",
+      name: "test case 1",
+      parent_id: 0
+    });
   });
 });
