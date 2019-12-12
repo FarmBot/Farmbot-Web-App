@@ -84,6 +84,22 @@ describe("searchFolderTree", () => {
     expect(folder2seq).toBeTruthy();
     expect(folder1.content.length).toBe(0);
   });
+
+  it("finds sequences in an `initial` folder node", () => {
+    const byName: Record<string, FolderUnion> = {};
+    const results = searchFolderTree(fakeSearchProps("level one"));
+    results.map(x => byName[x.name] = x);
+    const folder1 = byName["First Folder"];
+    const folder2 = byName["Second Folder"];
+    const folder3 = byName["Third Folder"];
+    const folder1seq = TEST_REFERENCES[folder1.content[0]];
+    expect(results.length).toEqual(1);
+    expect(folder1seq).toBeTruthy();
+    expect(folder3).toBeUndefined();
+    expect(folder2).toBeUndefined();
+    expect(folder1).toBeTruthy();
+    expect(folder1.content.length).toBe(1);
+  });
 });
 
 const TEST_REFERENCES = {
