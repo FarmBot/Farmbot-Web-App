@@ -1,6 +1,6 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { collapseAll, setFolderColor } from "../actions";
+import { collapseAll, setFolderColor, setFolderName } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 import { store } from "../../redux/store";
@@ -141,5 +141,18 @@ describe("setFolderColor", () => {
     expect(store.dispatch).toHaveBeenCalled();
     expect(save).toHaveBeenCalledWith(uuid);
     expect(edit).toHaveBeenCalledWith(resource, body);
+  });
+});
+
+describe("setFolderName", () => {
+  fit("updates a folder's name", () => {
+    setFolderName(11, "Harold");
+    const uuid = expect.stringContaining("Folder.11.");
+    const body = expect.objectContaining({ name: "Harold" });
+    const resource = expect.objectContaining({ uuid });
+
+    expect(store.dispatch).toHaveBeenCalled();
+    expect(edit).toHaveBeenCalledWith(resource, body);
+    expect(save).toHaveBeenCalledWith(uuid);
   });
 });
