@@ -1,8 +1,14 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { collapseAll } from "../actions";
+import { collapseAll, setFolderColor } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
+import { store } from "../../redux/store";
+import { DeepPartial } from "redux";
+import { Everything } from "../../interfaces";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { newTaggedResource } from "../../sync/actions";
+import { save, edit } from "../../api/crud";
 
 /** A set of fake Folder resources used exclusively for testing purposes.
  ```
@@ -25,7 +31,7 @@ import { cloneAndClimb, climb } from "../climb";
          ├─ Seventeen
          └─ Eighteen
   ``` */
-const TEST_FOLDERS: FolderNode[] = [
+const mockFolders: FolderNode[] = [
   { id: 1, parent_id: undefined, color: "blue", name: "One" },
   { id: 2, parent_id: undefined, color: "blue", name: "Two" },
   { id: 3, parent_id: 2, color: "blue", name: "Three" },
@@ -45,6 +51,23 @@ const TEST_FOLDERS: FolderNode[] = [
   { id: 17, parent_id: 16, color: "blue", name: "Seventeen" },
   { id: 18, parent_id: 16, color: "blue", name: "Eighteen" }
 ];
+
+const mockState: DeepPartial<Everything> = {
+  resources: buildResourceIndex(newTaggedResource("Folder", mockFolders))
+};
+
+jest.mock("../../redux/store", () => {
+  return {
+    store: {
+      dispatch: jest.fn(),
+      getState: jest.fn(() => mockState)
+    }
+  };
+});
+
+jest.mock("../../api/crud", () => {
+  return { edit: jest.fn(), save: jest.fn() };
+});
 
 /**
   ```
@@ -69,7 +92,7 @@ const TEST_FOLDERS: FolderNode[] = [
   ```
  */
 export const TEST_GRAPH = ingest({
-  folders: TEST_FOLDERS,
+  folders: mockFolders,
   localMetaAttributes: {
     [1]: { editing: false, open: true, sequences: ["childOfFolder1"] },
     [2]: { editing: false, open: true, sequences: ["childOfFolder2"] },
@@ -106,5 +129,17 @@ describe("expand/collapse all", () => {
     climb(closed, (node) => {
       expect(node.open).toBe(false);
     });
+  });
+});
+
+describe("setFolderColor", () => {
+  it("updates a folder's color", () => {
+    setFolderColor(11, "blue");
+    const uuid = expect.stringContaining("Folder.11.");
+    const body = expect.objectContaining({ color: "blue" });
+    const resource = expect.objectContaining({ uuid, body });
+    expect(store.dispatch).toHaveBeenCalled();
+    expect(save).toHaveBeenCalledWith(uuid);
+    expect(edit).toHaveBeenCalledWith(resource, body);
   });
 });
