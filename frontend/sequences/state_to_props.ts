@@ -16,7 +16,7 @@ import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
 import { DevSettings } from "../account/dev/dev_support";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
-import { mapStateToFolderProps } from "../folders/component";
+import { mapStateToFolderProps } from "../folders/map_state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;

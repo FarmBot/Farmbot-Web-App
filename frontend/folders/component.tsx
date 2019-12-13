@@ -1,7 +1,12 @@
 import React from "react";
 import { BlurableInput, ColorPicker, Row, Col } from "../ui";
-import { FolderUnion, RootFolderNode } from "./constants";
-import { Everything } from "../interfaces";
+import {
+  FolderUnion,
+  FolderItemProps,
+  FolderNodeProps,
+  FolderProps,
+  FolderState
+} from "./constants";
 import {
   createFolder,
   deleteFolder,
@@ -14,44 +19,11 @@ import {
   moveSequence,
   setFolderColor
 } from "./actions";
-import { TaggedSequence } from "farmbot";
-import { selectAllSequences } from "../resources/selectors";
 import { Link } from "../link";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { Position } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
-
-interface Props {
-  rootFolder: RootFolderNode;
-  sequences: Record<string, TaggedSequence>;
-  searchTerm: string | undefined;
-}
-
-type State = {
-  toggleDirection: boolean;
-  movedSequenceUuid?: string;
-};
-
-interface FolderNodeProps {
-  node: FolderUnion;
-  sequences: Record<string, TaggedSequence>;
-  movedSequenceUuid: string | undefined;
-  onMoveStart(sequenceUuid: string): void;
-  onMoveEnd(folderId: number): void;
-}
-
-interface FolderItemProps {
-  onClick(sequenceUuid: string): void;
-  sequence: TaggedSequence;
-  isMoveTarget: boolean;
-}
-
-const CSS_MARGINS: Record<FolderUnion["kind"], number> = {
-  "initial": 0,
-  "medial": 10,
-  "terminal": 10
-};
 
 const FolderItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
@@ -122,7 +94,7 @@ const FolderNode = (props: FolderNodeProps) => {
   />;
   const array: FolderUnion[] = node.children || [];
   const stuff: { jsx: JSX.Element[], margin: number } =
-    ({ jsx: array.map(mapper), margin: CSS_MARGINS[node.kind] });
+    ({ jsx: array.map(mapper), margin: 10 });
   const moverBtn = <FolderDropButton onClick={() => props.onMoveEnd(node.id)} />;
   const normalButtons = <div>
     <button
@@ -144,8 +116,8 @@ const FolderNode = (props: FolderNodeProps) => {
   </div>;
 };
 
-export class Folders extends React.Component<Props, State> {
-  state: State = { toggleDirection: true };
+export class Folders extends React.Component<FolderProps, FolderState> {
+  state: FolderState = { toggleDirection: true };
 
   Graph = (_props: {}) => {
 
@@ -175,17 +147,17 @@ export class Folders extends React.Component<Props, State> {
     moveSequence(this.state.movedSequenceUuid || "", folderId);
     this.setState({ movedSequenceUuid: undefined });
   }
+  rootSequences = () => this
+    .props
+    .rootFolder
+    .noFolder
+    .map(x => <FolderItem
+      key={x}
+      sequence={this.props.sequences[x]}
+      onClick={this.startSequenceMove}
+      isMoveTarget={this.state.movedSequenceUuid === x} />);
 
   render() {
-    const rootSequences = this
-      .props
-      .rootFolder
-      .noFolder
-      .map(x => <FolderItem
-        key={x}
-        sequence={this.props.sequences[x]}
-        onClick={this.startSequenceMove}
-        isMoveTarget={this.state.movedSequenceUuid === x} />);
 
     return <div>
       <h1>{t("Sequences")}</h1>
@@ -199,27 +171,8 @@ export class Folders extends React.Component<Props, State> {
       <this.Graph />
       {this.state.movedSequenceUuid && <FolderDropButton onClick={() => this.endSequenceMove(0)} />}
       <ul>
-        {rootSequences}
+        {this.rootSequences()}
       </ul>
     </div>;
   }
-}
-
-type Reducer =
-  (a: Props["sequences"], b: TaggedSequence) => Record<string, TaggedSequence>;
-
-export function mapStateToFolderProps(props: Everything): Props {
-
-  const reduce: Reducer = (a, b) => {
-    a[b.uuid] = b;
-    return a;
-  };
-
-  const x = props.resources.index.sequenceFolders;
-
-  return {
-    rootFolder: x.filteredFolders ? x.filteredFolders : x.folders,
-    sequences: selectAllSequences(props.resources.index).reduce(reduce, {}),
-    searchTerm: x.searchTerm
-  };
 }

@@ -1,4 +1,5 @@
 import { Color } from "farmbot/dist/corpus";
+import { TaggedSequence } from "farmbot";
 
 export interface FolderMeta {
   open: boolean;
@@ -46,10 +47,34 @@ export interface RootFolderNode {
   noFolder: string[];
 }
 
-/** === THIS WILL LIVE ON THE API === */
 export interface FolderNode {
   id: number;
   color: Color;
   parent_id?: number;
   name: string;
+}
+
+export interface FolderProps {
+  rootFolder: RootFolderNode;
+  sequences: Record<string, TaggedSequence>;
+  searchTerm: string | undefined;
+}
+
+export interface FolderState {
+  toggleDirection: boolean;
+  movedSequenceUuid?: string;
+};
+
+export interface FolderNodeProps {
+  node: FolderUnion;
+  sequences: Record<string, TaggedSequence>;
+  movedSequenceUuid: string | undefined;
+  onMoveStart(sequenceUuid: string): void;
+  onMoveEnd(folderId: number): void;
+}
+
+export interface FolderItemProps {
+  onClick(sequenceUuid: string): void;
+  sequence: TaggedSequence;
+  isMoveTarget: boolean;
 }

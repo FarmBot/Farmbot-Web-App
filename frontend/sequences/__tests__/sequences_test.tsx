@@ -18,7 +18,7 @@ import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
 import { push } from "../../history";
-import { mapStateToFolderProps } from "../../folders/component";
+import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 
 describe("<Sequences/>", () => {
