@@ -207,16 +207,15 @@ export const resourceReducer =
           localMetaAttributes,
           folders
         });
-        nextFolder.noFolder =
-          nextFolder.noFolder.filter(uuid => {
-            const sq = s.index.references[uuid];
-            if (sq && sq.kind === "Sequence") {
-              const n = sq.body.name.toLowerCase();
-              return n.includes(payload);
-            } else {
-              return false;
-            }
-          });
+        nextFolder.noFolder = nextFolder.noFolder.filter(uuid => {
+          const sq = s.index.references[uuid];
+          if (sq && sq.kind === "Sequence") {
+            const n = sq.body.name.toLowerCase();
+            return n.includes(payload);
+          } else {
+            return false;
+          }
+        });
         s.index.sequenceFolders.filteredFolders = nextFolder;
       } else {
         s.index.sequenceFolders.filteredFolders = undefined;

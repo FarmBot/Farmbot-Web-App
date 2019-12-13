@@ -15,9 +15,11 @@ const f3 = fakeFolder({ name: "$", parent_id: f2.body.id });
 const s1 = fakeSequence({ name: "%", folder_id: f1.body.id });
 const s2 = fakeSequence({ name: "^", folder_id: f2.body.id });
 const s3 = fakeSequence({ name: "&", folder_id: f3.body.id });
+const s4 = fakeSequence({ name: "*", folder_id: undefined });
+const s5 = fakeSequence({ name: "!", folder_id: undefined });
 
 function initialState(): RestResources {
-  return buildResourceIndex([f1, f2, f3, s1, s2, s3,]);
+  return buildResourceIndex([f1, f2, f3, s1, s2, s3, s4, s5]);
 }
 
 describe("Actions.FOLDER_TOGGLE", () => {
@@ -65,6 +67,18 @@ describe("Actions.FOLDER_TOGGLE_EDIT", () => {
 });
 
 describe("Actions.FOLDER_SEARCH", () => {
+  it("searches folderless sequences", () => {
+    const state = initialState();
+    const action = { type: Actions.FOLDER_SEARCH, payload: "!" };
+    const { index } = resourceReducer(state, action);
+    const { sequenceFolders } = index;
+    const { filteredFolders } = sequenceFolders;
+    expect(sequenceFolders.searchTerm).toBe("!");
+    const list = filteredFolders?.noFolder || [];
+    expect(list.length).toBe(1);
+    expect(list[0]).toBe(s5.uuid);
+  });
+
   it("searches folders", () => {
     const state = initialState();
     const action = { type: Actions.FOLDER_SEARCH, payload: "" };
