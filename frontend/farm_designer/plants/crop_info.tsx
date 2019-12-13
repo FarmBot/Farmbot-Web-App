@@ -16,7 +16,7 @@ import { round } from "../map/util";
 import { BotPosition } from "../../devices/interfaces";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "./designer_panel";
+} from "../designer_panel";
 import { Actions } from "../../constants";
 import {
   EmptyStateWrapper, EmptyStateGraphic

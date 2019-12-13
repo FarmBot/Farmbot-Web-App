@@ -36,6 +36,15 @@ jest.mock("../background/selection_box_actions", () => ({
 
 jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
 
+jest.mock("../../../history", () => ({
+  history: {
+    push: jest.fn(),
+    getPathArray: () => [],
+  },
+  push: jest.fn(),
+  getPathArray: () => [],
+}));
+
 import * as React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow, mount } from "enzyme";
@@ -56,6 +65,7 @@ import {
 } from "../../../__test_support__/fake_designer_state";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { history } from "../../../history";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -144,12 +154,46 @@ describe("<GardenMap/>", () => {
     expect(dragPlant).toHaveBeenCalled();
   });
 
-  it("starts drag: selecting", () => {
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+  it("starts drag on background: selecting", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.addPlant;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith("/app/designer/plants");
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
+  });
+
+  it("starts drag on background: selecting again", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
     mockMode = Mode.boxSelect;
     const e = { pageX: 1000, pageY: 2000 };
-    wrapper.find(".drop-area-svg").simulate("mouseDown", e);
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
+  });
+
+  it("starts drag on background: does nothing when adding plants", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.clickToAdd;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).not.toHaveBeenCalled();
+  });
+
+  it("starts drag on background: creating points", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.createPoint;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewPoint).toHaveBeenCalled();
+    expect(startNewSelectionBox).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });

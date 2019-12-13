@@ -11,7 +11,7 @@ import {
 import { Content } from "../../constants";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
-} from "./designer_panel";
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 
 export interface PlantInventoryProps {

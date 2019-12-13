@@ -5,7 +5,7 @@ import { Panel, DesignerNavTabs } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { findAll } from "../../resources/find_all";
 import { TaggedPointGroup } from "farmbot";
 import { history } from "../../history";

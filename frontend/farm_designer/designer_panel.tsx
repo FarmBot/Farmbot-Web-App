@@ -1,9 +1,9 @@
 import * as React from "react";
-import { history as routeHistory } from "../../history";
+import { history as routeHistory } from "../history";
 import { last, trim } from "lodash";
-import { Link } from "../../link";
-import { Panel, TAB_COLOR, PanelColor } from "../panel_header";
-import { t } from "../../i18next_wrapper";
+import { Link } from "../link";
+import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
+import { t } from "../i18next_wrapper";
 
 interface DesignerPanelProps {
   panelName: string;

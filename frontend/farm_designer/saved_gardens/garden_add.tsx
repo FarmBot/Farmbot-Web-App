@@ -7,7 +7,7 @@ import {
 } from "../../resources/selectors";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { Content } from "../../constants";
 import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";

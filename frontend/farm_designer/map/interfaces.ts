@@ -111,6 +111,7 @@ export interface MapBackgroundProps {
 export interface GridProps {
   mapTransformProps: MapTransformProps;
   onClick(): void;
+  onMouseDown(e: React.MouseEvent<SVGElement>): void;
 }
 
 export interface VirtualFarmBotProps {

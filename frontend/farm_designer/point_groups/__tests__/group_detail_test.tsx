@@ -14,7 +14,7 @@ mockGroup.body.point_ids = [23];
 let mockId = GOOD_ID;
 jest.mock("../../../history", () => {
   return {
-    getPathArray: jest.fn(() => [mockId]),
+    getPathArray: jest.fn(() => ["groups", mockId]),
     push: jest.fn()
   };
 });

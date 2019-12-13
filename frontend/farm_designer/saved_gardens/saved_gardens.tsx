@@ -11,7 +11,7 @@ import { SavedGardensProps, SavedGardensState } from "./interfaces";
 import { closeSavedGarden } from "./actions";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop
-} from "../plants/designer_panel";
+} from "../designer_panel";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {

@@ -2,10 +2,8 @@ import * as React from "react";
 import { Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
-  DesignerPanel,
-  DesignerPanelContent,
-  DesignerPanelHeader
-} from "../plants/designer_panel";
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+} from "../designer_panel";
 import { TaggedPointGroup } from "farmbot";
 import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";

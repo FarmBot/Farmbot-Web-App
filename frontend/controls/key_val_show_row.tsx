@@ -22,10 +22,10 @@ export function KeyValShowRow(p: KeyValRowProps) {
     <Col xs={4}>
       <label>{label}</label>
     </Col>
-    <Col xs={4}>
+    <Col xs={6}>
       <p>{value}</p>
     </Col>
-    <Col xs={4}>
+    <Col xs={2}>
       <ToggleButton
         toggleValue={toggleValue}
         toggleAction={onClick}
