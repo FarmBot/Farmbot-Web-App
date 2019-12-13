@@ -1,6 +1,18 @@
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
-import { collapseAll, setFolderColor, setFolderName, addNewSequenceToFolder, createFolder } from "../actions";
+import {
+  collapseAll,
+  setFolderColor,
+  setFolderName,
+  addNewSequenceToFolder,
+  createFolder,
+  deleteFolder,
+  updateSearchTerm,
+  toggleFolderOpenState,
+  toggleFolderEditState,
+  toggleAll,
+  moveSequence
+} from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
 import { store } from "../../redux/store";
@@ -8,9 +20,10 @@ import { DeepPartial } from "redux";
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";
-import { save, edit, init, initSave } from "../../api/crud";
+import { save, edit, init, initSave, destroy } from "../../api/crud";
 import { setActiveSequenceByName } from "../../sequences/set_active_sequence_by_name";
 import { push } from "../../history";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
 
 /** A set of fake Folder resources used exclusively for testing purposes.
  ```
@@ -54,9 +67,11 @@ const mockFolders: FolderNode[] = [
   { id: 18, parent_id: 16, color: "blue", name: "Eighteen" }
 ];
 
-const mockState: DeepPartial<Everything> = {
-  resources: buildResourceIndex(newTaggedResource("Folder", mockFolders))
-};
+const mockSequence = fakeSequence();
+const i = buildResourceIndex(newTaggedResource("Folder", mockFolders));
+
+const mockState: DeepPartial<Everything> =
+  ({ resources: buildResourceIndex([mockSequence], i) });
 
 jest.mock("../../redux/store", () => {
   return {
@@ -69,10 +84,11 @@ jest.mock("../../redux/store", () => {
 
 jest.mock("../../api/crud", () => {
   return {
+    destroy: jest.fn(),
     edit: jest.fn(),
-    save: jest.fn(),
     init: jest.fn(),
-    initSave: jest.fn()
+    initSave: jest.fn(),
+    save: jest.fn()
   };
 });
 
@@ -177,9 +193,9 @@ describe("addNewSequenceToFolder", () => {
     addNewSequenceToFolder(11);
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
-      name: "new sequence 0"
+      name: "new sequence 1"
     }));
-    expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_0");
+    expect(push).toHaveBeenCalledWith("/app/sequences/new_sequence_1");
   });
 });
 
@@ -192,5 +208,71 @@ describe("createFolder", () => {
       name: "test case 1",
       parent_id: 0
     });
+  });
+});
+
+describe("deleteFolder", () => {
+  it("deletes a folder", () => {
+    const uuid = expect.stringContaining("Folder.12.");
+    deleteFolder(12);
+    expect(store.dispatch).toHaveBeenCalled();
+    expect(destroy).toHaveBeenCalledWith(uuid);
+  });
+});
+
+describe("updateSearchTerm", () => {
+  it("updates a search term", () => {
+    const argss =
+      (payload: string | undefined) => ({ type: "FOLDER_SEARCH", payload });
+    [undefined, "foo"].map(term => {
+      updateSearchTerm(term);
+      expect(store.dispatch).toHaveBeenCalledWith(argss(term));
+    });
+  });
+});
+
+describe("toggleFolderOpenState", () => {
+  it("dispatches the correct action", () => {
+    const id = 12;
+    toggleFolderOpenState(id);
+    expect(store.dispatch)
+      .toHaveBeenCalledWith({ type: "FOLDER_TOGGLE", payload: { id } });
+  });
+});
+
+describe("toggleFolderEditState", () => {
+  it("dispatches the correct action", () => {
+    const id = 12;
+    toggleFolderEditState(id);
+    expect(store.dispatch)
+      .toHaveBeenCalledWith({ type: "FOLDER_TOGGLE_EDIT", payload: { id } });
+  });
+});
+
+describe("toggleAll", () => {
+  it("toggles all folders", () => {
+    [true, false].map(payload => {
+      toggleAll(payload);
+      expect(store.dispatch)
+        .toHaveBeenCalledWith({ type: "FOLDER_TOGGLE_ALL", payload });
+    });
+  });
+});
+
+describe("moveSequence", () => {
+  it("silently fails when given bad UUIDs", () => {
+    const uuid = "a.b.c";
+    moveSequence(uuid, 123);
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("moves a sequence", () => {
+    const uuid = mockSequence.uuid;
+    moveSequence(uuid, 12);
+    expect(store.dispatch).toHaveBeenCalled();
+    const update1 = expect.objectContaining({ uuid });
+    const update2 = expect.objectContaining({ folder_id: 12 });
+    expect(edit).toHaveBeenCalledWith(update1, update2);
+    expect(save).toHaveBeenCalledWith(uuid);
   });
 });

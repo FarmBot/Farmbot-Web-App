@@ -124,13 +124,6 @@ describe("findPointerByTypeAndId()", () => {
   });
 });
 
-describe("findToolSlot()", () => {
-  it("throws error", () => {
-    const find = () => Selector.findToolSlot(fakeIndex, "bad");
-    expect(find).toThrow("ToolSlotPointer not found: bad");
-  });
-});
-
 describe("findPlant()", () => {
   it("throws error", () => {
     console.warn = jest.fn();

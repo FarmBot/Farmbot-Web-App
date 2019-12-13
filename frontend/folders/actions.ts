@@ -72,11 +72,12 @@ export const createFolder = (config: DeepPartial<Folder> = {}) => {
 };
 
 export const deleteFolder = (id: number) => {
+  const d: Function = store.dispatch;
   const { index } = store.getState().resources;
   const folder = findFolderById(index, id);
   const action = destroy(folder.uuid);
-  // tslint:disable-next-line:no-any
-  return store.dispatch(action as any) as ReturnType<typeof action>;
+
+  return d(action) as ReturnType<typeof action>;
 };
 
 export const updateSearchTerm = (payload: string | undefined) => {
@@ -99,12 +100,10 @@ export const toggleAll = (payload: boolean) => Promise
   .resolve(store.dispatch({ type: Actions.FOLDER_TOGGLE_ALL, payload }));
 
 export function moveSequence(sequenceUuid: string, folder_id: number) {
-  const d = store.dispatch as Function;
+  const d: Function = store.dispatch;
   const s = store.getState().resources.index.references[sequenceUuid];
   if (s && s.kind === "Sequence") {
     d(edit(s, { folder_id }));
     d(save(sequenceUuid));
-  } else {
-    throw new Error("Blooper");
   }
 }

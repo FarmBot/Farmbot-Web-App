@@ -106,15 +106,6 @@ export function selectAllToolSlotPointers(index: ResourceIndex):
   return betterCompact(toolSlotPointers);
 }
 
-export function findToolSlot(i: ResourceIndex, uuid: string): TaggedToolSlotPointer {
-  const ts = selectAllToolSlotPointers(i).filter(x => x.uuid === uuid)[0];
-  if (ts) {
-    return ts;
-  } else {
-    throw new Error("ToolSlotPointer not found: " + uuid);
-  }
-}
-
 export function findPlant(i: ResourceIndex, uuid: string):
   TaggedPlantPointer {
   const point = findPoints(i, uuid);
