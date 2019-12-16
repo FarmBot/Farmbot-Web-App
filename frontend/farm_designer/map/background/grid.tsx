@@ -5,7 +5,7 @@ import { Color } from "../../../ui/index";
 import { range } from "lodash";
 
 export function Grid(props: GridProps) {
-  const { mapTransformProps } = props;
+  const { mapTransformProps, zoomLvl } = props;
   const { gridSize, xySwap } = mapTransformProps;
   const gridSizeW = xySwap ? gridSize.y : gridSize.x;
   const gridSizeH = xySwap ? gridSize.x : gridSize.y;
@@ -13,19 +13,27 @@ export function Grid(props: GridProps) {
   const arrowEnd = transformXY(25, 25, mapTransformProps);
   const xLabel = transformXY(15, -10, mapTransformProps);
   const yLabel = transformXY(-11, 18, mapTransformProps);
+  const minorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0)" : "rgba(0, 0, 0, 0.15)";
+  const majorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.3)";
+  const superiorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0.4)";
   return <g className="drop-area-background" onClick={props.onClick}
     onMouseDown={props.onMouseDown}>
     <defs>
       <pattern id="minor_grid"
         width={10} height={10} patternUnits="userSpaceOnUse">
         <path d="M10,0 L0,0 L0,10" strokeWidth={1}
-          fill="none" stroke="rgba(0, 0, 0, 0.15)" />
+          fill="none" stroke={minorGridStroke} />
       </pattern>
 
       <pattern id={"major_grid"}
         width={100} height={100} patternUnits="userSpaceOnUse">
         <path d="M100,0 L0,0 0,100" strokeWidth={2}
-          fill="none" stroke="rgba(0, 0, 0, 0.15)" />
+          fill="none" stroke={majorGridStroke} />
+      </pattern>
+
+      <pattern id="superior_grid" width={1000} height={1000} patternUnits="userSpaceOnUse">
+        <path d="M1000,0 L0,0 0,1000" strokeWidth={2}
+              fill="none" stroke={superiorGridStroke} />
       </pattern>
 
       <marker id="arrow"
@@ -40,6 +48,8 @@ export function Grid(props: GridProps) {
         width={gridSizeW} height={gridSizeH} fill="url(#minor_grid)" />
       <rect id="major-grid" transform={transformForQuadrant(mapTransformProps)}
         width={gridSizeW} height={gridSizeH} fill="url(#major_grid)" />
+      <rect id="superior-grid" transform={transformForQuadrant(mapTransformProps)}
+            width={gridSizeW} height={gridSizeH} fill="url(#superior_grid)" />
       <rect id="border" width={gridSizeW} height={gridSizeH} fill="none"
         stroke="rgba(0,0,0,0.3)" strokeWidth={2} />
     </g>
