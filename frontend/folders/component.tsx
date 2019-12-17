@@ -27,7 +27,7 @@ import { t } from "../i18next_wrapper";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
 
-const FolderItem = (props: FolderItemProps) => {
+const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   return <li style={{ border: "1px dashed " + sequence.body.color }}>
@@ -43,7 +43,7 @@ interface FolderDropButtonProps {
   active: boolean;
 }
 
-const FolderDropButton = (props: FolderDropButtonProps) => {
+const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
     return <div>
       <button onClick={props.onClick}> MOVE SEQUENCE TO FOLDER </button>
@@ -53,50 +53,68 @@ const FolderDropButton = (props: FolderDropButtonProps) => {
   }
 };
 
-interface AddFolderBtn {
-  folder?: DeepPartial<Folder>;
-}
+interface AddFolderBtn { folder?: DeepPartial<Folder>; }
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <button
-    title={"Create Subfolder"}
-    onClick={() => createFolder(folder || {})}>+📁</button>;
+  return <button title={"Create Subfolder"} onClick={() => createFolder(folder || {})}>
+    +📁
+  </button>;
 };
 
-interface AddSequenceProps {
-  folderId?: number;
-}
+interface AddSequenceProps { folderId?: number; }
 
 const AddSequence = ({ folderId }: AddSequenceProps) =>
   <button onClick={() => addNewSequenceToFolder(folderId)}>+</button>;
 
+const FolderButtonClusterActive = ({ node }: FolderNodeProps) => {
+  return <div>
+    <button
+      title={"Open/Close Folder"}
+      onClick={() => toggleFolderOpenState(node.id)}>
+      {node.open ? "⬇️" : "➡️"}
+    </button>
+    {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
+    <button onClick={() => deleteFolder(node.id)}>🗑️</button>
+    <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
+    <AddSequence folderId={node.id} />
+  </div>;
+};
+
 const FolderButtonCluster = (props: FolderNodeProps) => {
   const { node } = props;
   if (props.movedSequenceUuid) {
-    return <FolderDropButton active={true} onClick={() => props.onMoveEnd(node.id)} />
+    return <DropFolderHereBtn
+      active={true}
+      onClick={() => props.onMoveEnd(node.id)} />;
   } else {
-    const subfolderBtn =
-      <AddFolderBtn folder={{ parent_id: node.id }} />;
-    return <div>
-      <button
-        title={"Open/Close Folder"}
-        onClick={() => toggleFolderOpenState(node.id)}>
-        {node.open ? "⬇️" : "➡️"}
-      </button>
-      {node.kind !== "terminal" && subfolderBtn}
-      <button onClick={() => deleteFolder(node.id)}>🗑️</button>
-      <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
-      <AddSequence folderId={node.id} />
-    </div>;
+    return <FolderButtonClusterActive {...props} />;
   }
 };
 
+interface FolderNameEditorProps {
+  name: string;
+  id: number;
+  editing: boolean;
+}
+
+const FolderNameEditor = (props: FolderNameEditorProps) => {
+  if (props.editing) {
+    return <BlurableInput
+      value={props.name}
+      onCommit={({ currentTarget }) => {
+        return setFolderName(props.id, currentTarget.value)
+          .then(() => toggleFolderEditState(props.id));
+      }} />;
+  } else {
+    return <span>{props.name}</span>;
+  }
+};
 const FolderNode = (props: FolderNodeProps) => {
   const { node, sequences } = props;
 
   const names = node
     .content
-    .map(x => <FolderItem
+    .map(x => <FolderListItem
       sequence={sequences[x]}
       key={"F" + x}
       onClick={props.onMoveStart}
@@ -117,20 +135,12 @@ const FolderNode = (props: FolderNodeProps) => {
     style={{ marginLeft: `${stuff.margin}px`, border: "2px solid " + node.color }}>
     <FolderButtonCluster {...props} />
     <Row>
-      <Col xs={1} className="color-picker-col">
+      <Col xs={12} className="color-picker-col">
         <ColorPicker
           position={Position.LEFT}
           onChange={(color) => setFolderColor(node.id, color)}
           current={node.color} />
-      </Col>
-      <Col xs={11}>
-        {!node.editing && node.name}
-        {node.editing && <BlurableInput
-          value={node.name}
-          onCommit={({ currentTarget }) => {
-            return setFolderName(node.id, currentTarget.value)
-              .then(() => toggleFolderEditState(node.id));
-          }} />}
+        <FolderNameEditor {...node} />
       </Col>
     </Row>
     {!!node.open && children}
@@ -174,7 +184,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     .props
     .rootFolder
     .noFolder
-    .map(x => <FolderItem
+    .map(x => <FolderListItem
       key={x}
       sequence={this.props.sequences[x]}
       onClick={this.startSequenceMove}
@@ -191,7 +201,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       <AddFolderBtn />
       <AddSequence />
       <this.Graph />
-      <FolderDropButton
+      <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
       <ul> {this.rootSequences()} </ul>
