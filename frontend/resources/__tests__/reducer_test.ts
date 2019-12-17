@@ -27,6 +27,7 @@ describe("resource reducer", () => {
     const next = resourceReducer(state, overwrite(sequence, {
       kind: "sequence",
       name: "wow",
+      folder_id: undefined,
       args: { version: -0, locals: { kind: "scope_declaration", args: {} } },
       body: [],
       color: "red"

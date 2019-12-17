@@ -47,6 +47,7 @@ export function fakeSequence(): TaggedSequence {
     color: "red",
     name: "fake",
     kind: "sequence",
+    folder_id: undefined,
     body: []
   });
 }
