@@ -91,6 +91,7 @@ const SequenceListItem = (props: SequenceListItemProps) =>
 
 const emptySequenceBody = (seqCount: number): TaggedSequence["body"] => ({
   name: t("new sequence {{ num }}", { num: seqCount }),
+  folder_id: undefined,
   args: {
     version: -999,
     locals: { kind: "scope_declaration", args: {} },

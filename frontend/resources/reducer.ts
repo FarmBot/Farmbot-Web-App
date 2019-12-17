@@ -63,6 +63,7 @@ export const emptyState = (): RestResources => {
         User: {},
         WebAppConfig: {},
         WebcamFeed: {},
+        Folder: {}
       },
       byKindAndId: {},
       references: {},
