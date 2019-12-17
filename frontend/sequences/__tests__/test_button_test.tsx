@@ -36,6 +36,7 @@ describe("<TestButton/>", () => {
         "name": "Goto 0, 0, 0",
         "color": "gray",
         "body": [],
+        "folder_id": undefined,
         "args": {
           "version": 4,
           "locals": { kind: "scope_declaration", args: {} },

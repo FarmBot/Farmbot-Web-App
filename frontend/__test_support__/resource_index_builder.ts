@@ -39,6 +39,7 @@ const tr0: TaggedResource = {
     "id": 23,
     "name": "Goto 0, 0, 0",
     "color": "gray",
+    "folder_id": undefined,
     "body": [
       {
         "kind": "move_absolute",
@@ -366,6 +367,7 @@ const KIND_PRIORITY: ResourceLookupTable = {
   Sensor: 1,
   Tool: 1,
   Alert: 1,
+  Folder: 1,
   PointGroup: 2,
   SensorReading: 2,
   Sequence: 2,
@@ -400,6 +402,7 @@ const blankSeq: TaggedSequence = {
   "body": {
     "id": undefined,
     "name": "Repair sequence",
+    "folder_id": undefined,
     "color": "gray",
     "body": [],
     "args": {
