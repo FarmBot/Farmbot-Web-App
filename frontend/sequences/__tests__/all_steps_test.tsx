@@ -15,8 +15,8 @@ describe("<AllSteps/>", () => {
     "body": sanitizeNodes({
       "id": 8,
       "name": "Goto 0, 0, 0",
-      "color": "gray",
       "folder_id": undefined,
+      "color": "gray",
       "body": [
         {
           "kind": "move_relative",

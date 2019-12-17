@@ -402,8 +402,8 @@ const blankSeq: TaggedSequence = {
   "body": {
     "id": undefined,
     "name": "Repair sequence",
-    "color": "gray",
     "folder_id": undefined,
+    "color": "gray",
     "body": [],
     "args": {
       "version": 4,
