@@ -27,12 +27,10 @@ import { t } from "../i18next_wrapper";
 
 const FolderItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
+  const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   return <li style={{ border: "1px dashed " + sequence.body.color }}>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
-    <Link
-      to={`/app/sequences/${urlFriendly(sequence.body.name) || ""}`}
-      key={sequence.uuid}
-      onClick={setActiveSequenceByName}>
+    <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {props.isMoveTarget ? "=>" : ""}{sequence.body.name}
     </Link>
   </li>;
@@ -56,24 +54,6 @@ const FolderNode = (props: FolderNodeProps) => {
       onClick={() => createFolder({ parent_id: node.id })}>
       +📁
     </button>;
-
-  const inputBox = <Row>
-    <Col xs={1} className="color-picker-col">
-      <ColorPicker
-        position={Position.LEFT}
-        onChange={(color) => setFolderColor(node.id, color)}
-        current={node.color} />
-    </Col>
-    <Col xs={11}>
-      {!node.editing && node.name}
-      {node.editing && <BlurableInput
-        value={node.name}
-        onCommit={({ currentTarget }) => {
-          return setFolderName(node.id, currentTarget.value)
-            .then(() => toggleFolderEditState(node.id));
-        }} />}
-    </Col>
-  </Row>;
 
   const names = node
     .content
@@ -110,7 +90,23 @@ const FolderNode = (props: FolderNodeProps) => {
   return <div
     style={{ marginLeft: `${stuff.margin}px`, border: "2px solid " + node.color }}>
     {props.movedSequenceUuid ? moverBtn : normalButtons}
-    {inputBox}
+    <Row>
+      <Col xs={1} className="color-picker-col">
+        <ColorPicker
+          position={Position.LEFT}
+          onChange={(color) => setFolderColor(node.id, color)}
+          current={node.color} />
+      </Col>
+      <Col xs={11}>
+        {!node.editing && node.name}
+        {node.editing && <BlurableInput
+          value={node.name}
+          onCommit={({ currentTarget }) => {
+            return setFolderName(node.id, currentTarget.value)
+              .then(() => toggleFolderEditState(node.id));
+          }} />}
+      </Col>
+    </Row>
     {!!node.open && children}
     {!!node.open && stuff.jsx}
   </div>;

@@ -39,7 +39,7 @@ describe("<Sequences/>", () => {
     getWebAppConfigValue: jest.fn(),
     menuOpen: false,
     stepIndex: undefined,
-    folderData: mapStateToFolderProps(fakeState())
+    folderData: mapStateToFolderProps(fakeState().resources)
   });
 
   it("renders", () => {
