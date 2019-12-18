@@ -22,7 +22,7 @@ import {
 import { Link } from "../link";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
-import { Position } from "@blueprintjs/core";
+import { Position, Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
@@ -30,7 +30,7 @@ import { Folder } from "farmbot/dist/resources/api_resources";
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
-  return <li style={{ border: "1px dashed " + sequence.body.color }}>
+  return <li>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {props.isMoveTarget ? "=>" : ""}{sequence.body.name}
@@ -107,18 +107,14 @@ const FolderNameEditor = (props: FolderNodeProps) => {
     namePart = <span>{node.name}</span>;
   }
 
-  let buttonPart: JSX.Element;
-  const [isOpen, changeOpenState] = useState(false);
-  if (isOpen) {
-    buttonPart = <FolderButtonCluster {...props} />;
-  } else {
-    buttonPart = <div />;
-  }
+  const buttonPart = <Popover>
+    <button className={"fb-btn " + node.color}>...</button>
+    <FolderButtonCluster {...props} />
+  </Popover>;
 
   return <div>
-    <button onClick={() => { changeOpenState(!isOpen); }}> ... </button>
-    {namePart}
     {buttonPart}
+    {namePart}
   </div>;
 };
 
@@ -141,11 +137,9 @@ const FolderNode = (props: FolderNodeProps) => {
     movedSequenceUuid={props.movedSequenceUuid}
     onMoveStart={props.onMoveStart}
     onMoveEnd={props.onMoveEnd} />;
+  //
   const array: FolderUnion[] = node.children || [];
-  const stuff: { jsx: JSX.Element[], margin: number } =
-    ({ jsx: array.map(mapper), margin: 10 });
-  return <div
-    style={{ marginLeft: `${stuff.margin}px`, border: "2px solid " + node.color }}>
+  return <div style={{ marginLeft: 10 }}>
     <Row>
       <Col xs={12} className="color-picker-col">
         <ColorPicker
@@ -156,7 +150,7 @@ const FolderNode = (props: FolderNodeProps) => {
       </Col>
     </Row>
     {!!node.open && children}
-    {!!node.open && stuff.jsx}
+    {!!node.open && array.map(mapper)}
   </div>;
 };
 
