@@ -46,7 +46,7 @@ const FolderListItem = (props: FolderItemProps) => {
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
   return <li style={{ ...style, ...STYLE_MOVE_ME }}>
-    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows" />
+    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows-v float-right" />
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
     </Link>
@@ -129,7 +129,7 @@ const FolderNameEditor = (props: FolderNodeProps) => {
       className={faIcon}
       title={"Open/Close Folder"}
       onClick={toggle} />
-    <div className={"popover-left"}>
+    <div className={"float-left"}>
       <Popover>
         <i className="fa fa-folder" style={{ color: node.color }} />
         <ColorPickerCluster
@@ -138,7 +138,7 @@ const FolderNameEditor = (props: FolderNodeProps) => {
       </Popover>
     </div>
     {namePart}
-    <div className={"popover-right"}>
+    <div className={"float-right"}>
       <Popover>
         <i className={"fa fa-ellipsis-v"} />
         <FolderButtonCluster {...props} />
