@@ -118,14 +118,14 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
     backgroundColor: "#ddd",
     borderBottom: "1px solid #aaa",
-    display: "flex",
+    // display: "flex",
     cursor: "pointer",
     padding: "0.5rem",
     margin: "0.5rem",
     height: "3.5rem"
   };
 
-  return <div style={STYLE_MOVE_ME}>
+  return <div className={"folder-block"} style={STYLE_MOVE_ME}>
     <i className={faIcon} title={"Open/Close Folder"} onClick={toggle} />
     <i className="fa fa-folder" style={{ color: node.color }} />
     {namePart}
