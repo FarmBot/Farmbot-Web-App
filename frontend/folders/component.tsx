@@ -202,10 +202,16 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     return <div>
       <h3>{t("Sequences")}</h3>
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <input
-        placeholder={"Search sequences and subfolders..."}
-        value={this.props.searchTerm || ""}
-        onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
+      <div className="thin-search-wrapper">
+        <div className="text-input-wrapper">
+          <i className="fa fa-search"></i>
+          <input
+            value={this.props.searchTerm || ""}
+            onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }}
+            type="text"
+            placeholder={"Search sequences and subfolders..."} />
+        </div>
+      </div>
       <i
         className={`fa fa-${this.state.toggleDirection ? "minus" : "plus"}-square`}
         onClick={this.toggleAll}></i>
@@ -220,3 +226,4 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     </div>;
   }
 }
+
