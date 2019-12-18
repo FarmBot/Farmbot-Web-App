@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BlurableInput, ColorPicker, Row, Col } from "../ui";
 import {
   FolderUnion,
@@ -91,24 +91,37 @@ const FolderButtonCluster = (props: FolderNodeProps) => {
   }
 };
 
-interface FolderNameEditorProps {
-  name: string;
-  id: number;
-  editing: boolean;
-}
+const FolderNameEditor = (props: FolderNodeProps) => {
+  const { node } = props;
 
-const FolderNameEditor = (props: FolderNameEditorProps) => {
-  if (props.editing) {
-    return <BlurableInput
-      value={props.name}
-      onCommit={({ currentTarget }) => {
-        return setFolderName(props.id, currentTarget.value)
-          .then(() => toggleFolderEditState(props.id));
-      }} />;
+  const onCommit = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
+    const { currentTarget } = e;
+    return setFolderName(node.id, currentTarget.value)
+      .then(() => toggleFolderEditState(node.id));
+  };
+  let namePart: JSX.Element;
+
+  if (node.editing) {
+    namePart = <BlurableInput value={node.name} onCommit={onCommit} />;
   } else {
-    return <span>{props.name}</span>;
+    namePart = <span>{node.name}</span>;
   }
+
+  let buttonPart: JSX.Element;
+  const [isOpen, changeOpenState] = useState(false);
+  if (isOpen) {
+    buttonPart = <FolderButtonCluster {...props} />;
+  } else {
+    buttonPart = <div>Hmm...</div>;
+  }
+
+  return <div>
+    <button onClick={() => { changeOpenState(!isOpen); }}> ... </button>
+    {namePart}
+    {buttonPart}
+  </div>;
 };
+
 const FolderNode = (props: FolderNodeProps) => {
   const { node, sequences } = props;
 
@@ -140,7 +153,7 @@ const FolderNode = (props: FolderNodeProps) => {
           position={Position.LEFT}
           onChange={(color) => setFolderColor(node.id, color)}
           current={node.color} />
-        <FolderNameEditor {...node} />
+        <FolderNameEditor {...props} />
       </Col>
     </Row>
     {!!node.open && children}
