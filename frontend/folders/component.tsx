@@ -154,7 +154,7 @@ const FolderNode = (props: FolderNodeProps) => {
       onClick={props.onMoveStart}
       isMoveTarget={props.movedSequenceUuid === x} />);
 
-  const children = <ul> {names} </ul>;
+  const children = <ul style={{ marginBottom: "0px" }}> {names} </ul>;
   const mapper = (n2: FolderUnion) => <FolderNode
     node={n2}
     key={n2.id}
@@ -241,7 +241,9 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
       <this.Graph />
-      <ul> {this.rootSequences()} </ul>
+      <ul>
+        {this.rootSequences()}
+      </ul>
     </div>;
   }
 }
