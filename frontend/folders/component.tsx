@@ -32,10 +32,13 @@ import { t } from "../i18next_wrapper";
 const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
   backgroundColor: "#ddd",
   borderBottom: "1px solid #aaa",
-  borderBottom: "1px solid #aaa",
   padding: "0.5rem",
   cursor: "pointer",
   height: "3.5rem"
+};
+
+const UL_STYLE = {
+  marginBottom: "0px"
 };
 
 const FolderListItem = (props: FolderItemProps) => {
@@ -155,7 +158,7 @@ const FolderNode = (props: FolderNodeProps) => {
       onClick={props.onMoveStart}
       isMoveTarget={props.movedSequenceUuid === x} />);
 
-  const children = <ul style={{ marginBottom: "0px" }}> {names} </ul>;
+  const children = <ul style={UL_STYLE}> {names} </ul>;
   const mapper = (n2: FolderUnion) => <FolderNode
     node={n2}
     key={n2.id}
@@ -166,7 +169,7 @@ const FolderNode = (props: FolderNodeProps) => {
   const array: FolderUnion[] = node.children || [];
   return <div style={{ marginLeft: 10 }}>
     <Row>
-      <Col xs={12} className="color-picker-col">
+      <Col xs={12}>
         <FolderNameEditor {...props} />
       </Col>
     </Row>
@@ -241,10 +244,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
-      <this.Graph />
-      <ul>
+      <ul style={UL_STYLE}>
         {this.rootSequences()}
       </ul>
+      <this.Graph />
     </div>;
   }
 }
