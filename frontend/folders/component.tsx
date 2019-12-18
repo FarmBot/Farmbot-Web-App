@@ -27,6 +27,20 @@ import { t } from "../i18next_wrapper";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
 
+interface FolderDropButtonProps {
+  onClick(): void;
+  active: boolean;
+  folderName: string;
+}
+
+interface AddFolderBtn {
+  folder?: DeepPartial<Folder>;
+}
+
+interface AddSequenceProps {
+  folderId?: number;
+}
+
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
@@ -39,12 +53,6 @@ const FolderListItem = (props: FolderItemProps) => {
   </li>;
 };
 
-interface FolderDropButtonProps {
-  onClick(): void;
-  active: boolean;
-  folderName: string;
-}
-
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
     return <button className="drag-drop-area visible" onClick={props.onClick}>
@@ -55,26 +63,21 @@ const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   }
 };
 
-interface AddFolderBtn { folder?: DeepPartial<Folder>; }
-
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
   return <button title={"Create Subfolder"} onClick={() => createFolder(folder || {})}>
     +📁
   </button>;
 };
 
-interface AddSequenceProps { folderId?: number; }
-
 const AddSequence = ({ folderId }: AddSequenceProps) =>
   <button onClick={() => addNewSequenceToFolder(folderId)}>+</button>;
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
-  return <div>
-    <button
-      title={"Open/Close Folder"}
-      onClick={() => toggleFolderOpenState(node.id)}>
-      {node.open ? "⬇️" : "➡️"}
-    </button>
+  return <div style={{ display: "flex" }}>
+    <ColorPicker
+      position={Position.LEFT}
+      onChange={(color) => setFolderColor(node.id, color)}
+      current={node.color} />
     {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
     <button onClick={() => deleteFolder(node.id)}>🗑️</button>
     <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
@@ -98,23 +101,25 @@ const FolderNameEditor = (props: FolderNodeProps) => {
       .then(() => toggleFolderEditState(node.id));
   };
   let namePart: JSX.Element;
+  const btnColor = "fb-btn " + node.color;
 
   if (node.editing) {
     namePart = <BlurableInput value={node.name} onCommit={onCommit} />;
   } else {
-    namePart = <span>{node.name}</span>;
+    namePart = <span className={btnColor}>{node.name}</span>;
   }
-
   const buttonPart = <Popover>
-    <button className={"fb-btn " + node.color}>...</button>
+    <i className={btnColor + " fa fa-gear"} />
     <FolderButtonCluster {...props} />
   </Popover>;
 
-  return <div>
-    <ColorPicker
-      position={Position.LEFT}
-      onChange={(color) => setFolderColor(node.id, color)}
-      current={node.color} />
+  return <div style={{ display: "flex", cursor: "pointer" }}>
+    <span
+      className={btnColor}
+      title={"Open/Close Folder"}
+      onClick={() => toggleFolderOpenState(node.id)}>
+      {node.open ? "📂" : "📁"}
+    </span>
     {buttonPart}
     {namePart}
   </div>;
