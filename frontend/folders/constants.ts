@@ -65,7 +65,7 @@ export interface FolderProps {
 export interface FolderState {
   toggleDirection: boolean;
   movedSequenceUuid?: string;
-};
+}
 
 export interface FolderNodeProps {
   node: FolderUnion;

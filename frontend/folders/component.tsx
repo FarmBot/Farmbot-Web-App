@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, ColorPicker, Row, Col, ToolTip } from "../ui";
+import { BlurableInput, ColorPicker, Row, Col } from "../ui";
 import {
   FolderUnion,
   FolderItemProps,
@@ -28,7 +28,6 @@ import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { Position, Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
-import { ToolTips } from "../constants";
 
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
@@ -211,8 +210,6 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
   render() {
     return <div>
-      <h3>{t("Sequences")}</h3>
-      <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
       <div className="panel-top with-button" style={{ marginTop: 0 }}>
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
