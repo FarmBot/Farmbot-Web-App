@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
-import { Page, Row, Col } from "../ui/index";
+import { Page, Row, LeftPanel } from "../ui/index";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ToolTips } from "../constants";
@@ -41,9 +41,12 @@ export class RawSequences extends React.Component<Props, {}> {
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
     return <Page className="sequence-page">
       <Row>
-        <Col sm={3}>
+        <LeftPanel
+          className={`sequence-list-panel ${activeClasses}`}
+          title={t("Sequences")}
+          helpText={t(ToolTips.SEQUENCE_LIST)}>
           <Folders {...this.props.folderData} />
-        </Col>
+        </LeftPanel>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}
           backButton={<SequenceBackButton
