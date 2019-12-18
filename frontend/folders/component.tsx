@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, ColorPicker, Row, Col } from "../ui";
+import { BlurableInput, ColorPicker, Row, Col, ToolTip } from "../ui";
 import {
   FolderUnion,
   FolderItemProps,
@@ -26,6 +26,7 @@ import { Position, Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
+import { ToolTips } from "../constants";
 
 interface FolderDropButtonProps {
   onClick(): void;
@@ -112,14 +113,13 @@ const FolderNameEditor = (props: FolderNodeProps) => {
     <i className={btnColor + " fa fa-gear"} />
     <FolderButtonCluster {...props} />
   </Popover>;
-
+  const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
   return <div style={{ display: "flex", cursor: "pointer" }}>
-    <span
-      className={btnColor}
+    <i
+      className={btnColor + faIcon}
       title={"Open/Close Folder"}
       onClick={() => toggleFolderOpenState(node.id)}>
-      {node.open ? "📂" : "📁"}
-    </span>
+    </i>
     {buttonPart}
     {namePart}
   </div>;
@@ -200,12 +200,15 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
   render() {
     return <div>
-      <h1>{t("Sequences")}</h1>
+      <h3>{t("Sequences")}</h3>
+      <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
       <input
         placeholder={"Search sequences and subfolders..."}
         value={this.props.searchTerm || ""}
         onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }} />
-      <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
+      <i
+        className={`fa fa-${this.state.toggleDirection ? "minus" : "plus"}-square`}
+        onClick={this.toggleAll}></i>
       <AddFolderBtn />
       <AddSequence />
       <DropFolderHereBtn
