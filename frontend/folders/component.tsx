@@ -119,13 +119,12 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   </Popover>;
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
   const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
-    // marginTop: 0,
     backgroundColor: "#ddd",
     borderBottom: "1px solid #aaa",
     display: "flex",
     cursor: "pointer",
-    paddingTop: "0.5rem",
-    paddingBottom: "0.5rem",
+    padding: "0.5rem",
+    margin: "0.5rem",
     height: "3.5rem"
   };
 
