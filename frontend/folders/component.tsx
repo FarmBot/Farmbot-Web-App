@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, ColorPicker, Row, Col } from "../ui";
+import { BlurableInput, Row, Col, ColorPickerCluster } from "../ui";
 import {
   FolderUnion,
   FolderItemProps,
@@ -26,7 +26,7 @@ import {
 import { Link } from "../link";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
-import { Position, Popover } from "@blueprintjs/core";
+import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 
 const FolderListItem = (props: FolderItemProps) => {
@@ -59,7 +59,7 @@ const DropFolderHereBtn = (props: FolderDropButtonProps) => {
 };
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <button className="fb-button gray">
+  return <button className="fb-button green">
     <i
       title={"Create Subfolder"}
       onClick={() => createFolder(folder || {})}
@@ -67,7 +67,7 @@ const AddFolderBtn = ({ folder }: AddFolderBtn) => {
   </button>;
 };
 
-const AddSequence = ({ folderId }: AddSequenceProps) => {
+const AddSequenceBtn = ({ folderId }: AddSequenceProps) => {
   return <button className="fb-button green">
     <i className="fa fa-server" onClick={() => addNewSequenceToFolder(folderId)} />
   </button>;
@@ -75,18 +75,14 @@ const AddSequence = ({ folderId }: AddSequenceProps) => {
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
   return <div style={{ display: "flex" }}>
-    <ColorPicker
-      position={Position.LEFT}
-      onChange={(color) => setFolderColor(node.id, color)}
-      current={node.color} />
-    {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
-    <button className="fb-button gray">
+    <button className="fb-button red">
       <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
     </button>
     <button className="fb-button gray">
       <i className="fa fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
     </button>
-    <AddSequence folderId={node.id} />
+    {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
+    <AddSequenceBtn folderId={node.id} />
   </div>;
 };
 
@@ -117,21 +113,33 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
     backgroundColor: "#ddd",
     borderBottom: "1px solid #aaa",
-    // display: "flex",
     cursor: "pointer",
     padding: "0.5rem",
     margin: "0.5rem",
     height: "3.5rem"
   };
 
-  return <div className={"folder-block"} style={STYLE_MOVE_ME}>
-    <i className={faIcon} title={"Open/Close Folder"} onClick={toggle} />
-    <i className="fa fa-folder" style={{ color: node.color }} />
+  return <div style={STYLE_MOVE_ME}>
+    <i
+      style={{ float: "left" }}
+      className={faIcon}
+      title={"Open/Close Folder"}
+      onClick={toggle} />
+    <div className={"popover-left"}>
+      <Popover>
+        <i className="fa fa-folder" style={{ color: node.color }} />
+        <ColorPickerCluster
+          current={node.color}
+          onChange={(color) => setFolderColor(node.id, color)} />
+      </Popover>
+    </div>
     {namePart}
-    <Popover>
-      <i className={"fa fa-ellipsis-v"} />
-      <FolderButtonCluster {...props} />
-    </Popover>
+    <div className={"popover-right"}>
+      <Popover>
+        <i className={"fa fa-ellipsis-v"} />
+        <FolderButtonCluster {...props} />
+      </Popover>
+    </div>
   </div>;
 };
 
@@ -223,11 +231,11 @@ export class Folders extends React.Component<FolderProps, FolderState> {
               placeholder={t("Search sequences")} />
           </div>
         </div>
-        <AddFolderBtn />
         <ToggleFolderBtn
           expanded={this.state.toggleDirection}
           onClick={this.toggleAll} />
-        <AddSequence />
+        <AddFolderBtn />
+        <AddSequenceBtn />
       </div>
       <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
