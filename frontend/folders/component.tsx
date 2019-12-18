@@ -8,7 +8,8 @@ import {
   FolderState,
   FolderDropButtonProps,
   AddFolderBtn,
-  AddSequenceProps
+  AddSequenceProps,
+  ToggleFolderBtnProps
 } from "./constants";
 import {
   createFolder,
@@ -41,16 +42,13 @@ const FolderListItem = (props: FolderItemProps) => {
   </li>;
 };
 
-interface ToggleFolderBtnProps {
-  expanded: boolean;
-  onClick(): void;
-}
 const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
   const klass = `fa fa-${p.expanded ? "plus" : "minus"}-square`;
   return <button className="fb-button gray">
     <i className={klass} onClick={p.onClick} />
   </button>;
 };
+
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
     return <button className="drag-drop-area visible" onClick={props.onClick}>
@@ -108,26 +106,32 @@ const FolderNameEditor = (props: FolderNodeProps) => {
       .then(() => toggleFolderEditState(node.id));
   };
   let namePart: JSX.Element;
-  const btnColor = node.color;
   const toggle = () => toggleFolderOpenState(node.id);
 
   if (node.editing) {
     namePart = <BlurableInput value={node.name} onCommit={onCommit} />;
   } else {
-    namePart = <span className={btnColor} onClick={toggle}>{node.name}</span>;
+    namePart = <span onClick={toggle}> {node.name}</span>;
   }
   const buttonPart = <Popover>
-    <i className={btnColor + " fa fa-gear"} />
+    <i className={"fa fa-folder"} style={{ color: node.color }} />
     <FolderButtonCluster {...props} />
   </Popover>;
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
-  return <div style={{ display: "flex", cursor: "pointer" }}>
+  const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
+    // marginTop: 0,
+    backgroundColor: "#ddd",
+    borderBottom: "1px solid #aaa",
+    display: "flex",
+    cursor: "pointer",
+    paddingTop: "0.5rem",
+    paddingBottom: "0.5rem",
+    height: "3.5rem"
+  };
+
+  return <div style={STYLE_MOVE_ME}>
+    <i className={faIcon} title={"Open/Close Folder"} onClick={toggle} />
     {buttonPart}
-    <i
-      className={btnColor + faIcon}
-      title={"Open/Close Folder"}
-      onClick={toggle}>
-    </i>
     {namePart}
   </div>;
 };

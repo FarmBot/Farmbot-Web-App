@@ -93,3 +93,8 @@ export interface AddFolderBtn {
 export interface AddSequenceProps {
   folderId?: number;
 }
+
+export interface ToggleFolderBtnProps {
+  expanded: boolean;
+  onClick(): void;
+}
