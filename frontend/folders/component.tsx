@@ -29,6 +29,15 @@ import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_nam
 import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 
+const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
+  backgroundColor: "#ddd",
+  borderBottom: "1px solid #aaa",
+  cursor: "pointer",
+  padding: "0.5rem",
+  margin: "0.5rem",
+  height: "3.5rem"
+};
+
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
@@ -110,14 +119,6 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   }
 
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
-  const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
-    backgroundColor: "#ddd",
-    borderBottom: "1px solid #aaa",
-    cursor: "pointer",
-    padding: "0.5rem",
-    margin: "0.5rem",
-    height: "3.5rem"
-  };
 
   return <div style={STYLE_MOVE_ME}>
     <i
