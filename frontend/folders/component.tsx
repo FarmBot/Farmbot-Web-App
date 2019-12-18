@@ -30,10 +30,11 @@ import { Folder } from "farmbot/dist/resources/api_resources";
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
-  return <li>
+  const style = props.isMoveTarget ? { border: "1px solid red" } : {};
+  return <li style={style}>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
-      {props.isMoveTarget ? "=>" : ""}{sequence.body.name}
+      {sequence.body.name}
     </Link>
   </li>;
 };
@@ -41,15 +42,14 @@ const FolderListItem = (props: FolderItemProps) => {
 interface FolderDropButtonProps {
   onClick(): void;
   active: boolean;
-  sequenceName: string;
   folderName: string;
 }
 
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
-    return <div className="drag-drop-area visible" onClick={props.onClick}>
-      MOVE "{props.sequenceName}" TO "{props.folderName}"
-    </div>;
+    return <button className="drag-drop-area visible" onClick={props.onClick}>
+      Move sequence to "{props.folderName}"
+    </button>;
   } else {
     return <span />;
   }
@@ -83,14 +83,14 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
 };
 
 const FolderNameEditor = (props: FolderNodeProps) => {
+  const { node } = props;
+
   if (props.movedSequenceUuid) {
     return <DropFolderHereBtn
       folderName={props.node.name}
-      sequenceName={props.movedSequenceUuid || "??"}
       active={true}
       onClick={() => props.onMoveEnd(node.id)} />;
   }
-  const { node } = props;
 
   const onCommit = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
     const { currentTarget } = e;
@@ -203,12 +203,11 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       <button onClick={this.toggleAll}>{this.state.toggleDirection ? "📂" : "📁"}</button>
       <AddFolderBtn />
       <AddSequence />
-      <this.Graph />
       <DropFolderHereBtn
         folderName={"Top Level"}
-        sequenceName={this.props.sequences[this.state.movedSequenceUuid || ""]?.body.name || ""}
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
+      <this.Graph />
       <ul> {this.rootSequences()} </ul>
     </div>;
   }
