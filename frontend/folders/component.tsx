@@ -113,10 +113,7 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   } else {
     namePart = <span onClick={toggle}> {node.name}</span>;
   }
-  const buttonPart = <Popover>
-    <i className={"fa fa-folder"} style={{ color: node.color }} />
-    <FolderButtonCluster {...props} />
-  </Popover>;
+
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
   const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
     backgroundColor: "#ddd",
@@ -130,8 +127,12 @@ const FolderNameEditor = (props: FolderNodeProps) => {
 
   return <div style={STYLE_MOVE_ME}>
     <i className={faIcon} title={"Open/Close Folder"} onClick={toggle} />
-    {buttonPart}
+    <i className="fa fa-folder" style={{ color: node.color }} />
     {namePart}
+    <Popover>
+      <i className={"fa fa-ellipsis-v"} />
+      <FolderButtonCluster {...props} />
+    </Popover>
   </div>;
 };
 
