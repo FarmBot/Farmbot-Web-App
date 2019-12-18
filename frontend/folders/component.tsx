@@ -34,13 +34,22 @@ const FolderListItem = (props: FolderItemProps) => {
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
   return <li style={style}>
-    <i onClick={() => onClick(sequence.uuid)} className="fa fa-lg fa-arrows">{""}</i>
+    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
     </Link>
   </li>;
 };
 
+interface ToggleFolderBtnProps {
+  expanded: boolean;
+  onClick(): void;
+}
+const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
+  const klass = `fa fa-${p.expanded ? "plus" : "minus"}-square`;
+  return <i className={klass} onClick={p.onClick}>
+  </i>;
+};
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
     return <button className="drag-drop-area visible" onClick={props.onClick}>
@@ -52,17 +61,14 @@ const DropFolderHereBtn = (props: FolderDropButtonProps) => {
 };
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <div
+  return <i
     title={"Create Subfolder"}
     onClick={() => createFolder(folder || {})}
-    className="fa-stack">
-    <i className="fa fa-folder fa-stack-1x"></i>
-    <i style={{ color: "gray" }} className="fa fa-plus fa-stack-1x"></i>
-  </div>;
+    className="fa fa-folder" />;
 };
 
 const AddSequence = ({ folderId }: AddSequenceProps) => <i
-  className="fa fa-lg fa-server"
+  className="fa fa-server"
   onClick={() => addNewSequenceToFolder(folderId)} />;
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
@@ -72,8 +78,8 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
       onChange={(color) => setFolderColor(node.id, color)}
       current={node.color} />
     {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
-    <i className="fa fa-lg fa-trash" onClick={() => deleteFolder(node.id)} />
-    <i className="fa fa-lg fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
+    <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
+    <i className="fa fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
     <AddSequence folderId={node.id} />
   </div>;
 };
@@ -94,22 +100,23 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   };
   let namePart: JSX.Element;
   const btnColor = "fb-btn " + node.color;
+  const toggle = () => toggleFolderOpenState(node.id);
 
   if (node.editing) {
     namePart = <BlurableInput value={node.name} onCommit={onCommit} />;
   } else {
-    namePart = <span className={btnColor}>{node.name}</span>;
+    namePart = <span className={btnColor} onClick={toggle}>{node.name}</span>;
   }
   const buttonPart = <Popover>
-    <i className={btnColor + " fa fa-lg fa-gear"} />
+    <i className={btnColor + " fa fa-gear"} />
     <FolderButtonCluster {...props} />
   </Popover>;
-  const faIcon = ` fa fa-lg fa-chevron-${node.open ? "down" : "right"}`;
+  const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
   return <div style={{ display: "flex", cursor: "pointer" }}>
     <i
       className={btnColor + faIcon}
       title={"Open/Close Folder"}
-      onClick={() => toggleFolderOpenState(node.id)}>
+      onClick={toggle}>
     </i>
     {buttonPart}
     {namePart}
@@ -193,21 +200,23 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     return <div>
       <h3>{t("Sequences")}</h3>
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <div className="thin-search-wrapper">
-        <div className="text-input-wrapper">
-          <i className="fa fa-lg fa-search"></i>
-          <input
-            value={this.props.searchTerm || ""}
-            onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }}
-            type="text"
-            placeholder={t("Search sequences and folders...")} />
+      <div className="panel-top with-button">
+        <div className="thin-search-wrapper">
+          <div className="text-input-wrapper">
+            <i className="fa fa-search" />
+            <input
+              value={this.props.searchTerm || ""}
+              onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }}
+              type="text"
+              placeholder={t("Search sequences")} />
+          </div>
         </div>
+        <ToggleFolderBtn
+          expanded={this.state.toggleDirection}
+          onClick={this.toggleAll} />
+        <AddSequence />
+        <AddFolderBtn />
       </div>
-      <i
-        className={`fa fa-${this.state.toggleDirection ? "plus" : "minus"}-square`}
-        onClick={this.toggleAll}></i>
-      <AddFolderBtn />
-      <AddSequence />
       <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
