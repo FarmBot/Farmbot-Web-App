@@ -5,7 +5,10 @@ import {
   FolderItemProps,
   FolderNodeProps,
   FolderProps,
-  FolderState
+  FolderState,
+  FolderDropButtonProps,
+  AddFolderBtn,
+  AddSequenceProps
 } from "./constants";
 import {
   createFolder,
@@ -24,30 +27,14 @@ import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { Position, Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
-import { DeepPartial } from "redux";
-import { Folder } from "farmbot/dist/resources/api_resources";
 import { ToolTips } from "../constants";
-
-interface FolderDropButtonProps {
-  onClick(): void;
-  active: boolean;
-  folderName: string;
-}
-
-interface AddFolderBtn {
-  folder?: DeepPartial<Folder>;
-}
-
-interface AddSequenceProps {
-  folderId?: number;
-}
 
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
   return <li style={style}>
-    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
+    <i onClick={() => onClick(sequence.uuid)} className="fa fa-lg fa-arrows">{""}</i>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
     </Link>
@@ -57,7 +44,7 @@ const FolderListItem = (props: FolderItemProps) => {
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
     return <button className="drag-drop-area visible" onClick={props.onClick}>
-      Move sequence to "{props.folderName}"
+      Move sequence here
     </button>;
   } else {
     return <span />;
@@ -65,13 +52,18 @@ const DropFolderHereBtn = (props: FolderDropButtonProps) => {
 };
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <button title={"Create Subfolder"} onClick={() => createFolder(folder || {})}>
-    +📁
-  </button>;
+  return <div
+    title={"Create Subfolder"}
+    onClick={() => createFolder(folder || {})}
+    className="fa-stack">
+    <i className="fa fa-folder fa-stack-1x"></i>
+    <i style={{ color: "gray" }} className="fa fa-plus fa-stack-1x"></i>
+  </div>;
 };
 
-const AddSequence = ({ folderId }: AddSequenceProps) =>
-  <button onClick={() => addNewSequenceToFolder(folderId)}>+</button>;
+const AddSequence = ({ folderId }: AddSequenceProps) => <i
+  className="fa fa-lg fa-server"
+  onClick={() => addNewSequenceToFolder(folderId)} />;
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
   return <div style={{ display: "flex" }}>
@@ -80,8 +72,8 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
       onChange={(color) => setFolderColor(node.id, color)}
       current={node.color} />
     {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
-    <button onClick={() => deleteFolder(node.id)}>🗑️</button>
-    <button onClick={() => toggleFolderEditState(node.id)}>✎</button>
+    <i className="fa fa-lg fa-trash" onClick={() => deleteFolder(node.id)} />
+    <i className="fa fa-lg fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
     <AddSequence folderId={node.id} />
   </div>;
 };
@@ -91,7 +83,6 @@ const FolderNameEditor = (props: FolderNodeProps) => {
 
   if (props.movedSequenceUuid) {
     return <DropFolderHereBtn
-      folderName={props.node.name}
       active={true}
       onClick={() => props.onMoveEnd(node.id)} />;
   }
@@ -110,10 +101,10 @@ const FolderNameEditor = (props: FolderNodeProps) => {
     namePart = <span className={btnColor}>{node.name}</span>;
   }
   const buttonPart = <Popover>
-    <i className={btnColor + " fa fa-gear"} />
+    <i className={btnColor + " fa fa-lg fa-gear"} />
     <FolderButtonCluster {...props} />
   </Popover>;
-  const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
+  const faIcon = ` fa fa-lg fa-chevron-${node.open ? "down" : "right"}`;
   return <div style={{ display: "flex", cursor: "pointer" }}>
     <i
       className={btnColor + faIcon}
@@ -204,21 +195,20 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
       <div className="thin-search-wrapper">
         <div className="text-input-wrapper">
-          <i className="fa fa-search"></i>
+          <i className="fa fa-lg fa-search"></i>
           <input
             value={this.props.searchTerm || ""}
             onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }}
             type="text"
-            placeholder={"Search sequences and subfolders..."} />
+            placeholder={t("Search sequences and folders...")} />
         </div>
       </div>
       <i
-        className={`fa fa-${this.state.toggleDirection ? "minus" : "plus"}-square`}
+        className={`fa fa-${this.state.toggleDirection ? "plus" : "minus"}-square`}
         onClick={this.toggleAll}></i>
       <AddFolderBtn />
       <AddSequence />
       <DropFolderHereBtn
-        folderName={"Top Level"}
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
       <this.Graph />
@@ -226,4 +216,3 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     </div>;
   }
 }
-

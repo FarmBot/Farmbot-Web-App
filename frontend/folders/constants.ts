@@ -1,5 +1,7 @@
 import { Color } from "farmbot/dist/corpus";
 import { TaggedSequence } from "farmbot";
+import { DeepPartial } from "redux";
+import { Folder } from "farmbot/dist/resources/api_resources";
 
 export interface FolderMeta {
   open: boolean;
@@ -77,4 +79,17 @@ export interface FolderItemProps {
   onClick(sequenceUuid: string): void;
   sequence: TaggedSequence;
   isMoveTarget: boolean;
+}
+
+export interface FolderDropButtonProps {
+  onClick(): void;
+  active: boolean;
+}
+
+export interface AddFolderBtn {
+  folder?: DeepPartial<Folder>;
+}
+
+export interface AddSequenceProps {
+  folderId?: number;
 }
