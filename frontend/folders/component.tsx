@@ -32,6 +32,7 @@ import { t } from "../i18next_wrapper";
 const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
   backgroundColor: "#ddd",
   borderBottom: "1px solid #aaa",
+  borderBottom: "1px solid #aaa",
   padding: "0.5rem",
   cursor: "pointer",
   height: "3.5rem"
@@ -42,7 +43,7 @@ const FolderListItem = (props: FolderItemProps) => {
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
   return <li style={{ ...style, ...STYLE_MOVE_ME }}>
-    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows">{""}</i>
+    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows" />
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
     </Link>
