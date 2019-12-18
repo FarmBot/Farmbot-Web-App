@@ -10,13 +10,17 @@ describe DashboardController do
       expect(response.status).to eq(200)
     end
 
-    it "renders the terms of service" do
+    it "renders the front page" do
       get :front_page
       expect(response.status).to eq(200)
+      # first entry in api_docs.md
+      SmarfDoc.note("Documentation generated for the " +
+        "[FarmBot Web App](https://github.com/FarmBot/Farmbot-Web-App).")
     end
 
-    it "renders the terms of service" do
-      expect { get :main_app, params: { path: "nope.jpg" } }.to raise_error(ActionController::RoutingError)
+    it "returns error on invalid path" do
+      expect { get :main_app, params: { path: "nope.jpg" } }
+        .to raise_error(ActionController::RoutingError)
     end
 
     it "receives CSP violation reports (malformed JSON)" do
@@ -26,7 +30,7 @@ describe DashboardController do
       expect(json).to eq(problem: "Crashed while parsing report")
     end
 
-    it "receives CSP violation reports (malformed JSON)" do
+    it "receives CSP violation reports (JSON)" do
       post :csp_reports, body: {}.to_json, params: { format: :json }
       expect(json).to eq({})
     end
