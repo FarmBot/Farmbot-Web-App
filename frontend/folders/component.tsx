@@ -47,8 +47,9 @@ interface ToggleFolderBtnProps {
 }
 const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
   const klass = `fa fa-${p.expanded ? "plus" : "minus"}-square`;
-  return <i className={klass} onClick={p.onClick}>
-  </i>;
+  return <button className="fb-button gray">
+    <i className={klass} onClick={p.onClick} />
+  </button>;
 };
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
@@ -61,15 +62,19 @@ const DropFolderHereBtn = (props: FolderDropButtonProps) => {
 };
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <i
-    title={"Create Subfolder"}
-    onClick={() => createFolder(folder || {})}
-    className="fa fa-folder" />;
+  return <button className="fb-button gray">
+    <i
+      title={"Create Subfolder"}
+      onClick={() => createFolder(folder || {})}
+      className="fa fa-folder" />
+  </button>;
 };
 
-const AddSequence = ({ folderId }: AddSequenceProps) => <i
-  className="fa fa-server"
-  onClick={() => addNewSequenceToFolder(folderId)} />;
+const AddSequence = ({ folderId }: AddSequenceProps) => {
+  return <button className="fb-button green">
+    <i className="fa fa-server" onClick={() => addNewSequenceToFolder(folderId)} />
+  </button>;
+};
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
   return <div style={{ display: "flex" }}>
@@ -78,8 +83,12 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
       onChange={(color) => setFolderColor(node.id, color)}
       current={node.color} />
     {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
-    <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
-    <i className="fa fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
+    <button className="fb-button gray">
+      <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
+    </button>
+    <button className="fb-button gray">
+      <i className="fa fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
+    </button>
     <AddSequence folderId={node.id} />
   </div>;
 };
@@ -99,7 +108,7 @@ const FolderNameEditor = (props: FolderNodeProps) => {
       .then(() => toggleFolderEditState(node.id));
   };
   let namePart: JSX.Element;
-  const btnColor = "fb-btn " + node.color;
+  const btnColor = node.color;
   const toggle = () => toggleFolderOpenState(node.id);
 
   if (node.editing) {
@@ -113,12 +122,12 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   </Popover>;
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
   return <div style={{ display: "flex", cursor: "pointer" }}>
+    {buttonPart}
     <i
       className={btnColor + faIcon}
       title={"Open/Close Folder"}
       onClick={toggle}>
     </i>
-    {buttonPart}
     {namePart}
   </div>;
 };
@@ -155,7 +164,7 @@ const FolderNode = (props: FolderNodeProps) => {
 };
 
 export class Folders extends React.Component<FolderProps, FolderState> {
-  state: FolderState = { toggleDirection: true };
+  state: FolderState = { toggleDirection: false };
 
   Graph = (_props: {}) => {
 
@@ -200,22 +209,24 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     return <div>
       <h3>{t("Sequences")}</h3>
       <ToolTip helpText={ToolTips.SEQUENCE_LIST} />
-      <div className="panel-top with-button">
+      <div className="panel-top with-button" style={{ marginTop: 0 }}>
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
             <i className="fa fa-search" />
             <input
               value={this.props.searchTerm || ""}
-              onChange={({ currentTarget }) => { updateSearchTerm(currentTarget.value); }}
+              onChange={({ currentTarget }) => {
+                updateSearchTerm(currentTarget.value);
+              }}
               type="text"
               placeholder={t("Search sequences")} />
           </div>
         </div>
+        <AddFolderBtn />
         <ToggleFolderBtn
           expanded={this.state.toggleDirection}
           onClick={this.toggleAll} />
         <AddSequence />
-        <AddFolderBtn />
       </div>
       <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
