@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { BlurableInput, ColorPicker, Row, Col } from "../ui";
 import {
   FolderUnion,
@@ -41,12 +41,14 @@ const FolderListItem = (props: FolderItemProps) => {
 interface FolderDropButtonProps {
   onClick(): void;
   active: boolean;
+  sequenceName: string;
+  folderName: string;
 }
 
 const DropFolderHereBtn = (props: FolderDropButtonProps) => {
   if (props.active) {
-    return <div>
-      <button onClick={props.onClick}> MOVE SEQUENCE TO FOLDER </button>
+    return <div className="drag-drop-area visible" onClick={props.onClick}>
+      MOVE "{props.sequenceName}" TO "{props.folderName}"
     </div>;
   } else {
     return <span />;
@@ -66,7 +68,7 @@ interface AddSequenceProps { folderId?: number; }
 const AddSequence = ({ folderId }: AddSequenceProps) =>
   <button onClick={() => addNewSequenceToFolder(folderId)}>+</button>;
 
-const FolderButtonClusterActive = ({ node }: FolderNodeProps) => {
+const FolderButtonCluster = ({ node }: FolderNodeProps) => {
   return <div>
     <button
       title={"Open/Close Folder"}
@@ -80,18 +82,14 @@ const FolderButtonClusterActive = ({ node }: FolderNodeProps) => {
   </div>;
 };
 
-const FolderButtonCluster = (props: FolderNodeProps) => {
-  const { node } = props;
+const FolderNameEditor = (props: FolderNodeProps) => {
   if (props.movedSequenceUuid) {
     return <DropFolderHereBtn
+      folderName={props.node.name}
+      sequenceName={props.movedSequenceUuid || "??"}
       active={true}
       onClick={() => props.onMoveEnd(node.id)} />;
-  } else {
-    return <FolderButtonClusterActive {...props} />;
   }
-};
-
-const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
 
   const onCommit = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
@@ -113,6 +111,10 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   </Popover>;
 
   return <div>
+    <ColorPicker
+      position={Position.LEFT}
+      onChange={(color) => setFolderColor(node.id, color)}
+      current={node.color} />
     {buttonPart}
     {namePart}
   </div>;
@@ -137,15 +139,10 @@ const FolderNode = (props: FolderNodeProps) => {
     movedSequenceUuid={props.movedSequenceUuid}
     onMoveStart={props.onMoveStart}
     onMoveEnd={props.onMoveEnd} />;
-  //
   const array: FolderUnion[] = node.children || [];
   return <div style={{ marginLeft: 10 }}>
     <Row>
       <Col xs={12} className="color-picker-col">
-        <ColorPicker
-          position={Position.LEFT}
-          onChange={(color) => setFolderColor(node.id, color)}
-          current={node.color} />
         <FolderNameEditor {...props} />
       </Col>
     </Row>
@@ -208,6 +205,8 @@ export class Folders extends React.Component<FolderProps, FolderState> {
       <AddSequence />
       <this.Graph />
       <DropFolderHereBtn
+        folderName={"Top Level"}
+        sequenceName={this.props.sequences[this.state.movedSequenceUuid || ""]?.body.name || ""}
         onClick={() => this.endSequenceMove(0)}
         active={!!this.state.movedSequenceUuid} />
       <ul> {this.rootSequences()} </ul>
