@@ -112,7 +112,7 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   if (isOpen) {
     buttonPart = <FolderButtonCluster {...props} />;
   } else {
-    buttonPart = <div>Hmm...</div>;
+    buttonPart = <div />;
   }
 
   return <div>
@@ -146,7 +146,6 @@ const FolderNode = (props: FolderNodeProps) => {
     ({ jsx: array.map(mapper), margin: 10 });
   return <div
     style={{ marginLeft: `${stuff.margin}px`, border: "2px solid " + node.color }}>
-    <FolderButtonCluster {...props} />
     <Row>
       <Col xs={12} className="color-picker-col">
         <ColorPicker
