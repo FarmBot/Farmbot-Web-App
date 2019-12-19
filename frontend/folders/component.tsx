@@ -29,23 +29,23 @@ import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_nam
 import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
 
-const STYLE_MOVE_ME: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
+const FOLDER_LIST_ITEM: React.StyleHTMLAttributes<HTMLDivElement>["style"] = {
   backgroundColor: "#ddd",
   borderBottom: "1px solid #aaa",
   padding: "0.5rem",
   cursor: "pointer",
   height: "3.5rem"
 };
-
-const UL_STYLE = {
-  marginBottom: "0px"
-};
+const UL_STYLE = { marginBottom: "0px" };
+const FLEX = { display: "flex" };
+const FOLDER_NODE_WRAPPER = { marginLeft: 10 };
+const FOLDER_PANEL_WRAPPER = { marginTop: 0 };
 
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
   const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
-  return <li style={{ ...style, ...STYLE_MOVE_ME }}>
+  return <li style={{ ...style, ...FOLDER_LIST_ITEM }}>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows-v float-right" />
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
@@ -86,7 +86,7 @@ const AddSequenceBtn = ({ folderId }: AddSequenceProps) => {
 };
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
-  return <div style={{ display: "flex" }}>
+  return <div style={FLEX}>
     <button className="fb-button red">
       <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
     </button>
@@ -123,10 +123,9 @@ const FolderNameEditor = (props: FolderNodeProps) => {
 
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
 
-  return <div style={STYLE_MOVE_ME}>
+  return <div style={FOLDER_LIST_ITEM}>
     <i
-      style={{ float: "left" }}
-      className={faIcon}
+      className={"float-left" + faIcon}
       title={"Open/Close Folder"}
       onClick={toggle} />
     <div className={"float-left"}>
@@ -167,7 +166,7 @@ const FolderNode = (props: FolderNodeProps) => {
     onMoveStart={props.onMoveStart}
     onMoveEnd={props.onMoveEnd} />;
   const array: FolderUnion[] = node.children || [];
-  return <div style={{ marginLeft: 10 }}>
+  return <div style={FOLDER_NODE_WRAPPER}>
     <Row>
       <Col xs={12}>
         <FolderNameEditor {...props} />
@@ -222,7 +221,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
   render() {
     return <div>
-      <div className="panel-top with-button" style={{ marginTop: 0 }}>
+      <div className="panel-top with-button" style={FOLDER_PANEL_WRAPPER}>
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
             <i className="fa fa-search" />
