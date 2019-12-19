@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, Row, Col, ColorPickerCluster } from "../ui";
+import { BlurableInput, Row, Col, ColorPickerCluster, ColorPicker } from "../ui";
 import {
   FolderUnion,
   FolderItemProps,
@@ -46,6 +46,9 @@ const FolderListItem = (props: FolderItemProps) => {
   const style = props.isMoveTarget ? { border: "1px solid red" } : {};
   return <li style={{ ...style, ...FOLDER_LIST_ITEM }}>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows-v float-right" />
+    <div className={"float-left"}>
+      <ColorPicker current={sequence.body.color || "gray"} />
+    </div>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
     </Link>
