@@ -30,6 +30,7 @@ export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
   return <div>
     {colors.map((color) => {
       return <ColorPickerItem
+        key={color}
         onChange={props.onChange}
         current={props.current}
         color={color} />;
