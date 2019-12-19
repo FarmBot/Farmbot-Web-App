@@ -6,7 +6,6 @@ import {
   FolderNodeProps,
   FolderProps,
   FolderState,
-  FolderDropButtonProps,
   AddFolderBtn,
   AddSequenceProps,
   ToggleFolderBtnProps
@@ -60,16 +59,6 @@ const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
   </button>;
 };
 
-const DropFolderHereBtn = (props: FolderDropButtonProps) => {
-  if (props.active) {
-    return <button className="drag-drop-area visible" onClick={props.onClick}>
-      Move sequence here
-    </button>;
-  } else {
-    return <span />;
-  }
-};
-
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
   return <button className="fb-button green">
     <i
@@ -101,12 +90,6 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
 const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
 
-  if (props.movedSequenceUuid) {
-    return <DropFolderHereBtn
-      active={true}
-      onClick={() => props.onMoveEnd(node.id)} />;
-  }
-
   const onCommit = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
     const { currentTarget } = e;
     return setFolderName(node.id, currentTarget.value)
@@ -114,16 +97,22 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   };
   let namePart: JSX.Element;
   const toggle = () => toggleFolderOpenState(node.id);
-
+  const nodeName = props.movedSequenceUuid ?
+    t("CLICK TO MOVE HERE") : node.name;
   if (node.editing) {
-    namePart = <BlurableInput value={node.name} onCommit={onCommit} />;
+    namePart = <BlurableInput value={nodeName} onCommit={onCommit} />;
   } else {
-    namePart = <span onClick={toggle}> {node.name}</span>;
+    namePart = <span onClick={toggle}> {nodeName}</span>;
   }
 
   const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
-
-  return <div style={FOLDER_LIST_ITEM}>
+  const style = {
+    ...FOLDER_LIST_ITEM,
+    ...(props.movedSequenceUuid ? { backgroundColor: "#bbb" } : {})
+  };
+  const onClick =
+    props.movedSequenceUuid ? () => props.onMoveEnd(node.id) : () => { };
+  return <div style={style} onClick={onClick}>
     <i
       className={"float-left" + faIcon}
       title={"Open/Close Folder"}
@@ -240,9 +229,9 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         <AddFolderBtn />
         <AddSequenceBtn />
       </div>
-      <DropFolderHereBtn
+      {/* <DropFolderHereBtn
         onClick={() => this.endSequenceMove(0)}
-        active={!!this.state.movedSequenceUuid} />
+        active={!!this.state.movedSequenceUuid} /> */}
       <ul style={UL_STYLE}>
         {this.rootSequences()}
       </ul>

@@ -81,11 +81,6 @@ export interface FolderItemProps {
   isMoveTarget: boolean;
 }
 
-export interface FolderDropButtonProps {
-  onClick(): void;
-  active: boolean;
-}
-
 export interface AddFolderBtn {
   folder?: DeepPartial<Folder>;
 }
