@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput, Row, Col, ColorPickerCluster, ColorPicker } from "../ui";
+import { BlurableInput, Row, Col, ColorPickerCluster, Saucer } from "../ui";
 import {
   FolderUnion,
   FolderItemProps,
@@ -47,7 +47,7 @@ const FolderListItem = (props: FolderItemProps) => {
   return <li style={{ ...style, ...FOLDER_LIST_ITEM }}>
     <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows-v float-right" />
     <div className={"float-left"}>
-      <ColorPicker current={sequence.body.color || "gray"} />
+      <Saucer color={sequence.body.color || "gray"} active={false} />
     </div>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
       {sequence.body.name}
