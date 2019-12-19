@@ -57,16 +57,17 @@ const FolderListItem = (props: FolderItemProps) => {
 
 const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
   const klass = `fa fa-${p.expanded ? "plus" : "minus"}-square`;
-  return <button className="fb-button gray">
-    <i className={klass} onClick={p.onClick} />
+  return <button className="fb-button gray" onClick={p.onClick}>
+    <i className={klass} />
   </button>;
 };
 
 const AddFolderBtn = ({ folder }: AddFolderBtn) => {
-  return <button className="fb-button green">
+  return <button
+    className="fb-button green"
+    onClick={() => createFolder(folder || {})}>
     <i
       title={"Create Subfolder"}
-      onClick={() => createFolder(folder || {})}
       className="fa fa-folder" />
   </button>;
 };
@@ -79,11 +80,11 @@ const AddSequenceBtn = ({ folderId }: AddSequenceProps) => {
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
   return <div style={FLEX}>
-    <button className="fb-button red">
-      <i className="fa fa-trash" onClick={() => deleteFolder(node.id)} />
+    <button className="fb-button red" onClick={() => deleteFolder(node.id)}>
+      <i className="fa fa-trash" />
     </button>
-    <button className="fb-button gray">
-      <i className="fa fa-pencil" onClick={() => toggleFolderEditState(node.id)} />
+    <button className="fb-button gray" onClick={() => toggleFolderEditState(node.id)}>
+      <i className="fa fa-pencil" />
     </button>
     {node.kind !== "terminal" && <AddFolderBtn folder={{ parent_id: node.id }} />}
     <AddSequenceBtn folderId={node.id} />
