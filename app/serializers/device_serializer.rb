@@ -6,6 +6,7 @@ class DeviceSerializer < ApplicationSerializer
              :last_saw_mq,
              :mounted_tool_id,
              :name,
+             :needs_reset,
              :ota_hour,
              :serial_number,
              :throttled_at,
