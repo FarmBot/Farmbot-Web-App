@@ -300,7 +300,8 @@ export class GardenMap extends
   Grid = () => <Grid
     onClick={this.closePanel()}
     onMouseDown={this.startDragOnBackground}
-    mapTransformProps={this.mapTransformProps} />
+    mapTransformProps={this.mapTransformProps}
+    zoomLvl={this.props.zoomLvl} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
     sensorReadings={this.props.sensorReadings}
