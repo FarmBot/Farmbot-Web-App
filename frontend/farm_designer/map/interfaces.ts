@@ -110,6 +110,7 @@ export interface MapBackgroundProps {
 
 export interface GridProps {
   mapTransformProps: MapTransformProps;
+  zoomLvl: number;
   onClick(): void;
   onMouseDown(e: React.MouseEvent<SVGElement>): void;
 }
