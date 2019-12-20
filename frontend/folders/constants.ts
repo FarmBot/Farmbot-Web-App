@@ -2,6 +2,7 @@ import { Color } from "farmbot/dist/corpus";
 import { TaggedSequence } from "farmbot";
 import { DeepPartial } from "redux";
 import { Folder } from "farmbot/dist/resources/api_resources";
+import { VariableNameSet, UUID } from "../resources/interfaces";
 
 export interface FolderMeta {
   open: boolean;
@@ -60,6 +61,9 @@ export interface FolderProps {
   rootFolder: RootFolderNode;
   sequences: Record<string, TaggedSequence>;
   searchTerm: string | undefined;
+  dispatch: Function;
+  resourceUsage: Record<UUID, boolean | undefined>;
+  sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
 export interface FolderState {
@@ -73,12 +77,18 @@ export interface FolderNodeProps {
   movedSequenceUuid: string | undefined;
   onMoveStart(sequenceUuid: string): void;
   onMoveEnd(folderId: number): void;
+  dispatch: Function;
+  resourceUsage: Record<UUID, boolean | undefined>;
+  sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
 export interface FolderItemProps {
   onClick(sequenceUuid: string): void;
   sequence: TaggedSequence;
   isMoveTarget: boolean;
+  dispatch: Function;
+  variableData: VariableNameSet | undefined;
+  inUse: boolean;
 }
 
 export interface AddFolderBtn {

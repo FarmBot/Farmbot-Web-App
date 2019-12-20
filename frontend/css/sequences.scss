@@ -229,8 +229,145 @@
   }
 }
 
-.sequence-list-item {
-  margin-right: 15px;
+.folders-panel {
+  .panel-top,
+  .folder-button-cluster {
+    i {
+      font-size: 1.5rem;
+    }
+    .fa-stack {
+      font-size: 1rem;
+      transform: scale(0.8);
+    }
+    .fa-stack-2x {
+      font-size: 2rem;
+    }
+    .fa-stack-1x {
+      font-size: 1.5rem;
+      line-height: 1.5rem;
+      margin-left: 0.75rem;
+      filter: drop-shadow(0 0 0.2rem  $dark_green);
+      text-align: center;
+    }
+  }
+  .non-empty-state {
+    margin-left: -30px;
+    margin-right: -20px;
+  }
+  @media screen and (max-width: 767px) {
+    .non-empty-state {
+      margin-left: -15px;
+    }
+  }
+  .folder-button-cluster {
+    display: flex;
+    i {
+      width: 1.5rem !important;
+    }
+  }
+  ul {
+    margin-bottom: 0;
+  }
+  .folders {
+    .folder > div:not(:first-child), ul {
+      margin-left: 1rem;
+    }
+  }
+  .folder-list-item,
+  .sequence-list-item {
+    display: flex;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid $light_gray;
+    padding: 0.5rem;
+    cursor: pointer;
+    background: $lighter_gray;
+    &.active {
+      border-left: 3px solid $dark_gray;
+    }
+    .fa-chevron-down, .fa-chevron-right {
+      z-index: 2;
+      width: 2rem;
+      font-size: 1.1rem;
+    }
+    .folder-settings-icon,
+    .fa-arrows-v {
+      position: absolute;
+      right: 0;
+    }
+    .fa-arrows-v, .fa-ellipsis-v {
+      display: none;
+    }
+    &:hover {
+      .fa-arrows-v, .fa-ellipsis-v {
+        display: block;
+      }
+    }
+    i {
+      margin: 0;
+      line-height: 2.5rem;
+      width: 3rem;
+      text-align: center;
+    }
+    .saucer, .icon-saucer {
+      position: absolute;
+      margin: 0.5rem;
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+    p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 1.2rem;
+      font-weight: bold;
+      width: 100%;
+      padding: 0.5rem;
+      margin-left: 2rem;
+    }
+    .folder-name {
+      width: 100%;
+      margin-right: 3rem;
+      .input {
+        width: 90%;
+        margin-left: 2rem;
+      }
+    }
+    .sequence-list-item-icons {
+      display: flex;
+      margin-right: 3rem;
+    }
+    button {
+      margin-left: 0.5rem;
+    }
+    &.move-source {
+      border: 1px solid $dark_gray;
+    }
+    &.move-target {
+      background: $white;
+    }
+  }
+  .sequence-list-item {
+    padding-left: 2rem;
+    .saucer {
+      top: 0.55rem;
+    }
+  }
+  .folder-list-item {
+    .bp3-popover-wrapper {
+      position: absolute;
+    }
+    .color-picker {
+      .bp3-popover-target {
+        margin-left: 2.5rem;
+      }
+      .icon-saucer {
+        top: 0;
+        left: 1.5rem;
+        line-height: 1.4rem;
+      }
+    }
+  }
 }
 
 .farmware-list-panel,

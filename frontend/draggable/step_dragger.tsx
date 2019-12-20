@@ -32,7 +32,7 @@ export function StepDragger({ dispatch,
   children,
   intent,
   draggerId }: StepDraggerProps) {
-  return <div
+  return <div className="step-dragger"
     onDragStart={stepDragEventHandler(dispatch,
       step,
       intent,

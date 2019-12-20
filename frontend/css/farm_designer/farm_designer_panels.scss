@@ -394,7 +394,7 @@
     a {
       margin-top: 0.5rem;
     }
-    i {
+    i &:not(.fa-stack-2x) {
       font-size: 1.5rem;
     }
   }

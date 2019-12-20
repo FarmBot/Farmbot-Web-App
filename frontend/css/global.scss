@@ -34,9 +34,28 @@ body {
     width: 13rem;
     background: $dark_gray;
   }
-  div {
+  .bp3-popover-content,
+  .color-picker-cluster,
+  .color-picker-item-wrapper,
+  .saucer {
     display: inline-block;
     padding: 0.4rem;
+  }
+  .color-picker-item {
+    position: relative;
+    .active-border {
+      display: none;
+    }
+    &.active {
+      .active-border {
+        display: block;
+        position: absolute;
+        top: 2px;
+        left: 1px;
+        transform: scale(1.5);
+        color: $white;
+      }
+    }
   }
 }
 
@@ -110,6 +129,21 @@ fieldset {
     color: $white;
     margin-left: 0.7rem;
     margin-top: 0.3rem;
+  }
+}
+
+.icon-saucer {
+  position: relative;
+  z-index: 2;
+  height: 2rem;
+  width: 2rem;
+  color: $dark_gray;
+  cursor: pointer;
+  &.active {
+    border: 2px solid white;
+  }
+  &.hover {
+    border: 2px solid $dark_gray;
   }
 }
 

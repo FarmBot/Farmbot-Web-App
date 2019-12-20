@@ -1,10 +1,10 @@
 import React from "react";
 import {
   BlurableInput,
-  Row,
-  Col,
-  ColorPickerCluster,
-  Saucer
+  EmptyStateWrapper,
+  EmptyStateGraphic,
+  Saucer,
+  ColorPicker
 } from "../ui";
 import {
   FolderUnion,
@@ -29,40 +29,44 @@ import {
   setFolderColor
 } from "./actions";
 import { Link } from "../link";
-import { urlFriendly } from "../util";
+import { urlFriendly, lastUrlChunk } from "../util";
 import {
   setActiveSequenceByName
 } from "../sequences/set_active_sequence_by_name";
-import { Popover, Position } from "@blueprintjs/core";
+import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";
-
-type Style = React.StyleHTMLAttributes<HTMLDivElement>["style"];
-
-const FOLDER_LIST_ITEM: Style = {
-  backgroundColor: "#ddd",
-  borderBottom: "1px solid #aaa",
-  padding: "0.5rem",
-  cursor: "pointer",
-  height: "3.5rem"
-};
-const UL_STYLE = { marginBottom: "0px" };
-const FLEX = { display: "flex" };
-const FOLDER_NODE_WRAPPER = { marginLeft: 10 };
-const FOLDER_PANEL_WRAPPER = { marginTop: 0 };
+import { Content } from "../constants";
+import { StepDragger, NULL_DRAGGER_ID } from "../draggable/step_dragger";
+import { variableList } from "../sequences/locals_list/variable_support";
 
 const FolderListItem = (props: FolderItemProps) => {
   const { sequence, onClick } = props;
-  const url = `/app/sequences/${urlFriendly(sequence.body.name) || ""}`;
-  const style = props.isMoveTarget ? { border: "1px solid red" } : {};
-  return <li style={{ ...style, ...FOLDER_LIST_ITEM }}>
-    <i onClick={() => onClick(sequence.uuid)} className="fa fa-arrows-v float-right" />
-    <div className={"float-left"}>
-      <Saucer color={sequence.body.color || "gray"} active={false} />
-    </div>
+  const seqName = sequence.body.name;
+  const url = `/app/sequences/${urlFriendly(seqName) || ""}`;
+  const moveTarget = props.isMoveTarget ? "move-source" : "";
+  const nameWithSaveIndicator = seqName + (sequence.specialStatus ? "*" : "");
+  const active = lastUrlChunk() === urlFriendly(seqName) ? "active" : "";
+  return <StepDragger
+    dispatch={props.dispatch}
+    step={{
+      kind: "execute",
+      args: { sequence_id: props.sequence.body.id || 0 },
+      body: variableList(props.variableData)
+    }}
+    intent="step_splice"
+    draggerId={NULL_DRAGGER_ID}>
     <Link to={url} key={sequence.uuid} onClick={setActiveSequenceByName}>
-      {sequence.body.name}
+      <li className={`sequence-list-item ${active} ${moveTarget}`} draggable={true}>
+        <Saucer color={sequence.body.color || "gray"} active={false} />
+        <p>{nameWithSaveIndicator}</p>
+        <div className="sequence-list-item-icons">
+          {props.inUse &&
+            <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
+          <i className="fa fa-arrows-v" onClick={() => onClick(sequence.uuid)} />
+        </div>
+      </li>
     </Link>
-  </li>;
+  </StepDragger>;
 };
 
 const ToggleFolderBtn = (p: ToggleFolderBtnProps) => {
@@ -76,9 +80,10 @@ const AddFolderBtn = ({ folder }: AddFolderBtn) => {
   return <button
     className="fb-button green"
     onClick={() => createFolder(folder || {})}>
-    <i
-      title={"Create Subfolder"}
-      className="fa fa-folder" />
+    <div className="fa-stack fa-2x" title={"Create Subfolder"}>
+      <i className="fa fa-folder fa-stack-2x" />
+      <i className="fa fa-plus fa-stack-1x" />
+    </div>
   </button>;
 };
 
@@ -86,12 +91,15 @@ const AddSequenceBtn = ({ folderId }: AddSequenceProps) => {
   return <button
     className="fb-button green"
     onClick={() => addNewSequenceToFolder(folderId)}>
-    <i className="fa fa-server" />
+    <div className="fa-stack fa-2x">
+      <i className="fa fa-server fa-stack-2x" />
+      <i className="fa fa-plus fa-stack-1x" />
+    </div>
   </button>;
 };
 
 const FolderButtonCluster = ({ node }: FolderNodeProps) => {
-  return <div style={FLEX}>
+  return <div className="folder-button-cluster">
     <button
       className="fb-button red"
       onClick={() => deleteFolder(node.id)}>
@@ -110,51 +118,29 @@ const FolderButtonCluster = ({ node }: FolderNodeProps) => {
 
 const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
-
-  const onCommit = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
-    const { currentTarget } = e;
-    return setFolderName(node.id, currentTarget.value)
-      .then(() => toggleFolderEditState(node.id));
-  };
-  let namePart: JSX.Element;
-  const toggle = () => toggleFolderOpenState(node.id);
-  const nodeName = props.movedSequenceUuid ?
-    t("CLICK TO MOVE HERE") : node.name;
-  if (node.editing) {
-    namePart = <BlurableInput value={nodeName} onCommit={onCommit} />;
-  } else {
-    namePart = <span onClick={toggle}> {nodeName}</span>;
-  }
-
-  const faIcon = ` fa fa-chevron-${node.open ? "down" : "right"}`;
-  const style = {
-    ...FOLDER_LIST_ITEM,
-    ...(props.movedSequenceUuid ? { backgroundColor: "#bbb" } : {})
-  };
-  const onClick =
-    props.movedSequenceUuid ? () => props.onMoveEnd(node.id) : () => { };
-  return <div style={style} onClick={onClick}>
-    <i
-      className={"float-left" + faIcon}
+  const moveModeTarget = props.movedSequenceUuid ? "move-target" : "";
+  const nodeName = moveModeTarget ? t("CLICK TO MOVE HERE") : node.name;
+  const onClick = moveModeTarget ? () => props.onMoveEnd(node.id) : () => { };
+  return <div className={`folder-list-item ${moveModeTarget}`}
+    onClick={onClick}>
+    <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
       title={"Open/Close Folder"}
-      onClick={toggle} />
-    <div className={"float-left"}>
-      <Popover
-        position={Position.BOTTOM}
-        popoverClassName="colorpicker-menu gray">
-        <i className="fa fa-folder" style={{ color: node.color }} />
-        <ColorPickerCluster
-          current={node.color}
-          onChange={(color) => setFolderColor(node.id, color)} />
-      </Popover>
+      onClick={() => toggleFolderOpenState(node.id)} />
+    <ColorPicker
+      saucerIcon={"fa-folder"}
+      current={node.color}
+      onChange={color => setFolderColor(node.id, color)} />
+    <div className="folder-name" onClick={() => toggleFolderOpenState(node.id)}>
+      {node.editing
+        ? <BlurableInput value={nodeName} onCommit={e =>
+          setFolderName(node.id, e.currentTarget.value)
+            .then(() => toggleFolderEditState(node.id))} />
+        : <p>{nodeName}</p>}
     </div>
-    {namePart}
-    <div className={"float-right"}>
-      <Popover>
-        <i className={"fa fa-ellipsis-v"} />
-        <FolderButtonCluster {...props} />
-      </Popover>
-    </div>
+    <Popover className="folder-settings-icon" usePortal={false}>
+      <i className={"fa fa-ellipsis-v"} />
+      <FolderButtonCluster {...props} />
+    </Popover>
   </div>;
 };
 
@@ -163,28 +149,29 @@ const FolderNode = (props: FolderNodeProps) => {
 
   const names = node
     .content
-    .map(x => <FolderListItem
-      sequence={sequences[x]}
-      key={"F" + x}
+    .map(seqUuid => <FolderListItem
+      sequence={sequences[seqUuid]}
+      key={"F" + seqUuid}
+      dispatch={props.dispatch}
+      variableData={props.sequenceMetas[seqUuid]}
+      inUse={!!props.resourceUsage[seqUuid]}
       onClick={props.onMoveStart}
-      isMoveTarget={props.movedSequenceUuid === x} />);
+      isMoveTarget={props.movedSequenceUuid === seqUuid} />);
 
-  const children = <ul style={UL_STYLE}> {names} </ul>;
   const mapper = (n2: FolderUnion) => <FolderNode
     node={n2}
     key={n2.id}
     sequences={sequences}
+    dispatch={props.dispatch}
+    sequenceMetas={props.sequenceMetas}
+    resourceUsage={props.resourceUsage}
     movedSequenceUuid={props.movedSequenceUuid}
     onMoveStart={props.onMoveStart}
     onMoveEnd={props.onMoveEnd} />;
   const array: FolderUnion[] = node.children || [];
-  return <div style={FOLDER_NODE_WRAPPER}>
-    <Row>
-      <Col xs={12}>
-        <FolderNameEditor {...props} />
-      </Col>
-    </Row>
-    {!!node.open && children}
+  return <div className="folder">
+    <FolderNameEditor {...props} />
+    {!!node.open && <ul className="in-folder-sequences">{names}</ul>}
     {!!node.open && array.map(mapper)}
   </div>;
 };
@@ -194,11 +181,14 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
   Graph = (_props: {}) => {
 
-    return <div>
+    return <div className="folders">
       {this.props.rootFolder.folders.map(grandparent => {
         return <FolderNode
           node={grandparent}
           key={grandparent.id}
+          dispatch={this.props.dispatch}
+          sequenceMetas={this.props.sequenceMetas}
+          resourceUsage={this.props.resourceUsage}
           movedSequenceUuid={this.state.movedSequenceUuid}
           onMoveStart={this.startSequenceMove}
           onMoveEnd={this.endSequenceMove}
@@ -225,15 +215,18 @@ export class Folders extends React.Component<FolderProps, FolderState> {
     .props
     .rootFolder
     .noFolder
-    .map(x => <FolderListItem
-      key={x}
-      sequence={this.props.sequences[x]}
+    .map(seqUuid => <FolderListItem
+      key={seqUuid}
+      dispatch={this.props.dispatch}
+      variableData={this.props.sequenceMetas[seqUuid]}
+      inUse={!!this.props.resourceUsage[seqUuid]}
+      sequence={this.props.sequences[seqUuid]}
       onClick={this.startSequenceMove}
-      isMoveTarget={this.state.movedSequenceUuid === x} />);
+      isMoveTarget={this.state.movedSequenceUuid === seqUuid} />);
 
   render() {
-    return <div>
-      <div className="panel-top with-button" style={FOLDER_PANEL_WRAPPER}>
+    return <div className="folders-panel">
+      <div className="panel-top with-button">
         <div className="thin-search-wrapper">
           <div className="text-input-wrapper">
             <i className="fa fa-search" />
@@ -252,10 +245,17 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         <AddFolderBtn />
         <AddSequenceBtn />
       </div>
-      <ul style={UL_STYLE}>
-        {this.rootSequences()}
-      </ul>
-      <this.Graph />
+      <EmptyStateWrapper
+        notEmpty={Object.values(this.props.sequences).length > 0
+          || this.props.rootFolder.folders.length > 0}
+        graphic={EmptyStateGraphic.sequences}
+        title={t("No Sequences.")}
+        text={Content.NO_SEQUENCES}>
+        <ul className="sequences-not-in-folders">
+          {this.rootSequences()}
+        </ul>
+        <this.Graph />
+      </EmptyStateWrapper>
     </div>;
   }
 }

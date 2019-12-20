@@ -89,6 +89,6 @@ export function mapStateToProps(props: Everything): Props {
     getWebAppConfigValue: getConfig,
     menuOpen: props.resources.consumers.sequences.menuOpen,
     stepIndex: props.resources.consumers.sequences.stepIndex,
-    folderData: mapStateToFolderProps(props.resources)
+    folderData: mapStateToFolderProps(props)
   };
 }

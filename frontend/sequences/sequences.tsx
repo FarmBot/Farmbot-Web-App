@@ -2,12 +2,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
-import {
-  Page, Row, LeftPanel, EmptyStateWrapper, EmptyStateGraphic
-} from "../ui";
+import { Page, Row, LeftPanel } from "../ui";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { ToolTips, Content } from "../constants";
+import { ToolTips } from "../constants";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { CenterPanel, RightPanel } from "../ui";
@@ -47,14 +45,7 @@ export class RawSequences extends React.Component<Props, {}> {
           className={`sequence-list-panel ${activeClasses}`}
           title={t("Sequences")}
           helpText={t(ToolTips.SEQUENCE_LIST)}>
-          <EmptyStateWrapper
-            notEmpty={this.props.sequences.length > 0
-              || this.props.folderData.rootFolder.folders.length > 0}
-            graphic={EmptyStateGraphic.sequences}
-            title={t("No Sequences.")}
-            text={Content.NO_SEQUENCES}>
-            <Folders {...this.props.folderData} />
-          </EmptyStateWrapper>
+          <Folders {...this.props.folderData} dispatch={this.props.dispatch} />
         </LeftPanel>
         <CenterPanel
           className={`sequence-editor-panel ${activeClasses}`}

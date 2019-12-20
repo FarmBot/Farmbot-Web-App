@@ -8,11 +8,13 @@ interface PickerProps {
   position?: Position;
   current: ResourceColor;
   onChange?: (color: ResourceColor) => void;
+  saucerIcon?: string;
 }
 
 interface ColorPickerClusterProps {
   onChange: (color: ResourceColor) => void;
   current: ResourceColor;
+  saucerIcon?: string;
 }
 
 interface ColorPickerItemProps extends ColorPickerClusterProps {
@@ -21,17 +23,24 @@ interface ColorPickerItemProps extends ColorPickerClusterProps {
 
 const ColorPickerItem = (props: ColorPickerItemProps) => {
   const isActive = props.color === props.current;
-  return <div onClick={() => props.onChange(props.color)}>
-    <Saucer color={props.color} active={isActive} />
+  return <div className="color-picker-item-wrapper"
+    onClick={() => props.onChange(props.color)}>
+    {props.saucerIcon
+      ? <div className={`color-picker-item ${isActive ? "active" : ""}`}>
+        <i className={`icon-saucer active-border fa ${props.saucerIcon}`} />
+        <i className={`icon-saucer fa ${props.saucerIcon} ${props.color}`} />
+      </div>
+      : <Saucer color={props.color} active={isActive} />}
   </div>;
 };
 
 export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
-  return <div>
+  return <div className="color-picker-cluster">
     {colors.map((color) => {
       return <ColorPickerItem
         key={color}
         onChange={props.onChange}
+        saucerIcon={props.saucerIcon}
         current={props.current}
         color={color} />;
     })}
@@ -41,11 +50,17 @@ export class ColorPicker extends React.Component<PickerProps, {}> {
 
   public render() {
     const cb = this.props.onChange || function () { };
-    return <Popover
+    return <Popover className="color-picker"
       position={this.props.position || Position.BOTTOM}
       popoverClassName="colorpicker-menu gray">
-      <Saucer color={this.props.current} />
-      <ColorPickerCluster onChange={cb} current={this.props.current} />
+      {this.props.saucerIcon
+        ? <i className={`icon-saucer fa ${this.props.saucerIcon} ${
+          this.props.current}`} />
+        : <Saucer color={this.props.current} />}
+      <ColorPickerCluster
+        onChange={cb}
+        current={this.props.current}
+        saucerIcon={this.props.saucerIcon} />
     </Popover>;
   }
 }
