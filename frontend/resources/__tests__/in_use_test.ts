@@ -28,13 +28,15 @@ describe("resourceUsageList", () => {
       "Sequence.Sequence": {
         "Regimen.9.9": { "Sequence.10.10": true, "Sequence.11.11": true }
       },
-      "Sequence.FbosConfig": { "Device.99.99": { "Sequence.12.12": true } }
+      "Sequence.FbosConfig": { "Sequence.12.12": { "FbosConfig.13.13": true } },
+      "Sequence.PinBinding": { "Sequence.14.14": { "PinBinding.15.15": true } },
     };
     const actual = Object.keys(resourceUsageList(x)).sort();
     const expected = [
       "FarmEvent.0.0", "FarmEvent.3.3",
       "Regimen.6.6", "Regimen.9.9",
-      "Device.99.99",
+      "Sequence.12.12",
+      "Sequence.14.14",
     ].sort();
     expect(actual.length).toEqual(expected.length);
     expected.map(y => expect(actual).toContain(y));

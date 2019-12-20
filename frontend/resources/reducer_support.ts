@@ -15,6 +15,7 @@ import {
 } from "../sequences/locals_list/sanitize_nodes";
 import {
   selectAllFarmEvents,
+  selectAllPinBindings,
   findByKindAndId,
   selectAllLogs,
   selectAllRegimens,
@@ -211,6 +212,21 @@ const AFTER_HOOKS: IndexerHook = {
     } else {
       i.inUse["Sequence.FbosConfig"] = {};
     }
+  },
+  PinBinding: (i) => {
+    i.inUse["Sequence.PinBinding"] = {};
+    const tracker = i.inUse["Sequence.PinBinding"];
+    selectAllPinBindings(i)
+      .map(pinBinding => {
+        if (pinBinding.body.binding_type === "standard") {
+          const { sequence_id } = pinBinding.body;
+          const uuid = i.byKindAndId[joinKindAndId("Sequence", sequence_id)];
+          if (uuid) {
+            tracker[uuid] = tracker[uuid] || {};
+            tracker[uuid][pinBinding.uuid] = true;
+          }
+        }
+      });
   },
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,
