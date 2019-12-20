@@ -276,7 +276,8 @@ CREATE TABLE public.devices (
     mqtt_rate_limit_email_sent_at timestamp without time zone,
     last_ota timestamp without time zone,
     last_ota_checkup timestamp without time zone,
-    ota_hour integer DEFAULT 3
+    ota_hour integer DEFAULT 3,
+    needs_reset boolean DEFAULT false
 );
 
 
@@ -1405,7 +1406,7 @@ CREATE VIEW public.resource_update_steps AS
             edge_nodes.kind,
             edge_nodes.value
            FROM public.edge_nodes
-          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY (ARRAY[('"GenericPointer"'::character varying)::text, ('"ToolSlot"'::character varying)::text, ('"Plant"'::character varying)::text])))
+          WHERE (((edge_nodes.kind)::text = 'resource_type'::text) AND ((edge_nodes.value)::text = ANY ((ARRAY['"GenericPointer"'::character varying, '"ToolSlot"'::character varying, '"Plant"'::character varying])::text[])))
         ), resource_id AS (
          SELECT edge_nodes.primary_node_id,
             edge_nodes.kind,
@@ -1482,7 +1483,8 @@ CREATE TABLE public.sensor_readings (
     pin integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    mode integer DEFAULT 0
+    mode integer DEFAULT 0,
+    read_at timestamp without time zone
 );
 
 
@@ -1684,8 +1686,7 @@ CREATE TABLE public.users (
     agreed_to_terms_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    inactivity_warning_sent_at timestamp without time zone,
-    inactivity_warning_count integer
+    inactivity_warning_sent_at timestamp without time zone
 );
 
 
@@ -3442,6 +3443,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191002125625'),
 ('20191107170431'),
 ('20191119204916'),
-('20191203163621');
+('20191203163621'),
+('20191219212755'),
+('20191220010646');
 
 

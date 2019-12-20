@@ -83,7 +83,9 @@ RSpec.configure do |config|
   config.order = "random"
   if ENV["DOCS"]
     config.after(:each, type: :controller) do
-      SmarfDoc.run!(NiceResponse.new(request), response)
+      if request.path.length > 0 || response.body.length > 0
+        SmarfDoc.run!(NiceResponse.new(request), response)
+      end
     end
 
     config.after(:suite) do

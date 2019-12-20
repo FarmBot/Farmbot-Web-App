@@ -242,6 +242,7 @@ export function fakeSensorReading(): TaggedSensorReading {
   return fakeResource("SensorReading", {
     id: idCounter++,
     created_at: "2018-01-11T20:20:38.362Z",
+    read_at: "2018-01-11T20:20:38.362Z",
     pin: 1,
     value: 0,
     mode: 0,
