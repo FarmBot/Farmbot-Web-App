@@ -23,7 +23,7 @@ describe Api::SensorReadingsController do
         params: { format: :json }
 
       expect(response.status).to eq(200)
-      expect(json[:created_at]).to eq(json[:read_at])
+      expect(json[:created_at].first(22)).to eq(json[:read_at].first(22))
     end
 
     it "makes a sensor reading" do
@@ -52,7 +52,7 @@ describe Api::SensorReadingsController do
       expect(json[:z]).to eq(2)
       expect(json[:pin]).to eq(13)
       expect(json[:mode]).to eq(1)
-      expect(read_at.as_json.first(23)).to eq(json[:read_at].first(23))
+      expect(read_at.as_json.first(22)).to eq(json[:read_at].first(22))
       expect(before < SensorReading.count).to be_truthy
     end
 
