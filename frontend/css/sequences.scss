@@ -230,6 +230,14 @@
 }
 
 .folders-panel {
+  height: calc(100vh - 15rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-left: -30px;
+  margin-right: -20px;
+  @media screen and (max-width: 767px) {
+    margin-left: -15px;
+  }
   .panel-top,
   .folder-button-cluster {
     i {
@@ -248,15 +256,6 @@
       margin-left: 0.75rem;
       filter: drop-shadow(0 0 0.2rem  $dark_green);
       text-align: center;
-    }
-  }
-  .non-empty-state {
-    margin-left: -30px;
-    margin-right: -20px;
-  }
-  @media screen and (max-width: 767px) {
-    .non-empty-state {
-      margin-left: -15px;
     }
   }
   .folder-button-cluster {

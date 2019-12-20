@@ -120,17 +120,18 @@ const FolderNameEditor = (props: FolderNodeProps) => {
   const { node } = props;
   const moveModeTarget = props.movedSequenceUuid ? "move-target" : "";
   const nodeName = moveModeTarget ? t("CLICK TO MOVE HERE") : node.name;
-  const onClick = moveModeTarget ? () => props.onMoveEnd(node.id) : () => { };
+  const onClick = () => moveModeTarget ? props.onMoveEnd(node.id) : undefined;
+  const toggle = () => moveModeTarget ? undefined : toggleFolderOpenState(node.id);
   return <div className={`folder-list-item ${moveModeTarget}`}
     onClick={onClick}>
     <i className={`fa fa-chevron-${node.open ? "down" : "right"}`}
       title={"Open/Close Folder"}
-      onClick={() => toggleFolderOpenState(node.id)} />
+      onClick={toggle} />
     <ColorPicker
       saucerIcon={"fa-folder"}
       current={node.color}
       onChange={color => setFolderColor(node.id, color)} />
-    <div className="folder-name" onClick={() => toggleFolderOpenState(node.id)}>
+    <div className="folder-name" onClick={toggle}>
       {node.editing
         ? <BlurableInput value={nodeName} onCommit={e =>
           setFolderName(node.id, e.currentTarget.value)
