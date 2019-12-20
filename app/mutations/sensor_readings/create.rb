@@ -10,13 +10,14 @@ module SensorReadings
     end
 
     optional do
+      time :read_at
       integer :mode,
         in:      CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
         default: CeleryScriptSettingsBag::DIGITAL
     end
 
     def execute
-      SensorReading.create!(inputs)
+      SensorReading.create!(inputs.merge(read_at: read_at || Time.now))
     end
   end
 end
