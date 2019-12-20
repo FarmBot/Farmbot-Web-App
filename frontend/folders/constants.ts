@@ -66,9 +66,19 @@ export interface FolderProps {
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
+export interface FolderNodeState {
+  settingsOpen: boolean;
+}
+
 export interface FolderState {
   toggleDirection: boolean;
   movedSequenceUuid?: string;
+}
+
+export interface FolderPanelTopProps {
+  searchTerm: string | undefined;
+  toggleDirection: boolean;
+  toggleAll(): void;
 }
 
 export interface FolderNodeProps {

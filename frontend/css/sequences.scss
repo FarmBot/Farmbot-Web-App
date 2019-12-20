@@ -297,6 +297,11 @@
     .fa-arrows-v, .fa-ellipsis-v {
       display: none;
     }
+    .fa-ellipsis-v {
+      &.open {
+        display: block;
+      }
+    }
     &:hover {
       .fa-arrows-v, .fa-ellipsis-v {
         display: block;
