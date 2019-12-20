@@ -1,6 +1,6 @@
 import { RootFolderNode as Tree } from "./constants";
 import { cloneAndClimb } from "./climb";
-import { Color } from "farmbot";
+import { Color, SpecialStatus } from "farmbot";
 import { store } from "../redux/store";
 import { initSave, destroy, edit, save, init } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
@@ -104,6 +104,8 @@ export function moveSequence(sequenceUuid: string, folder_id: number) {
   const s = store.getState().resources.index.references[sequenceUuid];
   if (s && s.kind === "Sequence") {
     d(edit(s, { folder_id }));
-    d(save(sequenceUuid));
+    if (s.specialStatus == SpecialStatus.SAVED) {
+      d(save(sequenceUuid));
+    }
   }
 }
