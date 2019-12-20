@@ -10,6 +10,7 @@ describe("tagAllSteps()", () => {
     "body": {
       "id": 8,
       "name": "Goto 0, 0, 0",
+      "folder_id": undefined,
       "color": "gray",
       "body": [
         {
