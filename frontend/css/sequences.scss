@@ -238,6 +238,12 @@
   @media screen and (max-width: 767px) {
     margin-left: -15px;
   }
+  .panel-top {
+    margin-left: 1rem !important;
+    button {
+      margin-top: 0.7rem !important;
+    }
+  }
   .panel-top,
   .folder-button-cluster {
     i {
@@ -262,10 +268,40 @@
     display: flex;
     i {
       width: 1.5rem !important;
+      line-height: 2rem !important;
     }
   }
   ul {
     margin-bottom: 0;
+  }
+  .folder-drop-area {
+    height: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    transition: height 0.5s ease-out,
+      padding-top 0.5s ease-out,
+      padding-bottom 0.5s ease-out;
+    transition-delay: 0.4s;
+    color: $gray;
+    font-weight: bold;
+    background: $white;
+    text-align: center;
+    cursor: pointer;
+    &.visible {
+      transition: height 0.3s ease-in,
+        padding-top 0.3s ease-in,
+        padding-bottom 0.3s ease-in;
+      transition-delay: 0.2s;
+      height: 3rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    &:hover, &.hovered {
+      color: $medium_gray;
+    }
   }
   .folders {
     .folder > div:not(:first-child), ul {
@@ -277,24 +313,26 @@
     display: flex;
     position: relative;
     width: 100%;
+    height: 3.5rem;
     border-bottom: 1px solid $light_gray;
-    padding: 0.5rem;
     cursor: pointer;
     background: $lighter_gray;
+    border-left: 4px solid transparent;
     &.active {
-      border-left: 3px solid $dark_gray;
+      border-left: 4px solid $dark_gray;
     }
     .fa-chevron-down, .fa-chevron-right {
       z-index: 2;
-      width: 2rem;
+      position: absolute;
+      width: 3rem;
       font-size: 1.1rem;
     }
     .folder-settings-icon,
-    .fa-arrows-v {
+    .fa-bars {
       position: absolute;
       right: 0;
     }
-    .fa-arrows-v, .fa-ellipsis-v {
+    .fa-bars, .fa-ellipsis-v {
       display: none;
     }
     .fa-ellipsis-v {
@@ -303,13 +341,13 @@
       }
     }
     &:hover {
-      .fa-arrows-v, .fa-ellipsis-v {
+      .fa-bars, .fa-ellipsis-v {
         display: block;
       }
     }
     i {
       margin: 0;
-      line-height: 2.5rem;
+      line-height: 3.5rem;
       width: 3rem;
       text-align: center;
     }
@@ -319,27 +357,52 @@
       width: 1.2rem;
       height: 1.2rem;
     }
+    a {
+      width: 100%;
+    }
     p {
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       font-size: 1.2rem;
       font-weight: bold;
-      width: 100%;
+      width: 75%;
       padding: 0.5rem;
-      margin-left: 2rem;
+      padding-left: 0;
+      margin-left: 3rem;
+      line-height: 2.5rem;
     }
     .folder-name {
       width: 100%;
       margin-right: 3rem;
-      .input {
-        width: 90%;
-        margin-left: 2rem;
+      margin-left: 6rem;
+      p {
+        margin-left: 0;
+      }
+      .folder-name-input {
+        display: flex;
+        button {
+          top: 0.5rem;
+          width: auto;
+          height: 2rem;
+          i {
+            line-height: 0;
+            width: 1rem;
+          }
+        }
+        .input {
+          width: 90%;
+          margin: 0.3rem;
+        }
       }
     }
     .sequence-list-item-icons {
       display: flex;
-      margin-right: 3rem;
+      position: absolute;
+      right: 0;
+      .fa-hdd-o {
+        margin-right: 3rem;
+      }
     }
     button {
       margin-left: 0.5rem;
@@ -351,24 +414,34 @@
       background: $white;
     }
   }
+  .folder-list-item,
   .sequence-list-item {
-    padding-left: 2rem;
-    .saucer {
+    .bp3-popover-wrapper.color-picker {
+      position: absolute;
+      line-height: 0;
+      .bp3-popover-target {
+        width: 2rem;
+        height: 3.5rem;
+      }
+    }
+    padding-left: 3rem;
+    .saucer, .icon-saucer {
       top: 0.55rem;
+      position: relative;
+      margin: auto;
+      margin-top: 0.6rem;
     }
   }
   .folder-list-item {
-    .bp3-popover-wrapper {
-      position: absolute;
+    padding-left: 0;
+    .bp3-popover-wrapper.color-picker {
+      margin-left: 3rem;
     }
     .color-picker {
-      .bp3-popover-target {
-        margin-left: 2.5rem;
-      }
       .icon-saucer {
         top: 0;
-        left: 1.5rem;
-        line-height: 1.4rem;
+        margin-top: 0;
+        margin-left: 0.4rem;
       }
     }
   }

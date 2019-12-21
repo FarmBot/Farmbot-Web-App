@@ -43,8 +43,7 @@ export class RawSequences extends React.Component<Props, {}> {
       <Row>
         <LeftPanel
           className={`sequence-list-panel ${activeClasses}`}
-          title={t("Sequences")}
-          helpText={t(ToolTips.SEQUENCE_LIST)}>
+          title={t("Sequences")}>
           <Folders {...this.props.folderData} dispatch={this.props.dispatch} />
         </LeftPanel>
         <CenterPanel

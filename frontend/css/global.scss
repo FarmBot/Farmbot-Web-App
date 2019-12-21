@@ -41,22 +41,6 @@ body {
     display: inline-block;
     padding: 0.4rem;
   }
-  .color-picker-item {
-    position: relative;
-    .active-border {
-      display: none;
-    }
-    &.active {
-      .active-border {
-        display: block;
-        position: absolute;
-        top: 2px;
-        left: 1px;
-        transform: scale(1.5);
-        color: $white;
-      }
-    }
-  }
 }
 
 .bp3-popover.help {

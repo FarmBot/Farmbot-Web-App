@@ -22,15 +22,11 @@ interface ColorPickerItemProps extends ColorPickerClusterProps {
 }
 
 const ColorPickerItem = (props: ColorPickerItemProps) => {
-  const isActive = props.color === props.current;
   return <div className="color-picker-item-wrapper"
     onClick={() => props.onChange(props.color)}>
     {props.saucerIcon
-      ? <div className={`color-picker-item ${isActive ? "active" : ""}`}>
-        <i className={`icon-saucer active-border fa ${props.saucerIcon}`} />
-        <i className={`icon-saucer fa ${props.saucerIcon} ${props.color}`} />
-      </div>
-      : <Saucer color={props.color} active={isActive} />}
+      ? <i className={`icon-saucer fa ${props.saucerIcon} ${props.color}`} />
+      : <Saucer color={props.color} active={false} />}
   </div>;
 };
 

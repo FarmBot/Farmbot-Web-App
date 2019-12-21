@@ -73,6 +73,7 @@ export interface FolderNodeState {
 export interface FolderState {
   toggleDirection: boolean;
   movedSequenceUuid?: string;
+  stashedUuid?: string;
 }
 
 export interface FolderPanelTopProps {
@@ -85,28 +86,52 @@ export interface FolderNodeProps {
   node: FolderUnion;
   sequences: Record<string, TaggedSequence>;
   movedSequenceUuid: string | undefined;
-  onMoveStart(sequenceUuid: string): void;
+  startSequenceMove(sequenceUuid: UUID): void;
+  toggleSequenceMove(sequenceUuid?: UUID): void;
   onMoveEnd(folderId: number): void;
   dispatch: Function;
   resourceUsage: Record<UUID, boolean | undefined>;
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
+export interface FolderButtonClusterProps extends FolderNodeProps {
+  close(): void;
+}
+
+export interface FolderNameInputProps {
+  node: FolderUnion;
+}
+
 export interface FolderItemProps {
-  onClick(sequenceUuid: string): void;
+  startSequenceMove(sequenceUuid: UUID): void;
+  toggleSequenceMove(sequenceUuid?: UUID): void;
   sequence: TaggedSequence;
-  isMoveTarget: boolean;
+  movedSequenceUuid: UUID | undefined;
   dispatch: Function;
   variableData: VariableNameSet | undefined;
   inUse: boolean;
 }
 
+export interface SequenceDropAreaProps {
+  dropAreaVisible: boolean;
+  onMoveEnd(id: number): void;
+  toggleSequenceMove(sequenceUuid?: UUID): void;
+  folderId: number;
+  folderName: string;
+}
+
+export interface SequenceDropAreaState {
+  hovered: boolean;
+}
+
 export interface AddFolderBtn {
   folder?: DeepPartial<Folder>;
+  close?(): void;
 }
 
 export interface AddSequenceProps {
   folderId?: number;
+  close?(): void;
 }
 
 export interface ToggleFolderBtnProps {
