@@ -73,6 +73,7 @@ export const emptyState = (): RestResources => {
         "Sequence.FarmEvent": {},
         "Sequence.Regimen": {},
         "Sequence.Sequence": {},
+        "Sequence.PinBinding": {},
         "Sequence.FbosConfig": {}
       }
     }
