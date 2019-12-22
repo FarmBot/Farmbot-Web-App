@@ -50,6 +50,16 @@ export function StepButtonCluster(props: StepButtonProps) {
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
+        kind: "toggle_pin",
+        args: {
+          pin_number: 4
+        }
+      }}
+      color="yellow">
+      {t("TOGGLE PERIPHERAL")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{
         kind: "read_pin",
         args: {
           pin_number: NOTHING_SELECTED,
@@ -59,6 +69,17 @@ export function StepButtonCluster(props: StepButtonProps) {
       }}
       color="yellow">
       {t("READ SENSOR")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{
+        kind: "set_servo_angle",
+        args: {
+          pin_number: 4,
+          pin_value: 90
+        }
+      }}
+      color="blue">
+      {t("CONTROL SERVO")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
@@ -79,6 +100,16 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="red">
       {t("SEND MESSAGE")}
     </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{ kind: "emergency_lock", args: {} }}
+      color="brown">
+      {t("EMERGENCY LOCK")}
+    </StepButton>,
+    // <StepButton {...commonStepProps}
+    //   step={{ kind: "reboot", args: { package: "farmbot_os" } }}
+    //   color="brown">
+    //   {t("REBOOT")}
+    // </StepButton>,
     <StepButton{...commonStepProps}
       step={{
         kind: "find_home",

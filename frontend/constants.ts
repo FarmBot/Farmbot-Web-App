@@ -284,6 +284,8 @@ export namespace ToolTips {
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type
     on the Device page.`);
+  export const EMERGENCY_LOCK =
+    trim(`Stops a device from moving until it is unlocked by a user.`);
 
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
