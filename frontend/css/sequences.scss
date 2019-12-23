@@ -230,13 +230,15 @@
 }
 
 .folders-panel {
-  height: calc(100vh - 15rem);
-  overflow-y: auto;
-  overflow-x: hidden;
   margin-left: -30px;
   margin-right: -20px;
   @media screen and (max-width: 767px) {
     margin-left: -15px;
+  }
+  .non-empty-state {
+    height: calc(100vh - 15rem);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
   .panel-top {
     margin-left: 1rem !important;
@@ -282,8 +284,8 @@
     padding-left: 2rem;
     padding-right: 2rem;
     transition: height 0.5s ease-out,
-      padding-top 0.5s ease-out,
-      padding-bottom 0.5s ease-out;
+    padding-top 0.5s ease-out,
+    padding-bottom 0.5s ease-out;
     transition-delay: 0.4s;
     color: $gray;
     font-weight: bold;
@@ -292,8 +294,8 @@
     cursor: pointer;
     &.visible {
       transition: height 0.3s ease-in,
-        padding-top 0.3s ease-in,
-        padding-bottom 0.3s ease-in;
+      padding-top 0.3s ease-in,
+      padding-bottom 0.3s ease-in;
       transition-delay: 0.2s;
       height: 3rem;
       padding-top: 0.5rem;
@@ -322,8 +324,8 @@
       border-left: 4px solid $dark_gray;
     }
     .fa-chevron-down, .fa-chevron-right {
-      z-index: 2;
       position: absolute;
+      z-index: 2;
       width: 3rem;
       font-size: 1.1rem;
     }
@@ -391,8 +393,8 @@
           }
         }
         .input {
-          width: 90%;
           margin: 0.3rem;
+          width: 90%;
         }
       }
     }
@@ -426,8 +428,8 @@
     }
     padding-left: 3rem;
     .saucer, .icon-saucer {
-      top: 0.55rem;
       position: relative;
+      top: 0.55rem;
       margin: auto;
       margin-top: 0.6rem;
     }

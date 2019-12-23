@@ -2,15 +2,12 @@ import {
   TaggedResource,
   SpecialStatus,
   ResourceName,
-  TaggedSequence
+  TaggedSequence,
 } from "farmbot";
 import {
   isTaggedResource,
 } from "../resources/tagged_resources";
-import {
-  GetState,
-  ReduxAction
-} from "../redux/interfaces";
+import { GetState, ReduxAction } from "../redux/interfaces";
 import { API } from "./index";
 import axios from "axios";
 import {
@@ -18,7 +15,7 @@ import {
   destroyOK,
   destroyNO,
   GeneralizedError,
-  saveOK
+  saveOK,
 } from "../resources/actions";
 import { UnsafeError } from "../interfaces";
 import { defensiveClone, unpackUUID } from "../util";
@@ -284,7 +281,7 @@ export function urlFor(tag: ResourceName) {
     User: API.current.usersPath,
     WebAppConfig: API.current.webAppConfigPath,
     WebcamFeed: API.current.webcamFeedPath,
-    Folder: API.current.foldersPath
+    Folder: API.current.foldersPath,
   };
   const url = OPTIONS[tag];
   if (url) {

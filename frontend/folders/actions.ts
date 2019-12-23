@@ -118,7 +118,8 @@ export const dropSequence = (folder_id: number) =>
     const dataXferObj = dispatch(stepGet(key));
     const { sequence_id } = dataXferObj.value.args;
     const ri = store.getState().resources.index;
-    const seqUuid = ri.byKindAndId[joinKindAndId("Sequence", sequence_id)];
+    const seqUuid = dataXferObj.resourceUuid ||
+      ri.byKindAndId[joinKindAndId("Sequence", sequence_id)];
     const sequence = maybeGetSequence(ri, seqUuid);
     if (sequence) { sequenceEditMaybeSave(sequence, { folder_id }); }
   };

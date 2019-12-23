@@ -62,7 +62,8 @@ export const FolderListItem = (props: FolderItemProps) => {
       body: variableList(props.variableData)
     }}
     intent="step_splice"
-    draggerId={NULL_DRAGGER_ID}>
+    draggerId={NULL_DRAGGER_ID}
+    resourceUuid={sequence.uuid}>
     <li className={`sequence-list-item ${active} ${moveSource}`}
       draggable={true}>
       <ColorPicker
@@ -91,7 +92,7 @@ const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {
 const AddFolderBtn = ({ folder, close }: AddFolderBtn) => {
   return <button
     className="fb-button green"
-    onClick={() => { close?.(); createFolder(folder || {}); }}>
+    onClick={() => { close?.(); createFolder(folder); }}>
     <div className="fa-stack fa-2x" title={"Create Subfolder"}>
       <i className="fa fa-folder fa-stack-2x" />
       <i className="fa fa-plus fa-stack-1x" />
@@ -129,7 +130,7 @@ export const FolderButtonCluster =
     </div>;
   };
 
-const FolderNameInput = ({ node }: FolderNameInputProps) =>
+export const FolderNameInput = ({ node }: FolderNameInputProps) =>
   <div className="folder-name-input">
     <BlurableInput value={node.name} onCommit={e =>
       setFolderName(node.id, e.currentTarget.value)} />
@@ -143,6 +144,7 @@ const FolderNameInput = ({ node }: FolderNameInputProps) =>
 export class FolderNameEditor
   extends React.Component<FolderNodeProps, FolderNodeState> {
   state: FolderNodeState = { settingsOpen: false };
+  close = () => this.setState({ settingsOpen: false });
   render() {
     const { node } = this.props;
     const settingsOpenClass = this.state.settingsOpen ? "open" : "";
@@ -164,8 +166,7 @@ export class FolderNameEditor
         <i className={`fa fa-ellipsis-v ${settingsOpenClass}`}
           onClick={() =>
             this.setState({ settingsOpen: !this.state.settingsOpen })} />
-        <FolderButtonCluster {...this.props}
-          close={() => this.setState({ settingsOpen: false })} />
+        <FolderButtonCluster {...this.props} close={this.close} />
       </Popover>
     </div>;
   }
@@ -322,9 +323,7 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
         <i className="fa fa-search" />
         <input
           value={props.searchTerm || ""}
-          onChange={({ currentTarget }) => {
-            updateSearchTerm(currentTarget.value);
-          }}
+          onChange={e => updateSearchTerm(e.currentTarget.value)}
           type="text"
           placeholder={t("Search sequences")} />
       </div>

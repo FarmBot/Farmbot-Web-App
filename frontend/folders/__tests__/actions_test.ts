@@ -1,3 +1,11 @@
+const mockStepGetResult = {
+  value: { kind: "execute", args: { sequence_id: 1 } },
+  resourceUuid: "",
+};
+jest.mock("../../draggable/actions", () => ({
+  stepGet: jest.fn(() => () => mockStepGetResult),
+}));
+
 import { FolderNode } from "../constants";
 import { ingest } from "../data_transfer";
 import {
@@ -11,7 +19,9 @@ import {
   toggleFolderOpenState,
   toggleFolderEditState,
   toggleAll,
-  moveSequence
+  moveSequence,
+  dropSequence,
+  sequenceEditMaybeSave,
 } from "../actions";
 import { sample } from "lodash";
 import { cloneAndClimb, climb } from "../climb";
@@ -24,6 +34,8 @@ import { save, edit, init, initSave, destroy } from "../../api/crud";
 import { setActiveSequenceByName } from "../../sequences/set_active_sequence_by_name";
 import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { stepGet } from "../../draggable/actions";
+import { SpecialStatus } from "farmbot";
 
 /** A set of fake Folder resources used exclusively for testing purposes.
  ```
@@ -76,7 +88,7 @@ const mockState: DeepPartial<Everything> =
 jest.mock("../../redux/store", () => {
   return {
     store: {
-      dispatch: jest.fn(),
+      dispatch: jest.fn(x => typeof x === "function" && x()),
       getState: jest.fn(() => mockState)
     }
   };
@@ -146,10 +158,6 @@ export const TEST_GRAPH = ingest({
   }
 });
 
-describe("deletion of folders", () => {
-  test.todo("can't delete populated folders");
-});
-
 describe("expand/collapse all", () => {
   const halfOpen = cloneAndClimb(TEST_GRAPH, (node) => {
     node.open = !sample([true, false]);
@@ -209,6 +217,16 @@ describe("createFolder", () => {
       parent_id: 0
     });
   });
+
+  it("saves a new folder without inputs", () => {
+    createFolder();
+    expect(store.dispatch).toHaveReturnedTimes(1);
+    expect(initSave).toHaveBeenCalledWith("Folder", {
+      color: "gray",
+      name: "New Folder",
+      parent_id: 0
+    });
+  });
 });
 
 describe("deleteFolder", () => {
@@ -259,6 +277,24 @@ describe("toggleAll", () => {
   });
 });
 
+describe("sequenceEditMaybeSave()", () => {
+  it("saves", () => {
+    const sequence = fakeSequence();
+    sequence.specialStatus = SpecialStatus.SAVED;
+    sequenceEditMaybeSave(sequence, {});
+    expect(edit).toHaveBeenCalled();
+    expect(save).toHaveBeenCalledWith(sequence.uuid);
+  });
+
+  it("doesn't save", () => {
+    const sequence = fakeSequence();
+    sequence.specialStatus = SpecialStatus.DIRTY;
+    sequenceEditMaybeSave(sequence, {});
+    expect(edit).toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+});
+
 describe("moveSequence", () => {
   it("silently fails when given bad UUIDs", () => {
     const uuid = "a.b.c";
@@ -274,5 +310,32 @@ describe("moveSequence", () => {
     const update2 = expect.objectContaining({ folder_id: 12 });
     expect(edit).toHaveBeenCalledWith(update1, update2);
     expect(save).toHaveBeenCalledWith(uuid);
+  });
+});
+
+describe("dropSequence()", () => {
+  const fakeDragEvent = ({
+    dataTransfer: { getData: () => "fakeKey" }
+  } as unknown as React.DragEvent<HTMLElement>);
+
+  it("updates folder_id", () => {
+    dropSequence(1)(fakeDragEvent);
+    expect(stepGet).toHaveBeenCalledWith("fakeKey");
+    expect(edit).toHaveBeenCalledWith(mockSequence, { folder_id: 1 });
+  });
+
+  it("handles missing sequence", () => {
+    mockStepGetResult.value.args.sequence_id = -1;
+    dropSequence(1)(fakeDragEvent);
+    expect(stepGet).toHaveBeenCalledWith("fakeKey");
+    expect(edit).not.toHaveBeenCalled();
+  });
+
+  it("gets sequence by UUID", () => {
+    mockStepGetResult.value.args.sequence_id = -1;
+    mockStepGetResult.resourceUuid = mockSequence.uuid;
+    dropSequence(1)(fakeDragEvent);
+    expect(stepGet).toHaveBeenCalledWith("fakeKey");
+    expect(edit).toHaveBeenCalledWith(mockSequence, { folder_id: 1 });
   });
 });

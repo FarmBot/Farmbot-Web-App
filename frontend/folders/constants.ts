@@ -94,7 +94,8 @@ export interface FolderNodeProps {
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
 }
 
-export interface FolderButtonClusterProps extends FolderNodeProps {
+export interface FolderButtonClusterProps {
+  node: FolderUnion;
   close(): void;
 }
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import { stepPut } from "./actions";
 import { SequenceBodyItem as Step } from "farmbot";
 import { DataXferIntent, StepDraggerProps } from "./interfaces";
+import { UUID } from "../resources/interfaces";
 
 /** Magic number to indicate that the draggerId was not provided or can't be
  *  known. */
@@ -21,22 +22,21 @@ export const NULL_DRAGGER_ID = 0xCAFEF00D;
 export const stepDragEventHandler = (dispatch: Function,
   step: Step,
   intent: DataXferIntent,
-  draggerId: number) => {
+  draggerId: number,
+  resourceUuid?: UUID) => {
   return (ev: React.DragEvent<HTMLElement>) => {
-    dispatch(stepPut(step, ev, intent, draggerId));
+    dispatch(stepPut(step, ev, intent, draggerId, resourceUuid));
   };
 };
 
-export function StepDragger({ dispatch,
-  step,
-  children,
-  intent,
-  draggerId }: StepDraggerProps) {
+export function StepDragger(props: StepDraggerProps) {
+  const { dispatch, step, children, intent, draggerId, resourceUuid } = props;
   return <div className="step-dragger"
     onDragStart={stepDragEventHandler(dispatch,
       step,
       intent,
-      draggerId)}>
+      draggerId,
+      resourceUuid)}>
     {children}
   </div>;
 }

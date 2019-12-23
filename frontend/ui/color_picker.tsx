@@ -4,14 +4,14 @@ import { Saucer } from "../ui/index";
 import { ResourceColor } from "../interfaces";
 import { colors } from "../util";
 
-interface PickerProps {
+export interface ColorPickerProps {
   position?: Position;
   current: ResourceColor;
-  onChange?: (color: ResourceColor) => void;
+  onChange: (color: ResourceColor) => void;
   saucerIcon?: string;
 }
 
-interface ColorPickerClusterProps {
+export interface ColorPickerClusterProps {
   onChange: (color: ResourceColor) => void;
   current: ResourceColor;
   saucerIcon?: string;
@@ -42,10 +42,9 @@ export const ColorPickerCluster = (props: ColorPickerClusterProps) => {
     })}
   </div>;
 };
-export class ColorPicker extends React.Component<PickerProps, {}> {
+export class ColorPicker extends React.Component<ColorPickerProps, {}> {
 
   public render() {
-    const cb = this.props.onChange || function () { };
     return <Popover className="color-picker"
       position={this.props.position || Position.BOTTOM}
       popoverClassName="colorpicker-menu gray">
@@ -54,7 +53,7 @@ export class ColorPicker extends React.Component<PickerProps, {}> {
           this.props.current}`} />
         : <Saucer color={this.props.current} />}
       <ColorPickerCluster
-        onChange={cb}
+        onChange={this.props.onChange}
         current={this.props.current}
         saucerIcon={this.props.saucerIcon} />
     </Popover>;
