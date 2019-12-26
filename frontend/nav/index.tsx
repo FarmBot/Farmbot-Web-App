@@ -22,7 +22,6 @@ import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
-
   state: NavBarState = {
     mobileMenuOpen: false,
     tickerListOpen: false,
@@ -42,41 +41,87 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   close = (name: keyof NavBarState) => () =>
     this.setState({ [name]: false });
 
-  syncButton = () => {
-    return <SyncButton
+  ReadOnlyStatus = () =>
+    <ReadOnlyIcon locked={!!this.props.getConfigValue(
+      BooleanSetting.user_interface_read_only_mode)} />
+
+  SyncButton = () =>
+    <SyncButton
       bot={this.props.bot}
       dispatch={this.props.dispatch}
       autoSync={this.props.autoSync}
-      consistent={this.props.consistent} />;
+      consistent={this.props.consistent} />
+
+  EstopButton = () =>
+    <EStopButton
+      bot={this.props.bot}
+      forceUnlock={!!this.props.getConfigValue(
+        BooleanSetting.disable_emergency_unlock_confirmation)} />
+
+  AccountMenu = () => {
+    const hasName = this.props.user && this.props.user.body.name;
+    const firstName = hasName ?
+      `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
+    return <div className="menu-popover">
+      <Popover
+        portalClassName={"nav-right"}
+        popoverClassName={"menu-popover"}
+        position={Position.BOTTOM_RIGHT}
+        isOpen={this.state.accountMenuOpen}
+        onClose={this.close("accountMenuOpen")}>
+        <div className="nav-name" data-title={firstName}
+          onClick={this.toggle("accountMenuOpen")}>
+          {firstName}
+        </div>
+        {AdditionalMenu({ logout: this.logout, close: this.close })}
+      </Popover>
+    </div>;
   }
 
-  get connectivityData() {
-    return connectivityData({
+  ConnectionStatus = () => {
+    const data = connectivityData({
       bot: this.props.bot,
       device: this.props.device
     });
+    return <div className="connection-status-popover">
+      <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"connectivity-popover-portal"}
+        popoverClassName="connectivity-popover">
+        <DiagnosisSaucer {...data.flags} />
+        <ErrorBoundary>
+          <Connectivity
+            bot={this.props.bot}
+            rowData={data.rowData}
+            flags={data.flags}
+            pings={this.props.pings} />
+        </ErrorBoundary>
+      </Popover>
+    </div>;
+  }
+
+  AppNavLinks = () => {
+    const { close } = this;
+    const { mobileMenuOpen } = this.state;
+    const { alertCount } = this.props;
+    return <div>
+      <i className={"fa fa-bars mobile-menu-icon"}
+        onClick={this.toggle("mobileMenuOpen")} />
+      <span className="mobile-menu-container">
+        {MobileMenu({ close, mobileMenuOpen, alertCount })}
+      </span>
+      <span className="top-menu-container">
+        {NavLinks({ close, alertCount })}
+      </span>
+    </div>;
   }
 
   render() {
-    const isLocked = this.props.getConfigValue("user_interface_read_only_mode");
-    const hasName = this.props.user && this.props.user.body.name;
-
-    const firstName = hasName ?
-      `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
-
-    const menuIconClassNames: string[] = [
-      "fa", "fa-bars", "mobile-menu-icon"
-    ];
-
-    /** The way our app is laid out, we'll pretty much always want this bit. */
-    const pageName = getPathArray()[2] || "";
-
     /** Change document meta title on every route change. */
-    updatePageInfo(pageName);
+    updatePageInfo(getPathArray()[2] || "");
 
-    const { toggle, close } = this;
-    const { mobileMenuOpen, tickerListOpen, accountMenuOpen } = this.state;
-    const { logs, timeSettings, getConfigValue, alertCount } = this.props;
+    const { toggle } = this;
+    const { tickerListOpen } = this.state;
+    const { logs, timeSettings, getConfigValue } = this.props;
     const tickerListProps = {
       logs, tickerListOpen, toggle, timeSettings, getConfigValue
     };
@@ -89,51 +134,17 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                 <TickerList {...tickerListProps} />
                 <div className="nav-group">
                   <div className="nav-left">
-                    <i
-                      className={menuIconClassNames.join(" ")}
-                      onClick={this.toggle("mobileMenuOpen")} />
-                    <span className="mobile-menu-container">
-                      {MobileMenu({ close, mobileMenuOpen, alertCount })}
-                    </span>
-                    <span className="top-menu-container">
-                      {NavLinks({ close, alertCount })}
-                    </span>
+                    <this.AppNavLinks />
                   </div>
                   <div className="nav-right">
-                    <ReadOnlyIcon locked={!!isLocked} />
-
-                    <div className="menu-popover">
-                      <Popover
-                        portalClassName={"nav-right"}
-                        popoverClassName={"menu-popover"}
-                        position={Position.BOTTOM_RIGHT}
-                        isOpen={accountMenuOpen}
-                        onClose={this.close("accountMenuOpen")}>
-                        <div className="nav-name" data-title={firstName}
-                          onClick={this.toggle("accountMenuOpen")}>
-                          {firstName}
-                        </div>
-                        {AdditionalMenu({ logout: this.logout, close })}
-                      </Popover>
-                    </div>
-                    <EStopButton
-                      bot={this.props.bot}
-                      forceUnlock={!!this.props.getConfigValue(
-                        BooleanSetting.disable_emergency_unlock_confirmation)} />
-                    {this.syncButton()}
-                    <div className="connection-status-popover">
-                      <Popover position={Position.BOTTOM_RIGHT}
-                        portalClassName={"connectivity-popover-portal"}
-                        popoverClassName="connectivity-popover">
-                        <DiagnosisSaucer {...this.connectivityData.flags} />
-                        <Connectivity
-                          bot={this.props.bot}
-                          rowData={this.connectivityData.rowData}
-                          flags={this.connectivityData.flags}
-                          pings={this.props.pings} />
-                      </Popover>
-                    </div>
-                    <RunTour currentTour={this.props.tour} />
+                    <ErrorBoundary>
+                      <this.ReadOnlyStatus />
+                      <this.AccountMenu />
+                      <this.EstopButton />
+                      <this.SyncButton />
+                      <this.ConnectionStatus />
+                      <RunTour currentTour={this.props.tour} />
+                    </ErrorBoundary>
                   </div>
                 </div>
               </div>

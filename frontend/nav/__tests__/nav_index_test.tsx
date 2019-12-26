@@ -12,6 +12,7 @@ import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
+import { Link } from "../../link";
 
 describe("NavBar", () => {
   const fakeProps = (): NavBarProps => ({
@@ -35,8 +36,8 @@ describe("NavBar", () => {
   });
 
   it("closes nav menu", () => {
-    const wrapper = shallow<NavBar>(<NavBar {...fakeProps()} />);
-    const link = wrapper.find("Link").first();
+    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
+    const link = wrapper.find(Link).first();
     link.simulate("click");
     expect(wrapper.instance().state.mobileMenuOpen).toBeFalsy();
     link.simulate("click");

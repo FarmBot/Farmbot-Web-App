@@ -4,6 +4,7 @@ import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
 import { t } from "../i18next_wrapper";
+import { ErrorBoundary } from "../error_boundary";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -19,7 +20,9 @@ export const DesignerPanel = (props: DesignerPanelProps) => {
       "panel-container",
       `${color || PanelColor.gray}-panel`,
       `${props.panelName}-panel`].join(" ")}>
-    {props.children}
+    <ErrorBoundary>
+      {props.children}
+    </ErrorBoundary>
   </div>;
 };
 
@@ -86,7 +89,9 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
       <div className="text-input-wrapper">
         {!props.noIcon &&
           <i className="fa fa-search"></i>}
-        {props.children}
+        <ErrorBoundary>
+          {props.children}
+        </ErrorBoundary>
       </div>
     </div>
     {props.linkTo &&
@@ -105,8 +110,11 @@ interface DesignerPanelContentProps {
 }
 
 export const DesignerPanelContent = (props: DesignerPanelContentProps) =>
-  <div className={
-    `panel-content ${props.panelName}-panel-content ${props.className || ""}`
-  }>
-    {props.children}
+  <div className={[
+    "panel-content",
+    `${props.panelName}-panel-content`,
+    props.className || ""].join(" ")}>
+    <ErrorBoundary>
+      {props.children}
+    </ErrorBoundary>
   </div>;

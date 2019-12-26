@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Row, Col } from "../../ui/index";
+import { ErrorBoundary } from "../../error_boundary";
 
 interface StepContentProps {
   children?: React.ReactNode;
@@ -11,7 +12,9 @@ export function StepContent(props: StepContentProps) {
   return <Row>
     <Col sm={12}>
       <div className={`step-content ${className}`}>
-        {props.children}
+        <ErrorBoundary>
+          {props.children}
+        </ErrorBoundary>
       </div>
     </Col>
   </Row>;
