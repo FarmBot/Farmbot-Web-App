@@ -7,7 +7,7 @@ interface Props {
   expanded: boolean;
 }
 
-export let ExpandableHeader = (props: Props) => {
+export const ExpandableHeader = (props: Props) => {
   const { onClick, title, expanded } = props;
   const icon_string = expanded ? "minus" : "plus";
   const nbwhitespace = title != "";

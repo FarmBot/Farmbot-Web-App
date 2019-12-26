@@ -7,7 +7,9 @@ import {
   indexRemove,
   initResourceReducer,
   afterEach,
-  beforeEach
+  beforeEach,
+  folderIndexer,
+  reindexFolders
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
@@ -22,6 +24,8 @@ import { farmwareState } from "../farmware/reducer";
 import { initialState as regimenState } from "../regimens/reducer";
 import { initialState as sequenceState } from "../sequences/reducer";
 import { initialState as alertState } from "../messages/reducer";
+import { ingest } from "../folders/data_transfer";
+import { searchFolderTree } from "../folders/search_folder_tree";
 
 export const emptyState = (): RestResources => {
   return {
@@ -46,6 +50,7 @@ export const emptyState = (): RestResources => {
         FarmwareInstallation: {},
         FbosConfig: {},
         FirmwareConfig: {},
+        Folder: {},
         Image: {},
         Log: {},
         Peripheral: {},
@@ -63,7 +68,6 @@ export const emptyState = (): RestResources => {
         User: {},
         WebAppConfig: {},
         WebcamFeed: {},
-        Folder: {}
       },
       byKindAndId: {},
       references: {},
@@ -73,14 +77,22 @@ export const emptyState = (): RestResources => {
         "Sequence.FarmEvent": {},
         "Sequence.Regimen": {},
         "Sequence.Sequence": {},
+        "Sequence.PinBinding": {},
         "Sequence.FbosConfig": {}
+      },
+      sequenceFolders: {
+        localMetaAttributes: {},
+        folders: {
+          folders: [],
+          noFolder: [],
+        },
       }
     }
   };
 };
 
 /** Responsible for all RESTful resources. */
-export let resourceReducer =
+export const resourceReducer =
   generateReducer<RestResources>(emptyState())
     .beforeEach(beforeEach)
     .afterEach(afterEach)
@@ -109,12 +121,11 @@ export let resourceReducer =
       mutateSpecialStatus(uuid, s.index, specialStatus);
       return s;
     })
-    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY,
-      (s, { payload }) => {
-        !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
-        indexUpsert(s.index, payload.body, "initial");
-        return s;
-      })
+    .add<SyncBodyContents<TaggedResource>>(Actions.RESOURCE_READY, (s, { payload }) => {
+      !s.loaded.includes(payload.kind) && s.loaded.push(payload.kind);
+      indexUpsert(s.index, payload.body, "initial");
+      return s;
+    })
     .add<TaggedResource>(Actions.REFRESH_RESOURCE_OK, (s, { payload }) => {
       indexUpsert(s.index, [payload], "ongoing");
       mutateSpecialStatus(payload.uuid, s.index);
@@ -122,6 +133,7 @@ export let resourceReducer =
     })
     .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
       indexRemove(s.index, payload);
+      folderIndexer(payload, s.index);
       return s;
     })
     .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
@@ -149,4 +161,66 @@ export let resourceReducer =
           payload: resource
         });
       }, s);
+    })
+    .add<{ id: number }>(Actions.FOLDER_TOGGLE, (s, { payload }) => {
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      const record = localMetaAttributes[parseInt("" + payload.id)];
+      record.open = !(record.open ?? true);
+      reindexFolders(s.index);
+      return s;
+    })
+    .add<boolean>(Actions.FOLDER_TOGGLE_ALL, (s, { payload }) => {
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      Object.keys(localMetaAttributes).map((x) => {
+        localMetaAttributes[parseInt("" + x)].open = payload;
+      });
+      reindexFolders(s.index);
+      return s;
+    })
+    .add<{ id: number }>(Actions.FOLDER_TOGGLE_EDIT, (s, { payload }) => {
+      const { localMetaAttributes } = s.index.sequenceFolders;
+      const record = localMetaAttributes[parseInt("" + payload.id)];
+      record.editing = !record.editing;
+
+      reindexFolders(s.index);
+
+      return s;
+    })
+    .add<string | undefined>(Actions.FOLDER_SEARCH, (s, { payload }) => {
+      s.index.sequenceFolders.searchTerm = payload;
+      if (payload) {
+        const folders = searchFolderTree({
+          references: s.index.references,
+          input: payload,
+          root: s.index.sequenceFolders.folders
+        });
+        const { localMetaAttributes } = s.index.sequenceFolders;
+        Object /** Expand all folders when searching. */
+          .keys(localMetaAttributes)
+          .map(x => {
+            s
+              .index
+              .sequenceFolders
+              .localMetaAttributes[x as unknown as number]
+              .open = true;
+          });
+        const nextFolder = ingest({
+          localMetaAttributes,
+          folders
+        });
+        nextFolder.noFolder = nextFolder.noFolder.filter(uuid => {
+          const sq = s.index.references[uuid];
+          if (sq && sq.kind === "Sequence") {
+            const n = sq.body.name.toLowerCase();
+            return n.includes(payload);
+          } else {
+            return false;
+          }
+        });
+        s.index.sequenceFolders.filteredFolders = nextFolder;
+      } else {
+        s.index.sequenceFolders.filteredFolders = undefined;
+      }
+      reindexFolders(s.index);
+      return s;
     });

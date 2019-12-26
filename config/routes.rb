@@ -25,6 +25,7 @@ FarmBot::Application.routes.draw do
       sequences: [:create, :destroy, :index, :show, :update],
       tools: [:create, :destroy, :index, :show, :update],
       webcam_feeds: [:create, :destroy, :index, :show, :update],
+      folders: [:create, :destroy, :index, :show, :update],
     }.to_a.map { |(name, only)| resources name, only: only }
 
     # Singular API Resources:

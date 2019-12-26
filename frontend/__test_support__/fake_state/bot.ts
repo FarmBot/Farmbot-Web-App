@@ -1,6 +1,6 @@
 import { Everything } from "../../interfaces";
 
-export let bot: Everything["bot"] = {
+export const bot: Everything["bot"] = {
   "consistent": true,
   "stepSize": 100,
   "controlPanelState": {

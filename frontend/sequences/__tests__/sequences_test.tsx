@@ -18,6 +18,8 @@ import {
   fakeHardwareFlags
 } from "../../__test_support__/sequence_hardware_settings";
 import { push } from "../../history";
+import { mapStateToFolderProps } from "../../folders/map_state_to_props";
+import { fakeState } from "../../__test_support__/fake_state";
 
 describe("<Sequences/>", () => {
   const fakeProps = (): Props => ({
@@ -37,6 +39,7 @@ describe("<Sequences/>", () => {
     getWebAppConfigValue: jest.fn(),
     menuOpen: false,
     stepIndex: undefined,
+    folderData: mapStateToFolderProps(fakeState())
   });
 
   it("renders", () => {

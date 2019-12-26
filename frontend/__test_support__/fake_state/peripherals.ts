@@ -1,5 +1,5 @@
 import { Everything } from "../../interfaces";
 
-export let peripherals: Everything["Peripheral"] = {
+export const peripherals: Everything["Peripheral"] = {
   "isEditing": true
 };

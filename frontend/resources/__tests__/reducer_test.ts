@@ -15,6 +15,7 @@ import { fakeResource } from "../../__test_support__/fake_resource";
 import { resourceReducer } from "../reducer";
 import { findByUuid } from "../reducer_support";
 import { EditResourceParams } from "../../api/interfaces";
+import { fakeFolder } from "../../__test_support__/fake_state/resources";
 
 describe("resource reducer", () => {
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
@@ -113,6 +114,17 @@ describe("resource reducer", () => {
     TEST_RESOURCE_NAMES
       .concat(["Image", "SensorReading"])
       .map((kind: ResourceName) => testResourceDestroy(kind));
+  });
+
+  it("toggles folder open state", () => {
+    const folder = fakeFolder();
+    folder.body.id = 1;
+    const startingState = buildResourceIndex([folder]);
+    delete startingState.index.sequenceFolders.localMetaAttributes[1].open;
+    const action = { type: Actions.FOLDER_TOGGLE, payload: { id: 1 } };
+    const newState = resourceReducer(startingState, action);
+    expect(newState.index.sequenceFolders.localMetaAttributes[1].open)
+      .toEqual(false);
   });
 });
 

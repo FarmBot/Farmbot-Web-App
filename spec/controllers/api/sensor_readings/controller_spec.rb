@@ -7,11 +7,39 @@ describe Api::SensorReadingsController do
     let(:user) { FactoryBot.create(:user) }
     let (:reading) { FactoryBot.create(:sensor_reading, device: user.device) }
 
+    it "sets a default `read_at` value" do
+      sign_in user
+      before = SensorReading.count
+      read_at = Time.now - 5.hours
+      post :create,
+        body: {
+          pin: 13,
+          value: 128,
+          x: nil,
+          y: 1,
+          z: 2,
+          mode: 1
+        }.to_json,
+        params: { format: :json }
+
+      expect(response.status).to eq(200)
+      expect(json[:created_at].first(22)).to eq(json[:read_at].first(22))
+    end
+
     it "makes a sensor reading" do
       sign_in user
       before = SensorReading.count
+      read_at = Time.now - 5.hours
       post :create,
-        body: { pin: 13, value: 128, x: nil, y: 1, z: 2, mode: 1 }.to_json,
+        body: {
+          pin: 13,
+          value: 128,
+          x: nil,
+          y: 1,
+          z: 2,
+          mode: 1,
+          read_at: read_at
+        }.to_json,
         params: { format: :json }
 
       expect(response.status).to eq(200)
@@ -24,6 +52,7 @@ describe Api::SensorReadingsController do
       expect(json[:z]).to eq(2)
       expect(json[:pin]).to eq(13)
       expect(json[:mode]).to eq(1)
+      expect(read_at.as_json.first(22)).to eq(json[:read_at].first(22))
       expect(before < SensorReading.count).to be_truthy
     end
 

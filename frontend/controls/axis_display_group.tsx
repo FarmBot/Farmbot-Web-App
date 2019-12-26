@@ -8,7 +8,7 @@ const Axis = ({ val }: { val: number | undefined }) => <Col xs={3}>
   <input disabled value={isNumber(val) ? val : "---"} />
 </Col>;
 
-export let AxisDisplayGroup = ({ position, label }: AxisDisplayGroupProps) => {
+export const AxisDisplayGroup = ({ position, label }: AxisDisplayGroupProps) => {
   const { x, y, z } = position;
   return <Row>
     <Axis val={x} />

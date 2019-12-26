@@ -6,7 +6,7 @@ const INITIAL_STATE: DraggableState = {
   dataTransfer: {}
 };
 
-export let draggableReducer = generateReducer<DraggableState>(INITIAL_STATE)
+export const draggableReducer = generateReducer<DraggableState>(INITIAL_STATE)
   .add<DataXfer>(Actions.PUT_DATA_XFER, (s, { payload }) => {
     s.dataTransfer[payload.uuid] = payload;
     return s;

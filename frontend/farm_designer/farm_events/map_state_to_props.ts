@@ -65,7 +65,7 @@ export const nextRegItemTimes =
       && time.isSameOrAfter(moment(startTime)));
   };
 
-export let regimenCalendarAdder = (
+export const regimenCalendarAdder = (
   index: ResourceIndex, timeSettings: TimeSettings) =>
   (f: FarmEventWithRegimen, c: Calendar, now = moment()) => {
     const { regimen_items } = f.executable;
@@ -96,7 +96,7 @@ export let regimenCalendarAdder = (
     }
   };
 
-export let addSequenceToCalendar =
+export const addSequenceToCalendar =
   (f: FarmEventWithSequence, c: Calendar, timeSettings: TimeSettings,
     now = moment()) => {
     const schedule = scheduleForFarmEvent(f, now);

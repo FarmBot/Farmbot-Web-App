@@ -2,13 +2,13 @@ import { DataChangeType, Dictionary } from "farmbot/dist";
 import { box } from "boxed_value";
 import { isNumber, isNaN } from "lodash";
 
-export let METHOD_MAP: Dictionary<DataChangeType> = {
+export const METHOD_MAP: Dictionary<DataChangeType> = {
   "post": "add",
   "put": "update",
   "patch": "update",
   "delete": "remove"
 };
-export let METHODS = ["post", "put", "patch", "delete"];
+export const METHODS = ["post", "put", "patch", "delete"];
 
 /** More nasty hacks until we have time to implement proper API push state
  * notifications. */

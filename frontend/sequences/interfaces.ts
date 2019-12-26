@@ -15,6 +15,7 @@ import { TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { Folders } from "../folders/component";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -48,6 +49,7 @@ export interface Props {
   getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
   stepIndex: number | undefined;
+  folderData: Folders["props"];
 }
 
 export interface SequenceEditorMiddleProps {

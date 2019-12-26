@@ -10,6 +10,7 @@ describe("<Grid/>", () => {
   function fakeProps(): GridProps {
     return {
       mapTransformProps: fakeMapTransformProps(),
+      zoomLvl: 1,
       onClick: jest.fn(),
       onMouseDown: jest.fn(),
     };
@@ -38,4 +39,27 @@ describe("<Grid/>", () => {
       expect.objectContaining(expectedGridShape));
   });
 
+  it("render default patterns strokes above 0.5 zoom", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.6;
+    const wrapper = shallow(<Grid {...p} />);
+    const minorGrid = wrapper.find("#minor_grid>path");
+    const majorGrid = wrapper.find("#major_grid>path");
+    const superiorGrid = wrapper.find("#superior_grid>path");
+    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.15)");
+    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.3)");
+    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.4)");
+  });
+
+  it("change patterns strokes on 0.5 zoom and below", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.5;
+    const wrapper = shallow(<Grid {...p} />);
+    const minorGrid = wrapper.find("#minor_grid>path");
+    const majorGrid = wrapper.find("#major_grid>path");
+    const superiorGrid = wrapper.find("#superior_grid>path");
+    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0)");
+    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.6)");
+    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.8)");
+  });
 });

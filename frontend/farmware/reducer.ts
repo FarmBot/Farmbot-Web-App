@@ -3,14 +3,14 @@ import { FarmwareState } from "./interfaces";
 import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
 
-export let farmwareState: FarmwareState = {
+export const farmwareState: FarmwareState = {
   currentFarmware: undefined,
   currentImage: undefined,
   firstPartyFarmwareNames: [],
   infoOpen: false,
 };
 
-export let farmwareReducer = generateReducer<FarmwareState>(farmwareState)
+export const farmwareReducer = generateReducer<FarmwareState>(farmwareState)
   .add<TaggedResource>(Actions.INIT_RESOURCE, (s, { payload }) => {
     if (payload.kind === "Image") {
       s.currentImage = payload.uuid;
