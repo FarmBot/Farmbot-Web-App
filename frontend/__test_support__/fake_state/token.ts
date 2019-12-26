@@ -1,6 +1,6 @@
 import { AuthState } from "../../auth/interfaces";
 
-export let auth: AuthState = {
+export const auth: AuthState = {
   "token": {
     "unencoded": {
       "jti": "xyz",

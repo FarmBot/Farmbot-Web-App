@@ -3,6 +3,7 @@ $translucent: rgba(0, 0, 0, 0.2);
 $translucent2: rgba(0, 0, 0, 0.6);
 $white: #fff;
 $off_white: #f4f4f4;
+$lighter_gray: #eee;
 $light_gray: #ddd;
 $gray: #ccc;
 $medium_light_gray: #bcbcbc;
@@ -129,9 +130,36 @@ $panel_light_red: #fff7f6;
   background: $blue !important;
 }
 
-
 .dark-blue,
 .fun,
 .saucer-fun {
   background: $dark_blue !important;
+}
+
+.icon-saucer {
+  background: none !important;
+  &.blue {
+    color: $blue;
+  }
+  &.green {
+    color: $green;
+  }
+  &.yellow {
+    color: $yellow;
+  }
+  &.orange {
+    color: $orange;
+  }
+  &.purple {
+    color: $purple;
+  }
+  &.pink {
+    color: $pink;
+  }
+  &.gray {
+    color: $gray;
+  }
+  &.red {
+    color: $red;
+  }
 }

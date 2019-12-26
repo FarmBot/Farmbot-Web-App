@@ -202,6 +202,6 @@ export const attachEventListeners =
   };
 
 /** Connect to MQTT and attach all relevant event handlers. */
-export let connectDevice = (token: AuthState) =>
+export const connectDevice = (token: AuthState) =>
   (dispatch: Function, getState: GetState) => fetchNewDevice(token)
     .then(bot => attachEventListeners(bot, dispatch, getState), onOffline);

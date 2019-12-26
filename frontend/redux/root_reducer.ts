@@ -9,21 +9,17 @@ import { resourceReducer as resources } from "../resources/reducer";
 import { Everything } from "../interfaces";
 import { Actions } from "../constants";
 
-export let reducers = combineReducers({
+export const reducers = combineReducers({
   auth,
   bot,
   config,
   draggable,
-  resources,
+  resources
 });
 
 /** This is the topmost reducer in the application. If you need to preempt a
  * "normal" reducer this is the place to do it */
-export function rootReducer(
-  /** Sorry for the `any` here. */
-  state: Everything,
-  action: ReduxAction<{}>) {
+export function rootReducer(state: Everything, action: ReduxAction<{}>) {
   (action.type === Actions.LOGOUT) && Session.clear();
-
   return reducers(state, action);
 }

@@ -1,6 +1,6 @@
 import { TaggedImage, SpecialStatus } from "farmbot";
 
-export let fakeImages: TaggedImage[] = [
+export const fakeImages: TaggedImage[] = [
   {
     "kind": "Image",
     "specialStatus": SpecialStatus.SAVED,

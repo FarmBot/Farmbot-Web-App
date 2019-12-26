@@ -5,7 +5,7 @@ import { MobileMenuProps } from "./interfaces";
 
 const classes = [Classes.CARD, Classes.ELEVATION_4, "mobile-menu"];
 
-export let MobileMenu = (props: MobileMenuProps) => {
+export const MobileMenu = (props: MobileMenuProps) => {
   const isActive = props.mobileMenuOpen ? "active" : "inactive";
   const { alertCount } = props;
   return <div>

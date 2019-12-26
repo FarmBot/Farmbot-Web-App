@@ -15,9 +15,12 @@ import {
 } from "../sequences/locals_list/sanitize_nodes";
 import {
   selectAllFarmEvents,
+  selectAllPinBindings,
   findByKindAndId,
   selectAllLogs,
   selectAllRegimens,
+  selectAllFolders,
+  selectAllSequences,
 } from "./selectors_by_kind";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { betterCompact, unpackUUID } from "../util";
@@ -29,6 +32,9 @@ import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
+import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
+import { FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial } from "../folders/constants";
+import { climb } from "../folders/climb";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -44,6 +50,82 @@ type IndexDirection =
   | /** Resources leaving index */ "down";
 type IndexerCallback = (self: TaggedResource, index: ResourceIndex) => void;
 export interface Indexer extends Record<IndexDirection, IndexerCallback> { }
+
+export const reindexFolders = (i: ResourceIndex) => {
+  const folders = betterCompact(selectAllFolders(i)
+    .map((x): FolderNode | undefined => {
+      const { body } = x;
+      if (typeof body.id === "number") {
+        const fn: FolderNode = { id: body.id, ...body };
+        return fn;
+      }
+    }));
+  const allSequences = selectAllSequences(i);
+
+  const oldMeta = i.sequenceFolders.localMetaAttributes;
+  const localMetaAttributes: Record<number, FolderMeta> = {};
+  folders.map(x => {
+    localMetaAttributes[x.id] = {
+      ...(oldMeta[x.id] || {}),
+      sequences: [], // Clobber and re-init
+    };
+  });
+
+  allSequences.map((s) => {
+    const { folder_id } = s.body;
+    const parentId = folder_id || NO_PARENT;
+
+    if (!localMetaAttributes[parentId]) {
+      localMetaAttributes[parentId] = {
+        sequences: [],
+        open: true,
+        editing: false
+      };
+    }
+    localMetaAttributes[parentId].sequences.push(s.uuid);
+  });
+
+  const { searchTerm } = i.sequenceFolders;
+
+  /** Perform tree search for search term O(n)
+   * complexity plz send help. */
+  if (searchTerm) {
+    const sequenceHits = new Set<string>();
+    const folderHits = new Set<number>();
+
+    climb(i.sequenceFolders.folders, (node) => {
+      node.content.map(x => {
+        const s = i.references[x];
+        if (s &&
+          s.kind == "Sequence" &&
+          s.body.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          sequenceHits.add(s.uuid);
+          folderHits.add(node.id);
+        }
+      });
+      const nodes: (FolderNodeMedial | FolderNodeTerminal)[] =
+        node.children || [];
+      nodes.map(_x => { });
+    });
+  }
+
+  i.sequenceFolders = {
+    folders: ingest({ folders, localMetaAttributes }),
+    localMetaAttributes,
+    searchTerm: searchTerm,
+    filteredFolders: searchTerm ?
+      i.sequenceFolders.filteredFolders : undefined
+  };
+
+};
+
+export const folderIndexer: IndexerCallback = (r, i) => {
+  if (r.kind === "Folder" || r.kind === "Sequence") {
+    reindexFolders(i);
+  }
+};
+
+const SEQUENCE_FOLDERS: Indexer = { up: folderIndexer, down: () => { } };
 
 const REFERENCES: Indexer = {
   up: (r, i) => i.references[r.uuid] = r,
@@ -137,6 +219,7 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
+  SEQUENCE_FOLDERS
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
@@ -211,6 +294,21 @@ const AFTER_HOOKS: IndexerHook = {
     } else {
       i.inUse["Sequence.FbosConfig"] = {};
     }
+  },
+  PinBinding: (i) => {
+    i.inUse["Sequence.PinBinding"] = {};
+    const tracker = i.inUse["Sequence.PinBinding"];
+    selectAllPinBindings(i)
+      .map(pinBinding => {
+        if (pinBinding.body.binding_type === "standard") {
+          const { sequence_id } = pinBinding.body;
+          const uuid = i.byKindAndId[joinKindAndId("Sequence", sequence_id)];
+          if (uuid) {
+            tracker[uuid] = tracker[uuid] || {};
+            tracker[uuid][pinBinding.uuid] = true;
+          }
+        }
+      });
   },
   FarmEvent: reindexAllFarmEventUsage,
   Sequence: reindexAllSequences,

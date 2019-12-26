@@ -1,6 +1,7 @@
 .cache
 .env
 .vscode
+.idea
 *.log
 *.pem
 coverage_api

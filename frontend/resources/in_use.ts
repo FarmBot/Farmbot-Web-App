@@ -22,6 +22,7 @@ export type UsageKind =
   | "Sequence.Regimen"
   | "Sequence.FarmEvent"
   | "Sequence.Sequence"
+  | "Sequence.PinBinding"
   | "Sequence.FbosConfig";
 
 /** This variable ensures that `EVERY_USAGE_KIND` does not have typos and is
@@ -31,6 +32,7 @@ const values: Record<UsageKind, UsageKind> = {
   "Sequence.Regimen": "Sequence.Regimen",
   "Sequence.FarmEvent": "Sequence.FarmEvent",
   "Sequence.Sequence": "Sequence.Sequence",
+  "Sequence.PinBinding": "Sequence.PinBinding",
   "Sequence.FbosConfig": "Sequence.FbosConfig"
 };
 

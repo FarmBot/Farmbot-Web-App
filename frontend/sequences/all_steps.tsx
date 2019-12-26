@@ -10,7 +10,7 @@ import { HardwareFlags, FarmwareInfo } from "./interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
 
-interface AllStepsProps {
+export interface AllStepsProps {
   sequence: TaggedSequence;
   onDrop(index: number, key: string): void;
   dispatch: Function;
@@ -25,9 +25,7 @@ interface AllStepsProps {
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
-    const {
-      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, shouldDisplay
-    } = this.props;
+    const { sequence, dispatch } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
@@ -39,22 +37,22 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
           <AddCommandButton dispatch={dispatch} index={index} />
-          <DropArea callback={(key) => onDrop(index, key)} />
+          <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}
             step={currentStep}
             intent="step_move"
             draggerId={index}>
-            <div>
+            <div className="sequence-step">
               {renderCeleryNode({
                 currentStep,
                 index,
                 dispatch,
                 currentSequence: sequence,
                 resources: this.props.resources,
-                hardwareFlags,
-                farmwareInfo,
-                shouldDisplay,
+                hardwareFlags: this.props.hardwareFlags,
+                farmwareInfo: this.props.farmwareInfo,
+                shouldDisplay: this.props.shouldDisplay,
                 confirmStepDeletion: this.props.confirmStepDeletion,
                 showPins: this.props.showPins,
                 expandStepOptions: this.props.expandStepOptions,
@@ -64,6 +62,6 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         </div>;
       });
 
-    return <div> {items} </div>;
+    return <div className="all-steps">{items}</div>;
   }
 }

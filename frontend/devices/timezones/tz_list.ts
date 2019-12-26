@@ -1,4 +1,4 @@
-export let list = ["Africa/Abidjan",
+export const list = ["Africa/Abidjan",
   "Africa/Accra",
   "Africa/Addis_Ababa",
   "Africa/Algiers",

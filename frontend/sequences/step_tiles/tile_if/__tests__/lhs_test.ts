@@ -37,9 +37,9 @@ const seedSequence: TaggedSequence = {
   body: {
     id: 1,
     color: "red",
+    folder_id: undefined,
     name: "test",
     kind: "sequence",
-    folder_id: undefined,
     args: {
       locals: { kind: "scope_declaration", args: {} },
       version: 9999

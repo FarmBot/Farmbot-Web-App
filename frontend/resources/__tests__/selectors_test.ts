@@ -17,7 +17,6 @@ import { resourceReducer } from "../reducer";
 import { emptyState } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
 import { chain } from "lodash";
-// import { Actions } from "../../constants";
 
 const TOOL_ID = 99;
 const SLOT_ID = 100;
@@ -124,13 +123,6 @@ describe("findPointerByTypeAndId()", () => {
   });
 });
 
-describe("findToolSlot()", () => {
-  it("throws error", () => {
-    const find = () => Selector.findToolSlot(fakeIndex, "bad");
-    expect(find).toThrow("ToolSlotPointer not found: bad");
-  });
-});
-
 describe("findPlant()", () => {
   it("throws error", () => {
     console.warn = jest.fn();
@@ -163,6 +155,7 @@ describe("getSequenceByUUID()", () => {
     expect(console.warn).toBeCalled();
   });
 });
+
 describe("getUserAccountSettings", () => {
   it("throws exceptions when user is not loaded", () => {
     const boom = () => Selector
@@ -171,6 +164,7 @@ describe("getUserAccountSettings", () => {
       .toThrow("PROBLEM: Tried to fetch user before it was available.");
   });
 });
+
 describe("maybeGetSequence", () => {
   it("returns undefined", () => {
     const i = buildResourceIndex([]);
@@ -240,6 +234,13 @@ describe("findRegimenById()", () => {
   it("throws error", () => {
     const find = () => Selector.findRegimenById(fakeIndex, 0);
     expect(find).toThrow("Bad regimen id: 0");
+  });
+});
+
+describe("findFolderById()", () => {
+  it("throws error", () => {
+    const find = () => Selector.findFolderById(fakeIndex, 0);
+    expect(find).toThrow("Bad folder id: 0");
   });
 });
 

@@ -118,7 +118,7 @@ export function InnerIf(props: IfParams) {
 /** Creates a function that can be used in the `onChange` event of a _else or
  * _then block in the sequence editor.
  */
-export let IfBlockDropDownHandler = (props: ThenElseParams) => {
+export const IfBlockDropDownHandler = (props: ThenElseParams) => {
 
   const { dispatch, index, thenElseKey } = props;
   const step = props.currentStep;
