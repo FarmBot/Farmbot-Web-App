@@ -1,4 +1,5 @@
 import { SequenceBodyItem as Step } from "farmbot";
+import { UUID } from "../resources/interfaces";
 
 /** An entry in the data transfer table. Used to transfer data from a "draggable"
  * to a "dropable". For type safety, this is a "tagged union". See Typescript
@@ -17,6 +18,8 @@ export interface DataXferBase {
   /** "why" the drag/drop event took place (tagged union-  See Typescript
    * documentation for more information). */
   intent: DataXferIntent;
+  /** Optional resource UUID. */
+  resourceUuid?: UUID;
 }
 
 /** Data transfer payload used when moving a *new* step into an existing step */
@@ -51,4 +54,5 @@ export interface StepDraggerProps {
   intent: DataXferIntent;
   children?: React.ReactNode;
   draggerId: number;
+  resourceUuid?: UUID;
 }

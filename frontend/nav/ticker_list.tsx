@@ -72,7 +72,7 @@ const Ticker = (log: TaggedLog, timeSettings: TimeSettings) => {
 };
 
 /** The logs ticker, with closed/open views, and a link to the Logs page. */
-export let TickerList = (props: TickerListProps) => {
+export const TickerList = (props: TickerListProps) => {
   return <ErrorBoundary>
     <div className="ticker-list" onClick={props.toggle("tickerListOpen")}>
       <div className="first-ticker">

@@ -52,7 +52,7 @@ export interface Subscription { fn: (state: Everything) => void; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
-export let subscriptions: Subscription[] = [{ env: "*", fn: unsavedCheck }];
+export const subscriptions: Subscription[] = [{ env: "*", fn: unsavedCheck }];
 
 export function registerSubscribers(store: Store) {
   const ENV_LIST = [process.env.NODE_ENV, "*"];

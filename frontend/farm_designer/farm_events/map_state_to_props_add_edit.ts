@@ -36,17 +36,17 @@ import { getFbosConfig } from "../../resources/getters";
 import { t } from "../../i18next_wrapper";
 import { DevSettings } from "../../account/dev/dev_support";
 
-export let formatTime = (input: string, timeSettings: TimeSettings) => {
+export const formatTime = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
   return moment(iso).utcOffset(timeSettings.utcOffset).format("HH:mm");
 };
 
-export let formatDate = (input: string, timeSettings: TimeSettings) => {
+export const formatDate = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
   return moment(iso).utcOffset(timeSettings.utcOffset).format("YYYY-MM-DD");
 };
 
-export let repeatOptions = [
+export const repeatOptions = [
   { label: t("Minutes"), value: "minutely", name: "time_unit" },
   { label: t("Hours"), value: "hourly", name: "time_unit" },
   { label: t("Days"), value: "daily", name: "time_unit" },

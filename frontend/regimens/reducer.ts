@@ -36,9 +36,9 @@ function newState(): RegimenState {
   };
 }
 
-export let initialState: RegimenState = newState();
+export const initialState: RegimenState = newState();
 
-export let regimensReducer = generateReducer<RegimenState>(initialState)
+export const regimensReducer = generateReducer<RegimenState>(initialState)
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     switch (payload.uuid) {
       case s.selectedSequenceUUID:

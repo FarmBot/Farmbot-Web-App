@@ -33,6 +33,6 @@ export const generalizedError = (payload: GeneralizedError) => {
   return { type: Actions._RESOURCE_NO, payload };
 };
 
-export let destroyNO = generalizedError;
-export let createNO = generalizedError;
-export let updateNO = generalizedError;
+export const destroyNO = generalizedError;
+export const createNO = generalizedError;
+export const updateNO = generalizedError;

@@ -11,7 +11,7 @@ const ok = (x: AxiosResponse<AuthState>) => {
 
 /** Grab a new token from the API (won't extend token's exp. date).
  * Redirect to home page on failure. */
-export let maybeRefreshToken
+export const maybeRefreshToken
   = (old: AuthState): Promise<AuthState | undefined> => {
     API.setBaseUrl(old.token.unencoded.iss);
     setToken(old); // Precaution: The Axios interceptors might not be set yet.

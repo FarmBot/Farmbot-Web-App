@@ -12,7 +12,7 @@ export const TIME = {
   SATURDAY: moment("2017-06-24T06:30:00.000-05:00")
 };
 
-export let fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
+export const fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
   return {
     id: 1,
     start_time: "---",
@@ -29,7 +29,7 @@ export let fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
   };
 };
 
-export let calendarRows = [
+export const calendarRows = [
   {
     "sortKey": 1500922800,
     "year": 17,

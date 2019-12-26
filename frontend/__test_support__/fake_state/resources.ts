@@ -26,29 +26,42 @@ import {
   TaggedFarmwareInstallation,
   TaggedAlert,
   TaggedPointGroup,
+  TaggedFolder,
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType
+  ExecutableType, PinBindingType, Folder
 } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
 
-export let resources: Everything["resources"] = buildResourceIndex();
+export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
 
-export function fakeSequence(): TaggedSequence {
-  return fakeResource("Sequence", {
-    args: {
-      version: 4,
-      locals: { kind: "scope_declaration", args: {} },
-    },
+export const fakeSequence =
+  (body: Partial<TaggedSequence["body"]> = {}): TaggedSequence => {
+    return fakeResource("Sequence", {
+      args: {
+        version: 4,
+        locals: { kind: "scope_declaration", args: {} },
+      },
+      id: idCounter++,
+      color: "red",
+      folder_id: undefined,
+      name: "fake",
+      kind: "sequence",
+      body: [],
+      ...body
+    });
+  };
+
+export function fakeFolder(input: Partial<Folder> = {}): TaggedFolder {
+  return fakeResource("Folder", {
     id: idCounter++,
     color: "red",
+    parent_id: undefined,
     name: "fake",
-    kind: "sequence",
-    folder_id: undefined,
-    body: []
+    ...input
   });
 }
 

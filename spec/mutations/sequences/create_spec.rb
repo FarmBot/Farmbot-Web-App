@@ -18,6 +18,17 @@ describe Sequences::Create do
     expect(Sequence.find(seq[:id]).device).to eq(device)
   end
 
+  it "creates a sequence with a folder" do
+    folder = Folder.create!(name: "parent",
+                            color: "red",
+                            device: user.device)
+    seq = Sequences::Create.run!(device: device,
+                                name: "X",
+                                body: [],
+                                folder_id: folder.id)
+    expect(folder.id).to eq(seq.fetch("folder_id"))
+  end
+
   it 'Gives validation errors for malformed AST nodes' do
     move_abs = body.select{ |x| x["kind"] == "move_absolute" }.first
     move_abs["args"]["location"]["args"]["x"] = "not a number"
