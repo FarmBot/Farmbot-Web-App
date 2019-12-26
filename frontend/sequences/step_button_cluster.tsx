@@ -105,11 +105,11 @@ export function StepButtonCluster(props: StepButtonProps) {
       color="brown">
       {t("EMERGENCY LOCK")}
     </StepButton>,
-    // <StepButton {...commonStepProps}
-    //   step={{ kind: "reboot", args: { package: "farmbot_os" } }}
-    //   color="brown">
-    //   {t("REBOOT")}
-    // </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{ kind: "reboot", args: { package: "farmbot_os" } }}
+      color="brown">
+      {t("REBOOT")}
+    </StepButton>,
     <StepButton{...commonStepProps}
       step={{
         kind: "find_home",

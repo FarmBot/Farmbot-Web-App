@@ -293,6 +293,9 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
 
+  export const REBOOT =
+    trim(`Power cycle FarmBot's onboard computer or microcontroller.`);
+
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle.`);
 

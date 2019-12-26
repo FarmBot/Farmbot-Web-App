@@ -32,6 +32,7 @@ import { TileMoveHome } from "./tile_move_home";
 import { t } from "../../i18next_wrapper";
 import { TileAssertion } from "./tile_assertion";
 import { TileEmergencyStop } from "./tile_emergency_stop";
+import { TileReboot } from "./tile_reboot";
 
 interface MoveParams {
   step: Step;
@@ -155,6 +156,7 @@ export function renderCeleryNode(props: StepParams) {
     case "calibrate": return <TileCalibrate {...props} />;
     case "home": return <TileMoveHome {...props} />;
     case "reboot":
+      return <TileReboot {...props} />;
     case "check_updates":
     case "factory_reset":
       return <TileFirmwareAction {...props} />;
