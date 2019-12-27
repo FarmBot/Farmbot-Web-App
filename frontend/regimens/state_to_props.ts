@@ -9,21 +9,16 @@ import {
   maybeGetRegimen,
   findId,
   findSequence,
-  maybeGetDevice,
   findSequenceById,
   maybeGetTimeSettings
 } from "../resources/selectors";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
 import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
-import {
-  randomColor, determineInstalledOsVersion,
-  createShouldDisplayFn as shouldDisplayFunc,
-  timeFormatString
-} from "../util";
+import { randomColor, timeFormatString } from "../util";
 import { resourceUsageList } from "../resources/in_use";
 import { groupBy, chain, sortBy } from "lodash";
-import { DevSettings } from "../account/dev/dev_support";
+import { getShouldDisplayFn } from "../farmware/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const { resources, dispatch, bot } = props;
@@ -35,12 +30,6 @@ export function mapStateToProps(props: Everything): Props {
   const timeSettings = maybeGetTimeSettings(props.resources.index);
   const calendar = current ?
     generateCalendar(current, index, dispatch, timeSettings) : [];
-
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
 
   const calledSequences = (): UUID[] => {
     if (current) {
@@ -70,7 +59,7 @@ export function mapStateToProps(props: Everything): Props {
     bot,
     calendar,
     regimenUsageStats: resourceUsageList(props.resources.index.inUse),
-    shouldDisplay,
+    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     schedulerOpen,
   };
 }

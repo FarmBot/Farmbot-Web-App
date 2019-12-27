@@ -16,6 +16,7 @@ import { PhotosProps } from "../interfaces";
 import { selectImage } from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
+import { Content, ToolTips } from "../../../constants";
 
 describe("<Photos/>", () => {
   const fakeProps = (): PhotosProps => ({
@@ -26,6 +27,7 @@ describe("<Photos/>", () => {
     imageJobs: [],
     botToMqttStatus: "up",
     syncStatus: "synced",
+    env: {},
   });
 
   it("shows photo", () => {
@@ -44,9 +46,25 @@ describe("<Photos/>", () => {
 
   it("takes photo", async () => {
     const wrapper = mount(<Photos {...fakeProps()} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     await clickButton(wrapper, 0, "take photo");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
     await expect(success).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("shows disabled take photo button", () => {
+    const p = fakeProps();
+    p.env = { camera: "NONE" };
+    const wrapper = mount(<Photos {...p} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.text()).toEqual("Take Photo");
+    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
+    btn.simulate("click");
+    expect(error).toHaveBeenCalledWith(
+      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+    expect(mockDevice.takePhoto).not.toHaveBeenCalled();
   });
 
   it("fails to take photo", async () => {

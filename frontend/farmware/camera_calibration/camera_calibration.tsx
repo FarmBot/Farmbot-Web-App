@@ -13,6 +13,9 @@ import { Feature } from "../../devices/interfaces";
 import { namespace } from "../weed_detector";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../weed_detector/remote_env/translators";
+import {
+  cameraBtnProps
+} from "../../devices/components/fbos_settings/camera_selection";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -29,6 +32,7 @@ export class CameraCalibration extends
       : envSave(key, value)
 
   render() {
+    const camDisabled = cameraBtnProps(this.props.env);
     return <div className="weed-detector">
       <div className="farmware-button">
         <MustBeOnline
@@ -37,8 +41,9 @@ export class CameraCalibration extends
           hideBanner={true}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <button
-            onClick={this.props.dispatch(calibrate)}
-            className="fb-button green">
+            className={`fb-button green ${camDisabled.class}`}
+            title={camDisabled.title}
+            onClick={camDisabled.click || this.props.dispatch(calibrate)}>
             {t("Calibrate")}
           </button>
         </MustBeOnline>
@@ -68,9 +73,9 @@ export class CameraCalibration extends
               S_HI={this.props.S_HI}
               V_HI={this.props.V_HI}
               invertHue={!!envGet(this.namespace("invert_hue_selection"),
-                this.props.env)} />
+                this.props.wDEnv)} />
             <WeedDetectorConfig
-              values={this.props.env}
+              values={this.props.wDEnv}
               onChange={this.saveEnvVar} />
           </MustBeOnline>
         </Col>

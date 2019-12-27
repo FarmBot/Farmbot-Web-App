@@ -23,7 +23,7 @@ jest.mock("../../../util", () => ({
 }));
 
 import { deletePoints } from "../actions";
-import { scanImage, test } from "../actions";
+import { scanImage, detectPlants } from "../actions";
 import axios from "axios";
 import { API } from "../../../api";
 import { times } from "lodash";
@@ -44,10 +44,10 @@ describe("scanImage()", () => {
   });
 });
 
-describe("test()", () => {
+describe("detectPlants()", () => {
   it("calls out to the device", () => {
     // Run function to invoke side effects
-    const thunk = test();
+    const thunk = detectPlants();
     thunk();
     // Ensure the side effects were the ones we expected.
     expect(mockDevice.execScript)

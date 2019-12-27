@@ -1,26 +1,20 @@
-const mockDevice = {
-  setUserEnv: jest.fn(() => { return Promise.resolve(); }),
-};
-jest.mock("../../../../device", () => ({
-  getDevice: () => mockDevice
-}));
+const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { CameraSelection } from "../camera_selection";
+import { CameraSelection, cameraDisabled } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
 import { info, error } from "../../../../toast/toast";
 
 describe("<CameraSelection/>", () => {
-  const fakeProps = (): CameraSelectionProps => {
-    return {
-      env: {},
-      botOnline: true,
-      shouldDisplay: () => false,
-      saveFarmwareEnv: jest.fn(),
-      dispatch: jest.fn(),
-    };
-  };
+  const fakeProps = (): CameraSelectionProps => ({
+    env: {},
+    botOnline: true,
+    shouldDisplay: () => false,
+    saveFarmwareEnv: jest.fn(),
+    dispatch: jest.fn(),
+  });
 
   it("doesn't render camera", () => {
     const cameraSelection = mount(<CameraSelection {...fakeProps()} />);
@@ -64,5 +58,17 @@ describe("<CameraSelection/>", () => {
     expect(info)
       .toHaveBeenCalledWith("Sending camera configuration...", "Sending");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("camera", "\"mycamera\"");
+  });
+});
+
+describe("cameraDisabled()", () => {
+  it("returns enabled", () => {
+    expect(cameraDisabled({ camera: "USB" })).toEqual(false);
+    expect(cameraDisabled({ camera: "" })).toEqual(false);
+  });
+
+  it("returns disabled", () => {
+    expect(cameraDisabled({ camera: "none" })).toEqual(true);
+    expect(cameraDisabled({ camera: "\"NONE\"" })).toEqual(true);
   });
 });

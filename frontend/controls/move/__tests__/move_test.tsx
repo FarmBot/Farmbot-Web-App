@@ -1,16 +1,15 @@
-const mockDevice = {
-  moveAbsolute: jest.fn(() => { return Promise.resolve(); }),
-};
+const mockDevice = { moveAbsolute: jest.fn(() => Promise.resolve()) };
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../config_storage/actions", () => ({
+  toggleWebAppBool: jest.fn(),
 }));
 
-jest.mock("../../../config_storage/actions", () => {
-  return {
-    toggleWebAppBool: jest.fn()
-  };
-});
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => false,
+  }
+}));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -26,16 +25,15 @@ import { clickButton } from "../../../__test_support__/helpers";
 describe("<Move />", () => {
   const mockConfig: Dictionary<boolean> = {};
 
-  function fakeProps(): MoveProps {
-    return {
-      dispatch: jest.fn(),
-      bot: bot,
-      arduinoBusy: false,
-      botToMqttStatus: "up",
-      firmwareSettings: bot.hardware.mcu_params,
-      getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
-    };
-  }
+  const fakeProps = (): MoveProps => ({
+    dispatch: jest.fn(),
+    bot: bot,
+    arduinoBusy: false,
+    botToMqttStatus: "up",
+    firmwareSettings: bot.hardware.mcu_params,
+    getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
+    env: {},
+  });
 
   it("has default elements", () => {
     const wrapper = mount(<Move {...fakeProps()} />);

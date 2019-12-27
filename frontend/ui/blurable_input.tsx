@@ -29,6 +29,7 @@ export interface BIProps {
   error?: string;
   title?: string;
   autoFocus?: boolean;
+  autoSelect?: boolean;
 }
 
 interface BIState {
@@ -79,8 +80,10 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
     this.setState({ isEditing: false, buffer: "", error: undefined });
   }
 
-  focus = () => {
+  focus = (e: React.FocusEvent<HTMLInputElement>) => {
     const { value } = this.props;
+    this.props.autoSelect &&
+      e.target.setSelectionRange(0, e.target.value.length);
     this.setState({
       isEditing: true,
       buffer: "" + (value || ""),

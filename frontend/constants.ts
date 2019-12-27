@@ -285,6 +285,9 @@ export namespace ToolTips {
     trim(`Snaps a photo using the device camera. Select the camera type
     on the Device page.`);
 
+  export const SELECT_A_CAMERA =
+    trim(`Select a camera on the Device page to take photos.`);
+
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
     properties of the UTM, plants, and weeds from within a sequence.
@@ -822,6 +825,9 @@ export namespace Content {
 
   export const NOT_AVAILABLE_WHEN_OFFLINE =
     trim(`Not available when device is offline.`);
+
+  export const NO_CAMERA_SELECTED =
+    trim(`No camera selected`);
 }
 
 export namespace TourContent {

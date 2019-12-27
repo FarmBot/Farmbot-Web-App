@@ -13,7 +13,7 @@ import {
 } from "farmbot";
 import {
   fakeHardwareFlags
-} from "../../../__test_support__/sequence_hardware_settings";
+} from "../../../__test_support__/fake_sequence_step_data";
 import { emptyState } from "../../../resources/reducer";
 import { inputEvent } from "../../../__test_support__/fake_input_event";
 import { StepParams } from "../../interfaces";

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { t } from "../i18next_wrapper";
+import { ErrorBoundary } from "../error_boundary";
 
 export enum EmptyStateGraphic {
   plants = "plants",
@@ -28,7 +29,11 @@ interface EmptyStateWrapperProps {
 
 export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
   !!props.notEmpty
-    ? <div className="non-empty-state">{props.children}</div>
+    ? <div className="non-empty-state">
+      <ErrorBoundary>
+        {props.children}
+      </ErrorBoundary>
+    </div>
     : <div className={`empty-state ${props.colorScheme || ""}`}>
       <img
         className="empty-state-graphic"
