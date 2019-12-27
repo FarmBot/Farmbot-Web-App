@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ErrorBoundary } from "../../error_boundary";
 
 interface StepWrapperProps {
   children?: React.ReactNode;
@@ -8,6 +9,8 @@ interface StepWrapperProps {
 export function StepWrapper(props: StepWrapperProps) {
   const { className } = props;
   return <div className={`step-wrapper ${className ? className : ""}`}>
-    {props.children}
+    <ErrorBoundary>
+      {props.children}
+    </ErrorBoundary>
   </div>;
 }

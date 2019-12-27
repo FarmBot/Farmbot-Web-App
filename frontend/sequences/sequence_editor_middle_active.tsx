@@ -30,6 +30,7 @@ import { BooleanSetting } from "../session_keys";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { isUndefined } from "lodash";
 import { NO_GROUPS } from "./locals_list/default_value_form";
+import { ErrorBoundary } from "../error_boundary";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -201,19 +202,21 @@ const SequenceHeader = (props: SequenceHeaderProps) => {
       getWebAppConfigValue={props.getWebAppConfigValue}
       menuOpen={props.menuOpen} />
     <SequenceNameAndColor {...sequenceAndDispatch} />
-    <LocalsList
-      variableData={variableData}
-      sequenceUuid={sequence.uuid}
-      resources={props.resources}
-      onChange={localListCallback(props)(declarations)}
-      locationDropdownKey={JSON.stringify(sequence)}
-      allowedVariableNodes={AllowedVariableNodes.parameter}
-      collapsible={true}
-      collapsed={props.variablesCollapsed}
-      toggleVarShow={props.toggleVarShow}
-      shouldDisplay={props.shouldDisplay}
-      hideGroups={true}
-      customFilterRule={NO_GROUPS} />
+    <ErrorBoundary>
+      <LocalsList
+        variableData={variableData}
+        sequenceUuid={sequence.uuid}
+        resources={props.resources}
+        onChange={localListCallback(props)(declarations)}
+        locationDropdownKey={JSON.stringify(sequence)}
+        allowedVariableNodes={AllowedVariableNodes.parameter}
+        collapsible={true}
+        collapsed={props.variablesCollapsed}
+        toggleVarShow={props.toggleVarShow}
+        shouldDisplay={props.shouldDisplay}
+        hideGroups={true}
+        customFilterRule={NO_GROUPS} />
+    </ErrorBoundary>
   </div>;
 };
 
@@ -271,7 +274,9 @@ export class SequenceEditorMiddleActive extends
       <hr />
       <div className="sequence" id="sequenceDiv"
         style={{ height: this.stepSectionHeight }}>
-        <AllSteps {...this.stepProps} />
+        <ErrorBoundary>
+          <AllSteps {...this.stepProps} />
+        </ErrorBoundary>
         <Row>
           <Col xs={12}>
             <DropArea isLocked={true}

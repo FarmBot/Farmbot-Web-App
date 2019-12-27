@@ -76,8 +76,7 @@ export class GroupDetailActive
         panelName={Panel.Groups}
         panel={Panel.Groups}
         title={t("Edit Group")}
-        backTo={"/app/designer/groups"}>
-      </DesignerPanelHeader>
+        backTo={"/app/designer/groups"} />
       <DesignerPanelContent
         panelName={"groups"}>
         <label>{t("GROUP NAME")}{this.saved ? "" : "*"}</label>

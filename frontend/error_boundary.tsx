@@ -3,7 +3,7 @@ import { catchErrors } from "./util";
 import { Apology } from "./apology";
 
 interface State { hasError?: boolean; }
-interface Props { }
+interface Props { fallback?: React.ReactElement }
 
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -16,7 +16,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ hasError: true });
   }
 
-  no = () => <Apology />;
+  no = () => this.props.fallback || <Apology />;
 
   ok = () => this.props.children || <div />;
 

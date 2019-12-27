@@ -1,20 +1,29 @@
 import * as React from "react";
 import { Session } from "./session";
 
-const STYLE: React.CSSProperties = {
-  border: "2px solid #434343",
-  background: "#a4c2f4",
-  fontSize: "18px",
+const OUTER_STYLE: React.CSSProperties = {
+  borderRadius: "10px",
+  background: "repeating-linear-gradient(-45deg," +
+    "#ffff55, #ffff55 20px," +
+    "#ff5555 20px, #ff5555 40px)",
+  fontSize: "100%",
   color: "black",
   display: "block",
   overflow: "auto",
   padding: "1rem",
+  margin: "1rem",
+};
+
+const INNER_STYLE: React.CSSProperties = {
+  borderRadius: "10px",
+  background: "#ffffffdd",
+  padding: "1rem",
 };
 
 export function Apology(_: {}) {
-  return <div style={STYLE}>
-    <div>
-      <h1>Page Error</h1>
+  return <div style={OUTER_STYLE}>
+    <div style={INNER_STYLE}>
+      <h1 style={{ fontSize: "175%" }}>Page Error</h1>
       <span>
         We can't render this part of the page due to an unrecoverable error.
         Here are some things you can try:
