@@ -13,7 +13,6 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  maybeGetDevice,
   maybeGetTimeSettings
 } from "../../resources/selectors";
 import {
@@ -22,11 +21,7 @@ import {
   TaggedRegimen
 } from "farmbot";
 import { DropDownItem } from "../../ui/index";
-import {
-  validFbosConfig,
-  createShouldDisplayFn as shouldDisplayFunc,
-  determineInstalledOsVersion
-} from "../../util";
+import { validFbosConfig } from "../../util";
 import {
   sourceFbosConfigValue
 } from "../../devices/components/source_config_value";
@@ -34,7 +29,7 @@ import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { getFbosConfig } from "../../resources/getters";
 import { t } from "../../i18next_wrapper";
-import { DevSettings } from "../../account/dev/dev_support";
+import { getShouldDisplayFn } from "../../farmware/state_to_props";
 
 export const formatTime = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
@@ -143,12 +138,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
   const autoSyncEnabled =
     !!sourceFbosConfigValue(fbosConfig, configuration)("auto_sync").value;
 
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
-
   return {
     deviceTimezone: dev
       .body
@@ -167,6 +156,6 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     timeSettings: maybeGetTimeSettings(props.resources.index),
     autoSyncEnabled,
     resources: props.resources.index,
-    shouldDisplay,
+    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
   };
 }

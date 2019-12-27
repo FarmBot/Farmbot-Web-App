@@ -1,38 +1,28 @@
 import { Everything } from "../interfaces";
-import { Props, Feature } from "./interfaces";
+import { Props } from "./interfaces";
 import {
   selectAllImages,
   getDeviceAccountSettings,
-  maybeGetDevice,
   maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
   sourceFbosConfigValue, sourceFwConfigValue
 } from "./components/source_config_value";
+import { validFwConfig, validFbosConfig } from "../util";
 import {
-  determineInstalledOsVersion, validFwConfig, validFbosConfig,
-  createShouldDisplayFn as shouldDisplayFunc
-} from "../util";
-import {
-  saveOrEditFarmwareEnv, reduceFarmwareEnv
+  saveOrEditFarmwareEnv, getEnv, getShouldDisplayFn
 } from "../farmware/state_to_props";
-import { getFbosConfig, getFirmwareConfig, getWebAppConfig } from "../resources/getters";
-import { DevSettings } from "../account/dev/dev_support";
+import {
+  getFbosConfig, getFirmwareConfig, getWebAppConfig
+} from "../resources/getters";
 import { getAllAlerts } from "../messages/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const { hardware } = props.bot;
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
   const firmwareConfig = validFwConfig(getFirmwareConfig(props.resources.index));
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(installedOsVersion,
-    props.bot.minOsFeatureData,
-    fbosVersionOverride);
-  const env = shouldDisplay(Feature.api_farmware_env)
-    ? reduceFarmwareEnv(props.resources.index)
-    : props.bot.hardware.user_env;
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
   const webAppConfig = getWebAppConfig(props.resources.index);
   if (!webAppConfig) {
     throw new Error("Missing web app config");

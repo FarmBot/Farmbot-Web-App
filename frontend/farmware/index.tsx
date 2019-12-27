@@ -24,6 +24,7 @@ import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
 import { BooleanSetting } from "../session_keys";
 import { Dictionary } from "farmbot";
+import { WDENVKey } from "./weed_detector/remote_env/interfaces";
 
 /** Get the correct help text for the provided Farmware. */
 const getToolTipByFarmware =
@@ -136,6 +137,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
 
   /** Load Farmware input panel contents for 1st & 3rd party Farmware. */
   getPanelByFarmware(farmwareName: string) {
+    const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
     switch (farmwareUrlFriendly(farmwareName)) {
       case "take_photo":
       case "photos":
@@ -145,6 +147,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
           timeSettings={this.props.timeSettings}
           dispatch={this.props.dispatch}
           images={this.props.images}
+          env={this.props.env}
           currentImage={this.props.currentImage}
           imageJobs={this.props.imageJobs} />;
       case "camera_calibration":
@@ -153,17 +156,18 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
           dispatch={this.props.dispatch}
           currentImage={this.props.currentImage}
           images={this.props.images}
+          wDEnv={this.props.wDEnv}
           env={this.props.env}
           saveFarmwareEnv={this.props.saveFarmwareEnv}
-          iteration={envGet("CAMERA_CALIBRATION_iteration", this.props.env)}
-          morph={envGet("CAMERA_CALIBRATION_morph", this.props.env)}
-          blur={envGet("CAMERA_CALIBRATION_blur", this.props.env)}
-          H_LO={envGet("CAMERA_CALIBRATION_H_LO", this.props.env)}
-          S_LO={envGet("CAMERA_CALIBRATION_S_LO", this.props.env)}
-          V_LO={envGet("CAMERA_CALIBRATION_V_LO", this.props.env)}
-          H_HI={envGet("CAMERA_CALIBRATION_H_HI", this.props.env)}
-          S_HI={envGet("CAMERA_CALIBRATION_S_HI", this.props.env)}
-          V_HI={envGet("CAMERA_CALIBRATION_V_HI", this.props.env)}
+          iteration={wDEnvGet("CAMERA_CALIBRATION_iteration")}
+          morph={wDEnvGet("CAMERA_CALIBRATION_morph")}
+          blur={wDEnvGet("CAMERA_CALIBRATION_blur")}
+          H_LO={wDEnvGet("CAMERA_CALIBRATION_H_LO")}
+          S_LO={wDEnvGet("CAMERA_CALIBRATION_S_LO")}
+          V_LO={wDEnvGet("CAMERA_CALIBRATION_V_LO")}
+          H_HI={wDEnvGet("CAMERA_CALIBRATION_H_HI")}
+          S_HI={wDEnvGet("CAMERA_CALIBRATION_S_HI")}
+          V_HI={wDEnvGet("CAMERA_CALIBRATION_V_HI")}
           timeSettings={this.props.timeSettings}
           shouldDisplay={this.props.shouldDisplay}
           botToMqttStatus={this.props.botToMqttStatus} />;
@@ -174,7 +178,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
         const farmware = getFarmwareByName(this.props.farmwares, farmwareName);
         return farmware && needsFarmwareForm(farmware)
           ? <FarmwareForm farmware={farmware}
-            user_env={this.props.user_env}
+            env={this.props.env}
             shouldDisplay={this.props.shouldDisplay}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             botOnline={this.botOnline}

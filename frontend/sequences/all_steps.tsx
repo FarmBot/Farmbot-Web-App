@@ -6,7 +6,7 @@ import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
-import { HardwareFlags, FarmwareInfo } from "./interfaces";
+import { HardwareFlags, FarmwareData } from "./interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
 import { ErrorBoundary } from "../error_boundary";
@@ -18,7 +18,7 @@ export interface AllStepsProps {
   dispatch: Function;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
-  farmwareInfo?: FarmwareInfo;
+  farmwareData?: FarmwareData;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
   showPins?: boolean;
@@ -43,7 +43,7 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
           currentSequence: sequence,
           resources: this.props.resources,
           hardwareFlags: this.props.hardwareFlags,
-          farmwareInfo: this.props.farmwareInfo,
+          farmwareData: this.props.farmwareData,
           shouldDisplay: this.props.shouldDisplay,
           confirmStepDeletion: this.props.confirmStepDeletion,
           showPins: this.props.showPins,

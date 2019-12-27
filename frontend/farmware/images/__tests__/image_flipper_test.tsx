@@ -26,8 +26,8 @@ describe("<ImageFlipper/>", () => {
 
   it("defaults to index 0 and flips up", () => {
     const p = fakeProps();
-    const x = shallow(<ImageFlipper {...p} />);
-    const up = (x.instance() as ImageFlipper).go(1);
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const up = flipper.instance().go(1);
     up();
     expect(p.onFlip).toHaveBeenCalledWith(p.images[1].uuid);
   });
@@ -35,8 +35,8 @@ describe("<ImageFlipper/>", () => {
   it("flips down", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
-    const x = shallow(<ImageFlipper {...p} />);
-    const down = (x.instance() as ImageFlipper).go(-1);
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const down = flipper.instance().go(-1);
     down();
     expect(p.onFlip).toHaveBeenCalledWith(p.images[0].uuid);
   });
@@ -44,8 +44,8 @@ describe("<ImageFlipper/>", () => {
   it("stops at upper end", () => {
     const p = fakeProps();
     p.currentImage = p.images[2];
-    const x = shallow(<ImageFlipper {...p} />);
-    const up = (x.instance() as ImageFlipper).go(1);
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const up = flipper.instance().go(1);
     up();
     expect(p.onFlip).not.toHaveBeenCalled();
   });
@@ -53,8 +53,8 @@ describe("<ImageFlipper/>", () => {
   it("stops at lower end", () => {
     const p = fakeProps();
     p.currentImage = p.images[0];
-    const x = shallow(<ImageFlipper {...p} />);
-    const down = (x.instance() as ImageFlipper).go(-1);
+    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const down = flipper.instance().go(-1);
     down();
     expect(p.onFlip).not.toHaveBeenCalled();
   });
@@ -117,5 +117,13 @@ describe("<ImageFlipper/>", () => {
     p.currentImage = p.images[0];
     const wrapper = mount(<ImageFlipper {...p} />);
     expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
+  });
+
+  it("knows when image is loaded", () => {
+    const wrapper = mount<ImageFlipper>(<ImageFlipper {...fakeProps()} />);
+    const image = shallow(wrapper.instance().imageJSX());
+    expect(wrapper.state().isLoaded).toEqual(false);
+    image.find("img").simulate("load");
+    expect(wrapper.state().isLoaded).toEqual(true);
   });
 });

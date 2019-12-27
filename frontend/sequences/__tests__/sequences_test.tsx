@@ -15,8 +15,8 @@ import {
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { ToolTips, Actions } from "../../constants";
 import {
-  fakeHardwareFlags
-} from "../../__test_support__/sequence_hardware_settings";
+  fakeHardwareFlags, fakeFarmwareData
+} from "../../__test_support__/fake_sequence_step_data";
 import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -29,12 +29,7 @@ describe("<Sequences/>", () => {
     resources: buildResourceIndex(FAKE_RESOURCES).index,
     syncStatus: "synced",
     hardwareFlags: fakeHardwareFlags(),
-    farmwareInfo: {
-      farmwareNames: [],
-      firstPartyFarmwareNames: [],
-      showFirstPartyFarmware: false,
-      farmwareConfigs: {},
-    },
+    farmwareData: fakeFarmwareData(),
     shouldDisplay: jest.fn(),
     getWebAppConfigValue: jest.fn(),
     menuOpen: false,

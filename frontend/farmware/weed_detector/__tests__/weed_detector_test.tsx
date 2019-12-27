@@ -1,10 +1,14 @@
-const mockDevice = {
-  execScript: jest.fn(() => Promise.resolve()),
-  setUserEnv: jest.fn(() => Promise.resolve()),
-};
+const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve()) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
+
+const mockDeletePoints = jest.fn();
+jest.mock("../actions", () => ({
+  deletePoints: mockDeletePoints,
+  scanImage: jest.fn(),
+  detectPlants: jest.fn(),
+}));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
@@ -14,6 +18,9 @@ import { API } from "../../../api";
 import { selectImage } from "../../images/actions";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { deletePoints, detectPlants, scanImage } from "../actions";
+import { error } from "../../../toast/toast";
+import { Content, ToolTips } from "../../../constants";
 
 describe("<WeedDetector />", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -22,8 +29,8 @@ describe("<WeedDetector />", () => {
     timeSettings: fakeTimeSettings(),
     farmwares: {},
     botToMqttStatus: "up",
+    wDEnv: {},
     env: {},
-    user_env: {},
     dispatch: jest.fn(),
     currentImage: undefined,
     images: [],
@@ -54,16 +61,38 @@ describe("<WeedDetector />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(x => x());
     const wrapper = shallow(<WeedDetector {...p} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     clickButton(wrapper, 0, "detect weeds");
-    expect(mockDevice.execScript).toHaveBeenCalledWith("plant-detection");
+    expect(detectPlants).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("shows detection button as disabled when camera is disabled", () => {
+    const p = fakeProps();
+    p.env = { camera: "NONE" };
+    const wrapper = shallow(<WeedDetector {...p} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
+    btn.simulate("click");
+    expect(error).toHaveBeenCalledWith(
+      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+    expect(detectPlants).not.toHaveBeenCalled();
   });
 
   it("executes clear weeds", () => {
-    const wrapper =
-      shallow<WeedDetector>(<WeedDetector {...fakeProps()} />);
+    const wrapper = shallow<WeedDetector>(<WeedDetector {...fakeProps()} />);
     expect(wrapper.instance().state.deletionProgress).toBeUndefined();
     clickButton(wrapper, 1, "clear weeds");
+    expect(deletePoints).toHaveBeenCalledWith(
+      "weeds", { created_by: "plant-detection" }, expect.any(Function));
     expect(wrapper.instance().state.deletionProgress).toEqual("Deleting...");
+    const fakeProgress = { completed: 50, total: 100, isDone: false };
+    mockDeletePoints.mock.calls[0][2](fakeProgress);
+    expect(wrapper.instance().state.deletionProgress).toEqual("50 %");
+    fakeProgress.isDone = true;
+    mockDeletePoints.mock.calls[0][2](fakeProgress);
+    expect(wrapper.instance().state.deletionProgress).toEqual("");
   });
 
   it("saves changes", () => {
@@ -85,16 +114,9 @@ describe("<WeedDetector />", () => {
   });
 
   it("calls scanImage", () => {
-    const p = fakeProps();
-    p.dispatch = jest.fn(x => x());
-    const wrapper = shallow(<WeedDetector {...p} />);
+    const wrapper = shallow(<WeedDetector {...fakeProps()} />);
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
-    expect(mockDevice.execScript).toHaveBeenCalledWith(
-      "historical-plant-detection",
-      [expect.objectContaining({
-        kind: "pair",
-        args: expect.objectContaining({ value: "1" })
-      })]);
+    expect(scanImage).toHaveBeenCalledWith(1);
   });
 
   it("calls selectImage", () => {

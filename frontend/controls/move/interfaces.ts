@@ -1,4 +1,4 @@
-import { BotPosition, BotState } from "../../devices/interfaces";
+import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
 import { McuParams, Xyz } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
@@ -14,6 +14,7 @@ export interface MoveProps {
   botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
   getWebAppConfigVal: GetWebAppConfigValue;
+  env: UserEnv;
 }
 
 export interface DirectionButtonProps {
@@ -47,6 +48,7 @@ interface JogMovementControlsBaseProps extends DirectionAxesProps {
   stepSize: number;
   arduinoBusy: boolean;
   xySwap: boolean;
+  env: UserEnv;
 }
 
 export interface JogMovementControlsProps extends JogMovementControlsBaseProps {

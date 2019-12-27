@@ -351,6 +351,7 @@ describe("<FolderNameInput />", () => {
       currentTarget: { value: "new name" }
     });
     expect(setFolderName).toHaveBeenCalledWith(p.node.id, "new name");
+    expect(toggleFolderEditState).toHaveBeenCalledWith(p.node.id);
   });
 
   it("closes folder name input", () => {
