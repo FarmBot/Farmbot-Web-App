@@ -132,8 +132,11 @@ export const FolderButtonCluster =
 
 export const FolderNameInput = ({ node }: FolderNameInputProps) =>
   <div className="folder-name-input">
-    <BlurableInput value={node.name} onCommit={e =>
-      setFolderName(node.id, e.currentTarget.value)} />
+    <BlurableInput value={node.name} autoFocus={true} autoSelect={true}
+      onCommit={e => {
+        setFolderName(node.id, e.currentTarget.value);
+        toggleFolderEditState(node.id);
+      }} />
     <button
       className="fb-button green"
       onClick={() => toggleFolderEditState(node.id)}>
