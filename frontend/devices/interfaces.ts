@@ -78,6 +78,7 @@ export enum Feature {
   endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
   farmduino_k14 = "farmduino_k14",
+  farmduino_k15 = "farmduino_k15",
   firmware_restart = "firmware_restart",
   flash_firmware = "flash_firmware",
   groups = "groups",
