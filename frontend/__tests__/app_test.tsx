@@ -9,7 +9,7 @@ import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
-  fakeUser, fakeWebAppConfig
+  fakeUser, fakeWebAppConfig, fakeFbosConfig, fakeFarmwareEnv
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
 import {
@@ -40,7 +40,8 @@ const fakeProps = (): AppProps => ({
   resources: buildResourceIndex().index,
   autoSync: false,
   alertCount: 0,
-  pings: fakePings()
+  pings: fakePings(),
+  env: {},
 });
 
 describe("<App />: Controls Pop-Up", () => {
@@ -145,7 +146,24 @@ describe("mapStateToProps()", () => {
     const config = fakeWebAppConfig();
     config.body.x_axis_inverted = true;
     state.resources = buildResourceIndex([config]);
+    state.bot.hardware.user_env = { fake: "value" };
     const result = mapStateToProps(state);
     expect(result.axisInversion.x).toEqual(true);
+    expect(result.autoSync).toEqual(false);
+    expect(result.env).toEqual({ fake: "value" });
+  });
+
+  it("returns api props", () => {
+    const state = fakeState();
+    const config = fakeFbosConfig();
+    config.body.auto_sync = true;
+    config.body.api_migrated = true;
+    const fakeEnv = fakeFarmwareEnv();
+    state.resources = buildResourceIndex([config, fakeEnv]);
+    state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
+    state.bot.hardware.informational_settings.controller_version = "8.0.0";
+    const result = mapStateToProps(state);
+    expect(result.autoSync).toEqual(true);
+    expect(result.env).toEqual({ [fakeEnv.body.key]: fakeEnv.body.value });
   });
 });

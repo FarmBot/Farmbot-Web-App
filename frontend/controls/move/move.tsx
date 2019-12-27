@@ -47,6 +47,7 @@ export class Move extends React.Component<MoveProps, {}> {
             botPosition={locationData.position}
             getValue={this.getValue}
             arduinoBusy={this.props.arduinoBusy}
+            env={this.props.env}
             firmwareSettings={this.props.firmwareSettings} />
           <BotPositionRows
             locationData={locationData}

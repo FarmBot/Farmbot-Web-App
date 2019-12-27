@@ -9,24 +9,17 @@ import {
   selectAllPlantTemplates,
   selectAllSensorReadings,
   selectAllSensors,
-  maybeGetDevice,
   maybeGetTimeSettings
 } from "../resources/selectors";
-import {
-  validBotLocationData, validFwConfig, unpackUUID,
-  createShouldDisplayFn as shouldDisplayFunc,
-  determineInstalledOsVersion
-} from "../util";
+import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { Props } from "./interfaces";
 import { TaggedPlant } from "./map/interfaces";
 import { RestResources } from "../resources/interfaces";
 import { isString, uniq, chain } from "lodash";
 import { BooleanSetting } from "../session_keys";
-import { Feature } from "../devices/interfaces";
-import { reduceFarmwareEnv } from "../farmware/state_to_props";
+import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import { getFirmwareConfig } from "../resources/getters";
-import { DevSettings } from "../account/dev/dev_support";
 import { calcMicrostepsPerMm } from "../controls/move/direction_axes_props";
 
 const plantFinder = (plants: TaggedPlant[]) =>
@@ -84,14 +77,8 @@ export function mapStateToProps(props: Everything): Props {
     .reverse()
     .value();
 
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
-  const env = shouldDisplay(Feature.api_farmware_env)
-    ? reduceFarmwareEnv(props.resources.index)
-    : props.bot.hardware.user_env;
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
 
   const cameraCalibrationData = {
     scale: env["CAMERA_CALIBRATION_coord_scale"],

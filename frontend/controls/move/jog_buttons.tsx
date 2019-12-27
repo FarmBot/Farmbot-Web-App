@@ -5,6 +5,9 @@ import { JogMovementControlsProps } from "./interfaces";
 import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
 import { t } from "../../i18next_wrapper";
+import {
+  cameraBtnProps
+} from "../../devices/components/fbos_settings/camera_selection";
 const DEFAULT_STEP_SIZE = 100;
 
 /*
@@ -20,35 +23,37 @@ export function JogButtons(props: JogMovementControlsProps) {
   const directionAxesProps = buildDirectionProps(props);
   const rightLeft = xySwap ? "y" : "x";
   const upDown = xySwap ? "x" : "y";
-
+  const commonProps = {
+    steps: stepSize || DEFAULT_STEP_SIZE,
+    disabled: arduinoBusy
+  };
+  const camDisabled = cameraBtnProps(props.env);
   return <table className="jog-table">
     <tbody>
       <tr>
         <td>
           <button
-            className="i fa fa-camera arrow-button fb-button"
-            title={t("Take a photo")}
-            onClick={() => getDevice().takePhoto().catch(() => { })} />
+            className={`fa fa-camera arrow-button fb-button ${
+              camDisabled.class}`}
+            title={camDisabled.title || t("Take a photo")}
+            onClick={camDisabled.click ||
+              (() => getDevice().takePhoto().catch(() => { }))} />
         </td>
         <td />
         <td />
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis={upDown}
             direction="up"
-            directionAxisProps={directionAxesProps[upDown]}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps[upDown]} />
         </td>
         <td />
         <td />
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis="z"
             direction="up"
-            directionAxisProps={directionAxesProps.z}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps.z} />
         </td>
       </tr>
       <tr>
@@ -61,37 +66,29 @@ export function JogButtons(props: JogMovementControlsProps) {
         </td>
         <td />
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis={rightLeft}
             direction="left"
-            directionAxisProps={directionAxesProps[rightLeft]}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps[rightLeft]} />
         </td>
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis={upDown}
             direction="down"
-            directionAxisProps={directionAxesProps[upDown]}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps[upDown]} />
         </td>
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis={rightLeft}
             direction="right"
-            directionAxisProps={directionAxesProps[rightLeft]}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps[rightLeft]} />
         </td>
         <td />
         <td>
-          <DirectionButton
+          <DirectionButton {...commonProps}
             axis="z"
             direction="down"
-            directionAxisProps={directionAxesProps.z}
-            steps={stepSize || DEFAULT_STEP_SIZE}
-            disabled={arduinoBusy} />
+            directionAxisProps={directionAxesProps.z} />
         </td>
       </tr>
       <tr>

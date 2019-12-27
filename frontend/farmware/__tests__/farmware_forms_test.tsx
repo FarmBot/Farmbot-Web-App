@@ -93,7 +93,7 @@ describe("<FarmwareForm />", () => {
   const fakeProps = (): FarmwareFormProps => {
     return {
       farmware: fakeFarmware(),
-      user_env: {},
+      env: {},
       dispatch: jest.fn(),
       shouldDisplay: () => false,
       saveFarmwareEnv: jest.fn(),

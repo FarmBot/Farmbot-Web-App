@@ -209,8 +209,8 @@ export interface SensorsProps {
 
 export interface FarmwareProps {
   dispatch: Function;
-  env: Partial<WD_ENV>;
-  user_env: UserEnv;
+  wDEnv: Partial<WD_ENV>;
+  env: UserEnv;
   images: TaggedImage[];
   currentImage: TaggedImage | undefined;
   botToMqttStatus: NetworkState;

@@ -24,6 +24,7 @@ describe("<Controls />", () => {
     getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
     sensorReadings: [],
     timeSettings: fakeTimeSettings(),
+    env: {},
   });
 
   it("shows webcam widget", () => {

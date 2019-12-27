@@ -1,22 +1,20 @@
 import { Everything } from "../interfaces";
 import { Props, HardwareFlags, FarmwareConfigs } from "./interfaces";
-import {
-  selectAllSequences, findSequence, maybeGetDevice
-} from "../resources/selectors";
+import { selectAllSequences, findSequence } from "../resources/selectors";
 import { getStepTag } from "../resources/sequence_tagging";
 import { enabledAxisMap } from "../devices/components/axis_tracking_status";
-import {
-  createShouldDisplayFn as shouldDisplayFunc,
-  determineInstalledOsVersion, validFwConfig
-} from "../util";
+import { validFwConfig } from "../util";
 import { BooleanSetting } from "../session_keys";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
 import { Farmwares } from "../farmware/interfaces";
 import { manifestInfo } from "../farmware/generate_manifest_info";
-import { DevSettings } from "../account/dev/dev_support";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { mapStateToFolderProps } from "../folders/map_state_to_props";
+import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
+import {
+  cameraDisabled
+} from "../devices/components/fbos_settings/camera_selection";
 
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
@@ -62,11 +60,8 @@ export function mapStateToProps(props: Everything): Props {
   const farmwareConfigs: FarmwareConfigs = {};
   Object.values(farmwares).map(fw => farmwareConfigs[fw.name] = fw.config);
 
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
 
   return {
     dispatch: props.dispatch,
@@ -79,11 +74,12 @@ export function mapStateToProps(props: Everything): Props {
       .informational_settings
       .sync_status || "unknown"),
     hardwareFlags: hardwareFlags(),
-    farmwareInfo: {
+    farmwareData: {
       farmwareNames,
       firstPartyFarmwareNames,
       showFirstPartyFarmware,
       farmwareConfigs,
+      cameraDisabled: cameraDisabled(env),
     },
     shouldDisplay,
     getWebAppConfigValue: getConfig,

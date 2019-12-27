@@ -15,6 +15,8 @@ import { mount } from "enzyme";
 import { JogButtons } from "../jog_buttons";
 import { JogMovementControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { error } from "../../../toast/toast";
+import { Content, ToolTips } from "../../../constants";
 
 describe("<JogButtons/>", function () {
   const jogButtonProps = (): JogMovementControlsProps => {
@@ -26,6 +28,7 @@ describe("<JogButtons/>", function () {
       firmwareSettings: bot.hardware.mcu_params,
       xySwap: false,
       doFindHome: false,
+      env: {},
     };
   };
 
@@ -60,8 +63,12 @@ describe("<JogButtons/>", function () {
 
   it("takes photo", () => {
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    jogButtons.find("button").at(0).simulate("click");
+    const cameraBtn = jogButtons.find("button").at(0);
+    expect(cameraBtn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
+
+    cameraBtn.simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 
   it("error taking photo", () => {
@@ -69,6 +76,18 @@ describe("<JogButtons/>", function () {
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
     jogButtons.find("button").at(0).simulate("click");
     expect(mockDevice.takePhoto).toHaveBeenCalled();
+  });
+
+  it("shows camera as disabled", () => {
+    const p = jogButtonProps();
+    p.env = { camera: "NONE" };
+    const jogButtons = mount(<JogButtons {...p} />);
+    const cameraBtn = jogButtons.find("button").at(0);
+    expect(cameraBtn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
+    cameraBtn.simulate("click");
+    expect(error).toHaveBeenCalledWith(
+      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+    expect(mockDevice.takePhoto).not.toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {

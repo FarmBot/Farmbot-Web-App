@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FarmwareInfo } from "../interfaces";
+import { FarmwareData } from "../interfaces";
 import { DropDownItem, BlurableInput, Help } from "../../ui/index";
 import { without, isNumber } from "lodash";
 import { ExecuteScript, Pair, FarmwareConfig } from "farmbot";
@@ -113,11 +113,11 @@ const farmwareInputs =
 
 /** List of installed Farmware, if bot is connected (for DropDown). */
 export const farmwareList =
-  (farmwareInfo: FarmwareInfo | undefined): DropDownItem[] => {
-    if (farmwareInfo) {
+  (farmwareData: FarmwareData | undefined): DropDownItem[] => {
+    if (farmwareData) {
       const {
         farmwareNames, showFirstPartyFarmware, firstPartyFarmwareNames
-      } = farmwareInfo;
+      } = farmwareData;
       return farmwareNames
         .filter(x => (firstPartyFarmwareNames && !showFirstPartyFarmware)
           ? !firstPartyFarmwareNames.includes(x) : x)

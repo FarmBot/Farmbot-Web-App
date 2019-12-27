@@ -249,7 +249,7 @@ export class SequenceEditorMiddleActive extends
       dispatch: this.props.dispatch,
       resources: this.props.resources,
       hardwareFlags: this.props.hardwareFlags,
-      farmwareInfo: this.props.farmwareInfo,
+      farmwareData: this.props.farmwareData,
       shouldDisplay: this.props.shouldDisplay,
       confirmStepDeletion: !!getConfig(BooleanSetting.confirm_step_deletion),
       showPins: !!getConfig(BooleanSetting.show_pins),

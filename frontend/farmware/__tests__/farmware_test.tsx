@@ -16,8 +16,8 @@ describe("<FarmwarePage />", () => {
   const fakeProps = (): FarmwareProps => ({
     farmwares: fakeFarmwares(),
     botToMqttStatus: "up",
+    wDEnv: {},
     env: {},
-    user_env: {},
     dispatch: jest.fn(),
     currentImage: undefined,
     images: [],
