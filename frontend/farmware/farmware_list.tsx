@@ -94,7 +94,7 @@ export class FarmwareList
       .filter(x => showFirstParty || !firstPartyFarmwareNames.includes(x))
       .filter(x => !listed1stPartyNames.includes(x));
 
-    return <div>
+    return <div className="farmware-list-panel-contents">
       <div className="farmware-settings-menu">
         <Popover position={Position.BOTTOM_RIGHT}>
           <i className="fa fa-gear dark" />
