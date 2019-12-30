@@ -509,9 +509,125 @@
   }
 }
 
-.tools-panel-content {
+.tool-slots-panel,
+.tools-panel {
+  .panel-top {
+    display: flex;
+    margin-top: 5rem;
+  }
+  .tool-slots-panel-content,
+  .tools-panel-content {
+    .tool-search-item,
+    .tool-slot-search-item {
+      cursor: pointer;
+      margin-left: -15px;
+      margin-right: -15px;
+      .row {
+        margin-left: 0;
+        margin-right: 0;
+      }
+      p {
+        line-height: 3rem;
+      }
+    }
+    .mounted-tool-header {
+      display: flex;
+      margin-top: 1rem;
+      label {
+        margin: 0;
+      }
+      .help-icon {
+        margin-left: 1rem;
+        vertical-align: top;
+        font-size: 1.4rem;
+      }
+    }
+    .tool-slots-header {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      label {
+        margin: 0;
+        line-height: 2.1rem;
+      }
+      a {
+        margin-left: auto;
+      }
+      .fa-plus {
+        font-size: 1.5rem;
+      }
+    }
+    button:not(.bp3-button) {
+      display: block;
+      margin-left: auto;
+      float: none;
+      margin-top: 1rem;
+    }
+    .tool-verification-status {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      button {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+.add-tool-panel-content,
+.edit-tool-panel-content {
   button {
+    display: block;
+    margin-left: auto;
+    float: none;
     margin-top: 1rem;
+    &.red {
+      float: left;
+    }
+  }
+  .add-stock-tools {
+    ul {
+      font-size: 1.2rem;
+      padding-left: 1rem;
+    }
+    button {
+      .fa-plus {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.add-tool-slot-panel-content,
+.edit-tool-slot-panel-content {
+  label {
+    margin-top: 0 !important;
+  }
+  .row, fieldset {
+    margin-top: 2rem;
+  }
+  fieldset button {
+    margin: 0;
+  }
+  .direction-icon {
+    margin-left: 1rem;
+  }
+  .use-current-location-input {
+    button {
+      margin: 0;
+      float: none;
+      margin-left: 1rem;
+      vertical-align: middle;
+    }
+  }
+  .gantry-mounted-input {
+    label {
+      margin-top: 0;
+    }
+    input[type="checkbox"] {
+      float: left;
+      margin-right: 1rem;
+    }
   }
 }
 

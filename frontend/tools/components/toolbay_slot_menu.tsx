@@ -7,31 +7,32 @@ import { SlotDirectionSelect } from "./toolbay_slot_direction_selection";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
-const positionIsDefined = (position: BotPosition): boolean =>
+export const positionIsDefined = (position: BotPosition): boolean =>
   isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
 
-const useCurrentPosition = (
+export const useCurrentPosition = (
   dispatch: Function, slot: TaggedToolSlotPointer, position: BotPosition) => {
   if (positionIsDefined(position)) {
     dispatch(edit(slot, { x: position.x, y: position.y, z: position.z }));
   }
 };
 
-const positionButtonTitle = (position: BotPosition): string =>
+export const positionButtonTitle = (position: BotPosition): string =>
   positionIsDefined(position)
     ? `(${position.x}, ${position.y}, ${position.z})`
     : t("(unknown)");
 
-const changePulloutDirection =
+export const newSlotDirection =
+  (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
+    isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
+
+export const changePulloutDirection =
   (dispatch: Function, slot: TaggedToolSlotPointer) => () => {
-    const newDirection =
-      (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
-        isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
     dispatch(edit(slot,
-      { pullout_direction: newDirection(slot.body.pullout_direction) }));
+      { pullout_direction: newSlotDirection(slot.body.pullout_direction) }));
   };
 
-const directionIconClass = (slotDirection: ToolPulloutDirection) => {
+export const directionIconClass = (slotDirection: ToolPulloutDirection) => {
   switch (slotDirection) {
     case ToolPulloutDirection.POSITIVE_X: return "fa fa-arrow-circle-right";
     case ToolPulloutDirection.NEGATIVE_X: return "fa fa-arrow-circle-left";

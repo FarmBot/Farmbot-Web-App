@@ -178,6 +178,11 @@ export function maybeGetRegimen(index: ResourceIndex,
   if (tr && isTaggedRegimen(tr)) { return tr; }
 }
 
+export function maybeGetToolSlot(index: ResourceIndex,
+  uuid: string | undefined): TaggedToolSlotPointer | undefined {
+  return selectAllToolSlotPointers(index).filter(x => x.uuid === uuid)[0];
+}
+
 /** Return the UTC offset of current bot if possible. If not, use UTC (0). */
 export function maybeGetTimeOffset(index: ResourceIndex): number {
   const dev = maybeGetDevice(index);

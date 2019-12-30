@@ -103,6 +103,7 @@ export interface DesignerState {
   hoveredPlant: HoveredPlantPayl;
   hoveredPoint: string | undefined;
   hoveredPlantListItem: string | undefined;
+  hoveredToolSlot: string | undefined;
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;

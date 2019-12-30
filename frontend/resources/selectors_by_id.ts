@@ -50,6 +50,16 @@ export const findFarmEventById = (ri: ResourceIndex, fe_id: number) => {
   }
 };
 
+export const maybeFindToolSlotById = (ri: ResourceIndex, tool_slot_id?: number):
+  TaggedToolSlotPointer | undefined => {
+  const toolSlot = tool_slot_id && byId("Point")(ri, tool_slot_id);
+  if (toolSlot && isTaggedToolSlotPointer(toolSlot) && sanityCheck(toolSlot)) {
+    return toolSlot;
+  } else {
+    return undefined;
+  }
+};
+
 export const maybeFindToolById = (ri: ResourceIndex, tool_id?: number):
   TaggedTool | undefined => {
   const tool = tool_id && byId("Tool")(ri, tool_id);
