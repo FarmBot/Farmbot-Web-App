@@ -541,6 +541,9 @@
       }
       p {
         line-height: 3rem;
+        &.tool-slot-position {
+          float: right;
+        }
       }
     }
     .mounted-tool-header {
