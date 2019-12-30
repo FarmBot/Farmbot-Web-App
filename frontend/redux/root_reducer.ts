@@ -3,18 +3,18 @@ import { botReducer as bot } from "../devices/reducer";
 import { configReducer as config } from "../config/reducer";
 import { draggableReducer as draggable } from "../draggable/reducer";
 import { combineReducers } from "redux";
-import { ReduxAction } from "./interfaces";
+import { ReduxAction, Reducers } from "./interfaces";
 import { Session } from "../session";
 import { resourceReducer as resources } from "../resources/reducer";
 import { Everything } from "../interfaces";
 import { Actions } from "../constants";
 
-export const reducers = combineReducers({
+export const reducers: Reducers = combineReducers({
   auth,
   bot,
   config,
   draggable,
-  resources
+  resources,
 });
 
 /** This is the topmost reducer in the application. If you need to preempt a

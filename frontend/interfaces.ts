@@ -3,7 +3,6 @@ import { ConfigState } from "./config/interfaces";
 import { BotState } from "./devices/interfaces";
 import { Color as FarmBotJsColor } from "farmbot";
 import { DraggableState } from "./draggable/interfaces";
-import { PeripheralState } from "./controls/peripherals/interfaces";
 import { RestResources } from "./resources/interfaces";
 
 /** Regimens and sequences may have a "color" which determines how it looks
@@ -16,7 +15,6 @@ export interface Everything {
   dispatch: Function;
   bot: BotState;
   draggable: DraggableState;
-  Peripheral: PeripheralState;
   resources: RestResources;
 }
 

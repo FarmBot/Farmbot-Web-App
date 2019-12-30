@@ -1,5 +1,5 @@
 import { Everything } from "../interfaces";
-import { Store as ReduxStore } from "redux";
+import { Store as ReduxStore, Reducer, AnyAction } from "redux";
 import { Actions } from "../constants";
 
 export type Store = ReduxStore<Everything>;
@@ -18,3 +18,5 @@ export interface Thunk {
 }
 
 export type EnvName = "test" | "production" | "development" | "*";
+
+export type Reducers = Reducer<Omit<Everything, "dispatch">, AnyAction>;

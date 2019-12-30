@@ -2,8 +2,12 @@ import { FirmwareHardware } from "farmbot";
 import { ShouldDisplay, Feature } from "../interfaces";
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
-  const values: FirmwareHardware[] =
-    ["arduino", "farmduino", "farmduino_k14", "express_k10", "none"];
+  const values: FirmwareHardware[] = [
+    "arduino",
+    "farmduino", "farmduino_k14", "farmduino_k15",
+    "express_k10",
+    "none"
+  ];
   return !!values.includes(x as FirmwareHardware);
 };
 
@@ -13,7 +17,7 @@ export const getBoardIdentifier =
 
 export const isKnownBoard = (firmwareVersion: string | undefined): boolean => {
   const boardIdentifier = getBoardIdentifier(firmwareVersion);
-  return ["R", "F", "G", "E"].includes(boardIdentifier);
+  return ["R", "F", "G", "H", "E"].includes(boardIdentifier);
 };
 
 export const getBoardCategory =
@@ -33,6 +37,8 @@ export const boardType =
         return "farmduino";
       case "G":
         return "farmduino_k14";
+      case "H":
+        return "farmduino_k15";
       case "E":
         return "express_k10";
       default:
@@ -45,6 +51,9 @@ const FARMDUINO = { label: "Farmduino (Genesis v1.3)", value: "farmduino" };
 const FARMDUINO_K14 = {
   label: "Farmduino (Genesis v1.4)", value: "farmduino_k14"
 };
+const FARMDUINO_K15 = {
+  label: "Farmduino (Genesis v1.5)", value: "farmduino_k15"
+};
 const EXPRESS_K10 = {
   label: "Farmduino (Express v1.0)", value: "express_k10"
 };
@@ -54,6 +63,7 @@ export const FIRMWARE_CHOICES_DDI = {
   [ARDUINO.value]: ARDUINO,
   [FARMDUINO.value]: FARMDUINO,
   [FARMDUINO_K14.value]: FARMDUINO_K14,
+  [FARMDUINO_K15.value]: FARMDUINO_K15,
   [EXPRESS_K10.value]: EXPRESS_K10,
   [NONE.value]: NONE
 };
@@ -63,6 +73,7 @@ export const getFirmwareChoices =
     ARDUINO,
     FARMDUINO,
     FARMDUINO_K14,
+    ...(shouldDisplay(Feature.farmduino_k15) ? [FARMDUINO_K15] : []),
     ...(shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : []),
     ...(shouldDisplay(Feature.none_firmware) ? [NONE] : []),
   ]);
