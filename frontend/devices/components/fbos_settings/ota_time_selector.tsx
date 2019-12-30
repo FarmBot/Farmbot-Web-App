@@ -37,7 +37,7 @@ type HOUR =
   | 23;
 type TimeTable = Record<HOUR, DropDownItem>;
 type EveryTimeTable = Record<PreferredHourFormat, TimeTable>;
-const TIME_TABLE_12H: TimeTable = {
+const TIME_TABLE_12H = (): TimeTable => ({
   0: { label: t("Midnight"), value: 0 },
   1: { label: "1:00 AM", value: 1 },
   2: { label: "2:00 AM", value: 2 },
@@ -63,8 +63,8 @@ const TIME_TABLE_12H: TimeTable = {
   22: { label: "10:00 PM", value: 22 },
   23: { label: "11:00 PM", value: 23 },
   [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
-};
-const TIME_TABLE_24H: TimeTable = {
+});
+const TIME_TABLE_24H = (): TimeTable => ({
   0: { label: "00:00", value: 0 },
   1: { label: "01:00", value: 1 },
   2: { label: "02:00", value: 2 },
@@ -90,13 +90,13 @@ const TIME_TABLE_24H: TimeTable = {
   22: { label: "22:00", value: 22 },
   23: { label: "23:00", value: 23 },
   [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
-};
+});
 
 const DEFAULT_HOUR: keyof TimeTable = IMMEDIATELY;
-const TIME_FORMATS: EveryTimeTable = {
-  "12h": TIME_TABLE_12H,
-  "24h": TIME_TABLE_24H
-};
+const TIME_FORMATS = (): EveryTimeTable => ({
+  "12h": TIME_TABLE_12H(),
+  "24h": TIME_TABLE_24H()
+});
 
 interface OtaTimeSelectorProps {
   disabled: boolean;
@@ -136,7 +136,7 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     }
   };
 
-  const theTimeTable = TIME_FORMATS[props.timeFormat];
+  const theTimeTable = TIME_FORMATS()[props.timeFormat];
   const list = Object
     .values(theTimeTable)
     .map(x => ({ ...x, label: t(x.label) }))
