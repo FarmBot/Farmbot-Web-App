@@ -15,6 +15,7 @@ import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
 import { PanelColor } from "../panel_header";
 import { error } from "../../toast/toast";
+import { PlantStatusBulkUpdate } from "./edit_plant_status";
 
 export const mapStateToProps = (props: Everything): SelectPlantsProps => ({
   selected: props.resources.consumers.farm_designer.selectedPlants,
@@ -57,7 +58,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
 
   ActionButtons = () =>
     <div className="panel-action-buttons">
-      <div className="buttonrow">
+      <div className="button-row">
         <button className="fb-button gray"
           onClick={() => this.props.dispatch(selectPlant(undefined))}>
           {t("Select none")}
@@ -69,7 +70,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         </button>
       </div>
       <label>{t("SELECTION ACTIONS")}</label>
-      <div className="buttonrow">
+      <div className="button-row">
         <button className="fb-button red"
           onClick={() => this.destroySelected(this.props.selected)}>
           {t("Delete")}
@@ -80,6 +81,10 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
+        <PlantStatusBulkUpdate
+          plants={this.props.plants}
+          selected={this.selected}
+          dispatch={this.props.dispatch} />
       </div>
     </div>;
 
