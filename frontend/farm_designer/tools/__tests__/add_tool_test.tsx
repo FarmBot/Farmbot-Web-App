@@ -1,5 +1,7 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
+jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -8,6 +10,7 @@ import {
 import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
 import { initSave } from "../../../api/crud";
+import { history } from "../../../history";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
@@ -32,6 +35,13 @@ describe("<AddTool />", () => {
     wrapper.setState({ toolName: "Foo" });
     wrapper.find(SaveBtn).simulate("click");
     expect(initSave).toHaveBeenCalledWith("Tool", { name: "Foo" });
+  });
+
+  it("adds stock tools", () => {
+    const wrapper = mount(<AddTool {...fakeProps()} />);
+    wrapper.find("button").last().simulate("click");
+    expect(initSave).toHaveBeenCalledTimes(6);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 });
 

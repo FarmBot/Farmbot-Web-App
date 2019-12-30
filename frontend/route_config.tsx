@@ -347,6 +347,22 @@ export const UNBOUND_ROUTES = [
   }),
   route({
     children: true,
+    $: "/designer/tool-slots/add",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/tools/add_tool_slot"),
+    childKey: "AddToolSlot"
+  }),
+  route({
+    children: true,
+    $: "/designer/tool-slots/:tool_id",
+    getModule,
+    key,
+    getChild: () => import("./farm_designer/tools/edit_tool_slot"),
+    childKey: "EditToolSlot"
+  }),
+  route({
+    children: true,
     $: "/designer/groups",
     getModule,
     key,

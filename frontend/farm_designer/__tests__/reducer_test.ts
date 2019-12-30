@@ -63,6 +63,15 @@ describe("designer reducer", () => {
     expect(newState.hoveredPoint).toEqual("uuid");
   });
 
+  it("sets hovered tool slot", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.HOVER_TOOL_SLOT,
+      payload: "toolSlotUuid"
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.hoveredToolSlot).toEqual("toolSlotUuid");
+  });
+
   it("sets chosen location", () => {
     const action: ReduxAction<BotPosition> = {
       type: Actions.CHOOSE_LOCATION,

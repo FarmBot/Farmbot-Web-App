@@ -785,6 +785,10 @@ export namespace Content {
   export const NO_TOOLS =
     trim(`Press "+" to add a new tool.`);
 
+  export const MOUNTED_TOOL =
+    trim(`The tool currently mounted to the UTM can be set here or by using
+    a MARK AS step in a sequence.`);
+
   // Farm Events
   export const NOTHING_SCHEDULED =
     trim(`Press "+" to schedule an event.`);
@@ -979,6 +983,7 @@ export enum Actions {
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",

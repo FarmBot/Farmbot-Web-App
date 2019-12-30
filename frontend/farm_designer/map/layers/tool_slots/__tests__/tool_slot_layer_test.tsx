@@ -14,6 +14,7 @@ import { shallow } from "enzyme";
 import { history } from "../../../../../history";
 import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
 import { TaggedToolSlotPointer } from "farmbot";
+import { ToolSlotPoint } from "../tool_slot_point";
 
 describe("<ToolSlotLayer/>", () => {
   function fakeProps(): ToolSlotLayerProps {
@@ -35,18 +36,20 @@ describe("<ToolSlotLayer/>", () => {
       slots: [{ toolSlot, tool: undefined }],
       botPositionX: undefined,
       mapTransformProps: fakeMapTransformProps(),
+      dispatch: jest.fn(),
+      hoveredToolSlot: undefined,
     };
   }
   it("toggles visibility off", () => {
     const result = shallow(<ToolSlotLayer {...fakeProps()} />);
-    expect(result.find("ToolSlotPoint").length).toEqual(0);
+    expect(result.find(ToolSlotPoint).length).toEqual(0);
   });
 
   it("toggles visibility on", () => {
     const p = fakeProps();
     p.visible = true;
     const result = shallow(<ToolSlotLayer {...p} />);
-    expect(result.find("ToolSlotPoint").length).toEqual(1);
+    expect(result.find(ToolSlotPoint).length).toEqual(1);
   });
 
   it("navigates to tools page", async () => {

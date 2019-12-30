@@ -6,7 +6,7 @@ import { isNumber } from "lodash";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
-const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
+export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
   [ToolPulloutDirection.NONE]:
     { label: t("None"), value: ToolPulloutDirection.NONE },
   [ToolPulloutDirection.POSITIVE_X]:
@@ -19,7 +19,7 @@ const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
     { label: t("Negative Y"), value: ToolPulloutDirection.NEGATIVE_Y },
 };
 
-const DIRECTION_CHOICES: DropDownItem[] = [
+export const DIRECTION_CHOICES: DropDownItem[] = [
   DIRECTION_CHOICES_DDI[ToolPulloutDirection.NONE],
   DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_X],
   DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_X],
