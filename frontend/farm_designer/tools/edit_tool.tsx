@@ -9,7 +9,7 @@ import { getPathArray } from "../../history";
 import { TaggedTool, SpecialStatus } from "farmbot";
 import { maybeFindToolById } from "../../resources/selectors";
 import { SaveBtn } from "../../ui";
-import { edit } from "../../api/crud";
+import { edit, destroy } from "../../api/crud";
 import { history } from "../../history";
 import { Panel } from "../panel_header";
 
@@ -40,26 +40,35 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
     return <span>{t("Redirecting...")}</span>;
   }
 
-  default = (tool: TaggedTool) =>
-    <DesignerPanel panelName={"tool"} panel={Panel.Tools}>
+  default = (tool: TaggedTool) => {
+    const { dispatch } = this.props;
+    const { toolName } = this.state;
+    const panelName = "edit-tool";
+    return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
-        panelName={"tool"}
-        title={`${t("Edit")} ${tool.body.name}`}
+        panelName={panelName}
+        title={t("Edit tool")}
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
-      <DesignerPanelContent panelName={"tools"}>
+      <DesignerPanelContent panelName={panelName}>
         <label>{t("Tool Name")}</label>
         <input
-          value={this.state.toolName}
+          value={toolName}
           onChange={e => this.setState({ toolName: e.currentTarget.value })} />
         <SaveBtn
           onClick={() => {
-            this.props.dispatch(edit(tool, { name: this.state.toolName }));
+            dispatch(edit(tool, { name: toolName }));
             history.push("/app/designer/tools");
           }}
           status={SpecialStatus.DIRTY} />
+        <button
+          className="fb-button red no-float"
+          onClick={() => dispatch(destroy(tool.uuid))}>
+          {t("Delete")}
+        </button>
       </DesignerPanelContent>
     </DesignerPanel>;
+  }
 
   render() {
     return this.tool ? this.default(this.tool) : this.fallback();

@@ -9,6 +9,7 @@ import { SaveBtn } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave } from "../../api/crud";
 import { Panel } from "../panel_header";
+import { history } from "../../history";
 
 export interface AddToolProps {
   dispatch: Function;
@@ -24,21 +25,60 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   state: AddToolState = { toolName: "" };
+
+  newTool = (name: string) => {
+    this.props.dispatch(initSave("Tool", { name }));
+  };
+
+  save = () => {
+    this.newTool(this.state.toolName);
+    history.push("/app/designer/tools");
+  }
+
+  get stockToolNames() {
+    return [
+      t("Seeder"),
+      t("Watering Nozzle"),
+      t("Weeder"),
+      t("Soil Sensor"),
+      t("Seed Bin"),
+      t("Seed Tray"),
+    ];
+  }
+
+  AddStockTools = () =>
+    <div className="add-stock-tools">
+      <label>{t("Add stock tools")}</label>
+      <ul>
+        {this.stockToolNames.map(n => <li key={n}>{n}</li>)}
+      </ul>
+      <button
+        className="fb-button green"
+        onClick={() => {
+          this.stockToolNames.map(n => this.newTool(n));
+          history.push("/app/designer/tools");
+        }}>
+        <i className="fa fa-plus" />
+        {t("Stock Tools")}
+      </button>
+    </div>
+
   render() {
-    return <DesignerPanel panelName={"tool"} panel={Panel.Tools}>
+    const panelName = "add-tool";
+    return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
-        panelName={"tool"}
+        panelName={panelName}
         title={t("Add new tool")}
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
-      <DesignerPanelContent panelName={"tools"}>
-        <label>{t("Tool Name")}</label>
-        <input
-          onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-        <SaveBtn
-          onClick={() =>
-            this.props.dispatch(initSave("Tool", { name: this.state.toolName }))}
-          status={SpecialStatus.DIRTY} />
+      <DesignerPanelContent panelName={panelName}>
+        <div className="add-new-tool">
+          <label>{t("Tool Name")}</label>
+          <input onChange={e =>
+            this.setState({ toolName: e.currentTarget.value })} />
+          <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />
+        </div>
+        <this.AddStockTools />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

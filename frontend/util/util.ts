@@ -18,7 +18,7 @@ import {
 } from "lodash";
 import { t } from "../i18next_wrapper";
 
-export let colors: Array<ResourceColor> = [
+export const colors: Array<ResourceColor> = [
   "blue",
   "green",
   "yellow",

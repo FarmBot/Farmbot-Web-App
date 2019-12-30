@@ -161,4 +161,4 @@ export class PureFarmEvents
  * It avoids mocking `connect` in unit tests.
  * See testing pattern noted here: https://github.com/airbnb/enzyme/issues/98
  */
-export let FarmEvents = connect(mapStateToProps)(PureFarmEvents);
+export const FarmEvents = connect(mapStateToProps)(PureFarmEvents);

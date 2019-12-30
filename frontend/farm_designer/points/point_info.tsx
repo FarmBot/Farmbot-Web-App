@@ -49,8 +49,7 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
         backTo={this.backTo}
         onBack={() => this.props.dispatch({
           type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
-        })}>
-      </DesignerPanelHeader>
+        })} />
       <DesignerPanelContent panelName={this.panelName}>
         <EditPointProperties point={point}
           updatePoint={updatePoint(point, this.props.dispatch)} />

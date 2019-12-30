@@ -245,7 +245,7 @@ function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
  * Fetch and save minimum FBOS version data for UI feature display.
  * @param url location of data
  */
-export let fetchMinOsFeatureData = (url: string) =>
+export const fetchMinOsFeatureData = (url: string) =>
   (dispatch: Function) => {
     axios
       .get<MinOsFeatureLookup>(url)

@@ -20,6 +20,7 @@ import { Actions } from "../../constants";
 import { reduceVariables } from "../../sequences/locals_list/variable_support";
 import { determineDropdown, withPrefix } from "../../resources/sequence_meta";
 import { ResourceIndex } from "../../resources/interfaces";
+import { ErrorBoundary } from "../../error_boundary";
 
 /**
  * The bottom half of the regimen editor panel (when there's something to
@@ -57,14 +58,18 @@ export class ActiveEditor
       <div id="regimen-editor-tools" className="regimen-editor-tools">
         <RegimenButtonGroup {...this.regimenProps} />
         <RegimenNameInput {...this.regimenProps} />
-        <this.LocalsList />
+        <ErrorBoundary>
+          <this.LocalsList />
+        </ErrorBoundary>
         <hr />
       </div>
       <OpenSchedulerButton dispatch={this.props.dispatch} />
-      <RegimenRows {...this.regimenProps}
-        calendar={this.props.calendar}
-        varsCollapsed={this.state.variablesCollapsed}
-        resources={this.props.resources} />
+      <ErrorBoundary>
+        <RegimenRows {...this.regimenProps}
+          calendar={this.props.calendar}
+          varsCollapsed={this.state.variablesCollapsed}
+          resources={this.props.resources} />
+      </ErrorBoundary>
     </div>;
   }
 }

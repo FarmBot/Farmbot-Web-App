@@ -15,7 +15,7 @@ interface IdURL {
 }
 
 const FALLBACK: OpenFarm.Included[] = [];
-export let OFSearch = (searchTerm: string) =>
+export const OFSearch = (searchTerm: string) =>
   (dispatch: Function) => {
     dispatch({ type: Actions.OF_SEARCH_RESULTS_START, payload: undefined });
     openFarmSearchQuery(searchTerm)

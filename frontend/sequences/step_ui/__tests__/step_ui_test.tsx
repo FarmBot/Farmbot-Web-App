@@ -13,12 +13,12 @@ import { conflictsString } from "../step_warning";
 describe("<StepWrapper />", () => {
   it("renders", () => {
     const wrapper = mount(<StepWrapper />);
-    expect(wrapper.find("div").hasClass("step-wrapper")).toBeTruthy();
+    expect(wrapper.find("div").first().hasClass("step-wrapper")).toBeTruthy();
   });
 
   it("renders with extra className", () => {
     const wrapper = mount(<StepWrapper className={"step-class"} />);
-    expect(wrapper.find("div").hasClass("step-class")).toBeTruthy();
+    expect(wrapper.find("div").first().hasClass("step-class")).toBeTruthy();
   });
 });
 
@@ -50,7 +50,7 @@ describe("<StepHeader />", () => {
 describe("<StepContent />", () => {
   it("renders", () => {
     const wrapper = mount(<StepContent className={"step-class"} />);
-    const div = wrapper.find("div").last();
+    const div = wrapper.find("div").at(2);
     expect(div.hasClass("step-content")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
   });

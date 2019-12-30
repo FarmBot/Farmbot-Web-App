@@ -5,6 +5,7 @@ import {
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { Color } from "../../../../../ui";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import { Actions } from "../../../../../constants";
 
 describe("<ToolbaySlot />", () => {
   const fakeProps = (): ToolSlotGraphicProps => ({
@@ -61,7 +62,8 @@ describe("<Tool/>", () => {
     x: 10,
     y: 20,
     hovered: false,
-    setHoverState: jest.fn(),
+    dispatch: jest.fn(),
+    uuid: "fakeUuid",
     xySwap: false,
   });
 
@@ -75,9 +77,13 @@ describe("<Tool/>", () => {
     p.tool = toolName;
     const wrapper = svgMount(<Tool {...p} />);
     wrapper.find("g").simulate("mouseOver");
-    expect(p.toolProps.setHoverState).toHaveBeenCalledWith(true);
+    expect(p.toolProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_TOOL_SLOT, payload: "fakeUuid"
+    });
     wrapper.find("g").simulate("mouseLeave");
-    expect(p.toolProps.setHoverState).toHaveBeenCalledWith(false);
+    expect(p.toolProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_TOOL_SLOT, payload: undefined
+    });
   };
 
   it("renders standard tool styling", () => {

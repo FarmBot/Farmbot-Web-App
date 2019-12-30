@@ -14,4 +14,4 @@ const change = (state: "up" | "down") =>
 
 export const networkUp = change("up");
 
-export let networkDown = change("down");
+export const networkDown = change("down");

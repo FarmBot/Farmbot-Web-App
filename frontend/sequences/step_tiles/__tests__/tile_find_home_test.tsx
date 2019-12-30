@@ -4,7 +4,7 @@ import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
   fakeHardwareFlags
-} from "../../../__test_support__/sequence_hardware_settings";
+} from "../../../__test_support__/fake_sequence_step_data";
 import { HardwareFlags } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";
 

@@ -37,13 +37,13 @@ export const dispatchQosStart = (id: string) => {
   });
 };
 
-export let dispatchNetworkUp = (edge: Edge, at: number) => {
+export const dispatchNetworkUp = (edge: Edge, at: number) => {
   if (shouldThrottle(edge, at)) { return; }
   store.dispatch(networkUp(edge, at));
   bumpThrottle(edge, at);
 };
 
-export let dispatchNetworkDown = (edge: Edge, at: number) => {
+export const dispatchNetworkDown = (edge: Edge, at: number) => {
   if (shouldThrottle(edge, at)) { return; }
   store.dispatch(networkDown(edge, at));
   bumpThrottle(edge, at);

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Col, ToolTip, DocSlug } from ".";
 import { t } from "../i18next_wrapper";
+import { ErrorBoundary } from "../error_boundary";
 
 interface RightPanelProps {
   children?: React.ReactNode;
@@ -22,7 +23,9 @@ export function RightPanel(props: RightPanelProps) {
           <i>{t(props.title)}</i>
         </h3>
         <ToolTip helpText={props.helpText} docPage={props.docPage} />
-        {props.children}
+        <ErrorBoundary>
+          {props.children}
+        </ErrorBoundary>
       </div>}
   </Col>;
 }

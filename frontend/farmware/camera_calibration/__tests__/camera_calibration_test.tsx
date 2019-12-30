@@ -1,6 +1,5 @@
 const mockDevice = { setUserEnv: jest.fn(() => Promise.resolve({})) };
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 jest.mock("../actions", () => ({ scanImage: jest.fn() }));
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
@@ -11,12 +10,15 @@ import { CameraCalibrationProps } from "../interfaces";
 import { scanImage } from "../actions";
 import { selectImage } from "../../images/actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { error } from "../../../toast/toast";
+import { Content, ToolTips } from "../../../constants";
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
     dispatch: jest.fn(),
     currentImage: undefined,
     images: [],
+    wDEnv: {},
     env: {},
     iteration: 1,
     morph: 2,
@@ -94,5 +96,24 @@ describe("<CameraCalibration/>", () => {
       .simulate("change", "CAMERA_CALIBRATION_image_bot_origin_location", 4);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_image_bot_origin_location", "\"BOTTOM_LEFT\"");
+  });
+
+  it("shows calibrate as enabled", () => {
+    const wrapper = shallow(<CameraCalibration {...fakeProps()} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.text()).toEqual("Calibrate");
+    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("shows calibrate as disabled when camera is disabled", () => {
+    const p = fakeProps();
+    p.env = { camera: "NONE" };
+    const wrapper = shallow(<CameraCalibration {...p} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
+    btn.simulate("click");
+    expect(error).toHaveBeenCalledWith(
+      ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
   });
 });

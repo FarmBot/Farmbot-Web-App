@@ -22,6 +22,7 @@ import {
   TaggedFarmwareInstallation,
   TaggedAlert,
   TaggedPointGroup,
+  TaggedFolder,
 } from "farmbot";
 import {
   isTaggedResource,
@@ -53,13 +54,13 @@ const uuidFinder = <T extends TaggedResource>(r: T["kind"]) =>
     }
   };
 
-export let findTool = uuidFinder<TaggedTool>("Tool");
-export let findSequence = uuidFinder<TaggedSequence>("Sequence");
-export let findRegimen = uuidFinder<TaggedRegimen>("Regimen");
-export let findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
-export let findPoints = uuidFinder<TaggedPoint>("Point");
-export let findPointGroup = uuidFinder<TaggedPoint>("Point");
-export let findSavedGarden = uuidFinder<TaggedSavedGarden>("SavedGarden");
+export const findTool = uuidFinder<TaggedTool>("Tool");
+export const findSequence = uuidFinder<TaggedSequence>("Sequence");
+export const findRegimen = uuidFinder<TaggedRegimen>("Regimen");
+export const findFarmEvent = uuidFinder<TaggedFarmEvent>("FarmEvent");
+export const findPoints = uuidFinder<TaggedPoint>("Point");
+export const findPointGroup = uuidFinder<TaggedPoint>("Point");
+export const findSavedGarden = uuidFinder<TaggedSavedGarden>("SavedGarden");
 
 export const selectAllCrops =
   (i: ResourceIndex) => findAll<TaggedCrop>(i, "Crop");
@@ -107,6 +108,8 @@ export const selectAllSavedPeripherals =
   (input: ResourceIndex) => selectAllPeripherals(input).filter(isSaved);
 export const selectAllAlerts =
   (i: ResourceIndex) => findAll<TaggedAlert>(i, "Alert");
+export const selectAllFolders =
+  (i: ResourceIndex) => findAll<TaggedFolder>(i, "Folder");
 
 export const findByKindAndId = <T extends TaggedResource>(
   i: ResourceIndex, kind: T["kind"], id: number | undefined): T => {

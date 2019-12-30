@@ -1,5 +1,5 @@
 import { Everything } from "../../interfaces";
 
-export let draggable: Everything["draggable"] = {
+export const draggable: Everything["draggable"] = {
   "dataTransfer": {}
 };

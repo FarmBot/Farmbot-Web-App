@@ -4,6 +4,7 @@ import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as React from "react";
 import { Actions } from "../constants";
+import { UUID } from "../resources/interfaces";
 export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";
 
 /** SIDE EFFECT-Y!! Stores a step into store.draggable.dataTransfer and
@@ -12,7 +13,8 @@ export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";
 export function stepPut(value: Step,
   ev: React.DragEvent<HTMLElement>,
   intent: DataXferIntent,
-  draggerId: number):
+  draggerId: number,
+  resourceUuid?: UUID):
   ReduxAction<DataXferBase> {
   const uuid = id();
   ev.dataTransfer.setData(STEP_DATATRANSFER_IDENTIFER, uuid);
@@ -22,7 +24,8 @@ export function stepPut(value: Step,
       intent,
       uuid,
       value,
-      draggerId
+      draggerId,
+      resourceUuid,
     }
   };
 }

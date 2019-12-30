@@ -9,7 +9,7 @@ export const initialState: SequenceReducerState = {
   stepIndex: undefined,
 };
 
-export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
+export const sequenceReducer = generateReducer<SequenceReducerState>(initialState)
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s, { payload }) => {
     switch (payload.uuid) {
       case s.current:

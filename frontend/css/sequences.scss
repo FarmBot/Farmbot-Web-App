@@ -160,17 +160,17 @@
   margin-left: 10px;
 }
 
-.step-button-cluster,
-.sequence-list,
 .regimen-list {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 21rem);
+  max-height: calc(100vh - 19rem);
 }
 
-.step-button-cluster,
-.sequence-list {
+.step-button-cluster {
   margin-right: -15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 16rem);
 }
 
 .farmware-info-panel,
@@ -229,15 +229,230 @@
   }
 }
 
-.sequence-list-item {
-  margin-right: 15px;
+.folders-panel {
+  margin-left: -30px;
+  margin-right: -20px;
+  @media screen and (max-width: 767px) {
+    margin-left: -15px;
+  }
+  .non-empty-state {
+    height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .panel-top {
+    margin-left: 1rem !important;
+    button {
+      margin-top: 0.7rem !important;
+    }
+  }
+  .panel-top,
+  .folder-button-cluster {
+    i {
+      font-size: 1.5rem;
+    }
+    .fa-stack {
+      font-size: 1rem;
+      transform: scale(0.8);
+    }
+    .fa-stack-2x {
+      font-size: 2rem;
+    }
+    .fa-stack-1x {
+      font-size: 1.5rem;
+      line-height: 1.5rem;
+      margin-left: 0.75rem;
+      filter: drop-shadow(0 0 0.2rem  $dark_green);
+      text-align: center;
+    }
+  }
+  .folder-button-cluster {
+    display: flex;
+    i {
+      width: 1.5rem !important;
+      line-height: 2rem !important;
+    }
+  }
+  ul {
+    margin-bottom: 0;
+  }
+  .folder-drop-area {
+    height: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    transition: height 0.5s ease-out,
+    padding-top 0.5s ease-out,
+    padding-bottom 0.5s ease-out;
+    transition-delay: 0.4s;
+    color: $gray;
+    font-weight: bold;
+    background: $white;
+    text-align: center;
+    cursor: pointer;
+    &.visible {
+      transition: height 0.3s ease-in,
+      padding-top 0.3s ease-in,
+      padding-bottom 0.3s ease-in;
+      transition-delay: 0.2s;
+      height: 3rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    &:hover, &.hovered {
+      color: $medium_gray;
+    }
+  }
+  .folders {
+    .folder > div:not(:first-child), ul {
+      margin-left: 1rem;
+    }
+  }
+  .folder-list-item,
+  .sequence-list-item {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 3.5rem;
+    border-bottom: 1px solid $light_gray;
+    cursor: pointer;
+    background: $lighter_gray;
+    border-left: 4px solid transparent;
+    &.active {
+      border-left: 4px solid $dark_gray;
+    }
+    .fa-chevron-down, .fa-chevron-right {
+      position: absolute;
+      z-index: 2;
+      width: 3rem;
+      font-size: 1.1rem;
+    }
+    .folder-settings-icon,
+    .fa-bars {
+      position: absolute;
+      right: 0;
+    }
+    .fa-bars, .fa-ellipsis-v {
+      display: none;
+    }
+    .fa-ellipsis-v {
+      &.open {
+        display: block;
+      }
+    }
+    &:hover {
+      .fa-bars, .fa-ellipsis-v {
+        display: block;
+      }
+    }
+    i {
+      margin: 0;
+      line-height: 3.5rem;
+      width: 3rem;
+      text-align: center;
+    }
+    .saucer, .icon-saucer {
+      position: absolute;
+      margin: 0.5rem;
+      width: 1.2rem;
+      height: 1.2rem;
+    }
+    a {
+      width: 100%;
+    }
+    p {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 1.2rem;
+      font-weight: bold;
+      width: 75%;
+      padding: 0.5rem;
+      padding-left: 0;
+      margin-left: 3rem;
+      line-height: 2.5rem;
+    }
+    .folder-name {
+      width: 100%;
+      margin-right: 3rem;
+      margin-left: 6rem;
+      p {
+        margin-left: 0;
+      }
+      .folder-name-input {
+        display: flex;
+        button {
+          top: 0.5rem;
+          width: auto;
+          height: 2rem;
+          i {
+            line-height: 0;
+            width: 1rem;
+          }
+        }
+        .input {
+          margin: 0.3rem;
+          width: 90%;
+        }
+      }
+    }
+    .sequence-list-item-icons {
+      display: flex;
+      position: absolute;
+      right: 0;
+      .fa-hdd-o {
+        margin-right: 3rem;
+      }
+    }
+    button {
+      margin-left: 0.5rem;
+    }
+    &.move-source {
+      border: 1px solid $dark_gray;
+    }
+    &.move-target {
+      background: $white;
+    }
+  }
+  .folder-list-item,
+  .sequence-list-item {
+    .bp3-popover-wrapper.color-picker {
+      position: absolute;
+      line-height: 0;
+      .bp3-popover-target {
+        width: 2rem;
+        height: 3.5rem;
+      }
+    }
+    padding-left: 3rem;
+    .saucer, .icon-saucer {
+      position: relative;
+      top: 0.55rem;
+      margin: auto;
+      margin-top: 0.6rem;
+    }
+  }
+  .folder-list-item {
+    padding-left: 0;
+    .bp3-popover-wrapper.color-picker {
+      margin-left: 3rem;
+    }
+    .color-picker {
+      .icon-saucer {
+        top: 0;
+        margin-top: 0;
+        margin-left: 0.4rem;
+      }
+    }
+  }
 }
 
 .farmware-list-panel,
 .sequence-list-panel,
 .regimen-list-panel {
   padding-top: 0.4rem;
-  margin-bottom: 3rem;
   margin-right: 5px;
   @media screen and (max-width: 1075px) {
     margin-left: 15px;
@@ -268,7 +483,15 @@
 }
 
 .farmware-list-panel {
-  margin-bottom: 5rem;
+  .farmware-list-panel-contents {
+    height: calc(100vh - 15rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -20px;
+    margin-left: -15px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
   label {
     font-weight: bold;
     font-size: 1.4rem;

@@ -1,6 +1,7 @@
 import { TaggedImage, JobProgress, SyncStatus } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { TimeSettings } from "../../interfaces";
+import { UserEnv } from "../../devices/interfaces";
 
 export interface ImageFlipperProps {
   onFlip(uuid: string | undefined): void;
@@ -22,6 +23,7 @@ export interface PhotosProps {
   imageJobs: JobProgress[];
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
+  env: UserEnv;
 }
 
 export interface PhotoButtonsProps {
@@ -30,4 +32,5 @@ export interface PhotoButtonsProps {
   imageJobs: JobProgress[],
   botToMqttStatus: NetworkState;
   syncStatus: SyncStatus | undefined;
+  env: UserEnv;
 }

@@ -15,6 +15,7 @@ import { TaggedSequence } from "farmbot";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { Folders } from "../folders/component";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;
@@ -43,11 +44,12 @@ export interface Props {
   resources: ResourceIndex;
   syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
-  farmwareInfo: FarmwareInfo;
+  farmwareData: FarmwareData;
   shouldDisplay: ShouldDisplay;
   getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
   stepIndex: number | undefined;
+  folderData: Folders["props"];
 }
 
 export interface SequenceEditorMiddleProps {
@@ -56,7 +58,7 @@ export interface SequenceEditorMiddleProps {
   resources: ResourceIndex;
   syncStatus: SyncStatus;
   hardwareFlags: HardwareFlags;
-  farmwareInfo: FarmwareInfo;
+  farmwareData: FarmwareData;
   shouldDisplay: ShouldDisplay;
   getWebAppConfigValue: GetWebAppConfigValue;
   menuOpen: boolean;
@@ -187,11 +189,12 @@ export type dispatcher = (a: Function | { type: string }) => DataXferObj;
 
 export type FarmwareConfigs = { [x: string]: FarmwareConfig[] };
 
-export interface FarmwareInfo {
+export interface FarmwareData {
   farmwareNames: string[];
   firstPartyFarmwareNames: string[];
   showFirstPartyFarmware: boolean;
   farmwareConfigs: FarmwareConfigs;
+  cameraDisabled: boolean;
 }
 
 export interface StepParams {
@@ -201,7 +204,7 @@ export interface StepParams {
   index: number;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
-  farmwareInfo?: FarmwareInfo;
+  farmwareData?: FarmwareData;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
   showPins?: boolean;

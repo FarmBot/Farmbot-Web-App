@@ -20,7 +20,7 @@ export interface MiddlewareConfig { fn: MW; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */
-export let mwConfig: MiddlewareConfig[] = [
+export const mwConfig: MiddlewareConfig[] = [
   { env: "*", fn: thunk },
   { env: "development", fn: require("redux-immutable-state-invariant").default() },
   stateFetchMiddlewareConfig,

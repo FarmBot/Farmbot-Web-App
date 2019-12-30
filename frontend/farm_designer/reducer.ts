@@ -7,7 +7,7 @@ import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
-export let initialState: DesignerState = {
+export const initialState: DesignerState = {
   selectedPlants: undefined,
   hoveredPlant: {
     plantUUID: undefined,
@@ -15,6 +15,7 @@ export let initialState: DesignerState = {
   },
   hoveredPoint: undefined,
   hoveredPlantListItem: undefined,
+  hoveredToolSlot: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
@@ -24,7 +25,7 @@ export let initialState: DesignerState = {
   tryGroupSortType: undefined,
 };
 
-export let designer = generateReducer<DesignerState>(initialState)
+export const designer = generateReducer<DesignerState>(initialState)
   .add<string>(Actions.SEARCH_QUERY_CHANGE, (s, { payload }) => {
     s.cropSearchInProgress = true;
     const state = cloneDeep(s);
@@ -53,6 +54,10 @@ export let designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.TOGGLE_HOVERED_POINT, (s, { payload }) => {
     s.hoveredPoint = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.HOVER_TOOL_SLOT, (s, { payload }) => {
+    s.hoveredToolSlot = payload;
     return s;
   })
   .add<CurrentPointPayl | undefined>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {

@@ -1,14 +1,15 @@
 let mockLastUrlChunk = "farmware";
+jest.mock("../../util/urls", () => ({
+  urlFriendly: jest.fn(x => x),
+  lastUrlChunk: jest.fn(() => mockLastUrlChunk)
+}));
 
-jest.mock("../../util/urls", () => {
-  return {
-    urlFriendly: jest.fn(x => x),
-    lastUrlChunk: jest.fn(() => mockLastUrlChunk)
-  };
-});
+jest.mock("../../redux/store", () => ({ store: { dispatch: jest.fn() } }));
 
-jest.mock("../../redux/store", () => ({
-  store: { dispatch: jest.fn() }
+jest.mock("../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => false,
+  }
 }));
 
 import { setActiveFarmwareByName } from "../set_active_farmware_by_name";

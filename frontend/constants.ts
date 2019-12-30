@@ -287,6 +287,9 @@ export namespace ToolTips {
   export const EMERGENCY_LOCK =
     trim(`Stops a device from moving until it is unlocked by a user.`);
 
+  export const SELECT_A_CAMERA =
+    trim(`Select a camera on the Device page to take photos.`);
+
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
     properties of the UTM, plants, and weeds from within a sequence.
@@ -787,6 +790,10 @@ export namespace Content {
   export const NO_TOOLS =
     trim(`Press "+" to add a new tool.`);
 
+  export const MOUNTED_TOOL =
+    trim(`The tool currently mounted to the UTM can be set here or by using
+    a MARK AS step in a sequence.`);
+
   // Farm Events
   export const NOTHING_SCHEDULED =
     trim(`Press "+" to schedule an event.`);
@@ -827,6 +834,9 @@ export namespace Content {
 
   export const NOT_AVAILABLE_WHEN_OFFLINE =
     trim(`Not available when device is offline.`);
+
+  export const NO_CAMERA_SELECTED =
+    trim(`No camera selected`);
 }
 
 export namespace TourContent {
@@ -978,6 +988,7 @@ export enum Actions {
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",
@@ -1016,5 +1027,11 @@ export enum Actions {
   SET_CONSISTENCY = "SET_CONSISTENCY",
   PING_START = "PING_START",
   PING_OK = "PING_OK",
-  PING_NO = "PING_NO"
+  PING_NO = "PING_NO",
+
+  // Sequence Folders
+  FOLDER_TOGGLE = "FOLDER_TOGGLE",
+  FOLDER_TOGGLE_ALL = "FOLDER_TOGGLE_ALL",
+  FOLDER_TOGGLE_EDIT = "FOLDER_TOGGLE_EDIT",
+  FOLDER_SEARCH = "FOLDER_SEARCH"
 }

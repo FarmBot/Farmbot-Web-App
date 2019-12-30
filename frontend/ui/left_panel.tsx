@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Col, ToolTip } from ".";
 import { t } from "../i18next_wrapper";
+import { ErrorBoundary } from "../error_boundary";
 
 interface LeftPanelProps {
   children?: React.ReactNode;
@@ -17,7 +18,9 @@ export function LeftPanel(props: LeftPanelProps) {
         <i>{t(props.title)}</i>
       </h3>
       {props.helpText && <ToolTip helpText={props.helpText} />}
-      {props.children}
+      <ErrorBoundary>
+        {props.children}
+      </ErrorBoundary>
     </div>
   </Col>;
 }

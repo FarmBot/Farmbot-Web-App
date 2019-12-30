@@ -3,7 +3,7 @@ import {
   selectAllImages, maybeGetDevice, maybeGetTimeSettings
 } from "../resources/selectors";
 import {
-  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv
+  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState
 } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import {
@@ -11,7 +11,7 @@ import {
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
-  createShouldDisplayFn as shouldDisplayFunc,
+  createShouldDisplayFn,
   betterCompact
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
@@ -51,6 +51,20 @@ export const reduceFarmwareEnv =
     return farmwareEnv;
   };
 
+export const getEnv =
+  (ri: ResourceIndex, shouldDisplay: ShouldDisplay, bot: BotState) =>
+    shouldDisplay(Feature.api_farmware_env)
+      ? reduceFarmwareEnv(ri)
+      : bot.hardware.user_env;
+
+export const getShouldDisplayFn = (ri: ResourceIndex, bot: BotState) => {
+  const lookupData = bot.minOsFeatureData;
+  const installed = determineInstalledOsVersion(bot, maybeGetDevice(ri));
+  const override = DevSettings.overriddenFbosVersion();
+  const shouldDisplay = createShouldDisplayFn(installed, lookupData, override);
+  return shouldDisplay;
+};
+
 export function mapStateToProps(props: Everything): FarmwareProps {
   const images = chain(selectAllImages(props.resources.index))
     .sortBy(x => x.body.id)
@@ -64,14 +78,8 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   const { currentFarmware, firstPartyFarmwareNames, infoOpen } =
     props.resources.consumers.farmware;
 
-  const installedOsVersion = determineInstalledOsVersion(
-    props.bot, maybeGetDevice(props.resources.index));
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
-  const env = shouldDisplay(Feature.api_farmware_env)
-    ? reduceFarmwareEnv(props.resources.index)
-    : props.bot.hardware.user_env;
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
 
   const taggedFarmwareInstallations =
     selectAllFarmwareInstallations(props.resources.index);
@@ -115,8 +123,8 @@ export function mapStateToProps(props: Everything): FarmwareProps {
     currentFarmware,
     farmwares,
     botToMqttStatus,
-    env: prepopulateEnv(env),
-    user_env: env,
+    wDEnv: prepopulateEnv(env),
+    env,
     dispatch: props.dispatch,
     currentImage,
     images,

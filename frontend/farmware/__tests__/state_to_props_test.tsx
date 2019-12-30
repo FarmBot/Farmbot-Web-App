@@ -43,7 +43,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.bot.hardware.user_env = env;
     const props = mapStateToProps(state);
-    expect(props.user_env).toEqual(env);
+    expect(props.env).toEqual(env);
   });
 
   it("returns API farmware env", () => {
@@ -53,7 +53,7 @@ describe("mapStateToProps()", () => {
       DevSettings.MAX_FBOS_VERSION_OVERRIDE;
     state.resources = buildResourceIndex([fakeFarmwareEnv()]);
     const props = mapStateToProps(state);
-    expect(props.user_env).toEqual({
+    expect(props.env).toEqual({
       fake_FarmwareEnv_key: "fake_FarmwareEnv_value"
     });
   });

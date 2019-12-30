@@ -6,10 +6,9 @@ import { getMiddleware } from "./middlewares";
 import { set } from "lodash";
 
 function dev(): Store {
-  store = createStore(rootReducer,
+  return createStore(rootReducer,
     maybeFetchOldState(),
     getMiddleware("development"));
-  return store;
 }
 
 function prod(): Store {
@@ -26,7 +25,7 @@ export function configureStore() {
   return store2;
 }
 
-export let store = configureStore();
+export const store = configureStore();
 
 /** Tries to fetch previous state from `sessionStorage`.
  * Returns {} if nothing is found. Used mostly for hot reloading. */

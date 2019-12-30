@@ -21,7 +21,7 @@ export interface OFCropResponse {
 }
 
 export namespace OpenFarmAPI {
-  export let OFBaseURL = BASE;
+  export const OFBaseURL = BASE;
 }
 
 export function svgToUrl(xml: string | undefined): string {

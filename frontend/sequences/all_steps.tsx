@@ -6,17 +6,19 @@ import { StepDragger } from "../draggable/step_dragger";
 import { renderCeleryNode } from "./step_tiles/index";
 import { ResourceIndex } from "../resources/interfaces";
 import { getStepTag } from "../resources/sequence_tagging";
-import { HardwareFlags, FarmwareInfo } from "./interfaces";
+import { HardwareFlags, FarmwareData } from "./interfaces";
 import { ShouldDisplay } from "../devices/interfaces";
 import { AddCommandButton } from "./sequence_editor_middle_active";
+import { ErrorBoundary } from "../error_boundary";
+import { TileUnknown } from "./step_tiles/tile_unknown";
 
-interface AllStepsProps {
+export interface AllStepsProps {
   sequence: TaggedSequence;
   onDrop(index: number, key: string): void;
   dispatch: Function;
   resources: ResourceIndex;
   hardwareFlags?: HardwareFlags;
-  farmwareInfo?: FarmwareInfo;
+  farmwareData?: FarmwareData;
   shouldDisplay?: ShouldDisplay;
   confirmStepDeletion: boolean;
   showPins?: boolean;
@@ -25,9 +27,7 @@ interface AllStepsProps {
 
 export class AllSteps extends React.Component<AllStepsProps, {}> {
   render() {
-    const {
-      sequence, onDrop, dispatch, hardwareFlags, farmwareInfo, shouldDisplay
-    } = this.props;
+    const { sequence, dispatch } = this.props;
     const items = (sequence.body.body || [])
       .map((currentStep: SequenceBodyItem, index) => {
         /** HACK: React's diff algorithm (probably?) can't keep track of steps
@@ -36,34 +36,37 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
          * is guaranteed to be unique no matter where the step gets moved and
          * allows React to diff the list correctly. */
         const readThatCommentAbove = getStepTag(currentStep);
+        const stepProps = {
+          currentStep,
+          index,
+          dispatch,
+          currentSequence: sequence,
+          resources: this.props.resources,
+          hardwareFlags: this.props.hardwareFlags,
+          farmwareData: this.props.farmwareData,
+          shouldDisplay: this.props.shouldDisplay,
+          confirmStepDeletion: this.props.confirmStepDeletion,
+          showPins: this.props.showPins,
+          expandStepOptions: this.props.expandStepOptions,
+        };
         return <div className="sequence-steps"
           key={readThatCommentAbove}>
           <AddCommandButton dispatch={dispatch} index={index} />
-          <DropArea callback={(key) => onDrop(index, key)} />
+          <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}
             step={currentStep}
             intent="step_move"
             draggerId={index}>
-            <div>
-              {renderCeleryNode({
-                currentStep,
-                index,
-                dispatch,
-                currentSequence: sequence,
-                resources: this.props.resources,
-                hardwareFlags,
-                farmwareInfo,
-                shouldDisplay,
-                confirmStepDeletion: this.props.confirmStepDeletion,
-                showPins: this.props.showPins,
-                expandStepOptions: this.props.expandStepOptions,
-              })}
+            <div className="sequence-step">
+              <ErrorBoundary fallback={<TileUnknown {...stepProps} />}>
+                {renderCeleryNode(stepProps)}
+              </ErrorBoundary>
             </div>
           </StepDragger>
         </div>;
       });
 
-    return <div> {items} </div>;
+    return <div className="all-steps">{items}</div>;
   }
 }

@@ -6,6 +6,7 @@ import { ColWidth } from "../farmbot_os_settings";
 import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../../i18next_wrapper";
+import { ErrorBoundary } from "../../../error_boundary";
 
 const getVersionString =
   (fbosVersion: string | undefined, onBeta: boolean | undefined): string => {
@@ -30,14 +31,16 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
         <p>
           {t("Version {{ version }}", { version })}
         </p>
-        <FbosDetails
-          botInfoSettings={bot.hardware.informational_settings}
-          dispatch={dispatch}
-          shouldDisplay={props.shouldDisplay}
-          sourceFbosConfig={sourceFbosConfig}
-          botToMqttLastSeen={props.botToMqttLastSeen}
-          timeSettings={props.timeSettings}
-          deviceAccount={props.deviceAccount} />
+        <ErrorBoundary>
+          <FbosDetails
+            botInfoSettings={bot.hardware.informational_settings}
+            dispatch={dispatch}
+            shouldDisplay={props.shouldDisplay}
+            sourceFbosConfig={sourceFbosConfig}
+            botToMqttLastSeen={props.botToMqttLastSeen}
+            timeSettings={props.timeSettings}
+            deviceAccount={props.deviceAccount} />
+        </ErrorBoundary>
       </Popover>
     </Col>
     <Col xs={3}>

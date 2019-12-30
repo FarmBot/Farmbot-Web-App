@@ -47,8 +47,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         panel={Panel.Plants}
         title={`${t("Edit")} ${info.name}`}
         backTo={"/app/designer/plants"}
-        onBack={unselectPlant(this.props.dispatch)}>
-      </DesignerPanelHeader>
+        onBack={unselectPlant(this.props.dispatch)} />
       <PlantPanel
         info={info}
         onDestroy={this.destroy}

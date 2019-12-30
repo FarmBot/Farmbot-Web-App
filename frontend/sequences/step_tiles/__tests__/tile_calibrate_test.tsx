@@ -6,7 +6,7 @@ import { emptyState } from "../../../resources/reducer";
 import { HardwareFlags } from "../../interfaces";
 import {
   fakeHardwareFlags
-} from "../../../__test_support__/sequence_hardware_settings";
+} from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileCalibrate/>", () => {
   const fakeProps = (): CalibrateParams => ({

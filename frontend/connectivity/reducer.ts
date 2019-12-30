@@ -17,7 +17,7 @@ export const DEFAULT_STATE: ConnectionState = {
 };
 export type PingResultPayload = { id: string, at: number };
 
-export let connectivityReducer =
+export const connectivityReducer =
   generateReducer<ConnectionState>(DEFAULT_STATE)
     .add<{ id: string }>(Actions.PING_START, (s, { payload }) => {
       return { ...s, pings: startPing(s.pings, payload.id) };

@@ -9,6 +9,10 @@ describe("boardType()", () => {
     expect(boardType("5.0.3.G")).toEqual("farmduino_k14");
   });
 
+  it("returns Farmduino k1.5", () => {
+    expect(boardType("5.0.3.H")).toEqual("farmduino_k15");
+  });
+
   it("returns Farmduino Express k1.0", () => {
     expect(boardType("5.0.3.E")).toEqual("express_k10");
   });

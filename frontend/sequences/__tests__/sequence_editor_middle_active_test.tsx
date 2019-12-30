@@ -43,8 +43,8 @@ import {
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy, save, edit } from "../../api/crud";
 import {
-  fakeHardwareFlags
-} from "../../__test_support__/sequence_hardware_settings";
+  fakeHardwareFlags, fakeFarmwareData as fakeFarmwareData
+} from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
@@ -66,12 +66,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
-      farmwareInfo: {
-        farmwareNames: [],
-        firstPartyFarmwareNames: [],
-        showFirstPartyFarmware: false,
-        farmwareConfigs: {},
-      },
+      farmwareData: fakeFarmwareData(),
       shouldDisplay: jest.fn(),
       getWebAppConfigValue: jest.fn(),
       menuOpen: false,
