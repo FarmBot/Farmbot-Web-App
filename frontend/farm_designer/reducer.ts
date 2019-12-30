@@ -15,6 +15,7 @@ export const initialState: DesignerState = {
   },
   hoveredPoint: undefined,
   hoveredPlantListItem: undefined,
+  hoveredToolSlot: undefined,
   cropSearchQuery: "",
   cropSearchResults: [],
   cropSearchInProgress: false,
@@ -53,6 +54,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.TOGGLE_HOVERED_POINT, (s, { payload }) => {
     s.hoveredPoint = payload;
+    return s;
+  })
+  .add<string | undefined>(Actions.HOVER_TOOL_SLOT, (s, { payload }) => {
+    s.hoveredToolSlot = payload;
     return s;
   })
   .add<CurrentPointPayl | undefined>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
