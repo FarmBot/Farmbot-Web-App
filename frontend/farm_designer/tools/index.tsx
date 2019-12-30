@@ -208,7 +208,7 @@ interface ToolSlotInventoryItemProps {
 }
 
 const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
-  const { x, y, z, id, tool_id } = props.toolSlot.body;
+  const { x, y, z, id, tool_id, gantry_mounted } = props.toolSlot.body;
   return <div
     className={`tool-slot-search-item ${props.hovered ? "hovered" : ""}`}
     onClick={() => history.push(`/app/designer/tool-slots/${id}`)}
@@ -219,7 +219,9 @@ const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         <p>{props.getToolName(tool_id) || t("No tool")}</p>
       </Col>
       <Col xs={5}>
-        <p style={{ float: "right" }}>{botPositionLabel({ x, y, z })}</p>
+        <p className="tool-slot-position">
+          {botPositionLabel({ x, y, z }, gantry_mounted)}
+        </p>
       </Col>
     </Row>
   </div>;

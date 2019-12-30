@@ -48,18 +48,24 @@ describe("<Tools />", () => {
 
   it("renders with tools", () => {
     const p = fakeProps();
-    p.tools = [fakeTool(), fakeTool()];
+    p.tools = [fakeTool(), fakeTool(), fakeTool()];
     p.tools[0].body.id = 1;
     p.tools[0].body.status = "inactive";
     p.tools[0].body.name = undefined;
     p.tools[1].body.id = 2;
     p.tools[1].body.name = "my tool";
-    p.toolSlots = [fakeToolSlot()];
+    p.tools[2].body.id = 3;
+    p.tools[2].body.name = "my tool";
+    p.toolSlots = [fakeToolSlot(), fakeToolSlot()];
     p.toolSlots[0].body.tool_id = 2;
     p.toolSlots[0].body.x = 1;
+    p.toolSlots[1].body.tool_id = 3;
+    p.toolSlots[1].body.gantry_mounted = true;
+    p.toolSlots[1].body.y = 2;
     const wrapper = mount(<Tools {...p} />);
-    ["foo", "my tool", "unnamed tool", "(1, 0, 0)", "unknown"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    [
+      "foo", "my tool", "unnamed tool", "(1, 0, 0)", "unknown", "(gantry, 2, 0)"
+    ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("navigates to tool", () => {

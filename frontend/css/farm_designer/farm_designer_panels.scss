@@ -303,12 +303,25 @@
       margin-bottom: 0px;
       margin-left: .5rem;
     }
-    .buttonrow {
-      float:left;
+    .button-row {
+      float: left;
+      width: 100%;
+    }
+    .plant-status-bulk-update {
+      display: inline-flex;
+      width: 100%;
+      margin-left: 1rem;
+      .filter-search {
+        margin-left: 0.5rem;
+      }
+      p {
+        font-size: 1.2rem;
+        line-height: 4.1rem;
+      }
     }
   }
   .panel-content {
-    padding-top: 10rem;
+    padding-top: 15rem;
     padding-right: 0;
     padding-left: 0;
     padding-bottom: 5rem;
@@ -528,6 +541,9 @@
       }
       p {
         line-height: 3rem;
+        &.tool-slot-position {
+          float: right;
+        }
       }
     }
     .mounted-tool-header {

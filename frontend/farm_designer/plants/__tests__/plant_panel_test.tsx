@@ -1,10 +1,15 @@
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
+jest.mock("../../../api/crud", () => ({
+  edit: jest.fn(),
+  save: jest.fn(),
+}));
+
 import * as React from "react";
 import {
-  PlantPanel, PlantPanelProps, EditPlantStatus, EditPlantStatusProps,
+  PlantPanel, PlantPanelProps, EditPlantStatusProps,
   EditDatePlantedProps, EditDatePlanted, EditPlantLocationProps,
-  EditPlantLocation
+  EditPlantLocation,
 } from "../plant_panel";
 import { shallow, mount } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
@@ -13,6 +18,11 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { history } from "../../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { edit } from "../../../api/crud";
+import {
+  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate
+} from "../edit_plant_status";
 
 describe("<PlantPanel/>", () => {
   const info: FormattedPlantInfo = {
@@ -117,6 +127,42 @@ describe("<EditPlantStatus />", () => {
       plant_stage: "planned",
       planted_at: undefined
     });
+  });
+});
+
+describe("<PlantStatusBulkUpdate />", () => {
+  const fakeProps = (): PlantStatusBulkUpdateProps => ({
+    plants: [],
+    selected: [],
+    dispatch: jest.fn(),
+  });
+
+  it("doesn't update plant statuses", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    p.plants = [plant1, plant2];
+    p.selected = [plant1.uuid];
+    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => false);
+    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
+    expect(window.confirm).toHaveBeenCalled();
+    expect(edit).not.toHaveBeenCalled();
+  });
+
+  it("updates plant statuses", () => {
+    const p = fakeProps();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    const plant3 = fakePlant();
+    p.plants = [plant1, plant2, plant3];
+    p.selected = [plant1.uuid, plant2.uuid];
+    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
+    window.confirm = jest.fn(() => true);
+    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Change the plant status to 'planted' for 2 plants?");
+    expect(edit).toHaveBeenCalledTimes(2);
   });
 });
 
