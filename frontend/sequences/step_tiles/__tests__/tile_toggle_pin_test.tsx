@@ -29,7 +29,7 @@ describe("<TileTogglePin/>", () => {
     const labels = block.find("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Toggle Pin");
+    expect(inputs.first().props().placeholder).toEqual("Toggle Peripheral");
     expect(labels.at(0).text()).toContain("Peripheral");
   });
 });

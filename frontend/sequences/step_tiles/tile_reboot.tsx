@@ -74,7 +74,7 @@ export const editTheRebootStep =
 
 export function TileReboot(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "set-zero-step";
+  const className = "take-photo-step";
   assertReboot(currentStep);
   return <StepWrapper>
     <StepHeader
