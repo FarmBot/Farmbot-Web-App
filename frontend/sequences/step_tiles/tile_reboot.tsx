@@ -52,6 +52,26 @@ function assertReboot(x: SequenceBodyItem): asserts x is Reboot {
   }
 }
 
+type RELEVANT_KEYS = "currentStep" | "currentSequence" | "index" | "dispatch";
+type RebootEditProps = Pick<StepParams, RELEVANT_KEYS>;
+
+export const rebootExecutor =
+  (pkg: ALLOWED_PACKAGES) => (step: SequenceBodyItem) => {
+    assertReboot(step);
+    step.args.package = pkg;
+  };
+
+export const editTheRebootStep =
+  (props: RebootEditProps) => (pkg: ALLOWED_PACKAGES) => {
+    const { currentStep, index, currentSequence } = props;
+    props.dispatch(editStep({
+      step: currentStep,
+      index,
+      sequence: currentSequence,
+      executor: rebootExecutor(pkg),
+    }));
+  };
+
 export function TileReboot(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
   const className = "set-zero-step";
@@ -70,15 +90,7 @@ export function TileReboot(props: StepParams) {
         uuid={currentSequence.uuid + index}
         choices={PACKAGE_CHOICES}
         currentChoice={currentStep.args.package as ALLOWED_PACKAGES}
-        onChange={pkg => dispatch(editStep({
-          step: currentStep,
-          index,
-          sequence: currentSequence,
-          executor(step) {
-            assertReboot(step);
-            step.args.package = pkg;
-          },
-        }))} />
+        onChange={editTheRebootStep(props)} />
     </StepContent>
   </StepWrapper>;
 }
