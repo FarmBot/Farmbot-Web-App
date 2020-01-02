@@ -46,7 +46,7 @@ export interface WritePinStepParams {
 
 interface PinSelectProps extends StepParams {
   width?: number;
-};
+}
 
 export const PinSelect = (props: PinSelectProps): JSX.Element => {
   const step = props.currentStep;
