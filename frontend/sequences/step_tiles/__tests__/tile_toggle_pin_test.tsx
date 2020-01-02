@@ -27,10 +27,9 @@ describe("<TileTogglePin/>", () => {
     const block = mount(<TileTogglePin {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(2);
+    expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(1);
     expect(inputs.first().props().placeholder).toEqual("Toggle Pin");
-    expect(labels.at(0).text()).toContain("Pin");
-    expect(inputs.at(1).props().value).toEqual(13);
+    expect(labels.at(0).text()).toContain("Peripheral");
   });
 });
