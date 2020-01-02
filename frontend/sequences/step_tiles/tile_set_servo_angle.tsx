@@ -61,13 +61,7 @@ export function TileSetServoAngle(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
-        <Col xs={12}>
-          <label>{t("Servo pin")}</label>
-          <ServoPinSelection {...props} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
+        <Col lg={4} xs={6}>
           <label>
             {t("Servo angle (0-180)")}
           </label>
@@ -77,6 +71,10 @@ export function TileSetServoAngle(props: StepParams) {
             sequence={currentSequence}
             index={index}
             field={"pin_value"} />
+        </Col>
+        <Col lg={8} xs={6}>
+          <label>{t("Servo pin")}</label>
+          <ServoPinSelection {...props} />
         </Col>
       </Row>
     </StepContent>

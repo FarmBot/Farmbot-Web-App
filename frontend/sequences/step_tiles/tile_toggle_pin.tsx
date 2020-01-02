@@ -19,7 +19,7 @@ export function TileTogglePin(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
-        <PinSelect {...props} width={12} />
+        <PinSelect {...props} width={6} />
       </Row>
     </StepContent>
   </StepWrapper>;
