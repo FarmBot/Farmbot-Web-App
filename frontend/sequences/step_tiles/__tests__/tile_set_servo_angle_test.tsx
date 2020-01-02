@@ -28,10 +28,10 @@ describe("<TileSetServoAngle/>", () => {
     const block = mount(<TileSetServoAngle {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
-    expect(inputs.length).toEqual(3);
-    expect(labels.length).toEqual(2);
+    expect(inputs.length).toEqual(4);
+    expect(labels.length).toEqual(4);
     expect(inputs.first().props().placeholder).toEqual("Set Servo Angle");
     expect(labels.at(0).text()).toContain("Servo pin");
-    expect(inputs.at(1).props().value).toEqual(4);
+    expect(inputs.at(1).props().value).toEqual("4");
   });
 });
