@@ -284,6 +284,8 @@ export namespace ToolTips {
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type
     on the Device page.`);
+  export const EMERGENCY_LOCK =
+    trim(`Stops a device from moving until it is unlocked by a user.`);
 
   export const SELECT_A_CAMERA =
     trim(`Select a camera on the Device page to take photos.`);
@@ -293,6 +295,9 @@ export namespace ToolTips {
     properties of the UTM, plants, and weeds from within a sequence.
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
+
+  export const REBOOT =
+    trim(`Power cycle FarmBot's onboard computer or microcontroller.`);
 
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle.`);
