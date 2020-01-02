@@ -210,6 +210,7 @@ export const setArgsDotPinNumber =
         switch (c.kind) {
           case "read_pin":
           case "write_pin":
+          case "toggle_pin":
             c.args.pin_number = dropDown2CeleryArg(resources, d);
         }
       }

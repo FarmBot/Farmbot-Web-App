@@ -21,22 +21,24 @@ type Keys =
   | "index";
 type Props = Pick<StepParams, Keys>;
 
-const servoAngleChanger = (props: Props) => (y: string) => {
+export const createServoEditFn = (y: string) => (x: SetServoAngle) => {
+  x.args.pin_number = parseInt(y, 10);
+};
+
+export const pinNumberChanger = (props: Props) => (y: string) => {
   props.dispatch(editStep({
     step: props.currentStep,
     sequence: props.currentSequence,
     index: props.index,
-    executor(x: SetServoAngle) {
-      x.args.pin_number = parseInt(y, 10);
-    }
+    executor: createServoEditFn(y)
   }));
 };
 
-function ServoPinSelection(props: Props) {
+export function ServoPinSelection(props: Props) {
   const { currentSequence, index, currentStep } = props;
   const num = (currentStep as SetServoAngle).args.pin_number;
   if (typeof num !== "number") { throw new Error("NO!"); }
-  const onChange = servoAngleChanger(props);
+  const onChange = pinNumberChanger(props);
 
   return <MultiChoiceRadio
     uuid={currentSequence.uuid + index}

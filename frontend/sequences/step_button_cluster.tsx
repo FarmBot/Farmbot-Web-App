@@ -55,7 +55,7 @@ export function StepButtonCluster(props: StepButtonProps) {
           pin_number: 4
         }
       }}
-      color="yellow">
+      color="orange">
       {t("TOGGLE PERIPHERAL")}
     </StepButton>,
     <StepButton {...commonStepProps}

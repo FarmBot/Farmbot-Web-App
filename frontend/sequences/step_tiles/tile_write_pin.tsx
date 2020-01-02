@@ -44,22 +44,35 @@ export interface WritePinStepParams {
   showPins: boolean;
 }
 
-export class WritePinStep extends React.Component<WritePinStepParams> {
+interface PinSelectProps extends StepParams {
+  width?: number;
+};
 
-  PinSelect = (): JSX.Element => {
-    const { currentSequence, resources, showPins } = this.props;
-    const { pin_number } = this.props.currentStep.args;
-    return <Col xs={6} md={6}>
+export const PinSelect = (props: PinSelectProps): JSX.Element => {
+  const step = props.currentStep;
+  if (
+    step.kind === "write_pin" ||
+    step.kind === "toggle_pin" ||
+    step.kind === "read_pin") {
+    const { currentSequence, resources, showPins } = props;
+    const { pin_number } = step.args;
+    const width = props.width || 6;
+
+    return <Col xs={width} md={width}>
       <label>{t("Peripheral")}</label>
       <FBSelect
         key={JSON.stringify(currentSequence)}
         selectedItem={celery2DropDown(pin_number, resources)}
         customNullLabel={t("Select a peripheral")}
-        onChange={setArgsDotPinNumber(this.props)}
+        onChange={setArgsDotPinNumber(props)}
         list={pinsAsDropDownsWritePin(resources, !!showPins)} />
     </Col>;
   }
 
+  throw new Error("Can't render " + step ? step.kind : "NULL");
+};
+
+export class WritePinStep extends React.Component<WritePinStepParams> {
   PinValueField = (): JSX.Element => {
     const { dispatch, currentStep, index, currentSequence } = this.props;
     return (!(currentStep.args.pin_mode === 0) || currentStep.args.pin_value > 1)
@@ -90,7 +103,7 @@ export class WritePinStep extends React.Component<WritePinStepParams> {
         confirmStepDeletion={this.props.confirmStepDeletion} />
       <StepContent className={className}>
         <Row>
-          <this.PinSelect />
+          <PinSelect {...this.props} />
           <PinMode {...this.props} />
           <Col xs={6} md={3}>
             <label>{t("set to")}</label>
