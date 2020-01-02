@@ -16,7 +16,7 @@ interface MultiChoiceRadioProps<T extends StringMap> {
   onChange(key: keyof T): void;
 }
 
-const MultiChoiceRadio =
+export const MultiChoiceRadio =
   <T extends StringMap>(props: MultiChoiceRadioProps<T>) => {
     const choices = Object.keys(props.choices);
     return <Row>
