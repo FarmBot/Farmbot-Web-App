@@ -65,10 +65,12 @@ export const reindexFolders = (i: ResourceIndex) => {
   const allSequences = selectAllSequences(i);
 
   const oldMeta = i.sequenceFolders.localMetaAttributes;
+  /** Open folder edit mode when adding a new folder (& not during init all). */
+  const editing = !!oldMeta[-1];
   const localMetaAttributes: Record<number, FolderMeta> = {};
   folders.map(x => {
     localMetaAttributes[x.id] = {
-      ...(oldMeta[x.id] || {}),
+      ...(oldMeta[x.id] || { editing }),
       sequences: [], // Clobber and re-init
     };
   });
