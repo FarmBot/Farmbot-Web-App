@@ -23,9 +23,14 @@ jest.mock("@blueprintjs/core", () => ({
   Position: jest.fn(),
   PopoverInteractionKind: jest.fn(),
   Button: jest.fn(p => <button>{p.text}</button>),
-  Classes: { getClassNamespace: jest.fn() },
+  Classes: jest.fn(),
   MenuItem: jest.fn(),
   Alignment: jest.fn(),
+}));
+
+jest.mock("@blueprintjs/select", () => ({
+  Select: { ofType: jest.fn() },
+  ItemRenderer: jest.fn(),
 }));
 
 import * as React from "react";
