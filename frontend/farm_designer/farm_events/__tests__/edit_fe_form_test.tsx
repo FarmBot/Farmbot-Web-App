@@ -17,7 +17,14 @@ import {
   FarmEventViewModel,
   recombine,
   destructureFarmEvent,
-  offsetTime
+  offsetTime,
+  FarmEventDeleteButtonProps,
+  FarmEventDeleteButton,
+  RepeatForm,
+  RepeatFormProps,
+  StartTimeForm,
+  StartTimeFormProps,
+  FarmEventForm
 } from "../edit_fe_form";
 import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
@@ -28,15 +35,14 @@ import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
-import { clickButton } from "../../../__test_support__/helpers";
-import { destroy, save } from "../../../api/crud";
+import { save, destroy } from "../../../api/crud";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error, success } from "../../../toast/toast";
 
 const mockSequence = fakeSequence();
 
-describe("<FarmEventForm/>", () => {
-  const props = (): EditFEProps => ({
+describe("<EditFEForm />", () => {
+  const fakeProps = (): EditFEProps => ({
     deviceTimezone: undefined,
     executableOptions: [],
     repeatOptions: [],
@@ -53,34 +59,18 @@ describe("<FarmEventForm/>", () => {
   function instance(p: EditFEProps) {
     return mount(<EditFEForm {...p} />).instance() as EditFEForm;
   }
-  const context = { form: new EditFEForm(props()) };
+  const context = { form: new EditFEForm(fakeProps()) };
 
   beforeEach(() => {
-    context.form = new EditFEForm(props());
+    context.form = new EditFEForm(fakeProps());
   });
 
   it("sets defaults", () => {
     expect(context.form.state.fe).toMatchObject({});
   });
 
-  it("determines if it is a one time event", () => {
-    const i = instance(props());
-    expect(i.repeats).toBe(false);
-    i.mergeState("timeUnit", "daily");
-    i.forceUpdate();
-    expect(i.repeats).toBe(true);
-  });
-
-  it("has a dispatch", () => {
-    const p = props();
-    const i = instance(p);
-    expect(i.dispatch).toBe(p.dispatch);
-    i.dispatch();
-    expect(p.dispatch).toHaveBeenCalledTimes(1);
-  });
-
   it("has a view model", () => {
-    const p = props();
+    const p = fakeProps();
     const i = instance(p);
     i.forceUpdate();
     const vm = i.viewModel;
@@ -100,7 +90,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("has an executable", () => {
-    const p = props();
+    const p = fakeProps();
     const i = instance(p);
     i.forceUpdate();
     expect(i.executableGet().value).toEqual(mockSequence.body.id);
@@ -108,7 +98,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("sets the executable", () => {
-    const p = props();
+    const p = fakeProps();
     const i = instance(p);
     i.forceUpdate();
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
@@ -118,7 +108,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("allows proper changes to the executable", () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.id = 0;
     p.farmEvent.body.executable_type = "Sequence";
     const i = instance(p);
@@ -128,7 +118,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("doesn't allow improper changes to the executable", () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
@@ -139,7 +129,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("gets executable info", () => {
-    const p = props();
+    const p = fakeProps();
     const i = instance(p);
     i.forceUpdate();
     const exe = i.executableGet();
@@ -149,13 +139,12 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("sets a subfield of state.fe", () => {
-    const p = props();
+    const p = fakeProps();
     const i = instance(p);
     i.forceUpdate();
-    // tslint:disable-next-line:no-any
-    i.fieldSet("repeat")(({ currentTarget: { value: "4" } } as any));
+    i.fieldSet("executable_id", "1");
     i.forceUpdate();
-    expect(i.state.fe.repeat).toEqual("4");
+    expect(i.state.fe.executable_id).toEqual("1");
   });
 
   it("sets regimen repeat to `never` as needed", () => {
@@ -245,7 +234,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("displays success message on save: manual sync", async () => {
-    const p = props();
+    const p = fakeProps();
     p.autoSyncEnabled = false;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
@@ -256,7 +245,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("displays success message on save: auto sync", async () => {
-    const p = props();
+    const p = fakeProps();
     p.autoSyncEnabled = true;
     p.farmEvent.body.executable_type = "Regimen";
     const regimen = fakeRegimen();
@@ -273,7 +262,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("warns about missed regimen items", async () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.executable_type = "Regimen";
     const regimen = fakeRegimen();
     regimen.body.regimen_items = [
@@ -293,7 +282,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("sends toast with regimen start time", async () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.executable_type = "Regimen";
     const regimen = fakeRegimen();
     regimen.body.regimen_items = [{ sequence_id: -1, time_offset: 1000000000 }];
@@ -308,7 +297,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("sends toast with next sequence run time", async () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.executable_type = "Sequence";
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-06-22T06:00:00.000Z";
@@ -328,7 +317,7 @@ describe("<FarmEventForm/>", () => {
   };
 
   it("displays error message on save (add): start time has passed", () => {
-    const p = props();
+    const p = fakeProps();
     p.title = "add";
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
@@ -338,7 +327,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("displays error message on edit: start time has passed", () => {
-    const p = props();
+    const p = fakeProps();
     p.title = "edit";
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
@@ -349,7 +338,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("displays error message on save: no items", async () => {
-    const p = props();
+    const p = fakeProps();
     p.shouldDisplay = () => true;
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
@@ -360,7 +349,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("displays error message on save: save error", async () => {
-    const p = props();
+    const p = fakeProps();
     p.dispatch = jest.fn()
       .mockResolvedValueOnce("")
       .mockRejectedValueOnce("error");
@@ -374,7 +363,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("allows start time: edit with unsupported OS", () => {
-    const p = props();
+    const p = fakeProps();
     p.shouldDisplay = () => false;
     p.farmEvent.body.executable_type = "Regimen";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
@@ -385,7 +374,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("allows start time: add with supported OS", () => {
-    const p = props();
+    const p = fakeProps();
     p.title = "add";
     p.shouldDisplay = () => true;
     p.farmEvent.body.executable_type = "Regimen";
@@ -396,7 +385,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("rejects start time: add sequence event", () => {
-    const p = props();
+    const p = fakeProps();
     p.title = "add";
     p.farmEvent.body.executable_type = "Sequence";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
@@ -406,7 +395,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("allows start time: edit sequence event", () => {
-    const p = props();
+    const p = fakeProps();
     p.farmEvent.body.executable_type = "Sequence";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
     const fakeNow = moment("2017-06-01T02:00:00.000Z");
@@ -416,7 +405,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("allows start time in the future", () => {
-    const p = props();
+    const p = fakeProps();
     p.title = "add";
     p.farmEvent.body.executable_type = "Sequence";
     p.farmEvent.body.start_time = "2017-06-01T01:00:00.000Z";
@@ -426,7 +415,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("edits a variable", () => {
-    const p = props();
+    const p = fakeProps();
     const oldVariable: ParameterApplication = {
       kind: "parameter_application",
       args: {
@@ -455,7 +444,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("saves an updated variable", () => {
-    const p = props();
+    const p = fakeProps();
     const oldVariable: ParameterApplication = {
       kind: "parameter_application",
       args: {
@@ -481,7 +470,7 @@ describe("<FarmEventForm/>", () => {
   });
 
   it("saves the current variable", () => {
-    const p = props();
+    const p = fakeProps();
     const sequence = fakeSequence();
     p.findExecutable = () => sequence;
     const plant = fakePlant();
@@ -504,44 +493,11 @@ describe("<FarmEventForm/>", () => {
     expect(inst.updatedFarmEvent.body).toEqual([oldVariable]);
   });
 
-  it("deletes a farmEvent", async () => {
-    const p = props();
-    p.dispatch = jest.fn(() => Promise.resolve());
-    const inst = instance(p);
-    const wrapper = shallow(<inst.FarmEventDeleteButton />);
-    clickButton(wrapper, 0, "delete");
-    await expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
-    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
-    expect(success).toHaveBeenCalledWith("Deleted event.", "Deleted");
-  });
-
-  it("sets repeat", () => {
-    const p = props();
-    p.dispatch = jest.fn(() => Promise.resolve());
-    const e = {
-      currentTarget: { checked: true }
-    } as React.ChangeEvent<HTMLInputElement>;
-    const inst = instance(p);
-    inst.toggleRepeat(e);
-    expect(inst.state).toEqual({
-      fe: { timeUnit: "daily" },
-      specialStatusLocal: SpecialStatus.DIRTY
-    });
-  });
-
-  it("sets repeat: regimen", () => {
-    const p = props();
-    p.farmEvent.body.executable_type = "Regimen";
-    p.dispatch = jest.fn(() => Promise.resolve());
-    const e = {
-      currentTarget: { checked: true }
-    } as React.ChangeEvent<HTMLInputElement>;
-    const inst = instance(p);
-    inst.toggleRepeat(e);
-    expect(inst.state).toEqual({
-      fe: { timeUnit: "never" },
-      specialStatusLocal: SpecialStatus.DIRTY
-    });
+  it("shows error message upon farm event save", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<EditFEForm {...p} />);
+    wrapper.find(FarmEventForm).simulate("save");
+    expect(error).toHaveBeenCalled();
   });
 });
 
@@ -555,5 +511,77 @@ describe("destructureFarmEvent", () => {
     const { startTime, endTime } = destructureFarmEvent(fe, timeSettings);
     expect(startTime).toBe("22:32");
     expect(endTime).toBe("23:32");
+  });
+});
+
+describe("<StartTimeForm />", () => {
+  const fakeProps = (): StartTimeFormProps => ({
+    isRegimen: false,
+    fieldGet: jest.fn(),
+    fieldSet: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+  });
+
+  it("changes start date", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    wrapper.find("BlurableInput").first().simulate("commit", {
+      currentTarget: { value: "2017-07-26" }
+    });
+    expect(p.fieldSet).toHaveBeenCalledWith("startDate", "2017-07-26");
+  });
+
+  it("changes start time", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<StartTimeForm {...p} />);
+    wrapper.find("EventTimePicker").simulate("commit", {
+      currentTarget: { value: "08:57" }
+    });
+    expect(p.fieldSet).toHaveBeenCalledWith("startTime", "08:57");
+  });
+});
+
+describe("<RepeatForm />", () => {
+  const fakeProps = (): RepeatFormProps => ({
+    isRegimen: false,
+    fieldGet: jest.fn(key =>
+      "" + ({ endDate: "2017-07-26" } as FarmEventViewModel)[key]),
+    fieldSet: jest.fn(),
+    timeSettings: fakeTimeSettings(),
+  });
+
+  it("toggles repeat on", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<RepeatForm {...p} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { checked: true }
+    });
+    expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "daily");
+  });
+
+  it("toggles repeat off", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<RepeatForm {...p} />);
+    wrapper.find("input").first().simulate("change", {
+      currentTarget: { checked: false }
+    });
+    expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "never");
+  });
+});
+
+describe("<FarmEventDeleteButton />", () => {
+  const fakeProps = (): FarmEventDeleteButtonProps => ({
+    hidden: false,
+    farmEvent: fakeFarmEvent("Sequence", 1),
+    dispatch: jest.fn(() => Promise.resolve()),
+  });
+
+  it("deletes farm event", async () => {
+    const p = fakeProps();
+    const wrapper = shallow(<FarmEventDeleteButton {...p} />);
+    await wrapper.find("button").simulate("click");
+    expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/events");
+    expect(success).toHaveBeenCalledWith("Deleted event.", "Deleted");
   });
 });

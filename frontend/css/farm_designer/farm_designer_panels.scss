@@ -431,12 +431,32 @@
   .location-form {
     width: 100% !important;
   }
+  .note {
+    margin-top: 4rem;
+  }
+  .bp3-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+}
+
+.farm-event-form {
+  .farm-event-repeat-options {
+    input[type=checkbox] {
+      margin-right: 0.5rem;
+      margin-top: 0;
+      vertical-align: middle;
+    }
+    .farm-event-repeat-form {
+      .add-event-repeat-frequency {
+        min-height: 34px;
+      }
+    }
+  }
 }
 
 .add-farm-event-panel button.red,
-.edit-farm-event-panel button.red,
-.add-farm-event-panel button.magenta,
-.edit-farm-event-panel button.magenta {
+.edit-farm-event-panel button.red {
   margin-top: 1rem;
   margin-left: 1rem;
 }

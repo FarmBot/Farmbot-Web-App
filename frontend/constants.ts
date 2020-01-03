@@ -820,11 +820,9 @@ export namespace Content {
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
 
-  export const SET_TIMEZONE_HEADER =
-    trim(`You must set a timezone before using the event feature.`);
-
-  export const SET_TIMEZONE_BODY =
-    trim(`Set device timezone here.`);
+  export const MISSING_EXECUTABLE =
+    trim(`You haven't made any sequences or regimens yet. To add an event,
+    first create a sequence or regimen.`);
 
   // Farmware
   export const NO_IMAGES_YET =
