@@ -14,9 +14,7 @@ describe CeleryScript::Checker do
     }.deep_symbolize_keys
   end
 
-  let(:tree) do
-    CeleryScript::AstNode.new(hash)
-  end
+  let(:tree) { CeleryScript::AstNode.new(**hash) }
 
   let (:corpus) { Sequence::Corpus }
 
@@ -205,14 +203,14 @@ describe CeleryScript::Checker do
 
   it "catches bad `axis` nodes" do
     t =
-      CeleryScript::AstNode.new({ kind: "home", args: { speed: 100, axis: "?" } })
+      CeleryScript::AstNode.new(kind: "home", args: { speed: 100, axis: "?" })
     chk = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid axis")
   end
 
   it "catches bad `package` nodes" do
-    t = CeleryScript::AstNode.new({ kind: "factory_reset", args: { package: "?" } })
+    t = CeleryScript::AstNode.new(kind: "factory_reset", args: { package: "?" })
     chk = CeleryScript::Checker.new(t, corpus, device)
     expect(chk.valid?).to be false
     expect(chk.error.message).to include("not a valid package")
@@ -251,7 +249,7 @@ describe CeleryScript::Checker do
         },
       ],
     }
-    tree = CeleryScript::AstNode.new(ast)
+    tree = CeleryScript::AstNode.new(**ast)
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be true
   end
@@ -289,7 +287,7 @@ describe CeleryScript::Checker do
         },
       ],
     }
-    tree = CeleryScript::AstNode.new(ast)
+    tree = CeleryScript::AstNode.new(**ast)
     chk = CeleryScript::Checker.new(tree, corpus, device)
     expect(chk.valid?).to be false
     message = "must provide a value for all parameters"

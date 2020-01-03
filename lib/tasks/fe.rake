@@ -5,12 +5,12 @@ EXCLUDE           = []
 
 # Load package.json as JSON.
 def load_package_json()
-  return JSON.parse(open(PACKAGE_JSON_FILE).read)
+  return JSON.parse(URI.open(PACKAGE_JSON_FILE).read)
 end
 
 # Save JSON to package.json.
 def save_package_json(json)
-  open(PACKAGE_JSON_FILE, "w") { |file|
+  URI.open(PACKAGE_JSON_FILE, "w") { |file|
     file.write(JSON.pretty_generate(json))
     file.puts
   }

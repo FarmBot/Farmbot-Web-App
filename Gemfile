@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "~> 2.6.5"
+ruby "~> 2.7.0"
 
 gem "rails"
 gem "active_model_serializers"
@@ -24,6 +24,7 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
+# gem "farady", "~> 1.0.0"
 
 group :development, :test do
   gem "climate_control"

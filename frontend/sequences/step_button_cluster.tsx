@@ -55,7 +55,7 @@ export function StepButtonCluster(props: StepButtonProps) {
           pin_number: 4
         }
       }}
-      color="yellow">
+      color="orange">
       {t("TOGGLE PERIPHERAL")}
     </StepButton>,
     <StepButton {...commonStepProps}
@@ -103,7 +103,7 @@ export function StepButtonCluster(props: StepButtonProps) {
     <StepButton {...commonStepProps}
       step={{ kind: "emergency_lock", args: {} }}
       color="brown">
-      {t("EMERGENCY LOCK")}
+      {t("E-STOP")}
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{ kind: "reboot", args: { package: "farmbot_os" } }}

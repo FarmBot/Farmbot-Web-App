@@ -2,35 +2,36 @@ const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import * as React from "react";
-import { TileWritePin, WritePinStep } from "../tile_write_pin";
+import { TileWritePin, WritePinStep, PinSelect } from "../tile_write_pin";
 import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin } from "farmbot/dist";
 import { emptyState } from "../../../resources/reducer";
 import { FBSelect } from "../../../ui";
+import { StepParams } from "../../interfaces";
+
+function fakeProps() {
+  const currentStep: WritePin = {
+    kind: "write_pin",
+    args: {
+      pin_number: 3,
+      pin_value: 2,
+      pin_mode: 1
+    }
+  };
+  return {
+    currentSequence: fakeSequence(),
+    currentStep: currentStep,
+    dispatch: jest.fn(),
+    index: 0,
+    resources: emptyState().index,
+    confirmStepDeletion: false,
+    shouldDisplay: () => false,
+    showPins: false,
+  };
+}
 
 describe("<TileWritePin/>", () => {
-  function fakeProps() {
-    const currentStep: WritePin = {
-      kind: "write_pin",
-      args: {
-        pin_number: 3,
-        pin_value: 2,
-        pin_mode: 1
-      }
-    };
-    return {
-      currentSequence: fakeSequence(),
-      currentStep: currentStep,
-      dispatch: jest.fn(),
-      index: 0,
-      resources: emptyState().index,
-      confirmStepDeletion: false,
-      shouldDisplay: () => false,
-      showPins: false,
-    };
-  }
-
   it("renders inputs: Analog", () => {
     const wrapper = mount(<TileWritePin {...fakeProps()} />);
     const inputs = wrapper.find("input");
@@ -89,5 +90,14 @@ describe("<TileWritePin/>", () => {
     p.currentStep.kind = "wrong_step" as any;
     expect(() => mount(<TileWritePin {...p} />))
       .toThrow("Not a write_pin block.");
+  });
+});
+
+describe("<PinSelect/>", () => {
+  it("crashes on bad step `kind`s", () => {
+    const props = fakeProps() as StepParams;
+    props.currentStep = { kind: "execute", args: { sequence_id: 23 } };
+    const boom = () => PinSelect(props);
+    expect(boom).toThrowError("PinSelect can't render execute");
   });
 });

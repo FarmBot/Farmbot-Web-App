@@ -16,7 +16,7 @@ interface MultiChoiceRadioProps<T extends StringMap> {
   onChange(key: keyof T): void;
 }
 
-const MultiChoiceRadio =
+export const MultiChoiceRadio =
   <T extends StringMap>(props: MultiChoiceRadioProps<T>) => {
     const choices = Object.keys(props.choices);
     return <Row>
@@ -74,7 +74,7 @@ export const editTheRebootStep =
 
 export function TileReboot(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "set-zero-step";
+  const className = "take-photo-step";
   assertReboot(currentStep);
   return <StepWrapper>
     <StepHeader

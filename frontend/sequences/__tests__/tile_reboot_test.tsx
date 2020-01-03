@@ -1,13 +1,14 @@
 jest.mock("../../api/crud", () => {
   return { editStep: jest.fn() };
 });
-import { TileReboot, editTheRebootStep } from "../step_tiles/tile_reboot";
-import { render } from "enzyme";
+import { TileReboot, editTheRebootStep, rebootExecutor, MultiChoiceRadio } from "../step_tiles/tile_reboot";
+import { render, mount } from "enzyme";
 import React from "react";
 import { StepParams } from "../interfaces";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { editStep } from "../../api/crud";
+import { Reboot } from "farmbot";
 
 const fakeProps = (): StepParams => {
   const currentSequence = fakeSequence();
@@ -54,5 +55,32 @@ describe("<TileReboot/>", () => {
       sequence: props.currentSequence,
       executor: expect.any(Function),
     });
+  });
+
+  it("executes the executor", () => {
+    const props = fakeProps();
+    const step = props.currentStep as Reboot;
+    step.args.package = "X";
+    const fn = rebootExecutor("arduino_firmware");
+    fn(step);
+    expect(step.args.package).toBe("arduino_firmware");
+  });
+});
+
+describe("MultiChoiceRadio", () => {
+  it("triggers callbacks", () => {
+    const PACKAGE_CHOICES = {
+      "a": "1",
+      "b": "2"
+    };
+    const onChange = jest.fn();
+    const el = mount(<MultiChoiceRadio
+      uuid={"WHATEVER"}
+      choices={PACKAGE_CHOICES}
+      currentChoice={"a"}
+      onChange={onChange} />);
+    const radio = el.find("input[type='radio']").first();
+    radio.simulate("change", "a");
+    expect(onChange).toHaveBeenCalledWith("a");
   });
 });
