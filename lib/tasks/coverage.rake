@@ -14,7 +14,7 @@ FRACTION_DELIM = "/"
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def open_json(url)
   begin
-    JSON.parse(open(url).read)
+    JSON.parse(URI.open(url).read)
   rescue *[OpenURI::HTTPError, SocketError] => exception
     puts exception.message
     return {}
@@ -155,7 +155,8 @@ namespace :coverage do
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
     # Fetch current build coverage data from the HTML summary.
-    statements, branches, functions, lines = Nokogiri::HTML(open(COVERAGE_FILE_PATH))
+    statements, branches, functions, lines =
+    Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
       .css(CSS_SELECTOR)
       .map(&:text)
       .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
