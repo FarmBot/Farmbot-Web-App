@@ -50,7 +50,7 @@ class FarmwareInstallation < ApplicationRecord
   # SLOW I/O BOUND STUFF! Don't run this on the
   # main thread!
   def infer_package_name_from_url
-    string_io = URI.open(url)
+    string_io = open(url)
     string    = string_io.read(MAX_JSON_SIZE)
     json      = JSON.parse(string)
     pkg_name  = json.fetch("package")
