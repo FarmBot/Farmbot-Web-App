@@ -78,7 +78,7 @@ class Fragment < ApplicationRecord
 
   def self.from_celery(device:, kind:, args:, body:, owner:)
     p = { device: device, kind: kind, args: args, body: body }
-    flat_ast = Fragments::Preprocessor.run!(p)
+    flat_ast = Fragments::Preprocessor.run!(**p)
     Fragments::Create.run!(device: device,
                            flat_ast: flat_ast,
                            owner: owner)

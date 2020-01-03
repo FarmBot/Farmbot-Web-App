@@ -9,7 +9,7 @@ describe "Body nodes" do
   let(:device) { FactoryBot.create(:device) }
 
   it "always always empty bodies" do
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
       "kind": "baz",
       "args": {},
       "body": []

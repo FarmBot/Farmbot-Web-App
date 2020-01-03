@@ -16,7 +16,7 @@ module FarmEvents
                  kind: "internal_#{kind}",
                  args: {},
                  body: body }
-      flat_ast = Fragments::Preprocessor.run!(params)
+      flat_ast = Fragments::Preprocessor.run!(**params)
       Fragments::Create.run!(device: device,
                              flat_ast: flat_ast,
                              owner: owner)

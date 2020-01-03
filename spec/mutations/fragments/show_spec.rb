@@ -47,7 +47,7 @@ describe Fragments::Create do
         },
       ],
     }
-    flat_ast = Fragments::Preprocessor.run!(origin)
+    flat_ast = Fragments::Preprocessor.run!(**origin)
     fragment = Fragments::Create.run!(flat_ast: flat_ast, owner: farm_event)
     result = Fragments::Show.run!(owner: farm_event)
     diff = Hashdiff.diff(origin.without(:device), result.deep_symbolize_keys)
@@ -83,7 +83,7 @@ describe Fragments::Create do
     config.logger = spy_logger
     fragment = Fragments::Create.run!(device: device,
                                       owner: farm_event,
-                                      flat_ast: Fragments::Preprocessor.run!(origin))
+                                      flat_ast: Fragments::Preprocessor.run!(**origin))
     # Warm the cache up with two dry-runs:
     Fragments::Show.run!(owner: farm_event)
     Fragments::Show.run!(owner: farm_event)

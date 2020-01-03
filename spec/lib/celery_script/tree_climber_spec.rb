@@ -5,7 +5,7 @@ describe CeleryScript::TreeClimber do
 
   let(:node) do
       hash = JSON.parse(file_path).deep_symbolize_keys
-      CeleryScript::AstNode.new(hash)
+      CeleryScript::AstNode.new(**hash)
   end
 
   it "travels to each node with a callable object" do

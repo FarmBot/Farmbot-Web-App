@@ -5,7 +5,7 @@ describe CeleryScript::Corpus do
   let(:corpus) { Sequence::Corpus }
 
   it "handles valid move_absolute blocks" do
-    ok1 = CeleryScript::AstNode.new({
+    ok1 = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: {
@@ -75,7 +75,7 @@ describe CeleryScript::Corpus do
   end
 
   it "finds problems with nested nodes" do
-    bad = CeleryScript::AstNode.new({
+    bad = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: {
