@@ -23,7 +23,7 @@ jest.mock("@blueprintjs/core", () => ({
   Position: jest.fn(),
   PopoverInteractionKind: jest.fn(),
   Button: jest.fn(p => <button>{p.text}</button>),
-  Classes: jest.fn(),
+  Classes: { getClassNamespace: jest.fn() },
   MenuItem: jest.fn(),
   Alignment: jest.fn(),
 }));
