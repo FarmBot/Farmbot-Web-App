@@ -59,7 +59,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         BooleanSetting.disable_emergency_unlock_confirmation)} />
 
   AccountMenu = () => {
-    const hasName = this.props.user && this.props.user.body.name;
+    const hasName = this.props.user?.body.name;
     const firstName = hasName ?
       `${hasName.split(" ")[0].slice(0, 9)} ▾` : `${t("Menu")} ▾`;
     return <div className="menu-popover">

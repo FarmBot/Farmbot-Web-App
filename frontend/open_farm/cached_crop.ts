@@ -43,10 +43,7 @@ const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
 const cacheTheIcon = (slug: string) =>
   (resp: AxiosResponse<OFCropResponse>): OFIcon => {
-    if (resp
-      && resp.data
-      && resp.data.data
-      && resp.data.data.attributes) {
+    if (resp?.data?.data?.attributes) {
       const icon = {
         slug: resp.data.data.attributes.slug,
         spread: resp.data.data.attributes.spread,

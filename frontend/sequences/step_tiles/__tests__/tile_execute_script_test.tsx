@@ -83,7 +83,7 @@ describe("<TileExecuteScript/>", () => {
   it("shows special 1st-party Farmware name", () => {
     const p = fakeProps();
     (p.currentStep as ExecuteScript).args.label = "plant-detection";
-    p.farmwareData && p.farmwareData.farmwareNames.push("plant-detection");
+    p.farmwareData?.farmwareNames.push("plant-detection");
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(1);
     expect(wrapper.text()).toContain("Weed Detector");

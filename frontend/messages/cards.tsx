@@ -180,7 +180,7 @@ const FirmwareChoiceTable = () =>
 export const changeFirmwareHardware = (dispatch: Function | undefined) =>
   (ddi: DropDownItem) => {
     if (isFwHardwareValue(ddi.value)) {
-      dispatch && dispatch(updateConfig({ firmware_hardware: ddi.value }));
+      dispatch?.(updateConfig({ firmware_hardware: ddi.value }));
     }
   };
 

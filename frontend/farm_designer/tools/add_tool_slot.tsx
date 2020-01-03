@@ -100,7 +100,7 @@ export class RawAddToolSlot
           : "initializing"}
         <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />
       </DesignerPanelContent>
-    </DesignerPanel >;
+    </DesignerPanel>;
   }
 }
 

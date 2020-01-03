@@ -23,7 +23,7 @@ const fn: MW =
       // tslint:disable-next-line:no-any
       (action: any) => {
         const fbos = getVersionFromState(store.getState());
-        window.Rollbar && window.Rollbar.configure({ payload: { fbos } });
+        window.Rollbar?.configure({ payload: { fbos } });
         return dispatch(action);
       };
 

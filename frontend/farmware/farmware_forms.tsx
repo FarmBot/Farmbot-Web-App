@@ -108,6 +108,6 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
 
 /** Determine if a Farmware has requested inputs. */
 export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
-  const needsWidget = farmware.config && farmware.config.length > 0;
+  const needsWidget = farmware.config?.length > 0;
   return needsWidget;
 }

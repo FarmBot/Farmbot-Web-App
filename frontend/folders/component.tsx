@@ -80,7 +80,7 @@ export const FolderListItem = (props: FolderItemProps) => {
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
       </div>
     </li>
-  </StepDragger >;
+  </StepDragger>;
 };
 
 const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {

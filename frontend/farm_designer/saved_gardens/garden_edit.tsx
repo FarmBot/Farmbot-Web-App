@@ -66,7 +66,7 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
   const savedGarden = findSavedGardenByUrl(props.resources.index);
   return {
     savedGarden,
-    gardenIsOpen: !!(savedGarden && savedGarden.uuid === openedSavedGarden),
+    gardenIsOpen: !!(savedGarden?.uuid === openedSavedGarden),
     dispatch: props.dispatch,
     plantPointerCount: selectAllPlantPointers(props.resources.index).length,
   };

@@ -23,16 +23,11 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 // tslint:disable-next-line:no-any
 const fn: Middleware = () => (dispatch) => (action: any) => {
   const x: DeepPartial<SyncResponse<TaggedWebAppConfig>> = action;
-  if (x
-    && x.type === Actions.RESOURCE_READY
-    && x.payload
-    && x.payload.body
+  if (x?.type === Actions.RESOURCE_READY
+    && x.payload?.body
     && x.payload.kind === WEB_APP_CONFIG) {
     const conf = arrayUnwrap(x.payload.body);
-    conf
-      && conf.body
-      && conf.body.disable_i18n
-      && revertToEnglish();
+    conf?.body?.disable_i18n && revertToEnglish();
   }
 
   return dispatch(action);

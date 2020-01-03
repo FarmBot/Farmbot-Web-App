@@ -19,7 +19,7 @@ import {
 export function mapStateToProps(props: Everything): Props {
   const uuid = props.resources.consumers.sequences.current;
   const sequence = uuid ? findSequence(props.resources.index, uuid) : undefined;
-  sequence && (sequence.body.body || []).map(x => getStepTag(x));
+  (sequence?.body.body || []).map(x => getStepTag(x));
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;

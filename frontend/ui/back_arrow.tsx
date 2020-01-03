@@ -6,7 +6,7 @@ interface BackArrowProps {
 export function BackArrow(props: BackArrowProps) {
   const onClick = () => {
     history.back();
-    props.onClick && props.onClick();
+    props.onClick?.();
   };
 
   return <a onClick={onClick} className="back-arrow">

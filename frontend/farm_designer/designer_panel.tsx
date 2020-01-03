@@ -56,7 +56,7 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? routeHistory.push(props.backTo) : history.back();
-          props.onBack && props.onBack();
+          props.onBack?.();
         }} />
       {props.title &&
         <span className={`title ${textColor}-text`}>

@@ -1,5 +1,4 @@
 import { TaggedResource, TaggedSequence } from "farmbot";
-
 import { RootFolderNode, FolderUnion } from "./constants";
 
 export interface FolderSearchProps {
