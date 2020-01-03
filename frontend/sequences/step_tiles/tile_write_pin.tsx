@@ -69,7 +69,7 @@ export const PinSelect = (props: PinSelectProps): JSX.Element => {
     </Col>;
   }
 
-  throw new Error("Can't render " + step ? step.kind : "NULL");
+  throw new Error("PinSelect can't render " + step.kind);
 };
 
 export class WritePinStep extends React.Component<WritePinStepParams> {
