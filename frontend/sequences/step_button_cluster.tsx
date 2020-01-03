@@ -52,7 +52,7 @@ export function StepButtonCluster(props: StepButtonProps) {
       step={{
         kind: "toggle_pin",
         args: {
-          pin_number: 4
+          pin_number: NOTHING_SELECTED
         }
       }}
       color="orange">

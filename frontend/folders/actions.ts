@@ -1,4 +1,4 @@
-import { RootFolderNode as Tree } from "./constants";
+import { RootFolderNode as Tree } from "./interfaces";
 import { cloneAndClimb } from "./climb";
 import { Color, SpecialStatus, TaggedSequence } from "farmbot";
 import { store } from "../redux/store";

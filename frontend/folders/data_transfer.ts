@@ -4,7 +4,7 @@ import {
   FolderNodeTerminal,
   RootFolderNode,
   FolderMeta,
-} from "./constants";
+} from "./interfaces";
 import { sortBy } from "lodash";
 
 type FoldersIndexedByParentId = Record<number, FolderNode[]>;

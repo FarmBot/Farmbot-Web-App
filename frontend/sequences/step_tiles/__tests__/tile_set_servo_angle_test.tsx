@@ -1,7 +1,9 @@
 jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
 
 import * as React from "react";
-import { TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection } from "../tile_set_servo_angle";
+import {
+  TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection
+} from "../tile_set_servo_angle";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SetServoAngle } from "farmbot";
@@ -33,8 +35,8 @@ describe("<TileSetServoAngle/>", () => {
     const inputs = block.find("input");
     const labels = block.find("label");
     const stepArgs = props.currentStep.args as SetServoAngle["args"];
-    expect(inputs.length).toEqual(4);
-    expect(labels.length).toEqual(4);
+    expect(inputs.length).toEqual(6);
+    expect(labels.length).toEqual(6);
     expect(inputs.first().props().placeholder).toEqual("Control Servo");
     expect(labels.at(0).text()).toContain("Servo angle (0-180)");
     expect(inputs.at(1).props().value).toEqual(stepArgs.pin_value);
@@ -53,7 +55,7 @@ describe("<TileSetServoAngle/>", () => {
     });
   });
 
-  it("dissallows named_pins", () => {
+  it("disallows named_pins", () => {
     const p = fakeProps();
     const step = p.currentStep;
     if (step.kind === "set_servo_angle") {

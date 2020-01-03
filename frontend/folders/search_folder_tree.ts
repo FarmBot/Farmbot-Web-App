@@ -1,5 +1,5 @@
 import { TaggedResource, TaggedSequence } from "farmbot";
-import { RootFolderNode, FolderUnion } from "./constants";
+import { RootFolderNode, FolderUnion } from "./interfaces";
 
 export interface FolderSearchProps {
   references: Record<string, TaggedResource | undefined>;

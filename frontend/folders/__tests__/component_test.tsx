@@ -35,7 +35,7 @@ import {
   FolderNameInputProps,
   FolderNodeMedial,
   FolderNodeTerminal,
-} from "../constants";
+} from "../interfaces";
 import {
   updateSearchTerm, toggleAll, moveSequence, dropSequence,
   sequenceEditMaybeSave,

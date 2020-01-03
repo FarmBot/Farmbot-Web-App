@@ -33,7 +33,9 @@ import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
-import { FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial } from "../folders/constants";
+import {
+  FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial
+} from "../folders/interfaces";
 import { climb } from "../folders/climb";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {

@@ -98,61 +98,6 @@ describe("renderCeleryNode()", () => {
 
   const TEST_DATA: TestData[] = [
     {
-      expected: "MarkPlantasx = 300",
-      node: {
-        kind: "resource_update",
-        args: {
-          resource_id: 23,
-          resource_type: "Plant",
-          label: "x",
-          value: 300
-        }
-      }
-    },
-    {
-      expected: "System",
-      node: {
-        kind: "check_updates",
-        args: {
-          package: "farmbot_os"
-        }
-      }
-    },
-    {
-      expected: "System",
-      node: {
-        kind: "factory_reset",
-        args: {
-          package: "farmbot_os"
-        }
-      }
-    },
-    {
-      expected: "Unlocking a device requires user intervention",
-      node: {
-        kind: "emergency_lock",
-        args: {}
-      }
-    },
-    {
-      expected: "Unable to properly display this step",
-      node: {
-        kind: "power_off",
-        args: {}
-      }
-    },
-    {
-      expected: "Unable to properly display this step",
-      node: { kind: "read_status", args: {} }
-    },
-    {
-      expected: "",
-      node: {
-        kind: "install_first_party_farmware",
-        args: {}
-      }
-    },
-    {
       node: {
         kind: "_if",
         args: {
@@ -166,30 +111,12 @@ describe("renderCeleryNode()", () => {
       expected: "Then Execute"
     },
     {
-      node: {
-        kind: "execute_script",
-        args: { label: "farmware-to-execute" }
-      },
+      node: { kind: "execute_script", args: { label: "farmware-to-execute" } },
       expected: "Manual Input"
     },
     {
-      node: {
-        kind: "execute",
-        args: {
-          sequence_id: 0
-        }
-      },
+      node: { kind: "execute", args: { sequence_id: 0 } },
       expected: "Select a sequence"
-    },
-    {
-      node: {
-        kind: "find_home",
-        args: {
-          speed: 100,
-          axis: "all"
-        }
-      },
-      expected: "Find x"
     },
     {
       node: {
@@ -213,39 +140,36 @@ describe("renderCeleryNode()", () => {
       expected: "Message"
     },
     {
-      node: {
-        kind: "take_photo",
-        args: {}
-      },
+      node: { kind: "take_photo", args: {} },
       expected: "Photo"
     },
     {
-      node: {
-        kind: "wait",
-        args: {
-          milliseconds: 100
-        }
-      },
+      node: { kind: "wait", args: { milliseconds: 100 } },
       expected: "milliseconds"
     },
     {
       node: {
-        kind: "set_servo_angle",
+        kind: "resource_update",
         args: {
-          pin_number: 4,
-          pin_value: 90,
+          resource_id: 23,
+          resource_type: "Plant",
+          label: "x",
+          value: 300
         }
       },
+      expected: "MarkPlantasx = 300"
+    },
+    {
+      node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90, } },
       expected: "Servo"
     },
     {
-      node: {
-        kind: "toggle_pin",
-        args: {
-          pin_number: 13
-        }
-      },
+      node: { kind: "toggle_pin", args: { pin_number: 13 } },
       expected: "Pin"
+    },
+    {
+      node: { kind: "find_home", args: { speed: 100, axis: "all" } },
+      expected: "Find x"
     },
     {
       node: { kind: "zero", args: { axis: "all" } },
@@ -260,51 +184,35 @@ describe("renderCeleryNode()", () => {
       expected: "Home x"
     },
     {
-      node: { kind: "reboot", args: { package: "farmbot_os" } },
-      expected: "System"
-    },
-    {
-      node: {
-        kind: "check_updates", args: { package: "farmbot_os" }
-      },
-      expected: "System"
-    },
-    {
-      node: {
-        kind: "factory_reset", args: { package: "farmbot_os" }
-      },
-      expected: "System"
-    },
-    {
-      node: {
-        kind: "sync",
-        args: {}
-      },
-      expected: ""
-    },
-    {
-      node: {
-        kind: "dump_info",
-        args: {}
-      },
-      expected: ""
-    },
-    {
-      node: {
-        kind: "power_off",
-        args: {}
-      },
-      expected: ""
-    },
-    {
-      node: {
-        kind: "read_status",
-        args: {}
-      },
-      expected: ""
-    },
-    {
       node: { kind: "emergency_lock", args: {} },
+      expected: "Unlocking a device requires user intervention"
+    },
+    {
+      node: { kind: "reboot", args: { package: "farmbot_os" } },
+      expected: "entire system"
+    },
+    {
+      node: { kind: "check_updates", args: { package: "farmbot_os" } },
+      expected: "System"
+    },
+    {
+      node: { kind: "factory_reset", args: { package: "farmbot_os" } },
+      expected: "System"
+    },
+    {
+      node: { kind: "sync", args: {} },
+      expected: ""
+    },
+    {
+      node: { kind: "dump_info", args: {} },
+      expected: ""
+    },
+    {
+      node: { kind: "power_off", args: {} },
+      expected: ""
+    },
+    {
+      node: { kind: "read_status", args: {} },
       expected: ""
     },
     {
@@ -312,19 +220,12 @@ describe("renderCeleryNode()", () => {
       expected: ""
     },
     {
-      node: {
-        kind: "install_first_party_farmware", args: {}
-      },
+      node: { kind: "install_first_party_farmware", args: {} },
       expected: ""
     },
     {
-      node: {
-        kind: "unknown",
-        args: {
-          unknown: 0
-        }
-        // tslint:disable-next-line:no-any
-      } as any,
+      // tslint:disable-next-line: no-any
+      node: { kind: "unknown", args: { unknown: 0 } } as any,
       expected: "unknown"
     },
   ];

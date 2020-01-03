@@ -20,7 +20,7 @@ import {
   FolderButtonClusterProps,
   FolderNameInputProps,
   SequenceDropAreaState,
-} from "./constants";
+} from "./interfaces";
 import {
   createFolder,
   deleteFolder,
