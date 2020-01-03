@@ -17,44 +17,39 @@ describe("<ToolbaySlot />", () => {
     xySwap: false,
   });
 
-  const checkSlotDirection =
-    (direction: number,
-      quadrant: BotOriginQuadrant,
-      xySwap: boolean,
-      expected: string) => {
-      it(`renders slot, pullout: ${direction} quad: ${quadrant} yx: ${xySwap}`,
-        () => {
-          const p = fakeProps();
-          p.pulloutDirection = direction;
-          p.quadrant = quadrant;
-          p.xySwap = xySwap;
-          const wrapper = svgMount(<ToolbaySlot {...p} />);
-          expect(wrapper.find("use").props().transform).toEqual(expected);
-        });
-    };
-  checkSlotDirection(0, 2, false, "rotate(0, 10, 20)");
-  checkSlotDirection(1, 1, false, "rotate(180, 10, 20)");
-  checkSlotDirection(1, 2, false, "rotate(0, 10, 20)");
-  checkSlotDirection(1, 3, false, "rotate(0, 10, 20)");
-  checkSlotDirection(1, 4, false, "rotate(180, 10, 20)");
-  checkSlotDirection(2, 3, false, "rotate(180, 10, 20)");
-  checkSlotDirection(3, 1, false, "rotate(90, 10, 20)");
-  checkSlotDirection(3, 2, false, "rotate(90, 10, 20)");
-  checkSlotDirection(3, 3, false, "rotate(270, 10, 20)");
-  checkSlotDirection(3, 4, false, "rotate(270, 10, 20)");
-  checkSlotDirection(4, 3, false, "rotate(90, 10, 20)");
+  it.each<[number, BotOriginQuadrant, boolean, string]>([
+    [0, 2, false, "rotate(0, 10, 20)"],
+    [1, 1, false, "rotate(180, 10, 20)"],
+    [1, 2, false, "rotate(0, 10, 20)"],
+    [1, 3, false, "rotate(0, 10, 20)"],
+    [1, 4, false, "rotate(180, 10, 20)"],
+    [2, 3, false, "rotate(180, 10, 20)"],
+    [3, 1, false, "rotate(90, 10, 20)"],
+    [3, 2, false, "rotate(90, 10, 20)"],
+    [3, 3, false, "rotate(270, 10, 20)"],
+    [3, 4, false, "rotate(270, 10, 20)"],
+    [4, 3, false, "rotate(90, 10, 20)"],
 
-  checkSlotDirection(0, 2, true, "rotate(180, 10, 20)");
-  checkSlotDirection(1, 1, true, "rotate(90, 10, 20)");
-  checkSlotDirection(1, 2, true, "rotate(90, 10, 20)");
-  checkSlotDirection(1, 3, true, "rotate(270, 10, 20)");
-  checkSlotDirection(1, 4, true, "rotate(270, 10, 20)");
-  checkSlotDirection(2, 3, true, "rotate(90, 10, 20)");
-  checkSlotDirection(3, 1, true, "rotate(180, 10, 20)");
-  checkSlotDirection(3, 2, true, "rotate(0, 10, 20)");
-  checkSlotDirection(3, 3, true, "rotate(0, 10, 20)");
-  checkSlotDirection(3, 4, true, "rotate(180, 10, 20)");
-  checkSlotDirection(4, 3, true, "rotate(180, 10, 20)");
+    [0, 2, true, "rotate(180, 10, 20)"],
+    [1, 1, true, "rotate(90, 10, 20)"],
+    [1, 2, true, "rotate(90, 10, 20)"],
+    [1, 3, true, "rotate(270, 10, 20)"],
+    [1, 4, true, "rotate(270, 10, 20)"],
+    [2, 3, true, "rotate(90, 10, 20)"],
+    [3, 1, true, "rotate(180, 10, 20)"],
+    [3, 2, true, "rotate(0, 10, 20)"],
+    [3, 3, true, "rotate(0, 10, 20)"],
+    [3, 4, true, "rotate(180, 10, 20)"],
+    [4, 3, true, "rotate(180, 10, 20)"],
+  ])("renders slot, pullout: %s quad: %s yx: %s",
+    (direction, quadrant, xySwap, expected) => {
+      const p = fakeProps();
+      p.pulloutDirection = direction;
+      p.quadrant = quadrant;
+      p.xySwap = xySwap;
+      const wrapper = svgMount(<ToolbaySlot {...p} />);
+      expect(wrapper.find("use").props().transform).toEqual(expected);
+    });
 });
 
 describe("<Tool/>", () => {

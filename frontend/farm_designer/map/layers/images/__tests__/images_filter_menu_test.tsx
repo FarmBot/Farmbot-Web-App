@@ -11,31 +11,25 @@ import {
 } from "../../../../../__test_support__/fake_time_settings";
 
 const mockConfig = fakeWebAppConfig();
-jest.mock("../../../../../resources/selectors", () => {
-  return {
-    getWebAppConfig: () => mockConfig,
-    assertUuid: jest.fn()
-  };
-});
+jest.mock("../../../../../resources/selectors", () => ({
+  getWebAppConfig: () => mockConfig,
+  assertUuid: jest.fn(),
+}));
 
-jest.mock("../../../../../config_storage/actions", () => {
-  return {
-    setWebAppConfigValue: jest.fn()
-  };
-});
+jest.mock("../../../../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn(),
+}));
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";
   mockConfig.body.photo_filter_end = "";
 
-  const fakeProps = (): ImageFilterMenuProps => {
-    return {
-      timeSettings: fakeTimeSettings(),
-      dispatch: jest.fn(),
-      getConfigValue: jest.fn(x => mockConfig.body[x as StringConfigKey]),
-      imageAgeInfo: { newestDate: "", toOldest: 1 }
-    };
-  };
+  const fakeProps = (): ImageFilterMenuProps => ({
+    timeSettings: fakeTimeSettings(),
+    dispatch: jest.fn(),
+    getConfigValue: jest.fn(x => mockConfig.body[x as StringConfigKey]),
+    imageAgeInfo: { newestDate: "", toOldest: 1 },
+  });
 
   it("renders", () => {
     const p = fakeProps();
@@ -44,44 +38,38 @@ describe("<ImageFilterMenu />", () => {
       expect(wrapper.text()).toContain(string));
   });
 
-  const testFilterSetDate =
-    (filter: "beginDate" | "endDate",
-      key: "photo_filter_begin" | "photo_filter_end",
-      i: number) => {
-      it(`sets filter: ${filter}`, () => {
-        const p = fakeProps();
-        const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-        wrapper.find("BlurableInput").at(i).simulate("commit", {
-          currentTarget: { value: "2001-01-03" }
-        });
-        expect(wrapper.instance().state[filter]).toEqual("2001-01-03");
-        expect(setWebAppConfigValue)
-          .toHaveBeenCalledWith(key, "2001-01-03T00:00:00.000Z");
-      });
-    };
+  it.each<[
+    "beginDate" | "endDate", "photo_filter_begin" | "photo_filter_end", number
+  ]>([
+    ["beginDate", "photo_filter_begin", 0],
+    ["endDate", "photo_filter_end", 2],
+  ])("sets filter: %s", (filter, key, i) => {
+    const p = fakeProps();
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    wrapper.find("BlurableInput").at(i).simulate("commit", {
+      currentTarget: { value: "2001-01-03" }
+    });
+    expect(wrapper.instance().state[filter]).toEqual("2001-01-03");
+    expect(setWebAppConfigValue)
+      .toHaveBeenCalledWith(key, "2001-01-03T00:00:00.000Z");
+  });
 
-  testFilterSetDate("beginDate", "photo_filter_begin", 0);
-  testFilterSetDate("endDate", "photo_filter_end", 2);
-
-  const testFilterSetTime =
-    (filter: "beginTime" | "endTime",
-      key: "photo_filter_begin" | "photo_filter_end",
-      i: number) => {
-      it(`sets filter: ${filter}`, () => {
-        const p = fakeProps();
-        const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-        wrapper.setState({ beginDate: "2001-01-03", endDate: "2001-01-03" });
-        wrapper.find("BlurableInput").at(i).simulate("commit", {
-          currentTarget: { value: "05:00" }
-        });
-        expect(wrapper.instance().state[filter]).toEqual("05:00");
-        expect(setWebAppConfigValue)
-          .toHaveBeenCalledWith(key, "2001-01-03T05:00:00.000Z");
-      });
-    };
-
-  testFilterSetTime("beginTime", "photo_filter_begin", 1);
-  testFilterSetTime("endTime", "photo_filter_end", 3);
+  it.each<[
+    "beginTime" | "endTime", "photo_filter_begin" | "photo_filter_end", number
+  ]>([
+    ["beginTime", "photo_filter_begin", 1],
+    ["endTime", "photo_filter_end", 3],
+  ])("sets filter: %s", (filter, key, i) => {
+    const p = fakeProps();
+    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    wrapper.setState({ beginDate: "2001-01-03", endDate: "2001-01-03" });
+    wrapper.find("BlurableInput").at(i).simulate("commit", {
+      currentTarget: { value: "05:00" }
+    });
+    expect(wrapper.instance().state[filter]).toEqual("05:00");
+    expect(setWebAppConfigValue)
+      .toHaveBeenCalledWith(key, "2001-01-03T05:00:00.000Z");
+  });
 
   it("loads values from config", () => {
     mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";

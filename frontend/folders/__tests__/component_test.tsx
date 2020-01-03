@@ -18,6 +18,11 @@ jest.mock("../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
+jest.mock("@blueprintjs/core", () => ({
+  Popover: jest.fn(p => <div>{p.children}</div>),
+  Position: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {

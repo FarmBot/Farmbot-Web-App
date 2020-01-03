@@ -1,6 +1,6 @@
 let mockDev = false;
 jest.mock("../../../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev, }
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
 }));
 
 jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
@@ -29,21 +29,20 @@ describe("<ToolSlotPoint/>", () => {
     hoveredToolSlot: undefined,
   });
 
-  const testToolSlotGraphics = (tool: 0 | 1, slot: 0 | 1) => {
-    it(`renders ${tool ? "" : "no"} tool and ${slot ? "" : "no"} slot`, () => {
-      if (!tool && !slot) { tool = 1; }
-      const p = fakeProps();
-      if (!tool) { p.slot.tool = undefined; }
-      p.slot.toolSlot.body.pullout_direction = slot;
-      const wrapper = svgMount(<ToolSlotPoint {...p} />);
-      expect(wrapper.find("circle").length).toEqual(tool);
-      expect(wrapper.find("use").length).toEqual(slot);
-    });
-  };
-  testToolSlotGraphics(0, 0);
-  testToolSlotGraphics(0, 1);
-  testToolSlotGraphics(1, 0);
-  testToolSlotGraphics(1, 1);
+  it.each<[0 | 1, 0 | 1]>([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1],
+  ])("renders %s tool and %s slot", (tool, slot) => {
+    if (!tool && !slot) { tool = 1; }
+    const p = fakeProps();
+    if (!tool) { p.slot.tool = undefined; }
+    p.slot.toolSlot.body.pullout_direction = slot;
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("circle").length).toEqual(tool);
+    expect(wrapper.find("use").length).toEqual(slot);
+  });
 
   it("opens tool info", () => {
     const p = fakeProps();

@@ -45,29 +45,29 @@ const fakeProps = (): AppProps => ({
 });
 
 describe("<App />: Controls Pop-Up", () => {
-  function controlsPopUp(page: string, exists: boolean) {
-    it(`doesn't render controls pop-up on ${page} page`, () => {
-      mockPath = "/app/" + page;
-      const wrapper = mount(<App {...fakeProps()} />);
-      if (exists) {
-        expect(wrapper.html()).toContain("controls-popup");
-      } else {
-        expect(wrapper.html()).not.toContain("controls-popup");
-      }
-    });
-  }
-
-  controlsPopUp("designer", true);
-  controlsPopUp("designer/plants", true);
-  controlsPopUp("controls", false);
-  controlsPopUp("device", true);
-  controlsPopUp("sequences", true);
-  controlsPopUp("sequences/for_regimens", true);
-  controlsPopUp("regimens", false);
-  controlsPopUp("tools", true);
-  controlsPopUp("farmware", true);
-  controlsPopUp("account", false);
-
+  it.each<["renders" | "doesn't render", string]>([
+    ["renders", "designer"],
+    ["renders", "designer/plants"],
+    ["doesn't render", "controls"],
+    ["renders", "device"],
+    ["renders", "sequences"],
+    ["renders", "sequences/for_regimens"],
+    ["doesn't render", "regimens"],
+    ["renders", "tools"],
+    ["renders", "farmware"],
+    ["renders", "messages"],
+    ["renders", "logs"],
+    ["renders", "help"],
+    ["doesn't render", "account"],
+  ])("%s controls pop-up on %s page", (expected, page) => {
+    mockPath = "/app/" + page;
+    const wrapper = mount(<App {...fakeProps()} />);
+    if (expected == "renders") {
+      expect(wrapper.html()).toContain("controls-popup");
+    } else {
+      expect(wrapper.html()).not.toContain("controls-popup");
+    }
+  });
 });
 
 describe("<App />: Loading", () => {
