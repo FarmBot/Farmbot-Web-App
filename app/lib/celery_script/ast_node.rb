@@ -26,7 +26,7 @@ module CeleryScript
 
     def maybe_initialize(parent, leaf_or_node, key = NEVER)
       if is_node?(leaf_or_node)
-        AstNode.new(parent, leaf_or_node)
+        AstNode.new(parent, **leaf_or_node)
       else
         raise TypeCheckError, LEAVES_NEED_KEYS if key == NEVER
         AstLeaf.new(parent, leaf_or_node, key)

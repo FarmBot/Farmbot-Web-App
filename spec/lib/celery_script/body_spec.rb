@@ -19,7 +19,7 @@ describe "Body nodes" do
   end
 
   it "kicks back unexpected nodes" do
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
       "kind": "baz",
       "args": {},
       "body": [{ "kind": "wrong", "args": {}}]
@@ -30,7 +30,7 @@ describe "Body nodes" do
   end
 
   it "handles body members of nodes that shouldn't have bodies." do
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
       "kind": "baz",
       "args": {},
       "body": [{ "kind": "wrong", "args": {}}]
@@ -41,7 +41,7 @@ describe "Body nodes" do
   end
 
   it 'disallows leaves in the body field of a node' do
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
         "kind": "wrong",
         "args": {},
         "body": [
