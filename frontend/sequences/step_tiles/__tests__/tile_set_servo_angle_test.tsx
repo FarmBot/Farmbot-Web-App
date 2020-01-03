@@ -28,14 +28,17 @@ describe("<TileSetServoAngle/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileSetServoAngle {...fakeProps()} />);
+    const props = fakeProps();
+    const block = mount(<TileSetServoAngle {...props} />);
     const inputs = block.find("input");
     const labels = block.find("label");
+    const stepArgs = props.currentStep.args as SetServoAngle["args"];
     expect(inputs.length).toEqual(4);
     expect(labels.length).toEqual(4);
     expect(inputs.first().props().placeholder).toEqual("Control Servo");
-    expect(labels.at(0).text()).toContain("Servo pin");
-    expect(inputs.at(1).props().value).toEqual("4");
+    expect(labels.at(0).text()).toContain("Servo angle (0-180)");
+    expect(inputs.at(1).props().value).toEqual(stepArgs.pin_value);
+    expect(inputs.at(2).props().value).toEqual("" + stepArgs.pin_number);
   });
 
   it("Changes pin number", () => {
