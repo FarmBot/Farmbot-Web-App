@@ -10,6 +10,7 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             mv .circleci/circle_envs .env
             echo -e '\ndocker_volumes/db/pg_wal/*' >> .dockerignore
+            sudo docker-compose run web gem install bundler
             sudo docker-compose run web bundle install
             sudo docker-compose run web npm install
             sudo docker-compose run web bundle exec rails db:create
