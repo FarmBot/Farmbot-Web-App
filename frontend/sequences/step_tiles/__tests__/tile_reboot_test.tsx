@@ -32,8 +32,7 @@ describe("<TileReboot/>", () => {
   it("renders", () => {
     const el = render(<TileReboot {...fakeProps()} />);
     const verbiage = el.text();
-    expect(verbiage).toContain("Entire system");
-    expect(verbiage).toContain("Just the Arduino");
+    expect(verbiage).toContain("Power cycle FarmBot's onboard computer.");
   });
 
   it("crashes if the step is of the wrong `kind`", () => {
