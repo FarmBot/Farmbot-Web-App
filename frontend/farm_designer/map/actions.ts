@@ -36,7 +36,7 @@ const addOrRemoveFromGroup =
     const group = fetchGroupFromUrl(resources);
     const point =
       resources.references[clickedPlantUuid] as TaggedPoint | undefined;
-    if (group && point && point.body.id) {
+    if (group && point?.body.id) {
       type Body = (typeof group)["body"];
       const nextGroup: Body = ({
         ...group.body,
@@ -54,7 +54,7 @@ const addOrRemoveFromSelection =
   (clickedPlantUuid: UUID, selectedPlants: UUID[] | undefined) => {
     const nextSelected =
       (selectedPlants || []).filter(uuid => uuid !== clickedPlantUuid);
-    if (!(selectedPlants && selectedPlants.includes(clickedPlantUuid))) {
+    if (!(selectedPlants?.includes(clickedPlantUuid))) {
       nextSelected.push(clickedPlantUuid);
     }
     return selectPlant(nextSelected);

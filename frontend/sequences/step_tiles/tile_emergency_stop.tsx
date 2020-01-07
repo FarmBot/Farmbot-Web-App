@@ -7,7 +7,7 @@ import { t } from "../../i18next_wrapper";
 
 export function TileEmergencyStop(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "take-photo-step";
+  const className = "emergency-stop-step";
   return <StepWrapper>
     <StepHeader
       className={className}

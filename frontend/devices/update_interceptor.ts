@@ -79,8 +79,8 @@ export const mcuParamValidator =
     (ok: () => void, no?: (message: string) => void): void => {
       const validator = edgeCases[key];
       const result = validator && validator(key, val, state);
-      if (result && result.outcome === "NO") {
-        return (no && no(result.errorMessage));
+      if (result?.outcome === "NO") {
+        return (no?.(result.errorMessage));
       } else {
         return ok();
       }

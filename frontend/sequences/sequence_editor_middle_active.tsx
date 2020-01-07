@@ -148,7 +148,7 @@ const SequenceBtnGroup = ({
       onClick={() => {
         const confirm = getWebAppConfigValue(
           BooleanSetting.confirm_sequence_deletion);
-        const force = isUndefined(confirm) ? false : !confirm;
+        const force = !(confirm ?? true);
         dispatch(destroy(sequence.uuid, force))
           .then(() => push("/app/sequences/"));
       }}>

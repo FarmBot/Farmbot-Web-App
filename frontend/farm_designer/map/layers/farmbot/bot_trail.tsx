@@ -21,7 +21,7 @@ function getNewTrailArray(update: TrailRecord, watering: boolean): TrailRecord[]
   const arr: TrailRecord[] = JSON.parse(get(sessionStorage, key, "[]"));
   if (arr.length > (trailLength - 1)) { arr.shift(); } // max length reached
   const last = arr[arr.length - 1]; // most recent item in array
-  if (update && update.coord &&
+  if (update?.coord &&
     (!last || !isEqual(last.coord, update.coord))) { // coordinate comparison
     arr.push(update);  // unique addition
   } else { // nothing new to add, increase water circle size if watering

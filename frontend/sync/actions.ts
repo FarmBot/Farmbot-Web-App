@@ -30,7 +30,7 @@ export const newTaggedResource = <T extends TR>(kind: T["kind"],
     return {
       kind: kind as TaggedResource["kind"],
       body: body as TaggedResource["body"],
-      uuid: generateUuid(body && body.id ? body.id : undefined, kind),
+      uuid: generateUuid(body?.id, kind),
       specialStatus
     } as T;
   });

@@ -127,7 +127,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.dispatch = dispatch;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     const props = wrapper.find("DropArea").props() as DropAreaProps;
-    props.callback && props.callback("key");
+    props.callback?.("key");
     dispatch.mock.calls[0][0](() =>
       ({ value: 1, intent: "step_splice", draggerId: 2 }));
     expect(splice).toHaveBeenCalledWith(expect.objectContaining({

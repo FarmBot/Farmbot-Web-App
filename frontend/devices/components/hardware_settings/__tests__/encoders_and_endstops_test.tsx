@@ -8,15 +8,13 @@ import { Dictionary } from "farmbot";
 
 describe("<EncodersAndEndStops />", () => {
   const mockFeatures: Dictionary<boolean> = {};
-  const fakeProps = (): EncodersProps => {
-    return {
-      dispatch: jest.fn(),
-      controlPanelState: panelState(),
-      sourceFwConfig: x =>
-        ({ value: bot.hardware.mcu_params[x], consistent: true }),
-      shouldDisplay: jest.fn(key => mockFeatures[key]),
-    };
-  };
+  const fakeProps = (): EncodersProps => ({
+    dispatch: jest.fn(),
+    controlPanelState: panelState(),
+    sourceFwConfig: x =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    shouldDisplay: jest.fn(key => mockFeatures[key]),
+  });
 
   it("shows new inversion param", () => {
     mockFeatures.endstop_invert = true;
@@ -24,16 +22,15 @@ describe("<EncodersAndEndStops />", () => {
     expect(wrapper.text().toLowerCase()).not.toContain("invert endstops");
   });
 
-  const intSizeTest = (size: "short" | "long") =>
-    it(`uses ${size} int scaling factor`, () => {
-      mockFeatures.long_scaling_factor = size === "short" ? false : true;
-      const wrapper = shallow(<EncodersAndEndStops {...fakeProps()} />);
-      const sfProps = wrapper.find("NumericMCUInputGroup").at(2)
-        .props() as NumericMCUInputGroupProps;
-      expect(sfProps.name).toEqual("Encoder Scaling");
-      expect(sfProps.intSize).toEqual(size);
-    });
-
-  intSizeTest("short");
-  intSizeTest("long");
+  it.each<["short" | "long"]>([
+    ["short"],
+    ["long"],
+  ])("uses %s int scaling factor", (size) => {
+    mockFeatures.long_scaling_factor = size === "short" ? false : true;
+    const wrapper = shallow(<EncodersAndEndStops {...fakeProps()} />);
+    const sfProps = wrapper.find("NumericMCUInputGroup").at(2)
+      .props() as NumericMCUInputGroupProps;
+    expect(sfProps.name).toEqual("Encoder Scaling");
+    expect(sfProps.intSize).toEqual(size);
+  });
 });

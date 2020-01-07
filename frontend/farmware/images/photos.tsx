@@ -116,7 +116,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
 
   deletePhoto = () => {
     const img = this.props.currentImage || this.props.images[0];
-    if (img && img.uuid) {
+    if (img?.uuid) {
       this.props.dispatch(destroy(img.uuid))
         .then(() => success(t("Image Deleted.")))
         .catch(() => error(t("Could not delete image.")));

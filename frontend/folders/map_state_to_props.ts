@@ -1,4 +1,4 @@
-import { FolderProps } from "./constants";
+import { FolderProps } from "./interfaces";
 import { selectAllSequences } from "../resources/selectors";
 import { TaggedSequence } from "farmbot";
 import { resourceUsageList } from "../resources/in_use";

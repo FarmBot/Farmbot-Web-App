@@ -1,7 +1,14 @@
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+  init: jest.fn(() => ({ payload: { uuid: "fakeUuid" } })),
+}));
+
+jest.mock("../../../resources/actions", () => ({ destroyOK: jest.fn() }));
+
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { RawAddFarmEvent as AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import {
@@ -10,8 +17,13 @@ import {
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
-import { Actions } from "../../../constants";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import { destroyOK } from "../../../resources/actions";
+import { init, destroy } from "../../../api/crud";
+import { DesignerPanelHeader } from "../../designer_panel";
+import { Content } from "../../../constants";
+import { error } from "../../../toast/toast";
+import { FarmEventForm } from "../edit_fe_form";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -49,21 +61,24 @@ describe("<AddFarmEvent />", () => {
     expect(deleteBtn.props().hidden).toBeTruthy();
   });
 
-  it("redirects", () => {
-    const p = fakeProps();
-    p.findFarmEventByUuid = jest.fn();
-    const wrapper = mount(<AddFarmEvent {...p} />);
-    expect(wrapper.text()).toContain("Loading");
-  });
-
   it("renders with no executables", () => {
     const p = fakeProps();
     p.findFarmEventByUuid = jest.fn();
     p.sequencesById = {};
     p.regimensById = {};
     const wrapper = mount(<AddFarmEvent {...p} />);
-    expect(wrapper.text())
-      .toContain("You haven't made any regimens or sequences yet.");
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+  });
+
+  it("changes temporary values", () => {
+    const p = fakeProps();
+    p.findFarmEventByUuid = jest.fn();
+    p.sequencesById = {};
+    p.regimensById = {};
+    const wrapper = mount<AddFarmEvent>(<AddFarmEvent {...p} />);
+    expect(wrapper.instance().getField("repeat")).toEqual("1");
+    wrapper.instance().setField("repeat", "2");
+    expect(wrapper.state().temporaryValues.repeat).toEqual("2");
   });
 
   it("renders with no sequences", () => {
@@ -74,27 +89,57 @@ describe("<AddFarmEvent />", () => {
     p.regimensById = { "1": regimen };
     const wrapper = mount(<AddFarmEvent {...p} />);
     wrapper.mount();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.INIT_RESOURCE,
-      payload: expect.objectContaining({
-        kind: "FarmEvent",
-        body: expect.objectContaining({ executable_type: "Regimen" })
-      })
-    });
+    expect(init).toHaveBeenCalledWith("FarmEvent",
+      expect.objectContaining({ executable_type: "Regimen" }));
   });
 
   it("cleans up when unmounting", () => {
-    const props = fakeProps();
-    const wrapper = mount(<AddFarmEvent {...props} />);
-    wrapper.update();
-    const uuid: string = wrapper.state("uuid");
-    props.farmEvents[0].uuid = uuid;
-    props.farmEvents[0].body.id = undefined;
-    wrapper.setProps(props);
-    wrapper.update();
-    jest.resetAllMocks();
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    farmEvent.body.id = 0;
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = mount(<AddFarmEvent {...p} />);
     wrapper.unmount();
-    expect(props.dispatch).toHaveBeenCalled();
-    expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
+    expect(destroy).toHaveBeenCalledWith(farmEvent.uuid, true);
+  });
+
+  it("doesn't delete saved farm events when unmounting", () => {
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    farmEvent.body.id = 1;
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = mount(<AddFarmEvent {...p} />);
+    wrapper.unmount();
+    expect(destroy).not.toHaveBeenCalled();
+  });
+
+  it("cleans up on back", () => {
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    farmEvent.body.id = 0;
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = shallow(<AddFarmEvent {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("back");
+    expect(destroyOK).toHaveBeenCalledWith(farmEvent);
+  });
+
+  it("doesn't delete saved farm events on back", () => {
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    farmEvent.body.id = 1;
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = shallow(<AddFarmEvent {...p} />);
+    wrapper.find(DesignerPanelHeader).simulate("back");
+    expect(destroyOK).not.toHaveBeenCalled();
+  });
+
+  it("shows error on save", () => {
+    const p = fakeProps();
+    p.findFarmEventByUuid = jest.fn();
+    p.sequencesById = {};
+    p.regimensById = {};
+    const wrapper = shallow(<AddFarmEvent {...p} />);
+    wrapper.find(FarmEventForm).simulate("save");
+    expect(error).toHaveBeenCalledWith(Content.MISSING_EXECUTABLE);
   });
 });

@@ -16,10 +16,10 @@ export function occurrence(
   CalendarOccurrence {
   const normalHeading = fe.executable.name || fe.executable_type;
   const heading = () => {
-    if (modifiers && modifiers.empty) {
+    if (modifiers?.empty) {
       return "*Empty*";
     }
-    if (modifiers && modifiers.numHidden) {
+    if (modifiers?.numHidden) {
       return `+ ${modifiers.numHidden} more: ` + normalHeading;
     }
     return normalHeading;

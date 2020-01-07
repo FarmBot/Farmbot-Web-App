@@ -18,6 +18,21 @@ jest.mock("../../history", () => ({
   history: { getCurrentLocation: () => ({ pathname: mockPath }) }
 }));
 
+jest.mock("@blueprintjs/core", () => ({
+  Popover: jest.fn(p => <div>{p.children}</div>),
+  Position: jest.fn(),
+  PopoverInteractionKind: jest.fn(),
+  Button: jest.fn(p => <button>{p.text}</button>),
+  Classes: jest.fn(),
+  MenuItem: jest.fn(),
+  Alignment: jest.fn(),
+}));
+
+jest.mock("@blueprintjs/select", () => ({
+  Select: { ofType: jest.fn() },
+  ItemRenderer: jest.fn(),
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -30,7 +45,7 @@ import {
   FolderNameInputProps,
   FolderNodeMedial,
   FolderNodeTerminal,
-} from "../constants";
+} from "../interfaces";
 import {
   updateSearchTerm, toggleAll, moveSequence, dropSequence,
   sequenceEditMaybeSave,

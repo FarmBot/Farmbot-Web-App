@@ -7,7 +7,7 @@ import { TaggedPlant } from "../map/interfaces";
 import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
-import { isString, isUndefined } from "lodash";
+import { isString } from "lodash";
 import { history, getPathArray } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
@@ -20,7 +20,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   get confirmDelete() {
     const confirmSetting = this.props.getConfigValue(
       BooleanSetting.confirm_plant_deletion);
-    return isUndefined(confirmSetting) ? true : confirmSetting;
+    return confirmSetting ?? true;
   }
 
   destroy = (plantUUID: string) => {

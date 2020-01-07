@@ -1,35 +1,52 @@
 import * as React from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
+import {
+  mapStateToPropsAddEdit, formatDate, formatTime,
+} from "./map_state_to_props_add_edit";
 import { init, destroy } from "../../api/crud";
-import { EditFEForm } from "./edit_fe_form";
-import { betterCompact } from "../../util";
+import {
+  EditFEForm, FarmEventForm, FarmEventViewModel, NEVER
+} from "./edit_fe_form";
+import { betterCompact, betterMerge } from "../../util";
 import { entries } from "../../resources/util";
 import {
   AddEditFarmEventProps,
   TaggedExecutable
 } from "../interfaces";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
-import { Link } from "../../link";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent
 } from "../designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { SpecialStatus } from "farmbot";
+import { destroyOK } from "../../resources/actions";
+import { Content } from "../../constants";
+import { error } from "../../toast/toast";
 
 interface State {
   uuid: string;
+  temporaryValues: Partial<FarmEventViewModel>;
 }
 
 export class RawAddFarmEvent
-  extends React.Component<AddEditFarmEventProps, Partial<State>> {
-
-  constructor(props: AddEditFarmEventProps) {
-    super(props);
-    this.state = {};
+  extends React.Component<AddEditFarmEventProps, State> {
+  temporaryValueDefaults = () => {
+    const now = new Date();
+    const later = new Date(now.getTime() + 60000);
+    return {
+      startDate: formatDate(now.toString(), this.props.timeSettings),
+      startTime: formatTime(now.toString(), this.props.timeSettings),
+      endDate: formatDate(now.toString(), this.props.timeSettings),
+      endTime: formatTime(later.toString(), this.props.timeSettings),
+      repeat: "1",
+      timeUnit: NEVER,
+    };
   }
+
+  state: State = { uuid: "", temporaryValues: this.temporaryValueDefaults() };
 
   get sequences() { return betterCompact(entries(this.props.sequencesById)); }
 
@@ -71,55 +88,51 @@ export class RawAddFarmEvent
     if (fe && unsaved) { this.props.dispatch(destroy(fe.uuid, true)); }
   }
 
-  /** No executables. Can't load form. */
-  none() {
-    return <p>
-      {t("You haven't made any regimens or sequences yet. Please create a ")}
-      <Link to="/app/sequences">{t("sequence")}</Link> {t(" or ")}
-      <Link to="/app/regimens">{t("regimen")}</Link> {t(" first.")}
-    </p>;
-  }
-
-  /** User has executables to create FarmEvents with, has not loaded yet. */
-  loading() {
-    return <p>{t("Loading")}...</p>;
-  }
-
-  placeholderTemplate(children: React.ReactChild | React.ReactChild[]) {
-    return <DesignerPanel panelName={"add-farm-event"} panel={Panel.FarmEvents}>
-      <DesignerPanelHeader
-        panelName={"add-farm-event"}
-        panel={Panel.FarmEvents}
-        title={t("No Executables")} />
-      <DesignerPanelContent panelName={"add-farm-event"}>
-        <label>
-          {children}
-        </label>
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
+  getField = (field: keyof State["temporaryValues"]): string =>
+    "" + this.state.temporaryValues[field];
+  setField = (field: keyof State["temporaryValues"], value: string) =>
+    this.setState(betterMerge(this.state, {
+      temporaryValues: { [field]: value }
+    }))
 
   render() {
-    const { uuid } = this.state;
-    const fe = this.props.findFarmEventByUuid(uuid);
-    if (fe) {
-      return <EditFEForm
-        farmEvent={fe}
-        deviceTimezone={this.props.deviceTimezone}
-        repeatOptions={this.props.repeatOptions}
-        executableOptions={this.props.executableOptions}
-        dispatch={this.props.dispatch}
-        findExecutable={this.props.findExecutable}
+    const farmEvent = this.props.findFarmEventByUuid(this.state.uuid);
+    const panelName = "add-farm-event";
+    return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
+      <DesignerPanelHeader
+        panelName={panelName}
+        panel={Panel.FarmEvents}
         title={t("Add Event")}
-        timeSettings={this.props.timeSettings}
-        autoSyncEnabled={this.props.autoSyncEnabled}
-        resources={this.props.resources}
-        shouldDisplay={this.props.shouldDisplay}
-      />;
-    } else {
-      return this
-        .placeholderTemplate(this.executable ? this.loading() : this.none());
-    }
+        onBack={(farmEvent && !farmEvent.body.id)
+          ? () => this.props.dispatch(destroyOK(farmEvent))
+          : undefined} />
+      <DesignerPanelContent panelName={panelName}>
+        {farmEvent
+          ? <EditFEForm
+            farmEvent={farmEvent}
+            deviceTimezone={this.props.deviceTimezone}
+            repeatOptions={this.props.repeatOptions}
+            executableOptions={this.props.executableOptions}
+            dispatch={this.props.dispatch}
+            findExecutable={this.props.findExecutable}
+            title={t("Add Event")}
+            timeSettings={this.props.timeSettings}
+            autoSyncEnabled={this.props.autoSyncEnabled}
+            resources={this.props.resources}
+            shouldDisplay={this.props.shouldDisplay} />
+          : <FarmEventForm
+            isRegimen={false}
+            fieldGet={this.getField}
+            fieldSet={this.setField}
+            timeSettings={this.props.timeSettings}
+            executableOptions={[]}
+            executableSet={() => { }}
+            executableGet={() => undefined}
+            dispatch={this.props.dispatch}
+            specialStatus={SpecialStatus.DIRTY}
+            onSave={() => error(t(Content.MISSING_EXECUTABLE))} />}
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 }
 

@@ -177,7 +177,7 @@ describe("maybeGetSequence", () => {
     const i = buildResourceIndex([s]);
     const result = Selector.maybeGetSequence(i.index, s.uuid);
     expect(result).toBeTruthy();
-    result && expect(result.uuid).toBe(s.uuid);
+    expect(result?.uuid).toBe(s.uuid);
   });
 });
 

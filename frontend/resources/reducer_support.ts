@@ -33,7 +33,9 @@ import { get } from "lodash";
 import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
-import { FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial } from "../folders/constants";
+import {
+  FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial
+} from "../folders/interfaces";
 import { climb } from "../folders/climb";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
@@ -63,10 +65,12 @@ export const reindexFolders = (i: ResourceIndex) => {
   const allSequences = selectAllSequences(i);
 
   const oldMeta = i.sequenceFolders.localMetaAttributes;
+  /** Open folder edit mode when adding a new folder (& not during init all). */
+  const editing = !!oldMeta[-1];
   const localMetaAttributes: Record<number, FolderMeta> = {};
   folders.map(x => {
     localMetaAttributes[x.id] = {
-      ...(oldMeta[x.id] || {}),
+      ...(oldMeta[x.id] || { editing }),
       sequences: [], // Clobber and re-init
     };
   });
@@ -188,7 +192,7 @@ const reindexAllSequences = (i: ResourceIndex) => {
   const mapper = reindexSequences(i);
   betterCompact(Object.keys(i.byKind["Sequence"]).map(uuid => {
     const resource = i.references[uuid];
-    return (resource && resource.kind == "Sequence") ? resource : undefined;
+    return (resource?.kind == "Sequence") ? resource : undefined;
   })).map(mapper);
 };
 
@@ -283,7 +287,7 @@ const AFTER_HOOKS: IndexerHook = {
   FbosConfig: (i) => {
     const conf = getFbosConfig(i);
 
-    if (conf && conf.body.boot_sequence_id) {
+    if (conf?.body.boot_sequence_id) {
       const { boot_sequence_id } = conf.body;
       const tracker = i.inUse["Sequence.FbosConfig"];
       const uuid = i.byKindAndId[joinKindAndId("Sequence", boot_sequence_id)];
@@ -345,7 +349,7 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
   const { kind } = arrayUnwrap(resources);
   // Clean up indexes (if needed)
   const before = BEFORE_HOOKS[kind];
-  before && before(db, strategy);
+  before?.(db, strategy);
 
   // Run indexers
   ups.map(callback => {
@@ -354,14 +358,14 @@ export const indexUpsert: IndexUpsert = (db, resources, strategy) => {
 
   // Finalize indexing (if needed)
   const after = AFTER_HOOKS[kind];
-  after && after(db, strategy);
+  after?.(db, strategy);
 };
 
 export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
   downs.map(callback => arrayWrap(resource).map(r => callback(r, db)));
   // Finalize indexing (if needed)
   const after = AFTER_HOOKS[resource.kind];
-  after && after(db, "ongoing");
+  after?.(db, "ongoing");
 }
 
 export const beforeEach = (state: RestResources,

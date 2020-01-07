@@ -66,7 +66,7 @@ describe("<RegimenEditor />", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<RegimenEditor {...p} />);
     clickButton(wrapper, 2, "delete");
-    const expectedUuid = p.current && p.current.uuid;
+    const expectedUuid = p.current?.uuid;
     expect(destroy).toHaveBeenCalledWith(expectedUuid);
   });
 
@@ -74,7 +74,7 @@ describe("<RegimenEditor />", () => {
     const p = fakeProps();
     const wrapper = mount(<RegimenEditor {...p} />);
     clickButton(wrapper, 0, "save", { partial_match: true });
-    const expectedUuid = p.current && p.current.uuid;
+    const expectedUuid = p.current?.uuid;
     expect(save).toHaveBeenCalledWith(expectedUuid);
   });
 });

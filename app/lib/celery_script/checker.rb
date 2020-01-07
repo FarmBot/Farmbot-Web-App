@@ -26,6 +26,7 @@ module CeleryScript
     FRIENDLY_ERRORS = {
       nothing: {
         write_pin: "You must select a Peripheral in the Control Peripheral step.",
+        toggle_pin: "You must select a Peripheral in the Toggle Peripheral step.",
         variable_declaration: MISSING_VAR,
         parameter_declaration: MISSING_PARAM,
         read_pin: "You must select a Sensor in the Read Sensor step.",

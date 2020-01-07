@@ -300,7 +300,9 @@ export namespace ToolTips {
     trim(`Power cycle FarmBot's onboard computer or microcontroller.`);
 
   export const SET_SERVO_ANGLE =
-    trim(`Move a servo to the provided angle.`);
+    trim(`Move a servo to the provided angle. An angle of 90 degrees
+    corresponds to the servo midpoint (or, for a continuous rotation
+    servo, no movement).`);
 
   export const TOGGLE_PIN =
     trim(`Toggle a digital pin on or off.`);
@@ -818,11 +820,9 @@ export namespace Content {
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
 
-  export const SET_TIMEZONE_HEADER =
-    trim(`You must set a timezone before using the event feature.`);
-
-  export const SET_TIMEZONE_BODY =
-    trim(`Set device timezone here.`);
+  export const MISSING_EXECUTABLE =
+    trim(`You haven't made any sequences or regimens yet. To add an event,
+    first create a sequence or regimen.`);
 
   // Farmware
   export const NO_IMAGES_YET =

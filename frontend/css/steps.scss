@@ -23,6 +23,12 @@
         margin-left: 1rem;
         box-shadow: none;
       }
+      input[type="radio"] {
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        margin-top: 0;
+        vertical-align: middle;
+      }
     }
   }
 }
@@ -107,7 +113,7 @@
     background: $blue;
   }
   &.toggle-pin-step {
-    background: $yellow;
+    background: $orange;
   }
   &.set-zero-step {
     background: $blue;
@@ -122,6 +128,12 @@
     background: $brown;
   }
   &.system-action-step {
+    background: $brown;
+  }
+  &.emergency-stop-step {
+    background: $brown;
+  }
+  &.reboot-step {
     background: $brown;
   }
   &.unknown-step {
@@ -221,7 +233,7 @@
     background: $light_blue;
   }
   &.toggle-pin-step {
-    background: $light_yellow;
+    background: $light_orange;
   }
   &.set-zero-step {
     background: $light_blue;
@@ -236,6 +248,12 @@
     background: $light_brown;
   }
   &.system-action-step {
+    background: $light_brown;
+  }
+  &.emergency-stop-step {
+    background: $light_brown;
+  }
+  &.reboot-step {
     background: $light_brown;
   }
   &.unknown-step {

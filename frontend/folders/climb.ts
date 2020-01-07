@@ -1,4 +1,6 @@
-import { RootFolderNode, FolderUnion, FolderNodeMedial, FolderNodeInitial } from "./constants";
+import {
+  RootFolderNode, FolderUnion, FolderNodeMedial, FolderNodeInitial
+} from "./interfaces";
 import { defensiveClone } from "../util";
 
 interface TreeClimberState {

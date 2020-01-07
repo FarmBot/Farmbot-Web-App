@@ -57,7 +57,7 @@ const PendingInstallNameError =
   }): JSX.Element => {
     const installation: TaggedFarmwareInstallation | undefined =
       installations.filter(x => x.body.url === url)[0];
-    const packageError = installation && installation.body.package_error;
+    const packageError = installation?.body.package_error;
     return (url && installation && packageError)
       ? <div className="error-with-button">
         <label>{t("Could not fetch package name")}</label>

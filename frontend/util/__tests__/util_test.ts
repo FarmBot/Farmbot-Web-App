@@ -131,18 +131,6 @@ describe("util", () => {
     });
   });
 
-  describe("isUndefined()", () => {
-    it("undefined", () => {
-      const result = Util.isUndefined(undefined);
-      expect(result).toBeTruthy();
-    });
-
-    it("defined", () => {
-      const result = Util.isUndefined({});
-      expect(result).toBeFalsy();
-    });
-  });
-
   describe("randomColor()", () => {
     it("only picks valid colors", () => {
       times(Util.colors.length * 1.5, () =>

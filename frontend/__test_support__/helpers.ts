@@ -7,11 +7,11 @@ export function clickButton(
   position: number,
   text: string,
   options?: { partial_match?: boolean, button_tag?: string }) {
-  const btnTag = options && options.button_tag ? options.button_tag : "button";
+  const btnTag = options?.button_tag ? options.button_tag : "button";
   const button = wrapper.find(btnTag).at(position);
   const expectedText = text.toLowerCase();
   const actualText = button.text().toLowerCase();
-  options && options.partial_match
+  options?.partial_match
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);
   button.simulate("click");

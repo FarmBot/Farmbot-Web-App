@@ -20,7 +20,7 @@ import {
   FolderButtonClusterProps,
   FolderNameInputProps,
   SequenceDropAreaState,
-} from "./constants";
+} from "./interfaces";
 import {
   createFolder,
   deleteFolder,
@@ -80,7 +80,7 @@ export const FolderListItem = (props: FolderItemProps) => {
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
       </div>
     </li>
-  </StepDragger >;
+  </StepDragger>;
 };
 
 const ToggleFolderBtn = (props: ToggleFolderBtnProps) => {

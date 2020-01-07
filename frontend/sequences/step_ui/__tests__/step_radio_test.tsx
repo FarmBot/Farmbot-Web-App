@@ -1,14 +1,16 @@
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
+let mockStep = {};
+jest.mock("../../../api/crud", () => ({
+  editStep: jest.fn(x => x.executor(mockStep)),
+}));
 
 import * as React from "react";
 import { mount } from "enzyme";
-import { StepRadio, StepRadioProps } from "../step_radio";
+import { AxisStepRadio, AxisStepRadioProps } from "../step_radio";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome, Calibrate, Zero } from "farmbot";
-import { overwrite } from "../../../api/crud";
 
 describe("<StepRadio />", () => {
-  const currentStep: FindHome = {
+  const findHomeStep: FindHome = {
     kind: "find_home",
     args: {
       speed: 100,
@@ -16,55 +18,55 @@ describe("<StepRadio />", () => {
     }
   };
 
-  const fakeProps = (): StepRadioProps => ({
+  const fakeProps = (): AxisStepRadioProps => ({
     currentSequence: fakeSequence(),
-    currentStep,
+    currentStep: findHomeStep,
     dispatch: jest.fn(),
     index: 0,
     label: "Find",
   });
 
   it("renders", () => {
-    const wrapper = mount(<StepRadio {...fakeProps()} />);
+    const wrapper = mount(<AxisStepRadio {...fakeProps()} />);
     expect(wrapper.find("input").length).toEqual(4);
     expect(wrapper.text()).toContain("Find");
   });
 
   it("handles update for find_home", () => {
     const p = fakeProps();
-    const wrapper = mount(<StepRadio {...p} />);
+    mockStep = p.currentStep;
+    const wrapper = mount(<AxisStepRadio {...p} />);
     wrapper.find("input").last().simulate("change");
     const expectedStep: FindHome = {
       kind: "find_home",
       args: { speed: 100, axis: "all" }
     };
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence,
-      expect.objectContaining({ body: [expectedStep] }));
+    expect(mockStep).toEqual(expectedStep);
   });
 
   it("handles update for calibrate", () => {
     const p = fakeProps();
     p.currentStep = { kind: "calibrate", args: { axis: "x" } };
-    const wrapper = mount(<StepRadio {...p} />);
+    mockStep = p.currentStep;
+    const wrapper = mount(<AxisStepRadio {...p} />);
     wrapper.find("input").last().simulate("change");
     const expectedStep: Calibrate = {
       kind: "calibrate",
       args: { axis: "all" }
     };
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence,
-      expect.objectContaining({ body: [expectedStep] }));
+    expect(mockStep).toEqual(expectedStep);
   });
 
   it("handles update for zero", () => {
     const p = fakeProps();
     p.currentStep = { kind: "zero", args: { axis: "x" } };
-    const wrapper = mount(<StepRadio {...p} />);
+    mockStep = p.currentStep;
+    const wrapper = mount(<AxisStepRadio {...p} />);
     wrapper.find("input").last().simulate("change");
     const expectedStep: Zero = {
       kind: "zero",
       args: { axis: "all" }
     };
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence,
-      expect.objectContaining({ body: [expectedStep] }));
+    expect(mockStep).toEqual(expectedStep);
   });
 });

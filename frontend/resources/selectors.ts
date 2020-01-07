@@ -77,7 +77,7 @@ export function findPointerByTypeAndId(index: ResourceIndex,
   const uuid = "" + index.byKindAndId[pni];
   const resource = index.references[uuid];
 
-  if (resource && resource.kind === "Point") {
+  if (resource?.kind === "Point") {
     return resource;
   } else {
     // We might have a sequence dependency leak if this exception is ever
@@ -204,7 +204,7 @@ export function maybeGetTimeSettings(index: ResourceIndex): TimeSettings {
 
 export function maybeGetDevice(index: ResourceIndex): TaggedDevice | undefined {
   const dev = index.references[Object.keys(index.byKind.Device)[0] || "nope"];
-  return (dev && dev.kind === "Device") ?
+  return (dev?.kind === "Device") ?
     dev : undefined;
 }
 
@@ -227,7 +227,7 @@ export function maybeFetchUser(index: ResourceIndex):
   if (user && sanityCheck(user) && list.length > 1) {
     throw new Error("PROBLEM: Expected 1 user. Got: " + list.length);
   }
-  if ((list.length === 1) && user && user.kind === "User") {
+  if ((list.length === 1) && user?.kind === "User") {
     return user;
   } else {
     return undefined;

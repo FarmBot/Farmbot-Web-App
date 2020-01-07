@@ -1,4 +1,4 @@
-import { FolderNode } from "../constants";
+import { FolderNode } from "../interfaces";
 import { ingest } from "../data_transfer";
 import { climb } from "../climb";
 

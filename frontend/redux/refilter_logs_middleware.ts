@@ -12,10 +12,8 @@ const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
  * resources, downloading the filtered log list as required from the API. */
 // tslint:disable-next-line:no-any
 export const fn: Middleware = () => (dispatch) => (action: any) => {
-  const needsRefresh = action
-    && action.payload
-    && action.type === Actions.SAVE_RESOURCE_OK
-    && action.payload.kind === WEB_APP_CONFIG;
+  const needsRefresh = action?.payload?.kind === WEB_APP_CONFIG
+    && action.type === Actions.SAVE_RESOURCE_OK;
 
   needsRefresh && throttledLogRefresh(dispatch);
 

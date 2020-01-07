@@ -47,7 +47,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   withinLimits = (options?: { toasts?: boolean }): boolean => {
     const onError = (msg: string) => {
       this.setState({ error: msg });
-      options && options.toasts && error(msg);
+      options?.toasts && error(msg);
     };
 
     if (this.props.type === "number") {

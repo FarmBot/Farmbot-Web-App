@@ -1,7 +1,7 @@
 import { TEST_GRAPH } from "./actions_test";
 import { searchFolderTree, FolderSearchProps } from "../search_folder_tree";
 import { TaggedResource } from "farmbot";
-import { FolderUnion } from "../constants";
+import { FolderUnion } from "../interfaces";
 
 describe("searchFolderTree", () => {
   const searchFor = (input: string) => searchFolderTree({
@@ -19,7 +19,7 @@ describe("searchFolderTree", () => {
     expect(before).toEqual(after); // Prevent mutation of original data.
   });
 
-  it("finds an `inital` folder", () => {
+  it("finds an `initial` folder", () => {
     const results = searchFor("one").map(x => x.name);
     expect(results.length).toEqual(1);
     expect(results).toContain("One");

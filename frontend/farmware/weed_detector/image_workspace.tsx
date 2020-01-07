@@ -61,7 +61,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
 
   maybeProcessPhoto = () => {
     const img = this.props.currentImage || this.props.images[0];
-    if (img && img.body.id) {
+    if (img?.body.id) {
       this.props.onProcessPhoto(img.body.id);
     }
   };

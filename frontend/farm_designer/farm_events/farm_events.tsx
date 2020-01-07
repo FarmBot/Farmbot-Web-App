@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Row } from "../../ui/index";
 import { mapStateToProps } from "./map_state_to_props";
 import {
   FarmEventProps, CalendarOccurrence, FarmEventState
@@ -100,28 +99,9 @@ export class PureFarmEvents
     });
   }
 
-  /** FarmEvents will generate some very unexpected results if the user has
-   * not set a timezone for the bot (defaults to 0 UTC offset, which could be
-   * far from user's local time). */
-  tzwarning = () => {
-    return <DesignerPanelContent panelName={"farm-event"}>
-      <Row>
-      </Row>
-
-      <div className="farm-events">
-        <h2>Timezone Required</h2>
-        <p>
-          {t(Content.SET_TIMEZONE_HEADER)}
-        </p>
-        <p>
-          <Link to="/app/device">{t(Content.SET_TIMEZONE_BODY)}</Link>
-        </p>
-      </div>
-    </DesignerPanelContent>;
-  };
-
-  normalContent = () => {
-    return <div className="farm-event-panel-normal-content">
+  render() {
+    return <DesignerPanel panelName={"farm-event"} panel={Panel.FarmEvents}>
+      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.FarmEvents}
         linkTo={"/app/designer/events/add"}
@@ -134,7 +114,6 @@ export class PureFarmEvents
           placeholder={t("Search events...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"farm-event"}>
-
         <div className="farm-events">
           <EmptyStateWrapper
             notEmpty={this.props.calendarRows.length > 0}
@@ -146,19 +125,8 @@ export class PureFarmEvents
           </EmptyStateWrapper>
         </div>
       </DesignerPanelContent>
-    </div>;
-  };
-
-  render() {
-    return <DesignerPanel panelName={"farm-event"} panel={Panel.FarmEvents}>
-      <DesignerNavTabs />
-      {this.props.timezoneIsSet ? this.normalContent() : this.tzwarning()}
     </DesignerPanel>;
   }
 }
 
-/** This is intentional. It is not a hack or a work around.
- * It avoids mocking `connect` in unit tests.
- * See testing pattern noted here: https://github.com/airbnb/enzyme/issues/98
- */
 export const FarmEvents = connect(mapStateToProps)(PureFarmEvents);

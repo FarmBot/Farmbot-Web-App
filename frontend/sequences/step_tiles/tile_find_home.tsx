@@ -7,7 +7,7 @@ import {
   StepWrapper, StepHeader, StepContent, StepWarning, conflictsString
 } from "../step_ui/index";
 import { some } from "lodash";
-import { StepRadio } from "../step_ui/step_radio";
+import { AxisStepRadio } from "../step_ui/step_radio";
 import { t } from "../../i18next_wrapper";
 
 export function TileFindHome(props: StepParams) {
@@ -80,7 +80,7 @@ class InnerFindHome extends React.Component<FindHomeParams, {}> {
             conflicts={this.settingConflicts} />}
       </StepHeader>
       <StepContent className={className}>
-        <StepRadio
+        <AxisStepRadio
           currentSequence={currentSequence}
           currentStep={currentStep}
           dispatch={dispatch}

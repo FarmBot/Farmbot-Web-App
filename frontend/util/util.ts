@@ -14,7 +14,6 @@ import {
   sortBy,
   merge,
   isNumber,
-  isUndefined as lodashIsUndefined
 } from "lodash";
 import { t } from "../i18next_wrapper";
 
@@ -87,10 +86,6 @@ export type CowardlyDictionary<T> = Dictionary<T | undefined>;
  *  In those cases, you can use this constant to indicate intent.
  */
 export const NOT_SAVED = -1;
-
-export function isUndefined(x: object | undefined): x is undefined {
-  return lodashIsUndefined(x);
-}
 
 /** Better than Array.proto.filter and compact() because the type checker
  * knows what's going on.
@@ -190,7 +185,7 @@ export function validBotLocationData(
  */
 export function validFwConfig(config: TaggedFirmwareConfig | undefined):
   TaggedFirmwareConfig["body"] | undefined {
-  return (config && config.body.api_migrated)
+  return (config?.body.api_migrated)
     ? config.body
     : undefined;
 }
@@ -200,7 +195,7 @@ export function validFwConfig(config: TaggedFirmwareConfig | undefined):
  */
 export function validFbosConfig(
   config: TaggedFbosConfig | undefined): TaggedFbosConfig["body"] | undefined {
-  return (config && config.body.api_migrated)
+  return (config?.body.api_migrated)
     ? config.body
     : undefined;
 }
@@ -232,4 +227,4 @@ export const parseIntInput = (input: string): number => {
 
 export const timeFormatString =
   (timeSettings: TimeSettings | undefined): string =>
-    (timeSettings && timeSettings.hour24) ? "H:mm" : "h:mma";
+    (timeSettings?.hour24) ? "H:mm" : "h:mma";

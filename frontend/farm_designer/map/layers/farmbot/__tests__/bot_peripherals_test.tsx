@@ -6,25 +6,25 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {
-  function fakeProps(): BotPeripheralsProps {
-    return {
-      peripherals: [{ label: "", value: false }],
-      position: { x: 0, y: 0, z: 0 },
-      mapTransformProps: fakeMapTransformProps(),
-      plantAreaOffset: { x: 100, y: 100 },
-      getConfigValue: jest.fn(),
-    };
-  }
+  const fakeProps = (): BotPeripheralsProps => ({
+    peripherals: [{ label: "", value: false }],
+    position: { x: 0, y: 0, z: 0 },
+    mapTransformProps: fakeMapTransformProps(),
+    plantAreaOffset: { x: 100, y: 100 },
+    getConfigValue: jest.fn(),
+  });
 
-  function notDisplayed(name: string) {
-    it(`doesn't display ${name}`, () => {
-      const p = fakeProps();
-      p.peripherals[0].label = name;
-      p.peripherals[0].value = false;
-      const wrapper = shallow(<BotPeripherals {...p} />);
-      expect(wrapper.find(`#${name}`).length).toEqual(0);
-    });
-  }
+  it.each<[string]>([
+    ["lights"],
+    ["vacuum"],
+    ["water"],
+  ])("doesn't display %s", (peripheralName) => {
+    const p = fakeProps();
+    p.peripherals[0].label = peripheralName;
+    p.peripherals[0].value = false;
+    const wrapper = shallow(<BotPeripherals {...p} />);
+    expect(wrapper.find(`#${peripheralName}`).length).toEqual(0);
+  });
 
   function animationToggle(
     props: BotPeripheralsProps, enabled: number, disabled: number) {
@@ -101,8 +101,4 @@ describe("<BotPeripherals/>", () => {
     });
     animationToggle(p, 3, 1);
   });
-
-  notDisplayed("lights");
-  notDisplayed("vacuum");
-  notDisplayed("water");
 });

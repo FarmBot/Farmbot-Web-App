@@ -12,10 +12,9 @@ export function dontStopThem() { }
 const shouldStop =
   (allResources: TaggedResource[], config: TaggedWebAppConfig | undefined) => {
     const loggedIn = !!localStorage.getItem("session");
-    const discardUnsaved = config && config.body.discard_unsaved;
+    const discardUnsaved = config?.body.discard_unsaved;
     const sequenceResources = allResources.filter(r => r.kind === "Sequence");
-    const discardUnsavedSequences =
-      config && config.body.discard_unsaved_sequences;
+    const discardUnsavedSequences = config?.body.discard_unsaved_sequences;
 
     /**
      * For the unsaved notification to show, a user must:
@@ -59,6 +58,6 @@ export function registerSubscribers(store: Store) {
   subscriptions.forEach(function (s) {
     ENV_LIST.includes &&
       ENV_LIST.includes(s.env) &&
-      store.subscribe(() => s.fn && s.fn(store.getState()));
+      store.subscribe(() => s.fn?.(store.getState()));
   });
 }

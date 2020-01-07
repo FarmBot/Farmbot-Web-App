@@ -355,21 +355,20 @@ describe("<OsUpdateButton/>", () => {
     expect(osUpdateButton.text()).toEqual("UP TO DATE");
   });
 
-  function bytesProgressTest(unit: string, progress: number, text: string) {
-    it(`shows update progress: ${unit}`, () => {
-      bot.hardware.jobs = {
-        "FBOS_OTA": { status: "working", bytes: progress, unit: "bytes" }
-      };
-      const buttons = mount(<OsUpdateButton {...fakeProps()} />);
-      const osUpdateButton = buttons.find("button").first();
-      expect(osUpdateButton.text()).toBe(text);
-    });
-  }
-  bytesProgressTest("bytes", 300, "300B");
-  bytesProgressTest("kilobytes", 30000, "29kB");
-  bytesProgressTest("megabytes", 3e6, "3MB");
+  it.each<[string, number]>([
+    ["300B", 300],
+    ["29kB", 30000],
+    ["3MB", 3e6],
+  ])("shows bytes update progress: %s", (expected, progress) => {
+    bot.hardware.jobs = {
+      "FBOS_OTA": { status: "working", bytes: progress, unit: "bytes" }
+    };
+    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const osUpdateButton = buttons.find("button").first();
+    expect(osUpdateButton.text()).toBe(expected);
+  });
 
-  it("shows update progress: percent", () => {
+  it("shows percent update progress: 10%", () => {
     bot.hardware.jobs = {
       "FBOS_OTA": { status: "working", percent: 10, unit: "percent" }
     };

@@ -205,21 +205,20 @@ describe("Pin and Peripheral support files", () => {
       expect(result).toEqual(expected);
     });
 
-    Object.values(BoxLed).map(boxLed => {
-      it(`converts ${boxLed} named pin to DropDownItem`, () => {
-        const ri = buildResourceIndex([]).index;
-        const namedPin: NamedPin = {
-          kind: "named_pin",
-          args: { pin_type: boxLed, pin_id: -1 }
-        };
-        const result = namedPin2DropDown(ri, namedPin);
-        const expected: DropDownItem = {
-          label: expect.stringContaining("LED"),
-          value: boxLed,
-          headingId: PinGroupName.BoxLed
-        };
-        expect(result).toEqual(expected);
-      });
+    it.each<[BoxLed]>(Object.values(BoxLed).map(x => [x])
+    )("converts %s named pin to DropDownItem", (boxLed) => {
+      const ri = buildResourceIndex([]).index;
+      const namedPin: NamedPin = {
+        kind: "named_pin",
+        args: { pin_type: boxLed, pin_id: -1 }
+      };
+      const result = namedPin2DropDown(ri, namedPin);
+      const expected: DropDownItem = {
+        label: expect.stringContaining("LED"),
+        value: boxLed,
+        headingId: PinGroupName.BoxLed
+      };
+      expect(result).toEqual(expected);
     });
 
     it("converts nothing to DropDownItems", () => {

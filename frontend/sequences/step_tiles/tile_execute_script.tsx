@@ -54,7 +54,7 @@ export function TileExecuteScript(props: StepParams) {
 
     /** Configs (inputs) from Farmware manifest for <FarmwareInputs />. */
     const currentFarmwareConfigDefaults = (fwName: string): FarmwareConfig[] => {
-      return farmwareData && farmwareData.farmwareConfigs[fwName]
+      return farmwareData?.farmwareConfigs[fwName]
         ? farmwareData.farmwareConfigs[fwName]
         : [];
     };
