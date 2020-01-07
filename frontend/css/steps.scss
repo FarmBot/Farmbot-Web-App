@@ -86,7 +86,7 @@
     background: $brown;
   }
   &.send-message-step {
-    background: $red;
+    background: $brown;
   }
   &.find-home-step {
     background: $blue;
@@ -131,7 +131,7 @@
     background: $brown;
   }
   &.emergency-stop-step {
-    background: $brown;
+    background: $red;
   }
   &.reboot-step {
     background: $brown;
@@ -188,7 +188,7 @@
     background: $light_brown;
   }
   &.send-message-step {
-    background: $light_red;
+    background: $light_brown;
   }
   &.find-home-step {
     background: $light_blue;
@@ -251,7 +251,7 @@
     background: $light_brown;
   }
   &.emergency-stop-step {
-    background: $light_brown;
+    background: $light_red;
   }
   &.reboot-step {
     background: $light_brown;

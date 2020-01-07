@@ -21,7 +21,7 @@ export function TileEmergencyStop(props: StepParams) {
       <Row>
         <Col xs={12}>
           <p>
-            {t("Unlocking a device requires user intervention")}
+            {t("Unlocking a device requires user intervention.")}
           </p>
         </Col>
       </Row>

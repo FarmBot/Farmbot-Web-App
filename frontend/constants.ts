@@ -297,7 +297,7 @@ export namespace ToolTips {
     sequence or delete a weed after removing it.`);
 
   export const REBOOT =
-    trim(`Power cycle FarmBot's onboard computer or microcontroller.`);
+    trim(`Power cycle FarmBot's onboard computer.`);
 
   export const SET_SERVO_ANGLE =
     trim(`Move a servo to the provided angle. An angle of 90 degrees
