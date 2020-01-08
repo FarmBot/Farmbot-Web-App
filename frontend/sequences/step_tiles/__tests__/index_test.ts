@@ -189,7 +189,7 @@ describe("renderCeleryNode()", () => {
     },
     {
       node: { kind: "reboot", args: { package: "farmbot_os" } },
-      expected: "entire system"
+      expected: "power cycle farmbot's onboard computer."
     },
     {
       node: { kind: "check_updates", args: { package: "farmbot_os" } },
