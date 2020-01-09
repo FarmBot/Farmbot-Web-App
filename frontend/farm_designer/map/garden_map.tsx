@@ -340,6 +340,8 @@ export class GardenMap extends
   ToolSlotLayer = () => <ToolSlotLayer
     mapTransformProps={this.mapTransformProps}
     visible={!!this.props.showFarmbot}
+    dispatch={this.props.dispatch}
+    hoveredToolSlot={this.props.designer.hoveredToolSlot}
     botPositionX={this.props.botLocationData.position.x}
     slots={this.props.toolSlots} />
   FarmBotLayer = () => <FarmBotLayer

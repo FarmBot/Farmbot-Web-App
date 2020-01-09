@@ -1,57 +1,32 @@
 import * as React from "react";
 import { Row, Col } from "../../ui/index";
-import {
-  TaggedSequence, SequenceBodyItem, ALLOWED_AXIS
-} from "farmbot";
-import { overwrite } from "../../api/crud";
-import { defensiveClone } from "../../util";
 import { t } from "../../i18next_wrapper";
+import {
+  TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero
+} from "farmbot";
+import { editStep } from "../../api/crud";
 
-export interface StepRadioProps {
-  currentSequence: TaggedSequence;
-  currentStep: SequenceBodyItem;
-  dispatch: Function;
-  index: number;
-  label: string;
+export interface StepRadioProps<T extends string> {
+  choices: T[];
+  choiceLabelLookup: Record<T, string>;
+  currentChoice: T;
+  onChange(key: T): void;
 }
 
-const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
-
-export function StepRadio(props: StepRadioProps) {
-  const isSelected = (choice: ALLOWED_AXIS) => {
-    if (props.currentStep.kind === "find_home"
-      || props.currentStep.kind === "calibrate"
-      || props.currentStep.kind === "zero") {
-      return props.currentStep.args.axis === choice;
-    }
-  };
-
-  const handleUpdate = (choice: ALLOWED_AXIS) => {
-    const update = defensiveClone(props.currentStep);
-    if (update.kind === "find_home"
-      || update.kind === "calibrate"
-      || update.kind === "zero") {
-      const nextSequence = defensiveClone(props.currentSequence).body;
-      update.args.axis = choice;
-      (nextSequence.body || [])[props.index] = update;
-      props.dispatch(overwrite(props.currentSequence, nextSequence));
-    }
-  };
-
-  return <Row>
+export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
+  <Row>
     <Col xs={12}>
       <div className="bottom-content">
         <div className="channel-fields">
           <form>
-            {AXIS_CHOICES.map((choice, i) =>
+            {props.choices.map((choice, i) =>
               <div key={i} style={{ display: "inline" }}>
                 <label>
                   <input type="radio"
                     value={choice}
-                    onChange={e =>
-                      handleUpdate(e.currentTarget.value as typeof choice)}
-                    checked={isSelected(choice)} />
-                  {` ${t(props.label)} ${choice}`}
+                    onChange={() => props.onChange(choice)}
+                    checked={props.currentChoice === choice} />
+                  {t(props.choiceLabelLookup[choice])}
                 </label>
               </div>)}
           </form>
@@ -59,4 +34,37 @@ export function StepRadio(props: StepRadioProps) {
       </div>
     </Col>
   </Row>;
+
+type AxisStep = FindHome | Home | Calibrate | Zero;
+
+export interface AxisStepRadioProps {
+  currentSequence: TaggedSequence;
+  currentStep: AxisStep;
+  dispatch: Function;
+  index: number;
+  label: string;
 }
+
+export const AxisStepRadio = (props: AxisStepRadioProps) => {
+  const AXIS_CHOICES: ALLOWED_AXIS[] = ["x", "y", "z", "all"];
+  const CHOICE_LABELS = AXIS_CHOICES.reduce((acc, axis) => {
+    acc[axis] = `${t(props.label)} ${axis}`;
+    return acc;
+  }, {} as Record<ALLOWED_AXIS, string>);
+
+  const handleUpdate = (axis: ALLOWED_AXIS) => {
+    const { currentStep, index, currentSequence } = props;
+    props.dispatch(editStep({
+      step: currentStep,
+      index,
+      sequence: currentSequence,
+      executor: (step: AxisStep) => step.args.axis = axis,
+    }));
+  };
+
+  return <StepRadio
+    choices={AXIS_CHOICES}
+    choiceLabelLookup={CHOICE_LABELS}
+    currentChoice={props.currentStep.args.axis}
+    onChange={handleUpdate} />;
+};

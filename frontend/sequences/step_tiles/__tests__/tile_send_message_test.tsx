@@ -1,6 +1,13 @@
+let mockStep = {} as SendMessage;
+jest.mock("../../../api/crud", () => ({
+  editStep: jest.fn(x => x.executor(mockStep)),
+}));
+
 import * as React from "react";
-import { TileSendMessage, RefactoredSendMessage } from "../tile_send_message";
-import { mount } from "enzyme";
+import {
+  TileSendMessage, RefactoredSendMessage, SendMessageParams
+} from "../tile_send_message";
+import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { SendMessage, Channel } from "farmbot/dist";
 import { channel } from "../tile_send_message_support";
@@ -8,7 +15,7 @@ import { emptyState } from "../../../resources/reducer";
 import { MessageType } from "../../interfaces";
 
 describe("<TileSendMessage/>", () => {
-  function props() {
+  const fakeProps = (): SendMessageParams => {
     const currentStep: SendMessage = {
       kind: "send_message",
       args: {
@@ -31,16 +38,17 @@ describe("<TileSendMessage/>", () => {
       resources: emptyState().index,
       confirmStepDeletion: false,
     };
-  }
+  };
 
-  function bootstrapTest() {
-    return {
-      component: mount(<TileSendMessage {...props()} />)
-    };
-  }
+  it("throws error upon wrong step type", () => {
+    const p = fakeProps();
+    p.currentStep.kind = "nope" as SendMessage["kind"];
+    expect(() => shallow(<TileSendMessage {...p} />))
+      .toThrowError("TileSendMessage expects send_message");
+  });
 
   it("renders inputs", () => {
-    const block = bootstrapTest().component;
+    const block = mount(<TileSendMessage {...fakeProps()} />);
     const inputs = block.find("input");
     const labels = block.find("label");
     const buttons = block.find("button");
@@ -72,14 +80,37 @@ describe("<TileSendMessage/>", () => {
   });
 
   it("adds and removes channels", () => {
-    const i = new RefactoredSendMessage(props());
+    const i = new RefactoredSendMessage(fakeProps());
     const addEmail = i.add("email");
     const removeEmail = i.remove("email");
     const { currentStep } = i.props;
-    currentStep.body = [];
     addEmail(currentStep);
     expect(currentStep.body).toContainEqual(channel("email"));
     removeEmail(currentStep);
     expect(currentStep.body).not.toContainEqual(channel("email"));
+  });
+
+  it("adds and removes channels via toggle", () => {
+    const i = new RefactoredSendMessage(fakeProps());
+    delete i.props.currentStep.body;
+    mockStep = i.props.currentStep;
+    i.toggle("email")();
+    expect(mockStep.body).toContainEqual(channel("email"));
+    i.toggle("email")();
+    expect(mockStep.body).not.toContainEqual(channel("email"));
+  });
+
+  it("sets message type", () => {
+    const i = new RefactoredSendMessage(fakeProps());
+    mockStep = i.props.currentStep;
+    i.setMsgType({ label: "", value: "fun" });
+    expect(mockStep.args.message_type).toEqual("fun");
+  });
+
+  it("doesn't set incorrect message type", () => {
+    const i = new RefactoredSendMessage(fakeProps());
+    mockStep = i.props.currentStep;
+    expect(() => i.setMsgType({ label: "", value: "nope" }))
+      .toThrowError("message_type must be one of ALLOWED_MESSAGE_TYPES.");
   });
 });

@@ -11,7 +11,7 @@ import { t } from "../i18next_wrapper";
 
 export interface FarmwareFormProps {
   farmware: FarmwareManifestInfo;
-  user_env: UserEnv;
+  env: UserEnv;
   shouldDisplay: ShouldDisplay;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
@@ -73,7 +73,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
 
   /** Get a Farmware input value from FBOS. */
   function getValue(farmwareName: string, currentConfig: FarmwareConfig) {
-    return (user_env[getConfigEnvName(farmwareName, currentConfig.name)]
+    return (env[getConfigEnvName(farmwareName, currentConfig.name)]
       || toString(currentConfig.value));
   }
 
@@ -87,7 +87,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
     getDevice().execScript(farmwareName, pairs).catch(() => { });
   }
 
-  const { farmware, user_env } = props;
+  const { farmware, env } = props;
   return <Col key={farmware.name}>
     <div className={kebabCase(farmware.name)}>
       <button
@@ -108,6 +108,6 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
 
 /** Determine if a Farmware has requested inputs. */
 export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
-  const needsWidget = farmware.config && farmware.config.length > 0;
+  const needsWidget = farmware.config?.length > 0;
   return needsWidget;
 }

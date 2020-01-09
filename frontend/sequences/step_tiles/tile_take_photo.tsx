@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { ToolTips } from "../../constants";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui";
+import { ToolTips, Content } from "../../constants";
+import { StepWrapper, StepHeader, StepContent, StepWarning } from "../step_ui";
 import { Col, Row } from "../../ui/index";
 import { Link } from "../../link";
 import { t } from "../../i18next_wrapper";
@@ -17,7 +17,12 @@ export function TileTakePhoto(props: StepParams) {
       currentStep={currentStep}
       dispatch={dispatch}
       index={index}
-      confirmStepDeletion={props.confirmStepDeletion} />
+      confirmStepDeletion={props.confirmStepDeletion}>
+      {props.farmwareData && props.farmwareData.cameraDisabled &&
+        <StepWarning
+          titleBase={t(Content.NO_CAMERA_SELECTED)}
+          warning={t(ToolTips.SELECT_A_CAMERA)} />}
+    </StepHeader>
     <StepContent className={className}>
       <Row>
         <Col xs={12}>

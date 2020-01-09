@@ -284,6 +284,11 @@ export namespace ToolTips {
   export const TAKE_PHOTO =
     trim(`Snaps a photo using the device camera. Select the camera type
     on the Device page.`);
+  export const EMERGENCY_LOCK =
+    trim(`Stops a device from moving until it is unlocked by a user.`);
+
+  export const SELECT_A_CAMERA =
+    trim(`Select a camera on the Device page to take photos.`);
 
   export const MARK_AS =
     trim(`The Mark As step allows FarmBot to programmatically edit the
@@ -291,8 +296,13 @@ export namespace ToolTips {
     For example, you can mark a plant as "planted" during a seeding
     sequence or delete a weed after removing it.`);
 
+  export const REBOOT =
+    trim(`Power cycle FarmBot's onboard computer.`);
+
   export const SET_SERVO_ANGLE =
-    trim(`Move a servo to the provided angle.`);
+    trim(`Move a servo to the provided angle. An angle of 90 degrees
+    corresponds to the servo midpoint (or, for a continuous rotation
+    servo, no movement).`);
 
   export const TOGGLE_PIN =
     trim(`Toggle a digital pin on or off.`);
@@ -782,6 +792,10 @@ export namespace Content {
   export const NO_TOOLS =
     trim(`Press "+" to add a new tool.`);
 
+  export const MOUNTED_TOOL =
+    trim(`The tool currently mounted to the UTM can be set here or by using
+    a MARK AS step in a sequence.`);
+
   // Farm Events
   export const NOTHING_SCHEDULED =
     trim(`Press "+" to schedule an event.`);
@@ -806,11 +820,9 @@ export namespace Content {
     Doing so will limit the functionality of your FarmBot and
     may cause unexpected behavior.`);
 
-  export const SET_TIMEZONE_HEADER =
-    trim(`You must set a timezone before using the event feature.`);
-
-  export const SET_TIMEZONE_BODY =
-    trim(`Set device timezone here.`);
+  export const MISSING_EXECUTABLE =
+    trim(`You haven't made any sequences or regimens yet. To add an event,
+    first create a sequence or regimen.`);
 
   // Farmware
   export const NO_IMAGES_YET =
@@ -822,6 +834,9 @@ export namespace Content {
 
   export const NOT_AVAILABLE_WHEN_OFFLINE =
     trim(`Not available when device is offline.`);
+
+  export const NO_CAMERA_SELECTED =
+    trim(`No camera selected`);
 }
 
 export namespace TourContent {
@@ -973,6 +988,7 @@ export enum Actions {
   TOGGLE_HOVERED_PLANT = "TOGGLE_HOVERED_PLANT",
   TOGGLE_HOVERED_POINT = "TOGGLE_HOVERED_POINT",
   HOVER_PLANT_LIST_ITEM = "HOVER_PLANT_LIST_ITEM",
+  HOVER_TOOL_SLOT = "HOVER_TOOL_SLOT",
   OF_SEARCH_RESULTS_START = "OF_SEARCH_RESULTS_START",
   OF_SEARCH_RESULTS_OK = "OF_SEARCH_RESULTS_OK",
   OF_SEARCH_RESULTS_NO = "OF_SEARCH_RESULTS_NO",

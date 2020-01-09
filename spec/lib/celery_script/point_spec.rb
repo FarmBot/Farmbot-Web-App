@@ -22,7 +22,7 @@ describe "Celery Script `point` node" do
     }.deep_symbolize_keys
   end
 
-  let(:tree)    { CeleryScript::AstNode.new(hash) }
+  let(:tree)    { CeleryScript::AstNode.new(**hash) }
   let(:corpus)  { Sequence::Corpus }
   let(:device)  { plant.device }
   let(:checker) { CeleryScript::Checker.new(tree, corpus, device) }

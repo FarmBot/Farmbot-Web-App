@@ -29,7 +29,7 @@ export function TileSendMessage(props: StepParams) {
   }
 }
 
-interface SendMessageParams {
+export interface SendMessageParams {
   currentStep: SendMessage;
   currentSequence: TaggedSequence;
   dispatch: Function;
@@ -40,19 +40,12 @@ interface SendMessageParams {
 
 export class RefactoredSendMessage
   extends React.Component<SendMessageParams, {}> {
-  get args() { return this.props.currentStep.args; }
-  get message() { return this.args.message; }
-  get message_type() { return this.args.message_type; }
-  get step() { return this.props.currentStep; }
-  get dispatch() { return this.props.dispatch; }
-  get sequence() { return this.props.currentSequence; }
-  get index() { return this.props.index; }
   get currentSelection() {
-    return MESSAGE_STATUSES_DDI[this.message_type];
+    return MESSAGE_STATUSES_DDI[this.props.currentStep.args.message_type];
   }
 
   get channels() {
-    return (this.step.body || []).map(x => x.args.channel_name);
+    return (this.props.currentStep.body || []).map(x => x.args.channel_name);
   }
 
   hasChannel = (name: ChannelName) => {
@@ -69,19 +62,19 @@ export class RefactoredSendMessage
   }
 
   toggle = (n: ChannelName) => () => {
-    this.dispatch(editStep({
-      sequence: this.sequence,
-      step: this.step,
-      index: this.index,
+    this.props.dispatch(editStep({
+      sequence: this.props.currentSequence,
+      step: this.props.currentStep,
+      index: this.props.index,
       executor: this.hasChannel(n) ? this.remove(n) : this.add(n)
     }));
   }
 
   setMsgType = (x: DropDownItem) => {
-    this.dispatch(editStep({
-      sequence: this.sequence,
-      step: this.step,
-      index: this.index,
+    this.props.dispatch(editStep({
+      sequence: this.props.currentSequence,
+      step: this.props.currentStep,
+      index: this.props.index,
       executor: (step: SendMessage) => {
         if (isMessageType(x.value)) {
           step.args.message_type = x.value;
@@ -110,7 +103,7 @@ export class RefactoredSendMessage
           <Col xs={12}>
             <label>{t("Message")}</label>
             <span className="char-limit">
-              {this.message.length}/300
+              {this.props.currentStep.args.message.length}/300
                 </span>
             <StepInputBox dispatch={dispatch}
               step={currentStep}

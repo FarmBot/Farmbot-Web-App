@@ -62,6 +62,17 @@ export function StepButtonCluster(props: StepButtonProps) {
     </StepButton>,
     <StepButton {...commonStepProps}
       step={{
+        kind: "set_servo_angle",
+        args: {
+          pin_number: 4,
+          pin_value: 90
+        }
+      }}
+      color="blue">
+      {t("CONTROL SERVO")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{
         kind: "wait",
         args: { milliseconds: 0 }
       }}
@@ -76,8 +87,18 @@ export function StepButtonCluster(props: StepButtonProps) {
           message_type: MessageType.success
         }
       }}
-      color="red">
+      color="brown">
       {t("SEND MESSAGE")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{ kind: "reboot", args: { package: "farmbot_os" } }}
+      color="brown">
+      {t("REBOOT")}
+    </StepButton>,
+    <StepButton {...commonStepProps}
+      step={{ kind: "emergency_lock", args: {} }}
+      color="red">
+      {t("E-STOP")}
     </StepButton>,
     <StepButton{...commonStepProps}
       step={{
@@ -173,7 +194,6 @@ export function StepButtonCluster(props: StepButtonProps) {
     {t("Mark As...")}
   </StepButton>
   );
-
   return <div>
     <Row>
       <div className="step-button-cluster">

@@ -1,12 +1,11 @@
 import * as React from "react";
 import { AxisInputBoxProps } from "./interfaces";
 import { Col, BlurableInput } from "../ui/index";
-import { isUndefined } from "lodash";
 
 export const AxisInputBox = ({ onChange, value, axis }: AxisInputBoxProps) => {
   return <Col xs={3}>
     <BlurableInput
-      value={(isUndefined(value) ? "" : value)}
+      value={value ?? ""}
       type="number"
       allowEmpty={true}
       onCommit={e => {

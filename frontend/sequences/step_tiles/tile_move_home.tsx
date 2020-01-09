@@ -2,10 +2,11 @@ import * as React from "react";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { StepRadio } from "../step_ui/step_radio";
+import { AxisStepRadio } from "../step_ui/step_radio";
 import { StepInputBox } from "../inputs/step_input_box";
 import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
+import { Home } from "farmbot";
 
 export function TileMoveHome(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
@@ -20,9 +21,9 @@ export function TileMoveHome(props: StepParams) {
       index={index}
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
-      <StepRadio
+      <AxisStepRadio
         currentSequence={currentSequence}
-        currentStep={currentStep}
+        currentStep={currentStep as Home}
         dispatch={dispatch}
         index={index}
         label={t("Home")} />

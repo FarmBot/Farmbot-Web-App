@@ -36,8 +36,8 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        grayscale={grayscale && grayscale.x}
-        disabled={disable && disable.x}
+        grayscale={grayscale?.x}
+        disabled={disable?.x}
         dim={!xParam.consistent}
         toggleValue={xParam.value}
         toggleAction={() =>
@@ -45,8 +45,8 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        grayscale={grayscale && grayscale.y}
-        disabled={disable && disable.y}
+        grayscale={grayscale?.y}
+        disabled={disable?.y}
         dim={!yParam.consistent}
         toggleValue={yParam.value}
         toggleAction={() =>
@@ -54,8 +54,8 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
     </Col>
     <Col xs={2} className={"centered-button-div"}>
       <ToggleButton
-        grayscale={grayscale && grayscale.z}
-        disabled={disable && disable.z}
+        grayscale={grayscale?.z}
+        disabled={disable?.z}
         dim={!zParam.consistent}
         toggleValue={zParam.value}
         toggleAction={() =>

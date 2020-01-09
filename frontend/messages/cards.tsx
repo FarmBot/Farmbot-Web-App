@@ -165,6 +165,11 @@ const FirmwareChoiceTable = () =>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k14"].label}</code></td>
       </tr>
       <tr>
+        <td>{"Genesis v1.5"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k15"].label}</code></td>
+      </tr>
+      <tr>
         <td>{"Express v1.0"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
@@ -175,7 +180,7 @@ const FirmwareChoiceTable = () =>
 export const changeFirmwareHardware = (dispatch: Function | undefined) =>
   (ddi: DropDownItem) => {
     if (isFwHardwareValue(ddi.value)) {
-      dispatch && dispatch(updateConfig({ firmware_hardware: ddi.value }));
+      dispatch?.(updateConfig({ firmware_hardware: ddi.value }));
     }
   };
 

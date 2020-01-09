@@ -3,31 +3,23 @@ import {
   selectAllPeripherals,
   selectAllWebcamFeeds,
   selectAllSensors,
-  maybeGetDevice,
   selectAllSensorReadings,
   maybeGetTimeSettings
 } from "../resources/selectors";
 import { Props } from "./interfaces";
-import {
-  validFwConfig,
-  createShouldDisplayFn as shouldDisplayFunc,
-  determineInstalledOsVersion
-} from "../util";
+import { validFwConfig } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { getFirmwareConfig } from "../resources/getters";
 import { uniq } from "lodash";
 import { getStatus } from "../connectivity/reducer_support";
-import { DevSettings } from "../account/dev/dev_support";
+import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 
 export function mapStateToProps(props: Everything): Props {
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
 
-  const device = maybeGetDevice(props.resources.index);
-  const installedOsVersion = determineInstalledOsVersion(props.bot, device);
-  const fbosVersionOverride = DevSettings.overriddenFbosVersion();
-  const shouldDisplay = shouldDisplayFunc(
-    installedOsVersion, props.bot.minOsFeatureData, fbosVersionOverride);
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
 
   return {
     feeds: selectAllWebcamFeeds(props.resources.index),
@@ -41,5 +33,6 @@ export function mapStateToProps(props: Everything): Props {
     shouldDisplay,
     sensorReadings: selectAllSensorReadings(props.resources.index),
     timeSettings: maybeGetTimeSettings(props.resources.index),
+    env,
   };
 }

@@ -5,12 +5,7 @@ jest.mock("../../../api/crud", () => ({
 import { remove, move, splice, renderCeleryNode } from "../index";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { overwrite } from "../../../api/crud";
-import {
-  Wait, If, ExecuteScript, Execute, FindHome, MoveAbsolute, SendMessage,
-  TakePhoto, SetServoAngle, TogglePin, Zero, Calibrate, Home, Reboot,
-  CheckUpdates, FactoryReset, Sync, DumpInfo, PowerOff, ReadStatus,
-  EmergencyLock, EmergencyUnlock, InstallFirstPartyFarmware
-} from "farmbot";
+import { SequenceBodyItem, Wait } from "farmbot";
 import { mount } from "enzyme";
 import { StepParams, MessageType } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";
@@ -96,30 +91,32 @@ describe("renderCeleryNode()", () => {
     confirmStepDeletion: false,
   });
 
-  const TEST_DATA = [
+  interface TestData {
+    node: SequenceBodyItem;
+    expected: string;
+  }
+
+  const TEST_DATA: TestData[] = [
     {
       node: {
         kind: "_if",
         args: {
-          lhs: "pin0", op: "is", rhs: 0, _then: { kind: "nothing", args: {} },
+          lhs: "pin0",
+          op: "is",
+          rhs: 0,
+          _then: { kind: "nothing", args: {} },
           _else: { kind: "nothing", args: {} }
         }
-      } as If, expected: "Then Execute"
+      },
+      expected: "Then Execute"
     },
     {
-      node: {
-        kind: "execute_script",
-        args: { label: "farmware-to-execute" }
-      } as ExecuteScript, expected: "Manual Input"
+      node: { kind: "execute_script", args: { label: "farmware-to-execute" } },
+      expected: "Manual Input"
     },
     {
-      node: { kind: "execute", args: { sequence_id: 0 } } as Execute,
+      node: { kind: "execute", args: { sequence_id: 0 } },
       expected: "Select a sequence"
-    },
-    {
-      node: {
-        kind: "find_home", args: { speed: 100, axis: "all" }
-      } as FindHome, expected: "Find x"
     },
     {
       node: {
@@ -129,7 +126,8 @@ describe("renderCeleryNode()", () => {
           speed: 100,
           offset: { kind: "coordinate", args: { x: 4, y: 5, z: 6 } }
         }
-      } as MoveAbsolute, expected: "x-Offsety-Offsetz-OffsetSpeed (%)"
+      },
+      expected: "x-Offsety-Offsetz-OffsetSpeed (%)"
     },
     {
       node: {
@@ -138,70 +136,98 @@ describe("renderCeleryNode()", () => {
           message: "send this message",
           message_type: MessageType.info
         }
-      } as SendMessage, expected: "Message"
+      },
+      expected: "Message"
     },
-    { node: { kind: "take_photo", args: {} } as TakePhoto, expected: "Photo" },
     {
-      node: { kind: "wait", args: { milliseconds: 100 } } as Wait,
+      node: { kind: "take_photo", args: {} },
+      expected: "Photo"
+    },
+    {
+      node: { kind: "wait", args: { milliseconds: 100 } },
       expected: "milliseconds"
     },
     {
       node: {
-        kind: "set_servo_angle",
-        args: { pin_number: 4, pin_value: 90, }
-      } as SetServoAngle, expected: "Servo"
+        kind: "resource_update",
+        args: {
+          resource_id: 23,
+          resource_type: "Plant",
+          label: "x",
+          value: 300
+        }
+      },
+      expected: "MarkPlantasx = 300"
     },
     {
-      node: { kind: "toggle_pin", args: { pin_number: 13 } } as TogglePin,
+      node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90, } },
+      expected: "Servo"
+    },
+    {
+      node: { kind: "toggle_pin", args: { pin_number: 13 } },
       expected: "Pin"
     },
     {
-      node: { kind: "zero", args: { axis: "all" } } as Zero,
+      node: { kind: "find_home", args: { speed: 100, axis: "all" } },
+      expected: "Find x"
+    },
+    {
+      node: { kind: "zero", args: { axis: "all" } },
       expected: "Zero x"
     },
     {
-      node: { kind: "calibrate", args: { axis: "all" } } as Calibrate,
+      node: { kind: "calibrate", args: { axis: "all" } },
       expected: "Calibrate x"
     },
     {
-      node: { kind: "home", args: { axis: "all", speed: 100, } } as Home,
+      node: { kind: "home", args: { axis: "all", speed: 100, } },
       expected: "Home x"
     },
     {
-      node: { kind: "reboot", args: { package: "farmbot_os" } } as Reboot,
+      node: { kind: "emergency_lock", args: {} },
+      expected: "Unlocking a device requires user intervention"
+    },
+    {
+      node: { kind: "reboot", args: { package: "farmbot_os" } },
+      expected: "power cycle farmbot's onboard computer."
+    },
+    {
+      node: { kind: "check_updates", args: { package: "farmbot_os" } },
       expected: "System"
     },
     {
-      node: {
-        kind: "check_updates", args: { package: "farmbot_os" }
-      } as CheckUpdates,
+      node: { kind: "factory_reset", args: { package: "farmbot_os" } },
       expected: "System"
     },
     {
-      node: {
-        kind: "factory_reset", args: { package: "farmbot_os" }
-      } as FactoryReset,
-      expected: "System"
-    },
-    { node: { kind: "sync", args: {} } as Sync, expected: "" },
-    { node: { kind: "dump_info", args: {} } as DumpInfo, expected: "" },
-    { node: { kind: "power_off", args: {} } as PowerOff, expected: "" },
-    { node: { kind: "read_status", args: {} } as ReadStatus, expected: "" },
-    {
-      node: { kind: "emergency_lock", args: {} } as EmergencyLock,
+      node: { kind: "sync", args: {} },
       expected: ""
     },
     {
-      node: { kind: "emergency_unlock", args: {} } as EmergencyUnlock,
+      node: { kind: "dump_info", args: {} },
       expected: ""
     },
     {
-      node: {
-        kind: "install_first_party_farmware", args: {}
-      } as InstallFirstPartyFarmware, expected: ""
+      node: { kind: "power_off", args: {} },
+      expected: ""
     },
-    // tslint:disable-next-line:no-any
-    { node: { kind: "unknown", args: { unknown: 0 } } as any, expected: "unknown" },
+    {
+      node: { kind: "read_status", args: {} },
+      expected: ""
+    },
+    {
+      node: { kind: "emergency_unlock", args: {} },
+      expected: ""
+    },
+    {
+      node: { kind: "install_first_party_farmware", args: {} },
+      expected: ""
+    },
+    {
+      // tslint:disable-next-line: no-any
+      node: { kind: "unknown", args: { unknown: 0 } } as any,
+      expected: "unknown"
+    },
   ];
 
   it("renders correct step", () => {
@@ -209,7 +235,8 @@ describe("renderCeleryNode()", () => {
       const p = fakeProps();
       p.currentStep = test.node;
       const step = renderCeleryNode(p);
-      expect(mount(step).text()).toContain(test.expected);
+      const verbiage = mount(step).text().toLowerCase();
+      expect(verbiage).toContain(test.expected.toLowerCase());
     });
   });
 });

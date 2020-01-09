@@ -16,6 +16,9 @@ import { startCase } from "lodash";
 import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import {
+  cameraBtnProps
+} from "../../devices/components/fbos_settings/camera_selection";
 
 interface MetaInfoProps {
   /** Default conversion is `attr_name ==> Attr Name`.
@@ -52,6 +55,7 @@ const PhotoMetaData = ({ image }: { image: TaggedImage | undefined }) =>
 
 const PhotoButtons = (props: PhotoButtonsProps) => {
   const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
+  const camDisabled = cameraBtnProps(props.env);
   return <div className="farmware-button">
     <MustBeOnline
       syncStatus={props.syncStatus}
@@ -59,8 +63,9 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
       hideBanner={true}
       lockOpen={process.env.NODE_ENV !== "production"}>
       <button
-        className="fb-button green"
-        onClick={props.takePhoto}>
+        className={`fb-button green ${camDisabled.class}`}
+        title={camDisabled.title}
+        onClick={camDisabled.click || props.takePhoto}>
         {t("Take Photo")}
       </button>
     </MustBeOnline>
@@ -111,7 +116,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
 
   deletePhoto = () => {
     const img = this.props.currentImage || this.props.images[0];
-    if (img && img.uuid) {
+    if (img?.uuid) {
       this.props.dispatch(destroy(img.uuid))
         .then(() => success(t("Image Deleted.")))
         .catch(() => error(t("Could not delete image.")));
@@ -125,6 +130,7 @@ export class Photos extends React.Component<PhotosProps, {}> {
         botToMqttStatus={this.props.botToMqttStatus}
         takePhoto={this.takePhoto}
         deletePhoto={this.deletePhoto}
+        env={this.props.env}
         imageJobs={this.props.imageJobs} />
       <ImageFlipper
         onFlip={id => this.props.dispatch(selectImage(id))}

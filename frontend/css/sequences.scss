@@ -160,17 +160,17 @@
   margin-left: 10px;
 }
 
-.step-button-cluster,
-.sequence-list,
 .regimen-list {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 21rem);
+  max-height: calc(100vh - 19rem);
 }
 
-.step-button-cluster,
-.sequence-list {
+.step-button-cluster {
   margin-right: -15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 16rem);
 }
 
 .farmware-info-panel,
@@ -236,7 +236,7 @@
     margin-left: -15px;
   }
   .non-empty-state {
-    height: calc(100vh - 15rem);
+    height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -453,7 +453,6 @@
 .sequence-list-panel,
 .regimen-list-panel {
   padding-top: 0.4rem;
-  margin-bottom: 3rem;
   margin-right: 5px;
   @media screen and (max-width: 1075px) {
     margin-left: 15px;
@@ -484,7 +483,15 @@
 }
 
 .farmware-list-panel {
-  margin-bottom: 5rem;
+  .farmware-list-panel-contents {
+    height: calc(100vh - 15rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -20px;
+    margin-left: -15px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
   label {
     font-weight: bold;
     font-size: 1.4rem;

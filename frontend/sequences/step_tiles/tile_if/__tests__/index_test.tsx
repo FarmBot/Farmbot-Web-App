@@ -24,8 +24,8 @@ import {
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;
 const fakeTaggedSequence = fakeResourceIndex
   .references[Object.keys(fakeResourceIndex.byKind.Sequence)[0]] as TaggedSequence;
-const fakeId = fakeTaggedSequence && fakeTaggedSequence.body.id || 0;
-const fakeName = fakeTaggedSequence && fakeTaggedSequence.body.name || "";
+const fakeId = fakeTaggedSequence.body.id || 0;
+const fakeName = fakeTaggedSequence.body.name || "";
 const expectedItem = { label: fakeName, value: fakeId };
 
 function fakeProps(): IfParams {

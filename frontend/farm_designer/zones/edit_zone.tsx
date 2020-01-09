@@ -37,8 +37,7 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
         panelName={"zone-info"}
         panel={Panel.Zones}
         title={`${t("Edit")} zone`}
-        backTo={"/app/designer/zones"}>
-      </DesignerPanelHeader>
+        backTo={"/app/designer/zones"} />
       <DesignerPanelContent panelName={"zone-info"}>
       </DesignerPanelContent>
     </DesignerPanel>;

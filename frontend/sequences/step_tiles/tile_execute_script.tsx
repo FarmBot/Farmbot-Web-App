@@ -1,8 +1,10 @@
 import * as React from "react";
 import { StepParams } from "../interfaces";
-import { ToolTips } from "../../constants";
+import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
-import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
+import {
+  StepWrapper, StepHeader, StepContent, StepWarning
+} from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
@@ -10,14 +12,14 @@ import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
 import { t } from "../../i18next_wrapper";
 
 export function TileExecuteScript(props: StepParams) {
-  const { dispatch, currentStep, index, currentSequence, farmwareInfo } = props;
+  const { dispatch, currentStep, index, currentSequence, farmwareData } = props;
   if (currentStep.kind === "execute_script") {
 
     const farmwareName = currentStep.args.label;
 
     /** Selected Farmware is installed on connected bot. */
     const isInstalled = (name: string): boolean => {
-      return !!(farmwareInfo && farmwareInfo.farmwareNames.includes(name));
+      return !!(farmwareData && farmwareData.farmwareNames.includes(name));
     };
 
     const selectedFarmwareDDI = (name: string): DropDownItem => {
@@ -52,8 +54,8 @@ export function TileExecuteScript(props: StepParams) {
 
     /** Configs (inputs) from Farmware manifest for <FarmwareInputs />. */
     const currentFarmwareConfigDefaults = (fwName: string): FarmwareConfig[] => {
-      return farmwareInfo && farmwareInfo.farmwareConfigs[fwName]
-        ? farmwareInfo.farmwareConfigs[fwName]
+      return farmwareData?.farmwareConfigs[fwName]
+        ? farmwareData.farmwareConfigs[fwName]
         : [];
     };
 
@@ -66,14 +68,20 @@ export function TileExecuteScript(props: StepParams) {
         currentStep={currentStep}
         dispatch={dispatch}
         index={index}
-        confirmStepDeletion={props.confirmStepDeletion} />
+        confirmStepDeletion={props.confirmStepDeletion}>
+        {props.farmwareData && props.farmwareData.cameraDisabled &&
+          (farmwareName === "plant-detection") &&
+          <StepWarning
+            titleBase={t(Content.NO_CAMERA_SELECTED)}
+            warning={t(ToolTips.SELECT_A_CAMERA)} />}
+      </StepHeader>
       <StepContent className={className}>
         <Row>
           <Col xs={12}>
             <label>{t("Package Name")}</label>
             <FBSelect
               key={JSON.stringify(props.currentSequence)}
-              list={farmwareList(farmwareInfo)}
+              list={farmwareList(farmwareData)}
               selectedItem={selectedFarmwareDDI(farmwareName)}
               onChange={updateStepFarmwareSelection}
               allowEmpty={true}

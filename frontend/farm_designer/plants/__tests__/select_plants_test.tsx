@@ -4,7 +4,8 @@ jest.mock("../../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/"))
 }));
 
-jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
+let mockDestroy = jest.fn(() => Promise.resolve());
+jest.mock("../../../api/crud", () => ({ destroy: mockDestroy }));
 
 let mockDev = false;
 jest.mock("../../../account/dev/dev_support", () => ({
@@ -41,7 +42,7 @@ describe("<SelectPlants />", () => {
     return {
       selected: ["plant.1"],
       plants: [plant1, plant2],
-      dispatch: jest.fn(),
+      dispatch: jest.fn(x => x),
       gardenOpen: undefined,
     };
   }
@@ -118,7 +119,7 @@ describe("<SelectPlants />", () => {
 
   it("deletes selected plants", () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve());
+    mockDestroy = jest.fn(() => Promise.resolve());
     p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");
@@ -130,7 +131,7 @@ describe("<SelectPlants />", () => {
 
   it("does not delete if selection is empty", () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve());
+    mockDestroy = jest.fn(() => Promise.resolve());
     p.selected = undefined;
     const wrapper = mount(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");
@@ -140,7 +141,7 @@ describe("<SelectPlants />", () => {
 
   it("errors when deleting selected plants", () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.reject());
+    mockDestroy = jest.fn(() => Promise.reject());
     p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
     expect(wrapper.text()).toContain("Delete");

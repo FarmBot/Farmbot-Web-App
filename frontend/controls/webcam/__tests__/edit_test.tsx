@@ -6,6 +6,7 @@ import { Edit } from "../edit";
 import { SpecialStatus } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { WebcamPanelProps } from "../interfaces";
+import { KeyValEditRow } from "../../key_val_edit_row";
 
 describe("<Edit/>", () => {
   const fakeProps = (): WebcamPanelProps => {
@@ -47,5 +48,23 @@ describe("<Edit/>", () => {
     const wrapper = shallow(<Edit {...p} />);
     wrapper.find("WidgetBody").find("KeyValEditRow").first().simulate("click");
     expect(p.destroy).toHaveBeenCalledWith(p.feeds[0]);
+  });
+
+  it("changes name", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<Edit {...p} />);
+    wrapper.find(KeyValEditRow).first().simulate("labelChange", {
+      currentTarget: { value: "new_name" }
+    });
+    expect(p.edit).toHaveBeenCalledWith(p.feeds[0], { name: "new_name" });
+  });
+
+  it("changes url", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<Edit {...p} />);
+    wrapper.find(KeyValEditRow).first().simulate("valueChange", {
+      currentTarget: { value: "new_url" }
+    });
+    expect(p.edit).toHaveBeenCalledWith(p.feeds[0], { url: "new_url" });
   });
 });

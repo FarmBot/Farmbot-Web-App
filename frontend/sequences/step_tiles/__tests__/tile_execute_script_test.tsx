@@ -4,8 +4,11 @@ import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { ExecuteScript } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
-import { Actions } from "../../../constants";
+import { Actions, Content } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
+import {
+  fakeFarmwareData
+} from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileExecuteScript/>", () => {
   const fakeProps = (): StepParams => {
@@ -15,18 +18,17 @@ describe("<TileExecuteScript/>", () => {
         label: "farmware-to-execute"
       }
     };
+    const farmwareData = fakeFarmwareData();
+    farmwareData.farmwareNames = ["one", "two", "three"];
+    farmwareData.firstPartyFarmwareNames = ["one"];
+    farmwareData.farmwareConfigs = { "farmware-to-execute": [] };
     return {
       currentSequence: fakeSequence(),
       currentStep,
       dispatch: jest.fn(),
       index: 0,
       resources: emptyState().index,
-      farmwareInfo: {
-        farmwareNames: ["one", "two", "three"],
-        firstPartyFarmwareNames: ["one"],
-        showFirstPartyFarmware: false,
-        farmwareConfigs: { "farmware-to-execute": [] },
-      },
+      farmwareData,
       confirmStepDeletion: false,
     };
   };
@@ -61,7 +63,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("shows 1st party in list", () => {
     const p = fakeProps();
-    p.farmwareInfo && (p.farmwareInfo.showFirstPartyFarmware = true);
+    p.farmwareData && (p.farmwareData.showFirstPartyFarmware = true);
     const wrapper = shallow(<TileExecuteScript {...p} />);
     expect(wrapper.find("FBSelect").props().list).toEqual([
       { label: "one", value: "one" },
@@ -81,7 +83,7 @@ describe("<TileExecuteScript/>", () => {
   it("shows special 1st-party Farmware name", () => {
     const p = fakeProps();
     (p.currentStep as ExecuteScript).args.label = "plant-detection";
-    p.farmwareInfo && p.farmwareInfo.farmwareNames.push("plant-detection");
+    p.farmwareData?.farmwareNames.push("plant-detection");
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("label").length).toEqual(1);
     expect(wrapper.text()).toContain("Weed Detector");
@@ -89,7 +91,7 @@ describe("<TileExecuteScript/>", () => {
 
   it("renders manual input", () => {
     const p = fakeProps();
-    p.farmwareInfo = undefined;
+    p.farmwareData = undefined;
     const wrapper = mount(<TileExecuteScript {...p} />);
     expect(wrapper.find("button").text()).toEqual("Manual Input");
     expect(wrapper.find("label").at(1).text()).toEqual("Manual input");
@@ -130,5 +132,13 @@ describe("<TileExecuteScript/>", () => {
       }),
       type: Actions.OVERWRITE_RESOURCE
     });
+  });
+
+  it("displays warning when camera is disabled", () => {
+    const p = fakeProps();
+    (p.currentStep as ExecuteScript).args.label = "plant-detection";
+    p.farmwareData && (p.farmwareData.cameraDisabled = true);
+    const wrapper = mount(<TileExecuteScript {...p} />);
+    expect(wrapper.text()).toContain(Content.NO_CAMERA_SELECTED);
   });
 });

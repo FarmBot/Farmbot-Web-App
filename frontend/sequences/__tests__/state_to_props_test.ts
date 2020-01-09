@@ -3,7 +3,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { Feature } from "../../devices/interfaces";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
-  fakeSequence, fakeWebAppConfig
+  fakeSequence, fakeWebAppConfig, fakeFarmwareEnv
 } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex
@@ -67,12 +67,24 @@ describe("mapStateToProps()", () => {
       "My Fake Farmware": fakeFarmwareManifestV1()
     };
     const props = mapStateToProps(state);
-    expect(props.farmwareInfo.farmwareNames).toEqual(["My Fake Farmware"]);
-    expect(props.farmwareInfo.showFirstPartyFarmware).toEqual(true);
-    expect(props.farmwareInfo.farmwareConfigs).toEqual({
+    expect(props.farmwareData.farmwareNames).toEqual(["My Fake Farmware"]);
+    expect(props.farmwareData.showFirstPartyFarmware).toEqual(true);
+    expect(props.farmwareData.farmwareConfigs).toEqual({
       "My Fake Farmware": [{
         name: "config_1", label: "Config 1", value: "4"
       }]
     });
+  });
+
+  it("returns api props", () => {
+    const state = fakeState();
+    const fakeEnv = fakeFarmwareEnv();
+    fakeEnv.body.key = "camera";
+    fakeEnv.body.value = "NONE";
+    state.resources = buildResourceIndex([fakeEnv]);
+    state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
+    state.bot.hardware.informational_settings.controller_version = "8.0.0";
+    const props = mapStateToProps(state);
+    expect(props.farmwareData.cameraDisabled).toEqual(true);
   });
 });

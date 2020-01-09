@@ -2,7 +2,7 @@ import * as React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { round } from "../map/util";
 import { history } from "../../history";
-import { FBSelect, DropDownItem, BlurableInput, Row, Col } from "../../ui";
+import { BlurableInput, Row, Col } from "../../ui";
 import { PlantOptions } from "../interfaces";
 import { PlantStage } from "farmbot";
 import { Moment } from "moment";
@@ -14,6 +14,7 @@ import { parseIntInput } from "../../util";
 import { startCase } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { EditPlantStatus } from "./edit_plant_status";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -24,32 +25,6 @@ export interface PlantPanelProps {
   timeSettings?: TimeSettings;
 }
 
-export const PLANT_STAGES: DropDownItem[] = [
-  { value: "planned", label: t("Planned") },
-  { value: "planted", label: t("Planted") },
-  { value: "sprouted", label: t("Sprouted") },
-  { value: "harvested", label: t("Harvested") },
-];
-
-export const PLANT_STAGES_DDI = {
-  [PLANT_STAGES[0].value]: {
-    label: PLANT_STAGES[0].label,
-    value: PLANT_STAGES[0].value
-  },
-  [PLANT_STAGES[1].value]: {
-    label: PLANT_STAGES[1].label,
-    value: PLANT_STAGES[1].value
-  },
-  [PLANT_STAGES[2].value]: {
-    label: PLANT_STAGES[2].label,
-    value: PLANT_STAGES[2].value
-  },
-  [PLANT_STAGES[3].value]: {
-    label: PLANT_STAGES[3].label,
-    value: PLANT_STAGES[3].value
-  },
-};
-
 interface EditPlantProperty {
   uuid: string;
   updatePlant(uuid: string, update: PlantOptions): void;
@@ -57,25 +32,6 @@ interface EditPlantProperty {
 
 export interface EditPlantStatusProps extends EditPlantProperty {
   plantStatus: PlantStage;
-}
-
-export function EditPlantStatus(props: EditPlantStatusProps) {
-  const { plantStatus, updatePlant, uuid } = props;
-  return <FBSelect
-    list={PLANT_STAGES}
-    selectedItem={PLANT_STAGES_DDI[plantStatus]}
-    onChange={e => {
-      const plant_stage = e.value as PlantStage;
-      const update: PlantOptions = { plant_stage };
-      switch (plant_stage) {
-        case "planned":
-          update.planted_at = undefined;
-          break;
-        case "planted":
-          update.planted_at = moment().toISOString();
-      }
-      updatePlant(uuid, update);
-    }} />;
 }
 
 export interface EditDatePlantedProps extends EditPlantProperty {

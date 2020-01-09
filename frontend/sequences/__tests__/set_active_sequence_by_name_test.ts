@@ -4,31 +4,25 @@ const mockData = {
   fakeSequences: [fakeSequence()]
 };
 
-jest.mock("../../util/urls", () => {
-  return {
-    urlFriendly: jest.fn(x => x),
-    lastUrlChunk: jest.fn(() => mockData.lastUrlChunk)
-  };
-});
+jest.mock("../../util/urls", () => ({
+  urlFriendly: jest.fn(x => x),
+  lastUrlChunk: jest.fn(() => mockData.lastUrlChunk)
+}));
 
 jest.mock("../actions", () => ({ selectSequence: jest.fn() }));
 
-jest.mock("../../resources/selectors", () => {
-  return {
-    selectAllSequences: jest.fn(() => {
-      return mockData.fakeSequences || [];
-    })
-  };
-});
+jest.mock("../../resources/selectors", () => ({
+  selectAllSequences: jest.fn(() => mockData.fakeSequences || []),
+}));
 
-jest.mock("../../redux/store", () => {
-  return {
-    store: {
-      dispatch: jest.fn(),
-      getState: jest.fn(() => ({ resources: { index: {} } }))
-    }
-  };
-});
+jest.mock("../../redux/store", () => ({
+  store: {
+    dispatch: jest.fn(),
+    getState: jest.fn(() => ({ resources: { index: {} } }))
+  }
+}));
+
+jest.mock("../../account/dev/dev_support", () => ({}));
 
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { selectSequence } from "../actions";

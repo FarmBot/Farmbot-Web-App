@@ -11,7 +11,7 @@ export const computeEditorUrlFromState =
         : resources.consumers.regimens.currentRegimen;
       const r = resources.index.references[current || ""];
       const base = `/app/${resource === "Sequence" ? "sequences" : "regimens"}/`;
-      if (r && r.kind == resource) {
+      if (r?.kind == resource) {
         return base + urlFriendly(r.body.name);
       } else {
         return base;

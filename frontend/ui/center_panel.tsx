@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Col, ToolTip, DocSlug } from ".";
 import { t } from "../i18next_wrapper";
+import { ErrorBoundary } from "../error_boundary";
 
 interface CenterProps {
   children?: React.ReactNode;
@@ -20,9 +21,10 @@ export function CenterPanel(props: CenterProps) {
         <i>{t(props.title)}</i>
       </h3>
       {props.helpText &&
-        <ToolTip helpText={t(props.helpText)} docPage={props.docPage} />
-      }
-      {props.children}
+        <ToolTip helpText={t(props.helpText)} docPage={props.docPage} />}
+      <ErrorBoundary>
+        {props.children}
+      </ErrorBoundary>
     </div>
   </Col>;
 }

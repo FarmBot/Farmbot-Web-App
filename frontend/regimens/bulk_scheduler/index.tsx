@@ -17,7 +17,7 @@ const BAD_UUID = "WARNING: Not a sequence UUID.";
 export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   selected = (): DropDownItem => {
     const s = this.props.selectedSequence;
-    return (s && s.body.id)
+    return (s?.body.id)
       ? { label: s.body.name, value: s.uuid }
       : NULL_CHOICE;
   };
@@ -66,7 +66,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
 
   render() {
     const { dispatch, weeks, sequences } = this.props;
-    const active = !!(sequences && sequences.length);
+    const active = !!(sequences?.length);
     return <div className="bulk-scheduler-content">
       <AddButton
         active={active}

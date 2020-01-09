@@ -69,7 +69,7 @@ export function scanImage(imageId: number) {
   };
 }
 
-export function test() {
+export function detectPlants() {
   return function () {
     getDevice().execScript("plant-detection").catch(() => { });
   };

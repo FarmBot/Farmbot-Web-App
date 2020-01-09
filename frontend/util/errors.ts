@@ -28,7 +28,7 @@ export function prettyPrintApiErrors(err: AxiosErrorResponse) {
 
 function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   // In case the interpreter gives us an oddball error message.
-  if (err && err.response && err.response.data) {
+  if (err.response?.data) {
     return err.response.data;
   } else {
     return {
@@ -42,7 +42,7 @@ export function bail(message: string): never {
 }
 
 export const catchErrors = (error: Error) => {
-  if (window.Rollbar && window.Rollbar.error) {
+  if (window.Rollbar?.error) {
     window.Rollbar.error(error);
   } else {
     throw error;

@@ -9,7 +9,7 @@ import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
-  fakeUser, fakeWebAppConfig
+  fakeUser, fakeWebAppConfig, fakeFbosConfig, fakeFarmwareEnv
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
 import {
@@ -40,33 +40,34 @@ const fakeProps = (): AppProps => ({
   resources: buildResourceIndex().index,
   autoSync: false,
   alertCount: 0,
-  pings: fakePings()
+  pings: fakePings(),
+  env: {},
 });
 
 describe("<App />: Controls Pop-Up", () => {
-  function controlsPopUp(page: string, exists: boolean) {
-    it(`doesn't render controls pop-up on ${page} page`, () => {
-      mockPath = "/app/" + page;
-      const wrapper = mount(<App {...fakeProps()} />);
-      if (exists) {
-        expect(wrapper.html()).toContain("controls-popup");
-      } else {
-        expect(wrapper.html()).not.toContain("controls-popup");
-      }
-    });
-  }
-
-  controlsPopUp("designer", true);
-  controlsPopUp("designer/plants", true);
-  controlsPopUp("controls", false);
-  controlsPopUp("device", true);
-  controlsPopUp("sequences", true);
-  controlsPopUp("sequences/for_regimens", true);
-  controlsPopUp("regimens", false);
-  controlsPopUp("tools", true);
-  controlsPopUp("farmware", true);
-  controlsPopUp("account", false);
-
+  it.each<["renders" | "doesn't render", string]>([
+    ["renders", "designer"],
+    ["renders", "designer/plants"],
+    ["doesn't render", "controls"],
+    ["renders", "device"],
+    ["renders", "sequences"],
+    ["renders", "sequences/for_regimens"],
+    ["doesn't render", "regimens"],
+    ["renders", "tools"],
+    ["renders", "farmware"],
+    ["renders", "messages"],
+    ["renders", "logs"],
+    ["renders", "help"],
+    ["doesn't render", "account"],
+  ])("%s controls pop-up on %s page", (expected, page) => {
+    mockPath = "/app/" + page;
+    const wrapper = mount(<App {...fakeProps()} />);
+    if (expected == "renders") {
+      expect(wrapper.html()).toContain("controls-popup");
+    } else {
+      expect(wrapper.html()).not.toContain("controls-popup");
+    }
+  });
 });
 
 describe("<App />: Loading", () => {
@@ -145,7 +146,24 @@ describe("mapStateToProps()", () => {
     const config = fakeWebAppConfig();
     config.body.x_axis_inverted = true;
     state.resources = buildResourceIndex([config]);
+    state.bot.hardware.user_env = { fake: "value" };
     const result = mapStateToProps(state);
     expect(result.axisInversion.x).toEqual(true);
+    expect(result.autoSync).toEqual(false);
+    expect(result.env).toEqual({ fake: "value" });
+  });
+
+  it("returns api props", () => {
+    const state = fakeState();
+    const config = fakeFbosConfig();
+    config.body.auto_sync = true;
+    config.body.api_migrated = true;
+    const fakeEnv = fakeFarmwareEnv();
+    state.resources = buildResourceIndex([config, fakeEnv]);
+    state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
+    state.bot.hardware.informational_settings.controller_version = "8.0.0";
+    const result = mapStateToProps(state);
+    expect(result.autoSync).toEqual(true);
+    expect(result.env).toEqual({ [fakeEnv.body.key]: fakeEnv.body.value });
   });
 });

@@ -1,14 +1,13 @@
 import * as React from "react";
-import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
-import { Row, Col } from "../../ui/index";
-import { t } from "../../i18next_wrapper";
+import { Row } from "../../ui/index";
+import { PinSelect } from "./tile_write_pin";
 
 export function TileTogglePin(props: StepParams) {
   const { dispatch, currentStep, index, currentSequence } = props;
-  const className = "toggle-pin-step";
+  const className = "write-pin-step";
   return <StepWrapper>
     <StepHeader
       className={className}
@@ -20,14 +19,7 @@ export function TileTogglePin(props: StepParams) {
       confirmStepDeletion={props.confirmStepDeletion} />
     <StepContent className={className}>
       <Row>
-        <Col xs={12}>
-          <label>{t("Pin")}</label>
-          <StepInputBox dispatch={dispatch}
-            step={currentStep}
-            sequence={currentSequence}
-            index={index}
-            field={"pin_number"} />
-        </Col>
+        <PinSelect {...props} width={6} />
       </Row>
     </StepContent>
   </StepWrapper>;

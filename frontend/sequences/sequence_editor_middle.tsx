@@ -23,7 +23,7 @@ export class SequenceEditorMiddle
         resources={this.props.resources}
         syncStatus={this.props.syncStatus}
         hardwareFlags={this.props.hardwareFlags}
-        farmwareInfo={this.props.farmwareInfo}
+        farmwareData={this.props.farmwareData}
         shouldDisplay={this.props.shouldDisplay}
         getWebAppConfigValue={this.props.getWebAppConfigValue}
         menuOpen={this.props.menuOpen} />}

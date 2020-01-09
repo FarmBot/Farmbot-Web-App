@@ -29,6 +29,7 @@ export class RawControls extends React.Component<Props, {}> {
 
   move = () => <Move
     bot={this.props.bot}
+    env={this.props.env}
     dispatch={this.props.dispatch}
     arduinoBusy={this.arduinoBusy}
     botToMqttStatus={this.props.botToMqttStatus}

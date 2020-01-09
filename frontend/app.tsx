@@ -4,7 +4,7 @@ import { init, error } from "./toast/toast";
 import { NavBar } from "./nav";
 import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
-import { BotState, Xyz } from "./devices/interfaces";
+import { BotState, Xyz, UserEnv } from "./devices/interfaces";
 import { ResourceName, TaggedUser, TaggedLog } from "farmbot";
 import {
   maybeFetchUser,
@@ -30,6 +30,7 @@ import { isBotOnline } from "./devices/must_be_online";
 import { getStatus } from "./connectivity/reducer_support";
 import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
+import { getEnv, getShouldDisplayFn } from "./farmware/state_to_props";
 
 /** For the logger module */
 init();
@@ -52,11 +53,14 @@ export interface AppProps {
   autoSync: boolean;
   alertCount: number;
   pings: PingDictionary;
+  env: UserEnv;
 }
 
 export function mapStateToProps(props: Everything): AppProps {
   const webAppConfigValue = getWebAppConfigValue(() => props);
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
+  const shouldDisplay = getShouldDisplayFn(props.resources.index, props.bot);
+  const env = getEnv(props.resources.index, shouldDisplay, props.bot);
   return {
     timeSettings: maybeGetTimeSettings(props.resources.index),
     dispatch: props.dispatch,
@@ -78,7 +82,8 @@ export function mapStateToProps(props: Everything): AppProps {
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
     alertCount: getAllAlerts(props.resources).length,
-    pings: props.bot.connectivity.pings
+    pings: props.bot.connectivity.pings,
+    env,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -147,6 +152,7 @@ export class RawApp extends React.Component<AppProps, {}> {
           xySwap={this.props.xySwap}
           arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
           botOnline={isBotOnline(sync_status, getStatus(bot2mqtt))}
+          env={this.props.env}
           stepSize={this.props.bot.stepSize} />}
     </div>;
   }

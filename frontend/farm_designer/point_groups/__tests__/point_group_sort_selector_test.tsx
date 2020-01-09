@@ -51,7 +51,7 @@ describe("", () => {
 
   const sort = (sortType: PointGroupSortType): string[] => {
     const array = SORT_OPTIONS[sortType](plants as TaggedPlant[]);
-    return array.map(x => x && x.body && (x.body.name || "NA"));
+    return array.map(x => x?.body?.name || "NA");
   };
 
   it("sorts randomly", () => {

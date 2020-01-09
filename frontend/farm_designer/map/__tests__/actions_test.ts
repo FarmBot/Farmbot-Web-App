@@ -1,7 +1,7 @@
 let mockPath = "/app/designer/plants";
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
 jest.mock("../../../api/crud", () => ({
@@ -32,11 +32,12 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 
 describe("movePlant", () => {
-  function movePlantTest(
-    caseDescription: string,
-    attempted: { x: number, y: number },
-    expected: { x: number, y: number }) {
-    it(`restricts plant to grid area: ${caseDescription}`, () => {
+  it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
+    ["within bounds", { x: 1, y: 2 }, { x: 101, y: 202 }],
+    ["too high", { x: 10000, y: 10000 }, { x: 3000, y: 1500 }],
+    ["too low", { x: -10000, y: -10000 }, { x: 0, y: 0 }],
+  ])("restricts plant to grid area: %s",
+    (_test_description, attempted, expected) => {
       const payload: MovePlantProps = {
         deltaX: attempted.x,
         deltaY: attempted.y,
@@ -57,10 +58,6 @@ describe("movePlant", () => {
         })
       );
     });
-  }
-  movePlantTest("within bounds", { x: 1, y: 2 }, { x: 101, y: 202 });
-  movePlantTest("too high", { x: 10000, y: 10000 }, { x: 3000, y: 1500 });
-  movePlantTest("too low", { x: -10000, y: -10000 }, { x: 0, y: 0 });
 });
 
 describe("closePlantInfo()", () => {

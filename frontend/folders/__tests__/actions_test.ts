@@ -6,7 +6,7 @@ jest.mock("../../draggable/actions", () => ({
   stepGet: jest.fn(() => () => mockStepGetResult),
 }));
 
-import { FolderNode } from "../constants";
+import { FolderNode } from "../interfaces";
 import { ingest } from "../data_transfer";
 import {
   collapseAll,
@@ -240,11 +240,11 @@ describe("deleteFolder", () => {
 
 describe("updateSearchTerm", () => {
   it("updates a search term", () => {
-    const argss =
+    const args =
       (payload: string | undefined) => ({ type: "FOLDER_SEARCH", payload });
     [undefined, "foo"].map(term => {
       updateSearchTerm(term);
-      expect(store.dispatch).toHaveBeenCalledWith(argss(term));
+      expect(store.dispatch).toHaveBeenCalledWith(args(term));
     });
   });
 });

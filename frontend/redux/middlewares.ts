@@ -35,7 +35,7 @@ export function getMiddleware(env: EnvName) {
     .map((mwc) => mwc.fn);
   // tslint:disable-next-line:no-any
   const wow = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-  const dtCompose = wow && wow({
+  const dtCompose = wow?.({
     actionsBlacklist: [
       Actions.NETWORK_EDGE_CHANGE,
       Actions.PING_NO,

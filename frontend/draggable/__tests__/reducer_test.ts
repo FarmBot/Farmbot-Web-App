@@ -26,7 +26,7 @@ describe("draggableReducer", () => {
     const dt = nextState.dataTransfer;
     expect(Object.keys(dt)).toContain(payload.uuid);
     const entry = dt[payload.uuid];
-    expect(entry && entry.uuid).toEqual(payload.uuid);
+    expect(entry?.uuid).toEqual(payload.uuid);
   });
 
   it("drops a step", () => {

@@ -5,7 +5,7 @@ describe CeleryScript::Corpus do
   let(:corpus) { Sequence::Corpus }
 
   it "handles valid move_absolute blocks" do
-    ok1 = CeleryScript::AstNode.new({
+    ok1 = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: {
@@ -30,7 +30,7 @@ describe CeleryScript::Corpus do
     check1 = CeleryScript::Checker.new(ok1, corpus, device)
     expect(check1.valid?).to be_truthy
 
-    ok2 = CeleryScript::AstNode.new({
+    ok2 = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: {
@@ -53,7 +53,7 @@ describe CeleryScript::Corpus do
   end
 
   it "kicks back invalid move_absolute nodes" do
-    bad = CeleryScript::AstNode.new({
+    bad = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: 42,
@@ -75,7 +75,7 @@ describe CeleryScript::Corpus do
   end
 
   it "finds problems with nested nodes" do
-    bad = CeleryScript::AstNode.new({
+    bad = CeleryScript::AstNode.new(**{
       kind: "move_absolute",
       args: {
         location: {
@@ -109,7 +109,7 @@ describe CeleryScript::Corpus do
   it "Handles message_type validations for version 1" do
     # This test is __ONLY__ relevant for version 1.
     # Change / delete / update as needed.
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
       "kind": "send_message",
       "args": {
         "message": "Hello, world!",
@@ -122,7 +122,7 @@ describe CeleryScript::Corpus do
   end
 
   it "Handles channel_name validations" do
-    tree = CeleryScript::AstNode.new({
+    tree = CeleryScript::AstNode.new(**{
       "kind": "send_message",
       "args": {
         "message": "Hello, world!",
@@ -141,7 +141,7 @@ describe CeleryScript::Corpus do
 
   it "validates tool_ids" do
     ast = { "kind": "tool", "args": { "tool_id": 0 } }
-    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(**ast),
                                         corpus,
                                         device)
     expect(checker.valid?).to be(false)
@@ -154,7 +154,8 @@ describe CeleryScript::Corpus do
                       "resource_id" => 23, # Mutated to "0" later..
                       "label" => "mounted_tool_id",
                       "value" => 1 } }
-    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast), corpus, device)
+    checker = CeleryScript::Checker
+      .new(CeleryScript::AstNode.new(**ast), corpus, device)
     expect(checker.valid?).to be(true)
     expect(checker.tree.args[:resource_id].value).to eq(device.id)
   end
@@ -167,7 +168,7 @@ describe CeleryScript::Corpus do
                       "resource_id" => fake_id,
                       "label" => "foo",
                       "value" => "Should Fail" } }
-    hmm = CeleryScript::AstNode.new(ast)
+    hmm = CeleryScript::AstNode.new(**ast)
     expect(hmm.args.fetch(:resource_id).value).to eq(fake_id)
     checker = CeleryScript::Checker.new(hmm, corpus, device)
     expect(checker.valid?).to be(false)
@@ -180,7 +181,7 @@ describe CeleryScript::Corpus do
                       "resource_id" => 0,
                       "label" => "foo",
                       "value" => "Should Fail" } }
-    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(ast),
+    checker = CeleryScript::Checker.new(CeleryScript::AstNode.new(**ast),
                                         corpus,
                                         device)
     expect(checker.valid?).to be(false)
@@ -222,7 +223,7 @@ describe CeleryScript::Corpus do
   end
 
   it "sets a MAX_WAIT_MS limit for `wait` nodes" do
-    bad = CeleryScript::AstNode.new({
+    bad = CeleryScript::AstNode.new(**{
       kind: "wait",
       args: { milliseconds: CeleryScriptSettingsBag::MAX_WAIT_MS + 10 },
     })
@@ -236,7 +237,7 @@ describe CeleryScript::Corpus do
       pg = PointGroups::Create.run!(device: device,
                                     name: "cs checks",
                                     point_ids: [])
-      bad = CeleryScript::AstNode.new({
+      bad = CeleryScript::AstNode.new(**{
         kind: "point_group",
         args: { point_group_id: pg.id },
       })
@@ -247,7 +248,7 @@ describe CeleryScript::Corpus do
 
   it "disallows invalid `point_group` nodes" do
     device.auto_sync_transaction do
-      bad = CeleryScript::AstNode.new({
+      bad = CeleryScript::AstNode.new(**{
         kind: "point_group",
         args: { point_group_id: -1 },
       })

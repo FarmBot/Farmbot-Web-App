@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DetectorState } from "./interfaces";
 import { Row, Col } from "../../ui/index";
-import { deletePoints, scanImage, test } from "./actions";
+import { deletePoints, scanImage, detectPlants } from "./actions";
 import { selectImage } from "../images/actions";
 import { Progress } from "../../util";
 import { FarmwareProps, Feature } from "../../devices/interfaces";
@@ -11,6 +11,9 @@ import { envGet } from "./remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { envSave } from "./remote_env/actions";
 import { t } from "../../i18next_wrapper";
+import {
+  cameraBtnProps
+} from "../../devices/components/fbos_settings/camera_selection";
 
 export const namespace = (prefix: string) => (key: string): WDENVKey => {
   const namespacedKey = prefix + key;
@@ -52,6 +55,8 @@ export class WeedDetector
       : envSave(key, value)
 
   render() {
+    const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
+    const camDisabled = cameraBtnProps(this.props.env);
     return <div className="weed-detector">
       <div className="farmware-button">
         <MustBeOnline
@@ -60,8 +65,9 @@ export class WeedDetector
           hideBanner={true}
           lockOpen={process.env.NODE_ENV !== "production"}>
           <button
-            onClick={this.props.dispatch(test)}
-            className="fb-button green">
+            className={`fb-button green ${camDisabled.class}`}
+            title={camDisabled.title}
+            onClick={camDisabled.click || this.props.dispatch(detectPlants)}>
             {t("detect weeds")}
           </button>
         </MustBeOnline>
@@ -86,15 +92,15 @@ export class WeedDetector
               images={this.props.images}
               onChange={this.change}
               timeSettings={this.props.timeSettings}
-              iteration={envGet(this.namespace("iteration"), this.props.env)}
-              morph={envGet(this.namespace("morph"), this.props.env)}
-              blur={envGet(this.namespace("blur"), this.props.env)}
-              H_LO={envGet(this.namespace("H_LO"), this.props.env)}
-              H_HI={envGet(this.namespace("H_HI"), this.props.env)}
-              S_LO={envGet(this.namespace("S_LO"), this.props.env)}
-              S_HI={envGet(this.namespace("S_HI"), this.props.env)}
-              V_LO={envGet(this.namespace("V_LO"), this.props.env)}
-              V_HI={envGet(this.namespace("V_HI"), this.props.env)} />
+              iteration={wDEnvGet(this.namespace("iteration"))}
+              morph={wDEnvGet(this.namespace("morph"))}
+              blur={wDEnvGet(this.namespace("blur"))}
+              H_LO={wDEnvGet(this.namespace("H_LO"))}
+              H_HI={wDEnvGet(this.namespace("H_HI"))}
+              S_LO={wDEnvGet(this.namespace("S_LO"))}
+              S_HI={wDEnvGet(this.namespace("S_HI"))}
+              V_LO={wDEnvGet(this.namespace("V_LO"))}
+              V_HI={wDEnvGet(this.namespace("V_HI"))} />
           </MustBeOnline>
         </Col>
       </Row>

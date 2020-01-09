@@ -21,7 +21,7 @@ function translate(input: Step): string {
     "take_photo": t("Take a Photo"),
     "resource_update": t("Mark As"),
     "assertion": t("Assertion"),
-    "set_servo_angle": t("Set Servo Angle"),
+    "set_servo_angle": t("Control Servo"),
     "wait": t("Wait"),
     "write_pin": t("Control Peripheral"),
     "sync": t("Sync"),
@@ -39,7 +39,7 @@ function translate(input: Step): string {
     "home": t("Move to Home"),
     "factory_reset": t("Factory reset"),
     "reboot": t("Reboot"),
-    "toggle_pin": t("Toggle Pin"),
+    "toggle_pin": t("Toggle Peripheral"),
     "zero": t("Set zero"),
     "set_user_env": t("Set Farmware Env"),
   };

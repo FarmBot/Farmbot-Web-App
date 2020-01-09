@@ -6,6 +6,7 @@ import { t } from "../../i18next_wrapper";
 interface StepWarningProps {
   warning: string;
   conflicts?: Record<Xyz, boolean>;
+  titleBase?: string;
 }
 
 const TITLE_BASE = t("Hardware setting conflict");
@@ -20,11 +21,10 @@ export const conflictsString = (conflicts: Record<Xyz, boolean>) => {
 };
 
 export function StepWarning(props: StepWarningProps) {
-  const { conflicts, warning } = props;
+  const { conflicts, warning, titleBase } = props;
   const warningTitle = () => {
-    return conflicts
-      ? TITLE_BASE + ": " + conflictsString(conflicts)
-      : TITLE_BASE;
+    return (titleBase || TITLE_BASE) +
+      (conflicts ? ": " + conflictsString(conflicts) : "");
   };
   return <div className="step-warning">
     <Popover

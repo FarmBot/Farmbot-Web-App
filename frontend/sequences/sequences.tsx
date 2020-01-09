@@ -58,7 +58,7 @@ export class RawSequences extends React.Component<Props, {}> {
             sequence={this.props.sequence}
             resources={this.props.resources}
             hardwareFlags={this.props.hardwareFlags}
-            farmwareInfo={this.props.farmwareInfo}
+            farmwareData={this.props.farmwareData}
             shouldDisplay={this.props.shouldDisplay}
             getWebAppConfigValue={this.props.getWebAppConfigValue}
             menuOpen={this.props.menuOpen} />

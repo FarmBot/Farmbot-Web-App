@@ -16,8 +16,8 @@ describe("<FarmwarePage />", () => {
   const fakeProps = (): FarmwareProps => ({
     farmwares: fakeFarmwares(),
     botToMqttStatus: "up",
+    wDEnv: {},
     env: {},
-    user_env: {},
     dispatch: jest.fn(),
     currentImage: undefined,
     images: [],
@@ -67,24 +67,21 @@ describe("<FarmwarePage />", () => {
     expect(wrapper.text()).toContain("Take Photo");
   });
 
-  const TEST_DATA = {
-    "Photos": ["Take Photo"],
-    "take-photo": ["Take Photo"],
-    "Weed Detector": ["detect weeds", "CLEAR WEEDS", "Color Range"],
-    "plant-detection": ["detect weeds", "CLEAR WEEDS", "Color Range"],
-    "Camera Calibration": ["Calibrate", "Color Range", "Invert Hue Range Selection"],
-    "camera-calibration": ["Calibrate", "Color Range", "Invert Hue Range Selection"],
-  };
+  it.each<[string, string[]]>([
+    ["Photos", ["Take Photo"]],
+    ["take-photo", ["Take Photo"]],
+    ["Weed Detector", ["detect weeds", "CLEAR WEEDS", "Color Range"]],
+    ["plant-detection", ["detect weeds", "CLEAR WEEDS", "Color Range"]],
+    ["Camera Calibration", ["Calibrate", "Color Range", "Invert Hue Range Selection"]],
+    ["camera-calibration", ["Calibrate", "Color Range", "Invert Hue Range Selection"]],
+  ])("renders %s Farmware page", (farmware, expectedText) => {
+    const p = fakeProps();
+    p.currentFarmware = farmware;
+    const wrapper = mount(<FarmwarePage {...p} />);
+    expectedText.map(string =>
+      expect(wrapper.text()).toContain(string));
+  });
 
-  Object.entries(TEST_DATA).map(([farmware, expectedText]) =>
-    it(`renders ${farmware} Farmware page`, () => {
-      const p = fakeProps();
-      p.currentFarmware = farmware;
-      const wrapper = mount(<FarmwarePage {...p} />);
-      expectedText.map(string =>
-        expect(wrapper.text()).toContain(string));
-    })
-  );
   it("renders installed Farmware page", () => {
     const p = fakeProps();
     const farmware = fakeFarmware();

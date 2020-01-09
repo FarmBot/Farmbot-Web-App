@@ -50,7 +50,7 @@ export const determineVector =
         return ts ? ts.body : undefined;
       case "identifier":
         const variable = maybeFindVariable(node.args.label, resources, uuid);
-        return variable && variable.vector;
+        return variable?.vector;
     }
     return undefined;
   };

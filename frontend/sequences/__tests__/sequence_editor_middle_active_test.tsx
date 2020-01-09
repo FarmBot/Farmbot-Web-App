@@ -43,8 +43,8 @@ import {
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy, save, edit } from "../../api/crud";
 import {
-  fakeHardwareFlags
-} from "../../__test_support__/sequence_hardware_settings";
+  fakeHardwareFlags, fakeFarmwareData as fakeFarmwareData
+} from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";
 import { copySequence, editCurrentSequence } from "../actions";
@@ -66,12 +66,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
       resources: buildResourceIndex(FAKE_RESOURCES).index,
       syncStatus: "synced",
       hardwareFlags: fakeHardwareFlags(),
-      farmwareInfo: {
-        farmwareNames: [],
-        firstPartyFarmwareNames: [],
-        showFirstPartyFarmware: false,
-        farmwareConfigs: {},
-      },
+      farmwareData: fakeFarmwareData(),
       shouldDisplay: jest.fn(),
       getWebAppConfigValue: jest.fn(),
       menuOpen: false,
@@ -132,7 +127,7 @@ describe("<SequenceEditorMiddleActive/>", () => {
     p.dispatch = dispatch;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     const props = wrapper.find("DropArea").props() as DropAreaProps;
-    props.callback && props.callback("key");
+    props.callback?.("key");
     dispatch.mock.calls[0][0](() =>
       ({ value: 1, intent: "step_splice", draggerId: 2 }));
     expect(splice).toHaveBeenCalledWith(expect.objectContaining({

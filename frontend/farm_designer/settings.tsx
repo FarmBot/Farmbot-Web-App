@@ -71,7 +71,7 @@ const Setting = (props: SettingProps) => {
           toggleValue={props.invert ? !value : value}
           toggleAction={() => {
             props.dispatch(setWebAppConfigValue(setting, !value));
-            callback && callback();
+            callback?.();
           }}
           title={`${t("toggle")} ${title}`}
           customText={{ textFalse: t("off"), textTrue: t("on") }} />}

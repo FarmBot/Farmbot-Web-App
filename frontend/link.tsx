@@ -18,7 +18,7 @@ export const clickHandler =
     /** BEGIN LEGACY SHIMS */
     const { onClick, to } = props;
     navigate(maybeStripLegacyUrl(to));
-    onClick && onClick(e);
+    onClick?.(e);
   };
 
 export class Link extends React.Component<LinkProps, {}> {

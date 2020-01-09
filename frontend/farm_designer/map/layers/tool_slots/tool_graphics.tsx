@@ -3,13 +3,16 @@ import { Color } from "../../../../ui/index";
 import { trim } from "../../../../util";
 import { BotOriginQuadrant } from "../../../interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../../../../constants";
+import { UUID } from "../../../../resources/interfaces";
 
 export interface ToolGraphicProps {
   x: number;
   y: number;
   hovered: boolean;
-  setHoverState(hoverState: boolean): void;
+  dispatch: Function;
   xySwap: boolean;
+  uuid: UUID | undefined;
 }
 
 export interface ToolProps {
@@ -95,11 +98,14 @@ export const Tool = (props: ToolProps) => {
   }
 };
 
+export const setToolHover = (payload: string | undefined) =>
+  ({ type: Actions.HOVER_TOOL_SLOT, payload });
+
 const StandardTool = (props: ToolGraphicProps) => {
-  const { x, y, hovered, setHoverState } = props;
+  const { x, y, hovered, dispatch, uuid } = props;
   return <g id={"tool"}
-    onMouseOver={() => setHoverState(true)}
-    onMouseLeave={() => setHoverState(false)}>
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
     <circle
       cx={x}
       cy={y}
@@ -116,10 +122,10 @@ const seedBinGradient =
   </radialGradient>;
 
 const SeedBin = (props: ToolGraphicProps) => {
-  const { x, y, hovered, setHoverState } = props;
+  const { x, y, hovered, dispatch, uuid } = props;
   return <g id={"seed-bin"}
-    onMouseOver={() => setHoverState(true)}
-    onMouseLeave={() => setHoverState(false)}>
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
 
     <defs>
       {seedBinGradient}
@@ -140,10 +146,10 @@ const SeedBin = (props: ToolGraphicProps) => {
 };
 
 const SeedTray = (props: ToolGraphicProps) => {
-  const { x, y, hovered, setHoverState } = props;
+  const { x, y, hovered, dispatch, uuid } = props;
   return <g id={"seed-tray"}
-    onMouseOver={() => setHoverState(true)}
-    onMouseLeave={() => setHoverState(false)}>
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
 
     <defs>
       {seedBinGradient}
@@ -188,12 +194,12 @@ export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
 };
 
 const SeedTrough = (props: ToolGraphicProps) => {
-  const { x, y, hovered, setHoverState, xySwap } = props;
+  const { x, y, hovered, dispatch, uuid, xySwap } = props;
   const slotLengthX = xySwap ? 20 : 45;
   const slotLengthY = xySwap ? 45 : 20;
   return <g id={"seed-trough"}
-    onMouseOver={() => setHoverState(true)}
-    onMouseLeave={() => setHoverState(false)}>
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
     <rect
       x={x - slotLengthX / 2} y={y - slotLengthY / 2}
       width={slotLengthX} height={slotLengthY}

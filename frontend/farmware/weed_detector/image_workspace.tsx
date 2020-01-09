@@ -61,7 +61,7 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
 
   maybeProcessPhoto = () => {
     const img = this.props.currentImage || this.props.images[0];
-    if (img && img.body.id) {
+    if (img?.body.id) {
       this.props.onProcessPhoto(img.body.id);
     }
   };
@@ -154,10 +154,9 @@ export class ImageWorkspace extends React.Component<ImageWorkspaceProps, {}> {
         <Col xs={12}>
           <button
             className="green fb-button"
-            title="Scan this image"
+            title={t("Scan this image")}
             onClick={this.maybeProcessPhoto}
-            disabled={!this.props.botOnline}
-            hidden={!this.props.images.length}>
+            disabled={!this.props.botOnline || !this.props.images.length}>
             {t("Scan image")}
           </button>
         </Col>
