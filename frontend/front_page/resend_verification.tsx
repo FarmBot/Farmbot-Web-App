@@ -24,7 +24,7 @@ export class ResendVerification extends React.Component<Props, State> {
   state: State = {};
 
   render() {
-    return <Col xs={12} sm={5}>
+    return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
       <Widget>
         <WidgetHeader title={t("Account Not Verified")}>
           <button onClick={this.props.onGoBack}

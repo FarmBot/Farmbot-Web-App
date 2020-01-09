@@ -17,7 +17,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
     onEmailChange,
   } = props;
 
-  return <Col xs={12} sm={5}>
+  return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
     <Widget>
       <WidgetHeader title={"Reset Password"}>
         <button
