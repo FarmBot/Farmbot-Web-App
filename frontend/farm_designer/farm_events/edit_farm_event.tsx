@@ -6,6 +6,10 @@ import { history } from "../../history";
 import { TaggedFarmEvent } from "farmbot";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "../../i18next_wrapper";
+import { Panel } from "../panel_header";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+} from "../designer_panel";
 
 export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {
   redirect() {
@@ -14,18 +18,27 @@ export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}>
   }
 
   renderForm(fe: TaggedFarmEvent) {
-    return <EditFEForm farmEvent={fe}
-      deviceTimezone={this.props.deviceTimezone}
-      repeatOptions={this.props.repeatOptions}
-      executableOptions={this.props.executableOptions}
-      dispatch={this.props.dispatch}
-      findExecutable={this.props.findExecutable}
-      title={t("Edit Event")}
-      deleteBtn={true}
-      timeSettings={this.props.timeSettings}
-      autoSyncEnabled={this.props.autoSyncEnabled}
-      resources={this.props.resources}
-      shouldDisplay={this.props.shouldDisplay} />;
+    const panelName = "edit-farm-event";
+    return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
+      <DesignerPanelHeader
+        panelName={panelName}
+        panel={Panel.FarmEvents}
+        title={t("Edit Event")} />
+      <DesignerPanelContent panelName={panelName}>
+        <EditFEForm farmEvent={fe}
+          deviceTimezone={this.props.deviceTimezone}
+          repeatOptions={this.props.repeatOptions}
+          executableOptions={this.props.executableOptions}
+          dispatch={this.props.dispatch}
+          findExecutable={this.props.findExecutable}
+          title={t("Edit Event")}
+          deleteBtn={true}
+          timeSettings={this.props.timeSettings}
+          autoSyncEnabled={this.props.autoSyncEnabled}
+          resources={this.props.resources}
+          shouldDisplay={this.props.shouldDisplay} />
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 
   render() {
