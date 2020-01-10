@@ -421,6 +421,7 @@
   }
 }
 
+.edit-farm-event-panel,
 .add-farm-event-panel {
   input {
     background: $white;
@@ -459,6 +460,7 @@
 .edit-farm-event-panel button.red {
   margin-top: 1rem;
   margin-left: 1rem;
+  margin-right: 0.5rem;
 }
 
 .panel-nav {
