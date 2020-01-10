@@ -162,6 +162,12 @@ namespace :coverage do
       .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
       .map { |x| Pair.new(*x) }
 
+    fallback_fraction = Pair.new(0, 1)
+    statements = statements || fallback_fraction
+    branches = branches || fallback_fraction
+    functions = functions || fallback_fraction
+    lines = lines || fallback_fraction
+
     puts
     puts "This build: #{CURRENT_COMMIT}"
     puts "Statements: #{to_percent(statements)}%"
