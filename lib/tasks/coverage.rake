@@ -10,6 +10,7 @@ BASE_BRANCHES = ["master", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
+FALLBACK_VALUE = 0.9772
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def open_json(url)
@@ -161,6 +162,15 @@ namespace :coverage do
       .map(&:text)
       .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
       .map { |x| Pair.new(*x) }
+
+    fallback_fraction = Pair.new(FALLBACK_VALUE, 1.0)
+    puts "!" * 50 if lines.nil?
+    puts "WARNING: USING FALLBACK VALUE (#{FALLBACK_VALUE})" if lines.nil?
+    puts "!" * 50 if lines.nil?
+    statements = statements || fallback_fraction
+    branches = branches || fallback_fraction
+    functions = functions || fallback_fraction
+    lines = lines || fallback_fraction
 
     puts
     puts "This build: #{CURRENT_COMMIT}"
