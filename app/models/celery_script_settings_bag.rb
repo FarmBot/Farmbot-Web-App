@@ -231,6 +231,9 @@ module CeleryScriptSettingsBag
     op: {
       defn: [e(:ALLOWED_OPS)],
     },
+    operands: {
+      defn: [n(:pair)],
+    },
     priority: { defn: [v(:integer)] },
     channel_name: {
       defn: [e(:ALLOWED_CHANNEL_NAMES)],
@@ -530,6 +533,10 @@ module CeleryScriptSettingsBag
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
     },
+    comparison: {
+      args: [ :op, :operands ],
+      tags: [ :data, :disk_user ]
+    }
   }.map { |(name, list)| Corpus.node(name, **list) }
 
   HASH = Corpus.as_json
