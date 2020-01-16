@@ -50,21 +50,49 @@ describe Api::PointGroupsController do
 
   it "adds criteria to a group" do
     sign_in user
-    comparison = {
-      kind: "comparison",
-      args: {
-        op: "is",
-        operands: { kind: "pair", args: { label: "meta.type", value: "weed" } },
+    payload = {
+      name: "Criteria group",
+      point_ids: point_ids,
+      criteria: {
+        string_eq: {
+          openfarm_slug: ["carrot"]
+        },
+        number_eq: {
+          z: [24, 25, 26]
+        },
+        number_lt: {
+          x: 4,
+          y: 4
+        },
+        number_gt: {
+          x: 1,
+          y: 1
+        },
+        day: {
+          op: "<",
+          days: 0
+        },
       },
     }
 
-    payload =
-      { name: "Criteria group", point_ids: point_ids, body: [comparison] }
-
     post :create, body: payload.to_json, format: :json
     expect(response.status).to eq(200)
-    expect(json[:body]).to be_kind_of(Array)
-    binding.pry
-    raise "TODO: Make sure auto sync is called similarly to FarmEvent"
+    hash = json[:criteria]
+    expect(hash).to be_kind_of(Hash)
+    expectations = {
+      [:string_eq, :openfarm_slug] => ["carrot"],
+      [:number_eq, :z] => [24, 25, 26],
+      [:number_lt, :x] => 4,
+      [:number_lt, :y] => 4,
+      [:number_gt, :x] => 1,
+      [:number_gt, :y] => 1,
+      [:day, :op] => "<",
+      [:day, :days] => 0,
+    }
+    expectations.map do |k, v|
+      q = hash.dig(*k)
+      binding.pry
+      expect(q).to eq(v)
+    end
   end
 end

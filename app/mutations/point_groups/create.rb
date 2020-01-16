@@ -12,7 +12,7 @@ module PointGroups
       string :sort_type
       hash :criteria do
         hash(:day) do
-          integer :op, in: [">", "<"]
+          string :op, in: [">", "<"]
           integer :days
         end
         hash(:string_eq) { array :*, class: String }
