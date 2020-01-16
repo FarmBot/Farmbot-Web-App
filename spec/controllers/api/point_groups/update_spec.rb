@@ -44,4 +44,8 @@ describe Api::PointGroupsController do
     json2 = JSON.parse(call1.first, symbolize_names: true).fetch(:body)
     expect(json).to eq(json2)
   end
+
+  it "updates criteria of a group" do
+    raise "TODO: Make sure auto sync is called similarly to FarmEvent"
+  end
 end

@@ -47,4 +47,24 @@ describe Api::PointGroupsController do
     expect(response.status).to eq(422)
     expect(json[:sort_type]).to include(PointGroup::BAD_SORT.split("}").last)
   end
+
+  it "adds criteria to a group" do
+    sign_in user
+    comparison = {
+      kind: "comparison",
+      args: {
+        op: "is",
+        operands: { kind: "pair", args: { label: "meta.type", value: "weed" } },
+      },
+    }
+
+    payload =
+      { name: "Criteria group", point_ids: point_ids, body: [comparison] }
+
+    post :create, body: payload.to_json, format: :json
+    expect(response.status).to eq(200)
+    expect(json[:body]).to be_kind_of(Array)
+    binding.pry
+    raise "TODO: Make sure auto sync is called similarly to FarmEvent"
+  end
 end
