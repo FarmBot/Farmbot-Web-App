@@ -16,9 +16,4 @@ class PointGroup < ApplicationRecord
   validates_inclusion_of :sort_type, in: SORT_TYPES,
                                      message: BAD_SORT
   serialize :criteria
-  # before_validation :set_defaults
-
-  # def set_defaults
-  #   self.criteria ||=
-  # end
 end
