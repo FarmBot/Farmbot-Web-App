@@ -10,6 +10,16 @@ module PointGroups
 
     optional do
       string :sort_type
+      hash :criteria do
+        hash(:day) do
+          integer :op, in: [">", "<"]
+          integer :days
+        end
+        hash(:string_eq) { array :*, class: String }
+        hash(:number_eq) { array :*, class: Integer }
+        hash(:number_lt) { integer :* }
+        hash(:number_gt) { integer :* }
+      end
     end
 
     def validate
