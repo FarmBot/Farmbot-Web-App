@@ -8,19 +8,12 @@ module PointGroups
       array :point_ids, class: Integer
     end
 
+    criteria
+
     optional do
       string :sort_type
-      hash :criteria do
-        hash(:day) do
-          string :op, in: [">", "<"]
-          integer :days
-        end
-        hash(:string_eq) { array :*, class: String }
-        hash(:number_eq) { array :*, class: Integer }
-        hash(:number_lt) { integer :* }
-        hash(:number_gt) { integer :* }
-      end
     end
+
 
     def validate
       validate_point_ids
