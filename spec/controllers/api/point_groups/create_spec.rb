@@ -55,22 +55,22 @@ describe Api::PointGroupsController do
       point_ids: point_ids,
       criteria: {
         string_eq: {
-          openfarm_slug: ["carrot"]
+          openfarm_slug: ["carrot"],
         },
         number_eq: {
-          z: [24, 25, 26]
+          z: [24, 25, 26],
         },
         number_lt: {
           x: 4,
-          y: 4
+          y: 4,
         },
         number_gt: {
           x: 1,
-          y: 1
+          y: 1,
         },
         day: {
           op: "<",
-          days: 0
+          days: 0,
         },
       },
     }
@@ -79,20 +79,13 @@ describe Api::PointGroupsController do
     expect(response.status).to eq(200)
     hash = json[:criteria]
     expect(hash).to be_kind_of(Hash)
-    expectations = {
-      [:string_eq, :openfarm_slug] => ["carrot"],
-      [:number_eq, :z] => [24, 25, 26],
-      [:number_lt, :x] => 4,
-      [:number_lt, :y] => 4,
-      [:number_gt, :x] => 1,
-      [:number_gt, :y] => 1,
-      [:day, :op] => "<",
-      [:day, :days] => 0,
-    }
-    expectations.map do |k, v|
-      q = hash.dig(*k)
-      binding.pry
-      expect(q).to eq(v)
-    end
+    expect(hash.dig(:number_eq, :z)).to eq([24, 25, 26])
+    expect(hash.dig(:number_lt, :x)).to eq(4)
+    expect(hash.dig(:number_lt, :y)).to eq(4)
+    expect(hash.dig(:number_gt, :x)).to eq(1)
+    expect(hash.dig(:number_gt, :y)).to eq(1)
+    expect(hash.dig(:day, :op)).to eq("<")
+    expect(hash.dig(:day, :days)).to eq(0)
+    expect(hash.dig(:string_eq, :openfarm_slug)).to eq(["carrot"])
   end
 end

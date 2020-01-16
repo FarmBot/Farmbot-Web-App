@@ -30,7 +30,10 @@ module PointGroups
     def execute
       PointGroup.transaction do
         PointGroupItem.transaction do
-          pg = PointGroup.new(name: name, device: device)
+          pg = PointGroup.new(name: name,
+            device: device,
+            criteria: PointGroup::DEFAULT_CRITERIA.merge(criteria || {})
+          )
           add_point_group_items(pg)
           pg.save!
           pg
