@@ -88,6 +88,13 @@ describe("<PointGroupItem/>", () => {
       name: "Fake",
       point_ids: [],
       sort_type: "xy_ascending",
+      criteria: {
+        day: { days: 0, op: ">" },
+        number_eq: {},
+        number_gt: {},
+        number_lt: {},
+        string_eq: {},
+      }
     });
     expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
