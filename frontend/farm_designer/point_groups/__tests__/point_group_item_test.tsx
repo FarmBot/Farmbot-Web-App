@@ -69,7 +69,18 @@ describe("<PointGroupItem/>", () => {
     i.click();
     expect(i.props.dispatch).toHaveBeenCalledTimes(2);
     expect(overwrite).toHaveBeenCalledWith({
-      body: { name: "Fake", point_ids: [], sort_type: "xy_ascending" },
+      body: {
+        name: "Fake",
+        point_ids: [],
+        sort_type: "xy_ascending",
+        criteria: {
+          day: { days: 0, op: ">" },
+          number_eq: {},
+          number_gt: {},
+          number_lt: {},
+          string_eq: {},
+        }
+      },
       kind: "PointGroup",
       specialStatus: "",
       uuid: expect.any(String),
