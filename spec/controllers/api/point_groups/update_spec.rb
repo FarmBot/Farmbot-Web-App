@@ -44,4 +44,44 @@ describe Api::PointGroupsController do
     json2 = JSON.parse(call1.first, symbolize_names: true).fetch(:body)
     expect(json).to eq(json2)
   end
+
+  it "updates criteria of a group" do
+    sign_in user
+    initial_params = {
+      device: device,
+      name: "XYZ",
+      point_ids: [],
+      criteria: {
+        string_eq: { openfarm_slug: ["carrot"] },
+        number_eq: { z: [24, 25, 26] },
+        number_lt: { x: 4, y: 4 },
+        number_gt: { x: 1, y: 1 },
+        day: { op: "<", days: 0 },
+      },
+    }
+    pg = PointGroups::Create.run!(initial_params)
+    payload = {
+      point_ids: [],
+      criteria: {
+        string_eq: { name: ["carrot"] },
+        number_eq: { x: [42, 52, 62] },
+        number_lt: { y: 8 },
+        number_gt: { z: 2 },
+        day: { op: ">", days: 10 },
+      },
+    }
+    put :update, body: payload.to_json, format: :json, params: { id: pg.id }
+    expect(response.status).to eq(200)
+    expect(json.dig(:criteria, :day, :days)).to eq(10)
+    expect(json.dig(:criteria, :day, :op)).to eq(">")
+    expect(json.dig(:criteria, :number_eq, :x)).to eq([42, 52, 62])
+    expect(json.dig(:criteria, :number_eq, :z)).to eq(nil)
+    expect(json.dig(:criteria, :number_gt, :x)).to eq(nil)
+    expect(json.dig(:criteria, :number_gt, :y)).to eq(nil)
+    expect(json.dig(:criteria, :number_gt, :z)).to eq(2)
+    expect(json.dig(:criteria, :number_lt, :x)).to eq(nil)
+    expect(json.dig(:criteria, :number_lt, :y)).to eq(8)
+    expect(json.dig(:criteria, :string_eq, :name)).to eq(["carrot"])
+    expect(json.dig(:criteria, :string_eq, :openfarm_slug)).to eq(nil)
+  end
 end

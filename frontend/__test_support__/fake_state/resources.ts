@@ -475,6 +475,13 @@ export function fakePointGroup(): TaggedPointGroup {
   return fakeResource("PointGroup", {
     name: "Fake",
     sort_type: "xy_ascending",
-    point_ids: []
+    point_ids: [],
+    criteria: {
+      day: { op: ">", days: 0 },
+      number_eq: {},
+      number_gt: {},
+      number_lt: {},
+      string_eq: {}
+    }
   });
 }

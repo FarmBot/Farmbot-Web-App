@@ -34,11 +34,18 @@ describe("group action creators and thunks", () => {
 
     const thunk = createGroup({ points, name: "Name123" });
     await thunk(dispatch, () => fakeS as Everything);
-    expect(init).toHaveBeenCalledWith("PointGroup", {
+    expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Name123",
       point_ids: [1, 2],
-      sort_type: "xy_ascending"
-    });
+      sort_type: "xy_ascending",
+      criteria: {
+        day: { days: 0, op: ">" },
+        number_eq: {},
+        number_gt: {},
+        number_lt: {},
+        string_eq: {},
+      },
+    }));
     expect(save).toHaveBeenCalledWith("???");
     expect(history.push)
       .toHaveBeenCalledWith("/app/designer/groups/323232332");
