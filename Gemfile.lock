@@ -265,7 +265,7 @@ GEM
     scenic (1.5.1)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
-    secure_headers (6.1.2)
+    secure_headers (6.3.0)
     signet (0.12.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
