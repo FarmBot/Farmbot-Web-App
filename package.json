@@ -8,7 +8,7 @@
   },
   "scripts": {
     "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-    "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage # low CPU/RAM usage",
+    "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage",
     "test-slow": "./node_modules/.bin/jest -w 6 --colors",
     "test": "./node_modules/.bin/jest -w 5 --no-coverage",
     "typecheck": "./node_modules/typescript/bin/tsc --noEmit",
@@ -82,60 +82,8 @@
     "jest": "24.9.0",
     "jest-cli": "24.9.0",
     "jest-skipped-reporter": "0.0.5",
+    "jest-junit": "10.0.0",
     "jshint": "2.11.0-rc1",
     "madge": "3.6.0"
-  },
-  "jest": {
-    "clearMocks": true,
-    "logHeapUsage": true,
-    "globals": {
-      "ts-jest": {
-        "diagnostics": {
-          "ignoreCodes": [
-            151001
-          ]
-        }
-      },
-      "globalConfig": {
-        "NODE_ENV": "development",
-        "TOS_URL": "https://farm.bot/tos/",
-        "PRIV_URL": "https://farm.bot/privacy/",
-        "LONG_REVISION": "------------",
-        "SHORT_REVISION": "--------"
-      }
-    },
-    "setupFiles": [
-      "./frontend/__test_support__/setup_enzyme.js",
-      "./frontend/__test_support__/localstorage.js",
-      "./frontend/__test_support__/mock_fbtoaster.ts",
-      "./frontend/__test_support__/unmock_i18next.ts",
-      "./frontend/__test_support__/additional_mocks.ts"
-    ],
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "frontend/**/*.{ts,tsx}"
-    ],
-    "reporters": [
-      "default",
-      "jest-skipped-reporter"
-    ],
-    "coverageReporters": [
-      "html",
-      "json",
-      "lcov"
-    ],
-    "coverageDirectory": "<rootDir>/coverage_fe",
-    "setupFilesAfterEnv": [
-      "<rootDir>/frontend/__test_support__/customMatchers.js"
-    ]
   }
 }

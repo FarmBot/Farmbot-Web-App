@@ -127,7 +127,11 @@ end
 # Calculate coverage results from JSON coverage report.
 def get_json_coverage_results()
   results = {lines: {covered: 0, total: 0}, branches: {covered: 0, total: 0}}
-  data = open_json(JSON_COVERAGE_FILE_PATH)
+  begin
+    data = open_json(JSON_COVERAGE_FILE_PATH)
+  rescue Errno::ENOENT
+    return results
+  end
   data.each do |filename, file_coverage|
     lineMap = {}
     file_coverage["s"].each do |statement, count|
@@ -181,13 +185,16 @@ namespace :coverage do
        "The Coveralls stats reporter used to perform this check, but didn't" \
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
-    # Fetch current build coverage data from the HTML summary.
-    statements, branches, functions, lines =
-    Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
-      .css(CSS_SELECTOR)
-      .map(&:text)
-      .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
-      .map { |x| Pair.new(*x) }
+    begin
+      # Fetch current build coverage data from the HTML summary.
+      statements, branches, functions, lines =
+      Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
+        .css(CSS_SELECTOR)
+        .map(&:text)
+        .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
+        .map { |x| Pair.new(*x) }
+    rescue Errno::ENOENT
+    end
 
     puts "\nUnable to determine coverage from HTML report." if lines.nil?
     puts "Checking JSON report..." if lines.nil?
