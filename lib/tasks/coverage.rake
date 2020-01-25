@@ -1,4 +1,5 @@
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
+JSON_COVERAGE_FILE_PATH = "./coverage_fe/coverage-final.json"
 THRESHOLD = 0.001
 REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
@@ -10,7 +11,6 @@ BASE_BRANCHES = ["master", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
-FALLBACK_VALUE = 0.9772
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def open_json(url)
@@ -124,6 +124,36 @@ def latest_build_data(build_history, branch)
   end
 end
 
+# Calculate coverage results from JSON coverage report.
+def get_json_coverage_results()
+  results = {lines: {covered: 0, total: 0}, branches: {covered: 0, total: 0}}
+  begin
+    data = open_json(JSON_COVERAGE_FILE_PATH)
+  rescue Errno::ENOENT
+    return results
+  end
+  data.each do |filename, file_coverage|
+    lineMap = {}
+    file_coverage["s"].each do |statement, count|
+      line = file_coverage["statementMap"][statement]["start"]["line"]
+      if lineMap[line].nil? || lineMap[line] < count
+        lineMap[line] = count
+      end
+    end
+    results[:lines][:covered] += lineMap.map{ |line, count| count }
+      .filter{ |count| count != 0}.length
+    results[:lines][:total] += lineMap.length
+
+    branches = []
+    file_coverage["b"].each do |branch, counts|
+      counts.map{ |count| branches.push(count) }
+    end
+    results[:branches][:covered] += branches.filter{ |count| count != 0 }.length
+    results[:branches][:total] += branches.length
+  end
+  results
+end
+
 # <commit hash> on <username>:<branch>
 def branch_info_string?(target, pull_data)
   unless pull_data.dig(target, "sha").nil?
@@ -155,18 +185,35 @@ namespace :coverage do
        "The Coveralls stats reporter used to perform this check, but didn't" \
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
-    # Fetch current build coverage data from the HTML summary.
-    statements, branches, functions, lines =
-    Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
-      .css(CSS_SELECTOR)
-      .map(&:text)
-      .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
-      .map { |x| Pair.new(*x) }
+    begin
+      # Fetch current build coverage data from the HTML summary.
+      statements, branches, functions, lines =
+      Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
+        .css(CSS_SELECTOR)
+        .map(&:text)
+        .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
+        .map { |x| Pair.new(*x) }
+    rescue Errno::ENOENT
+    end
 
-    fallback_fraction = Pair.new(FALLBACK_VALUE, 1.0)
-    puts "!" * 50 if lines.nil?
-    puts "WARNING: USING FALLBACK VALUE (#{FALLBACK_VALUE})" if lines.nil?
-    puts "!" * 50 if lines.nil?
+    puts "\nUnable to determine coverage from HTML report." if lines.nil?
+    puts "Checking JSON report..." if lines.nil?
+    results = get_json_coverage_results()
+    lines_json_report = Pair.new(
+      results[:lines][:covered].to_f, results[:lines][:total].to_f)
+    branches_json_report = Pair.new(
+        results[:branches][:covered].to_f, results[:branches][:total].to_f)
+    if results[:lines][:total] > 0
+      lines = lines || lines_json_report
+      branches = branches || branches_json_report
+    end
+    covered = lines_json_report.head + branches_json_report.head
+    total = lines_json_report.tail + branches_json_report.tail
+    puts "JSON report aggregate:  #{covered / total * 100}%"
+    puts
+
+    fallback_fraction = Pair.new(0.0, 1.0)
+    puts "\nUnable to determine coverage from build." if lines.nil?
     statements = statements || fallback_fraction
     branches = branches || fallback_fraction
     functions = functions || fallback_fraction

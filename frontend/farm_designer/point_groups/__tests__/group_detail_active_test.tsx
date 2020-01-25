@@ -69,6 +69,13 @@ describe("<GroupDetailActive/>", () => {
         name: "XYZ",
         point_ids: [1],
         sort_type: "xy_ascending",
+        criteria: {
+          day: { days: 0, op: ">" },
+          number_eq: {},
+          number_gt: {},
+          number_lt: {},
+          string_eq: {},
+        }
       },
       kind: "PointGroup",
       specialStatus: "DIRTY",

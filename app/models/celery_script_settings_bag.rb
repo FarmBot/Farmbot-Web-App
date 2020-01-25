@@ -529,7 +529,7 @@ module CeleryScriptSettingsBag
         resource_id = n.args.fetch(:point_group_id).value
         check_resource_type(n, "PointGroup", resource_id, Device.current)
       end,
-    },
+    }
   }.map { |(name, list)| Corpus.node(name, **list) }
 
   HASH = Corpus.as_json
