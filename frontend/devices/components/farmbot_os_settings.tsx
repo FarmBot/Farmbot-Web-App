@@ -13,7 +13,6 @@ import { BoardType } from "./fbos_settings/board_type";
 import { FarmbotOsRow } from "./fbos_settings/farmbot_os_row";
 import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
-import { isUndefined } from "lodash";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { SendDiagnosticReport } from "./send_diagnostic_report";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
@@ -154,11 +153,9 @@ export class FarmbotOsSettings
               botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
               timeSettings={this.props.timeSettings}
               deviceAccount={this.props.deviceAccount} />
-            {(location.host.includes("localhost")
-              || !isUndefined(sourceFbosConfig("auto_sync").value)) &&
-              <AutoSyncRow
-                dispatch={this.props.dispatch}
-                sourceFbosConfig={sourceFbosConfig} />}
+            <AutoSyncRow
+              dispatch={this.props.dispatch}
+              sourceFbosConfig={sourceFbosConfig} />
             {this.props.shouldDisplay(Feature.boot_sequence) &&
               <BootSequenceSelector />}
             <PowerAndReset

@@ -1,6 +1,26 @@
 module PointGroups
+  module ClassLevelHelpers
+    def criteria
+      self.optional do
+        hash :criteria do
+          hash(:day) do
+            string :op, in: [">", "<"]
+            integer :days
+          end
+          hash(:string_eq) { array :*, class: String }
+          hash(:number_eq) { array :*, class: Integer }
+          hash(:number_lt) { integer :* }
+          hash(:number_gt) { integer :* }
+        end
+      end
+    end
+  end
+
   module Helpers
     BAD_POINT_IDS = "The group contains invalid points."
+    def self.included(base)
+      base.extend PointGroups::ClassLevelHelpers
+    end
 
     def points
       @points ||= Point.where(id: point_ids, device: device)

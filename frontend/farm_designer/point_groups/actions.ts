@@ -22,8 +22,18 @@ export const createGroup = ({ points, name }: CreateGroupProps) => {
         .map(x => references[x])
         .map(x => x ? x.body.id : undefined);
       const point_ids = betterCompact(possiblyNil);
-      const group: PointGroup =
-        ({ name: name || UNTITLED(), point_ids, sort_type: "xy_ascending" });
+      const group: PointGroup = {
+        name: name || UNTITLED(),
+        point_ids,
+        sort_type: "xy_ascending",
+        criteria: {
+          day: { op: ">", days: 0 },
+          number_eq: {},
+          number_gt: {},
+          number_lt: {},
+          string_eq: {}
+        }
+      };
       const action = init("PointGroup", group);
       dispatch(action);
       return dispatch(save(action.payload.uuid)).then(() => {

@@ -8,6 +8,8 @@ module PointGroups
       model :point_group, class: PointGroup
     end
 
+    criteria
+
     optional do
       string :name
       array :point_ids, class: Integer
@@ -34,7 +36,9 @@ module PointGroups
     private
 
     def update_attributes
-      @update_attributes ||= inputs.except(*BLACKLISTED_FIELDS)
+      @update_attributes ||= inputs
+        .except(*BLACKLISTED_FIELDS)
+        .merge(criteria: criteria || point_group.criteria)
     end
 
     def maybe_reconcile_points
