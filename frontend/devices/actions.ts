@@ -96,8 +96,11 @@ export function reboot() {
 /** Restart Farmduino firmware serial connection. */
 export function restartFirmware() {
   const noun = t("Restart Firmware");
-  getDevice()
+  const device = getDevice();
+  return device
     .rebootFirmware()
+    .then(device.emergencyLock)
+    .then(device.emergencyUnlock)
     .then(commandOK(noun), commandErr(noun));
 }
 
