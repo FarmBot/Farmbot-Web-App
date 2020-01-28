@@ -97,7 +97,7 @@ export function reboot() {
 export function restartFirmware() {
   const noun = t("Restart Firmware");
   const device = getDevice();
-  device
+  return device
     .rebootFirmware()
     .then(device.emergencyLock)
     .then(device.emergencyUnlock)
