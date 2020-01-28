@@ -14,10 +14,12 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   home: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve()),
-  dumpInfo: jest.fn(() => Promise.resolve()),
+  dumpInfo: jest.fn(() => Promise.resolve())
 };
 
-const mockDevice = { current: mockDeviceDefault };
+const mockDevice = {
+  current: mockDeviceDefault
+};
 
 jest.mock("../../device", () => ({ getDevice: () => mockDevice.current }));
 
