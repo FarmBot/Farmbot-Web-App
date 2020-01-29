@@ -837,6 +837,11 @@ export namespace Content {
 
   export const NO_CAMERA_SELECTED =
     trim(`No camera selected`);
+
+  // Other
+  export const DOWNLOAD_FBOS =
+    trim(`Download the version of FarmBot OS that corresponds to your
+    FarmBot kit and its internal computer.`);
 }
 
 export namespace TourContent {

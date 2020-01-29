@@ -57,6 +57,7 @@ commands:
           name: Run JS tests
           command: |
             sudo docker-compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js
+            echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
       - run:
@@ -74,7 +75,7 @@ commands:
       - run:
           name: Report coverage to Coveralls
           command: |
-            if [ -f /home/circleci/project/coverage_fe/lcov.info ]
+            if [ "$COVERAGE_AVAILABLE" ]
             then
               sudo docker-compose run -e COVERALLS_REPO_TOKEN=lEX6nkql7y2YFCcIXVq5ORvdvMtYzfZdG web npm run coverage
             fi

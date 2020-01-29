@@ -10,6 +10,11 @@ describe DashboardController do
       expect(response.status).to eq(200)
     end
 
+    it "renders the os download page" do
+      get :os_download
+      expect(response.status).to eq(200)
+    end
+
     it "renders the front page" do
       get :front_page
       expect(response.status).to eq(200)
