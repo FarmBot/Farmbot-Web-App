@@ -7,6 +7,7 @@ class DashboardController < ApplicationController
                        :main_app,
                        :password_reset,
                        :tos_update,
+                       :os_download,
                        :demo]
 
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
@@ -24,6 +25,7 @@ class DashboardController < ApplicationController
     password_reset: "/password_reset/index.tsx",
     tos_update: "/tos_update/index.tsx",
     demo: "/demo/index.tsx",
+    os_download: "/os_download/index.tsx"
   }.with_indifferent_access
 
   # === THESE CONSTANTS ARE NON-CONFIGURABLE. ===

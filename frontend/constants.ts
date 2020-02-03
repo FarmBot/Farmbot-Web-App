@@ -837,6 +837,11 @@ export namespace Content {
 
   export const NO_CAMERA_SELECTED =
     trim(`No camera selected`);
+
+  // Other
+  export const DOWNLOAD_FBOS =
+    trim(`Download the version of FarmBot OS that corresponds to your
+    FarmBot kit and its internal computer.`);
 }
 
 export namespace TourContent {
@@ -907,10 +912,12 @@ export namespace DiagnosticMessages {
     network, a firewall may be blocking port 5672. Ensure that the blue LED
     communications light on the FarmBot electronics box is illuminated.`);
 
-  export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
-    but we have no recent record of FarmBot connecting to the internet.
-    This usually happens because of a bad WiFi signal in the garden, a bad
-    password during configuration, or a very long power outage.`);
+  export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly, but
+  we have no recent record of FarmBot connecting to the internet. This usually
+  happens because of poor WiFi connectivity in the garden, a bad password during
+  configuration, a very long power outage, or blocked ports on FarmBot's local
+  network. Please refer IT staff to
+  https://software.farm.bot/docs/for-it-security-professionals`);
 
   export const NO_WS_AVAILABLE = trim(`You are either offline, using a web
    browser that does not support WebSockets, or are behind a firewall that

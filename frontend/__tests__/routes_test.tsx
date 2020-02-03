@@ -21,6 +21,7 @@ import { store } from "../redux/store";
 import { AuthState } from "../auth/interfaces";
 import { auth } from "../__test_support__/fake_state/token";
 import { Session } from "../session";
+import { FourOhFour } from "../404";
 
 describe("<RootComponent />", () => {
   it("clears session when not authorized", () => {
@@ -37,5 +38,11 @@ describe("<RootComponent />", () => {
     const wrapper = shallow(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
     wrapper.unmount();
+  });
+
+  it("changes route", () => {
+    const wrapper = shallow<RootComponent>(<RootComponent store={store} />);
+    wrapper.instance().changeRoute(FourOhFour);
+    expect(wrapper.state().Route).toEqual(FourOhFour);
   });
 });

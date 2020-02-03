@@ -133,6 +133,10 @@ export type HardwareState = BotStateTree;
 export interface GithubRelease {
   tag_name: string;
   target_commitish: string;
+  assets: {
+    name: string;
+    browser_download_url: string;
+  }[];
 }
 
 export interface OsUpdateInfo {
