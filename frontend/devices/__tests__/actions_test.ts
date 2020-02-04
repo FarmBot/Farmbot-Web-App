@@ -13,8 +13,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   readPin: jest.fn(() => Promise.resolve()),
   home: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
-  readStatus: jest.fn(() => Promise.resolve()),
-  dumpInfo: jest.fn(() => Promise.resolve())
+  readStatus: jest.fn(() => Promise.resolve())
 };
 
 const mockDevice = {
@@ -210,13 +209,6 @@ describe("MCUFactoryReset()", function () {
     window.confirm = () => true;
     actions.MCUFactoryReset();
     expect(mockDevice.current.resetMCU).toHaveBeenCalled();
-  });
-});
-
-describe("requestDiagnostic", () => {
-  it("requests that FBOS build a diagnostic report", () => {
-    actions.requestDiagnostic();
-    expect(mockDevice.current.dumpInfo).toHaveBeenCalled();
   });
 });
 

@@ -65,7 +65,7 @@ describe("resource reducer", () => {
   });
 
   const TEST_RESOURCE_NAMES: TaggedResource["kind"][] = ["Crop", "Device",
-    "DiagnosticDump", "FarmEvent", "FarmwareInstallation", "FbosConfig",
+    "FarmEvent", "FarmwareInstallation", "FbosConfig",
     "FirmwareConfig", "Log", "Peripheral", "PinBinding", "PlantTemplate",
     "Point", "Regimen", "SavedGarden", "Sensor"];
 

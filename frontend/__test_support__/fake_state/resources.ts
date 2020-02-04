@@ -1,7 +1,6 @@
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../resource_index_builder";
 import {
-  TaggedDiagnosticDump,
   TaggedFarmEvent,
   TaggedFbosConfig,
   TaggedFirmwareConfig,
@@ -156,23 +155,6 @@ export function fakePlant(): TaggedPlantPointer {
     radius: 25,
     meta: {},
     openfarm_slug: "strawberry"
-  });
-}
-
-export function fakeDiagnosticDump(): TaggedDiagnosticDump {
-  const string = "----PLACEHOLDER DIAG STUFF ---";
-  return fakeResource("DiagnosticDump", {
-    id: idCounter++,
-    device_id: idCounter++,
-    ticket_identifier: string,
-    fbos_commit: string,
-    fbos_version: string,
-    firmware_commit: string,
-    firmware_state: string,
-    network_interface: string,
-    fbos_dmesg_dump: string,
-    created_at: "2018-01-11T20:20:38.362Z",
-    updated_at: "2018-01-11T20:20:38.362Z",
   });
 }
 

@@ -6,7 +6,6 @@ import { Page, Col, Row } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
 import { PinBindings } from "./pin_bindings/pin_bindings";
-import { selectAllDiagnosticDumps } from "../resources/selectors";
 import { getStatus } from "../connectivity/reducer_support";
 import { isFwHardwareValue } from "./components/firmware_hardware_support";
 
@@ -24,7 +23,6 @@ export class RawDevices extends React.Component<Props, {}> {
         <Row>
           <Col xs={12} sm={6}>
             <FarmbotOsSettings
-              diagnostics={selectAllDiagnosticDumps(this.props.resources)}
               deviceAccount={this.props.deviceAccount}
               dispatch={this.props.dispatch}
               alerts={this.props.alerts}

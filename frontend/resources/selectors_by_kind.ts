@@ -14,7 +14,6 @@ import {
   TaggedSensor,
   TaggedPeripheral,
   TaggedPinBinding,
-  TaggedDiagnosticDump,
   TaggedSensorReading,
   TaggedSavedGarden,
   TaggedPlantTemplate,
@@ -82,8 +81,6 @@ export const selectAllPointGroups =
 export const selectAllActivePoints = (input: ResourceIndex) =>
   selectAllPoints(input).filter(x => !x.body.discarded_at);
 
-export const selectAllDiagnosticDumps =
-  (i: ResourceIndex) => findAll<TaggedDiagnosticDump>(i, "DiagnosticDump");
 export const selectAllFarmwareEnvs =
   (i: ResourceIndex) => findAll<TaggedFarmwareEnv>(i, "FarmwareEnv");
 export const selectAllFarmwareInstallations = (i: ResourceIndex) =>

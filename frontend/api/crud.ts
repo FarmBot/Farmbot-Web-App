@@ -260,7 +260,6 @@ export function urlFor(tag: ResourceName) {
   const OPTIONS: Partial<Record<ResourceName, string>> = {
     Alert: API.current.alertPath,
     Device: API.current.devicePath,
-    DiagnosticDump: API.current.diagnosticDumpsPath,
     FarmEvent: API.current.farmEventsPath,
     FarmwareEnv: API.current.farmwareEnvPath,
     FarmwareInstallation: API.current.farmwareInstallationPath,
