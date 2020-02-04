@@ -44,7 +44,6 @@ export const emptyState = (): RestResources => {
         Alert: {},
         Crop: {},
         Device: {},
-        DiagnosticDump: {},
         FarmEvent: {},
         FarmwareEnv: {},
         FarmwareInstallation: {},

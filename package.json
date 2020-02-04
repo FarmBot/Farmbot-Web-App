@@ -45,7 +45,7 @@
     "coveralls": "3.0.9",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.2",
-    "farmbot": "9.0.1-rc1",
+    "farmbot": "9.0.2",
     "i18next": "19.0.3",
     "install": "0.13.0",
     "lodash": "4.17.15",
@@ -69,7 +69,6 @@
     "redux": "4.0.5",
     "redux-immutable-state-invariant": "2.1.0",
     "redux-thunk": "2.3.0",
-    "sass": "1.25.0",
     "sass-lint": "1.13.1",
     "takeme": "0.11.3",
     "ts-jest": "25.0.0",
@@ -81,9 +80,10 @@
   "devDependencies": {
     "jest": "25.1.0",
     "jest-cli": "25.1.0",
-    "jest-skipped-reporter": "0.0.5",
     "jest-junit": "10.0.0",
+    "jest-skipped-reporter": "0.0.5",
     "jshint": "2.11.0",
-    "madge": "3.6.0"
+    "madge": "3.6.0",
+    "sass": "1.25.0"
   }
 }

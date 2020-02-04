@@ -90,7 +90,6 @@ export async function fetchSyncData(dispatch: Function) {
     ]),
     4: () => Promise.all<{}>([
       get("FarmEvent", API.current.farmEventsPath),
-      get("DiagnosticDump", API.current.diagnosticDumpsPath),
       get("Image", API.current.imagesPath),
       get("Log", API.current.filteredLogsPath),
       get("WebcamFeed", API.current.webcamFeedPath)

@@ -168,11 +168,6 @@ export function execSequence(
   }
 }
 
-export function requestDiagnostic() {
-  const noun = t("Diagnostic Request");
-  return getDevice().dumpInfo().then(commandOK(noun), commandErr(noun));
-}
-
 const tagNameToVersionString = (tagName: string): string =>
   tagName.toLowerCase().replace("v", "");
 

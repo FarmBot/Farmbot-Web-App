@@ -30,8 +30,7 @@ export const initialState = (): BotState => ({
     encoders_and_endstops: false,
     danger_zone: false,
     power_and_reset: false,
-    pin_guard: false,
-    diagnostic_dumps: false
+    pin_guard: false
   },
   hardware: {
     gpio_registry: {},

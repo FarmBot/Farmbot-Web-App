@@ -25,7 +25,6 @@ export const specialActionLabelLookup: { [x: string]: string } = {
   [PinBindingSpecialAction.power_off]: t("Shutdown"),
   [PinBindingSpecialAction.reboot]: t("Reboot"),
   [PinBindingSpecialAction.sync]: t("Sync"),
-  [PinBindingSpecialAction.dump_info]: t("Diagnostic Report"),
   [PinBindingSpecialAction.read_status]: t("Read Status"),
   [PinBindingSpecialAction.take_photo]: t("Take Photo"),
   "": t("None")

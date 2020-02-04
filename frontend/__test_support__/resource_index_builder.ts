@@ -375,7 +375,6 @@ const KIND_PRIORITY: ResourceLookupTable = {
   Regimen: 3,
   PinBinding: 3,
   FarmEvent: 4,
-  DiagnosticDump: 4,
   Image: 4,
   Log: 4,
   WebcamFeed: 4,
