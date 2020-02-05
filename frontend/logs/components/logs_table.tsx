@@ -69,26 +69,28 @@ const LOG_TABLE_CLASS = [
 
 /** All log messages with select data in table form for display in the app. */
 export const LogsTable = (props: LogsTableProps) => {
-  return <table className={LOG_TABLE_CLASS}>
-    <thead>
-      <tr>
-        <th><label>{t("Type")}</label></th>
-        <th><label>{t("Message")}</label></th>
-        <th><label>{t("(x, y, z)")}</label></th>
-        <th><label>{t("Time")}</label></th>
-      </tr>
-    </thead>
-    <tbody>
-      {filterByVerbosity(getFilterLevel(props.state), props.logs)
-        .map((log: TaggedLog) =>
-          <LogsRow
-            key={log.uuid}
-            tlog={log}
-            dispatch={props.dispatch}
-            markdown={props.state.markdown}
-            timeSettings={props.timeSettings} />)}
-    </tbody>
-  </table>;
+  return <div className={"table-responsive"}>
+    <table className={LOG_TABLE_CLASS}>
+      <thead>
+        <tr>
+          <th><label>{t("Type")}</label></th>
+          <th><label>{t("Message")}</label></th>
+          <th><label>{t("(x, y, z)")}</label></th>
+          <th><label>{t("Time")}</label></th>
+        </tr>
+      </thead>
+      <tbody>
+        {filterByVerbosity(getFilterLevel(props.state), props.logs)
+          .map((log: TaggedLog) =>
+            <LogsRow
+              key={log.uuid}
+              tlog={log}
+              dispatch={props.dispatch}
+              markdown={props.state.markdown}
+              timeSettings={props.timeSettings} />)}
+      </tbody>
+    </table>
+  </div>;
 };
 
 /** Get current verbosity filter level for a message type from LogsState. */

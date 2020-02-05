@@ -37,7 +37,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
     } else {
       return currentValue as number;
     }
-  }
+  };
 
   state: LogsState = {
     autoscroll: false,
@@ -61,7 +61,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
       this.props.dispatch(
         setWebAppConfigValue(safeNumericSetting(name + "_log"), newSetting));
     };
-  }
+  };
 
   /** Set log type filter level. i.e., level 2 shows verbosity 2 and lower.*/
   setFilterLevel = (name: keyof Filters) => {
