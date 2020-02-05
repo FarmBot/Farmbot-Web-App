@@ -45,6 +45,8 @@ micro .env          # ⚠ SKIP THIS STEP IF UPGRADING!
 # ^ This is the most important step
 # READ NOTE ABOVE. Very important!
 
+# Install the correct version of bundler for the project
+sudo docker-compose run web gem install bundler:2.1.4
 # Install application specific Ruby dependencies
 sudo docker-compose run web bundle install
 # Install application specific Javascript deps
