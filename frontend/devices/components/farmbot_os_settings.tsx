@@ -14,7 +14,6 @@ import { FarmbotOsRow } from "./fbos_settings/farmbot_os_row";
 import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
-import { SendDiagnosticReport } from "./send_diagnostic_report";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
 
 export enum ColWidth {
@@ -164,11 +163,6 @@ export class FarmbotOsSettings
               sourceFbosConfig={sourceFbosConfig}
               shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
-            <SendDiagnosticReport
-              diagnostics={this.props.diagnostics}
-              expanded={this.props.bot.controlPanelState.diagnostic_dumps}
-              botOnline={isBotOnline(sync_status, botToMqttStatus)}
-              dispatch={this.props.dispatch} />
           </MustBeOnline>
         </WidgetBody>
       </form>

@@ -3,7 +3,6 @@ import { startTracking } from "../connectivity/data_consistency";
 import { unpackUUID } from "../util";
 
 const BLACKLIST: ResourceName[] = [
-  "DiagnosticDump",
   "FbosConfig",
   "FirmwareConfig",
   "Image",

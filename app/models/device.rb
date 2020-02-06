@@ -16,7 +16,7 @@ class Device < ApplicationRecord
                         images logs peripherals pin_bindings plant_templates
                         points point_groups regimens saved_gardens
                         sensor_readings sensors sequences token_issuances tools
-                        webcam_feeds diagnostic_dumps fragments)
+                        webcam_feeds fragments)
 
   PLURAL_RESOURCES.map { |resources| has_many resources, dependent: :destroy }
 

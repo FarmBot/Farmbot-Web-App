@@ -856,7 +856,7 @@
     "This will restart FarmBot's Raspberry Pi and controller software.": "Ceci redémarrera le programme de contrôle de la Raspberry Pi de FarmBot.",
     "This will shutdown FarmBot's Raspberry Pi. To turn it back on, unplug FarmBot and plug it back in.": "Ceci éteindra la Raspberry Pi de FarmBot. Pour la redémarrer, débranchez puis rebranchez FarmBot.",
     "Ticker Notification": "Ticket de Notification",
-    "Time": "Temps",
+    "Time": "Heure",
     "Time in milliseconds": "Temps en millisecondes",
     "Time in minutes to attempt connecting to WiFi before a factory reset.": "Temps en minutes pour tenter de se connecter au WiFi avant une réinitialisation d'usine.",
     "Time is not properly formatted.": "Le temps n'est pas correctement formaté.",

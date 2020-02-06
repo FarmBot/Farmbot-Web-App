@@ -15,7 +15,6 @@ describe Api::DevicesController do
     it "provides timestamps of updates, plus current time" do
       sign_in user
 
-      FactoryBot.create(:diagnostic_dump, device: device)
       FactoryBot.create(:farm_event, device: device)
       FactoryBot.create(:farmware_env, device: device)
       FactoryBot.create(:farmware_installation, device: device)

@@ -53,7 +53,7 @@ describe("botReducer", () => {
     });
 
     const bulkToggable =
-      omit(state.controlPanelState, "power_and_reset", "diagnostic_dumps");
+      omit(state.controlPanelState, "power_and_reset");
     values(bulkToggable).map(value => {
       expect(value).toBeTruthy();
     });

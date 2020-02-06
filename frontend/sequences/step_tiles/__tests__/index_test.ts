@@ -204,10 +204,6 @@ describe("renderCeleryNode()", () => {
       expected: ""
     },
     {
-      node: { kind: "dump_info", args: {} },
-      expected: ""
-    },
-    {
       node: { kind: "power_off", args: {} },
       expected: ""
     },

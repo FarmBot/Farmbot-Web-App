@@ -302,49 +302,6 @@ ALTER SEQUENCE public.devices_id_seq OWNED BY public.devices.id;
 
 
 --
--- Name: diagnostic_dumps; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.diagnostic_dumps (
-    id bigint NOT NULL,
-    device_id bigint NOT NULL,
-    ticket_identifier character varying NOT NULL,
-    fbos_commit character varying NOT NULL,
-    fbos_version character varying NOT NULL,
-    firmware_commit character varying NOT NULL,
-    firmware_state character varying NOT NULL,
-    network_interface character varying NOT NULL,
-    fbos_dmesg_dump text NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    sync_status character varying(12),
-    wifi_level character varying(12),
-    soc_temp character varying(12),
-    firmware_hardware character varying(12),
-    firmware_version character varying(12)
-);
-
-
---
--- Name: diagnostic_dumps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.diagnostic_dumps_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: diagnostic_dumps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.diagnostic_dumps_id_seq OWNED BY public.diagnostic_dumps.id;
-
-
---
 -- Name: edge_nodes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1878,13 +1835,6 @@ ALTER TABLE ONLY public.devices ALTER COLUMN id SET DEFAULT nextval('public.devi
 
 
 --
--- Name: diagnostic_dumps id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.diagnostic_dumps ALTER COLUMN id SET DEFAULT nextval('public.diagnostic_dumps_id_seq'::regclass);
-
-
---
 -- Name: edge_nodes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2191,14 +2141,6 @@ ALTER TABLE ONLY public.delayed_jobs
 
 ALTER TABLE ONLY public.devices
     ADD CONSTRAINT devices_pkey PRIMARY KEY (id);
-
-
---
--- Name: diagnostic_dumps diagnostic_dumps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.diagnostic_dumps
-    ADD CONSTRAINT diagnostic_dumps_pkey PRIMARY KEY (id);
 
 
 --
@@ -2550,13 +2492,6 @@ CREATE INDEX index_devices_on_mounted_tool_id ON public.devices USING btree (mou
 --
 
 CREATE INDEX index_devices_on_timezone ON public.devices USING btree (timezone);
-
-
---
--- Name: index_diagnostic_dumps_on_device_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_diagnostic_dumps_on_device_id ON public.diagnostic_dumps USING btree (device_id);
 
 
 --
@@ -3151,14 +3086,6 @@ ALTER TABLE ONLY public.active_storage_attachments
 
 
 --
--- Name: diagnostic_dumps fk_rails_c5df7fdc83; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.diagnostic_dumps
-    ADD CONSTRAINT fk_rails_c5df7fdc83 FOREIGN KEY (device_id) REFERENCES public.devices(id);
-
-
---
 -- Name: farmware_installations fk_rails_c72f38683f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3448,6 +3375,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191203163621'),
 ('20191219212755'),
 ('20191220010646'),
-('20200116140201');
+('20200116140201'),
+('20200204192005');
 
 

@@ -6,7 +6,6 @@ import {
   TaggedPeripheral,
   TaggedDevice,
   TaggedSensor,
-  TaggedDiagnosticDump,
   TaggedFarmwareInstallation,
   JobProgress,
   FirmwareHardware,
@@ -74,7 +73,6 @@ export enum Feature {
   backscheduled_regimens = "backscheduled_regimens",
   boot_sequence = "boot_sequence",
   change_ownership = "change_ownership",
-  diagnostic_dumps = "diagnostic_dumps",
   endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
   farmduino_k14 = "farmduino_k14",
@@ -164,7 +162,6 @@ export type UserEnv = Record<string, string | undefined>;
 export interface FarmbotOsProps {
   bot: BotState;
   alerts: Alert[];
-  diagnostics: TaggedDiagnosticDump[];
   deviceAccount: TaggedDevice;
   botToMqttStatus: NetworkState;
   botToMqttLastSeen: number;
@@ -251,5 +248,4 @@ export interface ControlPanelState {
   danger_zone: boolean;
   power_and_reset: boolean;
   pin_guard: boolean;
-  diagnostic_dumps: boolean;
 }

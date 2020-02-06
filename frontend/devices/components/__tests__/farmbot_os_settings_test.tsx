@@ -35,7 +35,6 @@ describe("<FarmbotOsSettings />", () => {
       ota_hour: 3,
       tz_offset_hrs: 0
     }),
-    diagnostics: [],
     dispatch: jest.fn(),
     bot,
     alerts: [],
