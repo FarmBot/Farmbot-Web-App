@@ -46,9 +46,9 @@ describe("<Grid/>", () => {
     const minorGrid = wrapper.find("#minor_grid>path");
     const majorGrid = wrapper.find("#major_grid>path");
     const superiorGrid = wrapper.find("#superior_grid>path");
-    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.15)");
-    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.3)");
-    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.4)");
+    expect(minorGrid.props()).toHaveProperty("strokeWidth", "1");
+    expect(majorGrid.props()).toHaveProperty("strokeWidth", "2");
+    expect(superiorGrid.props()).toHaveProperty("strokeWidth", "4");
   });
 
   it("change patterns strokes on 0.5 zoom and below", () => {
@@ -58,8 +58,8 @@ describe("<Grid/>", () => {
     const minorGrid = wrapper.find("#minor_grid>path");
     const majorGrid = wrapper.find("#major_grid>path");
     const superiorGrid = wrapper.find("#superior_grid>path");
-    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0)");
-    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.6)");
-    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.8)");
+    expect(minorGrid.props()).toHaveProperty("strokeWidth", "0");
+    expect(majorGrid.props()).toHaveProperty("strokeWidth", "3");
+    expect(superiorGrid.props()).toHaveProperty("strokeWidth", "6");
   });
 });

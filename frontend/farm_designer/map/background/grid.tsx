@@ -13,27 +13,27 @@ export function Grid(props: GridProps) {
   const arrowEnd = transformXY(25, 25, mapTransformProps);
   const xLabel = transformXY(15, -10, mapTransformProps);
   const yLabel = transformXY(-11, 18, mapTransformProps);
-  const minorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0)" : "rgba(0, 0, 0, 0.15)";
-  const majorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.3)";
-  const superiorGridStroke = zoomLvl <= 0.5 ? "rgba(0, 0, 0, 0.8)" : "rgba(0, 0, 0, 0.4)";
+  const minorStrokeWidth = zoomLvl <= 0.5 ? "0" : "1";
+  const majorStrokeWidth = zoomLvl <= 0.5 ? "3" : "2";
+  const superiorStrokeWidth = zoomLvl <= 0.5 ? "6" : "4";
   return <g className="drop-area-background" onClick={props.onClick}
     onMouseDown={props.onMouseDown}>
     <defs>
       <pattern id="minor_grid"
         width={10} height={10} patternUnits="userSpaceOnUse">
-        <path d="M10,0 L0,0 L0,10" strokeWidth={1}
-          fill="none" stroke={minorGridStroke} />
+        <path d="M10,0 L0,0 L0,10" strokeWidth={minorStrokeWidth}
+          fill="none" stroke="rgba(0, 0, 0, 0.15)" />
       </pattern>
 
       <pattern id={"major_grid"}
         width={100} height={100} patternUnits="userSpaceOnUse">
-        <path d="M100,0 L0,0 0,100" strokeWidth={2}
-          fill="none" stroke={majorGridStroke} />
+        <path d="M100,0 L0,0 0,100" strokeWidth={majorStrokeWidth}
+          fill="none" stroke="rgba(0, 0, 0, 0.3)" />
       </pattern>
 
       <pattern id="superior_grid" width={1000} height={1000} patternUnits="userSpaceOnUse">
-        <path d="M1000,0 L0,0 0,1000" strokeWidth={2}
-              fill="none" stroke={superiorGridStroke} />
+        <path d="M1000,0 L0,0 0,1000" strokeWidth={superiorStrokeWidth}
+              fill="none" stroke="rgba(0, 0, 0, 0.4)" />
       </pattern>
 
       <marker id="arrow"
