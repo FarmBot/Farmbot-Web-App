@@ -5,7 +5,7 @@ import { shallow } from "enzyme";
 import { write, RegimenNameInput } from "../regimen_name_input";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { editRegimen } from "../../actions";
-import { inputEvent } from "../../../__test_support__/fake_input_event";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 
 const fakeProps = () => ({ regimen: fakeRegimen(), dispatch: jest.fn() });
 

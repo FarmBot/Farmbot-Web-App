@@ -2,6 +2,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { PasswordReset, State } from "../password_reset";
 import * as moxios from "moxios";
+import { inputEvent } from "../../__test_support__/fake_html_events";
 
 describe("<PasswordReset/>", () => {
   beforeEach(function () {
@@ -46,11 +47,8 @@ describe("<PasswordReset/>", () => {
     const i = el.instance() as PasswordReset;
     const field = "password";
     const value = "password123";
-    const fn = i.set(field);
     i.setState = jest.fn(i.setState);
-    type E = React.FormEvent<HTMLInputElement>;
-    const e = { currentTarget: { value } } as E;
-    fn(e as E);
+    i.set(field)(inputEvent(value));
     expect(i.setState).toHaveBeenCalledWith({ [field]: value });
   });
 });

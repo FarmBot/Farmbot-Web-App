@@ -15,8 +15,7 @@ import axios from "axios";
 import { API } from "../../api/index";
 import { Session } from "../../session";
 import { error } from "../../toast/toast";
-
-type E = React.FormEvent<HTMLInputElement>;
+import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 
 describe("<TosUpdate/>", () => {
   const instance = () => shallow<TosUpdate>(<TosUpdate />).instance();
@@ -32,27 +31,26 @@ describe("<TosUpdate/>", () => {
   });
 
   it("has a setter", () => {
-    const wow = instance();
-    wow.setState = jest.fn();
-    const fn = wow.set("email");
-    fn({ currentTarget: { value: "foo@bar.com" } } as E);
-    expect(wow.setState).toHaveBeenCalledWith({ email: "foo@bar.com" });
+    const tosUpdate = instance();
+    tosUpdate.setState = jest.fn();
+    tosUpdate.set("email")(inputEvent("foo@bar.com"));
+    expect(tosUpdate.setState).toHaveBeenCalledWith({ email: "foo@bar.com" });
   });
 
-  type FormEvent = React.FormEvent<HTMLFormElement>;
-  const fakeEvent: Partial<FormEvent> = { preventDefault: jest.fn() };
   const fake = {
     email: "foo@bar.com",
     password: "password123",
     agree_to_terms: true
   };
 
+  const fakeFormEvent = formEvent();
+
   it("submits a form", async () => {
     location.assign = jest.fn();
     const i = instance();
     i.setState(fake);
-    await i.submit(fakeEvent as FormEvent);
-    expect(fakeEvent.preventDefault).toHaveBeenCalled();
+    await i.submit(fakeFormEvent);
+    expect(fakeFormEvent.preventDefault).toHaveBeenCalled();
     expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, { user: fake });
     expect(Session.replaceToken).toHaveBeenCalledWith(mockToken);
@@ -63,8 +61,8 @@ describe("<TosUpdate/>", () => {
     mockPostResponse = Promise.reject({ response: { data: ["error"] } });
     const i = instance();
     i.setState(fake);
-    await i.submit(fakeEvent as FormEvent);
-    expect(fakeEvent.preventDefault).toHaveBeenCalled();
+    await i.submit(fakeFormEvent);
+    expect(fakeFormEvent.preventDefault).toHaveBeenCalled();
     await expect(axios.post)
       .toHaveBeenCalledWith(API.current.tokensPath, { user: fake });
     await expect(error).toHaveBeenCalledWith(expect.stringContaining("error"));

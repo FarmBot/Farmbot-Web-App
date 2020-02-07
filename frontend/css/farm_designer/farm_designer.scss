@@ -213,7 +213,7 @@
   .groups-list-wrapper {
     padding: 0.5em 0em;
   }
-  .groups-delete-btn {
+  .group-delete-btn {
     float: left;
     margin-top: 1em;
   }
@@ -329,6 +329,21 @@
   pointer-events: none;
   &.animate {
     animation: spread-pop 0.2s cubic-bezier(0, 0, 0, 1);
+  }
+}
+
+.zones-layer {
+  [id*="zones-1D-"] {
+    stroke: $black;
+    stroke-width: 5;
+  }
+  [id*="zones-"] {
+    opacity: 0.1;
+    &.current {
+      opacity: 0.25;
+      fill: $white;
+      stroke: $white;
+    }
   }
 }
 

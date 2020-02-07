@@ -11,19 +11,18 @@ mockGroup.body.name = "one";
 mockGroup.body.id = GOOD_ID;
 mockGroup.body.point_ids = [23];
 
-let mockId = GOOD_ID;
-jest.mock("../../../history", () => {
-  return {
-    getPathArray: jest.fn(() => ["groups", mockId]),
-    push: jest.fn()
-  };
-});
+const mockId = GOOD_ID;
+let mockPath = `/app/designer/groups/${mockId}`;
+jest.mock("../../../history", () => ({
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  push: jest.fn()
+}));
 
 import React from "react";
 import { Provider } from "react-redux";
 import { mount } from "enzyme";
 import { GroupDetailActive } from "../group_detail_active";
-import { GroupDetail } from "../group_detail";
+import { GroupDetail, findGroupFromUrl } from "../group_detail";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { createStore } from "redux";
 import {
@@ -42,7 +41,7 @@ describe("<GroupDetail />", () => {
   };
 
   it("redirects when group is not found", () => {
-    mockId = -23;
+    mockPath = "/app/designer/groups/-23";
     const store = fakeStore();
     const el = mount(<Provider store={store}>
       <GroupDetail />
@@ -53,12 +52,44 @@ describe("<GroupDetail />", () => {
   });
 
   it("loads <GroupDetailActive/>", () => {
-    mockId = GOOD_ID;
+    mockPath = `/app/designer/groups/${mockId}`;
     const store = fakeStore();
     const el = mount(<Provider store={store}>
       <GroupDetail />
     </Provider>);
     const result = el.find(GroupDetailActive);
     expect(result.length).toEqual(1);
+  });
+});
+
+describe("findGroupFromUrl()", () => {
+  it("finds group from URL", () => {
+    mockPath = `/app/designer/groups/${mockId}`;
+    const group = fakePointGroup();
+    group.body.id = mockId;
+    const otherGroup = fakePointGroup();
+    otherGroup.body.id = mockId + 1;
+    const result = findGroupFromUrl([group]);
+    expect(result).toEqual(group);
+  });
+
+  it("fails to find group from URL", () => {
+    mockPath = `/app/designer/groups/${mockId}`;
+    const result = findGroupFromUrl([]);
+    expect(result).toEqual(undefined);
+  });
+
+  it("fails to find group from URL: undefined array item", () => {
+    mockPath = "/app/designer/groups/";
+    const result = findGroupFromUrl([]);
+    expect(result).toEqual(undefined);
+  });
+
+  it("doesn't try to find a group when at a different URL", () => {
+    mockPath = `/app/designer/plants/${mockId}`;
+    const group = fakePointGroup();
+    group.body.id = mockId;
+    const result = findGroupFromUrl([group]);
+    expect(result).toEqual(undefined);
   });
 });

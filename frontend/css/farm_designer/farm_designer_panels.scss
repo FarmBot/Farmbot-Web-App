@@ -738,6 +738,114 @@
   }
 }
 
+.group-detail-panel {
+  .panel-content {
+    .group-criteria {
+      margin-top: 1rem;
+      .criteria-heading {
+        margin-top: 0;
+      }
+      .fb-button {
+        margin-top: 0.5rem;
+      }
+      .group-criteria-presets {
+        input[type="radio"] {
+          width: auto;
+          margin-right: 1rem;
+        }
+        p {
+          display: inline;
+          text-transform: uppercase;
+        }
+      }
+      .criteria-string,
+      .criteria-pointer-type,
+      .criteria-plant-status,
+      .criteria-slug {
+        margin-top: 1rem;
+      }
+      .location-criteria {
+        .row {
+          margin-top: 1rem;
+          p {
+            font-size: 1.4rem;
+            font-weight: bold;
+          }
+          label {
+            margin-top: 0;
+          }
+        }
+      }
+      .day-criteria {
+        p {
+          display: inline;
+          vertical-align: bottom;
+        }
+      }
+      .string-eq-criteria {
+        margin-top: 1rem;
+        .row {
+          margin-top: 1rem;
+        }
+      }
+      .number-eq-criteria,
+      .number-gt-lt-criteria {
+        margin-top: 1rem;
+        .row {
+          margin-top: 1rem;
+        }
+        p {
+          text-align: center;
+          margin-top: 0.5rem;
+        }
+      }
+      .expandable-header {
+        margin-top: 3rem;
+      }
+    }
+    .criteria-point-count-breakdown {
+      margin-bottom: 1rem;
+      .manual-group-member-count,
+      .criteria-group-member-count {
+        margin-left: 2rem;
+        div {
+          display: inline;
+          padding: 0.25rem;
+          font-size: 1.2rem;
+          border: 1px solid $panel_light_blue;
+        }
+        p {
+          display: inline;
+          margin-left: 1rem;
+        }
+      }
+      .criteria-group-member-count {
+        div {
+          border: 1px solid gray;
+          border-radius: 5px;
+        }
+      }
+    }
+  }
+}
+
+.zone-info-panel {
+  .panel-content {
+    .location-criteria {
+      .row {
+        margin-top: 1rem;
+        p {
+          font-size: 1.4rem;
+          font-weight: bold;
+        }
+        label {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+}
+
 .weeds-inventory-panel,
 .zones-inventory-panel,
 .groups-panel {

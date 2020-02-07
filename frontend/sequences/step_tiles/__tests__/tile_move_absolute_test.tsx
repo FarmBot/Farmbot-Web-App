@@ -15,7 +15,7 @@ import {
   fakeHardwareFlags
 } from "../../../__test_support__/fake_sequence_step_data";
 import { emptyState } from "../../../resources/reducer";
-import { inputEvent } from "../../../__test_support__/fake_input_event";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { StepParams } from "../../interfaces";
 
 describe("<TileMoveAbsolute/>", () => {

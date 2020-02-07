@@ -6,14 +6,14 @@ import { EditResourceParams } from "../../../../api/interfaces";
 import { Actions } from "../../../../constants";
 import { TaggedSequence } from "farmbot";
 import { fakeAssertProps } from "../../__tests__/tile_assertion_test";
+import { inputEvent } from "../../../../__test_support__/fake_html_events";
 
 describe("<LuaPart/>", () => {
   it("renders default verbiage and props", () => {
     const p = fakeAssertProps();
     const el = shallow(<LuaPart {...p} />);
-    const fakeEvent =
-      ({ currentTarget: { value: "hello" } });
-    el.find("textarea").first().simulate("change", fakeEvent);
+    const fakeInputEvent = inputEvent("hello");
+    el.find("textarea").first().simulate("change", fakeInputEvent);
     expect(p.dispatch).toHaveBeenCalled();
     const calledWith: ReduxAction<EditResourceParams> | undefined =
       (p.dispatch as jest.Mock).mock.calls[0][0];

@@ -6,19 +6,19 @@ import { getMode } from "../../util";
 
 export interface PointLayerProps {
   visible: boolean;
-  points: TaggedGenericPointer[];
+  genericPoints: TaggedGenericPointer[];
   mapTransformProps: MapTransformProps;
   hoveredPoint: string | undefined;
   dispatch: Function;
 }
 
 export function PointLayer(props: PointLayerProps) {
-  const { visible, points, mapTransformProps, hoveredPoint } = props;
+  const { visible, genericPoints, mapTransformProps, hoveredPoint } = props;
   const style: React.CSSProperties =
     getMode() === Mode.points ? {} : { pointerEvents: "none" };
   return <g id="point-layer" style={style}>
     {visible &&
-      points.map(p =>
+      genericPoints.map(p =>
         <GardenPoint
           point={p}
           key={p.uuid}

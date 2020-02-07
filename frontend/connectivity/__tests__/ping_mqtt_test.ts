@@ -4,8 +4,6 @@ jest.mock("../index", () => ({
   dispatchQosStart: jest.fn(),
   pingOK: jest.fn()
 }));
-const mockTimestamp = 0;
-jest.mock("../../util", () => ({ timestamp: () => mockTimestamp }));
 
 import {
   readPing,

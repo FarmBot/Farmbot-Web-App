@@ -1,4 +1,4 @@
-import { mapStateToProps } from "../map_state_to_props";
+import { mapStateToProps, plantAge } from "../map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex
@@ -30,5 +30,21 @@ describe("mapStateToProps()", () => {
     const result = mapStateToProps(state);
     expect(result.findPlant("10")).toEqual(
       expect.objectContaining({ uuid }));
+  });
+});
+
+describe("plantAge()", () => {
+  it("returns planted at date", () => {
+    const plant = fakePlant();
+    plant.body.planted_at = "2018-01-11T20:20:38.362Z";
+    plant.body.created_at = undefined;
+    expect(plantAge(plant)).toBeGreaterThan(100);
+  });
+
+  it("returns created at date", () => {
+    const plant = fakePlant();
+    plant.body.planted_at = undefined;
+    plant.body.created_at = "2018-01-11T20:20:38.362Z";
+    expect(plantAge(plant)).toBeGreaterThan(100);
   });
 });

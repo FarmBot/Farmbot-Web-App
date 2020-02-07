@@ -4,12 +4,22 @@ jest.mock("../../util", () => ({ getMode: () => mockMode }));
 
 jest.mock("../../../../history", () => ({ history: { push: jest.fn() } }));
 
-import { fakePlant } from "../../../../__test_support__/fake_state/resources";
+jest.mock("../../../point_groups/criteria", () => ({
+  editGtLtCriteria: jest.fn(),
+}));
+
 import {
-  getSelected, resizeBox, startNewSelectionBox, ResizeSelectionBoxProps
+  fakePlant, fakePointGroup
+} from "../../../../__test_support__/fake_state/resources";
+import {
+  getSelected, resizeBox, startNewSelectionBox, ResizeSelectionBoxProps,
+  StartNewSelectionBoxProps,
+  maybeUpdateGroupCriteria,
+  MaybeUpdateGroupCriteriaProps,
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
 import { history } from "../../../../history";
+import { editGtLtCriteria } from "../../../point_groups/criteria";
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -41,6 +51,7 @@ describe("resizeBox", () => {
     gardenCoords: { x: 100, y: 200 },
     setMapState: jest.fn(),
     dispatch: jest.fn(),
+    plantActions: true,
   });
 
   it("resizes selection box", () => {
@@ -53,6 +64,16 @@ describe("resizeBox", () => {
       type: Actions.SELECT_PLANT,
       payload: undefined
     });
+  });
+
+  it("resizes selection box without plant actions", () => {
+    const p = fakeProps();
+    p.plantActions = false;
+    resizeBox(p);
+    expect(p.setMapState).toHaveBeenCalledWith({
+      selectionBox: { x0: 0, y0: 0, x1: 100, y1: 200 }
+    });
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("doesn't resize box: no location", () => {
@@ -93,10 +114,11 @@ describe("resizeBox", () => {
 });
 
 describe("startNewSelectionBox", () => {
-  const fakeProps = () => ({
+  const fakeProps = (): StartNewSelectionBoxProps => ({
     gardenCoords: { x: 100, y: 200 },
     setMapState: jest.fn(),
     dispatch: jest.fn(),
+    plantActions: true,
   });
 
   it("starts selection box", () => {
@@ -111,6 +133,16 @@ describe("startNewSelectionBox", () => {
     });
   });
 
+  it("starts selection box without plant actions", () => {
+    const p = fakeProps();
+    p.plantActions = false;
+    startNewSelectionBox(p);
+    expect(p.setMapState).toHaveBeenCalledWith({
+      selectionBox: { x0: 100, y0: 200, x1: undefined, y1: undefined }
+    });
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
   it("doesn't start box", () => {
     const p = fakeProps();
     // tslint:disable-next-line:no-any
@@ -121,5 +153,27 @@ describe("startNewSelectionBox", () => {
       type: Actions.SELECT_PLANT,
       payload: undefined
     });
+  });
+});
+
+describe("maybeUpdateGroupCriteria()", () => {
+  const fakeProps = (): MaybeUpdateGroupCriteriaProps => ({
+    selectionBox: { x0: 0, y0: 0, x1: undefined, y1: undefined },
+    dispatch: jest.fn(),
+    group: fakePointGroup(),
+    shouldDisplay: () => true,
+  });
+
+  it("updates criteria", () => {
+    const p = fakeProps();
+    maybeUpdateGroupCriteria(p);
+    expect(editGtLtCriteria).toHaveBeenCalledWith(p.group, p.selectionBox);
+  });
+
+  it("doesn't update criteria", () => {
+    const p = fakeProps();
+    p.shouldDisplay = () => false;
+    maybeUpdateGroupCriteria(p);
+    expect(editGtLtCriteria).not.toHaveBeenCalled();
   });
 });

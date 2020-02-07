@@ -49,22 +49,30 @@ export interface FormattedPlantInfo {
   plantStatus: PlantStage;
 }
 
-export function formatPlantInfo(rsrc: TaggedPlant): FormattedPlantInfo {
-  const p = rsrc.body;
-  const plantedAt = get(p, "planted_at", moment())
-    ? moment(get(p, "planted_at", moment()))
-    : moment(get(p, "created_at", moment()));
-  const currentDay = moment();
-  const daysOld = currentDay.diff(plantedAt, "days") + 1;
+/** Get date planted or fallback to creation date. */
+const plantDate = (plant: TaggedPlant): moment.Moment => {
+  const plantedAt = get(plant, "body.planted_at");
+  const createdAt = get(plant, "body.created_at", moment());
+  return plantedAt ? moment(plantedAt) : moment(createdAt);
+};
+
+/** Compare planted or created date vs time now to determine age. */
+export const plantAge = (plant: TaggedPlant): number => {
+  const currentDate = moment();
+  const daysOld = currentDate.diff(plantDate(plant), "days") + 1;
+  return daysOld;
+};
+
+export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
   return {
-    slug: p.openfarm_slug,
-    id: p.id,
-    name: p.name,
-    daysOld,
-    x: p.x,
-    y: p.y,
-    uuid: rsrc.uuid,
-    plantedAt,
-    plantStatus: get(p, "plant_stage", "planned"),
+    slug: plant.body.openfarm_slug,
+    id: plant.body.id,
+    name: plant.body.name,
+    daysOld: plantAge(plant),
+    x: plant.body.x,
+    y: plant.body.y,
+    uuid: plant.uuid,
+    plantedAt: plantDate(plant),
+    plantStatus: get(plant, "plant_stage", "planned"),
   };
 }

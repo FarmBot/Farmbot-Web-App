@@ -1,3 +1,5 @@
+jest.unmock("../error_boundary");
+
 jest.mock("../util/errors.ts", () => ({ catchErrors: jest.fn() }));
 
 import * as React from "react";

@@ -1,7 +1,14 @@
+jest.mock("../../../open_farm/cached_crop", () => ({
+  maybeGetCachedPlantIcon: jest.fn(),
+}));
+
 import * as React from "react";
-import { RawPlants as Plants, PlantInventoryProps } from "../plant_inventory";
+import {
+  RawPlants as Plants, PlantInventoryProps, mapStateToProps
+} from "../plant_inventory";
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { fakeState } from "../../../__test_support__/fake_state";
 
 describe("<PlantInventory />", () => {
   const fakeProps = (): PlantInventoryProps => ({
@@ -30,5 +37,14 @@ describe("<PlantInventory />", () => {
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "mint" } });
     expect(wrapper.state().searchTerm).toEqual("mint");
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    const state = fakeState();
+    state.resources.consumers.farm_designer.hoveredPlantListItem = "uuid";
+    const result = mapStateToProps(state);
+    expect(result.hoveredPlantListItem).toEqual("uuid");
   });
 });

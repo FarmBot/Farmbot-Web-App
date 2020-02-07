@@ -36,6 +36,7 @@ import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { stepGet } from "../../draggable/actions";
 import { SpecialStatus } from "farmbot";
+import { dragEvent } from "../../__test_support__/fake_html_events";
 
 /** A set of fake Folder resources used exclusively for testing purposes.
  ```
@@ -314,19 +315,15 @@ describe("moveSequence", () => {
 });
 
 describe("dropSequence()", () => {
-  const fakeDragEvent = ({
-    dataTransfer: { getData: () => "fakeKey" }
-  } as unknown as React.DragEvent<HTMLElement>);
-
   it("updates folder_id", () => {
-    dropSequence(1)(fakeDragEvent);
+    dropSequence(1)(dragEvent("fakeKey"));
     expect(stepGet).toHaveBeenCalledWith("fakeKey");
     expect(edit).toHaveBeenCalledWith(mockSequence, { folder_id: 1 });
   });
 
   it("handles missing sequence", () => {
     mockStepGetResult.value.args.sequence_id = -1;
-    dropSequence(1)(fakeDragEvent);
+    dropSequence(1)(dragEvent("fakeKey"));
     expect(stepGet).toHaveBeenCalledWith("fakeKey");
     expect(edit).not.toHaveBeenCalled();
   });
@@ -334,7 +331,7 @@ describe("dropSequence()", () => {
   it("gets sequence by UUID", () => {
     mockStepGetResult.value.args.sequence_id = -1;
     mockStepGetResult.resourceUuid = mockSequence.uuid;
-    dropSequence(1)(fakeDragEvent);
+    dropSequence(1)(dragEvent("fakeKey"));
     expect(stepGet).toHaveBeenCalledWith("fakeKey");
     expect(edit).toHaveBeenCalledWith(mockSequence, { folder_id: 1 });
   });

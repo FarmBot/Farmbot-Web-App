@@ -1,14 +1,17 @@
-import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
-const mockGroup = fakePointGroup();
-mockGroup.body.point_ids = [1, 2, 3];
-jest.mock("../group_detail", () => ({ fetchGroupFromUrl: () => mockGroup }));
+import { fakeState } from "../../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../../redux/store", () => ({
+  store: { getState: () => mockState },
+}));
 
 import * as React from "react";
 import { GroupOrder, GroupOrderProps } from "../group_order_visual";
 import {
   fakeMapTransformProps
 } from "../../../__test_support__/map_transform_props";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakePointGroup
+} from "../../../__test_support__/fake_state/resources";
 import { svgMount } from "../../../__test_support__/svg_mount";
 
 describe("<GroupOrder />", () => {
@@ -23,14 +26,24 @@ describe("<GroupOrder />", () => {
     plant4.body.id = undefined;
     const plant5 = fakePlant();
     plant5.body.id = 5;
+    const group = fakePointGroup();
+    group.body.point_ids = [1, 2, 3];
     return {
       mapTransformProps: fakeMapTransformProps(),
-      plants: [plant1, plant2, plant3],
+      groupPoints: [plant1, plant2, plant3],
+      group,
     };
   };
 
   it("renders group order", () => {
     const wrapper = svgMount(<GroupOrder {...fakeProps()} />);
+    expect(wrapper.find("line").length).toEqual(3);
+  });
+
+  it("renders optimized group order", () => {
+    const p = fakeProps();
+    mockState.resources.consumers.farm_designer.tryGroupSortType = "nn";
+    const wrapper = svgMount(<GroupOrder {...p} />);
     expect(wrapper.find("line").length).toEqual(3);
   });
 });

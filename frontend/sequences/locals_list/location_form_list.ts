@@ -51,10 +51,11 @@ const heading = (name: DropdownHeadingId): DropDownItem[] => ([{
   headingId: name
 }]);
 
-const points2ddi = (points: TaggedPoint[], pointerType: PointerTypeName) => points
-  .filter(x => x.body.pointer_type === pointerType)
-  .map(formatPoint)
-  .filter(x => parseInt("" + x.value) > 0);
+const points2ddi = (allPoints: TaggedPoint[], pointerType: PointerTypeName) =>
+  allPoints
+    .filter(x => x.body.pointer_type === pointerType)
+    .map(formatPoint)
+    .filter(x => parseInt("" + x.value) > 0);
 
 export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
   return groups
@@ -67,10 +68,9 @@ export const groups2Ddi = (groups: TaggedPointGroup[]): DropDownItem[] => {
 /** Location selection menu items. */
 export function locationFormList(resources: ResourceIndex,
   additionalItems: DropDownItem[], displayGroups?: boolean): DropDownItem[] {
-  const points = selectAllActivePoints(resources)
-    .filter(x => x.body.pointer_type !== "ToolSlot");
-  const plantDDI = points2ddi(points, "Plant");
-  const genericPointerDDI = points2ddi(points, "GenericPointer");
+  const allPoints = selectAllActivePoints(resources);
+  const plantDDI = points2ddi(allPoints, "Plant");
+  const genericPointerDDI = points2ddi(allPoints, "GenericPointer");
   const toolDDI = activeToolDDIs(resources);
   return [COORDINATE_DDI()]
     .concat(additionalItems)

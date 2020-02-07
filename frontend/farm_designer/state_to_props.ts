@@ -9,7 +9,9 @@ import {
   selectAllPlantTemplates,
   selectAllSensorReadings,
   selectAllSensors,
-  maybeGetTimeSettings
+  maybeGetTimeSettings,
+  selectAllPoints,
+  selectAllPointGroups
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -47,10 +49,10 @@ export function mapStateToProps(props: Everything): Props {
   const hoveredPlant = findPlant(plantUUID);
 
   const getConfigValue = getWebAppConfigValue(() => props);
-  const allPoints = selectAllGenericPointers(props.resources.index);
-  const points = getConfigValue(BooleanSetting.show_historic_points)
-    ? allPoints
-    : allPoints.filter(x => !x.body.discarded_at);
+  const allGenericPoints = selectAllGenericPointers(props.resources.index);
+  const genericPoints = getConfigValue(BooleanSetting.show_historic_points)
+    ? allGenericPoints
+    : allGenericPoints.filter(x => !x.body.discarded_at);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
@@ -103,7 +105,8 @@ export function mapStateToProps(props: Everything): Props {
     dispatch: props.dispatch,
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
-    points,
+    genericPoints,
+    allPoints: selectAllPoints(props.resources.index),
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,
     plants,
@@ -118,5 +121,7 @@ export function mapStateToProps(props: Everything): Props {
     getConfigValue,
     sensorReadings,
     sensors: selectAllSensors(props.resources.index),
+    groups: selectAllPointGroups(props.resources.index),
+    shouldDisplay,
   };
 }

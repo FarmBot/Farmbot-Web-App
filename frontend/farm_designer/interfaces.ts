@@ -9,6 +9,8 @@ import {
   TaggedImage,
   TaggedSensorReading,
   TaggedSensor,
+  TaggedPoint,
+  TaggedPointGroup,
 } from "farmbot";
 import { SlotWithTool, ResourceIndex } from "../resources/interfaces";
 import {
@@ -49,6 +51,7 @@ export interface State extends TypeCheckerHint {
   show_spread: boolean;
   show_farmbot: boolean;
   show_images: boolean;
+  show_zones: boolean;
   show_sensor_readings: boolean;
   bot_origin_quadrant: BotOriginQuadrant;
   zoom_level: number;
@@ -59,7 +62,8 @@ export interface Props {
   selectedPlant: TaggedPlant | undefined;
   designer: DesignerState;
   hoveredPlant: TaggedPlant | undefined;
-  points: TaggedGenericPointer[];
+  genericPoints: TaggedGenericPointer[];
+  allPoints: TaggedPoint[];
   plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
@@ -74,6 +78,8 @@ export interface Props {
   getConfigValue: GetWebAppConfigValue;
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
+  groups: TaggedPointGroup[];
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface MovePlantProps {
@@ -176,10 +182,12 @@ export interface GardenMapProps {
   showSpread: boolean | undefined;
   showFarmbot: boolean | undefined;
   showImages: boolean | undefined;
+  showZones: boolean | undefined;
   showSensorReadings: boolean | undefined;
   dispatch: Function;
   designer: DesignerState;
-  points: TaggedGenericPointer[];
+  genericPoints: TaggedGenericPointer[];
+  allPoints: TaggedPoint[];
   plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
   selectedPlant: TaggedPlant | undefined;
@@ -200,6 +208,8 @@ export interface GardenMapProps {
   sensorReadings: TaggedSensorReading[];
   sensors: TaggedSensor[];
   timeSettings: TimeSettings;
+  groups: TaggedPointGroup[];
+  shouldDisplay: ShouldDisplay;
 }
 
 export interface GardenMapState {

@@ -44,17 +44,17 @@ export const plant2ddi = (i: TaggedPlantPointer["body"]): DropDownItem => {
  * RETURNS: list of DropDownItems with proper headers and `headerId`s */
 const pointList =
   (input: TaggedPoint[]): DropDownItem[] => {
-    const points: DropDownItem[] = [POINT_HEADER];
+    const genericPoints: DropDownItem[] = [POINT_HEADER];
     const plants: DropDownItem[] = [PLANT_HEADER];
     input
       .map(x => x.body)
       .forEach(body => {
         switch (body.pointer_type) {
-          case "GenericPointer": return points.push(pointer2ddi(body));
+          case "GenericPointer": return genericPoints.push(pointer2ddi(body));
           case "Plant": return plants.push(plant2ddi(body));
         }
       });
-    return [...plants, ...points];
+    return [...plants, ...genericPoints];
   };
 
 /** Creates a formatted DropDownItem list for the "Resource" (left hand) side of

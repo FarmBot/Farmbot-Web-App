@@ -35,6 +35,7 @@ describe("<ToolTip />", () => {
   it("renders doc link", () => {
     expect(wrapper.text()).toContain("Documentation");
     expect(wrapper.find("i").at(2).html()).toContain("fa-external-link");
-    expect(wrapper.find("a").html()).toContain("https://software.farm.bot/docs/weed-detection");
+    expect(wrapper.find("a").html())
+      .toContain("https://software.farm.bot/docs/weed-detection");
   });
 });

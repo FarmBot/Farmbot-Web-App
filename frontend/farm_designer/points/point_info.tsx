@@ -8,7 +8,7 @@ import { history, getPathArray } from "../../history";
 import { Panel } from "../panel_header";
 import { Everything } from "../../interfaces";
 import { TaggedGenericPointer } from "farmbot";
-import { maybeFindPointById } from "../../resources/selectors";
+import { maybeFindGenericPointerById } from "../../resources/selectors";
 import { Actions } from "../../constants";
 import {
   EditPointProperties, updatePoint, PointActions
@@ -21,7 +21,7 @@ export interface EditPointProps {
 
 export const mapStateToProps = (props: Everything): EditPointProps => ({
   dispatch: props.dispatch,
-  findPoint: id => maybeFindPointById(props.resources.index, id),
+  findPoint: id => maybeFindGenericPointerById(props.resources.index, id),
 });
 
 export class RawEditPoint extends React.Component<EditPointProps, {}> {

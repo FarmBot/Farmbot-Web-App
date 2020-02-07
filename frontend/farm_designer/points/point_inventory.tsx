@@ -16,7 +16,7 @@ import { t } from "../../i18next_wrapper";
 import { isAWeed } from "./weeds_inventory";
 
 export interface PointsProps {
-  points: TaggedGenericPointer[];
+  genericPoints: TaggedGenericPointer[];
   dispatch: Function;
   hoveredPoint: string | undefined;
 }
@@ -28,7 +28,7 @@ interface PointsState {
 export function mapStateToProps(props: Everything): PointsProps {
   const { hoveredPoint } = props.resources.consumers.farm_designer;
   return {
-    points: selectAllGenericPointers(props.resources.index)
+    genericPoints: selectAllGenericPointers(props.resources.index)
       .filter(x => !x.body.discarded_at)
       .filter(x => !isAWeed(x.body.name, x.body.meta.type)),
     dispatch: props.dispatch,
@@ -55,12 +55,12 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>
         <EmptyStateWrapper
-          notEmpty={this.props.points.length > 0}
+          notEmpty={this.props.genericPoints.length > 0}
           graphic={EmptyStateGraphic.points}
           title={t("No points yet.")}
           text={Content.NO_POINTS}
           colorScheme={"points"}>
-          {this.props.points
+          {this.props.genericPoints
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PointInventoryItem

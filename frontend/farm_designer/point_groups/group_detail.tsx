@@ -2,55 +2,40 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
-import { findByKindAndId } from "../../resources/selectors";
-import { betterCompact } from "../../util/util";
+import {
+  selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups
+} from "../../resources/selectors";
 import { push, getPathArray } from "../../history";
-import { ResourceIndex } from "../../resources/interfaces";
 import { GroupDetailActive } from "./group_detail_active";
-import { TaggedPlant } from "../map/interfaces";
+import { ShouldDisplay } from "../../devices/interfaces";
+import { getShouldDisplayFn } from "../../farmware/state_to_props";
+import { uniq } from "lodash";
 
 interface GroupDetailProps {
   dispatch: Function;
   group: TaggedPointGroup | undefined;
-  plants: TaggedPlant[];
+  allPoints: TaggedPoint[];
+  shouldDisplay: ShouldDisplay;
+  slugs: string[];
 }
 
-export function fetchGroupFromUrl(index: ResourceIndex) {
-  if (!getPathArray().includes("groups")) { return; }
-  /** TODO: Write better selectors. */
+/** Find a group from a URL-provided ID. */
+export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
+  const urlIncludes = (string: string) => getPathArray().includes(string);
+  if (!urlIncludes("groups") && !urlIncludes("zones")) { return; }
   const groupId = parseInt(getPathArray().pop() || "?", 10);
-  let group: TaggedPointGroup | undefined;
-  try {
-    group = findByKindAndId<TaggedPointGroup>(index, "PointGroup", groupId);
-  } catch (error) {
-    group = undefined;
-  }
-  return group;
-}
+  return groups.filter(group => group.body.id === groupId)[0];
+};
 
 function mapStateToProps(props: Everything): GroupDetailProps {
-  const plants: TaggedPlant[] = [];
-  const group = fetchGroupFromUrl(props.resources.index);
-  if (group) {
-    betterCompact(group
-      .body
-      .point_ids
-      .map((id) => {
-        return props.resources.index.byKindAndId[`Point.${id}`];
-      })).map(uuid => {
-        const p =
-          props.resources.index.references[uuid] as TaggedPoint | undefined;
-        if (p) {
-          if (p.kind === "Point") {
-            if (p.body.pointer_type == "Plant") {
-              plants.push(p as TaggedPlant); // Sorry.
-            }
-          }
-        }
-      });
-  }
-
-  return { plants, group, dispatch: props.dispatch };
+  return {
+    allPoints: selectAllActivePoints(props.resources.index),
+    group: findGroupFromUrl(selectAllPointGroups(props.resources.index)),
+    dispatch: props.dispatch,
+    shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
+    slugs: uniq(selectAllPlantPointers(props.resources.index)
+      .map(p => p.body.openfarm_slug)),
+  };
 }
 
 export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {

@@ -60,13 +60,14 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.hoveredToolSlot = payload;
     return s;
   })
-  .add<CurrentPointPayl | undefined>(Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
-    const { color } =
-      (!payload || !payload.color) ? (s.currentPoint || { color: "green" }) : payload;
-    s.currentPoint = payload;
-    s.currentPoint && (s.currentPoint.color = color);
-    return s;
-  })
+  .add<CurrentPointPayl | undefined>(
+    Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
+      const { color } = (!payload || !payload.color) ?
+        (s.currentPoint || { color: "green" }) : payload;
+      s.currentPoint = payload;
+      s.currentPoint && (s.currentPoint.color = color);
+      return s;
+    })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
     s.cropSearchResults = a.payload;
     s.cropSearchInProgress = false;
