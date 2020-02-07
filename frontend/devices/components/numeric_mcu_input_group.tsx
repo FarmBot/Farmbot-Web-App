@@ -14,7 +14,7 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
       <label>
         {name}
       </label>
-      <Help text={tooltip} requireClick={true} position={Position.RIGHT}/>
+      <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
     </Col>
     <Col xs={2}>
       <McuInputBox
@@ -24,7 +24,7 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
         intSize={intSize}
         float={float}
         scale={props.xScale}
-        gray={gray && gray.x} />
+        gray={gray?.x} />
     </Col>
     <Col xs={2}>
       <McuInputBox
@@ -34,7 +34,7 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
         intSize={intSize}
         float={float}
         scale={props.yScale}
-        gray={gray && gray.y} />
+        gray={gray?.y} />
     </Col>
     <Col xs={2}>
       <McuInputBox
@@ -44,7 +44,7 @@ export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
         intSize={intSize}
         float={float}
         scale={props.zScale}
-        gray={gray && gray.z} />
+        gray={gray?.z} />
     </Col>
   </Row>;
 }

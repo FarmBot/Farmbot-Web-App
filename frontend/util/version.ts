@@ -81,7 +81,7 @@ export function semverCompare(left: string, right: string): SemverResult {
  */
 export function minFwVersionCheck(current: string | undefined, min: string) {
   if (isString(current)) {
-    switch (semverCompare(current.slice(0, -1), min)) {
+    switch (semverCompare(current, min)) {
       case SemverResult.LEFT_IS_GREATER:
       case SemverResult.EQUAL:
         return true;

@@ -11,9 +11,18 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   return !!values.includes(x as FirmwareHardware);
 };
 
+const TMC_BOARDS = ["express_k10", "farmduino_k15"];
+const EXPRESS_BOARDS = ["express_k10"];
+
+export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
+  !!(firmwareHardware && TMC_BOARDS.includes(firmwareHardware));
+
+export const isExpressBoard = (firmwareHardware: FirmwareHardware | undefined) =>
+  !!(firmwareHardware && EXPRESS_BOARDS.includes(firmwareHardware));
+
 export const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>
-    firmwareVersion ? firmwareVersion.slice(-1) : "undefined";
+    firmwareVersion ? firmwareVersion.split(".")[3] : "undefined";
 
 export const isKnownBoard = (firmwareVersion: string | undefined): boolean => {
   const boardIdentifier = getBoardIdentifier(firmwareVersion);
