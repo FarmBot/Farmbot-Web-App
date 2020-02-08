@@ -25,6 +25,7 @@ describe Api::PointGroupsController do
 
     old_pgis = PointGroupItem.where(point_id: old_point_ids).pluck(:point_id)
     do_delete = old_pgis[0]
+    do_delete_pgi = PointGroupItem.find_by(point_id: do_delete)
     dont_delete = [old_pgis[1], old_pgis[2]]
     new_point_ids = rando_points + dont_delete
     payload = { name: "new name",
@@ -32,7 +33,7 @@ describe Api::PointGroupsController do
     Transport.current.connection.clear!
     put :update, body: payload.to_json, format: :json, params: { id: pg.id }
     expect(response.status).to eq(200)
-    expect(PointGroupItem.exists?(do_delete)).to be false
+    expect(PointGroupItem.exists?(do_delete_pgi.id)).to be false
     expect(PointGroupItem.where(point_id: new_point_ids).count).to eq(new_point_ids.count)
     expect(json[:point_ids].count).to eq(new_point_ids.count)
     expect(json.fetch(:name)).to eq "new name"
