@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { RegimensList } from "../index";
 import { RegimensListProps } from "../../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { inputEvent } from "../../../__test_support__/fake_input_event";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 
 describe("<RegimensList />", () => {
   function fakeProps(): RegimensListProps {

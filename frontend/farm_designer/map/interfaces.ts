@@ -1,12 +1,13 @@
 import {
   TaggedPlantPointer,
   TaggedGenericPointer,
-  TaggedPlantTemplate
+  TaggedPlantTemplate,
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { TimeSettings } from "../../interfaces";
+import { UUID } from "../../resources/interfaces";
 
 export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 
@@ -20,7 +21,8 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
-  selectedForDel: string[] | undefined;
+  boxSelected: string[] | undefined;
+  groupSelected: UUID[];
   animate: boolean;
 }
 
@@ -33,6 +35,7 @@ export interface GardenMapLegendProps {
   showSpread: boolean;
   showFarmbot: boolean;
   showImages: boolean;
+  showZones: boolean;
   showSensorReadings: boolean;
   hasSensorReadings: boolean;
   dispatch: Function;
@@ -59,7 +62,6 @@ export interface GardenPlantProps {
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   uuid: string;
-  multiselected: boolean;
   animate: boolean;
 }
 

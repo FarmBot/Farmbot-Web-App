@@ -1,4 +1,4 @@
-import { inputEvent } from "../../../__test_support__/fake_input_event";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { ParameterApplication } from "farmbot";
 import {
   AxisEditProps, manuallyEditAxis

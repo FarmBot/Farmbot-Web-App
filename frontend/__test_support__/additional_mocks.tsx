@@ -1,3 +1,5 @@
+import * as React from "react";
+
 jest.mock("browser-speech", () => ({
   talk: jest.fn(),
 }));
@@ -16,3 +18,8 @@ window.location = {
   pathname: "", href: "", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
 };
+
+jest.mock("../error_boundary", () => ({
+  // tslint:disable-next-line:no-any
+  ErrorBoundary: (p: any) => <div>{p.children}</div>,
+}));

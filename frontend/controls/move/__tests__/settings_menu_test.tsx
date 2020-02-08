@@ -8,7 +8,9 @@ jest.mock("../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import { BooleanSetting } from "../../../session_keys";
-import { moveWidgetSetting, MoveWidgetSettingsMenu } from "../settings_menu";
+import {
+  moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps
+} from "../settings_menu";
 
 describe("moveWidgetSetting()", () => {
   it("renders setting", () => {
@@ -22,9 +24,10 @@ describe("moveWidgetSetting()", () => {
 });
 
 describe("<MoveWidgetSettingsMenu />", () => {
-  const fakeProps = () => ({
+  const fakeProps = (): MoveWidgetSettingsMenuProps => ({
     toggle: jest.fn(),
     getValue: jest.fn(),
+    firmwareHardware: undefined,
   });
 
   it("displays motor plot toggle", () => {
@@ -34,5 +37,17 @@ describe("<MoveWidgetSettingsMenu />", () => {
     const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
     expect(wrapper.text()).toContain("Motor position plot");
     mockDev = false;
+  });
+
+  it("displays encoder toggles", () => {
+    const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
+    expect(wrapper.text().toLowerCase()).toContain("encoder");
+  });
+
+  it("doesn't display encoder toggles", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<MoveWidgetSettingsMenu {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("encoder");
   });
 });

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TaggedPlant, MapTransformProps } from "../map/interfaces";
+import { MapTransformProps } from "../map/interfaces";
 import { sortGroupBy, sortOptionsTable } from "./point_group_sort_selector";
 import { sortBy } from "lodash";
 import { PointsPathLine } from "./group_order_visual";
@@ -8,18 +8,18 @@ import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 import { Actions } from "../../constants";
 import { edit } from "../../api/crud";
-import { TaggedPointGroup } from "farmbot";
+import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { error } from "../../toast/toast";
 
-const xy = (point: TaggedPlant) => ({ x: point.body.x, y: point.body.y });
+const xy = (point: TaggedPoint) => ({ x: point.body.x, y: point.body.y });
 
 const distance = (p1: { x: number, y: number }, p2: { x: number, y: number }) =>
   Math.pow(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2), 0.5);
 
-const pathDistance = (points: TaggedPlant[]) => {
+const pathDistance = (pathPoints: TaggedPoint[]) => {
   let total = 0;
   let prev: { x: number, y: number } | undefined = undefined;
-  points.map(xy)
+  pathPoints.map(xy)
     .map(p => {
       prev ? total += distance(p, prev) : 0;
       prev = p;
@@ -28,18 +28,18 @@ const pathDistance = (points: TaggedPlant[]) => {
 };
 
 const findNearest =
-  (from: { x: number, y: number }, available: TaggedPlant[]) => {
+  (from: { x: number, y: number }, available: TaggedPoint[]) => {
     const distances = available.map(p => ({
       point: p, distance: distance(xy(p), from)
     }));
     return sortBy(distances, "distance")[0].point;
   };
 
-export const nn = (points: TaggedPlant[]) => {
-  let available = points.slice(0);
-  const ordered: TaggedPlant[] = [];
+export const nn = (pathPoints: TaggedPoint[]) => {
+  let available = pathPoints.slice(0);
+  const ordered: TaggedPoint[] = [];
   let from = { x: 0, y: 0 };
-  points.map(() => {
+  pathPoints.map(() => {
     if (available.length < 1) { return; }
     const nearest = findNearest(from, available);
     ordered.push(nearest);
@@ -80,8 +80,8 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
   </div>;
 };
 
-interface PathsProps {
-  points: TaggedPlant[];
+export interface PathsProps {
+  pathPoints: TaggedPoint[];
   dispatch: Function;
   group: TaggedPointGroup;
 }
@@ -93,15 +93,15 @@ interface PathsState {
 export class Paths extends React.Component<PathsProps, PathsState> {
   state: PathsState = { pathData: {} };
 
-  generatePathData = (points: TaggedPlant[]) => {
+  generatePathData = (pathPoints: TaggedPoint[]) => {
     SORT_TYPES.map((sortType: PointGroupSortType) =>
       this.state.pathData[sortType] =
-      pathDistance(sortGroupBy(sortType, points)));
-    this.state.pathData.nn = pathDistance(nn(points));
+      pathDistance(sortGroupBy(sortType, pathPoints)));
+    this.state.pathData.nn = pathDistance(nn(pathPoints));
   };
 
   render() {
-    if (!this.state.pathData.nn) { this.generatePathData(this.props.points); }
+    if (!this.state.pathData.nn) { this.generatePathData(this.props.pathPoints); }
     return <div>
       <label>{t("Path lengths by sort type")}</label>
       {SORT_TYPES.concat("nn").map(st =>
@@ -115,7 +115,7 @@ export class Paths extends React.Component<PathsProps, PathsState> {
 }
 
 interface NNPathProps {
-  plants: TaggedPlant[];
+  pathPoints: TaggedPoint[];
   mapTransformProps: MapTransformProps;
 }
 
@@ -125,6 +125,6 @@ export const NNPath = (props: NNPathProps) =>
       color={Color.blue}
       strokeWidth={2}
       dash={1}
-      orderedPoints={nn(props.plants).map(xy)}
+      orderedPoints={nn(props.pathPoints).map(xy)}
       mapTransformProps={props.mapTransformProps} />
     : <g />;

@@ -16,14 +16,16 @@ export function PlantLayer(props: PlantLayerProps) {
     mapTransformProps,
     zoomLvl,
     activeDragXY,
-    selectedForDel,
+    boxSelected,
+    groupSelected,
     animate,
   } = props;
 
   return <g id="plant-layer">
     {visible && plants.map(p => {
-      const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
-      const multiselected = !!(selectedForDel && (selectedForDel.includes(p.uuid)));
+      const selected = !!(p.uuid === currentPlant?.uuid);
+      const selectedByBox = !!boxSelected?.includes(p.uuid);
+      const selectedByGroup = groupSelected.includes(p.uuid);
       const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
         ? "gardens/templates"
         : "plants";
@@ -31,9 +33,8 @@ export function PlantLayer(props: PlantLayerProps) {
         uuid={p.uuid}
         mapTransformProps={mapTransformProps}
         plant={p}
-        selected={selected}
+        selected={selected || selectedByBox || selectedByGroup}
         editing={editing}
-        multiselected={multiselected}
         dragging={selected && dragging && editing}
         dispatch={dispatch}
         zoomLvl={zoomLvl}

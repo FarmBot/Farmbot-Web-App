@@ -5,6 +5,7 @@ import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { clickButton } from "../../../__test_support__/helpers";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 
 describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({
@@ -51,11 +52,7 @@ describe("<ImageWorkspace />", () => {
   it("triggers numericChange()", () => {
     const props = fakeProps();
     const iw = new ImageWorkspace(props);
-    const trigger = iw.numericChange("blur");
-    const currentTarget: Partial<HTMLInputElement> = { value: "23" };
-    type PartialEv = Partial<React.SyntheticEvent<HTMLInputElement>>;
-    const e: PartialEv = { currentTarget: (currentTarget as HTMLInputElement) };
-    trigger(e as React.SyntheticEvent<HTMLInputElement>);
+    iw.numericChange("blur")(inputEvent("23"));
     expect(props.onChange).toHaveBeenCalledWith("blur", 23);
   });
 

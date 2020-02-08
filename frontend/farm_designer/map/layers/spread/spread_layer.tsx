@@ -36,7 +36,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
     </defs>
 
     {plants.map(p => {
-      const selected = !!(currentPlant && (p.uuid === currentPlant.uuid));
+      const selected = p.uuid === currentPlant?.uuid;
       return <g id={"spread-components-" + p.body.id} key={p.uuid}>
         {visible &&
           <SpreadCircle
@@ -58,7 +58,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
   </g>;
 }
 
-interface SpreadCircleProps {
+export interface SpreadCircleProps {
   plant: TaggedPlant;
   mapTransformProps: MapTransformProps;
   visible: boolean;

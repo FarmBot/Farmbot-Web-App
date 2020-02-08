@@ -14,12 +14,23 @@ describe("<EncodersAndEndStops />", () => {
     sourceFwConfig: x =>
       ({ value: bot.hardware.mcu_params[x], consistent: true }),
     shouldDisplay: jest.fn(key => mockFeatures[key]),
+    firmwareHardware: undefined,
   });
 
-  it("shows new inversion param", () => {
-    mockFeatures.endstop_invert = true;
-    const wrapper = mount(<EncodersAndEndStops {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invert endstops");
+  it("shows encoder labels", () => {
+    const p = fakeProps();
+    p.firmwareHardware = undefined;
+    const wrapper = mount(<EncodersAndEndStops {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("encoder");
+    expect(wrapper.text().toLowerCase()).not.toContain("stall");
+  });
+
+  it("shows stall labels", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<EncodersAndEndStops {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("encoder");
+    expect(wrapper.text().toLowerCase()).toContain("stall");
   });
 
   it.each<["short" | "long"]>([

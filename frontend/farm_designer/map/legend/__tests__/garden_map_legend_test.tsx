@@ -40,6 +40,7 @@ describe("<GardenMapLegend />", () => {
     showSpread: false,
     showFarmbot: false,
     showImages: false,
+    showZones: false,
     showSensorReadings: false,
     hasSensorReadings: false,
     dispatch: jest.fn(),

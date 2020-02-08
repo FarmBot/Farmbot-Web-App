@@ -24,7 +24,8 @@ export function PinGuard(props: PinGuardProps) {
           <label>
             {t("Pin Number")}
           </label>
-          <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} requireClick={true} position={Position.RIGHT}/>
+          <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} requireClick={true}
+            position={Position.RIGHT} />
         </Col>
         <Col xs={4}>
           <label>

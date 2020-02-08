@@ -78,10 +78,8 @@ export interface PinGuardProps {
 
 export interface MotorsProps {
   dispatch: Function;
-  firmwareVersion: string | undefined;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
-  isValidFwConfig: boolean;
   firmwareHardware: FirmwareHardware | undefined;
 }
 
@@ -90,6 +88,7 @@ export interface EncodersProps {
   shouldDisplay: ShouldDisplay;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface DangerZoneProps {

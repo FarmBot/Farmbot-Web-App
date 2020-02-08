@@ -14,39 +14,55 @@ jest.mock("../../../account/dev/dev_support", () => ({
 }));
 
 import React from "react";
-import { GroupDetailActive } from "../group_detail_active";
+import {
+  GroupDetailActive, GroupDetailActiveProps
+} from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
   fakePointGroup, fakePlant
 } from "../../../__test_support__/fake_state/resources";
 import { save, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
+import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 
 describe("<GroupDetailActive/>", () => {
-  function fakeProps() {
+  const fakeProps = (): GroupDetailActiveProps => {
     const plant = fakePlant();
     plant.body.id = 1;
-    const plants = [plant];
     const group = fakePointGroup();
     group.specialStatus = SpecialStatus.DIRTY;
     group.body.name = "XYZ";
     group.body.point_ids = [plant.body.id];
-    return { dispatch: jest.fn(), group, plants };
-  }
+    return {
+      dispatch: jest.fn(),
+      group,
+      allPoints: [],
+      shouldDisplay: () => true,
+      slugs: [],
+    };
+  };
 
   it("saves", () => {
     const p = fakeProps();
-    const { dispatch } = p;
     const el = new GroupDetailActive(p);
     el.saveGroup();
-    expect(dispatch).toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalled();
     expect(save).toHaveBeenCalledWith(p.group.uuid);
   });
 
   it("renders", () => {
-    const props = fakeProps();
-    const el = mount(<GroupDetailActive {...props} />);
-    expect(el.find("input").prop("defaultValue")).toContain("XYZ");
+    const p = fakeProps();
+    p.group.specialStatus = SpecialStatus.SAVED;
+    const wrapper = mount(<GroupDetailActive {...p} />);
+    expect(wrapper.find("input").first().prop("defaultValue")).toContain("XYZ");
+    expect(wrapper.text()).not.toContain("saving");
+  });
+
+  it("shows saving indicator", () => {
+    const p = fakeProps();
+    p.group.specialStatus = SpecialStatus.DIRTY;
+    const wrapper = mount(<GroupDetailActive {...p} />);
+    expect(wrapper.text()).toContain("saving");
   });
 
   it("changes group name", () => {
@@ -69,13 +85,7 @@ describe("<GroupDetailActive/>", () => {
         name: "XYZ",
         point_ids: [1],
         sort_type: "xy_ascending",
-        criteria: {
-          day: { days: 0, op: ">" },
-          number_eq: {},
-          number_gt: {},
-          number_lt: {},
-          string_eq: {},
-        }
+        criteria: DEFAULT_CRITERIA
       },
       kind: "PointGroup",
       specialStatus: "DIRTY",
@@ -97,7 +107,6 @@ describe("<GroupDetailActive/>", () => {
   it("shows paths", () => {
     mockDev = true;
     const p = fakeProps();
-    p.plants = [fakePlant(), fakePlant()];
     const wrapper = mount(<GroupDetailActive {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("optimized");
   });

@@ -95,9 +95,9 @@ select {
     }
   }
   &.disabled {
+    pointer-events: none;
     button {
       background: darken($white, 10%) !important;
-      pointer-events: none;
     }
   }
 }

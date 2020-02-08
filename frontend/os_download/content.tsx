@@ -22,6 +22,9 @@ const tagNameFromUrl = (url: string) => {
   return tagPart.startsWith("v") ? tagPart : "";
 };
 
+const downloadButtonText = (versionString: string) =>
+  `${t("DOWNLOAD")} ${versionString}`;
+
 export class OsDownload extends React.Component<{}, OsDownloadState> {
   state: OsDownloadState = { tagName: "", genesisImg: "", expressImg: "" };
 
@@ -75,15 +78,15 @@ export class OsDownload extends React.Component<{}, OsDownloadState> {
                 <span>{"Genesis v1.2"}</span>
                 <span>{"Genesis v1.3"}</span>
                 <span>{"Genesis v1.4"}</span>
-                <span>{"Genesis XL v1.4"}</span>
                 <span>{"Genesis v1.5"}</span>
+                <span>{"Genesis XL v1.4"}</span>
                 <span>{"Genesis XL v1.5"}</span>
               </td>
               <td>{t("Raspberry Pi 3")}</td>
               <td>
                 <a className="transparent-link-button"
                   href={this.genesisImgDownloadLink}>
-                  {`${t("Download")} FBOS ${this.genesisTagName}`}
+                  {downloadButtonText(this.genesisTagName)}
                 </a>
               </td>
             </tr>
@@ -96,7 +99,7 @@ export class OsDownload extends React.Component<{}, OsDownloadState> {
               <td>
                 <a className="transparent-link-button"
                   href={this.expressImgDownloadLink}>
-                  {`${t("Download")} FBOS ${this.expressTagName}`}
+                  {downloadButtonText(this.expressTagName)}
                 </a>
               </td>
             </tr>

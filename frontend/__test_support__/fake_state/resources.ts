@@ -316,6 +316,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_historic_points: false,
     time_format_24_hour: false,
     show_pins: false,
+    show_zones: false,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
     map_size_y: 1400,
@@ -459,7 +460,7 @@ export function fakePointGroup(): TaggedPointGroup {
     sort_type: "xy_ascending",
     point_ids: [],
     criteria: {
-      day: { op: ">", days: 0 },
+      day: { op: "<", days: 0 },
       number_eq: {},
       number_gt: {},
       number_lt: {},

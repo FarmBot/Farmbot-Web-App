@@ -15,7 +15,7 @@ import { selectAllGenericPointers } from "../../resources/selectors";
 import { PointInventoryItem } from "./point_inventory_item";
 
 export interface WeedsProps {
-  points: TaggedGenericPointer[];
+  genericPoints: TaggedGenericPointer[];
   dispatch: Function;
   hoveredPoint: string | undefined;
 }
@@ -28,7 +28,7 @@ export const isAWeed = (pointName: string, type?: string) =>
   type == "weed" || pointName.toLowerCase().includes("weed");
 
 export const mapStateToProps = (props: Everything): WeedsProps => ({
-  points: selectAllGenericPointers(props.resources.index)
+  genericPoints: selectAllGenericPointers(props.resources.index)
     .filter(x => !x.body.discarded_at)
     .filter(x => isAWeed(x.body.name, x.body.meta.type)),
   dispatch: props.dispatch,
@@ -54,12 +54,12 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>
         <EmptyStateWrapper
-          notEmpty={this.props.points.length > 0}
+          notEmpty={this.props.genericPoints.length > 0}
           graphic={EmptyStateGraphic.weeds}
           title={t("No weeds yet.")}
           text={Content.NO_WEEDS}
           colorScheme={"weeds"}>
-          {this.props.points
+          {this.props.genericPoints
             .filter(p => p.body.name.toLowerCase()
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PointInventoryItem

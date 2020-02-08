@@ -24,7 +24,7 @@ interface State {
   searchTerm: string;
 }
 
-function mapStateToProps(props: Everything): PlantInventoryProps {
+export function mapStateToProps(props: Everything): PlantInventoryProps {
   const { hoveredPlantListItem } = props.resources.consumers.farm_designer;
   return {
     plants: getPlants(props.resources),
@@ -62,7 +62,7 @@ export class RawPlants extends React.Component<PlantInventoryProps, State> {
               .includes(this.state.searchTerm.toLowerCase()))
             .map(p => <PlantInventoryItem
               key={p.uuid}
-              tpp={p}
+              plant={p}
               hovered={this.props.hoveredPlantListItem === p.uuid}
               dispatch={this.props.dispatch} />)}
         </EmptyStateWrapper>

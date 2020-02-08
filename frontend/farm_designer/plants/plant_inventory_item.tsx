@@ -1,18 +1,15 @@
 import * as React from "react";
-import moment from "moment";
-import { DEFAULT_ICON, svgToUrl } from "../../open_farm/icons";
+import { DEFAULT_ICON } from "../../open_farm/icons";
 import { push } from "../../history";
 import { TaggedPlant } from "../map/interfaces";
-import { get } from "lodash";
 import { unpackUUID } from "../../util";
 import { t } from "../../i18next_wrapper";
-import { cachedCrop } from "../../open_farm/cached_crop";
+import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import { selectPlant, setHoveredPlant } from "../map/actions";
-
-type IMGEvent = React.SyntheticEvent<HTMLImageElement>;
+import { plantAge } from "./map_state_to_props";
 
 export interface PlantInventoryItemProps {
-  tpp: TaggedPlant;
+  plant: TaggedPlant;
   dispatch: Function;
   hovered: boolean;
 }
@@ -28,49 +25,32 @@ export class PlantInventoryItem extends
   state: PlantInventoryItemState = { icon: "" };
 
   render() {
-    const plant = this.props.tpp.body;
-    const { tpp, dispatch } = this.props;
-    const plantId = (plant.id || "ERR_NO_PLANT_ID").toString();
+    const { plant, dispatch } = this.props;
+    const plantId = (plant.body.id || "ERR_NO_PLANT_ID").toString();
 
     const toggle = (action: "enter" | "leave") => {
       const isEnter = action === "enter";
-      const plantUUID = isEnter ? tpp.uuid : undefined;
+      const plantUUID = isEnter ? plant.uuid : undefined;
       const icon = isEnter ? this.state.icon : "";
       dispatch(setHoveredPlant(plantUUID, icon));
     };
 
     const click = () => {
       const plantCategory =
-        unpackUUID(this.props.tpp.uuid).kind === "PlantTemplate"
+        unpackUUID(plant.uuid).kind === "PlantTemplate"
           ? "gardens/templates"
           : "plants";
       push(`/app/designer/${plantCategory}/${plantId}`);
-      dispatch(selectPlant([tpp.uuid]));
+      dispatch(selectPlant([plant.uuid]));
     };
 
-    // See `cachedIcon` for more details on this.
-    const maybeGetCachedIcon = (e: IMGEvent) => {
-      const OFS = tpp.body.openfarm_slug;
-      const img = e.currentTarget;
-      OFS && cachedCrop(OFS)
-        .then((crop) => {
-          const i = svgToUrl(crop.svg_icon);
-          i !== img.getAttribute("src") && img.setAttribute("src", i);
-          this.setState({ icon: i });
-        });
-    };
+    const updateStateIcon = (i: string) => this.setState({ icon: i });
+    const onLoad = (e: React.SyntheticEvent<HTMLImageElement>) =>
+      maybeGetCachedPlantIcon(slug, e.currentTarget, updateStateIcon);
 
     // Name given from OpenFarm's API.
-    const label = plant.name || "Unknown plant";
-
-    // Original planted date vs time now to determine age.
-    const getPlantedAt = get(plant, "planted_at", moment());
-    const createdAt = get(plant, "created_at", moment());
-    const plantedAt = getPlantedAt
-      ? moment(getPlantedAt)
-      : moment(createdAt);
-    const currentDay = moment();
-    const daysOld = currentDay.diff(plantedAt, "days") + 1;
+    const label = plant.body.name || "Unknown plant";
+    const slug = plant.body.openfarm_slug;
 
     return <div
       className={`plant-search-item ${this.props.hovered ? "hovered" : ""}`}
@@ -81,12 +61,12 @@ export class PlantInventoryItem extends
       <img
         className="plant-search-item-image"
         src={DEFAULT_ICON}
-        onLoad={maybeGetCachedIcon} />
+        onLoad={onLoad} />
       <span className="plant-search-item-name">
         {label}
       </span>
       <i className="plant-search-item-age">
-        {daysOld} {t("days old")}
+        {plantAge(plant)} {t("days old")}
       </i>
     </div>;
   }

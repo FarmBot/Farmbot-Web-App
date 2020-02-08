@@ -15,7 +15,6 @@ describe("<GardenPlant/>", () => {
       plant: fakePlant(),
       selected: false,
       editing: false,
-      multiselected: false,
       dragging: false,
       dispatch: jest.fn(),
       zoomLvl: 1.8,
@@ -27,7 +26,7 @@ describe("<GardenPlant/>", () => {
 
   it("renders plant", () => {
     const p = fakeProps();
-    p.multiselected = true;
+    p.selected = true;
     p.animate = false;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").length).toEqual(1);
@@ -42,7 +41,7 @@ describe("<GardenPlant/>", () => {
   it("renders plant animations", () => {
     const p = fakeProps();
     p.animate = true;
-    p.multiselected = true;
+    p.selected = true;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".soil-cloud").length).toEqual(1);
     expect(wrapper.find(".animate").length).toEqual(2);
@@ -82,9 +81,9 @@ describe("<GardenPlant/>", () => {
     expect(wrapper.find(".plant-indicator").length).toEqual(0);
   });
 
-  it("indicator cirlce is there", () => {
+  it("indicator circle is rendered", () => {
     const p = fakeProps();
-    p.multiselected = true;
+    p.selected = true;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".plant-indicator").length).toEqual(1);
     expect(wrapper.find("Circle").length).toEqual(1);

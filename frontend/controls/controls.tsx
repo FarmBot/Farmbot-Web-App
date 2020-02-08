@@ -34,6 +34,7 @@ export class RawControls extends React.Component<Props, {}> {
     arduinoBusy={this.arduinoBusy}
     botToMqttStatus={this.props.botToMqttStatus}
     firmwareSettings={this.props.firmwareSettings}
+    firmwareHardware={this.props.firmwareHardware}
     getWebAppConfigVal={this.props.getWebAppConfigVal} />
 
   peripherals = () => <Peripherals

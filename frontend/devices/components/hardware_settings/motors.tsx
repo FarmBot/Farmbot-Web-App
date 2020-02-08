@@ -9,11 +9,11 @@ import { Row, Col, Help } from "../../../ui/index";
 import { Header } from "./header";
 import { Collapse, Position } from "@blueprintjs/core";
 import { McuInputBox } from "../mcu_input_box";
-import { minFwVersionCheck } from "../../../util";
 import { t } from "../../../i18next_wrapper";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../interfaces";
 import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
+import { isTMCBoard, isExpressBoard } from "../firmware_hardware_support";
 
 const SingleSettingRow =
   ({ label, tooltip, settingType, children }: {
@@ -25,7 +25,7 @@ const SingleSettingRow =
     <Row>
       <Col xs={6} className={"widget-body-tooltips"}>
         <label>{label}</label>
-        <Help text={tooltip} requireClick={true} position={Position.RIGHT}/>
+        <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
       </Col>
       {settingType === "button"
         ? <Col xs={2} className={"centered-button-div"}>{children}</Col>
@@ -47,15 +47,17 @@ export const calculateScale =
 
 export function Motors(props: MotorsProps) {
   const {
-    dispatch, firmwareVersion, controlPanelState,
-    sourceFwConfig, isValidFwConfig, firmwareHardware
+    dispatch, controlPanelState, sourceFwConfig, firmwareHardware
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
   const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
-  const isFarmduinoExpress = firmwareHardware &&
-    firmwareHardware.includes("express");
+  const encodersDisabled = {
+    x: !sourceFwConfig("encoder_enabled_x").value,
+    y: !sourceFwConfig("encoder_enabled_y").value,
+    z: !sourceFwConfig("encoder_enabled_z").value,
+  };
   return <section>
     <Header
       expanded={controlPanelState.motors}
@@ -91,18 +93,17 @@ export function Motors(props: MotorsProps) {
         zScale={scale.z}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
-      {(minFwVersionCheck(firmwareVersion, "5.0.5") || isValidFwConfig) &&
-        <NumericMCUInputGroup
-          name={t("Homing Speed (mm/s)")}
-          tooltip={ToolTips.HOME_SPEED}
-          x={"movement_home_spd_x"}
-          y={"movement_home_spd_y"}
-          z={"movement_home_spd_z"}
-          xScale={scale.x}
-          yScale={scale.y}
-          zScale={scale.z}
-          sourceFwConfig={sourceFwConfig}
-          dispatch={dispatch} />}
+      <NumericMCUInputGroup
+        name={t("Homing Speed (mm/s)")}
+        tooltip={ToolTips.HOME_SPEED}
+        x={"movement_home_spd_x"}
+        y={"movement_home_spd_y"}
+        z={"movement_home_spd_z"}
+        xScale={scale.x}
+        yScale={scale.y}
+        zScale={scale.z}
+        sourceFwConfig={sourceFwConfig}
+        dispatch={dispatch} />
       <NumericMCUInputGroup
         name={t("Minimum Speed (mm/s)")}
         tooltip={ToolTips.MIN_SPEED}
@@ -161,7 +162,7 @@ export function Motors(props: MotorsProps) {
         z={"movement_invert_motor_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      {isFarmduinoExpress &&
+      {isTMCBoard(firmwareHardware) &&
         <NumericMCUInputGroup
           name={t("Motor Current")}
           tooltip={ToolTips.MOTOR_CURRENT}
@@ -170,13 +171,14 @@ export function Motors(props: MotorsProps) {
           z={"movement_motor_current_z"}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
-      {isFarmduinoExpress &&
+      {isExpressBoard(firmwareHardware) &&
         <NumericMCUInputGroup
           name={t("Stall Sensitivity")}
           tooltip={ToolTips.STALL_SENSITIVITY}
           x={"movement_stall_sensitivity_x"}
           y={"movement_stall_sensitivity_y"}
           z={"movement_stall_sensitivity_z"}
+          gray={encodersDisabled}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"

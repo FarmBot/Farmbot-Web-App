@@ -33,6 +33,7 @@ describe("<Move />", () => {
     firmwareSettings: bot.hardware.mcu_params,
     getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
     env: {},
+    firmwareHardware: undefined,
   });
 
   it("has default elements", () => {

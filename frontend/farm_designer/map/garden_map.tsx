@@ -11,7 +11,7 @@ import {
 import {
   Grid, MapBackground,
   TargetCoordinate,
-  SelectionBox, resizeBox, startNewSelectionBox
+  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroupCriteria,
 } from "./background";
 import {
   PlantLayer,
@@ -32,6 +32,11 @@ import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";
 import { NNPath } from "../point_groups/paths";
 import { history } from "../../history";
+import { ZonesLayer } from "./layers/zones/zones_layer";
+import { ErrorBoundary } from "../../error_boundary";
+import { TaggedPoint, TaggedPointGroup } from "farmbot";
+import { findGroupFromUrl } from "../point_groups/group_detail";
+import { pointsSelectedByGroup } from "../point_groups/criteria";
 
 export class GardenMap extends
   React.Component<GardenMapProps, Partial<GardenMapState>> {
@@ -67,6 +72,14 @@ export class GardenMap extends
   get animate(): boolean {
     return !this.props.getConfigValue(BooleanSetting.disable_animations);
   }
+  get group(): TaggedPointGroup | undefined {
+    return findGroupFromUrl(this.props.groups);
+  }
+
+  get pointsSelectedByGroup(): TaggedPoint[] {
+    return this.group ?
+      pointsSelectedByGroup(this.group, this.props.allPoints) : [];
+  }
 
   /** Save the current plant (if needed) and reset drag state. */
   endDrag = () => {
@@ -74,6 +87,12 @@ export class GardenMap extends
       plant: this.getPlant(),
       isDragging: this.state.isDragging,
       dispatch: this.props.dispatch,
+    });
+    maybeUpdateGroupCriteria({
+      selectionBox: this.state.selectionBox,
+      group: this.group,
+      dispatch: this.props.dispatch,
+      shouldDisplay: this.props.shouldDisplay,
     });
     this.setState({
       isDragging: false, qPageX: 0, qPageY: 0,
@@ -114,8 +133,17 @@ export class GardenMap extends
             gardenCoords,
             setMapState: this.setMapState,
             dispatch: this.props.dispatch,
+            plantActions: true,
           });
         }
+        break;
+      case Mode.editGroup:
+        startNewSelectionBox({
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
+          plantActions: false,
+        });
         break;
       case Mode.createPoint:
         startNewPoint({
@@ -141,6 +169,15 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
+          plantActions: true,
+        });
+        break;
+      case Mode.editGroup:
+        startNewSelectionBox({
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
+          plantActions: false,
         });
         break;
       default:
@@ -149,6 +186,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
+          plantActions: true,
         });
         break;
     }
@@ -236,6 +274,16 @@ export class GardenMap extends
           isDragging: this.state.isDragging,
         });
         break;
+      case Mode.editGroup:
+        resizeBox({
+          selectionBox: this.state.selectionBox,
+          plants: this.props.plants,
+          gardenCoords: this.getGardenCoordinates(e),
+          setMapState: this.setMapState,
+          dispatch: this.props.dispatch,
+          plantActions: false,
+        });
+        break;
       case Mode.boxSelect:
       default:
         resizeBox({
@@ -244,6 +292,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
+          plantActions: true,
         });
         break;
     }
@@ -302,6 +351,12 @@ export class GardenMap extends
     onMouseDown={this.startDragOnBackground}
     mapTransformProps={this.mapTransformProps}
     zoomLvl={this.props.zoomLvl} />
+  ZonesLayer = () => <ZonesLayer
+    visible={!!this.props.showZones}
+    botSize={this.props.botSize}
+    mapTransformProps={this.mapTransformProps}
+    groups={this.props.groups}
+    currentGroup={this.group?.uuid} />
   SensorReadingsLayer = () => <SensorReadingsLayer
     visible={!!this.props.showSensorReadings}
     sensorReadings={this.props.sensorReadings}
@@ -324,7 +379,7 @@ export class GardenMap extends
     dispatch={this.props.dispatch}
     hoveredPoint={this.props.designer.hoveredPoint}
     visible={!!this.props.showPoints}
-    points={this.props.points} />
+    genericPoints={this.props.genericPoints} />
   PlantLayer = () => <PlantLayer
     mapTransformProps={this.mapTransformProps}
     dispatch={this.props.dispatch}
@@ -333,7 +388,8 @@ export class GardenMap extends
     currentPlant={this.getPlant()}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
-    selectedForDel={this.props.designer.selectedPlants}
+    boxSelected={this.props.designer.selectedPlants}
+    groupSelected={this.pointsSelectedByGroup.map(point => point.uuid)}
     zoomLvl={this.props.zoomLvl}
     activeDragXY={this.state.activeDragXY}
     animate={this.animate} />
@@ -383,9 +439,10 @@ export class GardenMap extends
     key={"currentPoint"}
     mapTransformProps={this.mapTransformProps} />
   GroupOrder = () => <GroupOrder
-    plants={this.props.plants}
+    group={this.group}
+    groupPoints={this.pointsSelectedByGroup}
     mapTransformProps={this.mapTransformProps} />
-  NNPath = () => <NNPath plants={this.props.plants}
+  NNPath = () => <NNPath pathPoints={this.props.allPoints}
     mapTransformProps={this.mapTransformProps} />
   Bugs = () => showBugs() ? <Bugs mapTransformProps={this.mapTransformProps}
     botSize={this.props.botSize} /> : <g />
@@ -393,27 +450,30 @@ export class GardenMap extends
   /** Render layers in order from back to front. */
   render() {
     return <div className={"drop-area"} {...this.mapDropAreaProps()}>
-      <svg id={"map-background-svg"}>
-        <this.MapBackground />
-        <svg className={"drop-area-svg"} {...this.svgDropAreaProps()}>
-          <this.ImageLayer />
-          <this.Grid />
-          <this.SensorReadingsLayer />
-          <this.SpreadLayer />
-          <this.PointLayer />
-          <this.PlantLayer />
-          <this.ToolSlotLayer />
-          <this.FarmBotLayer />
-          <this.HoveredPlant />
-          <this.DragHelper />
-          <this.SelectionBox />
-          <this.TargetCoordinate />
-          <this.DrawnPoint />
-          <this.GroupOrder />
-          <this.NNPath />
-          <this.Bugs />
+      <ErrorBoundary>
+        <svg id={"map-background-svg"}>
+          <this.MapBackground />
+          <svg className={"drop-area-svg"} {...this.svgDropAreaProps()}>
+            <this.ImageLayer />
+            <this.Grid />
+            <this.ZonesLayer />
+            <this.SensorReadingsLayer />
+            <this.SpreadLayer />
+            <this.PointLayer />
+            <this.PlantLayer />
+            <this.ToolSlotLayer />
+            <this.FarmBotLayer />
+            <this.HoveredPlant />
+            <this.DragHelper />
+            <this.SelectionBox />
+            <this.TargetCoordinate />
+            <this.DrawnPoint />
+            <this.GroupOrder />
+            <this.NNPath />
+            <this.Bugs />
+          </svg>
         </svg>
-      </svg>
+      </ErrorBoundary>
     </div>;
   }
 }

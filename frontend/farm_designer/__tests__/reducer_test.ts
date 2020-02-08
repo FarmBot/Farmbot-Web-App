@@ -5,7 +5,9 @@ import {
   HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
-import { fakeCropLiveSearchResult } from "../../__test_support__/fake_crop_search_result";
+import {
+  fakeCropLiveSearchResult
+} from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
