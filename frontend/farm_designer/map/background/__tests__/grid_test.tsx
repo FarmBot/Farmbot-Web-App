@@ -62,4 +62,28 @@ describe("<Grid/>", () => {
     expect(majorGrid.props()).toHaveProperty("strokeWidth", "3");
     expect(superiorGrid.props()).toHaveProperty("strokeWidth", "6");
   });
+
+  it("visualizes axis values every 100mm above 0.5 zoom", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.6;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(29);
+  });
+
+  it("visualizes axis values every 200mm between 0.5 and 0.2 excluded zoom", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.5;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(14);
+  });
+
+  it("visualizes axis values every 500mm on 0.2 zoom and below", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.2;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(5);
+  });
 });

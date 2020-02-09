@@ -16,6 +16,22 @@ export function Grid(props: GridProps) {
   const minorStrokeWidth = zoomLvl <= 0.5 ? "0" : "1";
   const majorStrokeWidth = zoomLvl <= 0.5 ? "3" : "2";
   const superiorStrokeWidth = zoomLvl <= 0.5 ? "6" : "4";
+
+  // Start axis-values controls
+  // TODO: Create helper to regroup code and clean grid.tsx
+  // Text transform:scale value
+  const axisTransformValue = zoomLvl <= 1 ? 2 - zoomLvl : 1;
+  // Start and increment steps to visualize in grid
+  let axisStep = 0;
+  if (zoomLvl > 0.5) {
+    axisStep = 100;
+  } else if (zoomLvl <= 0.2) {
+    axisStep = 500;
+  } else if (zoomLvl <= 0.5) {
+    axisStep = 200;
+  }
+  // End axis-values controls
+
   return <g className="drop-area-background" onClick={props.onClick}
     onMouseDown={props.onMouseDown}>
     <defs>
@@ -70,10 +86,21 @@ export function Grid(props: GridProps) {
 
     <g id="axis-values" fontFamily="Arial" fontSize="10"
       textAnchor="middle" dominantBaseline="central" fill="rgba(0, 0, 0, 0.3)">
-      {range(100, gridSize.x, 100).map((i) => {
+      {range(axisStep, gridSize.x, axisStep).map((i) => {
         const location = transformXY(i, -10, mapTransformProps);
-        return <text key={"x-label-" + i}
-          x={location.qx} y={location.qy}>{i}</text>;
+        return (
+          <text key={"x-label-" + i}
+                fontSize="16"
+                fontWeight="bold"
+                className="x-label"
+                color="rgba(0, 0, 0, 0.4)"
+                x={location.qx}
+                y={location.qy}
+                style={{transformOrigin: "center", transformBox: "fill-box", transform: `scale(${axisTransformValue})`}}>
+            {i}
+          </text>
+        );
+
       })}
       {range(100, gridSize.y, 100).map((i) => {
         const location = transformXY(-15, i, mapTransformProps);
