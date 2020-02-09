@@ -22,13 +22,13 @@ export function Grid(props: GridProps) {
   // Text transform:scale value
   const axisTransformValue = zoomLvl <= 1 ? 2 - zoomLvl : 1;
   // Start and increment steps to visualize in grid
-  let axisStep = 0;
-  if (zoomLvl > 0.5) {
-    axisStep = 100;
-  } else if (zoomLvl <= 0.2) {
+  let axisStep;
+  if (zoomLvl <= 0.2) {
     axisStep = 500;
   } else if (zoomLvl <= 0.5) {
     axisStep = 200;
+  } else {
+    axisStep = 100;
   }
   // End axis-values controls
 

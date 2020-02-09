@@ -86,4 +86,20 @@ describe("<Grid/>", () => {
     const axisValues = wrapper.find(".x-label").children();
     expect(axisValues).toHaveLength(5);
   });
+
+  it("use transform scale 1 for zoom above 1", () => {
+    const p = fakeProps();
+    p.zoomLvl = 1.1;
+    const wrapper = shallow(<Grid {...p} />);
+    const textNode = wrapper.find(".x-label").first();
+    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1)");
+  });
+
+  it("use transform scale 1.5 for zoom on 0.5", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.5;
+    const wrapper = shallow(<Grid {...p} />);
+    const textNode = wrapper.find(".x-label").first();
+    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1.5)");
+  });
 });
