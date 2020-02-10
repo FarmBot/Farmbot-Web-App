@@ -1,4 +1,3 @@
-import "../../../__test_support__/unmock_i18next";
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import { ImageFlipper, PLACEHOLDER_FARMBOT } from "../image_flipper";

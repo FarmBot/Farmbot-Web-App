@@ -1,5 +1,5 @@
 import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
-import { McuParams, Xyz } from "farmbot";
+import { McuParams, Xyz, FirmwareHardware } from "farmbot";
 import { NetworkState } from "../../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
@@ -15,6 +15,7 @@ export interface MoveProps {
   firmwareSettings: McuParams;
   getWebAppConfigVal: GetWebAppConfigValue;
   env: UserEnv;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface DirectionButtonProps {

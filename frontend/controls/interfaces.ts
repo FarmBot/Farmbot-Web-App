@@ -1,7 +1,7 @@
 import {
   BotState, Xyz, BotPosition, ShouldDisplay, UserEnv
 } from "../devices/interfaces";
-import { Vector3, McuParams } from "farmbot/dist";
+import { Vector3, McuParams, FirmwareHardware } from "farmbot/dist";
 import {
   TaggedWebcamFeed,
   TaggedPeripheral,
@@ -25,6 +25,7 @@ export interface Props {
   sensorReadings: TaggedSensorReading[];
   timeSettings: TimeSettings;
   env: UserEnv;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface AxisDisplayGroupProps {

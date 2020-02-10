@@ -2,7 +2,7 @@ module Api
   class ToolsController < Api::AbstractController
 
     def index
-      render json: tools
+      maybe_paginate tools
     end
 
     def show

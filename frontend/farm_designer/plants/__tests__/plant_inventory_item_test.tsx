@@ -1,5 +1,5 @@
 jest.mock("../../../open_farm/cached_crop", () => ({
-  cachedCrop: jest.fn(() => Promise.resolve({ svg_icon: "icon" })),
+  maybeGetCachedPlantIcon: jest.fn(),
 }));
 
 jest.mock("../../../history", () => ({ push: jest.fn() }));
@@ -8,22 +8,20 @@ import * as React from "react";
 import {
   PlantInventoryItem, PlantInventoryItemProps
 } from "../plant_inventory_item";
-import { shallow } from "enzyme";
+import { shallow, mount } from "enzyme";
 import {
   fakePlant, fakePlantTemplate
 } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";
-import { svgToUrl } from "../../../open_farm/icons";
+import { maybeGetCachedPlantIcon } from "../../../open_farm/cached_crop";
 
 describe("<PlantInventoryItem />", () => {
-  const fakeProps = (): PlantInventoryItemProps => {
-    return {
-      tpp: fakePlant(),
-      dispatch: jest.fn(),
-      hovered: false,
-    };
-  };
+  const fakeProps = (): PlantInventoryItemProps => ({
+    plant: fakePlant(),
+    dispatch: jest.fn(),
+    hovered: false,
+  });
 
   it("renders", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
@@ -45,7 +43,7 @@ describe("<PlantInventoryItem />", () => {
     expect(p.dispatch).toBeCalledWith({
       payload: {
         icon: "",
-        plantUUID: p.tpp.uuid
+        plantUUID: p.plant.uuid
       },
       type: Actions.TOGGLE_HOVERED_PLANT
     });
@@ -69,30 +67,31 @@ describe("<PlantInventoryItem />", () => {
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(p.dispatch).toBeCalledWith({
-      payload: [p.tpp.uuid],
+      payload: [p.plant.uuid],
       type: Actions.SELECT_PLANT
     });
-    expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.tpp.body.id);
+    expect(push).toHaveBeenCalledWith("/app/designer/plants/" + p.plant.body.id);
   });
 
   it("selects plant template", () => {
     const p = fakeProps();
-    p.tpp = fakePlantTemplate();
+    p.plant = fakePlantTemplate();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(p.dispatch).toBeCalledWith({
-      payload: [p.tpp.uuid],
+      payload: [p.plant.uuid],
       type: Actions.SELECT_PLANT
     });
     expect(push).toHaveBeenCalledWith(
-      "/app/designer/gardens/templates/" + p.tpp.body.id);
+      "/app/designer/gardens/templates/" + p.plant.body.id);
   });
 
-  it("gets cached icon", async () => {
+  it("gets cached icon", () => {
     const wrapper =
-      shallow<PlantInventoryItem>(<PlantInventoryItem {...fakeProps()} />);
-    const img = new Image;
-    await wrapper.find("img").simulate("load", { currentTarget: img });
-    expect(wrapper.state().icon).toEqual(svgToUrl("icon"));
+      mount<PlantInventoryItem>(<PlantInventoryItem {...fakeProps()} />);
+    const img = wrapper.find("img");
+    img.simulate("load");
+    expect(maybeGetCachedPlantIcon).toHaveBeenCalledWith("strawberry",
+      img.instance(), expect.any(Function));
   });
 });

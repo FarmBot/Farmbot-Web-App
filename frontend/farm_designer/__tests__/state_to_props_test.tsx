@@ -56,7 +56,7 @@ describe("mapStateToProps()", () => {
       expect.objectContaining({ uuid: plantUuid }));
   });
 
-  it("returns all points", () => {
+  it("returns all genericPoints", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = true;
@@ -67,10 +67,10 @@ describe("mapStateToProps()", () => {
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
-    expect(mapStateToProps(state).points.length).toEqual(3);
+    expect(mapStateToProps(state).genericPoints.length).toEqual(3);
   });
 
-  it("returns active points", () => {
+  it("returns active genericPoints", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
     (webAppConfig.body as WebAppConfig).show_historic_points = false;
@@ -81,7 +81,7 @@ describe("mapStateToProps()", () => {
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
-    expect(mapStateToProps(state).points.length).toEqual(1);
+    expect(mapStateToProps(state).genericPoints.length).toEqual(1);
   });
 
   it("returns sensor readings", () => {

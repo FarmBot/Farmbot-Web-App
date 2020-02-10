@@ -15,6 +15,7 @@ import {
   SpecialStatus,
   TaggedPlantTemplate,
   TaggedSavedGarden,
+  TaggedPointGroup,
 } from "farmbot";
 
 export interface TaggedResourceBase {
@@ -75,7 +76,7 @@ const is = (r: ResourceName) => function isOfTag(x: object): x is TaggedResource
   return safe;
 };
 
-function isTaggedPoint(x: {}): x is PointerType {
+export function isTaggedPoint(x: {}): x is PointerType {
   return (is("Point")(x)) && (x.kind === "Point");
 }
 
@@ -105,3 +106,5 @@ export const isTaggedSavedGarden =
   (x: object): x is TaggedSavedGarden => is("SavedGarden")(x);
 export const isTaggedPlantTemplate =
   (x: object): x is TaggedPlantTemplate => is("PlantTemplate")(x);
+export const isTaggedPointGroup =
+  (x: object): x is TaggedPointGroup => is("PointGroup")(x);

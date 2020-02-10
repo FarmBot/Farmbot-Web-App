@@ -21,8 +21,8 @@ module.exports = {
     "./frontend/__test_support__/setup_enzyme.js",
     "./frontend/__test_support__/localstorage.js",
     "./frontend/__test_support__/mock_fbtoaster.ts",
-    "./frontend/__test_support__/unmock_i18next.ts",
-    "./frontend/__test_support__/additional_mocks.ts"
+    "./frontend/__test_support__/mock_i18next.ts",
+    "./frontend/__test_support__/additional_mocks.tsx"
   ],
   "transform": {
     ".(ts|tsx)": "ts-jest"

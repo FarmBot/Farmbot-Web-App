@@ -32,6 +32,7 @@ jest.mock("../drawn_point/drawn_point_actions", () => ({
 jest.mock("../background/selection_box_actions", () => ({
   startNewSelectionBox: jest.fn(),
   resizeBox: jest.fn(),
+  maybeUpdateGroupCriteria: jest.fn(),
 }));
 
 jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
@@ -45,6 +46,11 @@ jest.mock("../../../history", () => ({
   getPathArray: () => [],
 }));
 
+let mockGroup: TaggedPointGroup | undefined = undefined;
+jest.mock("../../point_groups/group_detail", () => ({
+  findGroupFromUrl: () => mockGroup,
+}));
+
 import * as React from "react";
 import { GardenMap } from "../garden_map";
 import { shallow, mount } from "enzyme";
@@ -55,7 +61,7 @@ import {
   dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
 } from "../layers/plants/plant_actions";
 import {
-  startNewSelectionBox, resizeBox
+  startNewSelectionBox, resizeBox, maybeUpdateGroupCriteria
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
 import { chooseLocation } from "../../move_to";
@@ -63,9 +69,12 @@ import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
   fakeDesignerState
 } from "../../../__test_support__/fake_designer_state";
-import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakePointGroup, fakePoint
+} from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";
+import { TaggedPointGroup } from "farmbot";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -75,13 +84,15 @@ const fakeProps = (): GardenMapProps => ({
   showSpread: false,
   showFarmbot: false,
   showImages: false,
+  showZones: false,
   showSensorReadings: false,
   selectedPlant: undefined,
   crops: [],
   dispatch: jest.fn(),
   designer: fakeDesignerState(),
   plants: [],
-  points: [],
+  genericPoints: [],
+  allPoints: [],
   toolSlots: [],
   botLocationData: {
     position: { x: 0, y: 0, z: 0 },
@@ -111,6 +122,8 @@ const fakeProps = (): GardenMapProps => ({
   sensorReadings: [],
   sensors: [],
   timeSettings: fakeTimeSettings(),
+  groups: [],
+  shouldDisplay: () => false,
 });
 
 describe("<GardenMap/>", () => {
@@ -144,6 +157,7 @@ describe("<GardenMap/>", () => {
     wrapper.setState({ isDragging: true });
     wrapper.find(".drop-area-svg").simulate("mouseUp", DEFAULT_EVENT);
     expect(maybeSavePlantLocation).toHaveBeenCalled();
+    expect(maybeUpdateGroupCriteria).toHaveBeenCalled();
     expect(wrapper.instance().state.isDragging).toBeFalsy();
   });
 
@@ -198,6 +212,18 @@ describe("<GardenMap/>", () => {
       expect.objectContaining(e));
   });
 
+  it("starts drag on background: selecting zone", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.editGroup;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).toHaveBeenCalledWith(
+      expect.objectContaining({ plantActions: false }));
+    expect(history.push).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
+  });
+
   it("starts drag: click-to-add mode", () => {
     const wrapper = shallow(<GardenMap {...fakeProps()} />);
     mockMode = Mode.clickToAdd;
@@ -213,6 +239,17 @@ describe("<GardenMap/>", () => {
     const e = { pageX: 2000, pageY: 2000 };
     wrapper.find(".drop-area-svg").simulate("mouseMove", e);
     expect(resizeBox).toHaveBeenCalled();
+    expect(getGardenCoordinates).toHaveBeenCalledWith(
+      expect.objectContaining(e));
+  });
+
+  it("drags: selecting zone", () => {
+    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.editGroup;
+    const e = { pageX: 2000, pageY: 2000 };
+    wrapper.find(".drop-area-svg").simulate("mouseMove", e);
+    expect(resizeBox).toHaveBeenCalledWith(
+      expect.objectContaining({ plantActions: false }));
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
@@ -361,4 +398,14 @@ describe("<GardenMap/>", () => {
     expect(svg.props().height).toEqual(1000);
   });
 
+  it("gets group points", () => {
+    mockGroup = fakePointGroup();
+    mockGroup.body.point_ids = [1];
+    const p = fakeProps();
+    const point = fakePoint();
+    point.body.id = 1;
+    p.allPoints = [point];
+    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
+    expect(wrapper.instance().pointsSelectedByGroup).toEqual([point]);
+  });
 });

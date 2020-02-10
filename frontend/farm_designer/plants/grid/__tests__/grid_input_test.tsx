@@ -3,7 +3,7 @@ import { testGrid } from "./generate_grid_test";
 import { GridInput, InputCell, InputCellProps, createCB } from "../grid_input";
 import { mount, shallow } from "enzyme";
 import { BlurableInput } from "../../../../ui/blurable_input";
-import { DeepPartial } from "redux";
+import { changeEvent } from "../../../../__test_support__/fake_html_events";
 
 describe("<GridInput/>", () => {
   it("renders", () => {
@@ -37,15 +37,8 @@ describe("<InputCell/>", () => {
 
 describe("createCB", () => {
   it("creates a callback", () => {
-    type E = React.ChangeEvent<HTMLInputElement>;
-    const e: DeepPartial<E> = {
-      currentTarget: {
-        value: "7"
-      }
-    };
     const dispatch = jest.fn();
-    const cb = createCB("numPlantsH", dispatch);
-    cb(e as E);
+    createCB("numPlantsH", dispatch)(changeEvent("7"));
     expect(dispatch).toHaveBeenCalledWith("numPlantsH", 7);
   });
 });

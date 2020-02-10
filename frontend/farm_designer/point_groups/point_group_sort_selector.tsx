@@ -2,11 +2,11 @@ import * as React from "react";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { FBSelect, DropDownItem } from "../../ui";
 import { t } from "../../i18next_wrapper";
-import { TaggedPlant } from "../map/interfaces";
 import { shuffle, sortBy } from "lodash";
 import { Content } from "../../constants";
+import { TaggedPoint } from "farmbot";
 
-interface Props {
+export interface PointGroupSortSelectorProps {
   onChange(value: PointGroupSortType): void;
   value: PointGroupSortType;
 }
@@ -41,7 +41,7 @@ export const sortTypeChange = (cb: Function) => (ddi: DropDownItem) => {
   isSortType(value) && cb(value);
 };
 
-export function PointGroupSortSelector(p: Props) {
+export function PointGroupSortSelector(p: PointGroupSortSelectorProps) {
 
   return <div>
     <div className="default-value-tooltip">
@@ -60,25 +60,25 @@ export function PointGroupSortSelector(p: Props) {
   </div>;
 }
 
-type Sorter = (p: TaggedPlant[]) => TaggedPlant[];
+type Sorter = (p: TaggedPoint[]) => TaggedPoint[];
 type SortDictionary = Record<PointGroupSortType, Sorter>;
 
 export const SORT_OPTIONS: SortDictionary = {
-  random(plants) {
-    return shuffle(plants);
+  random(points) {
+    return shuffle(points);
   },
-  xy_ascending(plants) {
-    return sortBy(plants, ["body.x", "body.y"]);
+  xy_ascending(points) {
+    return sortBy(points, ["body.x", "body.y"]);
   },
-  xy_descending(plants) {
-    return sortBy(plants, ["body.x", "body.y"]).reverse();
+  xy_descending(points) {
+    return sortBy(points, ["body.x", "body.y"]).reverse();
   },
-  yx_ascending(plants) {
-    return sortBy(plants, ["body.y", "body.x"]);
+  yx_ascending(points) {
+    return sortBy(points, ["body.y", "body.x"]);
   },
-  yx_descending(plants) {
-    return sortBy(plants, ["body.y", "body.x"]).reverse();
+  yx_descending(points) {
+    return sortBy(points, ["body.y", "body.x"]).reverse();
   }
 };
 export const sortGroupBy =
-  (st: PointGroupSortType, p: TaggedPlant[]) => SORT_OPTIONS[st](p);
+  (st: PointGroupSortType, p: TaggedPoint[]) => SORT_OPTIONS[st](p);

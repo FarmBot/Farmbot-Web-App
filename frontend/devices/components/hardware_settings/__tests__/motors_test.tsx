@@ -28,10 +28,8 @@ describe("<Motors/>", () => {
     controlPanelState.motors = true;
     return {
       dispatch: jest.fn(x => x(jest.fn(), () => state)),
-      firmwareVersion: undefined,
       controlPanelState,
       sourceFwConfig: () => ({ value: 0, consistent: true }),
-      isValidFwConfig: true,
       firmwareHardware: undefined,
     };
   };
@@ -46,27 +44,20 @@ describe("<Motors/>", () => {
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });
 
-  it("doesn't render homing speed", () => {
+  it("shows TMC parameters", () => {
     const p = fakeProps();
-    p.firmwareVersion = "4.0.0R";
-    p.isValidFwConfig = false;
+    p.firmwareHardware = "express_k10";
     const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).not.toContain("Homing Speed");
+    expect(wrapper.text()).toContain("Stall");
+    expect(wrapper.text()).toContain("Current");
   });
 
-  it("renders homing speed", () => {
+  it("doesn't show TMC parameters", () => {
     const p = fakeProps();
-    p.firmwareVersion = "5.1.0R";
+    p.firmwareHardware = "farmduino";
     const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).toContain("Homing Speed");
-  });
-
-  it("renders homing speed while disconnected", () => {
-    const p = fakeProps();
-    p.firmwareVersion = undefined;
-    p.isValidFwConfig = true;
-    const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).toContain("Homing Speed");
+    expect(wrapper.text()).not.toContain("Stall");
+    expect(wrapper.text()).not.toContain("Current");
   });
 
   const testParamToggle = (

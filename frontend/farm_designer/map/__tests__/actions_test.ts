@@ -12,7 +12,7 @@ jest.mock("../../../api/crud", () => ({
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 const mockGroup = fakePointGroup();
 jest.mock("../../point_groups/group_detail", () => ({
-  fetchGroupFromUrl: jest.fn(() => mockGroup)
+  findGroupFromUrl: jest.fn(() => mockGroup)
 }));
 
 import {

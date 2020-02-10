@@ -4,20 +4,27 @@ import { t } from "../../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader
 } from "../designer_panel";
-import { TaggedPointGroup } from "farmbot";
+import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";
-import { TaggedPlant } from "../map/interfaces";
 import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PointGroupItem } from "./point_group_item";
 import { Paths } from "./paths";
 import { DevSettings } from "../../account/dev/dev_support";
+import { Feature, ShouldDisplay } from "../../devices/interfaces";
+import { ErrorBoundary } from "../../error_boundary";
+import {
+  GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup
+} from "./criteria";
+import { Content } from "../../constants";
 
-interface GroupDetailActiveProps {
+export interface GroupDetailActiveProps {
   dispatch: Function;
   group: TaggedPointGroup;
-  plants: TaggedPlant[];
+  allPoints: TaggedPoint[];
+  shouldDisplay: ShouldDisplay;
+  slugs: string[];
 }
 
 type State = { timerId?: ReturnType<typeof setInterval> };
@@ -30,16 +37,19 @@ export class GroupDetailActive
     this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
   };
 
-  get icons() {
-    const plants = sortGroupBy(this.props.group.body.sort_type,
-      this.props.plants);
+  get pointsSelectedByGroup() {
+    return pointsSelectedByGroup(this.props.group, this.props.allPoints);
+  }
 
-    return plants.map(point => {
+  get icons() {
+    const sortedPoints =
+      sortGroupBy(this.props.group.body.sort_type, this.pointsSelectedByGroup);
+    return sortedPoints.map(point => {
       return <PointGroupItem
         key={point.uuid}
         hovered={false}
         group={this.props.group}
-        plant={point}
+        point={point}
         dispatch={this.props.dispatch} />;
     });
   }
@@ -70,6 +80,7 @@ export class GroupDetailActive
   }
 
   render() {
+    const { group, dispatch } = this.props;
     return <DesignerPanel panelName={"group-detail"} panel={Panel.Groups}>
       <DesignerPanelHeader
         onBack={this.saveGroup}
@@ -79,35 +90,46 @@ export class GroupDetailActive
         backTo={"/app/designer/groups"} />
       <DesignerPanelContent
         panelName={"groups"}>
-        <label>{t("GROUP NAME")}{this.saved ? "" : "*"}</label>
-        <input
-          defaultValue={this.props.group.body.name}
-          onChange={this.update}
-          onBlur={this.saveGroup} />
-        <PointGroupSortSelector
-          value={this.props.group.body.sort_type}
-          onChange={this.changeSortType} />
-        <label>
-          {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
-        </label>
-        <p>
-          {t("Click plants in map to add or remove.")}
-        </p>
-        <div className="groups-list-wrapper">
-          {this.icons}
-        </div>
-        {DevSettings.futureFeaturesEnabled() &&
-          <Paths
-            points={this.props.plants}
-            dispatch={this.props.dispatch}
-            group={this.props.group} />}
-        <DeleteButton
-          className="groups-delete-btn"
-          dispatch={this.props.dispatch}
-          uuid={this.props.group.uuid}
-          onDestroy={history.back}>
-          {t("DELETE GROUP")}
-        </DeleteButton>
+        <ErrorBoundary>
+          <label>{t("GROUP NAME")}</label>
+          <i style={{ float: "right" }}>{this.saved ? "" : "  saving..."}</i>
+          <input
+            defaultValue={group.body.name}
+            onChange={this.update}
+            onBlur={this.saveGroup} />
+          <PointGroupSortSelector
+            value={group.body.sort_type}
+            onChange={this.changeSortType} />
+          <label>
+            {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
+          </label>
+          {this.props.shouldDisplay(Feature.criteria_groups) &&
+            <GroupPointCountBreakdown
+              manualCount={group.body.point_ids.length}
+              totalCount={this.pointsSelectedByGroup.length} />}
+          <p>{t("Click plants in map to add or remove.")}</p>
+          {this.props.shouldDisplay(Feature.criteria_groups) &&
+            this.pointsSelectedByGroup.length != group.body.point_ids.length &&
+            <p>{t(Content.CRITERIA_SELECTION_COUNT)}</p>}
+          <div className="groups-list-wrapper">
+            {this.icons}
+          </div>
+          {this.props.shouldDisplay(Feature.criteria_groups) &&
+            <GroupCriteria dispatch={dispatch}
+              group={group} slugs={this.props.slugs} />}
+          {DevSettings.futureFeaturesEnabled() &&
+            <Paths
+              pathPoints={this.pointsSelectedByGroup}
+              dispatch={dispatch}
+              group={group} />}
+          <DeleteButton
+            className="group-delete-btn"
+            dispatch={dispatch}
+            uuid={group.uuid}
+            onDestroy={history.back}>
+            {t("DELETE GROUP")}
+          </DeleteButton>
+        </ErrorBoundary>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

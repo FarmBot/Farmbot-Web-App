@@ -106,14 +106,14 @@ describe("semver compare", () => {
 
 describe("minFwVersionCheck()", () => {
   it("firmware version meets or exceeds minimum", () => {
-    expect(minFwVersionCheck("1.0.1R", "1.0.1")).toBeTruthy();
-    expect(minFwVersionCheck("1.0.2F", "1.0.1")).toBeTruthy();
+    expect(minFwVersionCheck("1.0.1.R", "1.0.1")).toBeTruthy();
+    expect(minFwVersionCheck("1.0.2.F", "1.0.1")).toBeTruthy();
   });
 
   it("firmware version doesn't meet minimum", () => {
-    expect(minFwVersionCheck("1.0.0R", "1.0.1")).toBeFalsy();
+    expect(minFwVersionCheck("1.0.0.R", "1.0.1")).toBeFalsy();
     expect(minFwVersionCheck(undefined, "1.0.1")).toBeFalsy();
-    expect(minFwVersionCheck("1.0.0", "1.0.1")).toBeFalsy();
+    expect(minFwVersionCheck("1.0.0.9.9", "1.0.1")).toBeFalsy();
   });
 });
 

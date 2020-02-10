@@ -1,32 +1,31 @@
 import * as React from "react";
 import { store } from "../../redux/store";
-import { MapTransformProps, TaggedPlant } from "../map/interfaces";
-import { fetchGroupFromUrl } from "./group_detail";
+import { MapTransformProps } from "../map/interfaces";
 import { isUndefined } from "lodash";
 import { sortGroupBy } from "./point_group_sort_selector";
 import { Color } from "../../ui";
 import { transformXY } from "../map/util";
 import { nn } from "./paths";
+import { TaggedPoint, TaggedPointGroup } from "farmbot";
 
 export interface GroupOrderProps {
-  plants: TaggedPlant[];
+  group: TaggedPointGroup | undefined;
+  groupPoints: TaggedPoint[];
   mapTransformProps: MapTransformProps;
 }
 
-const sortedPointCoordinates =
-  (plants: TaggedPlant[]): { x: number, y: number }[] => {
-    const { resources } = store.getState();
-    const group = fetchGroupFromUrl(resources.index);
-    if (isUndefined(group)) { return []; }
-    const groupPlants = plants
-      .filter(p => group.body.point_ids.includes(p.body.id || 0));
-    const groupSortType = resources.consumers.farm_designer.tryGroupSortType
-      || group.body.sort_type;
-    const sorted = groupSortType == "nn"
-      ? nn(groupPlants)
-      : sortGroupBy(groupSortType, groupPlants);
-    return sorted.map(p => ({ x: p.body.x, y: p.body.y }));
-  };
+const sortedPointCoordinates = (
+  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[]
+): { x: number, y: number }[] => {
+  if (isUndefined(group)) { return []; }
+  const { resources } = store.getState();
+  const groupSortType = resources.consumers.farm_designer.tryGroupSortType
+    || group.body.sort_type;
+  const sorted = groupSortType == "nn"
+    ? nn(groupPoints)
+    : sortGroupBy(groupSortType, groupPoints);
+  return sorted.map(p => ({ x: p.body.x, y: p.body.y }));
+};
 
 export interface PointsPathLineProps {
   orderedPoints: { x: number, y: number }[];
@@ -51,5 +50,5 @@ export const PointsPathLine = (props: PointsPathLineProps) =>
 
 export const GroupOrder = (props: GroupOrderProps) =>
   <PointsPathLine
-    orderedPoints={sortedPointCoordinates(props.plants)}
+    orderedPoints={sortedPointCoordinates(props.group, props.groupPoints)}
     mapTransformProps={props.mapTransformProps} />;

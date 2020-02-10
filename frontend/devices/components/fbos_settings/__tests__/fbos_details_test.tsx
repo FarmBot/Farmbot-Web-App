@@ -37,7 +37,7 @@ describe("<FbosDetails/>", () => {
     p.botInfoSettings.commit = "fakeCommit";
     p.botInfoSettings.target = "fakeTarget";
     p.botInfoSettings.node_name = "fakeName";
-    p.botInfoSettings.firmware_version = "fakeFirmware";
+    p.botInfoSettings.firmware_version = "0.0.0.R.ramps";
     p.botInfoSettings.firmware_commit = "fakeFwCommit";
     p.botInfoSettings.soc_temp = 48.3;
     p.botInfoSettings.wifi_level = -49;
@@ -50,8 +50,9 @@ describe("<FbosDetails/>", () => {
       "Commit", "fakeComm",
       "Target", "fakeTarget",
       "Node name", "fakeName",
-      "Firmware", "fakeFirmware",
+      "Firmware", "0.0.0 Arduino/RAMPS (Genesis v1.2)",
       "Firmware commit", "fakeFwCo",
+      "Firmware code", "0.0.0.R.ramps",
       "FAKETARGET CPU temperature", "48.3", "C",
       "WiFi strength", "-49dBm",
       "OS release channel",
@@ -68,6 +69,20 @@ describe("<FbosDetails/>", () => {
     const wrapper = shallow(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("nodeName");
     expect(wrapper.text()).not.toContain("name@");
+  });
+
+  it("handles missing firmware version", () => {
+    const p = fakeProps();
+    p.botInfoSettings.firmware_version = undefined;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("---");
+  });
+
+  it("handles unknown firmware version", () => {
+    const p = fakeProps();
+    p.botInfoSettings.firmware_version = "0.0.0.S.S";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.text()).toContain("0.0.0");
   });
 
   it("displays commit link", () => {

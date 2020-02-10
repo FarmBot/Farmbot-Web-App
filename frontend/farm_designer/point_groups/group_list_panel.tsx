@@ -7,15 +7,17 @@ import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent
 } from "../designer_panel";
 import { findAll } from "../../resources/find_all";
-import { TaggedPointGroup } from "farmbot";
+import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { history } from "../../history";
 import { GroupInventoryItem } from "./group_inventory_item";
 import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
+import { selectAllActivePoints } from "../../resources/selectors";
 
 export interface GroupListPanelProps {
   dispatch: Function;
   groups: TaggedPointGroup[];
+  allPoints: TaggedPoint[];
 }
 
 interface State {
@@ -23,9 +25,11 @@ interface State {
 }
 
 export function mapStateToProps(props: Everything): GroupListPanelProps {
-  const groups =
-    findAll<TaggedPointGroup>(props.resources.index, "PointGroup");
-  return { groups, dispatch: props.dispatch };
+  return {
+    groups: findAll<TaggedPointGroup>(props.resources.index, "PointGroup"),
+    dispatch: props.dispatch,
+    allPoints: selectAllActivePoints(props.resources.index)
+  };
 }
 
 export class RawGroupListPanel extends React.Component<GroupListPanelProps, State> {
@@ -62,6 +66,7 @@ export class RawGroupListPanel extends React.Component<GroupListPanelProps, Stat
             .map(group => <GroupInventoryItem
               key={group.uuid}
               group={group}
+              allPoints={this.props.allPoints}
               hovered={false}
               dispatch={this.props.dispatch}
               onClick={() => this.navigate(group.body.id || 0)}

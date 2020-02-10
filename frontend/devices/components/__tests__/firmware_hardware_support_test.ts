@@ -2,7 +2,7 @@ import { boardType } from "../firmware_hardware_support";
 
 describe("boardType()", () => {
   it("returns Farmduino", () => {
-    expect(boardType("5.0.3.F")).toEqual("farmduino");
+    expect(boardType("5.0.3.F.extra")).toEqual("farmduino");
   });
 
   it("returns Farmduino k1.4", () => {
@@ -25,6 +25,7 @@ describe("boardType()", () => {
     expect(boardType(undefined)).toEqual("unknown");
     expect(boardType("Arduino Disconnected!")).toEqual("unknown");
     expect(boardType("STUBFW")).toEqual("unknown");
+    expect(boardType("0.0.0.S.STUB")).toEqual("unknown");
   });
 
   it("returns None", () => {

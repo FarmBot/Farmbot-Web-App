@@ -84,6 +84,11 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         dispatch={props.dispatch}
         getConfigValue={getConfigValue}
         imageAgeInfo={props.imageAgeInfo} />} />
+    {DevSettings.futureFeaturesEnabled() &&
+      <LayerToggle
+        value={props.showZones}
+        label={t("Zones?")}
+        onClick={toggle(BooleanSetting.show_zones)} />}
     {DevSettings.futureFeaturesEnabled() && props.hasSensorReadings &&
       <LayerToggle
         value={props.showSensorReadings}

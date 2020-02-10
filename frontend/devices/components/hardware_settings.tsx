@@ -25,7 +25,6 @@ export class HardwareSettings extends
       botToMqttStatus, firmwareHardware, resources
     } = this.props;
     const { informational_settings } = this.props.bot.hardware;
-    const firmwareVersion = informational_settings.firmware_version;
     const { sync_status } = informational_settings;
     const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
     return <Widget className="hardware-widget">
@@ -68,16 +67,15 @@ export class HardwareSettings extends
             botDisconnected={botDisconnected} />
           <Motors
             dispatch={dispatch}
-            firmwareVersion={firmwareVersion}
             controlPanelState={controlPanelState}
             sourceFwConfig={sourceFwConfig}
-            isValidFwConfig={!!firmwareConfig}
             firmwareHardware={firmwareHardware} />
           <EncodersAndEndStops
             dispatch={dispatch}
             shouldDisplay={this.props.shouldDisplay}
             controlPanelState={controlPanelState}
-            sourceFwConfig={sourceFwConfig} />
+            sourceFwConfig={sourceFwConfig}
+            firmwareHardware={firmwareHardware} />
           <PinGuard
             dispatch={dispatch}
             resources={resources}

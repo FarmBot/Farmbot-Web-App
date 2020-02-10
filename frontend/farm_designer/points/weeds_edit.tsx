@@ -7,7 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
 import { TaggedGenericPointer } from "farmbot";
-import { maybeFindPointById } from "../../resources/selectors";
+import { maybeFindGenericPointerById } from "../../resources/selectors";
 import { Panel } from "../panel_header";
 import {
   EditPointProperties, PointActions, updatePoint
@@ -21,7 +21,7 @@ export interface EditWeedProps {
 
 export const mapStateToProps = (props: Everything): EditWeedProps => ({
   dispatch: props.dispatch,
-  findPoint: id => maybeFindPointById(props.resources.index, id),
+  findPoint: id => maybeFindGenericPointerById(props.resources.index, id),
 });
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {

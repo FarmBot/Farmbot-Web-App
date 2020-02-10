@@ -572,12 +572,6 @@ export namespace Content {
   export const CONFIRM_PLANT_DELETION =
     trim(`Show a confirmation dialog when deleting a plant.`);
 
-  export const SORT_DESCRIPTION =
-    trim(`When executing a sequence over a Group of locations, FarmBot will
-    travel to each group member in the order of the chosen sort method.
-    If the random option is chosen, FarmBot will travel in a random order
-    every time, so the ordering shown below will only be representative.`);
-
   // Device
   export const NOT_HTTPS =
     trim(`WARNING: Sending passwords via HTTP:// is not secure.`);
@@ -824,6 +818,20 @@ export namespace Content {
     trim(`You haven't made any sequences or regimens yet. To add an event,
     first create a sequence or regimen.`);
 
+  // Groups
+  export const SORT_DESCRIPTION =
+    trim(`When executing a sequence over a Group of locations, FarmBot will
+    travel to each group member in the order of the chosen sort method.
+    If the random option is chosen, FarmBot will travel in a random order
+    every time, so the ordering shown below will only be representative.`);
+
+  export const CRITERIA_SELECTION_COUNT =
+    trim(`Criteria additions can only be removed by changing criteria.
+    Click and drag in the map to modify zone selection criteria.
+    Criteria will be applied at the time of sequence execution. The final
+    selection at that time may differ from the selection currently
+    displayed.`);
+
   // Farmware
   export const NO_IMAGES_YET =
     trim(`You haven't yet taken any photos with your FarmBot.
@@ -912,12 +920,12 @@ export namespace DiagnosticMessages {
     network, a firewall may be blocking port 5672. Ensure that the blue LED
     communications light on the FarmBot electronics box is illuminated.`);
 
-  export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly, but
-  we have no recent record of FarmBot connecting to the internet. This usually
-  happens because of poor WiFi connectivity in the garden, a bad password during
-  configuration, a very long power outage, or blocked ports on FarmBot's local
-  network. Please refer IT staff to
-  https://software.farm.bot/docs/for-it-security-professionals`);
+  export const WIFI_OR_CONFIG = trim(`Your browser is connected correctly,
+    but we have no recent record of FarmBot connecting to the internet.
+    This usually happens because of poor WiFi connectivity in the garden,
+    a bad password during configuration, a very long power outage, or
+    blocked ports on FarmBot's local network. Please refer IT staff to
+    https://software.farm.bot/docs/for-it-security-professionals`);
 
   export const NO_WS_AVAILABLE = trim(`You are either offline, using a web
    browser that does not support WebSockets, or are behind a firewall that

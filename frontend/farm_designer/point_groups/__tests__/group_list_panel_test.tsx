@@ -8,7 +8,9 @@ import { mount, shallow } from "enzyme";
 import {
   RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps
 } from "../group_list_panel";
-import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
+import {
+  fakePointGroup, fakePlant
+} from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
@@ -17,15 +19,23 @@ import {
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
-    const fake1 = fakePointGroup();
-    fake1.body.name = "one";
-    fake1.body.id = 9;
-    fake1.body.point_ids = [1, 2, 3];
-
-    const fake2 = fakePointGroup();
-    fake2.body.name = "two";
-
-    return { dispatch: jest.fn(), groups: [fake1, fake2] };
+    const group1 = fakePointGroup();
+    group1.body.name = "one";
+    group1.body.id = 9;
+    group1.body.point_ids = [1, 2, 3];
+    const group2 = fakePointGroup();
+    group2.body.name = "two";
+    const point1 = fakePlant();
+    point1.body.id = 1;
+    const point2 = fakePlant();
+    point2.body.id = 2;
+    const point3 = fakePlant();
+    point3.body.id = 3;
+    return {
+      dispatch: jest.fn(),
+      groups: [group1, group2],
+      allPoints: [point1, point2, point3],
+    };
   };
 
   it("changes search term", () => {

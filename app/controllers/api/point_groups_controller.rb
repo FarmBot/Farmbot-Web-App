@@ -3,7 +3,7 @@ module Api
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
-      render json: your_point_groups
+      maybe_paginate your_point_groups
     end
 
     def show

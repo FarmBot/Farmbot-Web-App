@@ -161,8 +161,6 @@ export const equals = <T>(a: T, b: T): boolean => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
 
-export const timestamp = (date = new Date()) => Math.round(date.getTime());
-
 /** Used to scroll to the bottom of a sequence after adding a step. */
 export function scrollToBottom(elementId: string) {
   const elToScroll = document.getElementById(elementId);

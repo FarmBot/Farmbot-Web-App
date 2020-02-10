@@ -62,7 +62,8 @@ export const initialState = (): BotState => ({
       target: "---",
       env: "---",
       node_name: "---",
-      firmware_commit: "---"
+      firmware_version: "---",
+      firmware_commit: "---",
     },
     user_env: {},
     process_info: {

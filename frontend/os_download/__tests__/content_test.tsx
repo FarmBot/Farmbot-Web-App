@@ -13,12 +13,14 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { OsDownload } from "../content";
 
+const DOWNLOAD_PREFIX = "DOWNLOAD ";
+
 describe("<OsDownload />", () => {
   it("fetches and renders", async () => {
     const wrapper = await mount<OsDownload>(<OsDownload />);
     expect(wrapper.state().tagName).toEqual("v1.0.0");
     expect(wrapper.state().genesisImg).toEqual("fake rpi3 img url");
-    expect(wrapper.text()).toContain("Download FBOS v1.0.0");
+    expect(wrapper.text()).toContain(DOWNLOAD_PREFIX + "v1.0.0");
     wrapper.update();
     expect(wrapper.find("a").first().props().href)
       .toEqual("fake rpi3 img url");
@@ -28,7 +30,7 @@ describe("<OsDownload />", () => {
     globalConfig.GENESIS_IMG_FALLBACK = "fake rpi3 img fallback url///////v0.0.0";
     mockResponse = Promise.reject();
     const wrapper = await mount(<OsDownload />);
-    expect(wrapper.text()).toContain("Download FBOS v0.0.0");
+    expect(wrapper.text()).toContain(DOWNLOAD_PREFIX + "v0.0.0");
     expect(wrapper.find("a").first().props().href)
       .toEqual(globalConfig.GENESIS_IMG_FALLBACK);
   });
@@ -36,7 +38,7 @@ describe("<OsDownload />", () => {
   it("uses override", async () => {
     globalConfig.GENESIS_IMG_OVERRIDE = "fake rpi3 img override url";
     const wrapper = await mount(<OsDownload />);
-    expect(wrapper.text()).toContain("Download FBOS");
+    expect(wrapper.text()).toContain(DOWNLOAD_PREFIX);
     wrapper.update();
     expect(wrapper.find("a").first().props().href)
       .toEqual(globalConfig.GENESIS_IMG_OVERRIDE);

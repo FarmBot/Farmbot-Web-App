@@ -73,6 +73,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       show_spread: init(BooleanSetting.show_spread, false),
       show_farmbot: init(BooleanSetting.show_farmbot, true),
       show_images: init(BooleanSetting.show_images, false),
+      show_zones: init(BooleanSetting.show_zones, false),
       show_sensor_readings: init(BooleanSetting.show_sensor_readings, false),
       bot_origin_quadrant: this.getBotOriginQuadrant(),
       zoom_level: calcZoomLevel(getZoomLevelIndex(this.props.getConfigValue)),
@@ -118,6 +119,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
       show_spread,
       show_farmbot,
       show_images,
+      show_zones,
       show_sensor_readings,
       zoom_level
     } = this.state;
@@ -156,6 +158,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
         showSpread={show_spread}
         showFarmbot={show_farmbot}
         showImages={show_images}
+        showZones={show_zones}
         showSensorReadings={show_sensor_readings}
         hasSensorReadings={this.props.sensorReadings.length > 0}
         dispatch={this.props.dispatch}
@@ -181,13 +184,15 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           showSpread={show_spread}
           showFarmbot={show_farmbot}
           showImages={show_images}
+          showZones={show_zones}
           showSensorReadings={show_sensor_readings}
           selectedPlant={this.props.selectedPlant}
           crops={this.props.crops}
           dispatch={this.props.dispatch}
           designer={this.props.designer}
           plants={this.props.plants}
-          points={this.props.points}
+          genericPoints={this.props.genericPoints}
+          allPoints={this.props.allPoints}
           toolSlots={this.props.toolSlots}
           botLocationData={this.props.botLocationData}
           botSize={botSize}
@@ -204,7 +209,9 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           getConfigValue={this.props.getConfigValue}
           sensorReadings={this.props.sensorReadings}
           timeSettings={this.props.timeSettings}
-          sensors={this.props.sensors} />
+          sensors={this.props.sensors}
+          groups={this.props.groups}
+          shouldDisplay={this.props.shouldDisplay} />
       </div>
 
       {this.props.designer.openedSavedGarden &&

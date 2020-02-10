@@ -22,7 +22,8 @@ describe("<PlantLayer/>", () => {
     currentPlant: undefined,
     dragging: false,
     editing: false,
-    selectedForDel: undefined,
+    boxSelected: undefined,
+    groupSelected: [],
     dispatch: jest.fn(),
     zoomLvl: 1,
     activeDragXY: { x: undefined, y: undefined, z: undefined },
@@ -97,14 +98,14 @@ describe("<PlantLayer/>", () => {
     expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
   });
 
-  it("has plant selected for deletion", () => {
+  it("has plant selected by selection box", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
     const plant = fakePlant();
     p.plants = [plant];
-    p.selectedForDel = [plant.uuid];
+    p.boxSelected = [plant.uuid];
     const wrapper = svgMount(<PlantLayer {...p} />);
-    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).multiselected)
+    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).selected)
       .toEqual(true);
   });
 

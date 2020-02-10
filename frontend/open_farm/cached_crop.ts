@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Dictionary } from "farmbot";
 import { isObject } from "lodash";
-import { OFCropAttrs, OFCropResponse, OpenFarmAPI } from "./icons";
+import { OFCropAttrs, OFCropResponse, OpenFarmAPI, svgToUrl } from "./icons";
 
 export type OFIcon = Readonly<OFCropAttrs>;
 type IconDictionary = Dictionary<OFIcon | undefined>;
@@ -39,7 +39,7 @@ function localStorageIconSet(icon: OFIcon): void {
  * end up performing 10 HTTP requests at application start time. Not very
  * efficient.
  * SOLUTION: Keep a record of open requests to avoid duplicate requests. */
-const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
+export const promiseCache: Dictionary<Promise<Readonly<OFCropAttrs>>> = {};
 
 const cacheTheIcon = (slug: string) =>
   (resp: AxiosResponse<OFCropResponse>): OFIcon => {
@@ -72,3 +72,23 @@ function HTTPIconFetch(slug: string) {
 export function cachedCrop(slug: string): Promise<OFIcon> {
   return localStorageIconFetch(slug) || HTTPIconFetch(slug);
 }
+
+export const maybeGetCachedPlantIcon = (
+  slug: string | undefined,
+  target: React.SyntheticEvent<HTMLImageElement>["currentTarget"],
+  cb: (icon: string) => void) => {
+  slug && cachedCrop(slug)
+    .then(crop => {
+      const i = svgToUrl(crop.svg_icon);
+      setImgSrc(target, i);
+      cb(i);
+    });
+};
+
+export const setImgSrc = (
+  target: React.SyntheticEvent<HTMLImageElement>["currentTarget"],
+  icon: string) => {
+  if (icon !== target.getAttribute("src")) {
+    target.setAttribute("src", icon);
+  }
+};

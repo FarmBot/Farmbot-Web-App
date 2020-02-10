@@ -7,11 +7,12 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Feature } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
+import { isExpressBoard } from "../firmware_hardware_support";
 
 export function EncodersAndEndStops(props: EncodersProps) {
 
   const { encoders_and_endstops } = props.controlPanelState;
-  const { dispatch, sourceFwConfig, shouldDisplay } = props;
+  const { dispatch, sourceFwConfig, shouldDisplay, firmwareHardware } = props;
 
   const encodersDisabled = {
     x: !sourceFwConfig("encoder_enabled_x").value,
@@ -22,36 +23,42 @@ export function EncodersAndEndStops(props: EncodersProps) {
   return <section>
     <Header
       expanded={encoders_and_endstops}
-      title={t("Encoders and Endstops")}
+      title={isExpressBoard(firmwareHardware)
+        ? t("Stall Detection and Endstops")
+        : t("Encoders and Endstops")}
       name={"encoders_and_endstops"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders_and_endstops}>
       <BooleanMCUInputGroup
-        name={t("Enable Encoders")}
+        name={isExpressBoard(firmwareHardware)
+          ? t("Enable Stall Detection")
+          : t("Enable Encoders")}
         tooltip={ToolTips.ENABLE_ENCODERS}
         x={"encoder_enabled_x"}
         y={"encoder_enabled_y"}
         z={"encoder_enabled_z"}
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
-        name={t("Use Encoders for Positioning")}
-        tooltip={ToolTips.ENCODER_POSITIONING}
-        x={"encoder_use_for_pos_x"}
-        y={"encoder_use_for_pos_y"}
-        z={"encoder_use_for_pos_z"}
-        grayscale={encodersDisabled}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
-      <BooleanMCUInputGroup
-        name={t("Invert Encoders")}
-        tooltip={ToolTips.INVERT_ENCODERS}
-        x={"encoder_invert_x"}
-        y={"encoder_invert_y"}
-        z={"encoder_invert_z"}
-        grayscale={encodersDisabled}
-        dispatch={dispatch}
-        sourceFwConfig={sourceFwConfig} />
+      {!isExpressBoard(firmwareHardware) &&
+        <BooleanMCUInputGroup
+          name={t("Use Encoders for Positioning")}
+          tooltip={ToolTips.ENCODER_POSITIONING}
+          x={"encoder_use_for_pos_x"}
+          y={"encoder_use_for_pos_y"}
+          z={"encoder_use_for_pos_z"}
+          grayscale={encodersDisabled}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
+      {!isExpressBoard(firmwareHardware) &&
+        <BooleanMCUInputGroup
+          name={t("Invert Encoders")}
+          tooltip={ToolTips.INVERT_ENCODERS}
+          x={"encoder_invert_x"}
+          y={"encoder_invert_y"}
+          z={"encoder_invert_z"}
+          grayscale={encodersDisabled}
+          dispatch={dispatch}
+          sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
         name={t("Max Missed Steps")}
         tooltip={ToolTips.MAX_MISSED_STEPS}
@@ -62,7 +69,7 @@ export function EncodersAndEndStops(props: EncodersProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Encoder Missed Step Decay")}
+        name={t("Missed Step Decay")}
         tooltip={ToolTips.ENCODER_MISSED_STEP_DECAY}
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
@@ -70,19 +77,20 @@ export function EncodersAndEndStops(props: EncodersProps) {
         gray={encodersDisabled}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
-      <NumericMCUInputGroup
-        name={t("Encoder Scaling")}
-        tooltip={ToolTips.ENCODER_SCALING}
-        x={"encoder_scaling_x"}
-        y={"encoder_scaling_y"}
-        z={"encoder_scaling_z"}
-        xScale={sourceFwConfig("movement_microsteps_x").value}
-        yScale={sourceFwConfig("movement_microsteps_y").value}
-        zScale={sourceFwConfig("movement_microsteps_z").value}
-        intSize={shouldDisplay(Feature.long_scaling_factor) ? "long" : "short"}
-        gray={encodersDisabled}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
+      {!isExpressBoard(firmwareHardware) &&
+        <NumericMCUInputGroup
+          name={t("Encoder Scaling")}
+          tooltip={ToolTips.ENCODER_SCALING}
+          x={"encoder_scaling_x"}
+          y={"encoder_scaling_y"}
+          z={"encoder_scaling_z"}
+          xScale={sourceFwConfig("movement_microsteps_x").value}
+          yScale={sourceFwConfig("movement_microsteps_y").value}
+          zScale={sourceFwConfig("movement_microsteps_z").value}
+          intSize={shouldDisplay(Feature.long_scaling_factor) ? "long" : "short"}
+          gray={encodersDisabled}
+          sourceFwConfig={sourceFwConfig}
+          dispatch={dispatch} />}
       <BooleanMCUInputGroup
         name={t("Enable Endstops")}
         tooltip={ToolTips.ENABLE_ENDSTOPS}

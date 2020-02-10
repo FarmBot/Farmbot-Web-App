@@ -1579,7 +1579,7 @@ textarea:focus {
     }
   }
   table {
-    margin: 2rem;
+    margin: auto;
     margin-top: 3rem;
     width: 93%;
     font-size: 1.2rem;
@@ -1596,6 +1596,7 @@ textarea:focus {
       padding-bottom: 1rem;
       span {
         display: block;
+        white-space: nowrap;
       }
     }
   }

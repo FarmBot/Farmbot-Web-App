@@ -23,7 +23,9 @@ describe Api::SensorReadingsController do
         params: { format: :json }
 
       expect(response.status).to eq(200)
-      expect(json[:created_at].first(21)).to eq(json[:read_at].first(21))
+      created_at_result = Time.parse(json[:created_at])
+      read_at_result = Time.parse(json[:read_at])
+      expect((created_at_result - read_at_result).abs).to be < 0.1
     end
 
     it "makes a sensor reading" do
@@ -52,7 +54,7 @@ describe Api::SensorReadingsController do
       expect(json[:z]).to eq(2)
       expect(json[:pin]).to eq(13)
       expect(json[:mode]).to eq(1)
-      expect(read_at.as_json.first(21)).to eq(json[:read_at].first(21))
+      expect((Time.parse(json[:read_at]) - read_at).abs).to be < 0.1
       expect(before < SensorReading.count).to be_truthy
     end
 
@@ -78,6 +80,14 @@ describe Api::SensorReadingsController do
       keys = json.first.keys
       expect(json.map { |x| x[:id] }).to include(id)
       expect(keys).to include(:x, :y, :z, :value, :pin)
+    end
+
+    it "paginates sensor readings" do
+      sign_in user
+      SensorReading.destroy_all
+      FactoryBot.create_list(:sensor_reading, 30, device: user.device)
+      get :index, params: { format: :json, page: 2, per: 5 }
+      expect(json.length).to eq(5)
     end
 
     it "destroys a reading" do

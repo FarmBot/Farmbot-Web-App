@@ -73,6 +73,7 @@ export enum Feature {
   backscheduled_regimens = "backscheduled_regimens",
   boot_sequence = "boot_sequence",
   change_ownership = "change_ownership",
+  criteria_groups = "criteria_groups",
   endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
   farmduino_k14 = "farmduino_k14",
@@ -89,7 +90,7 @@ export enum Feature {
   rpi_led_control = "rpi_led_control",
   sensors = "sensors",
   use_update_channel = "use_update_channel",
-  variables = "variables"
+  variables = "variables",
 }
 
 /** Object fetched from FEATURE_MIN_VERSIONS_URL. */

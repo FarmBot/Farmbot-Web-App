@@ -7,10 +7,11 @@ import { svgToUrl, DEFAULT_ICON } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../../redux/interfaces";
-import { fetchGroupFromUrl } from "../point_groups/group_detail";
+import { findGroupFromUrl } from "../point_groups/group_detail";
 import { TaggedPoint } from "farmbot";
 import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
+import { selectAllPointGroups } from "../../resources/selectors";
 
 export function movePlant(payload: MovePlantProps) {
   const tr = payload.plant;
@@ -33,7 +34,7 @@ export const setHoveredPlant = (plantUUID: string | undefined, icon = "") => ({
 
 const addOrRemoveFromGroup =
   (clickedPlantUuid: UUID, resources: ResourceIndex) => {
-    const group = fetchGroupFromUrl(resources);
+    const group = findGroupFromUrl(selectAllPointGroups(resources));
     const point =
       resources.references[clickedPlantUuid] as TaggedPoint | undefined;
     if (group && point?.body.id) {

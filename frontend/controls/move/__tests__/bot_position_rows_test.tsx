@@ -1,16 +1,11 @@
 const mockDevice = {
-  moveAbsolute: jest.fn(() => { return Promise.resolve(); }),
+  moveAbsolute: jest.fn(() => Promise.resolve()),
 };
+jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("../../../device", () => ({
-  getDevice: () => (mockDevice)
+jest.mock("../../../config_storage/actions", () => ({
+  toggleWebAppBool: jest.fn()
 }));
-
-jest.mock("../../../config_storage/actions", () => {
-  return {
-    toggleWebAppBool: jest.fn()
-  };
-});
 
 import * as React from "react";
 import { shallow, mount } from "enzyme";
@@ -22,14 +17,12 @@ import { BooleanSetting } from "../../../session_keys";
 describe("<BotPositionRows />", () => {
   const mockConfig: Dictionary<boolean> = {};
 
-  function fakeProps(): BotPositionRowsProps {
-    return {
-      getValue: jest.fn(key => mockConfig[key]),
-      locationData: bot.hardware.location_data,
-      arduinoBusy: false,
-      firmware_version: undefined,
-    };
-  }
+  const fakeProps = (): BotPositionRowsProps => ({
+    getValue: jest.fn(key => mockConfig[key]),
+    locationData: bot.hardware.location_data,
+    arduinoBusy: false,
+    firmwareHardware: undefined,
+  });
 
   it("inputs axis destination", () => {
     const wrapper = shallow(<BotPositionRows {...fakeProps()} />);
@@ -38,19 +31,21 @@ describe("<BotPositionRows />", () => {
     expect(mockDevice.moveAbsolute).toHaveBeenCalledWith("123");
   });
 
-  it("shows encoder position in steps", () => {
+  it("shows encoder position", () => {
     mockConfig[BooleanSetting.scaled_encoders] = true;
+    mockConfig[BooleanSetting.raw_encoders] = true;
     const p = fakeProps();
-    p.firmware_version = undefined;
+    p.firmwareHardware = undefined;
     const wrapper = mount(<BotPositionRows {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("scaled encoder (steps)");
+    expect(wrapper.text().toLowerCase()).toContain("encoder");
   });
 
-  it("shows encoder position in mm", () => {
+  it("doesn't show encoder position", () => {
     mockConfig[BooleanSetting.scaled_encoders] = true;
+    mockConfig[BooleanSetting.raw_encoders] = true;
     const p = fakeProps();
-    p.firmware_version = "6.0.0";
+    p.firmwareHardware = "express_k10";
     const wrapper = mount(<BotPositionRows {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("scaled encoder (mm)");
+    expect(wrapper.text().toLowerCase()).not.toContain("encoder");
   });
 });

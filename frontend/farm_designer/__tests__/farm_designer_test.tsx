@@ -35,7 +35,8 @@ describe("<FarmDesigner/>", () => {
     selectedPlant: undefined,
     designer: fakeDesignerState(),
     hoveredPlant: undefined,
-    points: [],
+    genericPoints: [],
+    allPoints: [],
     plants: [],
     toolSlots: [],
     crops: [],
@@ -59,6 +60,8 @@ describe("<FarmDesigner/>", () => {
     getConfigValue: jest.fn(),
     sensorReadings: [],
     sensors: [],
+    groups: [],
+    shouldDisplay: () => false,
   });
 
   it("loads default map settings", () => {

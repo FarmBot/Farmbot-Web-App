@@ -25,6 +25,7 @@ describe("<Controls />", () => {
     sensorReadings: [],
     timeSettings: fakeTimeSettings(),
     env: {},
+    firmwareHardware: undefined,
   });
 
   it("shows webcam widget", () => {

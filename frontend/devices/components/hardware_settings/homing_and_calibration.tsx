@@ -9,7 +9,6 @@ import { disabledAxisMap } from "../axis_tracking_status";
 import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
-import { minFwVersionCheck } from "../../../util";
 import { t } from "../../../i18next_wrapper";
 import { calculateScale } from "./motors";
 
@@ -18,13 +17,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
   const { dispatch, bot, sourceFwConfig, firmwareConfig, botDisconnected
   } = props;
   const hardware = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
-  const { firmware_version } = bot.hardware.informational_settings;
   const { homing_and_calibration } = props.bot.controlPanelState;
-
-  const axisLengthIntSize =
-    minFwVersionCheck(firmware_version, "6.0.0")
-      ? "long"
-      : "short";
 
   /**
    * Tells us if X/Y/Z have a means of checking their position.
@@ -94,7 +87,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         }}
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
-        intSize={axisLengthIntSize} />
+        intSize={"long"} />
       <NumericMCUInputGroup
         name={t("Timeout after (seconds)")}
         tooltip={ToolTips.TIMEOUT_AFTER}

@@ -1,6 +1,6 @@
 let mockPath = "/app/designer/plants";
 jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
+  getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
 let mockDev = false;

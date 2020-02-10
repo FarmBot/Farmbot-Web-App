@@ -291,7 +291,8 @@ export const transformForQuadrant =
 export const getMode = (): Mode => {
   const pathArray = getPathArray();
   if (pathArray) {
-    if ((pathArray[3] === "groups") && pathArray[4]) { return Mode.editGroup; }
+    if ((pathArray[3] === "groups" || pathArray[3] === "zones")
+      && pathArray[4]) { return Mode.editGroup; }
     if (pathArray[6] === "add") { return Mode.clickToAdd; }
     if (!isNaN(parseInt(pathArray.slice(-1)[0]))) { return Mode.editPlant; }
     if (pathArray[5] === "edit") { return Mode.editPlant; }

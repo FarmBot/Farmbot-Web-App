@@ -29,7 +29,7 @@ const OMIT_THESE: Record<keyof ButtonCustomProps, true> = {
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
     {...omit(props, Object.keys(OMIT_THESE))}
-    className="red fb-button del-button"
+    className={`red fb-button del-button ${props.className}`}
     title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.uuid))

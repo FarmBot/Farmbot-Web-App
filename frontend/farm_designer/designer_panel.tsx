@@ -78,13 +78,15 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
 interface DesignerPanelTopProps {
   panel: Panel;
   linkTo?: string;
+  onClick?(): void;
   title?: string;
   children?: React.ReactNode;
   noIcon?: boolean;
 }
 
 export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
-  return <div className={`panel-top ${props.linkTo ? "with-button" : ""}`}>
+  const withBtn = !!props.linkTo || !!props.onClick;
+  return <div className={`panel-top ${withBtn ? "with-button" : ""}`}>
     <div className="thin-search-wrapper">
       <div className="text-input-wrapper">
         {!props.noIcon &&
@@ -94,6 +96,13 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
         </ErrorBoundary>
       </div>
     </div>
+    {props.onClick &&
+      <a>
+        <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}
+          onClick={props.onClick}>
+          <i className="fa fa-plus" title={props.title} />
+        </div>
+      </a>}
     {props.linkTo &&
       <Link to={props.linkTo}>
         <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}>

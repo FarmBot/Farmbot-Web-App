@@ -1,9 +1,7 @@
 let mockPath = "";
 jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); }),
-  history: {
-    push: jest.fn()
-  }
+  getPathArray: jest.fn(() => mockPath.split("/")),
+  history: { push: jest.fn() }
 }));
 
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
@@ -15,6 +13,7 @@ import {
   fakeSequence, fakeRegimen, fakeFarmEvent
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
+import { inputEvent } from "../../../__test_support__/fake_html_events";
 
 describe("mapStateToPropsAddEdit()", () => {
 
@@ -22,25 +21,19 @@ describe("mapStateToPropsAddEdit()", () => {
     const { handleTime } = mapStateToPropsAddEdit(fakeState());
 
     it("handles an element with name `start_time`", () => {
-      const e = {
-        currentTarget: { value: "10:54", name: "start_time" }
-      } as React.SyntheticEvent<HTMLInputElement>;
+      const e = inputEvent("10:54", "start_time");
       const result = handleTime(e, "2017-05-21T22:00:00.000");
       expect(result).toContain("54");
     });
 
     it("handles an element with name `end_time`", () => {
-      const e = {
-        currentTarget: { value: "10:53", name: "end_time" }
-      } as React.SyntheticEvent<HTMLInputElement>;
+      const e = inputEvent("10:53", "end_time");
       const result = handleTime(e, "2017-05-21T22:00:00.000");
       expect(result).toContain("53");
     });
 
     it("crashes on other names", () => {
-      const e = {
-        currentTarget: { value: "10:52", name: "other" }
-      } as React.SyntheticEvent<HTMLInputElement>;
+      const e = inputEvent("10:52", "other");
       const boom = () => handleTime(e, "2017-05-21T22:00:00.000");
       expect(boom).toThrowError("Expected a name attribute from time field.");
     });

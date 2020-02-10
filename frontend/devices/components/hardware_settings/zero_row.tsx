@@ -28,7 +28,8 @@ export function ZeroRow({ botDisconnected }: ZeroRowProps) {
       <label>
         {t("SET ZERO POSITION")}
       </label>
-      <Help text={ToolTips.SET_ZERO_POSITION} requireClick={true} position={Position.RIGHT} />
+      <Help text={ToolTips.SET_ZERO_POSITION} requireClick={true}
+        position={Position.RIGHT} />
     </Col>
     {AXES.map((axis) => {
       return <Col xs={2} key={axis} className={"centered-button-div"}>

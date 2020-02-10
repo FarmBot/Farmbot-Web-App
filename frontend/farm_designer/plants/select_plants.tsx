@@ -77,7 +77,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
         </button>
         <button className="fb-button dark-blue"
           onClick={() => !this.props.gardenOpen
-            ? this.props.dispatch(createGroup({ points: this.selected }))
+            ? this.props.dispatch(createGroup({ pointUuids: this.selected }))
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}
         </button>
@@ -111,7 +111,7 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
           selectedPlantData.map(p =>
             <PlantInventoryItem
               key={p.uuid}
-              tpp={p}
+              plant={p}
               hovered={false}
               dispatch={dispatch} />)}
       </DesignerPanelContent>

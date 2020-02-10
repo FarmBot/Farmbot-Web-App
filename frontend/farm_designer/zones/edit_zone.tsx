@@ -7,15 +7,20 @@ import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
 import { Panel } from "../panel_header";
+import { selectAllPointGroups } from "../../resources/selectors";
+import { TaggedPointGroup } from "farmbot";
+import { edit, save } from "../../api/crud";
+import { LocationSelection } from "../point_groups/criteria";
 
 export interface EditZoneProps {
   dispatch: Function;
-  findZone(id: number): string | undefined;
+  findZone(id: number): TaggedPointGroup | undefined;
 }
 
 export const mapStateToProps = (props: Everything): EditZoneProps => ({
   dispatch: props.dispatch,
-  findZone: _id => undefined,
+  findZone: id => selectAllPointGroups(props.resources.index)
+    .filter(g => g.body.id == id)[0],
 });
 
 export class RawEditZone extends React.Component<EditZoneProps, {}> {
@@ -31,7 +36,7 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
     return <span>{t("Redirecting...")}</span>;
   }
 
-  default = () => {
+  default = (zone: TaggedPointGroup) => {
     return <DesignerPanel panelName={"zone-info"} panel={Panel.Zones}>
       <DesignerPanelHeader
         panelName={"zone-info"}
@@ -39,12 +44,23 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
         title={`${t("Edit")} zone`}
         backTo={"/app/designer/zones"} />
       <DesignerPanelContent panelName={"zone-info"}>
+        <label>{t("zone name")}</label>
+        <input
+          defaultValue={zone.body.name}
+          onBlur={e => {
+            this.props.dispatch(edit(zone, { name: e.currentTarget.value }));
+            this.props.dispatch(save(zone.uuid));
+          }} />
+        <LocationSelection
+          group={zone}
+          criteria={zone.body.criteria}
+          dispatch={this.props.dispatch} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }
 
   render() {
-    return this.zone ? this.default() : this.fallback();
+    return this.zone ? this.default(this.zone) : this.fallback();
   }
 }
 

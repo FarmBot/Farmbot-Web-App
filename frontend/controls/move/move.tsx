@@ -33,7 +33,8 @@ export class Move extends React.Component<MoveProps, {}> {
           <i className="fa fa-gear" />
           <MoveWidgetSettingsMenu
             toggle={this.toggle}
-            getValue={this.getValue} />
+            getValue={this.getValue}
+            firmwareHardware={this.props.firmwareHardware} />
         </Popover>
       </WidgetHeader>
       <WidgetBody>
@@ -53,7 +54,7 @@ export class Move extends React.Component<MoveProps, {}> {
             locationData={locationData}
             getValue={this.getValue}
             arduinoBusy={this.props.arduinoBusy}
-            firmware_version={informational_settings.firmware_version} />
+            firmwareHardware={this.props.firmwareHardware} />
         </MustBeOnline>
         {this.props.getWebAppConfigVal(BooleanSetting.show_motor_plot) &&
           <MotorPositionPlot locationData={locationData} />}

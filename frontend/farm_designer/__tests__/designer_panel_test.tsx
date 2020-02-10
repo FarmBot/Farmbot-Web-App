@@ -14,4 +14,11 @@ describe("<DesignerPanelHeader />", () => {
     const wrapper = mount(<DesignerPanelHeader panelName={"test-panel"} />);
     expect(wrapper.find("div").first().hasClass("gray-panel")).toBeTruthy();
   });
+
+  it("goes back", () => {
+    const wrapper = mount(<DesignerPanelHeader panelName={"test-panel"} />);
+    history.back = jest.fn();
+    wrapper.find("i").first().simulate("click");
+    expect(history.back).toHaveBeenCalled();
+  });
 });

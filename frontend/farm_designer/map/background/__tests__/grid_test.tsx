@@ -46,9 +46,9 @@ describe("<Grid/>", () => {
     const minorGrid = wrapper.find("#minor_grid>path");
     const majorGrid = wrapper.find("#major_grid>path");
     const superiorGrid = wrapper.find("#superior_grid>path");
-    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.15)");
-    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.3)");
-    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.4)");
+    expect(minorGrid.props()).toHaveProperty("strokeWidth", "1");
+    expect(majorGrid.props()).toHaveProperty("strokeWidth", "2");
+    expect(superiorGrid.props()).toHaveProperty("strokeWidth", "4");
   });
 
   it("change patterns strokes on 0.5 zoom and below", () => {
@@ -58,8 +58,48 @@ describe("<Grid/>", () => {
     const minorGrid = wrapper.find("#minor_grid>path");
     const majorGrid = wrapper.find("#major_grid>path");
     const superiorGrid = wrapper.find("#superior_grid>path");
-    expect(minorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0)");
-    expect(majorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.6)");
-    expect(superiorGrid.props()).toHaveProperty("stroke", "rgba(0, 0, 0, 0.8)");
+    expect(minorGrid.props()).toHaveProperty("strokeWidth", "0");
+    expect(majorGrid.props()).toHaveProperty("strokeWidth", "3");
+    expect(superiorGrid.props()).toHaveProperty("strokeWidth", "6");
+  });
+
+  it("visualizes axis values every 100mm above 0.5 zoom", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.6;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(29);
+  });
+
+  it("visualizes axis values every 200mm between 0.5 and 0.2 excluded zoom", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.5;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(14);
+  });
+
+  it("visualizes axis values every 500mm on 0.2 zoom and below", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.2;
+    const wrapper = shallow(<Grid {...p} />);
+    const axisValues = wrapper.find(".x-label").children();
+    expect(axisValues).toHaveLength(5);
+  });
+
+  it("use transform scale 1 for zoom above 1", () => {
+    const p = fakeProps();
+    p.zoomLvl = 1.1;
+    const wrapper = shallow(<Grid {...p} />);
+    const textNode = wrapper.find(".x-label").first();
+    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1)");
+  });
+
+  it("use transform scale 1.5 for zoom on 0.5", () => {
+    const p = fakeProps();
+    p.zoomLvl = 0.5;
+    const wrapper = shallow(<Grid {...p} />);
+    const textNode = wrapper.find(".x-label").first();
+    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1.5)");
   });
 });
