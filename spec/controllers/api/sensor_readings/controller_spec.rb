@@ -82,6 +82,14 @@ describe Api::SensorReadingsController do
       expect(keys).to include(:x, :y, :z, :value, :pin)
     end
 
+    it "paginates sensor readings" do
+      sign_in user
+      SensorReading.destroy_all
+      FactoryBot.create_list(:sensor_reading, 30, device: user.device)
+      get :index, params: { format: :json, page: 2, per: 5 }
+      expect(json.length).to eq(5)
+    end
+
     it "destroys a reading" do
       sign_in user
       SensorReading.destroy_all

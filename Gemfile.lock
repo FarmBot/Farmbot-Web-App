@@ -153,6 +153,18 @@ GEM
     json (2.3.0)
     jsonapi-renderer (0.2.2)
     jwt (2.2.1)
+    kaminari (1.2.0)
+      activesupport (>= 4.1.0)
+      kaminari-actionview (= 1.2.0)
+      kaminari-activerecord (= 1.2.0)
+      kaminari-core (= 1.2.0)
+    kaminari-actionview (1.2.0)
+      actionview
+      kaminari-core (= 1.2.0)
+    kaminari-activerecord (1.2.0)
+      activerecord
+      kaminari-core (= 1.2.0)
+    kaminari-core (1.2.0)
     loofah (2.4.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -320,6 +332,7 @@ DEPENDENCIES
   google-cloud-storage (~> 1.11)
   hashdiff
   jwt
+  kaminari
   mutations
   passenger
   pg

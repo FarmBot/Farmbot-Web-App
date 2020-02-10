@@ -80,6 +80,16 @@ module Api
       { root: false, user: current_user }
     end
 
+    def maybe_paginate(collection)
+      page = params[:page]
+      per = params[:per]
+
+      if page && per
+        render json: collection.page(page).per(per)
+      else
+        render json: collection
+      end
+    end
     private
 
     def clean_expired_farm_events

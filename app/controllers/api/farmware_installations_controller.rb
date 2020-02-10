@@ -1,7 +1,7 @@
 module Api
   class FarmwareInstallationsController < Api::AbstractController
     def index
-      render json: farmware_installations
+      maybe_paginate farmware_installations
     end
 
     def show

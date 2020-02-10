@@ -5,7 +5,7 @@ module Api
     end
 
     def index
-      render json: readings
+      maybe_paginate(readings)
     end
 
     def show

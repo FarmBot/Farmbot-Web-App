@@ -7,7 +7,7 @@ module Api
     end
 
     def index
-      render json: webcams
+      maybe_paginate webcams
     end
 
     def show

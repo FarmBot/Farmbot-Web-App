@@ -10,7 +10,7 @@ module Api
     end
 
     def index
-      render json: farmware_envs
+      maybe_paginate farmware_envs
     end
 
     def show

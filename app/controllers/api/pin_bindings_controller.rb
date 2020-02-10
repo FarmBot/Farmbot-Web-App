@@ -1,7 +1,7 @@
 module Api
   class PinBindingsController < Api::AbstractController
     def index
-      render json: pin_bindings
+      maybe_paginate pin_bindings
     end
 
     def show

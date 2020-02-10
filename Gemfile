@@ -24,7 +24,7 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "valid_url"
-# gem "farady", "~> 1.0.0"
+gem "kaminari"
 
 group :development, :test do
   gem "climate_control"
