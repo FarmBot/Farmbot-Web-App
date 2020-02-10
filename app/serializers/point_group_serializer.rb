@@ -4,4 +4,8 @@ class PointGroupSerializer < ApplicationSerializer
   def point_ids
     object.point_group_items.pluck(:point_id)
   end
+
+  def criteria
+    object.criteria || PointGroup::DEFAULT_CRITERIA
+  end
 end
