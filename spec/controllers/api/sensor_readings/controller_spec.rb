@@ -119,6 +119,9 @@ describe Api::SensorReadingsController do
       expect(json.count).to eq(5)
       expect(user.device.sensor_readings.count).to eq(5)
       const_reassign(Api::SensorReadingsController, :LIMIT, 5000)
+      first = (json.first[:created_at])
+      last = (json.last[:created_at])
+      expect(first).to be > last
     end
   end
 end
