@@ -171,9 +171,10 @@ class Device < ApplicationRecord
   end
 
   TOO_MANY_CONNECTIONS =
-    "Your device is " +
-      "reconnecting to the server too often. Please " +
-      "see https://developer.farm.bot/docs/connectivity-issues"
+    "Your device is reconnecting to the server too often. " +
+    "This may be a sign of local network issues. " +
+    "Please review the documentation provided at " +
+    "https://software.farm.bot/docs/connecting-farmbot-to-the-internet"
   def self.connection_warning(username)
     device_id = username.split("_").last.to_i || 0
     device = self.find_by(id: device_id)
