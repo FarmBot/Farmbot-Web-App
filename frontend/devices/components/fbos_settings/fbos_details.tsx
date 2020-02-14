@@ -260,6 +260,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
   const { last_ota, last_ota_checkup } = props.deviceAccount.body;
+  const firmwareCommit = [firmware_commit, firmware_version].includes("---")
+    ? firmware_commit : firmware_version?.split("-")[1] || firmware_commit;
 
   return <div>
     <LastSeen
@@ -275,7 +277,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     {isString(private_ip) && <p><b>{t("Local IP address")}: </b>{private_ip}</p>}
     <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
     <CommitDisplay title={t("Firmware commit")}
-      repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
+      repo={"farmbot-arduino-firmware"} commit={firmwareCommit} />
     <p><b>{t("Firmware code")}: </b>{firmware_version}</p>
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
     {isNumber(memory_usage) &&

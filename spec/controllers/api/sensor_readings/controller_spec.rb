@@ -18,7 +18,7 @@ describe Api::SensorReadingsController do
           x: nil,
           y: 1,
           z: 2,
-          mode: 1
+          mode: 1,
         }.to_json,
         params: { format: :json }
 
@@ -40,7 +40,7 @@ describe Api::SensorReadingsController do
           y: 1,
           z: 2,
           mode: 1,
-          read_at: read_at
+          read_at: read_at,
         }.to_json,
         params: { format: :json }
 
@@ -104,6 +104,24 @@ describe Api::SensorReadingsController do
     it "requires logged in user" do
       post :create, body: {}.to_json
       expect(response.status).to eq(401)
+    end
+
+    it "cleans up excess logs" do
+      const_reassign(Api::SensorReadingsController, :LIMIT, 5)
+      sign_in user
+      10.times do |n|
+        FactoryBot.create(:sensor_reading,
+                          device: user.device,
+                          created_at: n.minutes.ago)
+      end
+      expect(user.device.sensor_readings.count).to eq(10)
+      get :index, params: { format: :json }
+      expect(json.count).to eq(5)
+      expect(user.device.sensor_readings.count).to eq(5)
+      const_reassign(Api::SensorReadingsController, :LIMIT, 5000)
+      first = (json.first[:created_at])
+      last = (json.last[:created_at])
+      expect(first).to be > last
     end
   end
 end
