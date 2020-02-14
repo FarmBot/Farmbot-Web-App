@@ -85,6 +85,26 @@ describe("<FbosDetails/>", () => {
     expect(wrapper.text()).toContain("0.0.0");
   });
 
+  it("displays firmware commit link from firmware_commit", () => {
+    const p = fakeProps();
+    const commit = "abcdefgh";
+    p.botInfoSettings.firmware_commit = commit;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").last().text()).toEqual(commit);
+    expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
+      .toEqual(commit);
+  });
+
+  it("displays firmware commit link from version", () => {
+    const p = fakeProps();
+    const commit = "abcdefgh";
+    p.botInfoSettings.firmware_version = `1.2.3.R.x-${commit}+`;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").last().text()).toEqual(commit);
+    expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
+      .toEqual(commit);
+  });
+
   it("displays commit link", () => {
     const p = fakeProps();
     p.botInfoSettings.commit = "abcdefgh";

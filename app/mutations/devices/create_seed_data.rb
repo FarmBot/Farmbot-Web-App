@@ -7,7 +7,9 @@ module Devices
       "genesis_1.2" => Devices::Seeders::GenesisOneTwo,
       "genesis_1.3" => Devices::Seeders::GenesisOneThree,
       "genesis_1.4" => Devices::Seeders::GenesisOneFour,
+      "genesis_1.5" => Devices::Seeders::GenesisOneFive,
       "genesis_xl_1.4" => Devices::Seeders::GenesisXlOneFour,
+      "genesis_xl_1.5" => Devices::Seeders::GenesisXlOneFive,
 
       "demo_account" => Devices::Seeders::DemoAccountSeeder,
       "none" => Devices::Seeders::None,
