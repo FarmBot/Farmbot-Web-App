@@ -3,6 +3,13 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 jest.mock("../actions", () => ({ scanImage: jest.fn() }));
 jest.mock("../../images/actions", () => ({ selectImage: jest.fn() }));
 
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraCalibration } from "../camera_calibration";
@@ -12,6 +19,7 @@ import { selectImage } from "../../images/actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
+import { SPECIAL_VALUES } from "../../weed_detector/remote_env/constants";
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
@@ -115,5 +123,22 @@ describe("<CameraCalibration/>", () => {
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, Content.NO_CAMERA_SELECTED);
+  });
+
+  it("toggles simple version", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount(<CameraCalibration {...p} />);
+    wrapper.find("input").first().simulate("change");
+    expect(mockDevice.setUserEnv).toHaveBeenCalledWith({
+      CAMERA_CALIBRATION_easy_calibration: "\"FALSE\""
+    });
+  });
+
+  it("renders simple version", () => {
+    const p = fakeProps();
+    p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
+    const wrapper = mount(<CameraCalibration {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("blur");
   });
 });

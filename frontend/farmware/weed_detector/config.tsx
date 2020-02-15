@@ -15,6 +15,9 @@ import { isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 
 export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
+  getValue(conf: keyof WD_ENV) { return envGet(conf, this.props.values); }
+  get simple() { return !!this.getValue("CAMERA_CALIBRATION_easy_calibration"); }
+
   NumberBox = ({ conf, label }: {
     conf: keyof WD_ENV;
     label: string;
@@ -25,7 +28,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
       </label>
       <BlurableInput type="number"
         id={conf}
-        value={"" + envGet(conf, this.props.values)}
+        value={"" + this.getValue(conf)}
         onCommit={e =>
           this.props.onChange(conf, parseFloat(e.currentTarget.value))}
         placeholder={label} />
@@ -40,57 +43,48 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
     }
   };
 
-  find = (needle: keyof WD_ENV): DropDownItem => {
-    const wow = envGet(needle, this.props.values);
-    const ok = SPECIAL_VALUE_DDI[wow];
-    return ok || NULL_CHOICE;
-  };
+  find = (conf: keyof WD_ENV): DropDownItem =>
+    SPECIAL_VALUE_DDI[this.getValue(conf)] || NULL_CHOICE
 
   render() {
-    return <div>
-      <label htmlFor="invert_hue_selection">
-        {t("Invert Hue Range Selection")}
-      </label>
-      <div>
-        <input
-          type="checkbox"
-          id="invert_hue_selection"
-          checked={!!envGet("CAMERA_CALIBRATION_invert_hue_selection",
-            this.props.values)}
-          onChange={e =>
-            this.props.onChange("CAMERA_CALIBRATION_invert_hue_selection",
-              e.currentTarget.checked ?
-                SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
-      </div>
-      <this.NumberBox
-        conf={"CAMERA_CALIBRATION_calibration_object_separation"}
-        label={t(`Calibration Object Separation`)} />
-      <label>
-        {t(`Calibration Object Separation along axis`)}
-      </label>
-      <FBSelect
-        onChange={this.setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
-        selectedItem={this.find("CAMERA_CALIBRATION_calibration_along_axis")}
-        list={CALIBRATION_DROPDOWNS} />
-      <Row>
-        <Col xs={6}>
+    return <div className={"camera-calibration-config"}>
+      {!this.simple &&
+        <div className={"camera-calibration-configs"}>
+          <BoolConfig
+            wDEnv={this.props.values}
+            configKey={"CAMERA_CALIBRATION_invert_hue_selection"}
+            label={t("Invert Hue Range Selection")}
+            onChange={this.props.onChange} />
           <this.NumberBox
-            conf={"CAMERA_CALIBRATION_camera_offset_x"}
-            label={t(`Camera Offset X`)} />
-        </Col>
-        <Col xs={6}>
-          <this.NumberBox
-            conf={"CAMERA_CALIBRATION_camera_offset_y"}
-            label={t(`Camera Offset Y`)} />
-        </Col>
-      </Row>
-      <label htmlFor="image_bot_origin_location">
-        {t(`Origin Location in Image`)}
-      </label>
-      <FBSelect
-        list={ORIGIN_DROPDOWNS}
-        onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
-        selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")} />
+            conf={"CAMERA_CALIBRATION_calibration_object_separation"}
+            label={t(`Calibration Object Separation`)} />
+          <label>
+            {t(`Calibration Object Separation along axis`)}
+          </label>
+          <FBSelect
+            onChange={this.setDDI("CAMERA_CALIBRATION_calibration_along_axis")}
+            selectedItem={this.find("CAMERA_CALIBRATION_calibration_along_axis")}
+            list={CALIBRATION_DROPDOWNS} />
+          <Row>
+            <Col xs={6}>
+              <this.NumberBox
+                conf={"CAMERA_CALIBRATION_camera_offset_x"}
+                label={t(`Camera Offset X`)} />
+            </Col>
+            <Col xs={6}>
+              <this.NumberBox
+                conf={"CAMERA_CALIBRATION_camera_offset_y"}
+                label={t(`Camera Offset Y`)} />
+            </Col>
+          </Row>
+          <label htmlFor="image_bot_origin_location">
+            {t(`Origin Location in Image`)}
+          </label>
+          <FBSelect
+            list={ORIGIN_DROPDOWNS}
+            onChange={this.setDDI("CAMERA_CALIBRATION_image_bot_origin_location")}
+            selectedItem={this.find("CAMERA_CALIBRATION_image_bot_origin_location")} />
+        </div>}
       <Row>
         <Col xs={6}>
           <this.NumberBox
@@ -106,3 +100,25 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
     </div>;
   }
 }
+
+export interface BoolConfigProps {
+  configKey: keyof WD_ENV;
+  label: string;
+  wDEnv: Partial<WD_ENV>;
+  onChange(key: keyof WD_ENV, value: number): void;
+}
+
+export const BoolConfig = (props: BoolConfigProps) =>
+  <div className="boolean-camera-calibration-config">
+    <label htmlFor={props.configKey}>
+      {t(props.label)}
+    </label>
+    <input
+      type="checkbox"
+      id={props.configKey}
+      checked={!!envGet(props.configKey, props.wDEnv)}
+      onChange={e =>
+        props.onChange(props.configKey,
+          e.currentTarget.checked ?
+            SPECIAL_VALUES.TRUE : SPECIAL_VALUES.FALSE)} />
+  </div>;

@@ -24,7 +24,6 @@ export interface AutoUpdateRowProps {
   timeFormat: PreferredHourFormat;
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface CameraSelectionProps {

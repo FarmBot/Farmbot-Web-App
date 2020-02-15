@@ -28,11 +28,12 @@ module Devices
       def tool_slots_slot_4; end
       def tool_slots_slot_5; end
       def tool_slots_slot_6; end
+      def tool_slots_slot_7; end
+      def tool_slots_slot_8; end
       def tools_seed_bin; end
       def tools_seed_tray; end
       def tools_seed_trough_1; end
       def tools_seed_trough_2; end
-      def tools_seed_trough_3; end
       def tools_seeder; end
       def tools_soil_sensor; end
       def tools_watering_nozzle; end

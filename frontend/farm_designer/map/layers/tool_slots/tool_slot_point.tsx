@@ -43,7 +43,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
     xySwap,
   };
   return <g id={"toolslot-" + id}
-    onClick={() => DevSettings.futureFeaturesEnabled() &&
+    onClick={() => !DevSettings.futureFeaturesEnabled() &&
       history.push(`/app/designer/tool-slots/${id}`)}>
     {pullout_direction &&
       <ToolbaySlot

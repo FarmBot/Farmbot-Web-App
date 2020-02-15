@@ -41,6 +41,11 @@ describe("formatEnvKey()", () => {
         r: "FALSE"
       },
       {
+        k: "CAMERA_CALIBRATION_easy_calibration",
+        v: SPECIAL_VALUES.FALSE,
+        r: "FALSE"
+      },
+      {
         k: "CAMERA_CALIBRATION_calibration_along_axis",
         v: SPECIAL_VALUES.X,
         r: "X"

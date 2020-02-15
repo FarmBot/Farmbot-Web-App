@@ -19,7 +19,7 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
   const pathArray = getPathArray();
   const canClickTool = !(pathArray[3] === "plants" && pathArray.length > 4);
   const goToToolsPage = () => canClickTool &&
-    !DevSettings.futureFeaturesEnabled() && history.push("/app/tools");
+    DevSettings.futureFeaturesEnabled() && history.push("/app/tools");
   const { slots, visible, mapTransformProps } = props;
   const cursor = canClickTool ? "pointer" : "default";
 

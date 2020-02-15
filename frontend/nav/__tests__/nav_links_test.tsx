@@ -28,7 +28,7 @@ describe("<NavLinks />", () => {
   });
 
   it("shows links", () => {
-    mockDev = true;
+    mockDev = false;
     const wrapper = mount(<NavLinks close={jest.fn()} alertCount={1} />);
     expect(wrapper.text().toLowerCase()).not.toContain("tools");
   });

@@ -11,6 +11,7 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
+import { error } from "../../../toast/toast";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
@@ -37,10 +38,19 @@ describe("<AddTool />", () => {
     expect(initSave).toHaveBeenCalledWith("Tool", { name: "Foo" });
   });
 
-  it("adds stock tools", () => {
+  it("doesn't add stock tools", () => {
     const wrapper = mount(<AddTool {...fakeProps()} />);
     wrapper.find("button").last().simulate("click");
-    expect(initSave).toHaveBeenCalledTimes(6);
+    expect(error).toHaveBeenCalledWith("Please choose a FarmBot model.");
+    expect(initSave).not.toHaveBeenCalledTimes(6);
+    expect(history.push).not.toHaveBeenCalledWith("/app/designer/tools");
+  });
+
+  it("adds stock tools", () => {
+    const wrapper = mount(<AddTool {...fakeProps()} />);
+    wrapper.setState({ model: "express" });
+    wrapper.find("button").last().simulate("click");
+    expect(initSave).toHaveBeenCalledTimes(2);
     expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 });

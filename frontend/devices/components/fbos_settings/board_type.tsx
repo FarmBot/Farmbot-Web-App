@@ -57,7 +57,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           <FBSelect
             key={this.apiValue}
             extraClass={this.state.sending ? "dim" : ""}
-            list={getFirmwareChoices(this.props.shouldDisplay)}
+            list={getFirmwareChoices()}
             selectedItem={this.selectedBoard}
             onChange={this.sendOffConfig} />
         </div>
@@ -69,8 +69,7 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           alerts={this.props.alerts}
           bot={this.props.bot}
           dispatch={this.props.dispatch}
-          timeSettings={this.props.timeSettings}
-          shouldDisplay={this.props.shouldDisplay} />
+          timeSettings={this.props.timeSettings} />
       </Col>
     </Row>;
   }

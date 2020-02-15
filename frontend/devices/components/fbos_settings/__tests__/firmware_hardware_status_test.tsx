@@ -22,7 +22,6 @@ describe("<FirmwareHardwareStatusDetails />", () => {
     apiFirmwareValue: undefined,
     botFirmwareValue: undefined,
     mcuFirmwareValue: undefined,
-    shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
   });
@@ -79,7 +78,6 @@ describe("<FirmwareHardwareStatus />", () => {
     alerts: [],
     botOnline: true,
     apiFirmwareValue: undefined,
-    shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
   });

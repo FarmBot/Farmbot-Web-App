@@ -11,7 +11,6 @@ import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer, PingResultPayload } from "../connectivity/reducer";
 import { versionOK } from "../util";
-import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
 import { incomingLegacyStatus } from "../connectivity/connect_device";
 import { merge } from "lodash";
@@ -205,8 +204,7 @@ function legacyStatusHandler(state: BotState,
 
   const nextSyncStatus = maybeNegateStatus(info);
 
-  versionOK(informational_settings.controller_version,
-    EXPECTED_MAJOR, EXPECTED_MINOR);
+  versionOK(informational_settings.controller_version);
   state.hardware.informational_settings.sync_status = nextSyncStatus;
   return state;
 }

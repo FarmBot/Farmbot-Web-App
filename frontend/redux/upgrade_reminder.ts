@@ -1,10 +1,10 @@
 import { info } from "../toast/toast";
-import { semverCompare, SemverResult, MinVersionOverride } from "../util";
+import { semverCompare, SemverResult, FbosVersionFallback } from "../util";
 import { Content } from "../constants";
 import { Dictionary } from "lodash";
 
 const IDEAL_VERSION =
-  globalConfig.FBOS_END_OF_LIFE_VERSION || MinVersionOverride.ALWAYS;
+  globalConfig.FBOS_END_OF_LIFE_VERSION || FbosVersionFallback.NULL;
 
 /** Returns a function that, when given a version string, (possibly) warns the
  * user to upgrade FBOS versions before it hits end of life. */
@@ -12,8 +12,8 @@ export function createReminderFn() {
   /** FBOS Version can change during the app lifecycle. We only want one
    * reminder per FBOS version change. */
   const alreadyChecked: Dictionary<boolean | undefined> = {
-    // Dont bother when the user is offline.
-    [MinVersionOverride.ALWAYS]: true
+    // Don't bother when the user is offline.
+    [FbosVersionFallback.NULL]: true
   };
 
   return function reminder(version: string) {

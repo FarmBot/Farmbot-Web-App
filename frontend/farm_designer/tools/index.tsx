@@ -159,14 +159,20 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             getToolName={this.getToolName} />)}
     </div>
 
-  InactiveTools = () =>
-    <div className="inactive-tools">
-      <label>{t("inactive tools")}</label>
+  Tools = () =>
+    <div className="tools">
+      <div className="tools-header">
+        <label>{t("tools")}</label>
+        <Link to={"/app/designer/tools/add"}>
+          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
+            <i className="fa fa-plus" title={t("Add tool")} />
+          </div>
+        </Link>
+      </div>
       {this.props.tools
         .filter(tool => !tool.body.name ||
           tool.body.name && tool.body.name.toLowerCase()
             .includes(this.state.searchTerm.toLowerCase()))
-        .filter(tool => tool.body.status === "inactive")
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
             toolId={tool.body.id}
@@ -175,25 +181,26 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   render() {
     const panelName = "tools";
+    const hasTools = this.props.tools.length > 0;
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Tools}
-        linkTo={"/app/designer/tools/add"}
-        title={t("Add tool")}>
+        linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
+        title={!hasTools ? t("Add tool") : undefined}>
         <input type="text" onChange={this.update}
           placeholder={t("Search your tools...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"tools"}>
         <EmptyStateWrapper
-          notEmpty={this.props.tools.length > 0}
+          notEmpty={hasTools}
           graphic={EmptyStateGraphic.tools}
           title={t("Add a tool")}
           text={Content.NO_TOOLS}
           colorScheme={"tools"}>
           <this.MountedToolInfo />
           <this.ToolSlots />
-          <this.InactiveTools />
+          <this.Tools />
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

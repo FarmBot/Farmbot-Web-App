@@ -2,7 +2,7 @@ import * as React from "react";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
 import { HardwareSettingsProps } from "../interfaces";
-import { MustBeOnline, isBotOnline } from "../must_be_online";
+import { isBotOnline } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
@@ -32,14 +32,7 @@ export class HardwareSettings extends
     const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
     const commonProps = { dispatch, controlPanelState };
     return <Widget className="hardware-widget">
-      <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
-        <MustBeOnline
-          hideBanner={true}
-          syncStatus={sync_status}
-          networkState={this.props.botToMqttStatus}
-          lockOpen={process.env.NODE_ENV !== "production"}>
-        </MustBeOnline>
-      </WidgetHeader>
+      <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS} />
       <WidgetBody>
         <button
           className={"fb-button gray no-float"}
@@ -51,43 +44,37 @@ export class HardwareSettings extends
           onClick={() => dispatch(bulkToggleControlPanel(false))}>
           {t("Collapse All")}
         </button>
-        {firmwareConfig &&
-          <Popover position={Position.BOTTOM_RIGHT}>
-            <i className="fa fa-download" />
-            <FwParamExportMenu firmwareConfig={firmwareConfig} />
-          </Popover>}
-        <MustBeOnline
-          networkState={this.props.botToMqttStatus}
-          syncStatus={sync_status}
-          lockOpen={process.env.NODE_ENV !== "production" || !!firmwareConfig}>
-          <div className="label-headings">
-            <SpacePanelHeader />
-          </div>
-          <HomingAndCalibration {...commonProps}
-            bot={bot}
-            sourceFwConfig={sourceFwConfig}
-            firmwareConfig={firmwareConfig}
-            firmwareHardware={firmwareHardware}
-            botDisconnected={botDisconnected} />
-          <Motors {...commonProps}
-            sourceFwConfig={sourceFwConfig}
-            firmwareHardware={firmwareHardware} />
-          <Encoders {...commonProps}
-            sourceFwConfig={sourceFwConfig}
-            firmwareHardware={firmwareHardware} />
-          <EndStops {...commonProps}
-            sourceFwConfig={sourceFwConfig} />
-          <ErrorHandling {...commonProps}
-            sourceFwConfig={sourceFwConfig} />
-          <PinGuard {...commonProps}
-            resources={resources}
-            sourceFwConfig={sourceFwConfig} />
-          <DangerZone {...commonProps}
-            onReset={MCUFactoryReset}
-            botDisconnected={botDisconnected} />
-          <PinBindings  {...commonProps}
-            resources={resources} />
-        </MustBeOnline>
+        <Popover position={Position.BOTTOM_RIGHT}>
+          <i className="fa fa-download" />
+          <FwParamExportMenu firmwareConfig={firmwareConfig} />
+        </Popover>
+        <div className="label-headings">
+          <SpacePanelHeader />
+        </div>
+        <HomingAndCalibration {...commonProps}
+          bot={bot}
+          sourceFwConfig={sourceFwConfig}
+          firmwareConfig={firmwareConfig}
+          firmwareHardware={firmwareHardware}
+          botDisconnected={botDisconnected} />
+        <Motors {...commonProps}
+          sourceFwConfig={sourceFwConfig}
+          firmwareHardware={firmwareHardware} />
+        <Encoders {...commonProps}
+          sourceFwConfig={sourceFwConfig}
+          firmwareHardware={firmwareHardware} />
+        <EndStops {...commonProps}
+          sourceFwConfig={sourceFwConfig} />
+        <ErrorHandling {...commonProps}
+          sourceFwConfig={sourceFwConfig} />
+        <PinGuard {...commonProps}
+          resources={resources}
+          sourceFwConfig={sourceFwConfig} />
+        <DangerZone {...commonProps}
+          onReset={MCUFactoryReset}
+          botDisconnected={botDisconnected} />
+        <PinBindings  {...commonProps}
+          resources={resources} />
       </WidgetBody>
     </Widget>;
   }

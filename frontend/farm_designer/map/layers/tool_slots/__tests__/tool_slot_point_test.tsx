@@ -48,10 +48,10 @@ describe("<ToolSlotPoint/>", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.id = 1;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    mockDev = false;
+    mockDev = true;
     wrapper.find("g").first().simulate("click");
     expect(history.push).not.toHaveBeenCalled();
-    mockDev = true;
+    mockDev = false;
     wrapper.find("g").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
   });

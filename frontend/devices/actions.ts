@@ -26,8 +26,6 @@ import { t } from "../i18next_wrapper";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
-export const EXPECTED_MAJOR = 6;
-export const EXPECTED_MINOR = 0;
 export const FEATURE_MIN_VERSIONS_URL =
   "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
   "FEATURE_MIN_VERSIONS.json";
@@ -132,7 +130,7 @@ export function sync(): Thunk {
   return function (_dispatch, getState) {
     const currentFBOSversion =
       getState().bot.hardware.informational_settings.controller_version;
-    const IS_OK = versionOK(currentFBOSversion, EXPECTED_MAJOR, EXPECTED_MINOR);
+    const IS_OK = versionOK(currentFBOSversion);
     if (IS_OK) {
       getDevice()
         .sync()

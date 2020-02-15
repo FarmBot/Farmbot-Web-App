@@ -39,7 +39,7 @@ export const textAnchorPosition = (
     case Anchor.end: return { anchor: "end", x: -40, y: 10 };
     case Anchor.middleTop: return { anchor: "middle", x: 0, y: 60 };
     case Anchor.middleBottom: return { anchor: "middle", x: 0, y: -40 };
-    default: return { anchor: "start", x: 40, y: 10 };
+    default: throw new Error("https://xkcd.com/2200");
   }
 };
 
