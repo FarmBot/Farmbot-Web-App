@@ -53,7 +53,6 @@ export interface PowerAndResetProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 

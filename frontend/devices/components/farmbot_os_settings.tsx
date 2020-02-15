@@ -161,7 +161,6 @@ export class FarmbotOsSettings
               controlPanelState={this.props.bot.controlPanelState}
               dispatch={this.props.dispatch}
               sourceFbosConfig={sourceFbosConfig}
-              shouldDisplay={this.props.shouldDisplay}
               botOnline={botOnline} />
           </MustBeOnline>
         </WidgetBody>

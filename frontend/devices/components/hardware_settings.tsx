@@ -6,7 +6,8 @@ import { MustBeOnline, isBotOnline } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
-import { EncodersAndEndStops } from "./hardware_settings/encoders_and_endstops";
+import { Encoders } from "./hardware_settings/encoders";
+import { EndStops } from "./hardware_settings/endstops";
 import { Motors } from "./hardware_settings/motors";
 import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
@@ -15,6 +16,8 @@ import {
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";
 import { t } from "../../i18next_wrapper";
+import { PinBindings } from "./hardware_settings/pin_bindings";
+import { ErrorHandling } from "./hardware_settings/error_handling";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
@@ -27,6 +30,7 @@ export class HardwareSettings extends
     const { informational_settings } = this.props.bot.hardware;
     const { sync_status } = informational_settings;
     const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
+    const commonProps = { dispatch, controlPanelState };
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
         <MustBeOnline
@@ -59,33 +63,30 @@ export class HardwareSettings extends
           <div className="label-headings">
             <SpacePanelHeader />
           </div>
-          <HomingAndCalibration
-            dispatch={dispatch}
+          <HomingAndCalibration {...commonProps}
             bot={bot}
             sourceFwConfig={sourceFwConfig}
             firmwareConfig={firmwareConfig}
+            firmwareHardware={firmwareHardware}
             botDisconnected={botDisconnected} />
-          <Motors
-            dispatch={dispatch}
-            controlPanelState={controlPanelState}
+          <Motors {...commonProps}
             sourceFwConfig={sourceFwConfig}
             firmwareHardware={firmwareHardware} />
-          <EncodersAndEndStops
-            dispatch={dispatch}
-            shouldDisplay={this.props.shouldDisplay}
-            controlPanelState={controlPanelState}
+          <Encoders {...commonProps}
             sourceFwConfig={sourceFwConfig}
             firmwareHardware={firmwareHardware} />
-          <PinGuard
-            dispatch={dispatch}
-            resources={resources}
-            controlPanelState={controlPanelState}
+          <EndStops {...commonProps}
             sourceFwConfig={sourceFwConfig} />
-          <DangerZone
-            dispatch={dispatch}
-            controlPanelState={controlPanelState}
+          <ErrorHandling {...commonProps}
+            sourceFwConfig={sourceFwConfig} />
+          <PinGuard {...commonProps}
+            resources={resources}
+            sourceFwConfig={sourceFwConfig} />
+          <DangerZone {...commonProps}
             onReset={MCUFactoryReset}
             botDisconnected={botDisconnected} />
+          <PinBindings  {...commonProps}
+            resources={resources} />
         </MustBeOnline>
       </WidgetBody>
     </Widget>;

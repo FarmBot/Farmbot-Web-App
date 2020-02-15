@@ -4,23 +4,20 @@ import { Collapse, Popover, Position } from "@blueprintjs/core";
 import { FactoryResetRow } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
-import { Feature } from "../../interfaces";
 import { FbosButtonRow } from "./fbos_button_row";
 import { Content } from "../../../constants";
 import { reboot, powerOff, restartFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 
 export function PowerAndReset(props: PowerAndResetProps) {
-  const { dispatch, sourceFbosConfig, shouldDisplay, botOnline } = props;
+  const { dispatch, sourceFbosConfig, botOnline } = props;
   const { power_and_reset } = props.controlPanelState;
   return <section>
-    <div style={{ fontSize: "1px" }}>
-      <Header
-        expanded={power_and_reset}
-        title={t("Power and Reset")}
-        name={"power_and_reset"}
-        dispatch={dispatch} />
-    </div>
+    <Header
+      expanded={power_and_reset}
+      title={t("Power and Reset")}
+      name={"power_and_reset"}
+      dispatch={dispatch} />
     <Collapse isOpen={!!power_and_reset}>
       <FbosButtonRow
         botOnline={botOnline}
@@ -36,14 +33,13 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      {shouldDisplay(Feature.firmware_restart) &&
-        <FbosButtonRow
-          botOnline={botOnline}
-          label={t("RESTART FIRMWARE")}
-          description={Content.RESTART_FIRMWARE}
-          buttonText={t("RESTART")}
-          color={"yellow"}
-          action={restartFirmware} />}
+      <FbosButtonRow
+        botOnline={botOnline}
+        label={t("RESTART FIRMWARE")}
+        description={Content.RESTART_FIRMWARE}
+        buttonText={t("RESTART")}
+        color={"yellow"}
+        action={restartFirmware} />
       <FactoryResetRow
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig}

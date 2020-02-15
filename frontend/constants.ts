@@ -39,8 +39,8 @@ export namespace ToolTips {
     few sequences to verify that everything works as expected.`);
 
   export const PIN_BINDINGS =
-    trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is
-    activated.`);
+    trim(`Assign an action or sequence to execute when a Raspberry Pi
+    GPIO pin is activated.`);
 
   export const PIN_BINDING_WARNING =
     trim(`Warning: Binding to a pin without a physical button and
@@ -51,23 +51,37 @@ export namespace ToolTips {
     trim(`Diagnose connectivity issues with FarmBot and the browser.`);
 
   // Hardware Settings: Homing and Calibration
-  export const HOMING =
+  export const HOMING_ENCODERS =
     trim(`If encoders or end-stops are enabled, home axis (find zero).`);
 
-  export const CALIBRATION =
+  export const HOMING_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, home axis
+    (find zero).`);
+
+  export const CALIBRATION_ENCODERS =
     trim(`If encoders or end-stops are enabled, home axis and determine
     maximum.`);
+
+  export const CALIBRATION_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, home axis and
+    determine maximum.`);
 
   export const SET_ZERO_POSITION =
     trim(`Set the current location as zero.`);
 
-  export const FIND_HOME_ON_BOOT =
+  export const FIND_HOME_ON_BOOT_ENCODERS =
     trim(`If encoders or end-stops are enabled, find the home position
-    when the device powers on.
-    Warning! This will perform homing on all axes when the
-    device powers on. Encoders or endstops must be enabled.
+    when the device powers on. Warning! This will perform homing on all
+    axes when the device powers on. Encoders or endstops must be enabled.
     It is recommended to make sure homing works properly before enabling
     this feature. (default: disabled)`);
+
+  export const FIND_HOME_ON_BOOT_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, find the home
+    position when the device powers on. Warning! This will perform homing
+    on all axes when the device powers on. Stall detection or endstops
+    must be enabled. It is recommended to make sure homing works properly
+    before enabling this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
     trim(`Stop at the home location of the axis. (default: disabled)`);
@@ -85,18 +99,7 @@ export namespace ToolTips {
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
 
-  export const TIMEOUT_AFTER =
-    trim(`Amount of time to wait for a command to execute before stopping.
-    (default: 120s)`);
-
   // Hardware Settings: Motors
-  export const MAX_MOVEMENT_RETRIES =
-    trim(`Number of times to retry a movement before stopping. (default: 3)`);
-
-  export const E_STOP_ON_MOV_ERR =
-    trim(`Emergency stop if movement is not complete after the maximum
-    number of retries. (default: disabled)`);
-
   export const MAX_SPEED =
     trim(`Maximum travel speed after acceleration in millimeters per second.
     (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
@@ -132,17 +135,21 @@ export namespace ToolTips {
   export const MOTOR_CURRENT =
     trim(`Motor current in milliamps. (default: 600)`);
 
-  export const STALL_SENSITIVITY =
-    trim(`Motor stall sensitivity. (default: 30)`);
-
   export const ENABLE_X2_MOTOR =
     trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
     (default: enabled)`);
 
-  // Hardware Settings: Encoders and Endstops
+  // Hardware Settings: Encoders / Stall Detection
   export const ENABLE_ENCODERS =
     trim(`Enable use of rotary encoders for stall detection,
     calibration and homing. (default: enabled)`);
+
+  export const ENABLE_STALL_DETECTION =
+    trim(`Enable use of motor stall detection for detecting missed steps,
+    calibration and homing. (default: enabled)`);
+
+  export const STALL_SENSITIVITY =
+    trim(`Motor stall sensitivity. (default: 30)`);
 
   export const ENCODER_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
@@ -151,17 +158,22 @@ export namespace ToolTips {
     trim(`Reverse the direction of encoder position reading.
     (default: disabled)`);
 
-  export const MAX_MISSED_STEPS =
+  export const MAX_MISSED_STEPS_ENCODERS =
     trim(`Number of steps missed (determined by encoder) before motor is
     considered to have stalled. (default: 5)`);
 
-  export const ENCODER_MISSED_STEP_DECAY =
+  export const MAX_MISSED_STEPS_STALL_DETECTION =
+    trim(`Number of steps missed (determined by motor stall detection) before
+    motor is considered to have stalled. (default: 5)`);
+
+  export const MISSED_STEP_DECAY =
     trim(`Reduction to missed step total for every good step. (default: 5)`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution). (default: 5556 (10000*200/360))`);
 
+  // Hardware Settings: Endstops
   export const ENABLE_ENDSTOPS =
     trim(`Enable use of electronic end-stops for end detection,
     calibration and homing. (default: disabled)`);
@@ -172,6 +184,18 @@ export namespace ToolTips {
   export const INVERT_ENDPOINTS =
     trim(`Invert axis end-stops. Enable for normally closed (NC),
     disable for normally open (NO). (default: disabled)`);
+
+  // Hardware Settings: Error Handling
+  export const TIMEOUT_AFTER =
+    trim(`Amount of time to wait for a command to execute before stopping.
+    (default: 120s)`);
+
+  export const MAX_MOVEMENT_RETRIES =
+    trim(`Number of times to retry a movement before stopping. (default: 3)`);
+
+  export const E_STOP_ON_MOV_ERR =
+    trim(`Emergency stop if movement is not complete after the maximum
+    number of retries. (default: disabled)`);
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
@@ -263,8 +287,12 @@ export namespace ToolTips {
 
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
-    command (using encoders or endstops) to find and set zero for
-    the chosen axis or axes.`);
+    command (using encoders, stall detection, or endstops) to find and set
+    zero for the chosen axis or axes.`);
+
+  export const CALIBRATE =
+    trim(`If encoders, stall detection, or end-stops are enabled,
+    home axis and determine maximum.`);
 
   export const IF =
     trim(`Execute a sequence if a condition is satisfied. If the condition
@@ -715,8 +743,8 @@ export namespace Content {
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
-    encoders or endstops enabled for the chosen axis. Enable endstops or
-    encoders from the Device page for: `);
+    encoders, stall detection, or endstops enabled for the chosen axis.
+    Enable endstops, encoders, or stall detection from the Device page for: `);
 
   export const IN_USE =
     trim(`Used in another resource. Protected from deletion.`);

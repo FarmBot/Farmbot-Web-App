@@ -245,7 +245,10 @@ export interface HardwareSettingsProps {
 export interface ControlPanelState {
   homing_and_calibration: boolean;
   motors: boolean;
-  encoders_and_endstops: boolean;
+  encoders: boolean;
+  endstops: boolean;
+  error_handling: boolean;
+  pin_bindings: boolean;
   danger_zone: boolean;
   power_and_reset: boolean;
   pin_guard: boolean;

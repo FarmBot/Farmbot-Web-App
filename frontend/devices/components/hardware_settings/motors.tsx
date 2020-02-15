@@ -5,32 +5,14 @@ import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { MotorsProps } from "../interfaces";
-import { Row, Col, Help } from "../../../ui/index";
 import { Header } from "./header";
-import { Collapse, Position } from "@blueprintjs/core";
-import { McuInputBox } from "../mcu_input_box";
+import { Collapse } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../interfaces";
 import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
-import { isTMCBoard, isExpressBoard } from "../firmware_hardware_support";
-
-const SingleSettingRow =
-  ({ label, tooltip, settingType, children }: {
-    label: string,
-    tooltip: string,
-    children: React.ReactChild,
-    settingType: "button" | "input",
-  }) =>
-    <Row>
-      <Col xs={6} className={"widget-body-tooltips"}>
-        <label>{label}</label>
-        <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
-      </Col>
-      {settingType === "button"
-        ? <Col xs={2} className={"centered-button-div"}>{children}</Col>
-        : <Col xs={6}>{children}</Col>}
-    </Row>;
+import { isTMCBoard } from "../firmware_hardware_support";
+import { SingleSettingRow } from "./single_setting_row";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
@@ -51,13 +33,8 @@ export function Motors(props: MotorsProps) {
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
-  const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
-  const encodersDisabled = {
-    x: !sourceFwConfig("encoder_enabled_x").value,
-    y: !sourceFwConfig("encoder_enabled_y").value,
-    z: !sourceFwConfig("encoder_enabled_z").value,
-  };
+
   return <section>
     <Header
       expanded={controlPanelState.motors}
@@ -65,23 +42,6 @@ export function Motors(props: MotorsProps) {
       name={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!controlPanelState.motors}>
-      <SingleSettingRow settingType="input"
-        label={t("Max Retries")}
-        tooltip={ToolTips.MAX_MOVEMENT_RETRIES}>
-        <McuInputBox
-          setting="param_mov_nr_retry"
-          sourceFwConfig={sourceFwConfig}
-          dispatch={dispatch} />
-      </SingleSettingRow>
-      <SingleSettingRow settingType="button"
-        label={t("E-Stop on Movement Error")}
-        tooltip={ToolTips.E_STOP_ON_MOV_ERR}>
-        <ToggleButton
-          toggleValue={eStopOnMoveError.value}
-          dim={!eStopOnMoveError.consistent}
-          toggleAction={() => dispatch(
-            settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
-      </SingleSettingRow>
       <NumericMCUInputGroup
         name={t("Max Speed (mm/s)")}
         tooltip={ToolTips.MAX_SPEED}
@@ -169,16 +129,6 @@ export function Motors(props: MotorsProps) {
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
-      {isExpressBoard(firmwareHardware) &&
-        <NumericMCUInputGroup
-          name={t("Stall Sensitivity")}
-          tooltip={ToolTips.STALL_SENSITIVITY}
-          x={"movement_stall_sensitivity_x"}
-          y={"movement_stall_sensitivity_y"}
-          z={"movement_stall_sensitivity_z"}
-          gray={encodersDisabled}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"
