@@ -15,6 +15,7 @@ import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
+import { ExternalUrl } from "../../external_urls";
 
 export enum ColWidth {
   label = 3,
@@ -22,15 +23,12 @@ export enum ColWidth {
   button = 2
 }
 
-const OS_RELEASE_NOTES_URL =
-  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/RELEASE_NOTES.md";
-
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
   state: FarmbotOsState = { allOsReleaseNotes: "" };
 
   componentDidMount() {
-    this.fetchReleaseNotes(OS_RELEASE_NOTES_URL);
+    this.fetchReleaseNotes(ExternalUrl.osReleaseNotes);
   }
 
   get osMajorVersion() {

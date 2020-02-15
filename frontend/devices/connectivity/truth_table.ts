@@ -1,5 +1,11 @@
 import { Dictionary } from "farmbot";
 import { DiagnosticMessages } from "../../constants";
+import { docLink } from "../../ui/doc_link";
+import { trim } from "../../util/util";
+
+const DiagnosticMessagesWiFiOrConfig =
+  trim(`${DiagnosticMessages.WIFI_OR_CONFIG}
+  ${docLink("for-it-security-professionals")}`);
 
 // I don't like this at all.
 // If anyone has a cleaner solution, I'd love to hear it.
@@ -16,13 +22,13 @@ export const TRUTH_TABLE: Readonly<Dictionary<string | undefined>> = {
   // 17: No MQTT connections.
   [0b10001]: DiagnosticMessages.NO_WS_AVAILABLE,
   // 24: Browser is connected to API and MQTT.
-  [0b11000]: DiagnosticMessages.WIFI_OR_CONFIG,
+  [0b11000]: DiagnosticMessagesWiFiOrConfig,
   // 9: At least the browser is connected to MQTT.
-  [0b01001]: DiagnosticMessages.WIFI_OR_CONFIG,
+  [0b01001]: DiagnosticMessagesWiFiOrConfig,
   // 8: At least the browser is connected to MQTT.
-  [0b01000]: DiagnosticMessages.WIFI_OR_CONFIG,
+  [0b01000]: DiagnosticMessagesWiFiOrConfig,
   // 25: Farmbot offline.
-  [0b11001]: DiagnosticMessages.WIFI_OR_CONFIG,
+  [0b11001]: DiagnosticMessagesWiFiOrConfig,
   // 2: Browser offline. Farmbot last seen by the API recently.
   [0b00010]: DiagnosticMessages.NO_WS_AVAILABLE,
   // 18: Farmbot last seen by the API recently.

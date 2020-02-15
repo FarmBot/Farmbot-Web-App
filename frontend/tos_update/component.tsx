@@ -8,6 +8,7 @@ import { API } from "../api";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
+import { ExternalUrl } from "../external_urls";
 
 interface Props { }
 interface State {
@@ -86,7 +87,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
         </p>
         <p>
           {t("Please send us an email at contact@farm.bot or see the ")}
-          <a href="http://forum.farmbot.org/">
+          <a href={ExternalUrl.softwareForum}>
             {t("FarmBot forum.")}
           </a>
         </p>

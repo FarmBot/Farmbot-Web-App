@@ -93,7 +93,7 @@ export enum Feature {
   variables = "variables",
 }
 
-/** Object fetched from FEATURE_MIN_VERSIONS_URL. */
+/** Object fetched from ExternalUrl.featureMinVersions. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
 export interface BotState {

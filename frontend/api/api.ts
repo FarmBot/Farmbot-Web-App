@@ -158,6 +158,10 @@ export class API {
   get farmwareInstallationPath() {
     return `${this.baseUrl}/api/farmware_installations/`;
   }
+  /** /api/first_party_farmwares */
+  get firstPartyFarmwarePath() {
+    return `${this.baseUrl}/api/first_party_farmwares`;
+  }
   /** /api/alerts/:id */
   get alertPath() { return `${this.baseUrl}/api/alerts/`; }
   /** /api/global_bulletins/:id */

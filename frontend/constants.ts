@@ -952,8 +952,7 @@ export namespace DiagnosticMessages {
     but we have no recent record of FarmBot connecting to the internet.
     This usually happens because of poor WiFi connectivity in the garden,
     a bad password during configuration, a very long power outage, or
-    blocked ports on FarmBot's local network. Please refer IT staff to
-    https://software.farm.bot/docs/for-it-security-professionals`);
+    blocked ports on FarmBot's local network. Please refer IT staff to:`);
 
   export const NO_WS_AVAILABLE = trim(`You are either offline, using a web
    browser that does not support WebSockets, or are behind a firewall that

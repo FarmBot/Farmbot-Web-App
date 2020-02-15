@@ -24,6 +24,7 @@ import {
 import { startCase, isArray, chain, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
+import { ExternalUrl } from "../../external_urls";
 
 interface InfoFieldProps {
   title: string;
@@ -170,7 +171,7 @@ const CropDragInfoTile =
 const EditOnOpenFarm = ({ slug }: { slug: string }) =>
   <div className="edit-on-openfarm">
     <span>{t("Edit on")}&nbsp;</span>
-    <a href={OpenFarm.browsingCropUrl + slug} target="_blank"
+    <a href={ExternalUrl.OpenFarm.cropBrowse + slug} target="_blank"
       title={t("Open OpenFarm.cc in a new tab")}>
       {"OpenFarm"}
     </a>
