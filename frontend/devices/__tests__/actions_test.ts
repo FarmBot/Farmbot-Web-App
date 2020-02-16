@@ -307,7 +307,7 @@ describe("commandErr()", () => {
   });
 });
 
-describe("toggleControlPanel()", function () {
+describe("toggleControlPanel()", () => {
   it("toggles", () => {
     const action = actions.toggleControlPanel("homing_and_calibration");
     expect(action.payload).toEqual("homing_and_calibration");

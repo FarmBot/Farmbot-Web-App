@@ -4,6 +4,11 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
+let mockDev = false;
+jest.mock("../../../../../account/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import {
@@ -53,6 +58,7 @@ describe("<ToolSlotLayer/>", () => {
   });
 
   it("navigates to tools page", async () => {
+    mockDev = true;
     mockPath = "/app/designer/plants";
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotLayer {...p} />);

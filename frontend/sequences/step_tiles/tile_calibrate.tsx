@@ -69,7 +69,7 @@ class InnerTileCalibrate extends React.Component<CalibrateParams, {}> {
     return <StepWrapper>
       <StepHeader
         className={className}
-        helpText={ToolTips.CALIBRATION}
+        helpText={ToolTips.CALIBRATE}
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}

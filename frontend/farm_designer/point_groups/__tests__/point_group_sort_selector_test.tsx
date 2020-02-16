@@ -1,14 +1,10 @@
-import * as React from "react";
 import {
-  isSortType, sortTypeChange, SORT_OPTIONS, PointGroupSortSelector,
-  PointGroupSortSelectorProps
+  isSortType, sortTypeChange, SORT_OPTIONS
 } from "../point_group_sort_selector";
 import { DropDownItem } from "../../../ui";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { TaggedPoint } from "farmbot";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-import { mount } from "enzyme";
-import { Content } from "../../../constants";
 
 const tests: [string, boolean][] = [
   ["", false],
@@ -87,17 +83,5 @@ describe("sort()", () => {
   it("sorts by yx_descending", () => {
     const results = sort("yx_descending");
     expect(results).toEqual(["C", "D", "B", "A"]);
-  });
-});
-
-describe("<PointGroupSortSelector />", () => {
-  const fakeProps = (): PointGroupSortSelectorProps => ({
-    onChange: jest.fn(),
-    value: "random",
-  });
-
-  it("shows random warning text", () => {
-    const wrapper = mount(<PointGroupSortSelector {...fakeProps()} />);
-    expect(wrapper.text()).toContain(Content.SORT_DESCRIPTION);
   });
 });

@@ -2,19 +2,23 @@ import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToolTips } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
-import { HomingRow } from "./homing_row";
 import { CalibrationRow } from "./calibration_row";
-import { ZeroRow } from "./zero_row";
 import { disabledAxisMap } from "../axis_tracking_status";
 import { HomingAndCalibrationProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { calculateScale } from "./motors";
+import { isExpressBoard } from "../firmware_hardware_support";
+import { getDevice } from "../../../device";
+import { commandErr } from "../../actions";
+import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
-  const { dispatch, bot, sourceFwConfig, firmwareConfig, botDisconnected
+  const {
+    dispatch, bot, sourceFwConfig, firmwareConfig, botDisconnected,
+    firmwareHardware
   } = props;
   const hardware = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
   const { homing_and_calibration } = props.bot.controlPanelState;
@@ -34,12 +38,43 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       dispatch={dispatch}
       expanded={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
-      <HomingRow hardware={hardware} botDisconnected={botDisconnected} />
-      <CalibrationRow hardware={hardware} botDisconnected={botDisconnected} />
-      <ZeroRow botDisconnected={botDisconnected} />
+      <CalibrationRow
+        type={"find_home"}
+        title={t("HOMING")}
+        axisTitle={t("FIND HOME")}
+        toolTip={isExpressBoard(firmwareHardware)
+          ? ToolTips.HOMING_STALL_DETECTION
+          : ToolTips.HOMING_ENCODERS}
+        action={axis => getDevice()
+          .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
+          .catch(commandErr("'Find Home' request"))}
+        hardware={hardware}
+        botDisconnected={botDisconnected} />
+      <CalibrationRow
+        type={"calibrate"}
+        title={t("CALIBRATION")}
+        axisTitle={t("CALIBRATE")}
+        toolTip={isExpressBoard(firmwareHardware)
+          ? ToolTips.CALIBRATION_STALL_DETECTION
+          : ToolTips.CALIBRATION_ENCODERS}
+        action={axis => getDevice().calibrate({ axis })
+          .catch(commandErr("Calibration"))}
+        hardware={hardware}
+        botDisconnected={botDisconnected} />
+      <CalibrationRow
+        type={"zero"}
+        title={t("SET ZERO POSITION")}
+        axisTitle={t("ZERO")}
+        toolTip={ToolTips.SET_ZERO_POSITION}
+        action={axis => getDevice().setZero(axis)
+          .catch(commandErr("Zeroing"))}
+        hardware={hardware}
+        botDisconnected={botDisconnected} />
       <BooleanMCUInputGroup
         name={t("Find Home on Boot")}
-        tooltip={ToolTips.FIND_HOME_ON_BOOT}
+        tooltip={isExpressBoard(firmwareHardware)
+          ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
+          : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
         disable={disabled}
         x={"movement_home_at_boot_x"}
         y={"movement_home_at_boot_y"}
@@ -88,14 +123,6 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch}
         intSize={"long"} />
-      <NumericMCUInputGroup
-        name={t("Timeout after (seconds)")}
-        tooltip={ToolTips.TIMEOUT_AFTER}
-        x={"movement_timeout_x"}
-        y={"movement_timeout_y"}
-        z={"movement_timeout_z"}
-        sourceFwConfig={sourceFwConfig}
-        dispatch={dispatch} />
     </Collapse>
   </section>;
 }

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui";
+import { Row, Col, Help } from "../../ui";
 import { ToolTips } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
-import { PinBindingsProps, PinBindingListItems } from "./interfaces";
+import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
 import { PinBindingInputGroup } from "./pin_binding_input_group";
 import {
@@ -20,9 +20,8 @@ import { t } from "../../i18next_wrapper";
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {
   pin = 4,
-  type = 3,
-  target = 4,
-  button = 1
+  type = 6,
+  button = 2
 }
 
 /** Use binding type to return a sequence ID or a special action. */
@@ -64,34 +63,29 @@ const PinBindingsListHeader = () =>
       <label>
         {t("Binding")}
       </label>
-    </Col>
-    <Col xs={PinBindingColWidth.target}>
-      <label>
-        {t("target")}
-      </label>
+      <Help text={ToolTips.PIN_BINDINGS} />
     </Col>
   </Row>;
 
-export const PinBindings = (props: PinBindingsProps) => {
+export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const { dispatch, resources } = props;
   const pinBindings = apiPinBindings(resources);
 
-  return <Widget className="pin-bindings-widget">
-    <WidgetHeader
-      title={t("Pin Bindings")}
-      helpText={ToolTips.PIN_BINDINGS}>
+  return <div className="pin-bindings">
+    <Row>
+      <StockPinBindingsButton dispatch={dispatch} />
       <Popover
         position={Position.RIGHT_TOP}
         interactionKind={PopoverInteractionKind.HOVER}
+        portalClassName={"bindings-warning-icon"}
         popoverClassName={"help"}>
         <i className="fa fa-exclamation-triangle" />
         <div>
           {t(ToolTips.PIN_BINDING_WARNING)}
         </div>
       </Popover>
-      <StockPinBindingsButton dispatch={dispatch} />
-    </WidgetHeader>
-    <WidgetBody>
+    </Row>
+    <div>
       <PinBindingsListHeader />
       <PinBindingsList
         pinBindings={pinBindings}
@@ -101,6 +95,6 @@ export const PinBindings = (props: PinBindingsProps) => {
         pinBindings={pinBindings}
         dispatch={dispatch}
         resources={resources} />
-    </WidgetBody>
-  </Widget>;
+    </div>
+  </div>;
 };

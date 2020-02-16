@@ -3,7 +3,6 @@ import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { FBSelect, DropDownItem } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { shuffle, sortBy } from "lodash";
-import { Content } from "../../constants";
 import { TaggedPoint } from "farmbot";
 
 export interface PointGroupSortSelectorProps {
@@ -42,22 +41,11 @@ export const sortTypeChange = (cb: Function) => (ddi: DropDownItem) => {
 };
 
 export function PointGroupSortSelector(p: PointGroupSortSelectorProps) {
-
-  return <div>
-    <div className="default-value-tooltip">
-      <label>
-        {t("SORT BY")}
-      </label>
-    </div>
-    <FBSelect
-      key={p.value}
-      list={optionPlusDescriptions()}
-      selectedItem={selected(p.value as PointGroupSortType)}
-      onChange={sortTypeChange(p.onChange)} />
-    <p>
-      {(p.value == "random") ? t(Content.SORT_DESCRIPTION) : ""}
-    </p>
-  </div>;
+  return <FBSelect
+    key={p.value}
+    list={optionPlusDescriptions()}
+    selectedItem={selected(p.value as PointGroupSortType)}
+    onChange={sortTypeChange(p.onChange)} />;
 }
 
 type Sorter = (p: TaggedPoint[]) => TaggedPoint[];

@@ -1,10 +1,4 @@
-import { OpenFarmAPI, svgToUrl } from "../icons";
-
-describe("OpenFarmAPI", () => {
-  it("has a base URL", () => {
-    expect(OpenFarmAPI.OFBaseURL).toContain("openfarm.cc");
-  });
-});
+import { svgToUrl } from "../icons";
 
 describe("svgToUrl()", () => {
   it("returns svg url", () => {

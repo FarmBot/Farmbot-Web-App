@@ -180,23 +180,30 @@ export interface GantryToolSlotGraphicProps {
   xySwap: boolean;
 }
 
+/** dimensions */
+enum Trough {
+  width = 20,
+  length = 45,
+  wall = 4,
+}
+
 export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
   const { x, y, xySwap } = props;
-  const slotLengthX = xySwap ? 24 : 49;
-  const slotLengthY = xySwap ? 49 : 24;
+  const slotLengthX = Trough.wall + (xySwap ? Trough.width : Trough.length);
+  const slotLengthY = Trough.wall + (xySwap ? Trough.length : Trough.width);
   return <g id={"gantry-toolbay-slot"}>
     <rect
       x={x - slotLengthX / 2} y={y - slotLengthY / 2}
       width={slotLengthX} height={slotLengthY}
-      stroke={Color.mediumGray} strokeWidth={4} strokeOpacity={0.25}
+      stroke={Color.mediumGray} strokeWidth={Trough.wall} strokeOpacity={0.25}
       fill="transparent" />
   </g>;
 };
 
 const SeedTrough = (props: ToolGraphicProps) => {
   const { x, y, hovered, dispatch, uuid, xySwap } = props;
-  const slotLengthX = xySwap ? 20 : 45;
-  const slotLengthY = xySwap ? 45 : 20;
+  const slotLengthX = xySwap ? Trough.width : Trough.length;
+  const slotLengthY = xySwap ? Trough.length : Trough.width;
   return <g id={"seed-trough"}
     onMouseOver={() => dispatch(setToolHover(uuid))}
     onMouseLeave={() => dispatch(setToolHover(undefined))}>

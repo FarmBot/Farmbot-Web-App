@@ -97,8 +97,11 @@ export function minFwVersionCheck(current: string | undefined, min: string) {
  * for shouldDisplay()
  */
 export enum MinVersionOverride {
-  ALWAYS = "0.0.0",
   NEVER = "999.999.999",
+}
+
+export enum FbosVersionFallback {
+  NULL = "0.0.0",
 }
 
 /**
@@ -114,19 +117,18 @@ export function createShouldDisplayFn(
   lookupData: MinOsFeatureLookup | undefined,
   override: string | undefined) {
   return function (feature: Feature): boolean {
-    const target = override || current;
-    if (isString(target)) {
-      const table = lookupData || {};
-      const min = table[feature] || MinVersionOverride.NEVER;
-      switch (semverCompare(target, min)) {
-        case SemverResult.LEFT_IS_GREATER:
-        case SemverResult.EQUAL:
-          return true;
-        default:
-          return false;
-      }
+    const fallback = globalConfig.FBOS_END_OF_LIFE_VERSION ||
+      FbosVersionFallback.NULL;
+    const target = override || current || fallback;
+    const table = lookupData || {};
+    const min = table[feature] || MinVersionOverride.NEVER;
+    switch (semverCompare(target, min)) {
+      case SemverResult.LEFT_IS_GREATER:
+      case SemverResult.EQUAL:
+        return true;
+      default:
+        return false;
     }
-    return false;
   };
 }
 
@@ -147,6 +149,9 @@ export function determineInstalledOsVersion(
   }
 }
 
+const parseVersion = (version: string) =>
+  version.split(".").map(x => parseInt(x, 10));
+
 /**
  * Compare installed FBOS version against the lowest version compatible
  * with the web app to lock out incompatible FBOS versions from the App.
@@ -155,20 +160,16 @@ export function determineInstalledOsVersion(
  * identifiers.
  *
  * @param stringyVersion version string to check ("0.0.0")
- * @param _EXPECTED_MAJOR minimum required major version number
- * @param _EXPECTED_MINOR minimum required minor version number
  */
-export function versionOK(stringyVersion = "0.0.0",
-  _EXPECTED_MAJOR: number,
-  _EXPECTED_MINOR: number) {
-  const [actual_major, actual_minor] = stringyVersion
-    .split(".")
-    .map(x => parseInt(x, 10));
-  if (actual_major > _EXPECTED_MAJOR) {
+export function versionOK(stringyVersion = "0.0.0") {
+  const [actual_major, actual_minor] = parseVersion(stringyVersion);
+  const [EXPECTED_MAJOR, EXPECTED_MINOR] =
+    parseVersion(globalConfig.MINIMUM_FBOS_VERSION || "6.0.0");
+  if (actual_major > EXPECTED_MAJOR) {
     return true;
   } else {
-    const majorOK = (actual_major == _EXPECTED_MAJOR);
-    const minorOK = (actual_minor >= _EXPECTED_MINOR);
+    const majorOK = (actual_major == EXPECTED_MAJOR);
+    const minorOK = (actual_minor >= EXPECTED_MINOR);
     return (majorOK && minorOK);
   }
 }

@@ -14,6 +14,7 @@ import { timeFormatString } from "../../../util";
 import { TimeSettings } from "../../../interfaces";
 import { StringConfigKey } from "farmbot/dist/resources/configs/fbos";
 import { boardType, FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
+import { ExternalUrl, FarmBotRepo } from "../../../external_urls";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -170,7 +171,7 @@ const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
 
 interface CommitDisplayProps {
   title: string;
-  repo: string;
+  repo: FarmBotRepo;
   commit: string;
 }
 
@@ -184,7 +185,7 @@ const CommitDisplay = (
     {shortCommit === "---"
       ? shortCommit
       : <a
-        href={`https://github.com/FarmBot/${repo}/tree/${shortCommit}`}
+        href={`${ExternalUrl.gitHubFarmBot}/${repo}/tree/${shortCommit}`}
         target="_blank">
         {shortCommit}
       </a>}
@@ -270,14 +271,15 @@ export function FbosDetails(props: FbosDetailsProps) {
       timeSettings={props.timeSettings}
       device={props.deviceAccount} />
     <p><b>{t("Environment")}: </b>{env}</p>
-    <CommitDisplay title={t("Commit")} repo={"farmbot_os"} commit={commit} />
+    <CommitDisplay title={t("Commit")}
+      repo={FarmBotRepo.FarmBotOS} commit={commit} />
     <p><b>{t("Target")}: </b>{target}</p>
     <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
     <p><b>{t("Device ID")}: </b>{props.deviceAccount.body.id}</p>
     {isString(private_ip) && <p><b>{t("Local IP address")}: </b>{private_ip}</p>}
     <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
     <CommitDisplay title={t("Firmware commit")}
-      repo={"farmbot-arduino-firmware"} commit={firmwareCommit} />
+      repo={FarmBotRepo.FarmBotArduinoFirmware} commit={firmwareCommit} />
     <p><b>{t("Firmware code")}: </b>{firmware_version}</p>
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
     {isNumber(memory_usage) &&

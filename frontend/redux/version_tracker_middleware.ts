@@ -1,5 +1,5 @@
 import { EnvName } from "./interfaces";
-import { determineInstalledOsVersion, MinVersionOverride } from "../util/index";
+import { determineInstalledOsVersion, FbosVersionFallback } from "../util/index";
 import { maybeGetDevice } from "../resources/selectors";
 import { MW } from "./middlewares";
 import { Everything } from "../interfaces";
@@ -11,10 +11,10 @@ const maybeRemindUserToUpdate = createReminderFn();
 
 function getVersionFromState(state: Everything) {
   const device = maybeGetDevice(state.resources.index);
-  const v =
-    determineInstalledOsVersion(state.bot, device) || MinVersionOverride.ALWAYS;
-  maybeRemindUserToUpdate(v);
-  return v;
+  const version = determineInstalledOsVersion(state.bot, device)
+    || FbosVersionFallback.NULL;
+  maybeRemindUserToUpdate(version);
+  return version;
 }
 
 const fn: MW =

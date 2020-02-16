@@ -3,6 +3,7 @@ import { AccountMenuProps } from "./interfaces";
 import { Link } from "../link";
 import { shortRevision } from "../util";
 import { t } from "../i18next_wrapper";
+import { ExternalUrl } from "../external_urls";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -30,7 +31,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
     </div>
     <div className="app-version">
       <label>{t("VERSION")}</label>:&nbsp;
-      <a href="https://github.com/FarmBot/Farmbot-Web-App" target="_blank">
+      <a href={ExternalUrl.webAppRepo} target="_blank">
         {shortRevision().slice(0, 8)}
       </a>
     </div>

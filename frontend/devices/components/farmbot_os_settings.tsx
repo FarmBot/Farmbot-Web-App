@@ -4,7 +4,7 @@ import { t } from "../../i18next_wrapper";
 import { FarmbotOsProps, FarmbotOsState, Feature } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
-import { MustBeOnline, isBotOnline } from "../must_be_online";
+import { isBotOnline } from "../must_be_online";
 import { Content } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
@@ -15,6 +15,7 @@ import { AutoUpdateRow } from "./fbos_settings/auto_update_row";
 import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
+import { ExternalUrl } from "../../external_urls";
 
 export enum ColWidth {
   label = 3,
@@ -22,15 +23,12 @@ export enum ColWidth {
   button = 2
 }
 
-const OS_RELEASE_NOTES_URL =
-  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/RELEASE_NOTES.md";
-
 export class FarmbotOsSettings
   extends React.Component<FarmbotOsProps, FarmbotOsState> {
   state: FarmbotOsState = { allOsReleaseNotes: "" };
 
   componentDidMount() {
-    this.fetchReleaseNotes(OS_RELEASE_NOTES_URL);
+    this.fetchReleaseNotes(ExternalUrl.osReleaseNotes);
   }
 
   get osMajorVersion() {
@@ -116,54 +114,46 @@ export class FarmbotOsSettings
               </div>
             </Col>
           </Row>
-          <MustBeOnline
-            syncStatus={sync_status}
-            networkState={this.props.botToMqttStatus}
-            lockOpen={process.env.NODE_ENV !== "production"
-              || this.props.isValidFbosConfig}>
-            <CameraSelection
-              env={this.props.env}
-              botOnline={botOnline}
-              saveFarmwareEnv={this.props.saveFarmwareEnv}
-              shouldDisplay={this.props.shouldDisplay}
-              dispatch={this.props.dispatch} />
-            <BoardType
-              botOnline={botOnline}
-              bot={bot}
-              alerts={this.props.alerts}
-              dispatch={this.props.dispatch}
-              shouldDisplay={this.props.shouldDisplay}
-              timeSettings={this.props.timeSettings}
-              sourceFbosConfig={sourceFbosConfig} />
-            <AutoUpdateRow
-              shouldDisplay={this.props.shouldDisplay}
-              timeFormat={timeFormat}
-              device={this.props.deviceAccount}
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
-            <FarmbotOsRow
-              bot={this.props.bot}
-              osReleaseNotesHeading={this.osReleaseNotes.heading}
-              osReleaseNotes={this.osReleaseNotes.notes}
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig}
-              shouldDisplay={this.props.shouldDisplay}
-              botOnline={botOnline}
-              botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
-              timeSettings={this.props.timeSettings}
-              deviceAccount={this.props.deviceAccount} />
-            <AutoSyncRow
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig} />
-            {this.props.shouldDisplay(Feature.boot_sequence) &&
-              <BootSequenceSelector />}
-            <PowerAndReset
-              controlPanelState={this.props.bot.controlPanelState}
-              dispatch={this.props.dispatch}
-              sourceFbosConfig={sourceFbosConfig}
-              shouldDisplay={this.props.shouldDisplay}
-              botOnline={botOnline} />
-          </MustBeOnline>
+          <CameraSelection
+            env={this.props.env}
+            botOnline={botOnline}
+            saveFarmwareEnv={this.props.saveFarmwareEnv}
+            shouldDisplay={this.props.shouldDisplay}
+            dispatch={this.props.dispatch} />
+          <BoardType
+            botOnline={botOnline}
+            bot={bot}
+            alerts={this.props.alerts}
+            dispatch={this.props.dispatch}
+            shouldDisplay={this.props.shouldDisplay}
+            timeSettings={this.props.timeSettings}
+            sourceFbosConfig={sourceFbosConfig} />
+          <AutoUpdateRow
+            timeFormat={timeFormat}
+            device={this.props.deviceAccount}
+            dispatch={this.props.dispatch}
+            sourceFbosConfig={sourceFbosConfig} />
+          <FarmbotOsRow
+            bot={this.props.bot}
+            osReleaseNotesHeading={this.osReleaseNotes.heading}
+            osReleaseNotes={this.osReleaseNotes.notes}
+            dispatch={this.props.dispatch}
+            sourceFbosConfig={sourceFbosConfig}
+            shouldDisplay={this.props.shouldDisplay}
+            botOnline={botOnline}
+            botToMqttLastSeen={new Date(this.props.botToMqttLastSeen).getTime()}
+            timeSettings={this.props.timeSettings}
+            deviceAccount={this.props.deviceAccount} />
+          <AutoSyncRow
+            dispatch={this.props.dispatch}
+            sourceFbosConfig={sourceFbosConfig} />
+          {this.props.shouldDisplay(Feature.boot_sequence) &&
+            <BootSequenceSelector />}
+          <PowerAndReset
+            controlPanelState={this.props.bot.controlPanelState}
+            dispatch={this.props.dispatch}
+            sourceFbosConfig={sourceFbosConfig}
+            botOnline={botOnline} />
         </WidgetBody>
       </form>
     </Widget>;

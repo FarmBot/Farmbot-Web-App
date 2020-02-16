@@ -25,30 +25,25 @@ describe("<PowerAndReset/>", () => {
   const state = fakeState();
   state.resources = buildResourceIndex([fakeConfig]);
 
-  const fakeProps = (): PowerAndResetProps => {
-    return {
-      controlPanelState: panelState(),
-      dispatch: jest.fn(x => x(jest.fn(), () => state)),
-      sourceFbosConfig: () => ({ value: true, consistent: true }),
-      shouldDisplay: jest.fn(),
-      botOnline: true,
-    };
-  };
+  const fakeProps = (): PowerAndResetProps => ({
+    controlPanelState: panelState(),
+    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    sourceFbosConfig: () => ({ value: true, consistent: true }),
+    botOnline: true,
+  });
 
-  it("open", () => {
+  it("renders in open state", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
-    ["Power and Reset", "Restart", "Shutdown", "Factory Reset",
-      "Automatic Factory Reset", "Connection Attempt Period", "Change Ownership"]
+    ["Power and Reset", "Restart", "Shutdown", "Restart Firmware",
+      "Factory Reset", "Automatic Factory Reset",
+      "Connection Attempt Period", "Change Ownership"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
-    ["Restart Firmware"]
-      .map(string => expect(wrapper.text().toLowerCase())
-        .not.toContain(string.toLowerCase()));
   });
 
-  it("closed", () => {
+  it("renders as closed", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = false;
     const wrapper = mount(<PowerAndReset {...p} />);
@@ -73,7 +68,7 @@ describe("<PowerAndReset/>", () => {
     p.sourceFbosConfig = () => ({ value: false, consistent: true });
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
-    clickButton(wrapper, 3, "yes");
+    clickButton(wrapper, 4, "yes");
     expect(edit).toHaveBeenCalledWith(fakeConfig, { disable_factory_reset: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
@@ -81,7 +76,6 @@ describe("<PowerAndReset/>", () => {
   it("restarts firmware", () => {
     const p = fakeProps();
     p.controlPanelState.power_and_reset = true;
-    p.shouldDisplay = () => true;
     const wrapper = mount(<PowerAndReset {...p} />);
     expect(wrapper.text().toLowerCase())
       .toContain("Restart Firmware".toLowerCase());

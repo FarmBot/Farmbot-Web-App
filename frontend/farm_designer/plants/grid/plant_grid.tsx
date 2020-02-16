@@ -9,12 +9,17 @@ import { initPlantGrid } from "./generate_grid";
 import { init } from "../../../api/crud";
 import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
-import { error } from "../../../toast/toast";
+import { error, success } from "../../../toast/toast";
 import { t } from "../../../i18next_wrapper";
 import { GridInput } from "./grid_input";
 
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = { ...EMPTY_PLANT_GRID, gridId: uuid() };
+
+  get plantCount() {
+    const { numPlantsH, numPlantsV } = this.state.grid;
+    return numPlantsH * numPlantsV;
+  }
 
   onchange = (key: PlantGridKey, val: number) => {
     const grid = { ...this.state.grid, [key]: val };
@@ -33,9 +38,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   }
 
   performPreview = () => {
-    const { numPlantsH, numPlantsV } = this.state.grid;
-    const total = numPlantsH * numPlantsV;
-    if (total > 100) {
+    if (this.plantCount > 100) {
       error(t("Please make a grid with less than 100 plants"));
       return;
     }
@@ -57,7 +60,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   saveGrid = () => {
     const p: Promise<{}> = this.props.dispatch(saveGrid(this.state.gridId));
-    return p.then(() => this.setState(EMPTY_PLANT_GRID));
+    return p.then(() => {
+      success(t("{{ count }} plants added.", { count: this.plantCount }));
+      this.setState({ ...EMPTY_PLANT_GRID, gridId: uuid() });
+    });
   }
 
   inputs = () => {
@@ -73,16 +79,16 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       case "clean":
         return <div>
           <a className={"clear-button"} onClick={this.performPreview}>
-            Preview
+            {t("Preview")}
           </a>
         </div>;
       case "dirty":
         return <div>
           <a className={"clear-button"} onClick={this.revertPreview}>
-            Cancel
+            {t("Cancel")}
           </a>
           <a className={"clear-button"} onClick={this.saveGrid}>
-            Save
+            {t("Save")}
           </a>
         </div>;
     }

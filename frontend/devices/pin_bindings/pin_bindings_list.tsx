@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
-  bindingTypeLabelLookup, specialActionLabelLookup,
-  generatePinLabel, sortByNameAndPin
+  bindingTypeLabelLookup,
+  generatePinLabel, sortByNameAndPin, getSpecialActionLabel
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
 import { error } from "../../toast/toast";
@@ -36,12 +36,10 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
             {generatePinLabel(pin_number)}
           </Col>
           <Col xs={PinBindingColWidth.type}>
-            {t(bindingTypeLabelLookup[binding_type || ""])}
-          </Col>
-          <Col xs={PinBindingColWidth.target}>
+            {t(bindingTypeLabelLookup[binding_type || ""])}:&nbsp;
             {sequence_id
               ? findSequenceById(resources, sequence_id).body.name
-              : t(specialActionLabelLookup[special_action || ""])}
+              : t(getSpecialActionLabel(special_action))}
           </Col>
           <Col xs={PinBindingColWidth.button}>
             <button

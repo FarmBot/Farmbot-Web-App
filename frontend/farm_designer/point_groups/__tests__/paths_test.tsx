@@ -1,5 +1,12 @@
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -141,6 +148,7 @@ describe("<Paths />", () => {
     p.pathPoints = cases.order.xy_ascending;
     const wrapper = mount<Paths>(<Paths {...p} />);
     expect(wrapper.state().pathData).toEqual(cases.distance);
+    expect(wrapper.text().toLowerCase()).not.toContain("optimized");
   });
 
   it.each<[PointGroupSortType]>([
@@ -153,5 +161,25 @@ describe("<Paths />", () => {
     const cases = pathTestCases();
     expect(SORT_OPTIONS[sortType](cases.order.xy_ascending))
       .toEqual(cases.order[sortType]);
+  });
+
+  it("renders new sort type", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const cases = pathTestCases();
+    p.pathPoints = cases.order.xy_ascending;
+    const wrapper = mount<Paths>(<Paths {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("optimized");
+  });
+
+  it("doesn't generate data twice", () => {
+    const p = fakeProps();
+    const cases = pathTestCases();
+    p.pathPoints = cases.order.xy_ascending;
+    const wrapper = mount<Paths>(<Paths {...p} />);
+    expect(wrapper.state().pathData).toEqual(cases.distance);
+    wrapper.setState({ pathData: { nn: 0 } });
+    wrapper.update();
+    expect(wrapper.state().pathData).toEqual({ nn: 0 });
   });
 });

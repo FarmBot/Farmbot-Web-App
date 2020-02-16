@@ -5,7 +5,6 @@ import { FarmbotOsSettings } from "./components/farmbot_os_settings";
 import { Page, Col, Row } from "../ui/index";
 import { mapStateToProps } from "./state_to_props";
 import { Props } from "./interfaces";
-import { PinBindings } from "./pin_bindings/pin_bindings";
 import { getStatus } from "../connectivity/reducer_support";
 import { isFwHardwareValue } from "./components/firmware_hardware_support";
 
@@ -48,9 +47,6 @@ export class RawDevices extends React.Component<Props, {}> {
               firmwareHardware={firmwareHardware}
               sourceFwConfig={this.props.sourceFwConfig}
               firmwareConfig={this.props.firmwareConfig} />
-            <PinBindings
-              dispatch={this.props.dispatch}
-              resources={this.props.resources} />
           </Col>
         </Row>
       </Page>;

@@ -7,7 +7,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
-import { error } from "../../../../toast/toast";
+import { error, success } from "../../../../toast/toast";
 
 describe("PlantGrid", () => {
   function fakeProps() {
@@ -39,8 +39,11 @@ describe("PlantGrid", () => {
   it("saves a grid", async () => {
     const props = fakeProps();
     const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    const oldId = pg.state.gridId;
     await pg.saveGrid();
-    expect(saveGrid).toHaveBeenCalledWith(pg.state.gridId);
+    expect(saveGrid).toHaveBeenCalledWith(oldId);
+    expect(success).toHaveBeenCalledWith("16 plants added.");
+    expect(pg.state.gridId).not.toEqual(oldId);
   });
 
   it("stashes a grid", async () => {

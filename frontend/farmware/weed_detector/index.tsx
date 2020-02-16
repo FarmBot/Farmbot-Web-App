@@ -79,29 +79,24 @@ export class WeedDetector
       </div>
       <Row>
         <Col sm={12}>
-          <MustBeOnline
-            syncStatus={this.props.syncStatus}
-            networkState={this.props.botToMqttStatus}
-            lockOpen={process.env.NODE_ENV !== "production"}>
-            <ImageWorkspace
-              botOnline={
-                isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-              onProcessPhoto={id => this.props.dispatch(scanImage(id))}
-              onFlip={uuid => this.props.dispatch(selectImage(uuid))}
-              currentImage={this.props.currentImage}
-              images={this.props.images}
-              onChange={this.change}
-              timeSettings={this.props.timeSettings}
-              iteration={wDEnvGet(this.namespace("iteration"))}
-              morph={wDEnvGet(this.namespace("morph"))}
-              blur={wDEnvGet(this.namespace("blur"))}
-              H_LO={wDEnvGet(this.namespace("H_LO"))}
-              H_HI={wDEnvGet(this.namespace("H_HI"))}
-              S_LO={wDEnvGet(this.namespace("S_LO"))}
-              S_HI={wDEnvGet(this.namespace("S_HI"))}
-              V_LO={wDEnvGet(this.namespace("V_LO"))}
-              V_HI={wDEnvGet(this.namespace("V_HI"))} />
-          </MustBeOnline>
+          <ImageWorkspace
+            botOnline={
+              isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
+            onProcessPhoto={id => this.props.dispatch(scanImage(id))}
+            onFlip={uuid => this.props.dispatch(selectImage(uuid))}
+            currentImage={this.props.currentImage}
+            images={this.props.images}
+            onChange={this.change}
+            timeSettings={this.props.timeSettings}
+            iteration={wDEnvGet(this.namespace("iteration"))}
+            morph={wDEnvGet(this.namespace("morph"))}
+            blur={wDEnvGet(this.namespace("blur"))}
+            H_LO={wDEnvGet(this.namespace("H_LO"))}
+            H_HI={wDEnvGet(this.namespace("H_HI"))}
+            S_LO={wDEnvGet(this.namespace("S_LO"))}
+            S_HI={wDEnvGet(this.namespace("S_HI"))}
+            V_LO={wDEnvGet(this.namespace("V_LO"))}
+            V_HI={wDEnvGet(this.namespace("V_HI"))} />
         </Col>
       </Row>
     </div>;
