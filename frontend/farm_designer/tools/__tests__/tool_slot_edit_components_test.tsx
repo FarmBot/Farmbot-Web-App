@@ -136,6 +136,7 @@ describe("<ToolInputRow />", () => {
     tools: [],
     selectedTool: undefined,
     onChange: jest.fn(),
+    isExpress: false,
   });
 
   it("renders", () => {
@@ -148,6 +149,13 @@ describe("<ToolInputRow />", () => {
     p.selectedTool = fakeTool();
     const wrapper = mount(<ToolInputRow {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("foo");
+  });
+
+  it("renders for express bots", () => {
+    const p = fakeProps();
+    p.isExpress = true;
+    const wrapper = mount(<ToolInputRow {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("seed container");
   });
 });
 

@@ -7,7 +7,7 @@ export const LaptopSplash = ({ className }: { className: string }) =>
       <div className="laptop">
         <div className="laptop-screen">
           <video muted autoPlay loop>
-            <source src={ExternalUrl.Videos.desktop} type="video/mp4" />
+            <source src={ExternalUrl.Video.desktop} type="video/mp4" />
           </video>
           <span className="laptop-shine" />
         </div>

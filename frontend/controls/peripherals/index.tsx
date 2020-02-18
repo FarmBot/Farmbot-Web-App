@@ -56,12 +56,31 @@ export class Peripherals
     this.props.dispatch(init("Peripheral", { pin, label }));
   };
 
-  farmduinoPeripherals = () => {
-    this.newPeripheral(7, t("Lighting"));
-    this.newPeripheral(8, t("Water"));
-    this.newPeripheral(9, t("Vacuum"));
-    this.newPeripheral(10, t("Peripheral ") + "4");
-    this.newPeripheral(12, t("Peripheral ") + "5");
+  get stockPeripherals() {
+    switch (this.props.firmwareHardware) {
+      case "arduino":
+        return [
+          { pin: 8, label: t("Water") },
+          { pin: 9, label: t("Vacuum") },
+        ];
+      case "farmduino":
+      case "farmduino_k14":
+      case "farmduino_k15":
+      default:
+        return [
+          { pin: 7, label: t("Lighting") },
+          { pin: 8, label: t("Water") },
+          { pin: 9, label: t("Vacuum") },
+          { pin: 10, label: t("Peripheral ") + "4" },
+          { pin: 12, label: t("Peripheral ") + "5" },
+        ];
+      case "express_k10":
+        return [
+          { pin: 7, label: t("Lighting") },
+          { pin: 8, label: t("Water") },
+          { pin: 9, label: t("Vacuum") },
+        ];
+    }
   }
 
   render() {
@@ -92,10 +111,11 @@ export class Peripherals
           hidden={!isEditing}
           className="fb-button green"
           type="button"
-          onClick={this.farmduinoPeripherals}>
+          onClick={() => this.stockPeripherals.map(p =>
+            this.newPeripheral(p.pin, p.label))}>
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
-          Farmduino
-          </button>
+          {t("Stock")}
+        </button>
       </WidgetHeader>
       <WidgetBody>
         {this.showPins()}

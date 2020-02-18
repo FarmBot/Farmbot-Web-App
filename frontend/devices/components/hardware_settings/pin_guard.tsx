@@ -4,19 +4,21 @@ import { PinGuardProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse, Position } from "@blueprintjs/core";
 import { Row, Col, Help } from "../../../ui/index";
-import { ToolTips } from "../../../constants";
+import { ToolTips, DeviceSetting } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
+import { Highlight } from "../maybe_highlight";
 
 export function PinGuard(props: PinGuardProps) {
 
   const { pin_guard } = props.controlPanelState;
   const { dispatch, sourceFwConfig, resources } = props;
 
-  return <section>
+  return <Highlight className={"section"}
+    settingName={DeviceSetting.pinGuard}>
     <Header
       expanded={pin_guard}
-      title={t("Pin Guard")}
-      name={"pin_guard"}
+      title={DeviceSetting.pinGuard}
+      panel={"pin_guard"}
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_guard}>
       <Row>
@@ -79,5 +81,5 @@ export function PinGuard(props: PinGuardProps) {
         resources={resources}
         sourceFwConfig={sourceFwConfig} />
     </Collapse>
-  </section>;
+  </Highlight>;
 }

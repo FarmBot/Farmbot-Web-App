@@ -9,6 +9,8 @@ import { selectAllSequences, findSequenceById } from "../../../resources/selecto
 import { betterCompact } from "../../../util";
 import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
+import { Highlight } from "../maybe_highlight";
+import { DeviceSetting } from "../../../constants";
 
 interface Props {
   list: DropDownItem[];
@@ -56,18 +58,20 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
 
   render() {
     return <Row>
-      <Col xs={ColWidth.label}>
-        <label>
-          {t("BOOT SEQUENCE")}
-        </label>
-      </Col>
-      <Col xs={7}>
-        <FBSelect
-          allowEmpty={true}
-          list={this.props.list}
-          selectedItem={this.props.selectedItem}
-          onChange={this.onChange} />
-      </Col>
+      <Highlight settingName={DeviceSetting.bootSequence}>
+        <Col xs={ColWidth.label}>
+          <label>
+            {t("BOOT SEQUENCE")}
+          </label>
+        </Col>
+        <Col xs={7}>
+          <FBSelect
+            allowEmpty={true}
+            list={this.props.list}
+            selectedItem={this.props.selectedItem}
+            onChange={this.onChange} />
+        </Col>
+      </Highlight>
     </Row>;
   }
 }

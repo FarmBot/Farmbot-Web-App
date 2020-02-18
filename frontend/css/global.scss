@@ -1629,3 +1629,23 @@ textarea:focus {
     }
   }
 }
+
+.section {
+  display: block !important;
+}
+
+.highlight,
+.unhighlight {
+  display: flex;
+}
+
+.highlight {
+  background-color: $light_yellow;
+  box-shadow: 0px 0px 7px 4px $light_yellow;
+}
+
+.unhighlight {
+  transition: background-color 10s linear, box-shadow 10s linear;
+  background-color: transparent;
+  box-shadow: none;
+}

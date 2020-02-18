@@ -18,9 +18,13 @@ import { FwParamExportMenu } from "./hardware_settings/export_menu";
 import { t } from "../../i18next_wrapper";
 import { PinBindings } from "./hardware_settings/pin_bindings";
 import { ErrorHandling } from "./hardware_settings/error_handling";
+import { maybeOpenPanel } from "./maybe_highlight";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
+
+  componentDidMount = () =>
+    this.props.dispatch(maybeOpenPanel(this.props.controlPanelState));
 
   render() {
     const {

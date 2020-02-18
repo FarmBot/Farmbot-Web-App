@@ -6,6 +6,7 @@ import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
 import { IntegerSize } from "../../util";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { ResourceIndex } from "../../resources/interfaces";
+import { DeviceSetting } from "../../constants";
 
 export interface ZeroRowProps {
   botDisconnected: boolean;
@@ -25,7 +26,7 @@ export interface BooleanMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip: string;
-  name: string;
+  label: DeviceSetting;
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
@@ -41,7 +42,7 @@ export interface CalibrationRowProps {
   botDisconnected: boolean;
   action(axis: Axis): void;
   toolTip: string;
-  title: string;
+  title: DeviceSetting;
   axisTitle: string;
 }
 
@@ -49,7 +50,7 @@ export interface NumericMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip: string;
-  name: string;
+  label: DeviceSetting;
   x: McuParamName;
   xScale?: number;
   y: McuParamName;

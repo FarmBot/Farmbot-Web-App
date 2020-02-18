@@ -11,6 +11,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import {
   TaggedTool, TaggedToolSlotPointer, TaggedDevice, TaggedSensor,
+  FirmwareHardware,
 } from "farmbot";
 import {
   selectAllTools, selectAllToolSlotPointers, getDeviceAccountSettings,
@@ -31,6 +32,10 @@ import { getStatus } from "../../connectivity/reducer_support";
 import { setToolHover } from "../map/layers/tool_slots/tool_graphics";
 import { ToolSelection } from "./tool_slot_edit_components";
 import { error } from "../../toast/toast";
+import {
+  isExpressBoard, getFwHardwareValue
+} from "../../devices/components/firmware_hardware_support";
+import { getFbosConfig } from "../../resources/getters";
 
 export interface ToolsProps {
   tools: TaggedTool[];
@@ -42,6 +47,7 @@ export interface ToolsProps {
   bot: BotState;
   botToMqttStatus: NetworkState;
   hoveredToolSlot: string | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface ToolsState {
@@ -58,6 +64,7 @@ export const mapStateToProps = (props: Everything): ToolsProps => ({
   bot: props.bot,
   botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
   hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
+  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
 });
 
 const toolStatus = (value: number | undefined): string => {
@@ -108,6 +115,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       this.props.botToMqttStatus);
   }
 
+  get isExpress() { return isExpressBoard(this.props.firmwareHardware); }
+
   MountedToolInfo = () =>
     <div className="mounted-tool">
       <div className="mounted-tool-header">
@@ -141,10 +150,10 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   ToolSlots = () =>
     <div className="tool-slots">
       <div className="tool-slots-header">
-        <label>{t("tool slots")}</label>
+        <label>{this.strings.toolSlots}</label>
         <Link to={"/app/designer/tool-slots/add"}>
           <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
-            <i className="fa fa-plus" title={t("Add tool slot")} />
+            <i className="fa fa-plus" title={this.strings.addSlot} />
           </div>
         </Link>
       </div>
@@ -162,10 +171,10 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   Tools = () =>
     <div className="tools">
       <div className="tools-header">
-        <label>{t("tools")}</label>
+        <label>{this.strings.tools}</label>
         <Link to={"/app/designer/tools/add"}>
           <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
-            <i className="fa fa-plus" title={t("Add tool")} />
+            <i className="fa fa-plus" title={this.strings.titleText} />
           </div>
         </Link>
       </div>
@@ -176,8 +185,31 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
             toolId={tool.body.id}
-            toolName={tool.body.name || t("Unnamed tool")} />)}
+            toolName={tool.body.name || t("Unnamed")} />)}
     </div>
+
+  get strings() {
+    return {
+      placeholder: this.isExpress
+        ? t("Search your seed containers...")
+        : t("Search your tools..."),
+      titleText: this.isExpress
+        ? t("Add a seed container")
+        : t("Add a tool or seed container"),
+      emptyStateText: this.isExpress
+        ? Content.NO_SEED_CONTAINERS
+        : Content.NO_TOOLS,
+      tools: this.isExpress
+        ? t("seed containers")
+        : t("tools and seed containers"),
+      toolSlots: this.isExpress
+        ? t("seed container slots")
+        : t("tool slots"),
+      addSlot: this.isExpress
+        ? t("Add slot")
+        : t("Add tool slot"),
+    };
+  }
 
   render() {
     const panelName = "tools";
@@ -187,18 +219,19 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <DesignerPanelTop
         panel={Panel.Tools}
         linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
-        title={!hasTools ? t("Add tool") : undefined}>
+        title={!hasTools ? this.strings.titleText : undefined}>
         <input type="text" onChange={this.update}
-          placeholder={t("Search your tools...")} />
+          placeholder={this.strings.placeholder} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"tools"}>
         <EmptyStateWrapper
           notEmpty={hasTools}
           graphic={EmptyStateGraphic.tools}
-          title={t("Add a tool")}
-          text={Content.NO_TOOLS}
+          title={this.strings.titleText}
+          text={this.strings.emptyStateText}
           colorScheme={"tools"}>
-          <this.MountedToolInfo />
+          {!this.isExpress &&
+            <this.MountedToolInfo />}
           <this.ToolSlots />
           <this.Tools />
         </EmptyStateWrapper>
@@ -223,7 +256,7 @@ const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
     <Row>
       <Col xs={7}>
-        <p>{props.getToolName(tool_id) || t("No tool")}</p>
+        <p>{props.getToolName(tool_id) || t("Empty")}</p>
       </Col>
       <Col xs={5}>
         <p className="tool-slot-position">

@@ -18,6 +18,7 @@ import {
   GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup
 } from "./criteria";
 import { Content } from "../../constants";
+import { UUID } from "../../resources/interfaces";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -25,6 +26,7 @@ export interface GroupDetailActiveProps {
   allPoints: TaggedPoint[];
   shouldDisplay: ShouldDisplay;
   slugs: string[];
+  hovered: UUID | undefined;
 }
 
 type State = { timerId?: ReturnType<typeof setInterval> };
@@ -47,7 +49,7 @@ export class GroupDetailActive
     return sortedPoints.map(point => {
       return <PointGroupItem
         key={point.uuid}
-        hovered={false}
+        hovered={point.uuid === this.props.hovered}
         group={this.props.group}
         point={point}
         dispatch={this.props.dispatch} />;

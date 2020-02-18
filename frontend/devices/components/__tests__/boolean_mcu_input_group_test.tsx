@@ -7,13 +7,14 @@ import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
+import { DeviceSetting } from "../../../constants";
 
 describe("BooleanMCUInputGroup", () => {
   const fakeProps = (): BooleanMCUInputGroupProps => ({
     sourceFwConfig: x => ({ value: bot.hardware.mcu_params[x], consistent: true }),
     dispatch: jest.fn(),
     tooltip: "Tooltip",
-    name: "Name",
+    label: DeviceSetting.invertEncoders,
     x: "encoder_invert_x",
     y: "encoder_invert_y",
     z: "encoder_invert_z",

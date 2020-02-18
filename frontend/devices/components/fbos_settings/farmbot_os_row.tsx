@@ -7,6 +7,8 @@ import { FarmbotOsRowProps } from "./interfaces";
 import { FbosDetails } from "./fbos_details";
 import { t } from "../../../i18next_wrapper";
 import { ErrorBoundary } from "../../../error_boundary";
+import { Highlight } from "../maybe_highlight";
+import { DeviceSetting } from "../../../constants";
 
 const getVersionString =
   (fbosVersion: string | undefined, onBeta: boolean | undefined): string => {
@@ -21,48 +23,50 @@ export function FarmbotOsRow(props: FarmbotOsRowProps) {
   } = bot.hardware.informational_settings;
   const version = getVersionString(controller_version, currently_on_beta);
   return <Row>
-    <Col xs={ColWidth.label}>
-      <label>
-        {t("FARMBOT OS")}
-      </label>
-    </Col>
-    <Col xs={3}>
-      <Popover position={Position.BOTTOM_LEFT}>
-        <p>
-          {t("Version {{ version }}", { version })}
-        </p>
-        <ErrorBoundary>
-          <FbosDetails
-            botInfoSettings={bot.hardware.informational_settings}
-            dispatch={dispatch}
-            shouldDisplay={props.shouldDisplay}
-            sourceFbosConfig={sourceFbosConfig}
-            botToMqttLastSeen={props.botToMqttLastSeen}
-            timeSettings={props.timeSettings}
-            deviceAccount={props.deviceAccount} />
-        </ErrorBoundary>
-      </Popover>
-    </Col>
-    <Col xs={3}>
-      <Popover position={Position.BOTTOM}>
-        <p className="release-notes-button">
-          {t("Release Notes")}&nbsp;
+    <Highlight settingName={DeviceSetting.farmbotOS}>
+      <Col xs={ColWidth.label}>
+        <label>
+          {t(DeviceSetting.farmbotOS)}
+        </label>
+      </Col>
+      <Col xs={3}>
+        <Popover position={Position.BOTTOM_LEFT}>
+          <p>
+            {t("Version {{ version }}", { version })}
+          </p>
+          <ErrorBoundary>
+            <FbosDetails
+              botInfoSettings={bot.hardware.informational_settings}
+              dispatch={dispatch}
+              shouldDisplay={props.shouldDisplay}
+              sourceFbosConfig={sourceFbosConfig}
+              botToMqttLastSeen={props.botToMqttLastSeen}
+              timeSettings={props.timeSettings}
+              deviceAccount={props.deviceAccount} />
+          </ErrorBoundary>
+        </Popover>
+      </Col>
+      <Col xs={3}>
+        <Popover position={Position.BOTTOM}>
+          <p className="release-notes-button">
+            {t("Release Notes")}&nbsp;
           <i className="fa fa-caret-down" />
-        </p>
-        <div className="release-notes">
-          <h1>{props.osReleaseNotesHeading}</h1>
-          <Markdown>
-            {osReleaseNotes}
-          </Markdown>
-        </div>
-      </Popover>
-    </Col>
-    <Col xs={3}>
-      <OsUpdateButton
-        bot={bot}
-        sourceFbosConfig={sourceFbosConfig}
-        shouldDisplay={props.shouldDisplay}
-        botOnline={botOnline} />
-    </Col>
+          </p>
+          <div className="release-notes">
+            <h1>{props.osReleaseNotesHeading}</h1>
+            <Markdown>
+              {osReleaseNotes}
+            </Markdown>
+          </div>
+        </Popover>
+      </Col>
+      <Col xs={3}>
+        <OsUpdateButton
+          bot={bot}
+          sourceFbosConfig={sourceFbosConfig}
+          shouldDisplay={props.shouldDisplay}
+          botOnline={botOnline} />
+      </Col>
+    </Highlight>
   </Row>;
 }

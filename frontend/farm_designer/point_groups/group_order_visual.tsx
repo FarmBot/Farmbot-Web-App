@@ -36,7 +36,7 @@ export interface PointsPathLineProps {
 }
 
 export const PointsPathLine = (props: PointsPathLineProps) =>
-  <g id="group-order"
+  <g id="group-order" style={{ pointerEvents: "none" }}
     stroke={props.color || Color.mediumGray}
     strokeWidth={props.strokeWidth || 3}
     strokeDasharray={props.dash || 12}>

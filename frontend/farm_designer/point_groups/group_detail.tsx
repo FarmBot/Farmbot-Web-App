@@ -10,6 +10,7 @@ import { GroupDetailActive } from "./group_detail_active";
 import { ShouldDisplay } from "../../devices/interfaces";
 import { getShouldDisplayFn } from "../../farmware/state_to_props";
 import { uniq } from "lodash";
+import { UUID } from "../../resources/interfaces";
 
 interface GroupDetailProps {
   dispatch: Function;
@@ -17,6 +18,7 @@ interface GroupDetailProps {
   allPoints: TaggedPoint[];
   shouldDisplay: ShouldDisplay;
   slugs: string[];
+  hovered: UUID | undefined;
 }
 
 /** Find a group from a URL-provided ID. */
@@ -35,6 +37,7 @@ function mapStateToProps(props: Everything): GroupDetailProps {
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     slugs: uniq(selectAllPlantPointers(props.resources.index)
       .map(p => p.body.openfarm_slug)),
+    hovered: props.resources.consumers.farm_designer.hoveredPlantListItem,
   };
 }
 

@@ -100,4 +100,11 @@ describe("<SensorList/>", function () {
     readSensorBtn.last().simulate("click");
     expect(mockDevice.readPin).not.toHaveBeenCalled();
   });
+
+  it("renders analog reading", () => {
+    const p = fakeProps();
+    p.pins[50] && (p.pins[50].value = 600);
+    const wrapper = mount(<SensorList {...p} />);
+    expect(wrapper.html()).toContain("margin-left: -3.5rem");
+  });
 });

@@ -56,7 +56,7 @@ describe("<Tour />", () => {
     expect(wrapper.state()).toEqual({
       run: true, index: 1, returnPath: "/app/messages"
     });
-    expect(history.push).toHaveBeenCalledWith("/app/tools");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 
   it("navigates through tour: other", () => {

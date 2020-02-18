@@ -1,12 +1,12 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips } from "../../../constants";
+import { ToolTips, DeviceSetting } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { EncodersProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
-import { t } from "../../../i18next_wrapper";
 import { isExpressBoard } from "../firmware_hardware_support";
+import { Highlight } from "../maybe_highlight";
 
 export function Encoders(props: EncodersProps) {
 
@@ -20,19 +20,20 @@ export function Encoders(props: EncodersProps) {
   };
   const isExpress = isExpressBoard(firmwareHardware);
 
-  return <section>
+  return <Highlight className={"section"}
+    settingName={DeviceSetting.encoders}>
     <Header
       expanded={encoders}
       title={isExpress
-        ? t("Stall Detection")
-        : t("Encoders")}
-      name={"encoders"}
+        ? DeviceSetting.stallDetection
+        : DeviceSetting.encoders}
+      panel={"encoders"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders}>
       <BooleanMCUInputGroup
-        name={isExpress
-          ? t("Enable Stall Detection")
-          : t("Enable Encoders")}
+        label={isExpress
+          ? DeviceSetting.enableStallDetection
+          : DeviceSetting.enableEncoders}
         tooltip={isExpress
           ? ToolTips.ENABLE_STALL_DETECTION
           : ToolTips.ENABLE_ENCODERS}
@@ -43,7 +44,7 @@ export function Encoders(props: EncodersProps) {
         sourceFwConfig={sourceFwConfig} />
       {isExpress &&
         <NumericMCUInputGroup
-          name={t("Stall Sensitivity")}
+          label={DeviceSetting.stallSensitivity}
           tooltip={ToolTips.STALL_SENSITIVITY}
           x={"movement_stall_sensitivity_x"}
           y={"movement_stall_sensitivity_y"}
@@ -53,7 +54,7 @@ export function Encoders(props: EncodersProps) {
           sourceFwConfig={sourceFwConfig} />}
       {!isExpress &&
         <BooleanMCUInputGroup
-          name={t("Use Encoders for Positioning")}
+          label={DeviceSetting.useEncodersForPositioning}
           tooltip={ToolTips.ENCODER_POSITIONING}
           x={"encoder_use_for_pos_x"}
           y={"encoder_use_for_pos_y"}
@@ -63,7 +64,7 @@ export function Encoders(props: EncodersProps) {
           sourceFwConfig={sourceFwConfig} />}
       {!isExpress &&
         <BooleanMCUInputGroup
-          name={t("Invert Encoders")}
+          label={DeviceSetting.invertEncoders}
           tooltip={ToolTips.INVERT_ENCODERS}
           x={"encoder_invert_x"}
           y={"encoder_invert_y"}
@@ -72,7 +73,7 @@ export function Encoders(props: EncodersProps) {
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
       <NumericMCUInputGroup
-        name={t("Max Missed Steps")}
+        label={DeviceSetting.maxMissedSteps}
         tooltip={isExpress
           ? ToolTips.MAX_MISSED_STEPS_STALL_DETECTION
           : ToolTips.MAX_MISSED_STEPS_ENCODERS}
@@ -83,7 +84,7 @@ export function Encoders(props: EncodersProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Missed Step Decay")}
+        label={DeviceSetting.missedStepDecay}
         tooltip={ToolTips.MISSED_STEP_DECAY}
         x={"encoder_missed_steps_decay_x"}
         y={"encoder_missed_steps_decay_y"}
@@ -93,7 +94,7 @@ export function Encoders(props: EncodersProps) {
         dispatch={dispatch} />
       {!isExpress &&
         <NumericMCUInputGroup
-          name={t("Encoder Scaling")}
+          label={DeviceSetting.encoderScaling}
           tooltip={ToolTips.ENCODER_SCALING}
           x={"encoder_scaling_x"}
           y={"encoder_scaling_y"}
@@ -106,5 +107,5 @@ export function Encoders(props: EncodersProps) {
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch} />}
     </Collapse>
-  </section>;
+  </Highlight>;
 }

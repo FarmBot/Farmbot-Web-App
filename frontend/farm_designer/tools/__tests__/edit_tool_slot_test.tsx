@@ -28,6 +28,7 @@ describe("<EditToolSlot />", () => {
     findTool: jest.fn(),
     botPosition: { x: undefined, y: undefined, z: undefined },
     dispatch: jest.fn(),
+    firmwareHardware: undefined,
   });
 
   it("redirects", () => {
@@ -39,7 +40,7 @@ describe("<EditToolSlot />", () => {
     const p = fakeProps();
     p.findToolSlot = () => fakeToolSlot();
     const wrapper = mount(<EditToolSlot {...p} />);
-    ["edit tool slot", "x (mm)", "y (mm)", "z (mm)", "toolnone",
+    ["edit tool slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "change slot direction", "use current location", "gantry-mounted"
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });

@@ -1,10 +1,9 @@
-jest.mock("../util", () => {
-  return {
-    attachToRoot: jest.fn(),
-    // Incidental mock. Can be removed if errors go away.
-    trim: jest.fn(x => x)
-  };
-});
+jest.mock("../util", () => ({
+  attachToRoot: jest.fn(),
+  // Incidental mock. Can be removed if errors go away.
+  trim: jest.fn(x => x),
+  urlFriendly: jest.fn(),
+}));
 
 jest.mock("../redux/store", () => {
   return { store: { dispatch: jest.fn() } };

@@ -11,11 +11,13 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
-import { error } from "../../../toast/toast";
+import { FirmwareHardware } from "farmbot";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
     dispatch: jest.fn(),
+    existingToolNames: [],
+    firmwareHardware: undefined,
   });
 
   it("renders", () => {
@@ -38,19 +40,29 @@ describe("<AddTool />", () => {
     expect(initSave).toHaveBeenCalledWith("Tool", { name: "Foo" });
   });
 
-  it("doesn't add stock tools", () => {
-    const wrapper = mount(<AddTool {...fakeProps()} />);
+  it.each<[FirmwareHardware, number]>([
+    ["arduino", 6],
+    ["farmduino", 6],
+    ["farmduino_k14", 6],
+    ["farmduino_k15", 8],
+    ["express_k10", 2],
+  ])("adds peripherals: %s", (firmware, expectedAdds) => {
+    const p = fakeProps();
+    p.firmwareHardware = firmware;
+    const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(error).toHaveBeenCalledWith("Please choose a FarmBot model.");
-    expect(initSave).not.toHaveBeenCalledTimes(6);
-    expect(history.push).not.toHaveBeenCalledWith("/app/designer/tools");
+    expect(initSave).toHaveBeenCalledTimes(expectedAdds);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 
-  it("adds stock tools", () => {
-    const wrapper = mount(<AddTool {...fakeProps()} />);
+  it("doesn't add stock tools twice", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    p.existingToolNames = ["Seed Trough 1"];
+    const wrapper = mount(<AddTool {...p} />);
     wrapper.setState({ model: "express" });
     wrapper.find("button").last().simulate("click");
-    expect(initSave).toHaveBeenCalledTimes(2);
+    expect(initSave).toHaveBeenCalledTimes(1);
     expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 });
