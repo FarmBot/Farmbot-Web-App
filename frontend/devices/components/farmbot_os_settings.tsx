@@ -5,7 +5,7 @@ import { FarmbotOsProps, FarmbotOsState, Feature } from "../interfaces";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui";
 import { save, edit } from "../../api/crud";
 import { isBotOnline } from "../must_be_online";
-import { Content } from "../../constants";
+import { Content, DeviceSetting } from "../../constants";
 import { TimezoneSelector } from "../timezones/timezone_selector";
 import { timezoneMismatch } from "../timezones/guess_timezone";
 import { CameraSelection } from "./fbos_settings/camera_selection";
@@ -16,6 +16,7 @@ import { AutoSyncRow } from "./fbos_settings/auto_sync_row";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
 import { BootSequenceSelector } from "./fbos_settings/boot_sequence_selector";
 import { ExternalUrl } from "../../external_urls";
+import { Highlight } from "./maybe_highlight";
 
 export enum ColWidth {
   label = 3,
@@ -85,34 +86,38 @@ export class FarmbotOsSettings
         </WidgetHeader>
         <WidgetBody>
           <Row>
-            <Col xs={ColWidth.label}>
-              <label>
-                {t("NAME")}
-              </label>
-            </Col>
-            <Col xs={9}>
-              <input name="name"
-                onChange={this.changeBot}
-                onBlur={this.updateBot}
-                value={this.props.deviceAccount.body.name} />
-            </Col>
+            <Highlight settingName={DeviceSetting.name}>
+              <Col xs={ColWidth.label}>
+                <label>
+                  {t(DeviceSetting.name)}
+                </label>
+              </Col>
+              <Col xs={9}>
+                <input name="name"
+                  onChange={this.changeBot}
+                  onBlur={this.updateBot}
+                  value={this.props.deviceAccount.body.name} />
+              </Col>
+            </Highlight>
           </Row>
           <Row>
-            <Col xs={ColWidth.label}>
-              <label>
-                {t("TIME ZONE")}
-              </label>
-            </Col>
-            <Col xs={ColWidth.description}>
-              <div className="note">
-                {this.maybeWarnTz()}
-              </div>
-              <div>
-                <TimezoneSelector
-                  currentTimezone={this.props.deviceAccount.body.timezone}
-                  onUpdate={this.handleTimezone} />
-              </div>
-            </Col>
+            <Highlight settingName={DeviceSetting.timezone}>
+              <Col xs={ColWidth.label}>
+                <label>
+                  {t("TIME ZONE")}
+                </label>
+              </Col>
+              <Col xs={ColWidth.description}>
+                <div className="note">
+                  {this.maybeWarnTz()}
+                </div>
+                <div>
+                  <TimezoneSelector
+                    currentTimezone={this.props.deviceAccount.body.timezone}
+                    onUpdate={this.handleTimezone} />
+                </div>
+              </Col>
+            </Highlight>
           </Row>
           <CameraSelection
             env={this.props.env}

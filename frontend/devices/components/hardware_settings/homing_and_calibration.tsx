@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips } from "../../../constants";
+import { ToolTips, DeviceSetting } from "../../../constants";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { CalibrationRow } from "./calibration_row";
 import { disabledAxisMap } from "../axis_tracking_status";
@@ -13,6 +13,7 @@ import { isExpressBoard } from "../firmware_hardware_support";
 import { getDevice } from "../../../device";
 import { commandErr } from "../../actions";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
+import { Highlight } from "../maybe_highlight";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
@@ -31,16 +32,17 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
   const scale = calculateScale(sourceFwConfig);
 
-  return <section>
+  return <Highlight className={"section"}
+    settingName={DeviceSetting.homingAndCalibration}>
     <Header
-      title={t("Homing and Calibration")}
-      name={"homing_and_calibration"}
+      title={DeviceSetting.homingAndCalibration}
+      panel={"homing_and_calibration"}
       dispatch={dispatch}
       expanded={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
       <CalibrationRow
         type={"find_home"}
-        title={t("HOMING")}
+        title={DeviceSetting.homing}
         axisTitle={t("FIND HOME")}
         toolTip={isExpressBoard(firmwareHardware)
           ? ToolTips.HOMING_STALL_DETECTION
@@ -52,7 +54,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         botDisconnected={botDisconnected} />
       <CalibrationRow
         type={"calibrate"}
-        title={t("CALIBRATION")}
+        title={DeviceSetting.calibration}
         axisTitle={t("CALIBRATE")}
         toolTip={isExpressBoard(firmwareHardware)
           ? ToolTips.CALIBRATION_STALL_DETECTION
@@ -63,7 +65,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         botDisconnected={botDisconnected} />
       <CalibrationRow
         type={"zero"}
-        title={t("SET ZERO POSITION")}
+        title={DeviceSetting.setZeroPosition}
         axisTitle={t("ZERO")}
         toolTip={ToolTips.SET_ZERO_POSITION}
         action={axis => getDevice().setZero(axis)
@@ -71,7 +73,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         hardware={hardware}
         botDisconnected={botDisconnected} />
       <BooleanMCUInputGroup
-        name={t("Find Home on Boot")}
+        label={DeviceSetting.findHomeOnBoot}
         tooltip={isExpressBoard(firmwareHardware)
           ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
           : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
@@ -83,7 +85,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         sourceFwConfig={sourceFwConfig}
         caution={true} />
       <BooleanMCUInputGroup
-        name={t("Stop at Home")}
+        label={DeviceSetting.stopAtHome}
         tooltip={ToolTips.STOP_AT_HOME}
         x={"movement_stop_at_home_x"}
         y={"movement_stop_at_home_y"}
@@ -91,7 +93,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
-        name={t("Stop at Max")}
+        label={DeviceSetting.stopAtMax}
         tooltip={ToolTips.STOP_AT_MAX}
         x={"movement_stop_at_max_x"}
         y={"movement_stop_at_max_y"}
@@ -99,7 +101,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
-        name={t("Negative Coordinates Only")}
+        label={DeviceSetting.negativeCoordinatesOnly}
         tooltip={ToolTips.NEGATIVE_COORDINATES_ONLY}
         x={"movement_home_up_x"}
         y={"movement_home_up_y"}
@@ -107,7 +109,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <NumericMCUInputGroup
-        name={t("Axis Length (mm)")}
+        label={DeviceSetting.axisLength}
         tooltip={ToolTips.LENGTH}
         x={"movement_axis_nr_steps_x"}
         y={"movement_axis_nr_steps_y"}
@@ -124,5 +126,5 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         dispatch={dispatch}
         intSize={"long"} />
     </Collapse>
-  </section>;
+  </Highlight>;
 }

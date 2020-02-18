@@ -702,9 +702,9 @@ export namespace Content {
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
 
-  export const OLD_FBOS_REC_UPGRADE = trim(`Your version of FarmBot OS is
-    outdated and will soon no longer be supported. Please update your device as
-    soon as possible.`);
+  export const OLD_FBOS_REC_UPGRADE =
+    trim(`Your version of FarmBot OS is outdated and will soon no longer
+    be supported. Please update your device as soon as possible.`);
 
   export const EXPERIMENTAL_WARNING =
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
@@ -812,7 +812,10 @@ export namespace Content {
     trim(`add this crop on OpenFarm?`);
 
   export const NO_TOOLS =
-    trim(`Press "+" to add a new tool.`);
+    trim(`Press "+" to add a new tool or seed container.`);
+
+  export const NO_SEED_CONTAINERS =
+    trim(`Press "+" to add a seed container.`);
 
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
@@ -887,12 +890,23 @@ export namespace TourContent {
     selecting one, and dragging it into the garden.`);
 
   export const ADD_TOOLS =
-    trim(`Press edit and then the + button to add tools and seed containers.`);
+    trim(`Press the + button to add tools and seed containers.`);
+
+  export const ADD_SEED_CONTAINERS =
+    trim(`Press the + button to add seed containers.`);
+
+  export const ADD_TOOLS_AND_SLOTS =
+    trim(`Press the + button to add tools and seed containers. Then create
+    tool slots for them to by pressing the tool slot + button.`);
+
+  export const ADD_SEED_CONTAINERS_AND_SLOTS =
+    trim(`Press the + button to add seed containers. Then create
+    slots for them to by pressing the seed container slot + button.`);
 
   export const ADD_TOOLS_SLOTS =
     trim(`Add the newly created tools and seed containers to the
     corresponding tool slots on FarmBot:
-    press edit and then + to create a tool slot.`);
+    press the + button to create a tool slot.`);
 
   export const ADD_PERIPHERALS =
     trim(`Press edit and then the + button to add peripherals.`);
@@ -928,6 +942,87 @@ export namespace TourContent {
   // Fun stuff
   export const APP_SETTINGS =
     trim(`Toggle various settings to customize your web app experience.`);
+}
+
+export enum DeviceSetting {
+  // Homing and calibration
+  homingAndCalibration = `Homing and Calibration`,
+  homing = `Homing`,
+  calibration = `Calibration`,
+  setZeroPosition = `Set Zero Position`,
+  findHomeOnBoot = `Find Home on Boot`,
+  stopAtHome = `Stop at Home`,
+  stopAtMax = `Stop at Max`,
+  negativeCoordinatesOnly = `Negative Coordinates Only`,
+  axisLength = `Axis Length (mm)`,
+
+  // Motors
+  motors = `Motors`,
+  maxSpeed = `Max Speed (mm/s)`,
+  homingSpeed = `Homing Speed (mm/s)`,
+  minimumSpeed = `Minimum Speed (mm/s)`,
+  accelerateFor = `Accelerate for (mm)`,
+  stepsPerMm = `Steps per MM`,
+  microstepsPerStep = `Microsteps per step`,
+  alwaysPowerMotors = `Always Power Motors`,
+  invertMotors = `Invert Motors`,
+  motorCurrent = `Motor Current`,
+  enable2ndXMotor = `Enable 2nd X Motor`,
+  invert2ndXMotor = `Invert 2nd X Motor`,
+
+  // Encoders / Stall Detection
+  encoders = `Encoders`,
+  stallDetection = `Stall Detection`,
+  enableEncoders = `Enable Encoders`,
+  enableStallDetection = `Enable Stall Detection`,
+  stallSensitivity = `Stall Sensitivity`,
+  useEncodersForPositioning = `Use Encoders for Positioning`,
+  invertEncoders = `Invert Encoders`,
+  maxMissedSteps = `Max Missed Steps`,
+  missedStepDecay = `Missed Step Decay`,
+  encoderScaling = `Encoder Scaling`,
+
+  // Endstops
+  endstops = `Endstops`,
+  enableEndstops = `Enable Endstops`,
+  swapEndstops = `Swap Endstops`,
+  invertEndstops = `Invert Endstops`,
+
+  // Error handling
+  errorHandling = `Error Handling`,
+  timeoutAfter = `Timeout after (seconds)`,
+  maxRetries = `Max Retries`,
+  estopOnMovementError = `E-Stop on Movement Error`,
+
+  // Pin Guard
+  pinGuard = `Pin Guard`,
+
+  // Danger Zone
+  dangerZone = `dangerZone`,
+  resetHardwareParams = `Reset hardware parameter defaults`,
+
+  // Pin Bindings
+  pinBindings = `Pin Bindings`,
+
+  // FarmBot OS
+  name = `name`,
+  timezone = `timezone`,
+  camera = `camera`,
+  firmware = `firmware`,
+  farmbotOSAutoUpdate = `Farmbot OS Auto Update`,
+  farmbotOS = `Farmbot OS`,
+  autoSync = `Auto Sync`,
+  bootSequence = `Boot Sequence`,
+
+  // Power and Reset
+  powerAndReset = `Power and Reset`,
+  restartFarmbot = `Restart Farmbot`,
+  shutdownFarmbot = `Shutdown Farmbot`,
+  restartFirmware = `Restart Firmware`,
+  factoryReset = `Factory Reset`,
+  autoFactoryReset = `Automatic Factory Reset`,
+  connectionAttemptPeriod = `Connection Attempt Period`,
+  changeOwnership = `Change Ownership`,
 }
 
 export namespace DiagnosticMessages {

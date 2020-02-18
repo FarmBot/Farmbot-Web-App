@@ -93,6 +93,7 @@ export class PointGroupItem
         style={{
           border: this.criteriaIcon ? "1px solid gray" : "none",
           borderRadius: "5px",
+          background: this.props.hovered ? "lightgray" : "none",
         }}
         src={DEFAULT_ICON}
         onLoad={this.maybeGetCachedIcon}

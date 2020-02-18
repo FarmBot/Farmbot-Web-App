@@ -60,9 +60,9 @@ export class DemoIframe extends React.Component<{}, State> {
 
     return <div className="demo-container">
       <video muted={true} autoPlay={true} loop={true} className="demo-video">
-        <source src={ExternalUrl.Videos.desktop} type="video/mp4" />
+        <source src={ExternalUrl.Video.desktop} type="video/mp4" />
       </video>
-      <img className="demo-phone" src={ExternalUrl.Videos.mobile} />
+      <img className="demo-phone" src={ExternalUrl.Video.mobile} />
       <button className="demo-button" onClick={this.requestAccount}>
         {this.state.stage}
       </button>

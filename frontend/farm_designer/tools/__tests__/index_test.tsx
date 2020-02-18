@@ -39,6 +39,7 @@ describe("<Tools />", () => {
     bot,
     botToMqttStatus: "down",
     hoveredToolSlot: undefined,
+    firmwareHardware: undefined,
   });
 
   it("renders with no tools", () => {
@@ -64,7 +65,7 @@ describe("<Tools />", () => {
     p.toolSlots[1].body.y = 2;
     const wrapper = mount(<Tools {...p} />);
     [
-      "foo", "my tool", "unnamed tool", "(1, 0, 0)", "unknown", "(gantry, 2, 0)"
+      "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown", "(gantry, 2, 0)"
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
@@ -158,6 +159,7 @@ describe("<Tools />", () => {
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.botToMqttStatus = "up";
     const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("mounted tool");
     wrapper.find(".yellow").first().simulate("click");
     expect(mockDevice.readPin).toHaveBeenCalledWith({
       label: "pin63", pin_mode: 0, pin_number: 63
@@ -172,6 +174,13 @@ describe("<Tools />", () => {
     wrapper.find(".yellow").first().simulate("click");
     expect(mockDevice.readPin).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.NOT_AVAILABLE_WHEN_OFFLINE);
+  });
+
+  it("doesn't display mounted tool on express models", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("mounted tool");
   });
 });
 

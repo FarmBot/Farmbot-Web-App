@@ -31,7 +31,7 @@ export class BotFigure extends
     const positionQ = transformXY(
       (position.x || 0), (position.y || 0), mapTransformProps);
     const color = eStopStatus ? Color.virtualRed : Color.darkGray;
-    const opacity = name.includes("encoder") ? 0.25 : 0.75;
+    const opacity = name.includes("encoder") ? 0.25 : 0.5;
     return <g id={name}>
       <rect id="gantry"
         x={xySwap ? -plantAreaOffset.x : positionQ.qx - 10}

@@ -66,12 +66,12 @@ describe("<ToolSlotPoint/>", () => {
     expect(wrapper.find("text").props().dx).toEqual(-40);
   });
 
-  it("displays 'no tool'", () => {
+  it("displays 'empty'", () => {
     const p = fakeProps();
     p.slot.tool = undefined;
     p.hoveredToolSlot = p.slot.toolSlot.uuid;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    expect(wrapper.find("text").text()).toEqual("no tool");
+    expect(wrapper.find("text").text()).toEqual("empty");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 

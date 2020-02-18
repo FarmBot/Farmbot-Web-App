@@ -3,6 +3,7 @@ import { mount } from "enzyme";
 import { CalibrationRow } from "../calibration_row";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { CalibrationRowProps } from "../../interfaces";
+import { DeviceSetting } from "../../../../constants";
 
 describe("<CalibrationRow />", () => {
   const fakeProps = (): CalibrationRowProps => ({
@@ -11,7 +12,7 @@ describe("<CalibrationRow />", () => {
     botDisconnected: false,
     action: jest.fn(),
     toolTip: "calibrate",
-    title: "calibrate",
+    title: DeviceSetting.calibration,
     axisTitle: "calibrate",
   });
 

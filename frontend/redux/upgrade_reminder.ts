@@ -2,6 +2,7 @@ import { info } from "../toast/toast";
 import { semverCompare, SemverResult, FbosVersionFallback } from "../util";
 import { Content } from "../constants";
 import { Dictionary } from "lodash";
+import { t } from "../i18next_wrapper";
 
 const IDEAL_VERSION =
   globalConfig.FBOS_END_OF_LIFE_VERSION || FbosVersionFallback.NULL;
@@ -22,7 +23,7 @@ export function createReminderFn() {
     !alreadyChecked[version]
       // Is it up to date?
       && semverCompare(version, IDEAL_VERSION) === SemverResult.RIGHT_IS_GREATER
-      && info(Content.OLD_FBOS_REC_UPGRADE);
+      && info(t(Content.OLD_FBOS_REC_UPGRADE));
 
     alreadyChecked[version] = true; // Turn off checks for this version now.
   };

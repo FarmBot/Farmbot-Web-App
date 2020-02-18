@@ -201,6 +201,7 @@ export interface PeripheralsProps {
   peripherals: TaggedPeripheral[];
   dispatch: Function;
   disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface SensorsProps {
@@ -208,6 +209,7 @@ export interface SensorsProps {
   sensors: TaggedSensor[];
   dispatch: Function;
   disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface FarmwareProps {
@@ -248,8 +250,8 @@ export interface ControlPanelState {
   encoders: boolean;
   endstops: boolean;
   error_handling: boolean;
-  pin_bindings: boolean;
-  danger_zone: boolean;
-  power_and_reset: boolean;
   pin_guard: boolean;
+  danger_zone: boolean;
+  pin_bindings: boolean;
+  power_and_reset: boolean;
 }

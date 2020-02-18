@@ -18,7 +18,8 @@ describe("<Sensors />", () => {
       bot,
       sensors: [fakeSensor1, fakeSensor2],
       dispatch: jest.fn(),
-      disabled: false
+      disabled: false,
+      firmwareHardware: undefined,
     };
   }
 
@@ -68,8 +69,16 @@ describe("<Sensors />", () => {
   it("adds stock sensors", () => {
     const p = fakeProps();
     const wrapper = mount(<Sensors {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("stock sensors");
     wrapper.setState({ isEditing: true });
     clickButton(wrapper, 3, "stock sensors");
     expect(p.dispatch).toHaveBeenCalledTimes(2);
+  });
+
+  it("doesn't display + stock button", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<Sensors {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("stock sensors");
   });
 });

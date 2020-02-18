@@ -13,6 +13,7 @@ describe("<GardenPlant/>", () => {
     return {
       mapTransformProps: fakeMapTransformProps(),
       plant: fakePlant(),
+      current: false,
       selected: false,
       editing: false,
       dragging: false,
@@ -21,6 +22,7 @@ describe("<GardenPlant/>", () => {
       activeDragXY: { x: undefined, y: undefined, z: undefined },
       uuid: "plantUuid",
       animate: false,
+      hovered: false,
     };
   }
 
@@ -31,6 +33,8 @@ describe("<GardenPlant/>", () => {
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").length).toEqual(1);
     expect(wrapper.find("image").props().opacity).toEqual(1);
+    expect(wrapper.find("image").props().visibility).toEqual("visible");
+    expect(wrapper.find("image").props().opacity).toEqual(1.0);
     expect(wrapper.find("text").length).toEqual(0);
     expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
     expect(wrapper.find("use").length).toEqual(0);
@@ -87,5 +91,22 @@ describe("<GardenPlant/>", () => {
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find(".plant-indicator").length).toEqual(1);
     expect(wrapper.find("Circle").length).toEqual(1);
+  });
+
+  it("doesn't render indicator circle twice", () => {
+    const p = fakeProps();
+    p.selected = true;
+    p.hovered = true;
+    const wrapper = shallow(<GardenPlant {...p} />);
+    expect(wrapper.find(".plant-indicator").length).toEqual(0);
+    expect(wrapper.find("Circle").length).toEqual(0);
+  });
+
+  it("renders while dragging", () => {
+    const p = fakeProps();
+    p.dragging = true;
+    const wrapper = shallow(<GardenPlant {...p} />);
+    expect(wrapper.find("image").props().visibility).toEqual("hidden");
+    expect(wrapper.find("image").props().opacity).toEqual(0.4);
   });
 });

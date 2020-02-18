@@ -2,6 +2,13 @@ import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
 import { TourContent } from "../constants";
 import { t } from "../i18next_wrapper";
+import { DevSettings } from "../account/dev/dev_support";
+import { selectAllTools } from "../resources/selectors";
+import { store } from "../redux/store";
+import { getFbosConfig } from "../resources/getters";
+import {
+  isExpressBoard, getFwHardwareValue
+} from "../devices/components/firmware_hardware_support";
 
 export enum Tours {
   gettingStarted = "gettingStarted",
@@ -15,70 +22,105 @@ export const tourNames = () => [
   { name: Tours.funStuff, description: t("find new features") },
 ];
 
+const hasTools = () =>
+  selectAllTools(store.getState().resources.index).length > 0;
+
+const isExpress = () =>
+  isExpressBoard(getFwHardwareValue(
+    getFbosConfig(store.getState().resources.index)));
+
+const toolsStep = () => hasTools()
+  ? [{
+    target: ".tools",
+    content: isExpress()
+      ? t(TourContent.ADD_SEED_CONTAINERS)
+      : t(TourContent.ADD_TOOLS),
+    title: isExpress()
+      ? t("Add seed containers")
+      : t("Add tools and seed containers"),
+  }]
+  : [{
+    target: ".tools",
+    content: isExpress()
+      ? t(TourContent.ADD_SEED_CONTAINERS_AND_SLOTS)
+      : t(TourContent.ADD_TOOLS_AND_SLOTS),
+    title: isExpress()
+      ? t("Add seed containers and slots")
+      : t("Add tools and tool slots"),
+  }];
+
+const toolSlotsStep = () => hasTools()
+  ? [{
+    target: ".tool-slots",
+    content: t(TourContent.ADD_TOOLS_AND_SLOTS),
+    title: t("Add tool slots"),
+  }]
+  : [];
+
 export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
   [Tours.gettingStarted]: [
     {
       target: ".plant-inventory-panel",
-      content: TourContent.ADD_PLANTS,
+      content: t(TourContent.ADD_PLANTS),
       title: t("Add plants"),
     },
-    {
+    ...(DevSettings.futureFeaturesEnabled() ? [{
       target: ".tool-list",
-      content: TourContent.ADD_TOOLS,
-      title: t("Add tools"),
-    },
-    {
+      content: t(TourContent.ADD_TOOLS),
+      title: t("Add tools and seed containers"),
+    }] : toolsStep()),
+    ...(DevSettings.futureFeaturesEnabled() ? [{
       target: ".toolbay-list",
-      content: TourContent.ADD_TOOLS_SLOTS,
+      content: t(TourContent.ADD_TOOLS_SLOTS),
       title: t("Add tools to tool bay"),
-    },
+    }] : toolSlotsStep()),
     {
       target: ".peripherals-widget",
-      content: TourContent.ADD_PERIPHERALS,
+      content: t(TourContent.ADD_PERIPHERALS),
       title: t("Add peripherals"),
     },
     {
       target: ".sequence-list-panel",
-      content: TourContent.ADD_SEQUENCES,
+      content: t(TourContent.ADD_SEQUENCES),
       title: t("Create sequences"),
     },
     {
       target: ".regimen-list-panel",
-      content: TourContent.ADD_REGIMENS,
+      content: t(TourContent.ADD_REGIMENS),
       title: t("Create regimens"),
     },
     {
       target: ".farm-event-panel",
-      content: TourContent.ADD_FARM_EVENTS,
+      content: t(TourContent.ADD_FARM_EVENTS),
       title: t("Create events"),
     },
   ],
   [Tours.monitoring]: [
     {
       target: ".move-widget",
-      content: TourContent.LOCATION_GRID,
+      content: t(TourContent.LOCATION_GRID),
       title: t("View current location"),
     },
     {
       target: ".farm-designer",
-      content: TourContent.VIRTUAL_FARMBOT,
+      content: t(TourContent.VIRTUAL_FARMBOT),
       title: t("View current location"),
     },
     {
       target: ".logs-table",
-      content: TourContent.LOGS_TABLE,
+      content: t(TourContent.LOGS_TABLE),
       title: t("View log messages"),
     },
     {
       target: ".photos",
-      content: TourContent.PHOTOS,
+      content: t(TourContent.PHOTOS),
       title: t("Take and view photos"),
     },
   ],
   [Tours.funStuff]: [
     {
       target: ".app-settings-widget",
-      content: TourContent.APP_SETTINGS,
+      content: t(TourContent.APP_SETTINGS),
       title: t("Customize your web app experience"),
     },
   ],
@@ -111,6 +153,10 @@ export const tourPageNavigation = (nextStepTarget: string | HTMLElement) => {
     case ".tool-list":
     case ".toolbay-list":
       history.push("/app/tools");
+      break;
+    case ".tools":
+    case ".tool-slots":
+      history.push("/app/designer/tools");
       break;
     case ".photos":
       history.push("/app/farmware");

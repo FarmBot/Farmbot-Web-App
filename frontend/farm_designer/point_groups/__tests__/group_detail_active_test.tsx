@@ -40,6 +40,7 @@ describe("<GroupDetailActive/>", () => {
       allPoints: [],
       shouldDisplay: () => true,
       slugs: [],
+      hovered: undefined,
     };
   };
 
