@@ -31,18 +31,6 @@ describe("<WeedDetectorConfig />", () => {
     expect(badChange).toThrow("Weed detector got a non-numeric value");
   });
 
-  it("changes hue invert value", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<WeedDetectorConfig {...p} />);
-    const input = wrapper.find("input").first();
-    input.simulate("change", { currentTarget: { checked: true } });
-    expect(p.onChange).toHaveBeenCalledWith(
-      "CAMERA_CALIBRATION_invert_hue_selection", 1);
-    input.simulate("change", { currentTarget: { checked: false } });
-    expect(p.onChange).toHaveBeenCalledWith(
-      "CAMERA_CALIBRATION_invert_hue_selection", 0);
-  });
-
   it("changes number value", () => {
     const p = fakeProps();
     const wrapper = shallow<WeedDetectorConfig>(<WeedDetectorConfig {...p} />);

@@ -32,8 +32,13 @@ export const specialActionLabelLookup: { [x: string]: string } = {
 
 export const specialActionList: DropDownItem[] =
   Object.values(PinBindingSpecialAction)
+    .filter(action => action != PinBindingSpecialAction.dump_info)
     .map((action: PinBindingSpecialAction) =>
       ({ label: specialActionLabelLookup[action], value: action }));
+
+export const getSpecialActionLabel =
+  (action: PinBindingSpecialAction | undefined) =>
+    specialActionLabelLookup[action || ""] || "";
 
 /** Pin numbers for standard buttons. */
 export enum ButtonPin {
@@ -84,17 +89,17 @@ export const piSpi1Pins = [16, 17, 18, 19, 20, 21];
 /** Pin numbers used for special purposes by the RPi. (internal pullup, etc.) */
 export const reservedPiGPIO = piI2c0Pins;
 
-const LabeledGpioPins: { [x: number]: string } = {
-  [ButtonPin.estop]: "Button 1: E-STOP",
-  [ButtonPin.unlock]: "Button 2: UNLOCK",
-  [ButtonPin.btn3]: "Button 3",
-  [ButtonPin.btn4]: "Button 4",
-  [ButtonPin.btn5]: "Button 5",
-};
+const GPIO_PIN_LABELS = (): { [x: number]: string } => ({
+  [ButtonPin.estop]: t("Button {{ num }}: E-STOP", { num: 1 }),
+  [ButtonPin.unlock]: t("Button {{ num }}: UNLOCK", { num: 2 }),
+  [ButtonPin.btn3]: t("Button {{ num }})", { num: 3 }),
+  [ButtonPin.btn4]: t("Button {{ num }}", { num: 4 }),
+  [ButtonPin.btn5]: t("Button {{ num }}", { num: 5 }),
+});
 
 export const generatePinLabel = (pin: number) =>
-  LabeledGpioPins[pin]
-    ? `${LabeledGpioPins[pin]} (Pi ${pin})`
+  GPIO_PIN_LABELS()[pin]
+    ? `${t(GPIO_PIN_LABELS()[pin])} (Pi ${pin})`
     : `Pi GPIO ${pin}`;
 
 /** Raspberry Pi GPIO pin numbers. */

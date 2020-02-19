@@ -57,6 +57,8 @@ export class PointGroupItem
     this.leave();
   }
 
+  setIconState = (icon: string) => this.setState({ icon });
+
   get criteriaIcon() {
     return !this.props.group.body.point_ids
       .includes(this.props.point.body.id || 0);
@@ -67,7 +69,7 @@ export class PointGroupItem
     switch (this.props.point.body.pointer_type) {
       case "Plant":
         const slug = this.props.point.body.openfarm_slug;
-        maybeGetCachedPlantIcon(slug, img, icon => this.setState({ icon }));
+        maybeGetCachedPlantIcon(slug, img, this.setIconState);
         break;
       case "GenericPointer":
         const { color } = this.props.point.body.meta;
@@ -91,6 +93,7 @@ export class PointGroupItem
         style={{
           border: this.criteriaIcon ? "1px solid gray" : "none",
           borderRadius: "5px",
+          background: this.props.hovered ? "lightgray" : "none",
         }}
         src={DEFAULT_ICON}
         onLoad={this.maybeGetCachedIcon}

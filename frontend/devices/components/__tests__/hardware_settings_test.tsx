@@ -65,13 +65,7 @@ describe("<HardwareSettings />", () => {
   it("shows param export menu", () => {
     const p = fakeProps();
     p.firmwareConfig = fakeFirmwareConfig().body;
-    p.firmwareConfig.api_migrated = true;
     const wrapper = shallow(<HardwareSettings {...p} />);
     expect(wrapper.html()).toContain("fa-download");
-  });
-
-  it("doesn't show param export menu", () => {
-    const wrapper = shallow(<HardwareSettings {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("fa-download");
   });
 });

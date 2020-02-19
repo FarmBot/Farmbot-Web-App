@@ -24,7 +24,6 @@ export interface AutoUpdateRowProps {
   timeFormat: PreferredHourFormat;
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
-  shouldDisplay: ShouldDisplay;
 }
 
 export interface CameraSelectionProps {
@@ -53,7 +52,6 @@ export interface PowerAndResetProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 

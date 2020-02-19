@@ -2,16 +2,13 @@ import { connect, MqttClient } from "mqtt";
 import React from "react";
 import { uuid } from "farmbot";
 import axios from "axios";
+import { ExternalUrl } from "../external_urls";
 
 interface State {
   error: Error | undefined;
   stage: string;
 }
 
-const VIDEO_URL =
-  "https://cdn.shopify.com/s/files/1/2040/0289/files/Farm_Designer_Loop.mp4?9552037556691879018";
-const PHONE_URL =
-  "https://cdn.shopify.com/s/files/1/2040/0289/files/Controls.png?9668345515035078097";
 const WS_CONFIG = {
   username: "farmbot_demo",
   password: "required, but not used.",
@@ -63,9 +60,9 @@ export class DemoIframe extends React.Component<{}, State> {
 
     return <div className="demo-container">
       <video muted={true} autoPlay={true} loop={true} className="demo-video">
-        <source src={VIDEO_URL} type="video/mp4" />
+        <source src={ExternalUrl.Video.desktop} type="video/mp4" />
       </video>
-      <img className="demo-phone" src={PHONE_URL} />
+      <img className="demo-phone" src={ExternalUrl.Video.mobile} />
       <button className="demo-button" onClick={this.requestAccount}>
         {this.state.stage}
       </button>

@@ -97,13 +97,18 @@ export interface ToolInputRowProps {
   tools: TaggedTool[];
   selectedTool: TaggedTool | undefined;
   onChange(update: { tool_id: number }): void;
+  isExpress: boolean;
 }
 
 export const ToolInputRow = (props: ToolInputRowProps) =>
   <div className="tool-slot-tool-input">
     <Row>
       <Col xs={12}>
-        <label>{t("Tool")}</label>
+        <label>
+          {props.isExpress
+            ? t("Seed Container")
+            : t("Tool or Seed Container")}
+        </label>
         <ToolSelection
           tools={props.tools}
           selectedTool={props.selectedTool}
@@ -144,6 +149,7 @@ export interface SlotEditRowsProps {
   tool: TaggedTool | undefined;
   botPosition: BotPosition;
   updateToolSlot(update: Partial<TaggedToolSlotPointer["body"]>): void;
+  isExpress: boolean;
 }
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
@@ -153,16 +159,19 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       gantryMounted={props.toolSlot.body.gantry_mounted}
       onChange={props.updateToolSlot} />
     <ToolInputRow
+      isExpress={props.isExpress}
       tools={props.tools}
       selectedTool={props.tool}
       onChange={props.updateToolSlot} />
-    <SlotDirectionInputRow
-      toolPulloutDirection={props.toolSlot.body.pullout_direction}
-      onChange={props.updateToolSlot} />
+    {!props.toolSlot.body.gantry_mounted &&
+      <SlotDirectionInputRow
+        toolPulloutDirection={props.toolSlot.body.pullout_direction}
+        onChange={props.updateToolSlot} />}
     <UseCurrentLocationInputRow
       botPosition={props.botPosition}
       onChange={props.updateToolSlot} />
-    <GantryMountedInput
-      gantryMounted={props.toolSlot.body.gantry_mounted}
-      onChange={props.updateToolSlot} />
+    {!props.isExpress &&
+      <GantryMountedInput
+        gantryMounted={props.toolSlot.body.gantry_mounted}
+        onChange={props.updateToolSlot} />}
   </div>;

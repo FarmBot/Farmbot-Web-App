@@ -25,6 +25,7 @@ export const WD_KEY_DEFAULTS = {
   CAMERA_CALIBRATION_calibration_along_axis: SPECIAL_VALUES.X,
   CAMERA_CALIBRATION_image_bot_origin_location: SPECIAL_VALUES.BOTTOM_LEFT,
   CAMERA_CALIBRATION_invert_hue_selection: SPECIAL_VALUES.TRUE,
+  CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE,
   CAMERA_CALIBRATION_blur: 5,
   CAMERA_CALIBRATION_calibration_object_separation: 100,
   CAMERA_CALIBRATION_camera_offset_x: 50,
@@ -61,6 +62,7 @@ export const DEFAULT_FORMATTER: Translation = {
       case "CAMERA_CALIBRATION_calibration_along_axis":
       case "CAMERA_CALIBRATION_image_bot_origin_location":
       case "CAMERA_CALIBRATION_invert_hue_selection":
+      case "CAMERA_CALIBRATION_easy_calibration":
         return ("" + (SPECIAL_VALUES[val] || val));
       default:
         return val;

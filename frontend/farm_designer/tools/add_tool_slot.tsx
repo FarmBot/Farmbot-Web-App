@@ -6,7 +6,9 @@ import {
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
-import { SpecialStatus, TaggedTool, TaggedToolSlotPointer } from "farmbot";
+import {
+  SpecialStatus, TaggedTool, TaggedToolSlotPointer, FirmwareHardware
+} from "farmbot";
 import { init, save, edit, destroy } from "../../api/crud";
 import { Panel } from "../panel_header";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -18,6 +20,10 @@ import { validBotLocationData } from "../../util";
 import { history } from "../../history";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { UUID } from "../../resources/interfaces";
+import {
+  isExpressBoard, getFwHardwareValue
+} from "../../devices/components/firmware_hardware_support";
+import { getFbosConfig } from "../../resources/getters";
 
 export interface AddToolSlotProps {
   tools: TaggedTool[];
@@ -25,6 +31,7 @@ export interface AddToolSlotProps {
   botPosition: BotPosition;
   findTool(id: number): TaggedTool | undefined;
   findToolSlot(uuid: UUID | undefined): TaggedToolSlotPointer | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface AddToolSlotState {
@@ -38,6 +45,7 @@ export const mapStateToProps = (props: Everything): AddToolSlotProps => ({
   findTool: (id: number) => maybeFindToolById(props.resources.index, id),
   findToolSlot: (uuid: UUID | undefined) =>
     maybeGetToolSlot(props.resources.index, uuid),
+  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
 });
 
 export class RawAddToolSlot
@@ -48,7 +56,8 @@ export class RawAddToolSlot
     const action = init("Point", {
       pointer_type: "ToolSlot", name: "Tool Slot", radius: 0, meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
-      pullout_direction: ToolPulloutDirection.NONE, gantry_mounted: false
+      pullout_direction: ToolPulloutDirection.NONE,
+      gantry_mounted: isExpressBoard(this.props.firmwareHardware) ? true : false,
     });
     this.setState({ uuid: action.payload.uuid });
     this.props.dispatch(action);
@@ -57,7 +66,7 @@ export class RawAddToolSlot
   componentWillUnmount() {
     if (this.state.uuid && this.toolSlot
       && this.toolSlot.specialStatus == SpecialStatus.DIRTY) {
-      confirm(t("Save new tool?"))
+      confirm(t("Save new slot?"))
         ? this.props.dispatch(save(this.state.uuid))
         : this.props.dispatch(destroy(this.state.uuid, true));
     }
@@ -86,12 +95,15 @@ export class RawAddToolSlot
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
-        title={t("Add new tool slot")}
+        title={isExpressBoard(this.props.firmwareHardware)
+          ? t("Add new slot")
+          : t("Add new tool slot")}
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         {this.toolSlot
           ? <SlotEditRows
+            isExpress={isExpressBoard(this.props.firmwareHardware)}
             toolSlot={this.toolSlot}
             tools={this.props.tools}
             tool={this.tool}

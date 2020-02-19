@@ -22,6 +22,8 @@ import axios from "axios";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
+import { formEvent } from "../../../__test_support__/fake_html_events";
+import { Content } from "../../../constants";
 
 describe("<FarmbotOsSettings />", () => {
   beforeEach(() => {
@@ -54,8 +56,8 @@ describe("<FarmbotOsSettings />", () => {
     const osSettings = mount(<FarmbotOsSettings {...fakeProps()} />);
     expect(osSettings.find("input").length).toBe(1);
     expect(osSettings.find("button").length).toBe(7);
-    ["NAME", "TIME ZONE", "FARMBOT OS", "CAMERA", "FIRMWARE"]
-      .map(string => expect(osSettings.text()).toContain(string));
+    ["name", "time zone", "farmbot os", "camera", "firmware"]
+      .map(string => expect(osSettings.text().toLowerCase()).toContain(string));
   });
 
   it("fetches OS release notes", async () => {
@@ -114,5 +116,19 @@ describe("<FarmbotOsSettings />", () => {
     p.shouldDisplay = () => true;
     const osSettings = shallow(<FarmbotOsSettings {...p} />);
     expect(osSettings.find("BootSequenceSelector").length).toEqual(1);
+  });
+
+  it("prevents default form submit action", () => {
+    const osSettings = shallow(<FarmbotOsSettings {...fakeProps()} />);
+    const e = formEvent();
+    osSettings.find("form").simulate("submit", e);
+    expect(e.preventDefault).toHaveBeenCalled();
+  });
+
+  it("warns about timezone mismatch", () => {
+    const p = fakeProps();
+    p.deviceAccount.body.timezone = "different";
+    const osSettings = mount(<FarmbotOsSettings {...p} />);
+    expect(osSettings.text()).toContain(Content.DIFFERENT_TZ_WARNING);
   });
 });

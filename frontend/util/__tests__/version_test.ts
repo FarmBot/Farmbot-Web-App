@@ -5,6 +5,7 @@ import {
   createShouldDisplayFn,
   determineInstalledOsVersion,
   versionOK,
+  MinVersionOverride,
 } from "../version";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
@@ -128,6 +129,10 @@ describe("shouldDisplay()", () => {
     expect(createShouldDisplayFn("10.0.0",
       { jest_feature: "1.0.0" }, undefined)(
         Feature.jest_feature)).toBeTruthy();
+    globalConfig.FBOS_END_OF_LIFE_VERSION = MinVersionOverride.NEVER;
+    expect(createShouldDisplayFn(undefined, fakeMinOsData, undefined)(
+      Feature.jest_feature)).toBeTruthy();
+    delete globalConfig.FBOS_END_OF_LIFE_VERSION;
   });
 
   it("shouldn't display", () => {
@@ -179,14 +184,20 @@ describe("determineInstalledOsVersion()", () => {
 
 describe("versionOK()", () => {
   it("checks if major/minor version meets min requirement", () => {
-    expect(versionOK("9.1.9-rc99", 3, 0)).toBeTruthy();
-    expect(versionOK("3.0.9-rc99", 3, 0)).toBeTruthy();
-    expect(versionOK("4.0.0", 3, 0)).toBeTruthy();
-    expect(versionOK("4.0.0", 3, 1)).toBeTruthy();
-    expect(versionOK("3.1.0", 3, 0)).toBeTruthy();
-    expect(versionOK("2.0.-", 3, 0)).toBeFalsy();
-    expect(versionOK("2.9.4", 3, 0)).toBeFalsy();
-    expect(versionOK("1.9.6", 3, 0)).toBeFalsy();
-    expect(versionOK("3.1.6", 4, 0)).toBeFalsy();
+    globalConfig.MINIMUM_FBOS_VERSION = "3.0.0";
+    expect(versionOK("9.1.9-rc99")).toBeTruthy();
+    expect(versionOK("3.0.9-rc99")).toBeTruthy();
+    expect(versionOK("4.0.0")).toBeTruthy();
+    expect(versionOK("3.1.0")).toBeTruthy();
+    expect(versionOK("2.0.-")).toBeFalsy();
+    expect(versionOK("2.9.4")).toBeFalsy();
+    expect(versionOK("1.9.6")).toBeFalsy();
+    globalConfig.MINIMUM_FBOS_VERSION = "3.1.0";
+    expect(versionOK("4.0.0")).toBeTruthy();
+    globalConfig.MINIMUM_FBOS_VERSION = "4.0.0";
+    expect(versionOK("3.1.6")).toBeFalsy();
+    delete globalConfig.MINIMUM_FBOS_VERSION;
+    expect(versionOK("5.0.0")).toBeFalsy();
+    expect(versionOK("7.0.0")).toBeTruthy();
   });
 });

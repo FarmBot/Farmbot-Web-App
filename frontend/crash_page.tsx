@@ -2,6 +2,7 @@ import * as React from "react";
 import { get } from "lodash";
 import { Page } from "./ui/index";
 import { Session } from "./session";
+import { ExternalUrl } from "./external_urls";
 
 /** Use currying to pass down `error` object for now. */
 export function crashPage(error: object) {
@@ -24,7 +25,7 @@ export function crashPage(error: object) {
           <li>Perform a "hard refresh" (<strong>CTRL + SHIFT + R</strong> on most machines).</li>
           <li><span><a onClick={() => Session.clear()}>Log out by clicking here.</a></span></li>
           <li>Send the error information (below) to our developer team via the
-        <a href="http://forum.farmbot.org/c/software">FarmBot software
+        <a href={ExternalUrl.softwareForum}>FarmBot software
         forum</a>. Including additional information (such as steps leading up
         to the error) help us identify solutions more quickly. </li>
         </ol>

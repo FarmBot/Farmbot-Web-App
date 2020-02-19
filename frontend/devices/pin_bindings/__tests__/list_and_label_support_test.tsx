@@ -1,4 +1,5 @@
-import { sortByNameAndPin, ButtonPin } from "../list_and_label_support";
+import { sortByNameAndPin, ButtonPin, getSpecialActionLabel } from "../list_and_label_support";
+import { PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
 
 describe("sortByNameAndPin()", () => {
 
@@ -24,5 +25,13 @@ describe("sortByNameAndPin()", () => {
     sortTest(btn1Pin, btn2Pin, Order.firstSmaller); // Button 1 < Button 2
     sortTest(btn2Pin, btn1Pin, Order.secondSmaller); // Button 2 > Button 1
     sortTest(1, 1, Order.equal); // GPIO 1 == GPIO 1
+  });
+});
+
+describe("getSpecialActionLabel()", () => {
+  it("handles undefined values", () => {
+    expect(getSpecialActionLabel(undefined)).toEqual("None");
+    expect(getSpecialActionLabel("wrong" as PinBindingSpecialAction))
+      .toEqual("");
   });
 });

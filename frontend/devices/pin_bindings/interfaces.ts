@@ -4,7 +4,7 @@ import {
   PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
 
-export interface PinBindingsProps {
+export interface PinBindingsContentProps {
   dispatch: Function;
   resources: ResourceIndex;
 }

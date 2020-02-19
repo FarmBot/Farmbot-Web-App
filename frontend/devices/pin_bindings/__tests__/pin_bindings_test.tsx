@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PinBindings } from "../pin_bindings";
+import { PinBindingsContent } from "../pin_bindings";
 import { mount } from "enzyme";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import {
@@ -8,15 +8,15 @@ import {
 import {
   fakeSequence, fakePinBinding
 } from "../../../__test_support__/fake_state/resources";
-import { PinBindingsProps } from "../interfaces";
+import { PinBindingsContentProps } from "../interfaces";
 import {
   SpecialPinBinding,
   PinBindingType,
   PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
 
-describe("<PinBindings/>", () => {
-  function fakeProps(): PinBindingsProps {
+describe("<PinBindingsContent/>", () => {
+  function fakeProps(): PinBindingsContentProps {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
     fakeSequence1.body.name = "Sequence 1";
@@ -51,8 +51,8 @@ describe("<PinBindings/>", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<PinBindings {...p} />);
-    ["pin bindings", "pin number", "none", "bind", "stock bindings"]
+    const wrapper = mount(<PinBindingsContent {...p} />);
+    ["pin number", "none", "bind", "stock bindings"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     ["26", "action"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));

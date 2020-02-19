@@ -6,6 +6,7 @@ import { TOUR_STEPS, tourPageNavigation } from "./tours";
 import { t } from "../i18next_wrapper";
 import { Actions } from "../constants";
 import { store } from "../redux/store";
+import { ErrorBoundary } from "../error_boundary";
 
 const strings = () => ({
   back: t("Back"),
@@ -65,15 +66,17 @@ export class Tour extends React.Component<TourProps, TourState> {
       return step;
     });
     return <div className="tour">
-      <Joyride
-        steps={steps}
-        run={this.state.run}
-        callback={this.callback}
-        stepIndex={this.state.index}
-        showSkipButton={true}
-        continuous={true}
-        styles={STYLES}
-        locale={strings()} />
+      <ErrorBoundary>
+        <Joyride
+          steps={steps}
+          run={this.state.run}
+          callback={this.callback}
+          stepIndex={this.state.index}
+          showSkipButton={true}
+          continuous={true}
+          styles={STYLES}
+          locale={strings()} />
+      </ErrorBoundary>
     </div>;
   }
 }

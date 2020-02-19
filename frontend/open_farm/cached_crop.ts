@@ -1,7 +1,8 @@
 import axios, { AxiosResponse } from "axios";
 import { Dictionary } from "farmbot";
 import { isObject } from "lodash";
-import { OFCropAttrs, OFCropResponse, OpenFarmAPI, svgToUrl } from "./icons";
+import { OFCropAttrs, OFCropResponse, svgToUrl } from "./icons";
+import { ExternalUrl } from "../external_urls";
 
 export type OFIcon = Readonly<OFCropAttrs>;
 type IconDictionary = Dictionary<OFIcon | undefined>;
@@ -57,7 +58,7 @@ const cacheTheIcon = (slug: string) =>
   };
 
 function HTTPIconFetch(slug: string) {
-  const url = OpenFarmAPI.OFBaseURL + slug;
+  const url = ExternalUrl.OpenFarm.cropApi + slug;
   // Avoid duplicate requests.
   if (promiseCache[url]) { return promiseCache[url]; }
   promiseCache[url] = axios

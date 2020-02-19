@@ -5,6 +5,7 @@ import {
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
+import { ExternalUrl } from "../../external_urls";
 
 /** A stripped down version of OFSearchResult */
 interface Result {
@@ -24,7 +25,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
 
   get text(): JSX.Element {
     return <p>{`${t(Content.CROP_NOT_FOUND_INTRO)} `}
-      <a href="https://openfarm.cc/en/crops/new" target="_blank">
+      <a href={ExternalUrl.OpenFarm.newCrop} target="_blank">
         {t(Content.CROP_NOT_FOUND_LINK)}
       </a>
     </p>;

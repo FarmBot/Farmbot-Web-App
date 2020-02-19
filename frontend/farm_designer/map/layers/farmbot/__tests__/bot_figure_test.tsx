@@ -15,17 +15,19 @@ describe("<BotFigure/>", () => {
     plantAreaOffset: { x: 100, y: 100 },
   });
 
+  const EXPECTED_MOTORS_OPACITY = 0.5;
+
   it.each<[
     string, BotOriginQuadrant, Record<"x" | "y", number>, boolean, number
   ]>([
-    ["motors", 1, { x: 3000, y: 0 }, false, 0.75],
-    ["motors", 2, { x: 0, y: 0 }, false, 0.75],
-    ["motors", 3, { x: 0, y: 1500 }, false, 0.75],
-    ["motors", 4, { x: 3000, y: 1500 }, false, 0.75],
-    ["motors", 1, { x: 0, y: 1500 }, true, 0.75],
-    ["motors", 2, { x: 0, y: 0 }, true, 0.75],
-    ["motors", 3, { x: 3000, y: 0 }, true, 0.75],
-    ["motors", 4, { x: 3000, y: 1500 }, true, 0.75],
+    ["motors", 1, { x: 3000, y: 0 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 2, { x: 0, y: 0 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 3, { x: 0, y: 1500 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 4, { x: 3000, y: 1500 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 1, { x: 0, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 2, { x: 0, y: 0 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 3, { x: 3000, y: 0 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 4, { x: 3000, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
     ["encoders", 2, { x: 0, y: 0 }, false, 0.25],
   ])("shows %s in correct location for quadrant %i",
     (name, quadrant, expected, xySwap, opacity) => {

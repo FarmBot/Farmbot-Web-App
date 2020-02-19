@@ -8,7 +8,7 @@ export function FarmBotLayer(props: FarmBotLayerProps) {
     visible, stopAtHome, botSize, plantAreaOffset, mapTransformProps,
     peripherals, eStopStatus, botLocationData, getConfigValue
   } = props;
-  return visible ? <g id="farmbot-layer">
+  return visible ? <g id="farmbot-layer" style={{ pointerEvents: "none" }}>
     <VirtualFarmBot
       mapTransformProps={mapTransformProps}
       botLocationData={botLocationData}

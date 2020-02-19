@@ -49,4 +49,8 @@ describe("textAnchorPosition()", () => {
     expect(textAnchorPosition(4, 3, true)).toEqual(END);
     expect(textAnchorPosition(4, 4, true)).toEqual(START);
   });
+
+  it("handles bad data", () => {
+    expect(textAnchorPosition(1.1, 1.1, false)).toEqual(START);
+  });
 });

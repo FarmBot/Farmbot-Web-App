@@ -433,14 +433,17 @@ a {
   }
 }
 
-.pin-bindings-widget {
+.pin-bindings {
   .fa-exclamation-triangle {
     color: $orange;
+    margin-left: 1rem;
+    margin-top: 0.75rem;
   }
   .fa-th-large {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.5rem;
     color: $dark_gray;
-    margin-top: 0.5rem;
-    margin-left: 0.5rem;
   }
   .fb-button {
     &.green {
@@ -449,15 +452,26 @@ a {
   }
   .bindings-list {
     margin-bottom: 1rem;
+    margin-left: 1rem;
     font-size: 1.2rem;
+  }
+  .binding-type-dropdown {
+    margin-bottom: 1.5rem;
   }
   .stock-pin-bindings-button {
     button {
-      margin: 0 !important;
+      margin: 1rem;
+      float: left;
+      margin-left: 2rem;
     }
     i {
       margin-right: 0.5rem;
     }
+  }
+  .bp3-popover-wrapper {
+    display: inline;
+    float: none !important;
+    margin-left: 1rem;
   }
 }
 
@@ -1308,6 +1322,12 @@ ul {
   }
 }
 
+.boolean-camera-calibration-config {
+  input[type=checkbox] {
+    display: block;
+  }
+}
+
 .tour-list {
   margin: auto;
   max-width: 300px;
@@ -1519,16 +1539,24 @@ textarea:focus {
   box-shadow: 0 0 10px rgba(0,0,0,.2);
 }
 
-.sort-path-info-bar {
-  background: lightgray;
+.sort-option-bar {
   cursor: pointer;
-  font-size: 1.1rem;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-  white-space: nowrap;
-  line-height: 1.75rem;
-  &:hover {
-    background: darken(lightgray, 10%);
+  border: 2px solid $panel_light_blue;
+  &:hover, &.selected {
+    border: 2px solid $medium_gray;
+    border-radius: 2px;
+    .sort-path-info-bar {
+      background: darken($light_gray, 10%);
+    }
+  }
+  .sort-path-info-bar {
+    background: $light_gray;
+    font-size: 1.2rem;
+    padding-left: 0.5rem;
+    white-space: nowrap;
+    line-height: 2.5rem;
   }
 }
 
@@ -1600,4 +1628,24 @@ textarea:focus {
       }
     }
   }
+}
+
+.section {
+  display: block !important;
+}
+
+.highlight,
+.unhighlight {
+  display: flex;
+}
+
+.highlight {
+  background-color: $light_yellow;
+  box-shadow: 0px 0px 7px 4px $light_yellow;
+}
+
+.unhighlight {
+  transition: background-color 10s linear, box-shadow 10s linear;
+  background-color: transparent;
+  box-shadow: none;
 }

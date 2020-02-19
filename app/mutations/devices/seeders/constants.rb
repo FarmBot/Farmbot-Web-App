@@ -31,7 +31,6 @@ module Devices
         LIGHTING = "Lighting"
         SEED_TROUGH_1 = "Seed Trough 1"
         SEED_TROUGH_2 = "Seed Trough 2"
-        SEED_TROUGH_3 = "Seed Trough 3"
       end
 
       # Stub plants ==============================
