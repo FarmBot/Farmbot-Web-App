@@ -38,6 +38,7 @@ export class RawControls extends React.Component<Props, {}> {
     getWebAppConfigVal={this.props.getWebAppConfigVal} />
 
   peripherals = () => <Peripherals
+    firmwareHardware={this.props.firmwareHardware}
     bot={this.props.bot}
     peripherals={this.props.peripherals}
     dispatch={this.props.dispatch}
@@ -50,6 +51,7 @@ export class RawControls extends React.Component<Props, {}> {
   sensors = () => this.hideSensors
     ? <div id="hidden-sensors-widget" />
     : <Sensors
+      firmwareHardware={this.props.firmwareHardware}
       bot={this.props.bot}
       sensors={this.props.sensors}
       dispatch={this.props.dispatch}

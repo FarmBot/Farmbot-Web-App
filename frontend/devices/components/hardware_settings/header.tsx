@@ -2,18 +2,20 @@ import * as React from "react";
 import { ControlPanelState } from "../../interfaces";
 import { toggleControlPanel } from "../../actions";
 import { ExpandableHeader } from "../../../ui/expandable_header";
+import { t } from "../../../i18next_wrapper";
+import { DeviceSetting } from "../../../constants";
 
 interface Props {
   dispatch: Function;
-  name: keyof ControlPanelState;
-  title: string;
+  panel: keyof ControlPanelState;
+  title: DeviceSetting;
   expanded: boolean;
 }
 
 export const Header = (props: Props) => {
-  const { dispatch, name, title, expanded } = props;
+  const { dispatch, panel, title, expanded } = props;
   return <ExpandableHeader
     expanded={expanded}
-    title={title}
-    onClick={() => dispatch(toggleControlPanel(name))} />;
+    title={t(title)}
+    onClick={() => dispatch(toggleControlPanel(panel))} />;
 };

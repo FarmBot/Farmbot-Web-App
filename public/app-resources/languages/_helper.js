@@ -48,7 +48,7 @@ var HelperNamespace = (function () {
   var T_REGEX = /[.{[(\s]t\(["`]([\w\s{}().,:'\-=\\?\/%!]*)["`],*\s*.*\)/g;
 
   // '``'
-  var C_REGEX = /[`]([\w\s{}().,:'\-=\\?"+!]*)[`].*/g;
+  var C_REGEX = /[`]([\w\s{}().,:'\-=\/\\?"+!]*)[`].*/g;
 
   /** Some additional phrases the regex can't find. */
   var EXTRA_TAGS = [
@@ -60,6 +60,7 @@ var HelperNamespace = (function () {
     "Else Execute", "Connecting FarmBot to the Internet", "move to home",
     "emergency stop", "SYNC ERROR", "inactive", "error", "No messages.",
     "back to regimens", "back to sequences", "back to farmware list",
+    "Verify Password",
   ];
 
   /**

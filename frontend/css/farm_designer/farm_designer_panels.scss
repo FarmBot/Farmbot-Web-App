@@ -580,6 +580,7 @@
         font-size: 1.4rem;
       }
     }
+    .tools-header,
     .tool-slots-header {
       display: flex;
       margin-top: 1rem;
@@ -624,6 +625,12 @@
     }
   }
   .add-stock-tools {
+    .filter-search {
+      margin-bottom: 1rem;
+      button {
+        margin-top: 0.2rem;
+      }
+    }
     ul {
       font-size: 1.2rem;
       padding-left: 1rem;

@@ -1,14 +1,8 @@
-jest.mock("../../slow_down", () => {
-  return {
-    slowDown: jest.fn((fn: Function) => fn),
-  };
-});
-
-jest.mock("../../../devices/actions", () => ({
-  badVersion: jest.fn(),
-  EXPECTED_MAJOR: 1,
-  EXPECTED_MINOR: 0,
+jest.mock("../../slow_down", () => ({
+  slowDown: jest.fn((fn: Function) => fn)
 }));
+
+jest.mock("../../../devices/actions", () => ({ badVersion: jest.fn() }));
 
 import {
   onStatus,
@@ -49,8 +43,10 @@ describe("onStatus()", () => {
   });
 
   it("version ok", () => {
+    globalConfig.MINIMUM_FBOS_VERSION = "1.0.0";
     callOnStatus("1.0.0");
     expect(badVersion).not.toHaveBeenCalled();
+    delete globalConfig.MINIMUM_FBOS_VERSION;
   });
 });
 

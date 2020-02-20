@@ -32,7 +32,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
   const { quadrant, xySwap } = mapTransformProps;
   const xPosition = gantry_mounted ? (botPositionX || 0) : x;
   const { qx, qy } = transformXY(xPosition, y, props.mapTransformProps);
-  const toolName = props.slot.tool ? props.slot.tool.body.name : "no tool";
+  const toolName = props.slot.tool ? props.slot.tool.body.name : "empty";
   const hovered = props.slot.toolSlot.uuid === props.hoveredToolSlot;
   const toolProps = {
     x: qx,
@@ -43,7 +43,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
     xySwap,
   };
   return <g id={"toolslot-" + id}
-    onClick={() => DevSettings.futureFeaturesEnabled() &&
+    onClick={() => !DevSettings.futureFeaturesEnabled() &&
       history.push(`/app/designer/tool-slots/${id}`)}>
     {pullout_direction &&
       <ToolbaySlot

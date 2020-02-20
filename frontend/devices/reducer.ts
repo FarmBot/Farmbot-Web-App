@@ -11,7 +11,6 @@ import { maybeNegateStatus } from "../connectivity/maybe_negate_status";
 import { ReduxAction } from "../redux/interfaces";
 import { connectivityReducer, PingResultPayload } from "../connectivity/reducer";
 import { versionOK } from "../util";
-import { EXPECTED_MAJOR, EXPECTED_MINOR } from "./actions";
 import { DeepPartial } from "redux";
 import { incomingLegacyStatus } from "../connectivity/connect_device";
 import { merge } from "lodash";
@@ -27,7 +26,10 @@ export const initialState = (): BotState => ({
   controlPanelState: {
     homing_and_calibration: false,
     motors: false,
-    encoders_and_endstops: false,
+    encoders: false,
+    endstops: false,
+    error_handling: false,
+    pin_bindings: false,
     danger_zone: false,
     power_and_reset: false,
     pin_guard: false
@@ -116,7 +118,10 @@ export const botReducer = generateReducer<BotState>(initialState())
   .add<boolean>(Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
     s.controlPanelState.homing_and_calibration = a.payload;
     s.controlPanelState.motors = a.payload;
-    s.controlPanelState.encoders_and_endstops = a.payload;
+    s.controlPanelState.encoders = a.payload;
+    s.controlPanelState.endstops = a.payload;
+    s.controlPanelState.error_handling = a.payload;
+    s.controlPanelState.pin_bindings = a.payload;
     s.controlPanelState.pin_guard = a.payload;
     s.controlPanelState.danger_zone = a.payload;
     return s;
@@ -199,8 +204,7 @@ function legacyStatusHandler(state: BotState,
 
   const nextSyncStatus = maybeNegateStatus(info);
 
-  versionOK(informational_settings.controller_version,
-    EXPECTED_MAJOR, EXPECTED_MINOR);
+  versionOK(informational_settings.controller_version);
   state.hardware.informational_settings.sync_status = nextSyncStatus;
   return state;
 }

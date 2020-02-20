@@ -386,6 +386,7 @@ export class GardenMap extends
     visible={!!this.props.showPlants}
     plants={this.props.plants}
     currentPlant={this.getPlant()}
+    hoveredPlant={this.props.hoveredPlant}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
     boxSelected={this.props.designer.selectedPlants}

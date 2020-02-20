@@ -18,7 +18,6 @@ describe("mapStateToProps()", () => {
   it("returns firmware value", () => {
     const state = fakeState();
     const fbosConfig = fakeFbosConfig();
-    fbosConfig.body.api_migrated = true;
     fbosConfig.body.firmware_hardware = "arduino";
     state.resources = buildResourceIndex([fbosConfig]);
     const props = mapStateToProps(state);

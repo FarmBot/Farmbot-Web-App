@@ -8,13 +8,7 @@ import { success, error, info, warning, fun, busy } from "../toast/toast";
 import { HardwareState } from "../devices/interfaces";
 import { GetState, ReduxAction } from "../redux/interfaces";
 import { Content, Actions } from "../constants";
-import {
-  EXPECTED_MAJOR,
-  EXPECTED_MINOR,
-  commandOK,
-  badVersion,
-  commandErr
-} from "../devices/actions";
+import { commandOK, badVersion, commandErr } from "../devices/actions";
 import { init } from "../api/crud";
 import { AuthState } from "../auth/interfaces";
 import { autoSync } from "./auto_sync";
@@ -123,7 +117,7 @@ const setBothUp = () => bothUp();
 const legacyChecks = (getState: GetState) => {
   const { controller_version } = getState().bot.hardware.informational_settings;
   if (HACKY_FLAGS.needVersionCheck && controller_version) {
-    const IS_OK = versionOK(controller_version, EXPECTED_MAJOR, EXPECTED_MINOR);
+    const IS_OK = versionOK(controller_version);
     if (!IS_OK) { badVersion(); }
     HACKY_FLAGS.needVersionCheck = false;
   }

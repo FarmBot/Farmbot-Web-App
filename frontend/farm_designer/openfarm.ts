@@ -67,9 +67,6 @@ export namespace OpenFarm {
     type: string;
     attributes: ImageAttrs;
   }
-
-  export const cropUrl = "https://openfarm.cc/api/v1/crops";
-  export const browsingCropUrl = "https://openfarm.cc/crops/";
 }
 /** Returned by https://openfarm.cc/api/v1/crops?filter=q */
 export interface CropSearchResult {

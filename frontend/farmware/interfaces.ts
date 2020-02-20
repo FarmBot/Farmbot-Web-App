@@ -24,8 +24,6 @@ export interface FarmwareState {
   infoOpen: boolean;
 }
 
-export type FarmwareManifestEntry = Record<"name" | "manifest", string>;
-
 export interface FarmwareConfigMenuProps {
   show: boolean | undefined;
   dispatch: Function;

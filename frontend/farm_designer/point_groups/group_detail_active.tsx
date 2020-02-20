@@ -18,6 +18,7 @@ import {
   GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup
 } from "./criteria";
 import { Content } from "../../constants";
+import { UUID } from "../../resources/interfaces";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -25,6 +26,7 @@ export interface GroupDetailActiveProps {
   allPoints: TaggedPoint[];
   shouldDisplay: ShouldDisplay;
   slugs: string[];
+  hovered: UUID | undefined;
 }
 
 type State = { timerId?: ReturnType<typeof setInterval> };
@@ -47,7 +49,7 @@ export class GroupDetailActive
     return sortedPoints.map(point => {
       return <PointGroupItem
         key={point.uuid}
-        hovered={false}
+        hovered={point.uuid === this.props.hovered}
         group={this.props.group}
         point={point}
         dispatch={this.props.dispatch} />;
@@ -97,9 +99,24 @@ export class GroupDetailActive
             defaultValue={group.body.name}
             onChange={this.update}
             onBlur={this.saveGroup} />
-          <PointGroupSortSelector
-            value={group.body.sort_type}
-            onChange={this.changeSortType} />
+          <div>
+            <label>
+              {t("SORT BY")}
+            </label>
+            {!DevSettings.futureFeaturesEnabled()
+              ? <Paths
+                key={JSON.stringify(this.pointsSelectedByGroup
+                  .map(p => p.body.id))}
+                pathPoints={this.pointsSelectedByGroup}
+                dispatch={dispatch}
+                group={group} />
+              : <PointGroupSortSelector
+                value={group.body.sort_type}
+                onChange={this.changeSortType} />}
+            <p>
+              {group.body.sort_type == "random" && t(Content.SORT_DESCRIPTION)}
+            </p>
+          </div>
           <label>
             {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
           </label>
@@ -117,11 +134,6 @@ export class GroupDetailActive
           {this.props.shouldDisplay(Feature.criteria_groups) &&
             <GroupCriteria dispatch={dispatch}
               group={group} slugs={this.props.slugs} />}
-          {DevSettings.futureFeaturesEnabled() &&
-            <Paths
-              pathPoints={this.pointsSelectedByGroup}
-              dispatch={dispatch}
-              group={group} />}
           <DeleteButton
             className="group-delete-btn"
             dispatch={dispatch}

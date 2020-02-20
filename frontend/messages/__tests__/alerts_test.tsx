@@ -52,8 +52,7 @@ describe("<Alerts />", () => {
     const p = fakeProps();
     p.alerts = [FIRMWARE_MISSING_ALERT, SEED_DATA_MISSING_ALERT];
     const wrapper = mount(<Alerts {...p} />);
-    expect(wrapper.text()).toContain("2");
-    expect(wrapper.text()).toContain("Your device has no firmware");
+    expect(wrapper.text()).not.toContain("Your device has no firmware");
     expect(wrapper.text()).toContain("Choose your FarmBot");
   });
 
@@ -61,7 +60,6 @@ describe("<Alerts />", () => {
     const p = fakeProps();
     p.alerts = [FIRMWARE_MISSING_ALERT, UNKNOWN_ALERT];
     const wrapper = mount(<Alerts {...p} />);
-    expect(wrapper.text()).toContain("1");
     expect(wrapper.text()).toContain("firmware: alert");
   });
 });

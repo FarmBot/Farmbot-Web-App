@@ -1,6 +1,6 @@
 import axios from "axios";
 import {
-  fetchReleases, fetchMinOsFeatureData, FEATURE_MIN_VERSIONS_URL,
+  fetchReleases, fetchMinOsFeatureData,
   fetchLatestGHBetaRelease
 } from "../devices/actions";
 import { AuthState } from "./interfaces";
@@ -16,6 +16,7 @@ import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";
 import { getFirstPartyFarmwareList } from "../farmware/actions";
 import { readOnlyInterceptor } from "../read_only_mode";
+import { ExternalUrl } from "../external_urls";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -24,7 +25,7 @@ export function didLogin(authState: AuthState, dispatch: Function) {
   beta_os_update_server && beta_os_update_server != "NOT_SET" &&
     dispatch(fetchLatestGHBetaRelease(beta_os_update_server));
   dispatch(getFirstPartyFarmwareList());
-  dispatch(fetchMinOsFeatureData(FEATURE_MIN_VERSIONS_URL));
+  dispatch(fetchMinOsFeatureData(ExternalUrl.featureMinVersions));
   dispatch(setToken(authState));
   Sync.fetchSyncData(dispatch);
   dispatch(connectDevice(authState));

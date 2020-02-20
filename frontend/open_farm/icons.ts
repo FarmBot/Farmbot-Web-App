@@ -1,4 +1,3 @@
-const BASE = "https://openfarm.cc/api/v1/crops/";
 export const DATA_URI = "data:image/svg+xml;utf8,";
 export const DEFAULT_ICON = "/app-resources/img/generic-plant.svg";
 
@@ -18,10 +17,6 @@ export interface OFCropResponse {
   data?: {
     attributes?: OFCropAttrs | undefined;
   };
-}
-
-export namespace OpenFarmAPI {
-  export const OFBaseURL = BASE;
 }
 
 export function svgToUrl(xml: string | undefined): string {

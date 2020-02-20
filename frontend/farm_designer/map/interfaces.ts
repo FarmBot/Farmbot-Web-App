@@ -14,6 +14,7 @@ export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 export interface PlantLayerProps {
   plants: TaggedPlant[];
   currentPlant: TaggedPlant | undefined;
+  hoveredPlant: TaggedPlant | undefined;
   dragging: boolean;
   editing: boolean;
   visible: boolean;
@@ -57,12 +58,14 @@ export interface GardenPlantProps {
   dispatch: Function;
   plant: Readonly<TaggedPlant>;
   selected: boolean;
+  current: boolean;
   editing: boolean;
   dragging: boolean;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
   uuid: string;
   animate: boolean;
+  hovered: boolean;
 }
 
 export interface GardenPlantState {

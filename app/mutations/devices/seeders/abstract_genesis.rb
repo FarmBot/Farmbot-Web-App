@@ -75,6 +75,9 @@ module Devices
                       tool: tools_weeder)
       end
 
+      def tool_slots_slot_7; end
+      def tool_slots_slot_8; end
+
       def tools_seed_bin
         @tools_seed_bin ||=
           add_tool(ToolNames::SEED_BIN)
@@ -87,7 +90,6 @@ module Devices
 
       def tools_seed_trough_1; end
       def tools_seed_trough_2; end
-      def tools_seed_trough_3; end
 
       def tools_seeder
         @tools_seeder ||=

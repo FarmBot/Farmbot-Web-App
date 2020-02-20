@@ -6,13 +6,21 @@ import {
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, FirmwareHardware } from "farmbot";
 import { initSave } from "../../api/crud";
 import { Panel } from "../panel_header";
 import { history } from "../../history";
+import { selectAllTools } from "../../resources/selectors";
+import { betterCompact } from "../../util";
+import {
+  isExpressBoard, getFwHardwareValue
+} from "../../devices/components/firmware_hardware_support";
+import { getFbosConfig } from "../../resources/getters";
 
 export interface AddToolProps {
   dispatch: Function;
+  existingToolNames: string[];
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface AddToolState {
@@ -21,6 +29,9 @@ export interface AddToolState {
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
+  existingToolNames: betterCompact(selectAllTools(props.resources.index)
+    .map(tool => tool.body.name)),
+  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
 });
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
@@ -35,31 +46,55 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     history.push("/app/designer/tools");
   }
 
-  get stockToolNames() {
-    return [
-      t("Seeder"),
-      t("Watering Nozzle"),
-      t("Weeder"),
-      t("Soil Sensor"),
-      t("Seed Bin"),
-      t("Seed Tray"),
-    ];
+  stockToolNames = () => {
+    switch (this.props.firmwareHardware) {
+      case "arduino":
+      case "farmduino":
+      case "farmduino_k14":
+      default:
+        return [
+          t("Seeder"),
+          t("Watering Nozzle"),
+          t("Weeder"),
+          t("Soil Sensor"),
+          t("Seed Bin"),
+          t("Seed Tray"),
+        ];
+      case "farmduino_k15":
+        return [
+          t("Seeder"),
+          t("Watering Nozzle"),
+          t("Weeder"),
+          t("Soil Sensor"),
+          t("Seed Bin"),
+          t("Seed Tray"),
+          t("Seed Trough 1"),
+          t("Seed Trough 2"),
+        ];
+      case "express_k10":
+        return [
+          t("Seed Trough 1"),
+          t("Seed Trough 2"),
+        ];
+    }
   }
 
   AddStockTools = () =>
     <div className="add-stock-tools">
-      <label>{t("Add stock tools")}</label>
+      <label>{t("Add stock names")}</label>
       <ul>
-        {this.stockToolNames.map(n => <li key={n}>{n}</li>)}
+        {this.stockToolNames().map(n => <li key={n}>{n}</li>)}
       </ul>
       <button
         className="fb-button green"
         onClick={() => {
-          this.stockToolNames.map(n => this.newTool(n));
+          this.stockToolNames()
+            .filter(n => !this.props.existingToolNames.includes(n))
+            .map(n => this.newTool(n));
           history.push("/app/designer/tools");
         }}>
         <i className="fa fa-plus" />
-        {t("Stock Tools")}
+        {t("Stock names")}
       </button>
     </div>
 
@@ -68,12 +103,14 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
-        title={t("Add new tool")}
+        title={isExpressBoard(this.props.firmwareHardware)
+          ? t("Add new")
+          : t("Add new tool")}
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool">
-          <label>{t("Tool Name")}</label>
+          <label>{t("Name")}</label>
           <input onChange={e =>
             this.setState({ toolName: e.currentTarget.value })} />
           <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />

@@ -93,7 +93,7 @@ export enum Feature {
   variables = "variables",
 }
 
-/** Object fetched from FEATURE_MIN_VERSIONS_URL. */
+/** Object fetched from ExternalUrl.featureMinVersions. */
 export type MinOsFeatureLookup = Partial<Record<Feature, string>>;
 
 export interface BotState {
@@ -201,6 +201,7 @@ export interface PeripheralsProps {
   peripherals: TaggedPeripheral[];
   dispatch: Function;
   disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface SensorsProps {
@@ -208,6 +209,7 @@ export interface SensorsProps {
   sensors: TaggedSensor[];
   dispatch: Function;
   disabled: boolean | undefined;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface FarmwareProps {
@@ -245,8 +247,11 @@ export interface HardwareSettingsProps {
 export interface ControlPanelState {
   homing_and_calibration: boolean;
   motors: boolean;
-  encoders_and_endstops: boolean;
-  danger_zone: boolean;
-  power_and_reset: boolean;
+  encoders: boolean;
+  endstops: boolean;
+  error_handling: boolean;
   pin_guard: boolean;
+  danger_zone: boolean;
+  pin_bindings: boolean;
+  power_and_reset: boolean;
 }

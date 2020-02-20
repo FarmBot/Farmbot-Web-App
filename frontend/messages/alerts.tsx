@@ -34,6 +34,7 @@ export const Alerts = (props: AlertsProps) =>
     <div className="problem-alerts-content">
       {sortAlerts(props.alerts)
         .filter(filterIncompleteAlerts)
+        .filter(x => x.problem_tag != "farmbot_os.firmware.missing")
         .map(x =>
           <AlertCard key={x.slug + x.created_at}
             alert={x}

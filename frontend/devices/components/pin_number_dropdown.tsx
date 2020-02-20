@@ -56,8 +56,12 @@ const pinNumOrNamedPin =
       }
       : pin;
 
+const DISABLE_DDI = (): DropDownItem => ({
+  label: t("None"), value: 0
+});
+
 const listItems = (resources: ResourceIndex): DropDownItem[] =>
-  [...peripheralItems(resources), ...pinDropdowns(n => n)];
+  [DISABLE_DDI(), ...peripheralItems(resources), ...pinDropdowns(n => n)];
 
 const peripheralItems = (resources: ResourceIndex): DropDownItem[] => {
   const list = selectAllSavedPeripherals(resources)

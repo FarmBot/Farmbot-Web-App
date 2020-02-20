@@ -51,7 +51,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
-        <label>{t("Tool Name")}</label>
+        <label>{t("Name")}</label>
         <input
           value={toolName}
           onChange={e => this.setState({ toolName: e.currentTarget.value })} />

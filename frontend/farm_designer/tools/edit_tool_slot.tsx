@@ -6,7 +6,7 @@ import {
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { getPathArray } from "../../history";
-import { TaggedToolSlotPointer, TaggedTool } from "farmbot";
+import { TaggedToolSlotPointer, TaggedTool, FirmwareHardware } from "farmbot";
 import { edit, save, destroy } from "../../api/crud";
 import { history } from "../../history";
 import { Panel } from "../panel_header";
@@ -17,6 +17,10 @@ import { BotPosition } from "../../devices/interfaces";
 import { validBotLocationData } from "../../util";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../../devices/actions";
+import {
+  getFwHardwareValue, isExpressBoard
+} from "../../devices/components/firmware_hardware_support";
+import { getFbosConfig } from "../../resources/getters";
 
 export interface EditToolSlotProps {
   findToolSlot(id: string): TaggedToolSlotPointer | undefined;
@@ -24,6 +28,7 @@ export interface EditToolSlotProps {
   findTool(id: number): TaggedTool | undefined;
   dispatch: Function;
   botPosition: BotPosition;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export const mapStateToProps = (props: Everything): EditToolSlotProps => ({
@@ -33,6 +38,7 @@ export const mapStateToProps = (props: Everything): EditToolSlotProps => ({
   findTool: (id: number) => maybeFindToolById(props.resources.index, id),
   dispatch: props.dispatch,
   botPosition: validBotLocationData(props.bot.hardware.location_data).position,
+  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
 });
 
 export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
@@ -64,6 +70,7 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
         <SlotEditRows
+          isExpress={isExpressBoard(this.props.firmwareHardware)}
           toolSlot={toolSlot}
           tools={this.props.tools}
           tool={this.tool}

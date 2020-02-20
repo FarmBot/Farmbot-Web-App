@@ -157,7 +157,6 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const config = fakeFbosConfig();
     config.body.auto_sync = true;
-    config.body.api_migrated = true;
     const fakeEnv = fakeFarmwareEnv();
     state.resources = buildResourceIndex([config, fakeEnv]);
     state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };

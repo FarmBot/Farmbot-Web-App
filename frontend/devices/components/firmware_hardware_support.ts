@@ -1,5 +1,4 @@
-import { FirmwareHardware } from "farmbot";
-import { ShouldDisplay, Feature } from "../interfaces";
+import { FirmwareHardware, TaggedFbosConfig } from "farmbot";
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
@@ -10,6 +9,12 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   ];
   return !!values.includes(x as FirmwareHardware);
 };
+
+export const getFwHardwareValue =
+  (fbosConfig: TaggedFbosConfig | undefined) => {
+    const value = fbosConfig?.body.firmware_hardware;
+    return isFwHardwareValue(value) ? value : undefined;
+  };
 
 const TMC_BOARDS = ["express_k10", "farmduino_k15"];
 const EXPRESS_BOARDS = ["express_k10"];
@@ -77,12 +82,11 @@ export const FIRMWARE_CHOICES_DDI = {
   [NONE.value]: NONE
 };
 
-export const getFirmwareChoices =
-  (shouldDisplay: ShouldDisplay = () => true) => ([
-    ARDUINO,
-    FARMDUINO,
-    FARMDUINO_K14,
-    ...(shouldDisplay(Feature.farmduino_k15) ? [FARMDUINO_K15] : []),
-    ...(shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : []),
-    ...(shouldDisplay(Feature.none_firmware) ? [NONE] : []),
-  ]);
+export const getFirmwareChoices = () => ([
+  ARDUINO,
+  FARMDUINO,
+  FARMDUINO_K14,
+  FARMDUINO_K15,
+  EXPRESS_K10,
+  NONE,
+]);

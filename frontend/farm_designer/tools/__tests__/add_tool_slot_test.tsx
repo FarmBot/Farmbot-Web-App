@@ -22,6 +22,7 @@ import {
 import { init, save, edit, destroy } from "../../../api/crud";
 import { history } from "../../../history";
 import { SpecialStatus } from "farmbot";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -30,14 +31,20 @@ describe("<AddToolSlot />", () => {
     botPosition: { x: undefined, y: undefined, z: undefined },
     dispatch: jest.fn(),
     findToolSlot: fakeToolSlot,
+    firmwareHardware: undefined,
   });
 
   it("renders", () => {
     const wrapper = mount(<AddToolSlot {...fakeProps()} />);
-    ["add new tool slot", "x (mm)", "y (mm)", "z (mm)", "toolnone",
+    ["add new tool slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "change slot direction", "use current location", "gantry-mounted"
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(init).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Point", {
+      pointer_type: "ToolSlot", name: "Tool Slot", radius: 0, meta: {},
+      x: 0, y: 0, z: 0, tool_id: undefined,
+      pullout_direction: ToolPulloutDirection.NONE,
+      gantry_mounted: false,
+    });
   });
 
   it("renders while loading", () => {
@@ -101,6 +108,19 @@ describe("<AddToolSlot />", () => {
     p.findToolSlot = () => undefined;
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     expect(wrapper.instance().tool).toEqual(undefined);
+  });
+
+  it("renders for express bots", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<AddToolSlot {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("tool");
+    expect(init).toHaveBeenCalledWith("Point", {
+      pointer_type: "ToolSlot", name: "Tool Slot", radius: 0, meta: {},
+      x: 0, y: 0, z: 0, tool_id: undefined,
+      pullout_direction: ToolPulloutDirection.NONE,
+      gantry_mounted: true,
+    });
   });
 });
 

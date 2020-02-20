@@ -1,16 +1,12 @@
 import {
   BotState, Xyz, SourceFwConfig,
-  ControlPanelState, ShouldDisplay
+  ControlPanelState, Axis
 } from "../interfaces";
 import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
 import { IntegerSize } from "../../util";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { ResourceIndex } from "../../resources/interfaces";
-
-export interface HomingRowProps {
-  hardware: McuParams;
-  botDisconnected: boolean;
-}
+import { DeviceSetting } from "../../constants";
 
 export interface ZeroRowProps {
   botDisconnected: boolean;
@@ -19,16 +15,18 @@ export interface ZeroRowProps {
 export interface HomingAndCalibrationProps {
   dispatch: Function;
   bot: BotState;
+  controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
   botDisconnected: boolean;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface BooleanMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip: string;
-  name: string;
+  label: DeviceSetting;
   x: McuParamName;
   y: McuParamName;
   z: McuParamName;
@@ -39,15 +37,20 @@ export interface BooleanMCUInputGroupProps {
 }
 
 export interface CalibrationRowProps {
+  type: "find_home" | "calibrate" | "zero";
   hardware: McuParams;
   botDisconnected: boolean;
+  action(axis: Axis): void;
+  toolTip: string;
+  title: DeviceSetting;
+  axisTitle: string;
 }
 
 export interface NumericMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
   tooltip: string;
-  name: string;
+  label: DeviceSetting;
   x: McuParamName;
   xScale?: number;
   y: McuParamName;
@@ -85,10 +88,27 @@ export interface MotorsProps {
 
 export interface EncodersProps {
   dispatch: Function;
-  shouldDisplay: ShouldDisplay;
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareHardware: FirmwareHardware | undefined;
+}
+
+export interface EndStopsProps {
+  dispatch: Function;
+  controlPanelState: ControlPanelState;
+  sourceFwConfig: SourceFwConfig;
+}
+
+export interface ErrorHandlingProps {
+  dispatch: Function;
+  controlPanelState: ControlPanelState;
+  sourceFwConfig: SourceFwConfig;
+}
+
+export interface PinBindingsProps {
+  dispatch: Function;
+  controlPanelState: ControlPanelState;
+  resources: ResourceIndex;
 }
 
 export interface DangerZoneProps {

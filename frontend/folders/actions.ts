@@ -40,11 +40,11 @@ export const setFolderName = (id: number, name: string) => {
   return d(save(folder.uuid)) as Promise<{}>;
 };
 
-const DEFAULTS: Folder = {
-  name: "New Folder",
+const DEFAULTS = (): Folder => ({
+  name: t("New Folder"),
   color: "gray",
   parent_id: 0,
-};
+});
 
 export const addNewSequenceToFolder = (folder_id?: number) => {
   const uuidMap = store.getState().resources.index.byKind["Sequence"];
@@ -67,7 +67,7 @@ export const addNewSequenceToFolder = (folder_id?: number) => {
 
 export const createFolder = (config: DeepPartial<Folder> = {}) => {
   const d: Function = store.dispatch;
-  const folder: Folder = { ...DEFAULTS, ...config };
+  const folder: Folder = { ...DEFAULTS(), ...config };
   const action = initSave("Folder", folder);
   // tslint:disable-next-line:no-any
   const p: Promise<{}> = d(action);
