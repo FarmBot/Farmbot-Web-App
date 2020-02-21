@@ -25,6 +25,7 @@ describe("<FarmBotLayer/>", () => {
       peripherals: [],
       eStopStatus: false,
       getConfigValue: jest.fn(),
+      mountedToolName: undefined,
     };
   }
 

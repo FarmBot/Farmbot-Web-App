@@ -13,9 +13,17 @@ enum Anchor {
 export const textAnchorPosition = (
   pulloutDirection: ToolPulloutDirection,
   quadrant: BotOriginQuadrant,
-  xySwap: boolean): { x: number, y: number, anchor: string } => {
+  xySwap: boolean,
+  gantryMounted: boolean,
+): { x: number, y: number, anchor: string } => {
   const rawAnchor = () => {
-    const direction = pulloutDirection + (xySwap ? 2 : 0);
+    const noDirection = !pulloutDirection || gantryMounted;
+    const noDirectionXY = xySwap
+      ? ToolPulloutDirection.POSITIVE_Y
+      : ToolPulloutDirection.POSITIVE_X;
+    const direction = noDirection
+      ? noDirectionXY
+      : pulloutDirection + (xySwap ? 2 : 0);
     switch (direction > 4 ? direction % 4 : direction) {
       case ToolPulloutDirection.POSITIVE_X: return Anchor.start;
       case ToolPulloutDirection.NEGATIVE_X: return Anchor.end;
@@ -51,12 +59,15 @@ interface ToolLabelProps {
   pulloutDirection: ToolPulloutDirection;
   quadrant: BotOriginQuadrant;
   xySwap: boolean;
+  gantryMounted: boolean;
 }
 
 export const ToolLabel = (props: ToolLabelProps) => {
-  const { toolName, hovered, x, y, pulloutDirection, quadrant, xySwap } = props;
-  const labelAnchor = textAnchorPosition(pulloutDirection, quadrant, xySwap);
-
+  const {
+    toolName, hovered, x, y, pulloutDirection, quadrant, xySwap, gantryMounted,
+  } = props;
+  const labelAnchor = textAnchorPosition
+    (pulloutDirection, quadrant, xySwap, gantryMounted);
   return <text textAnchor={labelAnchor.anchor}
     visibility={hovered ? "visible" : "hidden"}
     x={x}

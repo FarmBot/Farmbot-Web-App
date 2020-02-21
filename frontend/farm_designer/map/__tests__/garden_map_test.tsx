@@ -124,6 +124,7 @@ const fakeProps = (): GardenMapProps => ({
   timeSettings: fakeTimeSettings(),
   groups: [],
   shouldDisplay: () => false,
+  mountedToolName: undefined,
 });
 
 describe("<GardenMap/>", () => {
@@ -193,6 +194,16 @@ describe("<GardenMap/>", () => {
   it("starts drag on background: does nothing when adding plants", () => {
     const wrapper = mount(<GardenMap {...fakeProps()} />);
     mockMode = Mode.clickToAdd;
+    const e = { pageX: 1000, pageY: 2000 };
+    wrapper.find(".drop-area-background").simulate("mouseDown", e);
+    expect(startNewSelectionBox).not.toHaveBeenCalled();
+    expect(history.push).not.toHaveBeenCalled();
+    expect(getGardenCoordinates).not.toHaveBeenCalled();
+  });
+
+  it("starts drag on background: does nothing when in move mode", () => {
+    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.moveTo;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
@@ -348,8 +359,17 @@ describe("<GardenMap/>", () => {
     expect(closePlantInfo).toHaveBeenCalled();
   });
 
-  it("doesn't close panel", () => {
+  it("doesn't close panel: box select", () => {
     mockMode = Mode.boxSelect;
+    const p = fakeProps();
+    p.designer.selectedPlants = [fakePlant().uuid];
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
+    wrapper.instance().closePanel()();
+    expect(closePlantInfo).not.toHaveBeenCalled();
+  });
+
+  it("doesn't close panel: move mode", () => {
+    mockMode = Mode.moveTo;
     const p = fakeProps();
     p.designer.selectedPlants = [fakePlant().uuid];
     const wrapper = mount<GardenMap>(<GardenMap {...p} />);
@@ -405,7 +425,7 @@ describe("<GardenMap/>", () => {
     const point = fakePoint();
     point.body.id = 1;
     p.allPoints = [point];
-    const wrapper = shallow<GardenMap>(<GardenMap {...p} />);
+    const wrapper = mount<GardenMap>(<GardenMap {...p} />);
     expect(wrapper.instance().pointsSelectedByGroup).toEqual([point]);
   });
 });

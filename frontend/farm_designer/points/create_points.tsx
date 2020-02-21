@@ -274,7 +274,7 @@ export class RawCreatePoints
       <DesignerPanelHeader
         panelName={"point-creation"}
         panel={panelType}
-        title={this.panel == "weeds" ? t("Create weed") : t("Create point")}
+        title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
         backTo={`/app/designer/${this.panel}`}
         description={panelDescription} />
       <DesignerPanelContent panelName={"point-creation"}>

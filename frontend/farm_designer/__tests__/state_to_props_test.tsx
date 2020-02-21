@@ -1,7 +1,7 @@
 import { mapStateToProps, getPlants } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex, fakeDevice
 } from "../../__test_support__/resource_index_builder";
 import {
   fakePlant,
@@ -49,7 +49,7 @@ describe("mapStateToProps()", () => {
 
   it("returns selected plant", () => {
     const state = fakeState();
-    state.resources = buildResourceIndex([fakePlant()]);
+    state.resources = buildResourceIndex([fakePlant(), fakeDevice()]);
     const plantUuid = Object.keys(state.resources.index.byKind["Point"])[0];
     state.resources.consumers.farm_designer.selectedPlants = [plantUuid];
     expect(mapStateToProps(state).selectedPlant).toEqual(
@@ -66,7 +66,9 @@ describe("mapStateToProps()", () => {
     point2.body.discarded_at = DISCARDED_AT;
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
-    state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
+    state.resources = buildResourceIndex([
+      webAppConfig, point1, point2, point3, fakeDevice()
+    ]);
     expect(mapStateToProps(state).genericPoints.length).toEqual(3);
   });
 
@@ -80,7 +82,9 @@ describe("mapStateToProps()", () => {
     point2.body.discarded_at = DISCARDED_AT;
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
-    state.resources = buildResourceIndex([webAppConfig, point1, point2, point3]);
+    state.resources = buildResourceIndex([
+      webAppConfig, point1, point2, point3, fakeDevice()
+    ]);
     expect(mapStateToProps(state).genericPoints.length).toEqual(1);
   });
 
@@ -90,7 +94,7 @@ describe("mapStateToProps()", () => {
     sr1.body.created_at = "2018-01-14T20:20:38.362Z";
     const sr2 = fakeSensorReading();
     sr2.body.created_at = "2018-01-11T20:20:38.362Z";
-    state.resources = buildResourceIndex([sr1, sr2]);
+    state.resources = buildResourceIndex([sr1, sr2, fakeDevice()]);
     const uuid1 = Object.keys(state.resources.index.byKind["SensorReading"])[0];
     const uuid2 = Object.keys(state.resources.index.byKind["SensorReading"])[1];
     expect(mapStateToProps(state).sensorReadings).toEqual([
@@ -112,7 +116,8 @@ describe("getPlants()", () => {
     const template2 = fakePlantTemplate();
     template2.body.saved_garden_id = 2;
     return buildResourceIndex([
-      savedGarden, plant1, plant2, template1, template2]);
+      savedGarden, plant1, plant2, template1, template2, fakeDevice()
+    ]);
   };
   it("returns plants", () => {
     expect(getPlants(fakeResources()).length).toEqual(2);
@@ -133,7 +138,7 @@ describe("getPlants()", () => {
     const fwEnv = fakeFarmwareEnv();
     fwEnv.body.key = "CAMERA_CALIBRATION_total_rotation_angle";
     fwEnv.body.value = 15;
-    state.resources = buildResourceIndex([fwEnv]);
+    state.resources = buildResourceIndex([fwEnv, fakeDevice()]);
     const props = mapStateToProps(state);
     expect(props.cameraCalibrationData).toEqual(
       expect.objectContaining({ rotation: "15" }));

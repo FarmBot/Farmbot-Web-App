@@ -102,7 +102,7 @@ export class RawAddFarmEvent
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.FarmEvents}
-        title={t("Add Event")}
+        title={t("Add event")}
         onBack={(farmEvent && !farmEvent.body.id)
           ? () => this.props.dispatch(destroyOK(farmEvent))
           : undefined} />
@@ -115,7 +115,7 @@ export class RawAddFarmEvent
             executableOptions={this.props.executableOptions}
             dispatch={this.props.dispatch}
             findExecutable={this.props.findExecutable}
-            title={t("Add Event")}
+            title={t("Add event")}
             timeSettings={this.props.timeSettings}
             autoSyncEnabled={this.props.autoSyncEnabled}
             resources={this.props.resources}

@@ -226,7 +226,7 @@ fieldset {
   .percent-bar {
     position: absolute;
     top: 2px;
-    left: 12rem;
+    right: 0;
     height: 1rem;
     width: 25%;
     clip-path: polygon(0 85%, 100% 0, 100% 100%, 0% 100%);
@@ -1543,16 +1543,21 @@ textarea:focus {
   cursor: pointer;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-  border: 2px solid $panel_light_blue;
+  border: 2px solid darken($panel_light_blue, 30%);
+  border-radius: 5px;
   &:hover, &.selected {
-    border: 2px solid $medium_gray;
-    border-radius: 2px;
     .sort-path-info-bar {
-      background: darken($light_gray, 10%);
+      background: darken($panel_light_blue, 40%);
     }
   }
+  &:hover {
+    border: 2px solid darken($panel_light_blue, 40%);
+  }
+  &.selected {
+    border: 2px solid $medium_gray;
+  }
   .sort-path-info-bar {
-    background: $light_gray;
+    background: darken($panel_light_blue, 30%);
     font-size: 1.2rem;
     padding-left: 0.5rem;
     white-space: nowrap;

@@ -46,14 +46,14 @@ const toolsStep = () => hasTools()
       : t(TourContent.ADD_TOOLS_AND_SLOTS),
     title: isExpress()
       ? t("Add seed containers and slots")
-      : t("Add tools and tool slots"),
+      : t("Add tools and slots"),
   }];
 
 const toolSlotsStep = () => hasTools()
   ? [{
     target: ".tool-slots",
     content: t(TourContent.ADD_TOOLS_AND_SLOTS),
-    title: t("Add tool slots"),
+    title: t("Add slots"),
   }]
   : [];
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { MapTransformProps } from "../map/interfaces";
-import { sortGroupBy, sortOptionsTable } from "./point_group_sort_selector";
+import { sortGroupBy, sortOptionsTable } from "./point_group_sort";
 import { sortBy, isNumber } from "lodash";
 import { PointsPathLine } from "./group_order_visual";
 import { Color } from "../../ui";
