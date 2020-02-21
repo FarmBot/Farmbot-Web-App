@@ -1,9 +1,9 @@
 module Tools
   class Destroy < Mutations::Command
-    STILL_IN_USE = "Can't delete tool because the following sequences are " \
-                   "still using it: %s"
-    STILL_IN_SLOT = "Can't delete tool because it is still in a tool slot. " \
-                    "Please remove it from the tool slot first."
+    STILL_IN_USE = "Can't delete tool or seed container because the " \
+                   "following sequences are still using it: %s"
+    STILL_IN_SLOT = "Can't delete tool or seed container because it is " \
+                    "still in a slot. Please remove it from the slot first."
 
     required do
       model :tool, class: Tool

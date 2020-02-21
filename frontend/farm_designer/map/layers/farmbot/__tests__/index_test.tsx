@@ -19,6 +19,7 @@ describe("<VirtualFarmBot/>", () => {
       peripherals: [],
       eStopStatus: false,
       getConfigValue: () => true,
+      mountedToolName: undefined,
     };
   }
 

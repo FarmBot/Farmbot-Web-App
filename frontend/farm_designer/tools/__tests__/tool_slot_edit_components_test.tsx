@@ -2,14 +2,13 @@ import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
   GantryMountedInput, GantryMountedInputProps,
-  UseCurrentLocationInputRow, UseCurrentLocationInputRowProps,
   SlotDirectionInputRow, SlotDirectionInputRowProps,
   ToolInputRow, ToolInputRowProps,
   SlotLocationInputRow, SlotLocationInputRowProps,
-  ToolSelection, ToolSelectionProps,
+  ToolSelection, ToolSelectionProps, SlotEditRows, SlotEditRowsProps,
 } from "../tool_slot_edit_components";
-import { fakeTool } from "../../../__test_support__/fake_state/resources";
-import { FBSelect } from "../../../ui";
+import { fakeTool, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
+import { FBSelect, NULL_CHOICE } from "../../../ui";
 
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
@@ -30,33 +29,6 @@ describe("<GantryMountedInput />", () => {
   });
 });
 
-describe("<UseCurrentLocationInputRow />", () => {
-  const fakeProps = (): UseCurrentLocationInputRowProps => ({
-    botPosition: { x: undefined, y: undefined, z: undefined },
-    onChange: jest.fn(),
-  });
-
-  it("renders", () => {
-    const wrapper = mount(<UseCurrentLocationInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("use current location");
-  });
-
-  it("doesn't change value", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<UseCurrentLocationInputRow {...p} />);
-    wrapper.find("button").simulate("click");
-    expect(p.onChange).not.toHaveBeenCalled();
-  });
-
-  it("changes value", () => {
-    const p = fakeProps();
-    p.botPosition = { x: 0, y: 1, z: 2 };
-    const wrapper = shallow(<UseCurrentLocationInputRow {...p} />);
-    wrapper.find("button").simulate("click");
-    expect(p.onChange).toHaveBeenCalledWith(p.botPosition);
-  });
-});
-
 describe("<SlotDirectionInputRow />", () => {
   const fakeProps = (): SlotDirectionInputRowProps => ({
     toolPulloutDirection: 0,
@@ -65,7 +37,7 @@ describe("<SlotDirectionInputRow />", () => {
 
   it("renders", () => {
     const wrapper = mount(<SlotDirectionInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("change slot direction");
+    expect(wrapper.text().toLowerCase()).toContain("change direction");
   });
 
   it("changes value by click", () => {
@@ -89,6 +61,7 @@ describe("<ToolSelection />", () => {
     selectedTool: undefined,
     onChange: jest.fn(),
     filterSelectedTool: false,
+    isActive: jest.fn(),
   });
 
   it("renders", () => {
@@ -98,12 +71,13 @@ describe("<ToolSelection />", () => {
 
   it("handles missing tool data", () => {
     const p = fakeProps();
+    p.filterSelectedTool = true;
     const tool = fakeTool();
     tool.body.name = undefined;
     tool.body.id = undefined;
     p.tools = [tool];
     const wrapper = shallow(<ToolSelection {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([]);
+    expect(wrapper.find("FBSelect").props().list).toEqual([NULL_CHOICE]);
   });
 
   it("handles missing selected tool data", () => {
@@ -137,6 +111,7 @@ describe("<ToolInputRow />", () => {
     selectedTool: undefined,
     onChange: jest.fn(),
     isExpress: false,
+    isActive: jest.fn(),
   });
 
   it("renders", () => {
@@ -164,6 +139,7 @@ describe("<SlotLocationInputRow />", () => {
     slotLocation: { x: 0, y: 0, z: 0 },
     gantryMounted: false,
     onChange: jest.fn(),
+    botPosition: { x: undefined, y: undefined, z: undefined },
   });
 
   it("renders", () => {
@@ -194,5 +170,41 @@ describe("<SlotLocationInputRow />", () => {
     expect(p.onChange).toHaveBeenCalledWith({ x: 1 });
     expect(p.onChange).toHaveBeenCalledWith({ y: 2 });
     expect(p.onChange).toHaveBeenCalledWith({ z: 3 });
+  });
+
+  it("doesn't use current coordinates", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(p.onChange).not.toHaveBeenCalled();
+  });
+
+  it("uses current coordinates", () => {
+    const p = fakeProps();
+    p.botPosition = { x: 0, y: 1, z: 2 };
+    const wrapper = shallow(<SlotLocationInputRow {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith(p.botPosition);
+  });
+});
+
+describe("<SlotEditRows />", () => {
+  const fakeProps = (): SlotEditRowsProps => ({
+    toolSlot: fakeToolSlot(),
+    tools: [],
+    tool: undefined,
+    botPosition: { x: undefined, y: undefined, z: undefined },
+    updateToolSlot: jest.fn(),
+    isExpress: false,
+    xySwap: false,
+    quadrant: 2,
+    isActive: () => false,
+  });
+
+  it("handles missing tool", () => {
+    const p = fakeProps();
+    p.tool = undefined;
+    const wrapper = mount(<SlotEditRows {...p} />);
+    expect(wrapper.text()).toContain("None");
   });
 });

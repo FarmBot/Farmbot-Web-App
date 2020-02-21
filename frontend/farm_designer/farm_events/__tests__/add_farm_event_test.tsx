@@ -55,7 +55,7 @@ describe("<AddFarmEvent />", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     wrapper.setState({ uuid: "FarmEvent" });
     ["Add Event", "Sequence or Regimen", "fake", "Save"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
     const deleteBtn = wrapper.find("button").last();
     expect(deleteBtn.text()).toEqual("Delete");
     expect(deleteBtn.props().hidden).toBeTruthy();

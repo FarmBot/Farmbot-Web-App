@@ -71,13 +71,41 @@ describe("<ToolSlotPoint/>", () => {
     p.slot.tool = undefined;
     p.hoveredToolSlot = p.slot.toolSlot.uuid;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    expect(wrapper.find("text").text()).toEqual("empty");
+    expect(wrapper.find("text").text()).toEqual("Empty");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 
   it("doesn't display tool name", () => {
     const wrapper = svgMount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
+  });
+
+  it("renders weeder", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "weeder"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#weeder").length).toEqual(1);
+  });
+
+  it("renders watering nozzle", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "watering nozzle"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#watering-nozzle").length).toEqual(1);
+  });
+
+  it("renders seeder", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "seeder"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#seeder").length).toEqual(1);
+  });
+
+  it("renders soil sensor", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "soil sensor"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#soil-sensor").length).toEqual(1);
   });
 
   it("renders bin", () => {

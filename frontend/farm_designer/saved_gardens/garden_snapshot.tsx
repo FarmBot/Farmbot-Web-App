@@ -49,7 +49,7 @@ export class GardenSnapshot
       <button
         className="fb-button green wide"
         onClick={this.new}>
-        {t("create new garden")}
+        {t("Add new garden")}
       </button>
     </div>;
   }

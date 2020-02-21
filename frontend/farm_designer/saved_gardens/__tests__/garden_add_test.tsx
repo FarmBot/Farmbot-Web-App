@@ -15,7 +15,7 @@ describe("<AddGarden />", () => {
 
   it("renders add garden panel", () => {
     const wrapper = mount(<AddGarden {...fakeProps()} />);
-    expect(wrapper.text()).toContain("create new garden");
+    expect(wrapper.text().toLowerCase()).toContain("add garden");
   });
 });
 

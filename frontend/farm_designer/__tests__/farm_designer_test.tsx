@@ -62,6 +62,7 @@ describe("<FarmDesigner/>", () => {
     sensors: [],
     groups: [],
     shouldDisplay: () => false,
+    mountedToolName: undefined,
   });
 
   it("loads default map settings", () => {

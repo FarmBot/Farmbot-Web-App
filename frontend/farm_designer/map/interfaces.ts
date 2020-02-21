@@ -127,6 +127,7 @@ export interface VirtualFarmBotProps {
   peripherals: { label: string, value: boolean }[];
   eStopStatus: boolean;
   getConfigValue: GetWebAppConfigValue;
+  mountedToolName: string | undefined;
 }
 
 export interface FarmBotLayerProps extends VirtualFarmBotProps, BotExtentsProps {

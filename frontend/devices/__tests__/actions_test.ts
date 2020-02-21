@@ -353,9 +353,10 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
+    console.error = jest.fn();
     await actions.fetchReleases("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).toHaveBeenCalledWith(
+    expect(console.error).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",

@@ -69,7 +69,7 @@ export function WiFiStrengthDisplay(
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi strength")}: </b>
-      {wifiStrength ? dbString : "N/A"}
+      {wifiStrength ? `${dbString} (${percentString})` : "N/A"}
     </p>
     {wifiStrength &&
       <div className="percent-bar">
@@ -261,8 +261,8 @@ export function FbosDetails(props: FbosDetailsProps) {
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
   const { last_ota, last_ota_checkup } = props.deviceAccount.body;
-  const firmwareCommit = [firmware_commit, firmware_version].includes("---")
-    ? firmware_commit : firmware_version?.split("-")[1] || firmware_commit;
+  const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
+  const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
   return <div>
     <LastSeen

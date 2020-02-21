@@ -58,7 +58,7 @@ describe("tourPageNavigation()", () => {
       Object.values(TOUR_STEPS()[Tours.gettingStarted]).map(t => t.title);
     mockDev = false;
     mockState.resources = buildResourceIndex([]);
-    expect(getTitles()).toContain("Add tools and tool slots");
+    expect(getTitles()).toContain("Add tools and slots");
     expect(getTitles()).not.toContain("Add seed containers");
     const fbosConfig = fakeFbosConfig();
     fbosConfig.body.firmware_hardware = "express_k10";
