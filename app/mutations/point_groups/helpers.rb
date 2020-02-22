@@ -5,7 +5,7 @@ module PointGroups
         hash :criteria do
           hash(:day) do
             string :op, in: [">", "<"]
-            integer :days
+            integer :days_ago
           end
           hash(:string_eq) { array :*, class: String }
           hash(:number_eq) { array :*, class: Integer }

@@ -4,7 +4,7 @@ class PointGroup < ApplicationRecord
   BAD_SORT = "%{value} is not valid. Valid options are: " +
              SORT_TYPES.map(&:inspect).join(", ")
   DEFAULT_CRITERIA = {
-    day: { op: "<", days: 0 },
+    day: { op: "<", days_ago: 0 },
     string_eq: {},
     number_eq: {},
     number_lt: {},

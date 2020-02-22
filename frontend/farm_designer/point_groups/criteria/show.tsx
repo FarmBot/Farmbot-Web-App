@@ -105,16 +105,16 @@ export const DaySelection = (props: CriteriaSelectionProps) => {
           selectedItem={DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
           onChange={ddi => dispatch(editCriteria(group, {
             day: {
-              days: dayCriteria.days,
+              days_ago: dayCriteria.days_ago,
               op: ddi.value as PointGroup["criteria"]["day"]["op"]
             }
           }))} />
       </Col>
       <Col xs={3}>
-        <input type="number" value={dayCriteria.days} onChange={e => {
+        <input type="number" value={dayCriteria.days_ago} onChange={e => {
           const { op } = dayCriteria;
-          const days = parseInt(e.currentTarget.value);
-          dispatch(editCriteria(group, { day: { days, op } }));
+          const days_ago = parseInt(e.currentTarget.value);
+          dispatch(editCriteria(group, { day: { days_ago, op } }));
         }} />
       </Col>
       <Col xs={4}>
