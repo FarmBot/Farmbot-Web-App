@@ -20,10 +20,14 @@ import {
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
 
+export interface Vector3Plus extends Vector3 {
+  gantry_mounted: boolean;
+}
+
 export interface SequenceMeta {
   celeryNode: VariableNode;
   dropdown: DropDownItem;
-  vector: Vector3 | undefined;
+  vector: Vector3 | Vector3Plus | undefined;
   default?: boolean;
 }
 

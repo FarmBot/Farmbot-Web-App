@@ -80,6 +80,7 @@ export interface Props {
   sensors: TaggedSensor[];
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
+  mountedToolName: string | undefined;
 }
 
 export interface MovePlantProps {
@@ -210,6 +211,7 @@ export interface GardenMapProps {
   timeSettings: TimeSettings;
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
+  mountedToolName: string | undefined;
 }
 
 export interface GardenMapState {

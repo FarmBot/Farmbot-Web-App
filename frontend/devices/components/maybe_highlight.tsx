@@ -3,6 +3,7 @@ import { ControlPanelState } from "../interfaces";
 import { toggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
+import { trim } from "lodash";
 
 const HOMING_PANEL = [
   DeviceSetting.homingAndCalibration,
@@ -86,10 +87,15 @@ DANGER_ZONE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
 
+/** Keep string up until first `(` character (trailing whitespace removed). */
+const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
+
 /** Look up parent panels for settings using URL-friendly names. */
 const URL_FRIENDLY_LOOKUP: Record<string, keyof ControlPanelState> = {};
-Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) =>
-  URL_FRIENDLY_LOOKUP[urlFriendly(setting)] = panel);
+Object.entries(SETTING_PANEL_LOOKUP).map(([setting, panel]) => {
+  URL_FRIENDLY_LOOKUP[urlFriendly(setting)] = panel;
+  URL_FRIENDLY_LOOKUP[urlFriendly(stripUnits(setting))] = panel;
+});
 
 /** Look up all relevant names for the same setting. */
 const ALTERNATE_NAMES =
@@ -100,7 +106,9 @@ ALTERNATE_NAMES[DeviceSetting.stallDetection].push(DeviceSetting.encoders);
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
-  (ALTERNATE_NAMES[settingName]).map(s => urlFriendly(s));
+  (ALTERNATE_NAMES[settingName] as string[])
+    .concat(stripUnits(settingName))
+    .map(s => urlFriendly(s));
 
 /** Retrieve a highlight search term. */
 const getHighlightName = () => location.search.split("?highlight=").pop();

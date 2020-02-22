@@ -70,7 +70,7 @@ export const CRITERIA_TYPE_LIST = () => [
 export const POINTER_TYPE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   Plant: { label: t("Plants"), value: "Plant" },
   GenericPointer: { label: t("Points"), value: "GenericPointer" },
-  ToolSlot: { label: t("Tool Slots"), value: "ToolSlot" },
+  ToolSlot: { label: t("Slots"), value: "ToolSlot" },
 });
 export const POINTER_TYPE_LIST = () => [
   POINTER_TYPE_DDI_LOOKUP().Plant,

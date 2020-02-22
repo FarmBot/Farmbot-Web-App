@@ -2,7 +2,7 @@ import * as React from "react";
 import { store } from "../../redux/store";
 import { MapTransformProps } from "../map/interfaces";
 import { isUndefined } from "lodash";
-import { sortGroupBy } from "./point_group_sort_selector";
+import { sortGroupBy } from "./point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "../map/util";
 import { nn } from "./paths";
