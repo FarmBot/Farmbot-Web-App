@@ -55,21 +55,24 @@ export function ChipTemperatureDisplay(
 interface WiFiStrengthDisplayProps {
   wifiStrength: number | undefined;
   wifiStrengthPercent?: number | undefined;
+  extraInfo?: boolean;
 }
 
 /** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay(
-  { wifiStrength, wifiStrengthPercent }: WiFiStrengthDisplayProps
+  { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps
 ): JSX.Element {
   const percent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${wifiStrengthPercent || percent}%`;
+  const numberDisplay =
+    extraInfo ? `${percentString} (${dbString})` : percentString;
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi strength")}: </b>
-      {wifiStrength ? `${dbString} (${percentString})` : "N/A"}
+      {wifiStrength ? numberDisplay : "N/A"}
     </p>
     {wifiStrength &&
       <div className="percent-bar">
@@ -287,7 +290,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     {isNumber(cpu_usage) && <p><b>{t("CPU usage")}: </b>{cpu_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
-    <WiFiStrengthDisplay
+    <WiFiStrengthDisplay extraInfo={true}
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
     <VoltageDisplay chip={target} throttled={throttled} />
     <BetaReleaseOptIn

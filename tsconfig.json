@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "incremental": true,
     "lib": [
       "es7",
       "dom",

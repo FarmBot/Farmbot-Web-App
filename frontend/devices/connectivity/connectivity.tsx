@@ -31,7 +31,9 @@ export class Connectivity
 
   render() {
     const { informational_settings } = this.props.bot.hardware;
-    const { soc_temp, wifi_level, throttled } = informational_settings;
+    const {
+      soc_temp, wifi_level, throttled, wifi_level_percent
+    } = informational_settings;
     return <div className="connectivity">
       <Row>
         <Col md={12} lg={4}>
@@ -42,7 +44,8 @@ export class Connectivity
           <div className="fbos-info">
             <label>{t("Raspberry Pi Info")}</label>
             <ChipTemperatureDisplay temperature={soc_temp} />
-            <WiFiStrengthDisplay wifiStrength={wifi_level} />
+            <WiFiStrengthDisplay wifiStrength={wifi_level}
+              wifiStrengthPercent={wifi_level_percent} />
             <VoltageDisplay throttled={throttled} />
           </div>
           <QosPanel pings={this.props.pings} />

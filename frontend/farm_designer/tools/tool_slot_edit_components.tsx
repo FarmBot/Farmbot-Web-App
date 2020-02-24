@@ -57,6 +57,7 @@ export interface ToolSelectionProps {
   onChange(update: { tool_id: number }): void;
   filterSelectedTool: boolean;
   isActive(id: number | undefined): boolean;
+  filterActiveTools: boolean;
 }
 
 export const ToolSelection = (props: ToolSelectionProps) =>
@@ -64,7 +65,8 @@ export const ToolSelection = (props: ToolSelectionProps) =>
     list={([NULL_CHOICE] as DropDownItem[]).concat(props.tools
       .filter(tool => !props.filterSelectedTool
         || tool.body.id != props.selectedTool?.body.id)
-      .filter(tool => !props.isActive(tool.body.id))
+      .filter(tool => !props.filterActiveTools
+        || !props.isActive(tool.body.id))
       .map(tool => ({
         label: tool.body.name || "untitled",
         value: tool.body.id || 0,
@@ -100,7 +102,8 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
           selectedTool={props.selectedTool}
           onChange={props.onChange}
           isActive={props.isActive}
-          filterSelectedTool={false} />
+          filterSelectedTool={false}
+          filterActiveTools={true} />
       </Col>
     </Row>
   </div>;

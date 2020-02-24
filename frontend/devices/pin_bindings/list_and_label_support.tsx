@@ -92,7 +92,7 @@ export const reservedPiGPIO = piI2c0Pins;
 const GPIO_PIN_LABELS = (): { [x: number]: string } => ({
   [ButtonPin.estop]: t("Button {{ num }}: E-STOP", { num: 1 }),
   [ButtonPin.unlock]: t("Button {{ num }}: UNLOCK", { num: 2 }),
-  [ButtonPin.btn3]: t("Button {{ num }})", { num: 3 }),
+  [ButtonPin.btn3]: t("Button {{ num }}", { num: 3 }),
   [ButtonPin.btn4]: t("Button {{ num }}", { num: 4 }),
   [ButtonPin.btn5]: t("Button {{ num }}", { num: 5 }),
 });
