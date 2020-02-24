@@ -552,7 +552,7 @@
   }
   .tool-slots-panel-content,
   .tools-panel-content {
-    max-height: calc(100vh - 15rem);
+    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
     .tool-search-item,
@@ -582,7 +582,7 @@
           }
         }
         i {
-          line-height: 2.5rem;
+          line-height: 2rem;
         }
       }
       svg {

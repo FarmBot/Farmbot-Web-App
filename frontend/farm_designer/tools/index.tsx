@@ -137,7 +137,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           this.props.dispatch(save(this.props.device.uuid));
         }}
         isActive={this.props.isActive}
-        filterSelectedTool={true} />
+        filterSelectedTool={true}
+        filterActiveTools={false} />
       <div className="tool-verification-status">
         <p>{t("status")}: {toolStatus(this.toolVerificationValue)}</p>
         <button
@@ -281,7 +282,8 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
               props.dispatch(save(props.toolSlot.uuid));
             }}
             isActive={props.isActive}
-            filterSelectedTool={false} />
+            filterSelectedTool={false}
+            filterActiveTools={true} />
         </div>
       </Col>
       <Col xs={4} className={"tool-slot-position-info"}>

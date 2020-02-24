@@ -62,6 +62,7 @@ describe("<ToolSelection />", () => {
     onChange: jest.fn(),
     filterSelectedTool: false,
     isActive: jest.fn(),
+    filterActiveTools: true,
   });
 
   it("renders", () => {
