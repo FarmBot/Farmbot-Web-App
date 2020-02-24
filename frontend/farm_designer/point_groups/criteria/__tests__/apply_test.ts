@@ -57,7 +57,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches age greater than 1 day old", () => {
     const criteria = fakeCriteria();
-    criteria.day = { days: 1, op: ">" };
+    criteria.day = { days_ago: 1, op: ">" };
     const matchingPoint = fakePoint();
     matchingPoint.body.created_at = "2020-01-20T20:00:00.000Z";
     const otherPoint = fakePoint();
@@ -70,7 +70,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches age less than 1 day old", () => {
     const criteria = fakeCriteria();
-    criteria.day = { days: 1, op: "<" };
+    criteria.day = { days_ago: 1, op: "<" };
     const matchingPoint = fakePoint();
     matchingPoint.body.created_at = "2020-02-20T20:00:00.000Z";
     const otherPoint = fakePoint();
@@ -83,7 +83,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches planted date less than 1 day old", () => {
     const criteria = fakeCriteria();
-    criteria.day = { days: 1, op: "<" };
+    criteria.day = { days_ago: 1, op: "<" };
     const matchingPoint = fakePlant();
     matchingPoint.body.planted_at = "2020-02-20T20:00:00.000Z";
     matchingPoint.body.created_at = "2020-01-20T20:00:00.000Z";

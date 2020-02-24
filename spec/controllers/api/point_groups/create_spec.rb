@@ -70,7 +70,7 @@ describe Api::PointGroupsController do
         },
         day: {
           op: "<",
-          days: 0,
+          days_ago: 0,
         },
       },
     }
@@ -85,7 +85,7 @@ describe Api::PointGroupsController do
     expect(hash.dig(:number_gt, :x)).to eq(1)
     expect(hash.dig(:number_gt, :y)).to eq(1)
     expect(hash.dig(:day, :op)).to eq("<")
-    expect(hash.dig(:day, :days)).to eq(0)
+    expect(hash.dig(:day, :days_ago)).to eq(0)
     expect(hash.dig(:string_eq, :openfarm_slug)).to eq(["carrot"])
   end
 end
