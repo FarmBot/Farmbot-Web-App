@@ -10,7 +10,6 @@ import { saveAll, init } from "../../api/crud";
 import { ToolTips } from "../../constants";
 import { uniq } from "lodash";
 import { t } from "../../i18next_wrapper";
-import { isExpressBoard } from "../../devices/components/firmware_hardware_support";
 
 export class Sensors extends React.Component<SensorsProps, SensorState> {
   constructor(props: SensorsProps) {
@@ -80,15 +79,14 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           onClick={() => this.newSensor()}>
           <i className="fa fa-plus" />
         </button>
-        {!isExpressBoard(this.props.firmwareHardware) &&
-          <button
-            hidden={!isEditing}
-            className="fb-button green"
-            type="button"
-            onClick={this.stockSensors}>
-            <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
-            {t("Stock sensors")}
-          </button>}
+        <button
+          hidden={!isEditing || this.props.firmwareHardware == "none"}
+          className="fb-button green"
+          type="button"
+          onClick={this.stockSensors}>
+          <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
+          {t("Stock sensors")}
+        </button>
       </WidgetHeader>
       <WidgetBody>
         {this.showPins()}

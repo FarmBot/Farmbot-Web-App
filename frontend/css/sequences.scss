@@ -322,6 +322,9 @@
     border-left: 4px solid transparent;
     &.active {
       border-left: 4px solid $dark_gray;
+      p {
+        font-weight: bold;
+      }
     }
     .fa-chevron-down, .fa-chevron-right {
       position: absolute;
@@ -330,11 +333,11 @@
       font-size: 1.1rem;
     }
     .folder-settings-icon,
-    .fa-bars {
+    .fa-arrows-v {
       position: absolute;
       right: 0;
     }
-    .fa-bars, .fa-ellipsis-v {
+    .fa-arrows-v, .fa-ellipsis-v {
       display: none;
     }
     .fa-ellipsis-v {
@@ -342,8 +345,14 @@
         display: block;
       }
     }
+    @media screen and (max-width: 450px) {
+      .fa-arrows-v, .fa-ellipsis-v {
+        display: block;
+        margin-right: 0.5rem;
+      }
+    }
     &:hover {
-      .fa-bars, .fa-ellipsis-v {
+      .fa-arrows-v, .fa-ellipsis-v {
         display: block;
       }
     }
@@ -367,7 +376,7 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       font-size: 1.2rem;
-      font-weight: bold;
+      font-weight: normal;
       width: 75%;
       padding: 0.5rem;
       padding-left: 0;

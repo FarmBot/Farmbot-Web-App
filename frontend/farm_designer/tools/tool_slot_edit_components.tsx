@@ -1,18 +1,15 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Xyz, TaggedTool, TaggedToolSlotPointer } from "farmbot";
-import { Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem } from "../../ui";
 import {
-  directionIconClass, positionButtonTitle, newSlotDirection, positionIsDefined
-} from "../../tools/components/toolbay_slot_menu";
-import {
-  DIRECTION_CHOICES, DIRECTION_CHOICES_DDI
-} from "../../tools/components/toolbay_slot_direction_selection";
+  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem
+} from "../../ui";
 import { BotPosition } from "../../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { Popover } from "@blueprintjs/core";
 import { ToolSlotSVG } from "../map/layers/tool_slots/tool_graphics";
 import { BotOriginQuadrant } from "../interfaces";
+import { isNumber } from "lodash";
 
 export interface GantryMountedInputProps {
   gantryMounted: boolean;
@@ -189,3 +186,46 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
         gantryMounted={props.toolSlot.body.gantry_mounted}
         onChange={props.updateToolSlot} />}
   </div>;
+
+const directionIconClass = (slotDirection: ToolPulloutDirection) => {
+  switch (slotDirection) {
+    case ToolPulloutDirection.POSITIVE_X: return "fa fa-arrow-circle-right";
+    case ToolPulloutDirection.NEGATIVE_X: return "fa fa-arrow-circle-left";
+    case ToolPulloutDirection.POSITIVE_Y: return "fa fa-arrow-circle-up";
+    case ToolPulloutDirection.NEGATIVE_Y: return "fa fa-arrow-circle-down";
+    case ToolPulloutDirection.NONE: return "fa fa-dot-circle-o";
+  }
+};
+
+export const positionButtonTitle = (position: BotPosition): string =>
+  positionIsDefined(position)
+    ? `(${position.x}, ${position.y}, ${position.z})`
+    : t("(unknown)");
+
+export const newSlotDirection =
+  (old: ToolPulloutDirection | undefined): ToolPulloutDirection =>
+    isNumber(old) && old < 4 ? old + 1 : ToolPulloutDirection.NONE;
+
+export const positionIsDefined = (position: BotPosition): boolean =>
+  isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
+
+export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
+  [ToolPulloutDirection.NONE]:
+    { label: t("None"), value: ToolPulloutDirection.NONE },
+  [ToolPulloutDirection.POSITIVE_X]:
+    { label: t("Positive X"), value: ToolPulloutDirection.POSITIVE_X },
+  [ToolPulloutDirection.NEGATIVE_X]:
+    { label: t("Negative X"), value: ToolPulloutDirection.NEGATIVE_X },
+  [ToolPulloutDirection.POSITIVE_Y]:
+    { label: t("Positive Y"), value: ToolPulloutDirection.POSITIVE_Y },
+  [ToolPulloutDirection.NEGATIVE_Y]:
+    { label: t("Negative Y"), value: ToolPulloutDirection.NEGATIVE_Y },
+};
+
+export const DIRECTION_CHOICES: DropDownItem[] = [
+  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NONE],
+  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_X],
+  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_X],
+  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_Y],
+  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_Y],
+];

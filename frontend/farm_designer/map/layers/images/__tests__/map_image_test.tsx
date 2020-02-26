@@ -1,5 +1,4 @@
 import * as React from "react";
-import { mount } from "enzyme";
 import { MapImage, MapImageProps } from "../map_image";
 import { SpecialStatus } from "farmbot";
 import { cloneDeep } from "lodash";
@@ -7,6 +6,9 @@ import { trim } from "../../../../../util";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
+
+const NOT_DISPLAYED = "<svg><image></image></svg>";
 
 describe("<MapImage />", () => {
   const fakeProps = (): MapImageProps => {
@@ -37,28 +39,28 @@ describe("<MapImage />", () => {
   };
 
   it("doesn't render image", () => {
-    const wrapper = mount(<MapImage {...fakeProps()} />);
-    expect(wrapper.html()).toEqual("<image></image>");
+    const wrapper = svgMount(<MapImage {...fakeProps()} />);
+    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
   });
 
   it("renders pre-calibration preview", () => {
     const p = fakeProps();
     p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
-    const wrapper = mount(<MapImage {...p} />);
-    wrapper.setState({ width: 100, height: 100 });
+    const wrapper = svgMount(<MapImage {...p} />);
+    wrapper.find(MapImage).setState({ width: 100, height: 100 });
     expect(wrapper.html()).toContain("image_url");
   });
 
   it("gets image size", () => {
     const p = fakeProps();
     p.image && (p.image.body.meta = { x: 0, y: 0, z: 0 });
-    const wrapper = mount<MapImage>(<MapImage {...p} />);
-    expect(wrapper.state()).toEqual({ width: 0, height: 0 });
+    const wrapper = svgMount(<MapImage {...p} />);
+    expect(wrapper.find(MapImage).state()).toEqual({ width: 0, height: 0 });
     const img = new Image();
     img.width = 100;
     img.height = 200;
-    wrapper.instance().imageCallback(img)();
-    expect(wrapper.state()).toEqual({ width: 100, height: 200 });
+    wrapper.find<MapImage>(MapImage).instance().imageCallback(img)();
+    expect(wrapper.find(MapImage).state()).toEqual({ width: 100, height: 200 });
   });
 
   interface ExpectedData {
@@ -83,8 +85,8 @@ describe("<MapImage />", () => {
       expectedData: ExpectedData,
       extra?: ExtraTranslationData) => {
       it(`renders image: INPUT_SET_${num}`, () => {
-        const wrapper = mount(<MapImage {...inputData[num]} />);
-        wrapper.setState({ width: 480, height: 640 });
+        const wrapper = svgMount(<MapImage {...inputData[num]} />);
+        wrapper.find(MapImage).setState({ width: 480, height: 640 });
         expect(wrapper.find("image").props()).toEqual({
           xlinkHref: "image_url",
           x: 0,
@@ -183,21 +185,21 @@ describe("<MapImage />", () => {
   it("doesn't render placeholder image", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.attachment_url = "/placehold.");
-    const wrapper = mount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual("<image></image>");
+    const wrapper = svgMount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
   });
 
   it("doesn't render image taken at different height than calibration", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.meta.z = 100);
-    const wrapper = mount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual("<image></image>");
+    const wrapper = svgMount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
   });
 
   it("doesn't render images that are not adjusted for camera rotation", () => {
     const p = INPUT_SET_1;
     p.image && (p.image.body.meta.name = "na");
-    const wrapper = mount(<MapImage {...p} />);
-    expect(wrapper.html()).toEqual("<image></image>");
+    const wrapper = svgMount(<MapImage {...p} />);
+    expect(wrapper.html()).toEqual(NOT_DISPLAYED);
   });
 });

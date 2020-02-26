@@ -23,8 +23,9 @@ import {
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
-import { getPathArray } from "../../history";
+import { history, getPathArray } from "../../history";
 import { ListItem } from "../plants/plant_panel";
+import { success } from "../../toast/toast";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -176,9 +177,13 @@ export class RawCreatePoints
       radius: this.attr("r"),
     };
     this.props.dispatch(initSave("Point", body));
+    success(this.panel == "weeds"
+      ? t("Weed created.")
+      : t("Point created."));
     this.cancel();
-    this.loadDefaultPoint();
+    history.push(`/app/designer/${this.panel}`);
   }
+
   PointProperties = () =>
     <ul>
       <li>

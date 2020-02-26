@@ -288,7 +288,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
       </Col>
       <Col xs={4} className={"tool-slot-position-info"}>
         <p className="tool-slot-position">
-          {botPositionLabel({ x, y, z }, gantry_mounted)}
+          <i>{botPositionLabel({ x, y, z }, gantry_mounted)}</i>
         </p>
       </Col>
     </Row>
@@ -303,7 +303,7 @@ interface ToolInventoryItemProps {
 }
 
 const ToolInventoryItem = (props: ToolInventoryItemProps) => {
-  const activeText = props.active ? t("active") : t("inactive");
+  const activeText = props.active ? t("in slot") : t("inactive");
   return <div className={"tool-search-item"}
     onClick={() => history.push(`/app/designer/tools/${props.toolId}`)}>
     <Row>
@@ -315,7 +315,7 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
       </Col>
       <Col xs={3}>
         <p className="tool-status">
-          {props.mounted ? t("mounted") : activeText}
+          <i>{props.mounted ? t("mounted") : activeText}</i>
         </p>
       </Col>
     </Row>

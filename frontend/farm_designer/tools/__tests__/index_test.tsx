@@ -193,7 +193,7 @@ describe("<Tools />", () => {
     p.isActive = () => true;
     p.device.body.mounted_tool_id = undefined;
     const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("active");
+    expect(wrapper.text().toLowerCase()).toContain("in slot");
   });
 
   it("displays tool as mounted", () => {

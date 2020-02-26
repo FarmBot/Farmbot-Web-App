@@ -16,6 +16,7 @@ export type Filters = Record<ALLOWED_MESSAGE_TYPES, number>;
 
 export interface LogsState extends Filters {
   autoscroll: boolean;
+  searchTerm: string;
   markdown: boolean;
 }
 

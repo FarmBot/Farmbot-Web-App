@@ -94,6 +94,19 @@ describe("designer reducer", () => {
     });
   });
 
+  it("uses current point color", () => {
+    const action: ReduxAction<CurrentPointPayl> = {
+      type: Actions.SET_CURRENT_POINT_DATA,
+      payload: { cx: 10, cy: 20, r: 30 }
+    };
+    const state = oldState();
+    state.currentPoint = { cx: 0, cy: 0, r: 0, color: "red" };
+    const newState = designer(state, action);
+    expect(newState.currentPoint).toEqual({
+      cx: 10, cy: 20, r: 30, color: "red"
+    });
+  });
+
   it("sets opened saved garden", () => {
     const payload = "savedGardenUuid";
     const action: ReduxAction<string | undefined> = {

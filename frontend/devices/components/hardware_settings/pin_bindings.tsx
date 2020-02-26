@@ -9,7 +9,7 @@ import { Highlight } from "../maybe_highlight";
 export function PinBindings(props: PinBindingsProps) {
 
   const { pin_bindings } = props.controlPanelState;
-  const { dispatch, resources } = props;
+  const { dispatch, resources, firmwareHardware } = props;
 
   return <Highlight className={"section"}
     settingName={DeviceSetting.pinBindings}>
@@ -19,7 +19,8 @@ export function PinBindings(props: PinBindingsProps) {
       panel={"pin_bindings"}
       dispatch={dispatch} />
     <Collapse isOpen={!!pin_bindings}>
-      <PinBindingsContent dispatch={dispatch} resources={resources} />
+      <PinBindingsContent dispatch={dispatch} resources={resources}
+        firmwareHardware={firmwareHardware} />
     </Collapse>
   </Highlight>;
 }

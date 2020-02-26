@@ -9,23 +9,23 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
     <div>
       <Link to="/app/account" onClick={props.close("accountMenuOpen")}>
-        <i className="fa fa-cog"></i>
+        <i className="fa fa-cog" />
         {t("Account Settings")}
       </Link>
     </div>
     <div>
       <Link to="/app/logs" onClick={props.close("accountMenuOpen")}>
-        <i className="fa fa-list"></i>
+        <i className="fa fa-list" />
         {t("Logs")}
       </Link>
     </div>
     <Link to="/app/help" onClick={props.close("accountMenuOpen")}>
-      <i className="fa fa-question-circle"></i>
+      <i className="fa fa-question-circle" />
       {t("Help")}
     </Link>
     <div>
       <a onClick={props.logout}>
-        <i className="fa fa-sign-out"></i>
+        <i className="fa fa-sign-out" />
         {t("Logout")}
       </a>
     </div>

@@ -30,7 +30,6 @@ import "../regimens/editor/interfaces";
 import "../regimens/interfaces";
 import "../resources/interfaces";
 import "../sequences/interfaces";
-import "../tools/interfaces";
 
 describe("interfaces", () => {
   it("cant explain why coverage is 0 for interface files", () => {

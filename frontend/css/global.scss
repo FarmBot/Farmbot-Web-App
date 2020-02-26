@@ -407,6 +407,18 @@ a {
     }
 }
 
+.load-progress-bar-wrapper {
+  position: absolute;
+  top: 3.2rem;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 1px;
+  .load-progress-bar {
+    height: 100%;
+  }
+}
+
 .firmware-setting-export-menu {
   button {
     margin-bottom: 1rem;
@@ -1653,4 +1665,10 @@ textarea:focus {
   transition: background-color 10s linear, box-shadow 10s linear;
   background-color: transparent;
   box-shadow: none;
+}
+
+.read-only-icon {
+  margin: 9px 0px 0px 9px;
+  float: right;
+  box-sizing: inherit;
 }
