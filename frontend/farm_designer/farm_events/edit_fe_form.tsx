@@ -41,6 +41,7 @@ import {
 } from "../../sequences/locals_list/locals_list_support";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { ErrorBoundary } from "../../error_boundary";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -360,19 +361,24 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   render() {
     const { farmEvent } = this.props;
     return <div className="edit-farm-event-form">
-      <FarmEventForm
-        isRegimen={this.isReg}
-        fieldGet={this.fieldGet}
-        fieldSet={this.fieldSet}
-        timeSettings={this.props.timeSettings}
-        executableOptions={this.props.executableOptions}
-        executableSet={this.executableSet}
-        executableGet={this.executableGet}
-        dispatch={this.props.dispatch}
-        specialStatus={farmEvent.specialStatus || this.state.specialStatusLocal}
-        onSave={() => this.commitViewModel()}>
-        <this.LocalsList />
-      </FarmEventForm>
+      <ErrorBoundary>
+        <FarmEventForm
+          isRegimen={this.isReg}
+          fieldGet={this.fieldGet}
+          fieldSet={this.fieldSet}
+          timeSettings={this.props.timeSettings}
+          executableOptions={this.props.executableOptions}
+          executableSet={this.executableSet}
+          executableGet={this.executableGet}
+          dispatch={this.props.dispatch}
+          specialStatus={farmEvent.specialStatus
+            || this.state.specialStatusLocal}
+          onSave={() => this.commitViewModel()}>
+          <ErrorBoundary>
+            <this.LocalsList />
+          </ErrorBoundary>
+        </FarmEventForm>
+      </ErrorBoundary>
       <FarmEventDeleteButton
         hidden={!this.props.deleteBtn}
         farmEvent={this.props.farmEvent}

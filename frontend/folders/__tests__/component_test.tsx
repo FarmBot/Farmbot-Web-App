@@ -294,14 +294,14 @@ describe("<FolderListItem />", () => {
   it("starts sequence move", () => {
     const p = fakeProps();
     const wrapper = shallow(<FolderListItem {...p} />);
-    wrapper.find(".fa-bars").simulate("mouseDown");
+    wrapper.find(".fa-arrows-v").simulate("mouseDown");
     expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 
   it("toggles sequence move", () => {
     const p = fakeProps();
     const wrapper = shallow(<FolderListItem {...p} />);
-    wrapper.find(".fa-bars").simulate("mouseUp");
+    wrapper.find(".fa-arrows-v").simulate("mouseUp");
     expect(p.toggleSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 });

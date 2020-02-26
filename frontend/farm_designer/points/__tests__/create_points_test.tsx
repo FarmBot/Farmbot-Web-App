@@ -6,6 +6,7 @@ jest.mock("../../../farmware/weed_detector/actions", () => ({
 
 let mockPath = "/app/designer/points/add";
 jest.mock("../../../history", () => ({
+  history: { push: jest.fn() },
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
 }));

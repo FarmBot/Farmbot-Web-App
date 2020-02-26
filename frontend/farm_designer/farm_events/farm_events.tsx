@@ -111,7 +111,7 @@ export class PureFarmEvents
         <input
           value={this.state.searchTerm}
           onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
-          placeholder={t("Search events...")} />
+          placeholder={t("Search your events...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"farm-event"}>
         <div className="farm-events">

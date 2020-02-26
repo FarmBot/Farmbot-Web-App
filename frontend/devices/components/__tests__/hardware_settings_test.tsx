@@ -12,6 +12,8 @@ import { clickButton } from "../../../__test_support__/helpers";
 import {
   buildResourceIndex
 } from "../../../__test_support__/resource_index_builder";
+import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { Color } from "../../../ui";
 
 describe("<HardwareSettings />", () => {
   const fakeProps = (): HardwareSettingsProps => ({
@@ -67,5 +69,42 @@ describe("<HardwareSettings />", () => {
     p.firmwareConfig = fakeFirmwareConfig().body;
     const wrapper = shallow(<HardwareSettings {...p} />);
     expect(wrapper.html()).toContain("fa-download");
+  });
+
+  it("shows setting load progress", () => {
+    type ConsistencyLookup = Record<keyof FirmwareConfig, boolean>;
+    const consistent: Partial<ConsistencyLookup> =
+      ({ id: false, encoder_invert_x: true, encoder_enabled_y: false });
+    const consistencyLookup = consistent as ConsistencyLookup;
+    const p = fakeProps();
+    const fakeConfig: Partial<FirmwareConfig> =
+      ({ id: 0, encoder_invert_x: 1, encoder_enabled_y: 0 });
+    p.firmwareConfig = fakeConfig as FirmwareConfig;
+    p.sourceFwConfig = x =>
+      ({ value: p.firmwareConfig?.[x], consistent: consistencyLookup[x] });
+    const wrapper = mount(<HardwareSettings {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.background).toEqual(Color.white);
+    expect(barStyle?.width).toEqual("50%");
+  });
+
+  it("shows setting load progress: 0%", () => {
+    const p = fakeProps();
+    p.firmwareConfig = fakeFirmwareConfig().body;
+    p.sourceFwConfig = () => ({ value: 0, consistent: false });
+    const wrapper = mount(<HardwareSettings {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.width).toEqual("0%");
+    expect(barStyle?.background).toEqual(Color.darkGray);
+  });
+
+  it("shows setting load progress: 100%", () => {
+    const p = fakeProps();
+    p.firmwareConfig = fakeFirmwareConfig().body;
+    p.sourceFwConfig = () => ({ value: 0, consistent: true });
+    const wrapper = mount(<HardwareSettings {...p} />);
+    const barStyle = wrapper.find(".load-progress-bar").props().style;
+    expect(barStyle?.width).toEqual("100%");
+    expect(barStyle?.background).toEqual(Color.darkGray);
   });
 });

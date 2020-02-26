@@ -8,6 +8,8 @@ import { PinBindingListItems } from "./interfaces";
 import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";
 import { t } from "../../i18next_wrapper";
+import { FirmwareHardware } from "farmbot";
+import { hasButtons } from "../components/firmware_hardware_support";
 
 /** Return the correct Pin Binding resource according to binding type. */
 export const pinBindingBody =
@@ -34,15 +36,21 @@ export const pinBindingBody =
     return body;
   };
 
+export interface StockPinBindingsButtonProps {
+  dispatch: Function;
+  firmwareHardware: FirmwareHardware | undefined;
+}
+
 /** Add default pin bindings. */
-export const StockPinBindingsButton = ({ dispatch }: { dispatch: Function }) =>
+export const StockPinBindingsButton = (props: StockPinBindingsButtonProps) =>
   <div className="stock-pin-bindings-button">
     <button
       className="fb-button green"
+      hidden={!hasButtons(props.firmwareHardware)}
       onClick={() => stockPinBindings.map(binding =>
-        dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
+        props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
       <i className="fa fa-plus" />
-      {t("v1.4 Stock Bindings")}
+      {t("Stock Bindings")}
     </button>
   </div>;
 

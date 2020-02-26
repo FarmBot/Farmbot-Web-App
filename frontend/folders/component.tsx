@@ -75,7 +75,7 @@ export const FolderListItem = (props: FolderItemProps) => {
       <div className="sequence-list-item-icons">
         {props.inUse &&
           <i className="in-use fa fa-hdd-o" title={t(Content.IN_USE)} />}
-        <i className="fa fa-bars"
+        <i className="fa fa-arrows-v"
           onMouseDown={() => props.startSequenceMove(sequence.uuid)}
           onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
       </div>
@@ -328,7 +328,7 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
           value={props.searchTerm || ""}
           onChange={e => updateSearchTerm(e.currentTarget.value)}
           type="text"
-          placeholder={t("Search sequences")} />
+          placeholder={t("Search sequences...")} />
       </div>
     </div>
     <ToggleFolderBtn

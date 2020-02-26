@@ -10,6 +10,6 @@ export function BackArrow(props: BackArrowProps) {
   };
 
   return <a onClick={onClick} className="back-arrow">
-    <i className="fa fa-arrow-left"></i>
+    <i className="fa fa-arrow-left" />
   </a>;
 }

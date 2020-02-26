@@ -23,7 +23,7 @@ export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}>
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.FarmEvents}
-        title={t("Edit Event")} />
+        title={t("Edit event")} />
       <DesignerPanelContent panelName={panelName}>
         <EditFEForm farmEvent={fe}
           deviceTimezone={this.props.deviceTimezone}
@@ -31,7 +31,7 @@ export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}>
           executableOptions={this.props.executableOptions}
           dispatch={this.props.dispatch}
           findExecutable={this.props.findExecutable}
-          title={t("Edit Event")}
+          title={t("Edit event")}
           deleteBtn={true}
           timeSettings={this.props.timeSettings}
           autoSyncEnabled={this.props.autoSyncEnabled}

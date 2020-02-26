@@ -1,7 +1,7 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
 import * as React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { RawLogs as Logs } from "../index";
 import { ToolTips } from "../../constants";
 import { TaggedLog, Dictionary } from "farmbot";
@@ -171,5 +171,13 @@ describe("<Logs />", () => {
     expect(wrapper.html()).toContain("<code>message</code>");
     wrapper.setState({ markdown: false });
     expect(wrapper.html()).not.toContain("<code>message</code>");
+  });
+
+  it("changes search term", () => {
+    const p = fakeProps();
+    const wrapper = shallow<Logs>(<Logs {...p} />);
+    wrapper.find("input").first().simulate("change",
+      { currentTarget: { value: "one" } });
+    expect(wrapper.state().searchTerm).toEqual("one");
   });
 });

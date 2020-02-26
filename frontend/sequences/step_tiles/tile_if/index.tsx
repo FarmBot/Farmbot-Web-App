@@ -100,7 +100,7 @@ export function InnerIf(props: IfParams) {
       confirmStepDeletion={confirmStepDeletion}>
       {recursive &&
         <span>
-          <i className="fa fa-exclamation-triangle"></i>
+          <i className="fa fa-exclamation-triangle" />
           &nbsp;{t("Recursive condition.")}
         </span>
       }

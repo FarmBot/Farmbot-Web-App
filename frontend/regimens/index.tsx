@@ -42,8 +42,7 @@ export class RawRegimens extends React.Component<Props, {}> {
       <Row>
         <LeftPanel
           className={`regimen-list-panel ${activeClasses}`}
-          title={t("Regimens")}
-          helpText={t(ToolTips.REGIMEN_LIST)}>
+          title={t("Regimens")}>
           <RegimensList
             usageStats={this.props.regimenUsageStats}
             dispatch={this.props.dispatch}

@@ -109,6 +109,7 @@ export interface PinBindingsProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   resources: ResourceIndex;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface DangerZoneProps {

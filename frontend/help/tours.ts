@@ -7,7 +7,7 @@ import { selectAllTools } from "../resources/selectors";
 import { store } from "../redux/store";
 import { getFbosConfig } from "../resources/getters";
 import {
-  isExpressBoard, getFwHardwareValue
+  getFwHardwareValue, hasUTM
 } from "../devices/components/firmware_hardware_support";
 
 export enum Tours {
@@ -25,26 +25,26 @@ export const tourNames = () => [
 const hasTools = () =>
   selectAllTools(store.getState().resources.index).length > 0;
 
-const isExpress = () =>
-  isExpressBoard(getFwHardwareValue(
+const noUTM = () =>
+  !hasUTM(getFwHardwareValue(
     getFbosConfig(store.getState().resources.index)));
 
 const toolsStep = () => hasTools()
   ? [{
     target: ".tools",
-    content: isExpress()
+    content: noUTM()
       ? t(TourContent.ADD_SEED_CONTAINERS)
       : t(TourContent.ADD_TOOLS),
-    title: isExpress()
+    title: noUTM()
       ? t("Add seed containers")
       : t("Add tools and seed containers"),
   }]
   : [{
     target: ".tools",
-    content: isExpress()
+    content: noUTM()
       ? t(TourContent.ADD_SEED_CONTAINERS_AND_SLOTS)
       : t(TourContent.ADD_TOOLS_AND_SLOTS),
-    title: isExpress()
+    title: noUTM()
       ? t("Add seed containers and slots")
       : t("Add tools and slots"),
   }];

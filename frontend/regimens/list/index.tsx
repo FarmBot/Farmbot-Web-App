@@ -18,10 +18,10 @@ const RegimenListHeader = (props: RegimenListHeaderProps) =>
   <div className={"panel-top with-button"}>
     <div className="thin-search-wrapper">
       <div className="text-input-wrapper">
-        <i className="fa fa-search"></i>
+        <i className="fa fa-search" />
         <input
           onChange={props.onChange}
-          placeholder={t("Search Regimens...")} />
+          placeholder={t("Search regimens...")} />
       </div>
     </div>
     <AddRegimen dispatch={props.dispatch} length={props.regimenCount} />

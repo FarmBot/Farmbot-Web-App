@@ -958,3 +958,10 @@
   margin-right: 1.5rem;
   &:hover { color: $white; }
 }
+
+.desktop-hide {
+  display: none !important;
+  @media screen and (max-width: 1075px) {
+    display: block !important;
+  }
+}

@@ -16,14 +16,30 @@ export const getFwHardwareValue =
     return isFwHardwareValue(value) ? value : undefined;
   };
 
-const TMC_BOARDS = ["express_k10", "farmduino_k15"];
+const NO_BUTTONS = ["arduino", "farmduino", "none"];
 const EXPRESS_BOARDS = ["express_k10"];
+const NO_SENSORS = [...EXPRESS_BOARDS];
+const NO_ENCODERS = [...EXPRESS_BOARDS];
+const NO_TOOLS = [...EXPRESS_BOARDS];
+const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
-  !!(firmwareHardware && TMC_BOARDS.includes(firmwareHardware));
+  !firmwareHardware || !NO_TMC.includes(firmwareHardware);
 
 export const isExpressBoard = (firmwareHardware: FirmwareHardware | undefined) =>
   !!(firmwareHardware && EXPRESS_BOARDS.includes(firmwareHardware));
+
+export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);
+
+export const hasEncoders = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_ENCODERS.includes(firmwareHardware);
+
+export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_SENSORS.includes(firmwareHardware);
+
+export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
 
 export const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>

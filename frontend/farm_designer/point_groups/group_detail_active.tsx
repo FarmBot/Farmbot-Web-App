@@ -87,7 +87,7 @@ export class GroupDetailActive
         onBack={this.saveGroup}
         panelName={Panel.Groups}
         panel={Panel.Groups}
-        title={t("Edit Group")}
+        title={t("Edit group")}
         backTo={"/app/designer/groups"} />
       <DesignerPanelContent
         panelName={"groups"}>
