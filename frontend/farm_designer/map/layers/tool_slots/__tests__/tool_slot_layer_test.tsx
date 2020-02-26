@@ -4,11 +4,6 @@ jest.mock("../../../../../history", () => ({
   getPathArray: jest.fn(() => { return mockPath.split("/"); })
 }));
 
-let mockDev = false;
-jest.mock("../../../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import {
@@ -55,16 +50,6 @@ describe("<ToolSlotLayer/>", () => {
     p.visible = true;
     const result = shallow(<ToolSlotLayer {...p} />);
     expect(result.find(ToolSlotPoint).length).toEqual(1);
-  });
-
-  it("navigates to tools page", async () => {
-    mockDev = true;
-    mockPath = "/app/designer/plants";
-    const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p} />);
-    const tools = wrapper.find("g").first();
-    await tools.simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/tools");
   });
 
   it("doesn't navigate to tools page", async () => {

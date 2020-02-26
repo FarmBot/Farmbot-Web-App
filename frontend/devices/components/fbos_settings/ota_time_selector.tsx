@@ -6,11 +6,12 @@ import { edit, save } from "../../../api/crud";
 import { ColWidth } from "../farmbot_os_settings";
 import { DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
+import { OtaTimeSelectorRowProps } from "./interfaces";
 
 // tslint:disable-next-line:no-null-keyword
 const UNDEFINED = null as unknown as undefined;
 const IMMEDIATELY = -1;
-export type PreferredHourFormat = "12h" | "24h";
+type PreferredHourFormat = "12h" | "24h";
 type HOUR =
   | typeof IMMEDIATELY
   | 0
@@ -163,3 +164,13 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     </Highlight>
   </Row>;
 };
+
+export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
+  const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
+  const timeFormat = props.timeSettings.hour24 ? "24h" : "12h";
+  return <OtaTimeSelector
+    timeFormat={timeFormat}
+    disabled={!osAutoUpdate.value}
+    value={props.device.body.ota_hour}
+    onChange={changeOtaHour(props.dispatch, props.device)} />;
+}

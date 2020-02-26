@@ -143,11 +143,10 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds"}
         title={t("Weeds")} />
-      {!DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Tools}
-          linkTo={"/app/designer/tools"}
-          title={t("Tools")} />}
+      <NavTab
+        panel={Panel.Tools}
+        linkTo={"/app/designer/tools"}
+        title={t("Tools")} />
       <NavTab
         panel={Panel.Settings}
         icon={"fa fa-gear"}

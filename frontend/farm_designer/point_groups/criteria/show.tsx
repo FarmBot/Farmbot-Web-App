@@ -3,7 +3,7 @@ import { cloneDeep, capitalize } from "lodash";
 import { Row, Col, FBSelect, DropDownItem } from "../../../ui";
 import {
   AddEqCriteria, toggleEqCriteria, editCriteria, AddNumberCriteria,
-  POINTER_TYPE_DDI_LOOKUP, PLANT_STAGE_DDI_LOOKUP, AddStringCriteria,
+  POINTER_TYPE_DDI_LOOKUP, AddStringCriteria,
   CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria
 } from ".";
 import {
@@ -14,6 +14,7 @@ import {
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
+import { PLANT_STAGE_DDI_LOOKUP } from "../../plants/edit_plant_status";
 
 export class EqCriteriaSelection<T extends string | number>
   extends React.Component<EqCriteriaSelectionProps<T>> {

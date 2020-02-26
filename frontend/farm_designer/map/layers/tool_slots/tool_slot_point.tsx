@@ -5,7 +5,6 @@ import { MapTransformProps } from "../../interfaces";
 import { ToolbaySlot, ToolNames, Tool, GantryToolSlot } from "./tool_graphics";
 import { ToolLabel } from "./tool_label";
 import { includes } from "lodash";
-import { DevSettings } from "../../../../account/dev/dev_support";
 import { history } from "../../../../history";
 import { t } from "../../../../i18next_wrapper";
 
@@ -49,8 +48,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
     xySwap,
   };
   return <g id={"toolslot-" + id}
-    onClick={() => !DevSettings.futureFeaturesEnabled() &&
-      history.push(`/app/designer/tool-slots/${id}`)}>
+    onClick={() => history.push(`/app/designer/tool-slots/${id}`)}>
     {pullout_direction && !gantry_mounted &&
       <ToolbaySlot
         id={-(id || 1)}

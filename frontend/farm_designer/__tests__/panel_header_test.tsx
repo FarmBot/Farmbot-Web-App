@@ -71,6 +71,14 @@ describe("<DesignerNavTabs />", () => {
     expect(wrapper.html()).toContain("active");
   });
 
+  it("renders for tools", () => {
+    mockPath = "/app/designer/tools";
+    mockDev = false;
+    const wrapper = shallow(<DesignerNavTabs />);
+    expect(wrapper.hasClass("gray-panel")).toBeTruthy();
+    expect(wrapper.html()).toContain("active");
+  });
+
   it("renders for zones", () => {
     mockPath = "/app/designer/zones";
     mockDev = true;
