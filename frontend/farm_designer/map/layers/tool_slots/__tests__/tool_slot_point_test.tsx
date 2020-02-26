@@ -1,8 +1,3 @@
-let mockDev = false;
-jest.mock("../../../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
@@ -17,10 +12,6 @@ import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { history } from "../../../../../history";
 
 describe("<ToolSlotPoint/>", () => {
-  beforeEach(() => {
-    mockDev = false;
-  });
-
   const fakeProps = (): TSPProps => ({
     mapTransformProps: fakeMapTransformProps(),
     botPositionX: undefined,
@@ -48,10 +39,6 @@ describe("<ToolSlotPoint/>", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.id = 1;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    mockDev = true;
-    wrapper.find("g").first().simulate("click");
-    expect(history.push).not.toHaveBeenCalled();
-    mockDev = false;
     wrapper.find("g").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
   });

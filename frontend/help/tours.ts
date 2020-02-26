@@ -2,7 +2,6 @@ import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
 import { TourContent } from "../constants";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../account/dev/dev_support";
 import { selectAllTools } from "../resources/selectors";
 import { store } from "../redux/store";
 import { getFbosConfig } from "../resources/getters";
@@ -64,16 +63,8 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
       content: t(TourContent.ADD_PLANTS),
       title: t("Add plants"),
     },
-    ...(DevSettings.futureFeaturesEnabled() ? [{
-      target: ".tool-list",
-      content: t(TourContent.ADD_TOOLS),
-      title: t("Add tools and seed containers"),
-    }] : toolsStep()),
-    ...(DevSettings.futureFeaturesEnabled() ? [{
-      target: ".toolbay-list",
-      content: t(TourContent.ADD_TOOLS_SLOTS),
-      title: t("Add tools to tool bay"),
-    }] : toolSlotsStep()),
+    ...toolsStep(),
+    ...toolSlotsStep(),
     {
       target: ".peripherals-widget",
       content: t(TourContent.ADD_PERIPHERALS),

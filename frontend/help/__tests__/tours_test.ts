@@ -1,12 +1,5 @@
 jest.mock("../../history", () => ({ history: { push: jest.fn() } }));
 
-let mockDev = false;
-jest.mock("../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({
@@ -46,7 +39,6 @@ describe("tourPageNavigation()", () => {
   it("includes steps based on tool count", () => {
     const getTargets = () =>
       Object.values(TOUR_STEPS()[Tours.gettingStarted]).map(t => t.target);
-    mockDev = false;
     mockState.resources = buildResourceIndex([]);
     expect(getTargets()).not.toContain(".tool-slots");
     mockState.resources = buildResourceIndex([fakeTool()]);
@@ -56,7 +48,6 @@ describe("tourPageNavigation()", () => {
   it("has correct content based on board version", () => {
     const getTitles = () =>
       Object.values(TOUR_STEPS()[Tours.gettingStarted]).map(t => t.title);
-    mockDev = false;
     mockState.resources = buildResourceIndex([]);
     expect(getTitles()).toContain("Add tools and slots");
     expect(getTitles()).not.toContain("Add seed containers");
@@ -68,14 +59,5 @@ describe("tourPageNavigation()", () => {
     mockState.resources = buildResourceIndex([fbosConfig, fakeTool()]);
     expect(getTitles()).not.toContain("Add seed containers and slots");
     expect(getTitles()).toContain("Add seed containers");
-  });
-
-  it("includes correct tour steps", () => {
-    mockDev = true;
-    const targets =
-      Object.values(TOUR_STEPS()[Tours.gettingStarted]).map(t => t.target);
-    expect(targets).not.toContain(".tools");
-    expect(targets).toContain(".tool-list");
-    expect(targets).toContain(".toolbay-list");
   });
 });

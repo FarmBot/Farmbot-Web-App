@@ -10,6 +10,9 @@ import {
   AddNumberCriteriaState,
   AddStringCriteriaProps,
 } from "./interfaces";
+import {
+  PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST
+} from "../../plants/edit_plant_status";
 
 export class AddEqCriteria<T extends string | number>
   extends React.Component<AddEqCriteriaProps<T>, AddEqCriteriaState> {
@@ -76,19 +79,6 @@ export const POINTER_TYPE_LIST = () => [
   POINTER_TYPE_DDI_LOOKUP().Plant,
   POINTER_TYPE_DDI_LOOKUP().GenericPointer,
   POINTER_TYPE_DDI_LOOKUP().ToolSlot,
-];
-
-export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
-  planned: { label: t("Planned"), value: "planned" },
-  planted: { label: t("Planted"), value: "planted" },
-  sprouted: { label: t("Sprouted"), value: "sprouted" },
-  harvested: { label: t("Harvested"), value: "harvested" },
-});
-export const PLANT_STAGE_LIST = () => [
-  PLANT_STAGE_DDI_LOOKUP().planned,
-  PLANT_STAGE_DDI_LOOKUP().planted,
-  PLANT_STAGE_DDI_LOOKUP().sprouted,
-  PLANT_STAGE_DDI_LOOKUP().harvested,
 ];
 
 export class AddStringCriteria
