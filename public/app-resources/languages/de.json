@@ -536,7 +536,7 @@
     "Can't execute unsaved sequences": "Can't execute unsaved sequences",
     "Cannot change from a Regimen to a Sequence.": "Cannot change from a Regimen to a Sequence.",
     "Cannot delete built-in pin binding.": "Cannot delete built-in pin binding.",
-    "clear filters": "clear filters",
+    "clear filters": "Filter löschen",
     "Click a spot in the grid to choose a location. Once selected, press button to move FarmBot to this position. Press the back arrow to exit.": "Click a spot in the grid to choose a location. Once selected, press button to move FarmBot to this position. Press the back arrow to exit.",
     "Click and drag to draw a point or use the inputs and press update. Press CREATE POINT to save, or the back arrow to exit.": "Click and drag to draw a point or use the inputs and press update. Press CREATE POINT to save, or the back arrow to exit.",
     "Click one in the Regimens panel to edit, or click \"+\" to create a new one.": "Click one in the Regimens panel to edit, or click \"+\" to create a new one.",
