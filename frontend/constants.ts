@@ -648,8 +648,8 @@ export namespace Content {
     trim(`Restart the Farmduino or Arduino firmware.`);
 
   export const OS_AUTO_UPDATE =
-    trim(`When enabled, FarmBot OS will periodically check for, download,
-    and install updates automatically.`);
+    trim(`When enabled, FarmBot OS will automatically download and install
+    software updates at the chosen time.`);
 
   export const AUTO_SYNC =
     trim(`When enabled, device resources such as sequences and regimens
@@ -663,7 +663,7 @@ export namespace Content {
     back on, unplug FarmBot and plug it back in.`);
 
   export const OS_BETA_RELEASES =
-    trim(`Warning! Opting in to FarmBot OS beta releases may reduce
+    trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
     FarmBot system stability. Are you sure?`);
 
   export const DIAGNOSTIC_CHECK =
@@ -897,16 +897,16 @@ export namespace TourContent {
 
   export const ADD_TOOLS_AND_SLOTS =
     trim(`Press the + button to add tools and seed containers. Then create
-    tool slots for them to by pressing the tool slot + button.`);
+    slots for them to by pressing the slot + button.`);
 
   export const ADD_SEED_CONTAINERS_AND_SLOTS =
     trim(`Press the + button to add seed containers. Then create
-    slots for them to by pressing the seed container slot + button.`);
+    slots for them to by pressing the slot + button.`);
 
   export const ADD_TOOLS_SLOTS =
     trim(`Add the newly created tools and seed containers to the
-    corresponding tool slots on FarmBot:
-    press the + button to create a tool slot.`);
+    corresponding slots on FarmBot:
+    press the + button to create a slot.`);
 
   export const ADD_PERIPHERALS =
     trim(`Press edit and then the + button to add peripherals.`);
@@ -998,7 +998,7 @@ export enum DeviceSetting {
   pinGuard = `Pin Guard`,
 
   // Danger Zone
-  dangerZone = `dangerZone`,
+  dangerZone = `Danger Zone`,
   resetHardwareParams = `Reset hardware parameter defaults`,
 
   // Pin Bindings
@@ -1009,7 +1009,8 @@ export enum DeviceSetting {
   timezone = `timezone`,
   camera = `camera`,
   firmware = `firmware`,
-  farmbotOSAutoUpdate = `Farmbot OS Auto Update`,
+  applySoftwareUpdates = `update time`,
+  farmbotOSAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
   autoSync = `Auto Sync`,
   bootSequence = `Boot Sequence`,

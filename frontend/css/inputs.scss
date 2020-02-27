@@ -154,4 +154,12 @@ select {
       }
     }
   }
+  &.disabled {
+    input[type="checkbox"] {
+      cursor: not-allowed;
+      &:checked:after {
+        border-color: $gray;
+     }
+    }
+  }
 }

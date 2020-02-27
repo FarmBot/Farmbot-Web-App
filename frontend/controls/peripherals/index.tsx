@@ -108,7 +108,7 @@ export class Peripherals
           <i className="fa fa-plus" />
         </button>
         <button
-          hidden={!isEditing}
+          hidden={!isEditing || this.props.firmwareHardware == "none"}
           className="fb-button green"
           type="button"
           onClick={() => this.stockPeripherals.map(p =>

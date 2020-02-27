@@ -30,11 +30,11 @@ const checkCriteria =
             ? point.body.planted_at
             : point.body.created_at);
           const compareDate = moment(now)
-            .subtract(criteria[criteriaKey].days, "days");
+            .subtract(criteria[criteriaKey].days_ago, "days");
           const matchesDays = criteria[criteriaKey].op == "<"
             ? pointDate.isAfter(compareDate)
             : pointDate.isBefore(compareDate);
-          return matchesDays || !criteria[criteriaKey].days;
+          return matchesDays || !criteria[criteriaKey].days_ago;
       }
     };
 

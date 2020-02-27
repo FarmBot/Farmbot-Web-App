@@ -1,44 +1,7 @@
-import {
-  isSortType, sortTypeChange, SORT_OPTIONS
-} from "../point_group_sort_selector";
-import { DropDownItem } from "../../../ui";
+import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { TaggedPoint } from "farmbot";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
-
-const tests: [string, boolean][] = [
-  ["", false],
-  ["nope", false],
-  ["random", true],
-  ["xy_ascending", true],
-  ["xy_descending", true],
-  ["yx_ascending", true],
-  ["yx_descending", true]
-];
-
-describe("isSortType", () => {
-  it("identifies malformed sort types", () => {
-    tests.map(([sortType, valid]) => {
-      expect(isSortType(sortType)).toBe(valid);
-    });
-  });
-});
-
-describe("sortTypeChange", () => {
-  it("selectively triggers the callback", () => {
-    tests.map(([value, valid]) => {
-      const cb = jest.fn();
-      const ddi: DropDownItem = { value, label: "TEST" };
-      if (valid) {
-        sortTypeChange(cb)(ddi);
-        expect(cb).toHaveBeenCalledWith(value);
-      } else {
-        sortTypeChange(cb)(ddi);
-        expect(cb).not.toHaveBeenCalled();
-      }
-    });
-  });
-});
 
 describe("sort()", () => {
   const phony = (name: string, x: number, y: number): TaggedPoint => {

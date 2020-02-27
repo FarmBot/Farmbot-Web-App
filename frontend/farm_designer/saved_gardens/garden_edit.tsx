@@ -80,7 +80,7 @@ export class RawEditGarden extends React.Component<EditGardenProps, {}> {
       <DesignerPanelHeader
         panelName={"saved-garden"}
         panel={Panel.SavedGardens}
-        title={t("Edit Garden")}
+        title={t("Edit garden")}
         backTo={"/app/designer/gardens"} />
       <DesignerPanelContent panelName={"saved-garden-edit"}>
         {savedGarden

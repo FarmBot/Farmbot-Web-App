@@ -48,7 +48,7 @@ export class RawGroupListPanel extends React.Component<GroupListPanelProps, Stat
       <DesignerPanelTop
         panel={Panel.Groups}
         linkTo={"/app/designer/plants/select"}
-        title={t("Add Group")}>
+        title={t("Add group")}>
         <input type="text"
           onChange={this.update}
           placeholder={t("Search your groups...")} />

@@ -40,13 +40,14 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     noFolder: (localMetaAttributes[PARENTLESS] || {}).sequences || []
   };
   const index = folders.map(setDefaultParentId).reduce(addToIndex, emptyIndex);
-  const childrenOf = (i: number) => sortBy(index[i] || [], (x) => x.name.toLowerCase());
+  const childrenOf = (i: number) =>
+    sortBy(index[i] || [], (x) => x.name.toLowerCase());
 
   const terminal = (x: FolderNode): FolderNodeTerminal => ({
     ...x,
     kind: "terminal",
     content: (localMetaAttributes[x.id] || {}).sequences || [],
-    open: true,
+    open: false,
     editing: false,
     // children: [],
     ...(localMetaAttributes[x.id] || {})
@@ -55,7 +56,7 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
   const medial = (x: FolderNode): FolderNodeMedial => ({
     ...x,
     kind: "medial",
-    open: true,
+    open: false,
     editing: false,
     children: childrenOf(x.id).map(terminal),
     content: (localMetaAttributes[x.id] || {}).sequences || [],
@@ -67,7 +68,7 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     return output.folders.push({
       ...root,
       kind: "initial",
-      open: true,
+      open: false,
       editing: false,
       children,
       content: (localMetaAttributes[root.id] || {}).sequences || [],

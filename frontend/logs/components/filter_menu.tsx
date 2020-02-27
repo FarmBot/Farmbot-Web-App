@@ -28,7 +28,7 @@ const menuSort = (a: string, b: string) =>
 export const filterStateKeys =
   (state: LogsState, shouldDisplay: ShouldDisplay) =>
     Object.keys(state)
-      .filter(key => !["autoscroll", "markdown"].includes(key))
+      .filter(key => !["autoscroll", "markdown", "searchTerm"].includes(key))
       .filter(key => shouldDisplay(Feature.assertion_block)
         || key !== "assertion");
 

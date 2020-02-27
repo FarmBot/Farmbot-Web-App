@@ -1,4 +1,6 @@
-import { sortByNameAndPin, ButtonPin, getSpecialActionLabel } from "../list_and_label_support";
+import {
+  sortByNameAndPin, ButtonPin, getSpecialActionLabel
+} from "../list_and_label_support";
 import { PinBindingSpecialAction } from "farmbot/dist/resources/api_resources";
 
 describe("sortByNameAndPin()", () => {

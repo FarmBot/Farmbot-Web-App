@@ -3,10 +3,12 @@ import {
   PinBindingType,
   PinBindingSpecialAction
 } from "farmbot/dist/resources/api_resources";
+import { FirmwareHardware } from "farmbot";
 
 export interface PinBindingsContentProps {
   dispatch: Function;
   resources: ResourceIndex;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface PinBindingListItems {

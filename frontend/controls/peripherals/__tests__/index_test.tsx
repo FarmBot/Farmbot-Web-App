@@ -88,4 +88,14 @@ describe("<Peripherals />", () => {
     clickButton(wrapper, 3, "stock");
     expect(p.dispatch).toHaveBeenCalledTimes(expectedAdds);
   });
+
+  it("hides stock button", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "none";
+    const wrapper = mount(<Peripherals {...p} />);
+    wrapper.setState({ isEditing: true });
+    const btn = wrapper.find("button").at(3);
+    expect(btn.text().toLowerCase()).toContain("stock");
+    expect(btn.props().hidden).toBeTruthy();
+  });
 });

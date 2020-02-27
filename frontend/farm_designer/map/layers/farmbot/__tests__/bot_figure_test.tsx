@@ -86,7 +86,7 @@ describe("<BotFigure/>", () => {
     p.position.x = 100;
     const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     expect(wrapper.instance().state.hovered).toBeFalsy();
-    const utm = wrapper.find("#UTM");
+    const utm = wrapper.find("#UTM-wrapper");
     utm.simulate("mouseOver");
     expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
@@ -105,7 +105,7 @@ describe("<BotFigure/>", () => {
     p.position.x = 100;
     p.mapTransformProps.xySwap = true;
     const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
-    const utm = wrapper.find("#UTM");
+    const utm = wrapper.find("#UTM-wrapper");
     utm.simulate("mouseOver");
     expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
@@ -113,5 +113,13 @@ describe("<BotFigure/>", () => {
       textAnchor: "middle", visibility: "visible",
     }));
     expect(wrapper.text()).toEqual("(100, 0, 0)");
+  });
+
+  it("shows mounted tool", () => {
+    const p = fakeProps();
+    p.mountedToolName = "Seeder";
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
+      .toEqual(1);
   });
 });

@@ -89,6 +89,7 @@ describe("<FbosDetails/>", () => {
     const p = fakeProps();
     const commit = "abcdefgh";
     p.botInfoSettings.firmware_commit = commit;
+    p.botInfoSettings.firmware_version = "1.0.0";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.find("a").last().text()).toEqual(commit);
     expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
@@ -115,6 +116,7 @@ describe("<FbosDetails/>", () => {
 
   it("doesn't display link without commit", () => {
     const p = fakeProps();
+    p.botInfoSettings.firmware_version = undefined;
     p.botInfoSettings.commit = "---";
     p.botInfoSettings.firmware_commit = "---";
     const wrapper = mount(<FbosDetails {...p} />);

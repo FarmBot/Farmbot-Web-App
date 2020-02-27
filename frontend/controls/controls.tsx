@@ -10,6 +10,7 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
+import { hasSensors } from "../devices/components/firmware_hardware_support";
 
 /** Controls page. */
 export class RawControls extends React.Component<Props, {}> {
@@ -24,7 +25,8 @@ export class RawControls extends React.Component<Props, {}> {
   }
 
   get hideSensors() {
-    return this.props.getWebAppConfigVal(BooleanSetting.hide_sensors);
+    return this.props.getWebAppConfigVal(BooleanSetting.hide_sensors)
+      || !hasSensors(this.props.firmwareHardware);
   }
 
   move = () => <Move

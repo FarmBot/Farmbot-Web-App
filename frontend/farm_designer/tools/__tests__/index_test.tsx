@@ -13,7 +13,10 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import { RawTools as Tools, ToolsProps, mapStateToProps } from "../index";
+import {
+  RawTools as Tools, ToolsProps, mapStateToProps,
+  ToolSlotInventoryItem, ToolSlotInventoryItemProps,
+} from "../index";
 import {
   fakeTool, fakeToolSlot, fakeSensor
 } from "../../../__test_support__/fake_state/resources";
@@ -40,6 +43,7 @@ describe("<Tools />", () => {
     botToMqttStatus: "down",
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
+    isActive: jest.fn(),
   });
 
   it("renders with no tools", () => {
@@ -181,6 +185,62 @@ describe("<Tools />", () => {
     p.firmwareHardware = "express_k10";
     const wrapper = mount(<Tools {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("mounted tool");
+  });
+
+  it("displays tool as active", () => {
+    const p = fakeProps();
+    p.tools = [fakeTool()];
+    p.isActive = () => true;
+    p.device.body.mounted_tool_id = undefined;
+    const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("in slot");
+  });
+
+  it("displays tool as mounted", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.findTool = () => tool;
+    p.tools = [tool];
+    p.device.body.mounted_tool_id = 1;
+    const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.find("p").last().text().toLowerCase()).toContain("mounted");
+  });
+
+  it("handles missing tools", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.findTool = () => undefined;
+    p.tools = [tool];
+    p.device.body.mounted_tool_id = 1;
+    const wrapper = mount(<Tools {...p} />);
+    expect(wrapper.find("p").last().text().toLowerCase()).not.toContain("mounted");
+  });
+});
+
+describe("<ToolSlotInventoryItem />", () => {
+  const fakeProps = (): ToolSlotInventoryItemProps => ({
+    toolSlot: fakeToolSlot(),
+    tools: [],
+    hovered: false,
+    dispatch: jest.fn(),
+    isActive: jest.fn(),
+  });
+
+  it("changes tool", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
+    wrapper.find(ToolSelection).simulate("change", { tool_id: 1 });
+    expect(edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
+    expect(save).toHaveBeenCalledWith(p.toolSlot.uuid);
+  });
+
+  it("doesn't open tool slot", () => {
+    const wrapper = shallow(<ToolSlotInventoryItem {...fakeProps()} />);
+    const e = { stopPropagation: jest.fn() };
+    wrapper.find(".tool-selection-wrapper").first().simulate("click", e);
+    expect(e.stopPropagation).toHaveBeenCalled();
   });
 });
 

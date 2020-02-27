@@ -6,6 +6,7 @@ jest.mock("../../../farmware/weed_detector/actions", () => ({
 
 let mockPath = "/app/designer/points/add";
 jest.mock("../../../history", () => ({
+  history: { push: jest.fn() },
   push: jest.fn(),
   getPathArray: () => mockPath.split("/"),
 }));
@@ -70,14 +71,14 @@ describe("<CreatePoints />", () => {
   it("renders for points", () => {
     mockPath = "/app/designer";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["create point", "delete", "x", "y", "radius", "color"]
+    ["add point", "delete", "x", "y", "radius", "color"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     mockPath = "/app/designer/weeds/add";
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["create weed", "delete", "x", "y", "radius", "color"]
+    ["add weed", "delete", "x", "y", "radius", "color"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

@@ -100,7 +100,7 @@ describe("<DaySelection />", () => {
       currentTarget: { value: "1" }
     });
     const expectedBody = cloneDeep(p.group.body);
-    expectedBody.criteria.day.days = 1;
+    expectedBody.criteria.day.days_ago = 1;
     expect(overwrite).toHaveBeenCalledWith(p.group, expectedBody);
   });
 

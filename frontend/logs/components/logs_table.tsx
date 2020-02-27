@@ -3,7 +3,7 @@ import { TaggedLog, ALLOWED_MESSAGE_TYPES } from "farmbot";
 import { LogsState, LogsTableProps, Filters } from "../interfaces";
 import { formatLogTime } from "../index";
 import { Classes } from "@blueprintjs/core";
-import { isNumber, startCase } from "lodash";
+import { isNumber, startCase, some } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { UUID } from "../../resources/interfaces";
@@ -81,6 +81,7 @@ export const LogsTable = (props: LogsTableProps) => {
       </thead>
       <tbody>
         {filterByVerbosity(getFilterLevel(props.state), props.logs)
+          .filter(bySearchTerm(props.state.searchTerm, props.timeSettings))
           .map((log: TaggedLog) =>
             <LogsRow
               key={log.uuid}
@@ -114,3 +115,18 @@ export const filterByVerbosity =
         return displayLog;
       });
   };
+
+export const bySearchTerm =
+  (searchTerm: string, timeSettings: TimeSettings) =>
+    (log: TaggedLog) => {
+      const { x, y, z, created_at, message, type } = log.body;
+      const displayedTime = formatLogTime(created_at || NaN, timeSettings);
+      const displayedPosition = xyzTableEntry(x, y, z);
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      return some([message, type]
+        .map(string => string.toLowerCase().includes(lowerSearchTerm))
+        .concat([
+          displayedTime.toLowerCase().includes(lowerSearchTerm),
+          displayedPosition.includes(lowerSearchTerm),
+        ]));
+    };

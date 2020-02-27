@@ -22,7 +22,7 @@ import { Actions } from "../../../constants";
 import { edit } from "../../../api/crud";
 import { error } from "../../../toast/toast";
 import { svgMount } from "../../../__test_support__/svg_mount";
-import { SORT_OPTIONS } from "../point_group_sort_selector";
+import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 /**

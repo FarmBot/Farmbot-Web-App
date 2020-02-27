@@ -160,6 +160,8 @@ export class GardenMap extends
   /** Map background drag start actions. */
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
+      case Mode.moveTo:
+        break;
       case Mode.createPoint:
       case Mode.clickToAdd:
       case Mode.editPlant:
@@ -301,6 +303,8 @@ export class GardenMap extends
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
     switch (getMode()) {
+      case Mode.moveTo:
+        return () => { };
       case Mode.boxSelect:
         return this.props.designer.selectedPlants
           ? () => { }
@@ -410,6 +414,7 @@ export class GardenMap extends
     plantAreaOffset={this.props.gridOffset}
     peripherals={this.props.peripherals}
     eStopStatus={this.props.eStopStatus}
+    mountedToolName={this.props.mountedToolName}
     getConfigValue={this.props.getConfigValue} />
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}

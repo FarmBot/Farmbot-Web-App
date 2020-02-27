@@ -2,7 +2,7 @@ import { TaggedPointGroup } from "farmbot";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 
 export const DEFAULT_CRITERIA: Readonly<PointGroup["criteria"]> = {
-  day: { op: "<", days: 0 },
+  day: { op: "<", days_ago: 0 },
   number_eq: {},
   number_gt: {},
   number_lt: {},

@@ -12,6 +12,7 @@ describe("<PinBindings />", () => {
     dispatch: jest.fn(),
     controlPanelState: panelState(),
     resources: buildResourceIndex([]).index,
+    firmwareHardware: undefined,
   });
 
   it("shows pin binding labels", () => {

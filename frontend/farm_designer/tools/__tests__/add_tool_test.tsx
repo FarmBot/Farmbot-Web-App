@@ -22,7 +22,7 @@ describe("<AddTool />", () => {
 
   it("renders", () => {
     const wrapper = mount(<AddTool {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Add new tool");
+    expect(wrapper.text()).toContain("Add new");
   });
 
   it("edits tool name", () => {
@@ -60,10 +60,35 @@ describe("<AddTool />", () => {
     p.firmwareHardware = "express_k10";
     p.existingToolNames = ["Seed Trough 1"];
     const wrapper = mount(<AddTool {...p} />);
-    wrapper.setState({ model: "express" });
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(1);
     expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+  });
+
+  it("copies a tool name", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    wrapper.find("p").last().simulate("click");
+    expect(wrapper.state().toolName).toEqual("Seed Trough 2");
+  });
+
+  it("deselects a tool", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    expect(wrapper.state().toAdd).toEqual(["Seed Trough 1", "Seed Trough 2"]);
+    wrapper.find("input").last().simulate("change");
+    expect(wrapper.state().toAdd).toEqual(["Seed Trough 1"]);
+  });
+
+  it("selects a tool", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    wrapper.setState({ toAdd: [] });
+    wrapper.find("input").last().simulate("change");
+    expect(wrapper.state().toAdd).toEqual(["Seed Trough 2"]);
   });
 });
 

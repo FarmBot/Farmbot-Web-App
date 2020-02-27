@@ -226,7 +226,7 @@ fieldset {
   .percent-bar {
     position: absolute;
     top: 2px;
-    left: 12rem;
+    right: 0;
     height: 1rem;
     width: 25%;
     clip-path: polygon(0 85%, 100% 0, 100% 100%, 0% 100%);
@@ -405,6 +405,18 @@ a {
     width: 0px !important;
     background-color: transparent !important;
     }
+}
+
+.load-progress-bar-wrapper {
+  position: absolute;
+  top: 3.2rem;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 1px;
+  .load-progress-bar {
+    height: 100%;
+  }
 }
 
 .firmware-setting-export-menu {
@@ -1543,16 +1555,21 @@ textarea:focus {
   cursor: pointer;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-  border: 2px solid $panel_light_blue;
+  border: 2px solid darken($panel_light_blue, 30%);
+  border-radius: 5px;
   &:hover, &.selected {
-    border: 2px solid $medium_gray;
-    border-radius: 2px;
     .sort-path-info-bar {
-      background: darken($light_gray, 10%);
+      background: darken($panel_light_blue, 40%);
     }
   }
+  &:hover {
+    border: 2px solid darken($panel_light_blue, 40%);
+  }
+  &.selected {
+    border: 2px solid $medium_gray;
+  }
   .sort-path-info-bar {
-    background: $light_gray;
+    background: darken($panel_light_blue, 30%);
     font-size: 1.2rem;
     padding-left: 0.5rem;
     white-space: nowrap;
@@ -1648,4 +1665,10 @@ textarea:focus {
   transition: background-color 10s linear, box-shadow 10s linear;
   background-color: transparent;
   box-shadow: none;
+}
+
+.read-only-icon {
+  margin: 9px 0px 0px 9px;
+  float: right;
+  box-sizing: inherit;
 }

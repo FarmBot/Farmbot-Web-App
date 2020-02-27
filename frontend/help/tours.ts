@@ -2,12 +2,11 @@ import { history } from "../history";
 import { Step as TourStep } from "react-joyride";
 import { TourContent } from "../constants";
 import { t } from "../i18next_wrapper";
-import { DevSettings } from "../account/dev/dev_support";
 import { selectAllTools } from "../resources/selectors";
 import { store } from "../redux/store";
 import { getFbosConfig } from "../resources/getters";
 import {
-  isExpressBoard, getFwHardwareValue
+  getFwHardwareValue, hasUTM
 } from "../devices/components/firmware_hardware_support";
 
 export enum Tours {
@@ -25,35 +24,35 @@ export const tourNames = () => [
 const hasTools = () =>
   selectAllTools(store.getState().resources.index).length > 0;
 
-const isExpress = () =>
-  isExpressBoard(getFwHardwareValue(
+const noUTM = () =>
+  !hasUTM(getFwHardwareValue(
     getFbosConfig(store.getState().resources.index)));
 
 const toolsStep = () => hasTools()
   ? [{
     target: ".tools",
-    content: isExpress()
+    content: noUTM()
       ? t(TourContent.ADD_SEED_CONTAINERS)
       : t(TourContent.ADD_TOOLS),
-    title: isExpress()
+    title: noUTM()
       ? t("Add seed containers")
       : t("Add tools and seed containers"),
   }]
   : [{
     target: ".tools",
-    content: isExpress()
+    content: noUTM()
       ? t(TourContent.ADD_SEED_CONTAINERS_AND_SLOTS)
       : t(TourContent.ADD_TOOLS_AND_SLOTS),
-    title: isExpress()
+    title: noUTM()
       ? t("Add seed containers and slots")
-      : t("Add tools and tool slots"),
+      : t("Add tools and slots"),
   }];
 
 const toolSlotsStep = () => hasTools()
   ? [{
     target: ".tool-slots",
     content: t(TourContent.ADD_TOOLS_AND_SLOTS),
-    title: t("Add tool slots"),
+    title: t("Add slots"),
   }]
   : [];
 
@@ -64,16 +63,8 @@ export const TOUR_STEPS = (): { [x: string]: TourStep[] } => ({
       content: t(TourContent.ADD_PLANTS),
       title: t("Add plants"),
     },
-    ...(DevSettings.futureFeaturesEnabled() ? [{
-      target: ".tool-list",
-      content: t(TourContent.ADD_TOOLS),
-      title: t("Add tools and seed containers"),
-    }] : toolsStep()),
-    ...(DevSettings.futureFeaturesEnabled() ? [{
-      target: ".toolbay-list",
-      content: t(TourContent.ADD_TOOLS_SLOTS),
-      title: t("Add tools to tool bay"),
-    }] : toolSlotsStep()),
+    ...toolsStep(),
+    ...toolSlotsStep(),
     {
       target: ".peripherals-widget",
       content: t(TourContent.ADD_PERIPHERALS),

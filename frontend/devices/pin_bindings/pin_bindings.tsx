@@ -68,12 +68,13 @@ const PinBindingsListHeader = () =>
   </Row>;
 
 export const PinBindingsContent = (props: PinBindingsContentProps) => {
-  const { dispatch, resources } = props;
+  const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
 
   return <div className="pin-bindings">
     <Row>
-      <StockPinBindingsButton dispatch={dispatch} />
+      <StockPinBindingsButton
+        dispatch={dispatch} firmwareHardware={firmwareHardware} />
       <Popover
         position={Position.RIGHT_TOP}
         interactionKind={PopoverInteractionKind.HOVER}

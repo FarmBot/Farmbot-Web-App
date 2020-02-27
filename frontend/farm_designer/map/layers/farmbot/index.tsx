@@ -28,6 +28,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       position={props.botLocationData.position}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
+      mountedToolName={props.mountedToolName}
       eStopStatus={eStopStatus} />
     {encoderFigure &&
       <BotFigure name={"encoder-position"}

@@ -9,7 +9,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { t } from "../../../i18next_wrapper";
 import { calculateScale } from "./motors";
-import { isExpressBoard } from "../firmware_hardware_support";
+import { hasEncoders } from "../firmware_hardware_support";
 import { getDevice } from "../../../device";
 import { commandErr } from "../../actions";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
@@ -44,7 +44,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         type={"find_home"}
         title={DeviceSetting.homing}
         axisTitle={t("FIND HOME")}
-        toolTip={isExpressBoard(firmwareHardware)
+        toolTip={!hasEncoders(firmwareHardware)
           ? ToolTips.HOMING_STALL_DETECTION
           : ToolTips.HOMING_ENCODERS}
         action={axis => getDevice()
@@ -56,7 +56,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         type={"calibrate"}
         title={DeviceSetting.calibration}
         axisTitle={t("CALIBRATE")}
-        toolTip={isExpressBoard(firmwareHardware)
+        toolTip={!hasEncoders(firmwareHardware)
           ? ToolTips.CALIBRATION_STALL_DETECTION
           : ToolTips.CALIBRATION_ENCODERS}
         action={axis => getDevice().calibrate({ axis })
@@ -74,7 +74,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         botDisconnected={botDisconnected} />
       <BooleanMCUInputGroup
         label={DeviceSetting.findHomeOnBoot}
-        tooltip={isExpressBoard(firmwareHardware)
+        tooltip={!hasEncoders(firmwareHardware)
           ? ToolTips.FIND_HOME_ON_BOOT_STALL_DETECTION
           : ToolTips.FIND_HOME_ON_BOOT_ENCODERS}
         disable={disabled}

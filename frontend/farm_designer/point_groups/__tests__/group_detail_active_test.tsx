@@ -6,13 +6,6 @@ jest.mock("../../../api/crud", () => ({
 
 jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import React from "react";
 import {
   GroupDetailActive, GroupDetailActiveProps
@@ -107,17 +100,9 @@ describe("<GroupDetailActive/>", () => {
   });
 
   it("shows paths", () => {
-    mockDev = false;
     const p = fakeProps();
     const wrapper = mount(<GroupDetailActive {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("0m");
-  });
-
-  it("doesn't show paths", () => {
-    mockDev = true;
-    const p = fakeProps();
-    const wrapper = mount(<GroupDetailActive {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("0m");
   });
 
   it("shows random warning text", () => {

@@ -46,6 +46,7 @@ describe("<PinBindingsContent/>", () => {
     return {
       dispatch: jest.fn(),
       resources: resources,
+      firmwareHardware: undefined,
     };
   }
 

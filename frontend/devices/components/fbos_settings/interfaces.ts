@@ -12,7 +12,6 @@ import {
   TaggedDevice,
 } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
-import { PreferredHourFormat } from "./ota_time_selector";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -21,9 +20,14 @@ export interface AutoSyncRowProps {
 
 export interface AutoUpdateRowProps {
   dispatch: Function;
-  timeFormat: PreferredHourFormat;
+  sourceFbosConfig: SourceFbosConfig;
+}
+
+export interface OtaTimeSelectorRowProps {
+  dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
+  timeSettings: TimeSettings;
 }
 
 export interface CameraSelectionProps {

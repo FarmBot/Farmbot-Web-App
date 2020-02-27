@@ -14,7 +14,7 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
     onClick={() => dispatch(openSavedGarden(savedGarden.uuid))}>
     <Col>
       <span>{savedGarden.body.name}</span>
-      <p>{props.plantTemplateCount} {t("plants")}</p>
+      <p><i>{props.plantTemplateCount} {t("plants")}</i></p>
     </Col>
   </div>;
 };

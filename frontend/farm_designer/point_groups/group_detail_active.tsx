@@ -7,11 +7,10 @@ import {
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { DeleteButton } from "../../ui/delete_button";
 import { save, edit } from "../../api/crud";
-import { PointGroupSortSelector, sortGroupBy } from "./point_group_sort_selector";
+import { sortGroupBy } from "./point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PointGroupItem } from "./point_group_item";
 import { Paths } from "./paths";
-import { DevSettings } from "../../account/dev/dev_support";
 import { Feature, ShouldDisplay } from "../../devices/interfaces";
 import { ErrorBoundary } from "../../error_boundary";
 import {
@@ -88,7 +87,7 @@ export class GroupDetailActive
         onBack={this.saveGroup}
         panelName={Panel.Groups}
         panel={Panel.Groups}
-        title={t("Edit Group")}
+        title={t("Edit group")}
         backTo={"/app/designer/groups"} />
       <DesignerPanelContent
         panelName={"groups"}>
@@ -103,16 +102,12 @@ export class GroupDetailActive
             <label>
               {t("SORT BY")}
             </label>
-            {!DevSettings.futureFeaturesEnabled()
-              ? <Paths
-                key={JSON.stringify(this.pointsSelectedByGroup
-                  .map(p => p.body.id))}
-                pathPoints={this.pointsSelectedByGroup}
-                dispatch={dispatch}
-                group={group} />
-              : <PointGroupSortSelector
-                value={group.body.sort_type}
-                onChange={this.changeSortType} />}
+            <Paths
+              key={JSON.stringify(this.pointsSelectedByGroup
+                .map(p => p.body.id))}
+              pathPoints={this.pointsSelectedByGroup}
+              dispatch={dispatch}
+              group={group} />
             <p>
               {group.body.sort_type == "random" && t(Content.SORT_DESCRIPTION)}
             </p>
