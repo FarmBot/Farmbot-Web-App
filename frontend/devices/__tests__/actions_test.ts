@@ -32,11 +32,11 @@ jest.mock("axios", () => ({ get: jest.fn(() => mockGetRelease) }));
 
 import * as actions from "../actions";
 import {
-  fakeFirmwareConfig, fakeFbosConfig
+  fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  changeStepSize, commandErr
+  changeStepSize, commandErr,
 } from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";

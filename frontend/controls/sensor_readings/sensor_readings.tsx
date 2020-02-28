@@ -4,7 +4,7 @@ import { SensorReadingsProps, SensorReadingsState } from "./interfaces";
 import { SensorReadingsTable } from "./table";
 import { filterSensorReadings } from "./filter_readings";
 import {
-  TimePeriodSelection, DateDisplay, getEndDate
+  TimePeriodSelection, DateDisplay, getEndDate,
 } from "./time_period_selection";
 import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";

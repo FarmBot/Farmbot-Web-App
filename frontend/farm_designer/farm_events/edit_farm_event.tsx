@@ -7,7 +7,7 @@ import { EditFEForm } from "./edit_fe_form";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 
 export class RawEditFarmEvent extends React.Component<AddEditFarmEventProps, {}> {

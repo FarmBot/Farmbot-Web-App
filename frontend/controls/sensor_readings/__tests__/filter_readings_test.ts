@@ -1,5 +1,5 @@
 import {
-  fakeSensorReading, fakeSensor
+  fakeSensorReading, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { filterSensorReadings } from "../filter_readings";
 import { SensorReadingsState } from "../interfaces";

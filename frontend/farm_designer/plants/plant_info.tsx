@@ -5,7 +5,7 @@ import { PlantPanel } from "./plant_panel";
 import { unselectPlant } from "../map/actions";
 import { TaggedPlant } from "../map/interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";

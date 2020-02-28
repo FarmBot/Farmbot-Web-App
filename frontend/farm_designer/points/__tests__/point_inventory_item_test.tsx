@@ -3,7 +3,7 @@ jest.mock("../../../history", () => ({ push: jest.fn() }));
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
-  PointInventoryItem, PointInventoryItemProps
+  PointInventoryItem, PointInventoryItemProps,
 } from "../point_inventory_item";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { push } from "../../../history";

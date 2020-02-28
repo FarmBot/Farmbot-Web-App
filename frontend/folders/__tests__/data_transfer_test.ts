@@ -7,7 +7,7 @@ const FOLDERS: FolderNode[] = [
   { id: 2, color: "green", name: "Folder for growing things", parent_id: undefined },
   { id: 3, color: "yellow", name: "subfolder", parent_id: 2 },
   { id: 4, color: "gray", name: "tests", parent_id: undefined },
-  { id: 5, color: "pink", name: "deeply nested directory", parent_id: 3 }
+  { id: 5, color: "pink", name: "deeply nested directory", parent_id: 3 },
 ];
 const TREE = ingest({
   folders: FOLDERS,

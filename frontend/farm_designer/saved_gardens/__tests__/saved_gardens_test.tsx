@@ -21,12 +21,12 @@ import {
 } from "../saved_gardens";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
-  fakePlantTemplate, fakeSavedGarden
+  fakePlantTemplate, fakeSavedGarden,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { SavedGardensProps } from "../interfaces";
 import { closeSavedGarden } from "../actions";

@@ -3,7 +3,7 @@ import { ResourceIndex } from "../../../resources/interfaces";
 import {
   selectAllFarmEvents,
   indexSequenceById,
-  indexRegimenById
+  indexRegimenById,
 } from "../../../resources/selectors";
 import { betterCompact } from "../../../util";
 import { TaggedFarmEvent } from "farmbot";

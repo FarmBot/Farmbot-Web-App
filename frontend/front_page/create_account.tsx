@@ -6,7 +6,7 @@ import {
   WidgetHeader,
   Row,
   BlurableInput,
-  BIProps
+  BIProps,
 } from "../ui/index";
 
 import { resendEmail } from "./resend_verification";

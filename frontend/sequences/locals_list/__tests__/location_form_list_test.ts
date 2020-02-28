@@ -1,9 +1,9 @@
 import {
-  locationFormList, dropDownName, formatTool, groups2Ddi
+  locationFormList, dropDownName, formatTool, groups2Ddi,
 } from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
-  fakeToolSlot, fakeTool, fakePointGroup
+  fakeToolSlot, fakeTool, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 
 describe("locationFormList()", () => {

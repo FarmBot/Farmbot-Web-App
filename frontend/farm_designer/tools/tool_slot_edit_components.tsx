@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Xyz, TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import {
-  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem
+  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui";
 import { BotPosition } from "../../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";

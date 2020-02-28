@@ -4,18 +4,18 @@ import { connect } from "react-redux";
 import { history } from "../../history";
 import { unselectPlant } from "../map/actions";
 import {
-  selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers
+  selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers,
 } from "../../resources/selectors";
 import { SavedGardenList } from "./garden_list";
 import { SavedGardensProps, SavedGardensState } from "./interfaces";
 import { closeSavedGarden } from "./actions";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 

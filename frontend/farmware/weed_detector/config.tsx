@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   BlurableInput,
   Row, Col,
-  FBSelect, NULL_CHOICE, DropDownItem
+  FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui/index";
 import { SettingsMenuProps } from "./interfaces";
 import {
-  SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS
+  SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS,
 } from "./constants";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";

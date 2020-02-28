@@ -14,7 +14,7 @@ import { namespace } from "../weed_detector";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../weed_detector/remote_env/translators";
 import {
-  cameraBtnProps
+  cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 import { ImageFlipper } from "../images/image_flipper";
 import { PhotoFooter } from "../images/photos";

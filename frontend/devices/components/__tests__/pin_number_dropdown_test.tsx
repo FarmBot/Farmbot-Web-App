@@ -5,10 +5,10 @@ import { mount, shallow } from "enzyme";
 import { PinNumberDropdown } from "../pin_number_dropdown";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakeFirmwareConfig, fakePeripheral
+  fakeFirmwareConfig, fakePeripheral,
 } from "../../../__test_support__/fake_state/resources";
 import { TaggedFirmwareConfig } from "farmbot";
 import { FBSelect } from "../../../ui";

@@ -11,7 +11,7 @@ import { EndStops } from "./hardware_settings/endstops";
 import { Motors } from "./hardware_settings/motors";
 import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
-  HomingAndCalibration
+  HomingAndCalibration,
 } from "./hardware_settings/homing_and_calibration";
 import { Popover, Position } from "@blueprintjs/core";
 import { FwParamExportMenu } from "./hardware_settings/export_menu";

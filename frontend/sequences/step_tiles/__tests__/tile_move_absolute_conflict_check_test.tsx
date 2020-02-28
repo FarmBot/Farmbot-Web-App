@@ -2,7 +2,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { MoveAbsoluteWarningProps } from "../../interfaces";
 import {
-  fakeHardwareFlags
+  fakeHardwareFlags,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { MoveAbsoluteWarning } from "../tile_move_absolute_conflict_check";
 

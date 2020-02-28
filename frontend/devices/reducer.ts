@@ -3,7 +3,7 @@ import {
   ControlPanelState,
   HardwareState,
   MinOsFeatureLookup,
-  OsUpdateInfo
+  OsUpdateInfo,
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";

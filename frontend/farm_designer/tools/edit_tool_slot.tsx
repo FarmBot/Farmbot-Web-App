@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { getPathArray } from "../../history";
@@ -12,7 +12,7 @@ import { Panel } from "../panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../../devices/actions";
 import {
-  isExpressBoard
+  isExpressBoard,
 } from "../../devices/components/firmware_hardware_support";
 import { EditToolSlotProps, mapStateToPropsEdit } from "./map_to_props_add_edit";
 

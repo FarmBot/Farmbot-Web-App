@@ -1,18 +1,18 @@
 import { Everything } from "../interfaces";
 import {
-  selectAllImages, maybeGetDevice, maybeGetTimeSettings
+  selectAllImages, maybeGetDevice, maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
-  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState
+  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState,
 } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import {
-  selectAllFarmwareEnvs, selectAllFarmwareInstallations
+  selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
   createShouldDisplayFn,
-  betterCompact
+  betterCompact,
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, JobProgress } from "farmbot";

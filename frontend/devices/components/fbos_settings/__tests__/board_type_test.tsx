@@ -9,15 +9,15 @@ import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  fakeFbosConfig
+  fakeFbosConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import {
-  fakeTimeSettings
+  fakeTimeSettings,
 } from "../../../../__test_support__/fake_time_settings";
 
 describe("<BoardType/>", () => {

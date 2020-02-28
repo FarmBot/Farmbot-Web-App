@@ -21,7 +21,7 @@ describe("tagAllSteps()", () => {
             "z": 0,
             "speed": 100
           },
-        }
+        },
       ],
       "args": {
         "locals": { kind: "scope_declaration", args: {} },

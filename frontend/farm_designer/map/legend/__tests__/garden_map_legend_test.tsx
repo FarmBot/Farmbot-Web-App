@@ -20,12 +20,12 @@ jest.mock("../../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  GardenMapLegend, ZoomControls, PointsSubMenu
+  GardenMapLegend, ZoomControls, PointsSubMenu,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
 import {
-  fakeTimeSettings
+  fakeTimeSettings,
 } from "../../../../__test_support__/fake_time_settings";
 
 describe("<GardenMapLegend />", () => {

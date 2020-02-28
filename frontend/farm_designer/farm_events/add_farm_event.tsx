@@ -6,17 +6,17 @@ import {
 } from "./map_state_to_props_add_edit";
 import { init, destroy } from "../../api/crud";
 import {
-  EditFEForm, FarmEventForm, FarmEventViewModel, NEVER
+  EditFEForm, FarmEventForm, FarmEventViewModel, NEVER,
 } from "./edit_fe_form";
 import { betterCompact, betterMerge } from "../../util";
 import { entries } from "../../resources/util";
 import {
   AddEditFarmEventProps,
-  TaggedExecutable
+  TaggedExecutable,
 } from "../interfaces";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";

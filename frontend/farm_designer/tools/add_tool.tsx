@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
@@ -13,7 +13,7 @@ import { history } from "../../history";
 import { selectAllTools } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  getFwHardwareValue
+  getFwHardwareValue,
 } from "../../devices/components/firmware_hardware_support";
 import { getFbosConfig } from "../../resources/getters";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";

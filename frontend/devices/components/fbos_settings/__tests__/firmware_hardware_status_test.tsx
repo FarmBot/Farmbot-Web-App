@@ -8,7 +8,7 @@ import {
   FirmwareHardwareStatusDetailsProps, FirmwareHardwareStatusDetails,
   FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon,
   FirmwareHardwareStatusProps, FirmwareHardwareStatus,
-  FirmwareActions, FirmwareActionsProps
+  FirmwareActions, FirmwareActionsProps,
 } from "../firmware_hardware_status";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { clickButton } from "../../../../__test_support__/helpers";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   bindingTypeLabelLookup,
-  generatePinLabel, sortByNameAndPin, getSpecialActionLabel
+  generatePinLabel, sortByNameAndPin, getSpecialActionLabel,
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
 import { error } from "../../toast/toast";

@@ -6,11 +6,11 @@ import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
 import {
-  fakeFirmwareConfig
+  fakeFirmwareConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { Color } from "../../../ui";

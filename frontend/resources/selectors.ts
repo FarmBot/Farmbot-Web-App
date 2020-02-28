@@ -23,7 +23,7 @@ import {
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
 import {
-  findPoints, selectAllPoints, selectAllActivePoints
+  findPoints, selectAllPoints, selectAllActivePoints,
 } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";

@@ -12,7 +12,7 @@ import { validBotLocationData } from "../util/util";
 import { unselectPlant } from "./map/actions";
 import { AxisNumberProperty } from "./map/interfaces";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "./designer_panel";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";

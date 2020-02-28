@@ -11,7 +11,7 @@ import { arrayWrap, arrayUnwrap } from "./util";
 import { TaggedResource, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import {
-  sanitizeNodes
+  sanitizeNodes,
 } from "../sequences/locals_list/sanitize_nodes";
 import {
   selectAllFarmEvents,
@@ -34,7 +34,7 @@ import { Actions } from "../constants";
 import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
 import {
-  FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial
+  FolderNode, FolderMeta, FolderNodeTerminal, FolderNodeMedial,
 } from "../folders/interfaces";
 import { climb } from "../folders/climb";
 
@@ -223,7 +223,7 @@ export const INDEXERS: Indexer[] = [
   ALL,
   BY_KIND,
   BY_KIND_AND_ID,
-  SEQUENCE_FOLDERS
+  SEQUENCE_FOLDERS,
 ];
 
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;

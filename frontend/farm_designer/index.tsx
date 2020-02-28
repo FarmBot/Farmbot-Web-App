@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import {
-  Props, State, BotOriginQuadrant, isBotOriginQuadrant
+  Props, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { Plants } from "./plants/plant_inventory";
@@ -15,12 +15,12 @@ import {
   getMapPadding,
 } from "./map/util";
 import {
-  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex
+  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex,
 } from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import {
-  setWebAppConfigValue, GetWebAppConfigValue
+  setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 

@@ -41,7 +41,7 @@ interface ChipTemperatureDisplayProps {
 
 /** RPI CPU temperature display row: label, temperature, indicator. */
 export function ChipTemperatureDisplay(
-  { chip, temperature }: ChipTemperatureDisplayProps
+  { chip, temperature }: ChipTemperatureDisplayProps,
 ): JSX.Element {
   return <div className="chip-temp-display">
     <p>
@@ -60,7 +60,7 @@ interface WiFiStrengthDisplayProps {
 
 /** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay(
-  { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps
+  { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps,
 ): JSX.Element {
   const percent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
@@ -180,7 +180,7 @@ interface CommitDisplayProps {
 
 /** GitHub commit display row: label, commit link. */
 const CommitDisplay = (
-  { title, repo, commit }: CommitDisplayProps
+  { title, repo, commit }: CommitDisplayProps,
 ): JSX.Element => {
   const shortCommit = shortenCommit(commit);
   return <p>
@@ -222,7 +222,7 @@ export interface BetaReleaseOptInButtonProps {
 
 /** Label and toggle button for opting in to FBOS beta releases. */
 export const BetaReleaseOptIn = (
-  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps
+  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps,
 ): JSX.Element => {
   const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName).value;
   return <fieldset className={"os-release-channel"}>

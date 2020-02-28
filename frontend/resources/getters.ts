@@ -3,7 +3,7 @@ import { ResourceIndex } from "./interfaces";
 import {
   TaggedFbosConfig,
   TaggedWebAppConfig,
-  TaggedFirmwareConfig
+  TaggedFirmwareConfig,
 } from "farmbot";
 
 /** @fileoverview Resource selectors for SINGULAR resources. */

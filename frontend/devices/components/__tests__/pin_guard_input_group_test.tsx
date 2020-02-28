@@ -7,7 +7,7 @@ import { PinGuardMCUInputGroupProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { settingToggle } from "../../actions";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 describe("<PinGuardMCUInputGroup/>", () => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "../../link";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";

@@ -19,7 +19,7 @@ jest.mock("../session", () => ({
 }));
 
 import {
-  responseFulfilled, isLocalRequest, requestFulfilled, responseRejected
+  responseFulfilled, isLocalRequest, requestFulfilled, responseRejected,
 } from "../interceptors";
 import { AxiosResponse, Method } from "axios";
 import { uuid } from "farmbot";

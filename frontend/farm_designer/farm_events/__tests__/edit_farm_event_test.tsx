@@ -7,10 +7,10 @@ import { mount } from "enzyme";
 import { RawEditFarmEvent as EditFarmEvent } from "../edit_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import {
-  fakeFarmEvent, fakeSequence
+  fakeFarmEvent, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 

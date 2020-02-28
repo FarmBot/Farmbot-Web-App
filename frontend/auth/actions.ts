@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   fetchReleases, fetchMinOsFeatureData,
-  fetchLatestGHBetaRelease
+  fetchLatestGHBetaRelease,
 } from "../devices/actions";
 import { AuthState } from "./interfaces";
 import { ReduxAction } from "../redux/interfaces";
@@ -10,7 +10,7 @@ import { API } from "../api";
 import {
   responseFulfilled,
   responseRejected,
-  requestFulfilled
+  requestFulfilled,
 } from "../interceptors";
 import { Actions } from "../constants";
 import { connectDevice } from "../connectivity/connect_device";

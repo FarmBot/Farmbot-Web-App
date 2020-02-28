@@ -7,11 +7,11 @@ import { OFSearch } from "../util";
 import { debounce } from "lodash";
 import { Actions, Content } from "../../constants";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Spinner } from "../../extras/spinner";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";

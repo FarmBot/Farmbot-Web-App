@@ -1,12 +1,12 @@
 import {
   selectAllSavedPeripherals,
-  selectAllSavedSensors
+  selectAllSavedSensors,
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { DropDownItem } from "../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
-  TaggedPeripheral, TaggedSensor, ResourceName, Nothing
+  TaggedPeripheral, TaggedSensor, ResourceName, Nothing,
 } from "farmbot";
 import { ReadPin, AllowedPinTypes, NamedPin } from "farmbot";
 import { bail } from "../../util/errors";
@@ -109,7 +109,7 @@ export function pinDropdowns(
 }
 
 export const pinsAsDropDownsWritePin = (
-  input: ResourceIndex, showPins: boolean
+  input: ResourceIndex, showPins: boolean,
 ): DropDownItem[] => [
     ...peripheralsAsDropDowns(input),
     ...boxLedsAsDropDowns(),
@@ -117,7 +117,7 @@ export const pinsAsDropDownsWritePin = (
   ];
 
 export const pinsAsDropDownsReadPin = (
-  input: ResourceIndex, showPins: boolean
+  input: ResourceIndex, showPins: boolean,
 ): DropDownItem[] => [
     ...sensorsAsDropDowns(input),
     ...peripheralsAsDropDowns(input),

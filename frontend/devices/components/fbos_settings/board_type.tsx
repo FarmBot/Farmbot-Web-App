@@ -8,7 +8,7 @@ import { BoardTypeProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI
+  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
 } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";

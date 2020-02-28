@@ -28,13 +28,13 @@ import { TzWarning } from "./tz_warning";
 import { nextRegItemTimes } from "./map_state_to_props";
 import { first } from "lodash";
 import {
-  TimeUnit, ExecutableType, FarmEvent
+  TimeUnit, ExecutableType, FarmEvent,
 } from "farmbot/dist/resources/api_resources";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ShouldDisplay } from "../../devices/interfaces";
 import {
-  addOrEditParamApps, variableList, getRegimenVariableData
+  addOrEditParamApps, variableList, getRegimenVariableData,
 } from "../../sequences/locals_list/variable_support";
 import {
   AllowedVariableNodes,
@@ -266,7 +266,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   fieldGet = (key: FarmEventViewModelKey): string =>
     (this.state.fe[key] || this.viewModel[key] || "").toString()
 
-  nextItemTime = (fe: FarmEvent, now: moment.Moment
+  nextItemTime = (fe: FarmEvent, now: moment.Moment,
   ): moment.Moment | undefined => {
     const { timeSettings } = this.props;
     const kind = fe.executable_type;
@@ -460,7 +460,7 @@ export const RepeatForm = (props: RepeatFormProps) => {
 };
 
 export const dateCheck = (
-  fieldGet: (key: FarmEventViewModelKey) => string
+  fieldGet: (key: FarmEventViewModelKey) => string,
 ): string | undefined => {
   const startDate = fieldGet("startDate");
   const endDate = fieldGet("endDate");
@@ -471,7 +471,7 @@ export const dateCheck = (
 
 export const timeCheck = (
   fieldGet: (key: FarmEventViewModelKey) => string,
-  timeSettings: TimeSettings
+  timeSettings: TimeSettings,
 ): string | undefined => {
   const startDate = fieldGet("startDate");
   const startTime = fieldGet("startTime");

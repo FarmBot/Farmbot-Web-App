@@ -25,7 +25,7 @@ export const colors: Array<ResourceColor> = [
   "purple",
   "pink",
   "gray",
-  "red"
+  "red",
 ];
 
 /** Picks a color that is compliant with sequence / regimen color codes */

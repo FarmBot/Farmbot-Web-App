@@ -33,17 +33,17 @@ import {
   SequenceEditorMiddleActive, onDrop, SequenceNameAndColor, AddCommandButton,
   SequenceSettingsMenu,
   SequenceSetting,
-  SequenceSettingProps
+  SequenceSettingProps,
 } from "../sequence_editor_middle_active";
 import { mount, shallow } from "enzyme";
 import { ActiveMiddleProps, SequenceHeaderProps } from "../interfaces";
 import {
-  FAKE_RESOURCES, buildResourceIndex
+  FAKE_RESOURCES, buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { destroy, save, edit } from "../../api/crud";
 import {
-  fakeHardwareFlags, fakeFarmwareData as fakeFarmwareData
+  fakeHardwareFlags, fakeFarmwareData as fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus } from "farmbot";
 import { move, splice } from "../step_tiles";

@@ -77,7 +77,7 @@ const mockFolders: FolderNode[] = [
   { id: 15, parent_id: 14, color: "blue", name: "Fifteen" },
   { id: 16, parent_id: 14, color: "blue", name: "Sixteen" },
   { id: 17, parent_id: 16, color: "blue", name: "Seventeen" },
-  { id: 18, parent_id: 16, color: "blue", name: "Eighteen" }
+  { id: 18, parent_id: 16, color: "blue", name: "Eighteen" },
 ];
 
 const mockSequence = fakeSequence();

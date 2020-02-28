@@ -32,7 +32,7 @@ interface TourState {
 }
 
 export class Tour extends React.Component<TourProps, TourState> {
-  state: TourState = { run: false, index: 0, returnPath: "", };
+  state: TourState = { run: false, index: 0, returnPath: "" };
 
   callback = ({ action, index, step, type }: CallBackProps) => {
     console.log("Tour debug:", step.target, type, action);

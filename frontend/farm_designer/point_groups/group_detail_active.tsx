@@ -10,7 +10,7 @@ import { Paths } from "./paths";
 import { Feature, ShouldDisplay } from "../../devices/interfaces";
 import { ErrorBoundary } from "../../error_boundary";
 import {
-  GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup
+  GroupCriteria, GroupPointCountBreakdown, pointsSelectedByGroup,
 } from "./criteria";
 import { Content } from "../../constants";
 import { UUID } from "../../resources/interfaces";

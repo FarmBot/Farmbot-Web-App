@@ -4,7 +4,7 @@ import { Everything } from "../../interfaces";
 import { Panel, DesignerNavTabs } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
-  DesignerPanel, DesignerPanelTop, DesignerPanelContent
+  DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../designer_panel";
 import { findAll } from "../../resources/find_all";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";

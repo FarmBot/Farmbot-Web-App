@@ -7,10 +7,10 @@ jest.mock("../../../history", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  RawAddPlant as AddPlant, AddPlantProps, mapStateToProps
+  RawAddPlant as AddPlant, AddPlantProps, mapStateToProps,
 } from "../add_plant";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../../__test_support__/fake_crop_search_result";
 import { svgToUrl } from "../../../open_farm/icons";
 import { fakeState } from "../../../__test_support__/fake_state";

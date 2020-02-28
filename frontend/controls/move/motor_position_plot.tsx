@@ -4,7 +4,7 @@ import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
 import { trim } from "../../util";
 import {
-  cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range
+  cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range,
 } from "lodash";
 import { t } from "../../i18next_wrapper";
 

@@ -1,12 +1,12 @@
 import * as React from "react";
 import {
-  GetWebAppConfigValue, setWebAppConfigValue
+  GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { t } from "../i18next_wrapper";
 import { Row, Col } from "../ui";
 import { NumericSetting } from "../session_keys";
 import {
-  NumberConfigKey as WebAppNumberConfigKey
+  NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
 interface LengthInputProps {

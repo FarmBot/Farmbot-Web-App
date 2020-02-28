@@ -9,7 +9,7 @@ import {
   afterEach,
   beforeEach,
   folderIndexer,
-  reindexFolders
+  reindexFolders,
 } from "./reducer_support";
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";

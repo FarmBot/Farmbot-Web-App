@@ -3,7 +3,7 @@ import {
   EMPTY_PLANT_GRID,
   PlantGridKey,
   PlantGridProps,
-  PlantGridState
+  PlantGridState,
 } from "./constants";
 import { initPlantGrid } from "./generate_grid";
 import { init } from "../../../api/crud";

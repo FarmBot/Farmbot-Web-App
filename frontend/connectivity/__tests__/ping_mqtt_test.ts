@@ -8,7 +8,7 @@ jest.mock("../index", () => ({
 import {
   readPing,
   startPinging,
-  PING_INTERVAL
+  PING_INTERVAL,
 } from "../ping_mqtt";
 import { Farmbot, RpcRequest, RpcRequestBodyItem } from "farmbot";
 import { FarmBotInternalConfig } from "farmbot/dist/config";

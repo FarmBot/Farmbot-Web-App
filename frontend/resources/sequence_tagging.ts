@@ -1,7 +1,7 @@
 import { get, set } from "lodash";
 import { SequenceBodyItem, uuid } from "farmbot/dist";
 import {
-  Traversable
+  Traversable,
 } from "../sequences/locals_list/sanitize_nodes";
 
 /** HISTORICAL NOTES:

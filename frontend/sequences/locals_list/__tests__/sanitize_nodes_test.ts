@@ -28,7 +28,7 @@ describe("performAllIndexesOnSequence", () => {
               kind: "coordinate", args: { x: 0, y: 0, z: 0 }
             }, label: "parent"
           }
-        }
+        },
       ]
     };
     const result = sanitizeNodes(unusedVar);

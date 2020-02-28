@@ -6,14 +6,14 @@ import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
 import { PinBindingInputGroup } from "./pin_binding_input_group";
 import {
-  StockPinBindingsButton, sysBtnBindingData
+  StockPinBindingsButton, sysBtnBindingData,
 } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 import {
   PinBindingSpecialAction,
   PinBindingType,
-  PinBinding
+  PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 

@@ -1,14 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { getPathArray } from "../../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
-  maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers
+  maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
 } from "../../resources/selectors";
 import { SaveBtn } from "../../ui";
 import { edit, destroy } from "../../api/crud";

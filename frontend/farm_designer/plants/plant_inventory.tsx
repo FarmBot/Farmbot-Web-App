@@ -6,11 +6,11 @@ import { Panel, DesignerNavTabs } from "../panel_header";
 import { getPlants } from "../state_to_props";
 import { TaggedPlant } from "../map/interfaces";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 

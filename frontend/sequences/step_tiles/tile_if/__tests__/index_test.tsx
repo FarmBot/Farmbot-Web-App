@@ -10,15 +10,15 @@ import {
   IfParams,
   IfBlockDropDownHandler,
   LHSOptions,
-  ThenElseParams
+  ThenElseParams,
 } from "../index";
 import {
-  buildResourceIndex, FAKE_RESOURCES
+  buildResourceIndex, FAKE_RESOURCES,
 } from "../../../../__test_support__/resource_index_builder";
 import { Execute, If, TaggedSequence, ParameterApplication } from "farmbot";
 import { overwrite } from "../../../../api/crud";
 import {
-  fakeSensor, fakePeripheral
+  fakeSensor, fakePeripheral,
 } from "../../../../__test_support__/fake_state/resources";
 
 const fakeResourceIndex = buildResourceIndex(FAKE_RESOURCES).index;

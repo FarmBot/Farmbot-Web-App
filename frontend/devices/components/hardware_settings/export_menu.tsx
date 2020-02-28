@@ -90,7 +90,6 @@ export const uncondenseFwConfig =
       Object.entries(obj).map(([subKey, value]) => {
         const fwConfigKey = subKey != "" ? `${key}_${subKey}` : key;
         uncondensedFwConfig[fwConfigKey] = value;
-      }
-      ));
+      }));
     return uncondensedFwConfig;
   };

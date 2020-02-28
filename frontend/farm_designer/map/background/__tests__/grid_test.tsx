@@ -3,7 +3,7 @@ import { Grid } from "../grid";
 import { shallow } from "enzyme";
 import { GridProps } from "../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 
 describe("<Grid/>", () => {

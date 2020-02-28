@@ -5,17 +5,17 @@ jest.mock("../../history", () => ({
 
 import * as React from "react";
 import {
-  RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton
+  RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton,
 } from "../sequences";
 import { shallow, mount } from "enzyme";
 import { Props } from "../interfaces";
 import {
-  FAKE_RESOURCES, buildResourceIndex
+  FAKE_RESOURCES, buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { ToolTips, Actions } from "../../constants";
 import {
-  fakeHardwareFlags, fakeFarmwareData
+  fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
 import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";

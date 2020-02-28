@@ -1,6 +1,6 @@
 import {
   BotState, Xyz, SourceFwConfig,
-  ControlPanelState, Axis
+  ControlPanelState, Axis,
 } from "../interfaces";
 import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
 import { IntegerSize } from "../../util";

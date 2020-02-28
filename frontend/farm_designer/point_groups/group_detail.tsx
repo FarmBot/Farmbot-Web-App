@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import {
-  selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups
+  selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups,
 } from "../../resources/selectors";
 import { push, getPathArray } from "../../history";
 import { GroupDetailActive } from "./group_detail_active";
@@ -12,7 +12,7 @@ import { getShouldDisplayFn } from "../../farmware/state_to_props";
 import { uniq } from "lodash";
 import { UUID } from "../../resources/interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";

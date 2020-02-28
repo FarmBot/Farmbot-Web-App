@@ -7,12 +7,12 @@ jest.mock("../../../history", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditWeed as EditWeed, EditWeedProps, mapStateToProps
+  RawEditWeed as EditWeed, EditWeedProps, mapStateToProps,
 } from "../weeds_edit";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { Actions } from "../../../constants";
 import { DesignerPanelHeader } from "../../designer_panel";

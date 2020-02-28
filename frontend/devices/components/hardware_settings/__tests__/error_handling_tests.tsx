@@ -12,10 +12,10 @@ import { bot } from "../../../../__test_support__/fake_state/bot";
 import { edit, save } from "../../../../api/crud";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  fakeFirmwareConfig
+  fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 
 describe("<ErrorHandling />", () => {

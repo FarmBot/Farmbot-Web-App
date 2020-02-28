@@ -10,7 +10,7 @@ import {
   MESSAGE_STATUSES,
   EACH_CHANNEL,
   channel,
-  MESSAGE_STATUSES_DDI
+  MESSAGE_STATUSES_DDI,
 } from "./tile_send_message_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { t } from "../../i18next_wrapper";

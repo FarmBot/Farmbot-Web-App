@@ -15,7 +15,7 @@ describe("sort()", () => {
     phony("A", 0, 0),
     phony("B", 1, 0),
     phony("C", 1, 1),
-    phony("D", 0, 1)
+    phony("D", 0, 1),
   ];
 
   const sort = (sortType: PointGroupSortType): string[] => {

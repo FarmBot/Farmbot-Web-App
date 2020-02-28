@@ -4,11 +4,11 @@ import { PointInventoryItem } from "./point_inventory_item";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";

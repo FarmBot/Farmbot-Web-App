@@ -18,7 +18,7 @@ import { validBotLocationData, validFwConfig, validFbosConfig } from "./util";
 import { BooleanSetting } from "./session_keys";
 import { getPathArray } from "./history";
 import {
-  getWebAppConfigValue, GetWebAppConfigValue
+  getWebAppConfigValue, GetWebAppConfigValue,
 } from "./config_storage/actions";
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
@@ -99,7 +99,7 @@ const MUST_LOAD: ResourceName[] = [
   "FarmEvent",
   "Point",
   "Device",
-  "Tool" // Sequence editor needs this for rendering.
+  "Tool", // Sequence editor needs this for rendering.
 ];
 
 export class RawApp extends React.Component<AppProps, {}> {

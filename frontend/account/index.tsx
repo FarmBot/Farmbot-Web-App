@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import {
-  Settings, ChangePassword, ExportAccountPanel, DangerousDeleteWidget
+  Settings, ChangePassword, ExportAccountPanel, DangerousDeleteWidget,
 } from "./components";
 import { Props } from "./interfaces";
 import { Page, Row, Col } from "../ui";

@@ -20,7 +20,7 @@ export const editCriteria =
     };
 
 export const toggleEqCriteria = <T extends string | number>(
-  eqCriteria: Record<string, T[] | undefined>
+  eqCriteria: Record<string, T[] | undefined>,
 ) =>
   (key: string, value: T): Record<string, T[] | undefined> => {
     const values: T[] = eqCriteria[key] || [];

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  Row, Col, BlurableInput, FBSelect, DropDownItem
+  Row, Col, BlurableInput, FBSelect, DropDownItem,
 } from "../../ui/index";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";

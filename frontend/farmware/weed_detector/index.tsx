@@ -12,7 +12,7 @@ import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { envSave } from "./remote_env/actions";
 import { t } from "../../i18next_wrapper";
 import {
-  cameraBtnProps
+  cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 
 export const namespace = (prefix: string) => (key: string): WDENVKey => {

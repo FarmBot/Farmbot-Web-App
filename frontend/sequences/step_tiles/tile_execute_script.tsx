@@ -3,7 +3,7 @@ import { StepParams } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  StepWrapper, StepHeader, StepContent, StepWarning
+  StepWrapper, StepHeader, StepContent, StepWarning,
 } from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { editStep } from "../../api/crud";

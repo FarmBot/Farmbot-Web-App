@@ -192,8 +192,7 @@ export function StepButtonCluster(props: StepButtonProps) {
     }}
     color="brown">
     {t("Mark As...")}
-  </StepButton>
-  );
+  </StepButton>);
   return <Row>
     <div className="step-button-cluster">
       {ALL_THE_BUTTONS.map((stepButton, inx) =>

@@ -38,7 +38,7 @@ import {
 import { Link } from "../link";
 import { urlFriendly, lastUrlChunk } from "../util";
 import {
-  setActiveSequenceByName
+  setActiveSequenceByName,
 } from "../sequences/set_active_sequence_by_name";
 import { Popover } from "@blueprintjs/core";
 import { t } from "../i18next_wrapper";

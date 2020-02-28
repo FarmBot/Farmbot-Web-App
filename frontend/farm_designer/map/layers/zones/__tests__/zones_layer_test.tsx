@@ -2,10 +2,10 @@ import * as React from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { ZonesLayer, ZonesLayerProps } from "../zones_layer";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 

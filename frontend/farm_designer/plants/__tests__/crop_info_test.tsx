@@ -18,7 +18,7 @@ import { CropInfoProps } from "../../interfaces";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../../__test_support__/fake_crop_search_result";
 import { unselectPlant } from "../../map/actions";
 import { svgToUrl } from "../../../open_farm/icons";

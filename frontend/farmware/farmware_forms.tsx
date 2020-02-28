@@ -3,7 +3,7 @@ import { Col, BlurableInput } from "../ui/index";
 import { Pair, FarmwareConfig } from "farmbot";
 import { getDevice } from "../device";
 import {
-  ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv
+  ShouldDisplay, Feature, SaveFarmwareEnv, UserEnv,
 } from "../devices/interfaces";
 import { kebabCase, toString, snakeCase } from "lodash";
 import { FarmwareManifestInfo } from "./interfaces";

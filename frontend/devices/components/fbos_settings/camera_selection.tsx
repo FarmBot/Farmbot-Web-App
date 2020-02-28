@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import {
-  CameraSelectionProps, CameraSelectionState
+  CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
 import { info, success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";

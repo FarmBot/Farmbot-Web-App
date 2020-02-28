@@ -4,13 +4,13 @@ import { Row, Col, FBSelect, DropDownItem } from "../../../ui";
 import {
   AddEqCriteria, toggleEqCriteria, editCriteria, AddNumberCriteria,
   POINTER_TYPE_DDI_LOOKUP, AddStringCriteria,
-  CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria
+  CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria,
 } from ".";
 import {
   EqCriteriaSelectionProps, NumberCriteriaProps,
   CriteriaSelectionProps, LocationSelectionProps, GroupCriteriaProps,
   AddCriteriaState,
-  DEFAULT_CRITERIA
+  DEFAULT_CRITERIA,
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { PointGroup } from "farmbot/dist/resources/api_resources";

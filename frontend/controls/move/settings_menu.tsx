@@ -27,7 +27,7 @@ export interface MoveWidgetSettingsMenuProps {
 }
 
 export const MoveWidgetSettingsMenu = (
-  { toggle, getValue, firmwareHardware }: MoveWidgetSettingsMenuProps
+  { toggle, getValue, firmwareHardware }: MoveWidgetSettingsMenuProps,
 ) => {
   const Setting = moveWidgetSetting(toggle, getValue);
   return <div className="move-settings-menu">

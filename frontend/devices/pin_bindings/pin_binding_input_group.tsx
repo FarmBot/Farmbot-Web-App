@@ -5,7 +5,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
   PinBindingInputGroupProps,
-  PinBindingInputGroupState
+  PinBindingInputGroupState,
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
 import { initSave } from "../../api/crud";
@@ -16,12 +16,12 @@ import {
   bindingTypeLabelLookup, specialActionList,
   reservedPiGPIO,
   bindingTypeList,
-  getSpecialActionLabel
+  getSpecialActionLabel,
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { ResourceIndex } from "../../resources/interfaces";
 import {
-  PinBindingType, PinBindingSpecialAction
+  PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 

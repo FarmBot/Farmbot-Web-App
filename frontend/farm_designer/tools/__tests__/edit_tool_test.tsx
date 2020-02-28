@@ -13,12 +13,12 @@ jest.mock("../../../history", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditTool as EditTool, EditToolProps, mapStateToProps, isActive
+  RawEditTool as EditTool, EditToolProps, mapStateToProps, isActive,
 } from "../edit_tool";
 import { fakeTool, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { SaveBtn } from "../../../ui";
 import { history } from "../../../history";

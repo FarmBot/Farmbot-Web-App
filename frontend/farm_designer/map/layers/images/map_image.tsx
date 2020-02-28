@@ -37,7 +37,7 @@ const cameraZCheck =
 /* Get the size of the image at the URL. */
 const getImageSize = (
   url: string,
-  onLoad: (img: HTMLImageElement) => () => void
+  onLoad: (img: HTMLImageElement) => () => void,
 ): void => {
   const imageData = new Image();
   imageData.src = url;

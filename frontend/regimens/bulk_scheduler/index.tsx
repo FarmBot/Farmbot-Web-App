@@ -4,7 +4,7 @@ import { AddButton } from "./add_button";
 import { WeekGrid } from "./week_grid";
 import { commitBulkEditor, setTimeOffset, setSequence } from "./actions";
 import {
-  BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE
+  BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE,
 } from "../../ui/index";
 import moment from "moment";
 import { isString } from "lodash";

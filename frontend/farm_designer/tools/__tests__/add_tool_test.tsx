@@ -5,7 +5,7 @@ jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawAddTool as AddTool, AddToolProps, mapStateToProps
+  RawAddTool as AddTool, AddToolProps, mapStateToProps,
 } from "../add_tool";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";

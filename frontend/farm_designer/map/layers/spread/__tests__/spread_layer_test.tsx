@@ -1,11 +1,11 @@
 import * as React from "react";
 import {
-  SpreadLayer, SpreadLayerProps, SpreadCircle, SpreadCircleProps
+  SpreadLayer, SpreadLayerProps, SpreadCircle, SpreadCircleProps,
 } from "../spread_layer";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
 

@@ -45,7 +45,7 @@ export function getBugTime() {
 
 const BUGS = [
   "aphid", "caterpillar", "earth-worm", "generic-ant",
-  "generic-moth", "june-bug", "ladybug", "roly-poly"
+  "generic-moth", "june-bug", "ladybug", "roly-poly",
 ];
 const bugFile = (bug: string) => `/app-resources/img/bugs/${bug}.svg`;
 

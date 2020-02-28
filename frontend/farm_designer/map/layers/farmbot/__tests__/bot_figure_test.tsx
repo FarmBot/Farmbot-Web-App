@@ -4,7 +4,7 @@ import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../../ui/index";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotFigure/>", () => {

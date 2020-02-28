@@ -16,12 +16,12 @@ const isPinMode = (x: any): x is ALLOWED_PIN_MODES =>
 
 export const PIN_MODES = () => [
   { value: PinMode.analog, label: t("Analog") },
-  { value: PinMode.digital, label: t("Digital") }
+  { value: PinMode.digital, label: t("Digital") },
 ];
 
 export const PIN_VALUES = () => [
   { value: 1, label: t("ON") },
-  { value: 0, label: t("OFF") }
+  { value: 0, label: t("OFF") },
 ];
 
 export function currentModeSelection(currentStep: SequenceBodyItem) {

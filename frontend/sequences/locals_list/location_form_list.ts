@@ -7,7 +7,7 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber } from "lodash";

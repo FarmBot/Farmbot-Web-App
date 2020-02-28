@@ -15,10 +15,10 @@ import {
   CriteriaSelectionProps,
   DEFAULT_CRITERIA,
   LocationSelectionProps,
-  GroupCriteriaProps
+  GroupCriteriaProps,
 } from "../interfaces";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { overwrite } from "../../../../api/crud";
 import { cloneDeep } from "lodash";

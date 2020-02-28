@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 import {
-  TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero
+  TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero,
 } from "farmbot";
 import { editStep } from "../../api/crud";
 

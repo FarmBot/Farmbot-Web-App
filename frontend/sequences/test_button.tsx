@@ -7,7 +7,7 @@ import { Popover } from "@blueprintjs/core";
 import { LocalsList } from "./locals_list/locals_list";
 import { AllowedVariableNodes } from "./locals_list/locals_list_support";
 import {
-  addOrEditParamApps, variableList, mergeParameterApplications
+  addOrEditParamApps, variableList, mergeParameterApplications,
 } from "./locals_list/variable_support";
 import { ResourceIndex, VariableNameSet, UUID } from "../resources/interfaces";
 import { ShouldDisplay } from "../devices/interfaces";

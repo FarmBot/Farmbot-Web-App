@@ -7,7 +7,7 @@ import { Props } from "../interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
-  fakeDevice, buildResourceIndex, FAKE_RESOURCES
+  fakeDevice, buildResourceIndex, FAKE_RESOURCES,
 } from "../../__test_support__/resource_index_builder";
 import { FarmbotOsSettings } from "../components/farmbot_os_settings";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";

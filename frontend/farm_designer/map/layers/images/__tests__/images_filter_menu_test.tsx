@@ -2,12 +2,12 @@ import * as React from "react";
 import { ImageFilterMenu, ImageFilterMenuProps } from "../image_filter_menu";
 import { shallow, mount } from "enzyme";
 import {
-  fakeWebAppConfig
+  fakeWebAppConfig,
 } from "../../../../../__test_support__/fake_state/resources";
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { setWebAppConfigValue } from "../../../../../config_storage/actions";
 import {
-  fakeTimeSettings
+  fakeTimeSettings,
 } from "../../../../../__test_support__/fake_time_settings";
 
 const mockConfig = fakeWebAppConfig();

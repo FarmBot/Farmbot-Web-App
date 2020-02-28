@@ -3,7 +3,7 @@ import { VirtualFarmBot } from "../index";
 import { shallow } from "enzyme";
 import { VirtualFarmBotProps } from "../../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { BotFigure } from "../bot_figure";
 

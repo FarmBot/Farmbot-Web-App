@@ -1,12 +1,12 @@
 import {
-  sequence2ddi, mapStateToProps, RawBootSequenceSelector
+  sequence2ddi, mapStateToProps, RawBootSequenceSelector,
 } from "../boot_sequence_selector";
 import {
-  fakeSequence, fakeFbosConfig
+  fakeSequence, fakeFbosConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import React from "react";
 import { mount } from "enzyme";

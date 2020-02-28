@@ -3,7 +3,7 @@ import { RegimenNameInput } from "./regimen_name_input";
 import { ActiveEditorProps, ActiveEditorState } from "./interfaces";
 import { push } from "../../history";
 import {
-  RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps
+  RegimenItem, CalendarRow, RegimenItemCalendarRow, RegimenProps,
 } from "../interfaces";
 import { TaggedRegimen, ScopeDeclarationBodyItem } from "farmbot";
 import { defensiveClone } from "../../util";
@@ -12,7 +12,7 @@ import { SaveBtn } from "../../ui";
 import { CopyButton } from "./copy_button";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import {
-  AllowedVariableNodes, VariableNode
+  AllowedVariableNodes, VariableNode,
 } from "../../sequences/locals_list/locals_list_support";
 import { addOrEditBodyVariables } from "../../sequences/locals_list/handle_select";
 import { t } from "../../i18next_wrapper";
@@ -140,7 +140,7 @@ const regimenDay = (dispatch: Function, resources: ResourceIndex) =>
     </div>;
 
 const regimenItemRow = (
-  dispatch: Function, resources: ResourceIndex, dayIndex: number
+  dispatch: Function, resources: ResourceIndex, dayIndex: number,
 ) =>
   (row: RegimenItemCalendarRow, itemIndex: number) =>
     <div className={`${row.color} regimen-event`}

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
@@ -11,7 +11,7 @@ import { TaggedGenericPointer } from "farmbot";
 import { maybeFindGenericPointerById } from "../../resources/selectors";
 import { Actions } from "../../constants";
 import {
-  EditPointProperties, updatePoint, PointActions
+  EditPointProperties, updatePoint, PointActions,
 } from "./point_edit_actions";
 
 export interface EditPointProps {

@@ -13,7 +13,7 @@ import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { mapStateToFolderProps } from "../folders/map_state_to_props";
 import { getEnv, getShouldDisplayFn } from "../farmware/state_to_props";
 import {
-  cameraDisabled
+  cameraDisabled,
 } from "../devices/components/fbos_settings/camera_selection";
 
 export function mapStateToProps(props: Everything): Props {

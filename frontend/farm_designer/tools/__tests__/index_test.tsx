@@ -18,12 +18,12 @@ import {
   ToolSlotInventoryItem, ToolSlotInventoryItemProps,
 } from "../index";
 import {
-  fakeTool, fakeToolSlot, fakeSensor
+  fakeTool, fakeToolSlot, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { error } from "../../../toast/toast";
@@ -69,7 +69,7 @@ describe("<Tools />", () => {
     p.toolSlots[1].body.y = 2;
     const wrapper = mount(<Tools {...p} />);
     [
-      "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown", "(gantry, 2, 0)"
+      "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown", "(gantry, 2, 0)",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

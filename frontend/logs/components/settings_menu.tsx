@@ -31,7 +31,7 @@ const SEQUENCE_LOG_SETTINGS = (): LogSettingRecord[] => [
     label: t("Complete"),
     setting: "sequence_complete_log",
     tooltip: ToolTips.SEQUENCE_LOG_END
-  }
+  },
 ];
 
 const FIRMWARE_LOG_SETTINGS = (): LogSettingRecord[] => [

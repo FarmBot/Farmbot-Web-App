@@ -21,16 +21,13 @@ export class StepSizeSelector extends React.Component<StepSizeSelectorProps, {}>
 
   render() {
     return <div className="move-amount-wrapper">
-      {
-        this.props.choices.map(
-          (item: number, inx: number) => <button key={inx}
-            title={t("{{ amount }}mm", { amount: item })}
-            className={this.cssForIndex(item)}
-            onClick={() => this.props.selector(item)}>
-            {item}
-          </button>
-        )
-      }
+      {this.props.choices.map((item: number, inx: number) =>
+        <button key={inx}
+          title={t("{{ amount }}mm", { amount: item })}
+          className={this.cssForIndex(item)}
+          onClick={() => this.props.selector(item)}>
+          {item}
+        </button>)}
     </div>;
   }
 }

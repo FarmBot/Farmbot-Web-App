@@ -2,7 +2,7 @@ import * as React from "react";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
-  computeEditorUrlFromState, computeFarmwareUrlFromState
+  computeEditorUrlFromState, computeFarmwareUrlFromState,
 } from "./compute_editor_url_from_state";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";

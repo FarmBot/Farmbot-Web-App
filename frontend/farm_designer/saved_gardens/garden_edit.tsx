@@ -7,11 +7,11 @@ import { BlurableInput, Row } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { connect } from "react-redux";
 import {
-  selectAllPlantPointers, maybeFindSavedGardenById
+  selectAllPlantPointers, maybeFindSavedGardenById,
 } from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { history, getPathArray } from "../../history";
 import { isNumber } from "lodash";

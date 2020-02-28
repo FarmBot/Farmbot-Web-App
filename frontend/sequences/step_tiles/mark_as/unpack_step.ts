@@ -2,7 +2,7 @@ import { DropDownItem } from "../../../ui";
 import {
   findToolById,
   findByKindAndId,
-  findPointerByTypeAndId
+  findPointerByTypeAndId,
 } from "../../../resources/selectors";
 import { plant2ddi, pointer2ddi } from "./resource_list";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";

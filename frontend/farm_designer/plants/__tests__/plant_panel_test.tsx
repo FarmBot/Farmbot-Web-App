@@ -21,7 +21,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { edit } from "../../../api/crud";
 import {
-  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate
+  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate,
 } from "../edit_plant_status";
 
 describe("<PlantPanel/>", () => {

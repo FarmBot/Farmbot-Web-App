@@ -9,7 +9,7 @@ import { Actions, Content } from "../../constants";
 import { TaggedPlant } from "../map/interfaces";
 import { getPlants } from "../state_to_props";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";

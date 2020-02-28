@@ -2,7 +2,7 @@ import moment from "moment";
 import { Everything } from "../../interfaces";
 import { EditPlantInfoProps } from "../interfaces";
 import {
-  maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeSettings
+  maybeFindPlantById, maybeFindPlantTemplateById, maybeGetTimeSettings,
 } from "../../resources/selectors";
 import { history } from "../../history";
 import { PlantStage } from "farmbot";

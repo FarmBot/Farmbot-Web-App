@@ -5,10 +5,10 @@ jest.mock("../../../../api/crud", () => ({
 
 import {
   editCriteria, toggleEqCriteria,
-  togglePointSelection, toggleStringCriteria, editGtLtCriteria
+  togglePointSelection, toggleStringCriteria, editGtLtCriteria,
 } from "..";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { overwrite, save } from "../../../../api/crud";
 import { cloneDeep } from "lodash";

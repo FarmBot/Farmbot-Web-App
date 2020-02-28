@@ -11,7 +11,7 @@ import {
   AddStringCriteriaProps,
 } from "./interfaces";
 import {
-  PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST
+  PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST,
 } from "../../plants/edit_plant_status";
 
 export class AddEqCriteria<T extends string | number>

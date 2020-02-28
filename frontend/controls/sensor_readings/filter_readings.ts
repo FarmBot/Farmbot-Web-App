@@ -10,7 +10,7 @@ const oneDay = 3600 * 24;
 export const calcEndOfPeriod = (
   timePeriod: number,
   endDate: number,
-  period: "current" | "previous"
+  period: "current" | "previous",
 ) => endDate + oneDay
   - timePeriod * (period === "current" ? 0 : 1);
 

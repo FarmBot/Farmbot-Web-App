@@ -5,7 +5,7 @@ import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { Row, Col } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
-  ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay
+  ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
 } from "../components/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";

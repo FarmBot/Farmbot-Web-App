@@ -6,15 +6,15 @@ jest.mock("../../../history", () => ({
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps
+  RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps,
 } from "../group_list_panel";
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 describe("<GroupListPanel />", () => {

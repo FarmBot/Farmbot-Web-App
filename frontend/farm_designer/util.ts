@@ -36,8 +36,7 @@ export const OFSearch = (searchTerm: string) =>
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
       })
       .catch(() =>
-        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined })
-      );
+        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined }));
   };
 
 function isExecutableType(x?: string): x is ExecutableType {

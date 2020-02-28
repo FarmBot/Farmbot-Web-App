@@ -12,10 +12,10 @@ import { mount, shallow } from "enzyme";
 import { RawAddFarmEvent as AddFarmEvent } from "../add_farm_event";
 import { AddEditFarmEventProps } from "../../interfaces";
 import {
-  fakeFarmEvent, fakeSequence, fakeRegimen
+  fakeFarmEvent, fakeSequence, fakeRegimen,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { destroyOK } from "../../../resources/actions";

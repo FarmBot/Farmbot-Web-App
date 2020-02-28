@@ -2,14 +2,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import {
   Everything,
-  ResourceColor
+  ResourceColor,
 } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
   Row,
   Col,
   BlurableInput,
-  ColorPicker
+  ColorPicker,
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
@@ -18,7 +18,7 @@ import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
-  DesignerPanelContent
+  DesignerPanelContent,
 } from "../designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";

@@ -2,7 +2,7 @@ import * as React from "react";
 import { edit } from "../api/crud";
 import { FBSelect } from "../ui";
 import {
-  pinDropdowns
+  pinDropdowns,
 } from "../sequences/step_tiles/pin_and_peripheral_support";
 import { PIN_MODES } from "../sequences/step_tiles/tile_pin_support";
 import { t } from "../i18next_wrapper";

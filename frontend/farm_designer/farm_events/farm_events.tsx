@@ -2,17 +2,17 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { mapStateToProps } from "./map_state_to_props";
 import {
-  FarmEventProps, CalendarOccurrence, FarmEventState
+  FarmEventProps, CalendarOccurrence, FarmEventState,
 } from "../interfaces";
 import moment from "moment";
 import { Content } from "../../constants";
 import { Panel, DesignerNavTabs } from "../panel_header";
 import { Link } from "../../link";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { some, uniq, map, sortBy } from "lodash";
 import { t } from "../../i18next_wrapper";

@@ -51,7 +51,7 @@ export class Peripherals
 
   newPeripheral = (
     pin: number | undefined = undefined,
-    label = t("New Peripheral")
+    label = t("New Peripheral"),
   ) => {
     this.props.dispatch(init("Peripheral", { pin, label }));
   };

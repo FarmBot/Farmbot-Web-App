@@ -83,7 +83,7 @@ export function getOverlap(
   // Get the overlap of the active and inactive plant spread.
   activeXYZ: BotPosition | undefined,
   plantXYZ: BotPosition,
-  spreadData: SpreadRadii
+  spreadData: SpreadRadii,
 ): number {
   if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)
     && plantXYZ && !isUndefined(plantXYZ.x) && !isUndefined(plantXYZ.y)) {
@@ -105,7 +105,7 @@ export function overlapText(
   qx: number,
   qy: number,
   overlap: number,
-  spreadData: SpreadRadii
+  spreadData: SpreadRadii,
 ): JSX.Element {
   // Display spread overlap percentages for debugging purposes.
   const activeSpreadDia = spreadData.active * 2;
