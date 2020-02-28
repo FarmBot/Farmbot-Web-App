@@ -9,7 +9,6 @@ import { PinGuard } from "./hardware_settings/pin_guard";
 import { Encoders } from "./hardware_settings/encoders";
 import { EndStops } from "./hardware_settings/endstops";
 import { Motors } from "./hardware_settings/motors";
-import { SpacePanelHeader } from "./hardware_settings/space_panel_header";
 import {
   HomingAndCalibration,
 } from "./hardware_settings/homing_and_calibration";
@@ -59,9 +58,6 @@ export class HardwareSettings extends
           <i className="fa fa-download" />
           <FwParamExportMenu firmwareConfig={firmwareConfig} />
         </Popover>
-        <div className="label-headings">
-          <SpacePanelHeader />
-        </div>
         <HomingAndCalibration {...commonProps}
           bot={bot}
           sourceFwConfig={sourceFwConfig}
@@ -78,15 +74,15 @@ export class HardwareSettings extends
           sourceFwConfig={sourceFwConfig} />
         <ErrorHandling {...commonProps}
           sourceFwConfig={sourceFwConfig} />
+        <PinBindings  {...commonProps}
+          resources={resources}
+          firmwareHardware={firmwareHardware} />
         <PinGuard {...commonProps}
           resources={resources}
           sourceFwConfig={sourceFwConfig} />
         <DangerZone {...commonProps}
           onReset={MCUFactoryReset}
           botDisconnected={botDisconnected} />
-        <PinBindings  {...commonProps}
-          resources={resources}
-          firmwareHardware={firmwareHardware} />
       </WidgetBody>
     </Widget>;
   }

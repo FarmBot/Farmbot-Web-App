@@ -9,6 +9,7 @@ import { settingToggle } from "../../actions";
 import { SingleSettingRow } from "./single_setting_row";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export function ErrorHandling(props: ErrorHandlingProps) {
 
@@ -24,6 +25,9 @@ export function ErrorHandling(props: ErrorHandlingProps) {
       panel={"error_handling"}
       dispatch={dispatch} />
     <Collapse isOpen={!!error_handling}>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <NumericMCUInputGroup
         label={DeviceSetting.timeoutAfter}
         tooltip={ToolTips.TIMEOUT_AFTER}

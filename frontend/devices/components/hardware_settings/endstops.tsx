@@ -5,6 +5,7 @@ import { EndStopsProps } from "../interfaces";
 import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export function EndStops(props: EndStopsProps) {
 
@@ -19,6 +20,9 @@ export function EndStops(props: EndStopsProps) {
       panel={"endstops"}
       dispatch={dispatch} />
     <Collapse isOpen={!!endstops}>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <BooleanMCUInputGroup
         label={DeviceSetting.enableEndstops}
         tooltip={ToolTips.ENABLE_ENDSTOPS}

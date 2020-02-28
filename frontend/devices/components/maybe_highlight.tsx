@@ -75,6 +75,36 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.changeOwnership,
 ];
 
+const FARM_DESIGNER_PANEL = [
+  DeviceSetting.farmDesigner,
+  DeviceSetting.animations,
+  DeviceSetting.trail,
+  DeviceSetting.dynamicMap,
+  DeviceSetting.mapSize,
+  DeviceSetting.rotateMap,
+  DeviceSetting.mapOrigin,
+  DeviceSetting.confirmPlantDeletion,
+];
+
+const FIRMWARE_PANEL = [
+  DeviceSetting.firmwareSection,
+  DeviceSetting.firmware,
+  DeviceSetting.flashFirmware,
+  DeviceSetting.restartFirmware,
+];
+
+const FARMBOT_PANEL = [
+  DeviceSetting.farmbot,
+  DeviceSetting.name,
+  DeviceSetting.timezone,
+  DeviceSetting.camera,
+  DeviceSetting.applySoftwareUpdates,
+  DeviceSetting.farmbotOSAutoUpdate,
+  DeviceSetting.farmbotOS,
+  DeviceSetting.autoSync,
+  DeviceSetting.bootSequence,
+];
+
 /** Look up parent panels for settings. */
 const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof ControlPanelState>;
 HOMING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "homing_and_calibration");
@@ -86,6 +116,9 @@ PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 DANGER_ZONE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
+FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
+FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_os");
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);

@@ -254,4 +254,7 @@ export interface ControlPanelState {
   danger_zone: boolean;
   pin_bindings: boolean;
   power_and_reset: boolean;
+  farm_designer: boolean;
+  firmware: boolean;
+  farmbot_os: boolean;
 }

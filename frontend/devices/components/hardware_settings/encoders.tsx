@@ -7,6 +7,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { hasEncoders } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export function Encoders(props: EncodersProps) {
 
@@ -30,6 +31,9 @@ export function Encoders(props: EncodersProps) {
       panel={"encoders"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders}>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <BooleanMCUInputGroup
         label={!showEncoders
           ? DeviceSetting.enableStallDetection

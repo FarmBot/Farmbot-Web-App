@@ -31,7 +31,7 @@ describe("<HardwareSettings />", () => {
 
   it("renders", () => {
     const wrapper = mount(<HardwareSettings {...fakeProps()} />);
-    ["expand all", "x axis", "motors"].map(string =>
+    ["expand all", "motors"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

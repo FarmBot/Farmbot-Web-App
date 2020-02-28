@@ -14,6 +14,7 @@ import { getDevice } from "../../../device";
 import { commandErr } from "../../actions";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
@@ -40,6 +41,9 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       dispatch={dispatch}
       expanded={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <CalibrationRow
         type={"find_home"}
         title={DeviceSetting.homing}

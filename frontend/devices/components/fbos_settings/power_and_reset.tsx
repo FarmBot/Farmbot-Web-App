@@ -9,6 +9,7 @@ import { Content, DeviceSetting } from "../../../constants";
 import { reboot, powerOff, restartFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
@@ -35,13 +36,14 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      <FbosButtonRow
-        botOnline={botOnline}
-        label={DeviceSetting.restartFirmware}
-        description={Content.RESTART_FIRMWARE}
-        buttonText={t("RESTART")}
-        color={"yellow"}
-        action={restartFirmware} />
+      {!DevSettings.futureFeaturesEnabled() &&
+        <FbosButtonRow
+          botOnline={botOnline}
+          label={DeviceSetting.restartFirmware}
+          description={Content.RESTART_FIRMWARE}
+          buttonText={t("RESTART")}
+          color={"yellow"}
+          action={restartFirmware} />}
       <FactoryResetRows
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig}
