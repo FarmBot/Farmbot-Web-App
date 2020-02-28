@@ -27,7 +27,7 @@ export function MustBeOnline(props: MBOProps) {
   const { children, hideBanner, lockOpen, networkState, syncStatus } = props;
   const banner = hideBanner ? "" : "banner";
   if (isBotOnline(syncStatus, networkState) || lockOpen) {
-    return <div> {children} </div>;
+    return <div className={"bot-is-online-wrapper"}>{children}</div>;
   } else {
     return <div
       className={`unavailable ${banner}`}

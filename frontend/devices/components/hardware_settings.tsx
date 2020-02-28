@@ -45,11 +45,13 @@ export class HardwareSettings extends
       <WidgetBody>
         <button
           className={"fb-button gray no-float"}
+          title={t("Expand All")}
           onClick={() => dispatch(bulkToggleControlPanel(true))}>
           {t("Expand All")}
         </button>
         <button
           className={"fb-button gray no-float"}
+          title={t("Collapse All")}
           onClick={() => dispatch(bulkToggleControlPanel(false))}>
           {t("Collapse All")}
         </button>

@@ -32,6 +32,7 @@ export const FbosButtonRow = (props: FbosButtonRowProps) => {
           className={`fb-button ${props.color}`}
           type="button"
           onClick={props.action}
+          title={t(props.buttonText)}
           disabled={!props.botOnline}>
           {t(props.buttonText)}
         </button>

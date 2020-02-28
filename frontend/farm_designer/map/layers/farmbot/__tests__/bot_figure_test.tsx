@@ -9,7 +9,7 @@ import {
 
 describe("<BotFigure/>", () => {
   const fakeProps = (): BotFigureProps => ({
-    name: "",
+    figureName: "",
     position: { x: 0, y: 0, z: 0 },
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
@@ -30,11 +30,11 @@ describe("<BotFigure/>", () => {
     ["motors", 4, { x: 3000, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
     ["encoders", 2, { x: 0, y: 0 }, false, 0.25],
   ])("shows %s in correct location for quadrant %i",
-    (name, quadrant, expected, xySwap, opacity) => {
+    (figureName, quadrant, expected, xySwap, opacity) => {
       const p = fakeProps();
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
-      p.name = name;
+      p.figureName = figureName;
       const result = shallow<BotFigure>(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({

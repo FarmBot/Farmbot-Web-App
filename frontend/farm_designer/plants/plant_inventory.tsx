@@ -47,7 +47,7 @@ export class RawPlants extends React.Component<PlantInventoryProps, State> {
         panel={Panel.Plants}
         linkTo={"/app/designer/plants/crop_search"}
         title={t("Add plant")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your plants...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>

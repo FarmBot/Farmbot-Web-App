@@ -48,17 +48,17 @@ export class RefactoredSendMessage
     return (this.props.currentStep.body || []).map(x => x.args.channel_name);
   }
 
-  hasChannel = (name: ChannelName) => {
-    return this.channels.includes(name);
+  hasChannel = (channelName: ChannelName) => {
+    return this.channels.includes(channelName);
   }
 
-  add = (name: ChannelName) => (s: SendMessage) => {
+  add = (channelName: ChannelName) => (s: SendMessage) => {
     s.body = s.body || [];
-    s.body.push(channel(name));
+    s.body.push(channel(channelName));
   }
 
-  remove = (name: ChannelName) => (s: SendMessage) => {
-    s.body = (s.body || []).filter(x => x.args.channel_name !== name);
+  remove = (channelName: ChannelName) => (s: SendMessage) => {
+    s.body = (s.body || []).filter(x => x.args.channel_name !== channelName);
   }
 
   toggle = (n: ChannelName) => () => {
@@ -119,12 +119,12 @@ export class RefactoredSendMessage
                   list={MESSAGE_STATUSES} />
               </div>
               <div className="channel-fields">
-                <div>{EACH_CHANNEL.map((chan, inx) => {
+                {EACH_CHANNEL.map((chan, inx) => {
                   return <fieldset key={inx}>
                     <label htmlFor={chan.name}>
                       {chan.label}
                     </label>
-                    <input type="checkbox"
+                    <input type="checkbox" name={chan.name}
                       id={chan.name}
                       onChange={this.toggle(chan.name)}
                       checked={
@@ -132,7 +132,6 @@ export class RefactoredSendMessage
                       disabled={chan.alwaysOn} />
                   </fieldset>;
                 })}
-                </div>
               </div>
             </div>
           </Col>

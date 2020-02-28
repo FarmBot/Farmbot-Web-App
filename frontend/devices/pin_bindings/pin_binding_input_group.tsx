@@ -133,8 +133,9 @@ export class PinBindingInputGroup
         <button
           className="fb-button green"
           type="button"
+          title={t("BIND")}
           onClick={this.bindPin}>
-          {t("BIND")}
+          <i className={"fa fa-plus"} />
         </button>
       </Col>
     </Row>;

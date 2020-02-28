@@ -256,15 +256,15 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     };
   }
 
-  fieldSet = (name: FarmEventViewModelKey, value: string) =>
+  fieldSet = (key: FarmEventViewModelKey, value: string) =>
     // A merge is required to not overwrite `fe`.
     this.setState(betterMerge(this.state, {
-      fe: { [name]: value },
+      fe: { [key]: value },
       specialStatusLocal: SpecialStatus.DIRTY
     }))
 
-  fieldGet = (name: FarmEventViewModelKey): string =>
-    (this.state.fe[name] || this.viewModel[name] || "").toString()
+  fieldGet = (key: FarmEventViewModelKey): string =>
+    (this.state.fe[key] || this.viewModel[key] || "").toString()
 
   nextItemTime = (fe: FarmEvent, now: moment.Moment
   ): moment.Moment | undefined => {
@@ -390,8 +390,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
 
 export interface StartTimeFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
 }
 
@@ -426,8 +426,8 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
 
 export interface RepeatFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
 }
 
@@ -437,13 +437,14 @@ export const RepeatForm = (props: RepeatFormProps) => {
     {!props.isRegimen
       ? <label>
         <input type="checkbox"
+          name="timeUnit"
           onChange={e => props.fieldSet("timeUnit",
             (!e.currentTarget.checked || props.isRegimen) ? "never" : "daily")}
           disabled={props.isRegimen}
           checked={allowRepeat} />
         {t("Repeats?")}
       </label>
-      : <div />}
+      : <div className={"no-repeat"} />}
     <FarmEventRepeatForm
       timeSettings={props.timeSettings}
       disabled={!allowRepeat}
@@ -459,7 +460,7 @@ export const RepeatForm = (props: RepeatFormProps) => {
 };
 
 export const dateCheck = (
-  fieldGet: (name: FarmEventViewModelKey) => string
+  fieldGet: (key: FarmEventViewModelKey) => string
 ): string | undefined => {
   const startDate = fieldGet("startDate");
   const endDate = fieldGet("endDate");
@@ -469,7 +470,7 @@ export const dateCheck = (
 };
 
 export const timeCheck = (
-  fieldGet: (name: FarmEventViewModelKey) => string,
+  fieldGet: (key: FarmEventViewModelKey) => string,
   timeSettings: TimeSettings
 ): string | undefined => {
   const startDate = fieldGet("startDate");
@@ -491,6 +492,7 @@ export interface FarmEventDeleteButtonProps {
 
 export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
   <button className="fb-button red" hidden={props.hidden}
+    title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
@@ -502,8 +504,8 @@ export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
 
 export interface FarmEventFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
   executableOptions: DropDownItem[];
   executableSet(ddi: DropDownItem): void;

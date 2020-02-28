@@ -26,8 +26,8 @@ export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
 
-  hover = (name: string) =>
-    () => this.setState({ hoveredConnection: name });
+  hover = (connectionName: string) =>
+    () => this.setState({ hoveredConnection: connectionName });
 
   render() {
     const { informational_settings } = this.props.bot.hardware;

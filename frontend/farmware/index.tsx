@@ -102,10 +102,11 @@ interface BasicFarmwarePageProps {
 
 export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
   BasicFarmwarePageProps) =>
-  <div>
+  <div className={"basic-farmware-page"}>
     <button
       className="fb-button green farmware-button"
       disabled={isPendingInstallation(farmware) || !botOnline}
+      title={t("Run Farmware")}
       onClick={run(farmwareName)}>
       {t("Run")}
     </button>
@@ -208,6 +209,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
     <button
       className={`farmware-info-button fb-button gray ${props.className}`}
       disabled={!props.online}
+      title={t("open Farmware info")}
       onClick={() => this.props.dispatch({
         type: Actions.SET_FARMWARE_INFO_STATE, payload: true
       })}>

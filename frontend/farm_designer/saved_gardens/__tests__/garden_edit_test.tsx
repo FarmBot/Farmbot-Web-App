@@ -12,6 +12,7 @@ jest.mock("../../../api/crud", () => ({
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
+  history: { push: jest.fn() },
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 

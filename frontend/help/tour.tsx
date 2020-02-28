@@ -82,5 +82,7 @@ export class Tour extends React.Component<TourProps, TourState> {
 }
 
 export const RunTour = ({ currentTour }: { currentTour: string | undefined }) => {
-  return currentTour ? <Tour steps={TOUR_STEPS()[currentTour]} /> : <div />;
+  return currentTour
+    ? <Tour steps={TOUR_STEPS()[currentTour]} />
+    : <div className={"tour-inactive"} />;
 };

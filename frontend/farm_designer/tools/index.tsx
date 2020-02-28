@@ -226,7 +226,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         panel={Panel.Tools}
         linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
         title={!hasTools ? this.strings.titleText : undefined}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={this.strings.placeholder} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"tools"}>

@@ -58,7 +58,7 @@ describe("<PinBindingInputGroup/>", () => {
   it("no pin selected", () => {
     const wrapper = mount(<PinBindingInputGroup {...fakeProps()} />);
     const buttons = wrapper.find("button");
-    expect(buttons.last().text()).toEqual("BIND");
+    expect(buttons.last().props().title).toEqual("BIND");
     buttons.last().simulate("click");
     expect(error).toHaveBeenCalledWith("Pin number cannot be blank.");
   });
@@ -66,7 +66,7 @@ describe("<PinBindingInputGroup/>", () => {
   it("no target selected", () => {
     const wrapper = mount(<PinBindingInputGroup {...fakeProps()} />);
     const buttons = wrapper.find("button");
-    expect(buttons.last().text()).toEqual("BIND");
+    expect(buttons.last().props().title).toEqual("BIND");
     wrapper.setState({ pinNumberInput: AVAILABLE_PIN });
     buttons.last().simulate("click");
     expect(error).toHaveBeenCalledWith("Please select a sequence or action.");
@@ -77,7 +77,7 @@ describe("<PinBindingInputGroup/>", () => {
     p.dispatch = jest.fn();
     const wrapper = mount(<PinBindingInputGroup {...p} />);
     const buttons = wrapper.find("button");
-    expect(buttons.last().text()).toEqual("BIND");
+    expect(buttons.last().props().title).toEqual("BIND");
     wrapper.setState({ pinNumberInput: 1, sequenceIdInput: 2 });
     buttons.last().simulate("click");
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe("<PinBindingInputGroup/>", () => {
     p.dispatch = jest.fn();
     const wrapper = mount(<PinBindingInputGroup {...p} />);
     const buttons = wrapper.find("button");
-    expect(buttons.last().text()).toEqual("BIND");
+    expect(buttons.last().props().title).toEqual("BIND");
     wrapper.setState({
       pinNumberInput: 0,
       bindingType: PinBindingType.special,

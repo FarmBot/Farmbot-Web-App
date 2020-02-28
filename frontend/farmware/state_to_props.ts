@@ -98,12 +98,12 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   });
   shouldDisplay(Feature.api_farmware_installations) &&
     taggedFarmwareInstallations.map(x => {
-      const name = namePendingInstall(x.body.package, x.body.id);
-      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || name);
+      const n = namePendingInstall(x.body.package, x.body.id);
+      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || n);
       const alreadyInstalled = Object.values(farmwares)
         .map(fw => fw.url).includes(x.body.url);
       if (x.body.id && !alreadyAdded && !alreadyInstalled) {
-        farmwares[name] = manifestInfoPending(name, x.body.url);
+        farmwares[n] = manifestInfoPending(n, x.body.url);
       }
     });
 

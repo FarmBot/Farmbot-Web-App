@@ -27,6 +27,7 @@ export function CalibrationRow(props: CalibrationRowProps) {
           return <Col xs={2} key={axis} className={"centered-button-div"}>
             <LockableButton
               disabled={hardwareDisabled || botDisconnected}
+              title={t(props.axisTitle)}
               onClick={() => props.action(axis)}>
               {`${t(props.axisTitle)} ${axis}`}
             </LockableButton>

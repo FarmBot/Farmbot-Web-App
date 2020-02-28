@@ -84,7 +84,7 @@ export class FarmbotColorPicker extends React.Component<FarmbotPickerProps, {}> 
     return { ...selectedCSS, width, height, top, left };
   }
 
-  customPointer = () => <div />;
+  customPointer = () => <div className={"no-custom-pointer"} />;
 
   render() {
     const H_AVG = !!this.props.invertHue

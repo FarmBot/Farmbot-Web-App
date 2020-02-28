@@ -49,7 +49,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds/add"}
         title={t("Add weed")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your weeds...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>

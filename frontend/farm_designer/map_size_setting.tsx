@@ -24,6 +24,7 @@ const LengthInput = (props: LengthInputProps) =>
     <Col xs={5}>
       <input
         type="number"
+        name={props.setting}
         value={"" + props.value}
         onChange={e => props.dispatch(setWebAppConfigValue(
           props.setting, e.currentTarget.value))} />

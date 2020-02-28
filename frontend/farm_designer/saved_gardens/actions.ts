@@ -11,8 +11,9 @@ import { t } from "../../i18next_wrapper";
 import { stopTracking } from "../../connectivity/data_consistency";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
-export const snapshotGarden = (name?: string | undefined) =>
-  axios.post<void>(API.current.snapshotPath, name ? { name } : {})
+export const snapshotGarden = (gardenName?: string | undefined) =>
+  axios.post<void>(API.current.snapshotPath, gardenName
+    ? { name: gardenName } : {})
     .then(() => {
       success(t("Garden Saved."));
       history.push("/app/designer/gardens");
@@ -63,9 +64,9 @@ export const openOrCloseGarden = (props: {
       : props.dispatch(closeSavedGarden());
 
 /** Create a new SavedGarden with the chosen name. */
-export const newSavedGarden = (name: string) =>
+export const newSavedGarden = (gardenName: string) =>
   (dispatch: Function) => {
-    dispatch(initSave("SavedGarden", { name: name || "Untitled Garden" }))
+    dispatch(initSave("SavedGarden", { name: gardenName || "Untitled Garden" }))
       .then(() => {
         success(t("Garden Saved."));
         history.push("/app/designer/gardens");
@@ -93,8 +94,8 @@ export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
 }) =>
   (dispatch: Function) => {
     const sourceSavedGardenId = savedGarden.body.id;
-    const name = newSGName || `${savedGarden.body.name} (${t("copy")})`;
-    dispatch(initSaveGetId(savedGarden.kind, { name }))
+    const gardenName = newSGName || `${savedGarden.body.name} (${t("copy")})`;
+    dispatch(initSaveGetId(savedGarden.kind, { name: gardenName }))
       .then((newSGId: number) => {
         plantTemplates
           .filter(x => x.body.saved_garden_id === sourceSavedGardenId)

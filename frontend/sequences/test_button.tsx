@@ -85,10 +85,14 @@ interface TestProps {
 /** Sequence test button. Turns grey when sequence is not saved and synced. */
 const Test = (props: TestProps) => {
   const normalColor = props.canTest ? "orange" : "pseudo-disabled";
+  const buttonText = props.menuOpen
+    ? t("Close")
+    : t("Test");
   return <button
     className={`fb-button ${props.menuOpen ? "gray" : normalColor}`}
+    title={buttonText}
     onClick={props.onClick}>
-    {props.menuOpen ? t("Close") : t("Test")}
+    {buttonText}
   </button>;
 };
 

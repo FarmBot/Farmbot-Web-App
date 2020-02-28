@@ -58,10 +58,10 @@ const LOG_SETTING_NAMES = SEQUENCE_LOG_SETTINGS().map(s => s.setting)
 const LogSetting = (props: LogSettingProps) => {
   const { label, setting, toolTip, setFilterLevel, sourceFbosConfig } = props;
   /** Update the current filter level to a minimum needed for log display. */
-  const updateMinFilterLevel = (name: keyof Filters, level: number) => {
+  const updateMinFilterLevel = (key: keyof Filters, level: number) => {
     const currentLevel =
-      props.getConfigValue(safeNumericSetting(name + "_log")) || 0;
-    if (currentLevel < level) { setFilterLevel(name)(level); }
+      props.getConfigValue(safeNumericSetting(key + "_log")) || 0;
+    if (currentLevel < level) { setFilterLevel(key)(level); }
   };
   const config = sourceFbosConfig(setting);
   return <fieldset>

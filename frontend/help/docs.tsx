@@ -18,11 +18,13 @@ export const DocsWidget = () =>
   <Widget className="documentation-widget">
     <WidgetHeader title={t("Documentation")} />
     <WidgetBody>
-      <div>
+      <div className={"general-doc-links"}>
         <label>{t("General")}</label>
-        <div>{documentationLink("the-farmbot-web-app", "Web App")}</div>
+        <div className={"web-app-doc-link"}>
+          {documentationLink("the-farmbot-web-app", "Web App")}
+        </div>
       </div>
-      <div>
+      <div className={"specific-doc-links"}>
         <label>{t("Topics")}</label>
         {Object.entries(DOC_SLUGS).map(documentationLinkMapper)}
       </div>

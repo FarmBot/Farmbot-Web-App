@@ -17,12 +17,12 @@ const parse = (str: string | undefined) => {
 };
 
 /* Check if the image has been rotated according to the calibration value. */
-const isRotated = (name: string | undefined, noCalib: boolean) => {
+const isRotated = (annotation: string | undefined, noCalib: boolean) => {
   if (PRE_CALIBRATION_PREVIEW && noCalib) { return true; }
-  return name &&
-    (name.includes("rotated")
-      || name.includes("marked")
-      || name.includes("calibration_result"));
+  return annotation &&
+    (annotation.includes("rotated")
+      || annotation.includes("marked")
+      || annotation.includes("calibration_result"));
 };
 
 /* Check if the calibration data is valid for the image provided using z. */

@@ -47,12 +47,13 @@ export class RawAccount extends React.Component<Props, State> {
     (key: keyof User) => (key === "email") && this.setState({ warnThem: true });
 
   onChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget;
-    if (isKey(name)) {
-      this.tempHack(name);
-      this.props.dispatch(edit(this.props.user, { [name]: value }));
+    const { value } = e.currentTarget;
+    const field = e.currentTarget.name;
+    if (isKey(field)) {
+      this.tempHack(field);
+      this.props.dispatch(edit(this.props.user, { [field]: value }));
     } else {
-      throw new Error("Bad key: " + name);
+      throw new Error("Bad key: " + field);
     }
   };
 

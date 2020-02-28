@@ -285,13 +285,13 @@ export function MCUFactoryReset() {
 
 /** Toggle a firmware setting. */
 export function settingToggle(
-  name: ConfigKey,
+  key: ConfigKey,
   sourceFwConfig: SourceFwConfig,
   displayAlert?: string | undefined
 ) {
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }
-    const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
+    const update = { [key]: (sourceFwConfig(key).value === 0) ? ON : OFF };
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
       dispatch(edit(fwConfig, update));

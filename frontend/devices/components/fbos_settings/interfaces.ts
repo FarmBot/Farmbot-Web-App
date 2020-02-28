@@ -59,7 +59,7 @@ export interface PowerAndResetProps {
   botOnline: boolean;
 }
 
-export interface FactoryResetRowProps {
+export interface FactoryResetRowsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;

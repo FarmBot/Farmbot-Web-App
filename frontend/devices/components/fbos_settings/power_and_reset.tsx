@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Header } from "../hardware_settings/header";
 import { Collapse, Popover, Position } from "@blueprintjs/core";
-import { FactoryResetRow } from "./factory_reset_row";
+import { FactoryResetRows } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
 import { FbosButtonRow } from "./fbos_button_row";
@@ -42,7 +42,7 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("RESTART")}
         color={"yellow"}
         action={restartFirmware} />
-      <FactoryResetRow
+      <FactoryResetRows
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline} />

@@ -35,11 +35,11 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   logout = () => Session.clear();
 
-  toggle = (name: keyof NavBarState) => () =>
-    this.setState({ [name]: !this.state[name] });
+  toggle = (key: keyof NavBarState) => () =>
+    this.setState({ [key]: !this.state[key] });
 
-  close = (name: keyof NavBarState) => () =>
-    this.setState({ [name]: false });
+  close = (key: keyof NavBarState) => () =>
+    this.setState({ [key]: false });
 
   ReadOnlyStatus = () =>
     <ReadOnlyIcon locked={!!this.props.getConfigValue(
@@ -103,7 +103,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const { close } = this;
     const { mobileMenuOpen } = this.state;
     const { alertCount } = this.props;
-    return <div>
+    return <div className={"app-nav-links"}>
       <i className={"fa fa-bars mobile-menu-icon"}
         onClick={this.toggle("mobileMenuOpen")} />
       <span className="mobile-menu-container">
@@ -130,7 +130,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         <nav role="navigation">
           <Row>
             <Col xs={12}>
-              <div>
+              <div className={"nav-bar"}>
                 <TickerList {...tickerListProps} />
                 <div className="nav-group">
                   <div className="nav-left">

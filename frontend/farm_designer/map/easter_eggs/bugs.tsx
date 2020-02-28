@@ -125,6 +125,7 @@ export const BugsControls = () =>
     ? <div className="more-bugs">
       <button
         className="fb-button green"
+        title={t("more bugs!")}
         onClick={resetBugs}>
         {t("more bugs!")}
       </button>
@@ -133,4 +134,4 @@ export const BugsControls = () =>
           {t("{{seconds}} seconds!", { seconds: getBugTime() })}
         </p>}
     </div>
-    : <div />;
+    : <div className={"no-bugs"} />;

@@ -47,6 +47,7 @@ export const StockPinBindingsButton = (props: StockPinBindingsButtonProps) =>
     <button
       className="fb-button green"
       hidden={!hasButtons(props.firmwareHardware)}
+      title={t("add stock pin bindings")}
       onClick={() => stockPinBindings.map(binding =>
         props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
       <i className="fa fa-plus" />

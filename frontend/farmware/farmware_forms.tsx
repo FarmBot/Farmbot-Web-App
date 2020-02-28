@@ -54,7 +54,7 @@ export function ConfigFields(props: {
   }
 
   const { farmware, getValue } = props;
-  return <div>
+  return <div className={"farmware-config-fields"}>
     {farmware.config.map(config => {
       const configEnvName =
         getConfigEnvName(farmware.name, config.name);
@@ -93,6 +93,7 @@ export function FarmwareForm(props: FarmwareFormProps): JSX.Element {
       <button
         className="fb-button green farmware-button"
         disabled={!props.botOnline}
+        title={t("Run Farmware")}
         onClick={() => run(farmware.name, farmware.config)}>
         {t("Run")}
       </button>

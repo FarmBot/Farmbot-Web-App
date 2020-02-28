@@ -16,7 +16,7 @@ import { Highlight } from "../maybe_highlight";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
-    const getV = (name: McuParamName) => sourceFwConfig(name).value;
+    const getV = (key: McuParamName) => sourceFwConfig(key).value;
     return {
       x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
         getV("movement_microsteps_x")),

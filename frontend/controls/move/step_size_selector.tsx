@@ -1,6 +1,7 @@
 import * as React from "react";
 import { StepSizeSelectorProps } from "./interfaces";
 import { first, last } from "lodash";
+import { t } from "../../i18next_wrapper";
 
 export class StepSizeSelector extends React.Component<StepSizeSelectorProps, {}> {
   cssForIndex(num: number) {
@@ -22,10 +23,10 @@ export class StepSizeSelector extends React.Component<StepSizeSelectorProps, {}>
     return <div className="move-amount-wrapper">
       {
         this.props.choices.map(
-          (item: number, inx: number) => <button
+          (item: number, inx: number) => <button key={inx}
+            title={t("{{ amount }}mm", { amount: item })}
             className={this.cssForIndex(item)}
-            onClick={() => this.props.selector(item)}
-            key={inx}>
+            onClick={() => this.props.selector(item)}>
             {item}
           </button>
         )

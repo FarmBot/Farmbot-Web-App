@@ -53,7 +53,7 @@ export class RawZones extends React.Component<ZonesProps, ZonesState> {
         }))
           .then((id: number) => this.navigate(id)).catch(() => { })}
         title={t("Add zone")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your zones...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"zones-inventory"}>

@@ -56,14 +56,12 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           </label>
         </Col>
         <Col xs={ColWidth.description}>
-          <div>
-            <FBSelect
-              key={this.apiValue}
-              extraClass={this.state.sending ? "dim" : ""}
-              list={getFirmwareChoices()}
-              selectedItem={this.selectedBoard}
-              onChange={this.sendOffConfig} />
-          </div>
+          <FBSelect
+            key={this.apiValue}
+            extraClass={this.state.sending ? "dim" : ""}
+            list={getFirmwareChoices()}
+            selectedItem={this.selectedBoard}
+            onChange={this.sendOffConfig} />
         </Col>
         <Col xs={ColWidth.button}>
           <FirmwareHardwareStatus

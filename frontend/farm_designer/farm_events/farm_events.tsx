@@ -109,6 +109,7 @@ export class PureFarmEvents
         noIcon={true}>
         <i className="fa fa-calendar" onClick={this.resetCalendar} />
         <input
+          name="searchTerm"
           value={this.state.searchTerm}
           onChange={e => this.setState({ searchTerm: e.currentTarget.value })}
           placeholder={t("Search your events...")} />

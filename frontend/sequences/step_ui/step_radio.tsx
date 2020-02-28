@@ -22,7 +22,7 @@ export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
             {props.choices.map((choice, i) =>
               <div key={i} style={{ display: "inline" }}>
                 <label>
-                  <input type="radio"
+                  <input type="radio" name={choice}
                     value={choice}
                     onChange={() => props.onChange(choice)}
                     checked={props.currentChoice === choice} />

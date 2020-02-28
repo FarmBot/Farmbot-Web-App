@@ -81,12 +81,12 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
         portalClassName={"bindings-warning-icon"}
         popoverClassName={"help"}>
         <i className="fa fa-exclamation-triangle" />
-        <div>
+        <div className={"pin-binding-warning"}>
           {t(ToolTips.PIN_BINDING_WARNING)}
         </div>
       </Popover>
     </Row>
-    <div>
+    <div className={"pin-bindings-list-and-input"}>
       <PinBindingsListHeader />
       <PinBindingsList
         pinBindings={pinBindings}

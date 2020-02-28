@@ -22,8 +22,8 @@ export const DISMOUNTED = (): DropDownPair => ({
 const DEFAULT_TOOL_NAME = "Untitled Tool";
 const REMOVED_ACTION = { label: "Removed", value: "removed" };
 
-const mountedTo = (name = DEFAULT_TOOL_NAME): DropDownItem =>
-  ({ label: `${MOUNTED_TO} ${name}`, value: "mounted" });
+const mountedTo = (toolName = DEFAULT_TOOL_NAME): DropDownItem =>
+  ({ label: `${MOUNTED_TO} ${toolName}`, value: "mounted" });
 
 /** The user wants to change the `mounted_tool_id` of their Device. */
 function mountTool(i: StepWithResourceIndex): DropDownPair {

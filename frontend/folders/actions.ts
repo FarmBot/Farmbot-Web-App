@@ -31,11 +31,11 @@ export const setFolderColor = (id: number, color: Color) => {
   d(save(f.uuid));
 };
 
-export const setFolderName = (id: number, name: string) => {
+export const setFolderName = (id: number, folderName: string) => {
   const d = store.dispatch as Function;
   const { index } = store.getState().resources;
   const folder = findFolderById(index, id);
-  const action = edit(folder, { name });
+  const action = edit(folder, { name: folderName });
   d(action);
   return d(save(folder.uuid)) as Promise<{}>;
 };

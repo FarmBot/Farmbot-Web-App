@@ -41,7 +41,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
 
   SequenceSelectBox = () =>
     <Col xs={6}>
-      <div>
+      <div className={"sequence-select-box"}>
         <label>{t("Sequence")}</label>
         <FBSelect onChange={this.onChange}
           selectedItem={this.selected()}
@@ -51,7 +51,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
 
   TimeSelection = () =>
     <Col xs={6}>
-      <div>
+      <div className={"time-selection"}>
         <label>{t("Time")}</label>
         <i className="fa fa-clock-o" onClick={() =>
           this.props.dispatch(setTimeOffset(timeToMs(

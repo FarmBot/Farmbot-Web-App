@@ -43,9 +43,9 @@ describe("<SensorReadings />", () => {
   it("sets location", () => {
     const expectedLocation = { x: 1, y: 2, z: undefined };
     const wrapper = mount<SensorReadings>(<SensorReadings {...fakeProps()} />);
-    expect(wrapper.instance().state.location).toEqual(undefined);
+    expect(wrapper.instance().state.xyzLocation).toEqual(undefined);
     wrapper.instance().setLocation(expectedLocation);
-    expect(wrapper.instance().state.location).toEqual(expectedLocation);
+    expect(wrapper.instance().state.xyzLocation).toEqual(expectedLocation);
   });
 
   it("sets end date", () => {
@@ -87,9 +87,9 @@ describe("<SensorReadings />", () => {
     const p = fakeProps();
     p.sensors = [s];
     const wrapper = mount<SensorReadings>(<SensorReadings {...p} />);
-    wrapper.setState({ location: { x: 1, y: 2, z: 3 }, sensor: s });
+    wrapper.setState({ xyzLocation: { x: 1, y: 2, z: 3 }, sensor: s });
     wrapper.instance().clearFilters();
-    expect(wrapper.instance().state.location).toEqual(undefined);
+    expect(wrapper.instance().state.xyzLocation).toEqual(undefined);
     expect(wrapper.instance().state.sensor).toEqual(undefined);
   });
 });

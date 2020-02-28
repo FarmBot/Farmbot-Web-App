@@ -22,7 +22,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
     conf: keyof WD_ENV;
     label: string;
   }) => {
-    return <div>
+    return <div className={"camera-config-number-box"}>
       <label htmlFor={conf}>
         {label}
       </label>
@@ -115,6 +115,7 @@ export const BoolConfig = (props: BoolConfigProps) =>
     </label>
     <input
       type="checkbox"
+      name={props.configKey}
       id={props.configKey}
       checked={!!envGet(props.configKey, props.wDEnv)}
       onChange={e =>

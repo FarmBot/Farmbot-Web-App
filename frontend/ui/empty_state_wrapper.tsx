@@ -40,7 +40,7 @@ export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
         src={`/app-resources/img/empty_state/${props.graphic}.png`} />
       {props.title &&
         <h5>{t(props.title)}</h5>}
-      {props.textElement || <div />}
+      {props.textElement || <div className={"no-empty-state-text"} />}
       {props.text &&
         <p>{t(props.text)}</p>}
     </div>;

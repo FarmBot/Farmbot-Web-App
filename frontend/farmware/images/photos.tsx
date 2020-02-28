@@ -33,7 +33,7 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const top = label || startCase(attr.split("_").join());
   const bottom = safeStringFetch(obj, attr);
-  return <div>
+  return <div className={"meta-info"}>
     <label>{top}:</label>
     <span>{bottom || t("unknown")}</span>
   </div>;
@@ -71,6 +71,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
     </MustBeOnline>
     <button
       className="fb-button red"
+      title={t("Delete Photo")}
       onClick={props.deletePhoto}>
       {t("Delete Photo")}
     </button>

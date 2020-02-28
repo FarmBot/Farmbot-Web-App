@@ -74,6 +74,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
             onChange={this.handleChange}
             onKeyPress={this.handleChange}
             className="search"
+            name="searchTerm"
             placeholder={t("Search OpenFarm...")} />
           {this.showResultChangeSpinner &&
             <Spinner radius={10} strokeWidth={3} />}

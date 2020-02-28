@@ -56,7 +56,7 @@ export const MoveWidgetSettingsMenu = (
       setting={BooleanSetting.home_button_homing} />
 
     {DevSettings.futureFeaturesEnabled() &&
-      <div>
+      <div className={"motor-position-plot-setting-row"}>
         <p>{t("Motor position plot")}</p>
         <Setting
           label={t("show")}

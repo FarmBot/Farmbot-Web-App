@@ -17,7 +17,7 @@ import { updateMCU } from "../../actions";
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
     (firmwareConfig?: TaggedFirmwareConfig): PinGuardMCUInputGroupProps => ({
-      name: "Pin Guard 1",
+      label: "Pin Guard 1",
       pinNumKey: "pin_guard_1_pin_nr",
       timeoutKey: "pin_guard_1_time_out",
       activeStateKey: "pin_guard_1_active_state",

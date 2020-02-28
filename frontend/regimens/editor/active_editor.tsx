@@ -76,6 +76,7 @@ export class ActiveEditor
 
 export const OpenSchedulerButton = (props: { dispatch: Function }) =>
   <button className="open-bulk-scheduler-btn fb-button gray"
+    title={t("open scheduler panel")}
     onClick={() => props.dispatch({
       type: Actions.SET_SCHEDULER_STATE, payload: true
     })}>
@@ -97,6 +98,7 @@ const RegimenButtonGroup = (props: RegimenProps) =>
       onClick={() => props.dispatch(save(props.regimen.uuid))} />
     <CopyButton regimen={props.regimen} dispatch={props.dispatch} />
     <button className="fb-button red"
+      title={t("delete regimen")}
       onClick={() => props.dispatch(destroy(props.regimen.uuid))
         .then(() => push("/app/regimens/"))}>
       {t("Delete")}

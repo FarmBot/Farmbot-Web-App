@@ -26,6 +26,6 @@ export const ReadOnlyIcon = (p: { locked: boolean }) => {
       <i className="fa fa-ban fa-stack-2x fa-rotate-90 text-danger" />
     </div>;
   } else {
-    return <div />;
+    return <div className={"read-only-mode-disabled"} />;
   }
 };

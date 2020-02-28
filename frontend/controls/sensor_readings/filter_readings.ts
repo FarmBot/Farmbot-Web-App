@@ -20,7 +20,7 @@ export const filterSensorReadings =
     sensorReadingsState: SensorReadingsState) =>
     (period: "current" | "previous"): TaggedSensorReading[] => {
       const {
-        sensor, endDate, timePeriod, showPreviousPeriod, location, deviation
+        sensor, endDate, timePeriod, showPreviousPeriod, xyzLocation, deviation
       } = sensorReadingsState;
 
       // Don't return sensor readings from the previous period if not desired.
@@ -41,11 +41,11 @@ export const filterSensorReadings =
         .filter(x => sensor ? x.body.pin === sensor.body.pin : true)
         // Filter by location
         .filter(sensorReading => {
-          if (location) {
+          if (xyzLocation) {
             const { body } = sensorReading;
             return every(["x", "y", "z"].map((axis: Xyz) => {
               const a = body[axis];
-              const input = location[axis];
+              const input = xyzLocation[axis];
               return isNumber(a) && isNumber(input)
                 ? (a <= input + deviation) && (a >= input - deviation)
                 : true;

@@ -10,7 +10,7 @@ import { PinNumberDropdown } from "./pin_number_dropdown";
 
 export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
 
-  const { sourceFwConfig, dispatch, name, pinNumKey, timeoutKey, activeStateKey
+  const { sourceFwConfig, dispatch, label, pinNumKey, timeoutKey, activeStateKey
   } = props;
   const activeStateValue = sourceFwConfig(activeStateKey).value;
   const inactiveState = isUndefined(activeStateValue)
@@ -19,7 +19,7 @@ export function PinGuardMCUInputGroup(props: PinGuardMCUInputGroupProps) {
   return <Row>
     <Col xs={3}>
       <label>
-        {name}
+        {label}
       </label>
     </Col>
     <Col xs={3}>

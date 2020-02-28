@@ -49,6 +49,7 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
   const { apiFirmwareValue } = props;
   return <button className="fb-button yellow"
     disabled={!apiFirmwareValue || !props.botOnline}
+    title={t("flash firmware")}
     onClick={() => isFwHardwareValue(apiFirmwareValue) &&
       flashFirmware(apiFirmwareValue)}>
     {t("flash firmware")}

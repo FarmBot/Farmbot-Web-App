@@ -99,6 +99,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     return <div className={`fb-checkbox ${alreadyAdded ? "disabled" : ""}`}>
       <input type="checkbox" key={JSON.stringify(this.state.toAdd)}
         title={alreadyAdded ? t("Already added.") : ""}
+        name="toolName"
         checked={checked}
         onChange={() => checked
           ? this.remove(toolName)
@@ -118,6 +119,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
       </ul>
       <button
         className="fb-button green"
+        title={t("add selected stock names")}
         onClick={() => {
           this.state.toAdd.filter(this.filterExisting)
             .map(n => this.newTool(n));
@@ -141,6 +143,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           <ToolSVG toolName={this.state.toolName} />
           <label>{t("Name")}</label>
           <input defaultValue={this.state.toolName}
+            name="name"
             onChange={e =>
               this.setState({ toolName: e.currentTarget.value })} />
           <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />

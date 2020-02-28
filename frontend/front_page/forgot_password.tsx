@@ -22,6 +22,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
       <WidgetHeader title={"Reset Password"}>
         <button
           className="fb-button gray"
+          title={t("go back")}
           onClick={onGoBack}>
           {t("BACK")}
         </button>
@@ -35,6 +36,7 @@ export function ForgotPassword(props: ForgotPasswordProps) {
             onCommit={onEmailChange} />
           <Row>
             <button
+              title={t("Reset Password")}
               className="fb-button green front-page-button">
               {t("Reset Password")}
             </button>

@@ -21,12 +21,14 @@ export class GroupCriteria extends
     const commonProps = { group, criteria, dispatch };
     return <div className="group-criteria">
       <label className="criteria-heading">{t("criteria")}</label>
-      <button className="fb-button red" onClick={() => {
-        dispatch(overwrite(group, {
-          ...group.body, criteria: DEFAULT_CRITERIA
-        }));
-        dispatch(save(group.uuid));
-      }}>
+      <button className="fb-button red"
+        title={t("clear all criteria")}
+        onClick={() => {
+          dispatch(overwrite(group, {
+            ...group.body, criteria: DEFAULT_CRITERIA
+          }));
+          dispatch(save(group.uuid));
+        }}>
         {t("clear all criteria")}
       </button>
       <div className="group-criteria-presets">
@@ -60,13 +62,13 @@ export class GroupCriteria extends
 export const GroupPointCountBreakdown = (props: GroupPointCountBreakdownProps) =>
   <div className={"criteria-point-count-breakdown"}>
     <div className={"manual-group-member-count"}>
-      <div>
+      <div className={"manual-selection-count"}>
         {props.manualCount}
       </div>
       <p>{t("manually selected")}</p>
     </div>
     <div className={"criteria-group-member-count"}>
-      <div>
+      <div className={"criteria-selection-count"}>
         {props.totalCount - props.manualCount}
       </div>
       <p>{t("selected by criteria")}</p>

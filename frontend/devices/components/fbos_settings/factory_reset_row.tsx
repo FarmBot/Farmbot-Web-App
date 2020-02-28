@@ -4,16 +4,16 @@ import { Content, DeviceSetting } from "../../../constants";
 import { factoryReset, updateConfig } from "../../actions";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { BotConfigInputBox } from "../bot_config_input_box";
-import { FactoryResetRowProps } from "./interfaces";
+import { FactoryResetRowsProps } from "./interfaces";
 import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 
-export function FactoryResetRow(props: FactoryResetRowProps) {
+export function FactoryResetRows(props: FactoryResetRowsProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
   const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
   const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
-  return <div>
+  return <div className={"factory-reset-options"}>
     <Row>
       <Highlight settingName={DeviceSetting.factoryReset}>
         <Col xs={ColWidth.label}>
@@ -31,6 +31,7 @@ export function FactoryResetRow(props: FactoryResetRowProps) {
             className="fb-button red"
             type="button"
             onClick={factoryReset}
+            title={t("FACTORY RESET")}
             disabled={!botOnline}>
             {t("FACTORY RESET")}
           </button>

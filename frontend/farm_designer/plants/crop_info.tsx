@@ -44,7 +44,7 @@ const InfoField = (props: InfoFieldProps) =>
     <p>
       {t(startCase(props.title))}
     </p>
-    <div>
+    <div className={"crop-info-field-data"}>
       {props.children}
     </div>
   </li>;
@@ -67,11 +67,13 @@ const NO_VALUE = t("Not Set");
 const SvgIcon = ({ i, field, value }: SummaryItemProps) =>
   <InfoField key={i} title={field}>
     {value
-      ? <div><img
-        src={svgToUrl(value)}
-        width={100}
-        height={100}
-        onDragStart={setDragIcon(value)} /></div>
+      ? <div className={"svg-img"}>
+        <img
+          src={svgToUrl(value)}
+          width={100}
+          height={100}
+          onDragStart={setDragIcon(value)} />
+      </div>
       : <span>{NO_VALUE}</span>}
   </InfoField>;
 
@@ -149,6 +151,7 @@ const AddPlantHereButton = (props: {
       dispatch, openedSavedGarden
     }) : () => { };
   return <button className="fb-button gray no-float"
+    title={t("Add plant at current location")}
     disabled={!botXY} onClick={click}>
     {t("Add plant at current FarmBot location {{coordinate}}",
       { coordinate: botXYLabel })}

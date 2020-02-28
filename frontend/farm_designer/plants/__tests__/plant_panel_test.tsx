@@ -189,7 +189,7 @@ describe("<EditDatePlanted />", () => {
 describe("<EditPlantLocation />", () => {
   const fakeProps = (): EditPlantLocationProps => ({
     uuid: "Plant.0.0",
-    location: { x: 1, y: 2 },
+    xyLocation: { x: 1, y: 2 },
     updatePlant: jest.fn(),
   });
 

@@ -25,7 +25,7 @@ export function IndexIndicator(props: { i: number, total: number }): JSX.Element
     style={{
       width: `${percentWidth}%`,
       left: `calc(-10px + ${props.i} * ${percentWidth}%)`
-    }} /> : <div />;
+    }} /> : <div className={"no-index-indicator"} />;
 }
 
 export class Show extends React.Component<WebcamPanelProps, State> {
@@ -57,6 +57,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
       <WidgetHeader title={title} helpText={ToolTips.WEBCAM}>
         <button
           className="fb-button gray"
+          title={t("Edit")}
           onClick={props.onToggle}>
           {t("Edit")}
         </button>
@@ -74,6 +75,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             onClick={() => flipper.down((_, current) => this.setState({ current }))}
             hidden={feeds.length < 2}
             disabled={false}
+            title={t("Previous image")}
             className="image-flipper-left fb-button">
             {t("Prev")}
           </button>
@@ -81,6 +83,7 @@ export class Show extends React.Component<WebcamPanelProps, State> {
             onClick={() => flipper.up((_, current) => this.setState({ current }))}
             hidden={feeds.length < 2}
             disabled={false}
+            title={t("Next image")}
             className="image-flipper-right fb-button">
             {t("Next")}
           </button>

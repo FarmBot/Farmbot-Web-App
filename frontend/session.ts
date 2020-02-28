@@ -49,21 +49,21 @@ export namespace Session {
 export const isBooleanSetting =
   (k: unknown): k is BooleanConfigKey => !!BooleanSetting[k as BooleanConfigKey];
 
-export function safeBooleanSetting(name: string): BooleanConfigKey {
-  if (isBooleanSetting(name)) {
-    return name;
+export function safeBooleanSetting(settingName: string): BooleanConfigKey {
+  if (isBooleanSetting(settingName)) {
+    return settingName;
   } else {
-    throw new Error(`Expected BooleanConfigKey but got '${name}'`);
+    throw new Error(`Expected BooleanConfigKey but got '${settingName}'`);
   }
 }
 
 export const isNumericSetting =
   (x: unknown): x is NumberConfigKey => !!NumericSetting[x as NumberConfigKey];
 
-export function safeNumericSetting(name: string): NumberConfigKey {
-  if (isNumericSetting(name)) {
-    return name;
+export function safeNumericSetting(settingName: string): NumberConfigKey {
+  if (isNumericSetting(settingName)) {
+    return settingName;
   } else {
-    throw new Error(`Expected NumberConfigKey but got '${name}'`);
+    throw new Error(`Expected NumberConfigKey but got '${settingName}'`);
   }
 }

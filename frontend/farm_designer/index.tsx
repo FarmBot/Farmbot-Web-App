@@ -49,10 +49,10 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
   initializeSetting =
-    (name: keyof State, defaultValue: boolean): boolean => {
-      const currentValue = this.props.getConfigValue(name);
+    (key: keyof State, defaultValue: boolean): boolean => {
+      const currentValue = this.props.getConfigValue(key);
       if (isUndefined(currentValue)) {
-        this.props.dispatch(setWebAppConfigValue(name, defaultValue));
+        this.props.dispatch(setWebAppConfigValue(key, defaultValue));
         return defaultValue;
       } else {
         return !!currentValue;
@@ -87,10 +87,10 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     this.updateZoomLevel(0)();
   }
 
-  toggle = (name: keyof State) => () => {
-    const newValue = !this.state[name];
-    this.props.dispatch(setWebAppConfigValue(name, newValue));
-    this.setState({ [name]: newValue });
+  toggle = (key: keyof State) => () => {
+    const newValue = !this.state[key];
+    this.props.dispatch(setWebAppConfigValue(key, newValue));
+    this.setState({ [key]: newValue });
   }
 
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {

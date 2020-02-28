@@ -40,7 +40,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         customFilterRule={NO_GROUPS} />
     </div>;
   } else {
-    return <div />;
+    return <div className={"no-default-value-form"} />;
   }
 };
 

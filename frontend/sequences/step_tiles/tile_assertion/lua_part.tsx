@@ -15,7 +15,7 @@ export function LuaPart(props: AssertionStepProps) {
     }));
   };
   const { lua } = props.currentStep.args;
-  return <div>
+  return <div className={"lua"}>
     <textarea
       value={lua}
       onChange={luaChange}

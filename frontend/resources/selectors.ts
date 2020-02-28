@@ -59,7 +59,8 @@ export const findId = (index: ResourceIndex, kind: ResourceName, id: number): UU
   }
 };
 
-export const isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
+export const isKind = (resourceName: ResourceName) => (tr: TaggedResource) =>
+  tr.kind === resourceName;
 
 export function groupPointsByType(index: ResourceIndex) {
   return chain(selectAllActivePoints(index))

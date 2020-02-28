@@ -4,9 +4,9 @@ import { TaggedPoint } from "farmbot";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
 describe("sort()", () => {
-  const phony = (name: string, x: number, y: number): TaggedPoint => {
+  const phony = (plantName: string, x: number, y: number): TaggedPoint => {
     const plant = fakePlant();
-    plant.body.name = name;
+    plant.body.name = plantName;
     plant.body.x = x;
     plant.body.y = y;
     return plant;

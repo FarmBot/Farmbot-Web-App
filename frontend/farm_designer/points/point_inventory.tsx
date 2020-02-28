@@ -50,7 +50,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         panel={Panel.Points}
         linkTo={"/app/designer/points/add"}
         title={t("Add point")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your points...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>

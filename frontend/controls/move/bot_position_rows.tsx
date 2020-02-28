@@ -19,7 +19,7 @@ export interface BotPositionRowsProps {
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getValue, arduinoBusy } = props;
-  return <div>
+  return <div className={"bot-position-rows"}>
     <Row>
       <Col xs={3}>
         <label>{t("X AXIS")}</label>

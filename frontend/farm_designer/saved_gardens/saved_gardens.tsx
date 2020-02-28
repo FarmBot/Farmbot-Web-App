@@ -46,7 +46,7 @@ export class RawSavedGardens
           panel={Panel.SavedGardens}
           linkTo={"/app/designer/gardens/add"}
           title={t("Add garden")}>
-          <input type="text" onChange={this.onChange}
+          <input type="text" onChange={this.onChange} name="searchTerm"
             placeholder={t("Search your gardens...")} />
         </DesignerPanelTop>
         <EmptyStateWrapper
@@ -66,6 +66,7 @@ export class RawSavedGardens
 export const SavedGardensLink = () =>
   <button className="fb-button green"
     hidden={true}
+    title={t("open saved gardens panel")}
     onClick={() => history.push("/app/designer/gardens")}>
     {t("Saved Gardens")}
   </button>;
@@ -80,10 +81,12 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
     <button className="fb-button gray"
+      title={t("open saved gardens panel")}
       onClick={() => history.push("/app/designer/gardens")}>
       {t("Menu")}
     </button>
     <button className="fb-button green"
+      title={t("open plants panel")}
       onClick={() => {
         history.push("/app/designer/plants");
         unselectPlant(props.dispatch)();
@@ -91,6 +94,7 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
       {t("Edit")}
     </button>
     <button className="fb-button red"
+      title={t("close saved garden")}
       onClick={() => props.dispatch(closeSavedGarden())}>
       {t("Exit")}
     </button>

@@ -5,6 +5,7 @@ import { VirtualFarmBotProps } from "../../../interfaces";
 import {
   fakeMapTransformProps
 } from "../../../../../__test_support__/map_transform_props";
+import { BotFigure } from "../bot_figure";
 
 describe("<VirtualFarmBot/>", () => {
   function fakeProps(): VirtualFarmBotProps {
@@ -27,9 +28,9 @@ describe("<VirtualFarmBot/>", () => {
     const p = fakeProps();
     p.getConfigValue = () => false;
     const wrapper = shallow(<VirtualFarmBot {...p} />);
-    const figures = wrapper.find("BotFigure");
+    const figures = wrapper.find(BotFigure);
     expect(figures.length).toEqual(1);
-    expect(figures.last().props().name).toEqual("motor-position");
+    expect(figures.last().props().figureName).toEqual("motor-position");
   });
 
   it("shows trail", () => {
@@ -39,8 +40,8 @@ describe("<VirtualFarmBot/>", () => {
 
   it("shows encoder position", () => {
     const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
-    const figures = wrapper.find("BotFigure");
+    const figures = wrapper.find(BotFigure);
     expect(figures.length).toEqual(2);
-    expect(figures.last().props().name).toEqual("encoder-position");
+    expect(figures.last().props().figureName).toEqual("encoder-position");
   });
 });

@@ -13,7 +13,7 @@ export const TermsCheckbox = (props: {
     <a href={props.privUrl} target="_blank">{t("Privacy Policy")}</a>
     {` ${t("and")} `}
     <a href={props.tosUrl} target="_blank">{t("Terms of Use")}</a>
-    <input type="checkbox"
+    <input type="checkbox" name="tos"
       onChange={props.onChange}
       value={props.agree ? "false" : "true"} />
   </div>;

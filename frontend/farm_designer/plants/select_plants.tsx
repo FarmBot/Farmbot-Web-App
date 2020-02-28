@@ -60,10 +60,12 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
     <div className="panel-action-buttons">
       <div className="button-row">
         <button className="fb-button gray"
+          title={t("Select none")}
           onClick={() => this.props.dispatch(selectPlant(undefined))}>
           {t("Select none")}
         </button>
         <button className="fb-button gray"
+          title={t("Select all")}
           onClick={() => this.props
             .dispatch(selectPlant(this.props.plants.map(p => p.uuid)))}>
           {t("Select all")}
@@ -72,10 +74,12 @@ export class RawSelectPlants extends React.Component<SelectPlantsProps, {}> {
       <label>{t("SELECTION ACTIONS")}</label>
       <div className="button-row">
         <button className="fb-button red"
+          title={t("Delete")}
           onClick={() => this.destroySelected(this.props.selected)}>
           {t("Delete")}
         </button>
         <button className="fb-button dark-blue"
+          title={t("Create group")}
           onClick={() => !this.props.gardenOpen
             ? this.props.dispatch(createGroup({ pointUuids: this.selected }))
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>

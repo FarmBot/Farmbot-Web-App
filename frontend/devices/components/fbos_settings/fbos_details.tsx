@@ -267,7 +267,7 @@ export function FbosDetails(props: FbosDetailsProps) {
   const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
   const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
-  return <div>
+  return <div className={"farmbot-os-details"}>
     <LastSeen
       dispatch={props.dispatch}
       botToMqttLastSeen={props.botToMqttLastSeen}

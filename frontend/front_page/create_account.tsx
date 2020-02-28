@@ -44,13 +44,14 @@ interface FormFieldProps {
   onCommit(val: string): void;
 }
 
-export const FormField = (props: FormFieldProps) => <div>
-  <label> {t(props.label)} </label>
-  <BlurableInput
-    value={props.value}
-    type={props.type}
-    onCommit={(e) => props.onCommit(e.currentTarget.value)} />
-</div>;
+export const FormField = (props: FormFieldProps) =>
+  <div className={"account-form-field"}>
+    <label> {t(props.label)} </label>
+    <BlurableInput
+      value={props.value}
+      type={props.type}
+      onCommit={(e) => props.onCommit(e.currentTarget.value)} />
+  </div>;
 
 interface FieldData {
   label: string,
@@ -94,6 +95,7 @@ export function MustRegister(props: CreateAccountProps) {
       {props.children}
       <Row>
         <button
+          title={t("Create Account")}
           className="fb-button green front-page-button">
           {t("Create Account")}
         </button>
