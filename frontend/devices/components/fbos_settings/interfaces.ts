@@ -4,7 +4,7 @@ import {
   SaveFarmwareEnv,
   ShouldDisplay,
   SourceFbosConfig,
-  UserEnv
+  UserEnv,
 } from "../../interfaces";
 import {
   Alert,
@@ -59,7 +59,7 @@ export interface PowerAndResetProps {
   botOnline: boolean;
 }
 
-export interface FactoryResetRowProps {
+export interface FactoryResetRowsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;

@@ -93,7 +93,7 @@ export interface TimeLine {
 }
 /** Takes a subset of FarmEvent<Sequence> data and generates a list of dates. */
 export function scheduleForFarmEvent(
-  { start_time, end_time, repeat, time_unit }: TimeLine, timeNow = moment()
+  { start_time, end_time, repeat, time_unit }: TimeLine, timeNow = moment(),
 ): { items: Moment[], shortenedBy: number } {
   const interval = repeat && farmEventIntervalSeconds(repeat, time_unit);
   const gracePeriod = timeNow.clone().subtract(gracePeriodSeconds, "seconds");

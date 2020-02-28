@@ -1,14 +1,14 @@
 import { TaggedResource, TaggedRegimen, TaggedSequence } from "farmbot";
 import { ResourceIndex } from "../interfaces";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
 import { DeepPartial } from "redux";
 import {
   fakeSequence,
   fakeFarmEvent,
-  fakeRegimen
+  fakeRegimen,
 } from "../../__test_support__/fake_state/resources";
 import { resourceReducer } from "../reducer";
 import { resourceReady, newTaggedResource } from "../../sync/actions";
@@ -118,7 +118,7 @@ describe("in_use tracking at reducer level", () => {
       name: "X",
       color: "red",
       regimen_items: [
-        { sequence_id, time_offset: 12 }
+        { sequence_id, time_offset: 12 },
       ],
       body: [],
     })[0];

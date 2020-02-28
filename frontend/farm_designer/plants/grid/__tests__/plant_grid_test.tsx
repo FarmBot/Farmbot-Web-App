@@ -23,14 +23,13 @@ describe("PlantGrid", () => {
     const p = fakeProps();
     const el = mount<PlantGrid>(<PlantGrid {...p} />);
     // Upon load, there should be one button.
-    const previewButton = el.find("a.clear-button");
+    const previewButton = el.find("a.preview-button");
     expect(previewButton.text()).toContain("Preview");
     previewButton.simulate("click");
 
     // After clicking PREVIEW, there should be two buttons.
-    const saveAndCancelBtns = el.find("a.clear-button");
-    const cancel = saveAndCancelBtns.at(0);
-    const save = saveAndCancelBtns.at(1);
+    const cancel = el.find("a.cancel-button");
+    const save = el.find("a.save-button");
     expect(cancel.text()).toContain("Cancel");
     expect(save.text()).toContain("Save");
     expect(el.state().status).toEqual("dirty");

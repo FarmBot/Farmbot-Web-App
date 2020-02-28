@@ -1,7 +1,7 @@
 import * as React from "react";
 import { svgToUrl } from "../../open_farm/icons";
 import {
-  CropInfoProps, CropLiveSearchResult, OpenfarmSearch
+  CropInfoProps, CropLiveSearchResult, OpenfarmSearch,
 } from "../interfaces";
 import { history, getPathArray } from "../../history";
 import { connect } from "react-redux";
@@ -15,11 +15,11 @@ import { createPlant } from "../map/layers/plants/plant_actions";
 import { round } from "../map/util";
 import { BotPosition } from "../../devices/interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { Actions } from "../../constants";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { startCase, isArray, chain, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
@@ -44,7 +44,7 @@ const InfoField = (props: InfoFieldProps) =>
     <p>
       {t(startCase(props.title))}
     </p>
-    <div>
+    <div className={"crop-info-field-data"}>
       {props.children}
     </div>
   </li>;
@@ -55,7 +55,7 @@ const OMITTED_PROPERTIES = [
   "description",
   "main_image_path",
   "tags_array",
-  "guides_count"
+  "guides_count",
 ];
 
 const NO_VALUE = t("Not Set");
@@ -67,11 +67,13 @@ const NO_VALUE = t("Not Set");
 const SvgIcon = ({ i, field, value }: SummaryItemProps) =>
   <InfoField key={i} title={field}>
     {value
-      ? <div><img
-        src={svgToUrl(value)}
-        width={100}
-        height={100}
-        onDragStart={setDragIcon(value)} /></div>
+      ? <div className={"svg-img"}>
+        <img
+          src={svgToUrl(value)}
+          width={100}
+          height={100}
+          onDragStart={setDragIcon(value)} />
+      </div>
       : <span>{NO_VALUE}</span>}
   </InfoField>;
 
@@ -149,6 +151,7 @@ const AddPlantHereButton = (props: {
       dispatch, openedSavedGarden
     }) : () => { };
   return <button className="fb-button gray no-float"
+    title={t("Add plant at current location")}
     disabled={!botXY} onClick={click}>
     {t("Add plant at current FarmBot location {{coordinate}}",
       { coordinate: botXYLabel })}

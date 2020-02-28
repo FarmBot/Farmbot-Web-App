@@ -8,11 +8,11 @@ jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
 import React from "react";
 import {
-  GroupDetailActive, GroupDetailActiveProps
+  GroupDetailActive, GroupDetailActiveProps,
 } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { save, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";

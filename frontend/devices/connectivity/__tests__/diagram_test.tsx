@@ -8,7 +8,7 @@ import {
   getTextPosition,
   getLineProps,
   DiagramNodes,
-  getConnectionColor
+  getConnectionColor,
 } from "../diagram";
 import { Color } from "../../../ui/index";
 import { svgMount } from "../../../__test_support__/svg_mount";

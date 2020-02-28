@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   BlurableInput,
   Row, Col,
-  FBSelect, NULL_CHOICE, DropDownItem
+  FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui/index";
 import { SettingsMenuProps } from "./interfaces";
 import {
-  SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS
+  SPECIAL_VALUE_DDI, CALIBRATION_DROPDOWNS, ORIGIN_DROPDOWNS,
 } from "./constants";
 import { WD_ENV } from "./remote_env/interfaces";
 import { envGet } from "./remote_env/selectors";
@@ -22,7 +22,7 @@ export class WeedDetectorConfig extends React.Component<SettingsMenuProps, {}> {
     conf: keyof WD_ENV;
     label: string;
   }) => {
-    return <div>
+    return <div className={"camera-config-number-box"}>
       <label htmlFor={conf}>
         {label}
       </label>
@@ -115,6 +115,7 @@ export const BoolConfig = (props: BoolConfigProps) =>
     </label>
     <input
       type="checkbox"
+      name={props.configKey}
       id={props.configKey}
       checked={!!envGet(props.configKey, props.wDEnv)}
       onChange={e =>

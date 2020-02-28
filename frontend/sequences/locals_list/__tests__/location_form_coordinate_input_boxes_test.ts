@@ -1,7 +1,7 @@
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { ParameterApplication } from "farmbot";
 import {
-  AxisEditProps, manuallyEditAxis
+  AxisEditProps, manuallyEditAxis,
 } from "../location_form_coordinate_input_boxes";
 import { VariableNode } from "../locals_list_support";
 

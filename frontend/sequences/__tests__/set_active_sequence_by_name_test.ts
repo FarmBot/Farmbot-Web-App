@@ -38,8 +38,8 @@ describe("setActiveSequenceByName", () => {
 
   it("sometimes can't find a sequence by name", () => {
     const body = mockData.fakeSequences[0].body;
-    const name = "a different value than " + body.name;
-    mockData.lastUrlChunk = name;
+    const sequenceName = "a different value than " + body.name;
+    mockData.lastUrlChunk = sequenceName;
     setActiveSequenceByName();
     expect(selectAllSequences).toHaveBeenCalled();
     expect(selectSequence).not.toHaveBeenCalled();

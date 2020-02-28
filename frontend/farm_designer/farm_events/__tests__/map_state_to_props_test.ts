@@ -3,10 +3,10 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   fakeSequence,
   fakeRegimen,
-  fakeFarmEvent
+  fakeFarmEvent,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import moment from "moment";
 import { countBy } from "lodash";
@@ -39,7 +39,7 @@ describe("mapStateToProps()", () => {
       sequence,
       regimen,
       sequenceFarmEvent,
-      regimenFarmEvent
+      regimenFarmEvent,
     ];
 
     const state = fakeState();
@@ -207,7 +207,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
         timeStr: expect.stringContaining("02")
-      }
+      },
     ],
     month: "Dec",
     sortKey: expect.any(Number),
@@ -224,12 +224,12 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
         mmddyy: expect.stringContaining("17"),
         sortKey: expect.any(Number),
         timeStr: expect.stringContaining("11")
-      }
+      },
     ],
     month: "Dec",
     sortKey: expect.any(Number),
     year: 17
-  }
+  },
   ];
 
   it("returns calendar rows", () => {

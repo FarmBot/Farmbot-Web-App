@@ -64,7 +64,7 @@ const LogsRow = ({ tlog, timeSettings, dispatch, markdown }: LogsRowProps) => {
 const LOG_TABLE_CLASS = [
   Classes.HTML_TABLE,
   Classes.HTML_TABLE_STRIPED,
-  "logs-table"
+  "logs-table",
 ].join(" ");
 
 /** All log messages with select data in table form for display in the app. */

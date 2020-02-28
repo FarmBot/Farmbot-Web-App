@@ -2,14 +2,14 @@ jest.mock("i18next", () => ({ t: (i: string) => i }));
 jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import {
-  commitBulkEditor, setTimeOffset, toggleDay, setSequence
+  commitBulkEditor, setTimeOffset, toggleDay, setSequence,
 } from "../actions";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  TaggedResource, TaggedSequence, TaggedRegimen, Coordinate
+  TaggedResource, TaggedSequence, TaggedRegimen, Coordinate,
 } from "farmbot";
 import { Actions } from "../../../constants";
 import { Everything } from "../../../interfaces";
@@ -30,7 +30,7 @@ describe("commitBulkEditor()", () => {
       name: "Test Regimen",
       color: "gray",
       regimen_items: [
-        { regimen_id, sequence_id, time_offset: 1000 }
+        { regimen_id, sequence_id, time_offset: 1000 },
       ],
       body: [],
     };
@@ -113,7 +113,7 @@ describe("commitBulkEditor()", () => {
     commitBulkEditor()(dispatch, getState);
     const expected = [
       { regimen_id, sequence_id, time_offset: 1000 },
-      { sequence_id, time_offset: 2000 }
+      { sequence_id, time_offset: 2000 },
     ];
     expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({

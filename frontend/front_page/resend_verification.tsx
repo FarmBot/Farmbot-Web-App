@@ -29,6 +29,7 @@ export class ResendVerification extends React.Component<Props, State> {
         <WidgetHeader title={t("Account Not Verified")}>
           <button onClick={this.props.onGoBack}
             type="button"
+            title={t("go back")}
             className="fb-button gray pull-right front-page-button">
             {t("back")}
           </button>

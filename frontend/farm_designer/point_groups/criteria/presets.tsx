@@ -1,6 +1,6 @@
 import * as React from "react";
 import { t } from "../../../i18next_wrapper";
-import { every, } from "lodash";
+import { every } from "lodash";
 import { togglePointSelection } from ".";
 import { CheckboxSelectionsProps, StringEqCriteria } from "./interfaces";
 

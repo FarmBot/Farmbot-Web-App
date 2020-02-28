@@ -15,7 +15,7 @@ import {
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
 import {
-  ConnectionStatus, ConnectionState, NetworkState
+  ConnectionStatus, ConnectionState, NetworkState,
 } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { Farmwares } from "../farmware/interfaces";
@@ -254,4 +254,7 @@ export interface ControlPanelState {
   danger_zone: boolean;
   pin_bindings: boolean;
   power_and_reset: boolean;
+  farm_designer: boolean;
+  firmware: boolean;
+  farmbot_os: boolean;
 }

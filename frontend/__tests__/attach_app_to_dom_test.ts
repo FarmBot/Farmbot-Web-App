@@ -10,7 +10,7 @@ jest.mock("../redux/store", () => {
 });
 
 jest.mock("../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => false, }
+  DevSettings: { futureFeaturesEnabled: () => false }
 }));
 
 jest.mock("../config/actions", () => {

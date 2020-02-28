@@ -18,12 +18,12 @@ import { Props } from "../interfaces";
 import { GardenMapLegendProps } from "../map/interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
-  fakeImage, fakeWebAppConfig
+  fakeImage, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";

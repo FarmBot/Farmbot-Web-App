@@ -2,7 +2,7 @@ import { Calendar } from "../index";
 import { occurrence } from "../occurrence";
 import {
   TIME,
-  fakeFarmEventWithExecutable
+  fakeFarmEventWithExecutable,
 } from "../../../../__test_support__/farm_event_calendar_support";
 import moment from "moment";
 import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";

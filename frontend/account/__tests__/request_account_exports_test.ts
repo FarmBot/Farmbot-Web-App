@@ -11,7 +11,7 @@ jest.mock("axios", () => ({
 import { API } from "../../api";
 import { Content } from "../../constants";
 import {
-  requestAccountExport, generateFilename
+  requestAccountExport, generateFilename,
 } from "../request_account_export";
 import { success } from "../../toast/toast";
 import axios from "axios";

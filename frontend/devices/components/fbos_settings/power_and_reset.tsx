@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Header } from "../hardware_settings/header";
 import { Collapse, Popover, Position } from "@blueprintjs/core";
-import { FactoryResetRow } from "./factory_reset_row";
+import { FactoryResetRows } from "./factory_reset_row";
 import { PowerAndResetProps } from "./interfaces";
 import { ChangeOwnershipForm } from "./change_ownership_form";
 import { FbosButtonRow } from "./fbos_button_row";
@@ -9,6 +9,7 @@ import { Content, DeviceSetting } from "../../../constants";
 import { reboot, powerOff, restartFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export function PowerAndReset(props: PowerAndResetProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
@@ -35,14 +36,15 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      <FbosButtonRow
-        botOnline={botOnline}
-        label={DeviceSetting.restartFirmware}
-        description={Content.RESTART_FIRMWARE}
-        buttonText={t("RESTART")}
-        color={"yellow"}
-        action={restartFirmware} />
-      <FactoryResetRow
+      {!DevSettings.futureFeaturesEnabled() &&
+        <FbosButtonRow
+          botOnline={botOnline}
+          label={DeviceSetting.restartFirmware}
+          description={Content.RESTART_FIRMWARE}
+          buttonText={t("RESTART")}
+          color={"yellow"}
+          action={restartFirmware} />}
+      <FactoryResetRows
         dispatch={dispatch}
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline} />

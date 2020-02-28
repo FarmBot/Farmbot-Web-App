@@ -1,10 +1,10 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  FwParamExportMenu, condenseFwConfig, uncondenseFwConfig
+  FwParamExportMenu, condenseFwConfig, uncondenseFwConfig,
 } from "../export_menu";
 import {
-  fakeFirmwareConfig
+  fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
 
 describe("<FwParamExportMenu />", () => {

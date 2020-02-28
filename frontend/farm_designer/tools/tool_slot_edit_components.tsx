@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Xyz, TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import {
-  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem
+  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui";
 import { BotPosition } from "../../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -19,7 +19,7 @@ export interface GantryMountedInputProps {
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
     <label>{t("Gantry-mounted")}</label>
-    <input type="checkbox"
+    <input type="checkbox" name="gantry_mounted"
       onChange={() => props.onChange({ gantry_mounted: !props.gantryMounted })}
       checked={props.gantryMounted} />
   </fieldset>;
@@ -120,7 +120,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
           <Col xs={4} key={axis}>
             <label>{t("{{axis}} (mm)", { axis })}</label>
             {axis == "x" && props.gantryMounted
-              ? <input disabled value={t("Gantry")} />
+              ? <input disabled value={t("Gantry")} name={axis} />
               : <BlurableInput
                 type="number"
                 value={props.slotLocation[axis]}

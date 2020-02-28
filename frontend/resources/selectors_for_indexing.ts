@@ -8,11 +8,11 @@ import {
 import { CowardlyDictionary } from "../util";
 import {
   ResourceIndex,
-  SlotWithTool
+  SlotWithTool,
 } from "./interfaces";
 import {
   selectAllToolSlotPointers,
-  maybeFindToolById
+  maybeFindToolById,
 } from "./selectors";
 import { assertUuid } from "./util";
 
@@ -33,7 +33,7 @@ interface MapperFn<T extends TaggedResource> { (item: T): T | undefined; }
 * */
 export const buildIndexer =
   <T extends TaggedResource>(kind: T["kind"], mapper?: MapperFn<T>): Indexer<T> => {
-    return function (index: ResourceIndex, ) {
+    return function (index: ResourceIndex) {
       const noop: MapperFn<T> = (i) => i;
       const output: CowardlyDictionary<T> = {};
       const uuids = Object.keys(index.byKind[kind]);

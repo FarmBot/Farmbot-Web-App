@@ -7,7 +7,7 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import {
-  PinBindingType, PinBindingSpecialAction
+  PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 const mockData = [{
   pin_number: 1, sequence_id: undefined,
@@ -23,11 +23,11 @@ jest.mock("../tagged_pin_binding_init", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "farmbot";
 import {
-  fakeSequence, fakePinBinding
+  fakeSequence, fakePinBinding,
 } from "../../../__test_support__/fake_state/resources";
 import { destroy } from "../../../api/crud";
 import { PinBindingsList } from "../pin_bindings_list";

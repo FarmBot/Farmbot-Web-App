@@ -2,7 +2,7 @@ import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
 import {
-  fakeSequence, fakePoint, fakeTool, fakeToolSlot
+  fakeSequence, fakePoint, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import {
   Coordinate,
@@ -12,7 +12,7 @@ import {
   Tool,
 } from "farmbot";
 import {
-  fakeHardwareFlags
+  fakeHardwareFlags,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { emptyState } from "../../../resources/reducer";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
@@ -48,7 +48,7 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   function checkField(
-    block: ReactWrapper, position: number, label: string, value: string | number
+    block: ReactWrapper, position: number, label: string, value: string | number,
   ) {
     expect(block.find("label").at(position).text().toLowerCase())
       .toEqual(label);
@@ -186,7 +186,7 @@ describe("<TileMoveAbsolute/>", () => {
       const tma = ordinaryMoveAbs();
       tma.updateArgs = jest.fn();
       const location: Coordinate = {
-        kind: "coordinate", args: { x: 0, y: 0, z: 0, }
+        kind: "coordinate", args: { x: 0, y: 0, z: 0 }
       };
       tma.updateLocation({
         kind: "parameter_application",

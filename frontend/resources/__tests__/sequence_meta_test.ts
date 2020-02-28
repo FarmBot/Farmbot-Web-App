@@ -3,23 +3,23 @@ import {
   determineDropdown,
   findVariableByName,
   determineVector,
-  determineVarDDILabel
+  determineVarDDILabel,
 } from "../sequence_meta";
 import {
   fakeSequence,
   fakePoint,
   fakeTool,
   fakeToolSlot,
-  fakePointGroup
+  fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  sanitizeNodes
+  sanitizeNodes,
 } from "../../sequences/locals_list/sanitize_nodes";
 import {
-  formatPoint, NO_VALUE_SELECTED_DDI, formatTool
+  formatPoint, NO_VALUE_SELECTED_DDI, formatTool,
 } from "../../sequences/locals_list/location_form_list";
 import { Point, Tool } from "farmbot";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";

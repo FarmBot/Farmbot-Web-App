@@ -21,7 +21,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { edit } from "../../../api/crud";
 import {
-  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate
+  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate,
 } from "../edit_plant_status";
 
 describe("<PlantPanel/>", () => {
@@ -189,7 +189,7 @@ describe("<EditDatePlanted />", () => {
 describe("<EditPlantLocation />", () => {
   const fakeProps = (): EditPlantLocationProps => ({
     uuid: "Plant.0.0",
-    location: { x: 1, y: 2 },
+    xyLocation: { x: 1, y: 2 },
     updatePlant: jest.fn(),
   });
 

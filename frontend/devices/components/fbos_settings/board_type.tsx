@@ -8,7 +8,7 @@ import { BoardTypeProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI
+  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
 } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
@@ -56,14 +56,12 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
           </label>
         </Col>
         <Col xs={ColWidth.description}>
-          <div>
-            <FBSelect
-              key={this.apiValue}
-              extraClass={this.state.sending ? "dim" : ""}
-              list={getFirmwareChoices()}
-              selectedItem={this.selectedBoard}
-              onChange={this.sendOffConfig} />
-          </div>
+          <FBSelect
+            key={this.apiValue}
+            extraClass={this.state.sending ? "dim" : ""}
+            list={getFirmwareChoices()}
+            selectedItem={this.selectedBoard}
+            onChange={this.sendOffConfig} />
         </Col>
         <Col xs={ColWidth.button}>
           <FirmwareHardwareStatus

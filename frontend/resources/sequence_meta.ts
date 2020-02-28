@@ -9,13 +9,13 @@ import { findPointerByTypeAndId, findPointGroup } from "./selectors";
 import {
   findSlotByToolId,
   findToolById,
-  findResourceById
+  findResourceById,
 } from "./selectors_by_id";
 import {
   formatPoint,
   NO_VALUE_SELECTED_DDI,
   formatTool,
-  COORDINATE_DDI
+  COORDINATE_DDI,
 } from "../sequences/locals_list/location_form_list";
 import { VariableNode } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
@@ -61,7 +61,7 @@ export const determineVector =
 
 /** Try to find a vector in scope declarations for the variable. */
 const maybeFindVariable = (
-  label: string, resources: ResourceIndex, uuid?: UUID
+  label: string, resources: ResourceIndex, uuid?: UUID,
 ): SequenceMeta | undefined =>
   uuid ? findVariableByName(resources, uuid, label) : undefined;
 

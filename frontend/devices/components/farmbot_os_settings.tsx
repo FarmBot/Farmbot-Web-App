@@ -110,11 +110,9 @@ export class FarmbotOsSettings
                 <div className="note">
                   {this.maybeWarnTz()}
                 </div>
-                <div>
-                  <TimezoneSelector
-                    currentTimezone={this.props.deviceAccount.body.timezone}
-                    onUpdate={this.handleTimezone} />
-                </div>
+                <TimezoneSelector
+                  currentTimezone={this.props.deviceAccount.body.timezone}
+                  onUpdate={this.handleTimezone} />
               </Col>
             </Highlight>
           </Row>

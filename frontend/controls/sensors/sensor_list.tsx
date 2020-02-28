@@ -46,7 +46,7 @@ const SensorReadingDisplay =
     const classNames = [
       "sensor-reading-display",
       moistureSensor, toolSensor,
-      mode ? "analog" : "digital"
+      mode ? "analog" : "digital",
     ];
     return <div className={classNames.join(" ")}>
       {isNumber(value) && value >= 0 &&

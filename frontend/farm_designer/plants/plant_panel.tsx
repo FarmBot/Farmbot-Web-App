@@ -51,18 +51,18 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
 };
 
 export interface EditPlantLocationProps extends EditPlantProperty {
-  location: Record<"x" | "y", number>;
+  xyLocation: Record<"x" | "y", number>;
 }
 
 export const EditPlantLocation = (props: EditPlantLocationProps) => {
-  const { location, updatePlant, uuid } = props;
+  const { xyLocation, updatePlant, uuid } = props;
   return <Row>
     {["x", "y"].map((axis: "x" | "y") =>
       <Col xs={6} key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
-          value={location[axis]}
+          value={xyLocation[axis]}
           min={0}
           onCommit={e => updatePlant(uuid, {
             [axis]: round(parseIntInput(e.currentTarget.value))
@@ -89,6 +89,7 @@ interface MoveToPlantProps {
 const MoveToPlant = (props: MoveToPlantProps) =>
   <button className="fb-button gray no-float"
     style={{ marginTop: "1rem" }}
+    title={t("Move to this plant")}
     onClick={() => props.dispatch(chooseLocation({ x: props.x, y: props.y }))
       .then(() => history.push("/app/designer/move_to"))}>
     {t("Move FarmBot to this plant")}
@@ -99,20 +100,22 @@ interface DeleteButtonsProps {
 }
 
 const DeleteButtons = (props: DeleteButtonsProps) =>
-  <div>
-    <div>
+  <div className={"plant-delete-buttons"}>
+    <div className={"plant-delete-button-label"}>
       <label>
         {t("Delete this plant")}
       </label>
     </div>
     <button
       className="fb-button red no-float"
+      title={t("Delete")}
       onClick={props.destroy}>
       {t("Delete")}
     </button>
     <button
       className="fb-button gray no-float"
       style={{ marginRight: "10px" }}
+      title={t("Delete multiple")}
       onClick={() => history.push("/app/designer/plants/select")}>
       {t("Delete multiple")}
     </button>
@@ -128,7 +131,7 @@ export const ListItem = (props: ListItemProps) =>
     <p>
       {props.name}
     </p>
-    <div>
+    <div className={"plant-info-field-data"}>
       {props.children}
     </div>
   </li>;
@@ -171,7 +174,7 @@ export function PlantPanel(props: PlantPanelProps) {
         </Row>}
       <ListItem name={t("Location")}>
         <EditPlantLocation uuid={uuid}
-          location={{ x, y }}
+          xyLocation={{ x, y }}
           updatePlant={updatePlant} />
       </ListItem>
       <MoveToPlant x={x} y={y} dispatch={dispatch} />

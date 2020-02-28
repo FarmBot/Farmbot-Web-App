@@ -5,7 +5,7 @@ import { Content } from "../constants";
 import { DesignerPanel, DesignerPanelContent } from "./designer_panel";
 import { t } from "../i18next_wrapper";
 import {
-  GetWebAppConfigValue, getWebAppConfigValue, setWebAppConfigValue
+  GetWebAppConfigValue, getWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { Row, Col } from "../ui";
 import { ToggleButton } from "../controls/toggle_button";
@@ -136,8 +136,7 @@ const OriginSelector = (props: DesignerSettingsProps) => {
       {[2, 1, 3, 4].map(q =>
         <div key={"quadrant_" + q}
           className={`quadrant ${quadrant === q ? "selected" : ""}`}
-          onClick={update(q)} />
-      )}
+          onClick={update(q)} />)}
     </div>
   </div>;
 };

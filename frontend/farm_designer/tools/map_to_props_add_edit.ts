@@ -8,7 +8,7 @@ import { BotPosition } from "../../devices/interfaces";
 import { validBotLocationData } from "../../util";
 import { UUID } from "../../resources/interfaces";
 import {
-  getFwHardwareValue
+  getFwHardwareValue,
 } from "../../devices/components/firmware_hardware_support";
 import { getFbosConfig } from "../../resources/getters";
 import { getWebAppConfigValue } from "../../config_storage/actions";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import {
-  CameraSelectionProps, CameraSelectionState
+  CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
 import { info, success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";
@@ -92,14 +92,12 @@ export class CameraSelection
           </label>
         </Col>
         <Col xs={ColWidth.description}>
-          <div>
-            <FBSelect
-              allowEmpty={false}
-              list={CAMERA_CHOICES()}
-              selectedItem={this.selectedCamera()}
-              onChange={this.sendOffConfig}
-              extraClass={this.props.botOnline ? "" : "disabled"} />
-          </div>
+          <FBSelect
+            allowEmpty={false}
+            list={CAMERA_CHOICES()}
+            selectedItem={this.selectedCamera()}
+            onChange={this.sendOffConfig}
+            extraClass={this.props.botOnline ? "" : "disabled"} />
         </Col>
       </Highlight>
     </Row>;

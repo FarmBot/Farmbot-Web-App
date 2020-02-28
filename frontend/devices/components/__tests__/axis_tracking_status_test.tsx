@@ -1,5 +1,5 @@
 import {
-  axisTrackingStatus, disabledAxisMap, enabledAxisMap
+  axisTrackingStatus, disabledAxisMap, enabledAxisMap,
 } from "../axis_tracking_status";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
@@ -16,7 +16,7 @@ const expected =
     {
       "axis": "z",
       "disabled": true
-    }
+    },
   ];
 
 describe("axisTrackingStatus()", () => {

@@ -15,7 +15,7 @@ export interface SensorReadingsState {
   /** seconds */
   endDate: number;
   /** location filter setting */
-  location: AxisInputBoxGroupState | undefined;
+  xyzLocation: AxisInputBoxGroupState | undefined;
   /** Show the previous time period in addition to the current time period. */
   showPreviousPeriod: boolean;
   /** mm */
@@ -50,11 +50,11 @@ export interface SensorSelectionProps {
 }
 
 export interface LocationSelectionProps {
-  location: AxisInputBoxGroupState | undefined;
+  xyzLocation: AxisInputBoxGroupState | undefined;
   /** mm */
   deviation: number;
   setDeviation: (deviation: number) => void;
-  setLocation: (location: AxisInputBoxGroupState | undefined) => void;
+  setLocation: (xyzLocation: AxisInputBoxGroupState | undefined) => void;
 }
 
 export interface TimePeriodSelectionProps {

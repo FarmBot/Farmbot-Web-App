@@ -4,7 +4,7 @@ import {
   asTaggedResource,
   handleCreate,
   handleUpdate,
-  handleCreateOrUpdate
+  handleCreateOrUpdate,
 } from "../auto_sync";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import { Actions } from "../../constants";

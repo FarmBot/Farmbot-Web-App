@@ -30,6 +30,7 @@ export function StepButton({ children, step, color, dispatch, current, index }:
         draggerId={NULL_DRAGGER_ID}>
         <button draggable={true}
           className={`fb-button full-width block step-block ${color}`}
+          title={t("add step")}
           onClick={stepClick(dispatch, step, current, index)}>
           <div className="step-block-drag">
             {children}

@@ -5,7 +5,7 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { emptyState } from "../../../resources/reducer";
 import { HardwareFlags } from "../../interfaces";
 import {
-  fakeHardwareFlags
+  fakeHardwareFlags,
 } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileCalibrate/>", () => {

@@ -58,19 +58,19 @@ import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { unselectPlant, closePlantInfo } from "../actions";
 import {
-  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
+  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant,
 } from "../layers/plants/plant_actions";
 import {
-  startNewSelectionBox, resizeBox, maybeUpdateGroupCriteria
+  startNewSelectionBox, resizeBox, maybeUpdateGroupCriteria,
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
 import { chooseLocation } from "../../move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
-  fakeDesignerState
+  fakeDesignerState,
 } from "../../../__test_support__/fake_designer_state";
 import {
-  fakePlant, fakePointGroup, fakePoint
+  fakePlant, fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";

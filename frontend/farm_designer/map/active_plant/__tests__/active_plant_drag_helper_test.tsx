@@ -3,7 +3,7 @@ import { ActivePlantDragHelper } from "../active_plant_drag_helper";
 import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { ActivePlantDragHelperProps } from "../../interfaces";
 

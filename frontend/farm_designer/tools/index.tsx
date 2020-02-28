@@ -1,12 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelTop, DesignerPanelContent
+  DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel, TAB_COLOR } from "../panel_header";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { t } from "../../i18next_wrapper";
 import {
@@ -16,7 +16,7 @@ import {
 import {
   selectAllTools, selectAllToolSlotPointers, getDeviceAccountSettings,
   maybeFindToolById,
-  selectAllSensors
+  selectAllSensors,
 } from "../../resources/selectors";
 import { Content } from "../../constants";
 import { history } from "../../history";
@@ -30,12 +30,12 @@ import { BotState } from "../../devices/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import { getStatus } from "../../connectivity/reducer_support";
 import {
-  setToolHover, ToolSlotSVG, ToolSVG
+  setToolHover, ToolSlotSVG, ToolSVG,
 } from "../map/layers/tool_slots/tool_graphics";
 import { ToolSelection } from "./tool_slot_edit_components";
 import { error } from "../../toast/toast";
 import {
-  isExpressBoard, getFwHardwareValue
+  isExpressBoard, getFwHardwareValue,
 } from "../../devices/components/firmware_hardware_support";
 import { getFbosConfig } from "../../resources/getters";
 import { isActive } from "./edit_tool";
@@ -226,7 +226,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         panel={Panel.Tools}
         linkTo={!hasTools ? "/app/designer/tools/add" : undefined}
         title={!hasTools ? this.strings.titleText : undefined}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={this.strings.placeholder} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"tools"}>

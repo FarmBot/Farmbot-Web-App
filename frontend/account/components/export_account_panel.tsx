@@ -7,7 +7,7 @@ export function ExportAccountPanel(props: { onClick: () => void }) {
   return <Widget>
     <WidgetHeader title={t("Export Account Data")} />
     <WidgetBody>
-      <div>
+      <div className={"export-account-data-description"}>
         {t(Content.EXPORT_DATA_DESC)}
       </div>
       <form>
@@ -19,6 +19,7 @@ export function ExportAccountPanel(props: { onClick: () => void }) {
           </Col>
           <Col xs={4}>
             <button className="green fb-button" type="button"
+              title={t("Export")}
               onClick={props.onClick}>
               {t("Export")}
             </button>

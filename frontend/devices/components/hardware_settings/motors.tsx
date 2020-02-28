@@ -13,10 +13,11 @@ import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props
 import { isTMCBoard } from "../firmware_hardware_support";
 import { SingleSettingRow } from "./single_setting_row";
 import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
-    const getV = (name: McuParamName) => sourceFwConfig(name).value;
+    const getV = (key: McuParamName) => sourceFwConfig(key).value;
     return {
       x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
         getV("movement_microsteps_x")),
@@ -43,6 +44,9 @@ export function Motors(props: MotorsProps) {
       panel={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!controlPanelState.motors}>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <NumericMCUInputGroup
         label={DeviceSetting.maxSpeed}
         tooltip={ToolTips.MAX_SPEED}

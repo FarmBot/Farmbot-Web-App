@@ -11,7 +11,7 @@ interface LabsFeaturesListProps {
 }
 
 export function LabsFeaturesList(props: LabsFeaturesListProps) {
-  return <div>
+  return <div className="labs-features-list">
     {fetchLabFeatures(props.getConfigValue).map((feature, i) => {
       const displayValue = feature.displayInvert ? !feature.value : feature.value;
       return <Row key={i}>
@@ -23,6 +23,7 @@ export function LabsFeaturesList(props: LabsFeaturesListProps) {
         </Col>
         <Col xs={2}>
           <ToggleButton
+            title={t("toggle feature")}
             toggleValue={displayValue ? 1 : 0}
             toggleAction={() => props.onToggle(feature)
               .then(() => feature.callback && feature.callback())}

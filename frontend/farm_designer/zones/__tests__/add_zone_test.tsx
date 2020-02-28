@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  RawAddZone as AddZone, AddZoneProps, mapStateToProps
+  RawAddZone as AddZone, AddZoneProps, mapStateToProps,
 } from "../add_zone";
 import { fakeState } from "../../../__test_support__/fake_state";
 

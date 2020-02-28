@@ -26,7 +26,7 @@ export const mwConfig: MiddlewareConfig[] = [
   stateFetchMiddlewareConfig,
   revertToEnglishMiddleware,
   versionChangeMiddleware,
-  refilterLogsMiddleware
+  refilterLogsMiddleware,
 ];
 
 export function getMiddleware(env: EnvName) {
@@ -41,7 +41,7 @@ export function getMiddleware(env: EnvName) {
       Actions.PING_NO,
       Actions.PING_OK,
       Actions.PING_START,
-      Actions.RESOURCE_READY
+      Actions.RESOURCE_READY,
     ]
   });
   const composeEnhancers = dtCompose || compose;

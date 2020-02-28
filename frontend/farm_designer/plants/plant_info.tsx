@@ -4,7 +4,9 @@ import { mapStateToProps, formatPlantInfo } from "./map_state_to_props";
 import { PlantPanel } from "./plant_panel";
 import { unselectPlant } from "../map/actions";
 import { TaggedPlant } from "../map/interfaces";
-import { DesignerPanel, DesignerPanelHeader } from "../designer_panel";
+import {
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
+} from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../interfaces";
 import { isString } from "lodash";
@@ -36,7 +38,17 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 
   fallback = () => {
     history.push("/app/designer/plants");
-    return <span>{t("Redirecting...")}</span>;
+    return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
+      <DesignerPanelHeader
+        panelName={"plant-info"}
+        panel={Panel.Plants}
+        title={`${t("Edit")}`}
+        backTo={"/app/designer/plants"}
+        onBack={unselectPlant(this.props.dispatch)} />
+      <DesignerPanelContent panelName={"plants"}>
+        <span>{t("Redirecting")}...</span>
+      </DesignerPanelContent>
+    </DesignerPanel>;
   }
 
   default = (plant_info: TaggedPlant) => {

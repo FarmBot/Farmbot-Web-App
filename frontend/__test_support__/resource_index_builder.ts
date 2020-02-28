@@ -62,7 +62,7 @@ const tr0: TaggedResource = {
           },
           "speed": 100
         }
-      }
+      },
     ],
     "args": {
       "version": 4,
@@ -287,7 +287,7 @@ const tr12: TaggedResource = {
         "regimen_id": 11,
         "sequence_id": 23,
         "time_offset": 345900000
-      }
+      },
     ],
     body: [],
   },
@@ -345,7 +345,7 @@ export const FAKE_RESOURCES: TaggedResource[] = [
   tr0,
   tr14,
   tr15,
-  log
+  log,
 ];
 const KIND: keyof TaggedResource = "kind"; // Safety first, kids.
 type ResourceGroupNumber = 0 | 1 | 2 | 3 | 4;

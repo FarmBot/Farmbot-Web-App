@@ -8,14 +8,14 @@ jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import React from "react";
 import {
-  PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON
+  PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON,
 } from "../point_group_item";
 import { shallow } from "enzyme";
 import {
-  fakePlant, fakePointGroup, fakePoint, fakeToolSlot
+  fakePlant, fakePointGroup, fakePoint, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  maybeGetCachedPlantIcon, setImgSrc
+  maybeGetCachedPlantIcon, setImgSrc,
 } from "../../../open_farm/cached_crop";
 import { setHoveredPlant } from "../../map/actions";
 import { overwrite } from "../../../api/crud";

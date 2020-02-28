@@ -1,6 +1,6 @@
 import {
   buildResourceIndex,
-  FAKE_RESOURCES
+  FAKE_RESOURCES,
 } from "../__test_support__/resource_index_builder";
 import { TaggedFarmEvent, SpecialStatus } from "farmbot";
 

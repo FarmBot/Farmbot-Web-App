@@ -2,7 +2,7 @@ import {
   fakeFbosConfig,
   fakeImage,
   fakeFarmwareEnv,
-  fakeWebAppConfig
+  fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();

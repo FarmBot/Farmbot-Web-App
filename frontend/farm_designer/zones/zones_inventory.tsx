@@ -3,16 +3,16 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import {
-  selectAllPointGroups, selectAllActivePoints
+  selectAllPointGroups, selectAllActivePoints,
 } from "../../resources/selectors";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { history } from "../../history";
@@ -53,7 +53,7 @@ export class RawZones extends React.Component<ZonesProps, ZonesState> {
         }))
           .then((id: number) => this.navigate(id)).catch(() => { })}
         title={t("Add zone")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your zones...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"zones-inventory"}>

@@ -15,12 +15,14 @@ export function KeyValEditRow(p: Props) {
   return <Row>
     <Col xs={6}>
       <input type="text"
+        name="label"
         placeholder={p.labelPlaceholder}
         value={p.label}
         onChange={p.onLabelChange} />
     </Col>
     <Col xs={4}>
       <input type={p.valueType}
+        name="value"
         value={p.value}
         placeholder={p.valuePlaceholder}
         onChange={p.onValueChange} />

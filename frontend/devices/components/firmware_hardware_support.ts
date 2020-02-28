@@ -5,7 +5,7 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
     "arduino",
     "farmduino", "farmduino_k14", "farmduino_k15",
     "express_k10",
-    "none"
+    "none",
   ];
   return !!values.includes(x as FirmwareHardware);
 };

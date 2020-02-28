@@ -9,7 +9,7 @@ jest.mock("../../../point_groups/criteria", () => ({
 }));
 
 import {
-  fakePlant, fakePointGroup
+  fakePlant, fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import {
   getSelected, resizeBox, startNewSelectionBox, ResizeSelectionBoxProps,

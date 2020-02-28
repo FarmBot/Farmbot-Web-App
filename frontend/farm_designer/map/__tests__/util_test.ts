@@ -24,11 +24,11 @@ import {
 } from "../util";
 import { McuParams } from "farmbot";
 import {
-  AxisNumberProperty, BotSize, MapTransformProps, Mode
+  AxisNumberProperty, BotSize, MapTransformProps, Mode,
 } from "../interfaces";
 import { StepsPerMmXY } from "../../../devices/interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 

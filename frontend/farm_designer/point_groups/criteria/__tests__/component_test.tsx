@@ -7,10 +7,10 @@ import React from "react";
 import { mount } from "enzyme";
 import { GroupCriteria, GroupPointCountBreakdown } from "..";
 import {
-  GroupCriteriaProps, GroupPointCountBreakdownProps, DEFAULT_CRITERIA
+  GroupCriteriaProps, GroupPointCountBreakdownProps, DEFAULT_CRITERIA,
 } from "../interfaces";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { cloneDeep } from "lodash";
 import { overwrite, save } from "../../../../api/crud";

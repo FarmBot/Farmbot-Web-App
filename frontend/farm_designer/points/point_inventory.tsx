@@ -4,11 +4,11 @@ import { PointInventoryItem } from "./point_inventory_item";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { selectAllGenericPointers } from "../../resources/selectors";
 import { TaggedGenericPointer } from "farmbot";
@@ -50,7 +50,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         panel={Panel.Points}
         linkTo={"/app/designer/points/add"}
         title={t("Add point")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your points...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"points"}>

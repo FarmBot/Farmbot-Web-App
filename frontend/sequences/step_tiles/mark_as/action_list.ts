@@ -8,7 +8,7 @@ import {
   MOUNTED_TO,
   DISMOUNT,
   PLANT_OPTIONS,
-  POINT_OPTIONS
+  POINT_OPTIONS,
 } from "./constants";
 
 const allToolsAsDDI = (i: ResourceIndex) => {

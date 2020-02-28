@@ -36,6 +36,7 @@ export function DangerZone(props: DangerZoneProps) {
             <button
               className="fb-button red"
               disabled={botDisconnected}
+              title={t("RESET")}
               onClick={onReset}>
               {t("RESET")}
             </button>

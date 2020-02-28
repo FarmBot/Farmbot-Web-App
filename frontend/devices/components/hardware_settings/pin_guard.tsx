@@ -41,7 +41,7 @@ export function PinGuard(props: PinGuardProps) {
         </Col>
       </Row>
       <PinGuardMCUInputGroup
-        name={t("Pin Guard {{ num }}", { num: 1 })}
+        label={t("Pin Guard {{ num }}", { num: 1 })}
         pinNumKey={"pin_guard_1_pin_nr"}
         timeoutKey={"pin_guard_1_time_out"}
         activeStateKey={"pin_guard_1_active_state"}
@@ -49,7 +49,7 @@ export function PinGuard(props: PinGuardProps) {
         resources={resources}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard {{ num }}", { num: 2 })}
+        label={t("Pin Guard {{ num }}", { num: 2 })}
         pinNumKey={"pin_guard_2_pin_nr"}
         timeoutKey={"pin_guard_2_time_out"}
         activeStateKey={"pin_guard_2_active_state"}
@@ -57,7 +57,7 @@ export function PinGuard(props: PinGuardProps) {
         resources={resources}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard {{ num }}", { num: 3 })}
+        label={t("Pin Guard {{ num }}", { num: 3 })}
         pinNumKey={"pin_guard_3_pin_nr"}
         timeoutKey={"pin_guard_3_time_out"}
         activeStateKey={"pin_guard_3_active_state"}
@@ -65,7 +65,7 @@ export function PinGuard(props: PinGuardProps) {
         resources={resources}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard {{ num }}", { num: 4 })}
+        label={t("Pin Guard {{ num }}", { num: 4 })}
         pinNumKey={"pin_guard_4_pin_nr"}
         timeoutKey={"pin_guard_4_time_out"}
         activeStateKey={"pin_guard_4_active_state"}
@@ -73,7 +73,7 @@ export function PinGuard(props: PinGuardProps) {
         resources={resources}
         sourceFwConfig={sourceFwConfig} />
       <PinGuardMCUInputGroup
-        name={t("Pin Guard {{ num }}", { num: 5 })}
+        label={t("Pin Guard {{ num }}", { num: 5 })}
         pinNumKey={"pin_guard_5_pin_nr"}
         timeoutKey={"pin_guard_5_time_out"}
         activeStateKey={"pin_guard_5_active_state"}

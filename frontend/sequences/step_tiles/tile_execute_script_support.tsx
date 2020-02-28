@@ -8,9 +8,9 @@ import { ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 
 /** Create a Farmware input pair to include in the step body. */
-const createPair = (name: string, label: string, value: string): Pair => ({
+const createPair = (envName: string, label: string, value: string): Pair => ({
   kind: "pair",
-  args: { label: name, value },
+  args: { label: envName, value },
   comment: label
 });
 
@@ -24,9 +24,9 @@ const executorAdd = (inputPair: Pair) => (s: ExecuteScript) => {
 const executorAddAll = (fwName: string, configs: FarmwareConfig[]) =>
   (s: ExecuteScript) => {
     configs.map(config => {
-      const name = getConfigEnvName(fwName, config.name);
-      if (!hasPair(s, name)) {
-        const pair = createPair(name, config.label, config.value);
+      const envName = getConfigEnvName(fwName, config.name);
+      if (!hasPair(s, envName)) {
+        const pair = createPair(envName, config.label, config.value);
         s.body = s.body || [];
         s.body.push(pair);
       }
@@ -57,10 +57,10 @@ const executorRemoveAll = (s: ExecuteScript) => {
 };
 
 /** Check if the current step already has a Farmware input. */
-const hasPair = (step: ExecuteScript, name: string): Boolean => {
+const hasPair = (step: ExecuteScript, envName: string): Boolean => {
   // A list of Farmware input pair names in the current step.
   const inputNames: string[] = (step.body || []).map(x => x.args.label);
-  return inputNames.includes(name);
+  return inputNames.includes(envName);
 };
 
 /** Replace the Farmware input pair if it exists, otherwise add it. */
@@ -121,7 +121,7 @@ export const farmwareList =
       return farmwareNames
         .filter(x => (firstPartyFarmwareNames && !showFirstPartyFarmware)
           ? !firstPartyFarmwareNames.includes(x) : x)
-        .map(name => ({ value: name, label: name }))
+        .map(farmwareName => ({ value: farmwareName, label: farmwareName }))
         .concat({ label: t("Weed Detector"), value: "plant-detection" });
     }
     return [];
@@ -171,18 +171,18 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
   };
 
   /** Change a Farmware input pair value. */
-  const changePairValue = (name: string, label: string) =>
+  const changePairValue = (envName: string, label: string) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value;
-      const pair = createPair(name, label, value);
+      const pair = createPair(envName, label, value);
       addOrUpdatePair(pair, currentStep, updateStep);
     };
 
   /** Reset Farmware input pair value to the default value. */
-  const resetPairValue = (name: string, label: string) =>
+  const resetPairValue = (envName: string, label: string) =>
     () => {
-      const value = defaultValues()[name];
-      const pair = createPair(name, label, value);
+      const value = defaultValues()[envName];
+      const pair = createPair(envName, label, value);
       addOrUpdatePair(pair, currentStep, updateStep);
     };
 
@@ -197,8 +197,8 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
   };
 
   /** Check if a value is the default input value. */
-  const isDefault = (name: string, value: string): Boolean =>
-    defaultValues()[name] === value;
+  const isDefault = (envName: string, value: string): Boolean =>
+    defaultValues()[envName] === value;
 
   /** All requested inputs (namespaced, only if connected to bot). */
   const configEnvNames = currentFarmwareInputs(farmwareName, defaultConfigs);
@@ -219,25 +219,25 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
     <div className="farmware-step-input-fields">
       <div className="checkbox-row">
         <div className={`fb-checkbox ${partial}`}>
-          <input type="checkbox"
+          <input type="checkbox" name="parameters"
             checked={areAllPresent}
             onChange={areAllPresent ? removeAllPairs : addAllDefaultPairs} />
         </div>
         <label>{t("Parameters")}</label>
         <Help text={ToolTips.FARMWARE_CONFIGS} />
       </div>
-      {farmwareInputEntries.map(([name, config], i) => {
-        const pair = createPair(name, config.label, config.value);
+      {farmwareInputEntries.map(([envName, config], i) => {
+        const pair = createPair(envName, config.label, config.value);
         const outdated = farmwareInstalled &&
-          !isCurrentFarmwareInput(configEnvNames, name);
-        return <fieldset key={i + name}
+          !isCurrentFarmwareInput(configEnvNames, envName);
+        return <fieldset key={i + envName}
           title={outdated ? t("Input is not needed for this Farmware.") : ""}>
           <div className="checkbox-row">
             <div className="fb-checkbox">
-              <input type="checkbox"
-                checked={inputsInBody.includes(name)}
-                onChange={inputsInBody.includes(name)
-                  ? removeStepPair(name)
+              <input type="checkbox" name="parameter"
+                checked={inputsInBody.includes(envName)}
+                onChange={inputsInBody.includes(envName)
+                  ? removeStepPair(envName)
                   : addStepPair(pair)} />
             </div>
             <label style={outdated ? { color: "gray" } : {}}>
@@ -245,16 +245,16 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
             </label>
           </div>
           <div className="farmware-input-group">
-            {inputsInBody.includes(name) &&
+            {inputsInBody.includes(envName) &&
               <BlurableInput
                 value={config.value}
-                onCommit={changePairValue(name, config.label)}
+                onCommit={changePairValue(envName, config.label)}
                 disabled={outdated} />}
-            {!isDefault(name, config.value) &&
+            {!isDefault(envName, config.value) &&
               <i className="fa fa-times-circle"
-                onClick={resetPairValue(name, config.label)} />}
+                onClick={resetPairValue(envName, config.label)} />}
           </div>
         </fieldset>;
       })}
-    </div> : <div />;
+    </div> : <div className={"no-farmware-inputs"} />;
 }

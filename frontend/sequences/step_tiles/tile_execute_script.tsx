@@ -3,7 +3,7 @@ import { StepParams } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  StepWrapper, StepHeader, StepContent, StepWarning
+  StepWrapper, StepHeader, StepContent, StepWarning,
 } from "../step_ui/index";
 import { Row, Col, FBSelect, DropDownItem } from "../../ui/index";
 import { editStep } from "../../api/crud";
@@ -18,15 +18,15 @@ export function TileExecuteScript(props: StepParams) {
     const farmwareName = currentStep.args.label;
 
     /** Selected Farmware is installed on connected bot. */
-    const isInstalled = (name: string): boolean => {
-      return !!(farmwareData && farmwareData.farmwareNames.includes(name));
+    const isInstalled = (n: string): boolean => {
+      return !!(farmwareData && farmwareData.farmwareNames.includes(n));
     };
 
-    const selectedFarmwareDDI = (name: string): DropDownItem => {
-      if (isInstalled(name)) {
-        return name === "plant-detection"
-          ? { value: name, label: t("Weed Detector") }
-          : { value: name, label: name };
+    const selectedFarmwareDDI = (n: string): DropDownItem => {
+      if (isInstalled(n)) {
+        return n === "plant-detection"
+          ? { value: n, label: t("Weed Detector") }
+          : { value: n, label: n };
       }
       return { label: t("Manual Input"), value: "" };
     };

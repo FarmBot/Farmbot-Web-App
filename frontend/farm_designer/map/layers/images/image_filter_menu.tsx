@@ -2,11 +2,11 @@ import * as React from "react";
 import { BlurableInput } from "../../../../ui/index";
 import { offsetTime } from "../../../farm_events/edit_fe_form";
 import {
-  setWebAppConfigValue, GetWebAppConfigValue
+  setWebAppConfigValue, GetWebAppConfigValue,
 } from "../../../../config_storage/actions";
 import moment from "moment";
 import {
-  formatDate, formatTime
+  formatDate, formatTime,
 } from "../../../farm_events/map_state_to_props_add_edit";
 import { Slider } from "@blueprintjs/core";
 import { t } from "../../../../i18next_wrapper";

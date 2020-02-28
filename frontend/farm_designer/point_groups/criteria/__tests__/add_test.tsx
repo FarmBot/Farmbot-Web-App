@@ -15,7 +15,7 @@ import {
   AddStringCriteriaProps,
 } from "../interfaces";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { PLANT_STAGE_LIST } from "../../../plants/edit_plant_status";

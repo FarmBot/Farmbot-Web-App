@@ -14,10 +14,10 @@ import { createGroup } from "../actions";
 import { init, save } from "../../../api/crud";
 import { history } from "../../../history";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakePoint, fakePlant, fakeToolSlot
+  fakePoint, fakePlant, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import { DeepPartial } from "redux";
 import { Everything } from "../../../interfaces";

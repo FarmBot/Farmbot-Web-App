@@ -3,10 +3,10 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { Feature } from "../../devices/interfaces";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";
 import {
-  fakeSequence, fakeWebAppConfig, fakeFarmwareEnv
+  fakeSequence, fakeWebAppConfig, fakeFarmwareEnv,
 } from "../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { TaggedSequence } from "farmbot";
 

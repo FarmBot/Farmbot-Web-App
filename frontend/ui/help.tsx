@@ -16,6 +16,6 @@ export function Help(props: HelpProps) {
       ? PopoverInteractionKind.CLICK : PopoverInteractionKind.HOVER}
     popoverClassName={"help"}>
     <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`} />
-    <div>{t(props.text)}</div>
+    <div className={"help-text-content"}>{t(props.text)}</div>
   </Popover>;
 }

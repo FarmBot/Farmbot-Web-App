@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { RawControls as Controls } from "../controls";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
-  fakePeripheral, fakeWebcamFeed, fakeSensor
+  fakePeripheral, fakeWebcamFeed, fakeSensor,
 } from "../../__test_support__/fake_state/resources";
 import { Dictionary } from "farmbot";
 import { Props } from "../interfaces";

@@ -26,7 +26,7 @@ export const FirmwareHardwareStatusIcon =
     return <i className={`fa ${icon} status-icon ${status}`} title={statusText} />;
   };
 
-const lookup = (value: string | undefined) =>
+export const lookup = (value: string | undefined) =>
   value && Object.keys(FIRMWARE_CHOICES_DDI).includes(value)
     ? FIRMWARE_CHOICES_DDI[value].label : undefined;
 
@@ -49,6 +49,7 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
   const { apiFirmwareValue } = props;
   return <button className="fb-button yellow"
     disabled={!apiFirmwareValue || !props.botOnline}
+    title={t("flash firmware")}
     onClick={() => isFwHardwareValue(apiFirmwareValue) &&
       flashFirmware(apiFirmwareValue)}>
     {t("flash firmware")}

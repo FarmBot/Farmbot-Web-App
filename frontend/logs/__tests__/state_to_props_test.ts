@@ -4,7 +4,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
 import {
-  fakeFbosConfig, fakeLog
+  fakeFbosConfig, fakeLog,
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {

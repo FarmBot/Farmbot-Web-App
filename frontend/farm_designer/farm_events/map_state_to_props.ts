@@ -11,7 +11,7 @@ import {
 } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import {
-  FarmEventWithRegimen, FarmEventWithSequence
+  FarmEventWithRegimen, FarmEventWithSequence,
 } from "./calendar/interfaces";
 import { scheduleForFarmEvent } from "./calendar/scheduler";
 import { last } from "lodash";

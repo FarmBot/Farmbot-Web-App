@@ -12,10 +12,10 @@ import { mount, shallow } from "enzyme";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  fakeTool, fakeToolSlot, fakeWebAppConfig
+  fakeTool, fakeToolSlot, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { init, save, edit, destroy } from "../../../api/crud";
 import { history } from "../../../history";
@@ -39,7 +39,7 @@ describe("<AddToolSlot />", () => {
   it("renders", () => {
     const wrapper = mount(<AddToolSlot {...fakeProps()} />);
     ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "change direction", "gantry-mounted"
+      "change direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     expect(init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},

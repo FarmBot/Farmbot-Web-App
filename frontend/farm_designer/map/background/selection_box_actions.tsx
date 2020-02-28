@@ -12,7 +12,7 @@ import { ShouldDisplay, Feature } from "../../../devices/interfaces";
 /** Return all plants within the selection box. */
 export const getSelected = (
   plants: TaggedPlant[],
-  box: SelectionBoxData | undefined
+  box: SelectionBoxData | undefined,
 ): string[] | undefined => {
   const arraySelected = plants.filter(p => {
     if (box &&

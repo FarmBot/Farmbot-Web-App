@@ -11,10 +11,10 @@ import { McuParamName } from "farmbot";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  fakeFirmwareConfig
+  fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../../api/crud";
 
@@ -37,7 +37,7 @@ describe("<Motors/>", () => {
   it("renders the base case", () => {
     const wrapper = render(<Motors {...fakeProps()} />);
     ["Enable 2nd X Motor",
-      "Max Speed (mm/s)"
+      "Max Speed (mm/s)",
     ].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });

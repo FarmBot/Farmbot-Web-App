@@ -16,6 +16,7 @@ export function ResendPanelBody(props: { onClick(): void; }) {
       <Row>
         <button onClick={props.onClick}
           type="button"
+          title={t("Resend Verification Email")}
           className="fb-button green pull-right front-page-button">
           {t("Resend Verification Email")}
         </button>

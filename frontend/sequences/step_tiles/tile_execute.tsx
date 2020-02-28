@@ -12,7 +12,7 @@ import { ShouldDisplay } from "../../devices/interfaces";
 import { findSequenceById } from "../../resources/selectors_by_id";
 import { LocalsList } from "../locals_list/locals_list";
 import {
-  addOrEditParamApps, variableList
+  addOrEditParamApps, variableList,
 } from "../locals_list/variable_support";
 import { AllowedVariableNodes } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";

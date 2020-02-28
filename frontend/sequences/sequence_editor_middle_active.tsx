@@ -145,6 +145,7 @@ const SequenceBtnGroup = ({
       dispatch={dispatch} />
     <button
       className="fb-button red"
+      title={t("delete sequence")}
       onClick={() => {
         const confirm = getWebAppConfigValue(
           BooleanSetting.confirm_sequence_deletion);
@@ -156,6 +157,7 @@ const SequenceBtnGroup = ({
     </button>
     <button
       className="fb-button yellow"
+      title={t("copy sequence")}
       onClick={() => dispatch(copySequence(sequence))}>
       {t("Copy")}
     </button>
@@ -295,6 +297,7 @@ export const AddCommandButton = (props: { dispatch: Function, index: number }) =
   <div className="add-command-button-container">
     <button
       className="add-command fb-button gray"
+      title={t("add sequence step")}
       onClick={() => props.dispatch({
         type: Actions.SET_SEQUENCE_STEP_POSITION,
         payload: props.index,

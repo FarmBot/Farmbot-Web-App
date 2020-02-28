@@ -1,7 +1,7 @@
 import { BooleanSetting } from "../../session_keys";
 import { Content } from "../../constants";
 import {
-  GetWebAppConfigValue, setWebAppConfigValue
+  GetWebAppConfigValue, setWebAppConfigValue,
 } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
@@ -78,7 +78,7 @@ export const fetchLabFeatures =
       storageKey: BooleanSetting.user_interface_read_only_mode,
       value: false,
       displayInvert: false,
-    }
+    },
   ].map(fetchSettingValue(getConfigValue)));
 
 /** Always allow toggling from true => false (deactivate).

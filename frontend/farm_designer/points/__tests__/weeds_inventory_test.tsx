@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawWeeds as Weeds, WeedsProps, mapStateToProps
+  RawWeeds as Weeds, WeedsProps, mapStateToProps,
 } from "../weeds_inventory";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";

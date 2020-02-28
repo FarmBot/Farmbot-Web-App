@@ -7,7 +7,7 @@ import { StepParams } from "../../interfaces";
 import { Actions, Content } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
 import {
-  fakeFarmwareData
+  fakeFarmwareData,
 } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileExecuteScript/>", () => {

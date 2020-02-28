@@ -5,10 +5,10 @@ import { mount, shallow } from "enzyme";
 import { PinNumberDropdown } from "../pin_number_dropdown";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakeFirmwareConfig, fakePeripheral
+  fakeFirmwareConfig, fakePeripheral,
 } from "../../../__test_support__/fake_state/resources";
 import { TaggedFirmwareConfig } from "farmbot";
 import { FBSelect } from "../../../ui";
@@ -17,7 +17,7 @@ import { updateMCU } from "../../actions";
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
     (firmwareConfig?: TaggedFirmwareConfig): PinGuardMCUInputGroupProps => ({
-      name: "Pin Guard 1",
+      label: "Pin Guard 1",
       pinNumKey: "pin_guard_1_pin_nr",
       timeoutKey: "pin_guard_1_time_out",
       activeStateKey: "pin_guard_1_active_state",

@@ -2,11 +2,11 @@ import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
 import {
-  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
+  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult,
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";

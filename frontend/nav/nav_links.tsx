@@ -2,11 +2,12 @@ import * as React from "react";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
-  computeEditorUrlFromState, computeFarmwareUrlFromState
+  computeEditorUrlFromState, computeFarmwareUrlFromState,
 } from "./compute_editor_url_from_state";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { betterCompact } from "../util";
+import { DevSettings } from "../account/dev/dev_support";
 /** Uses a slug and a child path to compute the `href` of a navbar link. */
 export type LinkComputeFn = (slug: string, childPath: string) => string;
 
@@ -27,7 +28,8 @@ interface NavLinkParams {
 export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
-  { name: "Device", icon: "cog", slug: "device" },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    { name: "Device", icon: "cog", slug: "device" },
   {
     name: "Sequences", icon: "server", slug: "sequences",
     computeHref: computeEditorUrlFromState("Sequence")

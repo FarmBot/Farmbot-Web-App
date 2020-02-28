@@ -7,10 +7,10 @@ jest.mock("../../../history", () => ({
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakeSequence, fakeRegimen, fakeFarmEvent
+  fakeSequence, fakeRegimen, fakeFarmEvent,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
@@ -53,7 +53,7 @@ describe("mapStateToPropsAddEdit()", () => {
     it("returns executable list", () => {
       expect(executableOptions).toEqual(expect.arrayContaining([
         { headingId: "Regimen", label: "Fake Regimen", value: 1 },
-        { headingId: "Sequence", label: "Fake Sequence", value: 1 }
+        { headingId: "Sequence", label: "Fake Sequence", value: 1 },
       ]));
     });
   });

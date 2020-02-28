@@ -8,7 +8,7 @@ jest.mock("../../../api/crud", () => ({ initSaveGetId: jest.fn() }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawZones as Zones, ZonesProps, mapStateToProps
+  RawZones as Zones, ZonesProps, mapStateToProps,
 } from "../zones_inventory";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";

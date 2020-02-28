@@ -1,5 +1,5 @@
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import {
   SpecialStatus,
@@ -11,7 +11,7 @@ import {
 } from "farmbot";
 import {
   selectAllSequences,
-  selectAllPeripherals
+  selectAllPeripherals,
 } from "../../../../resources/selectors";
 import { updateLhs } from "../update_lhs";
 import { PinGroupName } from "../../pin_and_peripheral_support";

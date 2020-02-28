@@ -38,19 +38,19 @@ export interface PartialFormEvent {
 
 /** Set value for front page state field (except for "activePanel"). */
 export const setField =
-  (name: keyof Omit<FrontPageState, "activePanel">, cb: SetterCB) =>
+  (field: keyof Omit<FrontPageState, "activePanel">, cb: SetterCB) =>
     (event: PartialFormEvent) => {
       const state: Partial<FrontPageState> = {};
 
-      switch (name) {
+      switch (field) {
         // Booleans
         case "agreeToTerms":
         case "registrationSent":
-          state[name] = event.currentTarget.checked;
+          state[field] = event.currentTarget.checked;
           break;
         // all others (string)
         default:
-          state[name] = event.currentTarget.value;
+          state[field] = event.currentTarget.value;
       }
       cb(state);
     };
@@ -259,5 +259,9 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
     </div>;
   }
 
-  render() { return Session.fetchStoredToken() ? <div /> : this.defaultContent(); }
+  render() {
+    return Session.fetchStoredToken()
+      ? <div className={"app-loading"} />
+      : this.defaultContent();
+  }
 }

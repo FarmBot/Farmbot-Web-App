@@ -7,7 +7,7 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber } from "lodash";
@@ -44,11 +44,11 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "Other": "Other",
 };
 
-const heading = (name: DropdownHeadingId): DropDownItem[] => ([{
-  label: t(NAME_MAP[name]),
+const heading = (headingId: DropdownHeadingId): DropDownItem[] => ([{
+  label: t(NAME_MAP[headingId]),
   heading: true,
   value: 0,
-  headingId: name
+  headingId: headingId
 }]);
 
 const points2ddi = (allPoints: TaggedPoint[], pointerType: PointerTypeName) =>

@@ -5,7 +5,7 @@ import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
 import { Row, Col } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
-  ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay
+  ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
 } from "../components/fbos_settings/fbos_details";
 import { t } from "../../i18next_wrapper";
 import { QosPanel } from "./qos_panel";
@@ -26,8 +26,8 @@ export class Connectivity
   extends React.Component<ConnectivityProps, ConnectivityState> {
   state: ConnectivityState = { hoveredConnection: undefined };
 
-  hover = (name: string) =>
-    () => this.setState({ hoveredConnection: name });
+  hover = (connectionName: string) =>
+    () => this.setState({ hoveredConnection: connectionName });
 
   render() {
     const { informational_settings } = this.props.bot.hardware;

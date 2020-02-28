@@ -1,5 +1,5 @@
 import {
-  toggleWebAppBool, getWebAppConfigValue, setWebAppConfigValue
+  toggleWebAppBool, getWebAppConfigValue, setWebAppConfigValue,
 } from "../actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
 import { edit, save } from "../../api/crud";

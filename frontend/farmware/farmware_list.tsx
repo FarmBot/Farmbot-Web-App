@@ -118,12 +118,13 @@ export class FarmwareList
         {t("Install new Farmware")}
       </label>
       <fieldset>
-        <input type="url"
+        <input type="url" name="url"
           placeholder={"https://...."}
           value={this.state.packageUrl || ""}
           onChange={e => this.setState({ packageUrl: e.currentTarget.value })} />
         <button
           className="fb-button green"
+          title={t("install Farmware")}
           onClick={this.install}>
           {t("Install")}
         </button>

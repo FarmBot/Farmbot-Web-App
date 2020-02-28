@@ -2,11 +2,11 @@ import * as React from "react";
 import { BooleanSetting } from "../../session_keys";
 import { closePlantInfo, unselectPlant } from "./actions";
 import {
-  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
+  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty,
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import {
-  getMapSize, getGardenCoordinates, getMode, cursorAtPlant
+  getMapSize, getGardenCoordinates, getMode, cursorAtPlant,
 } from "./util";
 import {
   Grid, MapBackground,
@@ -26,7 +26,7 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";

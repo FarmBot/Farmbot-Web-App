@@ -9,9 +9,8 @@ interface DataDumpExport { device?: DeviceAccountSettings; }
 type Response = AxiosResponse<DataDumpExport | undefined>;
 
 export function generateFilename({ device }: DataDumpExport): string {
-  let name: string;
-  name = device ? (device.name + "_" + device.id) : "farmbot";
-  return `export_${name}.json`.toLowerCase();
+  const nameAndId = device ? (device.name + "_" + device.id) : "farmbot";
+  return `export_${nameAndId}.json`.toLowerCase();
 }
 
 // Thanks, @KOL - https://stackoverflow.com/a/19328891/1064917

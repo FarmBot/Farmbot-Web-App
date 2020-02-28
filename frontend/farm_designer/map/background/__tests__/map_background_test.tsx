@@ -3,7 +3,7 @@ import { MapBackground } from "../map_background";
 import { shallow } from "enzyme";
 import { MapBackgroundProps } from "../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 
 describe("<MapBackground/>", () => {

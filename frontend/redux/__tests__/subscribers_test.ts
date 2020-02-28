@@ -1,10 +1,10 @@
 import {
   unsavedCheck,
   stopThem,
-  dontStopThem
+  dontStopThem,
 } from "../subscribers";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { SpecialStatus, TaggedWebAppConfig } from "farmbot";
 import { fakeState } from "../../__test_support__/fake_state";

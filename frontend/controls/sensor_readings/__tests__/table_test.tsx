@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { SensorReadingsTable } from "../table";
 import { SensorReadingsTableProps } from "../interfaces";
 import {
-  fakeSensorReading, fakeSensor
+  fakeSensorReading, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 

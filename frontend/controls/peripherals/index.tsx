@@ -51,7 +51,7 @@ export class Peripherals
 
   newPeripheral = (
     pin: number | undefined = undefined,
-    label = t("New Peripheral")
+    label = t("New Peripheral"),
   ) => {
     this.props.dispatch(init("Peripheral", { pin, label }));
   };
@@ -86,15 +86,17 @@ export class Peripherals
   render() {
     const { isEditing } = this.state;
     const status = getArrayStatus(this.props.peripherals);
-
+    const editButtonText = isEditing
+      ? t("Back")
+      : t("Edit");
     return <Widget className="peripherals-widget">
       <WidgetHeader title={t("Peripherals")} helpText={ToolTips.PERIPHERALS}>
         <button
           className="fb-button gray"
           onClick={this.toggle}
+          title={editButtonText}
           disabled={!!status && isEditing}>
-          {!isEditing && t("Edit")}
-          {isEditing && t("Back")}
+          {editButtonText}
         </button>
         <SaveBtn
           hidden={!isEditing}
@@ -104,6 +106,7 @@ export class Peripherals
           hidden={!isEditing}
           className="fb-button green"
           type="button"
+          title={t("add peripheral")}
           onClick={() => this.newPeripheral()}>
           <i className="fa fa-plus" />
         </button>
@@ -111,6 +114,7 @@ export class Peripherals
           hidden={!isEditing || this.props.firmwareHardware == "none"}
           className="fb-button green"
           type="button"
+          title={t("add stock peripherals")}
           onClick={() => this.stockPeripherals.map(p =>
             this.newPeripheral(p.pin, p.label))}>
           <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />

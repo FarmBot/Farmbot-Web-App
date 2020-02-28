@@ -1,6 +1,6 @@
 import { store } from "../../redux/store";
 import {
-  getWebAppConfigValue, setWebAppConfigValue
+  getWebAppConfigValue, setWebAppConfigValue,
 } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 

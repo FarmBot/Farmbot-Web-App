@@ -11,11 +11,11 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  determineDropdown, determineVector, Vector3Plus
+  determineDropdown, determineVector, Vector3Plus,
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
 import {
-  VariableNode, AllowedVariableNodes
+  VariableNode, AllowedVariableNodes,
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
 import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";

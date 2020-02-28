@@ -16,7 +16,7 @@ import { HomingAndCalibration } from "../homing_and_calibration";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { updateMCU } from "../../../actions";
 import {
-  fakeFirmwareConfig
+  fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import { error, warning } from "../../../../toast/toast";
 import { inputEvent } from "../../../../__test_support__/fake_html_events";

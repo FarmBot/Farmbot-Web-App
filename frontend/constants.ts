@@ -1005,10 +1005,11 @@ export enum DeviceSetting {
   pinBindings = `Pin Bindings`,
 
   // FarmBot OS
+  farmbot = `FarmBot`,
   name = `name`,
   timezone = `timezone`,
   camera = `camera`,
-  firmware = `firmware`,
+  firmware = `Firmware`,
   applySoftwareUpdates = `update time`,
   farmbotOSAutoUpdate = `auto update`,
   farmbotOS = `Farmbot OS`,
@@ -1024,6 +1025,20 @@ export enum DeviceSetting {
   autoFactoryReset = `Automatic Factory Reset`,
   connectionAttemptPeriod = `Connection Attempt Period`,
   changeOwnership = `Change Ownership`,
+
+  // Farm Designer
+  farmDesigner = `Farm Designer`,
+  animations = `Plant animations`,
+  trail = `Virtual FarmBot trail`,
+  dynamicMap = `Dynamic map size`,
+  mapSize = `Map size`,
+  rotateMap = `Rotate map`,
+  mapOrigin = `Map origin`,
+  confirmPlantDeletion = `Confirm plant deletion`,
+
+  // Firmware
+  firmwareSection = `Firmware`,
+  flashFirmware = `Flash firmware`,
 }
 
 export namespace DiagnosticMessages {

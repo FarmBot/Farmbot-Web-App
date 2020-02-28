@@ -110,7 +110,7 @@ export interface ScreenToGardenParams {
 
 /** Transform screen coordinates into garden coordinates  */
 export function translateScreenToGarden(
-  params: ScreenToGardenParams
+  params: ScreenToGardenParams,
 ): XYCoordinate {
   const {
     page, scroll, zoomLvl, mapTransformProps, gridOffset, panelStatus
@@ -198,7 +198,7 @@ function quadTransform(params: QuadTransformParams): XYCoordinate {
 export function transformXY(
   x: number,
   y: number,
-  rawMapTransformProps: MapTransformProps
+  rawMapTransformProps: MapTransformProps,
 ): { qx: number, qy: number } {
   const { quadrant, gridSize, xySwap } = rawMapTransformProps;
   const coordinate = {
@@ -226,7 +226,7 @@ export function transformXY(
 export function getBotSize(
   botMcuParams: McuParams,
   stepsPerMmXY: StepsPerMmXY,
-  defaultLength: AxisNumberProperty
+  defaultLength: AxisNumberProperty,
 ): BotSize {
   const stopAtMaxXY = {
     x: !!botMcuParams.movement_stop_at_max_x,
@@ -252,7 +252,7 @@ export function getBotSize(
 /** Calculate map dimensions */
 export function getMapSize(
   mapTransformProps: MapTransformProps,
-  gridOffset: AxisNumberProperty
+  gridOffset: AxisNumberProperty,
 ): { w: number, h: number } {
   const { gridSize, xySwap } = mapTransformProps;
   const mapSize = {
@@ -282,8 +282,7 @@ export const transformForQuadrant =
     const translate = { x: flip.x * origin.qx, y: flip.y * origin.qy };
     return trim(
       `scale(${flip.x}, ${flip.y})
-       translate(${translate.x}, ${translate.y})`
-    );
+       translate(${translate.x}, ${translate.y})`);
   };
 
 /** Determine the current map mode based on path. */

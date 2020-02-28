@@ -12,14 +12,14 @@ import { mount, shallow } from "enzyme";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  fakeToolSlot, fakeTool
+  fakeToolSlot, fakeTool,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { destroy, edit, save } from "../../../api/crud";
 import {
-  EditToolSlotProps, mapStateToPropsEdit
+  EditToolSlotProps, mapStateToPropsEdit,
 } from "../map_to_props_add_edit";
 import { SlotEditRows } from "../tool_slot_edit_components";
 
@@ -46,7 +46,7 @@ describe("<EditToolSlot />", () => {
     p.findToolSlot = () => fakeToolSlot();
     const wrapper = mount(<EditToolSlot {...p} />);
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "change direction", "gantry-mounted"
+      "change direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 

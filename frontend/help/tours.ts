@@ -6,7 +6,7 @@ import { selectAllTools } from "../resources/selectors";
 import { store } from "../redux/store";
 import { getFbosConfig } from "../resources/getters";
 import {
-  getFwHardwareValue, hasUTM
+  getFwHardwareValue, hasUTM,
 } from "../devices/components/firmware_hardware_support";
 
 export enum Tours {

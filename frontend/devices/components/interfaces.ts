@@ -1,6 +1,6 @@
 import {
   BotState, Xyz, SourceFwConfig,
-  ControlPanelState, Axis
+  ControlPanelState, Axis,
 } from "../interfaces";
 import { McuParamName, McuParams, FirmwareHardware } from "farmbot/dist";
 import { IntegerSize } from "../../util";
@@ -65,7 +65,7 @@ export interface NumericMCUInputGroupProps {
 export interface PinGuardMCUInputGroupProps {
   sourceFwConfig: SourceFwConfig;
   dispatch: Function;
-  name: string;
+  label: string;
   pinNumKey: McuParamName;
   timeoutKey: McuParamName;
   activeStateKey: McuParamName;
