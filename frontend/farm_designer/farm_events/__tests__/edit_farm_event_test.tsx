@@ -52,6 +52,6 @@ describe("<EditFarmEvent />", () => {
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);
-    expect(wrapper.text()).toContain("Loading");
+    expect(wrapper.text()).toContain("Redirecting");
   });
 });

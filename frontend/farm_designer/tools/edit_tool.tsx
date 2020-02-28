@@ -50,18 +50,45 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   fallback = () => {
     history.push("/app/designer/tools");
-    return <span>{t("Redirecting...")}</span>;
+    return <this.PanelWrapper>
+      <span>{t("Redirecting")}...</span>
+    </this.PanelWrapper>;
   }
 
   default = (tool: TaggedTool) => {
     const { dispatch } = this.props;
     const { toolName } = this.state;
-    const panelName = "edit-tool";
     const isMounted = this.props.mountedToolId == tool.body.id;
     const message = isMounted
       ? t("Cannot delete while mounted.")
       : t("Cannot delete while in a slot.");
     const activeOrMounted = this.props.isActive(tool.body.id) || isMounted;
+    return <this.PanelWrapper>
+      <ToolSVG toolName={this.state.toolName} />
+      <label>{t("Name")}</label>
+      <input name="name"
+        value={toolName}
+        onChange={e => this.setState({ toolName: e.currentTarget.value })} />
+      <SaveBtn
+        onClick={() => {
+          dispatch(edit(tool, { name: toolName }));
+          history.push("/app/designer/tools");
+        }}
+        status={SpecialStatus.DIRTY} />
+      <button
+        className={`fb-button red no-float ${activeOrMounted
+          ? "pseudo-disabled" : ""}`}
+        title={activeOrMounted ? message : t("delete")}
+        onClick={() => activeOrMounted
+          ? error(t(message))
+          : dispatch(destroy(tool.uuid))}>
+        {t("Delete")}
+      </button>
+    </this.PanelWrapper>;
+  }
+
+  PanelWrapper = (props: { children: React.ReactChild | React.ReactChild[] }) => {
+    const panelName = "edit-tool";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -69,26 +96,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
-        <ToolSVG toolName={this.state.toolName} />
-        <label>{t("Name")}</label>
-        <input
-          value={toolName}
-          onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-        <SaveBtn
-          onClick={() => {
-            dispatch(edit(tool, { name: toolName }));
-            history.push("/app/designer/tools");
-          }}
-          status={SpecialStatus.DIRTY} />
-        <button
-          className={`fb-button red no-float ${activeOrMounted
-            ? "pseudo-disabled" : ""}`}
-          title={activeOrMounted ? message : t("delete")}
-          onClick={() => activeOrMounted
-            ? error(t(message))
-            : dispatch(destroy(tool.uuid))}>
-          {t("Delete")}
-        </button>
+        {props.children}
       </DesignerPanelContent>
     </DesignerPanel>;
   }

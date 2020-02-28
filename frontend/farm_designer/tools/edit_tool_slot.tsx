@@ -24,18 +24,15 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
     return this.toolSlot && this.props.findTool(this.toolSlot.body.tool_id || 0);
   }
 
-  fallback = () => {
-    history.push("/app/designer/tools");
-    return <span>{t("Redirecting...")}</span>;
-  }
-
   updateSlot = (toolSlot: TaggedToolSlotPointer) =>
     (update: Partial<TaggedToolSlotPointer["body"]>) => {
       this.props.dispatch(edit(toolSlot, update));
       this.props.dispatch(save(toolSlot.uuid));
     }
 
-  default = (toolSlot: TaggedToolSlotPointer) => {
+  render() {
+    const { toolSlot } = this;
+    !toolSlot && history.push("/app/designer/tools");
     const panelName = "edit-tool-slot";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
@@ -44,38 +41,40 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
         backTo={"/app/designer/tools"}
         panel={Panel.Tools} />
       <DesignerPanelContent panelName={panelName}>
-        <SlotEditRows
-          isExpress={isExpressBoard(this.props.firmwareHardware)}
-          toolSlot={toolSlot}
-          tools={this.props.tools}
-          tool={this.tool}
-          botPosition={this.props.botPosition}
-          xySwap={this.props.xySwap}
-          quadrant={this.props.quadrant}
-          isActive={this.props.isActive}
-          updateToolSlot={this.updateSlot(toolSlot)} />
-        <button
-          className="fb-button gray no-float"
-          onClick={() => {
-            const x = toolSlot.body.gantry_mounted
-              ? this.props.botPosition.x ?? toolSlot.body.x
-              : toolSlot.body.x;
-            const { y, z } = toolSlot.body;
-            moveAbs({ x, y, z });
-          }}>
-          {t("Move FarmBot to slot location")}
-        </button>
-        <button
-          className="fb-button red no-float"
-          onClick={() => this.props.dispatch(destroy(toolSlot.uuid))}>
-          {t("Delete")}
-        </button>
+        {toolSlot
+          ? <div className={"edit-tool-slot-content-wrapper"}>
+            <SlotEditRows
+              isExpress={isExpressBoard(this.props.firmwareHardware)}
+              toolSlot={toolSlot}
+              tools={this.props.tools}
+              tool={this.tool}
+              botPosition={this.props.botPosition}
+              xySwap={this.props.xySwap}
+              quadrant={this.props.quadrant}
+              isActive={this.props.isActive}
+              updateToolSlot={this.updateSlot(toolSlot)} />
+            <button
+              className="fb-button gray no-float"
+              title={t("move to this location")}
+              onClick={() => {
+                const x = toolSlot.body.gantry_mounted
+                  ? this.props.botPosition.x ?? toolSlot.body.x
+                  : toolSlot.body.x;
+                const { y, z } = toolSlot.body;
+                moveAbs({ x, y, z });
+              }}>
+              {t("Move FarmBot to slot location")}
+            </button>
+            <button
+              className="fb-button red no-float"
+              title={t("Delete")}
+              onClick={() => this.props.dispatch(destroy(toolSlot.uuid))}>
+              {t("Delete")}
+            </button>
+          </div>
+          : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>
     </DesignerPanel>;
-  }
-
-  render() {
-    return this.toolSlot ? this.default(this.toolSlot) : this.fallback();
   }
 }
 
