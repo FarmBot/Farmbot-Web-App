@@ -62,15 +62,6 @@ export class RawSavedGardens
   }
 }
 
-/** Link to SavedGardens panel for garden map legend. */
-export const SavedGardensLink = () =>
-  <button className="fb-button green"
-    hidden={true}
-    title={t("open saved gardens panel")}
-    onClick={() => history.push("/app/designer/gardens")}>
-    {t("Saved Gardens")}
-  </button>;
-
 /** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
   pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0

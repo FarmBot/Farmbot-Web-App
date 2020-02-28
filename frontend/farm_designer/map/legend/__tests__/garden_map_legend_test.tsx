@@ -23,8 +23,6 @@ import {
   GardenMapLegend, ZoomControls, PointsSubMenu
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
-import { clickButton } from "../../../../__test_support__/helpers";
-import { history } from "../../../../history";
 import { BooleanSetting } from "../../../../session_keys";
 import {
   fakeTimeSettings
@@ -96,15 +94,6 @@ describe("<ZoomControls />", () => {
 });
 
 describe("<PointsSubMenu />", () => {
-  it("navigates to point creator", () => {
-    const wrapper = mount(<PointsSubMenu
-      toggle={jest.fn()}
-      getConfigValue={jest.fn()} />);
-    clickButton(wrapper, 0, "point creator");
-    expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/points/add");
-  });
-
   it("shows historic points", () => {
     const toggle = jest.fn();
     const wrapper = shallow(<PointsSubMenu

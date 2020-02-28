@@ -1,13 +1,11 @@
 import * as React from "react";
 import { LayerToggle } from "../legend/layer_toggle";
 import { GardenMapLegendProps } from "../interfaces";
-import { history } from "../../../history";
 import { atMaxZoom, atMinZoom } from "../zoom";
 import { ImageFilterMenu } from "../layers/images/image_filter_menu";
 import { BugsControls } from "../easter_eggs/bugs";
 import { State } from "../../interfaces";
 import { MoveModeLink } from "../../move_to";
-import { SavedGardensLink } from "../../saved_gardens/saved_gardens";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { DevSettings } from "../../../account/dev/dev_support";
@@ -40,11 +38,6 @@ export const PointsSubMenu = ({ toggle, getConfigValue }: {
   getConfigValue: GetWebAppConfigValue
 }) =>
   <div className="map-points-submenu">
-    {!DevSettings.futureFeaturesEnabled() &&
-      <button className={"fb-button green"}
-        onClick={() => history.push("/app/designer/points/add")}>
-        {t("Point Creator")}
-      </button>}
     <LayerToggle
       value={!!getConfigValue(BooleanSetting.show_historic_points)}
       label={t("Historic Points?")}
@@ -111,7 +104,6 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <ZoomControls zoom={props.zoom} getConfigValue={props.getConfigValue} />
       <LayerToggles {...props} />
       <MoveModeLink />
-      <SavedGardensLink />
       <BugsControls />
     </div>
   </div>;
