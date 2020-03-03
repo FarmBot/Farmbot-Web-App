@@ -2,7 +2,7 @@ import {
   fakeFbosConfig,
   fakeImage,
   fakeFarmwareEnv,
-  fakeWebAppConfig
+  fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
@@ -35,7 +35,6 @@ describe("mapStateToProps()", () => {
   it("uses the API as the source of FBOS settings", () => {
     const fakeApiConfig = fakeFbosConfig();
     fakeApiConfig.body.auto_sync = true;
-    fakeApiConfig.body.api_migrated = true;
     mockFbosConfig = fakeApiConfig;
     const props = mapStateToProps(fakeState());
     expect(props.sourceFbosConfig("auto_sync")).toEqual({
@@ -47,19 +46,6 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.bot.hardware.configuration.auto_sync = false;
     mockFbosConfig = undefined;
-    const props = mapStateToProps(state);
-    expect(props.sourceFbosConfig("auto_sync")).toEqual({
-      value: false, consistent: true
-    });
-  });
-
-  it("uses the bot as the source of FBOS settings: ignore API defaults", () => {
-    const state = fakeState();
-    state.bot.hardware.configuration.auto_sync = false;
-    const fakeApiConfig = fakeFbosConfig();
-    fakeApiConfig.body.auto_sync = true;
-    fakeApiConfig.body.api_migrated = false;
-    mockFbosConfig = fakeApiConfig;
     const props = mapStateToProps(state);
     expect(props.sourceFbosConfig("auto_sync")).toEqual({
       value: false, consistent: true

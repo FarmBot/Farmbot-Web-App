@@ -28,19 +28,20 @@ import { TzWarning } from "./tz_warning";
 import { nextRegItemTimes } from "./map_state_to_props";
 import { first } from "lodash";
 import {
-  TimeUnit, ExecutableType, FarmEvent
+  TimeUnit, ExecutableType, FarmEvent,
 } from "farmbot/dist/resources/api_resources";
 import { LocalsList } from "../../sequences/locals_list/locals_list";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ShouldDisplay } from "../../devices/interfaces";
 import {
-  addOrEditParamApps, variableList, getRegimenVariableData
+  addOrEditParamApps, variableList, getRegimenVariableData,
 } from "../../sequences/locals_list/variable_support";
 import {
   AllowedVariableNodes,
 } from "../../sequences/locals_list/locals_list_support";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
+import { ErrorBoundary } from "../../error_boundary";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -255,17 +256,17 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     };
   }
 
-  fieldSet = (name: FarmEventViewModelKey, value: string) =>
+  fieldSet = (key: FarmEventViewModelKey, value: string) =>
     // A merge is required to not overwrite `fe`.
     this.setState(betterMerge(this.state, {
-      fe: { [name]: value },
+      fe: { [key]: value },
       specialStatusLocal: SpecialStatus.DIRTY
     }))
 
-  fieldGet = (name: FarmEventViewModelKey): string =>
-    (this.state.fe[name] || this.viewModel[name] || "").toString()
+  fieldGet = (key: FarmEventViewModelKey): string =>
+    (this.state.fe[key] || this.viewModel[key] || "").toString()
 
-  nextItemTime = (fe: FarmEvent, now: moment.Moment
+  nextItemTime = (fe: FarmEvent, now: moment.Moment,
   ): moment.Moment | undefined => {
     const { timeSettings } = this.props;
     const kind = fe.executable_type;
@@ -360,19 +361,24 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   render() {
     const { farmEvent } = this.props;
     return <div className="edit-farm-event-form">
-      <FarmEventForm
-        isRegimen={this.isReg}
-        fieldGet={this.fieldGet}
-        fieldSet={this.fieldSet}
-        timeSettings={this.props.timeSettings}
-        executableOptions={this.props.executableOptions}
-        executableSet={this.executableSet}
-        executableGet={this.executableGet}
-        dispatch={this.props.dispatch}
-        specialStatus={farmEvent.specialStatus || this.state.specialStatusLocal}
-        onSave={() => this.commitViewModel()}>
-        <this.LocalsList />
-      </FarmEventForm>
+      <ErrorBoundary>
+        <FarmEventForm
+          isRegimen={this.isReg}
+          fieldGet={this.fieldGet}
+          fieldSet={this.fieldSet}
+          timeSettings={this.props.timeSettings}
+          executableOptions={this.props.executableOptions}
+          executableSet={this.executableSet}
+          executableGet={this.executableGet}
+          dispatch={this.props.dispatch}
+          specialStatus={farmEvent.specialStatus
+            || this.state.specialStatusLocal}
+          onSave={() => this.commitViewModel()}>
+          <ErrorBoundary>
+            <this.LocalsList />
+          </ErrorBoundary>
+        </FarmEventForm>
+      </ErrorBoundary>
       <FarmEventDeleteButton
         hidden={!this.props.deleteBtn}
         farmEvent={this.props.farmEvent}
@@ -384,8 +390,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
 
 export interface StartTimeFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
 }
 
@@ -420,8 +426,8 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
 
 export interface RepeatFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
 }
 
@@ -431,13 +437,14 @@ export const RepeatForm = (props: RepeatFormProps) => {
     {!props.isRegimen
       ? <label>
         <input type="checkbox"
+          name="timeUnit"
           onChange={e => props.fieldSet("timeUnit",
             (!e.currentTarget.checked || props.isRegimen) ? "never" : "daily")}
           disabled={props.isRegimen}
           checked={allowRepeat} />
         {t("Repeats?")}
       </label>
-      : <div />}
+      : <div className={"no-repeat"} />}
     <FarmEventRepeatForm
       timeSettings={props.timeSettings}
       disabled={!allowRepeat}
@@ -453,7 +460,7 @@ export const RepeatForm = (props: RepeatFormProps) => {
 };
 
 export const dateCheck = (
-  fieldGet: (name: FarmEventViewModelKey) => string
+  fieldGet: (key: FarmEventViewModelKey) => string,
 ): string | undefined => {
   const startDate = fieldGet("startDate");
   const endDate = fieldGet("endDate");
@@ -463,8 +470,8 @@ export const dateCheck = (
 };
 
 export const timeCheck = (
-  fieldGet: (name: FarmEventViewModelKey) => string,
-  timeSettings: TimeSettings
+  fieldGet: (key: FarmEventViewModelKey) => string,
+  timeSettings: TimeSettings,
 ): string | undefined => {
   const startDate = fieldGet("startDate");
   const startTime = fieldGet("startTime");
@@ -485,6 +492,7 @@ export interface FarmEventDeleteButtonProps {
 
 export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
   <button className="fb-button red" hidden={props.hidden}
+    title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
@@ -496,8 +504,8 @@ export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
 
 export interface FarmEventFormProps {
   isRegimen: boolean;
-  fieldGet(name: FarmEventViewModelKey): string;
-  fieldSet(name: FarmEventViewModelKey, value: string): void;
+  fieldGet(key: FarmEventViewModelKey): string;
+  fieldSet(key: FarmEventViewModelKey, value: string): void;
   timeSettings: TimeSettings;
   executableOptions: DropDownItem[];
   executableSet(ddi: DropDownItem): void;

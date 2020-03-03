@@ -3,25 +3,19 @@ import { Row, Col } from "../../../ui/index";
 import { ColWidth } from "../farmbot_os_settings";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { updateConfig } from "../../actions";
-import { Content } from "../../../constants";
+import { Content, DeviceSetting } from "../../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
-import { OtaTimeSelector, changeOtaHour } from "./ota_time_selector";
-import { Feature } from "../../interfaces";
+import { Highlight } from "../maybe_highlight";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
 
-  return <div>
-    {props.shouldDisplay(Feature.ota_update_hour) && <OtaTimeSelector
-      timeFormat={props.timeFormat}
-      disabled={!osAutoUpdate.value}
-      value={props.device.body.ota_hour}
-      onChange={changeOtaHour(props.dispatch, props.device)} />}
-    <Row>
+  return <Row>
+    <Highlight settingName={DeviceSetting.farmbotOSAutoUpdate}>
       <Col xs={ColWidth.label}>
         <label>
-          {t("FARMBOT OS AUTO UPDATE")}
+          {t(DeviceSetting.farmbotOSAutoUpdate)}
         </label>
       </Col>
       <Col xs={ColWidth.description}>
@@ -36,6 +30,6 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
             os_auto_update: !osAutoUpdate.value
           }))} />
       </Col>
-    </Row>
-  </div>;
+    </Highlight>
+  </Row>;
 }

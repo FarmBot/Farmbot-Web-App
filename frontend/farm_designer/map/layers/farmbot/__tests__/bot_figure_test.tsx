@@ -4,35 +4,37 @@ import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../../ui/index";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotFigure/>", () => {
   const fakeProps = (): BotFigureProps => ({
-    name: "",
+    figureName: "",
     position: { x: 0, y: 0, z: 0 },
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
   });
 
+  const EXPECTED_MOTORS_OPACITY = 0.5;
+
   it.each<[
     string, BotOriginQuadrant, Record<"x" | "y", number>, boolean, number
   ]>([
-    ["motors", 1, { x: 3000, y: 0 }, false, 0.75],
-    ["motors", 2, { x: 0, y: 0 }, false, 0.75],
-    ["motors", 3, { x: 0, y: 1500 }, false, 0.75],
-    ["motors", 4, { x: 3000, y: 1500 }, false, 0.75],
-    ["motors", 1, { x: 0, y: 1500 }, true, 0.75],
-    ["motors", 2, { x: 0, y: 0 }, true, 0.75],
-    ["motors", 3, { x: 3000, y: 0 }, true, 0.75],
-    ["motors", 4, { x: 3000, y: 1500 }, true, 0.75],
+    ["motors", 1, { x: 3000, y: 0 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 2, { x: 0, y: 0 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 3, { x: 0, y: 1500 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 4, { x: 3000, y: 1500 }, false, EXPECTED_MOTORS_OPACITY],
+    ["motors", 1, { x: 0, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 2, { x: 0, y: 0 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 3, { x: 3000, y: 0 }, true, EXPECTED_MOTORS_OPACITY],
+    ["motors", 4, { x: 3000, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
     ["encoders", 2, { x: 0, y: 0 }, false, 0.25],
   ])("shows %s in correct location for quadrant %i",
-    (name, quadrant, expected, xySwap, opacity) => {
+    (figureName, quadrant, expected, xySwap, opacity) => {
       const p = fakeProps();
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
-      p.name = name;
+      p.figureName = figureName;
       const result = shallow<BotFigure>(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
@@ -84,7 +86,7 @@ describe("<BotFigure/>", () => {
     p.position.x = 100;
     const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
     expect(wrapper.instance().state.hovered).toBeFalsy();
-    const utm = wrapper.find("#UTM");
+    const utm = wrapper.find("#UTM-wrapper");
     utm.simulate("mouseOver");
     expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
@@ -103,7 +105,7 @@ describe("<BotFigure/>", () => {
     p.position.x = 100;
     p.mapTransformProps.xySwap = true;
     const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
-    const utm = wrapper.find("#UTM");
+    const utm = wrapper.find("#UTM-wrapper");
     utm.simulate("mouseOver");
     expect(wrapper.instance().state.hovered).toBeTruthy();
     expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
@@ -111,5 +113,13 @@ describe("<BotFigure/>", () => {
       textAnchor: "middle", visibility: "visible",
     }));
     expect(wrapper.text()).toEqual("(100, 0, 0)");
+  });
+
+  it("shows mounted tool", () => {
+    const p = fakeProps();
+    p.mountedToolName = "Seeder";
+    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
+      .toEqual(1);
   });
 });

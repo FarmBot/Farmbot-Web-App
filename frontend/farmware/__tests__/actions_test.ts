@@ -2,8 +2,8 @@ jest.mock("axios", () => ({
   get: jest.fn(() => {
     return Promise.resolve({
       data: [
-        { manifest: "url", name: "farmware0" },
-        { manifest: "url", name: "farmware1" }
+        { package: "farmware0" },
+        { package: "farmware1" },
       ]
     });
   }),

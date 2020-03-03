@@ -14,6 +14,7 @@ import { timeFormatString } from "../../../util";
 import { TimeSettings } from "../../../interfaces";
 import { StringConfigKey } from "farmbot/dist/resources/configs/fbos";
 import { boardType, FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
+import { ExternalUrl, FarmBotRepo } from "../../../external_urls";
 
 /** Return an indicator color for the given temperature (C). */
 export const colorFromTemp = (temp: number | undefined): string => {
@@ -40,7 +41,7 @@ interface ChipTemperatureDisplayProps {
 
 /** RPI CPU temperature display row: label, temperature, indicator. */
 export function ChipTemperatureDisplay(
-  { chip, temperature }: ChipTemperatureDisplayProps
+  { chip, temperature }: ChipTemperatureDisplayProps,
 ): JSX.Element {
   return <div className="chip-temp-display">
     <p>
@@ -54,21 +55,24 @@ export function ChipTemperatureDisplay(
 interface WiFiStrengthDisplayProps {
   wifiStrength: number | undefined;
   wifiStrengthPercent?: number | undefined;
+  extraInfo?: boolean;
 }
 
 /** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay(
-  { wifiStrength, wifiStrengthPercent }: WiFiStrengthDisplayProps
+  { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps,
 ): JSX.Element {
   const percent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
   const dbString = `${wifiStrength || 0}dBm`;
   const percentString = `${wifiStrengthPercent || percent}%`;
+  const numberDisplay =
+    extraInfo ? `${percentString} (${dbString})` : percentString;
   return <div className="wifi-strength-display">
     <p>
       <b>{t("WiFi strength")}: </b>
-      {wifiStrength ? dbString : "N/A"}
+      {wifiStrength ? numberDisplay : "N/A"}
     </p>
     {wifiStrength &&
       <div className="percent-bar">
@@ -170,13 +174,13 @@ const shortenCommit = (longCommit: string) => (longCommit || "").slice(0, 8);
 
 interface CommitDisplayProps {
   title: string;
-  repo: string;
+  repo: FarmBotRepo;
   commit: string;
 }
 
 /** GitHub commit display row: label, commit link. */
 const CommitDisplay = (
-  { title, repo, commit }: CommitDisplayProps
+  { title, repo, commit }: CommitDisplayProps,
 ): JSX.Element => {
   const shortCommit = shortenCommit(commit);
   return <p>
@@ -184,7 +188,7 @@ const CommitDisplay = (
     {shortCommit === "---"
       ? shortCommit
       : <a
-        href={`https://github.com/FarmBot/${repo}/tree/${shortCommit}`}
+        href={`${ExternalUrl.gitHubFarmBot}/${repo}/tree/${shortCommit}`}
         target="_blank">
         {shortCommit}
       </a>}
@@ -218,7 +222,7 @@ export interface BetaReleaseOptInButtonProps {
 
 /** Label and toggle button for opting in to FBOS beta releases. */
 export const BetaReleaseOptIn = (
-  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps
+  { dispatch, sourceFbosConfig }: BetaReleaseOptInButtonProps,
 ): JSX.Element => {
   const betaOptIn = sourceFbosConfig("update_channel" as ConfigurationName).value;
   return <fieldset className={"os-release-channel"}>
@@ -260,22 +264,25 @@ export function FbosDetails(props: FbosDetailsProps) {
     wifi_level_percent, cpu_usage, private_ip,
   } = props.botInfoSettings;
   const { last_ota, last_ota_checkup } = props.deviceAccount.body;
+  const infoFwCommit = firmware_version?.includes(".") ? firmware_commit : "---";
+  const firmwareCommit = firmware_version?.split("-")[1] || infoFwCommit;
 
-  return <div>
+  return <div className={"farmbot-os-details"}>
     <LastSeen
       dispatch={props.dispatch}
       botToMqttLastSeen={props.botToMqttLastSeen}
       timeSettings={props.timeSettings}
       device={props.deviceAccount} />
     <p><b>{t("Environment")}: </b>{env}</p>
-    <CommitDisplay title={t("Commit")} repo={"farmbot_os"} commit={commit} />
+    <CommitDisplay title={t("Commit")}
+      repo={FarmBotRepo.FarmBotOS} commit={commit} />
     <p><b>{t("Target")}: </b>{target}</p>
     <p><b>{t("Node name")}: </b>{last((node_name || "").split("@"))}</p>
     <p><b>{t("Device ID")}: </b>{props.deviceAccount.body.id}</p>
     {isString(private_ip) && <p><b>{t("Local IP address")}: </b>{private_ip}</p>}
     <p><b>{t("Firmware")}: </b>{reformatFwVersion(firmware_version)}</p>
     <CommitDisplay title={t("Firmware commit")}
-      repo={"farmbot-arduino-firmware"} commit={firmware_commit} />
+      repo={FarmBotRepo.FarmBotArduinoFirmware} commit={firmwareCommit} />
     <p><b>{t("Firmware code")}: </b>{firmware_version}</p>
     {isNumber(uptime) && <UptimeDisplay uptime_sec={uptime} />}
     {isNumber(memory_usage) &&
@@ -283,7 +290,7 @@ export function FbosDetails(props: FbosDetailsProps) {
     {isNumber(disk_usage) && <p><b>{t("Disk usage")}: </b>{disk_usage}%</p>}
     {isNumber(cpu_usage) && <p><b>{t("CPU usage")}: </b>{cpu_usage}%</p>}
     <ChipTemperatureDisplay chip={target} temperature={soc_temp} />
-    <WiFiStrengthDisplay
+    <WiFiStrengthDisplay extraInfo={true}
       wifiStrength={wifi_level} wifiStrengthPercent={wifi_level_percent} />
     <VoltageDisplay chip={target} throttled={throttled} />
     <BetaReleaseOptIn

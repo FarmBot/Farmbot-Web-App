@@ -7,7 +7,7 @@ export const DISMOUNT: DropDownItem = { label: t("Not Mounted"), value: 0 };
 
 /** Legal "actions" for "Mark As.." block when marking Point resources */
 export const POINT_OPTIONS: DropDownItem[] = [
-  { label: t("Removed"), value: "removed" }
+  { label: t("Removed"), value: "removed" },
 ];
 
 /** Legal "actions" in the "Mark As.." block when operating on
@@ -36,6 +36,6 @@ export const POINT_HEADER: DropDownItem = {
 };
 
 export const TOP_HALF = [
-  { headingId: "Device", label: t("Device"), value, heading: true, },
-  { headingId: "Device", label: t("Tool Mount"), value }
+  { headingId: "Device", label: t("Device"), value, heading: true },
+  { headingId: "Device", label: t("Tool Mount"), value },
 ];

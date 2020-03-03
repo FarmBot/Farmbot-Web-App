@@ -19,6 +19,6 @@ describe("<AddButton />", () => {
   it("renders a <div> when inactive", () => {
     const props: AddButtonProps = { active: false, onClick: jest.fn() };
     const wrapper = mount(<AddButton {...props} />);
-    expect(wrapper.html()).toEqual("<div></div>");
+    expect(wrapper.html()).toEqual("<div class=\"no-add-button\"></div>");
   });
 });

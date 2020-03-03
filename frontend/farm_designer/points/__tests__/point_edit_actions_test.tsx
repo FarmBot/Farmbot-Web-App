@@ -47,7 +47,7 @@ describe("<EditPointName />", () => {
 describe("<EditPointLocation />", () => {
   const fakeProps = (): EditPointLocationProps => ({
     updatePoint: jest.fn(),
-    location: { x: 1, y: 2 },
+    xyLocation: { x: 1, y: 2 },
   });
 
   it("edits location", () => {

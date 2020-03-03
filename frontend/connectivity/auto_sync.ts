@@ -4,7 +4,7 @@ import { TaggedResource, SpecialStatus } from "farmbot";
 import { overwrite, init } from "../api/crud";
 import { handleInbound } from "./auto_sync_handle_inbound";
 import {
-  SyncPayload, MqttDataResult, Reason, UpdateMqttData
+  SyncPayload, MqttDataResult, Reason, UpdateMqttData,
 } from "./interfaces";
 import { outstandingRequests } from "./data_consistency";
 import { newTaggedResource } from "../sync/actions";

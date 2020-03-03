@@ -11,7 +11,7 @@ import {
 } from "..";
 import { CheckboxSelectionsProps } from "../interfaces";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 
@@ -25,7 +25,7 @@ describe("<CheckboxSelections />", () => {
     const p = fakeProps();
     p.group.body.criteria = undefined as unknown as PointGroup["criteria"];
     const wrapper = mount(<CheckboxSelections {...p} />);
-    ["planted plants", "detected weeds", "created points", "created weeds"
+    ["planted plants", "detected weeds", "created points", "created weeds",
     ].map(string =>
       expect(wrapper.text()).toContain(string));
   });

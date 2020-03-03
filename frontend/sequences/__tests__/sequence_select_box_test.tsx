@@ -34,7 +34,7 @@ describe("<SequenceSelectBox />", () => {
     const result = SequenceSelectBox(p);
     expect(result.props.list).toEqual([
       { label: "Fake 1", value: 1 },
-      { label: "Fake 2", value: 2 }
+      { label: "Fake 2", value: 2 },
     ]);
     expect(result.props.selectedItem).toEqual(undefined);
   });
@@ -45,7 +45,7 @@ describe("<SequenceSelectBox />", () => {
     p.resources = fakeRIWithSequences();
     const result = SequenceSelectBox(p);
     expect(result.props.list).toEqual([
-      { label: "Fake 2", value: 2 }
+      { label: "Fake 2", value: 2 },
     ]);
     expect(result.props.selectedItem).toEqual(
       { label: "Fake 1", value: 1 });

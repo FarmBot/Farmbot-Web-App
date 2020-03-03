@@ -2,14 +2,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import {
   Everything,
-  ResourceColor
+  ResourceColor,
 } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
   Row,
   Col,
   BlurableInput,
-  ColorPicker
+  ColorPicker,
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
@@ -18,13 +18,14 @@ import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
-  DesignerPanelContent
+  DesignerPanelContent,
 } from "../designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Panel } from "../panel_header";
-import { getPathArray } from "../../history";
+import { history, getPathArray } from "../../history";
 import { ListItem } from "../plants/plant_panel";
+import { success } from "../../toast/toast";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
@@ -176,13 +177,17 @@ export class RawCreatePoints
       radius: this.attr("r"),
     };
     this.props.dispatch(initSave("Point", body));
+    success(this.panel == "weeds"
+      ? t("Weed created.")
+      : t("Point created."));
     this.cancel();
-    this.loadDefaultPoint();
+    history.push(`/app/designer/${this.panel}`);
   }
+
   PointProperties = () =>
     <ul>
       <li>
-        <div>
+        <div className={"point-name-input"}>
           <label>{t("Name")}</label>
           <BlurableInput
             name="name"
@@ -236,6 +241,7 @@ export class RawCreatePoints
   PointActions = () =>
     <Row>
       <button className="fb-button green"
+        title={t("save")}
         onClick={this.createPoint}>
         {t("Save")}
       </button>
@@ -249,6 +255,7 @@ export class RawCreatePoints
           ? t("Delete all of the weeds created through this panel.")
           : t("Delete all of the points created through this panel.")}</p>
         <button className="fb-button red delete"
+          title={t("delete all")}
           onClick={() => {
             if (confirm(type === "weed"
               ? t("Delete all the weeds you have created?")
@@ -274,7 +281,7 @@ export class RawCreatePoints
       <DesignerPanelHeader
         panelName={"point-creation"}
         panel={panelType}
-        title={this.panel == "weeds" ? t("Create weed") : t("Create point")}
+        title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
         backTo={`/app/designer/${this.panel}`}
         description={panelDescription} />
       <DesignerPanelContent panelName={"point-creation"}>

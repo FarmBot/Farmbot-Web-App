@@ -1,12 +1,12 @@
 import { ResourceUpdate, TaggedSequence, resource_type } from "farmbot";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
   fakeTool,
   fakePlant,
   fakePoint,
-  fakeSequence
+  fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { betterMerge } from "../../../util";
 import { MarkAs } from "../mark_as";
@@ -43,7 +43,7 @@ export function fakeMarkAsProps() {
         label: "mounted_tool_id",
         value: 0
       }
-    }
+    },
   ];
   const currentSequence: TaggedSequence =
     betterMerge(fakeSequence(), { body: { body: steps } });

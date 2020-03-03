@@ -1,24 +1,45 @@
-import { FirmwareHardware } from "farmbot";
-import { ShouldDisplay, Feature } from "../interfaces";
+import { FirmwareHardware, TaggedFbosConfig } from "farmbot";
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
     "arduino",
     "farmduino", "farmduino_k14", "farmduino_k15",
     "express_k10",
-    "none"
+    "none",
   ];
   return !!values.includes(x as FirmwareHardware);
 };
 
-const TMC_BOARDS = ["express_k10", "farmduino_k15"];
+export const getFwHardwareValue =
+  (fbosConfig: TaggedFbosConfig | undefined) => {
+    const value = fbosConfig?.body.firmware_hardware;
+    return isFwHardwareValue(value) ? value : undefined;
+  };
+
+const NO_BUTTONS = ["arduino", "farmduino", "none"];
 const EXPRESS_BOARDS = ["express_k10"];
+const NO_SENSORS = [...EXPRESS_BOARDS];
+const NO_ENCODERS = [...EXPRESS_BOARDS];
+const NO_TOOLS = [...EXPRESS_BOARDS];
+const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
-  !!(firmwareHardware && TMC_BOARDS.includes(firmwareHardware));
+  !firmwareHardware || !NO_TMC.includes(firmwareHardware);
 
 export const isExpressBoard = (firmwareHardware: FirmwareHardware | undefined) =>
   !!(firmwareHardware && EXPRESS_BOARDS.includes(firmwareHardware));
+
+export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);
+
+export const hasEncoders = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_ENCODERS.includes(firmwareHardware);
+
+export const hasSensors = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_SENSORS.includes(firmwareHardware);
+
+export const hasUTM = (firmwareHardware: FirmwareHardware | undefined) =>
+  !firmwareHardware || !NO_TOOLS.includes(firmwareHardware);
 
 export const getBoardIdentifier =
   (firmwareVersion: string | undefined): string =>
@@ -77,12 +98,11 @@ export const FIRMWARE_CHOICES_DDI = {
   [NONE.value]: NONE
 };
 
-export const getFirmwareChoices =
-  (shouldDisplay: ShouldDisplay = () => true) => ([
-    ARDUINO,
-    FARMDUINO,
-    FARMDUINO_K14,
-    ...(shouldDisplay(Feature.farmduino_k15) ? [FARMDUINO_K15] : []),
-    ...(shouldDisplay(Feature.express_k10) ? [EXPRESS_K10] : []),
-    ...(shouldDisplay(Feature.none_firmware) ? [NONE] : []),
-  ]);
+export const getFirmwareChoices = () => ([
+  ARDUINO,
+  FARMDUINO,
+  FARMDUINO_K14,
+  FARMDUINO_K15,
+  EXPRESS_K10,
+  NONE,
+]);

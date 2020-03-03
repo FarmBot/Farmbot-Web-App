@@ -2,11 +2,11 @@ import * as React from "react";
 import { BooleanSetting } from "../../session_keys";
 import { closePlantInfo, unselectPlant } from "./actions";
 import {
-  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
+  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty,
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import {
-  getMapSize, getGardenCoordinates, getMode, cursorAtPlant
+  getMapSize, getGardenCoordinates, getMode, cursorAtPlant,
 } from "./util";
 import {
   Grid, MapBackground,
@@ -26,7 +26,7 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";
@@ -160,6 +160,8 @@ export class GardenMap extends
   /** Map background drag start actions. */
   startDragOnBackground = (e: React.MouseEvent<SVGElement>): void => {
     switch (getMode()) {
+      case Mode.moveTo:
+        break;
       case Mode.createPoint:
       case Mode.clickToAdd:
       case Mode.editPlant:
@@ -301,6 +303,8 @@ export class GardenMap extends
   /** Return to garden (unless selecting more plants). */
   closePanel = () => {
     switch (getMode()) {
+      case Mode.moveTo:
+        return () => { };
       case Mode.boxSelect:
         return this.props.designer.selectedPlants
           ? () => { }
@@ -386,6 +390,7 @@ export class GardenMap extends
     visible={!!this.props.showPlants}
     plants={this.props.plants}
     currentPlant={this.getPlant()}
+    hoveredPlant={this.props.hoveredPlant}
     dragging={!!this.state.isDragging}
     editing={this.isEditing}
     boxSelected={this.props.designer.selectedPlants}
@@ -409,6 +414,7 @@ export class GardenMap extends
     plantAreaOffset={this.props.gridOffset}
     peripherals={this.props.peripherals}
     eStopStatus={this.props.eStopStatus}
+    mountedToolName={this.props.mountedToolName}
     getConfigValue={this.props.getConfigValue} />
   HoveredPlant = () => <HoveredPlant
     visible={!!this.props.showPlants}

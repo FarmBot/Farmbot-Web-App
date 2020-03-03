@@ -90,7 +90,7 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     <div className="thin-search-wrapper">
       <div className="text-input-wrapper">
         {!props.noIcon &&
-          <i className="fa fa-search"></i>}
+          <i className="fa fa-search" />}
         <ErrorBoundary>
           {props.children}
         </ErrorBoundary>

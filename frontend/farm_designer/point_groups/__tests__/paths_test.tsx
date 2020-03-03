@@ -1,21 +1,28 @@
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  PathInfoBar, nn, NNPath, PathInfoBarProps, Paths, PathsProps
+  PathInfoBar, nn, NNPath, PathInfoBarProps, Paths, PathsProps,
 } from "../paths";
 import {
-  fakePointGroup, fakePoint
+  fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import { Actions } from "../../../constants";
 import { edit } from "../../../api/crud";
 import { error } from "../../../toast/toast";
 import { svgMount } from "../../../__test_support__/svg_mount";
-import { SORT_OPTIONS } from "../point_group_sort_selector";
+import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 
 /**
@@ -141,6 +148,7 @@ describe("<Paths />", () => {
     p.pathPoints = cases.order.xy_ascending;
     const wrapper = mount<Paths>(<Paths {...p} />);
     expect(wrapper.state().pathData).toEqual(cases.distance);
+    expect(wrapper.text().toLowerCase()).not.toContain("optimized");
   });
 
   it.each<[PointGroupSortType]>([
@@ -153,5 +161,25 @@ describe("<Paths />", () => {
     const cases = pathTestCases();
     expect(SORT_OPTIONS[sortType](cases.order.xy_ascending))
       .toEqual(cases.order[sortType]);
+  });
+
+  it("renders new sort type", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const cases = pathTestCases();
+    p.pathPoints = cases.order.xy_ascending;
+    const wrapper = mount<Paths>(<Paths {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("optimized");
+  });
+
+  it("doesn't generate data twice", () => {
+    const p = fakeProps();
+    const cases = pathTestCases();
+    p.pathPoints = cases.order.xy_ascending;
+    const wrapper = mount<Paths>(<Paths {...p} />);
+    expect(wrapper.state().pathData).toEqual(cases.distance);
+    wrapper.setState({ pathData: { nn: 0 } });
+    wrapper.update();
+    expect(wrapper.state().pathData).toEqual({ nn: 0 });
   });
 });

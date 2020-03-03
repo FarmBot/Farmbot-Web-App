@@ -3,17 +3,18 @@ import { cloneDeep, capitalize } from "lodash";
 import { Row, Col, FBSelect, DropDownItem } from "../../../ui";
 import {
   AddEqCriteria, toggleEqCriteria, editCriteria, AddNumberCriteria,
-  POINTER_TYPE_DDI_LOOKUP, PLANT_STAGE_DDI_LOOKUP, AddStringCriteria,
-  CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria
+  POINTER_TYPE_DDI_LOOKUP, AddStringCriteria,
+  CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria,
 } from ".";
 import {
   EqCriteriaSelectionProps, NumberCriteriaProps,
   CriteriaSelectionProps, LocationSelectionProps, GroupCriteriaProps,
   AddCriteriaState,
-  DEFAULT_CRITERIA
+  DEFAULT_CRITERIA,
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
+import { PLANT_STAGE_DDI_LOOKUP } from "../../plants/edit_plant_status";
 
 export class EqCriteriaSelection<T extends string | number>
   extends React.Component<EqCriteriaSelectionProps<T>> {
@@ -31,18 +32,20 @@ export class EqCriteriaSelection<T extends string | number>
             {values.map((value, valueIndex) =>
               <Row key={"" + keyIndex + valueIndex}>
                 <Col xs={9}>
-                  <input
+                  <input name="value"
                     disabled={true}
                     value={value} />
                 </Col>
                 <Col xs={2}>
-                  <button className="fb-button red" onClick={() => {
-                    const tempCriteriaField = cloneDeep(criteriaField);
-                    toggleEqCriteria<T>(tempCriteriaField)(key, value);
-                    dispatch(editCriteria(group, {
-                      [criteriaKey]: tempCriteriaField
-                    }));
-                  }}>
+                  <button className="fb-button red"
+                    title={t("remove criteria")}
+                    onClick={() => {
+                      const tempCriteriaField = cloneDeep(criteriaField);
+                      toggleEqCriteria<T>(tempCriteriaField)(key, value);
+                      dispatch(editCriteria(group, {
+                        [criteriaKey]: tempCriteriaField
+                      }));
+                    }}>
                     <i className="fa fa-minus" />
                   </button>
                 </Col>
@@ -68,17 +71,20 @@ export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
             </Col>
             <Col xs={4}>
               <input key={"" + keyIndex}
+                name="value"
                 disabled={true}
                 value={value} />
             </Col>
             <Col xs={2}>
-              <button className="fb-button red" onClick={() => {
-                const tempNumberCriteria = cloneDeep(criteriaField);
-                delete tempNumberCriteria[key];
-                props.dispatch(editCriteria(props.group, {
-                  [props.criteriaKey]: tempNumberCriteria
-                }));
-              }}>
+              <button className="fb-button red"
+                title={t("remove number criteria")}
+                onClick={() => {
+                  const tempNumberCriteria = cloneDeep(criteriaField);
+                  delete tempNumberCriteria[key];
+                  props.dispatch(editCriteria(props.group, {
+                    [props.criteriaKey]: tempNumberCriteria
+                  }));
+                }}>
                 <i className="fa fa-minus" />
               </button>
             </Col>
@@ -105,17 +111,18 @@ export const DaySelection = (props: CriteriaSelectionProps) => {
           selectedItem={DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
           onChange={ddi => dispatch(editCriteria(group, {
             day: {
-              days: dayCriteria.days,
+              days_ago: dayCriteria.days_ago,
               op: ddi.value as PointGroup["criteria"]["day"]["op"]
             }
           }))} />
       </Col>
       <Col xs={3}>
-        <input type="number" value={dayCriteria.days} onChange={e => {
-          const { op } = dayCriteria;
-          const days = parseInt(e.currentTarget.value);
-          dispatch(editCriteria(group, { day: { days, op } }));
-        }} />
+        <input type="number" value={dayCriteria.days_ago} name="days_ago"
+          onChange={e => {
+            const { op } = dayCriteria;
+            const days_ago = parseInt(e.currentTarget.value);
+            dispatch(editCriteria(group, { day: { days_ago, op } }));
+          }} />
       </Col>
       <Col xs={4}>
         <p>{t("days old")}</p>
@@ -135,6 +142,7 @@ export const LocationSelection = (props: LocationSelectionProps) => {
         <Col xs={4}>
           <input key={JSON.stringify(gtCriteria)}
             type="number"
+            name={`${axis}-number-gt`}
             defaultValue={gtCriteria[axis]}
             onBlur={e => {
               const tempGtCriteria = cloneDeep(gtCriteria);
@@ -154,6 +162,7 @@ export const LocationSelection = (props: LocationSelectionProps) => {
         <Col xs={4}>
           <input key={JSON.stringify(ltCriteria)}
             type="number"
+            name={`${axis}-number-lt`}
             defaultValue={ltCriteria[axis]}
             onBlur={e => {
               const tempLtCriteria = cloneDeep(ltCriteria);
@@ -194,14 +203,19 @@ export class AddCriteria
             <Row>
               <Col xs={5}>
                 <input value={CRITERIA_TYPE_DDI_LOOKUP()[key].label}
+                  name="key"
                   disabled={true} />
               </Col>
               <Col xs={5}>
-                <input value={this.labelLookup(key, value)} disabled={true} />
+                <input value={this.labelLookup(key, value)}
+                  name="value"
+                  disabled={true} />
               </Col>
               <Col xs={2}>
-                <button className="fb-button red" onClick={() => props.dispatch(
-                  toggleStringCriteria(props.group, key, value))}>
+                <button className="fb-button red"
+                  title={t("remove criteria")}
+                  onClick={() => props.dispatch(
+                    toggleStringCriteria(props.group, key, value))}>
                   <i className="fa fa-minus" />
                 </button>
               </Col>

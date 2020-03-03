@@ -6,17 +6,17 @@ import {
 } from "./map_state_to_props_add_edit";
 import { init, destroy } from "../../api/crud";
 import {
-  EditFEForm, FarmEventForm, FarmEventViewModel, NEVER
+  EditFEForm, FarmEventForm, FarmEventViewModel, NEVER,
 } from "./edit_fe_form";
 import { betterCompact, betterMerge } from "../../util";
 import { entries } from "../../resources/util";
 import {
   AddEditFarmEventProps,
-  TaggedExecutable
+  TaggedExecutable,
 } from "../interfaces";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { variableList } from "../../sequences/locals_list/variable_support";
 import { t } from "../../i18next_wrapper";
@@ -102,7 +102,7 @@ export class RawAddFarmEvent
       <DesignerPanelHeader
         panelName={panelName}
         panel={Panel.FarmEvents}
-        title={t("Add Event")}
+        title={t("Add event")}
         onBack={(farmEvent && !farmEvent.body.id)
           ? () => this.props.dispatch(destroyOK(farmEvent))
           : undefined} />
@@ -115,7 +115,7 @@ export class RawAddFarmEvent
             executableOptions={this.props.executableOptions}
             dispatch={this.props.dispatch}
             findExecutable={this.props.findExecutable}
-            title={t("Add Event")}
+            title={t("Add event")}
             timeSettings={this.props.timeSettings}
             autoSyncEnabled={this.props.autoSyncEnabled}
             resources={this.props.resources}

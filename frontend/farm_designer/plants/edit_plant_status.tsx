@@ -9,31 +9,18 @@ import { UUID } from "../../resources/interfaces";
 import { edit, save } from "../../api/crud";
 import { EditPlantStatusProps } from "./plant_panel";
 
-const PLANT_STAGES: DropDownItem[] = [
-  { value: "planned", label: t("Planned") },
-  { value: "planted", label: t("Planted") },
-  { value: "sprouted", label: t("Sprouted") },
-  { value: "harvested", label: t("Harvested") },
+export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
+  planned: { label: t("Planned"), value: "planned" },
+  planted: { label: t("Planted"), value: "planted" },
+  sprouted: { label: t("Sprouted"), value: "sprouted" },
+  harvested: { label: t("Harvested"), value: "harvested" },
+});
+export const PLANT_STAGE_LIST = () => [
+  PLANT_STAGE_DDI_LOOKUP().planned,
+  PLANT_STAGE_DDI_LOOKUP().planted,
+  PLANT_STAGE_DDI_LOOKUP().sprouted,
+  PLANT_STAGE_DDI_LOOKUP().harvested,
 ];
-
-const PLANT_STAGES_DDI = {
-  [PLANT_STAGES[0].value]: {
-    label: PLANT_STAGES[0].label,
-    value: PLANT_STAGES[0].value
-  },
-  [PLANT_STAGES[1].value]: {
-    label: PLANT_STAGES[1].label,
-    value: PLANT_STAGES[1].value
-  },
-  [PLANT_STAGES[2].value]: {
-    label: PLANT_STAGES[2].label,
-    value: PLANT_STAGES[2].value
-  },
-  [PLANT_STAGES[3].value]: {
-    label: PLANT_STAGES[3].label,
-    value: PLANT_STAGES[3].value
-  },
-};
 
 /** Change `planted_at` value based on `plant_stage` update. */
 const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
@@ -52,8 +39,8 @@ const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
 export function EditPlantStatus(props: EditPlantStatusProps) {
   const { plantStatus, updatePlant, uuid } = props;
   return <FBSelect
-    list={PLANT_STAGES}
-    selectedItem={PLANT_STAGES_DDI[plantStatus]}
+    list={PLANT_STAGE_LIST()}
+    selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
     onChange={ddi =>
       updatePlant(uuid, getUpdateByPlantStage(ddi.value as PlantStage))} />;
 }
@@ -70,7 +57,7 @@ export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
     <p>{t("update plant status to")}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
-      list={PLANT_STAGES}
+      list={PLANT_STAGE_LIST()}
       selectedItem={undefined}
       customNullLabel={t("Select a status")}
       onChange={ddi => {

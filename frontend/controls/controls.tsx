@@ -10,6 +10,7 @@ import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
 import { isBotOnline } from "../devices/must_be_online";
+import { hasSensors } from "../devices/components/firmware_hardware_support";
 
 /** Controls page. */
 export class RawControls extends React.Component<Props, {}> {
@@ -24,7 +25,8 @@ export class RawControls extends React.Component<Props, {}> {
   }
 
   get hideSensors() {
-    return this.props.getWebAppConfigVal(BooleanSetting.hide_sensors);
+    return this.props.getWebAppConfigVal(BooleanSetting.hide_sensors)
+      || !hasSensors(this.props.firmwareHardware);
   }
 
   move = () => <Move
@@ -38,6 +40,7 @@ export class RawControls extends React.Component<Props, {}> {
     getWebAppConfigVal={this.props.getWebAppConfigVal} />
 
   peripherals = () => <Peripherals
+    firmwareHardware={this.props.firmwareHardware}
     bot={this.props.bot}
     peripherals={this.props.peripherals}
     dispatch={this.props.dispatch}
@@ -50,6 +53,7 @@ export class RawControls extends React.Component<Props, {}> {
   sensors = () => this.hideSensors
     ? <div id="hidden-sensors-widget" />
     : <Sensors
+      firmwareHardware={this.props.firmwareHardware}
       bot={this.props.bot}
       sensors={this.props.sensors}
       dispatch={this.props.dispatch}

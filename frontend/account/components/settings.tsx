@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn
+  BlurableInput, Widget, WidgetHeader, WidgetBody, SaveBtn,
 } from "../../ui/index";
 import { SettingsPropTypes } from "../interfaces";
 import { t } from "../../i18next_wrapper";

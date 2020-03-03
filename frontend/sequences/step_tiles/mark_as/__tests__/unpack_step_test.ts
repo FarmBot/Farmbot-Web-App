@@ -4,7 +4,7 @@ import { unpackStep, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import {
   selectAllPlantPointers,
   selectAllTools,
-  selectAllGenericPointers
+  selectAllGenericPointers,
 } from "../../../../resources/selectors";
 import { DropDownPair } from "../interfaces";
 describe("unpackStep()", () => {
@@ -24,7 +24,7 @@ describe("unpackStep()", () => {
       step: resourceUpdate({ label: "mounted_tool_id", value: 0 }),
       resourceIndex: fakeResourceIndex()
     });
-    expect(result).toEqual(DISMOUNTED);
+    expect(result).toEqual(DISMOUNTED());
   });
 
   it("unpacks valid tool_ids", () => {
@@ -37,7 +37,7 @@ describe("unpackStep()", () => {
       resourceIndex
     });
     const actionLabel = "Mounted to: Generic Tool";
-    const { label, value } = TOOL_MOUNT;
+    const { label, value } = TOOL_MOUNT();
     assertGoodness(result, actionLabel, "mounted", label, value);
   });
 
@@ -47,7 +47,7 @@ describe("unpackStep()", () => {
       resourceIndex: fakeResourceIndex()
     });
     const actionLabel = "Mounted to: an unknown tool";
-    const { label, value } = TOOL_MOUNT;
+    const { label, value } = TOOL_MOUNT();
     assertGoodness(result, actionLabel, "mounted", label, value);
   });
 

@@ -5,7 +5,7 @@ const mockFeatures = [
     storageKey: "weedDetector",
     callback: jest.fn(),
     value: false
-  }
+  },
 ];
 
 const mocks = {

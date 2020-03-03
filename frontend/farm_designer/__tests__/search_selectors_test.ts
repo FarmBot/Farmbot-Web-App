@@ -1,7 +1,7 @@
 import { findBySlug } from "../search_selectors";
 import { DEFAULT_ICON } from "../../open_farm/icons";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 
 describe("findBySlug()", () => {

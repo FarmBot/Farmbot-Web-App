@@ -6,7 +6,7 @@ class InUsePoint < ApplicationRecord
   DEFAULT_NAME = "point"
   FANCY_NAMES = {
     GenericPointer.name => DEFAULT_NAME,
-    ToolSlot.name => "tool slot",
+    ToolSlot.name => "slot",
     Plant.name => "plant",
   }
 

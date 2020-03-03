@@ -10,46 +10,48 @@ export interface GardenSnapshotProps {
 }
 
 interface GardenSnapshotState {
-  name: string;
+  gardenName: string;
 }
 
 /** New SavedGarden name input and snapshot/create buttons. */
 export class GardenSnapshot
   extends React.Component<GardenSnapshotProps, GardenSnapshotState> {
-  state = { name: "" };
+  state = { gardenName: "" };
 
   snapshot = () => {
     const { currentSavedGarden, plantTemplates } = this.props;
     !currentSavedGarden
-      ? snapshotGarden(this.state.name)
+      ? snapshotGarden(this.state.gardenName)
       : this.props.dispatch(copySavedGarden({
-        newSGName: this.state.name,
+        newSGName: this.state.gardenName,
         savedGarden: currentSavedGarden,
         plantTemplates
       }));
-    this.setState({ name: "" });
+    this.setState({ gardenName: "" });
   }
 
   new = () => {
-    this.props.dispatch(newSavedGarden(this.state.name));
-    this.setState({ name: "" });
+    this.props.dispatch(newSavedGarden(this.state.gardenName));
+    this.setState({ gardenName: "" });
   };
 
   render() {
     return <div className="garden-snapshot">
       <label>{t("name")}</label>
-      <input
-        onChange={e => this.setState({ name: e.currentTarget.value })}
-        value={this.state.name} />
+      <input name="name"
+        onChange={e => this.setState({ gardenName: e.currentTarget.value })}
+        value={this.state.gardenName} />
       <button
         className={"fb-button gray wide"}
+        title={t("Snapshot current garden")}
         onClick={this.snapshot}>
         {t("Snapshot current garden")}
       </button>
       <button
         className="fb-button green wide"
+        title={t("Add new garden")}
         onClick={this.new}>
-        {t("create new garden")}
+        {t("Add new garden")}
       </button>
     </div>;
   }

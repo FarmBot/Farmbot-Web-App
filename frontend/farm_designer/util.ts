@@ -4,8 +4,10 @@ import { DEFAULT_ICON } from "../open_farm/icons";
 import { Actions } from "../constants";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { get } from "lodash";
+import { ExternalUrl } from "../external_urls";
 
-const url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
+const url = (q: string) =>
+  `${ExternalUrl.OpenFarm.cropApi}?include=pictures&filter=${q}`;
 const openFarmSearchQuery = (q: string): AxiosPromise<CropSearchResult> =>
   axios.get<CropSearchResult>(url(q));
 
@@ -34,8 +36,7 @@ export const OFSearch = (searchTerm: string) =>
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
       })
       .catch(() =>
-        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined })
-      );
+        dispatch({ type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined }));
   };
 
 function isExecutableType(x?: string): x is ExecutableType {

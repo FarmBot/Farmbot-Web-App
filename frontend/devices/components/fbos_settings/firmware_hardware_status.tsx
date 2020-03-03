@@ -3,7 +3,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { FIRMWARE_CHOICES_DDI } from "../firmware_hardware_support";
 import { flashFirmware } from "../../actions";
 import { t } from "../../../i18next_wrapper";
-import { BotState, Feature, ShouldDisplay } from "../../interfaces";
+import { BotState } from "../../interfaces";
 import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
 import { trim } from "../../../util";
@@ -26,7 +26,7 @@ export const FirmwareHardwareStatusIcon =
     return <i className={`fa ${icon} status-icon ${status}`} title={statusText} />;
   };
 
-const lookup = (value: string | undefined) =>
+export const lookup = (value: string | undefined) =>
   value && Object.keys(FIRMWARE_CHOICES_DDI).includes(value)
     ? FIRMWARE_CHOICES_DDI[value].label : undefined;
 
@@ -36,7 +36,6 @@ export interface FirmwareHardwareStatusDetailsProps {
   apiFirmwareValue: string | undefined;
   botFirmwareValue: string | undefined;
   mcuFirmwareValue: string | undefined;
-  shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;
   dispatch: Function;
 }
@@ -50,6 +49,7 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
   const { apiFirmwareValue } = props;
   return <button className="fb-button yellow"
     disabled={!apiFirmwareValue || !props.botOnline}
+    title={t("flash firmware")}
     onClick={() => isFwHardwareValue(apiFirmwareValue) &&
       flashFirmware(apiFirmwareValue)}>
     {t("flash firmware")}
@@ -81,13 +81,10 @@ export const FirmwareHardwareStatusDetails =
       <p>{lookup(props.botFirmwareValue) || t("unknown")}</p>
       <label>{t("Arduino/Farmduino")}</label>
       <p>{lookup(props.mcuFirmwareValue) || t("unknown")}</p>
-      {props.shouldDisplay(Feature.flash_firmware) &&
-        <div>
-          <label>{t("Actions")}</label>
-          <FirmwareActions
-            apiFirmwareValue={props.apiFirmwareValue}
-            botOnline={props.botOnline} />
-        </div>}
+      <label>{t("Actions")}</label>
+      <FirmwareActions
+        apiFirmwareValue={props.apiFirmwareValue}
+        botOnline={props.botOnline} />
       <FirmwareAlerts
         alerts={props.alerts}
         dispatch={props.dispatch}
@@ -102,7 +99,6 @@ export interface FirmwareHardwareStatusProps {
   bot: BotState;
   botOnline: boolean;
   timeSettings: TimeSettings;
-  shouldDisplay: ShouldDisplay;
   dispatch: Function;
 }
 
@@ -122,7 +118,6 @@ export const FirmwareHardwareStatus = (props: FirmwareHardwareStatusProps) => {
       botFirmwareValue={firmware_hardware}
       mcuFirmwareValue={boardType(firmware_version)}
       timeSettings={props.timeSettings}
-      dispatch={props.dispatch}
-      shouldDisplay={props.shouldDisplay} />
+      dispatch={props.dispatch} />
   </Popover>;
 };

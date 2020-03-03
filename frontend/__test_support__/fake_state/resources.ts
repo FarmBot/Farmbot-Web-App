@@ -29,7 +29,7 @@ import {
 } from "farmbot";
 import { fakeResource } from "../fake_resource";
 import {
-  ExecutableType, PinBindingType, Folder
+  ExecutableType, PinBindingType, Folder,
 } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
@@ -460,7 +460,7 @@ export function fakePointGroup(): TaggedPointGroup {
     sort_type: "xy_ascending",
     point_ids: [],
     criteria: {
-      day: { op: "<", days: 0 },
+      day: { op: "<", days_ago: 0 },
       number_eq: {},
       number_gt: {},
       number_lt: {},

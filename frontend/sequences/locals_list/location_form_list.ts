@@ -7,7 +7,7 @@ import {
 } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup
+  TaggedTool, TaggedPoint, TaggedToolSlotPointer, Xyz, Vector3, TaggedPointGroup,
 } from "farmbot";
 import { DropDownItem } from "../../ui";
 import { capitalize, isNumber } from "lodash";
@@ -38,17 +38,17 @@ type DropdownHeadingId =
 export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "GenericPointer": "Map Points",
   "Plant": "Plants",
-  "ToolSlot": "Tool Slots",
+  "ToolSlot": "Slots",
   "Tool": "Tools and Seed Containers",
   "PointGroup": "Groups",
   "Other": "Other",
 };
 
-const heading = (name: DropdownHeadingId): DropDownItem[] => ([{
-  label: t(NAME_MAP[name]),
+const heading = (headingId: DropdownHeadingId): DropDownItem[] => ([{
+  label: t(NAME_MAP[headingId]),
   heading: true,
   value: 0,
-  headingId: name
+  headingId: headingId
 }]);
 
 const points2ddi = (allPoints: TaggedPoint[], pointerType: PointerTypeName) =>
@@ -100,24 +100,27 @@ export const formatTool =
     const { id, name } = tool.body;
     const coordinate = slot
       ? {
-        x: slot.body.gantry_mounted ? undefined : slot.body.x,
+        x: slot.body.x,
         y: slot.body.y,
         z: slot.body.z
       }
       : undefined;
+    const gantryMounted = !!slot?.body.gantry_mounted;
     return {
-      label: dropDownName((name || "Untitled tool"), coordinate),
+      label: dropDownName((name || "Untitled tool"), coordinate, gantryMounted),
       value: "" + id,
       headingId: TOOL
     };
   };
 
 /** Uniformly generate a label for things that have an X/Y/Z value. */
-export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) {
+export function dropDownName(name: string, v?: Record<Xyz, number | undefined>,
+  gantryMounted = false) {
   let label = name || "untitled";
   if (v) {
     const labelFor = (axis: number | undefined) => isNumber(axis) ? axis : "---";
-    label += ` (${labelFor(v.x)}, ${labelFor(v.y)}, ${labelFor(v.z)})`;
+    const xLabel = gantryMounted ? t("Gantry") : labelFor(v.x);
+    label += ` (${xLabel}, ${labelFor(v.y)}, ${labelFor(v.z)})`;
   }
   return capitalize(label);
 }
@@ -125,8 +128,8 @@ export function dropDownName(name: string, v?: Record<Xyz, number | undefined>) 
 export const ALL_POINT_LABELS = {
   "Plant": "All plants",
   "GenericPointer": "All map points",
-  "Tool": "All tools",
-  "ToolSlot": "All tool slots",
+  "Tool": "All tools and seed containers",
+  "ToolSlot": "All slots",
 };
 
 export type EveryPointType = keyof typeof ALL_POINT_LABELS;

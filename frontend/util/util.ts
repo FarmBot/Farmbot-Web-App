@@ -25,7 +25,7 @@ export const colors: Array<ResourceColor> = [
   "purple",
   "pink",
   "gray",
-  "red"
+  "red",
 ];
 
 /** Picks a color that is compliant with sequence / regimen color codes */
@@ -183,9 +183,7 @@ export function validBotLocationData(
  */
 export function validFwConfig(config: TaggedFirmwareConfig | undefined):
   TaggedFirmwareConfig["body"] | undefined {
-  return (config?.body.api_migrated)
-    ? config.body
-    : undefined;
+  return config ? config.body : undefined;
 }
 
 /**
@@ -193,9 +191,7 @@ export function validFwConfig(config: TaggedFirmwareConfig | undefined):
  */
 export function validFbosConfig(
   config: TaggedFbosConfig | undefined): TaggedFbosConfig["body"] | undefined {
-  return (config?.body.api_migrated)
-    ? config.body
-    : undefined;
+  return config ? config.body : undefined;
 }
 
 interface BetterUUID {

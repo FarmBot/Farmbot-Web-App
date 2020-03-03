@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Session } from "./session";
+import { ExternalUrl } from "./external_urls";
 
 const OUTER_STYLE: React.CSSProperties = {
   borderRadius: "10px",
@@ -47,7 +48,7 @@ export function Apology(_: {}) {
         <li>
           <span>
             Send a report to our developer team via the&nbsp;
-            <a href="http://forum.farmbot.org/c/software">FarmBot software
+            <a href={ExternalUrl.softwareForum}>FarmBot software
             forum</a>. Including additional information (such as steps leading up
             to the error) helps us identify solutions more quickly.
           </span>

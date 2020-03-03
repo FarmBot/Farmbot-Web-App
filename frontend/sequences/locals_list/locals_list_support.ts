@@ -1,10 +1,10 @@
 import {
   ParameterDeclaration,
   VariableDeclaration,
-  ParameterApplication
+  ParameterApplication,
 } from "farmbot";
 import {
-  ResourceIndex, VariableNameSet, UUID
+  ResourceIndex, VariableNameSet, UUID,
 } from "../../resources/interfaces";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { ShouldDisplay } from "../../devices/interfaces";

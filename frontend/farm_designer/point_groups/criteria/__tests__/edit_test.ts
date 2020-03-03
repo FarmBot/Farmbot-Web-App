@@ -5,10 +5,10 @@ jest.mock("../../../../api/crud", () => ({
 
 import {
   editCriteria, toggleEqCriteria,
-  togglePointSelection, toggleStringCriteria, editGtLtCriteria
+  togglePointSelection, toggleStringCriteria, editGtLtCriteria,
 } from "..";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { overwrite, save } from "../../../../api/crud";
 import { cloneDeep } from "lodash";
@@ -36,7 +36,7 @@ describe("editCriteria()", () => {
   it("edits criteria: full update", () => {
     const group = fakePointGroup();
     const criteria: PointGroup["criteria"] = {
-      day: { days: 1, op: "<" },
+      day: { days_ago: 1, op: "<" },
       string_eq: { openfarm_slug: ["slug"] },
       number_eq: { x: [0] },
       number_gt: { x: 0 },

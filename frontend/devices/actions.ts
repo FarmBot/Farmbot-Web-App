@@ -3,13 +3,13 @@ import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
-  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
+  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
   McuParams, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
-  FirmwareHardware
+  FirmwareHardware,
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -26,11 +26,6 @@ import { t } from "../i18next_wrapper";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
-export const EXPECTED_MAJOR = 6;
-export const EXPECTED_MINOR = 0;
-export const FEATURE_MIN_VERSIONS_URL =
-  "https://raw.githubusercontent.com/FarmBot/farmbot_os/staging/" +
-  "FEATURE_MIN_VERSIONS.json";
 // Already filtering messages in FarmBot OS and the API- this is just for
 // an additional layer of safety.
 const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
@@ -132,7 +127,7 @@ export function sync(): Thunk {
   return function (_dispatch, getState) {
     const currentFBOSversion =
       getState().bot.hardware.informational_settings.controller_version;
-    const IS_OK = versionOK(currentFBOSversion, EXPECTED_MAJOR, EXPECTED_MINOR);
+    const IS_OK = versionOK(currentFBOSversion);
     if (IS_OK) {
       getDevice()
         .sync()
@@ -149,7 +144,7 @@ export function sync(): Thunk {
 
 export function execSequence(
   sequenceId: number | undefined,
-  bodyVariables?: ParameterApplication[]
+  bodyVariables?: ParameterApplication[],
 ) {
   const noun = t("Sequence execution");
   if (sequenceId) {
@@ -217,7 +212,7 @@ export const fetchReleases =
         })
         .catch((ferror) => {
           !options.beta &&
-            error(t("Could not download FarmBot OS update information."));
+            console.error(t("Could not download FarmBot OS update information."));
           dispatch({
             type: options.beta
               ? "FETCH_BETA_OS_UPDATE_INFO_ERROR"
@@ -290,13 +285,13 @@ export function MCUFactoryReset() {
 
 /** Toggle a firmware setting. */
 export function settingToggle(
-  name: ConfigKey,
+  key: ConfigKey,
   sourceFwConfig: SourceFwConfig,
-  displayAlert?: string | undefined
+  displayAlert?: string | undefined,
 ) {
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }
-    const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
+    const update = { [key]: (sourceFwConfig(key).value === 0) ? ON : OFF };
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
       dispatch(edit(fwConfig, update));
@@ -330,7 +325,7 @@ export function pinToggle(pin_number: number) {
 }
 
 export function readPin(
-  pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES
+  pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES,
 ) {
   const noun = t("Read pin");
   return getDevice()

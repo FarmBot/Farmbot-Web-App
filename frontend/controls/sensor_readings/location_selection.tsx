@@ -10,7 +10,7 @@ import { t } from "../../i18next_wrapper";
 
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
-  ({ location, deviation, setDeviation, setLocation }: LocationSelectionProps) =>
+  ({ xyzLocation, deviation, setDeviation, setLocation }: LocationSelectionProps) =>
     <div className="sensor-history-location-selection">
       <Row>
         {["x", "y", "z"].map(axis =>
@@ -26,9 +26,9 @@ export const LocationSelection =
           <AxisInputBox
             key={axis}
             axis={axis}
-            value={location ? location[axis] : undefined}
+            value={xyzLocation ? xyzLocation[axis] : undefined}
             onChange={(a: Xyz, v) => {
-              const newLocation = (location || {});
+              const newLocation = (xyzLocation || {});
               newLocation[a] = v;
               setLocation(newLocation);
             }} />)}
@@ -42,15 +42,15 @@ export const LocationSelection =
     </div>;
 
 /** Display sensor reading location filter settings. */
-export const LocationDisplay = ({ location, deviation }: {
-  location: AxisInputBoxGroupState | undefined,
+export const LocationDisplay = ({ xyzLocation, deviation }: {
+  xyzLocation: AxisInputBoxGroupState | undefined,
   deviation: number
 }) => {
   return <div className="location">
     {["x", "y", "z"].map((axis: Xyz) => {
       const axisString = () => {
-        if (location) {
-          const axisValue = location[axis];
+        if (xyzLocation) {
+          const axisValue = xyzLocation[axis];
           if (isNumber(axisValue)) {
             return deviation
               ? `${axisValue - deviation}–${axisValue + deviation}`

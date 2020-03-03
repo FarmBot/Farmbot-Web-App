@@ -37,7 +37,8 @@ export function SaveBtn(props: SaveBtnProps) {
   const spinnerEl = (props.status === SpecialStatus.SAVING) ?
     spinner : "";
 
-  return <button onClick={onClick} hidden={!!hidden} className={klass}>
+  return <button onClick={onClick} title={t("save")}
+    hidden={!!hidden} className={klass}>
     {CAPTIONS[props.status] || (savedText || t("Saved") + " ✔")} {spinnerEl}
   </button>;
 }

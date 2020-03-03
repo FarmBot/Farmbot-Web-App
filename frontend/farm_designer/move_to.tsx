@@ -12,7 +12,7 @@ import { validBotLocationData } from "../util/util";
 import { unselectPlant } from "./map/actions";
 import { AxisNumberProperty } from "./map/interfaces";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "./designer_panel";
 import { t } from "../i18next_wrapper";
 import { isBotOnline } from "../devices/must_be_online";
@@ -64,7 +64,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
   render() {
     const { x, y } = this.props.chosenLocation;
     const { botOnline } = this.props;
-    return <div>
+    return <div className={"move-to-form"}>
       <Row>
         <Col xs={4}>
           <label>{t("X AXIS")}</label>
@@ -78,10 +78,10 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
       </Row>
       <Row>
         <Col xs={4}>
-          <input disabled value={isNumber(x) ? x : "---"} />
+          <input disabled name="x" value={isNumber(x) ? x : "---"} />
         </Col>
         <Col xs={4}>
-          <input disabled value={isNumber(y) ? y : "---"} />
+          <input disabled name="y" value={isNumber(y) ? y : "---"} />
         </Col>
         <AxisInputBox
           onChange={(_, val: number) => this.setState({ z: val })}
@@ -91,7 +91,9 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
           <button
             onClick={() => moveAbs(this.vector)}
             className={`fb-button gray ${botOnline ? "" : "pseudo-disabled"}`}
-            title={botOnline ? "" : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
+            title={botOnline
+              ? t("Move to this coordinate")
+              : t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}>
             {t("Move to this coordinate")}
           </button>
         </Row>

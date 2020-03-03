@@ -26,6 +26,5 @@ export const PeripheralForm = (props: PeripheralFormProps) =>
             dispatch={props.dispatch}
             uuid={peripheral.uuid} />
         </Col>
-      </Row>
-    )}
+      </Row>)}
   </div>;

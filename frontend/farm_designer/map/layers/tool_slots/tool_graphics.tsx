@@ -5,6 +5,9 @@ import { BotOriginQuadrant } from "../../../interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { Actions } from "../../../../constants";
 import { UUID } from "../../../../resources/interfaces";
+import { TaggedToolSlotPointer } from "farmbot";
+import { reduceToolName } from "./tool_slot_point";
+import { noop } from "lodash";
 
 export interface ToolGraphicProps {
   x: number;
@@ -27,6 +30,7 @@ export interface ToolSlotGraphicProps {
   pulloutDirection: ToolPulloutDirection;
   quadrant: BotOriginQuadrant;
   xySwap: boolean;
+  occupied: boolean;
 }
 
 const toolbaySlotAngle = (
@@ -57,10 +61,15 @@ const toolbaySlotAngle = (
 };
 
 export enum ToolNames {
+  weeder = "weeder",
+  wateringNozzle = "wateringNozzle",
+  seeder = "seeder",
+  soilSensor = "soilSensor",
   seedBin = "seedBin",
   seedTray = "seedTray",
   seedTrough = "seedTrough",
   tool = "tool",
+  emptyToolSlot = "emptyToolSlot",
 }
 
 export const ToolbaySlot = (props: ToolSlotGraphicProps) => {
@@ -82,7 +91,7 @@ export const ToolbaySlot = (props: ToolSlotGraphicProps) => {
       </g>
     </defs>
 
-    <use style={{ pointerEvents: "none" }}
+    <use style={props.occupied ? { pointerEvents: "none" } : {}}
       xlinkHref={"#toolbay-slot-" + id}
       transform={
         `rotate(${angle}, ${x}, ${y})`} />
@@ -91,9 +100,14 @@ export const ToolbaySlot = (props: ToolSlotGraphicProps) => {
 
 export const Tool = (props: ToolProps) => {
   switch (props.tool) {
+    case ToolNames.weeder: return <Weeder {...props.toolProps} />;
+    case ToolNames.wateringNozzle: return <WateringNozzle {...props.toolProps} />;
+    case ToolNames.seeder: return <Seeder {...props.toolProps} />;
+    case ToolNames.soilSensor: return <SoilSensor {...props.toolProps} />;
     case ToolNames.seedBin: return <SeedBin {...props.toolProps} />;
     case ToolNames.seedTray: return <SeedTray {...props.toolProps} />;
     case ToolNames.seedTrough: return <SeedTrough {...props.toolProps} />;
+    case ToolNames.emptyToolSlot: return <EmptySlot {...props.toolProps} />;
     default: return <StandardTool {...props.toolProps} />;
   }
 };
@@ -112,6 +126,115 @@ const StandardTool = (props: ToolGraphicProps) => {
       r={35}
       fillOpacity={0.5}
       fill={hovered ? Color.darkGray : Color.mediumGray} />
+  </g>;
+};
+
+const EmptySlot = (props: ToolGraphicProps) => {
+  const { x, y, hovered, dispatch, uuid } = props;
+  return <g id={"empty-tool-slot"}
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+    <circle
+      cx={x}
+      cy={y}
+      r={35}
+      fillOpacity={0.2}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <circle
+      cx={x}
+      cy={y}
+      r={34}
+      fill={"none"}
+      stroke={Color.mediumGray}
+      opacity={0.5}
+      strokeWidth={2}
+      strokeDasharray={"10 5"} />
+  </g>;
+};
+
+const Weeder = (props: ToolGraphicProps) => {
+  const { x, y, hovered, dispatch, uuid } = props;
+  const size = 10;
+  return <g id={"weeder"}
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+    <circle
+      cx={x}
+      cy={y}
+      r={35}
+      fillOpacity={0.5}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <line
+      x1={x - size} y1={y - size} x2={x + size} y2={y + size}
+      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
+    <line
+      x1={x - size} y1={y + size} x2={x + size} y2={y - size}
+      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
+  </g>;
+};
+
+const WateringNozzle = (props: ToolGraphicProps) => {
+  const { x, y, hovered, dispatch, uuid } = props;
+  return <g id={"watering-nozzle"}
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+
+    <defs>
+      <pattern id="WateringNozzlePattern"
+        x={0} y={0} width={0.2} height={0.2}>
+        <circle cx={5} cy={5} r={2} fill={Color.darkGray} fillOpacity={0.8} />
+      </pattern>
+    </defs>
+
+    <circle
+      cx={x}
+      cy={y}
+      r={35}
+      fillOpacity={0.5}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <circle
+      cx={x} cy={y} r={25}
+      fill="url(#WateringNozzlePattern)" />
+  </g>;
+};
+
+const Seeder = (props: ToolGraphicProps) => {
+  const { x, y, hovered, dispatch, uuid } = props;
+  const size = 10;
+  return <g id={"seeder"}
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+    <circle
+      cx={x}
+      cy={y}
+      r={35}
+      fillOpacity={0.5}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <circle
+      cx={x} cy={y} r={size}
+      fillOpacity={0.8}
+      fill={Color.darkGray} />
+  </g>;
+};
+
+const SoilSensor = (props: ToolGraphicProps) => {
+  const { x, y, hovered, dispatch, uuid } = props;
+  const size = 20;
+  return <g id={"soil-sensor"}
+    onMouseOver={() => dispatch(setToolHover(uuid))}
+    onMouseLeave={() => dispatch(setToolHover(undefined))}>
+    <circle
+      cx={x}
+      cy={y}
+      r={35}
+      fillOpacity={0.5}
+      fill={hovered ? Color.darkGray : Color.mediumGray} />
+    <line
+      x1={x - size} y1={y} x2={x - size / 2} y2={y}
+      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
+    <line
+      x1={x + size} y1={y} x2={x + size / 2} y2={y}
+      stroke={Color.darkGray} opacity={0.8} strokeWidth={5} />
   </g>;
 };
 
@@ -180,23 +303,30 @@ export interface GantryToolSlotGraphicProps {
   xySwap: boolean;
 }
 
+/** dimensions */
+enum Trough {
+  width = 20,
+  length = 45,
+  wall = 4,
+}
+
 export const GantryToolSlot = (props: GantryToolSlotGraphicProps) => {
   const { x, y, xySwap } = props;
-  const slotLengthX = xySwap ? 24 : 49;
-  const slotLengthY = xySwap ? 49 : 24;
+  const slotLengthX = Trough.wall + (xySwap ? Trough.width : Trough.length);
+  const slotLengthY = Trough.wall + (xySwap ? Trough.length : Trough.width);
   return <g id={"gantry-toolbay-slot"}>
     <rect
       x={x - slotLengthX / 2} y={y - slotLengthY / 2}
       width={slotLengthX} height={slotLengthY}
-      stroke={Color.mediumGray} strokeWidth={4} strokeOpacity={0.25}
+      stroke={Color.mediumGray} strokeWidth={Trough.wall} strokeOpacity={0.25}
       fill="transparent" />
   </g>;
 };
 
 const SeedTrough = (props: ToolGraphicProps) => {
   const { x, y, hovered, dispatch, uuid, xySwap } = props;
-  const slotLengthX = xySwap ? 20 : 45;
-  const slotLengthY = xySwap ? 45 : 20;
+  const slotLengthX = xySwap ? Trough.width : Trough.length;
+  const slotLengthY = xySwap ? Trough.length : Trough.width;
   return <g id={"seed-trough"}
     onMouseOver={() => dispatch(setToolHover(uuid))}
     onMouseLeave={() => dispatch(setToolHover(undefined))}>
@@ -206,4 +336,63 @@ const SeedTrough = (props: ToolGraphicProps) => {
       fillOpacity={0.5}
       fill={hovered ? Color.darkGray : Color.mediumGray} />
   </g>;
+};
+
+export interface ToolSlotSVGProps {
+  toolSlot: TaggedToolSlotPointer;
+  toolName: string | undefined;
+  renderRotation: boolean;
+  xySwap?: boolean;
+  quadrant?: BotOriginQuadrant;
+}
+
+export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
+  const xySwap = props.renderRotation ? !!props.xySwap : false;
+  const toolProps = {
+    x: 0, y: 0,
+    hovered: false,
+    dispatch: noop,
+    uuid: props.toolSlot.uuid,
+    xySwap,
+  };
+  const pulloutDirection = props.renderRotation
+    ? props.toolSlot.body.pullout_direction
+    : ToolPulloutDirection.POSITIVE_X;
+  const quadrant = props.renderRotation && props.quadrant ? props.quadrant : 2;
+  const viewBox = props.renderRotation ? "-25 0 50 1" : "-25 0 50 1";
+  return props.toolSlot.body.gantry_mounted
+    ? <svg width="3rem" height="3rem" viewBox={viewBox}>
+      <GantryToolSlot x={0} y={0} xySwap={xySwap} />
+      {props.toolSlot.body.tool_id &&
+        <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
+    </svg>
+    : <svg width="3rem" height="3rem" viewBox={`-50 0 100 1`}>
+      {props.toolSlot.body.pullout_direction &&
+        <ToolbaySlot
+          id={props.toolSlot.body.id}
+          x={0}
+          y={0}
+          pulloutDirection={pulloutDirection}
+          quadrant={quadrant}
+          occupied={false}
+          xySwap={xySwap} />}
+      {(props.toolSlot.body.tool_id ||
+        !props.toolSlot.body.pullout_direction) &&
+        <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
+    </svg>;
+};
+
+export interface ToolSVGProps {
+  toolName: string | undefined;
+}
+
+export const ToolSVG = (props: ToolSVGProps) => {
+  const toolProps = {
+    x: 0, y: 0, hovered: false, dispatch: noop, uuid: "", xySwap: false,
+  };
+  const viewBox = reduceToolName(props.toolName) === ToolNames.seedTrough
+    ? "-25 0 50 1" : "-40 0 80 1";
+  return <svg width="3rem" height="3rem" viewBox={viewBox}>
+    <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
+</svg>;
 };

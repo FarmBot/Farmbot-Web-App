@@ -13,7 +13,7 @@ jest.mock("axios", () => {
 import { transferOwnership } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import {
-  submitOwnershipChange
+  submitOwnershipChange,
 } from "../../components/fbos_settings/change_ownership_form";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";

@@ -1,9 +1,9 @@
 import {
-  locationFormList, dropDownName, formatTool, groups2Ddi
+  locationFormList, dropDownName, formatTool, groups2Ddi,
 } from "../location_form_list";
 import { fakeResourceIndex } from "../test_helpers";
 import {
-  fakeToolSlot, fakeTool, fakePointGroup
+  fakeToolSlot, fakeTool, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 
 describe("locationFormList()", () => {
@@ -82,7 +82,7 @@ describe("formatTool()", () => {
     const toolSlot = fakeToolSlot();
     toolSlot.body.gantry_mounted = true;
     const ddi = formatTool(fakeTool(), toolSlot);
-    expect(ddi.label).toEqual("Foo (---, 0, 0)");
+    expect(ddi.label).toEqual("Foo (gantry, 0, 0)");
   });
 });
 

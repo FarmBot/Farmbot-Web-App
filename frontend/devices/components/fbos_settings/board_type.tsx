@@ -8,8 +8,10 @@ import { BoardTypeProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI
+  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
 } from "../firmware_hardware_support";
+import { Highlight } from "../maybe_highlight";
+import { DeviceSetting } from "../../../constants";
 
 interface BoardTypeState { sending: boolean }
 
@@ -47,31 +49,30 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
 
   render() {
     return <Row>
-      <Col xs={ColWidth.label}>
-        <label>
-          {t("FIRMWARE")}
-        </label>
-      </Col>
-      <Col xs={ColWidth.description}>
-        <div>
+      <Highlight settingName={DeviceSetting.firmware}>
+        <Col xs={ColWidth.label}>
+          <label>
+            {t("FIRMWARE")}
+          </label>
+        </Col>
+        <Col xs={ColWidth.description}>
           <FBSelect
             key={this.apiValue}
             extraClass={this.state.sending ? "dim" : ""}
-            list={getFirmwareChoices(this.props.shouldDisplay)}
+            list={getFirmwareChoices()}
             selectedItem={this.selectedBoard}
             onChange={this.sendOffConfig} />
-        </div>
-      </Col>
-      <Col xs={ColWidth.button}>
-        <FirmwareHardwareStatus
-          botOnline={this.props.botOnline}
-          apiFirmwareValue={this.apiValue}
-          alerts={this.props.alerts}
-          bot={this.props.bot}
-          dispatch={this.props.dispatch}
-          timeSettings={this.props.timeSettings}
-          shouldDisplay={this.props.shouldDisplay} />
-      </Col>
+        </Col>
+        <Col xs={ColWidth.button}>
+          <FirmwareHardwareStatus
+            botOnline={this.props.botOnline}
+            apiFirmwareValue={this.apiValue}
+            alerts={this.props.alerts}
+            bot={this.props.bot}
+            dispatch={this.props.dispatch}
+            timeSettings={this.props.timeSettings} />
+        </Col>
+      </Highlight>
     </Row>;
   }
 }

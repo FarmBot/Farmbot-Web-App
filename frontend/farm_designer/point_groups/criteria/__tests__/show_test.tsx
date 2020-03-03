@@ -15,10 +15,10 @@ import {
   CriteriaSelectionProps,
   DEFAULT_CRITERIA,
   LocationSelectionProps,
-  GroupCriteriaProps
+  GroupCriteriaProps,
 } from "../interfaces";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import { overwrite } from "../../../../api/crud";
 import { cloneDeep } from "lodash";
@@ -100,7 +100,7 @@ describe("<DaySelection />", () => {
       currentTarget: { value: "1" }
     });
     const expectedBody = cloneDeep(p.group.body);
-    expectedBody.criteria.day.days = 1;
+    expectedBody.criteria.day.days_ago = 1;
     expect(overwrite).toHaveBeenCalledWith(p.group, expectedBody);
   });
 

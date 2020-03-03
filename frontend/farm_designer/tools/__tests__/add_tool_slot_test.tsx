@@ -9,19 +9,19 @@ jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import {
-  RawAddToolSlot as AddToolSlot, AddToolSlotProps, mapStateToProps
-} from "../add_tool_slot";
+import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  fakeTool, fakeToolSlot
+  fakeTool, fakeToolSlot, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { init, save, edit, destroy } from "../../../api/crud";
 import { history } from "../../../history";
 import { SpecialStatus } from "farmbot";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { AddToolSlotProps, mapStateToPropsAdd } from "../map_to_props_add_edit";
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -30,14 +30,23 @@ describe("<AddToolSlot />", () => {
     botPosition: { x: undefined, y: undefined, z: undefined },
     dispatch: jest.fn(),
     findToolSlot: fakeToolSlot,
+    firmwareHardware: undefined,
+    xySwap: false,
+    quadrant: 2,
+    isActive: jest.fn(),
   });
 
   it("renders", () => {
     const wrapper = mount(<AddToolSlot {...fakeProps()} />);
-    ["add new tool slot", "x (mm)", "y (mm)", "z (mm)", "toolnone",
-      "change slot direction", "use current location", "gantry-mounted"
+    ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
+      "change direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(init).toHaveBeenCalled();
+    expect(init).toHaveBeenCalledWith("Point", {
+      pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},
+      x: 0, y: 0, z: 0, tool_id: undefined,
+      pullout_direction: ToolPulloutDirection.NONE,
+      gantry_mounted: false,
+    });
   });
 
   it("renders while loading", () => {
@@ -102,16 +111,32 @@ describe("<AddToolSlot />", () => {
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     expect(wrapper.instance().tool).toEqual(undefined);
   });
+
+  it("renders for express bots", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<AddToolSlot {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("tool");
+    expect(init).toHaveBeenCalledWith("Point", {
+      pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},
+      x: 0, y: 0, z: 0, tool_id: undefined,
+      pullout_direction: ToolPulloutDirection.NONE,
+      gantry_mounted: true,
+    });
+  });
 });
 
-describe("mapStateToProps()", () => {
+describe("mapStateToPropsAdd()", () => {
   it("returns props", () => {
+    const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.bot_origin_quadrant = 1;
     const tool = fakeTool();
     tool.body.id = 1;
     const toolSlot = fakeToolSlot();
     const state = fakeState();
-    state.resources = buildResourceIndex([tool, toolSlot]);
-    const props = mapStateToProps(state);
+    state.resources = buildResourceIndex([tool, toolSlot, webAppConfig]);
+    const props = mapStateToPropsAdd(state);
+    expect(props.quadrant).toEqual(1);
     expect(props.findTool(1)).toEqual(tool);
     expect(props.findToolSlot(toolSlot.uuid)).toEqual(toolSlot);
   });

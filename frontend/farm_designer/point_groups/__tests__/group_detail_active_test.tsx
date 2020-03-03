@@ -6,24 +6,18 @@ jest.mock("../../../api/crud", () => ({
 
 jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import React from "react";
 import {
-  GroupDetailActive, GroupDetailActiveProps
+  GroupDetailActive, GroupDetailActiveProps,
 } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { save, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
+import { Content } from "../../../constants";
 
 describe("<GroupDetailActive/>", () => {
   const fakeProps = (): GroupDetailActiveProps => {
@@ -39,6 +33,7 @@ describe("<GroupDetailActive/>", () => {
       allPoints: [],
       shouldDisplay: () => true,
       slugs: [],
+      hovered: undefined,
     };
   };
 
@@ -105,16 +100,15 @@ describe("<GroupDetailActive/>", () => {
   });
 
   it("shows paths", () => {
-    mockDev = true;
     const p = fakeProps();
     const wrapper = mount(<GroupDetailActive {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("optimized");
+    expect(wrapper.text().toLowerCase()).toContain("0m");
   });
 
-  it("doesn't show paths", () => {
-    mockDev = false;
+  it("shows random warning text", () => {
     const p = fakeProps();
+    p.group.body.sort_type = "random";
     const wrapper = mount(<GroupDetailActive {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("optimized");
+    expect(wrapper.text()).toContain(Content.SORT_DESCRIPTION);
   });
 });

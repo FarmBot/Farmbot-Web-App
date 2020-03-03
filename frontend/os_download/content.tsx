@@ -3,9 +3,7 @@ import axios from "axios";
 import { t } from "../i18next_wrapper";
 import { GithubRelease } from "../devices/interfaces";
 import { Content } from "../constants";
-
-const LATEST_RELEASE_URL =
-  "https://api.github.com/repos/farmbot/farmbot_os/releases/latest";
+import { ExternalUrl } from "../external_urls";
 
 interface OsDownloadState {
   tagName: string;
@@ -49,7 +47,7 @@ export class OsDownload extends React.Component<{}, OsDownloadState> {
   }
 
   fetchLatestRelease = () =>
-    axios.get<GithubRelease>(LATEST_RELEASE_URL)
+    axios.get<GithubRelease>(ExternalUrl.latestRelease)
       .then(resp =>
         this.setState({
           tagName: resp.data.tag_name,

@@ -4,7 +4,7 @@ import { Everything } from "../../interfaces";
 import { Panel, DesignerNavTabs } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
-  DesignerPanel, DesignerPanelTop, DesignerPanelContent
+  DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../designer_panel";
 import { findAll } from "../../resources/find_all";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
@@ -48,8 +48,9 @@ export class RawGroupListPanel extends React.Component<GroupListPanelProps, Stat
       <DesignerPanelTop
         panel={Panel.Groups}
         linkTo={"/app/designer/plants/select"}
-        title={t("Add Group")}>
+        title={t("Add group")}>
         <input type="text"
+          name="searchTerm"
           onChange={this.update}
           placeholder={t("Search your groups...")} />
       </DesignerPanelTop>

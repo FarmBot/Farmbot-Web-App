@@ -1,5 +1,5 @@
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
   dropDown2CeleryArg,
@@ -23,11 +23,11 @@ import {
 import {
   fakePeripheral,
   fakeSensor,
-  fakeSequence
+  fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { DropDownItem } from "../../../ui";
 import {
-  NamedPin, AllowedPinTypes, TaggedSensor, TaggedSequence, Nothing
+  NamedPin, AllowedPinTypes, TaggedSensor, TaggedSequence, Nothing,
 } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { Actions } from "../../../constants";
@@ -51,7 +51,7 @@ describe("Pin and Peripheral support files", () => {
             }
           }
         }
-      }
+      },
     ];
     return buildResourceIndex([sequence, peripheral, fakeSensor()]).index;
   };
@@ -205,7 +205,7 @@ describe("Pin and Peripheral support files", () => {
       expect(result).toEqual(expected);
     });
 
-    it.each<[BoxLed]>(Object.values(BoxLed).map(x => [x])
+    it.each<[BoxLed]>(Object.values(BoxLed).map(x => [x]),
     )("converts %s named pin to DropDownItem", (boxLed) => {
       const ri = buildResourceIndex([]).index;
       const namedPin: NamedPin = {

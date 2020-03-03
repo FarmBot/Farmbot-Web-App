@@ -2,27 +2,28 @@ import { DropDownItem } from "../../../ui";
 import {
   findToolById,
   findByKindAndId,
-  findPointerByTypeAndId
+  findPointerByTypeAndId,
 } from "../../../resources/selectors";
 import { plant2ddi, pointer2ddi } from "./resource_list";
 import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import { MOUNTED_TO } from "./constants";
 import { DropDownPair, StepWithResourceIndex } from "./interfaces";
 import { TaggedPoint, TaggedPlantPointer } from "farmbot";
+import { t } from "../../../i18next_wrapper";
 
-export const TOOL_MOUNT: DropDownItem = {
-  label: "Tool Mount", value: "tool_mount"
-};
-const NOT_IN_USE: DropDownItem = { label: "Not Mounted", value: 0 };
-export const DISMOUNTED: DropDownPair = {
-  leftSide: TOOL_MOUNT,
-  rightSide: NOT_IN_USE
-};
+export const TOOL_MOUNT = (): DropDownItem => ({
+  label: t("Tool Mount"), value: "tool_mount"
+});
+const NOT_IN_USE = (): DropDownItem => ({ label: t("Not Mounted"), value: 0 });
+export const DISMOUNTED = (): DropDownPair => ({
+  leftSide: TOOL_MOUNT(),
+  rightSide: NOT_IN_USE()
+});
 const DEFAULT_TOOL_NAME = "Untitled Tool";
 const REMOVED_ACTION = { label: "Removed", value: "removed" };
 
-const mountedTo = (name = DEFAULT_TOOL_NAME): DropDownItem =>
-  ({ label: `${MOUNTED_TO} ${name}`, value: "mounted" });
+const mountedTo = (toolName = DEFAULT_TOOL_NAME): DropDownItem =>
+  ({ label: `${MOUNTED_TO} ${toolName}`, value: "mounted" });
 
 /** The user wants to change the `mounted_tool_id` of their Device. */
 function mountTool(i: StepWithResourceIndex): DropDownPair {
@@ -30,13 +31,13 @@ function mountTool(i: StepWithResourceIndex): DropDownPair {
   if (typeof value === "number" && value > 0) {
     try { // Good tool id
       const tool = findToolById(i.resourceIndex, value as number);
-      return { leftSide: TOOL_MOUNT, rightSide: mountedTo(tool.body.name) };
+      return { leftSide: TOOL_MOUNT(), rightSide: mountedTo(tool.body.name) };
     } catch { // Bad tool ID or app still loading.
-      return { leftSide: TOOL_MOUNT, rightSide: mountedTo("an unknown tool") };
+      return { leftSide: TOOL_MOUNT(), rightSide: mountedTo("an unknown tool") };
     }
   } else {
     // No tool id
-    return DISMOUNTED;
+    return DISMOUNTED();
   }
 }
 
@@ -55,10 +56,10 @@ function unknownOption(i: StepWithResourceIndex): DropDownPair {
 /** The user wants to mark a the `discarded_at` attribute of a Point. */
 function discardPoint(i: StepWithResourceIndex): DropDownPair {
   const { resource_id } = i.step.args;
-  const t =
+  const genericPointerBody =
     findPointerByTypeAndId(i.resourceIndex, "GenericPointer", resource_id).body;
   return {
-    leftSide: pointer2ddi(t as GenericPointer),
+    leftSide: pointer2ddi(genericPointerBody as GenericPointer),
     rightSide: REMOVED_ACTION
   };
 }

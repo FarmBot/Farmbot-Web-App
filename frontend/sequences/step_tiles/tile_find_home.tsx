@@ -4,7 +4,7 @@ import { StepParams, HardwareFlags } from "../interfaces";
 import { ResourceIndex } from "../../resources/interfaces";
 import { ToolTips, Content } from "../../constants";
 import {
-  StepWrapper, StepHeader, StepContent, StepWarning, conflictsString
+  StepWrapper, StepHeader, StepContent, StepWarning, conflictsString,
 } from "../step_ui/index";
 import { some } from "lodash";
 import { AxisStepRadio } from "../step_ui/step_radio";

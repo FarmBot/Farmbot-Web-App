@@ -32,11 +32,11 @@ jest.mock("axios", () => ({ get: jest.fn(() => mockGetRelease) }));
 
 import * as actions from "../actions";
 import {
-  fakeFirmwareConfig, fakeFbosConfig
+  fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  changeStepSize, commandErr
+  changeStepSize, commandErr,
 } from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -307,7 +307,7 @@ describe("commandErr()", () => {
   });
 });
 
-describe("toggleControlPanel()", function () {
+describe("toggleControlPanel()", () => {
   it("toggles", () => {
     const action = actions.toggleControlPanel("homing_and_calibration");
     expect(action.payload).toEqual("homing_and_calibration");
@@ -353,9 +353,10 @@ describe("fetchReleases()", () => {
   it("fails to fetches latest OS release version", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
+    console.error = jest.fn();
     await actions.fetchReleases("url")(dispatch);
     await expect(axios.get).toHaveBeenCalledWith("url");
-    expect(error).toHaveBeenCalledWith(
+    expect(console.error).toHaveBeenCalledWith(
       "Could not download FarmBot OS update information.");
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",

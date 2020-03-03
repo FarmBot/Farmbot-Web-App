@@ -4,10 +4,10 @@ import {
   completePing,
   startPing,
   failPing,
-  PingDictionary
+  PingDictionary,
 } from "../qos";
 import {
-  fakePings
+  fakePings,
 } from "../../../__test_support__/fake_state/pings";
 
 describe("QoS helpers", () => {

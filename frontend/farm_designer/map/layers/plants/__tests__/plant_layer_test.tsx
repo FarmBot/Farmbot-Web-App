@@ -6,13 +6,15 @@ jest.mock("../../../../../history", () => ({
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
 import {
-  fakePlant, fakePlantTemplate
+  fakePlant, fakePlantTemplate,
 } from "../../../../../__test_support__/fake_state/resources";
-import { PlantLayerProps, GardenPlantProps } from "../../../interfaces";
+import { PlantLayerProps } from "../../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import { shallow } from "enzyme";
+import { GardenPlant } from "../garden_plant";
 
 describe("<PlantLayer/>", () => {
   const fakeProps = (): PlantLayerProps => ({
@@ -28,6 +30,7 @@ describe("<PlantLayer/>", () => {
     zoomLvl: 1,
     activeDragXY: { x: undefined, y: undefined, z: undefined },
     animate: true,
+    hoveredPlant: undefined,
   });
 
   it("shows plants", () => {
@@ -41,7 +44,7 @@ describe("<PlantLayer/>", () => {
       "/app-resources/img/generic-plant.svg",
       "height=\"50\" width=\"50\" x=\"75\" y=\"175\"",
       "drag-helpers",
-      "plant-icon"
+      "plant-icon",
     ].map(string =>
       expect(layer.html()).toContain(string));
   });
@@ -88,14 +91,14 @@ describe("<PlantLayer/>", () => {
       .toEqual("/app/designer/gardens/templates/5");
   });
 
-  it("has selected plant", () => {
+  it("has hovered plant", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
     const plant = fakePlant();
     p.plants = [plant];
-    p.currentPlant = plant;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
+    p.hoveredPlant = plant;
+    const wrapper = shallow(<PlantLayer {...p} />);
+    expect(wrapper.find(GardenPlant).props().hovered).toEqual(true);
   });
 
   it("has plant selected by selection box", () => {
@@ -105,8 +108,7 @@ describe("<PlantLayer/>", () => {
     p.plants = [plant];
     p.boxSelected = [plant.uuid];
     const wrapper = svgMount(<PlantLayer {...p} />);
-    expect((wrapper.find("GardenPlant").props() as GardenPlantProps).selected)
-      .toEqual(true);
+    expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
   });
 
   it("allows clicking of unsaved plants", () => {

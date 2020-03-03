@@ -1,28 +1,27 @@
 import * as React from "react";
-import { Widget, WidgetBody, WidgetHeader, Row, Col } from "../../ui";
+import { Row, Col, Help } from "../../ui";
 import { ToolTips } from "../../constants";
 import { selectAllPinBindings } from "../../resources/selectors";
-import { PinBindingsProps, PinBindingListItems } from "./interfaces";
+import { PinBindingsContentProps, PinBindingListItems } from "./interfaces";
 import { PinBindingsList } from "./pin_bindings_list";
 import { PinBindingInputGroup } from "./pin_binding_input_group";
 import {
-  StockPinBindingsButton, sysBtnBindingData
+  StockPinBindingsButton, sysBtnBindingData,
 } from "./tagged_pin_binding_init";
 import { ResourceIndex } from "../../resources/interfaces";
 import { Popover, Position, PopoverInteractionKind } from "@blueprintjs/core";
 import {
   PinBindingSpecialAction,
   PinBindingType,
-  PinBinding
+  PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {
   pin = 4,
-  type = 3,
-  target = 4,
-  button = 1
+  type = 6,
+  button = 2
 }
 
 /** Use binding type to return a sequence ID or a special action. */
@@ -64,34 +63,30 @@ const PinBindingsListHeader = () =>
       <label>
         {t("Binding")}
       </label>
-    </Col>
-    <Col xs={PinBindingColWidth.target}>
-      <label>
-        {t("target")}
-      </label>
+      <Help text={ToolTips.PIN_BINDINGS} />
     </Col>
   </Row>;
 
-export const PinBindings = (props: PinBindingsProps) => {
-  const { dispatch, resources } = props;
+export const PinBindingsContent = (props: PinBindingsContentProps) => {
+  const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
 
-  return <Widget className="pin-bindings-widget">
-    <WidgetHeader
-      title={t("Pin Bindings")}
-      helpText={ToolTips.PIN_BINDINGS}>
+  return <div className="pin-bindings">
+    <Row>
+      <StockPinBindingsButton
+        dispatch={dispatch} firmwareHardware={firmwareHardware} />
       <Popover
         position={Position.RIGHT_TOP}
         interactionKind={PopoverInteractionKind.HOVER}
+        portalClassName={"bindings-warning-icon"}
         popoverClassName={"help"}>
         <i className="fa fa-exclamation-triangle" />
-        <div>
+        <div className={"pin-binding-warning"}>
           {t(ToolTips.PIN_BINDING_WARNING)}
         </div>
       </Popover>
-      <StockPinBindingsButton dispatch={dispatch} />
-    </WidgetHeader>
-    <WidgetBody>
+    </Row>
+    <div className={"pin-bindings-list-and-input"}>
       <PinBindingsListHeader />
       <PinBindingsList
         pinBindings={pinBindings}
@@ -101,6 +96,6 @@ export const PinBindings = (props: PinBindingsProps) => {
         pinBindings={pinBindings}
         dispatch={dispatch}
         resources={resources} />
-    </WidgetBody>
-  </Widget>;
+    </div>
+  </div>;
 };

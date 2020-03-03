@@ -27,7 +27,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
                       y: 25,
-                      z: -200,
+                      z: 0,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
@@ -37,25 +37,18 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
                       y: 50,
-                      z: -200,
+                      z: 0,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
       end
 
-      def tool_slots_slot_3
-        add_tool_slot(name: ToolNames::SEED_TROUGH_3,
-                      x: 0,
-                      y: 75,
-                      z: -200,
-                      tool: tools_seed_trough_3,
-                      pullout_direction: ToolSlot::NONE,
-                      gantry_mounted: true)
-      end
-
+      def tool_slots_slot_3; end
       def tool_slots_slot_4; end
       def tool_slots_slot_5; end
       def tool_slots_slot_6; end
+      def tool_slots_slot_7; end
+      def tool_slots_slot_8; end
       def tools_seed_bin; end
       def tools_seed_tray; end
 
@@ -67,11 +60,6 @@ module Devices
       def tools_seed_trough_2
         @tools_seed_trough_2 ||=
           add_tool(ToolNames::SEED_TROUGH_2)
-      end
-
-      def tools_seed_trough_3
-        @tools_seed_trough_3 ||=
-          add_tool(ToolNames::SEED_TROUGH_3)
       end
 
       def tools_seeder; end

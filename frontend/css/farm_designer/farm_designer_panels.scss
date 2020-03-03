@@ -552,8 +552,12 @@
   }
   .tool-slots-panel-content,
   .tools-panel-content {
+    max-height: calc(100vh - 19rem);
+    overflow-y: auto;
+    overflow-x: hidden;
     .tool-search-item,
     .tool-slot-search-item {
+      line-height: 4rem;
       cursor: pointer;
       margin-left: -15px;
       margin-right: -15px;
@@ -562,10 +566,31 @@
         margin-right: 0;
       }
       p {
-        line-height: 3rem;
+        font-size: 1.2rem;
+        line-height: 4rem;
+        &.tool-status,
         &.tool-slot-position {
           float: right;
         }
+      }
+      .filter-search {
+        .bp3-button {
+          min-height: 2.5rem;
+          max-height: 2.5rem;
+          span {
+            line-height: 1.5rem;
+          }
+        }
+        i {
+          line-height: 2rem;
+        }
+      }
+      svg {
+        vertical-align: middle;
+      }
+      .tool-slot-position-info {
+        padding: 0;
+        padding-right: 1rem;
       }
     }
     .mounted-tool-header {
@@ -580,6 +605,7 @@
         font-size: 1.4rem;
       }
     }
+    .tools-header,
     .tool-slots-header {
       display: flex;
       margin-top: 1rem;
@@ -623,10 +649,42 @@
       float: left;
     }
   }
+  svg {
+    display: block;
+    margin: auto;
+    width: 10rem;
+    height: 10rem;
+    margin-top: 2rem;
+  }
   .add-stock-tools {
+    .filter-search {
+      margin-bottom: 1rem;
+      button {
+        margin-top: 0.2rem;
+      }
+    }
     ul {
       font-size: 1.2rem;
       padding-left: 1rem;
+      li {
+        margin-top: 0.5rem;
+        line-height: 2rem;
+        cursor: pointer;
+        width: 50%;
+        &:hover {
+          font-weight: bold;
+        }
+        .fb-checkbox {
+          display: inline;
+        }
+        p {
+          display: inline;
+          line-height: 2.25rem;
+          font-size: 1.2rem;
+          vertical-align: top;
+          margin-left: 1rem;
+        }
+      }
     }
     button {
       .fa-plus {
@@ -638,6 +696,13 @@
 
 .add-tool-slot-panel-content,
 .edit-tool-slot-panel-content {
+  svg {
+    display: block;
+    margin: auto;
+    width: 10rem;
+    height: 10rem;
+    margin-top: 2rem;
+  }
   label {
     margin-top: 0 !important;
   }
@@ -650,12 +715,24 @@
   .direction-icon {
     margin-left: 1rem;
   }
-  .use-current-location-input {
+  .help-icon {
+    color: $dark_gray;
+  }
+  .tool-slot-location-input {
+    .axis-inputs {
+      padding-left: 0;
+    }
+    .use-current-location {
+      padding: 0;
+      margin-left: -1rem;
+    }
     button {
-      margin: 0;
-      float: none;
-      margin-left: 1rem;
-      vertical-align: middle;
+      margin-top: 0.5rem;
+      margin-right: 0.5rem;
+      height: 2.5rem;
+      .fa {
+        font-size: 1.5rem;
+      }
     }
   }
   .gantry-mounted-input {
@@ -868,7 +945,9 @@
     margin: 0;
   }
 }
-.clear-button {
+.preview-button,
+.cancel-button,
+.save-button {
   text-transform: uppercase;
   font-size: 1rem;
   border: 1px solid;
@@ -880,4 +959,11 @@
   margin-top: 1.25rem;
   margin-right: 1.5rem;
   &:hover { color: $white; }
+}
+
+.desktop-hide {
+  display: none !important;
+  @media screen and (max-width: 1075px) {
+    display: block !important;
+  }
 }

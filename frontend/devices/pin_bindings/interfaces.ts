@@ -1,12 +1,14 @@
 import { ResourceIndex } from "../../resources/interfaces";
 import {
   PinBindingType,
-  PinBindingSpecialAction
+  PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
+import { FirmwareHardware } from "farmbot";
 
-export interface PinBindingsProps {
+export interface PinBindingsContentProps {
   dispatch: Function;
   resources: ResourceIndex;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface PinBindingListItems {

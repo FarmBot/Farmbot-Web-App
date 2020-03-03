@@ -2,7 +2,7 @@ import * as React from "react";
 import { NavLinksProps } from "./interfaces";
 import { getPathArray } from "../history";
 import {
-  computeEditorUrlFromState, computeFarmwareUrlFromState
+  computeEditorUrlFromState, computeFarmwareUrlFromState,
 } from "./compute_editor_url_from_state";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
@@ -28,7 +28,8 @@ interface NavLinkParams {
 export const getLinks = (): NavLinkParams[] => betterCompact([
   { name: "Farm Designer", icon: "leaf", slug: "designer" },
   { name: "Controls", icon: "keyboard-o", slug: "controls" },
-  { name: "Device", icon: "cog", slug: "device" },
+  DevSettings.futureFeaturesEnabled() ? undefined :
+    { name: "Device", icon: "cog", slug: "device" },
   {
     name: "Sequences", icon: "server", slug: "sequences",
     computeHref: computeEditorUrlFromState("Sequence")
@@ -37,8 +38,6 @@ export const getLinks = (): NavLinkParams[] => betterCompact([
     name: "Regimens", icon: "calendar-check-o", slug: "regimens",
     computeHref: computeEditorUrlFromState("Regimen")
   },
-  DevSettings.futureFeaturesEnabled() ? undefined :
-    { name: "Tools", icon: "wrench", slug: "tools" },
   {
     name: "Farmware", icon: "crosshairs", slug: "farmware",
     computeHref: computeFarmwareUrlFromState

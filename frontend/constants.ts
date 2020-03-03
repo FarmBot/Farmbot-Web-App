@@ -39,8 +39,8 @@ export namespace ToolTips {
     few sequences to verify that everything works as expected.`);
 
   export const PIN_BINDINGS =
-    trim(`Assign a sequence to execute when a Raspberry Pi GPIO pin is
-    activated.`);
+    trim(`Assign an action or sequence to execute when a Raspberry Pi
+    GPIO pin is activated.`);
 
   export const PIN_BINDING_WARNING =
     trim(`Warning: Binding to a pin without a physical button and
@@ -51,23 +51,37 @@ export namespace ToolTips {
     trim(`Diagnose connectivity issues with FarmBot and the browser.`);
 
   // Hardware Settings: Homing and Calibration
-  export const HOMING =
+  export const HOMING_ENCODERS =
     trim(`If encoders or end-stops are enabled, home axis (find zero).`);
 
-  export const CALIBRATION =
+  export const HOMING_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, home axis
+    (find zero).`);
+
+  export const CALIBRATION_ENCODERS =
     trim(`If encoders or end-stops are enabled, home axis and determine
     maximum.`);
+
+  export const CALIBRATION_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, home axis and
+    determine maximum.`);
 
   export const SET_ZERO_POSITION =
     trim(`Set the current location as zero.`);
 
-  export const FIND_HOME_ON_BOOT =
+  export const FIND_HOME_ON_BOOT_ENCODERS =
     trim(`If encoders or end-stops are enabled, find the home position
-    when the device powers on.
-    Warning! This will perform homing on all axes when the
-    device powers on. Encoders or endstops must be enabled.
+    when the device powers on. Warning! This will perform homing on all
+    axes when the device powers on. Encoders or endstops must be enabled.
     It is recommended to make sure homing works properly before enabling
     this feature. (default: disabled)`);
+
+  export const FIND_HOME_ON_BOOT_STALL_DETECTION =
+    trim(`If stall detection or end-stops are enabled, find the home
+    position when the device powers on. Warning! This will perform homing
+    on all axes when the device powers on. Stall detection or endstops
+    must be enabled. It is recommended to make sure homing works properly
+    before enabling this feature. (default: disabled)`);
 
   export const STOP_AT_HOME =
     trim(`Stop at the home location of the axis. (default: disabled)`);
@@ -85,18 +99,7 @@ export namespace ToolTips {
     trim(`Set the length of each axis to provide software limits.
     Used only if STOP AT MAX is enabled. (default: 0 (disabled))`);
 
-  export const TIMEOUT_AFTER =
-    trim(`Amount of time to wait for a command to execute before stopping.
-    (default: 120s)`);
-
   // Hardware Settings: Motors
-  export const MAX_MOVEMENT_RETRIES =
-    trim(`Number of times to retry a movement before stopping. (default: 3)`);
-
-  export const E_STOP_ON_MOV_ERR =
-    trim(`Emergency stop if movement is not complete after the maximum
-    number of retries. (default: disabled)`);
-
   export const MAX_SPEED =
     trim(`Maximum travel speed after acceleration in millimeters per second.
     (default: x: 80mm/s, y: 80mm/s, z: 16mm/s)`);
@@ -132,17 +135,21 @@ export namespace ToolTips {
   export const MOTOR_CURRENT =
     trim(`Motor current in milliamps. (default: 600)`);
 
-  export const STALL_SENSITIVITY =
-    trim(`Motor stall sensitivity. (default: 30)`);
-
   export const ENABLE_X2_MOTOR =
     trim(`Enable use of a second x-axis motor. Connects to E0 on RAMPS.
     (default: enabled)`);
 
-  // Hardware Settings: Encoders and Endstops
+  // Hardware Settings: Encoders / Stall Detection
   export const ENABLE_ENCODERS =
     trim(`Enable use of rotary encoders for stall detection,
     calibration and homing. (default: enabled)`);
+
+  export const ENABLE_STALL_DETECTION =
+    trim(`Enable use of motor stall detection for detecting missed steps,
+    calibration and homing. (default: enabled)`);
+
+  export const STALL_SENSITIVITY =
+    trim(`Motor stall sensitivity. (default: 30)`);
 
   export const ENCODER_POSITIONING =
     trim(`Use encoders for positioning. (default: disabled)`);
@@ -151,17 +158,22 @@ export namespace ToolTips {
     trim(`Reverse the direction of encoder position reading.
     (default: disabled)`);
 
-  export const MAX_MISSED_STEPS =
+  export const MAX_MISSED_STEPS_ENCODERS =
     trim(`Number of steps missed (determined by encoder) before motor is
     considered to have stalled. (default: 5)`);
 
-  export const ENCODER_MISSED_STEP_DECAY =
+  export const MAX_MISSED_STEPS_STALL_DETECTION =
+    trim(`Number of steps missed (determined by motor stall detection) before
+    motor is considered to have stalled. (default: 5)`);
+
+  export const MISSED_STEP_DECAY =
     trim(`Reduction to missed step total for every good step. (default: 5)`);
 
   export const ENCODER_SCALING =
     trim(`encoder scaling factor = 10000 * (motor resolution * microsteps)
     / (encoder resolution). (default: 5556 (10000*200/360))`);
 
+  // Hardware Settings: Endstops
   export const ENABLE_ENDSTOPS =
     trim(`Enable use of electronic end-stops for end detection,
     calibration and homing. (default: disabled)`);
@@ -172,6 +184,18 @@ export namespace ToolTips {
   export const INVERT_ENDPOINTS =
     trim(`Invert axis end-stops. Enable for normally closed (NC),
     disable for normally open (NO). (default: disabled)`);
+
+  // Hardware Settings: Error Handling
+  export const TIMEOUT_AFTER =
+    trim(`Amount of time to wait for a command to execute before stopping.
+    (default: 120s)`);
+
+  export const MAX_MOVEMENT_RETRIES =
+    trim(`Number of times to retry a movement before stopping. (default: 3)`);
+
+  export const E_STOP_ON_MOV_ERR =
+    trim(`Emergency stop if movement is not complete after the maximum
+    number of retries. (default: disabled)`);
 
   // Hardware Settings: Pin Guard
   export const PIN_GUARD_PIN_NUMBER =
@@ -263,8 +287,12 @@ export namespace ToolTips {
 
   export const FIND_HOME =
     trim(`The Find Home step instructs the device to perform a homing
-    command (using encoders or endstops) to find and set zero for
-    the chosen axis or axes.`);
+    command (using encoders, stall detection, or endstops) to find and set
+    zero for the chosen axis or axes.`);
+
+  export const CALIBRATE =
+    trim(`If encoders, stall detection, or end-stops are enabled,
+    home axis and determine maximum.`);
 
   export const IF =
     trim(`Execute a sequence if a condition is satisfied. If the condition
@@ -620,8 +648,8 @@ export namespace Content {
     trim(`Restart the Farmduino or Arduino firmware.`);
 
   export const OS_AUTO_UPDATE =
-    trim(`When enabled, FarmBot OS will periodically check for, download,
-    and install updates automatically.`);
+    trim(`When enabled, FarmBot OS will automatically download and install
+    software updates at the chosen time.`);
 
   export const AUTO_SYNC =
     trim(`When enabled, device resources such as sequences and regimens
@@ -635,7 +663,7 @@ export namespace Content {
     back on, unplug FarmBot and plug it back in.`);
 
   export const OS_BETA_RELEASES =
-    trim(`Warning! Opting in to FarmBot OS beta releases may reduce
+    trim(`Warning! Leaving the stable FarmBot OS release channel may reduce
     FarmBot system stability. Are you sure?`);
 
   export const DIAGNOSTIC_CHECK =
@@ -674,9 +702,9 @@ export namespace Content {
     trim(`FarmBot sent a malformed message. You may need to upgrade
     FarmBot OS. Please upgrade FarmBot OS and log back in.`);
 
-  export const OLD_FBOS_REC_UPGRADE = trim(`Your version of FarmBot OS is
-    outdated and will soon no longer be supported. Please update your device as
-    soon as possible.`);
+  export const OLD_FBOS_REC_UPGRADE =
+    trim(`Your version of FarmBot OS is outdated and will soon no longer
+    be supported. Please update your device as soon as possible.`);
 
   export const EXPERIMENTAL_WARNING =
     trim(`Warning! This is an EXPERIMENTAL feature. This feature may be
@@ -715,8 +743,8 @@ export namespace Content {
 
   export const END_DETECTION_DISABLED =
     trim(`This command will not execute correctly because you do not have
-    encoders or endstops enabled for the chosen axis. Enable endstops or
-    encoders from the Device page for: `);
+    encoders, stall detection, or endstops enabled for the chosen axis.
+    Enable endstops, encoders, or stall detection from the Device page for: `);
 
   export const IN_USE =
     trim(`Used in another resource. Protected from deletion.`);
@@ -784,7 +812,10 @@ export namespace Content {
     trim(`add this crop on OpenFarm?`);
 
   export const NO_TOOLS =
-    trim(`Press "+" to add a new tool.`);
+    trim(`Press "+" to add a new tool or seed container.`);
+
+  export const NO_SEED_CONTAINERS =
+    trim(`Press "+" to add a seed container.`);
 
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
@@ -859,12 +890,23 @@ export namespace TourContent {
     selecting one, and dragging it into the garden.`);
 
   export const ADD_TOOLS =
-    trim(`Press edit and then the + button to add tools and seed containers.`);
+    trim(`Press the + button to add tools and seed containers.`);
+
+  export const ADD_SEED_CONTAINERS =
+    trim(`Press the + button to add seed containers.`);
+
+  export const ADD_TOOLS_AND_SLOTS =
+    trim(`Press the + button to add tools and seed containers. Then create
+    slots for them to by pressing the slot + button.`);
+
+  export const ADD_SEED_CONTAINERS_AND_SLOTS =
+    trim(`Press the + button to add seed containers. Then create
+    slots for them to by pressing the slot + button.`);
 
   export const ADD_TOOLS_SLOTS =
     trim(`Add the newly created tools and seed containers to the
-    corresponding tool slots on FarmBot:
-    press edit and then + to create a tool slot.`);
+    corresponding slots on FarmBot:
+    press the + button to create a slot.`);
 
   export const ADD_PERIPHERALS =
     trim(`Press edit and then the + button to add peripherals.`);
@@ -902,6 +944,103 @@ export namespace TourContent {
     trim(`Toggle various settings to customize your web app experience.`);
 }
 
+export enum DeviceSetting {
+  // Homing and calibration
+  homingAndCalibration = `Homing and Calibration`,
+  homing = `Homing`,
+  calibration = `Calibration`,
+  setZeroPosition = `Set Zero Position`,
+  findHomeOnBoot = `Find Home on Boot`,
+  stopAtHome = `Stop at Home`,
+  stopAtMax = `Stop at Max`,
+  negativeCoordinatesOnly = `Negative Coordinates Only`,
+  axisLength = `Axis Length (mm)`,
+
+  // Motors
+  motors = `Motors`,
+  maxSpeed = `Max Speed (mm/s)`,
+  homingSpeed = `Homing Speed (mm/s)`,
+  minimumSpeed = `Minimum Speed (mm/s)`,
+  accelerateFor = `Accelerate for (mm)`,
+  stepsPerMm = `Steps per MM`,
+  microstepsPerStep = `Microsteps per step`,
+  alwaysPowerMotors = `Always Power Motors`,
+  invertMotors = `Invert Motors`,
+  motorCurrent = `Motor Current`,
+  enable2ndXMotor = `Enable 2nd X Motor`,
+  invert2ndXMotor = `Invert 2nd X Motor`,
+
+  // Encoders / Stall Detection
+  encoders = `Encoders`,
+  stallDetection = `Stall Detection`,
+  enableEncoders = `Enable Encoders`,
+  enableStallDetection = `Enable Stall Detection`,
+  stallSensitivity = `Stall Sensitivity`,
+  useEncodersForPositioning = `Use Encoders for Positioning`,
+  invertEncoders = `Invert Encoders`,
+  maxMissedSteps = `Max Missed Steps`,
+  missedStepDecay = `Missed Step Decay`,
+  encoderScaling = `Encoder Scaling`,
+
+  // Endstops
+  endstops = `Endstops`,
+  enableEndstops = `Enable Endstops`,
+  swapEndstops = `Swap Endstops`,
+  invertEndstops = `Invert Endstops`,
+
+  // Error handling
+  errorHandling = `Error Handling`,
+  timeoutAfter = `Timeout after (seconds)`,
+  maxRetries = `Max Retries`,
+  estopOnMovementError = `E-Stop on Movement Error`,
+
+  // Pin Guard
+  pinGuard = `Pin Guard`,
+
+  // Danger Zone
+  dangerZone = `Danger Zone`,
+  resetHardwareParams = `Reset hardware parameter defaults`,
+
+  // Pin Bindings
+  pinBindings = `Pin Bindings`,
+
+  // FarmBot OS
+  farmbot = `FarmBot`,
+  name = `name`,
+  timezone = `timezone`,
+  camera = `camera`,
+  firmware = `Firmware`,
+  applySoftwareUpdates = `update time`,
+  farmbotOSAutoUpdate = `auto update`,
+  farmbotOS = `Farmbot OS`,
+  autoSync = `Auto Sync`,
+  bootSequence = `Boot Sequence`,
+
+  // Power and Reset
+  powerAndReset = `Power and Reset`,
+  restartFarmbot = `Restart Farmbot`,
+  shutdownFarmbot = `Shutdown Farmbot`,
+  restartFirmware = `Restart Firmware`,
+  factoryReset = `Factory Reset`,
+  autoFactoryReset = `Automatic Factory Reset`,
+  connectionAttemptPeriod = `Connection Attempt Period`,
+  changeOwnership = `Change Ownership`,
+
+  // Farm Designer
+  farmDesigner = `Farm Designer`,
+  animations = `Plant animations`,
+  trail = `Virtual FarmBot trail`,
+  dynamicMap = `Dynamic map size`,
+  mapSize = `Map size`,
+  rotateMap = `Rotate map`,
+  mapOrigin = `Map origin`,
+  confirmPlantDeletion = `Confirm plant deletion`,
+
+  // Firmware
+  firmwareSection = `Firmware`,
+  flashFirmware = `Flash firmware`,
+}
+
 export namespace DiagnosticMessages {
   export const OK = trim(`All systems nominal.`);
 
@@ -924,8 +1063,7 @@ export namespace DiagnosticMessages {
     but we have no recent record of FarmBot connecting to the internet.
     This usually happens because of poor WiFi connectivity in the garden,
     a bad password during configuration, a very long power outage, or
-    blocked ports on FarmBot's local network. Please refer IT staff to
-    https://software.farm.bot/docs/for-it-security-professionals`);
+    blocked ports on FarmBot's local network. Please refer IT staff to:`);
 
   export const NO_WS_AVAILABLE = trim(`You are either offline, using a web
    browser that does not support WebSockets, or are behind a firewall that

@@ -3,7 +3,7 @@ import { FarmBotLayer } from "../farmbot_layer";
 import { shallow } from "enzyme";
 import { FarmBotLayerProps } from "../../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<FarmBotLayer/>", () => {
@@ -25,6 +25,7 @@ describe("<FarmBotLayer/>", () => {
       peripherals: [],
       eStopStatus: false,
       getConfigValue: jest.fn(),
+      mountedToolName: undefined,
     };
   }
 

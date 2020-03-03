@@ -2,7 +2,7 @@ import { TaggedImage, SyncStatus } from "farmbot";
 import { WD_ENV } from "../weed_detector/remote_env/interfaces";
 import { NetworkState } from "../../connectivity/interfaces";
 import {
-  ShouldDisplay, SaveFarmwareEnv, UserEnv
+  ShouldDisplay, SaveFarmwareEnv, UserEnv,
 } from "../../devices/interfaces";
 import { TimeSettings } from "../../interfaces";
 

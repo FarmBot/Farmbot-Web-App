@@ -13,7 +13,7 @@ import { history } from "../../history";
 import { CallBackProps } from "react-joyride";
 
 describe("<RunTour />", () => {
-  const EMPTY_DIV = "<div></div>";
+  const EMPTY_DIV = "<div class=\"tour-inactive\"></div>";
 
   it("tour is running", () => {
     const wrapper = mount(<RunTour currentTour={tourNames()[0].name} />);
@@ -56,7 +56,7 @@ describe("<Tour />", () => {
     expect(wrapper.state()).toEqual({
       run: true, index: 1, returnPath: "/app/messages"
     });
-    expect(history.push).toHaveBeenCalledWith("/app/tools");
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
   });
 
   it("navigates through tour: other", () => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DrawnPoint, DrawnPointProps } from "../drawn_point";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../__test_support__/svg_mount";
 

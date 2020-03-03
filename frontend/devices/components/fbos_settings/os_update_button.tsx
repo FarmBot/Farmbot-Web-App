@@ -61,7 +61,7 @@ export function downloadProgress(job: JobProgress | undefined) {
 const getLatestVersion = (
   currentOSVersion: string | undefined,
   currentBetaOSVersion: string | undefined,
-  betaOptIn: boolean
+  betaOptIn: boolean,
 ): string | undefined => {
   if (!betaOptIn) { return currentOSVersion; }
   switch (semverCompare(currentOSVersion || "", currentBetaOSVersion || "")) {
@@ -90,7 +90,7 @@ const betaCommitsAreEqual = (
 /** Determine the FBOS update button state. */
 const compareWithBotVersion = (
   candidate: string | undefined,
-  installedVersion: string | undefined
+  installedVersion: string | undefined,
 ): UpdateButton => {
   if (!isString(installedVersion)) { return UpdateButton.none; }
   if (!isString(candidate)) { return UpdateButton.unknown; }
@@ -108,14 +108,14 @@ const compareWithBotVersion = (
 /** Installed version equal to latest. */
 const equalToLatest = (
   latest: string | undefined,
-  installedVersion: string | undefined
+  installedVersion: string | undefined,
 ): boolean =>
   isString(installedVersion) && isString(latest) &&
   semverCompare(installedVersion, latest) === SemverResult.EQUAL;
 
 /** Color, text, and hover text for update button: release version status. */
 const buttonVersionStatus =
-  ({ bot, betaOptIn }: { bot: BotState, betaOptIn: boolean, }): ButtonProps => {
+  ({ bot, betaOptIn }: { bot: BotState, betaOptIn: boolean }): ButtonProps => {
     // Information about available releases.
     const { currentOSVersion, currentBetaOSVersion, currentBetaOSCommit } = bot;
     // Currently installed FBOS version data.

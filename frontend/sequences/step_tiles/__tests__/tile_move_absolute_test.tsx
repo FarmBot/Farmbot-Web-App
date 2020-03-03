@@ -2,7 +2,7 @@ import * as React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { mount, ReactWrapper } from "enzyme";
 import {
-  fakeSequence, fakePoint, fakeTool
+  fakeSequence, fakePoint, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import {
   Coordinate,
@@ -12,11 +12,12 @@ import {
   Tool,
 } from "farmbot";
 import {
-  fakeHardwareFlags
+  fakeHardwareFlags,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { emptyState } from "../../../resources/reducer";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { StepParams } from "../../interfaces";
+import { buildResourceIndex } from "../../../__test_support__/resource_index_builder";
 
 describe("<TileMoveAbsolute/>", () => {
   const fakeProps = (): StepParams => {
@@ -47,7 +48,7 @@ describe("<TileMoveAbsolute/>", () => {
   }
 
   function checkField(
-    block: ReactWrapper, position: number, label: string, value: string | number
+    block: ReactWrapper, position: number, label: string, value: string | number,
   ) {
     expect(block.find("label").at(position).text().toLowerCase())
       .toEqual(label);
@@ -73,6 +74,25 @@ describe("<TileMoveAbsolute/>", () => {
     checkField(block, 3, "x-offset", "4.4");
     checkField(block, 4, "y-offset", "5");
     checkField(block, 5, "z-offset", "6");
+  });
+
+  it("disables x-offset", () => {
+    const p = fakeProps();
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.gantry_mounted = true;
+    toolSlot.body.tool_id = 1;
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.resources = buildResourceIndex([toolSlot, tool]).index;
+    const toolKind: Tool = { kind: "tool", args: { tool_id: 1 } };
+    (p.currentStep as MoveAbsolute).args.location = toolKind;
+    const block = mount(<TileMoveAbsolute {...p} />);
+    const xOffsetInput = block.find("input").at(1);
+    expect(xOffsetInput.props().name).toEqual("offset-x");
+    expect(xOffsetInput.props().disabled).toBeTruthy();
+    const yOffsetInput = block.find("input").at(2);
+    expect(yOffsetInput.props().name).toEqual("offset-y");
+    expect(yOffsetInput.props().disabled).toBeFalsy();
   });
 
   it("updates input value", () => {
@@ -166,7 +186,7 @@ describe("<TileMoveAbsolute/>", () => {
       const tma = ordinaryMoveAbs();
       tma.updateArgs = jest.fn();
       const location: Coordinate = {
-        kind: "coordinate", args: { x: 0, y: 0, z: 0, }
+        kind: "coordinate", args: { x: 0, y: 0, z: 0 }
       };
       tma.updateLocation({
         kind: "parameter_application",

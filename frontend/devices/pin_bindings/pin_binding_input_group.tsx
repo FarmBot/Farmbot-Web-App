@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Row, Col, FBSelect, NULL_CHOICE, DropDownItem } from "../../ui";
+import { Row, Col, FBSelect, DropDownItem } from "../../ui";
 import { PinBindingColWidth } from "./pin_bindings";
 import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
   PinBindingInputGroupProps,
-  PinBindingInputGroupState
+  PinBindingInputGroupState,
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
 import { initSave } from "../../api/crud";
@@ -13,14 +13,15 @@ import { pinBindingBody } from "./tagged_pin_binding_init";
 import { error, warning } from "../../toast/toast";
 import {
   validGpioPins, sysBindings, generatePinLabel, RpiPinList,
-  bindingTypeLabelLookup, specialActionLabelLookup, specialActionList,
+  bindingTypeLabelLookup, specialActionList,
   reservedPiGPIO,
-  bindingTypeList
+  bindingTypeList,
+  getSpecialActionLabel,
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { ResourceIndex } from "../../resources/interfaces";
 import {
-  PinBindingType, PinBindingSpecialAction
+  PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
 
@@ -119,8 +120,6 @@ export class PinBindingInputGroup
         <BindingTypeDropDown
           bindingType={bindingType}
           setBindingType={this.setBindingType} />
-      </Col>
-      <Col xs={PinBindingColWidth.target}>
         {bindingType == PinBindingType.special
           ? <ActionTargetDropDown
             specialActionInput={specialActionInput}
@@ -134,8 +133,9 @@ export class PinBindingInputGroup
         <button
           className="fb-button green"
           type="button"
+          title={t("BIND")}
           onClick={this.bindPin}>
-          {t("BIND")}
+          <i className={"fa fa-plus"} />
         </button>
       </Col>
     </Row>;
@@ -152,10 +152,10 @@ export const PinNumberInputGroup = (props: {
   const selectedPinNumber = isNumber(pinNumberInput) ? {
     label: generatePinLabel(pinNumberInput),
     value: "" + pinNumberInput
-  } : NULL_CHOICE;
+  } : undefined;
 
   return <Row>
-    <Col xs={1}>
+    <Col xs={3}>
       <Popover position={Position.TOP}>
         <i className="fa fa-th-large" />
         <RpiGpioDiagram
@@ -181,7 +181,7 @@ export const BindingTypeDropDown = (props: {
   setBindingType: (ddi: DropDownItem) => void,
 }) => {
   const { bindingType, setBindingType } = props;
-  return <FBSelect
+  return <FBSelect extraClass={"binding-type-dropdown"}
     key={"binding_type_input_" + bindingType}
     onChange={setBindingType}
     selectedItem={{
@@ -213,12 +213,13 @@ export const ActionTargetDropDown = (props: {
   const { specialActionInput, setSpecialAction } = props;
 
   const selectedSpecialAction = specialActionInput ? {
-    label: specialActionLabelLookup[specialActionInput || ""],
+    label: getSpecialActionLabel(specialActionInput),
     value: "" + specialActionInput
-  } : NULL_CHOICE;
+  } : undefined;
 
   return <FBSelect
     key={"special_action_input_" + specialActionInput}
+    customNullLabel={t("Select an action")}
     onChange={setSpecialAction}
     selectedItem={selectedSpecialAction}
     list={specialActionList} />;

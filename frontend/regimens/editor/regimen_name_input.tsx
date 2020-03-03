@@ -16,6 +16,7 @@ export function RegimenNameInput({ regimen, dispatch }: RegimenProps) {
       <input
         placeholder={t("Regimen Name")}
         type="text"
+        name="name"
         onChange={write({ dispatch, regimen })}
         value={value} />
     </Col>

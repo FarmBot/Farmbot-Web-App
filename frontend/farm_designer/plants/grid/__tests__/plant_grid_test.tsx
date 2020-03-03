@@ -7,7 +7,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
-import { error } from "../../../../toast/toast";
+import { error, success } from "../../../../toast/toast";
 
 describe("PlantGrid", () => {
   function fakeProps() {
@@ -23,14 +23,13 @@ describe("PlantGrid", () => {
     const p = fakeProps();
     const el = mount<PlantGrid>(<PlantGrid {...p} />);
     // Upon load, there should be one button.
-    const previewButton = el.find("a.clear-button");
+    const previewButton = el.find("a.preview-button");
     expect(previewButton.text()).toContain("Preview");
     previewButton.simulate("click");
 
     // After clicking PREVIEW, there should be two buttons.
-    const saveAndCancelBtns = el.find("a.clear-button");
-    const cancel = saveAndCancelBtns.at(0);
-    const save = saveAndCancelBtns.at(1);
+    const cancel = el.find("a.cancel-button");
+    const save = el.find("a.save-button");
     expect(cancel.text()).toContain("Cancel");
     expect(save.text()).toContain("Save");
     expect(el.state().status).toEqual("dirty");
@@ -39,8 +38,11 @@ describe("PlantGrid", () => {
   it("saves a grid", async () => {
     const props = fakeProps();
     const pg = mount<PlantGrid>(<PlantGrid {...props} />).instance();
+    const oldId = pg.state.gridId;
     await pg.saveGrid();
-    expect(saveGrid).toHaveBeenCalledWith(pg.state.gridId);
+    expect(saveGrid).toHaveBeenCalledWith(oldId);
+    expect(success).toHaveBeenCalledWith("16 plants added.");
+    expect(pg.state.gridId).not.toEqual(oldId);
   });
 
   it("stashes a grid", async () => {

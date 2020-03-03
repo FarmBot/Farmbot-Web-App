@@ -1,5 +1,4 @@
 import * as React from "react";
-import { mount } from "enzyme";
 import {
   ConnectivityDiagram,
   ConnectivityDiagramProps,
@@ -9,7 +8,7 @@ import {
   getTextPosition,
   getLineProps,
   DiagramNodes,
-  getConnectionColor
+  getConnectionColor,
 } from "../diagram";
 import { Color } from "../../../ui/index";
 import { svgMount } from "../../../__test_support__/svg_mount";
@@ -83,9 +82,9 @@ describe("getTextPosition()", () => {
 
 describe("nodeLabel()", () => {
   it("renders", () => {
-    const label = mount(nodeLabel("Top Node", "top" as DiagramNodes));
-    expect(label.text()).toEqual("Top Node");
-    expect(label.props())
+    const label = svgMount(nodeLabel("Top Node", "top" as DiagramNodes));
+    expect(label.find("text").text()).toEqual("Top Node");
+    expect(label.find("text").props())
       .toEqual({ children: "Top Node", textAnchor: "middle", x: 0, y: -75 });
   });
 });

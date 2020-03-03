@@ -22,7 +22,7 @@ export const JogControlsGroup = (props: JogControlsGroupProps) => {
   const {
     dispatch, stepSize, botPosition, getValue, arduinoBusy, firmwareSettings
   } = props;
-  return <div>
+  return <div className={"jog-controls-group"}>
     <label className="text-center">
       {t("MOVE AMOUNT (mm)")}
     </label>

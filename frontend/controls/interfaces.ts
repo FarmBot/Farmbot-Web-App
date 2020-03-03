@@ -1,12 +1,12 @@
 import {
-  BotState, Xyz, BotPosition, ShouldDisplay, UserEnv
+  BotState, Xyz, BotPosition, ShouldDisplay, UserEnv,
 } from "../devices/interfaces";
 import { Vector3, McuParams, FirmwareHardware } from "farmbot/dist";
 import {
   TaggedWebcamFeed,
   TaggedPeripheral,
   TaggedSensor,
-  TaggedSensorReading
+  TaggedSensorReading,
 } from "farmbot";
 import { NetworkState } from "../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";

@@ -79,7 +79,7 @@ const toolVar = (value: string | number) =>
 
 const pointVar = (
   pointer_type: "Plant" | "GenericPointer",
-  value: string | number
+  value: string | number,
 ) => ({ identifierLabel: label, allowedVariableNodes }: NewVarProps): VariableWithAValue =>
     createVariableNode(allowedVariableNodes)(label, {
       kind: "point",
@@ -163,7 +163,7 @@ export const isScopeDeclarationBodyItem =
 /** Add a new variable or replace an existing one with the same label (regimens). */
 export const addOrEditBodyVariables = (
   bodyVariables: VariableNode[],
-  updatedItem: ScopeDeclarationBodyItem
+  updatedItem: ScopeDeclarationBodyItem,
 ): ScopeDeclarationBodyItem[] => {
   const filteredVariables: ScopeDeclarationBodyItem[] =
     betterCompact(bodyVariables.map(v =>
@@ -177,7 +177,7 @@ export const addOrEditBodyVariables = (
  * (sequences) */
 export const addOrEditDeclarationLocals = (
   declarations: ScopeDeclarationBodyItem[],
-  updatedItem: ScopeDeclarationBodyItem
+  updatedItem: ScopeDeclarationBodyItem,
 ): ScopeDeclaration => {
   const updatedDeclarations = addOrEditBodyVariables(declarations, updatedItem);
   const newLocals: ScopeDeclaration = {

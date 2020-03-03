@@ -4,9 +4,15 @@ export const panelState = (): ControlPanelState => {
   return {
     homing_and_calibration: false,
     motors: false,
-    encoders_and_endstops: false,
+    encoders: false,
+    endstops: false,
+    error_handling: false,
+    pin_bindings: false,
     danger_zone: false,
     power_and_reset: false,
-    pin_guard: false
+    pin_guard: false,
+    farm_designer: false,
+    firmware: false,
+    farmbot_os: false,
   };
 };

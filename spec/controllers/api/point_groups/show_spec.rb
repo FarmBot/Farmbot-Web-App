@@ -17,4 +17,12 @@ describe Api::PointGroupsController do
     expect(response.status).to eq(200)
     expect(json.fetch(:name)).to eq pg.name
   end
+
+  it "fills `nil` criteria with PointGroup::DEFAULT_CRITERIA" do
+    pg = PointGroup.create!(name: "x", device: device, criteria: nil )
+    sign_in user
+    get :show, params: { id: pg.id }
+    expect(response.status).to eq(200)
+    expect(json.fetch(:criteria)).to eq PointGroup::DEFAULT_CRITERIA
+  end
 end

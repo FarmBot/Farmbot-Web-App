@@ -4,7 +4,7 @@ import moment from "moment";
 import { BotLocationData, BotPosition } from "../../devices/interfaces";
 import { trim } from "../../util";
 import {
-  cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range
+  cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range,
 } from "lodash";
 import { t } from "../../i18next_wrapper";
 
@@ -46,9 +46,9 @@ const getLastEntry = (): Entry | undefined => {
 const findYLimit = (): number => {
   const array = getArray();
   const arrayAbsMax = max(array.map(entry =>
-    max(["position", "scaled_encoders"].map((name: LocationName) =>
+    max(["position", "scaled_encoders"].map((key: LocationName) =>
       max(["x", "y", "z"].map((axis: Xyz) =>
-        Math.abs(entry.locationData[name][axis] || 0) + 1))))));
+        Math.abs(entry.locationData[key][axis] || 0) + 1))))));
   return Math.max(ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
 };
 
@@ -80,19 +80,19 @@ const getPaths = (): Paths => {
   const paths = newPaths();
   if (last) {
     getReversedArray().map(entry => {
-      ["position", "scaled_encoders"].map((name: LocationName) => {
+      ["position", "scaled_encoders"].map((key: LocationName) => {
         ["x", "y", "z"].map((axis: Xyz) => {
-          const lastPos = last.locationData[name][axis];
-          const pos = entry.locationData[name][axis];
+          const lastPos = last.locationData[key][axis];
+          const pos = entry.locationData[key][axis];
           if (isNumber(lastPos) && isFinite(lastPos)
             && isNumber(maxY) && isNumber(pos)) {
-            if (!paths[name][axis].startsWith("M")) {
+            if (!paths[key][axis].startsWith("M")) {
               const yStart = -lastPos / maxY * HEIGHT / 2;
-              paths[name][axis] = `M ${MAX_X},${yStart} `;
+              paths[key][axis] = `M ${MAX_X},${yStart} `;
             }
             const x = MAX_X - (last.timestamp - entry.timestamp);
             const y = -pos / maxY * HEIGHT / 2;
-            paths[name][axis] += `L ${x},${y} `;
+            paths[key][axis] += `L ${x},${y} `;
           }
         });
       });
@@ -154,12 +154,12 @@ const PlotLines = ({ locationData }: { locationData: BotLocationData }) => {
   updateArray({ timestamp: moment().unix(), locationData });
   const paths = getPaths();
   return <g id="plot_lines">
-    {["position", "scaled_encoders"].map((name: LocationName) =>
+    {["position", "scaled_encoders"].map((key: LocationName) =>
       ["x", "y", "z"].map((axis: Xyz) =>
-        <path key={name + axis} fill={"none"}
-          stroke={COLOR_LOOKUP[axis]} strokeWidth={LINEWIDTH_LOOKUP[name]}
+        <path key={key + axis} fill={"none"}
+          stroke={COLOR_LOOKUP[axis]} strokeWidth={LINEWIDTH_LOOKUP[key]}
           strokeLinecap={"round"} strokeLinejoin={"round"}
-          d={paths[name][axis]} />))}
+          d={paths[key][axis]} />))}
   </g>;
 };
 

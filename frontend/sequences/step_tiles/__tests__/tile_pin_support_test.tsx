@@ -9,7 +9,7 @@ import {
   currentModeSelection,
   currentValueSelection,
   setPinMode,
-  setPinValue
+  setPinValue,
 } from "../tile_pin_support";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { WritePin, ALLOWED_PIN_MODES } from "farmbot/dist";

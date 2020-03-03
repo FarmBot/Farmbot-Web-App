@@ -11,11 +11,11 @@ import { ToolTips } from "../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import {
-  determineDropdown, determineVector
+  determineDropdown, determineVector, Vector3Plus,
 } from "../../resources/sequence_meta";
 import { LocationForm } from "../locals_list/location_form";
 import {
-  VariableNode, AllowedVariableNodes
+  VariableNode, AllowedVariableNodes,
 } from "../locals_list/locals_list_support";
 import { merge } from "lodash";
 import { MoveAbsoluteWarning } from "./tile_move_absolute_conflict_check";
@@ -75,9 +75,14 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
     };
   }
 
-  get vector(): Vector3 | undefined {
+  get vector(): Vector3 | Vector3Plus | undefined {
     const sequenceUuid = this.props.currentSequence.uuid;
     return determineVector(this.celeryNode, this.props.resources, sequenceUuid);
+  }
+
+  get gantryMounted() {
+    return this.vector && ("gantry_mounted" in this.vector)
+      && this.vector.gantry_mounted;
   }
 
   LocationForm = () =>
@@ -120,6 +125,7 @@ export class TileMoveAbsolute extends React.Component<StepParams, MoveAbsState> 
         {t("{{axis}}-Offset", { axis })}
       </label>
       <BlurableInput type="number"
+        disabled={axis == "x" && this.gantryMounted}
         onCommit={this.updateInputValue(axis, "offset")}
         name={`offset-${axis}`}
         value={(this.args.offset.args[axis] || 0).toString()} />

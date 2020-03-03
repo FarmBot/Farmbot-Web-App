@@ -6,14 +6,14 @@ import {
   maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
-  sourceFbosConfigValue, sourceFwConfigValue
+  sourceFbosConfigValue, sourceFwConfigValue,
 } from "./components/source_config_value";
 import { validFwConfig, validFbosConfig } from "../util";
 import {
-  saveOrEditFarmwareEnv, getEnv, getShouldDisplayFn
+  saveOrEditFarmwareEnv, getEnv, getShouldDisplayFn,
 } from "../farmware/state_to_props";
 import {
-  getFbosConfig, getFirmwareConfig, getWebAppConfig
+  getFbosConfig, getFirmwareConfig, getWebAppConfig,
 } from "../resources/getters";
 import { getAllAlerts } from "../messages/state_to_props";
 

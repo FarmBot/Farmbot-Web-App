@@ -1,4 +1,5 @@
-import { boardType } from "../firmware_hardware_support";
+import { boardType, getFwHardwareValue } from "../firmware_hardware_support";
+import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 
 describe("boardType()", () => {
   it("returns Farmduino", () => {
@@ -30,5 +31,20 @@ describe("boardType()", () => {
 
   it("returns None", () => {
     expect(boardType("none")).toEqual("none");
+  });
+});
+
+describe("getFwHardwareValue()", () => {
+  it("returns undefined", () => {
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = "wrong";
+    expect(getFwHardwareValue(fbosConfig)).toEqual(undefined);
+    expect(getFwHardwareValue(undefined)).toEqual(undefined);
+  });
+
+  it("returns real value", () => {
+    const fbosConfig = fakeFbosConfig();
+    fbosConfig.body.firmware_hardware = "express_k10";
+    expect(getFwHardwareValue(fbosConfig)).toEqual("express_k10");
   });
 });

@@ -12,12 +12,12 @@ jest.mock("../../../api/crud", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditZone as EditZone, EditZoneProps, mapStateToProps
+  RawEditZone as EditZone, EditZoneProps, mapStateToProps,
 } from "../edit_zone";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { fakePointGroup } from "../../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { save, edit } from "../../../api/crud";
 

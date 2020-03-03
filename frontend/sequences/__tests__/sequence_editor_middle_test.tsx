@@ -3,11 +3,11 @@ import { SequenceEditorMiddle } from "../sequence_editor_middle";
 import { mount } from "enzyme";
 import { SequenceEditorMiddleProps } from "../interfaces";
 import {
-  FAKE_RESOURCES, buildResourceIndex
+  FAKE_RESOURCES, buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import {
-  fakeHardwareFlags, fakeFarmwareData
+  fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
 
 describe("<SequenceEditorMiddle/>", () => {

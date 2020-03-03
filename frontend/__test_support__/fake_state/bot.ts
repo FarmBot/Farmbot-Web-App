@@ -1,16 +1,10 @@
 import { Everything } from "../../interfaces";
+import { panelState } from "../control_panel_state";
 
 export const bot: Everything["bot"] = {
   "consistent": true,
   "stepSize": 100,
-  "controlPanelState": {
-    "homing_and_calibration": false,
-    "motors": false,
-    "encoders_and_endstops": false,
-    "danger_zone": false,
-    "power_and_reset": false,
-    "pin_guard": false,
-  },
+  "controlPanelState": panelState(),
   "hardware": {
     "gpio_registry": {},
     "mcu_params": {

@@ -6,11 +6,11 @@ import {
   CommonAlertCardProps,
   DismissAlertProps,
   Bulletin,
-  BulletinAlertComponentState
+  BulletinAlertComponentState,
 } from "./interfaces";
 import { formatLogTime } from "../logs";
 import {
-  FlashFirmwareBtn
+  FlashFirmwareBtn,
 } from "../devices/components/fbos_settings/firmware_hardware_status";
 import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
@@ -18,12 +18,11 @@ import { TourList } from "../help/tour_list";
 import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
 import {
-  isFwHardwareValue, FIRMWARE_CHOICES_DDI, getFirmwareChoices
+  isFwHardwareValue, FIRMWARE_CHOICES_DDI, getFirmwareChoices,
 } from "../devices/components/firmware_hardware_support";
 import { updateConfig } from "../devices/actions";
 import { fetchBulletinContent, seedAccount } from "./actions";
 import { startCase } from "lodash";
-import { DevSettings } from "../account/dev/dev_support";
 import { Session } from "../session";
 
 export const AlertCard = (props: AlertCardProps) => {
@@ -219,11 +218,11 @@ const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.2", value: "genesis_1.2" },
   { label: "Genesis v1.3", value: "genesis_1.3" },
   { label: "Genesis v1.4", value: "genesis_1.4" },
+  { label: "Genesis v1.5", value: "genesis_1.5" },
   { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
-  ...(DevSettings.futureFeaturesEnabled() ? [
-    { label: "Express v1.0", value: "express_1.0" },
-    { label: "Express v1.0 XL", value: "express_xl_1.0" },
-  ] : []),
+  { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
+  { label: "Express v1.0", value: "express_1.0" },
+  { label: "Express v1.0 XL", value: "express_xl_1.0" },
   { label: "Custom Bot", value: "none" },
 ];
 

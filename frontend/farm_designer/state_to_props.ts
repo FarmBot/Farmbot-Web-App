@@ -11,7 +11,9 @@ import {
   selectAllSensors,
   maybeGetTimeSettings,
   selectAllPoints,
-  selectAllPointGroups
+  selectAllPointGroups,
+  getDeviceAccountSettings,
+  maybeFindToolById,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -63,6 +65,11 @@ export function mapStateToProps(props: Everything): Props {
     x: calcMicrostepsPerMm(fw.movement_step_per_mm_x, fw.movement_microsteps_x),
     y: calcMicrostepsPerMm(fw.movement_step_per_mm_y, fw.movement_microsteps_y),
   };
+
+  const mountedToolId =
+    getDeviceAccountSettings(props.resources.index).body.mounted_tool_id;
+  const mountedToolName =
+    maybeFindToolById(props.resources.index, mountedToolId)?.body.name;
 
   const peripherals = uniq(selectAllPeripherals(props.resources.index))
     .map(x => {
@@ -123,5 +130,6 @@ export function mapStateToProps(props: Everything): Props {
     sensors: selectAllSensors(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
     shouldDisplay,
+    mountedToolName,
   };
 }

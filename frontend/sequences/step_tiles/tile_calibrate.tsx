@@ -2,7 +2,7 @@ import * as React from "react";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import {
-  StepWrapper, StepHeader, StepContent, conflictsString, StepWarning
+  StepWrapper, StepHeader, StepContent, conflictsString, StepWarning,
 } from "../step_ui/index";
 import { AxisStepRadio } from "../step_ui/step_radio";
 import { t } from "../../i18next_wrapper";
@@ -69,7 +69,7 @@ class InnerTileCalibrate extends React.Component<CalibrateParams, {}> {
     return <StepWrapper>
       <StepHeader
         className={className}
-        helpText={ToolTips.CALIBRATION}
+        helpText={ToolTips.CALIBRATE}
         currentSequence={currentSequence}
         currentStep={currentStep}
         dispatch={dispatch}

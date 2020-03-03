@@ -9,11 +9,11 @@ import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
-  fakeUser, fakeWebAppConfig, fakeFbosConfig, fakeFarmwareEnv
+  fakeUser, fakeWebAppConfig, fakeFbosConfig, fakeFarmwareEnv,
 } from "../__test_support__/fake_state/resources";
 import { fakeState } from "../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../__test_support__/resource_index_builder";
 import { ResourceName } from "farmbot";
 import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
@@ -125,7 +125,7 @@ describe("<App />: NavBar", () => {
       "Device",
       "Sequences",
       "Regimens",
-      "Farmware"
+      "Farmware",
     ];
     strings.map(string => expect(t).toContain(string));
     wrapper.unmount();
@@ -157,7 +157,6 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const config = fakeFbosConfig();
     config.body.auto_sync = true;
-    config.body.api_migrated = true;
     const fakeEnv = fakeFarmwareEnv();
     state.resources = buildResourceIndex([config, fakeEnv]);
     state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };

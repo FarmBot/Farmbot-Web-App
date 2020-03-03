@@ -54,5 +54,5 @@ export const fakeImages: TaggedImage[] = [
       }
     },
     "uuid": "Image.7.5"
-  }
+  },
 ];

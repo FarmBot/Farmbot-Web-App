@@ -4,7 +4,7 @@ import {
   selectAllWebcamFeeds,
   selectAllSensors,
   selectAllSensorReadings,
-  maybeGetTimeSettings
+  maybeGetTimeSettings,
 } from "../resources/selectors";
 import { Props } from "./interfaces";
 import { validFwConfig, validFbosConfig } from "../util";

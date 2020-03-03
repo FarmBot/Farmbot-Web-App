@@ -24,7 +24,7 @@ jest.mock("../../redux/store", () => {
 });
 
 import {
-  computeEditorUrlFromState, computeFarmwareUrlFromState
+  computeEditorUrlFromState, computeFarmwareUrlFromState,
 } from "../compute_editor_url_from_state";
 
 describe("computeEditorUrlFromState", () => {

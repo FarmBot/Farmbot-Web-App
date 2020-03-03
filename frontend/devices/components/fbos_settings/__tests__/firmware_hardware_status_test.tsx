@@ -8,7 +8,7 @@ import {
   FirmwareHardwareStatusDetailsProps, FirmwareHardwareStatusDetails,
   FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon,
   FirmwareHardwareStatusProps, FirmwareHardwareStatus,
-  FirmwareActions, FirmwareActionsProps
+  FirmwareActions, FirmwareActionsProps,
 } from "../firmware_hardware_status";
 import { bot } from "../../../../__test_support__/fake_state/bot";
 import { clickButton } from "../../../../__test_support__/helpers";
@@ -22,7 +22,6 @@ describe("<FirmwareHardwareStatusDetails />", () => {
     apiFirmwareValue: undefined,
     botFirmwareValue: undefined,
     mcuFirmwareValue: undefined,
-    shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
   });
@@ -79,7 +78,6 @@ describe("<FirmwareHardwareStatus />", () => {
     alerts: [],
     botOnline: true,
     apiFirmwareValue: undefined,
-    shouldDisplay: () => true,
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
   });

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  Widget, WidgetHeader, WidgetBody, Row, Col, BlurableInput
+  Widget, WidgetHeader, WidgetBody, Row, Col, BlurableInput,
 } from "../../ui";
 import { ToggleButton } from "../../controls/toggle_button";
 import { setWebAppConfigValue } from "../../config_storage/actions";

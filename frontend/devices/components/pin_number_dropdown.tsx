@@ -4,10 +4,10 @@ import { updateMCU } from "../actions";
 import { isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import {
-  pinDropdowns, celery2DropDown, PinGroupName, PERIPHERAL_HEADING
+  pinDropdowns, celery2DropDown, PinGroupName, PERIPHERAL_HEADING,
 } from "../../sequences/step_tiles/pin_and_peripheral_support";
 import {
-  selectAllPeripherals, selectAllSavedPeripherals
+  selectAllPeripherals, selectAllSavedPeripherals,
 } from "../../resources/selectors";
 import { Dictionary, NamedPin, McuParamName } from "farmbot";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -56,8 +56,12 @@ const pinNumOrNamedPin =
       }
       : pin;
 
+const DISABLE_DDI = (): DropDownItem => ({
+  label: t("None"), value: 0
+});
+
 const listItems = (resources: ResourceIndex): DropDownItem[] =>
-  [...peripheralItems(resources), ...pinDropdowns(n => n)];
+  [DISABLE_DDI(), ...peripheralItems(resources), ...pinDropdowns(n => n)];
 
 const peripheralItems = (resources: ResourceIndex): DropDownItem[] => {
   const list = selectAllSavedPeripherals(resources)

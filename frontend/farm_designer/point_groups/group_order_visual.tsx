@@ -2,7 +2,7 @@ import * as React from "react";
 import { store } from "../../redux/store";
 import { MapTransformProps } from "../map/interfaces";
 import { isUndefined } from "lodash";
-import { sortGroupBy } from "./point_group_sort_selector";
+import { sortGroupBy } from "./point_group_sort";
 import { Color } from "../../ui";
 import { transformXY } from "../map/util";
 import { nn } from "./paths";
@@ -15,7 +15,7 @@ export interface GroupOrderProps {
 }
 
 const sortedPointCoordinates = (
-  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[]
+  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[],
 ): { x: number, y: number }[] => {
   if (isUndefined(group)) { return []; }
   const { resources } = store.getState();
@@ -36,7 +36,7 @@ export interface PointsPathLineProps {
 }
 
 export const PointsPathLine = (props: PointsPathLineProps) =>
-  <g id="group-order"
+  <g id="group-order" style={{ pointerEvents: "none" }}
     stroke={props.color || Color.mediumGray}
     strokeWidth={props.strokeWidth || 3}
     strokeDasharray={props.dash || 12}>

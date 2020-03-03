@@ -1,7 +1,7 @@
 import * as React from "react";
 import { MapTransformProps } from "../map/interfaces";
-import { sortGroupBy, sortOptionsTable } from "./point_group_sort_selector";
-import { sortBy } from "lodash";
+import { sortGroupBy, sortOptionsTable } from "./point_group_sort";
+import { sortBy, isNumber } from "lodash";
 import { PointsPathLine } from "./group_order_visual";
 import { Color } from "../../ui";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -10,6 +10,7 @@ import { Actions } from "../../constants";
 import { edit } from "../../api/crud";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { error } from "../../toast/toast";
+import { DevSettings } from "../../account/dev/dev_support";
 
 const xy = (point: TaggedPoint) => ({ x: point.body.x, y: point.body.y });
 
@@ -66,7 +67,8 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
   const normalizedLength = pathLength / maxLength * 100;
   const sortLabel =
     sortTypeKey == "nn" ? "Optimized" : sortOptionsTable()[sortTypeKey];
-  return <div className={"sort-path-info-bar"}
+  const selected = group.body.sort_type == sortTypeKey;
+  return <div className={`sort-option-bar ${selected ? "selected" : ""}`}
     onMouseEnter={() =>
       dispatch({ type: Actions.TRY_SORT_TYPE, payload: sortTypeKey })}
     onMouseLeave={() =>
@@ -74,9 +76,11 @@ export const PathInfoBar = (props: PathInfoBarProps) => {
     onClick={() =>
       sortTypeKey == "nn"
         ? error(t("Not supported yet."))
-        : dispatch(edit(group, { sort_type: sortTypeKey }))}
-    style={{ width: `${normalizedLength}%` }}>
-    {`${sortLabel}: ${Math.round(pathLength / 10) / 100}m`}
+        : dispatch(edit(group, { sort_type: sortTypeKey }))}>
+    <div className={"sort-path-info-bar"}
+      style={{ width: `${normalizedLength}%` }}>
+      {`${sortLabel}: ${Math.round(pathLength / 10) / 100}m`}
+    </div>
   </div>;
 };
 
@@ -101,15 +105,17 @@ export class Paths extends React.Component<PathsProps, PathsState> {
   };
 
   render() {
-    if (!this.state.pathData.nn) { this.generatePathData(this.props.pathPoints); }
-    return <div>
-      <label>{t("Path lengths by sort type")}</label>
-      {SORT_TYPES.concat("nn").map(st =>
-        <PathInfoBar key={st}
-          sortTypeKey={st}
-          dispatch={this.props.dispatch}
-          group={this.props.group}
-          pathData={this.state.pathData} />)}
+    if (!isNumber(this.state.pathData.nn)) {
+      this.generatePathData(this.props.pathPoints);
+    }
+    return <div className={"group-sort-types"}>
+      {SORT_TYPES.concat(DevSettings.futureFeaturesEnabled() ? "nn" : [])
+        .map(sortType =>
+          <PathInfoBar key={sortType}
+            sortTypeKey={sortType}
+            dispatch={this.props.dispatch}
+            group={this.props.group}
+            pathData={this.state.pathData} />)}
     </div>;
   }
 }

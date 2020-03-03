@@ -1,18 +1,18 @@
 import { Everything } from "../interfaces";
 import {
-  selectAllImages, maybeGetDevice, maybeGetTimeSettings
+  selectAllImages, maybeGetDevice, maybeGetTimeSettings,
 } from "../resources/selectors";
 import {
-  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState
+  FarmwareProps, Feature, SaveFarmwareEnv, UserEnv, ShouldDisplay, BotState,
 } from "../devices/interfaces";
 import { prepopulateEnv } from "./weed_detector/remote_env/selectors";
 import {
-  selectAllFarmwareEnvs, selectAllFarmwareInstallations
+  selectAllFarmwareEnvs, selectAllFarmwareInstallations,
 } from "../resources/selectors_by_kind";
 import {
   determineInstalledOsVersion,
   createShouldDisplayFn,
-  betterCompact
+  betterCompact,
 } from "../util";
 import { ResourceIndex } from "../resources/interfaces";
 import { TaggedFarmwareEnv, JobProgress } from "farmbot";
@@ -98,12 +98,12 @@ export function mapStateToProps(props: Everything): FarmwareProps {
   });
   shouldDisplay(Feature.api_farmware_installations) &&
     taggedFarmwareInstallations.map(x => {
-      const name = namePendingInstall(x.body.package, x.body.id);
-      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || name);
+      const n = namePendingInstall(x.body.package, x.body.id);
+      const alreadyAdded = Object.keys(farmwares).includes(x.body.package || n);
       const alreadyInstalled = Object.values(farmwares)
         .map(fw => fw.url).includes(x.body.url);
       if (x.body.id && !alreadyAdded && !alreadyInstalled) {
-        farmwares[name] = manifestInfoPending(name, x.body.url);
+        farmwares[n] = manifestInfoPending(n, x.body.url);
       }
     });
 

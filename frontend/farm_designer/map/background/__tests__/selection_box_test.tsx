@@ -2,7 +2,7 @@ import * as React from "react";
 import { SelectionBox, SelectionBoxProps } from "../selection_box";
 import { shallow } from "enzyme";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 
 describe("<SelectionBox/>", () => {

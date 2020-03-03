@@ -10,6 +10,9 @@ import {
   AddNumberCriteriaState,
   AddStringCriteriaProps,
 } from "./interfaces";
+import {
+  PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST,
+} from "../../plants/edit_plant_status";
 
 export class AddEqCriteria<T extends string | number>
   extends React.Component<AddEqCriteriaProps<T>, AddEqCriteriaState> {
@@ -42,12 +45,15 @@ export class AddEqCriteria<T extends string | number>
         </Col>
         <Col xs={4}>
           <input type={this.props.type}
+            name="value"
             placeholder={t("value")}
             value={this.state.value}
             onChange={e => this.setState({ value: e.currentTarget.value })} />
         </Col>
         <Col xs={2}>
-          <button className="fb-button green" onClick={this.commit}>
+          <button className="fb-button green"
+            title={t("add criteria")}
+            onClick={this.commit}>
             <i className="fa fa-plus" />
           </button>
         </Col>
@@ -70,25 +76,12 @@ export const CRITERIA_TYPE_LIST = () => [
 export const POINTER_TYPE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   Plant: { label: t("Plants"), value: "Plant" },
   GenericPointer: { label: t("Points"), value: "GenericPointer" },
-  ToolSlot: { label: t("Tool Slots"), value: "ToolSlot" },
+  ToolSlot: { label: t("Slots"), value: "ToolSlot" },
 });
 export const POINTER_TYPE_LIST = () => [
   POINTER_TYPE_DDI_LOOKUP().Plant,
   POINTER_TYPE_DDI_LOOKUP().GenericPointer,
   POINTER_TYPE_DDI_LOOKUP().ToolSlot,
-];
-
-export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
-  planned: { label: t("Planned"), value: "planned" },
-  planted: { label: t("Planted"), value: "planted" },
-  sprouted: { label: t("Sprouted"), value: "sprouted" },
-  harvested: { label: t("Harvested"), value: "harvested" },
-});
-export const PLANT_STAGE_LIST = () => [
-  PLANT_STAGE_DDI_LOOKUP().planned,
-  PLANT_STAGE_DDI_LOOKUP().planted,
-  PLANT_STAGE_DDI_LOOKUP().sprouted,
-  PLANT_STAGE_DDI_LOOKUP().harvested,
 ];
 
 export class AddStringCriteria
@@ -159,7 +152,9 @@ export class AddStringCriteria
             onChange={this.change} />
         </Col>
         <Col xs={2}>
-          <button className="fb-button green" onClick={this.commit}>
+          <button className="fb-button green"
+            title={t("add string criteria")}
+            onClick={this.commit}>
             <i className="fa fa-plus" />
           </button>
         </Col>
@@ -192,6 +187,7 @@ export class AddNumberCriteria
       <Row>
         <Col xs={4}>
           <input type="string"
+            name="key"
             placeholder={t("field")}
             value={this.state.key}
             onChange={this.changeKey} />
@@ -201,11 +197,14 @@ export class AddNumberCriteria
         </Col>
         <Col xs={4}>
           <input type="number"
+            name="value"
             value={this.state.value}
             onChange={this.changeValue} />
         </Col>
         <Col xs={2}>
-          <button className="fb-button green" onClick={this.commit}>
+          <button className="fb-button green"
+            title={t("add number criteria")}
+            onClick={this.commit}>
             <i className="fa fa-plus" />
           </button>
         </Col>

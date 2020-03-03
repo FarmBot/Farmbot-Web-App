@@ -3,10 +3,10 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { GardenSnapshotProps, GardenSnapshot } from "./garden_snapshot";
 import {
-  selectAllPlantTemplates, findSavedGarden
+  selectAllPlantTemplates, findSavedGarden,
 } from "../../resources/selectors";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
 import { Content } from "../../constants";
 import { Row } from "../../ui";
@@ -29,7 +29,7 @@ export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
       <DesignerPanelHeader
         panelName={"saved-garden"}
         panel={Panel.SavedGardens}
-        title={t("Add Garden")}
+        title={t("Add garden")}
         description={Content.SAVED_GARDENS}
         backTo={"/app/designer/gardens"} />
       <DesignerPanelContent panelName={"saved-garden"}>

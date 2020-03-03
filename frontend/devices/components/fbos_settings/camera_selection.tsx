@@ -1,14 +1,15 @@
 import * as React from "react";
 import { DropDownItem, Row, Col, FBSelect } from "../../../ui/index";
 import {
-  CameraSelectionProps, CameraSelectionState
+  CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
 import { info, success, error } from "../../../toast/toast";
 import { getDevice } from "../../../device";
 import { ColWidth } from "../farmbot_os_settings";
 import { Feature, UserEnv } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
-import { Content, ToolTips } from "../../../constants";
+import { Content, ToolTips, DeviceSetting } from "../../../constants";
+import { Highlight } from "../maybe_highlight";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -84,21 +85,21 @@ export class CameraSelection
 
   render() {
     return <Row>
-      <Col xs={ColWidth.label}>
-        <label>
-          {t("CAMERA")}
-        </label>
-      </Col>
-      <Col xs={ColWidth.description}>
-        <div>
+      <Highlight settingName={DeviceSetting.camera}>
+        <Col xs={ColWidth.label}>
+          <label>
+            {t("CAMERA")}
+          </label>
+        </Col>
+        <Col xs={ColWidth.description}>
           <FBSelect
             allowEmpty={false}
             list={CAMERA_CHOICES()}
             selectedItem={this.selectedCamera()}
             onChange={this.sendOffConfig}
             extraClass={this.props.botOnline ? "" : "disabled"} />
-        </div>
-      </Col>
+        </Col>
+      </Highlight>
     </Row>;
   }
 }

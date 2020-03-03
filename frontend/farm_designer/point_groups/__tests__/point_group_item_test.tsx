@@ -8,14 +8,14 @@ jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import React from "react";
 import {
-  PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON
+  PointGroupItem, PointGroupItemProps, genericPointIcon, OTHER_POINT_ICON,
 } from "../point_group_item";
 import { shallow } from "enzyme";
 import {
-  fakePlant, fakePointGroup, fakePoint, fakeToolSlot
+  fakePlant, fakePointGroup, fakePoint, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  maybeGetCachedPlantIcon, setImgSrc
+  maybeGetCachedPlantIcon, setImgSrc,
 } from "../../../open_farm/cached_crop";
 import { setHoveredPlant } from "../../map/actions";
 import { overwrite } from "../../../api/crud";
@@ -45,7 +45,6 @@ describe("<PointGroupItem/>", () => {
     const p = fakeProps();
     p.point = fakePlant();
     const i = new PointGroupItem(p);
-    i.setState = jest.fn();
     const fakeImgEvent = imgEvent();
     await i.maybeGetCachedIcon(fakeImgEvent);
     const slug = i.props.point.body.pointer_type === "Plant" ?
@@ -55,11 +54,17 @@ describe("<PointGroupItem/>", () => {
     expect(setImgSrc).not.toHaveBeenCalled();
   });
 
+  it("sets icon in state", () => {
+    const i = new PointGroupItem(fakeProps());
+    i.setState = jest.fn();
+    i.setIconState("fake icon");
+    expect(i.setState).toHaveBeenCalledWith({ icon: "fake icon" });
+  });
+
   it("fetches point icon", () => {
     const p = fakeProps();
     p.point = fakePoint();
     const i = new PointGroupItem(p);
-    i.setState = jest.fn();
     const fakeImgEvent = imgEvent();
     i.maybeGetCachedIcon(fakeImgEvent);
     expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();
@@ -71,7 +76,6 @@ describe("<PointGroupItem/>", () => {
     const p = fakeProps();
     p.point = fakeToolSlot();
     const i = new PointGroupItem(p);
-    i.setState = jest.fn();
     const fakeImgEvent = imgEvent();
     i.maybeGetCachedIcon(fakeImgEvent);
     expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();

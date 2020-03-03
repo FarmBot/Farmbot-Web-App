@@ -4,7 +4,7 @@ import {
   SaveFarmwareEnv,
   ShouldDisplay,
   SourceFbosConfig,
-  UserEnv
+  UserEnv,
 } from "../../interfaces";
 import {
   Alert,
@@ -12,7 +12,6 @@ import {
   TaggedDevice,
 } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
-import { PreferredHourFormat } from "./ota_time_selector";
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -21,10 +20,14 @@ export interface AutoSyncRowProps {
 
 export interface AutoUpdateRowProps {
   dispatch: Function;
-  timeFormat: PreferredHourFormat;
+  sourceFbosConfig: SourceFbosConfig;
+}
+
+export interface OtaTimeSelectorRowProps {
+  dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   device: TaggedDevice;
-  shouldDisplay: ShouldDisplay;
+  timeSettings: TimeSettings;
 }
 
 export interface CameraSelectionProps {
@@ -53,11 +56,10 @@ export interface PowerAndResetProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
-  shouldDisplay: ShouldDisplay;
   botOnline: boolean;
 }
 
-export interface FactoryResetRowProps {
+export interface FactoryResetRowsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;

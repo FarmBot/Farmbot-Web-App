@@ -13,16 +13,17 @@ jest.mock("../../../history", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditTool as EditTool, EditToolProps, mapStateToProps
+  RawEditTool as EditTool, EditToolProps, mapStateToProps, isActive,
 } from "../edit_tool";
-import { fakeTool } from "../../../__test_support__/fake_state/resources";
+import { fakeTool, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { SaveBtn } from "../../../ui";
 import { history } from "../../../history";
 import { edit, destroy } from "../../../api/crud";
+import { clickButton } from "../../../__test_support__/helpers";
 
 describe("<EditTool />", () => {
   beforeEach(() => {
@@ -32,6 +33,8 @@ describe("<EditTool />", () => {
   const fakeProps = (): EditToolProps => ({
     findTool: jest.fn(() => fakeTool()),
     dispatch: jest.fn(),
+    mountedToolId: undefined,
+    isActive: jest.fn(),
   });
 
   it("renders", () => {
@@ -75,10 +78,37 @@ describe("<EditTool />", () => {
   it("removes tool", () => {
     const p = fakeProps();
     const tool = fakeTool();
+    tool.body.id = 1;
     p.findTool = () => tool;
+    p.isActive = () => false;
+    p.mountedToolId = undefined;
     const wrapper = shallow(<EditTool {...p} />);
-    wrapper.find("button").last().simulate("click");
+    clickButton(wrapper, 0, "delete");
     expect(destroy).toHaveBeenCalledWith(tool.uuid);
+  });
+
+  it("doesn't remove tool: active", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.findTool = () => tool;
+    p.isActive = () => true;
+    p.mountedToolId = undefined;
+    const wrapper = shallow(<EditTool {...p} />);
+    clickButton(wrapper, 0, "delete");
+    expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
+  });
+
+  it("doesn't remove tool: mounted", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.findTool = () => tool;
+    p.isActive = () => false;
+    p.mountedToolId = tool.body.id;
+    const wrapper = shallow(<EditTool {...p} />);
+    clickButton(wrapper, 0, "delete");
+    expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
   });
 });
 
@@ -87,8 +117,19 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const tool = fakeTool();
     tool.body.id = 123;
-    state.resources = buildResourceIndex([tool]);
+    state.resources = buildResourceIndex([tool, fakeDevice()]);
     const props = mapStateToProps(state);
     expect(props.findTool("" + tool.body.id)).toEqual(tool);
+  });
+});
+
+describe("isActive()", () => {
+  it("returns tool state", () => {
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = 1;
+    const active = isActive([toolSlot]);
+    expect(active(1)).toEqual(true);
+    expect(active(2)).toEqual(false);
+    expect(active(undefined)).toEqual(false);
   });
 });

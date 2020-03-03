@@ -4,7 +4,7 @@ import { SensorReadingsProps, SensorReadingsState } from "./interfaces";
 import { SensorReadingsTable } from "./table";
 import { filterSensorReadings } from "./filter_readings";
 import {
-  TimePeriodSelection, DateDisplay, getEndDate
+  TimePeriodSelection, DateDisplay, getEndDate,
 } from "./time_period_selection";
 import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";
@@ -20,7 +20,7 @@ export class SensorReadings
     sensor: undefined,
     timePeriod: 3600 * 24,
     endDate: getEndDate(this.props.sensorReadings),
-    location: undefined,
+    xyzLocation: undefined,
     showPreviousPeriod: false,
     deviation: 0,
     hovered: undefined,
@@ -32,15 +32,15 @@ export class SensorReadings
   setSensor = (sensor: TaggedSensor | undefined) => this.setState({ sensor });
   setEndDate = (endDate: number) => this.setState({ endDate });
   setTimePeriod = (timePeriod: number) => this.setState({ timePeriod });
-  setLocation = (location: AxisInputBoxGroupState | undefined) =>
-    this.setState({ location });
+  setLocation = (xyzLocation: AxisInputBoxGroupState | undefined) =>
+    this.setState({ xyzLocation });
   setDeviation = (deviation: number) => this.setState({ deviation });
   hover = (hovered: string | undefined) => this.setState({ hovered });
   clearFilters = () => this.setState({
     sensor: undefined,
     timePeriod: 3600 * 24,
     endDate: getEndDate(this.props.sensorReadings),
-    location: undefined,
+    xyzLocation: undefined,
     showPreviousPeriod: false,
     deviation: 0,
   });
@@ -55,7 +55,9 @@ export class SensorReadings
       <WidgetHeader
         title={t("Sensor History")}
         helpText={ToolTips.SENSOR_HISTORY}>
-        <button className="fb-button gray" onClick={this.clearFilters}>
+        <button className="fb-button gray"
+          title={t("clear filters")}
+          onClick={this.clearFilters}>
           {t("clear filters")}
         </button>
       </WidgetHeader>
@@ -72,7 +74,7 @@ export class SensorReadings
           setPeriod={this.setTimePeriod}
           togglePrevious={this.togglePrevious} />
         <LocationSelection
-          location={this.state.location}
+          xyzLocation={this.state.xyzLocation}
           deviation={this.state.deviation}
           setLocation={this.setLocation}
           setDeviation={this.setDeviation} />
@@ -100,7 +102,7 @@ export class SensorReadings
             timePeriod={this.state.timePeriod}
             timeSettings={this.props.timeSettings} />
           <LocationDisplay
-            location={this.state.location}
+            xyzLocation={this.state.xyzLocation}
             deviation={this.state.deviation} />
         </div>
       </WidgetFooter>

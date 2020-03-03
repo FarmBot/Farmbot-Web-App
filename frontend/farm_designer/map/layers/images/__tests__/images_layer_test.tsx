@@ -2,10 +2,10 @@ import * as React from "react";
 import { ImageLayer, ImageLayerProps } from "../image_layer";
 import { shallow } from "enzyme";
 import {
-  fakeImage, fakeWebAppConfig
+  fakeImage, fakeWebAppConfig,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 const mockConfig = fakeWebAppConfig();

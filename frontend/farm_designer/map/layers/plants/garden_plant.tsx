@@ -36,22 +36,22 @@ export class GardenPlant extends
   };
 
   get radius() {
-    const { selected, plant } = this.props;
+    const { plant } = this.props;
     const { hover } = this.state;
     const { radius } = plant.body;
-    return (hover && !selected) ? radius * 1.1 : radius;
+    return hover ? radius * 1.1 : radius;
   }
 
   render() {
-    const { selected, dragging, plant, mapTransformProps,
-      activeDragXY, zoomLvl, animate, editing } = this.props;
+    const { current, selected, dragging, plant, mapTransformProps,
+      activeDragXY, zoomLvl, animate, editing, hovered } = this.props;
     const { id, radius, x, y } = plant.body;
     const { icon } = this.state;
 
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
     const className = [
-      "plant-image", `is-chosen-${selected}`, animate ? "animate" : ""
+      "plant-image", `is-chosen-${current || selected}`, animate ? "animate" : "",
     ].join(" ");
 
     return <g id={"plant-" + id}>
@@ -65,7 +65,7 @@ export class GardenPlant extends
           fill={Color.soilCloud}
           fillOpacity={0} />}
 
-      {selected && !editing &&
+      {(current || selected) && !editing && !hovered &&
         <g id="selected-plant-indicator">
           <Circle
             className={`plant-indicator ${animate ? "animate" : ""}`}

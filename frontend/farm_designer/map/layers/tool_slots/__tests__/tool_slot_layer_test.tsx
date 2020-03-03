@@ -7,7 +7,7 @@ jest.mock("../../../../../history", () => ({
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../../__test_support__/fake_resource";
 import { shallow } from "enzyme";
@@ -50,15 +50,6 @@ describe("<ToolSlotLayer/>", () => {
     p.visible = true;
     const result = shallow(<ToolSlotLayer {...p} />);
     expect(result.find(ToolSlotPoint).length).toEqual(1);
-  });
-
-  it("navigates to tools page", async () => {
-    mockPath = "/app/designer/plants";
-    const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p} />);
-    const tools = wrapper.find("g").first();
-    await tools.simulate("click");
-    expect(history.push).toHaveBeenCalledWith("/app/tools");
   });
 
   it("doesn't navigate to tools page", async () => {

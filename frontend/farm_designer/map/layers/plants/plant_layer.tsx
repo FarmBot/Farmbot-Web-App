@@ -19,11 +19,13 @@ export function PlantLayer(props: PlantLayerProps) {
     boxSelected,
     groupSelected,
     animate,
+    hoveredPlant,
   } = props;
 
   return <g id="plant-layer">
     {visible && plants.map(p => {
-      const selected = !!(p.uuid === currentPlant?.uuid);
+      const current = p.uuid === currentPlant?.uuid;
+      const hovered = p.uuid === hoveredPlant?.uuid;
       const selectedByBox = !!boxSelected?.includes(p.uuid);
       const selectedByGroup = groupSelected.includes(p.uuid);
       const plantCategory = unpackUUID(p.uuid).kind === "PlantTemplate"
@@ -33,12 +35,14 @@ export function PlantLayer(props: PlantLayerProps) {
         uuid={p.uuid}
         mapTransformProps={mapTransformProps}
         plant={p}
-        selected={selected || selectedByBox || selectedByGroup}
+        selected={selectedByBox || selectedByGroup}
+        current={current}
         editing={editing}
-        dragging={selected && dragging && editing}
+        dragging={current && dragging && editing}
         dispatch={dispatch}
         zoomLvl={zoomLvl}
         activeDragXY={activeDragXY}
+        hovered={hovered}
         animate={animate} />;
       const wrapperProps = {
         className: "plant-link-wrapper",

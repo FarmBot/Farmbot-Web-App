@@ -7,7 +7,7 @@ import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { GetWebAppBool } from "./interfaces";
 import { BooleanSetting } from "../../session_keys";
 import { t } from "../../i18next_wrapper";
-import { isExpressBoard } from "../../devices/components/firmware_hardware_support";
+import { hasEncoders } from "../../devices/components/firmware_hardware_support";
 import { FirmwareHardware } from "farmbot";
 
 export interface BotPositionRowsProps {
@@ -19,7 +19,7 @@ export interface BotPositionRowsProps {
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getValue, arduinoBusy } = props;
-  return <div>
+  return <div className={"bot-position-rows"}>
     <Row>
       <Col xs={3}>
         <label>{t("X AXIS")}</label>
@@ -34,12 +34,12 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     <AxisDisplayGroup
       position={locationData.position}
       label={t("Motor Coordinates (mm)")} />
-    {!isExpressBoard(props.firmwareHardware) &&
+    {hasEncoders(props.firmwareHardware) &&
       getValue(BooleanSetting.scaled_encoders) &&
       <AxisDisplayGroup
         position={locationData.scaled_encoders}
         label={t("Scaled Encoder (mm)")} />}
-    {!isExpressBoard(props.firmwareHardware) &&
+    {hasEncoders(props.firmwareHardware) &&
       getValue(BooleanSetting.raw_encoders) &&
       <AxisDisplayGroup
         position={locationData.raw_encoders}

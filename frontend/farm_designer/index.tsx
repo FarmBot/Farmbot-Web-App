@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { GardenMap } from "./map/garden_map";
 import {
-  Props, State, BotOriginQuadrant, isBotOriginQuadrant
+  Props, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { Plants } from "./plants/plant_inventory";
@@ -15,12 +15,12 @@ import {
   getMapPadding,
 } from "./map/util";
 import {
-  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex
+  calcZoomLevel, getZoomLevelIndex, saveZoomLevelIndex,
 } from "./map/zoom";
 import moment from "moment";
 import { DesignerNavTabs } from "./panel_header";
 import {
-  setWebAppConfigValue, GetWebAppConfigValue
+  setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "./saved_gardens/saved_gardens";
 
@@ -49,10 +49,10 @@ export const gridOffset: AxisNumberProperty = { x: 50, y: 50 };
 export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
 
   initializeSetting =
-    (name: keyof State, defaultValue: boolean): boolean => {
-      const currentValue = this.props.getConfigValue(name);
+    (key: keyof State, defaultValue: boolean): boolean => {
+      const currentValue = this.props.getConfigValue(key);
       if (isUndefined(currentValue)) {
-        this.props.dispatch(setWebAppConfigValue(name, defaultValue));
+        this.props.dispatch(setWebAppConfigValue(key, defaultValue));
         return defaultValue;
       } else {
         return !!currentValue;
@@ -87,10 +87,10 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
     this.updateZoomLevel(0)();
   }
 
-  toggle = (name: keyof State) => () => {
-    const newValue = !this.state[name];
-    this.props.dispatch(setWebAppConfigValue(name, newValue));
-    this.setState({ [name]: newValue });
+  toggle = (key: keyof State) => () => {
+    const newValue = !this.state[key];
+    this.props.dispatch(setWebAppConfigValue(key, newValue));
+    this.setState({ [key]: newValue });
   }
 
   updateBotOriginQuadrant = (payload: BotOriginQuadrant) => () => {
@@ -211,6 +211,7 @@ export class RawFarmDesigner extends React.Component<Props, Partial<State>> {
           timeSettings={this.props.timeSettings}
           sensors={this.props.sensors}
           groups={this.props.groups}
+          mountedToolName={this.props.mountedToolName}
           shouldDisplay={this.props.shouldDisplay} />
       </div>
 

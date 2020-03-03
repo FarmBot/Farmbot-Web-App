@@ -1,7 +1,7 @@
 module Api
   class AlertsController < Api::AbstractController
     def index
-      render json: current_device.alerts
+      maybe_paginate current_device.alerts
     end
 
     def destroy

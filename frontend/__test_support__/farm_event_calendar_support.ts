@@ -1,6 +1,6 @@
 import moment from "moment";
 import {
-  FarmEventWithExecutable
+  FarmEventWithExecutable,
 } from "../farm_designer/farm_events/calendar/interfaces";
 
 export const TIME = {
@@ -24,7 +24,7 @@ export const fakeFarmEventWithExecutable = (): FarmEventWithExecutable => {
       color: "red",
       name: "faker",
       kind: "sequence",
-      args: { version: 0, locals: { kind: "scope_declaration", args: {} }, }
+      args: { version: 0, locals: { kind: "scope_declaration", args: {} } }
     }
   };
 };
@@ -84,7 +84,7 @@ export const calendarRows = [
         "subheading": "25",
         "id": 79,
         "childExecutableName": "Goto 0, 0, 0 123"
-      }
+      },
     ]
   },
   {
@@ -171,7 +171,7 @@ export const calendarRows = [
         "subheading": "25",
         "id": 79,
         "childExecutableName": "Goto 0, 0, 0 123"
-      }
+      },
     ]
   },
   {
@@ -258,7 +258,7 @@ export const calendarRows = [
         "subheading": "25",
         "id": 79,
         "childExecutableName": "Goto 0, 0, 0 123"
-      }
+      },
     ]
-  }
+  },
 ];

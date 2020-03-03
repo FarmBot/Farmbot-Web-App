@@ -6,7 +6,7 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { DevSettings } from "../../account/dev/dev_support";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
-import { isExpressBoard } from "../../devices/components/firmware_hardware_support";
+import { hasEncoders } from "../../devices/components/firmware_hardware_support";
 
 export const moveWidgetSetting =
   (toggle: ToggleWebAppBool, getValue: GetWebAppBool) =>
@@ -27,7 +27,7 @@ export interface MoveWidgetSettingsMenuProps {
 }
 
 export const MoveWidgetSettingsMenu = (
-  { toggle, getValue, firmwareHardware }: MoveWidgetSettingsMenuProps
+  { toggle, getValue, firmwareHardware }: MoveWidgetSettingsMenuProps,
 ) => {
   const Setting = moveWidgetSetting(toggle, getValue);
   return <div className="move-settings-menu">
@@ -36,7 +36,7 @@ export const MoveWidgetSettingsMenu = (
     <Setting label={t("Y Axis")} setting={BooleanSetting.y_axis_inverted} />
     <Setting label={t("Z Axis")} setting={BooleanSetting.z_axis_inverted} />
 
-    {!isExpressBoard(firmwareHardware) &&
+    {hasEncoders(firmwareHardware) &&
       <div className="display-encoder-data">
         <p>{t("Display Encoder Data")}</p>
         <Setting
@@ -56,7 +56,7 @@ export const MoveWidgetSettingsMenu = (
       setting={BooleanSetting.home_button_homing} />
 
     {DevSettings.futureFeaturesEnabled() &&
-      <div>
+      <div className={"motor-position-plot-setting-row"}>
         <p>{t("Motor position plot")}</p>
         <Setting
           label={t("show")}

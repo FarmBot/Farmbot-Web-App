@@ -93,11 +93,15 @@ interface NavTabProps {
   linkTo: string;
   title: string;
   icon?: string;
+  desktopHide?: boolean;
 }
 
 const NavTab = (props: NavTabProps) =>
   <Link to={props.linkTo} style={{ flex: 0.3 }}
-    className={getCurrentTab() === props.panel ? "active" : ""}>
+    className={[
+      getCurrentTab() === props.panel ? "active" : "",
+      props.desktopHide ? "desktop-hide" : "",
+    ].join(" ")}>
     <img {...common}
       src={TAB_ICON[props.panel]} title={props.title} />
   </Link>;
@@ -109,7 +113,7 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
     <div className="panel-tabs">
       <NavTab panel={Panel.Map}
         linkTo={"/app/designer"}
-        title={t("Map")} />
+        title={t("Map")} desktopHide={true} />
       <NavTab
         panel={Panel.Plants}
         linkTo={"/app/designer/plants"}
@@ -139,11 +143,10 @@ export function DesignerNavTabs(props: { hidden?: boolean }) {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds"}
         title={t("Weeds")} />
-      {DevSettings.futureFeaturesEnabled() &&
-        <NavTab
-          panel={Panel.Tools}
-          linkTo={"/app/designer/tools"}
-          title={t("Tools")} />}
+      <NavTab
+        panel={Panel.Tools}
+        linkTo={"/app/designer/tools"}
+        title={t("Tools")} />
       <NavTab
         panel={Panel.Settings}
         icon={"fa fa-gear"}

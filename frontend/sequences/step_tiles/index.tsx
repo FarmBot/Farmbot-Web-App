@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   CeleryNode, LegalArgString, If, Execute, Nothing,
-  SequenceBodyItem as Step, TaggedSequence
+  SequenceBodyItem as Step, TaggedSequence,
 } from "farmbot";
 import { FLOAT_NUMERIC_FIELDS, NUMERIC_FIELDS } from "../interfaces";
 import { ExecuteBlock } from "./tile_execute";

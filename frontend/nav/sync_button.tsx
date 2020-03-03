@@ -46,6 +46,7 @@ export function SyncButton(props: SyncButtonProps) {
 
   return <button
     className={className}
+    title={t("sync")}
     onClick={() => dispatch(sync())}>
     {text} {spinnerEl}
   </button>;

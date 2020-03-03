@@ -1,26 +1,17 @@
-let mockDev = false;
-jest.mock("../../../../../account/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";
 import {
-  fakeToolSlot, fakeTool
+  fakeToolSlot, fakeTool,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { history } from "../../../../../history";
 
 describe("<ToolSlotPoint/>", () => {
-  beforeEach(() => {
-    mockDev = false;
-  });
-
   const fakeProps = (): TSPProps => ({
     mapTransformProps: fakeMapTransformProps(),
     botPositionX: undefined,
@@ -48,10 +39,6 @@ describe("<ToolSlotPoint/>", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.id = 1;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    mockDev = false;
-    wrapper.find("g").first().simulate("click");
-    expect(history.push).not.toHaveBeenCalled();
-    mockDev = true;
     wrapper.find("g").first().simulate("click");
     expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
   });
@@ -66,18 +53,46 @@ describe("<ToolSlotPoint/>", () => {
     expect(wrapper.find("text").props().dx).toEqual(-40);
   });
 
-  it("displays 'no tool'", () => {
+  it("displays 'empty'", () => {
     const p = fakeProps();
     p.slot.tool = undefined;
     p.hoveredToolSlot = p.slot.toolSlot.uuid;
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
-    expect(wrapper.find("text").text()).toEqual("no tool");
+    expect(wrapper.find("text").text()).toEqual("Empty");
     expect(wrapper.find("text").props().dx).toEqual(40);
   });
 
   it("doesn't display tool name", () => {
     const wrapper = svgMount(<ToolSlotPoint {...fakeProps()} />);
     expect(wrapper.find("text").props().visibility).toEqual("hidden");
+  });
+
+  it("renders weeder", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "weeder"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#weeder").length).toEqual(1);
+  });
+
+  it("renders watering nozzle", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "watering nozzle"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#watering-nozzle").length).toEqual(1);
+  });
+
+  it("renders seeder", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "seeder"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#seeder").length).toEqual(1);
+  });
+
+  it("renders soil sensor", () => {
+    const p = fakeProps();
+    if (p.slot.tool) { p.slot.tool.body.name = "soil sensor"; }
+    const wrapper = svgMount(<ToolSlotPoint {...p} />);
+    expect(wrapper.find("#soil-sensor").length).toEqual(1);
   });
 
   it("renders bin", () => {

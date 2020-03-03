@@ -4,11 +4,14 @@ import { t } from "../../../i18next_wrapper";
 import { TaggedDevice } from "farmbot";
 import { edit, save } from "../../../api/crud";
 import { ColWidth } from "../farmbot_os_settings";
+import { DeviceSetting } from "../../../constants";
+import { Highlight } from "../maybe_highlight";
+import { OtaTimeSelectorRowProps } from "./interfaces";
 
 // tslint:disable-next-line:no-null-keyword
 const UNDEFINED = null as unknown as undefined;
 const IMMEDIATELY = -1;
-export type PreferredHourFormat = "12h" | "24h";
+type PreferredHourFormat = "12h" | "24h";
 type HOUR =
   | typeof IMMEDIATELY
   | 0
@@ -37,6 +40,7 @@ type HOUR =
   | 23;
 type TimeTable = Record<HOUR, DropDownItem>;
 type EveryTimeTable = Record<PreferredHourFormat, TimeTable>;
+const ASAP = () => t("As soon as possible");
 const TIME_TABLE_12H = (): TimeTable => ({
   0: { label: t("Midnight"), value: 0 },
   1: { label: "1:00 AM", value: 1 },
@@ -62,7 +66,7 @@ const TIME_TABLE_12H = (): TimeTable => ({
   21: { label: "9:00 PM", value: 21 },
   22: { label: "10:00 PM", value: 22 },
   23: { label: "11:00 PM", value: 23 },
-  [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
+  [IMMEDIATELY]: { label: ASAP(), value: IMMEDIATELY },
 });
 const TIME_TABLE_24H = (): TimeTable => ({
   0: { label: "00:00", value: 0 },
@@ -89,7 +93,7 @@ const TIME_TABLE_24H = (): TimeTable => ({
   21: { label: "21:00", value: 21 },
   22: { label: "22:00", value: 22 },
   23: { label: "23:00", value: 23 },
-  [IMMEDIATELY]: { label: t("as soon as possible"), value: IMMEDIATELY },
+  [IMMEDIATELY]: { label: ASAP(), value: IMMEDIATELY },
 });
 
 const DEFAULT_HOUR: keyof TimeTable = IMMEDIATELY;
@@ -144,17 +148,29 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
   const selectedItem = (typeof value == "number") ?
     theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
   return <Row>
-    <Col xs={ColWidth.label}>
-      <label>
-        {t("Apply Software Updates ")}
-      </label>
-    </Col>
-    <Col xs={ColWidth.description}>
-      <FBSelect
-        selectedItem={selectedItem}
-        onChange={cb}
-        list={list}
-        extraClass={disabled ? "disabled" : ""} />
-    </Col>
+    <Highlight settingName={DeviceSetting.applySoftwareUpdates}>
+      <Col xs={ColWidth.label}>
+        <label>
+          {t(DeviceSetting.applySoftwareUpdates)}
+        </label>
+      </Col>
+      <Col xs={ColWidth.description}>
+        <FBSelect
+          selectedItem={selectedItem}
+          onChange={cb}
+          list={list}
+          extraClass={disabled ? "disabled" : ""} />
+      </Col>
+    </Highlight>
   </Row>;
 };
+
+export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
+  const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
+  const timeFormat = props.timeSettings.hour24 ? "24h" : "12h";
+  return <OtaTimeSelector
+    timeFormat={timeFormat}
+    disabled={!osAutoUpdate.value}
+    value={props.device.body.ota_hour}
+    onChange={changeOtaHour(props.dispatch, props.device)} />;
+}

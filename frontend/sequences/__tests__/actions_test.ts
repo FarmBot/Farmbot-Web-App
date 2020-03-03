@@ -11,7 +11,7 @@ jest.mock("../set_active_sequence_by_name", () => ({
 }));
 
 import {
-  copySequence, editCurrentSequence, selectSequence, pushStep
+  copySequence, editCurrentSequence, selectSequence, pushStep,
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { init, edit, overwrite } from "../../api/crud";

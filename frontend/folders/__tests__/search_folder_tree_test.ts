@@ -37,7 +37,7 @@ describe("searchFolderTree", () => {
       "Six",
       "Sixteen",
       // == GRANDPARENTS
-      "Fourteen"
+      "Fourteen",
     ].map(x => expect(results).toContain(x));
     expect(results.length).toEqual(5);
     const results2 = searchFor("Eleven").map(x => x.name);
@@ -153,13 +153,13 @@ const fakeSearchProps = (input: string): FolderSearchProps => ({
                 "content": ["Sequence.67.12"],
                 "open": true,
                 "editing": false
-              }
+              },
             ],
             "content": ["Sequence.66.11"]
-          }
+          },
         ],
         "content": ["Sequence.65.10"]
-      }
+      },
     ]
   }
 });

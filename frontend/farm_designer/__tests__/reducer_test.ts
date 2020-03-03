@@ -2,11 +2,11 @@ import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
 import {
-  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult
+  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult,
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
@@ -89,6 +89,19 @@ describe("designer reducer", () => {
       payload: { cx: 10, cy: 20, r: 30, color: "red" }
     };
     const newState = designer(oldState(), action);
+    expect(newState.currentPoint).toEqual({
+      cx: 10, cy: 20, r: 30, color: "red"
+    });
+  });
+
+  it("uses current point color", () => {
+    const action: ReduxAction<CurrentPointPayl> = {
+      type: Actions.SET_CURRENT_POINT_DATA,
+      payload: { cx: 10, cy: 20, r: 30 }
+    };
+    const state = oldState();
+    state.currentPoint = { cx: 0, cy: 0, r: 0, color: "red" };
+    const newState = designer(state, action);
     expect(newState.currentPoint).toEqual({
       cx: 10, cy: 20, r: 30, color: "red"
     });

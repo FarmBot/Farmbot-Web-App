@@ -25,7 +25,7 @@ const getSubKeyName = (key: string) => {
 };
 
 export const FwParamExportMenu =
-  ({ firmwareConfig }: { firmwareConfig: FirmwareConfig }) => {
+  ({ firmwareConfig }: { firmwareConfig: FirmwareConfig | undefined }) => {
     /** Filter out unnecessary parameters. */
     const filteredConfig = pickBy(firmwareConfig, (_, key) =>
       !["id", "device_id", "api_migrated", "created_at", "updated_at",
@@ -90,7 +90,6 @@ export const uncondenseFwConfig =
       Object.entries(obj).map(([subKey, value]) => {
         const fwConfigKey = subKey != "" ? `${key}_${subKey}` : key;
         uncondensedFwConfig[fwConfigKey] = value;
-      }
-      ));
+      }));
     return uncondensedFwConfig;
   };

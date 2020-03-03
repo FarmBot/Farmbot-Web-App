@@ -4,7 +4,7 @@ import { TaggedSequence, ParameterApplication } from "farmbot";
 import { If, Execute, Nothing } from "farmbot/dist";
 import { ResourceIndex } from "../../../resources/interfaces";
 import {
-  selectAllSequences, findSequenceById
+  selectAllSequences, findSequenceById,
 } from "../../../resources/selectors";
 import { isRecursive } from "../index";
 import { If_ } from "./if";
@@ -14,12 +14,12 @@ import { overwrite } from "../../../api/crud";
 import { ToolTips } from "../../../constants";
 import { StepWrapper, StepHeader, StepContent } from "../../step_ui/index";
 import {
-  sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName
+  sensorsAsDropDowns, peripheralsAsDropDowns, pinDropdowns, PinGroupName,
 } from "../pin_and_peripheral_support";
 import { ShouldDisplay } from "../../../devices/interfaces";
 import { isNumber, isString } from "lodash";
 import {
-  addOrEditParamApps, variableList
+  addOrEditParamApps, variableList,
 } from "../../locals_list/variable_support";
 import { t } from "../../../i18next_wrapper";
 
@@ -45,7 +45,7 @@ export type Operator = "lhs"
   | "_else";
 
 export const LHSOptions =
-  (resources: ResourceIndex, showPins: boolean
+  (resources: ResourceIndex, showPins: boolean,
   ): DropDownItem[] => [
       {
         heading: true, headingId: PinGroupName.Position,
@@ -64,7 +64,7 @@ export const operatorOptions: DropDownItem[] = [
   { value: ">", label: t("is greater than") },
   { value: "is", label: t("is equal to") },
   { value: "not", label: t("is not equal to") },
-  { value: "is_undefined", label: t("is unknown") }
+  { value: "is_undefined", label: t("is unknown") },
 ];
 
 export function seqDropDown(i: ResourceIndex) {
@@ -100,7 +100,7 @@ export function InnerIf(props: IfParams) {
       confirmStepDeletion={confirmStepDeletion}>
       {recursive &&
         <span>
-          <i className="fa fa-exclamation-triangle"></i>
+          <i className="fa fa-exclamation-triangle" />
           &nbsp;{t("Recursive condition.")}
         </span>
       }

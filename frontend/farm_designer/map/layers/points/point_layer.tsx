@@ -24,7 +24,6 @@ export function PointLayer(props: PointLayerProps) {
           key={p.uuid}
           hovered={hoveredPoint == p.uuid}
           dispatch={props.dispatch}
-          mapTransformProps={mapTransformProps} />
-      )}
+          mapTransformProps={mapTransformProps} />)}
   </g>;
 }

@@ -3,7 +3,7 @@ import { Col } from "../../ui";
 import { isNumber, isString } from "lodash";
 import { openSavedGarden } from "./actions";
 import {
-  SavedGardenItemProps, SavedGardenInfoProps, SavedGardensListProps
+  SavedGardenItemProps, SavedGardenInfoProps, SavedGardensListProps,
 } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 
@@ -14,7 +14,7 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
     onClick={() => dispatch(openSavedGarden(savedGarden.uuid))}>
     <Col>
       <span>{savedGarden.body.name}</span>
-      <p>{props.plantTemplateCount} {t("plants")}</p>
+      <p><i>{props.plantTemplateCount} {t("plants")}</i></p>
     </Col>
   </div>;
 };

@@ -3,7 +3,7 @@ import {
   lessThan,
   mcuParamValidator,
   OK,
-  McuErrors
+  McuErrors,
 } from "../update_interceptor";
 
 describe("greaterThan() and lessThan()", () => {

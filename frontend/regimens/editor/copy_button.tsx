@@ -10,6 +10,7 @@ import { t } from "../../i18next_wrapper";
 export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
   <button
     className="fb-button yellow"
+    title={t("copy")}
     onClick={() => dispatch(copyRegimen(regimen))}>
     {t("Copy")}
   </button>;

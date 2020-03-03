@@ -2,7 +2,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { mapStateToProps } from "../state_to_props";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import {
-  fakeAlert, fakeFbosConfig
+  fakeAlert, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
@@ -18,7 +18,6 @@ describe("mapStateToProps()", () => {
   it("returns firmware value", () => {
     const state = fakeState();
     const fbosConfig = fakeFbosConfig();
-    fbosConfig.body.api_migrated = true;
     fbosConfig.body.firmware_hardware = "arduino";
     state.resources = buildResourceIndex([fbosConfig]);
     const props = mapStateToProps(state);

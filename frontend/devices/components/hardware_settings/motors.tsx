@@ -1,40 +1,23 @@
 import * as React from "react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToolTips } from "../../../constants";
+import { ToolTips, DeviceSetting } from "../../../constants";
 import { ToggleButton } from "../../../controls/toggle_button";
 import { settingToggle } from "../../actions";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { MotorsProps } from "../interfaces";
-import { Row, Col, Help } from "../../../ui/index";
 import { Header } from "./header";
-import { Collapse, Position } from "@blueprintjs/core";
-import { McuInputBox } from "../mcu_input_box";
-import { t } from "../../../i18next_wrapper";
+import { Collapse } from "@blueprintjs/core";
 import { Xyz, McuParamName } from "farmbot";
 import { SourceFwConfig } from "../../interfaces";
 import { calcMicrostepsPerMm } from "../../../controls/move/direction_axes_props";
-import { isTMCBoard, isExpressBoard } from "../firmware_hardware_support";
-
-const SingleSettingRow =
-  ({ label, tooltip, settingType, children }: {
-    label: string,
-    tooltip: string,
-    children: React.ReactChild,
-    settingType: "button" | "input",
-  }) =>
-    <Row>
-      <Col xs={6} className={"widget-body-tooltips"}>
-        <label>{label}</label>
-        <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
-      </Col>
-      {settingType === "button"
-        ? <Col xs={2} className={"centered-button-div"}>{children}</Col>
-        : <Col xs={6}>{children}</Col>}
-    </Row>;
+import { isTMCBoard } from "../firmware_hardware_support";
+import { SingleSettingRow } from "./single_setting_row";
+import { Highlight } from "../maybe_highlight";
+import { SpacePanelHeader } from "./space_panel_header";
 
 export const calculateScale =
   (sourceFwConfig: SourceFwConfig): Record<Xyz, number | undefined> => {
-    const getV = (name: McuParamName) => sourceFwConfig(name).value;
+    const getV = (key: McuParamName) => sourceFwConfig(key).value;
     return {
       x: calcMicrostepsPerMm(getV("movement_step_per_mm_x"),
         getV("movement_microsteps_x")),
@@ -51,39 +34,21 @@ export function Motors(props: MotorsProps) {
   } = props;
   const enable2ndXMotor = sourceFwConfig("movement_secondary_motor_x");
   const invert2ndXMotor = sourceFwConfig("movement_secondary_motor_invert_x");
-  const eStopOnMoveError = sourceFwConfig("param_e_stop_on_mov_err");
   const scale = calculateScale(sourceFwConfig);
-  const encodersDisabled = {
-    x: !sourceFwConfig("encoder_enabled_x").value,
-    y: !sourceFwConfig("encoder_enabled_y").value,
-    z: !sourceFwConfig("encoder_enabled_z").value,
-  };
-  return <section>
+
+  return <Highlight className={"section"}
+    settingName={DeviceSetting.motors}>
     <Header
       expanded={controlPanelState.motors}
-      title={t("Motors")}
-      name={"motors"}
+      title={DeviceSetting.motors}
+      panel={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!controlPanelState.motors}>
-      <SingleSettingRow settingType="input"
-        label={t("Max Retries")}
-        tooltip={ToolTips.MAX_MOVEMENT_RETRIES}>
-        <McuInputBox
-          setting="param_mov_nr_retry"
-          sourceFwConfig={sourceFwConfig}
-          dispatch={dispatch} />
-      </SingleSettingRow>
-      <SingleSettingRow settingType="button"
-        label={t("E-Stop on Movement Error")}
-        tooltip={ToolTips.E_STOP_ON_MOV_ERR}>
-        <ToggleButton
-          toggleValue={eStopOnMoveError.value}
-          dim={!eStopOnMoveError.consistent}
-          toggleAction={() => dispatch(
-            settingToggle("param_e_stop_on_mov_err", sourceFwConfig))} />
-      </SingleSettingRow>
+      <div className="label-headings">
+        <SpacePanelHeader />
+      </div>
       <NumericMCUInputGroup
-        name={t("Max Speed (mm/s)")}
+        label={DeviceSetting.maxSpeed}
         tooltip={ToolTips.MAX_SPEED}
         x={"movement_max_spd_x"}
         y={"movement_max_spd_y"}
@@ -94,7 +59,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Homing Speed (mm/s)")}
+        label={DeviceSetting.homingSpeed}
         tooltip={ToolTips.HOME_SPEED}
         x={"movement_home_spd_x"}
         y={"movement_home_spd_y"}
@@ -105,7 +70,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Minimum Speed (mm/s)")}
+        label={DeviceSetting.minimumSpeed}
         tooltip={ToolTips.MIN_SPEED}
         x={"movement_min_spd_x"}
         y={"movement_min_spd_y"}
@@ -116,7 +81,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Accelerate for (mm)")}
+        label={DeviceSetting.accelerateFor}
         tooltip={ToolTips.ACCELERATE_FOR}
         x={"movement_steps_acc_dec_x"}
         y={"movement_steps_acc_dec_y"}
@@ -127,7 +92,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={sourceFwConfig}
         dispatch={dispatch} />
       <NumericMCUInputGroup
-        name={t("Steps per MM")}
+        label={DeviceSetting.stepsPerMm}
         tooltip={ToolTips.STEPS_PER_MM}
         x={"movement_step_per_mm_x"}
         y={"movement_step_per_mm_y"}
@@ -139,7 +104,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
       <NumericMCUInputGroup
-        name={t("Microsteps per step")}
+        label={DeviceSetting.microstepsPerStep}
         tooltip={ToolTips.MICROSTEPS_PER_STEP}
         x={"movement_microsteps_x"}
         y={"movement_microsteps_y"}
@@ -147,7 +112,7 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={props.sourceFwConfig}
         dispatch={props.dispatch} />
       <BooleanMCUInputGroup
-        name={t("Always Power Motors")}
+        label={DeviceSetting.alwaysPowerMotors}
         tooltip={ToolTips.ALWAYS_POWER_MOTORS}
         x={"movement_keep_active_x"}
         y={"movement_keep_active_y"}
@@ -155,7 +120,7 @@ export function Motors(props: MotorsProps) {
         dispatch={dispatch}
         sourceFwConfig={sourceFwConfig} />
       <BooleanMCUInputGroup
-        name={t("Invert Motors")}
+        label={DeviceSetting.invertMotors}
         tooltip={ToolTips.INVERT_MOTORS}
         x={"movement_invert_motor_x"}
         y={"movement_invert_motor_y"}
@@ -164,25 +129,15 @@ export function Motors(props: MotorsProps) {
         sourceFwConfig={sourceFwConfig} />
       {isTMCBoard(firmwareHardware) &&
         <NumericMCUInputGroup
-          name={t("Motor Current")}
+          label={DeviceSetting.motorCurrent}
           tooltip={ToolTips.MOTOR_CURRENT}
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"}
           dispatch={dispatch}
           sourceFwConfig={sourceFwConfig} />}
-      {isExpressBoard(firmwareHardware) &&
-        <NumericMCUInputGroup
-          name={t("Stall Sensitivity")}
-          tooltip={ToolTips.STALL_SENSITIVITY}
-          x={"movement_stall_sensitivity_x"}
-          y={"movement_stall_sensitivity_y"}
-          z={"movement_stall_sensitivity_z"}
-          gray={encodersDisabled}
-          dispatch={dispatch}
-          sourceFwConfig={sourceFwConfig} />}
       <SingleSettingRow settingType="button"
-        label={t("Enable 2nd X Motor")}
+        label={DeviceSetting.enable2ndXMotor}
         tooltip={ToolTips.ENABLE_X2_MOTOR}>
         <ToggleButton
           toggleValue={enable2ndXMotor.value}
@@ -191,7 +146,7 @@ export function Motors(props: MotorsProps) {
             settingToggle("movement_secondary_motor_x", sourceFwConfig))} />
       </SingleSettingRow>
       <SingleSettingRow settingType="button"
-        label={t("Invert 2nd X Motor")}
+        label={DeviceSetting.invert2ndXMotor}
         tooltip={ToolTips.INVERT_MOTORS}>
         <ToggleButton
           grayscale={!enable2ndXMotor.value}
@@ -201,5 +156,5 @@ export function Motors(props: MotorsProps) {
             settingToggle("movement_secondary_motor_invert_x", sourceFwConfig))} />
       </SingleSettingRow>
     </Collapse>
-  </section>;
+  </Highlight>;
 }

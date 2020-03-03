@@ -14,7 +14,7 @@ import {
 } from "farmbot";
 import { SlotWithTool, ResourceIndex } from "../resources/interfaces";
 import {
-  BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay
+  BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
 import { McuParams, TaggedCrop } from "farmbot";
@@ -22,7 +22,7 @@ import { AxisNumberProperty, BotSize, TaggedPlant } from "./map/interfaces";
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
-  ExecutableType, PlantPointer, PointGroupSortType
+  ExecutableType, PlantPointer, PointGroupSortType,
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { TimeSettings } from "../interfaces";
@@ -80,6 +80,7 @@ export interface Props {
   sensors: TaggedSensor[];
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
+  mountedToolName: string | undefined;
 }
 
 export interface MovePlantProps {
@@ -210,6 +211,7 @@ export interface GardenMapProps {
   timeSettings: TimeSettings;
   groups: TaggedPointGroup[];
   shouldDisplay: ShouldDisplay;
+  mountedToolName: string | undefined;
 }
 
 export interface GardenMapState {

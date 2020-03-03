@@ -4,7 +4,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { TaggedLog } from "farmbot";
 import { times } from "lodash";
 import {
-  fakeFbosConfig, fakeLog
+  fakeFbosConfig, fakeLog,
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
@@ -24,24 +24,10 @@ describe("mapStateToProps()", () => {
     state.bot.hardware.configuration.sequence_init_log = false;
     const fakeApiConfig = fakeFbosConfig();
     fakeApiConfig.body.sequence_init_log = true;
-    fakeApiConfig.body.api_migrated = true;
     state.resources = buildResourceIndex([fakeApiConfig]);
     const props = mapStateToProps(state);
     expect(props.sourceFbosConfig("sequence_init_log")).toEqual({
       value: true, consistent: false
-    });
-  });
-
-  it("bot source of FBOS settings", () => {
-    const state = fakeState();
-    state.bot.hardware.configuration.sequence_init_log = false;
-    const fakeApiConfig = fakeFbosConfig();
-    fakeApiConfig.body.sequence_init_log = true;
-    fakeApiConfig.body.api_migrated = false;
-    state.resources = buildResourceIndex([fakeApiConfig]);
-    const props = mapStateToProps(state);
-    expect(props.sourceFbosConfig("sequence_init_log")).toEqual({
-      value: false, consistent: true
     });
   });
 });

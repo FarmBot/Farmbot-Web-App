@@ -11,7 +11,7 @@ import { FbosDetailsProps } from "../interfaces";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 import { updateConfig } from "../../../actions";
@@ -85,6 +85,27 @@ describe("<FbosDetails/>", () => {
     expect(wrapper.text()).toContain("0.0.0");
   });
 
+  it("displays firmware commit link from firmware_commit", () => {
+    const p = fakeProps();
+    const commit = "abcdefgh";
+    p.botInfoSettings.firmware_commit = commit;
+    p.botInfoSettings.firmware_version = "1.0.0";
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").last().text()).toEqual(commit);
+    expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
+      .toEqual(commit);
+  });
+
+  it("displays firmware commit link from version", () => {
+    const p = fakeProps();
+    const commit = "abcdefgh";
+    p.botInfoSettings.firmware_version = `1.2.3.R.x-${commit}+`;
+    const wrapper = mount(<FbosDetails {...p} />);
+    expect(wrapper.find("a").last().text()).toEqual(commit);
+    expect(wrapper.find("a").last().props().href?.split("/").slice(-1)[0])
+      .toEqual(commit);
+  });
+
   it("displays commit link", () => {
     const p = fakeProps();
     p.botInfoSettings.commit = "abcdefgh";
@@ -95,6 +116,7 @@ describe("<FbosDetails/>", () => {
 
   it("doesn't display link without commit", () => {
     const p = fakeProps();
+    p.botInfoSettings.firmware_version = undefined;
     p.botInfoSettings.commit = "---";
     p.botInfoSettings.firmware_commit = "---";
     const wrapper = mount(<FbosDetails {...p} />);

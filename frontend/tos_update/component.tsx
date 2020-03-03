@@ -8,6 +8,7 @@ import { API } from "../api";
 import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
+import { ExternalUrl } from "../external_urls";
 
 interface Props { }
 interface State {
@@ -23,9 +24,9 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
     this.state = { agree_to_terms: false };
   }
 
-  set = (name: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
-    const state: { [name: string]: State[keyof State] } = {};
-    state[name] = (event.currentTarget).value;
+  set = (key: keyof State) => (event: React.FormEvent<HTMLInputElement>) => {
+    const state: { [key: string]: State[keyof State] } = {};
+    state[key] = (event.currentTarget).value;
     this.setState(state);
   };
 
@@ -53,7 +54,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
       return <form onSubmit={this.submit}>
         <div className="input-group">
           <label> {t("Email")} </label>
-          <input type="email"
+          <input type="email" name="email"
             onChange={this.set("email").bind(this)}>
           </input>
           <label>{t("Password")}</label>
@@ -70,6 +71,7 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
             <Col xs={12}>
               <button
                 className="green fb-button"
+                title={t("agree")}
                 onClick={() =>
                   !agree && logError(t("Please agree to the terms."))}
                 type={agree ? "submit" : "button"}>
@@ -80,13 +82,13 @@ export class TosUpdate extends React.Component<Props, Partial<State>> {
         </div>
       </form>;
     } else {
-      return <div>
+      return <div className={"something-went-wrong"}>
         <p>
           {t("Something went wrong while rendering this page.")}
         </p>
         <p>
           {t("Please send us an email at contact@farm.bot or see the ")}
-          <a href="http://forum.farmbot.org/">
+          <a href={ExternalUrl.softwareForum}>
             {t("FarmBot forum.")}
           </a>
         </p>
