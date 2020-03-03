@@ -67,39 +67,49 @@ describe("<Grid/>", () => {
     const p = fakeProps();
     p.zoomLvl = 0.6;
     const wrapper = shallow(<Grid {...p} />);
-    const axisValues = wrapper.find(".x-label").children();
-    expect(axisValues).toHaveLength(29);
+    const xAxisValues = wrapper.find(".x-label").children();
+    const yAxisValues = wrapper.find(".y-label").children();
+    expect(xAxisValues).toHaveLength(29);
+    expect(yAxisValues).toHaveLength(14);
   });
 
   it("visualizes axis values every 200mm between 0.5 and 0.2 excluded zoom", () => {
     const p = fakeProps();
     p.zoomLvl = 0.5;
     const wrapper = shallow(<Grid {...p} />);
-    const axisValues = wrapper.find(".x-label").children();
-    expect(axisValues).toHaveLength(14);
+    const xAxisValues = wrapper.find(".x-label").children();
+    const YAxisValues = wrapper.find(".y-label").children();
+    expect(xAxisValues).toHaveLength(14);
+    expect(YAxisValues).toHaveLength(7);
   });
 
   it("visualizes axis values every 500mm on 0.2 zoom and below", () => {
     const p = fakeProps();
     p.zoomLvl = 0.2;
     const wrapper = shallow(<Grid {...p} />);
-    const axisValues = wrapper.find(".x-label").children();
-    expect(axisValues).toHaveLength(5);
+    const xAxisValues = wrapper.find(".x-label").children();
+    const yAxisValues = wrapper.find(".y-label").children();
+    expect(xAxisValues).toHaveLength(5);
+    expect(yAxisValues).toHaveLength(2);
   });
 
   it("use transform scale 1 for zoom above 1", () => {
     const p = fakeProps();
     p.zoomLvl = 1.1;
     const wrapper = shallow(<Grid {...p} />);
-    const textNode = wrapper.find(".x-label").first();
-    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1)");
+    const xTextNode = wrapper.find(".x-label").first();
+    const yTextNode = wrapper.find(".y-label").first();
+    expect(xTextNode.prop("style")).toHaveProperty("transform", "scale(1)");
+    expect(yTextNode.prop("style")).toHaveProperty("transform", "scale(1)");
   });
 
   it("use transform scale 1.5 for zoom on 0.5", () => {
     const p = fakeProps();
     p.zoomLvl = 0.5;
     const wrapper = shallow(<Grid {...p} />);
-    const textNode = wrapper.find(".x-label").first();
-    expect(textNode.prop("style")).toHaveProperty("transform", "scale(1.5)");
+    const xTextNode = wrapper.find(".x-label").first();
+    const yTextNode = wrapper.find(".y-label").first();
+    expect(xTextNode.prop("style")).toHaveProperty("transform", "scale(1.5)");
+    expect(yTextNode.prop("style")).toHaveProperty("transform", "scale(1.5)");
   });
 });
