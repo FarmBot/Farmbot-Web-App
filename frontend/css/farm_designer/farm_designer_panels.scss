@@ -809,7 +809,6 @@
 
 .weeds-inventory-panel,
 .zones-inventory-panel,
-.group-detail-panel,
 .groups-panel {
   .panel-content {
     max-height: calc(100vh - 19rem);
@@ -821,6 +820,31 @@
 
 .group-detail-panel {
   .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 5rem;
+    .group-member-display {
+      i[class*=fa-caret-] {
+        float: right;
+        font-size: 2rem;
+        margin-top: 1.5rem;
+      }
+      .groups-list-wrapper {
+        padding: 0.5em 0em;
+      }
+    }
+    .group-member-display,
+    .group-sort-section {
+      .bp3-popover-wrapper {
+        display: inline;
+        margin-left: 1rem;
+      }
+    }
+    .group-delete-btn {
+      float: left;
+      margin-top: 1em;
+    }
     .group-criteria {
       margin-top: 1rem;
       .criteria-heading {
@@ -829,7 +853,61 @@
       .fb-button {
         margin-top: 0.5rem;
       }
-      .group-criteria-presets {
+      .point-type-checkboxes {
+        .point-type-section {
+          .fb-checkbox {
+            display: inline;
+            margin-right: 1rem;
+            vertical-align: top;
+          }
+          p {
+            display: inline;
+            text-transform: uppercase;
+          }
+          .point-type-checkbox {
+            position: relative;
+            height: 2rem;
+            margin-top: 0.75rem;
+            cursor: pointer;
+            .fb-checkbox {
+              display: inline-block;
+              height: 2rem;
+            }
+            i[class*=fa-caret-] {
+              position: absolute;
+              right: -0.5rem;
+              width: 3rem;
+              font-size: 2rem;
+              padding-left: 1rem;
+            }
+          }
+          .plant-criteria-options,
+          .point-criteria-options,
+          .tool-criteria-options {
+            margin-left: 3rem;
+            p {
+              &.category {
+                display: block;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                text-transform: none;
+                font-size: 1.2rem;
+                font-weight: bold;
+              }
+            }
+            hr {
+              margin: 0.5rem;
+            }
+            .lt-gt-criteria {
+              margin-bottom: 1rem;
+              .row {
+                margin-left: 0 !important;
+              }
+            }
+          }
+        }
+      }
+      .criteria-radio-presets {
         input[type="radio"] {
           width: auto;
           margin-right: 1rem;
@@ -845,28 +923,27 @@
       .criteria-slug {
         margin-top: 1rem;
       }
-      .location-criteria {
-        .row {
-          margin-top: 1rem;
-          p {
-            font-size: 1.4rem;
-            font-weight: bold;
-          }
-          label {
-            margin-top: 0;
-          }
-        }
-      }
       .day-criteria {
         p {
           display: inline;
           vertical-align: bottom;
+        }
+        input {
+          line-height: 1.75rem;
         }
       }
       .string-eq-criteria {
         margin-top: 1rem;
         .row {
           margin-top: 1rem;
+        }
+        code {
+          display: inline-block;
+          margin-top: 2rem;
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: $black;
+          background: none;
         }
       }
       .number-eq-criteria,
@@ -877,11 +954,49 @@
         }
         p {
           text-align: center;
-          margin-top: 0.5rem;
+          line-height: 2.75rem;
+          font-size: 1.2rem;
         }
       }
-      .expandable-header {
-        margin-top: 3rem;
+      .fb-toggle-button {
+        width: 85px;
+        margin-top: 0;
+        &.red {
+          background: $dark_gray !important;
+        }
+      }
+      .clear-criteria {
+        margin-top: 2rem;
+      }
+      .basic,
+      .advanced {
+        margin-left: 1rem;
+        .day-criteria {
+          .row {
+            margin-left: 0;
+          }
+          div[class*=col-] {
+            padding: 0;
+            padding-right: 0.75rem;
+          }
+        }
+      }
+      .advanced {
+        .row {
+          margin-left: 0;
+        }
+        div[class*=col-] {
+          padding: 0;
+        }
+        .col-xs-9 {
+          margin-right: 0.5rem;
+        }
+        .col-xs-1 {
+          margin-left: 0.25rem;
+          margin-right: 0.25rem;
+          margin-top: 0.4rem;
+          text-align: center;
+        }
       }
     }
     .criteria-point-count-breakdown {
@@ -910,19 +1025,34 @@
   }
 }
 
-.zone-info-panel {
-  .panel-content {
-    .location-criteria {
-      .row {
-        margin-top: 1rem;
-        p {
-          font-size: 1.4rem;
-          font-weight: bold;
-        }
-        label {
-          margin-top: 0;
-        }
-      }
+.lt-gt-criteria,
+.location-criteria {
+  display: inline-block;
+  .row {
+    margin-left: 0;
+    div[class*=col-] {
+      padding: 0;
+      text-align: center;
+    }
+    margin-top: 1rem;
+    p {
+      display: block !important;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+      margin-top: 0.75rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+  }
+  .edit-in-map {
+    float: right;
+    button {
+      margin: 1rem !important;
+      width: 5rem !important;
+    }
+    label {
+      margin-top: 1.1rem !important;
     }
   }
 }

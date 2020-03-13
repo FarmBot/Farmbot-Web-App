@@ -39,8 +39,7 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
           <label>
             {t(this.props.title)}
           </label>
-          <Help text={t(this.props.toolTip)}
-            requireClick={true} position={Position.TOP_RIGHT} />
+          <Help text={t(this.props.toolTip)} position={Position.TOP_RIGHT} />
         </Col>
         {!this.newFormat && <this.Axes />}
       </Row>

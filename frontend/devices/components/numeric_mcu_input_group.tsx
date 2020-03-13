@@ -59,7 +59,7 @@ export class NumericMCUInputGroup
           <label>
             {t(label)}
           </label>
-          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
+          <Help text={tooltip} position={Position.TOP_RIGHT} />
         </Col>
         {!this.newFormat && <this.Inputs />}
       </Row>

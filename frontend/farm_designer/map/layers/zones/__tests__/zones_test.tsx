@@ -9,7 +9,7 @@ import {
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
+import { DEFAULT_CRITERIA } from "../../../../point_groups/criteria/interfaces";
 
 const fakeProps = (): ZonesProps => ({
   group: fakePointGroup(),
@@ -25,7 +25,7 @@ describe("<Zones0D />", () => {
   it("renders none: no data", () => {
     const p = fakeProps();
     p.group.body.id = 1;
-    p.group.body.criteria = undefined as unknown as PointGroup["criteria"];
+    p.group.body.criteria = DEFAULT_CRITERIA;
     const wrapper = svgMount(<Zones0D {...p} />);
     expect(wrapper.find("#zones-0D-1").length).toEqual(1);
     expect(wrapper.find("circle").length).toEqual(0);
@@ -63,7 +63,7 @@ describe("<Zones1D />", () => {
   it("renders none: no data", () => {
     const p = fakeProps();
     p.group.body.id = 1;
-    p.group.body.criteria = undefined as unknown as PointGroup["criteria"];
+    p.group.body.criteria = DEFAULT_CRITERIA;
     const wrapper = svgMount(<Zones1D {...p} />);
     expect(wrapper.find("#zones-1D-1").length).toEqual(1);
     expect(wrapper.find("line").length).toEqual(0);
@@ -110,7 +110,7 @@ describe("<Zones2D />", () => {
   it("renders none", () => {
     const p = fakeProps();
     p.group.body.id = 1;
-    p.group.body.criteria = undefined as unknown as PointGroup["criteria"];
+    p.group.body.criteria = DEFAULT_CRITERIA;
     const wrapper = svgMount(<Zones2D {...p} />);
     expect(wrapper.find("#zones-2D-1").length).toEqual(1);
     expect(wrapper.find("rect").length).toEqual(0);

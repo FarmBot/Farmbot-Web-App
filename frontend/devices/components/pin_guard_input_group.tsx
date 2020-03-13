@@ -76,7 +76,7 @@ export class PinGuardMCUInputGroup
             <label>
               {t("Pin Number")}
             </label>
-            <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} requireClick={true}
+            <Help text={ToolTips.PIN_GUARD_PIN_NUMBER}
               position={Position.TOP_RIGHT} />
           </Col>
           <Col xs={5} className="no-pad">

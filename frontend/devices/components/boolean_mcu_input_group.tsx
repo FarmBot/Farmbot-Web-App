@@ -63,7 +63,7 @@ export class BooleanMCUInputGroup
             {caution &&
               <i className="fa fa-exclamation-triangle caution-icon" />}
           </label>
-          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
+          <Help text={tooltip} position={Position.TOP_RIGHT} />
         </Col>
         {!this.newFormat && <this.Toggles />}
       </Row>

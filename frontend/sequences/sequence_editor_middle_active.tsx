@@ -77,7 +77,7 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
     <label>
       {t(props.label)}
     </label>
-    <Help text={t(props.description)} requireClick={true} />
+    <Help text={t(props.description)} />
     <ToggleButton
       toggleValue={value}
       toggleAction={() => proceed() &&

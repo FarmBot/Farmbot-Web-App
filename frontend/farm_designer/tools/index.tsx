@@ -77,7 +77,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
     <div className="mounted-tool">
       <div className="mounted-tool-header">
         <label>{t("mounted tool")}</label>
-        <Help text={Content.MOUNTED_TOOL} requireClick={true} />
+        <Help text={Content.MOUNTED_TOOL} />
       </div>
       <ToolSelection
         tools={this.props.tools}

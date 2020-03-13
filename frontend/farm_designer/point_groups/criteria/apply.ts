@@ -1,16 +1,17 @@
-import { every, get, isEqual, uniq, gt, lt, isNumber } from "lodash";
+import { every, get, uniq, gt, lt, isNumber } from "lodash";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
 import moment from "moment";
-import { DEFAULT_CRITERIA } from "./interfaces";
+import { PointGroupCriteria } from "./interfaces";
 
+/** Check if a string or number criteria field is empty. */
 const eqCriteriaEmpty =
   (eqCriteria: Record<string, (string | number)[] | undefined>) =>
     every(Object.values(eqCriteria).map(values => !values?.length));
 
+/** Check if a point matches the criteria in the provided category. */
 const checkCriteria =
-  (criteria: PointGroup["criteria"], now: moment.Moment) =>
-    (point: TaggedPoint, criteriaKey: keyof PointGroup["criteria"]) => {
+  (criteria: PointGroupCriteria, now: moment.Moment) =>
+    (point: TaggedPoint, criteriaKey: keyof PointGroupCriteria) => {
       switch (criteriaKey) {
         case "string_eq":
         case "number_eq":
@@ -38,18 +39,19 @@ const checkCriteria =
       }
     };
 
+/** Check if a point matches all criteria provided. */
 export const selectPointsByCriteria = (
-  criteria: PointGroup["criteria"] | undefined,
+  criteria: PointGroupCriteria,
   allPoints: TaggedPoint[],
   now = moment(),
 ): TaggedPoint[] => {
-  if (!criteria || isEqual(criteria, DEFAULT_CRITERIA)) { return []; }
   const check = checkCriteria(criteria, now);
   return allPoints.filter(point =>
-    every(Object.keys(criteria).map((key: keyof PointGroup["criteria"]) =>
+    every(Object.keys(criteria).map((key: keyof PointGroupCriteria) =>
       check(point, key))));
 };
 
+/** Return all points selected by group manual additions and criteria. */
 export const pointsSelectedByGroup =
   (group: TaggedPointGroup, allPoints: TaggedPoint[]) =>
     uniq(allPoints

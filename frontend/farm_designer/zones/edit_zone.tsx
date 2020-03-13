@@ -53,7 +53,8 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
             <LocationSelection
               group={zone}
               criteria={zone.body.criteria}
-              dispatch={this.props.dispatch} />
+              dispatch={this.props.dispatch}
+              editGroupAreaInMap={true} />
           </div>
           : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>

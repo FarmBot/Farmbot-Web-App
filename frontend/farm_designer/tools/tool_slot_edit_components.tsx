@@ -41,8 +41,8 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
       })} />
     <FBSelect
       key={props.toolPulloutDirection}
-      list={DIRECTION_CHOICES}
-      selectedItem={DIRECTION_CHOICES_DDI[props.toolPulloutDirection]}
+      list={DIRECTION_CHOICES()}
+      selectedItem={DIRECTION_CHOICES_DDI()[props.toolPulloutDirection]}
       onChange={ddi => props.onChange({
         pullout_direction: parseInt("" + ddi.value)
       })} />
@@ -209,7 +209,7 @@ export const newSlotDirection =
 export const positionIsDefined = (position: BotPosition): boolean =>
   isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
 
-export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
+export const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
   [ToolPulloutDirection.NONE]:
     { label: t("None"), value: ToolPulloutDirection.NONE },
   [ToolPulloutDirection.POSITIVE_X]:
@@ -220,12 +220,12 @@ export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
     { label: t("Positive Y"), value: ToolPulloutDirection.POSITIVE_Y },
   [ToolPulloutDirection.NEGATIVE_Y]:
     { label: t("Negative Y"), value: ToolPulloutDirection.NEGATIVE_Y },
-};
+});
 
-export const DIRECTION_CHOICES: DropDownItem[] = [
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NONE],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_X],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_X],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_Y],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_Y],
+export const DIRECTION_CHOICES = (): DropDownItem[] => [
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NONE],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.POSITIVE_X],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NEGATIVE_X],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.POSITIVE_Y],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NEGATIVE_Y],
 ];

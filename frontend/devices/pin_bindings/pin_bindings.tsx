@@ -75,7 +75,7 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
   return <div className="pin-bindings">
     <Row>
       {newFormat && <Help text={ToolTips.PIN_BINDINGS}
-        position={Position.TOP_RIGHT} requireClick={true} />}
+        position={Position.TOP_RIGHT} />}
       <StockPinBindingsButton
         dispatch={dispatch} firmwareHardware={firmwareHardware} />
       <Popover

@@ -20,7 +20,7 @@ export const SingleSettingRow =
       <Row>
         <Col xs={newFormat ? 12 : 6} className={"widget-body-tooltips"}>
           <label>{t(label)}</label>
-          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
+          <Help text={tooltip} position={Position.RIGHT} />
         </Col>
         {settingType === "button"
           ? <Col xs={newFormat ? 5 : 2} className={"centered-button-div"}>
