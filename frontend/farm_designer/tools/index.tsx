@@ -3,21 +3,12 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../designer_panel";
-import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel, TAB_COLOR } from "../panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { t } from "../../i18next_wrapper";
-import {
-  TaggedTool, TaggedToolSlotPointer, TaggedDevice, TaggedSensor,
-  FirmwareHardware,
-} from "farmbot";
-import {
-  selectAllTools, selectAllToolSlotPointers, getDeviceAccountSettings,
-  maybeFindToolById,
-  selectAllSensors,
-} from "../../resources/selectors";
+import { TaggedTool, TaggedToolSlotPointer, TaggedSensor } from "farmbot";
 import { Content } from "../../constants";
 import { history } from "../../history";
 import { Row, Col, Help } from "../../ui";
@@ -26,47 +17,15 @@ import { Link } from "../../link";
 import { edit, save } from "../../api/crud";
 import { readPin } from "../../devices/actions";
 import { isBotOnlineFromState } from "../../devices/must_be_online";
-import { BotState } from "../../devices/interfaces";
 import {
   setToolHover, ToolSlotSVG, ToolSVG,
 } from "../map/layers/tool_slots/tool_graphics";
 import { ToolSelection } from "./tool_slot_edit_components";
 import { error } from "../../toast/toast";
-import {
-  isExpressBoard, getFwHardwareValue,
-} from "../../devices/components/firmware_hardware_support";
-import { getFbosConfig } from "../../resources/getters";
-import { isActive } from "./edit_tool";
-
-export interface ToolsProps {
-  tools: TaggedTool[];
-  toolSlots: TaggedToolSlotPointer[];
-  dispatch: Function;
-  findTool(id: number): TaggedTool | undefined;
-  device: TaggedDevice;
-  sensors: TaggedSensor[];
-  bot: BotState;
-  hoveredToolSlot: string | undefined;
-  firmwareHardware: FirmwareHardware | undefined;
-  isActive(id: number | undefined): boolean;
-}
-
-export interface ToolsState {
-  searchTerm: string;
-}
-
-export const mapStateToProps = (props: Everything): ToolsProps => ({
-  tools: selectAllTools(props.resources.index),
-  toolSlots: selectAllToolSlotPointers(props.resources.index),
-  dispatch: props.dispatch,
-  findTool: (id: number) => maybeFindToolById(props.resources.index, id),
-  device: getDeviceAccountSettings(props.resources.index),
-  sensors: selectAllSensors(props.resources.index),
-  bot: props.bot,
-  hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
-  firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
-  isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
-});
+import { hasUTM } from "../../devices/components/firmware_hardware_support";
+import { ToolsProps, ToolsState } from "./interfaces";
+import { mapStateToProps } from "./state_to_props";
+import { BotOriginQuadrant } from "../interfaces";
 
 const toolStatus = (value: number | undefined): string => {
   switch (value) {
@@ -112,7 +71,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   get botOnline() { return isBotOnlineFromState(this.props.bot); }
 
-  get isExpress() { return isExpressBoard(this.props.firmwareHardware); }
+  get noUTM() { return !hasUTM(this.props.firmwareHardware); }
 
   MountedToolInfo = () =>
     <div className="mounted-tool">
@@ -165,7 +124,9 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
             dispatch={this.props.dispatch}
             toolSlot={toolSlot}
             isActive={this.props.isActive}
-            tools={this.props.tools} />)}
+            tools={this.props.tools}
+            xySwap={this.props.xySwap}
+            quadrant={this.props.quadrant} />)}
     </div>
 
   Tools = () =>
@@ -192,16 +153,16 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   get strings() {
     return {
-      placeholder: this.isExpress
+      placeholder: this.noUTM
         ? t("Search your seed containers...")
         : t("Search your tools..."),
-      titleText: this.isExpress
+      titleText: this.noUTM
         ? t("Add a seed container")
         : t("Add a tool or seed container"),
-      emptyStateText: this.isExpress
+      emptyStateText: this.noUTM
         ? Content.NO_SEED_CONTAINERS
         : Content.NO_TOOLS,
-      tools: this.isExpress
+      tools: this.noUTM
         ? t("seed containers")
         : t("tools and seed containers"),
       toolSlots: t("slots"),
@@ -228,8 +189,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           title={this.strings.titleText}
           text={this.strings.emptyStateText}
           colorScheme={"tools"}>
-          {!this.isExpress &&
-            <this.MountedToolInfo />}
+          {!this.noUTM && <this.MountedToolInfo />}
           <this.ToolSlots />
           <this.Tools />
         </EmptyStateWrapper>
@@ -244,6 +204,8 @@ export interface ToolSlotInventoryItemProps {
   hovered: boolean;
   dispatch: Function;
   isActive(id: number | undefined): boolean;
+  xySwap: boolean;
+  quadrant: BotOriginQuadrant;
 }
 
 export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
@@ -260,7 +222,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
-          renderRotation={false} />
+          xySwap={props.xySwap} quadrant={props.quadrant} />
       </Col>
       <Col xs={6}>
         <div className={"tool-selection-wrapper"}

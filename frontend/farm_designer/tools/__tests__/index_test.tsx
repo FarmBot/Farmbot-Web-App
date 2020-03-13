@@ -14,22 +14,20 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawTools as Tools, ToolsProps, mapStateToProps,
+  RawTools as Tools,
   ToolSlotInventoryItem, ToolSlotInventoryItemProps,
 } from "../index";
 import {
   fakeTool, fakeToolSlot, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
-import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  buildResourceIndex, fakeDevice,
-} from "../../../__test_support__/resource_index_builder";
+import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { error } from "../../../toast/toast";
 import { Content, Actions } from "../../../constants";
 import { edit, save } from "../../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
+import { ToolsProps } from "../interfaces";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -43,6 +41,8 @@ describe("<Tools />", () => {
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
     isActive: jest.fn(),
+    xySwap: false,
+    quadrant: 2,
   });
 
   it("renders with no tools", () => {
@@ -225,6 +225,8 @@ describe("<ToolSlotInventoryItem />", () => {
     hovered: false,
     dispatch: jest.fn(),
     isActive: jest.fn(),
+    xySwap: false,
+    quadrant: 2,
   });
 
   it("changes tool", () => {
@@ -240,16 +242,5 @@ describe("<ToolSlotInventoryItem />", () => {
     const e = { stopPropagation: jest.fn() };
     wrapper.find(".tool-selection-wrapper").first().simulate("click", e);
     expect(e.stopPropagation).toHaveBeenCalled();
-  });
-});
-
-describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    const tool = fakeTool();
-    tool.body.id = 1;
-    state.resources = buildResourceIndex([tool, fakeDevice()]);
-    const props = mapStateToProps(state);
-    expect(props.findTool(tool.body.id)).toEqual(tool);
   });
 });

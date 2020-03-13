@@ -6,7 +6,7 @@ import {
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
-import { SpecialStatus, FirmwareHardware } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { initSave } from "../../api/crud";
 import { Panel } from "../panel_header";
 import { history } from "../../history";
@@ -17,17 +17,7 @@ import {
 } from "../../devices/components/firmware_hardware_support";
 import { getFbosConfig } from "../../resources/getters";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";
-
-export interface AddToolProps {
-  dispatch: Function;
-  existingToolNames: string[];
-  firmwareHardware: FirmwareHardware | undefined;
-}
-
-export interface AddToolState {
-  toolName: string;
-  toAdd: string[];
-}
+import { AddToolProps, AddToolState } from "./interfaces";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -107,8 +97,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     </div>;
   }
 
-  AddStockTools = () =>
-    <div className="add-stock-tools">
+  AddStockTools = () => {
+    const add = this.state.toAdd.filter(this.filterExisting);
+    return <div className="add-stock-tools"
+      hidden={this.props.firmwareHardware == "none"}>
       <label>{t("stock names")}</label>
       <ul>
         {this.stockToolNames().map(n =>
@@ -118,17 +110,17 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           </li>)}
       </ul>
       <button
-        className="fb-button green"
-        title={t("add selected stock names")}
+        className={`fb-button green ${add.length > 0 ? "" : "pseudo-disabled"}`}
+        title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
-          this.state.toAdd.filter(this.filterExisting)
-            .map(n => this.newTool(n));
+          add.map(n => this.newTool(n));
           history.push("/app/designer/tools");
         }}>
         <i className="fa fa-plus" />
         {t("selected")}
       </button>
-    </div>
+    </div>;
+  }
 
   render() {
     const panelName = "add-tool";

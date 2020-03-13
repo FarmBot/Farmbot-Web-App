@@ -4,14 +4,13 @@ jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
 import * as React from "react";
 import { mount, shallow } from "enzyme";
-import {
-  RawAddTool as AddTool, AddToolProps, mapStateToProps,
-} from "../add_tool";
+import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
 import { initSave } from "../../../api/crud";
 import { history } from "../../../history";
 import { FirmwareHardware } from "farmbot";
+import { AddToolProps } from "../interfaces";
 
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
@@ -89,6 +88,22 @@ describe("<AddTool />", () => {
     wrapper.setState({ toAdd: [] });
     wrapper.find("input").last().simulate("change");
     expect(wrapper.state().toAdd).toEqual(["Seed Trough 2"]);
+  });
+
+  it("disables when all already added", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    p.existingToolNames = ["Seed Trough 1", "Seed Trough 2"];
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    expect(wrapper.find("button").last().hasClass("pseudo-disabled"))
+      .toBeTruthy();
+  });
+
+  it("hides when none firmware is selected", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "none";
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    expect(wrapper.find(".add-stock-tools").props().hidden).toBeTruthy();
   });
 });
 

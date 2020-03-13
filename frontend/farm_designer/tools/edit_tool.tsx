@@ -16,21 +16,11 @@ import { history } from "../../history";
 import { Panel } from "../panel_header";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";
 import { error } from "../../toast/toast";
+import { EditToolProps, EditToolState } from "./interfaces";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
     !!(toolId && toolSlots.map(x => x.body.tool_id).includes(toolId));
-
-export interface EditToolProps {
-  findTool(id: string): TaggedTool | undefined;
-  dispatch: Function;
-  mountedToolId: number | undefined;
-  isActive(id: number | undefined): boolean;
-}
-
-export interface EditToolState {
-  toolName: string;
-}
 
 export const mapStateToProps = (props: Everything): EditToolProps => ({
   findTool: (id: string) =>

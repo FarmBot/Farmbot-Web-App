@@ -8,8 +8,8 @@ import { BotPosition } from "../../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { Popover } from "@blueprintjs/core";
 import { ToolSlotSVG } from "../map/layers/tool_slots/tool_graphics";
-import { BotOriginQuadrant } from "../interfaces";
 import { isNumber } from "lodash";
+import { BotOriginQuadrant } from "../interfaces";
 
 export interface GantryMountedInputProps {
   gantryMounted: boolean;
@@ -32,7 +32,7 @@ export interface SlotDirectionInputRowProps {
 export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
   <fieldset className="tool-slot-direction-input">
     <label>
-      {t("Change direction")}
+      {t("Direction")}
     </label>
     <i className={"direction-icon "
       + directionIconClass(props.toolPulloutDirection)}
@@ -81,7 +81,7 @@ export interface ToolInputRowProps {
   tools: TaggedTool[];
   selectedTool: TaggedTool | undefined;
   onChange(update: { tool_id: number }): void;
-  isExpress: boolean;
+  noUTM: boolean;
   isActive(id: number | undefined): boolean;
 }
 
@@ -90,7 +90,7 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
     <Row>
       <Col xs={12}>
         <label>
-          {props.isExpress
+          {props.noUTM
             ? t("Seed Container")
             : t("Tool or Seed Container")}
         </label>
@@ -155,7 +155,7 @@ export interface SlotEditRowsProps {
   tool: TaggedTool | undefined;
   botPosition: BotPosition;
   updateToolSlot(update: Partial<TaggedToolSlotPointer["body"]>): void;
-  isExpress: boolean;
+  noUTM: boolean;
   xySwap: boolean;
   quadrant: BotOriginQuadrant;
   isActive(id: number | undefined): boolean;
@@ -165,14 +165,14 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">
     <ToolSlotSVG toolSlot={props.toolSlot}
       toolName={props.tool ? props.tool.body.name : "Empty"}
-      renderRotation={true} xySwap={props.xySwap} quadrant={props.quadrant} />
+      xySwap={props.xySwap} quadrant={props.quadrant} />
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
       gantryMounted={props.toolSlot.body.gantry_mounted}
       botPosition={props.botPosition}
       onChange={props.updateToolSlot} />
     <ToolInputRow
-      isExpress={props.isExpress}
+      noUTM={props.noUTM}
       tools={props.tools}
       selectedTool={props.tool}
       isActive={props.isActive}
@@ -181,7 +181,7 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       <SlotDirectionInputRow
         toolPulloutDirection={props.toolSlot.body.pullout_direction}
         onChange={props.updateToolSlot} />}
-    {!props.isExpress &&
+    {!props.noUTM &&
       <GantryMountedInput
         gantryMounted={props.toolSlot.body.gantry_mounted}
         onChange={props.updateToolSlot} />}

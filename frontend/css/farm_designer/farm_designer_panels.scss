@@ -640,6 +640,9 @@
 
 .add-tool-panel-content,
 .edit-tool-panel-content {
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   button {
     display: block;
     margin-left: auto;
@@ -687,6 +690,7 @@
       }
     }
     button {
+      margin-bottom: 2rem;
       .fa-plus {
         margin-right: 0.5rem;
       }

@@ -7,8 +7,11 @@ import {
   SlotLocationInputRow, SlotLocationInputRowProps,
   ToolSelection, ToolSelectionProps, SlotEditRows, SlotEditRowsProps,
 } from "../tool_slot_edit_components";
-import { fakeTool, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeTool, fakeToolSlot,
+} from "../../../__test_support__/fake_state/resources";
 import { FBSelect, NULL_CHOICE } from "../../../ui";
+import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
@@ -35,9 +38,18 @@ describe("<SlotDirectionInputRow />", () => {
     onChange: jest.fn(),
   });
 
-  it("renders", () => {
-    const wrapper = mount(<SlotDirectionInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("change direction");
+  it.each<[ToolPulloutDirection, string]>([
+    [ToolPulloutDirection.NONE, "fa-dot-circle-o"],
+    [ToolPulloutDirection.POSITIVE_X, "fa-arrow-circle-right"],
+    [ToolPulloutDirection.NEGATIVE_X, "fa-arrow-circle-left"],
+    [ToolPulloutDirection.POSITIVE_Y, "fa-arrow-circle-up"],
+    [ToolPulloutDirection.NEGATIVE_Y, "fa-arrow-circle-down"],
+  ])("renders: direction %s", (toolPulloutDirection, expected) => {
+    const p = fakeProps();
+    p.toolPulloutDirection = toolPulloutDirection;
+    const wrapper = mount(<SlotDirectionInputRow {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("direction");
+    expect(wrapper.find("i").first().hasClass(expected)).toBeTruthy();
   });
 
   it("changes value by click", () => {
@@ -45,6 +57,14 @@ describe("<SlotDirectionInputRow />", () => {
     const wrapper = shallow(<SlotDirectionInputRow {...p} />);
     wrapper.find("i").first().simulate("click");
     expect(p.onChange).toHaveBeenCalledWith({ pullout_direction: 1 });
+  });
+
+  it("changes value by click: handles rollover", () => {
+    const p = fakeProps();
+    p.toolPulloutDirection = ToolPulloutDirection.NEGATIVE_Y;
+    const wrapper = shallow(<SlotDirectionInputRow {...p} />);
+    wrapper.find("i").first().simulate("click");
+    expect(p.onChange).toHaveBeenCalledWith({ pullout_direction: 0 });
   });
 
   it("changes value by selection", () => {
@@ -72,7 +92,8 @@ describe("<ToolSelection />", () => {
 
   it("handles missing tool data", () => {
     const p = fakeProps();
-    p.filterSelectedTool = true;
+    p.filterActiveTools = false;
+    p.filterSelectedTool = false;
     const tool = fakeTool();
     tool.body.name = undefined;
     tool.body.id = undefined;
@@ -111,7 +132,7 @@ describe("<ToolInputRow />", () => {
     tools: [],
     selectedTool: undefined,
     onChange: jest.fn(),
-    isExpress: false,
+    noUTM: false,
     isActive: jest.fn(),
   });
 
@@ -129,7 +150,7 @@ describe("<ToolInputRow />", () => {
 
   it("renders for express bots", () => {
     const p = fakeProps();
-    p.isExpress = true;
+    p.noUTM = true;
     const wrapper = mount(<ToolInputRow {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("seed container");
   });
@@ -196,7 +217,7 @@ describe("<SlotEditRows />", () => {
     tool: undefined,
     botPosition: { x: undefined, y: undefined, z: undefined },
     updateToolSlot: jest.fn(),
-    isExpress: false,
+    noUTM: false,
     xySwap: false,
     quadrant: 2,
     isActive: () => false,

@@ -6,6 +6,7 @@ import { Color } from "../../../../../ui/index";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<BotFigure/>", () => {
   const fakeProps = (): BotFigureProps => ({
@@ -35,7 +36,7 @@ describe("<BotFigure/>", () => {
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
       p.figureName = figureName;
-      const result = shallow<BotFigure>(<BotFigure {...p} />);
+      const result = svgMount(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
@@ -65,7 +66,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     p.position = { x: 100, y: 200, z: 0 };
-    const result = shallow<BotFigure>(<BotFigure {...p} />);
+    const result = svgMount(<BotFigure {...p} />);
     const gantry = result.find("#gantry");
     expect(gantry.length).toEqual(1);
     expect(gantry.props().x).toEqual(90);
@@ -77,7 +78,7 @@ describe("<BotFigure/>", () => {
   it("changes color on e-stop", () => {
     const p = fakeProps();
     p.eStopStatus = true;
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
   });
 
@@ -118,7 +119,7 @@ describe("<BotFigure/>", () => {
   it("shows mounted tool", () => {
     const p = fakeProps();
     p.mountedToolName = "Seeder";
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
       .toEqual(1);
   });

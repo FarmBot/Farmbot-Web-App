@@ -11,10 +11,9 @@ import { history } from "../../history";
 import { Panel } from "../panel_header";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { moveAbs } from "../../devices/actions";
-import {
-  isExpressBoard,
-} from "../../devices/components/firmware_hardware_support";
-import { EditToolSlotProps, mapStateToPropsEdit } from "./map_to_props_add_edit";
+import { hasUTM } from "../../devices/components/firmware_hardware_support";
+import { mapStateToPropsEdit } from "./state_to_props";
+import { EditToolSlotProps } from "./interfaces";
 
 export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
 
@@ -44,7 +43,7 @@ export class RawEditToolSlot extends React.Component<EditToolSlotProps> {
         {toolSlot
           ? <div className={"edit-tool-slot-content-wrapper"}>
             <SlotEditRows
-              isExpress={isExpressBoard(this.props.firmwareHardware)}
+              noUTM={!hasUTM(this.props.firmwareHardware)}
               toolSlot={toolSlot}
               tools={this.props.tools}
               tool={this.tool}

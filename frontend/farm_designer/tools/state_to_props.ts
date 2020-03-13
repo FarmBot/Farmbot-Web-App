@@ -1,10 +1,10 @@
 import { Everything } from "../../interfaces";
-import { TaggedTool, TaggedToolSlotPointer, FirmwareHardware } from "farmbot";
 import {
   selectAllTools, maybeFindToolById, maybeGetToolSlot, maybeFindToolSlotById,
   selectAllToolSlotPointers,
+  getDeviceAccountSettings,
+  selectAllSensors,
 } from "../../resources/selectors";
-import { BotPosition } from "../../devices/interfaces";
 import { validBotLocationData } from "../../util";
 import { UUID } from "../../resources/interfaces";
 import {
@@ -13,21 +13,35 @@ import {
 import { getFbosConfig } from "../../resources/getters";
 import { getWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
-import { BotOriginQuadrant, isBotOriginQuadrant } from "../interfaces";
+import { isBotOriginQuadrant } from "../interfaces";
 import { isActive } from "./edit_tool";
+import {
+  AddEditToolSlotPropsBase, AddToolSlotProps, EditToolSlotProps, ToolsProps,
+} from "./interfaces";
 
-export interface AddEditToolSlotPropsBase {
-  tools: TaggedTool[];
-  dispatch: Function;
-  botPosition: BotPosition;
-  findTool(id: number): TaggedTool | undefined;
-  firmwareHardware: FirmwareHardware | undefined;
-  xySwap: boolean;
-  quadrant: BotOriginQuadrant;
-  isActive(id: number | undefined): boolean;
-}
+export const mapStateToProps = (props: Everything): ToolsProps => {
+  const getWebAppConfig = getWebAppConfigValue(() => props);
+  const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
+  const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
+  const quadrant = isBotOriginQuadrant(rawQuadrant) ? rawQuadrant : 2;
+  return {
+    tools: selectAllTools(props.resources.index),
+    toolSlots: selectAllToolSlotPointers(props.resources.index),
+    dispatch: props.dispatch,
+    findTool: (id: number) => maybeFindToolById(props.resources.index, id),
+    device: getDeviceAccountSettings(props.resources.index),
+    sensors: selectAllSensors(props.resources.index),
+    bot: props.bot,
+    hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
+    firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
+    isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
+    xySwap,
+    quadrant,
+  };
+};
 
-export const mapStateToPropsBase = (props: Everything): AddEditToolSlotPropsBase => {
+export const mapStateToPropsAddEditBase = (props: Everything):
+  AddEditToolSlotPropsBase => {
   const getWebAppConfig = getWebAppConfigValue(() => props);
   const xySwap = !!getWebAppConfig(BooleanSetting.xy_swap);
   const rawQuadrant = getWebAppConfig(NumericSetting.bot_origin_quadrant);
@@ -44,24 +58,16 @@ export const mapStateToPropsBase = (props: Everything): AddEditToolSlotPropsBase
   };
 };
 
-export interface AddToolSlotProps extends AddEditToolSlotPropsBase {
-  findToolSlot(uuid: UUID | undefined): TaggedToolSlotPointer | undefined;
-}
-
 export const mapStateToPropsAdd = (props: Everything): AddToolSlotProps => {
-  const mapStateToProps = mapStateToPropsBase(props) as AddToolSlotProps;
-  mapStateToProps.findToolSlot = (uuid: UUID | undefined) =>
+  const stateToProps = mapStateToPropsAddEditBase(props) as AddToolSlotProps;
+  stateToProps.findToolSlot = (uuid: UUID | undefined) =>
     maybeGetToolSlot(props.resources.index, uuid);
-  return mapStateToProps;
+  return stateToProps;
 };
 
-export interface EditToolSlotProps extends AddEditToolSlotPropsBase {
-  findToolSlot(id: string): TaggedToolSlotPointer | undefined;
-}
-
 export const mapStateToPropsEdit = (props: Everything): EditToolSlotProps => {
-  const mapStateToProps = mapStateToPropsBase(props) as EditToolSlotProps;
-  mapStateToProps.findToolSlot = (id: string) =>
+  const stateToProps = mapStateToPropsAddEditBase(props) as EditToolSlotProps;
+  stateToProps.findToolSlot = (id: string) =>
     maybeFindToolSlotById(props.resources.index, parseInt(id));
-  return mapStateToProps;
+  return stateToProps;
 };
