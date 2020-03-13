@@ -18,10 +18,9 @@ describe("<Controls />", () => {
     feeds: [fakeWebcamFeed()],
     peripherals: [fakePeripheral()],
     sensors: [fakeSensor()],
-    botToMqttStatus: "up",
     firmwareSettings: bot.hardware.mcu_params,
     shouldDisplay: () => true,
-    getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
+    getWebAppConfigVal: jest.fn(key => mockConfig[key]),
     sensorReadings: [],
     timeSettings: fakeTimeSettings(),
     env: {},
@@ -63,6 +62,17 @@ describe("<Controls />", () => {
       .map(string => expect(txt).toContain(string));
     ["webcam", "sensors"]
       .map(string => expect(txt).not.toContain(string));
+  });
+
+  it("hides sensors widget based on model", () => {
+    mockConfig.hide_sensors = false;
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<Controls {...p} />);
+    const txt = wrapper.text().toLowerCase();
+    ["move", "peripherals"]
+      .map(string => expect(txt).toContain(string));
+    ["sensors"].map(string => expect(txt).not.toContain(string));
   });
 
   it("doesn't show sensor readings widget", () => {

@@ -6,13 +6,6 @@ jest.mock("../../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { PowerAndReset } from "../power_and_reset";
 import { mount } from "enzyme";
@@ -28,10 +21,6 @@ import {
 import { edit, save } from "../../../../api/crud";
 
 describe("<PowerAndReset/>", () => {
-  beforeEach(() => {
-    mockDev = false;
-  });
-
   const fakeConfig = fakeFbosConfig();
   const state = fakeState();
   state.resources = buildResourceIndex([fakeConfig]);
@@ -52,17 +41,6 @@ describe("<PowerAndReset/>", () => {
       "Connection Attempt Period", "Change Ownership"]
       .map(string => expect(wrapper.text().toLowerCase())
         .toContain(string.toLowerCase()));
-    expect(wrapper.text().toLowerCase())
-      .toContain("Restart Firmware".toLowerCase());
-  });
-
-  it("doesn't render restart firmware", () => {
-    mockDev = true;
-    const p = fakeProps();
-    p.controlPanelState.power_and_reset = true;
-    const wrapper = mount(<PowerAndReset {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .not.toContain("Restart Firmware".toLowerCase());
   });
 
   it("renders as closed", () => {
@@ -90,19 +68,9 @@ describe("<PowerAndReset/>", () => {
     p.sourceFbosConfig = () => ({ value: false, consistent: true });
     p.controlPanelState.power_and_reset = true;
     const wrapper = mount(<PowerAndReset {...p} />);
-    clickButton(wrapper, 4, "yes");
+    clickButton(wrapper, 3, "yes");
     expect(edit).toHaveBeenCalledWith(fakeConfig, { disable_factory_reset: true });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
-  });
-
-  it("restarts firmware", () => {
-    const p = fakeProps();
-    p.controlPanelState.power_and_reset = true;
-    const wrapper = mount(<PowerAndReset {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toContain("Restart Firmware".toLowerCase());
-    clickButton(wrapper, 2, "restart");
-    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
   });
 
   it("shows change ownership button", () => {

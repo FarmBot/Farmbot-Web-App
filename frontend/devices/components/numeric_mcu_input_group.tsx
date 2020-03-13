@@ -5,50 +5,65 @@ import { Row, Col, Help } from "../../ui/index";
 import { Position } from "@blueprintjs/core";
 import { Highlight } from "./maybe_highlight";
 import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../account/dev/dev_support";
 
-export function NumericMCUInputGroup(props: NumericMCUInputGroupProps) {
+export class NumericMCUInputGroup
+  extends React.Component<NumericMCUInputGroupProps> {
 
-  const {
-    sourceFwConfig, dispatch, tooltip, label, x, y, z, intSize, gray, float,
-  } = props;
-  return <Row>
-    <Highlight settingName={label}>
-      <Col xs={6} className={"widget-body-tooltips"}>
-        <label>
-          {t(label)}
-        </label>
-        <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
-      </Col>
-      <Col xs={2}>
+  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
+
+  Inputs = () => {
+    const {
+      sourceFwConfig, dispatch, intSize, gray, float,
+      x, y, z, xScale, yScale, zScale,
+    } = this.props;
+    return <div className={"mcu-inputs"}>
+      <Col xs={this.newFormat ? 4 : 2}>
         <McuInputBox
           setting={x}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch}
           intSize={intSize}
           float={float}
-          scale={props.xScale}
+          scale={xScale}
           gray={gray?.x} />
       </Col>
-      <Col xs={2}>
+      <Col xs={this.newFormat ? 4 : 2}>
         <McuInputBox
           setting={y}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch}
           intSize={intSize}
           float={float}
-          scale={props.yScale}
+          scale={yScale}
           gray={gray?.y} />
       </Col>
-      <Col xs={2}>
+      <Col xs={this.newFormat ? 4 : 2}>
         <McuInputBox
           setting={z}
           sourceFwConfig={sourceFwConfig}
           dispatch={dispatch}
           intSize={intSize}
           float={float}
-          scale={props.zScale}
+          scale={zScale}
           gray={gray?.z} />
       </Col>
-    </Highlight>
-  </Row>;
+    </div>;
+  }
+
+  render() {
+    const { tooltip, label } = this.props;
+    return <Highlight settingName={label}>
+      <Row>
+        <Col xs={this.newFormat ? 12 : 6} className={"widget-body-tooltips"}>
+          <label>
+            {t(label)}
+          </label>
+          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
+        </Col>
+        {!this.newFormat && <this.Inputs />}
+      </Row>
+      {this.newFormat && <Row><this.Inputs /></Row>}
+    </Highlight>;
+  }
 }

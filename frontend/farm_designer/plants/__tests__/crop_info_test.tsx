@@ -99,9 +99,9 @@ describe("<CropInfo />", () => {
     p.cropSearchResults[0].crop.row_spacing = undefined;
     p.cropSearchResults[0].crop.common_names = [];
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("iconnot set");
-    expect(wrapper.text().toLowerCase()).toContain("spacingnot set");
-    expect(wrapper.text().toLowerCase()).toContain("common namesnot set");
+    expect(wrapper.text().toLowerCase()).toContain("iconnot available");
+    expect(wrapper.text().toLowerCase()).toContain("spacingnot available");
+    expect(wrapper.text().toLowerCase()).toContain("common namesnot available");
   });
 });
 

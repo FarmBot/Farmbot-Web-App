@@ -9,7 +9,7 @@ import { Props } from "./interfaces";
 import { Move } from "./move/move";
 import { BooleanSetting } from "../session_keys";
 import { SensorReadings } from "./sensor_readings/sensor_readings";
-import { isBotOnline } from "../devices/must_be_online";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 import { hasSensors } from "../devices/components/firmware_hardware_support";
 
 /** Controls page. */
@@ -19,9 +19,7 @@ export class RawControls extends React.Component<Props, {}> {
   }
 
   get botOnline() {
-    return isBotOnline(
-      this.props.bot.hardware.informational_settings.sync_status,
-      this.props.botToMqttStatus);
+    return isBotOnlineFromState(this.props.bot);
   }
 
   get hideSensors() {
@@ -34,7 +32,6 @@ export class RawControls extends React.Component<Props, {}> {
     env={this.props.env}
     dispatch={this.props.dispatch}
     arduinoBusy={this.arduinoBusy}
-    botToMqttStatus={this.props.botToMqttStatus}
     firmwareSettings={this.props.firmwareSettings}
     firmwareHardware={this.props.firmwareHardware}
     getWebAppConfigVal={this.props.getWebAppConfigVal} />

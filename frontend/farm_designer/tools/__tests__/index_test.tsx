@@ -40,7 +40,6 @@ describe("<Tools />", () => {
     device: fakeDevice(),
     sensors: [fakeSensor()],
     bot,
-    botToMqttStatus: "down",
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
     isActive: jest.fn(),
@@ -161,7 +160,7 @@ describe("<Tools />", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
     p.bot.hardware.informational_settings.sync_status = "synced";
-    p.botToMqttStatus = "up";
+    p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 0 };
     const wrapper = mount(<Tools {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("mounted tool");
     wrapper.find(".yellow").first().simulate("click");
@@ -173,7 +172,7 @@ describe("<Tools />", () => {
   it("can't verify tool attachment when offline", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
-    p.botToMqttStatus = "down";
+    p.bot.connectivity.uptime["bot.mqtt"] = undefined;
     const wrapper = mount(<Tools {...p} />);
     wrapper.find(".yellow").first().simulate("click");
     expect(mockDevice.readPin).not.toHaveBeenCalled();

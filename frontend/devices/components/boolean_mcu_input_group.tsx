@@ -6,38 +6,24 @@ import { BooleanMCUInputGroupProps } from "./interfaces";
 import { Position } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "./maybe_highlight";
+import { DevSettings } from "../../account/dev/dev_support";
 
-export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
+export class BooleanMCUInputGroup
+  extends React.Component<BooleanMCUInputGroupProps> {
 
-  const {
-    tooltip,
-    label,
-    x,
-    y,
-    z,
-    disable,
-    grayscale,
-    caution,
-    displayAlert,
-    sourceFwConfig,
-    dispatch,
-  } = props;
+  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
 
-  const xParam = sourceFwConfig(x);
-  const yParam = sourceFwConfig(y);
-  const zParam = sourceFwConfig(z);
-
-  return <Row>
-    <Highlight settingName={label}>
-      <Col xs={6} className={"widget-body-tooltips"}>
-        <label>
-          {t(label)}
-          {caution &&
-            <i className="fa fa-exclamation-triangle caution-icon" />}
-        </label>
-        <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
-      </Col>
-      <Col xs={2} className={"centered-button-div"}>
+  Toggles = () => {
+    const {
+      sourceFwConfig, dispatch, disable, grayscale, displayAlert,
+      x, y, z,
+    } = this.props;
+    const xParam = sourceFwConfig(x);
+    const yParam = sourceFwConfig(y);
+    const zParam = sourceFwConfig(z);
+    const width = this.newFormat ? 4 : 2;
+    return <div className={"mcu-inputs"}>
+      <Col xs={width} className={"centered-button-div"}>
         <ToggleButton
           grayscale={grayscale?.x}
           disabled={disable?.x}
@@ -46,7 +32,7 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
           toggleAction={() =>
             dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
       </Col>
-      <Col xs={2} className={"centered-button-div"}>
+      <Col xs={width} className={"centered-button-div"}>
         <ToggleButton
           grayscale={grayscale?.y}
           disabled={disable?.y}
@@ -55,7 +41,7 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
           toggleAction={() =>
             dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
       </Col>
-      <Col xs={2} className={"centered-button-div"}>
+      <Col xs={width} className={"centered-button-div"}>
         <ToggleButton
           grayscale={grayscale?.z}
           disabled={disable?.z}
@@ -64,6 +50,24 @@ export function BooleanMCUInputGroup(props: BooleanMCUInputGroupProps) {
           toggleAction={() =>
             dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />
       </Col>
-    </Highlight>
-  </Row>;
+    </div>;
+  }
+
+  render() {
+    const { tooltip, label, caution } = this.props;
+    return <Highlight settingName={label}>
+      <Row>
+        <Col xs={this.newFormat ? 12 : 6} className={"widget-body-tooltips"}>
+          <label>
+            {t(label)}
+            {caution &&
+              <i className="fa fa-exclamation-triangle caution-icon" />}
+          </label>
+          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
+        </Col>
+        {!this.newFormat && <this.Toggles />}
+      </Row>
+      {this.newFormat && <Row><this.Toggles /></Row>}
+    </Highlight>;
+  }
 }

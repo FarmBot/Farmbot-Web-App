@@ -4,6 +4,7 @@ import { Position } from "@blueprintjs/core";
 import { DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
 import { t } from "../../../i18next_wrapper";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export interface SingleSettingRowProps {
   label: DeviceSetting;
@@ -13,15 +14,19 @@ export interface SingleSettingRowProps {
 }
 
 export const SingleSettingRow =
-  ({ label, tooltip, settingType, children }: SingleSettingRowProps) =>
-    <Row>
-      <Highlight settingName={label}>
-        <Col xs={6} className={"widget-body-tooltips"}>
+  ({ label, tooltip, settingType, children }: SingleSettingRowProps) => {
+    const newFormat = DevSettings.futureFeaturesEnabled();
+    return <Highlight settingName={label}>
+      <Row>
+        <Col xs={newFormat ? 12 : 6} className={"widget-body-tooltips"}>
           <label>{t(label)}</label>
-          <Help text={tooltip} requireClick={true} position={Position.RIGHT} />
+          <Help text={tooltip} requireClick={true} position={Position.TOP_RIGHT} />
         </Col>
         {settingType === "button"
-          ? <Col xs={2} className={"centered-button-div"}>{children}</Col>
-          : <Col xs={6}>{children}</Col>}
-      </Highlight>
-    </Row>;
+          ? <Col xs={newFormat ? 5 : 2} className={"centered-button-div"}>
+            {children}
+          </Col>
+          : <Col xs={newFormat ? 8 : 6}>{children}</Col>}
+      </Row>
+    </Highlight>;
+  };

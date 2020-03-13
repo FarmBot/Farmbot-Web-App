@@ -7,6 +7,7 @@ import { ColWidth } from "../farmbot_os_settings";
 import { DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
 import { OtaTimeSelectorRowProps } from "./interfaces";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 // tslint:disable-next-line:no-null-keyword
 const UNDEFINED = null as unknown as undefined;
@@ -40,7 +41,7 @@ type HOUR =
   | 23;
 type TimeTable = Record<HOUR, DropDownItem>;
 type EveryTimeTable = Record<PreferredHourFormat, TimeTable>;
-const ASAP = () => t("As soon as possible");
+export const ASAP = () => t("As soon as possible");
 const TIME_TABLE_12H = (): TimeTable => ({
   0: { label: t("Midnight"), value: 0 },
   1: { label: "1:00 AM", value: 1 },
@@ -102,7 +103,7 @@ const TIME_FORMATS = (): EveryTimeTable => ({
   "24h": TIME_TABLE_24H()
 });
 
-interface OtaTimeSelectorProps {
+export interface OtaTimeSelectorProps {
   disabled: boolean;
   timeFormat: PreferredHourFormat;
   onChange(hour24: number | undefined): void;
@@ -116,7 +117,8 @@ export const changeOtaHour =
       dispatch(save(device.uuid));
     };
 
-export function assertIsHour(val: number | undefined): asserts val is (HOUR | undefined) {
+export function assertIsHour(
+  val: number | undefined): asserts val is (HOUR | undefined) {
   if ((val === null) || (val === undefined)) {
     return;
   }
@@ -147,9 +149,10 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
     .sort((_x, _y) => (_x.value > _y.value) ? 1 : -1);
   const selectedItem = (typeof value == "number") ?
     theTimeTable[value as HOUR] : theTimeTable[DEFAULT_HOUR];
-  return <Row>
-    <Highlight settingName={DeviceSetting.applySoftwareUpdates}>
-      <Col xs={ColWidth.label}>
+  const newFormat = DevSettings.futureFeaturesEnabled();
+  return <Highlight settingName={DeviceSetting.applySoftwareUpdates}>
+    <Row>
+      <Col xs={newFormat ? 5 : ColWidth.label}>
         <label>
           {t(DeviceSetting.applySoftwareUpdates)}
         </label>
@@ -161,8 +164,8 @@ export const OtaTimeSelector = (props: OtaTimeSelectorProps): JSX.Element => {
           list={list}
           extraClass={disabled ? "disabled" : ""} />
       </Col>
-    </Highlight>
-  </Row>;
+    </Row>
+  </Highlight>;
 };
 
 export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {

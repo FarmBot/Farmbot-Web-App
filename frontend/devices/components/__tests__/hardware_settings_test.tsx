@@ -1,7 +1,14 @@
+let mockDev = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import { HardwareSettings } from "../hardware_settings";
-import { HardwareSettingsProps } from "../../interfaces";
+import { HardwareSettingsProps, ControlPanelState } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { panelState } from "../../../__test_support__/control_panel_state";
@@ -19,7 +26,6 @@ describe("<HardwareSettings />", () => {
   const fakeProps = (): HardwareSettingsProps => ({
     bot,
     controlPanelState: panelState(),
-    botToMqttStatus: "up",
     dispatch: jest.fn(),
     sourceFwConfig: x =>
       ({ value: fakeFirmwareConfig().body[x], consistent: true }),
@@ -35,12 +41,23 @@ describe("<HardwareSettings />", () => {
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
+  it("renders expanded", () => {
+    mockDev = true;
+    const p = fakeProps();
+    Object.keys(p.controlPanelState).map((panel: keyof ControlPanelState) => {
+      p.controlPanelState[panel] = true;
+    });
+    const wrapper = mount(<HardwareSettings {...p} />);
+    ["steps", "mm"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
+  });
+
   function checkDispatch(
     buttonElement: string,
     buttonIndex: number,
     buttonText: string,
     type: string,
-    payload: boolean | string) {
+    payload: { open: boolean, all: boolean } | string) {
     const p = fakeProps();
     const wrapper = mount(<HardwareSettings {...p} />);
     clickButton(wrapper, buttonIndex, buttonText, {
@@ -51,12 +68,12 @@ describe("<HardwareSettings />", () => {
 
   it("expands all", () => {
     checkDispatch("button", 0, "expand all",
-      Actions.BULK_TOGGLE_CONTROL_PANEL, true);
+      Actions.BULK_TOGGLE_CONTROL_PANEL, { open: true, all: false });
   });
 
   it("collapses all", () => {
     checkDispatch("button", 1, "collapse all",
-      Actions.BULK_TOGGLE_CONTROL_PANEL, false);
+      Actions.BULK_TOGGLE_CONTROL_PANEL, { open: false, all: false });
   });
 
   it("toggles motor category", () => {

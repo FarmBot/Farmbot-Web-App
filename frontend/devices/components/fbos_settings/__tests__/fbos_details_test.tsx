@@ -71,9 +71,11 @@ describe("<FbosDetails/>", () => {
     expect(wrapper.text()).not.toContain("name@");
   });
 
-  it("handles missing firmware version", () => {
+  it("handles missing data", () => {
     const p = fakeProps();
     p.botInfoSettings.firmware_version = undefined;
+    p.botInfoSettings.node_name = "";
+    p.botInfoSettings.commit = "";
     const wrapper = mount(<FbosDetails {...p} />);
     expect(wrapper.text()).toContain("---");
   });

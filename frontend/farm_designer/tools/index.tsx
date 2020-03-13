@@ -25,10 +25,8 @@ import { botPositionLabel } from "../map/layers/farmbot/bot_position_label";
 import { Link } from "../../link";
 import { edit, save } from "../../api/crud";
 import { readPin } from "../../devices/actions";
-import { isBotOnline } from "../../devices/must_be_online";
+import { isBotOnlineFromState } from "../../devices/must_be_online";
 import { BotState } from "../../devices/interfaces";
-import { NetworkState } from "../../connectivity/interfaces";
-import { getStatus } from "../../connectivity/reducer_support";
 import {
   setToolHover, ToolSlotSVG, ToolSVG,
 } from "../map/layers/tool_slots/tool_graphics";
@@ -48,7 +46,6 @@ export interface ToolsProps {
   device: TaggedDevice;
   sensors: TaggedSensor[];
   bot: BotState;
-  botToMqttStatus: NetworkState;
   hoveredToolSlot: string | undefined;
   firmwareHardware: FirmwareHardware | undefined;
   isActive(id: number | undefined): boolean;
@@ -66,7 +63,6 @@ export const mapStateToProps = (props: Everything): ToolsProps => ({
   device: getDeviceAccountSettings(props.resources.index),
   sensors: selectAllSensors(props.resources.index),
   bot: props.bot,
-  botToMqttStatus: getStatus(props.bot.connectivity.uptime["bot.mqtt"]),
   hoveredToolSlot: props.resources.consumers.farm_designer.hoveredToolSlot,
   firmwareHardware: getFwHardwareValue(getFbosConfig(props.resources.index)),
   isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
@@ -114,11 +110,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
     return !!this.props.bot.hardware.informational_settings.busy;
   }
 
-  get botOnline() {
-    return isBotOnline(
-      this.props.bot.hardware.informational_settings.sync_status,
-      this.props.botToMqttStatus);
-  }
+  get botOnline() { return isBotOnlineFromState(this.props.bot); }
 
   get isExpress() { return isExpressBoard(this.props.firmwareHardware); }
 

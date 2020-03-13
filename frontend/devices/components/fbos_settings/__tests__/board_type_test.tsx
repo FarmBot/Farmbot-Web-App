@@ -33,19 +33,32 @@ describe("<BoardType/>", () => {
     shouldDisplay: () => false,
     botOnline: true,
     timeSettings: fakeTimeSettings(),
+    firmwareHardware: undefined,
   });
 
-  it("Disconnected with valid FirmwareConfig", () => {
+  it("renders with valid firmwareHardware", () => {
     const p = fakeProps();
-    p.sourceFbosConfig = () => ({ value: "farmduino", consistent: false });
+    p.firmwareHardware = "farmduino";
     const wrapper = mount(<BoardType {...p} />);
     expect(wrapper.text()).toContain("Farmduino");
   });
 
+  it("sets sending status", () => {
+    const wrapper = mount<BoardType>(<BoardType {...fakeProps()} />);
+    expect(wrapper.state().sending).toBeFalsy();
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: true, consistent: false });
+    wrapper.setProps(p);
+    wrapper.mount();
+    expect(wrapper.state().sending).toBeTruthy();
+  });
+
   it("calls updateConfig", () => {
     const p = fakeProps();
-    const wrapper = shallow(<BoardType {...p} />);
-    wrapper.find("FBSelect").simulate("change",
+    const wrapper = mount<BoardType>(<BoardType {...p} />);
+    const selection =
+      shallow(<div>{wrapper.instance().FirmwareSelection()}</div>);
+    selection.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "farmduino" });
     expect(edit).toHaveBeenCalledWith(fakeConfig, {
       firmware_hardware: "farmduino"
@@ -53,17 +66,19 @@ describe("<BoardType/>", () => {
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
-  it("deosn't call updateConfig", () => {
+  it("doesn't call updateConfig", () => {
     const p = fakeProps();
-    const wrapper = shallow(<BoardType {...p} />);
-    wrapper.find("FBSelect").simulate("change",
+    const wrapper = mount<BoardType>(<BoardType {...p} />);
+    const selection =
+      shallow(<div>{wrapper.instance().FirmwareSelection()}</div>);
+    selection.find("FBSelect").simulate("change",
       { label: "firmware_hardware", value: "unknown" });
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
   });
 
   it("displays standard boards", () => {
-    const wrapper = shallow(<BoardType {...fakeProps()} />);
+    const wrapper = mount(<BoardType {...fakeProps()} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
@@ -78,7 +93,7 @@ describe("<BoardType/>", () => {
   it("displays new boards", () => {
     const p = fakeProps();
     p.shouldDisplay = () => true;
-    const wrapper = shallow(<BoardType {...p} />);
+    const wrapper = mount(<BoardType {...p} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([
       { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },

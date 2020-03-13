@@ -5,7 +5,6 @@ import { defensiveClone } from "../../util";
 import { stash } from "../../connectivity/data_consistency";
 import { incomingStatus } from "../../connectivity/connect_device";
 import { Vector3, uuid } from "farmbot";
-import { values, omit } from "lodash";
 import { now } from "../connectivity/qos";
 
 const statusOf = (state: BotState) => {
@@ -46,15 +45,28 @@ describe("botReducer", () => {
       .toBe(!initialState().controlPanelState.danger_zone);
   });
 
-  it("bulk toggles control panel options", () => {
+  it("bulk toggles firmware control panel options", () => {
     const state = botReducer(initialState(), {
       type: Actions.BULK_TOGGLE_CONTROL_PANEL,
-      payload: true
+      payload: { open: true, all: false }
     });
 
     const bulkToggable =
-      omit(state.controlPanelState, "power_and_reset");
-    values(bulkToggable).map(value => {
+      Object.entries(state.controlPanelState).filter(([k, _]) => ![
+        "power_and_reset", "farmbot_os", "farm_designer", "firmware",
+      ].includes(k));
+    Object.values(bulkToggable).map(value => {
+      expect(value).toBeTruthy();
+    });
+  });
+
+  it("bulk toggles all control panel options", () => {
+    const state = botReducer(initialState(), {
+      type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+      payload: { open: true, all: true }
+    });
+
+    Object.values(state.controlPanelState).map(value => {
       expect(value).toBeTruthy();
     });
   });
@@ -81,6 +93,14 @@ describe("botReducer", () => {
       payload: {}
     }).minOsFeatureData;
     expect(r).toEqual({});
+  });
+
+  it("fetches OS release notes", () => {
+    const r = botReducer(initialState(), {
+      type: Actions.FETCH_OS_RELEASE_NOTES_OK,
+      payload: "notes"
+    }).osReleaseNotes;
+    expect(r).toEqual("notes");
   });
 
   it("Handles status_v8 info", () => {

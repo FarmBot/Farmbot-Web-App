@@ -31,9 +31,7 @@ export function Encoders(props: EncodersProps) {
       panel={"encoders"}
       dispatch={dispatch} />
     <Collapse isOpen={!!encoders}>
-      <div className="label-headings">
-        <SpacePanelHeader />
-      </div>
+      <SpacePanelHeader />
       <BooleanMCUInputGroup
         label={!showEncoders
           ? DeviceSetting.enableStallDetection

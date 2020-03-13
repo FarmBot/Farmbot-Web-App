@@ -18,7 +18,7 @@ export interface HomingAndCalibrationProps {
   controlPanelState: ControlPanelState;
   sourceFwConfig: SourceFwConfig;
   firmwareConfig: FirmwareConfig | undefined;
-  botDisconnected: boolean;
+  botOnline: boolean;
   firmwareHardware: FirmwareHardware | undefined;
 }
 
@@ -39,7 +39,7 @@ export interface BooleanMCUInputGroupProps {
 export interface CalibrationRowProps {
   type: "find_home" | "calibrate" | "zero";
   hardware: McuParams;
-  botDisconnected: boolean;
+  botOnline: boolean;
   action(axis: Axis): void;
   toolTip: string;
   title: DeviceSetting;
@@ -116,5 +116,5 @@ export interface DangerZoneProps {
   dispatch: Function;
   controlPanelState: ControlPanelState;
   onReset(): void;
-  botDisconnected: boolean;
+  botOnline: boolean;
 }

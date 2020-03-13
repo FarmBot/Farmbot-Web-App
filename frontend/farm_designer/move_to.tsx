@@ -15,19 +15,16 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "./designer_panel";
 import { t } from "../i18next_wrapper";
-import { isBotOnline } from "../devices/must_be_online";
-import { getStatus } from "../connectivity/reducer_support";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 import { PanelColor } from "./panel_header";
 
 export function mapStateToProps(props: Everything): MoveToProps {
-  const botToMqttStatus = getStatus(props.bot.connectivity.uptime["bot.mqtt"]);
-  const { sync_status } = props.bot.hardware.informational_settings;
   return {
     chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
     currentBotLocation:
       validBotLocationData(props.bot.hardware.location_data).position,
     dispatch: props.dispatch,
-    botOnline: isBotOnline(sync_status, botToMqttStatus),
+    botOnline: isBotOnlineFromState(props.bot),
   };
 }
 

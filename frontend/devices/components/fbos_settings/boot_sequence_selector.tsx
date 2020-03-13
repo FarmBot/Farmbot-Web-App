@@ -11,6 +11,7 @@ import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 interface Props {
   list: DropDownItem[];
@@ -56,23 +57,34 @@ export class RawBootSequenceSelector extends React.Component<Props, {}> {
     this.props.dispatch(save(this.props.config.uuid));
   }
 
+  SelectionInput = () =>
+    <FBSelect
+      allowEmpty={true}
+      list={this.props.list}
+      selectedItem={this.props.selectedItem}
+      onChange={this.onChange} />
+
   render() {
-    return <Row>
-      <Highlight settingName={DeviceSetting.bootSequence}>
-        <Col xs={ColWidth.label}>
+    const newFormat = DevSettings.futureFeaturesEnabled();
+    return <Highlight settingName={DeviceSetting.bootSequence}>
+      <Row>
+        <Col xs={newFormat ? 12 : ColWidth.label}>
           <label>
             {t("BOOT SEQUENCE")}
           </label>
         </Col>
-        <Col xs={7}>
-          <FBSelect
-            allowEmpty={true}
-            list={this.props.list}
-            selectedItem={this.props.selectedItem}
-            onChange={this.onChange} />
-        </Col>
-      </Highlight>
-    </Row>;
+        {!newFormat &&
+          <Col xs={ColWidth.description}>
+            <this.SelectionInput />
+          </Col>}
+      </Row>
+      {newFormat &&
+        <Row>
+          <Col xs={12} className="no-pad">
+            <this.SelectionInput />
+          </Col>
+        </Row>}
+    </Highlight>;
   }
 }
 

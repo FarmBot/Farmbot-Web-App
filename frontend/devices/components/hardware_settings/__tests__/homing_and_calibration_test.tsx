@@ -33,7 +33,7 @@ describe("<HomingAndCalibration />", () => {
       value: bot.hardware.mcu_params[x], consistent: true
     }),
     firmwareConfig: fakeFirmwareConfig().body,
-    botDisconnected: false,
+    botOnline: true,
     firmwareHardware: undefined,
   });
 

@@ -58,7 +58,7 @@ const OMITTED_PROPERTIES = [
   "guides_count",
 ];
 
-const NO_VALUE = t("Not Set");
+const NO_VALUE = t("Not available");
 
 /**
 * If there's a value, give it an img element to render the

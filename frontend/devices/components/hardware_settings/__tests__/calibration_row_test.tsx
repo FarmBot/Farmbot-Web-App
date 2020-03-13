@@ -9,7 +9,7 @@ describe("<CalibrationRow />", () => {
   const fakeProps = (): CalibrationRowProps => ({
     type: "calibrate",
     hardware: bot.hardware.mcu_params,
-    botDisconnected: false,
+    botOnline: true,
     action: jest.fn(),
     toolTip: "calibrate",
     title: DeviceSetting.calibration,

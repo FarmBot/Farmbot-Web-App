@@ -16,7 +16,7 @@ describe("findBySlug()", () => {
   it("returns crop default result: no slug provided", () => {
     const result = findBySlug([fakeCropLiveSearchResult()]);
     expect(result).toEqual({
-      crop: expect.objectContaining({ name: "Name" }),
+      crop: expect.objectContaining({ name: "" }),
       image: DEFAULT_ICON
     });
   });

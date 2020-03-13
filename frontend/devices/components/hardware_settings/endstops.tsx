@@ -20,9 +20,7 @@ export function EndStops(props: EndStopsProps) {
       panel={"endstops"}
       dispatch={dispatch} />
     <Collapse isOpen={!!endstops}>
-      <div className="label-headings">
-        <SpacePanelHeader />
-      </div>
+      <SpacePanelHeader />
       <BooleanMCUInputGroup
         label={DeviceSetting.enableEndstops}
         tooltip={ToolTips.ENABLE_ENDSTOPS}
