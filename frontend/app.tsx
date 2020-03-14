@@ -26,11 +26,11 @@ import { getFirmwareConfig, getFbosConfig } from "./resources/getters";
 import { intersection } from "lodash";
 import { t } from "./i18next_wrapper";
 import { ResourceIndex } from "./resources/interfaces";
-import { isBotOnline } from "./devices/must_be_online";
-import { getStatus } from "./connectivity/reducer_support";
+import { isBotOnlineFromState } from "./devices/must_be_online";
 import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
 import { getEnv, getShouldDisplayFn } from "./farmware/state_to_props";
+import { filterAlerts } from "./messages/alerts";
 
 /** For the logger module */
 init();
@@ -81,7 +81,7 @@ export function mapStateToProps(props: Everything): AppProps {
     tour: props.resources.consumers.help.currentTour,
     resources: props.resources.index,
     autoSync: !!(fbosConfig && fbosConfig.auto_sync),
-    alertCount: getAllAlerts(props.resources).length,
+    alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
     pings: props.bot.connectivity.pings,
     env,
   };
@@ -124,8 +124,6 @@ export class RawApp extends React.Component<AppProps, {}> {
     const syncLoaded = this.isLoaded;
     const currentPage = getPathArray()[2];
     const { location_data, mcu_params } = this.props.bot.hardware;
-    const { sync_status } = this.props.bot.hardware.informational_settings;
-    const bot2mqtt = this.props.bot.connectivity.uptime["bot.mqtt"];
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={this.props.dispatch} />
@@ -151,7 +149,7 @@ export class RawApp extends React.Component<AppProps, {}> {
           firmwareSettings={this.props.firmwareConfig || mcu_params}
           xySwap={this.props.xySwap}
           arduinoBusy={!!this.props.bot.hardware.informational_settings.busy}
-          botOnline={isBotOnline(sync_status, getStatus(bot2mqtt))}
+          botOnline={isBotOnlineFromState(this.props.bot)}
           env={this.props.env}
           stepSize={this.props.bot.stepSize} />}
     </div>;

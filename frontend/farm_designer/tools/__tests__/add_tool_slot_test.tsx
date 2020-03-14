@@ -21,7 +21,8 @@ import { init, save, edit, destroy } from "../../../api/crud";
 import { history } from "../../../history";
 import { SpecialStatus } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { AddToolSlotProps, mapStateToPropsAdd } from "../map_to_props_add_edit";
+import { mapStateToPropsAdd } from "../state_to_props";
+import { AddToolSlotProps } from "../interfaces";
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -39,7 +40,7 @@ describe("<AddToolSlot />", () => {
   it("renders", () => {
     const wrapper = mount(<AddToolSlot {...fakeProps()} />);
     ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
-      "change direction", "gantry-mounted",
+      "direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
     expect(init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", radius: 0, meta: {},

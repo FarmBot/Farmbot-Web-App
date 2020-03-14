@@ -24,6 +24,7 @@ interface GroupDetailProps {
   shouldDisplay: ShouldDisplay;
   slugs: string[];
   hovered: UUID | undefined;
+  editGroupAreaInMap: boolean;
 }
 
 /** Find a group from a URL-provided ID. */
@@ -35,6 +36,8 @@ export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
 };
 
 function mapStateToProps(props: Everything): GroupDetailProps {
+  const { hoveredPlantListItem, editGroupAreaInMap } =
+    props.resources.consumers.farm_designer;
   return {
     allPoints: selectAllActivePoints(props.resources.index),
     group: findGroupFromUrl(selectAllPointGroups(props.resources.index)),
@@ -42,7 +45,8 @@ function mapStateToProps(props: Everything): GroupDetailProps {
     shouldDisplay: getShouldDisplayFn(props.resources.index, props.bot),
     slugs: uniq(selectAllPlantPointers(props.resources.index)
       .map(p => p.body.openfarm_slug)),
-    hovered: props.resources.consumers.farm_designer.hoveredPlantListItem,
+    hovered: hoveredPlantListItem,
+    editGroupAreaInMap,
   };
 }
 

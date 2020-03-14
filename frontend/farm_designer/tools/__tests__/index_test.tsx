@@ -14,22 +14,20 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawTools as Tools, ToolsProps, mapStateToProps,
+  RawTools as Tools,
   ToolSlotInventoryItem, ToolSlotInventoryItemProps,
 } from "../index";
 import {
   fakeTool, fakeToolSlot, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
-import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  buildResourceIndex, fakeDevice,
-} from "../../../__test_support__/resource_index_builder";
+import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { error } from "../../../toast/toast";
 import { Content, Actions } from "../../../constants";
 import { edit, save } from "../../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
+import { ToolsProps } from "../interfaces";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -40,10 +38,11 @@ describe("<Tools />", () => {
     device: fakeDevice(),
     sensors: [fakeSensor()],
     bot,
-    botToMqttStatus: "down",
     hoveredToolSlot: undefined,
     firmwareHardware: undefined,
     isActive: jest.fn(),
+    xySwap: false,
+    quadrant: 2,
   });
 
   it("renders with no tools", () => {
@@ -161,7 +160,7 @@ describe("<Tools />", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
     p.bot.hardware.informational_settings.sync_status = "synced";
-    p.botToMqttStatus = "up";
+    p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 0 };
     const wrapper = mount(<Tools {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("mounted tool");
     wrapper.find(".yellow").first().simulate("click");
@@ -173,7 +172,7 @@ describe("<Tools />", () => {
   it("can't verify tool attachment when offline", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
-    p.botToMqttStatus = "down";
+    p.bot.connectivity.uptime["bot.mqtt"] = undefined;
     const wrapper = mount(<Tools {...p} />);
     wrapper.find(".yellow").first().simulate("click");
     expect(mockDevice.readPin).not.toHaveBeenCalled();
@@ -226,6 +225,8 @@ describe("<ToolSlotInventoryItem />", () => {
     hovered: false,
     dispatch: jest.fn(),
     isActive: jest.fn(),
+    xySwap: false,
+    quadrant: 2,
   });
 
   it("changes tool", () => {
@@ -241,16 +242,5 @@ describe("<ToolSlotInventoryItem />", () => {
     const e = { stopPropagation: jest.fn() };
     wrapper.find(".tool-selection-wrapper").first().simulate("click", e);
     expect(e.stopPropagation).toHaveBeenCalled();
-  });
-});
-
-describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    const tool = fakeTool();
-    tool.body.id = 1;
-    state.resources = buildResourceIndex([tool, fakeDevice()]);
-    const props = mapStateToProps(state);
-    expect(props.findTool(tool.body.id)).toEqual(tool);
   });
 });

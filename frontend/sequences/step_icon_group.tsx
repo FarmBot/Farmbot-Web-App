@@ -41,6 +41,6 @@ export function StepIconGroup(props: StepIconBarProps) {
     <StepUpDownButtonPopover onMove={onMove} />
     <i className="fa fa-clone step-control" onClick={onClone} />
     <i className="fa fa-trash step-control" onClick={onTrash} />
-    <Help text={helpText} requireClick={true} position={Position.TOP} />
+    <Help text={helpText} position={Position.TOP} />
   </span>;
 }

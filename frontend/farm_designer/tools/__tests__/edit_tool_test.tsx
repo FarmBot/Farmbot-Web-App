@@ -13,9 +13,11 @@ jest.mock("../../../history", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawEditTool as EditTool, EditToolProps, mapStateToProps, isActive,
+  RawEditTool as EditTool, mapStateToProps, isActive,
 } from "../edit_tool";
-import { fakeTool, fakeToolSlot } from "../../../__test_support__/fake_state/resources";
+import {
+  fakeTool, fakeToolSlot,
+} from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice,
@@ -24,6 +26,7 @@ import { SaveBtn } from "../../../ui";
 import { history } from "../../../history";
 import { edit, destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
+import { EditToolProps } from "../interfaces";
 
 describe("<EditTool />", () => {
   beforeEach(() => {

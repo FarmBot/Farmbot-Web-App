@@ -11,7 +11,7 @@ import {
 import {
   Grid, MapBackground,
   TargetCoordinate,
-  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroupCriteria,
+  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroup,
 } from "./background";
 import {
   PlantLayer,
@@ -88,11 +88,13 @@ export class GardenMap extends
       isDragging: this.state.isDragging,
       dispatch: this.props.dispatch,
     });
-    maybeUpdateGroupCriteria({
+    maybeUpdateGroup({
       selectionBox: this.state.selectionBox,
       group: this.group,
       dispatch: this.props.dispatch,
       shouldDisplay: this.props.shouldDisplay,
+      editGroupAreaInMap: this.props.designer.editGroupAreaInMap,
+      boxSelected: this.props.designer.selectedPlants,
     });
     this.setState({
       isDragging: false, qPageX: 0, qPageY: 0,
@@ -142,7 +144,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       case Mode.createPoint:
@@ -179,7 +181,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       default:
@@ -283,7 +285,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       case Mode.boxSelect:

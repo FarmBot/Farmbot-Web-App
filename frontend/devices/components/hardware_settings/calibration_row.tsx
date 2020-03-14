@@ -6,33 +6,44 @@ import { CalibrationRowProps } from "../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { Position } from "@blueprintjs/core";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
-export function CalibrationRow(props: CalibrationRowProps) {
+export class CalibrationRow extends React.Component<CalibrationRowProps> {
 
-  const { hardware, botDisconnected } = props;
+  get newFormat() { return DevSettings.futureFeaturesEnabled(); }
 
-  return <Row>
-    <Highlight settingName={props.title}>
-      <Col xs={6} className={"widget-body-tooltips"}>
-        <label>
-          {t(props.title)}
-        </label>
-        <Help text={t(props.toolTip)}
-          requireClick={true} position={Position.RIGHT} />
-      </Col>
+  Axes = () => {
+    const { type, botOnline, axisTitle, hardware, action } = this.props;
+    return <div className="calibration-row-axes">
       {axisTrackingStatus(hardware)
         .map(row => {
           const { axis } = row;
-          const hardwareDisabled = props.type == "zero" ? false : row.disabled;
-          return <Col xs={2} key={axis} className={"centered-button-div"}>
+          const hardwareDisabled = type == "zero" ? false : row.disabled;
+          return <Col xs={this.newFormat ? 4 : 2} key={axis}
+            className={"centered-button-div"}>
             <LockableButton
-              disabled={hardwareDisabled || botDisconnected}
-              title={t(props.axisTitle)}
-              onClick={() => props.action(axis)}>
-              {`${t(props.axisTitle)} ${axis}`}
+              disabled={hardwareDisabled || !botOnline}
+              title={t(axisTitle)}
+              onClick={() => action(axis)}>
+              {`${t(axisTitle)} ${axis}`}
             </LockableButton>
           </Col>;
         })}
-    </Highlight>
-  </Row>;
+    </div>;
+  }
+
+  render() {
+    return <Highlight settingName={this.props.title}>
+      <Row>
+        <Col xs={this.newFormat ? 12 : 6} className={"widget-body-tooltips"}>
+          <label>
+            {t(this.props.title)}
+          </label>
+          <Help text={t(this.props.toolTip)} position={Position.TOP_RIGHT} />
+        </Col>
+        {!this.newFormat && <this.Axes />}
+      </Row>
+      {this.newFormat && <Row><this.Axes /></Row>}
+    </Highlight>;
+  }
 }

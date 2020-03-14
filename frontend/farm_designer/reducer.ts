@@ -23,6 +23,7 @@ export const initialState: DesignerState = {
   currentPoint: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
+  editGroupAreaInMap: false,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -88,5 +89,9 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<PointGroupSortType | undefined>(Actions.TRY_SORT_TYPE, (s, { payload }) => {
     s.tryGroupSortType = payload;
+    return s;
+  })
+  .add<boolean>(Actions.EDIT_GROUP_AREA_IN_MAP, (s, { payload }) => {
+    s.editGroupAreaInMap = payload;
     return s;
   });

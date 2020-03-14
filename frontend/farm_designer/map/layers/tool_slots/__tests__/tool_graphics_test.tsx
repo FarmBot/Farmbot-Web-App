@@ -303,7 +303,6 @@ describe("<ToolSlotSVG />", () => {
   const fakeProps = (): ToolSlotSVGProps => ({
     toolSlot: fakeToolSlot(),
     toolName: "seeder",
-    renderRotation: false,
     xySwap: false,
     quadrant: 2,
   });

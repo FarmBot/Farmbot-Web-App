@@ -8,25 +8,28 @@ import { FactoryResetRowsProps } from "./interfaces";
 import { ColWidth } from "../farmbot_os_settings";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export function FactoryResetRows(props: FactoryResetRowsProps) {
   const { dispatch, sourceFbosConfig, botOnline } = props;
   const disableFactoryReset = sourceFbosConfig("disable_factory_reset");
   const maybeDisableTimer = disableFactoryReset.value ? { color: "grey" } : {};
+  const newFormat = DevSettings.futureFeaturesEnabled();
   return <div className={"factory-reset-options"}>
-    <Row>
-      <Highlight settingName={DeviceSetting.factoryReset}>
-        <Col xs={ColWidth.label}>
+    <Highlight settingName={DeviceSetting.factoryReset}>
+      <Row>
+        <Col xs={newFormat ? 6 : ColWidth.label}>
           <label>
             {t(DeviceSetting.factoryReset)}
           </label>
         </Col>
-        <Col xs={ColWidth.description}>
-          <p>
-            {t(Content.FACTORY_RESET_WARNING)}
-          </p>
-        </Col>
-        <Col xs={ColWidth.button}>
+        {!newFormat &&
+          <Col xs={ColWidth.description}>
+            <p>
+              {t(Content.FACTORY_RESET_WARNING)}
+            </p>
+          </Col>}
+        <Col xs={newFormat ? 6 : ColWidth.button}>
           <button
             className="fb-button red"
             type="button"
@@ -36,21 +39,23 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
             {t("FACTORY RESET")}
           </button>
         </Col>
-      </Highlight>
-    </Row>
-    <Row>
-      <Highlight settingName={DeviceSetting.autoFactoryReset}>
-        <Col xs={ColWidth.label}>
+      </Row>
+      {newFormat && <Row><p>{t(Content.FACTORY_RESET_WARNING)}</p></Row>}
+    </Highlight>
+    <Highlight settingName={DeviceSetting.autoFactoryReset}>
+      <Row>
+        <Col xs={newFormat ? 9 : ColWidth.label}>
           <label>
             {t(DeviceSetting.autoFactoryReset)}
           </label>
         </Col>
-        <Col xs={ColWidth.description}>
-          <p>
-            {t(Content.AUTO_FACTORY_RESET)}
-          </p>
-        </Col>
-        <Col xs={ColWidth.button}>
+        {!newFormat &&
+          <Col xs={ColWidth.description}>
+            <p>
+              {t(Content.AUTO_FACTORY_RESET)}
+            </p>
+          </Col>}
+        <Col xs={newFormat ? 3 : ColWidth.button}>
           <ToggleButton
             toggleValue={!disableFactoryReset.value}
             dim={!disableFactoryReset.consistent}
@@ -60,28 +65,35 @@ export function FactoryResetRows(props: FactoryResetRowsProps) {
               }));
             }} />
         </Col>
-      </Highlight>
-    </Row>
-    <Row>
-      <Highlight settingName={DeviceSetting.connectionAttemptPeriod}>
-        <Col xs={ColWidth.label}>
+      </Row>
+      {newFormat && <Row><p>{t(Content.AUTO_FACTORY_RESET)}</p></Row>}
+    </Highlight>
+    <Highlight settingName={DeviceSetting.connectionAttemptPeriod}>
+      <Row>
+        <Col xs={newFormat ? 12 : ColWidth.label}>
           <label style={maybeDisableTimer}>
             {t(DeviceSetting.connectionAttemptPeriod)}
           </label>
         </Col>
-        <Col xs={ColWidth.description}>
-          <p style={maybeDisableTimer}>
-            {t(Content.AUTO_FACTORY_RESET_PERIOD)}
-          </p>
-        </Col>
-        <Col xs={ColWidth.button}>
+        {!newFormat &&
+          <Col xs={ColWidth.description}>
+            <p style={maybeDisableTimer}>
+              {t(Content.AUTO_FACTORY_RESET_PERIOD)}
+            </p>
+          </Col>}
+        <Col xs={newFormat ? 12 : ColWidth.button}>
           <BotConfigInputBox
             setting="network_not_found_timer"
             dispatch={dispatch}
             disabled={!!disableFactoryReset.value}
             sourceFbosConfig={sourceFbosConfig} />
         </Col>
-      </Highlight>
-    </Row>
+      </Row>
+      {newFormat && <Row>
+        <p className="network-not-found-timer">
+          {t(Content.AUTO_FACTORY_RESET_PERIOD)}
+        </p>
+      </Row>}
+    </Highlight>
   </div>;
 }

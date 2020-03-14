@@ -14,6 +14,7 @@ import {
 } from "./criteria";
 import { Content } from "../../constants";
 import { UUID } from "../../resources/interfaces";
+import { Help } from "../../ui";
 
 export interface GroupDetailActiveProps {
   dispatch: Function;
@@ -22,13 +23,17 @@ export interface GroupDetailActiveProps {
   shouldDisplay: ShouldDisplay;
   slugs: string[];
   hovered: UUID | undefined;
+  editGroupAreaInMap: boolean;
 }
 
-type State = { timerId?: ReturnType<typeof setInterval> };
+interface GroupDetailActiveState {
+  timerId?: ReturnType<typeof setInterval>;
+  iconDisplay: boolean;
+}
 
 export class GroupDetailActive
-  extends React.Component<GroupDetailActiveProps, State> {
-  state: State = {};
+  extends React.Component<GroupDetailActiveProps, GroupDetailActiveState> {
+  state: GroupDetailActiveState = { iconDisplay: true };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
     this.props.dispatch(edit(this.props.group, { name: currentTarget.value }));
@@ -76,6 +81,8 @@ export class GroupDetailActive
     (typeof timerId == "number") && clearInterval(timerId);
   }
 
+  toggleIconShow = () => this.setState({ iconDisplay: !this.state.iconDisplay });
+
   render() {
     const { group, dispatch } = this.props;
     return <ErrorBoundary>
@@ -86,37 +93,18 @@ export class GroupDetailActive
         defaultValue={group.body.name}
         onChange={this.update}
         onBlur={this.saveGroup} />
-      <div className={"group-sort-section"}>
-        <label>
-          {t("SORT BY")}
-        </label>
-        <Paths
-          key={JSON.stringify(this.pointsSelectedByGroup
-            .map(p => p.body.id))}
-          pathPoints={this.pointsSelectedByGroup}
-          dispatch={dispatch}
-          group={group} />
-        <p>
-          {group.body.sort_type == "random" && t(Content.SORT_DESCRIPTION)}
-        </p>
-      </div>
-      <label>
-        {t("GROUP MEMBERS ({{count}})", { count: this.icons.length })}
-      </label>
-      {this.props.shouldDisplay(Feature.criteria_groups) &&
-        <GroupPointCountBreakdown
-          manualCount={group.body.point_ids.length}
-          totalCount={this.pointsSelectedByGroup.length} />}
-      <p>{t("Click plants in map to add or remove.")}</p>
-      {this.props.shouldDisplay(Feature.criteria_groups) &&
-        this.pointsSelectedByGroup.length != group.body.point_ids.length &&
-        <p>{t(Content.CRITERIA_SELECTION_COUNT)}</p>}
-      <div className="groups-list-wrapper">
-        {this.icons}
-      </div>
+      <GroupSortSelection group={group} dispatch={dispatch}
+        pointsSelectedByGroup={this.pointsSelectedByGroup} />
+      <GroupMemberDisplay group={group} dispatch={dispatch}
+        pointsSelectedByGroup={this.pointsSelectedByGroup}
+        icons={this.icons}
+        iconDisplay={this.state.iconDisplay}
+        toggleIconShow={this.toggleIconShow}
+        shouldDisplay={this.props.shouldDisplay} />
       {this.props.shouldDisplay(Feature.criteria_groups) &&
         <GroupCriteria dispatch={dispatch}
-          group={group} slugs={this.props.slugs} />}
+          group={group} slugs={this.props.slugs}
+          editGroupAreaInMap={this.props.editGroupAreaInMap} />}
       <DeleteButton
         className="group-delete-btn"
         dispatch={dispatch}
@@ -127,3 +115,62 @@ export class GroupDetailActive
     </ErrorBoundary>;
   }
 }
+
+interface GroupSortSelectionProps {
+  group: TaggedPointGroup;
+  dispatch: Function;
+  pointsSelectedByGroup: TaggedPoint[];
+}
+
+/** Choose and view group point sort method. */
+const GroupSortSelection = (props: GroupSortSelectionProps) =>
+  <div className={"group-sort-section"}>
+    <label>
+      {t("SORT BY")}
+    </label>
+    {props.group.body.sort_type == "random" &&
+      <Help
+        text={Content.SORT_DESCRIPTION}
+        customIcon={"exclamation-triangle"} />}
+    <Paths
+      key={JSON.stringify(props.pointsSelectedByGroup
+        .map(p => p.body.id))}
+      pathPoints={props.pointsSelectedByGroup}
+      dispatch={props.dispatch}
+      group={props.group} />
+  </div>;
+
+interface GroupMemberDisplayProps {
+  group: TaggedPointGroup;
+  dispatch: Function;
+  pointsSelectedByGroup: TaggedPoint[];
+  shouldDisplay: ShouldDisplay;
+  icons: JSX.Element[];
+  iconDisplay: boolean;
+  toggleIconShow(): void;
+}
+
+/** View group point counts and icon list. */
+const GroupMemberDisplay = (props: GroupMemberDisplayProps) =>
+  <div className="group-member-display">
+    <label>
+      {t("GROUP MEMBERS ({{count}})", { count: props.icons.length })}
+    </label>
+    <Help text={`${t("Click plants in map to add or remove.")} ${(
+      props.shouldDisplay(Feature.criteria_groups) &&
+      props.pointsSelectedByGroup.length != props.group.body.point_ids.length)
+      ? t(Content.CRITERIA_SELECTION_COUNT) : ""}`} />
+    <i onClick={props.toggleIconShow}
+      className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
+      title={props.iconDisplay
+        ? t("hide icons")
+        : t("show icons")} />
+    {props.shouldDisplay(Feature.criteria_groups) &&
+      <GroupPointCountBreakdown
+        manualCount={props.group.body.point_ids.length}
+        totalCount={props.pointsSelectedByGroup.length} />}
+    {props.iconDisplay &&
+      <div className="groups-list-wrapper">
+        {props.icons}
+      </div>}
+  </div>;

@@ -341,13 +341,12 @@ const SeedTrough = (props: ToolGraphicProps) => {
 export interface ToolSlotSVGProps {
   toolSlot: TaggedToolSlotPointer;
   toolName: string | undefined;
-  renderRotation: boolean;
   xySwap?: boolean;
   quadrant?: BotOriginQuadrant;
 }
 
 export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
-  const xySwap = props.renderRotation ? !!props.xySwap : false;
+  const xySwap = !!props.xySwap;
   const toolProps = {
     x: 0, y: 0,
     hovered: false,
@@ -355,13 +354,11 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
     uuid: props.toolSlot.uuid,
     xySwap,
   };
-  const pulloutDirection = props.renderRotation
-    ? props.toolSlot.body.pullout_direction
-    : ToolPulloutDirection.POSITIVE_X;
-  const quadrant = props.renderRotation && props.quadrant ? props.quadrant : 2;
-  const viewBox = props.renderRotation ? "-25 0 50 1" : "-25 0 50 1";
+  const pulloutDirection = props.toolSlot.body.pullout_direction
+    || ToolPulloutDirection.POSITIVE_X;
+  const quadrant = props.quadrant || 2;
   return props.toolSlot.body.gantry_mounted
-    ? <svg width="3rem" height="3rem" viewBox={viewBox}>
+    ? <svg width="3rem" height="3rem" viewBox={"-25 0 50 1"}>
       <GantryToolSlot x={0} y={0} xySwap={xySwap} />
       {props.toolSlot.body.tool_id &&
         <Tool tool={reduceToolName(props.toolName)} toolProps={toolProps} />}
@@ -369,7 +366,7 @@ export const ToolSlotSVG = (props: ToolSlotSVGProps) => {
     : <svg width="3rem" height="3rem" viewBox={`-50 0 100 1`}>
       {props.toolSlot.body.pullout_direction &&
         <ToolbaySlot
-          id={props.toolSlot.body.id}
+          id={-(props.toolSlot.body.id || 1)}
           x={0}
           y={0}
           pulloutDirection={pulloutDirection}

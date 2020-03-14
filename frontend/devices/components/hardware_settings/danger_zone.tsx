@@ -6,12 +6,13 @@ import { Collapse } from "@blueprintjs/core";
 import { Content, DeviceSetting } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export function DangerZone(props: DangerZoneProps) {
 
-  const { dispatch, onReset, botDisconnected } = props;
+  const { dispatch, onReset, botOnline } = props;
   const { danger_zone } = props.controlPanelState;
-
+  const newFormat = DevSettings.futureFeaturesEnabled();
   return <Highlight className={"section"}
     settingName={DeviceSetting.dangerZone}>
     <Header
@@ -20,29 +21,32 @@ export function DangerZone(props: DangerZoneProps) {
       panel={"danger_zone"}
       dispatch={dispatch} />
     <Collapse isOpen={!!danger_zone}>
-      <Row>
-        <Highlight settingName={DeviceSetting.resetHardwareParams}>
-          <Col xs={4}>
+      <Highlight settingName={DeviceSetting.resetHardwareParams}>
+        <Row>
+          <Col xs={newFormat ? 8 : 4}>
             <label>
               {t(DeviceSetting.resetHardwareParams)}
             </label>
           </Col>
-          <Col xs={6}>
-            <p>
-              {t(Content.RESTORE_DEFAULT_HARDWARE_SETTINGS)}
-            </p>
-          </Col>
-          <Col xs={2} className={"centered-button-div"}>
+          {!newFormat &&
+            <Col xs={6}>
+              <p>
+                {t(Content.RESTORE_DEFAULT_HARDWARE_SETTINGS)}
+              </p>
+            </Col>}
+          <Col xs={newFormat ? 4 : 2} className={"centered-button-div"}>
             <button
               className="fb-button red"
-              disabled={botDisconnected}
+              disabled={!botOnline}
               title={t("RESET")}
               onClick={onReset}>
               {t("RESET")}
             </button>
           </Col>
-        </Highlight>
-      </Row>
+        </Row>
+        {newFormat &&
+          <Row><p>{t(Content.RESTORE_DEFAULT_HARDWARE_SETTINGS)}</p></Row>}
+      </Highlight>
     </Collapse>
   </Highlight>;
 }

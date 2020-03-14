@@ -6,7 +6,6 @@ import { t } from "../../../i18next_wrapper";
 import { BotState } from "../../interfaces";
 import { FirmwareAlerts } from "../../../messages/alerts";
 import { TimeSettings } from "../../../interfaces";
-import { trim } from "../../../util";
 import { Alert } from "farmbot";
 import { isFwHardwareValue, boardType } from "../firmware_hardware_support";
 
@@ -56,22 +55,6 @@ export const FlashFirmwareBtn = (props: FlashFirmwareBtnProps) => {
   </button>;
 };
 
-export interface FirmwareActionsProps {
-  apiFirmwareValue: string | undefined;
-  botOnline: boolean;
-}
-
-export const FirmwareActions = (props: FirmwareActionsProps) => {
-  const { apiFirmwareValue } = props;
-  return <div className="firmware-actions">
-    <p>
-      {trim(`${t("Flash the")} ${lookup(apiFirmwareValue) || ""}
-      ${t("firmware to your device")}:`)}
-    </p>
-    <FlashFirmwareBtn {...props} />
-  </div>;
-};
-
 export const FirmwareHardwareStatusDetails =
   (props: FirmwareHardwareStatusDetailsProps) => {
     return <div className="firmware-hardware-status-details">
@@ -81,10 +64,6 @@ export const FirmwareHardwareStatusDetails =
       <p>{lookup(props.botFirmwareValue) || t("unknown")}</p>
       <label>{t("Arduino/Farmduino")}</label>
       <p>{lookup(props.mcuFirmwareValue) || t("unknown")}</p>
-      <label>{t("Actions")}</label>
-      <FirmwareActions
-        apiFirmwareValue={props.apiFirmwareValue}
-        botOnline={props.botOnline} />
       <FirmwareAlerts
         alerts={props.alerts}
         dispatch={props.dispatch}

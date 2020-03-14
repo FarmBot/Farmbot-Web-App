@@ -2,7 +2,7 @@ import * as React from "react";
 import { MCUFactoryReset, bulkToggleControlPanel } from "../actions";
 import { Widget, WidgetHeader, WidgetBody, Color } from "../../ui/index";
 import { HardwareSettingsProps, SourceFwConfig } from "../interfaces";
-import { isBotOnline } from "../must_be_online";
+import { isBotOnlineFromState } from "../must_be_online";
 import { ToolTips } from "../../constants";
 import { DangerZone } from "./hardware_settings/danger_zone";
 import { PinGuard } from "./hardware_settings/pin_guard";
@@ -17,24 +17,18 @@ import { FwParamExportMenu } from "./hardware_settings/export_menu";
 import { t } from "../../i18next_wrapper";
 import { PinBindings } from "./hardware_settings/pin_bindings";
 import { ErrorHandling } from "./hardware_settings/error_handling";
-import { maybeOpenPanel } from "./maybe_highlight";
 import type { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import type { McuParamName } from "farmbot";
 
 export class HardwareSettings extends
   React.Component<HardwareSettingsProps, {}> {
 
-  componentDidMount = () =>
-    this.props.dispatch(maybeOpenPanel(this.props.controlPanelState));
-
   render() {
     const {
       bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
-      botToMqttStatus, firmwareHardware, resources
+      firmwareHardware, resources
     } = this.props;
-    const { informational_settings } = this.props.bot.hardware;
-    const { sync_status } = informational_settings;
-    const botDisconnected = !isBotOnline(sync_status, botToMqttStatus);
+    const botOnline = !isBotOnlineFromState(bot);
     const commonProps = { dispatch, controlPanelState };
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
@@ -63,7 +57,7 @@ export class HardwareSettings extends
           sourceFwConfig={sourceFwConfig}
           firmwareConfig={firmwareConfig}
           firmwareHardware={firmwareHardware}
-          botDisconnected={botDisconnected} />
+          botOnline={botOnline} />
         <Motors {...commonProps}
           sourceFwConfig={sourceFwConfig}
           firmwareHardware={firmwareHardware} />
@@ -82,7 +76,7 @@ export class HardwareSettings extends
           sourceFwConfig={sourceFwConfig} />
         <DangerZone {...commonProps}
           onReset={MCUFactoryReset}
-          botDisconnected={botDisconnected} />
+          botOnline={botOnline} />
       </WidgetBody>
     </Widget>;
   }

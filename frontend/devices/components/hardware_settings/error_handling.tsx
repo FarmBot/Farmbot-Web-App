@@ -25,9 +25,7 @@ export function ErrorHandling(props: ErrorHandlingProps) {
       panel={"error_handling"}
       dispatch={dispatch} />
     <Collapse isOpen={!!error_handling}>
-      <div className="label-headings">
-        <SpacePanelHeader />
-      </div>
+      <SpacePanelHeader />
       <NumericMCUInputGroup
         label={DeviceSetting.timeoutAfter}
         tooltip={ToolTips.TIMEOUT_AFTER}

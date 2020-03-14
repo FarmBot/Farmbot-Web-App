@@ -2,13 +2,12 @@ import { selectPointsByCriteria, pointsSelectedByGroup } from "..";
 import {
   fakePoint, fakePlant, fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
 import moment from "moment";
-import { DEFAULT_CRITERIA } from "../interfaces";
+import { DEFAULT_CRITERIA, PointGroupCriteria } from "../interfaces";
 import { cloneDeep } from "lodash";
 
 describe("selectPointsByCriteria()", () => {
-  const fakeCriteria = (): PointGroup["criteria"] =>
+  const fakeCriteria = (): PointGroupCriteria =>
     cloneDeep(DEFAULT_CRITERIA);
 
   it("matches color", () => {
@@ -44,6 +43,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches positions: gt/lt", () => {
     const criteria = fakeCriteria();
+    criteria.string_eq = {};
     criteria.number_gt = { x: 100 };
     criteria.number_lt = { x: 500 };
     const matchingPoint = fakePoint();
@@ -57,6 +57,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches age greater than 1 day old", () => {
     const criteria = fakeCriteria();
+    criteria.string_eq = {};
     criteria.day = { days_ago: 1, op: ">" };
     const matchingPoint = fakePoint();
     matchingPoint.body.created_at = "2020-01-20T20:00:00.000Z";
@@ -70,6 +71,7 @@ describe("selectPointsByCriteria()", () => {
 
   it("matches age less than 1 day old", () => {
     const criteria = fakeCriteria();
+    criteria.string_eq = {};
     criteria.day = { days_ago: 1, op: "<" };
     const matchingPoint = fakePoint();
     matchingPoint.body.created_at = "2020-02-20T20:00:00.000Z";

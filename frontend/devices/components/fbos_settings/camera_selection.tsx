@@ -10,6 +10,7 @@ import { Feature, UserEnv } from "../../interfaces";
 import { t } from "../../../i18next_wrapper";
 import { Content, ToolTips, DeviceSetting } from "../../../constants";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 /** Check if the camera has been disabled. */
 export const cameraDisabled = (env: UserEnv): boolean =>
@@ -84,9 +85,10 @@ export class CameraSelection
   }
 
   render() {
-    return <Row>
-      <Highlight settingName={DeviceSetting.camera}>
-        <Col xs={ColWidth.label}>
+    const newFormat = DevSettings.futureFeaturesEnabled();
+    return <Highlight settingName={DeviceSetting.camera}>
+      <Row>
+        <Col xs={newFormat ? 5 : ColWidth.label}>
           <label>
             {t("CAMERA")}
           </label>
@@ -99,7 +101,7 @@ export class CameraSelection
             onChange={this.sendOffConfig}
             extraClass={this.props.botOnline ? "" : "disabled"} />
         </Col>
-      </Highlight>
-    </Row>;
+      </Row>
+    </Highlight>;
   }
 }

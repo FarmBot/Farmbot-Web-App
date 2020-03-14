@@ -19,7 +19,7 @@ import { SpacePanelHeader } from "./space_panel_header";
 export function HomingAndCalibration(props: HomingAndCalibrationProps) {
 
   const {
-    dispatch, bot, sourceFwConfig, firmwareConfig, botDisconnected,
+    dispatch, bot, sourceFwConfig, firmwareConfig, botOnline,
     firmwareHardware
   } = props;
   const hardware = firmwareConfig ? firmwareConfig : bot.hardware.mcu_params;
@@ -41,9 +41,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
       dispatch={dispatch}
       expanded={homing_and_calibration} />
     <Collapse isOpen={!!homing_and_calibration}>
-      <div className="label-headings">
-        <SpacePanelHeader />
-      </div>
+      <SpacePanelHeader />
       <CalibrationRow
         type={"find_home"}
         title={DeviceSetting.homing}
@@ -55,7 +53,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
           .findHome({ speed: CONFIG_DEFAULTS.speed, axis })
           .catch(commandErr("'Find Home' request"))}
         hardware={hardware}
-        botDisconnected={botDisconnected} />
+        botOnline={botOnline} />
       <CalibrationRow
         type={"calibrate"}
         title={DeviceSetting.calibration}
@@ -66,7 +64,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         action={axis => getDevice().calibrate({ axis })
           .catch(commandErr("Calibration"))}
         hardware={hardware}
-        botDisconnected={botDisconnected} />
+        botOnline={botOnline} />
       <CalibrationRow
         type={"zero"}
         title={DeviceSetting.setZeroPosition}
@@ -75,7 +73,7 @@ export function HomingAndCalibration(props: HomingAndCalibrationProps) {
         action={axis => getDevice().setZero(axis)
           .catch(commandErr("Zeroing"))}
         hardware={hardware}
-        botDisconnected={botDisconnected} />
+        botOnline={botOnline} />
       <BooleanMCUInputGroup
         label={DeviceSetting.findHomeOnBoot}
         tooltip={!hasEncoders(firmwareHardware)

@@ -16,6 +16,7 @@ import {
   PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../account/dev/dev_support";
 
 /** Width of UI columns in Pin Bindings widget. */
 export enum PinBindingColWidth {
@@ -70,13 +71,15 @@ const PinBindingsListHeader = () =>
 export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const { dispatch, resources, firmwareHardware } = props;
   const pinBindings = apiPinBindings(resources);
-
+  const newFormat = DevSettings.futureFeaturesEnabled();
   return <div className="pin-bindings">
     <Row>
+      {newFormat && <Help text={ToolTips.PIN_BINDINGS}
+        position={Position.TOP_RIGHT} />}
       <StockPinBindingsButton
         dispatch={dispatch} firmwareHardware={firmwareHardware} />
       <Popover
-        position={Position.RIGHT_TOP}
+        position={Position.TOP_RIGHT}
         interactionKind={PopoverInteractionKind.HOVER}
         portalClassName={"bindings-warning-icon"}
         popoverClassName={"help"}>
@@ -87,7 +90,7 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
       </Popover>
     </Row>
     <div className={"pin-bindings-list-and-input"}>
-      <PinBindingsListHeader />
+      {!newFormat && <PinBindingsListHeader />}
       <PinBindingsList
         pinBindings={pinBindings}
         dispatch={dispatch}

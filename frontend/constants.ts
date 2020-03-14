@@ -858,7 +858,7 @@ export namespace Content {
 
   export const CRITERIA_SELECTION_COUNT =
     trim(`Criteria additions can only be removed by changing criteria.
-    Click and drag in the map to modify zone selection criteria.
+    Click and drag in the map to modify selection criteria.
     Criteria will be applied at the time of sequence execution. The final
     selection at that time may differ from the selection currently
     displayed.`);
@@ -1127,6 +1127,8 @@ export enum Actions {
   FETCH_BETA_OS_UPDATE_INFO_ERROR = "FETCH_BETA_OS_UPDATE_INFO_ERROR",
   FETCH_MIN_OS_FEATURE_INFO_OK = "FETCH_MIN_OS_FEATURE_INFO_OK",
   FETCH_MIN_OS_FEATURE_INFO_ERROR = "FETCH_MIN_OS_FEATURE_INFO_ERROR",
+  FETCH_OS_RELEASE_NOTES_OK = "FETCH_OS_RELEASE_NOTES_OK",
+  FETCH_OS_RELEASE_NOTES_ERROR = "FETCH_OS_RELEASE_NOTES_ERROR",
   INVERT_JOG_BUTTON = "INVERT_JOG_BUTTON",
   DISPLAY_ENCODER_DATA = "DISPLAY_ENCODER_DATA",
   STASH_STATUS = "STASH_STATUS",
@@ -1149,6 +1151,7 @@ export enum Actions {
   SET_CURRENT_POINT_DATA = "SET_CURRENT_POINT_DATA",
   CHOOSE_SAVED_GARDEN = "CHOOSE_SAVED_GARDEN",
   TRY_SORT_TYPE = "TRY_SORT_TYPE",
+  EDIT_GROUP_AREA_IN_MAP = "EDIT_GROUP_AREA_IN_MAP",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

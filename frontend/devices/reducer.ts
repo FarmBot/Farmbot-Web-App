@@ -35,7 +35,7 @@ export const initialState = (): BotState => ({
     pin_guard: false,
     farm_designer: false,
     firmware: false,
-    farmbot_os: false,
+    farmbot_os: true,
   },
   hardware: {
     gpio_registry: {},
@@ -79,6 +79,7 @@ export const initialState = (): BotState => ({
   currentOSVersion: undefined,
   currentBetaOSVersion: undefined,
   minOsFeatureData: undefined,
+  osReleaseNotes: undefined,
   connectivity: {
     uptime: {
       "bot.mqtt": undefined,
@@ -118,21 +119,24 @@ export const botReducer = generateReducer<BotState>(initialState())
     s.controlPanelState[a.payload] = !s.controlPanelState[a.payload];
     return s;
   })
-  .add<boolean>(Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
-    s.controlPanelState.homing_and_calibration = a.payload;
-    s.controlPanelState.motors = a.payload;
-    s.controlPanelState.encoders = a.payload;
-    s.controlPanelState.endstops = a.payload;
-    s.controlPanelState.error_handling = a.payload;
-    s.controlPanelState.pin_bindings = a.payload;
-    s.controlPanelState.pin_guard = a.payload;
-    s.controlPanelState.danger_zone = a.payload;
-    s.controlPanelState.power_and_reset = a.payload;
-    s.controlPanelState.farm_designer = a.payload;
-    s.controlPanelState.firmware = a.payload;
-    s.controlPanelState.farmbot_os = a.payload;
-    return s;
-  })
+  .add<{ open: boolean, all: boolean }>(
+    Actions.BULK_TOGGLE_CONTROL_PANEL, (s, a) => {
+      s.controlPanelState.homing_and_calibration = a.payload.open;
+      s.controlPanelState.motors = a.payload.open;
+      s.controlPanelState.encoders = a.payload.open;
+      s.controlPanelState.endstops = a.payload.open;
+      s.controlPanelState.error_handling = a.payload.open;
+      s.controlPanelState.pin_bindings = a.payload.open;
+      s.controlPanelState.pin_guard = a.payload.open;
+      s.controlPanelState.danger_zone = a.payload.open;
+      if (a.payload.all) {
+        s.controlPanelState.power_and_reset = a.payload.open;
+        s.controlPanelState.farm_designer = a.payload.open;
+        s.controlPanelState.firmware = a.payload.open;
+        s.controlPanelState.farmbot_os = a.payload.open;
+      }
+      return s;
+    })
   .add<OsUpdateInfo>(Actions.FETCH_OS_UPDATE_INFO_OK, (s, { payload }) => {
     s.currentOSVersion = payload.version;
     return s;
@@ -145,6 +149,11 @@ export const botReducer = generateReducer<BotState>(initialState())
   .add<MinOsFeatureLookup>(Actions.FETCH_MIN_OS_FEATURE_INFO_OK,
     (s, { payload }) => {
       s.minOsFeatureData = payload;
+      return s;
+    })
+  .add<string>(Actions.FETCH_OS_RELEASE_NOTES_OK,
+    (s, { payload }) => {
+      s.osReleaseNotes = payload;
       return s;
     })
   .add<DeepPartial<HardwareState>>(Actions.STATUS_UPDATE, (s, { payload }) => {

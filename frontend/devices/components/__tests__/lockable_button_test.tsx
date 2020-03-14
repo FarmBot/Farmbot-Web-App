@@ -1,18 +1,26 @@
 import * as React from "react";
-import { LockableButton } from "../lockable_button";
-import { mount } from "enzyme";
+import { LockableButton, LockableButtonProps } from "../lockable_button";
+import { shallow } from "enzyme";
 
-describe("<LockableButton/>", () => {
-  it("does not trigger callback when clicked and disabled", () => {
-    const fakeCB = jest.fn();
-    const btn = mount(<LockableButton disabled={true} onClick={fakeCB} />);
-    btn.simulate("click");
-    expect(fakeCB).not.toHaveBeenCalled();
+describe("<LockableButton />", () => {
+  const fakeProps = (): LockableButtonProps => ({
+    disabled: false,
+    onClick: jest.fn(),
   });
-  it("does trigger callback when clicked and enabled", () => {
-    const fakeCB = jest.fn();
-    const btn = mount(<LockableButton disabled={false} onClick={fakeCB} />);
+
+  it("does not trigger callback when clicked and disabled", () => {
+    const p = fakeProps();
+    p.disabled = true;
+    const btn = shallow(<LockableButton {...p} />);
     btn.simulate("click");
-    expect(fakeCB).toHaveBeenCalled();
+    expect(p.onClick).not.toHaveBeenCalled();
+  });
+
+  it("does trigger callback when clicked and enabled", () => {
+    const p = fakeProps();
+    p.disabled = false;
+    const btn = shallow(<LockableButton {...p} />);
+    btn.simulate("click");
+    expect(p.onClick).toHaveBeenCalled();
   });
 });

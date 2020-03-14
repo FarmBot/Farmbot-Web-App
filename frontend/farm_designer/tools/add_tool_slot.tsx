@@ -11,15 +11,9 @@ import { Panel } from "../panel_header";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { history } from "../../history";
 import { SlotEditRows } from "./tool_slot_edit_components";
-import { UUID } from "../../resources/interfaces";
-import {
-  isExpressBoard,
-} from "../../devices/components/firmware_hardware_support";
-import { AddToolSlotProps, mapStateToPropsAdd } from "./map_to_props_add_edit";
-
-export interface AddToolSlotState {
-  uuid: UUID | undefined;
-}
+import { hasUTM } from "../../devices/components/firmware_hardware_support";
+import { mapStateToPropsAdd } from "./state_to_props";
+import { AddToolSlotState, AddToolSlotProps } from "./interfaces";
 
 export class RawAddToolSlot
   extends React.Component<AddToolSlotProps, AddToolSlotState> {
@@ -30,7 +24,7 @@ export class RawAddToolSlot
       pointer_type: "ToolSlot", name: t("Slot"), radius: 0, meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
-      gantry_mounted: isExpressBoard(this.props.firmwareHardware) ? true : false,
+      gantry_mounted: !hasUTM(this.props.firmwareHardware) ? true : false,
     });
     this.setState({ uuid: action.payload.uuid });
     this.props.dispatch(action);
@@ -74,7 +68,7 @@ export class RawAddToolSlot
       <DesignerPanelContent panelName={panelName}>
         {this.toolSlot
           ? <SlotEditRows
-            isExpress={isExpressBoard(this.props.firmwareHardware)}
+            noUTM={!hasUTM(this.props.firmwareHardware)}
             toolSlot={this.toolSlot}
             tools={this.props.tools}
             tool={this.tool}

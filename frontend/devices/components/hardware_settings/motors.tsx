@@ -44,9 +44,7 @@ export function Motors(props: MotorsProps) {
       panel={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!controlPanelState.motors}>
-      <div className="label-headings">
-        <SpacePanelHeader />
-      </div>
+      <SpacePanelHeader />
       <NumericMCUInputGroup
         label={DeviceSetting.maxSpeed}
         tooltip={ToolTips.MAX_SPEED}
@@ -140,6 +138,7 @@ export function Motors(props: MotorsProps) {
         label={DeviceSetting.enable2ndXMotor}
         tooltip={ToolTips.ENABLE_X2_MOTOR}>
         <ToggleButton
+          className={"no-float"}
           toggleValue={enable2ndXMotor.value}
           dim={!enable2ndXMotor.consistent}
           toggleAction={() => dispatch(
@@ -149,6 +148,7 @@ export function Motors(props: MotorsProps) {
         label={DeviceSetting.invert2ndXMotor}
         tooltip={ToolTips.INVERT_MOTORS}>
         <ToggleButton
+          className={"no-float"}
           grayscale={!enable2ndXMotor.value}
           toggleValue={invert2ndXMotor.value}
           dim={!invert2ndXMotor.consistent}

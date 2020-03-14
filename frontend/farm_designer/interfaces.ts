@@ -118,6 +118,7 @@ export interface DesignerState {
   currentPoint: CurrentPointPayl | undefined;
   openedSavedGarden: string | undefined;
   tryGroupSortType: PointGroupSortType | "nn" | undefined;
+  editGroupAreaInMap: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

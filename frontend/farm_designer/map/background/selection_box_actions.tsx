@@ -1,4 +1,4 @@
-import { isNumber } from "lodash";
+import { isNumber, uniq, cloneDeep, isEqual } from "lodash";
 import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
@@ -8,6 +8,9 @@ import { getMode } from "../util";
 import { editGtLtCriteria } from "../../point_groups/criteria";
 import { TaggedPointGroup } from "farmbot";
 import { ShouldDisplay, Feature } from "../../../devices/interfaces";
+import { overwrite } from "../../../api/crud";
+import { unpackUUID } from "../../../util";
+import { UUID } from "../../../resources/interfaces";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -85,17 +88,32 @@ export const startNewSelectionBox = (props: StartNewSelectionBoxProps) => {
   }
 };
 
-export interface MaybeUpdateGroupCriteriaProps {
+export interface MaybeUpdateGroupProps {
   selectionBox: SelectionBoxData | undefined;
   dispatch: Function;
   group: TaggedPointGroup | undefined;
   shouldDisplay: ShouldDisplay;
+  editGroupAreaInMap: boolean;
+  boxSelected: UUID[] | undefined;
 }
 
-export const maybeUpdateGroupCriteria =
-  (props: MaybeUpdateGroupCriteriaProps) => {
-    if (props.selectionBox && props.group &&
-      props.shouldDisplay(Feature.criteria_groups)) {
-      props.dispatch(editGtLtCriteria(props.group, props.selectionBox));
+export const maybeUpdateGroup =
+  (props: MaybeUpdateGroupProps) => {
+    if (props.selectionBox && props.group) {
+      if (props.editGroupAreaInMap
+        && props.shouldDisplay(Feature.criteria_groups)) {
+        props.dispatch(editGtLtCriteria(props.group, props.selectionBox));
+      } else {
+        const nextGroupBody = cloneDeep(props.group.body);
+        props.boxSelected?.map(uuid => {
+          const { kind, remoteId } = unpackUUID(uuid);
+          remoteId && kind == "Point" && nextGroupBody.point_ids.push(remoteId);
+        });
+        nextGroupBody.point_ids = uniq(nextGroupBody.point_ids);
+        if (!isEqual(props.group.body.point_ids, nextGroupBody.point_ids)) {
+          props.dispatch(overwrite(props.group, nextGroupBody));
+          props.dispatch(selectPlant(undefined));
+        }
+      }
     }
   };
