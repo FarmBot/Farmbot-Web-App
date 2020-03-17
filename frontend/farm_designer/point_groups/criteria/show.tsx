@@ -83,8 +83,8 @@ export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
 };
 
 const DAY_OPERATOR_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
-  ["<"]: { label: t("less than"), value: "<" },
-  [">"]: { label: t("greater than"), value: ">" },
+  ["<"]: { label: t("Less than"), value: "<" },
+  [">"]: { label: t("Greater than"), value: ">" },
 });
 
 /** Edit and view day criteria. */

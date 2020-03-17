@@ -150,6 +150,24 @@ fieldset {
   pointer-events: all;
 }
 
+.diagnosis-indicator {
+  text-align: center !important;
+  i {
+    display: block;
+    position: absolute;
+    top: 0.1rem;
+    left: 0.1rem;
+    color: $white;
+    font-size: 14px;
+    &.fa-times {
+      left: 0.25rem;
+    }
+    &.fa-question {
+      left: 0.35rem;
+    }
+  }
+}
+
 .connectivity-popover-portal {
   .bp3-transition-container {
     z-index: 999;

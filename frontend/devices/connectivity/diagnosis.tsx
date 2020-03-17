@@ -21,20 +21,23 @@ export const DiagnosisSaucer = (props: DiagnosisProps) => {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
   const title = diagnosisBoolean ? t("Ok") : t("Error");
-  return <div className={"saucer active " + diagnosisColor} title={title} />;
+  return <div
+    className={"diagnosis-indicator saucer active " + diagnosisColor}
+    title={title}>
+    <i className={`fa fa-${diagnosisBoolean ? "check" : "times"}`} />
+  </div>;
 };
 
 export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
-  const title = diagnosisBoolean ? t("Ok") : t("Error");
   return <div className={"diagnosis-section"}>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>
     </div>
     <Row>
       <Col xs={1}>
-        <div className={"saucer active " + diagnosisColor} title={title} />
+        <DiagnosisSaucer {...props} />
         <div className={"saucer-connector last " + diagnosisColor} />
       </Col>
       <Col xs={10} className={"connectivity-diagnosis"}>

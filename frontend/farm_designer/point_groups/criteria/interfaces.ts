@@ -15,7 +15,7 @@ export const DEFAULT_CRITERIA: Readonly<PointGroupCriteria> = {
   number_eq: {},
   number_gt: {},
   number_lt: {},
-  string_eq: { pointer_type: ["Plant"] },
+  string_eq: {},
 };
 
 export interface GroupCriteriaProps {
