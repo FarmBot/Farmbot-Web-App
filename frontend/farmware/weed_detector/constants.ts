@@ -32,7 +32,7 @@ export const SPECIAL_VALUE_DDI: { [index: number]: DropDownItem } = {
 
 export const CALIBRATION_DROPDOWNS: DropDownItem[] = [
   SPECIAL_VALUE_DDI[SPECIAL_VALUES.X],
-  SPECIAL_VALUE_DDI[SPECIAL_VALUES.Y]
+  SPECIAL_VALUE_DDI[SPECIAL_VALUES.Y],
 ];
 
 export const ORIGIN_DROPDOWNS: DropDownItem[] = [

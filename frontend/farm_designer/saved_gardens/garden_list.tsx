@@ -3,7 +3,7 @@ import { Col } from "../../ui";
 import { isNumber, isString } from "lodash";
 import { openSavedGarden } from "./actions";
 import {
-  SavedGardenItemProps, SavedGardenInfoProps, SavedGardensListProps
+  SavedGardenItemProps, SavedGardenInfoProps, SavedGardensListProps,
 } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 

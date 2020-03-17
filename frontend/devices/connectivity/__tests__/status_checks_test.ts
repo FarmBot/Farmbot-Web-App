@@ -1,5 +1,5 @@
 import {
-  browserToMQTT, botToMQTT, botToAPI, botToFirmware, browserToAPI
+  browserToMQTT, botToMQTT, botToAPI, botToFirmware, browserToAPI,
 } from "../status_checks";
 import moment from "moment";
 import { ConnectionStatus } from "../../../connectivity/interfaces";

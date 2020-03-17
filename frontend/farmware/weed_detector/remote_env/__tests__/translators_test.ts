@@ -59,7 +59,7 @@ describe("formatEnvKey()", () => {
         k: "CAMERA_CALIBRATION_image_bot_origin_location",
         v: SPECIAL_VALUES.TOP_LEFT,
         r: "TOP_LEFT"
-      }
+      },
     ].map(t => {
       expect(formatEnvKey(t.k as WDENVKey, t.v)).toEqual(t.r);
     });

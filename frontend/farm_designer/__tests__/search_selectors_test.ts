@@ -1,7 +1,7 @@
 import { findBySlug } from "../search_selectors";
 import { DEFAULT_ICON } from "../../open_farm/icons";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
 
 describe("findBySlug()", () => {
@@ -16,7 +16,7 @@ describe("findBySlug()", () => {
   it("returns crop default result: no slug provided", () => {
     const result = findBySlug([fakeCropLiveSearchResult()]);
     expect(result).toEqual({
-      crop: expect.objectContaining({ name: "Name" }),
+      crop: expect.objectContaining({ name: "" }),
       image: DEFAULT_ICON
     });
   });

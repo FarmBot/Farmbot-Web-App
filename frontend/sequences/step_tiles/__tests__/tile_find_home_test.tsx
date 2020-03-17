@@ -3,7 +3,7 @@ import { TileFindHome, FindHomeParams } from "../tile_find_home";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import {
-  fakeHardwareFlags
+  fakeHardwareFlags,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { HardwareFlags } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";

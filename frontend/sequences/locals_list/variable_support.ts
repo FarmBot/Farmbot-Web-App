@@ -1,7 +1,7 @@
 import { VariableNameSet, ResourceIndex } from "../../resources/interfaces";
 import {
   ParameterApplication, Dictionary,
-  VariableDeclaration, ParameterDeclaration
+  VariableDeclaration, ParameterDeclaration,
 } from "farmbot";
 import { betterCompact } from "../../util";
 import { isParameterDeclaration } from "./locals_list";
@@ -63,7 +63,7 @@ export const reduceVariables = <T extends VariableNode>(
 export const mergeVariables = <T extends VariableNode>(
   varData: VariableNameSet | undefined,
   variables: T[],
-  newVariableKind: "parameter_application" | "variable_declaration"
+  newVariableKind: "parameter_application" | "variable_declaration",
 ): T[] => {
   /** New variables required by the chosen sequence. */
   const newVars = newVariableKind === "variable_declaration"
@@ -81,7 +81,7 @@ export const mergeVariables = <T extends VariableNode>(
 /** Add new parameter applications if they don't already exist. */
 export const mergeParameterApplications = (
   varData: VariableNameSet | undefined,
-  bodyVariables: ParameterApplication[]
+  bodyVariables: ParameterApplication[],
 ): ParameterApplication[] => {
   return mergeVariables(varData, bodyVariables, "parameter_application");
 };
@@ -89,7 +89,7 @@ export const mergeParameterApplications = (
 /** Add new variables if they don't already exist. */
 export const mergeDeclarations = (
   varData: VariableNameSet | undefined,
-  bodyVariables: VariableNode[]
+  bodyVariables: VariableNode[],
 ): VariableNode[] => {
   return mergeVariables(varData, bodyVariables, "variable_declaration");
 };
@@ -97,7 +97,7 @@ export const mergeDeclarations = (
 /** Convert Regimen body variable data into a VariableNameSet. */
 export const getRegimenVariableData = (
   bodyVariables: VariableNode[],
-  resources: ResourceIndex
+  resources: ResourceIndex,
 ): VariableNameSet => {
   const varData: VariableNameSet = {};
   bodyVariables.map(variable => {

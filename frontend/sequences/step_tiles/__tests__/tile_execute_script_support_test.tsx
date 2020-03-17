@@ -1,7 +1,7 @@
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  FarmwareInputsProps, FarmwareInputs
+  FarmwareInputsProps, FarmwareInputs,
 } from "../tile_execute_script_support";
 
 describe("<FarmwareInputs />", () => {

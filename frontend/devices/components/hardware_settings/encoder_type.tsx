@@ -19,7 +19,7 @@ const OPTIONS = [LOOKUP[Encoder.differential], LOOKUP[Encoder.quadrature]];
 const KEYS: McuParamName[] = [
   "encoder_type_x",
   "encoder_type_y",
-  "encoder_type_z"
+  "encoder_type_z",
 ];
 
 export function isEncoderValue(x: unknown): x is Encoder {

@@ -7,7 +7,7 @@ jest.mock("../../../config_storage/actions", () => ({
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  DevWidget, DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow
+  DevWidget, DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow,
 } from "../dev_widget";
 import { DevSettings } from "../dev_support";
 import { setWebAppConfigValue } from "../../../config_storage/actions";

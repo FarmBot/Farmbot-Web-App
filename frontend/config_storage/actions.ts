@@ -4,7 +4,7 @@ import {
   BooleanConfigKey,
   WebAppConfig,
   NumberConfigKey,
-  StringConfigKey
+  StringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 import { getWebAppConfig } from "../resources/getters";
 

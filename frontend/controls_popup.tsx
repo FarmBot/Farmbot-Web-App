@@ -6,7 +6,7 @@ import { ControlsPopupProps } from "./controls/move/interfaces";
 import { commandErr } from "./devices/actions";
 import { mapPanelClassName } from "./farm_designer/map/util";
 import {
-  cameraBtnProps
+  cameraBtnProps,
 } from "./devices/components/fbos_settings/camera_selection";
 import { t } from "./i18next_wrapper";
 

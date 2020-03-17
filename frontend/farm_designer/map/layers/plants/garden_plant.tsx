@@ -51,7 +51,7 @@ export class GardenPlant extends
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
     const alpha = dragging ? 0.4 : 1.0;
     const className = [
-      "plant-image", `is-chosen-${current || selected}`, animate ? "animate" : ""
+      "plant-image", `is-chosen-${current || selected}`, animate ? "animate" : "",
     ].join(" ");
 
     return <g id={"plant-" + id}>

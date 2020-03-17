@@ -8,22 +8,22 @@ jest.mock("../../map/actions", () => ({ setHoveredPlant: jest.fn() }));
 
 import React from "react";
 import {
-  GroupDetailActive, GroupDetailActiveProps
+  GroupDetailActive, GroupDetailActiveProps,
 } from "../group_detail_active";
 import { mount, shallow } from "enzyme";
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { save, edit } from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
-import { Content } from "../../../constants";
 
 describe("<GroupDetailActive/>", () => {
   const fakeProps = (): GroupDetailActiveProps => {
     const plant = fakePlant();
     plant.body.id = 1;
     const group = fakePointGroup();
+    group.body.criteria = DEFAULT_CRITERIA;
     group.specialStatus = SpecialStatus.DIRTY;
     group.body.name = "XYZ";
     group.body.point_ids = [plant.body.id];
@@ -34,6 +34,7 @@ describe("<GroupDetailActive/>", () => {
       shouldDisplay: () => true,
       slugs: [],
       hovered: undefined,
+      editGroupAreaInMap: false,
     };
   };
 
@@ -45,11 +46,29 @@ describe("<GroupDetailActive/>", () => {
     expect(save).toHaveBeenCalledWith(p.group.uuid);
   });
 
+  it("is already saved", () => {
+    const p = fakeProps();
+    p.group.specialStatus = SpecialStatus.SAVED;
+    const el = new GroupDetailActive(p);
+    el.saveGroup();
+    expect(p.dispatch).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it("toggles icon view", () => {
+    const p = fakeProps();
+    const wrapper = mount<GroupDetailActive>(<GroupDetailActive {...p} />);
+    expect(wrapper.state().iconDisplay).toBeTruthy();
+    wrapper.instance().toggleIconShow();
+    expect(wrapper.state().iconDisplay).toBeFalsy();
+  });
+
   it("renders", () => {
     const p = fakeProps();
     p.group.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<GroupDetailActive {...p} />);
     expect(wrapper.find("input").first().prop("defaultValue")).toContain("XYZ");
+    expect(wrapper.find(".groups-list-wrapper").length).toEqual(1);
     expect(wrapper.text()).not.toContain("saving");
   });
 
@@ -109,6 +128,12 @@ describe("<GroupDetailActive/>", () => {
     const p = fakeProps();
     p.group.body.sort_type = "random";
     const wrapper = mount(<GroupDetailActive {...p} />);
-    expect(wrapper.text()).toContain(Content.SORT_DESCRIPTION);
+    expect(wrapper.html()).toContain("exclamation-triangle");
+  });
+
+  it("doesn't show icons", () => {
+    const wrapper = mount(<GroupDetailActive {...fakeProps()} />);
+    wrapper.setState({ iconDisplay: false });
+    expect(wrapper.find(".groups-list-wrapper").length).toEqual(0);
   });
 });

@@ -75,11 +75,14 @@ export class Login extends React.Component<LoginProps, {}> {
             <BlurablePassword
               name="login_password"
               onCommit={onLoginPasswordChange} />
-            <a className="forgot-password" onClick={onToggleForgotPassword}>
+            <a className="forgot-password"
+              title={t("Forgot password?")}
+              onClick={onToggleForgotPassword}>
               {t("Forgot password?")}
             </a>
             <Row>
-              <button className="fb-button green pull-right front-page-button">
+              <button className="fb-button green pull-right front-page-button"
+                title={t("Login")}>
                 {t("Login")}
               </button>
             </Row>

@@ -1,5 +1,5 @@
 import {
-  calcMicrostepsPerMm, calculateAxialLengths
+  calcMicrostepsPerMm, calculateAxialLengths,
 } from "../direction_axes_props";
 import { fakeFirmwareConfig } from "../../../__test_support__/fake_state/resources";
 

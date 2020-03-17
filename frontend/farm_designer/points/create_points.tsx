@@ -2,14 +2,14 @@ import * as React from "react";
 import { connect } from "react-redux";
 import {
   Everything,
-  ResourceColor
+  ResourceColor,
 } from "../../interfaces";
 import { initSave } from "../../api/crud";
 import {
   Row,
   Col,
   BlurableInput,
-  ColorPicker
+  ColorPicker,
 } from "../../ui/index";
 import { CurrentPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
@@ -18,7 +18,7 @@ import { GenericPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
-  DesignerPanelContent
+  DesignerPanelContent,
 } from "../designer_panel";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
@@ -187,7 +187,7 @@ export class RawCreatePoints
   PointProperties = () =>
     <ul>
       <li>
-        <div>
+        <div className={"point-name-input"}>
           <label>{t("Name")}</label>
           <BlurableInput
             name="name"
@@ -241,6 +241,7 @@ export class RawCreatePoints
   PointActions = () =>
     <Row>
       <button className="fb-button green"
+        title={t("save")}
         onClick={this.createPoint}>
         {t("Save")}
       </button>
@@ -254,6 +255,7 @@ export class RawCreatePoints
           ? t("Delete all of the weeds created through this panel.")
           : t("Delete all of the points created through this panel.")}</p>
         <button className="fb-button red delete"
+          title={t("delete all")}
           onClick={() => {
             if (confirm(type === "weed"
               ? t("Delete all the weeds you have created?")

@@ -6,13 +6,13 @@ jest.mock("../../history", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  RawRegimens as Regimens, RegimenBackButtonProps, RegimenBackButton
+  RawRegimens as Regimens, RegimenBackButtonProps, RegimenBackButton,
 } from "../index";
 import { Props } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { auth } from "../../__test_support__/fake_state/token";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeRegimen } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";

@@ -1,16 +1,16 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
-  GardenSensorReading, GardenSensorReadingProps
+  GardenSensorReading, GardenSensorReadingProps,
 } from "../garden_sensor_reading";
 import {
-  fakeSensorReading
+  fakeSensorReading,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import {
-  fakeTimeSettings
+  fakeTimeSettings,
 } from "../../../../../__test_support__/fake_time_settings";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 

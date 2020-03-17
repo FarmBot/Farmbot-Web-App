@@ -10,13 +10,10 @@ import {
   JobProgress,
   FirmwareHardware,
   Alert,
-  TaggedWebAppConfig,
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { WD_ENV } from "../farmware/weed_detector/remote_env/interfaces";
-import {
-  ConnectionStatus, ConnectionState, NetworkState
-} from "../connectivity/interfaces";
+import { ConnectionState, NetworkState } from "../connectivity/interfaces";
 import { IntegerSize } from "../util";
 import { Farmwares } from "../farmware/interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
@@ -24,9 +21,6 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 
 export interface Props {
-  userToApi: ConnectionStatus | undefined;
-  userToMqtt: ConnectionStatus | undefined;
-  botToMqtt: ConnectionStatus | undefined;
   auth: AuthState | undefined;
   bot: BotState;
   deviceAccount: TaggedDevice;
@@ -37,12 +31,10 @@ export interface Props {
   sourceFwConfig: SourceFwConfig;
   shouldDisplay: ShouldDisplay;
   firmwareConfig: FirmwareConfig | undefined;
-  isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
   alerts: Alert[];
-  webAppConfig: TaggedWebAppConfig;
 }
 
 /** Function to save a Farmware env variable to the API. */
@@ -112,6 +104,8 @@ export interface BotState {
   currentBetaOSCommit?: string;
   /** JSON string of minimum required FBOS versions for various features. */
   minOsFeatureData?: MinOsFeatureLookup;
+  /** Notes notifying users of changes that may require intervention. */
+  osReleaseNotes?: string;
   /** Is the bot in sync with the api */
   dirty: boolean;
   /** The state of the bot, as reported by the bot over MQTT. */
@@ -164,20 +158,25 @@ export interface FarmbotOsProps {
   bot: BotState;
   alerts: Alert[];
   deviceAccount: TaggedDevice;
-  botToMqttStatus: NetworkState;
-  botToMqttLastSeen: number;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
-  isValidFbosConfig: boolean;
   env: UserEnv;
   saveFarmwareEnv: SaveFarmwareEnv;
   timeSettings: TimeSettings;
-  webAppConfig: TaggedWebAppConfig;
 }
 
-export interface FarmbotOsState {
-  allOsReleaseNotes: string;
+export interface FarmbotSettingsProps {
+  bot: BotState;
+  alerts: Alert[];
+  device: TaggedDevice;
+  dispatch: Function;
+  sourceFbosConfig: SourceFbosConfig;
+  shouldDisplay: ShouldDisplay;
+  env: UserEnv;
+  saveFarmwareEnv: SaveFarmwareEnv;
+  timeSettings: TimeSettings;
+  botOnline: boolean;
 }
 
 export interface McuInputBoxProps {
@@ -235,7 +234,6 @@ export interface FarmwareProps {
 export interface HardwareSettingsProps {
   controlPanelState: ControlPanelState;
   dispatch: Function;
-  botToMqttStatus: NetworkState;
   bot: BotState;
   shouldDisplay: ShouldDisplay;
   sourceFwConfig: SourceFwConfig;
@@ -254,4 +252,7 @@ export interface ControlPanelState {
   danger_zone: boolean;
   pin_bindings: boolean;
   power_and_reset: boolean;
+  farm_designer: boolean;
+  firmware: boolean;
+  farmbot_os: boolean;
 }

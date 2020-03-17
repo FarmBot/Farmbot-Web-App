@@ -9,7 +9,7 @@ import { reduceToolName } from "../tool_slots/tool_slot_point";
 import { noop } from "lodash";
 
 export interface BotFigureProps {
-  name: string;
+  figureName: string;
   position: BotPosition;
   mapTransformProps: MapTransformProps;
   plantAreaOffset: AxisNumberProperty;
@@ -29,14 +29,14 @@ export class BotFigure extends
 
   render() {
     const {
-      name, position, plantAreaOffset, eStopStatus, mapTransformProps,
+      figureName, position, plantAreaOffset, eStopStatus, mapTransformProps,
     } = this.props;
     const { xySwap } = mapTransformProps;
     const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
     const positionQ = transformXY(
       (position.x || 0), (position.y || 0), mapTransformProps);
     const color = eStopStatus ? Color.virtualRed : Color.darkGray;
-    const opacity = name.includes("encoder") ? 0.25 : 0.5;
+    const opacity = figureName.includes("encoder") ? 0.25 : 0.5;
     const toolProps = {
       x: positionQ.qx,
       y: positionQ.qy,
@@ -45,7 +45,7 @@ export class BotFigure extends
       uuid: "utm",
       xySwap,
     };
-    return <g id={name}>
+    return <g id={figureName}>
       <rect id="gantry"
         x={xySwap ? -plantAreaOffset.x : positionQ.qx - 10}
         y={xySwap ? positionQ.qy - 10 : -plantAreaOffset.y}

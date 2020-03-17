@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue
+  EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue,
 } from "../encoder_type";
 import { shallow } from "enzyme";
 import { FBSelect } from "../../../../ui/index";

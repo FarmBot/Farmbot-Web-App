@@ -7,13 +7,13 @@ import { BlurableInput, Row } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { connect } from "react-redux";
 import {
-  selectAllPlantPointers, maybeFindSavedGardenById
+  selectAllPlantPointers, maybeFindSavedGardenById,
 } from "../../resources/selectors";
 import { Everything } from "../../interfaces";
 import {
-  DesignerPanel, DesignerPanelHeader, DesignerPanelContent
+  DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../designer_panel";
-import { getPathArray } from "../../history";
+import { history, getPathArray } from "../../history";
 import { isNumber } from "lodash";
 import { ResourceIndex } from "../../resources/interfaces";
 import { t } from "../../i18next_wrapper";
@@ -28,6 +28,7 @@ const GardenViewButton = (props: GardenViewButtonProps) => {
     : t("view");
   return <button
     className={`fb-button ${gardenIsOpen ? "gray" : "yellow"}`}
+    title={btnText}
     onClick={onClick}>
     {btnText}
   </button>;
@@ -38,6 +39,7 @@ const ApplyGardenButton =
   (props: { plantPointerCount: number, gardenId: number, dispatch: Function }) =>
     <button
       className="fb-button green"
+      title={t("apply garden")}
       onClick={() => props.plantPointerCount > 0
         ? error(trim(`${t("Please clear current garden first.")}
         (${props.plantPointerCount} ${t("plants")})`))
@@ -49,6 +51,7 @@ const DestroyGardenButton =
   (props: { dispatch: Function, gardenUuid: string }) =>
     <button
       className="fb-button red"
+      title={t("delete garden")}
       onClick={() => props.dispatch(destroySavedGarden(props.gardenUuid))}>
       {t("delete")}
     </button>;
@@ -75,6 +78,7 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
 export class RawEditGarden extends React.Component<EditGardenProps, {}> {
   render() {
     const { savedGarden } = this.props;
+    !savedGarden && history.push("/app/designer/gardens");
     return <DesignerPanel panelName={"saved-garden-edit"}
       panel={Panel.SavedGardens}>
       <DesignerPanelHeader
@@ -84,7 +88,7 @@ export class RawEditGarden extends React.Component<EditGardenProps, {}> {
         backTo={"/app/designer/gardens"} />
       <DesignerPanelContent panelName={"saved-garden-edit"}>
         {savedGarden
-          ? <div>
+          ? <div className={"saved-garden-content"}>
             <Row>
               <label>{t("name")}</label>
               <BlurableInput

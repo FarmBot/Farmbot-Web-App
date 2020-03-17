@@ -44,8 +44,8 @@ describe("setActiveRegimenByName", () => {
 
   it("sometimes can't find a regimen by name", () => {
     const body = mockData.fakeRegimens[0].body;
-    const name = "a different value than " + body.name;
-    mockData.lastUrlChunk = name;
+    const regimenName = "a different value than " + body.name;
+    mockData.lastUrlChunk = regimenName;
     setActiveRegimenByName();
     expect(selectAllRegimens).toHaveBeenCalled();
     expect(selectRegimen).not.toHaveBeenCalled();

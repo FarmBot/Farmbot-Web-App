@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 import { RawFarmwarePage as FarmwarePage, BasicFarmwarePage } from "../index";
 import { FarmwareProps } from "../../devices/interfaces";
 import {
-  fakeFarmware, fakeFarmwares
+  fakeFarmware, fakeFarmwares,
 } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
@@ -90,7 +90,7 @@ describe("<FarmwarePage />", () => {
     p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
     ["My Fake Test Farmware", "Does things", "Run", "Config 1",
-      "Information", "Description", "Version", "Update", "Remove"
+      "Information", "Description", "Version", "Update", "Remove",
     ].map(string =>
       expect(wrapper.text()).toContain(string));
   });
@@ -103,7 +103,7 @@ describe("<FarmwarePage />", () => {
     p.farmwares["My Fake Test Farmware"] = farmware;
     p.currentFarmware = "My Fake Test Farmware";
     const wrapper = mount(<FarmwarePage {...p} />);
-    ["My Fake Farmware", "Does things", "Run", "No inputs provided."
+    ["My Fake Farmware", "Does things", "Run", "No inputs provided.",
     ].map(string =>
       expect(wrapper.text()).toContain(string));
   });

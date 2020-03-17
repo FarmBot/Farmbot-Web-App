@@ -1,5 +1,5 @@
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import * as Selector from "../selectors";
 import {
@@ -11,7 +11,7 @@ import { hasId, arrayUnwrap } from "../util";
 import {
   fakeWebcamFeed,
   fakeSequence,
-  fakePlant
+  fakePlant,
 } from "../../__test_support__/fake_state/resources";
 import { resourceReducer } from "../reducer";
 import { emptyState } from "../reducer";
@@ -67,7 +67,7 @@ describe("getFeeds", () => {
   it("finds the only WebcamFeed", () => {
     const feed = fakeWebcamFeed();
     const state = [
-      resourceReady("WebcamFeed", feed)
+      resourceReady("WebcamFeed", feed),
     ].reduce(resourceReducer, emptyState());
     expect(Selector.selectAllWebcamFeeds(state.index)[0].body).toEqual(feed.body);
   });

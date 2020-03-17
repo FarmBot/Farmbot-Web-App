@@ -1,19 +1,23 @@
+let mockDev = false;
+jest.mock("../../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    futureFeaturesEnabled: () => mockDev,
+  }
+}));
+
 import {
-  sequence2ddi, mapStateToProps, RawBootSequenceSelector
+  sequence2ddi, mapStateToProps, RawBootSequenceSelector,
 } from "../boot_sequence_selector";
 import {
-  fakeSequence, fakeFbosConfig
+  fakeSequence, fakeFbosConfig,
 } from "../../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import React from "react";
 import { mount } from "enzyme";
 import { FBSelect } from "../../../../ui";
-// import { mount } from "enzyme";
-// import React from "react";
-// import { FBSelect } from "../../../../ui";
 
 describe("sequence2ddi", () => {
   it("converts TaggedSequences", () => {
@@ -96,6 +100,12 @@ describe("RawBootSequenceSelector", () => {
   it("renders", () => {
     const props = fakeProps();
     const el = mount(<RawBootSequenceSelector {...props} />);
+    expect(el.find(FBSelect).length).toEqual(1);
+  });
+
+  it("renders formatted", () => {
+    mockDev = true;
+    const el = mount(<RawBootSequenceSelector {...fakeProps()} />);
     expect(el.find(FBSelect).length).toEqual(1);
   });
 });

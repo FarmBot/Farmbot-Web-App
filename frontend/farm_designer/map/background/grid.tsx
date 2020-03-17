@@ -102,10 +102,20 @@ export function Grid(props: GridProps) {
         );
 
       })}
-      {range(100, gridSize.y, 100).map((i) => {
-        const location = transformXY(-15, i, mapTransformProps);
-        return <text key={"y-label-" + i}
-          x={location.qx} y={location.qy}>{i}</text>;
+      {range(axisStep, gridSize.y, axisStep).map((i) => {
+        const location = transformXY(10, i - 10, mapTransformProps);
+        return (
+            <text key={"y-label-" + i}
+                  fontSize="16"
+                  fontWeight="bold"
+                  className="y-label"
+                  color="rgba(0, 0, 0, 0.4)"
+                  x={location.qx}
+                  y={location.qy}
+                  style={{transformOrigin: "center", transformBox: "fill-box", transform: `scale(${axisTransformValue})`, textAnchor: "start"}}>
+              {i}
+            </text>
+        );
       })}
     </g>
   </g>;

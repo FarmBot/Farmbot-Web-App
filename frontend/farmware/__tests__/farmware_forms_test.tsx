@@ -11,7 +11,7 @@ import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
   needsFarmwareForm, farmwareHelpText, getConfigEnvName,
-  FarmwareForm, FarmwareFormProps, ConfigFields
+  FarmwareForm, FarmwareFormProps, ConfigFields,
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
@@ -123,7 +123,6 @@ describe("<FarmwareForm />", () => {
       "My Fake Farmware", [{
         kind: "pair",
         args: { label: "my_fake_farmware_config_1", value: "4" }
-      }]
-    );
+      }]);
   });
 });

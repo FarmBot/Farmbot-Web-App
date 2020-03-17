@@ -3,7 +3,7 @@ import { mount } from "enzyme";
 import { SensorReadingsPlot, calcTimeParams } from "../graph";
 import { SensorReadingPlotProps } from "../interfaces";
 import {
-  fakeSensorReading
+  fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 

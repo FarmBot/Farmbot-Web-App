@@ -18,13 +18,13 @@ import axios from "axios";
 import {
   snapshotGarden, applyGarden, destroySavedGarden, closeSavedGarden,
   openSavedGarden, openOrCloseGarden, newSavedGarden, unselectSavedGarden,
-  copySavedGarden
+  copySavedGarden,
 } from "../actions";
 import { history } from "../../../history";
 import { Actions } from "../../../constants";
 import { destroy, initSave, initSaveGetId } from "../../../api/crud";
 import {
-  fakeSavedGarden, fakePlantTemplate
+  fakeSavedGarden, fakePlantTemplate,
 } from "../../../__test_support__/fake_state/resources";
 
 describe("snapshotGarden", () => {

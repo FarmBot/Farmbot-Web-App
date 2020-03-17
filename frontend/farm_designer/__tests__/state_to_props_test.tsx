@@ -1,7 +1,7 @@
 import { mapStateToProps, getPlants } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import {
   fakePlant,
@@ -10,7 +10,7 @@ import {
   fakePoint,
   fakeWebAppConfig,
   fakeFarmwareEnv,
-  fakeSensorReading
+  fakeSensorReading,
 } from "../../__test_support__/fake_state/resources";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { generateUuid } from "../../resources/util";
@@ -67,7 +67,7 @@ describe("mapStateToProps()", () => {
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([
-      webAppConfig, point1, point2, point3, fakeDevice()
+      webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
     expect(mapStateToProps(state).genericPoints.length).toEqual(3);
   });
@@ -83,7 +83,7 @@ describe("mapStateToProps()", () => {
     const point3 = fakePoint();
     point3.body.discarded_at = DISCARDED_AT;
     state.resources = buildResourceIndex([
-      webAppConfig, point1, point2, point3, fakeDevice()
+      webAppConfig, point1, point2, point3, fakeDevice(),
     ]);
     expect(mapStateToProps(state).genericPoints.length).toEqual(1);
   });
@@ -116,7 +116,7 @@ describe("getPlants()", () => {
     const template2 = fakePlantTemplate();
     template2.body.saved_garden_id = 2;
     return buildResourceIndex([
-      savedGarden, plant1, plant2, template1, template2, fakeDevice()
+      savedGarden, plant1, plant2, template1, template2, fakeDevice(),
     ]);
   };
   it("returns plants", () => {

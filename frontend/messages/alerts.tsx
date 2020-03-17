@@ -15,6 +15,9 @@ export const sortAlerts = (alerts: Alert[]): Alert[] =>
 const filterIncompleteAlerts = (x: Alert) =>
   x.problem_tag && isNumber(x.priority) && x.created_at;
 
+export const filterAlerts = (x: Alert) =>
+  x.problem_tag != "farmbot_os.firmware.missing";
+
 export const FirmwareAlerts = (props: FirmwareAlertsProps) => {
   const firmwareAlerts = sortAlerts(props.alerts)
     .filter(filterIncompleteAlerts)
@@ -34,7 +37,7 @@ export const Alerts = (props: AlertsProps) =>
     <div className="problem-alerts-content">
       {sortAlerts(props.alerts)
         .filter(filterIncompleteAlerts)
-        .filter(x => x.problem_tag != "farmbot_os.firmware.missing")
+        .filter(filterAlerts)
         .map(x =>
           <AlertCard key={x.slug + x.created_at}
             alert={x}

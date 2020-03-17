@@ -8,7 +8,7 @@ import { DevMode } from "../dev_mode";
 import * as React from "react";
 import { range } from "lodash";
 import {
-  setWebAppConfigValue
+  setWebAppConfigValue,
 } from "../../../config_storage/actions";
 import { warning } from "../../../toast/toast";
 

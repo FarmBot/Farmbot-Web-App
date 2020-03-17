@@ -11,7 +11,7 @@ import {
 import { overwrite } from "../../api/crud";
 import { LocationForm } from "./location_form";
 import {
-  SequenceMeta, determineDropdown, determineVector
+  SequenceMeta, determineDropdown, determineVector,
 } from "../../resources/sequence_meta";
 import { ResourceIndex } from "../../resources/interfaces";
 

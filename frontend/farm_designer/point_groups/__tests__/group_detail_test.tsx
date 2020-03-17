@@ -1,5 +1,5 @@
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 const GOOD_ID = 9;
 
@@ -26,7 +26,7 @@ import { GroupDetail, findGroupFromUrl } from "../group_detail";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { createStore } from "redux";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { push } from "../../../history";
 
@@ -35,7 +35,7 @@ describe("<GroupDetail />", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([
       mockGroup,
-      mockPlant
+      mockPlant,
     ]);
     return createStore(s => s, state);
   };

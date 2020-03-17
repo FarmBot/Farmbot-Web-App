@@ -29,7 +29,7 @@ export class ImageFlipper extends
       const url = image.body.attachment_processed_at
         ? image.body.attachment_url
         : PLACEHOLDER_FARMBOT;
-      return <div>
+      return <div className={"image-jsx"}>
         {!this.state.isLoaded &&
           <PlaceholderImg
             textOverlay={t("Image loading (try refreshing)")} />}
@@ -67,12 +67,14 @@ export class ImageFlipper extends
       <this.imageJSX />
       <button
         onClick={this.go(1)}
+        title={t("previous image")}
         disabled={!multipleImages || this.state.disablePrev}
         className="image-flipper-left fb-button">
         {t("Prev")}
       </button>
       <button
         onClick={this.go(-1)}
+        title={t("next image")}
         disabled={!multipleImages || this.state.disableNext}
         className="image-flipper-right fb-button">
         {t("Next")}

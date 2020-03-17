@@ -17,4 +17,4 @@ export const InputError = (props: InputErrorProps) =>
       <i className="fa fa-exclamation-circle input-error" />
       <p>{props.error}</p>
     </Popover>
-    : <div />;
+    : <div className={"no-input-error"} />;

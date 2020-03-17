@@ -3,14 +3,14 @@ import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import {
-  setPinValue, currentValueSelection, PIN_VALUES
+  setPinValue, currentValueSelection, PIN_VALUES,
 } from "./tile_pin_support";
 import { StepWrapper, StepHeader, StepContent } from "../step_ui/index";
 import { Row, Col, FBSelect } from "../../ui/index";
 import {
   celery2DropDown,
   setArgsDotPinNumber,
-  pinsAsDropDownsWritePin
+  pinsAsDropDownsWritePin,
 } from "./pin_and_peripheral_support";
 import { t } from "../../i18next_wrapper";
 import { PinMode } from "./tile_read_pin";

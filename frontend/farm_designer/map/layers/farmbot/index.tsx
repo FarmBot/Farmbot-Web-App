@@ -24,14 +24,14 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
       plantAreaOffset={plantAreaOffset}
       peripherals={peripherals}
       getConfigValue={getConfigValue} />
-    <BotFigure name={"motor-position"}
+    <BotFigure figureName={"motor-position"}
       position={props.botLocationData.position}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
       mountedToolName={props.mountedToolName}
       eStopStatus={eStopStatus} />
     {encoderFigure &&
-      <BotFigure name={"encoder-position"}
+      <BotFigure figureName={"encoder-position"}
         position={props.botLocationData.scaled_encoders}
         mapTransformProps={mapTransformProps}
         plantAreaOffset={plantAreaOffset} />}

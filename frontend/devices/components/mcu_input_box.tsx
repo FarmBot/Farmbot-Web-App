@@ -4,7 +4,7 @@ import { McuInputBoxProps } from "../interfaces";
 import { updateMCU } from "../actions";
 import { BlurableInput } from "../../ui/index";
 import {
-  clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize
+  clampUnsignedInteger, IntegerSize, getMaxInputFromIntSize,
 } from "../../util";
 
 import { isUndefined } from "lodash";

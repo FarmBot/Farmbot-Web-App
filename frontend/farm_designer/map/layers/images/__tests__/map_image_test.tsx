@@ -4,7 +4,7 @@ import { SpecialStatus } from "farmbot";
 import { cloneDeep } from "lodash";
 import { trim } from "../../../../../util";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 

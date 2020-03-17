@@ -2,7 +2,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import {
   BlurablePassword,
-  BPProps
+  BPProps,
 } from "../blurable_password";
 
 describe("<BlurablePassword />", () => {

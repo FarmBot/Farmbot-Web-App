@@ -8,11 +8,8 @@ import {
   FirmwareHardwareStatusDetailsProps, FirmwareHardwareStatusDetails,
   FirmwareHardwareStatusIconProps, FirmwareHardwareStatusIcon,
   FirmwareHardwareStatusProps, FirmwareHardwareStatus,
-  FirmwareActions, FirmwareActionsProps
 } from "../firmware_hardware_status";
 import { bot } from "../../../../__test_support__/fake_state/bot";
-import { clickButton } from "../../../../__test_support__/helpers";
-import { flashFirmware } from "../../../actions";
 import { fakeTimeSettings } from "../../../../__test_support__/fake_time_settings";
 
 describe("<FirmwareHardwareStatusDetails />", () => {
@@ -94,18 +91,5 @@ describe("<FirmwareHardwareStatus />", () => {
     p.apiFirmwareValue = "arduino";
     const wrapper = mount(<FirmwareHardwareStatus {...p} />);
     expect(wrapper.find(FirmwareHardwareStatusIcon).props().status).toBeTruthy();
-  });
-});
-
-describe("<FirmwareActions />", () => {
-  const fakeProps = (): FirmwareActionsProps => ({
-    botOnline: true,
-    apiFirmwareValue: "arduino",
-  });
-
-  it("flashes firmware", () => {
-    const wrapper = mount(<FirmwareActions {...fakeProps()} />);
-    clickButton(wrapper, 0, "flash firmware");
-    expect(flashFirmware).toHaveBeenCalledWith("arduino");
   });
 });

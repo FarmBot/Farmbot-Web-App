@@ -8,7 +8,7 @@ jest.mock("../../../api/crud", () => ({
 
 import * as React from "react";
 import {
-  fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant
+  fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { mount, shallow } from "enzyme";
 import {
@@ -24,7 +24,7 @@ import {
   RepeatFormProps,
   StartTimeForm,
   StartTimeFormProps,
-  FarmEventForm
+  FarmEventForm,
 } from "../edit_fe_form";
 import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
@@ -32,7 +32,7 @@ import { SpecialStatus, ParameterApplication } from "farmbot";
 import moment from "moment";
 import { history } from "../../../history";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { save, destroy } from "../../../api/crud";
@@ -219,7 +219,7 @@ describe("<EditFEForm />", () => {
           label: "Sequence: Every Node",
           value: 11,
           headingId: "Sequence"
-        }
+        },
       ]}
       findExecutable={jest.fn(() => seq)}
       dispatch={jest.fn()}

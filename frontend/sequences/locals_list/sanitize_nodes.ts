@@ -4,10 +4,10 @@ import {
   Identifier,
   ScopeDeclarationBodyItem,
   VariableDeclaration,
-  Execute
+  Execute,
 } from "farmbot";
 import {
-  SequenceResource as Sequence
+  SequenceResource as Sequence,
 } from "farmbot/dist/resources/api_resources";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 import { NOTHING_SELECTED } from "./handle_select";

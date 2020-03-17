@@ -1,6 +1,6 @@
 import { manifestInfo, manifestInfoPending } from "../generate_manifest_info";
 import {
-  fakeFarmwareManifestV1, fakeFarmwareManifestV2
+  fakeFarmwareManifestV1, fakeFarmwareManifestV2,
 } from "../../__test_support__/fake_farmwares";
 
 describe("manifestInfo()", () => {

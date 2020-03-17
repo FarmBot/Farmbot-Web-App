@@ -3,7 +3,7 @@ import { ActiveEditor } from "./active_editor";
 import { RegimenEditorProps } from "./interfaces";
 import { isTaggedRegimen } from "../../resources/tagged_resources";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";

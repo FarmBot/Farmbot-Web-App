@@ -1,15 +1,15 @@
 import * as React from "react";
 import {
-  SensorReadingsLayer, SensorReadingsLayerProps
+  SensorReadingsLayer, SensorReadingsLayerProps,
 } from "../sensor_readings_layer";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import {
-  fakeSensorReading, fakeSensor
+  fakeSensorReading, fakeSensor,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeTimeSettings
+  fakeTimeSettings,
 } from "../../../../../__test_support__/fake_time_settings";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 

@@ -13,7 +13,7 @@ export function setActiveSequenceByName() {
   }
 
   selectAllSequences(store.getState().resources.index).map(seq => {
-    const name = urlFriendly(seq.body.name);
-    (lastUrlChunk() === name) && setSequence(seq.uuid);
+    const sequenceName = urlFriendly(seq.body.name);
+    (lastUrlChunk() === sequenceName) && setSequence(seq.uuid);
   });
 }

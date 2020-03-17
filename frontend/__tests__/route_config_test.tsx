@@ -12,7 +12,7 @@ type Info = UnboundRouteConfig<{}, {}>;
 const fakeCallback = (
   component: ConnectedComponent,
   child: ConnectedComponent | undefined,
-  info: Info
+  info: Info,
 ) => {
   if (info.$ == "*") {
     expect(component.name).toEqual("FourOhFour");

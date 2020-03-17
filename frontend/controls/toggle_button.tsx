@@ -40,12 +40,16 @@ export class ToggleButton extends React.Component<ToggleButtonProps, {}> {
   }
 
   render() {
-    const addCss = (this.props.dim ? " dim" : "")
-      + (this.props.grayscale ? " grayscale" : "");
+    const allCss = [
+      this.css(),
+      this.props.className,
+      this.props.dim ? "dim" : "",
+      this.props.grayscale ? "grayscale" : "",
+    ].join(" ");
     const cb = () => !this.props.disabled && this.props.toggleAction();
     return <button
       disabled={!!this.props.disabled}
-      className={this.css() + addCss}
+      className={allCss}
       title={this.props.title || ""}
       onClick={cb}>
       {t(this.caption())}

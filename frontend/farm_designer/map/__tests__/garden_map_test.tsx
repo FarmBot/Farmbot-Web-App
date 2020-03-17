@@ -32,7 +32,7 @@ jest.mock("../drawn_point/drawn_point_actions", () => ({
 jest.mock("../background/selection_box_actions", () => ({
   startNewSelectionBox: jest.fn(),
   resizeBox: jest.fn(),
-  maybeUpdateGroupCriteria: jest.fn(),
+  maybeUpdateGroup: jest.fn(),
 }));
 
 jest.mock("../../move_to", () => ({ chooseLocation: jest.fn() }));
@@ -58,19 +58,19 @@ import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import { unselectPlant, closePlantInfo } from "../actions";
 import {
-  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant
+  dropPlant, beginPlantDrag, maybeSavePlantLocation, dragPlant,
 } from "../layers/plants/plant_actions";
 import {
-  startNewSelectionBox, resizeBox, maybeUpdateGroupCriteria
+  startNewSelectionBox, resizeBox, maybeUpdateGroup,
 } from "../background/selection_box_actions";
 import { getGardenCoordinates } from "../util";
 import { chooseLocation } from "../../move_to";
 import { startNewPoint, resizePoint } from "../drawn_point/drawn_point_actions";
 import {
-  fakeDesignerState
+  fakeDesignerState,
 } from "../../../__test_support__/fake_designer_state";
 import {
-  fakePlant, fakePointGroup, fakePoint
+  fakePlant, fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { history } from "../../../history";
@@ -158,7 +158,7 @@ describe("<GardenMap/>", () => {
     wrapper.setState({ isDragging: true });
     wrapper.find(".drop-area-svg").simulate("mouseUp", DEFAULT_EVENT);
     expect(maybeSavePlantLocation).toHaveBeenCalled();
-    expect(maybeUpdateGroupCriteria).toHaveBeenCalled();
+    expect(maybeUpdateGroup).toHaveBeenCalled();
     expect(wrapper.instance().state.isDragging).toBeFalsy();
   });
 
@@ -224,7 +224,9 @@ describe("<GardenMap/>", () => {
   });
 
   it("starts drag on background: selecting zone", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const p = fakeProps();
+    p.designer.editGroupAreaInMap = true;
+    const wrapper = mount(<GardenMap {...p} />);
     mockMode = Mode.editGroup;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
@@ -255,7 +257,9 @@ describe("<GardenMap/>", () => {
   });
 
   it("drags: selecting zone", () => {
-    const wrapper = shallow(<GardenMap {...fakeProps()} />);
+    const p = fakeProps();
+    p.designer.editGroupAreaInMap = true;
+    const wrapper = shallow(<GardenMap {...p} />);
     mockMode = Mode.editGroup;
     const e = { pageX: 2000, pageY: 2000 };
     wrapper.find(".drop-area-svg").simulate("mouseMove", e);

@@ -1,6 +1,7 @@
 export * from "./back_arrow";
 export * from "./blurable_input";
 export * from "./center_panel";
+export * from "./checkbox";
 export * from "./color_picker";
 export * from "./colors";
 export * from "./column";

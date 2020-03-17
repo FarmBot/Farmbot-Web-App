@@ -15,7 +15,7 @@ export interface GroupOrderProps {
 }
 
 const sortedPointCoordinates = (
-  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[]
+  group: TaggedPointGroup | undefined, groupPoints: TaggedPoint[],
 ): { x: number, y: number }[] => {
   if (isUndefined(group)) { return []; }
   const { resources } = store.getState();

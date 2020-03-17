@@ -5,7 +5,7 @@ import { ExecutableType } from "farmbot/dist/resources/api_resources";
 
 describe("maybeWarnAboutMissedTasks()", () => {
   function testWarn(
-    time: string, executableType: ExecutableType = "Regimen"
+    time: string, executableType: ExecutableType = "Regimen",
   ): () => void {
     const callback = jest.fn();
     const fe = fakeFarmEvent(executableType, 1);

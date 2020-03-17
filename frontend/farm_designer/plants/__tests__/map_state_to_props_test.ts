@@ -1,10 +1,10 @@
 import { mapStateToProps, plantAge } from "../map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import {
-  fakePlant, fakePlantTemplate
+  fakePlant, fakePlantTemplate,
 } from "../../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {

@@ -3,6 +3,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { Saucer } from "../ui/index";
 import { ResourceColor } from "../interfaces";
 import { colors } from "../util";
+import { t } from "../i18next_wrapper";
 
 export interface ColorPickerProps {
   position?: Position;
@@ -23,6 +24,7 @@ interface ColorPickerItemProps extends ColorPickerClusterProps {
 
 const ColorPickerItem = (props: ColorPickerItemProps) => {
   return <div className="color-picker-item-wrapper"
+    title={t(props.color)}
     onClick={() => props.onChange(props.color)}>
     {props.saucerIcon
       ? <i className={`icon-saucer fa ${props.saucerIcon} ${props.color}`} />

@@ -28,7 +28,7 @@ export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
   const title = diagnosisBoolean ? t("Ok") : t("Error");
-  return <div>
+  return <div className={"diagnosis-section"}>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>
     </div>

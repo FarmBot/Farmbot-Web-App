@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ControlPanelState } from "../interfaces";
-import { toggleControlPanel } from "../actions";
+import { toggleControlPanel, bulkToggleControlPanel } from "../actions";
 import { urlFriendly } from "../../util";
 import { DeviceSetting } from "../../constants";
 import { trim } from "lodash";
@@ -75,6 +75,36 @@ const POWER_AND_RESET_PANEL = [
   DeviceSetting.changeOwnership,
 ];
 
+const FARM_DESIGNER_PANEL = [
+  DeviceSetting.farmDesigner,
+  DeviceSetting.animations,
+  DeviceSetting.trail,
+  DeviceSetting.dynamicMap,
+  DeviceSetting.mapSize,
+  DeviceSetting.rotateMap,
+  DeviceSetting.mapOrigin,
+  DeviceSetting.confirmPlantDeletion,
+];
+
+const FIRMWARE_PANEL = [
+  DeviceSetting.firmwareSection,
+  DeviceSetting.firmware,
+  DeviceSetting.flashFirmware,
+  DeviceSetting.restartFirmware,
+];
+
+const FARMBOT_PANEL = [
+  DeviceSetting.farmbot,
+  DeviceSetting.name,
+  DeviceSetting.timezone,
+  DeviceSetting.camera,
+  DeviceSetting.applySoftwareUpdates,
+  DeviceSetting.farmbotOSAutoUpdate,
+  DeviceSetting.farmbotOS,
+  DeviceSetting.autoSync,
+  DeviceSetting.bootSequence,
+];
+
 /** Look up parent panels for settings. */
 const SETTING_PANEL_LOOKUP = {} as Record<DeviceSetting, keyof ControlPanelState>;
 HOMING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "homing_and_calibration");
@@ -86,6 +116,9 @@ PIN_GUARD_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_guard");
 DANGER_ZONE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "danger_zone");
 PIN_BINDINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_bindings");
 POWER_AND_RESET_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "power_and_reset");
+FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+FIRMWARE_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "firmware");
+FARMBOT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farmbot_os");
 
 /** Keep string up until first `(` character (trailing whitespace removed). */
 const stripUnits = (settingName: string) => trim(settingName.split("(")[0]);
@@ -117,12 +150,16 @@ const getHighlightName = () => location.search.split("?highlight=").pop();
 export const highlight = { opened: false, highlighted: false };
 
 /** Open a panel if a setting in that panel is highlighted. */
-export const maybeOpenPanel = (panelState: ControlPanelState) =>
+export const maybeOpenPanel = (
+  panelState: ControlPanelState,
+  closeOthers = false,
+) =>
   (dispatch: Function) => {
     if (highlight.opened) { return; }
     const urlFriendlySettingName = urlFriendly(getHighlightName() || "");
     if (!urlFriendlySettingName) { return; }
     const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
+    closeOthers && dispatch(bulkToggleControlPanel(false, closeOthers));
     const panelIsOpen = panelState[panel];
     if (panelIsOpen) { return; }
     dispatch(toggleControlPanel(panel));
@@ -143,6 +180,7 @@ export interface HighlightProps {
   settingName: DeviceSetting;
   children: React.ReactChild
   | React.ReactChild[]
+  | (React.ReactChild | false)[]
   | (React.ReactChild | React.ReactChild[])[];
   className?: string;
 }
@@ -163,7 +201,10 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
   }
 
   render() {
-    return <div className={`${this.props.className} ${this.state.className}`}>
+    return <div className={[
+      this.props.className,
+      this.state.className,
+    ].join(" ")}>
       {this.props.children}
     </div>;
   }

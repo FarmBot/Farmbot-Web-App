@@ -10,7 +10,7 @@ import { mount } from "enzyme";
 import { PeripheralList } from "../peripheral_list";
 import {
   TaggedPeripheral,
-  SpecialStatus
+  SpecialStatus,
 } from "farmbot";
 import { Pins } from "farmbot/dist";
 

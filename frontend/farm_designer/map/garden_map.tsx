@@ -2,16 +2,16 @@ import * as React from "react";
 import { BooleanSetting } from "../../session_keys";
 import { closePlantInfo, unselectPlant } from "./actions";
 import {
-  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty
+  MapTransformProps, TaggedPlant, Mode, AxisNumberProperty,
 } from "./interfaces";
 import { GardenMapProps, GardenMapState } from "../interfaces";
 import {
-  getMapSize, getGardenCoordinates, getMode, cursorAtPlant
+  getMapSize, getGardenCoordinates, getMode, cursorAtPlant,
 } from "./util";
 import {
   Grid, MapBackground,
   TargetCoordinate,
-  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroupCriteria,
+  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroup,
 } from "./background";
 import {
   PlantLayer,
@@ -26,7 +26,7 @@ import { HoveredPlant, ActivePlantDragHelper } from "./active_plant";
 import { DrawnPoint, startNewPoint, resizePoint } from "./drawn_point";
 import { Bugs, showBugs } from "./easter_eggs/bugs";
 import {
-  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation
+  dropPlant, dragPlant, beginPlantDrag, maybeSavePlantLocation,
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "../point_groups/group_order_visual";
@@ -88,11 +88,13 @@ export class GardenMap extends
       isDragging: this.state.isDragging,
       dispatch: this.props.dispatch,
     });
-    maybeUpdateGroupCriteria({
+    maybeUpdateGroup({
       selectionBox: this.state.selectionBox,
       group: this.group,
       dispatch: this.props.dispatch,
       shouldDisplay: this.props.shouldDisplay,
+      editGroupAreaInMap: this.props.designer.editGroupAreaInMap,
+      boxSelected: this.props.designer.selectedPlants,
     });
     this.setState({
       isDragging: false, qPageX: 0, qPageY: 0,
@@ -142,7 +144,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       case Mode.createPoint:
@@ -179,7 +181,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       default:
@@ -283,7 +285,7 @@ export class GardenMap extends
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
-          plantActions: false,
+          plantActions: !this.props.designer.editGroupAreaInMap,
         });
         break;
       case Mode.boxSelect:

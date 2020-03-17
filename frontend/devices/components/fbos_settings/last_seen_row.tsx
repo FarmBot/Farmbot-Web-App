@@ -6,6 +6,14 @@ import { t } from "../../../i18next_wrapper";
 import { TimeSettings } from "../../../interfaces";
 import { timeFormatString } from "../../../util";
 import { refresh } from "../../../api/crud";
+import { BotState } from "../../interfaces";
+
+export const getLastSeenNumber = (bot: BotState): number => {
+  const { uptime } = bot.connectivity;
+  const bot2Mqtt = uptime["bot.mqtt"];
+  const botToMqttLastSeen = bot2Mqtt?.state === "up" ? bot2Mqtt.at : "";
+  return new Date(botToMqttLastSeen).getTime();
+};
 
 export interface LastSeenProps {
   dispatch: Function;

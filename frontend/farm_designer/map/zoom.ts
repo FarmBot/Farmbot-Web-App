@@ -1,7 +1,7 @@
 import { NumericSetting } from "../../session_keys";
 import { findIndex, isNumber, clamp } from "lodash";
 import {
-  setWebAppConfigValue, GetWebAppConfigValue
+  setWebAppConfigValue, GetWebAppConfigValue,
 } from "../../config_storage/actions";
 
 /**

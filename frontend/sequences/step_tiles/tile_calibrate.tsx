@@ -2,7 +2,7 @@ import * as React from "react";
 import { StepParams, HardwareFlags } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import {
-  StepWrapper, StepHeader, StepContent, conflictsString, StepWarning
+  StepWrapper, StepHeader, StepContent, conflictsString, StepWarning,
 } from "../step_ui/index";
 import { AxisStepRadio } from "../step_ui/step_radio";
 import { t } from "../../i18next_wrapper";

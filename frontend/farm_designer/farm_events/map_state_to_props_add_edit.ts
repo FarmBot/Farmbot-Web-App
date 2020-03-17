@@ -13,17 +13,17 @@ import {
   findSequenceById,
   findRegimenById,
   getDeviceAccountSettings,
-  maybeGetTimeSettings
+  maybeGetTimeSettings,
 } from "../../resources/selectors";
 import {
   TaggedFarmEvent,
   TaggedSequence,
-  TaggedRegimen
+  TaggedRegimen,
 } from "farmbot";
 import { DropDownItem } from "../../ui/index";
 import { validFbosConfig } from "../../util";
 import {
-  sourceFbosConfigValue
+  sourceFbosConfigValue,
 } from "../../devices/components/source_config_value";
 import { hasId } from "../../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
@@ -47,12 +47,12 @@ export const repeatOptions = [
   { label: t("Days"), value: "daily", name: "time_unit" },
   { label: t("Weeks"), value: "weekly", name: "time_unit" },
   { label: t("Months"), value: "monthly", name: "time_unit" },
-  { label: t("Years"), value: "yearly", name: "time_unit" }
+  { label: t("Years"), value: "yearly", name: "time_unit" },
 ];
 
 const handleTime = (
   e: React.SyntheticEvent<HTMLInputElement>,
-  currentISO: string
+  currentISO: string,
 ) => {
   const incomingTime = e.currentTarget.value.split(":");
   const hours = parseInt(incomingTime[0]) || 0;

@@ -3,10 +3,10 @@ jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
 import * as React from "react";
 import { ToolSlotPoint, TSPProps } from "../tool_slot_point";
 import {
-  fakeToolSlot, fakeTool
+  fakeToolSlot, fakeTool,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { history } from "../../../../../history";

@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   PinBindingType,
   PinBindingSpecialAction,
-  PinBinding
+  PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { PinBindingListItems } from "./interfaces";
 import { stockPinBindings } from "./list_and_label_support";
@@ -47,6 +47,7 @@ export const StockPinBindingsButton = (props: StockPinBindingsButtonProps) =>
     <button
       className="fb-button green"
       hidden={!hasButtons(props.firmwareHardware)}
+      title={t("add stock pin bindings")}
       onClick={() => stockPinBindings.map(binding =>
         props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
       <i className="fa fa-plus" />

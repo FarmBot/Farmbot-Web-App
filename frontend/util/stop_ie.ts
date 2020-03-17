@@ -11,13 +11,13 @@ const REQUIRED_GLOBALS = [
   "console",
   "WebSocket",
   "Intl",
-  "Set"
+  "Set",
 ];
 
 const REQUIRED_ARRAY_METHODS = [
   "includes",
   "map",
-  "filter"
+  "filter",
 ];
 
 /** We don't support IE. This method stops users from trying to use the site.

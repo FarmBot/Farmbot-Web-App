@@ -2,10 +2,10 @@ import { resourceReducer } from "../../resources/reducer";
 import { RestResources } from "../../resources/interfaces";
 import {
   fakeSequence,
-  fakeFolder
+  fakeFolder,
 } from "../../__test_support__/fake_state/resources";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { Actions } from "../../constants";
 

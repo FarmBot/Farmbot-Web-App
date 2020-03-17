@@ -26,9 +26,9 @@ type Point = { x: number, y: number };
 export enum ZoneType { points, lines, area, none }
 
 export const getZoneType = (group: TaggedPointGroup): ZoneType => {
-  const numEq = group.body.criteria?.number_eq || {};
-  const numGt = group.body.criteria?.number_gt || {};
-  const numLt = group.body.criteria?.number_lt || {};
+  const numEq = group.body.criteria.number_eq;
+  const numGt = group.body.criteria.number_gt;
+  const numLt = group.body.criteria.number_lt;
   const hasXEq = !!numEq.x?.length;
   const hasYEq = !!numEq.y?.length;
   if (hasXEq && hasYEq) {
@@ -46,8 +46,8 @@ export const getZoneType = (group: TaggedPointGroup): ZoneType => {
 /** Bounds for area selected by criteria or bot extents. */
 const getBoundary = (props: GetBoundaryProps): Boundary => {
   const { criteria } = props.group.body;
-  const gt = criteria?.number_gt || {};
-  const lt = criteria?.number_lt || {};
+  const gt = criteria.number_gt;
+  const lt = criteria.number_lt;
   const x1 = gt.x || 0;
   const x2 = lt.x || props.botSize.x.value;
   const y1 = gt.y || 0;
@@ -67,8 +67,8 @@ const filter: <T extends Point | Line>(
 /** Coordinates selected by both x and y number equal values. */
 const getPoints =
   (boundary: Boundary, group: TaggedPointGroup): Point[] => {
-    const xs = group.body.criteria?.number_eq.x;
-    const ys = group.body.criteria?.number_eq.y;
+    const xs = group.body.criteria.number_eq.x;
+    const ys = group.body.criteria.number_eq.y;
     const points: Point[] = [];
     xs?.map(x => ys?.map(y => points.push({ x, y })));
     return filter<Point>(boundary, points);
@@ -95,12 +95,12 @@ export const Zones0D = (props: ZonesProps) => {
 /** Lines selected by an x or y number equal value. */
 const getLines =
   (boundary: Boundary, group: TaggedPointGroup): Line[] => {
-    const xs = group.body.criteria?.number_eq.x;
-    const ys = group.body.criteria?.number_eq.y;
+    const xs = group.body.criteria.number_eq.x;
+    const ys = group.body.criteria.number_eq.y;
     const onlyXs = !!xs?.length && !ys?.length;
     const onlyYs = !!ys?.length && !xs?.length;
-    const xLineData = onlyXs ? xs?.map(x => ({ x })) : undefined;
-    const yLineData = onlyYs ? ys?.map(y => ({ y })) : undefined;
+    const xLineData = (onlyXs && xs) ? xs.map(x => ({ x })) : undefined;
+    const yLineData = (onlyYs && ys) ? ys.map(y => ({ y })) : undefined;
     return filter<Line>(boundary, xLineData || yLineData);
   };
 

@@ -138,6 +138,15 @@ select {
       padding: 0.6rem 0.3rem;
     }
   }
+  &.partial:after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    bottom: 1.2rem;
+    border: solid $dark_gray;
+    border-width: 0 0 3px 0;
+    padding: 0.6rem 0.3rem;
+  }
   &.large {
     input[type="checkbox"] {
       width: 3rem;
@@ -155,8 +164,10 @@ select {
     }
   }
   &.disabled {
+    cursor: not-allowed;
     input[type="checkbox"] {
-      cursor: not-allowed;
+      background: $light_gray;
+      pointer-events: none;
       &:checked:after {
         border-color: $gray;
      }

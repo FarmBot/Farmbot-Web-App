@@ -1,5 +1,5 @@
 import {
-  fakeSensorReading, fakeSensor
+  fakeSensorReading, fakeSensor,
 } from "../../../__test_support__/fake_state/resources";
 import { filterSensorReadings } from "../filter_readings";
 import { SensorReadingsState } from "../interfaces";
@@ -25,11 +25,11 @@ describe("filterSensorReadings()", () => {
     });
 
   const createLocatedReading = (locations: Record<Xyz, number | undefined>[]) =>
-    locations.map(location => {
+    locations.map(xyzLocation => {
       const sr = fakeSensorReading();
-      sr.body.x = location.x;
-      sr.body.y = location.y;
-      sr.body.z = location.z;
+      sr.body.x = xyzLocation.x;
+      sr.body.y = xyzLocation.y;
+      sr.body.z = xyzLocation.z;
       sr.body.created_at = defaultCreatedAt;
       return sr;
     });
@@ -38,7 +38,7 @@ describe("filterSensorReadings()", () => {
     sensor: undefined,
     timePeriod: 3600 * 24 * 7,
     endDate: 1515715140,
-    location: undefined,
+    xyzLocation: undefined,
     showPreviousPeriod: false,
     deviation: 0,
     hovered: undefined,
@@ -87,7 +87,7 @@ describe("filterSensorReadings()", () => {
     const locations = [expected, { x: 0, y: 0, z: 0 }];
     const filters = sensorReadingsState();
     filters.endDate = moment(defaultCreatedAt).unix() + 1;
-    filters.location = expected;
+    filters.xyzLocation = expected;
     const result = filterSensorReadings(
       createLocatedReading(locations), filters)("current");
     expect(result.length).toEqual(1);
@@ -101,7 +101,7 @@ describe("filterSensorReadings()", () => {
     const locations = [{ x: 1, y: 2, z: 3 }, { x: 0, y: 0, z: 0 }];
     const filters = sensorReadingsState();
     filters.endDate = moment(defaultCreatedAt).unix() + 1;
-    filters.location = expected;
+    filters.xyzLocation = expected;
     filters.deviation = 100;
     const result = filterSensorReadings(
       createLocatedReading(locations), filters)("current");

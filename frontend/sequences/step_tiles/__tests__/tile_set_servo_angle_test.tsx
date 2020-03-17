@@ -2,7 +2,7 @@ jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
 
 import * as React from "react";
 import {
-  TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection
+  TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection,
 } from "../tile_set_servo_angle";
 import { mount } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";

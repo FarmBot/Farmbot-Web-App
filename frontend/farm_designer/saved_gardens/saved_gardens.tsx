@@ -4,18 +4,18 @@ import { connect } from "react-redux";
 import { history } from "../../history";
 import { unselectPlant } from "../map/actions";
 import {
-  selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers
+  selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers,
 } from "../../resources/selectors";
 import { SavedGardenList } from "./garden_list";
 import { SavedGardensProps, SavedGardensState } from "./interfaces";
 import { closeSavedGarden } from "./actions";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import { t } from "../../i18next_wrapper";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 
@@ -46,7 +46,7 @@ export class RawSavedGardens
           panel={Panel.SavedGardens}
           linkTo={"/app/designer/gardens/add"}
           title={t("Add garden")}>
-          <input type="text" onChange={this.onChange}
+          <input type="text" onChange={this.onChange} name="searchTerm"
             placeholder={t("Search your gardens...")} />
         </DesignerPanelTop>
         <EmptyStateWrapper
@@ -62,14 +62,6 @@ export class RawSavedGardens
   }
 }
 
-/** Link to SavedGardens panel for garden map legend. */
-export const SavedGardensLink = () =>
-  <button className="fb-button green"
-    hidden={true}
-    onClick={() => history.push("/app/designer/gardens")}>
-    {t("Saved Gardens")}
-  </button>;
-
 /** Check if a SavedGarden is currently open (URL approach). */
 export const savedGardenOpen = (pathArray: string[]) =>
   pathArray[3] === "gardens" && parseInt(pathArray[4]) > 0
@@ -80,10 +72,12 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
   <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
     <button className="fb-button gray"
+      title={t("open saved gardens panel")}
       onClick={() => history.push("/app/designer/gardens")}>
       {t("Menu")}
     </button>
     <button className="fb-button green"
+      title={t("open plants panel")}
       onClick={() => {
         history.push("/app/designer/plants");
         unselectPlant(props.dispatch)();
@@ -91,6 +85,7 @@ export const SavedGardenHUD = (props: { dispatch: Function }) =>
       {t("Edit")}
     </button>
     <button className="fb-button red"
+      title={t("close saved garden")}
       onClick={() => props.dispatch(closeSavedGarden())}>
       {t("Exit")}
     </button>

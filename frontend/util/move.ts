@@ -24,14 +24,14 @@ export function move<T>(array: T[], fromIndex: number, toIndex: number) {
         ...array.slice(0, fromIndex),
         ...array.slice(fromIndex + 1, toIndex + 1),
         item,
-        ...array.slice(toIndex + 1, length)
+        ...array.slice(toIndex + 1, length),
       ];
     case Comparison.HIGH:
       return [
         ...array.slice(0, toIndex),
         item,
         ...array.slice(toIndex, fromIndex),
-        ...array.slice(fromIndex + 1, length)
+        ...array.slice(fromIndex + 1, length),
       ];
     default:
       return array;

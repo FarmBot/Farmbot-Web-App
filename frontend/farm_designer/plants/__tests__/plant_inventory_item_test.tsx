@@ -6,11 +6,11 @@ jest.mock("../../../history", () => ({ push: jest.fn() }));
 
 import * as React from "react";
 import {
-  PlantInventoryItem, PlantInventoryItemProps
+  PlantInventoryItem, PlantInventoryItemProps,
 } from "../plant_inventory_item";
 import { shallow, mount } from "enzyme";
 import {
-  fakePlant, fakePlantTemplate
+  fakePlant, fakePlantTemplate,
 } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import { push } from "../../../history";

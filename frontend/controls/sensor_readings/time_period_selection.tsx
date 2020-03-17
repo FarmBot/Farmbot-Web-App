@@ -74,6 +74,7 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
       <Col xs={ColWidth.showPrevious}>
         <div className="fb-checkbox large">
           <input type="checkbox"
+            name="previous"
             checked={showPreviousPeriod}
             onChange={togglePrevious} />
         </div>

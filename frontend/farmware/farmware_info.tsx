@@ -44,11 +44,11 @@ const removeFromAPI = (props: {
 const FarmwareToolsVersionField =
   ({ version }: { version: string | undefined }) =>
     (version && version != "latest")
-      ? <div>
+      ? <div className={"farmware-tools-version"}>
         <label>{t("Farmware Tools version")}</label>
         <p>{version}</p>
       </div>
-      : <div />;
+      : <div className={"farmware-tools-version"} />;
 
 const PendingInstallNameError =
   ({ url, installations }: {
@@ -64,11 +64,12 @@ const PendingInstallNameError =
         <p>{packageError}</p>
         <button
           className="fb-button red no-float"
+          title={t("retry fetch package name")}
           onClick={() => retryFetchPackageName(installation.body.id)}>
           {t("Retry")}
         </button>
       </div>
-      : <div />;
+      : <div className={"no-install-error"} />;
   };
 
 type RemoveFarmwareFunction =
@@ -79,20 +80,22 @@ const FarmwareManagementSection =
     farmware: FarmwareManifestInfo,
     remove: RemoveFarmwareFunction,
   }) =>
-    <div>
+    <div className={"farmware-management-section"}>
       <Popover usePortal={false}>
         <label>{t("Manage")}</label>
         <div className="farmware-url">{farmware.url}</div>
       </Popover>
-      <div>
+      <div className={"farmware-management-buttons"}>
         <button
           className="fb-button yellow no-float"
           disabled={isPendingInstallation(farmware)}
+          title={t("update Farmware")}
           onClick={update(farmware.name)}>
           {t("Update")}
         </button>
         <button
           className="fb-button red no-float"
+          title={t("remove Farmware")}
           onClick={remove(farmware.name, farmware.url)}>
           {t("Remove")}
         </button>
@@ -137,25 +140,29 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
 
 export function FarmwareInfo(props: FarmwareInfoProps) {
   const { farmware } = props;
-  return farmware ? <div className="farmware-info">
-    <label>{t("Description")}</label>
-    <p>{farmware.meta.description}</p>
-    <label>{t("Version")}</label>
-    <p>{farmware.meta.version}</p>
-    <label>{t("Min OS version required")}</label>
-    <p>{farmware.meta.fbos_version}</p>
-    <FarmwareToolsVersionField version={farmware.meta.farmware_tools_version} />
-    <label>{t("Language")}</label>
-    <p>{farmware.meta.language}</p>
-    <label>{t("Author")}</label>
-    <p>{farmware.meta.author === "Farmbot.io"
-      ? "FarmBot, Inc."
-      : farmware.meta.author}</p>
-    <FarmwareManagementSection
-      farmware={farmware}
-      remove={uninstallFarmware(props)} />
-    <PendingInstallNameError
-      url={farmware.url}
-      installations={props.installations} />
-  </div> : <div><p>{t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}</p></div>;
+  return farmware
+    ? <div className="farmware-info">
+      <label>{t("Description")}</label>
+      <p>{farmware.meta.description}</p>
+      <label>{t("Version")}</label>
+      <p>{farmware.meta.version}</p>
+      <label>{t("Min OS version required")}</label>
+      <p>{farmware.meta.fbos_version}</p>
+      <FarmwareToolsVersionField version={farmware.meta.farmware_tools_version} />
+      <label>{t("Language")}</label>
+      <p>{farmware.meta.language}</p>
+      <label>{t("Author")}</label>
+      <p>{farmware.meta.author === "Farmbot.io"
+        ? "FarmBot, Inc."
+        : farmware.meta.author}</p>
+      <FarmwareManagementSection
+        farmware={farmware}
+        remove={uninstallFarmware(props)} />
+      <PendingInstallNameError
+        url={farmware.url}
+        installations={props.installations} />
+    </div>
+    : <div className={"no-farmware-info"}>
+      <p>{t(Content.NOT_AVAILABLE_WHEN_OFFLINE)}</p>
+    </div>;
 }

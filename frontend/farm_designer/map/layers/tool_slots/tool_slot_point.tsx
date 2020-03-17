@@ -51,7 +51,7 @@ export const ToolSlotPoint = (props: TSPProps) => {
     onClick={() => history.push(`/app/designer/tool-slots/${id}`)}>
     {pullout_direction && !gantry_mounted &&
       <ToolbaySlot
-        id={-(id || 1)}
+        id={id}
         x={qx}
         y={qy}
         pulloutDirection={pullout_direction}

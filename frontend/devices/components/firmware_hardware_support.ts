@@ -5,7 +5,7 @@ export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
     "arduino",
     "farmduino", "farmduino_k14", "farmduino_k15",
     "express_k10",
-    "none"
+    "none",
   ];
   return !!values.includes(x as FirmwareHardware);
 };
@@ -25,9 +25,6 @@ const NO_TMC = ["arduino", "farmduino", "farmduino_k14"];
 
 export const isTMCBoard = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_TMC.includes(firmwareHardware);
-
-export const isExpressBoard = (firmwareHardware: FirmwareHardware | undefined) =>
-  !!(firmwareHardware && EXPRESS_BOARDS.includes(firmwareHardware));
 
 export const hasButtons = (firmwareHardware: FirmwareHardware | undefined) =>
   !firmwareHardware || !NO_BUTTONS.includes(firmwareHardware);

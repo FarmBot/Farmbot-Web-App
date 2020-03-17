@@ -16,7 +16,7 @@ import { mount, shallow } from "enzyme";
 import {
   RawCreatePoints as CreatePoints,
   CreatePointsProps,
-  mapStateToProps
+  mapStateToProps,
 } from "../create_points";
 import { initSave } from "../../../api/crud";
 import { deletePoints } from "../../../farmware/weed_detector/actions";

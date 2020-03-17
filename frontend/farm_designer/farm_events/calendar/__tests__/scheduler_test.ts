@@ -4,7 +4,7 @@ import {
   TimeLine,
   farmEventIntervalSeconds,
   maxDisplayItems,
-  gracePeriodSeconds
+  gracePeriodSeconds,
 } from "../scheduler";
 import moment from "moment";
 import { Moment } from "moment";
@@ -49,7 +49,7 @@ describe("scheduler", () => {
       "04:00am Th",
       "08:00am Th",
       "12:00pm Th",
-      "04:00pm Th"
+      "04:00pm Th",
     ];
     const REALITY = result1.items.map(x => x.format("hh:mma dd"));
     EXPECTED.map(x => expect(REALITY).toContain(x));
@@ -97,7 +97,7 @@ describe("scheduleForFarmEvent", () => {
       expected: [
         moment("2017-08-01T17:30:00.000Z"),
         moment("2017-08-03T17:30:00.000Z"),
-        moment("2017-08-05T17:30:00.000Z")
+        moment("2017-08-05T17:30:00.000Z"),
       ],
       shortenedBy: 0
     },
@@ -124,7 +124,7 @@ describe("scheduleForFarmEvent", () => {
       timeNow: moment("2017-08-03T18:30:00.000Z"),
       expected: [
         moment("2017-08-05T17:30:00.000Z"),
-        moment("2017-08-07T17:30:00.000Z")
+        moment("2017-08-07T17:30:00.000Z"),
       ],
       shortenedBy: 0
     },
@@ -148,7 +148,7 @@ describe("scheduleForFarmEvent", () => {
       expected: [
         moment("2017-08-01T17:30:00.000Z"),
         moment("2017-08-01T21:30:00.000Z"),
-        moment("2017-08-02T01:30:00.000Z")
+        moment("2017-08-02T01:30:00.000Z"),
       ],
       shortenedBy: 0
     },
@@ -219,7 +219,7 @@ describe("scheduleForFarmEvent", () => {
       timeNow: moment("2017-08-01T16:30:00.000Z"),
       expected: [
         moment("2017-08-01T17:30:00.000Z"),
-        moment("2017-08-01T21:30:00.000Z")
+        moment("2017-08-01T21:30:00.000Z"),
       ],
       shortenedBy: 0
     },
@@ -235,7 +235,7 @@ describe("scheduleForFarmEvent", () => {
         .add(gracePeriodSeconds, "seconds"),
       expected: [
         moment("2017-08-01T17:30:00.000Z"),
-        moment("2017-08-01T21:30:00.000Z")
+        moment("2017-08-01T21:30:00.000Z"),
       ],
       shortenedBy: 0
     },
@@ -259,7 +259,7 @@ describe("farmEventIntervalSeconds", () => {
       { count: 0, unit: "yearly", result: 0 },
       { count: 2, unit: "weekly", result: 1209600 },
       { count: 4, unit: "minutely", result: 240 },
-      { count: 3, unit: "never", result: 0 }
+      { count: 3, unit: "never", result: 0 },
     ];
 
     tests.forEach((T) => {

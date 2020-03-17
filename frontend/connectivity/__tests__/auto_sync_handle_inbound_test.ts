@@ -10,7 +10,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
 import { handleInbound } from "../auto_sync_handle_inbound";
 import {
-  handleCreateOrUpdate
+  handleCreateOrUpdate,
 } from "../auto_sync";
 import { destroyOK } from "../../resources/actions";
 import { SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData } from "../interfaces";

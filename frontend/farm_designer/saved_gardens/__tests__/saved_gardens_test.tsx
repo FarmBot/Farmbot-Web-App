@@ -13,27 +13,20 @@ jest.mock("../../../history", () => ({
 
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
-let mockDev = false;
-jest.mock("../../../account/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
-
 import * as React from "react";
 import { mount, shallow } from "enzyme";
 import {
-  RawSavedGardens as SavedGardens, mapStateToProps, SavedGardensLink,
+  RawSavedGardens as SavedGardens, mapStateToProps,
   SavedGardenHUD, savedGardenOpen,
 } from "../saved_gardens";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
-  fakePlantTemplate, fakeSavedGarden
+  fakePlantTemplate, fakeSavedGarden,
 } from "../../../__test_support__/fake_state/resources";
 import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { SavedGardensProps } from "../interfaces";
 import { closeSavedGarden } from "../actions";
@@ -103,25 +96,6 @@ describe("mapStateToProps()", () => {
   it("has plants in garden", () => {
     const result = mapStateToProps(fakeState());
     expect(result.plantPointerCount).toBeGreaterThan(0);
-  });
-});
-
-describe("<SavedGardensLink />", () => {
-  it("opens saved garden panel", () => {
-    mockDev = true;
-    const wrapper = shallow(<SavedGardensLink />);
-    clickButton(wrapper, 0, "saved gardens");
-    expect(history.push).toHaveBeenCalledWith(
-      "/app/designer/gardens");
-    mockDev = false;
-  });
-
-  it("saved garden button hidden", () => {
-    mockDev = false;
-    const wrapper = shallow(<SavedGardensLink />);
-    const btn = wrapper.find("button").at(0);
-    expect(btn.props().hidden).toEqual(true);
-    mockDev = false;
   });
 });
 

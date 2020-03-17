@@ -7,29 +7,32 @@ import { Content, DeviceSetting } from "../../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
-
-  return <Row>
-    <Highlight settingName={DeviceSetting.farmbotOSAutoUpdate}>
-      <Col xs={ColWidth.label}>
+  const newFormat = DevSettings.futureFeaturesEnabled();
+  return <Highlight settingName={DeviceSetting.farmbotOSAutoUpdate}>
+    <Row>
+      <Col xs={newFormat ? 9 : ColWidth.label}>
         <label>
           {t(DeviceSetting.farmbotOSAutoUpdate)}
         </label>
       </Col>
-      <Col xs={ColWidth.description}>
-        <p>
-          {t(Content.OS_AUTO_UPDATE)}
-        </p>
-      </Col>
-      <Col xs={ColWidth.button}>
+      {!newFormat &&
+        <Col xs={ColWidth.description}>
+          <p>
+            {t(Content.OS_AUTO_UPDATE)}
+          </p>
+        </Col>}
+      <Col xs={newFormat ? 3 : ColWidth.button}>
         <ToggleButton toggleValue={osAutoUpdate.value}
           dim={!osAutoUpdate.consistent}
           toggleAction={() => props.dispatch(updateConfig({
             os_auto_update: !osAutoUpdate.value
           }))} />
       </Col>
-    </Highlight>
-  </Row>;
+    </Row>
+    {newFormat && <Row><p>{t(Content.OS_AUTO_UPDATE)}</p></Row>}
+  </Highlight>;
 }

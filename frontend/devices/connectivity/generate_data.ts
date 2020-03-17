@@ -3,7 +3,7 @@ import { BotState } from "../interfaces";
 import { DiagnosisName, DiagnosisProps } from "./diagnosis";
 import { StatusRowProps } from "./connectivity_row";
 import {
-  browserToMQTT, browserToAPI, botToMQTT, botToAPI, botToFirmware
+  browserToMQTT, browserToAPI, botToMQTT, botToAPI, botToFirmware,
 } from "./status_checks";
 
 interface ConnectivityDataProps {

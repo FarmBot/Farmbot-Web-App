@@ -5,7 +5,7 @@ jest.mock("../../actions", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight
+  Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight,
 } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
 import { panelState } from "../../../__test_support__/control_panel_state";

@@ -2,7 +2,7 @@ import { generateReducer } from "../redux/generate_reducer";
 import { Actions } from "../constants";
 import {
   ConnectionState,
-  EdgeStatus
+  EdgeStatus,
 } from "./interfaces";
 import { startPing, completePing, failPing } from "../devices/connectivity/qos";
 

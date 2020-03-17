@@ -5,7 +5,7 @@ import { DragHelpersProps } from "../../interfaces";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import { Color } from "../../../../ui/index";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 
 describe("<DragHelpers/>", () => {

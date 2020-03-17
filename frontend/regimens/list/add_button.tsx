@@ -20,6 +20,7 @@ export function AddRegimen(props: AddRegimenProps) {
   const { dispatch, length } = props;
   return <button
     className={classes}
+    title={t("add new regimen")}
     onClick={() => {
       const newRegimen = emptyRegimenBody(length);
       dispatch(init("Regimen", newRegimen));

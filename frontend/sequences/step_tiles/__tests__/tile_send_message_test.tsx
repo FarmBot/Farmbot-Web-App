@@ -5,7 +5,7 @@ jest.mock("../../../api/crud", () => ({
 
 import * as React from "react";
 import {
-  TileSendMessage, RefactoredSendMessage, SendMessageParams
+  TileSendMessage, RefactoredSendMessage, SendMessageParams,
 } from "../tile_send_message";
 import { mount, shallow } from "enzyme";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";

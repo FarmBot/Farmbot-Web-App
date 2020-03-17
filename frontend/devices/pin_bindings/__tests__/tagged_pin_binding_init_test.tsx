@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  StockPinBindingsButton, StockPinBindingsButtonProps
+  StockPinBindingsButton, StockPinBindingsButtonProps,
 } from "../tagged_pin_binding_init";
 import { initSave } from "../../../api/crud";
 import { stockPinBindings } from "../list_and_label_support";

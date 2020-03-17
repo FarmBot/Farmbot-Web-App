@@ -23,7 +23,7 @@ describe("<Edit/>", () => {
       p.feeds[0].body.name,
       p.feeds[0].body.url,
       p.feeds[1].body.name,
-      p.feeds[1].body.url
+      p.feeds[1].body.url,
     ].map(text =>
       expect(wrapper.html()).toContain(text));
   });

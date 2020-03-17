@@ -22,6 +22,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className="fb-button gray fa fa-download"
+        title={t("reinstall first-party Farmware")}
         onClick={() => {
           const p = getDevice().installFirstPartyFarmware();
           p?.catch(commandErr("Farmware installation"));
@@ -34,6 +35,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
       </label>
       <button
         className={"fb-button fb-toggle-button " + listBtnColor}
+        title={t("toggle show first-party Farmware")}
         onClick={() => props.dispatch(
           toggleWebAppBool(BooleanSetting.show_first_party_farmware))} />
     </fieldset>
@@ -44,6 +46,7 @@ export function FarmwareConfigMenu(props: FarmwareConfigMenuProps) {
         </label>
         <button
           className={"fb-button red fa fa-trash"}
+          title={t("delete all data")}
           onClick={() => destroyAll("FarmwareEnv")
             .then(() => success(t("Farmware data successfully deleted.")))
             .catch(() => error(t("Error deleting Farmware data")))} />

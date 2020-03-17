@@ -32,10 +32,10 @@ export const findAllById =
   };
 
 export const byId =
-  <T extends TaggedResource>(name: T["kind"]) =>
+  <T extends TaggedResource>(kind: T["kind"]) =>
     (index: ResourceIndex, id: number): T | undefined => {
-      const resources = findAll(index, name);
-      const f = (x: TaggedResource) => (x.kind === name) && (x.body.id === id);
+      const resources = findAll(index, kind);
+      const f = (x: TaggedResource) => (x.kind === kind) && (x.body.id === id);
       // Maybe we should add a throw here?
       return resources.filter(f)[0] as T | undefined;
     };

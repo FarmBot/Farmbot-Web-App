@@ -13,7 +13,7 @@ import { history } from "../../history";
 import { CallBackProps } from "react-joyride";
 
 describe("<RunTour />", () => {
-  const EMPTY_DIV = "<div></div>";
+  const EMPTY_DIV = "<div class=\"tour-inactive\"></div>";
 
   it("tour is running", () => {
     const wrapper = mount(<RunTour currentTour={tourNames()[0].name} />);

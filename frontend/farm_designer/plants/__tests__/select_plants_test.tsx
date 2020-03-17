@@ -17,7 +17,7 @@ jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps
+  RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
 } from "../select_plants";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Actions, Content } from "../../../constants";

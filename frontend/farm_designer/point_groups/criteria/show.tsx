@@ -1,49 +1,47 @@
 import * as React from "react";
-import { cloneDeep, capitalize } from "lodash";
 import { Row, Col, FBSelect, DropDownItem } from "../../../ui";
 import {
-  AddEqCriteria, toggleEqCriteria, editCriteria, AddNumberCriteria,
-  POINTER_TYPE_DDI_LOOKUP, AddStringCriteria,
-  CRITERIA_TYPE_DDI_LOOKUP, toggleStringCriteria
+  AddEqCriteria, editCriteria, AddNumberCriteria,
+  editGtLtCriteriaField,
+  removeEqCriteriaValue,
+  clearCriteriaField,
 } from ".";
 import {
   EqCriteriaSelectionProps, NumberCriteriaProps,
-  CriteriaSelectionProps, LocationSelectionProps, GroupCriteriaProps,
-  AddCriteriaState,
-  DEFAULT_CRITERIA
+  CriteriaSelectionProps, LocationSelectionProps,
+  NumberLtGtInputProps,
+  PointGroupCriteria,
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
-import { PLANT_STAGE_DDI_LOOKUP } from "../../plants/edit_plant_status";
+import { ToggleButton } from "../../../controls/toggle_button";
+import { Actions } from "../../../constants";
 
+/** Add and view string or number equal criteria. */
 export class EqCriteriaSelection<T extends string | number>
   extends React.Component<EqCriteriaSelectionProps<T>> {
   render() {
-    const { criteriaField, criteriaKey, group, dispatch } = this.props;
+    const { eqCriteria, criteriaKey, group, dispatch } = this.props;
     return <div className={`${this.props.type}-eq-criteria`}>
       <AddEqCriteria<T> group={group} dispatch={dispatch}
-        type={this.props.type} criteriaField={criteriaField}
+        type={this.props.type} eqCriteria={eqCriteria}
         criteriaKey={criteriaKey} />
-      {criteriaField && Object.entries(criteriaField)
+      {eqCriteria && Object.entries(eqCriteria)
         .map(([key, values]: [string, T[]], keyIndex) =>
           values && values.length > 0 &&
           <div key={keyIndex}>
-            <label>{key}</label>
+            <code>{key}</code>
             {values.map((value, valueIndex) =>
               <Row key={"" + keyIndex + valueIndex}>
                 <Col xs={9}>
-                  <input
+                  <input name="value"
                     disabled={true}
                     value={value} />
                 </Col>
                 <Col xs={2}>
-                  <button className="fb-button red" onClick={() => {
-                    const tempCriteriaField = cloneDeep(criteriaField);
-                    toggleEqCriteria<T>(tempCriteriaField)(key, value);
-                    dispatch(editCriteria(group, {
-                      [criteriaKey]: tempCriteriaField
-                    }));
-                  }}>
+                  <button className="fb-button red"
+                    title={t("remove criteria")}
+                    onClick={() => dispatch(removeEqCriteriaValue(
+                      group, eqCriteria, criteriaKey, key, value))}>
                     <i className="fa fa-minus" />
                   </button>
                 </Col>
@@ -53,6 +51,7 @@ export class EqCriteriaSelection<T extends string | number>
   }
 }
 
+/** Add and view > or < number criteria. */
 export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
   const criteriaField = props.criteria[props.criteriaKey];
   return <div className={"number-gt-lt-criteria"}>
@@ -68,18 +67,13 @@ export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
               {props.criteriaKey == "number_gt" ? ">" : "<"}
             </Col>
             <Col xs={4}>
-              <input key={"" + keyIndex}
-                disabled={true}
-                value={value} />
+              <p>{value}</p>
             </Col>
             <Col xs={2}>
-              <button className="fb-button red" onClick={() => {
-                const tempNumberCriteria = cloneDeep(criteriaField);
-                delete tempNumberCriteria[key];
-                props.dispatch(editCriteria(props.group, {
-                  [props.criteriaKey]: tempNumberCriteria
-                }));
-              }}>
+              <button className="fb-button red"
+                title={t("remove number criteria")}
+                onClick={() => props.dispatch(clearCriteriaField(
+                  props.group, [props.criteriaKey], key))}>
                 <i className="fa fa-minus" />
               </button>
             </Col>
@@ -93,9 +87,10 @@ const DAY_OPERATOR_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   [">"]: { label: t("greater than"), value: ">" },
 });
 
+/** Edit and view day criteria. */
 export const DaySelection = (props: CriteriaSelectionProps) => {
   const { group, criteria, dispatch } = props;
-  const dayCriteria = criteria.day || cloneDeep(DEFAULT_CRITERIA.day);
+  const dayCriteria = criteria.day;
   return <div className="day-criteria">
     <label>{t("Age selection")}</label>
     <Row>
@@ -107,16 +102,17 @@ export const DaySelection = (props: CriteriaSelectionProps) => {
           onChange={ddi => dispatch(editCriteria(group, {
             day: {
               days_ago: dayCriteria.days_ago,
-              op: ddi.value as PointGroup["criteria"]["day"]["op"]
+              op: ddi.value as PointGroupCriteria["day"]["op"]
             }
           }))} />
       </Col>
       <Col xs={3}>
-        <input type="number" value={dayCriteria.days_ago} onChange={e => {
-          const { op } = dayCriteria;
-          const days_ago = parseInt(e.currentTarget.value);
-          dispatch(editCriteria(group, { day: { days_ago, op } }));
-        }} />
+        <input type="number" value={dayCriteria.days_ago} name="days_ago"
+          onChange={e => {
+            const { op } = dayCriteria;
+            const days_ago = parseInt(e.currentTarget.value);
+            dispatch(editCriteria(group, { day: { days_ago, op } }));
+          }} />
       </Col>
       <Col xs={4}>
         <p>{t("days old")}</p>
@@ -125,89 +121,64 @@ export const DaySelection = (props: CriteriaSelectionProps) => {
   </div>;
 };
 
-export const LocationSelection = (props: LocationSelectionProps) => {
-  const { group, criteria, dispatch } = props;
-  const gtCriteria = criteria.number_gt || {};
-  const ltCriteria = criteria.number_lt || {};
-  return <div className="location-criteria">
-    <label>{t("Location selection")}</label>
-    {["x", "y"].map(axis =>
-      <Row key={axis}>
-        <Col xs={4}>
-          <input key={JSON.stringify(gtCriteria)}
-            type="number"
-            defaultValue={gtCriteria[axis]}
-            onBlur={e => {
-              const tempGtCriteria = cloneDeep(gtCriteria);
-              tempGtCriteria[axis] = parseInt(e.currentTarget.value);
-              dispatch(editCriteria(group, { number_gt: tempGtCriteria }));
-            }} />
-        </Col>
-        <Col xs={1}>
-          <p>{"<"}</p>
-        </Col>
-        <Col xs={1}>
-          <label>{axis}</label>
-        </Col>
-        <Col xs={1}>
-          <p>{"<"}</p>
-        </Col>
-        <Col xs={4}>
-          <input key={JSON.stringify(ltCriteria)}
-            type="number"
-            defaultValue={ltCriteria[axis]}
-            onBlur={e => {
-              const tempLtCriteria = cloneDeep(ltCriteria);
-              tempLtCriteria[axis] = parseInt(e.currentTarget.value);
-              dispatch(editCriteria(group, { number_lt: tempLtCriteria }));
-            }} />
-        </Col>
-      </Row>)}
-  </div>;
+/** Edit number < and > criteria. */
+export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
+  const { group, dispatch, criteriaKey, pointerType } = props;
+  const gtCriteria = props.group.body.criteria.number_gt;
+  const ltCriteria = props.group.body.criteria.number_lt;
+  return <Row>
+    <Col xs={props.inputWidth || 4}>
+      <input key={JSON.stringify(gtCriteria)}
+        type="number"
+        name={`${criteriaKey}-number-gt`}
+        defaultValue={gtCriteria[criteriaKey]}
+        disabled={props.disabled}
+        onBlur={e => dispatch(editGtLtCriteriaField(
+          group, "number_gt", criteriaKey, pointerType)(e))} />
+    </Col>
+    <Col xs={1}>
+      <p>{"<"}</p>
+    </Col>
+    <Col xs={props.labelWidth || 1}>
+      <p>{criteriaKey}</p>
+    </Col>
+    <Col xs={1}>
+      <p>{"<"}</p>
+    </Col>
+    <Col xs={props.inputWidth || 4}>
+      <input key={JSON.stringify(ltCriteria)}
+        type="number"
+        name={`${criteriaKey}-number-lt`}
+        defaultValue={ltCriteria[criteriaKey]}
+        disabled={props.disabled}
+        onBlur={e => dispatch(editGtLtCriteriaField(
+          group, "number_lt", criteriaKey, pointerType)(e))} />
+    </Col>
+  </Row>;
 };
 
-export class AddCriteria
-  extends React.Component<GroupCriteriaProps, AddCriteriaState> {
-
-  labelLookup = (key: string, value: string) => {
-    switch (key) {
-      case "openfarm_slug":
-        return capitalize(value);
-      case "pointer_type":
-        return POINTER_TYPE_DDI_LOOKUP()[value].label;
-      case "plant_stage":
-        return PLANT_STAGE_DDI_LOOKUP()[value].label;
-    }
-  }
-
-  render() {
-    const { props } = this;
-    const stringCriteria = this.props.group.body.criteria?.string_eq || {};
-    const displayedCriteria = Object.entries(stringCriteria)
-      .filter(([key, _values]) =>
-        ["openfarm_slug", "pointer_type", "plant_stage"].includes(key));
-    return <div className={"add-criteria"}>
-      <AddStringCriteria
-        group={props.group} dispatch={props.dispatch} slugs={props.slugs} />
-      {displayedCriteria.map(([key, values]) =>
-        values && values.map((value, index) =>
-          <div key={key + index} className={"criteria-string"}>
-            <Row>
-              <Col xs={5}>
-                <input value={CRITERIA_TYPE_DDI_LOOKUP()[key].label}
-                  disabled={true} />
-              </Col>
-              <Col xs={5}>
-                <input value={this.labelLookup(key, value)} disabled={true} />
-              </Col>
-              <Col xs={2}>
-                <button className="fb-button red" onClick={() => props.dispatch(
-                  toggleStringCriteria(props.group, key, value))}>
-                  <i className="fa fa-minus" />
-                </button>
-              </Col>
-            </Row>
-          </div>))}
-    </div>;
-  }
-}
+/** Form inputs to define a 2D group criteria area. */
+export const LocationSelection = (props: LocationSelectionProps) =>
+  <div className="location-criteria">
+    <label>{t("Location selection")}</label>
+    {["x", "y"].map((axis: "x" | "y") =>
+      <NumberLtGtInput
+        key={axis}
+        criteriaKey={axis}
+        group={props.group}
+        dispatch={props.dispatch} />)}
+    <div className={"edit-in-map"}>
+      <ToggleButton
+        title={props.editGroupAreaInMap
+          ? t("map boxes will change location criteria")
+          : t("map boxes will manually add plants")}
+        customText={{ textFalse: t("off"), textTrue: t("on") }}
+        toggleValue={props.editGroupAreaInMap}
+        toggleAction={() =>
+          props.dispatch({
+            type: Actions.EDIT_GROUP_AREA_IN_MAP,
+            payload: !props.editGroupAreaInMap
+          })} />
+      <label>{t("edit in map")}</label>
+    </div>
+  </div>;

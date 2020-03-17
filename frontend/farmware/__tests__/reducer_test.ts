@@ -2,7 +2,7 @@ import { farmwareReducer } from "../reducer";
 import { FarmwareState } from "../interfaces";
 import { Actions } from "../../constants";
 import {
-  fakeImage, fakeFarmwareInstallation
+  fakeImage, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 
 describe("farmwareReducer", () => {
