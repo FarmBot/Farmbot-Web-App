@@ -1,17 +1,17 @@
 import * as React from "react";
 import { Row, Col, DropDownItem, FBSelect } from "../../../ui";
 import { info } from "../../../toast/toast";
-import { FirmwareHardware } from "farmbot";
 import { ColWidth } from "../farmbot_os_settings";
 import { updateConfig } from "../../actions";
 import { BoardTypeProps } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { FirmwareHardwareStatus } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI
+  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI,
 } from "../firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../../constants";
+import { DevSettings } from "../../../account/dev/dev_support";
 
 interface BoardTypeState { sending: boolean }
 
@@ -28,13 +28,10 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     return !this.props.sourceFbosConfig("firmware_hardware").consistent;
   }
 
-  get apiValue(): FirmwareHardware | undefined {
-    const { value } = this.props.sourceFbosConfig("firmware_hardware");
-    return isFwHardwareValue(value) ? value : undefined;
-  }
-
   get selectedBoard(): DropDownItem | undefined {
-    return this.apiValue ? FIRMWARE_CHOICES_DDI[this.apiValue] : undefined;
+    return this.props.firmwareHardware
+      ? FIRMWARE_CHOICES_DDI[this.props.firmwareHardware]
+      : undefined;
   }
 
   sendOffConfig = (selectedItem: DropDownItem) => {
@@ -47,34 +44,43 @@ export class BoardType extends React.Component<BoardTypeProps, BoardTypeState> {
     }
   }
 
+  FirmwareSelection = () =>
+    <FBSelect
+      key={this.props.firmwareHardware}
+      extraClass={this.state.sending ? "dim" : ""}
+      list={getFirmwareChoices()}
+      selectedItem={this.selectedBoard}
+      onChange={this.sendOffConfig} />
+
   render() {
-    return <Row>
-      <Highlight settingName={DeviceSetting.firmware}>
+    const newFormat = DevSettings.futureFeaturesEnabled();
+    return <Highlight settingName={DeviceSetting.firmware}>
+      <Row>
         <Col xs={ColWidth.label}>
           <label>
             {t("FIRMWARE")}
           </label>
         </Col>
-        <Col xs={ColWidth.description}>
-          <div>
-            <FBSelect
-              key={this.apiValue}
-              extraClass={this.state.sending ? "dim" : ""}
-              list={getFirmwareChoices()}
-              selectedItem={this.selectedBoard}
-              onChange={this.sendOffConfig} />
-          </div>
-        </Col>
+        {!newFormat &&
+          <Col xs={ColWidth.description}>
+            <this.FirmwareSelection />
+          </Col>}
         <Col xs={ColWidth.button}>
           <FirmwareHardwareStatus
             botOnline={this.props.botOnline}
-            apiFirmwareValue={this.apiValue}
+            apiFirmwareValue={this.props.firmwareHardware}
             alerts={this.props.alerts}
             bot={this.props.bot}
             dispatch={this.props.dispatch}
             timeSettings={this.props.timeSettings} />
         </Col>
-      </Highlight>
-    </Row>;
+      </Row>
+      {newFormat &&
+        <Row>
+          <Col xs={12} className="no-pad">
+            <this.FirmwareSelection />
+          </Col>
+        </Row>}
+    </Highlight>;
   }
 }

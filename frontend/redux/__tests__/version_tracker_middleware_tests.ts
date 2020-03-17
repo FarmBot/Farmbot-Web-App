@@ -1,7 +1,7 @@
 import { fakeState } from "../../__test_support__/fake_state";
 import { versionChangeMiddleware } from "../version_tracker_middleware";
 import {
-  buildResourceIndex, fakeDevice
+  buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { MiddlewareAPI } from "redux";
 

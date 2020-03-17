@@ -2,12 +2,11 @@ import * as React from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { ZonesLayer, ZonesLayerProps } from "../zones_layer";
 import {
-  fakePointGroup
+  fakePointGroup,
 } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
 
 describe("<ZonesLayer />", () => {
   const fakeProps = (): ZonesLayerProps => ({
@@ -69,7 +68,6 @@ describe("<ZonesLayer />", () => {
     const p = fakeProps();
     p.visible = false;
     p.groups[0].body.id = 1;
-    p.groups[0].body.criteria = undefined as unknown as PointGroup["criteria"];
     p.currentGroup = p.groups[0].uuid;
     const wrapper = svgMount(<ZonesLayer {...p} />);
     expect(wrapper.html())

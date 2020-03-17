@@ -1,6 +1,6 @@
 import * as React from "react";
 import {
-  FarmEventRepeatFormProps, FarmEventRepeatForm
+  FarmEventRepeatFormProps, FarmEventRepeatForm,
 } from "../farm_event_repeat_form";
 import { shallow, ShallowWrapper, render } from "enzyme";
 import { get } from "lodash";

@@ -1,7 +1,7 @@
 import {
   createElement,
   ComponentClass,
-  Attributes
+  Attributes,
 } from "react";
 import { render } from "react-dom";
 import { capitalize } from "lodash";

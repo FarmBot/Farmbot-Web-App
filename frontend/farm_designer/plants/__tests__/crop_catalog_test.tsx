@@ -16,7 +16,7 @@ import { CropCatalogProps } from "../../interfaces";
 import { Actions } from "../../../constants";
 import { history } from "../../../history";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../../__test_support__/fake_crop_search_result";
 
 describe("<CropCatalog />", () => {

@@ -20,7 +20,7 @@ export class DangerousDeleteWidget extends
     return <Widget>
       <WidgetHeader title={this.props.title} />
       <WidgetBody>
-        <div>
+        <div className={"dangerous-delete-warning-messages"}>
           {t(this.props.warning)}
           <br /><br />
           {t(this.props.confirmation)}
@@ -42,6 +42,7 @@ export class DangerousDeleteWidget extends
               <button
                 onClick={this.onClick}
                 className="red fb-button"
+                title={t(this.props.title)}
                 type="button">
                 {t(this.props.title)}
               </button>

@@ -9,7 +9,7 @@ jest.mock("axios", () => ({
 
 }));
 
-jest.mock("../session", () => ({ Session: { clear: jest.fn(), } }));
+jest.mock("../session", () => ({ Session: { clear: jest.fn() } }));
 
 import { maybeRefreshToken } from "../refresh_token";
 import { API } from "../api/index";

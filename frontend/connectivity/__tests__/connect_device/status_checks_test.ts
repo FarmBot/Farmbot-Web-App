@@ -9,7 +9,7 @@ import {
   incomingStatus,
   incomingLegacyStatus,
   onLegacyStatus,
-  HACKY_FLAGS
+  HACKY_FLAGS,
 } from "../../connect_device";
 import { slowDown } from "../../slow_down";
 import { fakeState } from "../../../__test_support__/fake_state";

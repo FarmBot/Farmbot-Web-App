@@ -18,7 +18,7 @@ const STATE: RegimenState = {
         "day6": true,
         "day7": false
       }
-    }
+    },
   ],
   schedulerOpen: false,
 };

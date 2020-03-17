@@ -20,17 +20,17 @@ jest.mock("../../../../../history", () => ({
 
 import {
   newPlantKindAndBody, maybeSavePlantLocation, beginPlantDrag, setActiveSpread,
-  dragPlant, createPlant, dropPlant
+  dragPlant, createPlant, dropPlant,
 } from "../plant_actions";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { edit, save, initSave } from "../../../../../api/crud";
 import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { movePlant } from "../../../actions";
 import {
-  fakeCropLiveSearchResult
+  fakeCropLiveSearchResult,
 } from "../../../../../__test_support__/fake_crop_search_result";
 import { error } from "../../../../../toast/toast";
 

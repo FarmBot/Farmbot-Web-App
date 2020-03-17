@@ -6,7 +6,7 @@ import {
   TaggedDevice,
   ResourceName,
   TaggedResource,
-  TaggedTool
+  TaggedTool,
 } from "farmbot";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";

@@ -27,7 +27,7 @@ export interface EditPointPropertiesProps {
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
   <ul>
     <li>
-      <div>
+      <div className={"point-name-input"}>
         <EditPointName
           name={props.point.body.name}
           updatePoint={props.updatePoint} />
@@ -35,7 +35,7 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     </li>
     <ListItem name={t("Location")}>
       <EditPointLocation
-        location={{ x: props.point.body.x, y: props.point.body.y }}
+        xyLocation={{ x: props.point.body.x, y: props.point.body.y }}
         updatePoint={props.updatePoint} />
     </ListItem>
     <ListItem name={t("Size")}>
@@ -59,15 +59,17 @@ export interface PointActionsProps {
 }
 
 export const PointActions = ({ x, y, z, uuid, dispatch }: PointActionsProps) =>
-  <div>
+  <div className={"point-actions"}>
     <button
       className="fb-button gray no-float"
       type="button"
+      title={t("move to location")}
       onClick={() => getDevice().moveAbsolute({ x, y, z })}>
       {t("Move Device to location")}
     </button>
     <button
       className="fb-button red no-float"
+      title={t("delete")}
       onClick={() => dispatch(destroy(uuid))}>
       {t("Delete")}
     </button>
@@ -84,6 +86,7 @@ export const EditPointName = (props: EditPointNameProps) =>
       <label>{t("Name")}</label>
       <BlurableInput
         type="text"
+        name="name"
         value={props.name}
         onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
     </Col>
@@ -91,7 +94,7 @@ export const EditPointName = (props: EditPointNameProps) =>
 
 export interface EditPointLocationProps {
   updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
-  location: Record<"x" | "y", number>;
+  xyLocation: Record<"x" | "y", number>;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
@@ -101,7 +104,8 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
-          value={props.location[axis]}
+          name={axis}
+          value={props.xyLocation[axis]}
           min={0}
           onCommit={e => props.updatePoint({
             [axis]: round(parseIntInput(e.currentTarget.value))
@@ -120,6 +124,7 @@ export const EditPointRadius = (props: EditPointRadiusProps) =>
       <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
       <BlurableInput
         type="number"
+        name="radius"
         value={props.radius}
         min={0}
         onCommit={e => props.updatePoint({

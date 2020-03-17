@@ -6,7 +6,7 @@ import { TakePhoto } from "farmbot/dist";
 import { StepParams } from "../../interfaces";
 import { emptyState } from "../../../resources/reducer";
 import {
-  fakeFarmwareData
+  fakeFarmwareData,
 } from "../../../__test_support__/fake_sequence_step_data";
 import { Content } from "../../../constants";
 

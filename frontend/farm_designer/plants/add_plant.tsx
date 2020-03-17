@@ -30,7 +30,7 @@ interface APDProps {
 }
 
 const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
-  <div>
+  <div className={"add-plant-description"}>
     <img className="crop-drag-info-image"
       src={svgToUrl(svgIcon)}
       alt={t("plant icon")}

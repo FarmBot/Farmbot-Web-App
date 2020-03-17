@@ -4,14 +4,26 @@ import {
   SaveFarmwareEnv,
   ShouldDisplay,
   SourceFbosConfig,
-  UserEnv
+  UserEnv,
 } from "../../interfaces";
 import {
   Alert,
   InformationalSettings,
   TaggedDevice,
+  FirmwareHardware,
 } from "farmbot";
 import { TimeSettings } from "../../../interfaces";
+
+export interface NameRowProps {
+  dispatch: Function;
+  device: TaggedDevice;
+  widget?: boolean;
+}
+
+export interface TimezoneRowProps {
+  dispatch: Function;
+  device: TaggedDevice;
+}
 
 export interface AutoSyncRowProps {
   dispatch: Function;
@@ -50,6 +62,22 @@ export interface BoardTypeProps {
   shouldDisplay: ShouldDisplay;
   timeSettings: TimeSettings;
   sourceFbosConfig: SourceFbosConfig;
+  firmwareHardware: FirmwareHardware | undefined;
+}
+
+export interface FirmwareProps {
+  botOnline: boolean;
+  bot: BotState;
+  alerts: Alert[];
+  dispatch: Function;
+  shouldDisplay: ShouldDisplay;
+  timeSettings: TimeSettings;
+  sourceFbosConfig: SourceFbosConfig;
+}
+
+export interface FlashFirmwareRowProps {
+  botOnline: boolean;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export interface PowerAndResetProps {
@@ -59,7 +87,7 @@ export interface PowerAndResetProps {
   botOnline: boolean;
 }
 
-export interface FactoryResetRowProps {
+export interface FactoryResetRowsProps {
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   botOnline: boolean;
@@ -67,13 +95,10 @@ export interface FactoryResetRowProps {
 
 export interface FarmbotOsRowProps {
   bot: BotState;
-  osReleaseNotesHeading: string;
-  osReleaseNotes: string;
   dispatch: Function;
   sourceFbosConfig: SourceFbosConfig;
   shouldDisplay: ShouldDisplay;
   botOnline: boolean;
-  botToMqttLastSeen: number;
   timeSettings: TimeSettings;
   deviceAccount: TaggedDevice;
 }

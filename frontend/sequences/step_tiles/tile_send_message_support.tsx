@@ -24,7 +24,7 @@ export const MESSAGE_STATUSES = [
   { value: MessageType.busy, label: t("Busy") },
   { value: MessageType.warn, label: t("Warning") },
   { value: MessageType.error, label: t("Error") },
-  { value: MessageType.info, label: t("Info") }
+  { value: MessageType.info, label: t("Info") },
 ];
 
 export const MESSAGE_STATUSES_DDI = {

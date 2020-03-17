@@ -1,6 +1,6 @@
 import {
   PinBindingType,
-  PinBindingSpecialAction
+  PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { DropDownItem } from "../../ui";
 import { gpio } from "./rpi_gpio_diagram";

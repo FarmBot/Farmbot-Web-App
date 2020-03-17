@@ -9,7 +9,7 @@ import {
   HotkeysTarget,
   IHotkeyProps,
   Overlay,
-  Classes
+  Classes,
 } from "@blueprintjs/core";
 import { findIndex } from "lodash";
 import { t } from "./i18next_wrapper";
@@ -26,7 +26,7 @@ interface State {
 const hotkeyGuideClasses = [
   "hotkey-guide",
   Classes.CARD,
-  Classes.ELEVATION_4
+  Classes.ELEVATION_4,
 ].join(" ");
 
 @HotkeysTarget
@@ -102,7 +102,7 @@ export class HotKeys extends React.Component<Props, Partial<State>> {
         combo: "ctrl + shift + /",
         label: "Toggle Guide",
         onKeyDown: () => this.toggle("guideOpen")()
-      }
+      },
     ];
     return hotkeyMap;
   }

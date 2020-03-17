@@ -9,7 +9,7 @@ import { selectImage } from "./actions";
 import { safeStringFetch, timeFormatString } from "../../util";
 import { destroy } from "../../api/crud";
 import {
-  downloadProgress
+  downloadProgress,
 } from "../../devices/components/fbos_settings/os_update_button";
 import { TaggedImage } from "farmbot";
 import { startCase } from "lodash";
@@ -17,7 +17,7 @@ import { MustBeOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import {
-  cameraBtnProps
+  cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 
 interface MetaInfoProps {
@@ -33,7 +33,7 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   const top = label || startCase(attr.split("_").join());
   const bottom = safeStringFetch(obj, attr);
-  return <div>
+  return <div className={"meta-info"}>
     <label>{top}:</label>
     <span>{bottom || t("unknown")}</span>
   </div>;
@@ -71,6 +71,7 @@ const PhotoButtons = (props: PhotoButtonsProps) => {
     </MustBeOnline>
     <button
       className="fb-button red"
+      title={t("Delete Photo")}
       onClick={props.deletePhoto}>
       {t("Delete Photo")}
     </button>

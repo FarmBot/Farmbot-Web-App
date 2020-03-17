@@ -23,7 +23,7 @@ import {
 import { betterCompact, bail } from "../util";
 import { findAllById } from "./selectors_by_id";
 import {
-  findPoints, selectAllPoints, selectAllActivePoints
+  findPoints, selectAllPoints, selectAllActivePoints,
 } from "./selectors_by_kind";
 import { assertUuid } from "./util";
 import { joinKindAndId } from "./reducer_support";
@@ -59,7 +59,8 @@ export const findId = (index: ResourceIndex, kind: ResourceName, id: number): UU
   }
 };
 
-export const isKind = (name: ResourceName) => (tr: TaggedResource) => tr.kind === name;
+export const isKind = (resourceName: ResourceName) => (tr: TaggedResource) =>
+  tr.kind === resourceName;
 
 export function groupPointsByType(index: ResourceIndex) {
   return chain(selectAllActivePoints(index))

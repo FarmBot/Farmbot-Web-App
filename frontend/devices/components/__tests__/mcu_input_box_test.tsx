@@ -9,15 +9,20 @@ import { updateMCU } from "../../actions";
 import { warning } from "../../../toast/toast";
 
 describe("McuInputBox", () => {
-  const fakeProps = (): McuInputBoxProps => {
-    return {
-      sourceFwConfig: (x) => {
-        return { value: bot.hardware.mcu_params[x], consistent: true };
-      },
-      setting: "encoder_enabled_x",
-      dispatch: jest.fn()
-    };
-  };
+  const fakeProps = (): McuInputBoxProps => ({
+    sourceFwConfig: x =>
+      ({ value: bot.hardware.mcu_params[x], consistent: true }),
+    setting: "encoder_enabled_x",
+    dispatch: jest.fn()
+  });
+
+  it("renders inconsistency", () => {
+    const p = fakeProps();
+    p.sourceFwConfig = x =>
+      ({ value: bot.hardware.mcu_params[x], consistent: false });
+    const wrapper = shallow(<McuInputBox {...p} />);
+    expect(wrapper.find("BlurableInput").hasClass("dim")).toBeTruthy();
+  });
 
   it("clamps negative numbers", () => {
     const mib = new McuInputBox(fakeProps());

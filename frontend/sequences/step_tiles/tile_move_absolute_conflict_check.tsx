@@ -76,5 +76,5 @@ export const MoveAbsoluteWarning =
       ? <StepWarning
         warning={settingConflictWarning()}
         conflicts={settingConflicts()} />
-      : <div />;
+      : <div className={"no-step-warning"} />;
   };

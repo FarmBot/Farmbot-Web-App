@@ -4,7 +4,7 @@ jest.mock("../../../open_farm/cached_crop", () => ({
 
 import * as React from "react";
 import {
-  RawPlants as Plants, PlantInventoryProps, mapStateToProps
+  RawPlants as Plants, PlantInventoryProps, mapStateToProps,
 } from "../plant_inventory";
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";

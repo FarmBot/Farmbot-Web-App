@@ -5,7 +5,7 @@ import { Popover, Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
   PinBindingInputGroupProps,
-  PinBindingInputGroupState
+  PinBindingInputGroupState,
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
 import { initSave } from "../../api/crud";
@@ -16,14 +16,15 @@ import {
   bindingTypeLabelLookup, specialActionList,
   reservedPiGPIO,
   bindingTypeList,
-  getSpecialActionLabel
+  getSpecialActionLabel,
 } from "./list_and_label_support";
 import { SequenceSelectBox } from "../../sequences/sequence_select_box";
 import { ResourceIndex } from "../../resources/interfaces";
 import {
-  PinBindingType, PinBindingSpecialAction
+  PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
+import { DevSettings } from "../../account/dev/dev_support";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -104,40 +105,62 @@ export class PinBindingInputGroup
     (ddi: { label: string, value: PinBindingSpecialAction }) =>
       this.setState({ specialActionInput: ddi.value });
 
-  render() {
-    const {
-      pinNumberInput, bindingType, specialActionInput, sequenceIdInput
-    } = this.state;
+  Number = () =>
+    <PinNumberInputGroup
+      pinNumberInput={this.state.pinNumberInput}
+      boundPins={this.boundPins}
+      setSelectedPin={this.setSelectedPin} />
 
-    return <Row>
-      <Col xs={PinBindingColWidth.pin}>
-        <PinNumberInputGroup
-          pinNumberInput={pinNumberInput}
-          boundPins={this.boundPins}
-          setSelectedPin={this.setSelectedPin} />
-      </Col>
-      <Col xs={PinBindingColWidth.type}>
-        <BindingTypeDropDown
-          bindingType={bindingType}
-          setBindingType={this.setBindingType} />
-        {bindingType == PinBindingType.special
-          ? <ActionTargetDropDown
-            specialActionInput={specialActionInput}
-            setSpecialAction={this.setSpecialAction} />
-          : <SequenceTargetDropDown
-            sequenceIdInput={sequenceIdInput}
-            resources={this.props.resources}
-            setSequenceIdInput={this.setSequenceIdInput} />}
-      </Col>
-      <Col xs={PinBindingColWidth.button}>
-        <button
-          className="fb-button green"
-          type="button"
-          onClick={this.bindPin}>
-          {t("BIND")}
-        </button>
-      </Col>
-    </Row>;
+  Type = () =>
+    <BindingTypeDropDown
+      bindingType={this.state.bindingType}
+      setBindingType={this.setBindingType} />
+
+  Action = () =>
+    this.state.bindingType == PinBindingType.special
+      ? <ActionTargetDropDown
+        specialActionInput={this.state.specialActionInput}
+        setSpecialAction={this.setSpecialAction} />
+      : <SequenceTargetDropDown
+        sequenceIdInput={this.state.sequenceIdInput}
+        resources={this.props.resources}
+        setSequenceIdInput={this.setSequenceIdInput} />
+
+  render() {
+    const newFormat = DevSettings.futureFeaturesEnabled();
+    return <div className="pin-binding-input-rows">
+      {newFormat && <Row><label>{t("add new pin binding")}</label></Row>}
+      {newFormat && <this.Number />}
+      {newFormat && <Row>
+        <Col xs={5}>
+          <this.Type />
+        </Col>
+        <Col xs={7}>
+          <this.Action />
+        </Col>
+      </Row>}
+      <Row>
+        {!newFormat &&
+          <Col xs={PinBindingColWidth.pin}>
+            <this.Number />
+          </Col>}
+        {!newFormat && <Col xs={PinBindingColWidth.type}>
+          <this.Type />
+          <this.Action />
+        </Col>}
+        <Col xs={newFormat ? 12 : PinBindingColWidth.button}>
+          <button
+            className="fb-button green"
+            type="button"
+            title={t("BIND")}
+            onClick={this.bindPin}>
+            {newFormat
+              ? t("Save")
+              : <i className={"fa fa-plus"} />}
+          </button>
+        </Col>
+      </Row>
+    </div>;
   }
 }
 
@@ -152,9 +175,9 @@ export const PinNumberInputGroup = (props: {
     label: generatePinLabel(pinNumberInput),
     value: "" + pinNumberInput
   } : undefined;
-
+  const newFormat = DevSettings.futureFeaturesEnabled();
   return <Row>
-    <Col xs={3}>
+    <Col xs={newFormat ? 2 : 3}>
       <Popover position={Position.TOP}>
         <i className="fa fa-th-large" />
         <RpiGpioDiagram
@@ -163,7 +186,7 @@ export const PinNumberInputGroup = (props: {
           selectedPin={pinNumberInput} />
       </Popover>
     </Col>
-    <Col xs={9}>
+    <Col xs={newFormat ? 10 : 9}>
       <FBSelect
         key={"pin_number_input_" + pinNumberInput}
         onChange={ddi =>

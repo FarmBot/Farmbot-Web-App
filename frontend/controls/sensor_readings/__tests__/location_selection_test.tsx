@@ -6,7 +6,7 @@ import { LocationSelectionProps } from "../interfaces";
 describe("<LocationSelection />", () => {
   function fakeProps(): LocationSelectionProps {
     return {
-      location: undefined,
+      xyzLocation: undefined,
       deviation: 0,
       setLocation: jest.fn(),
       setDeviation: jest.fn(),
@@ -22,7 +22,7 @@ describe("<LocationSelection />", () => {
 
   it("changes location", () => {
     const p = fakeProps();
-    p.location = { x: 10, y: 20, z: 30 };
+    p.xyzLocation = { x: 10, y: 20, z: 30 };
     const wrapper = mount(<LocationSelection {...p} />);
     wrapper.find("input").first().simulate("submit");
     expect(p.setLocation).toHaveBeenCalledWith({ x: 10, y: 20, z: 30 });
@@ -30,7 +30,7 @@ describe("<LocationSelection />", () => {
 
   it("changes location: undefined", () => {
     const p = fakeProps();
-    p.location = undefined;
+    p.xyzLocation = undefined;
     const wrapper = mount(<LocationSelection {...p} />);
     wrapper.find("input").first().simulate("submit");
     expect(p.setLocation).toHaveBeenCalledWith({ x: undefined });
@@ -47,7 +47,7 @@ describe("<LocationSelection />", () => {
 
 describe("<LocationDisplay />", () => {
   it("renders location ranges", () => {
-    const p = { location: { x: 10, y: 20, z: 30 }, deviation: 2 };
+    const p = { xyzLocation: { x: 10, y: 20, z: 30 }, deviation: 2 };
     const wrapper = mount(<LocationDisplay {...p} />);
     const txt = wrapper.text().toLowerCase();
     ["x", "y", "z", "8–12", "18–22", "28–32"]

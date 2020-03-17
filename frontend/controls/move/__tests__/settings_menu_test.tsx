@@ -9,7 +9,7 @@ import * as React from "react";
 import { mount } from "enzyme";
 import { BooleanSetting } from "../../../session_keys";
 import {
-  moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps
+  moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
 } from "../settings_menu";
 
 describe("moveWidgetSetting()", () => {

@@ -96,6 +96,7 @@ export class PasswordReset extends React.Component<Props, State> {
                     <Col xs={12}>
                       <button
                         className="fb-button green pull-right"
+                        title={t("Reset password")}
                         style={buttonStylesUniqueToOnlyThisPage}>
                         {t("Reset")}
                       </button>

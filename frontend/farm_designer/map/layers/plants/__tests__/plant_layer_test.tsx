@@ -6,11 +6,11 @@ jest.mock("../../../../../history", () => ({
 import * as React from "react";
 import { PlantLayer } from "../plant_layer";
 import {
-  fakePlant, fakePlantTemplate
+  fakePlant, fakePlantTemplate,
 } from "../../../../../__test_support__/fake_state/resources";
 import { PlantLayerProps } from "../../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { shallow } from "enzyme";
@@ -44,7 +44,7 @@ describe("<PlantLayer/>", () => {
       "/app-resources/img/generic-plant.svg",
       "height=\"50\" width=\"50\" x=\"75\" y=\"175\"",
       "drag-helpers",
-      "plant-icon"
+      "plant-icon",
     ].map(string =>
       expect(layer.html()).toContain(string));
   });

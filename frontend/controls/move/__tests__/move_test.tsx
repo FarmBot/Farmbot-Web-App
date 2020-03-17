@@ -29,7 +29,6 @@ describe("<Move />", () => {
     dispatch: jest.fn(),
     bot: bot,
     arduinoBusy: false,
-    botToMqttStatus: "up",
     firmwareSettings: bot.hardware.mcu_params,
     getWebAppConfigVal: jest.fn((key) => (mockConfig[key])),
     env: {},

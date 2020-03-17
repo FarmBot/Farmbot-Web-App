@@ -1,7 +1,7 @@
 import { ResourceIndex } from "../../resources/interfaces";
 import {
   PinBindingType,
-  PinBindingSpecialAction
+  PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { FirmwareHardware } from "farmbot";
 

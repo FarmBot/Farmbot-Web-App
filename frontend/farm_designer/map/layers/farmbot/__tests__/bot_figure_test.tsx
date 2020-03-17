@@ -4,12 +4,13 @@ import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../../ui/index";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
+import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<BotFigure/>", () => {
   const fakeProps = (): BotFigureProps => ({
-    name: "",
+    figureName: "",
     position: { x: 0, y: 0, z: 0 },
     mapTransformProps: fakeMapTransformProps(),
     plantAreaOffset: { x: 100, y: 100 },
@@ -30,12 +31,12 @@ describe("<BotFigure/>", () => {
     ["motors", 4, { x: 3000, y: 1500 }, true, EXPECTED_MOTORS_OPACITY],
     ["encoders", 2, { x: 0, y: 0 }, false, 0.25],
   ])("shows %s in correct location for quadrant %i",
-    (name, quadrant, expected, xySwap, opacity) => {
+    (figureName, quadrant, expected, xySwap, opacity) => {
       const p = fakeProps();
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
-      p.name = name;
-      const result = shallow<BotFigure>(<BotFigure {...p} />);
+      p.figureName = figureName;
+      const result = svgMount(<BotFigure {...p} />);
 
       const expectedGantryProps = expect.objectContaining({
         id: "gantry",
@@ -65,7 +66,7 @@ describe("<BotFigure/>", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     p.position = { x: 100, y: 200, z: 0 };
-    const result = shallow<BotFigure>(<BotFigure {...p} />);
+    const result = svgMount(<BotFigure {...p} />);
     const gantry = result.find("#gantry");
     expect(gantry.length).toEqual(1);
     expect(gantry.props().x).toEqual(90);
@@ -77,7 +78,7 @@ describe("<BotFigure/>", () => {
   it("changes color on e-stop", () => {
     const p = fakeProps();
     p.eStopStatus = true;
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
   });
 
@@ -118,7 +119,7 @@ describe("<BotFigure/>", () => {
   it("shows mounted tool", () => {
     const p = fakeProps();
     p.mountedToolName = "Seeder";
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
+    const wrapper = svgMount(<BotFigure {...p} />);
     expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
       .toEqual(1);
   });

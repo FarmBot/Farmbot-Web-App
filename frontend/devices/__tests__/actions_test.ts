@@ -32,11 +32,11 @@ jest.mock("axios", () => ({ get: jest.fn(() => mockGetRelease) }));
 
 import * as actions from "../actions";
 import {
-  fakeFirmwareConfig, fakeFbosConfig
+  fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  changeStepSize, commandErr
+  changeStepSize, commandErr,
 } from "../actions";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
@@ -407,14 +407,15 @@ describe("fetchLatestGHBetaRelease()", () => {
 });
 
 describe("fetchMinOsFeatureData()", () => {
+  const EXPECTED_URL = expect.stringContaining("FEATURE_MIN_VERSIONS.json");
   afterEach(() =>
     jest.restoreAllMocks());
 
   it("fetches min OS feature data: empty", async () => {
     mockGetRelease = Promise.resolve({ data: {} });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
+    await actions.fetchMinOsFeatureData()(dispatch);
+    expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: {},
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
@@ -426,8 +427,8 @@ describe("fetchMinOsFeatureData()", () => {
       data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
     });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
+    await actions.fetchMinOsFeatureData()(dispatch);
+    expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: { a_feature: "1.0.0", b_feature: "2.0.0" },
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_OK
@@ -438,8 +439,8 @@ describe("fetchMinOsFeatureData()", () => {
     mockGetRelease = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
-    await actions.fetchMinOsFeatureData("url")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
+    await actions.fetchMinOsFeatureData()(dispatch);
+    expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockConsole).toHaveBeenCalledWith(
       expect.stringContaining("\"bad\""));
@@ -449,8 +450,8 @@ describe("fetchMinOsFeatureData()", () => {
     mockGetRelease = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
     const mockConsole = jest.spyOn(console, "log").mockImplementation(() => { });
-    await actions.fetchMinOsFeatureData("url")(dispatch);
-    expect(axios.get).toHaveBeenCalledWith("url");
+    await actions.fetchMinOsFeatureData()(dispatch);
+    expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockConsole).toHaveBeenCalledWith(
       expect.stringContaining("{\"a\":\"0\",\"b\":0}"));
@@ -459,12 +460,40 @@ describe("fetchMinOsFeatureData()", () => {
   it("fails to fetch min OS feature data", async () => {
     mockGetRelease = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData("url")(dispatch);
-    await expect(axios.get).toHaveBeenCalledWith("url");
+    await actions.fetchMinOsFeatureData()(dispatch);
+    await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       payload: "error",
       type: Actions.FETCH_MIN_OS_FEATURE_INFO_ERROR
+    });
+  });
+});
+
+describe("fetchOsReleaseNotes()", () => {
+  const EXPECTED_URL = expect.stringContaining("RELEASE_NOTES.md");
+
+  it("fetches OS release notes", async () => {
+    mockGetRelease = Promise.resolve({
+      data: "intro\n\n# v6\n\n* note"
+    });
+    const dispatch = jest.fn();
+    await actions.fetchOsReleaseNotes()(dispatch);
+    await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: "intro\n\n# v6\n\n* note",
+      type: Actions.FETCH_OS_RELEASE_NOTES_OK
+    });
+  });
+
+  it("errors while fetching OS release notes", async () => {
+    mockGetRelease = Promise.reject({ error: "" });
+    const dispatch = jest.fn();
+    await actions.fetchOsReleaseNotes()(dispatch);
+    await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
+    expect(dispatch).toHaveBeenCalledWith({
+      payload: { error: "" },
+      type: Actions.FETCH_OS_RELEASE_NOTES_ERROR
     });
   });
 });

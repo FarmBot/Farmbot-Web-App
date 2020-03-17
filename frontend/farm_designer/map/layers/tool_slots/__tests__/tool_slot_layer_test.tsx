@@ -7,7 +7,7 @@ jest.mock("../../../../../history", () => ({
 import * as React from "react";
 import { ToolSlotLayer, ToolSlotLayerProps } from "../tool_slot_layer";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../../__test_support__/fake_resource";
 import { shallow } from "enzyme";

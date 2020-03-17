@@ -19,7 +19,7 @@ const RegimenListHeader = (props: RegimenListHeaderProps) =>
     <div className="thin-search-wrapper">
       <div className="text-input-wrapper">
         <i className="fa fa-search" />
-        <input
+        <input name="searchTerm"
           onChange={props.onChange}
           placeholder={t("Search regimens...")} />
       </div>
@@ -60,7 +60,7 @@ export class RegimensList extends
   }
 
   render() {
-    return <div>
+    return <div className={"regimens-list-wrapper"}>
       <RegimenListHeader
         dispatch={this.props.dispatch}
         regimenCount={this.props.regimens.length}

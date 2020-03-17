@@ -32,7 +32,7 @@ export function StepWarning(props: StepWarningProps) {
       interactionKind={PopoverInteractionKind.HOVER}
       popoverClassName={"help"}>
       <i className="fa fa-exclamation-triangle" />
-      <div>
+      <div className={"step-warning-text"}>
         {warning}
       </div>
     </Popover>

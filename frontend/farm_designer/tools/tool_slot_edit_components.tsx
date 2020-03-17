@@ -2,14 +2,14 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Xyz, TaggedTool, TaggedToolSlotPointer } from "farmbot";
 import {
-  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem
+  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem,
 } from "../../ui";
 import { BotPosition } from "../../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { Popover } from "@blueprintjs/core";
 import { ToolSlotSVG } from "../map/layers/tool_slots/tool_graphics";
-import { BotOriginQuadrant } from "../interfaces";
 import { isNumber } from "lodash";
+import { BotOriginQuadrant } from "../interfaces";
 
 export interface GantryMountedInputProps {
   gantryMounted: boolean;
@@ -19,7 +19,7 @@ export interface GantryMountedInputProps {
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="gantry-mounted-input">
     <label>{t("Gantry-mounted")}</label>
-    <input type="checkbox"
+    <input type="checkbox" name="gantry_mounted"
       onChange={() => props.onChange({ gantry_mounted: !props.gantryMounted })}
       checked={props.gantryMounted} />
   </fieldset>;
@@ -32,7 +32,7 @@ export interface SlotDirectionInputRowProps {
 export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
   <fieldset className="tool-slot-direction-input">
     <label>
-      {t("Change direction")}
+      {t("Direction")}
     </label>
     <i className={"direction-icon "
       + directionIconClass(props.toolPulloutDirection)}
@@ -41,8 +41,8 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) =>
       })} />
     <FBSelect
       key={props.toolPulloutDirection}
-      list={DIRECTION_CHOICES}
-      selectedItem={DIRECTION_CHOICES_DDI[props.toolPulloutDirection]}
+      list={DIRECTION_CHOICES()}
+      selectedItem={DIRECTION_CHOICES_DDI()[props.toolPulloutDirection]}
       onChange={ddi => props.onChange({
         pullout_direction: parseInt("" + ddi.value)
       })} />
@@ -81,7 +81,7 @@ export interface ToolInputRowProps {
   tools: TaggedTool[];
   selectedTool: TaggedTool | undefined;
   onChange(update: { tool_id: number }): void;
-  isExpress: boolean;
+  noUTM: boolean;
   isActive(id: number | undefined): boolean;
 }
 
@@ -90,7 +90,7 @@ export const ToolInputRow = (props: ToolInputRowProps) =>
     <Row>
       <Col xs={12}>
         <label>
-          {props.isExpress
+          {props.noUTM
             ? t("Seed Container")
             : t("Tool or Seed Container")}
         </label>
@@ -120,7 +120,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) =>
           <Col xs={4} key={axis}>
             <label>{t("{{axis}} (mm)", { axis })}</label>
             {axis == "x" && props.gantryMounted
-              ? <input disabled value={t("Gantry")} />
+              ? <input disabled value={t("Gantry")} name={axis} />
               : <BlurableInput
                 type="number"
                 value={props.slotLocation[axis]}
@@ -155,7 +155,7 @@ export interface SlotEditRowsProps {
   tool: TaggedTool | undefined;
   botPosition: BotPosition;
   updateToolSlot(update: Partial<TaggedToolSlotPointer["body"]>): void;
-  isExpress: boolean;
+  noUTM: boolean;
   xySwap: boolean;
   quadrant: BotOriginQuadrant;
   isActive(id: number | undefined): boolean;
@@ -165,14 +165,14 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">
     <ToolSlotSVG toolSlot={props.toolSlot}
       toolName={props.tool ? props.tool.body.name : "Empty"}
-      renderRotation={true} xySwap={props.xySwap} quadrant={props.quadrant} />
+      xySwap={props.xySwap} quadrant={props.quadrant} />
     <SlotLocationInputRow
       slotLocation={props.toolSlot.body}
       gantryMounted={props.toolSlot.body.gantry_mounted}
       botPosition={props.botPosition}
       onChange={props.updateToolSlot} />
     <ToolInputRow
-      isExpress={props.isExpress}
+      noUTM={props.noUTM}
       tools={props.tools}
       selectedTool={props.tool}
       isActive={props.isActive}
@@ -181,7 +181,7 @@ export const SlotEditRows = (props: SlotEditRowsProps) =>
       <SlotDirectionInputRow
         toolPulloutDirection={props.toolSlot.body.pullout_direction}
         onChange={props.updateToolSlot} />}
-    {!props.isExpress &&
+    {!props.noUTM &&
       <GantryMountedInput
         gantryMounted={props.toolSlot.body.gantry_mounted}
         onChange={props.updateToolSlot} />}
@@ -209,7 +209,7 @@ export const newSlotDirection =
 export const positionIsDefined = (position: BotPosition): boolean =>
   isNumber(position.x) && isNumber(position.y) && isNumber(position.z);
 
-export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
+export const DIRECTION_CHOICES_DDI = (): { [index: number]: DropDownItem } => ({
   [ToolPulloutDirection.NONE]:
     { label: t("None"), value: ToolPulloutDirection.NONE },
   [ToolPulloutDirection.POSITIVE_X]:
@@ -220,12 +220,12 @@ export const DIRECTION_CHOICES_DDI: { [index: number]: DropDownItem } = {
     { label: t("Positive Y"), value: ToolPulloutDirection.POSITIVE_Y },
   [ToolPulloutDirection.NEGATIVE_Y]:
     { label: t("Negative Y"), value: ToolPulloutDirection.NEGATIVE_Y },
-};
+});
 
-export const DIRECTION_CHOICES: DropDownItem[] = [
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NONE],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_X],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_X],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.POSITIVE_Y],
-  DIRECTION_CHOICES_DDI[ToolPulloutDirection.NEGATIVE_Y],
+export const DIRECTION_CHOICES = (): DropDownItem[] => [
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NONE],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.POSITIVE_X],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NEGATIVE_X],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.POSITIVE_Y],
+  DIRECTION_CHOICES_DDI()[ToolPulloutDirection.NEGATIVE_Y],
 ];

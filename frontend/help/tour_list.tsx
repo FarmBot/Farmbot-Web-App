@@ -9,6 +9,7 @@ export const TourList = ({ dispatch }: { dispatch: Function }) =>
     {tourNames().map(tour => <div key={tour.name}>
       <label>{tour.description}</label>
       <button className="fb-button green"
+        title={t("Start tour")}
         onClick={() =>
           dispatch({ type: Actions.START_TOUR, payload: tour.name })}>
         {t("Start tour")}

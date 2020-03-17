@@ -4,7 +4,7 @@ import { PinBindings } from "../pin_bindings";
 import { PinBindingsProps } from "../../interfaces";
 import { panelState } from "../../../../__test_support__/control_panel_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 
 describe("<PinBindings />", () => {

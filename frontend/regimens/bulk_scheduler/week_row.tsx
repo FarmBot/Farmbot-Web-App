@@ -28,6 +28,7 @@ function Day({ day, id, dispatch, week, active }: DayProps) {
     <input type="checkbox"
       id={id}
       className="day"
+      name="day"
       onClick={select(dispatch, day, week)}
       checked={active}
       readOnly={true} />

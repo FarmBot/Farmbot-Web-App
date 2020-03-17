@@ -1,6 +1,6 @@
 import {
   BooleanConfigKey,
-  NumberConfigKey
+  NumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
 export const BooleanSetting: Record<BooleanConfigKey, BooleanConfigKey> = {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Row, Col } from "../../ui/index";
 import { t } from "../../i18next_wrapper";
 import {
-  TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero
+  TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero,
 } from "farmbot";
 import { editStep } from "../../api/crud";
 
@@ -22,7 +22,7 @@ export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
             {props.choices.map((choice, i) =>
               <div key={i} style={{ display: "inline" }}>
                 <label>
-                  <input type="radio"
+                  <input type="radio" name={choice}
                     value={choice}
                     onChange={() => props.onChange(choice)}
                     checked={props.currentChoice === choice} />

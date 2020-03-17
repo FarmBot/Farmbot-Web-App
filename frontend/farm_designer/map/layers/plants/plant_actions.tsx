@@ -1,7 +1,7 @@
 import { Content } from "../../../../constants";
 import { initSave, edit, save } from "../../../../api/crud";
 import {
-  AxisNumberProperty, TaggedPlant, MapTransformProps
+  AxisNumberProperty, TaggedPlant, MapTransformProps,
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
 import moment from "moment";
@@ -153,8 +153,7 @@ export const setActiveSpread = (props: {
       // `radius * 10` is the default value for spread diameter (in mm).
       props.setMapState({
         activeDragSpread: (spread || defaultSpreadCm) * 10
-      })
-    );
+      }));
 };
 
 /** Prepare for plant move. */

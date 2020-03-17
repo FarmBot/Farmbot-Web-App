@@ -1,7 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import {
-  Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug
+  Page, Row, LeftPanel, CenterPanel, RightPanel, DocSlug,
 } from "../ui/index";
 import { mapStateToProps, isPendingInstallation } from "./state_to_props";
 import { Photos } from "./images/photos";
@@ -12,7 +12,7 @@ import { envGet } from "./weed_detector/remote_env/selectors";
 import { setActiveFarmwareByName } from "./set_active_farmware_by_name";
 import { FarmwareList } from "./farmware_list";
 import {
-  FarmwareForm, needsFarmwareForm, farmwareHelpText
+  FarmwareForm, needsFarmwareForm, farmwareHelpText,
 } from "./farmware_forms";
 import { urlFriendly } from "../util";
 import { ToolTips, Actions } from "../constants";
@@ -102,10 +102,11 @@ interface BasicFarmwarePageProps {
 
 export const BasicFarmwarePage = ({ farmwareName, farmware, botOnline }:
   BasicFarmwarePageProps) =>
-  <div>
+  <div className={"basic-farmware-page"}>
     <button
       className="fb-button green farmware-button"
       disabled={isPendingInstallation(farmware) || !botOnline}
+      title={t("Run Farmware")}
       onClick={run(farmwareName)}>
       {t("Run")}
     </button>
@@ -208,6 +209,7 @@ export class RawFarmwarePage extends React.Component<FarmwareProps, {}> {
     <button
       className={`farmware-info-button fb-button gray ${props.className}`}
       disabled={!props.online}
+      title={t("open Farmware info")}
       onClick={() => this.props.dispatch({
         type: Actions.SET_FARMWARE_INFO_STATE, payload: true
       })}>

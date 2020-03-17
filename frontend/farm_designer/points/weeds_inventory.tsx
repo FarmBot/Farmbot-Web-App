@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { DesignerNavTabs, Panel } from "../panel_header";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelTop
+  DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../designer_panel";
 import { t } from "../../i18next_wrapper";
 import { TaggedGenericPointer } from "farmbot";
@@ -49,7 +49,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
         panel={Panel.Weeds}
         linkTo={"/app/designer/weeds/add"}
         title={t("Add weed")}>
-        <input type="text" onChange={this.update}
+        <input type="text" onChange={this.update} name="searchTerm"
           placeholder={t("Search your weeds...")} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"weeds-inventory"}>

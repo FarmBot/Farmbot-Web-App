@@ -49,8 +49,9 @@ const diagramPositions: CowardlyDictionary<Record<"x" | "y", number>> = {
   subRight: { x: 40, y: 110 }
 };
 
-export function getTextPosition(name: DiagramNodes): Record<"x" | "y", number> {
-  const position = diagramPositions[name];
+export function getTextPosition(
+  positionKey: DiagramNodes): Record<"x" | "y", number> {
+  const position = diagramPositions[positionKey];
   if (position) {
     return {
       x: position.x,

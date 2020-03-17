@@ -3,7 +3,7 @@ import { SequenceEditorMiddleProps } from "./interfaces";
 import { isTaggedSequence } from "../resources/tagged_resources";
 import { SequenceEditorMiddleActive } from "./sequence_editor_middle_active";
 import {
-  EmptyStateWrapper, EmptyStateGraphic
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";

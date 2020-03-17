@@ -8,7 +8,7 @@ import { Row, Col, FBSelect } from "../../ui/index";
 import {
   pinsAsDropDownsReadPin,
   celery2DropDown,
-  setArgsDotPinNumber
+  setArgsDotPinNumber,
 } from "./pin_and_peripheral_support";
 import { t } from "../../i18next_wrapper";
 

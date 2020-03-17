@@ -7,10 +7,10 @@ jest.mock("../../api/crud", () => ({
 import { mapStateToProps, saveOrEditFarmwareEnv } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import {
-  fakeFarmwareEnv, fakeFarmwareInstallation
+  fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmwareManifestV1 } from "../../__test_support__/fake_farmwares";

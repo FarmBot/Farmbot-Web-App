@@ -76,12 +76,12 @@ export async function fetchSyncData(dispatch: Function) {
       get("Sensor", API.current.sensorPath),
       get("Tool", API.current.toolsPath),
       get("Alert", API.current.alertPath),
-      get("Folder", API.current.foldersPath)
+      get("Folder", API.current.foldersPath),
     ]),
     2: () => Promise.all<{}>([
       get("SensorReading", API.current.sensorReadingPath),
       get("Sequence", API.current.sequencesPath),
-      get("PointGroup", API.current.pointGroupsPath)
+      get("PointGroup", API.current.pointGroupsPath),
     ]),
     3: () => Promise.all<{}>([
       get("FbosConfig", API.current.fbosConfigPath),
@@ -92,7 +92,7 @@ export async function fetchSyncData(dispatch: Function) {
       get("FarmEvent", API.current.farmEventsPath),
       get("Image", API.current.imagesPath),
       get("Log", API.current.filteredLogsPath),
-      get("WebcamFeed", API.current.webcamFeedPath)
+      get("WebcamFeed", API.current.webcamFeedPath),
     ]),
   };
   const step = (num: keyof typeof group) => group[num];

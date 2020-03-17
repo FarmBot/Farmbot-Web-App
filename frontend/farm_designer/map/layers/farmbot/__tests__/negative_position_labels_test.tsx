@@ -1,10 +1,10 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
-  NegativePositionLabel, NegativePositionLabelProps
+  NegativePositionLabel, NegativePositionLabelProps,
 } from "../negative_position_labels";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<NegativePositionLabel />", () => {

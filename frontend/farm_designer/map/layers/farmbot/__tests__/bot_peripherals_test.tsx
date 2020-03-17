@@ -2,7 +2,7 @@ import * as React from "react";
 import { shallow } from "enzyme";
 import { BotPeripheralsProps, BotPeripherals } from "../bot_peripherals";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {

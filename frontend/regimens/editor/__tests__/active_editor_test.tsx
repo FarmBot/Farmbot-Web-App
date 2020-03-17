@@ -6,7 +6,7 @@ import { ActiveEditor, editRegimenVariables } from "../active_editor";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { ActiveEditorProps } from "../interfaces";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { overwrite } from "../../../api/crud";
 import { VariableDeclaration } from "farmbot";

@@ -11,7 +11,7 @@ export function setActiveRegimenByName() {
   }
 
   selectAllRegimens(store.getState().resources.index).map(reg => {
-    const name = urlFriendly(reg.body.name);
-    (lastUrlChunk() === name) && setRegimen(reg.uuid);
+    const regimenName = urlFriendly(reg.body.name);
+    (lastUrlChunk() === regimenName) && setRegimen(reg.uuid);
   });
 }

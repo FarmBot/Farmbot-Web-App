@@ -1,5 +1,5 @@
 import {
-  RootFolderNode, FolderUnion, FolderNodeMedial, FolderNodeInitial
+  RootFolderNode, FolderUnion, FolderNodeMedial, FolderNodeInitial,
 } from "./interfaces";
 import { defensiveClone } from "../util";
 

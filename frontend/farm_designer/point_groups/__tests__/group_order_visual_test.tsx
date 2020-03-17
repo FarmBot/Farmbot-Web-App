@@ -7,10 +7,10 @@ jest.mock("../../../redux/store", () => ({
 import * as React from "react";
 import { GroupOrder, GroupOrderProps } from "../group_order_visual";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import {
-  fakePlant, fakePointGroup
+  fakePlant, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { svgMount } from "../../../__test_support__/svg_mount";
 

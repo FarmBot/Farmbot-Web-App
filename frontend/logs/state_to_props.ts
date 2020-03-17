@@ -2,7 +2,7 @@ import { Everything } from "../interfaces";
 import { selectAllLogs, maybeGetTimeSettings } from "../resources/selectors";
 import { LogsProps } from "./interfaces";
 import {
-  sourceFbosConfigValue
+  sourceFbosConfigValue,
 } from "../devices/components/source_config_value";
 import { validFbosConfig } from "../util";
 import { ResourceIndex } from "../resources/interfaces";

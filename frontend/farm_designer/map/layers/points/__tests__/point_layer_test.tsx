@@ -7,7 +7,7 @@ import * as React from "react";
 import { PointLayer, PointLayerProps } from "../point_layer";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { GardenPoint } from "../garden_point";
 import { svgMount } from "../../../../../__test_support__/svg_mount";

@@ -40,6 +40,6 @@ describe("<IndexIndicator/>", () => {
 
   it("doesn't render index indicator", () => {
     const wrapper = mount(<IndexIndicator i={0} total={1} />);
-    expect(wrapper.html()).toEqual("<div></div>");
+    expect(wrapper.html()).toEqual("<div class=\"no-index-indicator\"></div>");
   });
 });

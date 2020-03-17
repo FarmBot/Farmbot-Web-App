@@ -10,13 +10,13 @@ jest.mock("../../../account/dev/dev_support", () => ({
 import * as React from "react";
 import { shallow, mount } from "enzyme";
 import {
-  PathInfoBar, nn, NNPath, PathInfoBarProps, Paths, PathsProps
+  PathInfoBar, nn, NNPath, PathInfoBarProps, Paths, PathsProps,
 } from "../paths";
 import {
-  fakePointGroup, fakePoint
+  fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../__test_support__/map_transform_props";
 import { Actions } from "../../../constants";
 import { edit } from "../../../api/crud";

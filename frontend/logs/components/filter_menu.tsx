@@ -45,10 +45,14 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
       <label>
         {t("Presets:")}
       </label>
-      <button className={`fb-button gray`} onClick={setAll(3)}>
+      <button className={`fb-button gray`}
+        title={t("show all")}
+        onClick={setAll(3)}>
         {t("max")}
       </button>
-      <button className={`fb-button gray`} onClick={setAll(1)}>
+      <button className={`fb-button gray`}
+        title={t("default")}
+        onClick={setAll(1)}>
         {t("normal")}
       </button>
     </fieldset>
@@ -61,6 +65,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
           </label>
           <button
             className={"fb-button fb-toggle-button " + btnColor(logType)}
+            title={t("toggle logs")}
             onClick={props.toggle(logType)} />
           <Slider min={0} max={3} stepSize={1}
             onChange={props.setFilterLevel(logType)}

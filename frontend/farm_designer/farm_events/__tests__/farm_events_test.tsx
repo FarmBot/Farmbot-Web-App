@@ -1,7 +1,7 @@
 import * as React from "react";
 import { PureFarmEvents } from "../farm_events";
 import {
-  calendarRows
+  calendarRows,
 } from "../../../__test_support__/farm_event_calendar_support";
 import { render, shallow, mount } from "enzyme";
 import { get } from "lodash";

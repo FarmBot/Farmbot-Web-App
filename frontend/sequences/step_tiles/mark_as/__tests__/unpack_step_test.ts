@@ -4,7 +4,7 @@ import { unpackStep, TOOL_MOUNT, DISMOUNTED } from "../unpack_step";
 import {
   selectAllPlantPointers,
   selectAllTools,
-  selectAllGenericPointers
+  selectAllGenericPointers,
 } from "../../../../resources/selectors";
 import { DropDownPair } from "../interfaces";
 describe("unpackStep()", () => {

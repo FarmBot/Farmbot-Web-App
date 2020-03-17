@@ -32,16 +32,19 @@ export function Edit(props: WebcamPanelProps) {
       <button
         className="fb-button gray"
         disabled={unsaved.length > 0}
+        title={t("Back")}
         onClick={props.onToggle}>
         {t("Back")}
       </button>
       <button
         className="fb-button green"
+        title={t("Save")}
         onClick={() => { unsaved.map(x => props.save(x)); }}>
         {t("Save")}{unsaved.length > 0 ? "*" : ""}
       </button>
       <button
         className="fb-button green"
+        title={t("Add webcam")}
         onClick={props.init}>
         <i className="fa fa-plus" />
       </button>

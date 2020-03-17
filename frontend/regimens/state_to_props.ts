@@ -1,6 +1,6 @@
 import { Everything, TimeSettings } from "../interfaces";
 import {
-  Props, RegimenItem, RegimenItemCalendarRow, CalendarRow
+  Props, RegimenItem, RegimenItemCalendarRow, CalendarRow,
 } from "./interfaces";
 import {
   selectAllSequences,
@@ -10,7 +10,7 @@ import {
   findId,
   findSequence,
   findSequenceById,
-  maybeGetTimeSettings
+  maybeGetTimeSettings,
 } from "../resources/selectors";
 import { TaggedRegimen, TaggedSequence } from "farmbot";
 import moment from "moment";
@@ -93,7 +93,7 @@ function generateCalendar(regimen: TaggedRegimen,
 
 const createRows = (
   index: ResourceIndex, dispatch: Function, regimen: TaggedRegimen,
-  timeSettings: TimeSettings
+  timeSettings: TimeSettings,
 ) =>
   (item: RegimenItem): RegimenItemCalendarRow => {
     const uuid = findId(index, "Sequence", item.sequence_id);

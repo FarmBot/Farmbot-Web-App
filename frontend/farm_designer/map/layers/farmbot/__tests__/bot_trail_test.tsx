@@ -1,10 +1,10 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
-  BotTrail, BotTrailProps, VirtualTrail, resetVirtualTrail
+  BotTrail, BotTrailProps, VirtualTrail, resetVirtualTrail,
 } from "../bot_trail";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotTrail/>", () => {

@@ -13,6 +13,7 @@ import { MotorPositionPlot } from "./motor_position_plot";
 import { Popover, Position } from "@blueprintjs/core";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { t } from "../../i18next_wrapper";
+import { getStatus } from "../../connectivity/reducer_support";
 
 export class Move extends React.Component<MoveProps, {}> {
 
@@ -23,7 +24,8 @@ export class Move extends React.Component<MoveProps, {}> {
     !!this.props.getWebAppConfigVal(BooleanSetting[key]);
 
   render() {
-    const { location_data, informational_settings } = this.props.bot.hardware;
+    const { bot } = this.props;
+    const { location_data, informational_settings } = bot.hardware;
     const locationData = validBotLocationData(location_data);
     return <Widget className="move-widget">
       <WidgetHeader
@@ -40,11 +42,11 @@ export class Move extends React.Component<MoveProps, {}> {
       <WidgetBody>
         <MustBeOnline
           lockOpen={process.env.NODE_ENV !== "production"}
-          networkState={this.props.botToMqttStatus}
+          networkState={getStatus(bot.connectivity.uptime["bot.mqtt"])}
           syncStatus={informational_settings.sync_status}>
           <JogControlsGroup
             dispatch={this.props.dispatch}
-            stepSize={this.props.bot.stepSize}
+            stepSize={bot.stepSize}
             botPosition={locationData.position}
             getValue={this.getValue}
             arduinoBusy={this.props.arduinoBusy}

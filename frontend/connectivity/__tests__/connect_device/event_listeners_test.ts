@@ -35,7 +35,7 @@ describe("attachEventListeners", () => {
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
     [
       "message",
-      "reconnect"
+      "reconnect",
     ].map(e => {
       if (dev.client) {
         expect(dev.client.on).toHaveBeenCalledWith(e, expect.any(Function));

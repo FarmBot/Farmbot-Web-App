@@ -8,18 +8,25 @@ jest.mock("../../../point_groups/criteria", () => ({
   editGtLtCriteria: jest.fn(),
 }));
 
+jest.mock("../../../../api/crud", () => ({
+  overwrite: jest.fn(),
+  save: jest.fn(),
+}));
+
 import {
-  fakePlant, fakePointGroup
+  fakePlant, fakePointGroup,
 } from "../../../../__test_support__/fake_state/resources";
 import {
   getSelected, resizeBox, startNewSelectionBox, ResizeSelectionBoxProps,
   StartNewSelectionBoxProps,
-  maybeUpdateGroupCriteria,
-  MaybeUpdateGroupCriteriaProps,
+  maybeUpdateGroup,
+  MaybeUpdateGroupProps,
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
 import { history } from "../../../../history";
 import { editGtLtCriteria } from "../../../point_groups/criteria";
+import { overwrite, save } from "../../../../api/crud";
+import { cloneDeep } from "lodash";
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -156,24 +163,55 @@ describe("startNewSelectionBox", () => {
   });
 });
 
-describe("maybeUpdateGroupCriteria()", () => {
-  const fakeProps = (): MaybeUpdateGroupCriteriaProps => ({
+describe("maybeUpdateGroup()", () => {
+  const fakeProps = (): MaybeUpdateGroupProps => ({
     selectionBox: { x0: 0, y0: 0, x1: undefined, y1: undefined },
     dispatch: jest.fn(),
     group: fakePointGroup(),
     shouldDisplay: () => true,
+    editGroupAreaInMap: false,
+    boxSelected: undefined,
+  });
+
+  it("updates group", () => {
+    const p = fakeProps();
+    p.editGroupAreaInMap = false;
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    p.boxSelected = [plant1.uuid, plant2.uuid];
+    p.group && (p.group.body.point_ids = [plant1.body.id || 0]);
+    maybeUpdateGroup(p);
+    expect(editGtLtCriteria).not.toHaveBeenCalled();
+    const expectedBody = cloneDeep(p.group?.body);
+    expectedBody && (expectedBody.point_ids = [
+      plant1.body.id || 0, plant2.body.id || 0,
+    ]);
+    expect(overwrite).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(save).not.toHaveBeenCalled();
   });
 
   it("updates criteria", () => {
     const p = fakeProps();
-    maybeUpdateGroupCriteria(p);
+    p.editGroupAreaInMap = true;
+    maybeUpdateGroup(p);
     expect(editGtLtCriteria).toHaveBeenCalledWith(p.group, p.selectionBox);
   });
 
   it("doesn't update criteria", () => {
     const p = fakeProps();
     p.shouldDisplay = () => false;
-    maybeUpdateGroupCriteria(p);
+    maybeUpdateGroup(p);
     expect(editGtLtCriteria).not.toHaveBeenCalled();
+  });
+
+  it("handles missing group or box", () => {
+    const p = fakeProps();
+    p.group = undefined;
+    p.selectionBox = undefined;
+    maybeUpdateGroup(p);
+    expect(p.dispatch).not.toHaveBeenCalled();
+    expect(editGtLtCriteria).not.toHaveBeenCalled();
+    expect(overwrite).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
   });
 });

@@ -15,7 +15,7 @@ import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { clickButton } from "../../__test_support__/helpers";
 import { destroy } from "../../api/crud";
 import {
-  fakeFarmwareInstallation
+  fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";

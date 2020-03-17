@@ -3,7 +3,7 @@ import {
   actOnChannelName,
   showLogOnScreen,
   speakLogAloud,
-  initLog
+  initLog,
 } from "./connect_device";
 import { GetState } from "../redux/interfaces";
 import { Log } from "farmbot/dist/resources/api_resources";

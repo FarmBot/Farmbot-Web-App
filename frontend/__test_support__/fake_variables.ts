@@ -2,7 +2,7 @@ import { Coordinate } from "farmbot";
 import { VariableNameSet } from "../resources/interfaces";
 
 export const fakeVariableNameSet = (
-  label = "parent", vector = { x: 0, y: 0, z: 0 }
+  label = "parent", vector = { x: 0, y: 0, z: 0 },
 ): VariableNameSet => {
   const data_value: Coordinate = {
     kind: "coordinate", args: vector

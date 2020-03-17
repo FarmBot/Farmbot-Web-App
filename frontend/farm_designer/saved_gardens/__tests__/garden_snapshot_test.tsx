@@ -46,14 +46,14 @@ describe("<GardenSnapshot />", () => {
     wrapper.find("input").first().simulate("change", {
       currentTarget: { value: "new name" }
     });
-    expect(wrapper.instance().state.name).toEqual("new name");
+    expect(wrapper.instance().state.gardenName).toEqual("new name");
   });
 
   it("creates new garden", () => {
     const wrapper = shallow<GardenSnapshot>(<GardenSnapshot {...fakeProps()} />);
-    wrapper.setState({ name: "new saved garden" });
+    wrapper.setState({ gardenName: "new saved garden" });
     wrapper.find("button").last().simulate("click");
     expect(newSavedGarden).toHaveBeenCalledWith("new saved garden");
-    expect(wrapper.instance().state.name).toEqual("");
+    expect(wrapper.instance().state.gardenName).toEqual("");
   });
 });

@@ -51,5 +51,5 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
             value={"" + vector[axis]} />
         </Col>)}
     </Row>
-    : <div />;
+    : <div className={"no-location-coordinate-input-boxes"} />;
 };

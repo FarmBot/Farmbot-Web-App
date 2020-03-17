@@ -1,14 +1,14 @@
 import {
-  variableList, mergeParameterApplications, getRegimenVariableData
+  variableList, mergeParameterApplications, getRegimenVariableData,
 } from "../variable_support";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import {
   ParameterApplication, ParameterDeclaration, ScopeDeclarationBodyItem,
-  Coordinate, VariableDeclaration
+  Coordinate, VariableDeclaration,
 } from "farmbot";
 import { cloneDeep } from "lodash";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 const COORDINATE: Coordinate = { kind: "coordinate", args: { x: 1, y: 2, z: 3 } };

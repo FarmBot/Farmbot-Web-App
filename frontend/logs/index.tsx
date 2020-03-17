@@ -28,11 +28,11 @@ export const formatLogTime =
 export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
 
   /** Initialize log type verbosity level to the configured or default value. */
-  initialize = (name: NumberConfigKey, defaultValue: number): number => {
-    const currentValue = this.props.getConfigValue(safeNumericSetting(name));
+  initialize = (key: NumberConfigKey, defaultValue: number): number => {
+    const currentValue = this.props.getConfigValue(safeNumericSetting(key));
     if (isUndefined(currentValue)) {
       this.props.dispatch(
-        setWebAppConfigValue(safeNumericSetting(name), defaultValue));
+        setWebAppConfigValue(safeNumericSetting(key), defaultValue));
       return defaultValue;
     } else {
       return currentValue as number;
@@ -54,22 +54,22 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
-  toggle = (name: keyof Filters) => {
+  toggle = (key: keyof Filters) => {
     // If log type is off, set it to verbosity level 1, otherwise turn it off
-    const newSetting = this.state[name] === 0 ? 1 : 0;
+    const newSetting = this.state[key] === 0 ? 1 : 0;
     return () => {
-      this.setState({ [name]: newSetting });
+      this.setState({ [key]: newSetting });
       this.props.dispatch(
-        setWebAppConfigValue(safeNumericSetting(name + "_log"), newSetting));
+        setWebAppConfigValue(safeNumericSetting(key + "_log"), newSetting));
     };
   };
 
   /** Set log type filter level. i.e., level 2 shows verbosity 2 and lower.*/
-  setFilterLevel = (name: keyof Filters) => {
+  setFilterLevel = (key: keyof Filters) => {
     return (value: number) => {
-      this.setState({ [name]: value });
+      this.setState({ [key]: value });
       this.props.dispatch(
-        setWebAppConfigValue(safeNumericSetting(name + "_log"), value));
+        setWebAppConfigValue(safeNumericSetting(key + "_log"), value));
     };
   };
 
@@ -105,7 +105,8 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
           </div>
           <div className={"settings-menu-button"}>
             <Popover position={Position.TOP_RIGHT}>
-              <button className={`fb-button ${filterBtnColor}`}>
+              <button className={`fb-button ${filterBtnColor}`}
+                title={t("edit filter settings")}>
                 {this.filterActive ? t("Filters active") : t("filter")}
               </button>
               <LogsFilterMenu
@@ -127,7 +128,7 @@ export class RawLogs extends React.Component<LogsProps, Partial<LogsState>> {
           <div className="thin-search-wrapper">
             <div className="text-input-wrapper">
               <i className="fa fa-search" />
-              <input
+              <input name="searchTerm"
                 onChange={e =>
                   this.setState({ searchTerm: e.currentTarget.value })}
                 placeholder={t("Search logs...")} />

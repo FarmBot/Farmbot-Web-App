@@ -12,6 +12,7 @@ jest.mock("../../../api/crud", () => ({
 
 let mockPath = "";
 jest.mock("../../../history", () => ({
+  history: { push: jest.fn() },
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
@@ -26,7 +27,7 @@ import { error } from "../../../toast/toast";
 import { edit } from "../../../api/crud";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 describe("<EditGarden />", () => {

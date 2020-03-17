@@ -161,7 +161,7 @@ describe("<TestButton/>", () => {
       .toHaveBeenCalledWith(props.sequence.body.id, [{
         kind: "parameter_application",
         args: { label: "label", data_value: COORDINATE }
-      }
+      },
       ]);
   });
 

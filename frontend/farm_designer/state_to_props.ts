@@ -13,7 +13,7 @@ import {
   selectAllPoints,
   selectAllPointGroups,
   getDeviceAccountSettings,
-  maybeFindToolById
+  maybeFindToolById,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";

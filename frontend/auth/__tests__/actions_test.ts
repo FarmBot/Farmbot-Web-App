@@ -3,8 +3,8 @@ jest.mock("axios", () => ({
     response: { use: jest.fn() },
     request: { use: jest.fn() }
   },
-  post: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
-  get: jest.fn(() => { return Promise.resolve({ data: { foo: "bar" } }); }),
+  post: jest.fn(() => Promise.resolve({ data: { foo: "bar" } })),
+  get: jest.fn(() => Promise.resolve({ data: { foo: "bar" } })),
 }));
 
 jest.mock("../../api/api", () => ({
@@ -22,6 +22,7 @@ jest.mock("../../devices/actions", () => ({
   fetchReleases: jest.fn(),
   fetchLatestGHBetaRelease: jest.fn(),
   fetchMinOsFeatureData: jest.fn(),
+  fetchOsReleaseNotes: jest.fn(),
 }));
 
 import { didLogin } from "../actions";

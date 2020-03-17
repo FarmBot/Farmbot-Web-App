@@ -4,9 +4,9 @@ import { TaggedPoint } from "farmbot";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 
 describe("sort()", () => {
-  const phony = (name: string, x: number, y: number): TaggedPoint => {
+  const phony = (plantName: string, x: number, y: number): TaggedPoint => {
     const plant = fakePlant();
-    plant.body.name = name;
+    plant.body.name = plantName;
     plant.body.x = x;
     plant.body.y = y;
     return plant;
@@ -15,7 +15,7 @@ describe("sort()", () => {
     phony("A", 0, 0),
     phony("B", 1, 0),
     phony("C", 1, 1),
-    phony("D", 0, 1)
+    phony("D", 0, 1),
   ];
 
   const sort = (sortType: PointGroupSortType): string[] => {

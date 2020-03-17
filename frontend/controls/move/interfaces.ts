@@ -1,6 +1,5 @@
 import { BotPosition, BotState, UserEnv } from "../../devices/interfaces";
 import { McuParams, Xyz, FirmwareHardware } from "farmbot";
-import { NetworkState } from "../../connectivity/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
@@ -11,7 +10,6 @@ export interface MoveProps {
   dispatch: Function;
   bot: BotState;
   arduinoBusy: boolean;
-  botToMqttStatus: NetworkState;
   firmwareSettings: McuParams;
   getWebAppConfigVal: GetWebAppConfigValue;
   env: UserEnv;

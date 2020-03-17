@@ -5,7 +5,7 @@ import {
   StepHeader,
   StepContent,
   StepHeaderProps,
-  StepWarning
+  StepWarning,
 } from "../index";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { conflictsString } from "../step_warning";

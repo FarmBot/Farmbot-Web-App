@@ -3,6 +3,7 @@ import React from "react";
 import { uuid } from "farmbot";
 import axios from "axios";
 import { ExternalUrl } from "../external_urls";
+import { t } from "../i18next_wrapper";
 
 interface State {
   error: Error | undefined;
@@ -23,7 +24,7 @@ export const WAITING_ON_API = "Planting your demo garden...";
 // APPLICATION CODE ==============================
 export class DemoIframe extends React.Component<{}, State> {
   state: State =
-    { error: undefined, stage: "DEMO THE APP" };
+    { error: undefined, stage: t("DEMO THE APP") };
 
   setError = (error?: Error) => this.setState({ error });
 
@@ -63,7 +64,9 @@ export class DemoIframe extends React.Component<{}, State> {
         <source src={ExternalUrl.Video.desktop} type="video/mp4" />
       </video>
       <img className="demo-phone" src={ExternalUrl.Video.mobile} />
-      <button className="demo-button" onClick={this.requestAccount}>
+      <button className="demo-button"
+        title={t("demo the app")}
+        onClick={this.requestAccount}>
         {this.state.stage}
       </button>
     </div>;

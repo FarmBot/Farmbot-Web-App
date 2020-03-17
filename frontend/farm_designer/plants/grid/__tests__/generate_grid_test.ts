@@ -14,7 +14,7 @@ const expectedResultsOfTestGrid = [
   [11, 45],
   [16, 31],
   [16, 38],
-  [16, 45]
+  [16, 45],
 ];
 
 describe("initPlantGrid", () => {

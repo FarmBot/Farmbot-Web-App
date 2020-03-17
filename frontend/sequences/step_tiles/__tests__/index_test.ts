@@ -43,7 +43,7 @@ describe("move()", () => {
   const step1: Wait = { kind: "wait", args: { milliseconds: 100 } };
   const step2: Wait = { kind: "wait", args: { milliseconds: 200 } };
   sequence.body.body = [step1, step2];
-  const fakeProps = () => ({ step: step2, sequence, to: 0, from: 1, });
+  const fakeProps = () => ({ step: step2, sequence, to: 0, from: 1 });
 
   it("moves step backward", () => {
     const p = fakeProps();
@@ -68,7 +68,7 @@ describe("move()", () => {
 describe("splice()", () => {
   const sequence = fakeSequence();
   const step: Wait = { kind: "wait", args: { milliseconds: 100 } };
-  const fakeProps = () => ({ step, sequence, index: 1, });
+  const fakeProps = () => ({ step, sequence, index: 1 });
 
   it("adds step", () => {
     const p = fakeProps();
@@ -160,7 +160,7 @@ describe("renderCeleryNode()", () => {
       expected: "MarkPlantasx = 300"
     },
     {
-      node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90, } },
+      node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90 } },
       expected: "Servo"
     },
     {
@@ -180,7 +180,7 @@ describe("renderCeleryNode()", () => {
       expected: "Calibrate x"
     },
     {
-      node: { kind: "home", args: { axis: "all", speed: 100, } },
+      node: { kind: "home", args: { axis: "all", speed: 100 } },
       expected: "Home x"
     },
     {

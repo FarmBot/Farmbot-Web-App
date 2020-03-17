@@ -17,7 +17,7 @@ jest.mock("../../point_groups/group_detail", () => ({
 
 import {
   movePlant, closePlantInfo, setDragIcon, clickMapPlant, selectPlant,
-  setHoveredPlant
+  setHoveredPlant,
 } from "../actions";
 import { MovePlantProps } from "../../interfaces";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
@@ -28,7 +28,7 @@ import { history } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { GetState } from "../../../redux/interfaces";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
 describe("movePlant", () => {
@@ -55,8 +55,7 @@ describe("movePlant", () => {
         // Update
         expect.objectContaining({
           x: expected.x, y: expected.y
-        })
-      );
+        }));
     });
 });
 

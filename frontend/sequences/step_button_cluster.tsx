@@ -192,16 +192,13 @@ export function StepButtonCluster(props: StepButtonProps) {
     }}
     color="brown">
     {t("Mark As...")}
-  </StepButton>
-  );
-  return <div>
-    <Row>
-      <div className="step-button-cluster">
-        {ALL_THE_BUTTONS.map((stepButton, inx) =>
-          <div key={inx} onClick={() => scrollToBottom("sequenceDiv")}>
-            {stepButton}
-          </div>)}
-      </div>
-    </Row>
-  </div>;
+  </StepButton>);
+  return <Row>
+    <div className="step-button-cluster">
+      {ALL_THE_BUTTONS.map((stepButton, inx) =>
+        <div key={inx} onClick={() => scrollToBottom("sequenceDiv")}>
+          {stepButton}
+        </div>)}
+    </div>
+  </Row>;
 }

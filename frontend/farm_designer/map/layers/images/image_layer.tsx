@@ -39,8 +39,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
               image={img}
               key={"image_" + img.body.id}
               cameraCalibrationData={cameraCalibrationData}
-              mapTransformProps={mapTransformProps} />
-          )}
+              mapTransformProps={mapTransformProps} />)}
     </g>;
   }
 }

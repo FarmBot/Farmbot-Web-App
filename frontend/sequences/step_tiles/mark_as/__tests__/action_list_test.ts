@@ -1,7 +1,7 @@
 import { actionList } from "../action_list";
 import { resourceUpdate, markAsResourceFixture } from "../assertion_support";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { PLANT_OPTIONS } from "../constants";
 

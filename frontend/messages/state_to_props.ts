@@ -4,10 +4,10 @@ import { validFbosConfig, betterCompact } from "../util";
 import { getFbosConfig } from "../resources/getters";
 import { sourceFbosConfigValue } from "../devices/components/source_config_value";
 import {
-  selectAllAlerts, maybeGetTimeSettings, findResourceById
+  selectAllAlerts, maybeGetTimeSettings, findResourceById,
 } from "../resources/selectors";
 import {
-  isFwHardwareValue
+  isFwHardwareValue,
 } from "../devices/components/firmware_hardware_support";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { Alert } from "farmbot";

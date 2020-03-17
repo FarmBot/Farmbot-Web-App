@@ -2,13 +2,13 @@ import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { TaggedResource } from "farmbot";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";
 import { selectAllRegimens } from "../../resources/selectors";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import {
-  fakeRegimen, fakeSequence
+  fakeRegimen, fakeSequence,
 } from "../../__test_support__/fake_state/resources";
 
 describe("mapStateToProps()", () => {
@@ -26,7 +26,7 @@ describe("mapStateToProps()", () => {
         name: "Test Regimen",
         color: "gray",
         regimen_items: [
-          { id: 1, regimen_id: 10000, sequence_id: 20000, time_offset: 1000 }
+          { id: 1, regimen_id: 10000, sequence_id: 20000, time_offset: 1000 },
         ]
       }),
       ...newTaggedResource("Sequence", {
@@ -38,7 +38,7 @@ describe("mapStateToProps()", () => {
           "version": 4, "locals": { "kind": "scope_declaration", "args": {} },
         },
         kind: "sequence"
-      })
+      }),
     ];
     const { index } = buildResourceIndex(fakeResources);
     state.resources.index = index;

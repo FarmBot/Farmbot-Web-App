@@ -1,12 +1,12 @@
 import * as React from "react";
 import { shallow } from "enzyme";
 import {
-  Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls
+  Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../__test_support__/svg_mount";
 

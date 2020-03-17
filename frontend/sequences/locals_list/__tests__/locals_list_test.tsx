@@ -2,11 +2,11 @@ import * as React from "react";
 import { LocalsList } from "../locals_list";
 import { ParameterApplication, Coordinate } from "farmbot";
 import {
-  fakeSequence
+  fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { shallow } from "enzyme";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { LocalsListProps, AllowedVariableNodes } from "../locals_list_support";
 import { VariableNameSet } from "../../../resources/interfaces";

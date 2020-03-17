@@ -3,13 +3,13 @@ import { success, warning, info, error } from "../toast/toast";
 import { getDevice } from "../device";
 import { Everything } from "../interfaces";
 import {
-  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis
+  GithubRelease, MoveRelProps, MinOsFeatureLookup, SourceFwConfig, Axis,
 } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import {
   McuParams, TaggedFirmwareConfig, ParameterApplication,
   ALLOWED_PIN_MODES,
-  FirmwareHardware
+  FirmwareHardware,
 } from "farmbot";
 import { ControlPanelState } from "../devices/interfaces";
 import { oneOf, versionOK, trim } from "../util";
@@ -23,6 +23,7 @@ import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
+import { ExternalUrl } from "../external_urls";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -144,7 +145,7 @@ export function sync(): Thunk {
 
 export function execSequence(
   sequenceId: number | undefined,
-  bodyVariables?: ParameterApplication[]
+  bodyVariables?: ParameterApplication[],
 ) {
   const noun = t("Sequence execution");
   if (sequenceId) {
@@ -236,12 +237,11 @@ function validMinOsFeatureLookup(x: MinOsFeatureLookup): boolean {
 
 /**
  * Fetch and save minimum FBOS version data for UI feature display.
- * @param url location of data
  */
-export const fetchMinOsFeatureData = (url: string) =>
+export const fetchMinOsFeatureData = () =>
   (dispatch: Function) => {
     axios
-      .get<MinOsFeatureLookup>(url)
+      .get<MinOsFeatureLookup>(ExternalUrl.featureMinVersions)
       .then(resp => {
         const data = resp.data;
         if (validMinOsFeatureLookup(data)) {
@@ -263,6 +263,27 @@ export const fetchMinOsFeatureData = (url: string) =>
   };
 
 /**
+* Fetch and save FBOS release notes.
+*/
+export const fetchOsReleaseNotes = () =>
+  (dispatch: Function) => {
+    axios
+      .get<string>(ExternalUrl.osReleaseNotes)
+      .then(resp => {
+        dispatch({
+          type: Actions.FETCH_OS_RELEASE_NOTES_OK,
+          payload: resp.data
+        });
+      })
+      .catch((ferror) => {
+        dispatch({
+          type: Actions.FETCH_OS_RELEASE_NOTES_ERROR,
+          payload: ferror
+        });
+      });
+  };
+
+/**
  * Toggles visibility of individual sections in the giant controls panel
  * found on the Devices page.
  */
@@ -271,8 +292,11 @@ export function toggleControlPanel(payload: keyof ControlPanelState) {
 }
 
 /** Toggle visibility of all hardware control panel sections. */
-export function bulkToggleControlPanel(payload: boolean) {
-  return { type: Actions.BULK_TOGGLE_CONTROL_PANEL, payload };
+export function bulkToggleControlPanel(open: boolean, all = false) {
+  return {
+    type: Actions.BULK_TOGGLE_CONTROL_PANEL,
+    payload: { open, all },
+  };
 }
 
 /** Factory reset all firmware settings. */
@@ -285,13 +309,13 @@ export function MCUFactoryReset() {
 
 /** Toggle a firmware setting. */
 export function settingToggle(
-  name: ConfigKey,
+  key: ConfigKey,
   sourceFwConfig: SourceFwConfig,
-  displayAlert?: string | undefined
+  displayAlert?: string | undefined,
 ) {
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }
-    const update = { [name]: (sourceFwConfig(name).value === 0) ? ON : OFF };
+    const update = { [key]: (sourceFwConfig(key).value === 0) ? ON : OFF };
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
       dispatch(edit(fwConfig, update));
@@ -325,7 +349,7 @@ export function pinToggle(pin_number: number) {
 }
 
 export function readPin(
-  pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES
+  pin_number: number, label: string, pin_mode: ALLOWED_PIN_MODES,
 ) {
   const noun = t("Read pin");
   return getDevice()

@@ -6,7 +6,7 @@ import { getDevice } from "../../device";
 import { buildDirectionProps } from "./direction_axes_props";
 import { t } from "../../i18next_wrapper";
 import {
-  cameraBtnProps
+  cameraBtnProps,
 } from "../../devices/components/fbos_settings/camera_selection";
 const DEFAULT_STEP_SIZE = 100;
 

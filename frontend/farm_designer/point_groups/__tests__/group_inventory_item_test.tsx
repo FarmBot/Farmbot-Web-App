@@ -1,9 +1,9 @@
 import React from "react";
 import {
-  GroupInventoryItem, GroupInventoryItemProps
+  GroupInventoryItem, GroupInventoryItemProps,
 } from "../group_inventory_item";
 import {
-  fakePointGroup, fakePlant
+  fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 

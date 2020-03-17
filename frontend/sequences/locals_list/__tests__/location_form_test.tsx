@@ -1,15 +1,15 @@
 import * as React from "react";
 import { LocationForm } from "../location_form";
 import {
-  fakeSequence
+  fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { shallow, mount } from "enzyme";
 import {
-  buildResourceIndex
+  buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { FBSelect, BlurableInput } from "../../../ui/index";
 import {
-  LocationFormProps, PARENT, AllowedVariableNodes
+  LocationFormProps, PARENT, AllowedVariableNodes,
 } from "../locals_list_support";
 import { difference } from "lodash";
 import { locationFormList } from "../location_form_list";

@@ -4,7 +4,7 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { ParameterDeclaration, ParameterApplication } from "farmbot";
 import { LocationForm } from "./location_form";
 import {
-  SequenceMeta, determineVector, determineDropdown
+  SequenceMeta, determineVector, determineDropdown,
 } from "../../resources/sequence_meta";
 import { Help, DropDownItem } from "../../ui";
 import { ToolTips } from "../../constants";
@@ -40,7 +40,7 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
         customFilterRule={NO_GROUPS} />
     </div>;
   } else {
-    return <div />;
+    return <div className={"no-default-value-form"} />;
   }
 };
 
@@ -61,7 +61,7 @@ const change =
 
 const defaultValueVariableData = (
   resources: ResourceIndex,
-  node: ParameterDeclaration
+  node: ParameterDeclaration,
 ): SequenceMeta => {
   const celeryNode: ParameterApplication = {
     kind: "parameter_application",

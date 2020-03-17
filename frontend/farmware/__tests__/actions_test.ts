@@ -3,7 +3,7 @@ jest.mock("axios", () => ({
     return Promise.resolve({
       data: [
         { package: "farmware0" },
-        { package: "farmware1" }
+        { package: "farmware1" },
       ]
     });
   }),

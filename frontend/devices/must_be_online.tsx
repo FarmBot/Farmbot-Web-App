@@ -3,6 +3,8 @@ import { NetworkState } from "../connectivity/interfaces";
 import { SyncStatus } from "farmbot";
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";
+import { BotState } from "./interfaces";
+import { getStatus } from "../connectivity/reducer_support";
 
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {
@@ -23,11 +25,17 @@ export function isBotOnline(
   return !!(isBotUp(syncStatus) && botToMqttStatus === "up");
 }
 
+export function isBotOnlineFromState(bot: BotState) {
+  const { sync_status } = bot.hardware.informational_settings;
+  const { uptime } = bot.connectivity;
+  return isBotOnline(sync_status, getStatus(uptime["bot.mqtt"]));
+}
+
 export function MustBeOnline(props: MBOProps) {
   const { children, hideBanner, lockOpen, networkState, syncStatus } = props;
   const banner = hideBanner ? "" : "banner";
   if (isBotOnline(syncStatus, networkState) || lockOpen) {
-    return <div> {children} </div>;
+    return <div className={"bot-is-online-wrapper"}>{children}</div>;
   } else {
     return <div
       className={`unavailable ${banner}`}

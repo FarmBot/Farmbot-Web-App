@@ -1,33 +1,23 @@
 import React from "react";
 import { connect } from "react-redux";
 import {
-  DesignerPanel, DesignerPanelContent, DesignerPanelHeader
+  DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../designer_panel";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
-import { SpecialStatus, FirmwareHardware } from "farmbot";
+import { SpecialStatus } from "farmbot";
 import { initSave } from "../../api/crud";
 import { Panel } from "../panel_header";
 import { history } from "../../history";
 import { selectAllTools } from "../../resources/selectors";
 import { betterCompact } from "../../util";
 import {
-  getFwHardwareValue
+  getFwHardwareValue,
 } from "../../devices/components/firmware_hardware_support";
 import { getFbosConfig } from "../../resources/getters";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";
-
-export interface AddToolProps {
-  dispatch: Function;
-  existingToolNames: string[];
-  firmwareHardware: FirmwareHardware | undefined;
-}
-
-export interface AddToolState {
-  toolName: string;
-  toAdd: string[];
-}
+import { AddToolProps, AddToolState } from "./interfaces";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -99,6 +89,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     return <div className={`fb-checkbox ${alreadyAdded ? "disabled" : ""}`}>
       <input type="checkbox" key={JSON.stringify(this.state.toAdd)}
         title={alreadyAdded ? t("Already added.") : ""}
+        name="toolName"
         checked={checked}
         onChange={() => checked
           ? this.remove(toolName)
@@ -106,8 +97,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     </div>;
   }
 
-  AddStockTools = () =>
-    <div className="add-stock-tools">
+  AddStockTools = () => {
+    const add = this.state.toAdd.filter(this.filterExisting);
+    return <div className="add-stock-tools"
+      hidden={this.props.firmwareHardware == "none"}>
       <label>{t("stock names")}</label>
       <ul>
         {this.stockToolNames().map(n =>
@@ -117,16 +110,17 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           </li>)}
       </ul>
       <button
-        className="fb-button green"
+        className={`fb-button green ${add.length > 0 ? "" : "pseudo-disabled"}`}
+        title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
-          this.state.toAdd.filter(this.filterExisting)
-            .map(n => this.newTool(n));
+          add.map(n => this.newTool(n));
           history.push("/app/designer/tools");
         }}>
         <i className="fa fa-plus" />
         {t("selected")}
       </button>
-    </div>
+    </div>;
+  }
 
   render() {
     const panelName = "add-tool";
@@ -141,6 +135,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           <ToolSVG toolName={this.state.toolName} />
           <label>{t("Name")}</label>
           <input defaultValue={this.state.toolName}
+            name="name"
             onChange={e =>
               this.setState({ toolName: e.currentTarget.value })} />
           <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />

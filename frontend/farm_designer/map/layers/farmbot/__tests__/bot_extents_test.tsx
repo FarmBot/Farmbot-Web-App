@@ -4,7 +4,7 @@ import { shallow } from "enzyme";
 import { bot } from "../../../../../__test_support__/fake_state/bot";
 import { BotExtentsProps } from "../../../interfaces";
 import {
-  fakeMapTransformProps
+  fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<VirtualFarmBot/>", () => {

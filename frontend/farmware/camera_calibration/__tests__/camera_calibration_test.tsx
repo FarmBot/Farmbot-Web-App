@@ -51,7 +51,7 @@ describe("<CameraCalibration/>", () => {
       "SATURATION025558",
       "VALUE025569",
       "Processing Parameters",
-      "Scan image"
+      "Scan image",
     ].map(string =>
       expect(wrapper.text()).toContain(string));
   });

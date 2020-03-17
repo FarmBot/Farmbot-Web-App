@@ -4,7 +4,7 @@ import {
   dispatchNetworkUp,
   dispatchQosStart,
   pingOK,
-  pingNO
+  pingNO,
 } from "./index";
 import { isNumber } from "lodash";
 import axios from "axios";

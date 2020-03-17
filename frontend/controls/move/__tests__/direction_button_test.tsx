@@ -9,7 +9,7 @@ jest.mock("../../../device", () => ({
 import * as React from "react";
 import { mount } from "enzyme";
 import {
-  DirectionButton, directionDisabled, calculateDistance
+  DirectionButton, directionDisabled, calculateDistance,
 } from "../direction_button";
 import { DirectionButtonProps } from "../interfaces";
 

@@ -18,7 +18,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   no = () => this.props.fallback || <Apology />;
 
-  ok = () => this.props.children || <div />;
+  ok = () => this.props.children || <div className={"no-children"} />;
 
   render() { return (this.state.hasError ? this.no : this.ok)(); }
 }

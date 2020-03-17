@@ -4,7 +4,7 @@ import { StatusRowProps } from "./connectivity_row";
 import { ConnectionStatus } from "../../connectivity/interfaces";
 import { t } from "../../i18next_wrapper";
 import {
-  getBoardCategory, isKnownBoard
+  getBoardCategory, isKnownBoard,
 } from "../components/firmware_hardware_support";
 
 /** "<how long> ago" for a given ISO time string or time in milliseconds. */
