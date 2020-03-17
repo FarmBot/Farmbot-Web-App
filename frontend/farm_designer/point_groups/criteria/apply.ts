@@ -1,7 +1,7 @@
-import { every, get, uniq, gt, lt, isNumber } from "lodash";
+import { every, get, uniq, gt, lt, isNumber, isEqual } from "lodash";
 import { TaggedPoint, TaggedPointGroup } from "farmbot";
 import moment from "moment";
-import { PointGroupCriteria } from "./interfaces";
+import { PointGroupCriteria, DEFAULT_CRITERIA } from "./interfaces";
 
 /** Check if a string or number criteria field is empty. */
 const eqCriteriaEmpty =
@@ -45,6 +45,7 @@ export const selectPointsByCriteria = (
   allPoints: TaggedPoint[],
   now = moment(),
 ): TaggedPoint[] => {
+  if (isEqual(criteria, DEFAULT_CRITERIA)) { return []; }
   const check = checkCriteria(criteria, now);
   return allPoints.filter(point =>
     every(Object.keys(criteria).map((key: keyof PointGroupCriteria) =>
