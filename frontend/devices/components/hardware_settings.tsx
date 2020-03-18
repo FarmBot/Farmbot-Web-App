@@ -28,7 +28,7 @@ export class HardwareSettings extends
       bot, dispatch, sourceFwConfig, controlPanelState, firmwareConfig,
       firmwareHardware, resources
     } = this.props;
-    const botOnline = !isBotOnlineFromState(bot);
+    const botOnline = isBotOnlineFromState(bot);
     const commonProps = { dispatch, controlPanelState };
     return <Widget className="hardware-widget">
       <WidgetHeader title={t("Hardware")} helpText={ToolTips.HW_SETTINGS}>
