@@ -48,25 +48,25 @@ describe Api::PointsController do
 
     it "creates a weed" do
       sign_in user
-      time = (DateTime.now - 1.day).to_json
-      p = { x: 23,
-            y: 45,
-            name: "unwelcomed guest",
-            pointer_type: "Weed",
-            planted_at: time,
-            plant_stage: "sprouted" }
-      post :create, body: p.to_json, params: { format: :json }
+      body = { x: 1,
+               y: 2,
+               z: 3,
+               radius: 3,
+               name: "test weed",
+               pointer_type: "Weed",
+               meta: { foo: "BAR" } }
+      post :create, body: body.to_json, params: { format: :json }
       expect(response.status).to eq(200)
+      expect(json[:name]).to eq(body[:name])
+      expect(json[:x]).to eq(body[:x])
+      expect(json[:y]).to eq(body[:y])
+      expect(json[:z]).to eq(body[:z])
+      expect(json[:radius]).to eq(body[:radius])
+      expect(json[:meta][:foo]).to eq(body[:meta][:foo])
       weed = Weed.last
-      expect(weed.x).to eq(p[:x])
-      expect(weed.y).to eq(p[:y])
-      expect(weed.name).to eq(p[:name])
-      expect(weed.plant_stage).to eq("sprouted")
-      expect(p[:plant_stage]).to eq("sprouted")
-      expect(weed.created_at).to be_truthy
-      p.keys.each do |key|
-        expect(json).to have_key(key)
-      end
+      expect(weed.id).to eq(json[:id])
+      expect(weed.device).to eq(device)
+      expect(json[:pointer_type]).to eq(body[:pointer_type])
     end
 
     it "validates pointer_type" do
