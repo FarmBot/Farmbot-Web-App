@@ -46,6 +46,29 @@ describe Api::PointsController do
       end
     end
 
+    it "creates a weed" do
+      sign_in user
+      time = (DateTime.now - 1.day).to_json
+      p = { x: 23,
+            y: 45,
+            name: "unwelcomed guest",
+            pointer_type: "Weed",
+            planted_at: time,
+            plant_stage: "sprouted" }
+      post :create, body: p.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      weed = Weed.last
+      expect(weed.x).to eq(p[:x])
+      expect(weed.y).to eq(p[:y])
+      expect(weed.name).to eq(p[:name])
+      expect(weed.plant_stage).to eq("sprouted")
+      expect(p[:plant_stage]).to eq("sprouted")
+      expect(weed.created_at).to be_truthy
+      p.keys.each do |key|
+        expect(json).to have_key(key)
+      end
+    end
+
     it "validates pointer_type" do
       sign_in user
       body = { pointer_type: "TypoPointer", x: 0, y: 0 }

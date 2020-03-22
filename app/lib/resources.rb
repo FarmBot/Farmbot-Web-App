@@ -46,5 +46,6 @@ module Resources
     Plant         => Points,
     Point         => Points,
     ToolSlot      => Points,
+    Weed          => Points,
   }
 end # Resources
