@@ -46,6 +46,29 @@ describe Api::PointsController do
       end
     end
 
+    it "creates a weed" do
+      sign_in user
+      body = { x: 1,
+               y: 2,
+               z: 3,
+               radius: 3,
+               name: "test weed",
+               pointer_type: "Weed",
+               meta: { foo: "BAR" } }
+      post :create, body: body.to_json, params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(json[:name]).to eq(body[:name])
+      expect(json[:x]).to eq(body[:x])
+      expect(json[:y]).to eq(body[:y])
+      expect(json[:z]).to eq(body[:z])
+      expect(json[:radius]).to eq(body[:radius])
+      expect(json[:meta][:foo]).to eq(body[:meta][:foo])
+      weed = Weed.last
+      expect(weed.id).to eq(json[:id])
+      expect(weed.device).to eq(device)
+      expect(json[:pointer_type]).to eq(body[:pointer_type])
+    end
+
     it "validates pointer_type" do
       sign_in user
       body = { pointer_type: "TypoPointer", x: 0, y: 0 }

@@ -4,7 +4,7 @@ class Point < ApplicationRecord
                          # axis value > 21k right now - RC
   # Using real constants instead of strings results
   # in circular dep. errors.
-  POINTER_KINDS = ["GenericPointer", "Plant", "ToolSlot"]
+  POINTER_KINDS = ["GenericPointer", "Plant", "ToolSlot", "Weed"]
   self.inheritance_column = "pointer_type"
 
   belongs_to :device

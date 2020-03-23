@@ -30,8 +30,8 @@ module CeleryScriptSettingsBag
   ALLOWED_PACKAGES = %w(farmbot_os arduino_firmware)
   ALLOWED_PIN_MODES = [DIGITAL = 0, ANALOG = 1]
   ALLOWED_PIN_TYPES = PIN_TYPE_MAP.keys
-  ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant)
-  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot GenericPointer)
+  ALLOWED_POINTER_TYPE = %w(GenericPointer ToolSlot Plant Weed)
+  ALLOWED_RESOURCE_TYPE = %w(Device Point Plant ToolSlot Weed GenericPointer)
   ALLOWED_RPC_NODES = %w(assertion calibrate change_ownership
                          check_updates dump_info emergency_lock
                          emergency_unlock execute execute_script

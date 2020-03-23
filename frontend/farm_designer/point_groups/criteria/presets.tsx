@@ -26,7 +26,7 @@ const CRITERIA_POINT_TYPES =
 export class CheckboxSelections extends React.Component
   <CheckboxSelectionsProps, Partial<CheckboxSelectionsState>> {
   state: CheckboxSelectionsState = {
-    Plant: false, GenericPointer: false, ToolSlot: false
+    Plant: false, GenericPointer: false, ToolSlot: false, Weed: false
   };
 
   toggleMore = (section: keyof CheckboxSelectionsState) => () =>

@@ -98,6 +98,7 @@ export interface CheckboxSelectionsState {
   Plant: boolean;
   GenericPointer: boolean;
   ToolSlot: boolean;
+  Weed: boolean;
 }
 
 export interface NumberLtGtInputProps {
