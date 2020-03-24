@@ -41,6 +41,7 @@ export const NAME_MAP: Record<DropdownHeadingId, string> = {
   "ToolSlot": "Slots",
   "Tool": "Tools and Seed Containers",
   "PointGroup": "Groups",
+  "Weed": "Weeds",
   "Other": "Other",
 };
 

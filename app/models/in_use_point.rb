@@ -8,6 +8,7 @@ class InUsePoint < ApplicationRecord
     GenericPointer.name => DEFAULT_NAME,
     ToolSlot.name => "slot",
     Plant.name => "plant",
+    Weed.name => "weed"
   }
 
   def readonly?
