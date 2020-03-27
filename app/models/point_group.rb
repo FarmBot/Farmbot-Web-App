@@ -4,9 +4,10 @@ class PointGroup < ApplicationRecord
   BAD_SORT = "%{value} is not valid. Valid options are: " +
              SORT_TYPES.map(&:inspect).join(", ")
   DEFAULT_CRITERIA = {
-    day: { op: "<", days_ago: 0 },
+    day: nil,
     string_eq: {},
     number_eq: {},
+    boolean_eq: {},
     number_lt: {},
     number_gt: {},
   }
@@ -16,4 +17,5 @@ class PointGroup < ApplicationRecord
   validates_inclusion_of :sort_type, in: SORT_TYPES,
                                      message: BAD_SORT
   serialize :criteria
+  serialize :group_type
 end

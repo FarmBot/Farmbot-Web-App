@@ -21,6 +21,7 @@ describe Api::PointGroupsController do
     sign_in user
     pg = PointGroups::Create.run!(device: device,
                                   point_ids: old_point_ids,
+                                  group_type: [],
                                   name: "PointGroups::Update test")
 
     old_pgis = PointGroupItem.where(point_id: old_point_ids).pluck(:point_id)
@@ -29,6 +30,7 @@ describe Api::PointGroupsController do
     dont_delete = [old_pgis[1], old_pgis[2]]
     new_point_ids = rando_points + dont_delete
     payload = { name: "new name",
+                group_type: ["Plant"],
                 point_ids: new_point_ids }
     Transport.current.connection.clear!
     put :update, body: payload.to_json, format: :json, params: { id: pg.id }
@@ -37,6 +39,7 @@ describe Api::PointGroupsController do
     expect(PointGroupItem.where(point_id: new_point_ids).count).to eq(new_point_ids.count)
     expect(json[:point_ids].count).to eq(new_point_ids.count)
     expect(json.fetch(:name)).to eq "new name"
+    expect(json[:group_type]).to eq(["Plant"])
     expect(new_point_ids.to_set).to eq(json.fetch(:point_ids).to_set)
     calls = Transport.current.connection.calls.fetch(:publish)
     expect(calls.length).to eq(1) # Don't echo!
@@ -55,6 +58,7 @@ describe Api::PointGroupsController do
       criteria: {
         string_eq: { openfarm_slug: ["carrot"] },
         number_eq: { z: [24, 25, 26] },
+        boolean_eq: { gantry_mounted: [true] },
         number_lt: { x: 4, y: 4 },
         number_gt: { x: 1, y: 1 },
         day: { op: "<", days_ago: 0 },
@@ -66,6 +70,7 @@ describe Api::PointGroupsController do
       criteria: {
         string_eq: { name: ["carrot"] },
         number_eq: { x: [42, 52, 62] },
+        boolean_eq: { gantry_mounted: [false] },
         number_lt: { y: 8 },
         number_gt: { z: 2 },
         day: { op: ">", days_ago: 10 },
@@ -75,6 +80,7 @@ describe Api::PointGroupsController do
     expect(response.status).to eq(200)
     expect(json.dig(:criteria, :day, :days_ago)).to eq(10)
     expect(json.dig(:criteria, :day, :op)).to eq(">")
+    expect(json.dig(:criteria, :boolean_eq, :gantry_mounted)).to eq([false])
     expect(json.dig(:criteria, :number_eq, :x)).to eq([42, 52, 62])
     expect(json.dig(:criteria, :number_eq, :z)).to eq(nil)
     expect(json.dig(:criteria, :number_gt, :x)).to eq(nil)

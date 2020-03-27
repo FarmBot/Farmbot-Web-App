@@ -10,7 +10,6 @@ import {
   EqCriteriaSelectionProps, NumberCriteriaProps,
   CriteriaSelectionProps, LocationSelectionProps,
   NumberLtGtInputProps,
-  PointGroupCriteria,
 } from "./interfaces";
 import { t } from "../../../i18next_wrapper";
 import { ToggleButton } from "../../../controls/toggle_button";
@@ -98,18 +97,22 @@ export const DaySelection = (props: CriteriaSelectionProps) => {
         <FBSelect key={JSON.stringify(criteria)}
           list={[DAY_OPERATOR_DDI_LOOKUP()["<"],
           DAY_OPERATOR_DDI_LOOKUP()[">"]]}
-          selectedItem={DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
+          selectedItem={!dayCriteria
+            ? { label: t("Select one"), value: "" }
+            : DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
           onChange={ddi => dispatch(editCriteria(group, {
             day: {
-              days_ago: dayCriteria.days_ago,
-              op: ddi.value as PointGroupCriteria["day"]["op"]
+              days_ago: dayCriteria?.days_ago || 0,
+              op: ddi.value as "<" | ">"
             }
           }))} />
       </Col>
       <Col xs={3}>
-        <input type="number" value={dayCriteria.days_ago} name="days_ago"
+        <input type="number" name="days_ago"
+          value={!dayCriteria ? "" : dayCriteria.days_ago}
+          disabled={!dayCriteria}
           onChange={e => {
-            const { op } = dayCriteria;
+            const op = dayCriteria?.op || "<";
             const days_ago = parseInt(e.currentTarget.value);
             dispatch(editCriteria(group, { day: { days_ago, op } }));
           }} />

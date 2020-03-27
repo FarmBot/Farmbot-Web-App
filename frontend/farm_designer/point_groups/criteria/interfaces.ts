@@ -11,11 +11,13 @@ export const POINTER_TYPES: PointerType[] =
   ["Plant", "GenericPointer", "ToolSlot"];
 
 export const DEFAULT_CRITERIA: Readonly<PointGroupCriteria> = {
-  day: { op: "<", days_ago: 0 },
+  // tslint:disable-next-line:no-null-keyword
+  day: null as unknown as undefined,
   number_eq: {},
   number_gt: {},
   number_lt: {},
   string_eq: {},
+  boolean_eq: {},
 };
 
 export interface GroupCriteriaProps {

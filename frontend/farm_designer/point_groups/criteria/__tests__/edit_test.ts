@@ -46,6 +46,7 @@ describe("editCriteria()", () => {
       number_eq: { x: [0] },
       number_gt: { x: 0 },
       number_lt: { x: 10 },
+      boolean_eq: { gantry_mounted: [true] },
     };
     editCriteria(group, criteria)(jest.fn());
     const expectedBody = cloneDeep(group.body);

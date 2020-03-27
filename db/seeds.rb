@@ -81,6 +81,7 @@ if Rails.env == "development"
   PointGroups::Create.run!(device: u.device,
                            name: "TEST GROUP I",
                            point_ids: all_of_em.sample(8),
+                           group_type: ["Plant"],
                            sort_type: "random")
 
   Device.all.map { |device| SavedGardens::Snapshot.run!(device: device) }

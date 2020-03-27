@@ -1,6 +1,6 @@
 import { selectPointsByCriteria, pointsSelectedByGroup } from "..";
 import {
-  fakePoint, fakePlant, fakePointGroup,
+  fakePoint, fakePlant, fakePointGroup, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import moment from "moment";
 import { DEFAULT_CRITERIA, PointGroupCriteria } from "../interfaces";
@@ -13,6 +13,7 @@ describe("selectPointsByCriteria()", () => {
   it("matches color", () => {
     const criteria = fakeCriteria();
     criteria.number_eq = { x: [], y: undefined, z: [] };
+    criteria.boolean_eq = { gantry_mounted: undefined };
     criteria.string_eq = { "meta.color": ["red", "blue"] };
     const matchingPoint = fakePoint();
     matchingPoint.body.meta.color = "red";
@@ -50,6 +51,18 @@ describe("selectPointsByCriteria()", () => {
     matchingPoint.body.x = 200;
     const otherPoint = fakePoint();
     otherPoint.body.x = 0;
+    const allPoints = [matchingPoint, otherPoint];
+    const result = selectPointsByCriteria(criteria, allPoints);
+    expect(result).toEqual([matchingPoint]);
+  });
+
+  it("matches boolean criteria", () => {
+    const criteria = fakeCriteria();
+    criteria.boolean_eq = { gantry_mounted: [true] };
+    const matchingPoint = fakeToolSlot();
+    matchingPoint.body.gantry_mounted = true;
+    const otherPoint = fakeToolSlot();
+    otherPoint.body.gantry_mounted = false;
     const allPoints = [matchingPoint, otherPoint];
     const result = selectPointsByCriteria(criteria, allPoints);
     expect(result).toEqual([matchingPoint]);

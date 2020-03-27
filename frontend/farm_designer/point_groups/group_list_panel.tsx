@@ -10,9 +10,12 @@ import { findAll } from "../../resources/find_all";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
 import { history } from "../../history";
 import { GroupInventoryItem } from "./group_inventory_item";
-import { EmptyStateWrapper, EmptyStateGraphic } from "../../ui/empty_state_wrapper";
+import {
+  EmptyStateWrapper, EmptyStateGraphic,
+} from "../../ui/empty_state_wrapper";
 import { Content } from "../../constants";
 import { selectAllActivePoints } from "../../resources/selectors";
+import { createGroup } from "./actions";
 
 export interface GroupListPanelProps {
   dispatch: Function;
@@ -32,8 +35,8 @@ export function mapStateToProps(props: Everything): GroupListPanelProps {
   };
 }
 
-export class RawGroupListPanel extends React.Component<GroupListPanelProps, State> {
-
+export class RawGroupListPanel
+  extends React.Component<GroupListPanelProps, State> {
   state: State = { searchTerm: "" };
 
   update = ({ currentTarget }: React.SyntheticEvent<HTMLInputElement>) => {
@@ -47,7 +50,7 @@ export class RawGroupListPanel extends React.Component<GroupListPanelProps, Stat
       <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Groups}
-        linkTo={"/app/designer/plants/select"}
+        onClick={() => this.props.dispatch(createGroup({ pointUuids: [] }))}
         title={t("Add group")}>
         <input type="text"
           name="searchTerm"

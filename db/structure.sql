@@ -41,6 +41,8 @@ CREATE TYPE public.special_action AS ENUM (
 
 SET default_tablespace = '';
 
+SET default_with_oids = false;
+
 --
 -- Name: active_storage_attachments; Type: TABLE; Schema: public; Owner: -
 --
@@ -1143,7 +1145,8 @@ CREATE TABLE public.point_groups (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     sort_type character varying(20) DEFAULT 'xy_ascending'::character varying,
-    criteria text
+    criteria text,
+    group_type text
 );
 
 
@@ -1644,8 +1647,7 @@ CREATE TABLE public.users (
     agreed_to_terms_at timestamp without time zone,
     confirmation_sent_at timestamp without time zone,
     unconfirmed_email character varying,
-    inactivity_warning_sent_at timestamp without time zone,
-    inactivity_warning_count integer
+    inactivity_warning_sent_at timestamp without time zone
 );
 
 
@@ -1729,7 +1731,9 @@ CREATE TABLE public.web_app_configs (
     confirm_sequence_deletion boolean DEFAULT true,
     discard_unsaved_sequences boolean DEFAULT false,
     user_interface_read_only_mode boolean DEFAULT false,
-    assertion_log integer DEFAULT 1
+    assertion_log integer DEFAULT 1,
+    show_zones boolean DEFAULT false,
+    show_weeds boolean DEFAULT false
 );
 
 
@@ -3376,6 +3380,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191219212755'),
 ('20191220010646'),
 ('20200116140201'),
-('20200204192005');
+('20200204192005'),
+('20200204230135'),
+('20200323235926'),
+('20200327150820');
 
 

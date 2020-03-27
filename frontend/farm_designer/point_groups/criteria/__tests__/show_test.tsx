@@ -102,6 +102,7 @@ describe("<DaySelection />", () => {
 
   it("changes operator", () => {
     const p = fakeProps();
+    p.criteria.day = { days_ago: 0, op: ">" };
     const wrapper = shallow(<DaySelection {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: "<" });
     expect(editCriteria).toHaveBeenCalledWith(
@@ -112,8 +113,39 @@ describe("<DaySelection />", () => {
 
   it("changes day value", () => {
     const p = fakeProps();
+    p.criteria.day = { days_ago: 0, op: "<" };
     const wrapper = shallow(<DaySelection {...p} />);
     wrapper.find("input").last().simulate("change", {
+      currentTarget: { value: "1" }
+    });
+    expect(editCriteria).toHaveBeenCalledWith(
+      p.group,
+      { day: { days_ago: 1, op: "<" } },
+    );
+  });
+
+  it("changes operator from undefined", () => {
+    const p = fakeProps();
+    p.criteria.day = undefined;
+    const wrapper = shallow(<DaySelection {...p} />);
+    const opSelect = wrapper.find(FBSelect);
+    expect(opSelect.props().selectedItem).toEqual({
+      label: "Select one", value: "",
+    });
+    opSelect.simulate("change", { label: "", value: "<" });
+    expect(editCriteria).toHaveBeenCalledWith(
+      p.group,
+      { day: { days_ago: 0, op: "<" } },
+    );
+  });
+
+  it("changes day value from undefined", () => {
+    const p = fakeProps();
+    p.criteria.day = undefined;
+    const wrapper = shallow(<DaySelection {...p} />);
+    const dayInput = wrapper.find("input").last();
+    expect(dayInput.props().value).toEqual("");
+    dayInput.simulate("change", {
       currentTarget: { value: "1" }
     });
     expect(editCriteria).toHaveBeenCalledWith(

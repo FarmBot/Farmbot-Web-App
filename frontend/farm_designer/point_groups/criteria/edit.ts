@@ -17,6 +17,7 @@ export const editCriteria =
         number_eq: update.number_eq || group.body.criteria.number_eq,
         number_gt: update.number_gt || group.body.criteria.number_gt,
         number_lt: update.number_lt || group.body.criteria.number_lt,
+        boolean_eq: update.boolean_eq || group.body.criteria.boolean_eq,
       };
       dispatch(overwrite(group, { ...group.body, criteria }));
       dispatch(save(group.uuid));

@@ -12,6 +12,7 @@ module PointGroups
 
     optional do
       string :sort_type
+      array :group_type, class: String
     end
 
 

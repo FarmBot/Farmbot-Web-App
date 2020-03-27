@@ -24,6 +24,7 @@ export const createGroup = ({ pointUuids, groupName }: CreateGroupProps) =>
       name: groupName || t("Untitled Group"),
       point_ids,
       sort_type: "xy_ascending",
+      group_type: ["Plant"],
       criteria: DEFAULT_CRITERIA
     };
     const action = init("PointGroup", group);

@@ -13,6 +13,7 @@ module PointGroups
     optional do
       string :name
       array :point_ids, class: Integer
+      array :group_type, class: String
       string :sort_type
     end
 

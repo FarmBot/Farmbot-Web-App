@@ -99,6 +99,7 @@ describe("<GroupDetailActive/>", () => {
         name: "XYZ",
         point_ids: [1],
         sort_type: "xy_ascending",
+        group_type: [],
         criteria: DEFAULT_CRITERIA
       },
       kind: "PointGroup",

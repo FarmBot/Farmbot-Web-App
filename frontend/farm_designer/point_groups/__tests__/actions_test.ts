@@ -37,6 +37,7 @@ describe("group action creators and thunks", () => {
       name: "Name123",
       point_ids: [1, 2],
       sort_type: "xy_ascending",
+      group_type: ["Plant"],
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");

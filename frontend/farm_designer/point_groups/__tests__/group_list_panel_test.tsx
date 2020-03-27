@@ -3,6 +3,10 @@ jest.mock("../../../history", () => ({
   history: { push: jest.fn() }
 }));
 
+jest.mock("../actions", () => ({
+  createGroup: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -16,6 +20,8 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import { createGroup } from "../actions";
+import { DesignerPanelTop } from "../../designer_panel";
 
 describe("<GroupListPanel />", () => {
   const fakeProps = (): GroupListPanelProps => {
@@ -25,7 +31,6 @@ describe("<GroupListPanel />", () => {
     group1.body.point_ids = [1, 2, 3];
     const group2 = fakePointGroup();
     group2.body.name = "two";
-    group2.body.criteria.day.days_ago = -1;
     const point1 = fakePlant();
     point1.body.id = 1;
     const point2 = fakePlant();
@@ -38,6 +43,13 @@ describe("<GroupListPanel />", () => {
       allPoints: [point1, point2, point3],
     };
   };
+
+  it("creates new group", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<GroupListPanel {...p} />);
+    wrapper.find(DesignerPanelTop).simulate("click");
+    expect(createGroup).toHaveBeenCalledWith({ pointUuids: [] });
+  });
 
   it("changes search term", () => {
     const p = fakeProps();
@@ -66,7 +78,9 @@ describe("<GroupListPanel />", () => {
     const wrapper = mount(<GroupListPanel {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("no groups yet");
   });
+});
 
+describe("mapStateToProps()", () => {
   it("maps state to props", () => {
     const state = fakeState();
     const group = fakePointGroup();

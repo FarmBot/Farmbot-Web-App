@@ -33,6 +33,10 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { MessageType } from "../../sequences/interfaces";
+import {
+  DEFAULT_CRITERIA,
+} from "../../farm_designer/point_groups/criteria/interfaces";
+import { cloneDeep } from "lodash";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -316,6 +320,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     show_historic_points: false,
     time_format_24_hour: false,
     show_pins: false,
+    show_weeds: false,
     show_zones: false,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
@@ -459,12 +464,7 @@ export function fakePointGroup(): TaggedPointGroup {
     name: "Fake",
     sort_type: "xy_ascending",
     point_ids: [],
-    criteria: {
-      day: { op: "<", days_ago: 0 },
-      number_eq: {},
-      number_gt: {},
-      number_lt: {},
-      string_eq: {}
-    }
+    group_type: [],
+    criteria: cloneDeep(DEFAULT_CRITERIA),
   });
 }
