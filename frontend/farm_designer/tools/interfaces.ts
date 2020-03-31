@@ -19,6 +19,7 @@ export interface AddToolProps {
 export interface AddToolState {
   toolName: string;
   toAdd: string[];
+  uuid: UUID | undefined;
 }
 
 export interface EditToolProps {
@@ -26,6 +27,7 @@ export interface EditToolProps {
   dispatch: Function;
   mountedToolId: number | undefined;
   isActive(id: number | undefined): boolean;
+  existingToolNames: string[];
 }
 
 export interface EditToolState {

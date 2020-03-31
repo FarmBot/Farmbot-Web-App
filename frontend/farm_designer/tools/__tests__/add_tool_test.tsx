@@ -1,4 +1,10 @@
-jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
+let mockSave = () => Promise.resolve();
+jest.mock("../../../api/crud", () => ({
+  initSave: jest.fn(),
+  init: jest.fn(() => ({ payload: { uuid: "fake uuid" } })),
+  save: jest.fn(() => mockSave),
+  destroy: jest.fn(),
+}));
 
 jest.mock("../../../history", () => ({ history: { push: jest.fn() } }));
 
@@ -7,7 +13,7 @@ import { mount, shallow } from "enzyme";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { SaveBtn } from "../../../ui";
-import { initSave } from "../../../api/crud";
+import { initSave, init, destroy } from "../../../api/crud";
 import { history } from "../../../history";
 import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
@@ -32,11 +38,47 @@ describe("<AddTool />", () => {
     expect(wrapper.state().toolName).toEqual("new name");
   });
 
-  it("saves", () => {
-    const wrapper = shallow(<AddTool {...fakeProps()} />);
+  it("disables save until name in entered", () => {
+    const wrapper = shallow<AddTool>(<AddTool {...fakeProps()} />);
+    expect(wrapper.state().toolName).toEqual("");
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
+    wrapper.setState({ toolName: "fake tool name" });
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeFalsy();
+  });
+
+  it("shows name collision message", () => {
+    const p = fakeProps();
+    p.existingToolNames = ["tool"];
+    const wrapper = shallow<AddTool>(<AddTool {...p} />);
+    wrapper.setState({ toolName: "tool" });
+    expect(wrapper.find("p").first().text()).toEqual("Already added.");
+    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
+  });
+
+  it("saves", async () => {
+    mockSave = () => Promise.resolve();
+    const p = fakeProps();
+    p.dispatch = jest.fn(x => typeof x === "function" && x());
+    const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
-    wrapper.find(SaveBtn).simulate("click");
-    expect(initSave).toHaveBeenCalledWith("Tool", { name: "Foo" });
+    await wrapper.find(SaveBtn).simulate("click");
+    expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
+    expect(wrapper.state().uuid).toEqual(undefined);
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tools");
+  });
+
+  it("removes unsaved tool on exit", async () => {
+    mockSave = () => Promise.reject();
+    const p = fakeProps();
+    p.dispatch = jest.fn(x => typeof x === "function" && x());
+    const wrapper = shallow<AddTool>(<AddTool {...p} />);
+    wrapper.setState({ toolName: "Foo" });
+    await wrapper.find(SaveBtn).simulate("click");
+    expect(init).toHaveBeenCalledWith("Tool", { name: "Foo" });
+    expect(wrapper.state().uuid).toEqual("fake uuid");
+    expect(history.push).not.toHaveBeenCalled();
+    wrapper.unmount();
+    expect(destroy).toHaveBeenCalledWith("fake uuid");
   });
 
   it.each<[FirmwareHardware, number]>([

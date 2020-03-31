@@ -7,7 +7,7 @@ import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { SaveBtn } from "../../ui";
 import { SpecialStatus } from "farmbot";
-import { initSave } from "../../api/crud";
+import { initSave, destroy, init, save } from "../../api/crud";
 import { Panel } from "../panel_header";
 import { history } from "../../history";
 import { selectAllTools } from "../../resources/selectors";
@@ -27,7 +27,7 @@ export const mapStateToProps = (props: Everything): AddToolProps => ({
 });
 
 export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
-  state: AddToolState = { toolName: "", toAdd: [] };
+  state: AddToolState = { toolName: "", toAdd: [], uuid: undefined };
 
   filterExisting = (n: string) => !this.props.existingToolNames.includes(n);
 
@@ -41,14 +41,22 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     toAdd: this.stockToolNames().filter(this.filterExisting)
   });
 
-  newTool = (name: string) => {
-    this.props.dispatch(initSave("Tool", { name }));
-  };
+  newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
 
   save = () => {
-    this.newTool(this.state.toolName);
-    history.push("/app/designer/tools");
+    const initTool = init("Tool", { name: this.state.toolName });
+    this.props.dispatch(initTool);
+    const { uuid } = initTool.payload;
+    this.setState({ uuid });
+    this.props.dispatch(save(uuid))
+      .then(() => {
+        this.setState({ uuid: undefined });
+        history.push("/app/designer/tools");
+      }).catch(() => { });
   }
+
+  componentWillUnmount = () =>
+    this.state.uuid && this.props.dispatch(destroy(this.state.uuid));
 
   stockToolNames = () => {
     switch (this.props.firmwareHardware) {
@@ -123,6 +131,8 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
   }
 
   render() {
+    const { toolName, uuid } = this.state;
+    const alreadyAdded = !uuid && !this.filterExisting(toolName);
     const panelName = "add-tool";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
       <DesignerPanelHeader
@@ -138,7 +148,13 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
             name="name"
             onChange={e =>
               this.setState({ toolName: e.currentTarget.value })} />
-          <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />
+          <SaveBtn
+            onClick={this.save}
+            disabled={!this.state.toolName || alreadyAdded}
+            status={SpecialStatus.DIRTY} />
+          <p className="name-error">
+            {alreadyAdded ? t("Already added.") : ""}
+          </p>
         </div>
         <this.AddStockTools />
       </DesignerPanelContent>

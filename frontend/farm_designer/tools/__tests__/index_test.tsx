@@ -188,7 +188,9 @@ describe("<Tools />", () => {
 
   it("displays tool as active", () => {
     const p = fakeProps();
-    p.tools = [fakeTool()];
+    const tool = fakeTool();
+    tool.body.id = 1;
+    p.tools = [tool];
     p.isActive = () => true;
     p.device.body.mounted_tool_id = undefined;
     const wrapper = mount(<Tools {...p} />);

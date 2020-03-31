@@ -143,6 +143,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         .filter(tool => !tool.body.name ||
           tool.body.name && tool.body.name.toLowerCase()
             .includes(this.state.searchTerm.toLowerCase()))
+        .filter(tool => tool.body.id)
         .map(tool =>
           <ToolInventoryItem key={tool.uuid}
             toolId={tool.body.id}
