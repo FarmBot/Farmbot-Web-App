@@ -650,6 +650,7 @@
     margin-top: 1rem;
     &.red {
       float: left;
+      margin-bottom: 1rem;
     }
   }
   svg {
@@ -658,6 +659,19 @@
     width: 10rem;
     height: 10rem;
     margin-top: 2rem;
+  }
+  .edit-tool,
+  .add-new-tool {
+    margin-bottom: 3rem;
+    .name-error {
+      margin-top: 1.2rem;
+      margin-right: 1rem;
+      color: $dark_red;
+      float: right;
+    }
+    .save-btn {
+      float: right;
+    }
   }
   .add-stock-tools {
     .filter-search {

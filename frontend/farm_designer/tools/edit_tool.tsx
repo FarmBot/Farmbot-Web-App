@@ -9,6 +9,7 @@ import { getPathArray } from "../../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
+  selectAllTools,
 } from "../../resources/selectors";
 import { SaveBtn } from "../../ui";
 import { edit, destroy } from "../../api/crud";
@@ -17,6 +18,7 @@ import { Panel } from "../panel_header";
 import { ToolSVG } from "../map/layers/tool_slots/tool_graphics";
 import { error } from "../../toast/toast";
 import { EditToolProps, EditToolState } from "./interfaces";
+import { betterCompact } from "../../util";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -29,6 +31,8 @@ export const mapStateToProps = (props: Everything): EditToolProps => ({
   mountedToolId: getDeviceAccountSettings(props.resources.index)
     .body.mounted_tool_id,
   isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
+  existingToolNames: betterCompact(selectAllTools(props.resources.index)
+    .map(tool => tool.body.name)),
 });
 
 export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
@@ -53,18 +57,26 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
       ? t("Cannot delete while mounted.")
       : t("Cannot delete while in a slot.");
     const activeOrMounted = this.props.isActive(tool.body.id) || isMounted;
+    const nameTaken = this.props.existingToolNames
+      .filter(x => x != tool.body.name).includes(this.state.toolName);
     return <this.PanelWrapper>
-      <ToolSVG toolName={this.state.toolName} />
-      <label>{t("Name")}</label>
-      <input name="name"
-        value={toolName}
-        onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-      <SaveBtn
-        onClick={() => {
-          dispatch(edit(tool, { name: toolName }));
-          history.push("/app/designer/tools");
-        }}
-        status={SpecialStatus.DIRTY} />
+      <div className="edit-tool">
+        <ToolSVG toolName={this.state.toolName} />
+        <label>{t("Name")}</label>
+        <input name="name"
+          value={toolName}
+          onChange={e => this.setState({ toolName: e.currentTarget.value })} />
+        <SaveBtn
+          onClick={() => {
+            this.props.dispatch(edit(tool, { name: toolName }));
+            history.push("/app/designer/tools");
+          }}
+          disabled={!this.state.toolName || nameTaken}
+          status={SpecialStatus.DIRTY} />
+        <p className="name-error">
+          {nameTaken ? t("Name already taken.") : ""}
+        </p>
+      </div>
       <button
         className={`fb-button red no-float ${activeOrMounted
           ? "pseudo-disabled" : ""}`}

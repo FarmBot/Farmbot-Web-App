@@ -7,6 +7,7 @@ interface SaveBtnProps {
   onClick?: (e: React.MouseEvent<{}>) => void;
   status: SpecialStatus;
   dirtyText?: string;
+  disabled?: boolean;
   /** Optional alternative to "SAVING" */
   savingText?: string;
   /** Optional alternative to "SAVED" */
@@ -31,13 +32,14 @@ export function SaveBtn(props: SaveBtnProps) {
     [SpecialStatus.SAVING]: props.savingText || t("Saving")
   };
 
-  const { savedText, onClick, hidden } = props;
+  const { savedText, onClick, hidden, disabled } = props;
   const statusClass = STATUS_TRANSLATION[props.status || ""] || "is-saved";
   const klass = `${props.color || "green"} ${statusClass} save-btn fb-button`;
   const spinnerEl = (props.status === SpecialStatus.SAVING) ?
     spinner : "";
 
   return <button onClick={onClick} title={t("save")}
+    disabled={disabled}
     hidden={!!hidden} className={klass}>
     {CAPTIONS[props.status] || (savedText || t("Saved") + " ✔")} {spinnerEl}
   </button>;
