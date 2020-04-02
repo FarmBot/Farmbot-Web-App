@@ -7,6 +7,10 @@ import {
   selectAllGenericPointers,
 } from "../../../../resources/selectors";
 import { DropDownPair } from "../interfaces";
+import { fakeTool } from "../../../../__test_support__/fake_state/resources";
+import {
+  buildResourceIndex,
+} from "../../../../__test_support__/resource_index_builder";
 describe("unpackStep()", () => {
   function assertGoodness(result: DropDownPair,
     action_label: string,
@@ -37,6 +41,23 @@ describe("unpackStep()", () => {
       resourceIndex
     });
     const actionLabel = "Mounted to: Generic Tool";
+    const { label, value } = TOOL_MOUNT();
+    assertGoodness(result, actionLabel, "mounted", label, value);
+  });
+
+  it("unpacks valid tool_ids with missing names", () => {
+    const tool = fakeTool();
+    tool.body.id = 1;
+    tool.body.name = undefined;
+    const resourceIndex = buildResourceIndex([tool]).index;
+    const { body } = selectAllTools(resourceIndex)[0];
+    expect(body).toBeTruthy();
+
+    const result = unpackStep({
+      step: resourceUpdate({ label: "mounted_tool_id", value: body.id || NaN }),
+      resourceIndex
+    });
+    const actionLabel = "Mounted to: Untitled Tool";
     const { label, value } = TOOL_MOUNT();
     assertGoodness(result, actionLabel, "mounted", label, value);
   });

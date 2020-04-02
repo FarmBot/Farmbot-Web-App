@@ -185,23 +185,33 @@
     }
   }
 
+  %panel-item-base {
+    text-align: right;
+    font-size: 1rem;
+    padding-right: 1rem;
+    line-height: 3rem;
+    float: right;
+  }
   .plant-search-item,
   .group-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
     img {
-      margin: 0 1rem 0 0;
-      height: 4rem;
-      width: 4rem;
+      margin-right: 0.5rem;
+      height: 3rem;
+      width: 3rem;
     }
-  }
-
-  %panel-item-base {
-    text-align: right;
-    font-size: 1rem;
-    padding-top: 1.4rem;
-    padding-right: 1rem;
-    float: right;
+    &.quick-del {
+      &:hover {
+        background: lighten($red, 10%) !important;
+        &:after {
+          content: "x";
+          margin-left: 1rem;
+          color: $darkest_red;
+          font-weight: bold;
+        }
+      }
+    }
   }
   .plant-search-item-age {
     @extend %panel-item-base;
@@ -209,6 +219,7 @@
   .group-item-count {
     @extend %panel-item-base;
     padding-top: 0.6rem;
+    line-height: 1rem;
   }
   .plant-search-item-name {
     display: inline-block;
@@ -219,24 +230,27 @@
     text-overflow: ellipsis;
     margin-left: 1rem;
   }
+  .weed-search-item,
   .point-search-item {
     cursor: pointer;
     padding: 0.5rem 1rem;
     .saucer {
       display: inline-block;
-      margin: 0 1rem 0 0;
-      height: 2rem;
-      width: 2rem;
+      height: 3rem;
+      width: 3rem;
       vertical-align: middle;
+      margin-right: 0.25rem;
     }
   }
+  .weed-search-item-info,
   .point-search-item-info {
     text-align: right;
     font-size: 1rem;
-    padding-top: 0.6rem;
     padding-right: 1rem;
+    line-height: 3rem;
     float: right;
   }
+  .weed-search-item-name,
   .point-search-item-name {
     display: inline-block;
     vertical-align: middle;
@@ -244,7 +258,34 @@
     width: 40%;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-left: 1rem;
+    margin-left: 1.25rem;
+  }
+  .tool-search-item,
+  .tool-slot-search-item {
+    line-height: 4rem;
+    cursor: pointer;
+    .row {
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .tool-slot-search-item-name {
+      margin-left: -1rem;
+    }
+    p {
+      font-size: 1rem;
+      line-height: 4rem;
+      &.tool-status,
+      &.tool-slot-position {
+        float: right;
+      }
+    }
+    svg {
+      vertical-align: middle;
+    }
+    .tool-slot-position-info {
+      padding: 0;
+      padding-right: 1.75rem;
+    }
   }
 }
 
@@ -284,11 +325,17 @@
 }
 
 .map-point {
+  cursor: pointer !important;
   stroke-width: 2;
   stroke-opacity: 0.3;
   fill-opacity: 0.1;
 }
 
+.map-weed {
+  cursor: pointer !important;
+}
+
+.weed-image,
 .plant-image {
   transform-origin: bottom;
   transform-box: fill-box;
@@ -336,6 +383,9 @@
       opacity: 0.25;
       fill: $white;
       stroke: $white;
+    }
+    &:hover {
+      opacity: 0.15;
     }
   }
 }

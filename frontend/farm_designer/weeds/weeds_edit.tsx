@@ -6,22 +6,22 @@ import {
 import { t } from "../../i18next_wrapper";
 import { history, getPathArray } from "../../history";
 import { Everything } from "../../interfaces";
-import { TaggedGenericPointer } from "farmbot";
-import { maybeFindGenericPointerById } from "../../resources/selectors";
+import { TaggedWeedPointer } from "farmbot";
+import { maybeFindWeedPointerById } from "../../resources/selectors";
 import { Panel } from "../panel_header";
 import {
   EditPointProperties, PointActions, updatePoint,
-} from "./point_edit_actions";
+} from "../points/point_edit_actions";
 import { Actions } from "../../constants";
 
 export interface EditWeedProps {
   dispatch: Function;
-  findPoint(id: number): TaggedGenericPointer | undefined;
+  findPoint(id: number): TaggedWeedPointer | undefined;
 }
 
 export const mapStateToProps = (props: Everything): EditWeedProps => ({
   dispatch: props.dispatch,
-  findPoint: id => maybeFindGenericPointerById(props.resources.index, id),
+  findPoint: id => maybeFindWeedPointerById(props.resources.index, id),
 });
 
 export class RawEditWeed extends React.Component<EditWeedProps, {}> {

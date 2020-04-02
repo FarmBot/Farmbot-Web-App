@@ -334,6 +334,7 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "Regimen",
   "Image",
   "SavedGarden",
+  "PointGroup",
 ];
 
 const confirmationChecker = (resourceName: ResourceName, force = false) =>

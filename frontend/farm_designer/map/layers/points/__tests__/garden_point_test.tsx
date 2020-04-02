@@ -1,4 +1,7 @@
-jest.mock("../../../../../history", () => ({ history: { push: jest.fn() } }));
+jest.mock("../../../../../history", () => ({
+  history: { push: jest.fn() },
+  getPathArray: jest.fn(),
+}));
 
 import * as React from "react";
 import { GardenPoint } from "../garden_point";
@@ -55,10 +58,9 @@ describe("<GardenPoint/>", () => {
 
   it("opens point info", () => {
     const p = fakeProps();
-    p.point.body.name = "weed";
     const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("click");
     expect(history.push).toHaveBeenCalledWith(
-      `/app/designer/weeds/${p.point.body.id}`);
+      `/app/designer/points/${p.point.body.id}`);
   });
 });

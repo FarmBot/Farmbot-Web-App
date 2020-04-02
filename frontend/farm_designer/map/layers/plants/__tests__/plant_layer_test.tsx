@@ -1,6 +1,6 @@
 let mockPath = "/app/designer/plants";
 jest.mock("../../../../../history", () => ({
-  getPathArray: jest.fn(() => { return mockPath.split("/"); })
+  getPathArray: jest.fn(() => mockPath.split("/"))
 }));
 
 import * as React from "react";
@@ -31,6 +31,7 @@ describe("<PlantLayer/>", () => {
     activeDragXY: { x: undefined, y: undefined, z: undefined },
     animate: true,
     hoveredPlant: undefined,
+    interactions: true,
   });
 
   it("shows plants", () => {
@@ -59,14 +60,19 @@ describe("<PlantLayer/>", () => {
   it("is in clickable mode", () => {
     mockPath = "/app/designer/plants";
     const p = fakeProps();
+    p.interactions = true;
+    p.plants[0].body.id = 1;
     const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().style).toEqual({});
+    expect(wrapper.find("Link").props().style).toEqual({
+      cursor: "pointer"
+    });
   });
 
   it("is in non-clickable mode", () => {
     mockPath = "/app/designer/plants/crop_search/mint/add";
     const p = fakeProps();
-
+    p.interactions = false;
+    p.plants[0].body.id = 1;
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
@@ -111,22 +117,12 @@ describe("<PlantLayer/>", () => {
     expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
   });
 
-  it("allows clicking of unsaved plants", () => {
-    const p = fakeProps();
-    const plant = fakePlant();
-    plant.body.id = 1;
-    p.plants = [plant];
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect((wrapper.find("Link").props()).style).toEqual({});
-  });
-
   it("doesn't allow clicking of unsaved plants", () => {
     const p = fakeProps();
-    const plant = fakePlant();
-    plant.body.id = 0;
-    p.plants = [plant];
+    p.interactions = false;
+    p.plants[0].body.id = 0;
     const wrapper = svgMount(<PlantLayer {...p} />);
-    expect((wrapper.find("Link").props()).style)
+    expect(wrapper.find("Link").props().style)
       .toEqual({ pointerEvents: "none" });
   });
 

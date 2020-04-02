@@ -111,7 +111,7 @@ describe("isKind()", () => {
 describe("groupPointsByType()", () => {
   it("returns points", () => {
     const points = Selector.groupPointsByType(fakeIndex);
-    const expectedKeys = ["Plant", "GenericPointer", "ToolSlot"];
+    const expectedKeys = ["Plant", "GenericPointer", "ToolSlot", "Weed"];
     expect(expectedKeys.every(key => key in points)).toBeTruthy();
   });
 });

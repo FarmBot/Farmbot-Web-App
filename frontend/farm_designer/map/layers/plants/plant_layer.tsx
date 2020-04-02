@@ -2,7 +2,7 @@ import * as React from "react";
 import { GardenPlant } from "./garden_plant";
 import { PlantLayerProps, Mode } from "../../interfaces";
 import { unpackUUID } from "../../../../util";
-import { maybeNoPointer, getMode } from "../../util";
+import { getMode } from "../../util";
 import { Link } from "../../../../link";
 
 export function PlantLayer(props: PlantLayerProps) {
@@ -44,9 +44,12 @@ export function PlantLayer(props: PlantLayerProps) {
         activeDragXY={activeDragXY}
         hovered={hovered}
         animate={animate} />;
+      const style: React.SVGProps<SVGGElement>["style"] =
+        (props.interactions && p.body.id)
+          ? { cursor: "pointer" } : { pointerEvents: "none" };
       const wrapperProps = {
         className: "plant-link-wrapper",
-        style: maybeNoPointer(p.body.id ? {} : { pointerEvents: "none" }),
+        style,
         key: p.uuid,
       };
       return (getMode() === Mode.editGroup || getMode() === Mode.boxSelect)

@@ -26,6 +26,9 @@ import { hasUTM } from "../../devices/components/firmware_hardware_support";
 import { ToolsProps, ToolsState } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { BotOriginQuadrant } from "../interfaces";
+import { mapPointClickAction } from "../map/actions";
+import { getMode } from "../map/util";
+import { Mode } from "../map/interfaces";
 
 const toolStatus = (value: number | undefined): string => {
   switch (value) {
@@ -207,6 +210,7 @@ export interface ToolSlotInventoryItemProps {
   isActive(id: number | undefined): boolean;
   xySwap: boolean;
   quadrant: BotOriginQuadrant;
+  hideDropdown?: boolean;
 }
 
 export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
@@ -215,7 +219,14 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     .filter(tool => tool.body.id == tool_id)[0]?.body.name;
   return <div
     className={`tool-slot-search-item ${props.hovered ? "hovered" : ""}`}
-    onClick={() => history.push(`/app/designer/tool-slots/${id}`)}
+    onClick={() => {
+      if (getMode() == Mode.boxSelect) {
+        mapPointClickAction(props.dispatch, props.toolSlot.uuid)();
+        props.dispatch(setToolHover(undefined));
+      } else {
+        history.push(`/app/designer/tool-slots/${id}`);
+      }
+    }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
     <Row>
@@ -226,20 +237,24 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
           xySwap={props.xySwap} quadrant={props.quadrant} />
       </Col>
       <Col xs={6}>
-        <div className={"tool-selection-wrapper"}
-          onClick={e => e.stopPropagation()}>
-          <ToolSelection
-            tools={props.tools}
-            selectedTool={props.tools
-              .filter(tool => tool.body.id == tool_id)[0]}
-            onChange={update => {
-              props.dispatch(edit(props.toolSlot, update));
-              props.dispatch(save(props.toolSlot.uuid));
-            }}
-            isActive={props.isActive}
-            filterSelectedTool={false}
-            filterActiveTools={true} />
-        </div>
+        {props.hideDropdown
+          ? <span className={"tool-slot-search-item-name"}>
+            {toolName || t("Empty")}
+          </span>
+          : <div className={"tool-selection-wrapper"}
+            onClick={e => e.stopPropagation()}>
+            <ToolSelection
+              tools={props.tools}
+              selectedTool={props.tools
+                .filter(tool => tool.body.id == tool_id)[0]}
+              onChange={update => {
+                props.dispatch(edit(props.toolSlot, update));
+                props.dispatch(save(props.toolSlot.uuid));
+              }}
+              isActive={props.isActive}
+              filterSelectedTool={false}
+              filterActiveTools={true} />
+          </div>}
       </Col>
       <Col xs={4} className={"tool-slot-position-info"}>
         <p className="tool-slot-position">

@@ -85,7 +85,7 @@ describe("<WeedDetector />", () => {
     expect(wrapper.instance().state.deletionProgress).toBeUndefined();
     clickButton(wrapper, 1, "clear weeds");
     expect(deletePoints).toHaveBeenCalledWith(
-      "weeds", { created_by: "plant-detection" }, expect.any(Function));
+      "weeds", { meta: { created_by: "plant-detection" } }, expect.any(Function));
     expect(wrapper.instance().state.deletionProgress).toEqual("Deleting...");
     const fakeProgress = { completed: 50, total: 100, isDone: false };
     mockDeletePoints.mock.calls[0][2](fakeProgress);

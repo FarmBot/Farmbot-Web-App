@@ -11,8 +11,10 @@ import {
   TaggedSensor,
   TaggedPoint,
   TaggedPointGroup,
+  TaggedWeedPointer,
+  PointType,
 } from "farmbot";
-import { SlotWithTool, ResourceIndex } from "../resources/interfaces";
+import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
 import {
   BotPosition, StepsPerMmXY, BotLocationData, ShouldDisplay,
 } from "../devices/interfaces";
@@ -48,6 +50,7 @@ export interface State extends TypeCheckerHint {
   legend_menu_open: boolean;
   show_plants: boolean;
   show_points: boolean;
+  show_weeds: boolean;
   show_spread: boolean;
   show_farmbot: boolean;
   show_images: boolean;
@@ -63,6 +66,7 @@ export interface Props {
   designer: DesignerState;
   hoveredPlant: TaggedPlant | undefined;
   genericPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
   allPoints: TaggedPoint[];
   plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
@@ -106,7 +110,8 @@ export interface Crop {
 }
 
 export interface DesignerState {
-  selectedPlants: string[] | undefined;
+  selectedPoints: UUID[] | undefined;
+  selectionPointType: PointType[] | undefined;
   hoveredPlant: HoveredPlantPayl;
   hoveredPoint: string | undefined;
   hoveredPlantListItem: string | undefined;
@@ -115,7 +120,8 @@ export interface DesignerState {
   cropSearchResults: CropLiveSearchResult[];
   cropSearchInProgress: boolean;
   chosenLocation: BotPosition;
-  currentPoint: CurrentPointPayl | undefined;
+  drawnPoint: DrawnPointPayl | undefined;
+  drawnWeed: DrawnWeedPayl | undefined;
   openedSavedGarden: string | undefined;
   tryGroupSortType: PointGroupSortType | "nn" | undefined;
   editGroupAreaInMap: boolean;
@@ -181,6 +187,7 @@ export interface FarmEventState {
 export interface GardenMapProps {
   showPlants: boolean | undefined;
   showPoints: boolean | undefined;
+  showWeeds: boolean | undefined;
   showSpread: boolean | undefined;
   showFarmbot: boolean | undefined;
   showImages: boolean | undefined;
@@ -189,6 +196,7 @@ export interface GardenMapProps {
   dispatch: Function;
   designer: DesignerState;
   genericPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
   allPoints: TaggedPoint[];
   plants: TaggedPlant[];
   toolSlots: SlotWithTool[];
@@ -279,7 +287,15 @@ export interface CameraCalibrationData {
   calibrationZ: string | undefined;
 }
 
-export interface CurrentPointPayl {
+export interface DrawnPointPayl {
+  name?: string;
+  cx: number;
+  cy: number;
+  r: number;
+  color?: string;
+}
+
+export interface DrawnWeedPayl {
   name?: string;
   cx: number;
   cy: number;

@@ -72,17 +72,20 @@ export function locationFormList(resources: ResourceIndex,
   const allPoints = selectAllActivePoints(resources);
   const plantDDI = points2ddi(allPoints, "Plant");
   const genericPointerDDI = points2ddi(allPoints, "GenericPointer");
+  const weedDDI = points2ddi(allPoints, "Weed");
   const toolDDI = activeToolDDIs(resources);
   return [COORDINATE_DDI()]
     .concat(additionalItems)
     .concat(heading("Tool"))
     .concat(toolDDI)
+    .concat(displayGroups ? heading("PointGroup") : [])
+    .concat(displayGroups ? groups2Ddi(selectAllPointGroups(resources)) : [])
     .concat(heading("Plant"))
     .concat(plantDDI)
     .concat(heading("GenericPointer"))
     .concat(genericPointerDDI)
-    .concat(displayGroups ? heading("PointGroup") : [])
-    .concat(displayGroups ? groups2Ddi(selectAllPointGroups(resources)) : []);
+    .concat(heading("Weed"))
+    .concat(weedDDI);
 }
 
 /** Create drop down item with label; i.e., "Point/Plant (1, 2, 3)" */
@@ -125,15 +128,6 @@ export function dropDownName(name: string, v?: Record<Xyz, number | undefined>,
   }
   return capitalize(label);
 }
-
-export const ALL_POINT_LABELS = {
-  "Plant": "All plants",
-  "GenericPointer": "All map points",
-  "Tool": "All tools and seed containers",
-  "ToolSlot": "All slots",
-};
-
-export type EveryPointType = keyof typeof ALL_POINT_LABELS;
 
 export const COORDINATE_DDI = (vector?: Vector3): DropDownItem => ({
   label: vector

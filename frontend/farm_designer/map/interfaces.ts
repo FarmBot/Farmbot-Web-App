@@ -2,6 +2,7 @@ import {
   TaggedPlantPointer,
   TaggedGenericPointer,
   TaggedPlantTemplate,
+  TaggedWeedPointer,
 } from "farmbot";
 import { State, BotOriginQuadrant } from "../interfaces";
 import { BotPosition, BotLocationData } from "../../devices/interfaces";
@@ -22,9 +23,10 @@ export interface PlantLayerProps {
   mapTransformProps: MapTransformProps;
   zoomLvl: number;
   activeDragXY: BotPosition | undefined;
-  boxSelected: string[] | undefined;
+  boxSelected: UUID[] | undefined;
   groupSelected: UUID[];
   animate: boolean;
+  interactions: boolean;
 }
 
 export interface GardenMapLegendProps {
@@ -33,6 +35,7 @@ export interface GardenMapLegendProps {
   legendMenuOpen: boolean;
   showPlants: boolean;
   showPoints: boolean;
+  showWeeds: boolean;
   showSpread: boolean;
   showFarmbot: boolean;
   showImages: boolean;
@@ -77,6 +80,17 @@ export interface GardenPointProps {
   mapTransformProps: MapTransformProps;
   point: TaggedGenericPointer;
   hovered: boolean;
+  dispatch: Function;
+}
+
+export interface GardenWeedProps {
+  mapTransformProps: MapTransformProps;
+  weed: TaggedWeedPointer;
+  hovered: boolean;
+  current: boolean;
+  selected: boolean;
+  animate: boolean;
+  spreadVisible: boolean;
   dispatch: Function;
 }
 
@@ -152,7 +166,9 @@ export enum Mode {
   addPlant = "addPlant",
   moveTo = "moveTo",
   points = "points",
+  weeds = "weeds",
   createPoint = "createPoint",
+  createWeed = "createWeed",
   templateView = "templateView",
   editGroup = "editGroup",
 }

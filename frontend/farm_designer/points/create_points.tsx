@@ -11,10 +11,10 @@ import {
   BlurableInput,
   ColorPicker,
 } from "../../ui/index";
-import { CurrentPointPayl } from "../interfaces";
+import { DrawnPointPayl } from "../interfaces";
 import { Actions, Content } from "../../constants";
 import { deletePoints } from "../../farmware/weed_detector/actions";
-import { GenericPointer } from "farmbot/dist/resources/api_resources";
+import { GenericPointer, WeedPointer } from "farmbot/dist/resources/api_resources";
 import {
   DesignerPanel,
   DesignerPanelHeader,
@@ -29,9 +29,10 @@ import { success } from "../../toast/toast";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { position } = props.bot.hardware.location_data;
+  const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
   return {
     dispatch: props.dispatch,
-    currentPoint: props.resources.consumers.farm_designer.currentPoint,
+    drawnPoint: drawnPoint || drawnWeed,
     deviceX: position.x || 0,
     deviceY: position.y || 0,
   };
@@ -39,14 +40,14 @@ export function mapStateToProps(props: Everything): CreatePointsProps {
 
 export interface CreatePointsProps {
   dispatch: Function;
-  currentPoint: CurrentPointPayl | undefined;
+  drawnPoint: DrawnPointPayl | undefined;
   deviceX: number;
   deviceY: number;
 }
 
-type CreatePointsState = Partial<CurrentPointPayl>;
+type CreatePointsState = Partial<DrawnPointPayl>;
 
-const DEFAULTS: CurrentPointPayl = {
+const DEFAULTS: DrawnPointPayl = {
   name: undefined,
   cx: 1,
   cy: 1,
@@ -61,10 +62,10 @@ export class RawCreatePoints
     this.state = {};
   }
 
-  attr = <T extends (keyof CurrentPointPayl & keyof CreatePointsState)>(key: T,
-    fallback = DEFAULTS[key]): CurrentPointPayl[T] => {
-    const p = this.props.currentPoint;
-    const userValue = this.state[key] as CurrentPointPayl[T] | undefined;
+  attr = <T extends (keyof DrawnPointPayl & keyof CreatePointsState)>(key: T,
+    fallback = DEFAULTS[key]): DrawnPointPayl[T] => {
+    const p = this.props.drawnPoint;
+    const userValue = this.state[key] as DrawnPointPayl[T] | undefined;
     const propValue = p ? p[key] : fallback;
     if (typeof userValue === "undefined") {
       return propValue;
@@ -81,7 +82,7 @@ export class RawCreatePoints
 
   get defaultColor() { return this.panel == "weeds" ? "red" : "green"; }
 
-  getPointData = (): CurrentPointPayl => {
+  getPointData = (): DrawnPointPayl => {
     return {
       name: this.attr("name"),
       cx: this.attr("cx"),
@@ -93,7 +94,9 @@ export class RawCreatePoints
 
   cancel = () => {
     this.props.dispatch({
-      type: Actions.SET_CURRENT_POINT_DATA,
+      type: this.panel == "weeds"
+        ? Actions.SET_DRAWN_WEED_DATA
+        : Actions.SET_DRAWN_POINT_DATA,
       payload: undefined
     });
     this.setState({
@@ -106,14 +109,16 @@ export class RawCreatePoints
 
   loadDefaultPoint = () => {
     this.props.dispatch({
-      type: Actions.SET_CURRENT_POINT_DATA,
+      type: this.panel == "weeds"
+        ? Actions.SET_DRAWN_WEED_DATA
+        : Actions.SET_DRAWN_POINT_DATA,
       payload: {
         name: this.defaultName,
         cx: DEFAULTS.cx,
         cy: DEFAULTS.cy,
         r: DEFAULTS.r,
         color: this.defaultColor,
-      } as CurrentPointPayl
+      } as DrawnPointPayl
     });
   }
 
@@ -129,7 +134,7 @@ export class RawCreatePoints
   updateValue = (key: keyof CreatePointsState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
-      if (this.props.currentPoint) {
+      if (this.props.drawnPoint) {
         const point = this.getPointData();
         switch (key) {
           case "name":
@@ -143,7 +148,9 @@ export class RawCreatePoints
             point[key] = intValue;
         }
         this.props.dispatch({
-          type: Actions.SET_CURRENT_POINT_DATA,
+          type: this.panel == "weeds"
+            ? Actions.SET_DRAWN_WEED_DATA
+            : Actions.SET_DRAWN_POINT_DATA,
           payload: point
         });
       }
@@ -155,7 +162,9 @@ export class RawCreatePoints
     const point = this.getPointData();
     point.color = color;
     this.props.dispatch({
-      type: Actions.SET_CURRENT_POINT_DATA,
+      type: this.panel == "weeds"
+        ? Actions.SET_DRAWN_WEED_DATA
+        : Actions.SET_DRAWN_POINT_DATA,
       payload: point
     });
   }
@@ -163,8 +172,8 @@ export class RawCreatePoints
   get panel() { return getPathArray()[3] || "points"; }
 
   createPoint = () => {
-    const body: GenericPointer = {
-      pointer_type: "GenericPointer",
+    const body: GenericPointer | WeedPointer = {
+      pointer_type: this.panel == "weeds" ? "Weed" : "GenericPointer",
       name: this.attr("name") || this.defaultName,
       meta: {
         color: this.attr("color") || this.defaultColor,
@@ -247,8 +256,9 @@ export class RawCreatePoints
       </button>
     </Row>
 
-  DeleteAllPoints = (type: "point" | "weed") =>
-    <Row>
+  DeleteAllPoints = (type: "point" | "weed") => {
+    const meta = { created_by: "farm-designer" };
+    return <Row>
       <div className="delete-row">
         <label>{t("delete")}</label>
         <p>{type === "weed"
@@ -261,7 +271,8 @@ export class RawCreatePoints
               ? t("Delete all the weeds you have created?")
               : t("Delete all the points you have created?"))) {
               this.props.dispatch(deletePoints("points", {
-                created_by: "farm-designer", type,
+                pointer_type: type === "weed" ? "Weed" : "GenericPointer",
+                meta,
               }));
               this.cancel();
             }
@@ -271,7 +282,8 @@ export class RawCreatePoints
             : t("Delete all created points")}
         </button>
       </div>
-    </Row>
+    </Row>;
+  };
 
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;

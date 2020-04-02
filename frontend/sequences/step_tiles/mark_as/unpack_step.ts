@@ -1,15 +1,12 @@
 import { DropDownItem } from "../../../ui";
 import {
-  findToolById,
-  findByKindAndId,
-  findPointerByTypeAndId,
+  findToolById, findPointerByTypeAndId,
 } from "../../../resources/selectors";
-import { plant2ddi, pointer2ddi } from "./resource_list";
-import { GenericPointer } from "farmbot/dist/resources/api_resources";
+import { point2ddi } from "./resource_list";
 import { MOUNTED_TO } from "./constants";
 import { DropDownPair, StepWithResourceIndex } from "./interfaces";
-import { TaggedPoint, TaggedPlantPointer } from "farmbot";
 import { t } from "../../../i18next_wrapper";
+import { PLANT_STAGE_DDI_LOOKUP } from "../../../farm_designer/plants/edit_plant_status";
 
 export const TOOL_MOUNT = (): DropDownItem => ({
   label: t("Tool Mount"), value: "tool_mount"
@@ -19,11 +16,11 @@ export const DISMOUNTED = (): DropDownPair => ({
   leftSide: TOOL_MOUNT(),
   rightSide: NOT_IN_USE()
 });
-const DEFAULT_TOOL_NAME = "Untitled Tool";
-const REMOVED_ACTION = { label: "Removed", value: "removed" };
+const DEFAULT_TOOL_NAME = () => t("Untitled Tool");
+const REMOVED_ACTION = () => ({ label: t("Removed"), value: "removed" });
 
-const mountedTo = (toolName = DEFAULT_TOOL_NAME): DropDownItem =>
-  ({ label: `${MOUNTED_TO} ${toolName}`, value: "mounted" });
+const mountedTo = (toolName = DEFAULT_TOOL_NAME()): DropDownItem =>
+  ({ label: `${MOUNTED_TO()} ${toolName}`, value: "mounted" });
 
 /** The user wants to change the `mounted_tool_id` of their Device. */
 function mountTool(i: StepWithResourceIndex): DropDownPair {
@@ -55,23 +52,24 @@ function unknownOption(i: StepWithResourceIndex): DropDownPair {
 
 /** The user wants to mark a the `discarded_at` attribute of a Point. */
 function discardPoint(i: StepWithResourceIndex): DropDownPair {
-  const { resource_id } = i.step.args;
-  const genericPointerBody =
-    findPointerByTypeAndId(i.resourceIndex, "GenericPointer", resource_id).body;
+  const { resource_id, resource_type } = i.step.args;
+  const pointerBody =
+    findPointerByTypeAndId(i.resourceIndex, resource_type, resource_id).body;
   return {
-    leftSide: pointer2ddi(genericPointerBody as GenericPointer),
-    rightSide: REMOVED_ACTION
+    leftSide: point2ddi(pointerBody),
+    rightSide: REMOVED_ACTION(),
   };
 }
 
 /** The user wants to mark a the `plant_stage` attribute of a Plant resource. */
 function plantStage(i: StepWithResourceIndex): DropDownPair {
-  const { resource_id, value } = i.step.args;
-  const r: TaggedPoint = findByKindAndId(i.resourceIndex, "Point", resource_id);
-
+  const { resource_id, resource_type, value } = i.step.args;
+  const pointerBody =
+    findPointerByTypeAndId(i.resourceIndex, resource_type, resource_id).body;
   return {
-    leftSide: plant2ddi(r.body as TaggedPlantPointer["body"]),
-    rightSide: { label: ("" + value), value: ("" + value) }
+    leftSide: point2ddi(pointerBody),
+    rightSide: PLANT_STAGE_DDI_LOOKUP()["" + value]
+      || { label: "" + value, value: "" + value },
   };
 }
 

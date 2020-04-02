@@ -51,7 +51,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([fakePlant(), fakeDevice()]);
     const plantUuid = Object.keys(state.resources.index.byKind["Point"])[0];
-    state.resources.consumers.farm_designer.selectedPlants = [plantUuid];
+    state.resources.consumers.farm_designer.selectedPoints = [plantUuid];
     expect(mapStateToProps(state).selectedPlant).toEqual(
       expect.objectContaining({ uuid: plantUuid }));
   });

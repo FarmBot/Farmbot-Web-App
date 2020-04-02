@@ -1,9 +1,9 @@
 import { ResourceIndex } from "../../../resources/interfaces";
 import { DropDownItem } from "../../../ui/fb_select";
 import { selectAllPoints } from "../../../resources/selectors";
-import { TaggedPoint, TaggedPlantPointer } from "farmbot";
-import { GenericPointer } from "farmbot/dist/resources/api_resources";
-import { POINT_HEADER, PLANT_HEADER, TOP_HALF } from "./constants";
+import { TaggedPoint } from "farmbot";
+import { Point } from "farmbot/dist/resources/api_resources";
+import { POINT_HEADER, PLANT_HEADER, TOP_HALF, WEED_HEADER } from "./constants";
 
 /** Filter function to remove resources we don't care about,
  * such as ToolSlots and unsaved (Plant|Point)'s */
@@ -17,26 +17,14 @@ const isRelevant = (x: TaggedPoint) => {
 const labelStr =
   (n: string, x: number, y: number, z: number) => `${n} (${x}, ${y}, ${z})`;
 
-/** Convert a GenericPointer to a DropDownItem that is formatted appropriately
+/** Convert a Point to a DropDownItem that is formatted appropriately
  * for the "Mark As.." step. */
-export const pointer2ddi = (i: GenericPointer): DropDownItem => {
-  const { x, y, z, name } = i;
+export const point2ddi = (i: Point): DropDownItem => {
+  const { x, y, z, name, id, pointer_type } = i;
   return {
-    value: i.id as number,
+    value: id || 0,
     label: labelStr(name, x, y, z),
-    headingId: "GenericPointer"
-  };
-};
-
-/** Convert a PlantPointer to a DropDownItem appropriately formatted for the
- * "Mark As.." step. */
-export const plant2ddi = (i: TaggedPlantPointer["body"]): DropDownItem => {
-  const { x, y, z, name, id } = i;
-
-  return {
-    value: id as number,
-    label: labelStr(name, x, y, z),
-    headingId: "Plant"
+    headingId: pointer_type,
   };
 };
 
@@ -45,16 +33,18 @@ export const plant2ddi = (i: TaggedPlantPointer["body"]): DropDownItem => {
 const pointList =
   (input: TaggedPoint[]): DropDownItem[] => {
     const genericPoints: DropDownItem[] = [POINT_HEADER];
+    const weeds: DropDownItem[] = [WEED_HEADER];
     const plants: DropDownItem[] = [PLANT_HEADER];
     input
       .map(x => x.body)
       .forEach(body => {
         switch (body.pointer_type) {
-          case "GenericPointer": return genericPoints.push(pointer2ddi(body));
-          case "Plant": return plants.push(plant2ddi(body));
+          case "GenericPointer": return genericPoints.push(point2ddi(body));
+          case "Weed": return weeds.push(point2ddi(body));
+          case "Plant": return plants.push(point2ddi(body));
         }
       });
-    return [...plants, ...genericPoints];
+    return [...plants, ...genericPoints, ...weeds];
   };
 
 /** Creates a formatted DropDownItem list for the "Resource" (left hand) side of

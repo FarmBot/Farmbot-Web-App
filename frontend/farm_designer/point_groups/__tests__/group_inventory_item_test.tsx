@@ -1,3 +1,14 @@
+jest.mock("../../../api/crud", () => ({
+  destroy: jest.fn(),
+}));
+
+let mockDelMode = false;
+jest.mock("../../../account/dev/dev_support", () => ({
+  DevSettings: {
+    quickDeleteEnabled: () => mockDelMode,
+  }
+}));
+
 import React from "react";
 import {
   GroupInventoryItem, GroupInventoryItemProps,
@@ -6,6 +17,7 @@ import {
   fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
+import { destroy } from "../../../api/crud";
 
 describe("<GroupInventoryItem />", () => {
   const fakeProps = (): GroupInventoryItemProps => ({
@@ -31,5 +43,22 @@ describe("<GroupInventoryItem />", () => {
     expect(x.text()).toContain("3 items");
     expect(x.text()).toContain("woosh");
     expect(x.find(".hovered").length).toBe(1);
+  });
+
+  it("opens group", () => {
+    const p = fakeProps();
+    const wrapper = mount(<GroupInventoryItem {...p} />);
+    wrapper.find("div").first().simulate("click");
+    expect(p.onClick).toHaveBeenCalled();
+    expect(destroy).not.toHaveBeenCalledWith(p.group.uuid);
+  });
+
+  it("deletes group", () => {
+    mockDelMode = true;
+    const p = fakeProps();
+    const wrapper = mount(<GroupInventoryItem {...p} />);
+    wrapper.find("div").first().simulate("click");
+    expect(p.onClick).not.toHaveBeenCalled();
+    expect(destroy).toHaveBeenCalledWith(p.group.uuid);
   });
 });

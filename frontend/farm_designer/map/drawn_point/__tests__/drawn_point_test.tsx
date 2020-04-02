@@ -12,13 +12,12 @@ describe("<DrawnPoint/>", () => {
       cx: 10,
       cy: 20,
       r: 30,
-      color: "red"
     }
   });
 
   it("renders point", () => {
     const wrapper = svgMount(<DrawnPoint {...fakeProps()} />);
-    expect(wrapper.find("g").props().stroke).toEqual("red");
+    expect(wrapper.find("g").props().stroke).toEqual("green");
     expect(wrapper.find("circle").first().props()).toEqual({
       id: "point-radius", strokeDasharray: "4 5",
       cx: 10, cy: 20, r: 30,
@@ -27,5 +26,12 @@ describe("<DrawnPoint/>", () => {
       id: "point-center",
       cx: 10, cy: 20, r: 2,
     });
+  });
+
+  it("renders point with chosen color", () => {
+    const p = fakeProps();
+    p.data = { cx: 0, cy: 0, r: 1, color: "red" };
+    const wrapper = svgMount(<DrawnPoint {...p} />);
+    expect(wrapper.find("g").props().stroke).toEqual("red");
   });
 });

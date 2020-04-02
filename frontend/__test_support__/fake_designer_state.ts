@@ -1,7 +1,8 @@
 import { DesignerState } from "../farm_designer/interfaces";
 
 export const fakeDesignerState = (): DesignerState => ({
-  selectedPlants: undefined,
+  selectedPoints: undefined,
+  selectionPointType: undefined,
   hoveredPlant: {
     plantUUID: undefined,
     icon: ""
@@ -13,7 +14,8 @@ export const fakeDesignerState = (): DesignerState => ({
   cropSearchResults: [],
   cropSearchInProgress: false,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
-  currentPoint: undefined,
+  drawnPoint: undefined,
+  drawnWeed: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,

@@ -23,8 +23,8 @@ export function movePlant(payload: MovePlantProps) {
   return edit(tr, update);
 }
 
-export const selectPlant = (payload: string[] | undefined) => {
-  return { type: Actions.SELECT_PLANT, payload };
+export const selectPoint = (payload: string[] | undefined) => {
+  return { type: Actions.SELECT_POINT, payload };
 };
 
 export const setHoveredPlant = (plantUUID: string | undefined, icon = "") => ({
@@ -52,16 +52,16 @@ const addOrRemoveFromGroup =
   };
 
 const addOrRemoveFromSelection =
-  (clickedPlantUuid: UUID, selectedPlants: UUID[] | undefined) => {
+  (clickedPointUuid: UUID, selectedPoints: UUID[] | undefined) => {
     const nextSelected =
-      (selectedPlants || []).filter(uuid => uuid !== clickedPlantUuid);
-    if (!(selectedPlants?.includes(clickedPlantUuid))) {
-      nextSelected.push(clickedPlantUuid);
+      (selectedPoints || []).filter(uuid => uuid !== clickedPointUuid);
+    if (!(selectedPoints?.includes(clickedPointUuid))) {
+      nextSelected.push(clickedPointUuid);
     }
-    return selectPlant(nextSelected);
+    return selectPoint(nextSelected);
   };
 
-export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
+export const clickMapPlant = (clickedPlantUuid: UUID, icon: string) => {
   return (dispatch: Function, getState: GetState) => {
     switch (getMode()) {
       case Mode.editGroup:
@@ -69,11 +69,11 @@ export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
         dispatch(addOrRemoveFromGroup(clickedPlantUuid, resources.index));
         break;
       case Mode.boxSelect:
-        const { selectedPlants } = getState().resources.consumers.farm_designer;
-        dispatch(addOrRemoveFromSelection(clickedPlantUuid, selectedPlants));
+        const { selectedPoints } = getState().resources.consumers.farm_designer;
+        dispatch(addOrRemoveFromSelection(clickedPlantUuid, selectedPoints));
         break;
       default:
-        dispatch(selectPlant([clickedPlantUuid]));
+        dispatch(selectPoint([clickedPlantUuid]));
         dispatch(setHoveredPlant(clickedPlantUuid, icon));
         break;
     }
@@ -81,7 +81,7 @@ export const clickMapPlant = (clickedPlantUuid: string, icon: string) => {
 };
 
 export const unselectPlant = (dispatch: Function) => () => {
-  dispatch(selectPlant(undefined));
+  dispatch(selectPoint(undefined));
   dispatch(setHoveredPlant(undefined));
   dispatch({ type: Actions.HOVER_PLANT_LIST_ITEM, payload: undefined });
 };
@@ -103,4 +103,15 @@ export const setDragIcon =
     const height = dragImg.naturalHeight;
     e.dataTransfer.setDragImage
       && e.dataTransfer.setDragImage(dragImg, width / 2, height / 2);
+  };
+
+export const mapPointClickAction =
+  (dispatch: Function, uuid: UUID, path?: string) => () => {
+    switch (getMode()) {
+      case Mode.editGroup:
+      case Mode.boxSelect:
+        return dispatch(clickMapPlant(uuid, ""));
+      default:
+        return path && history.push(path);
+    }
   };

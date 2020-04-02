@@ -1,14 +1,16 @@
-import { CropLiveSearchResult, CurrentPointPayl } from "./interfaces";
+import { CropLiveSearchResult, DrawnPointPayl, DrawnWeedPayl } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { DesignerState, HoveredPlantPayl } from "./interfaces";
 import { cloneDeep } from "lodash";
-import { TaggedResource } from "farmbot";
+import { TaggedResource, PointType } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
+import { UUID } from "../resources/interfaces";
 
 export const initialState: DesignerState = {
-  selectedPlants: undefined,
+  selectedPoints: undefined,
+  selectionPointType: undefined,
   hoveredPlant: {
     plantUUID: undefined,
     icon: ""
@@ -20,7 +22,8 @@ export const initialState: DesignerState = {
   cropSearchResults: [],
   cropSearchInProgress: false,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
-  currentPoint: undefined,
+  drawnPoint: undefined,
+  drawnWeed: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
@@ -41,10 +44,15 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.cropSearchInProgress = false;
     return s;
   })
-  .add<string[] | undefined>(Actions.SELECT_PLANT, (s, { payload }) => {
-    s.selectedPlants = payload;
+  .add<UUID[] | undefined>(Actions.SELECT_POINT, (s, { payload }) => {
+    s.selectedPoints = payload;
     return s;
   })
+  .add<PointType[] | undefined>(
+    Actions.SET_SELECTION_POINT_TYPE, (s, { payload }) => {
+      s.selectionPointType = payload;
+      return s;
+    })
   .add<HoveredPlantPayl>(Actions.TOGGLE_HOVERED_PLANT, (s, { payload }) => {
     s.hoveredPlant = payload;
     return s;
@@ -61,12 +69,20 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.hoveredToolSlot = payload;
     return s;
   })
-  .add<CurrentPointPayl | undefined>(
-    Actions.SET_CURRENT_POINT_DATA, (s, { payload }) => {
+  .add<DrawnPointPayl | undefined>(
+    Actions.SET_DRAWN_POINT_DATA, (s, { payload }) => {
       const { color } = (!payload || !payload.color) ?
-        (s.currentPoint || { color: "green" }) : payload;
-      s.currentPoint = payload;
-      s.currentPoint && (s.currentPoint.color = color);
+        (s.drawnPoint || { color: "green" }) : payload;
+      s.drawnPoint = payload;
+      s.drawnPoint && (s.drawnPoint.color = color);
+      return s;
+    })
+  .add<DrawnWeedPayl | undefined>(
+    Actions.SET_DRAWN_WEED_DATA, (s, { payload }) => {
+      const { color } = (!payload || !payload.color) ?
+        (s.drawnWeed || { color: "red" }) : payload;
+      s.drawnWeed = payload;
+      s.drawnWeed && (s.drawnWeed.color = color);
       return s;
     })
   .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
@@ -75,7 +91,7 @@ export const designer = generateReducer<DesignerState>(initialState)
     return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {
-    s.selectedPlants = undefined;
+    s.selectedPoints = undefined;
     s.hoveredPlant = { plantUUID: undefined, icon: "" };
     return s;
   })

@@ -14,6 +14,7 @@ import {
   selectAllPointGroups,
   getDeviceAccountSettings,
   maybeFindToolById,
+  selectAllWeedPointers,
 } from "../resources/selectors";
 import { validBotLocationData, validFwConfig, unpackUUID } from "../util";
 import { getWebAppConfigValue } from "../config_storage/actions";
@@ -44,10 +45,10 @@ export function mapStateToProps(props: Everything): Props {
   const plants = getPlants(props.resources);
   const findPlant = plantFinder(plants);
 
-  const { selectedPlants } = props.resources.consumers.farm_designer;
-  const selectedPlant = selectedPlants ? findPlant(selectedPlants[0]) : undefined;
-  const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
+  const { selectedPoints } = props.resources.consumers.farm_designer;
+  const selectedPlant = selectedPoints ? findPlant(selectedPoints[0]) : undefined;
 
+  const { plantUUID } = props.resources.consumers.farm_designer.hoveredPlant;
   const hoveredPlant = findPlant(plantUUID);
 
   const getConfigValue = getWebAppConfigValue(() => props);
@@ -55,6 +56,7 @@ export function mapStateToProps(props: Everything): Props {
   const genericPoints = getConfigValue(BooleanSetting.show_historic_points)
     ? allGenericPoints
     : allGenericPoints.filter(x => !x.body.discarded_at);
+  const weeds = selectAllWeedPointers(props.resources.index);
 
   const fwConfig = validFwConfig(getFirmwareConfig(props.resources.index));
   const { mcu_params } = props.bot.hardware;
@@ -113,6 +115,7 @@ export function mapStateToProps(props: Everything): Props {
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
     genericPoints,
+    weeds,
     allPoints: selectAllPoints(props.resources.index),
     toolSlots: joinToolsAndSlot(props.resources.index),
     hoveredPlant,

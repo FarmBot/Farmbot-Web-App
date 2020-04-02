@@ -3,16 +3,20 @@ import { t } from "../../i18next_wrapper";
 import { getDevice } from "../../device";
 import { destroy, edit, save } from "../../api/crud";
 import { ResourceColor } from "../../interfaces";
-import { TaggedGenericPointer } from "farmbot";
+import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { ListItem } from "../plants/plant_panel";
 import { round } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../../ui";
 import { parseIntInput } from "../../util";
 import { UUID } from "../../resources/interfaces";
 
+type PointUpdate =
+  Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
+
 export const updatePoint =
-  (point: TaggedGenericPointer | undefined, dispatch: Function) =>
-    (update: Partial<TaggedGenericPointer["body"]>) => {
+  (point: TaggedGenericPointer | TaggedWeedPointer | undefined,
+    dispatch: Function) =>
+    (update: PointUpdate) => {
       if (point) {
         dispatch(edit(point, update));
         dispatch(save(point.uuid));
@@ -20,18 +24,21 @@ export const updatePoint =
     };
 
 export interface EditPointPropertiesProps {
-  point: TaggedGenericPointer;
-  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  point: TaggedGenericPointer | TaggedWeedPointer;
+  updatePoint(update: PointUpdate): void;
 }
 
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
   <ul>
     <li>
-      <div className={"point-name-input"}>
+      <Row>
         <EditPointName
           name={props.point.body.name}
           updatePoint={props.updatePoint} />
-      </div>
+        <EditPointColor
+          color={props.point.body.meta.color}
+          updatePoint={props.updatePoint} />
+      </Row>
     </li>
     <ListItem name={t("Location")}>
       <EditPointLocation
@@ -41,11 +48,6 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
     <ListItem name={t("Size")}>
       <EditPointRadius
         radius={props.point.body.radius}
-        updatePoint={props.updatePoint} />
-    </ListItem>
-    <ListItem name={t("Color")}>
-      <EditPointColor
-        color={props.point.body.meta.color}
         updatePoint={props.updatePoint} />
     </ListItem>
   </ul>;
@@ -76,13 +78,13 @@ export const PointActions = ({ x, y, z, uuid, dispatch }: PointActionsProps) =>
   </div>;
 
 export interface EditPointNameProps {
-  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  updatePoint(update: PointUpdate): void;
   name: string;
 }
 
 export const EditPointName = (props: EditPointNameProps) =>
-  <Row>
-    <Col xs={12}>
+  <div className={"point-name-input"}>
+    <Col xs={10}>
       <label>{t("Name")}</label>
       <BlurableInput
         type="text"
@@ -90,10 +92,10 @@ export const EditPointName = (props: EditPointNameProps) =>
         value={props.name}
         onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
     </Col>
-  </Row>;
+  </div>;
 
 export interface EditPointLocationProps {
-  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  updatePoint(update: PointUpdate): void;
   xyLocation: Record<"x" | "y", number>;
 }
 
@@ -114,7 +116,7 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
   </Row>;
 
 export interface EditPointRadiusProps {
-  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  updatePoint(update: PointUpdate): void;
   radius: number;
 }
 
@@ -134,13 +136,15 @@ export const EditPointRadius = (props: EditPointRadiusProps) =>
   </Row>;
 
 export interface EditPointColorProps {
-  updatePoint(update: Partial<TaggedGenericPointer["body"]>): void;
+  updatePoint(update: PointUpdate): void;
   color: string | undefined;
 }
 
 export const EditPointColor = (props: EditPointColorProps) =>
-  <Row>
-    <ColorPicker
-      current={(props.color || "green") as ResourceColor}
-      onChange={color => props.updatePoint({ meta: { color } })} />
-  </Row>;
+  <div className={"point-color-input"}>
+    <Col xs={2}>
+      <ColorPicker
+        current={(props.color || "green") as ResourceColor}
+        onChange={color => props.updatePoint({ meta: { color } })} />
+    </Col>
+  </div>;

@@ -2,7 +2,7 @@ import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
 import {
-  HoveredPlantPayl, CurrentPointPayl, CropLiveSearchResult,
+  HoveredPlantPayl, DrawnPointPayl, CropLiveSearchResult, DrawnWeedPayl,
 } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
+import { PointType } from "farmbot";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
@@ -24,13 +25,22 @@ describe("designer reducer", () => {
     expect(newState.cropSearchInProgress).toEqual(true);
   });
 
-  it("selects plants", () => {
+  it("selects points", () => {
     const action: ReduxAction<string[]> = {
-      type: Actions.SELECT_PLANT,
-      payload: ["plantUuid"]
+      type: Actions.SELECT_POINT,
+      payload: ["pointUuid"]
     };
     const newState = designer(oldState(), action);
-    expect(newState.selectedPlants).toEqual(["plantUuid"]);
+    expect(newState.selectedPoints).toEqual(["pointUuid"]);
+  });
+
+  it("sets selection point type", () => {
+    const action: ReduxAction<PointType[] | undefined> = {
+      type: Actions.SET_SELECTION_POINT_TYPE,
+      payload: ["Plant"],
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.selectionPointType).toEqual(["Plant"]);
   });
 
   it("sets hovered plant", () => {
@@ -84,25 +94,49 @@ describe("designer reducer", () => {
   });
 
   it("sets current point data", () => {
-    const action: ReduxAction<CurrentPointPayl> = {
-      type: Actions.SET_CURRENT_POINT_DATA,
+    const action: ReduxAction<DrawnPointPayl> = {
+      type: Actions.SET_DRAWN_POINT_DATA,
       payload: { cx: 10, cy: 20, r: 30, color: "red" }
     };
     const newState = designer(oldState(), action);
-    expect(newState.currentPoint).toEqual({
+    expect(newState.drawnPoint).toEqual({
       cx: 10, cy: 20, r: 30, color: "red"
     });
   });
 
   it("uses current point color", () => {
-    const action: ReduxAction<CurrentPointPayl> = {
-      type: Actions.SET_CURRENT_POINT_DATA,
+    const action: ReduxAction<DrawnPointPayl> = {
+      type: Actions.SET_DRAWN_POINT_DATA,
       payload: { cx: 10, cy: 20, r: 30 }
     };
     const state = oldState();
-    state.currentPoint = { cx: 0, cy: 0, r: 0, color: "red" };
+    state.drawnPoint = { cx: 0, cy: 0, r: 0, color: "red" };
     const newState = designer(state, action);
-    expect(newState.currentPoint).toEqual({
+    expect(newState.drawnPoint).toEqual({
+      cx: 10, cy: 20, r: 30, color: "red"
+    });
+  });
+
+  it("sets current weed data", () => {
+    const action: ReduxAction<DrawnWeedPayl> = {
+      type: Actions.SET_DRAWN_WEED_DATA,
+      payload: { cx: 10, cy: 20, r: 30, color: "red" }
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.drawnWeed).toEqual({
+      cx: 10, cy: 20, r: 30, color: "red"
+    });
+  });
+
+  it("uses current weed color", () => {
+    const action: ReduxAction<DrawnWeedPayl> = {
+      type: Actions.SET_DRAWN_WEED_DATA,
+      payload: { cx: 10, cy: 20, r: 30 }
+    };
+    const state = oldState();
+    state.drawnWeed = { cx: 0, cy: 0, r: 0, color: "red" };
+    const newState = designer(state, action);
+    expect(newState.drawnWeed).toEqual({
       cx: 10, cy: 20, r: 30, color: "red"
     });
   });
@@ -155,5 +189,15 @@ describe("designer reducer", () => {
     };
     const newState = designer(state, action);
     expect(newState.tryGroupSortType).toEqual("random");
+  });
+
+  it("enables edit group area in map mode", () => {
+    const state = oldState();
+    state.editGroupAreaInMap = false;
+    const action: ReduxAction<boolean> = {
+      type: Actions.EDIT_GROUP_AREA_IN_MAP, payload: true
+    };
+    const newState = designer(state, action);
+    expect(newState.editGroupAreaInMap).toEqual(true);
   });
 });

@@ -62,7 +62,8 @@ describe("deletePoints()", () => {
     mockDelete = Promise.resolve();
     mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const dispatch = jest.fn();
-    await deletePoints("weeds", { created_by: "plant-detection" })(dispatch, jest.fn());
+    const query = { meta: { created_by: "plant-detection" } };
+    await deletePoints("weeds", query)(dispatch, jest.fn());
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
@@ -80,7 +81,8 @@ describe("deletePoints()", () => {
     mockDelete = Promise.reject("error");
     mockData = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const dispatch = jest.fn();
-    await deletePoints("weeds", { created_by: "plant-detection" })(dispatch, jest.fn());
+    const query = { meta: { created_by: "plant-detection" } };
+    await deletePoints("weeds", query)(dispatch, jest.fn());
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith("http://localhost/api/points/1,2,3");
@@ -98,7 +100,8 @@ describe("deletePoints()", () => {
     mockDelete = Promise.resolve();
     mockData = times(200, () => ({ id: 1 }));
     const dispatch = jest.fn();
-    await deletePoints("weeds", { created_by: "plant-detection" })(dispatch, jest.fn());
+    const query = { meta: { created_by: "plant-detection" } };
+    await deletePoints("weeds", query)(dispatch, jest.fn());
     expect(axios.post).toHaveBeenCalledWith("http://localhost/api/points/search",
       { meta: { created_by: "plant-detection" } });
     await expect(axios.delete).toHaveBeenCalledWith(

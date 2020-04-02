@@ -1,14 +1,14 @@
-import { TaggedPointGroup } from "farmbot";
-import { PointGroup, Point } from "farmbot/dist/resources/api_resources";
+import { TaggedPointGroup, PointType } from "farmbot";
+import { PointGroup } from "farmbot/dist/resources/api_resources";
 
 export type PointGroupCriteria = PointGroup["criteria"];
 export type StringEqCriteria = PointGroupCriteria["string_eq"];
-export type PointerType = Point["pointer_type"];
+export type PointerType = PointType;
 export type StrAndNumCriteriaKeys = (keyof Omit<PointGroupCriteria, "day">)[];
 export type EqCriteria<T> = Record<string, T[] | undefined>;
 
 export const POINTER_TYPES: PointerType[] =
-  ["Plant", "GenericPointer", "ToolSlot"];
+  ["Plant", "GenericPointer", "ToolSlot", "Weed"];
 
 export const DEFAULT_CRITERIA: Readonly<PointGroupCriteria> = {
   day: { op: "<", days_ago: 0 },

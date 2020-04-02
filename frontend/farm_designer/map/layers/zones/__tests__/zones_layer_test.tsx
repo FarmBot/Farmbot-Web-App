@@ -18,6 +18,7 @@ describe("<ZonesLayer />", () => {
       y: { value: 1500, isDefault: true }
     },
     mapTransformProps: fakeMapTransformProps(),
+    startDrag: jest.fn(),
   });
 
   it("renders", () => {
@@ -70,15 +71,15 @@ describe("<ZonesLayer />", () => {
     p.groups[0].body.id = 1;
     p.currentGroup = p.groups[0].uuid;
     const wrapper = svgMount(<ZonesLayer {...p} />);
-    expect(wrapper.html())
-      .toEqual("<svg><g class=\"zones-layer\"></g></svg>");
+    expect(wrapper.html()).toEqual(
+      "<svg><g class=\"zones-layer\" style=\"cursor: pointer;\"></g></svg>");
   });
 
   it("doesn't render current group's zones", () => {
     const p = fakeProps();
     p.visible = false;
     const wrapper = svgMount(<ZonesLayer {...p} />);
-    expect(wrapper.html())
-      .toEqual("<svg><g class=\"zones-layer\"></g></svg>");
+    expect(wrapper.html()).toEqual(
+      "<svg><g class=\"zones-layer\" style=\"cursor: pointer;\"></g></svg>");
   });
 });

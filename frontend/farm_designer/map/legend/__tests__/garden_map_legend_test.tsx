@@ -35,6 +35,7 @@ describe("<GardenMapLegend />", () => {
     legendMenuOpen: true,
     showPlants: false,
     showPoints: false,
+    showWeeds: false,
     showSpread: false,
     showFarmbot: false,
     showImages: false,

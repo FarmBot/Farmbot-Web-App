@@ -2,7 +2,6 @@ import * as React from "react";
 import { SlotWithTool, UUID } from "../../../../resources/interfaces";
 import { ToolSlotPoint } from "./tool_slot_point";
 import { MapTransformProps } from "../../interfaces";
-import { maybeNoPointer } from "../../util";
 
 export interface ToolSlotLayerProps {
   visible: boolean;
@@ -11,6 +10,7 @@ export interface ToolSlotLayerProps {
   mapTransformProps: MapTransformProps;
   dispatch: Function;
   hoveredToolSlot: UUID | undefined;
+  interactions: boolean;
 }
 
 export function ToolSlotLayer(props: ToolSlotLayerProps) {
@@ -18,7 +18,9 @@ export function ToolSlotLayer(props: ToolSlotLayerProps) {
 
   return <g
     id="toolslot-layer"
-    style={maybeNoPointer({ cursor: "pointer" })}>
+    style={props.interactions
+      ? { cursor: "pointer" }
+      : { pointerEvents: "none" }}>
     {visible &&
       slots.map(slot =>
         <ToolSlotPoint

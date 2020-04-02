@@ -60,6 +60,10 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         ? <PointsSubMenu toggle={toggle} getConfigValue={getConfigValue} />
         : undefined} />
     <LayerToggle
+      value={props.showWeeds}
+      label={t("Weeds?")}
+      onClick={toggle(BooleanSetting.show_weeds)} />
+    <LayerToggle
       value={props.showSpread}
       label={t("Spread?")}
       onClick={toggle(BooleanSetting.show_spread)} />

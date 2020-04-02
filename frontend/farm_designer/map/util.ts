@@ -299,9 +299,13 @@ export const getMode = (): Mode => {
     if (pathArray[4] === "select") { return Mode.boxSelect; }
     if (pathArray[4] === "crop_search") { return Mode.addPlant; }
     if (pathArray[3] === "move_to") { return Mode.moveTo; }
-    if (pathArray[3] === "points" || pathArray[3] === "weeds") {
+    if (pathArray[3] === "points") {
       if (pathArray[4] === "add") { return Mode.createPoint; }
       return Mode.points;
+    }
+    if (pathArray[3] === "weeds") {
+      if (pathArray[4] === "add") { return Mode.createWeed; }
+      return Mode.weeds;
     }
     if (savedGardenOpen(pathArray)) { return Mode.templateView; }
   }
@@ -337,18 +341,28 @@ export const getGardenCoordinates = (props: {
   }
 };
 
-export const maybeNoPointer =
-  (defaultStyle: React.CSSProperties): React.SVGProps<SVGGElement>["style"] => {
-    switch (getMode()) {
-      case Mode.clickToAdd:
-      case Mode.moveTo:
-      case Mode.points:
-      case Mode.createPoint:
-        return { pointerEvents: "none" };
-      default:
-        return defaultStyle;
-    }
-  };
+export const allowInteraction = () => {
+  switch (getMode()) {
+    case Mode.clickToAdd:
+    case Mode.moveTo:
+    case Mode.createPoint:
+    case Mode.createWeed:
+      return false;
+    default:
+      return true;
+  }
+};
+
+export const allowGroupAreaInteraction = () => {
+  if (!allowInteraction()) { return false; }
+  switch (getMode()) {
+    case Mode.boxSelect:
+    case Mode.editGroup:
+      return false;
+    default:
+      return true;
+  }
+};
 
 /** Check if the cursor is within the selected plant indicator area. */
 export const cursorAtPlant =

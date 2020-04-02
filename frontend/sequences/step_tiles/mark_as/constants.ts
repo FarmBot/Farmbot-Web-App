@@ -1,9 +1,11 @@
 import { DropDownItem } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
+import { PLANT_STAGE_LIST } from "../../../farm_designer/plants/edit_plant_status";
 
-export const MOUNTED_TO = t("Mounted to:");
+export const MOUNTED_TO = () => t("Mounted to:");
 
-export const DISMOUNT: DropDownItem = { label: t("Not Mounted"), value: 0 };
+export const DISMOUNT = (): DropDownItem =>
+  ({ label: t("Not Mounted"), value: 0 });
 
 /** Legal "actions" for "Mark As.." block when marking Point resources */
 export const POINT_OPTIONS: DropDownItem[] = [
@@ -12,12 +14,7 @@ export const POINT_OPTIONS: DropDownItem[] = [
 
 /** Legal "actions" in the "Mark As.." block when operating on
  * a Plant resource. */
-export const PLANT_OPTIONS: DropDownItem[] = [
-  { label: t("Planned"), value: "planned" },
-  { label: t("Planted"), value: "planted" },
-  { label: t("Sprouted"), value: "sprouted" },
-  { label: t("Harvested"), value: "harvested" },
-];
+export const PLANT_OPTIONS = PLANT_STAGE_LIST;
 
 const value = 0; // Not used in headings.
 
@@ -31,6 +28,13 @@ export const PLANT_HEADER: DropDownItem = {
 export const POINT_HEADER: DropDownItem = {
   headingId: "GenericPointer",
   label: t("Points"),
+  value,
+  heading: true
+};
+
+export const WEED_HEADER: DropDownItem = {
+  headingId: "Weed",
+  label: t("Weeds"),
   value,
   heading: true
 };

@@ -30,44 +30,57 @@ describe("locationFormList()", () => {
       label: "Generic tool (100, 200, 300)",
       value: "1",
     });
-    const plantHeading = items[3];
-    expect(plantHeading).toEqual({
-      headingId: "Plant",
-      label: "Plants",
-      value: 0,
-      heading: true,
-    });
-    const plant = items[4];
-    expect(plant).toEqual({
-      headingId: "Plant",
-      label: "Plant 1 (1, 2, 3)",
-      value: "1"
-    });
-    const pointHeading = items[6];
-    expect(pointHeading).toEqual({
-      headingId: "GenericPointer",
-      label: "Map Points",
-      value: 0,
-      heading: true,
-    });
-    const point = items[7];
-    expect(point).toEqual({
-      headingId: "GenericPointer",
-      label: "Point 1 (10, 20, 30)",
-      value: "2"
-    });
-    const groupHeading = items[8];
+    const groupHeading = items[3];
     expect(groupHeading).toEqual({
       headingId: "PointGroup",
       label: "Groups",
       value: 0,
       heading: true,
     });
-    const group = items[9];
+    const group = items[4];
     expect(group).toEqual({
       headingId: "PointGroup",
       label: "Fake",
       value: "1"
+    });
+    const plantHeading = items[5];
+    expect(plantHeading).toEqual({
+      headingId: "Plant",
+      label: "Plants",
+      value: 0,
+      heading: true,
+    });
+    const plant = items[6];
+    expect(plant).toEqual({
+      headingId: "Plant",
+      label: "Plant 1 (1, 2, 3)",
+      value: "1"
+    });
+    const pointHeading = items[8];
+    expect(pointHeading).toEqual({
+      headingId: "GenericPointer",
+      label: "Map Points",
+      value: 0,
+      heading: true,
+    });
+    const point = items[9];
+    expect(point).toEqual({
+      headingId: "GenericPointer",
+      label: "Point 1 (10, 20, 30)",
+      value: "2"
+    });
+    const weedHeading = items[10];
+    expect(weedHeading).toEqual({
+      headingId: "Weed",
+      label: "Weeds",
+      value: 0,
+      heading: true,
+    });
+    const weed = items[11];
+    expect(weed).toEqual({
+      headingId: "Weed",
+      label: "Weed 1 (15, 25, 35)",
+      value: "5"
     });
   });
 });

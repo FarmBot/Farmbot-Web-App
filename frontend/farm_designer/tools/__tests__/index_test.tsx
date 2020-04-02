@@ -1,11 +1,16 @@
+let mockPath = "/app/designer/tools";
 jest.mock("../../../history", () => ({
   history: { push: jest.fn() },
-  getPathArray: () => "/app/designer/tools".split("/"),
+  getPathArray: () => mockPath.split("/"),
 }));
 
 jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
+}));
+
+jest.mock("../../map/actions", () => ({
+  mapPointClickAction: jest.fn(() => jest.fn()),
 }));
 
 const mockDevice = { readPin: jest.fn(() => Promise.resolve()) };
@@ -28,6 +33,7 @@ import { Content, Actions } from "../../../constants";
 import { edit, save } from "../../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { ToolsProps } from "../interfaces";
+import { mapPointClickAction } from "../../map/actions";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -244,5 +250,38 @@ describe("<ToolSlotInventoryItem />", () => {
     const e = { stopPropagation: jest.fn() };
     wrapper.find(".tool-selection-wrapper").first().simulate("click", e);
     expect(e.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("shows tool name", () => {
+    const p = fakeProps();
+    p.hideDropdown = true;
+    const wrapper = mount(<ToolSlotInventoryItem {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("empty");
+  });
+
+  it("opens tool slot", () => {
+    mockPath = "/app/designer/tool-slots";
+    const p = fakeProps();
+    p.toolSlot.body.id = 1;
+    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
+    wrapper.find("div").first().simulate("click");
+    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(history.push).toHaveBeenCalledWith("/app/designer/tool-slots/1");
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("removes item in box select mode", () => {
+    mockPath = "/app/designer/plants/select";
+    const p = fakeProps();
+    p.toolSlot.body.id = 1;
+    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
+    wrapper.find("div").first().simulate("click");
+    expect(mapPointClickAction).toHaveBeenCalledWith(expect.any(Function),
+      p.toolSlot.uuid);
+    expect(history.push).not.toHaveBeenCalled();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.HOVER_TOOL_SLOT,
+      payload: undefined,
+    });
   });
 });

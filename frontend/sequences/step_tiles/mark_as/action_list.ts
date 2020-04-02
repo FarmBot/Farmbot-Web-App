@@ -16,7 +16,7 @@ const allToolsAsDDI = (i: ResourceIndex) => {
     .filter(x => !!x.body.id)
     .map(x => {
       return {
-        label: `${MOUNTED_TO} ${x.body.name}`,
+        label: `${MOUNTED_TO()} ${x.body.name}`,
         value: x.body.id || 0
       };
     });
@@ -25,9 +25,10 @@ const allToolsAsDDI = (i: ResourceIndex) => {
 const DEFAULT = "Default";
 
 const ACTION_LIST: Dictionary<ListBuilder> = {
-  "Device": (i) => [DISMOUNT, ...allToolsAsDDI(i)],
-  "Plant": () => PLANT_OPTIONS,
+  "Device": (i) => [DISMOUNT(), ...allToolsAsDDI(i)],
+  "Plant": () => PLANT_OPTIONS(),
   "GenericPointer": () => POINT_OPTIONS,
+  "Weed": () => POINT_OPTIONS,
   [DEFAULT]: () => []
 };
 

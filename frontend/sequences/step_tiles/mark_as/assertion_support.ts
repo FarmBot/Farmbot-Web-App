@@ -7,6 +7,7 @@ import {
   fakePlant,
   fakePoint,
   fakeSequence,
+  fakeWeed,
 } from "../../../__test_support__/fake_state/resources";
 import { betterMerge } from "../../../util";
 import { MarkAs } from "../mark_as";
@@ -30,6 +31,7 @@ export const markAsResourceFixture = () => buildResourceIndex([
   fakePlant(),
   betterMerge(fakeTool(), { body: { name: "T2", id: 2 } }),
   betterMerge(fakePoint(), { body: { name: "my point", id: 7 } }),
+  betterMerge(fakeWeed(), { body: { name: "weed 1", id: 8 } }),
   betterMerge(fakeTool(), { body: { name: "T3", id: undefined } }),
 ]);
 
